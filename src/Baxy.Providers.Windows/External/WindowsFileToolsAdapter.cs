@@ -529,6 +529,19 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             (byte r, byte g, byte b)? rgb = ParseColor(color);
             if (rgb is null)
                 return ExternalJson.FailureBeforeEffect(operation, "wallpaper_color_unknown");
+            // Ronda final: that solid colour already shown (no picture, same colour), read before: nothing is sent.
+            string already = string.Create(CultureInfo.InvariantCulture, $"{rgb.Value.r} {rgb.Value.g} {rgb.Value.b}");
+            if (previousWallpaper.Length == 0 && previousColor == already)
+                return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteString("mode", "solid_color");
+                    writer.WriteString("color", color);
+                    writer.WriteString("rgb", already);
+                    writer.WriteString("authority", "registry_desktop_color_preread");
+                    writer.WriteEndObject();
+                }), effectObserved: false);
             var effectBoundary = new ExternalEffectBoundary();
             effectBoundary.Cross();
             string value = string.Create(CultureInfo.InvariantCulture, $"{rgb.Value.r} {rgb.Value.g} {rgb.Value.b}");
@@ -578,6 +591,18 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             return ExternalJson.FailureBeforeEffect(operation, "file_not_found");
         if (Path.GetExtension(picture).ToLowerInvariant() is not (".png" or ".jpg" or ".jpeg" or ".bmp" or ".gif" or ".webp"))
             return ExternalJson.FailureBeforeEffect(operation, "wallpaper_file_not_an_image");
+        // Ronda final: that picture already the wallpaper, read before: the state reached, nothing is sent.
+        if (string.Equals(previousWallpaper, picture, StringComparison.OrdinalIgnoreCase))
+            return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("mode", "picture");
+                writer.WriteString("folder", folder);
+                writer.WriteString("name", Path.GetFileName(picture));
+                writer.WriteString("authority", "spi_desktop_wallpaper_preread");
+                writer.WriteEndObject();
+            }), effectObserved: false);
         var boundary = new ExternalEffectBoundary();
         boundary.Cross();
         if (!SystemParametersInfo(SpiSetDeskWallpaper, 0, picture, SpifUpdateIniFile | SpifSendChange))

@@ -64,8 +64,10 @@ internal sealed class WindowsRecycleBinAdapter : IExternalOperationAdapter
                 writer.WriteString("authority", "windows_recycle_bin_empty_postread");
                 writer.WriteEndObject();
             });
-            return ExternalJson.Success(
-                operation, result, effectObserved: beforeCount > 0);
+            // Ronda final: a bin already empty is the state reached (changed:false), not a failure nor an emptying.
+            return beforeCount > 0
+                ? ExternalJson.Success(operation, result, effectObserved: true)
+                : ExternalJson.Switched(operation, result, effectObserved: false);
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)

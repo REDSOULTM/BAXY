@@ -100,13 +100,17 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
                 return Store.Read(id, includeTrashed: true);
             if (arguments.Title is { } title)
             {
+                // The store's own title match: Unicode form C, trimmed, case folded (LocalNoteStore.FindUniqueByTitle).
+                string normalized = title.Normalize(System.Text.NormalizationForm.FormC).Trim();
                 NoteRecord[] named = Store.List(NoteListScope.All)
-                    .Where(note => string.Equals(note.Title, title, StringComparison.OrdinalIgnoreCase)).ToArray();
+                    .Where(note => string.Equals(note.Title, normalized, StringComparison.OrdinalIgnoreCase)).ToArray();
                 return named.Length == 1 ? named[0] : null;
             }
         }
-        catch (NoteNotFoundException)
+        catch (Exception exception) when (exception is NoteNotFoundException or ArgumentException or IOException
+            or InvalidDataException)
         {
+            // Nothing known before: nothing is said about whether it changed (and the selection itself decides).
         }
 
         return null;

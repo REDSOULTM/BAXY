@@ -113,17 +113,21 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         bool responseReplayed)
     {
         message = string.Empty;
-        if (!HasExactProperties(payload, ["version", "enabled", "replayed"])
+        if (!HasExactProperties(payload, ["version", "enabled", "replayed", "changed"])
             || !HasVersionOne(payload)
             || !TryGetBoolean(payload, "enabled", out bool enabled)
             || !TryGetBoolean(payload, "replayed", out bool replayed)
+            || !TryGetBoolean(payload, "changed", out bool changed)
             || enabled != string.Equals(operationName, "memory.enable", StringComparison.Ordinal))
         {
             return false;
         }
 
-        message = CompletedFacts("memory_configuration",
-            new JsonObject { ["enabled"] = enabled }, responseReplayed || replayed);
+        // Ronda final: the memory already as asked is the state reached (changed:false), not a switch made.
+        var configured = new JsonObject { ["enabled"] = enabled };
+        if (!changed)
+            configured["changed"] = false;
+        message = CompletedFacts("memory_configuration", configured, responseReplayed || replayed);
         return true;
     }
 
@@ -137,7 +141,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         message = string.Empty;
         if (!HasExactProperties(
                 payload,
-                ["version", "recordId", "revision", "selector", "replayed"])
+                ["version", "recordId", "revision", "selector", "replayed", "changed"])
             || !HasVersionOne(payload)
             || !TryGetCanonicalIdentifier(payload, "recordId", out _)
             || !TryGetInt32(payload, "revision", minimum: 1, maximum: int.MaxValue, out _)
@@ -147,7 +151,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 MaximumSelectorUtf8Bytes,
                 allowEmpty: false,
                 out string selector)
-            || !TryGetBoolean(payload, "replayed", out bool replayed))
+            || !TryGetBoolean(payload, "replayed", out bool replayed)
+            || !TryGetBoolean(payload, "changed", out bool mutationChanged))
         {
             return false;
         }
@@ -159,7 +164,12 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         var observed = new JsonObject { ["saved"] = true };
         if (operationName == "memory.correct")
         {
-            observed["corrected"] = true;
+            observed["corrected"] = mutationChanged;
+        }
+        // Ronda final: the same datum already kept (save) or the same value (correct): nothing changed.
+        if (!mutationChanged)
+        {
+            observed["changed"] = false;
         }
         if (operationName == "memory.sensitive.save")
         {

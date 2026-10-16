@@ -269,6 +269,23 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         SteamLocalGame? before = _snapshot().SingleOrDefault(game => game.AppId == appId);
+        // Ronda final: a download already running grows by itself, so it cannot show this request's start: it is the
+        // state reached (changed:false), read before, and nothing is sent.
+        if (before is { Installed: false } running && InstallState(running) == "downloading")
+        {
+            JsonElement downloading = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteString("jobId", JobId(appId)); writer.WriteString("appId", appId);
+                writer.WriteString("name", running.Name);
+                writer.WriteString("state", "downloading");
+                writer.WriteNumber("bytesDownloaded", running.BytesDownloaded);
+                writer.WriteNumber("bytesTotal", running.BytesToDownload);
+                writer.WriteString("authority", "steam_manifest_preread"); writer.WriteEndObject();
+            });
+            return ExternalJson.Switched(operation, downloading, effectObserved: false);
+        }
+
         if (await ActAsync(operation, "install", appId, effectBoundary, cancellationToken).ConfigureAwait(false)
             is { } failed)
         {

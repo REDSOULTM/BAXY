@@ -135,6 +135,7 @@ public sealed class LocalMemoryStore : IMemoryStore
             }
 
             AdvanceClockAndPurgeUnsafe(state);
+            bool changed = state.Enabled != request.Enabled;
             state.Enabled = request.Enabled;
             var receipt = new MemoryReceiptDocument
             {
@@ -145,7 +146,7 @@ public sealed class LocalMemoryStore : IMemoryStore
             };
             AddReceiptUnsafe(state, receipt, privacyReducing: !request.Enabled);
             CommitMutationUnsafe(state, allowPrivacyHeadroom: !request.Enabled);
-            return new MemoryConfigurationResult(request.Enabled, Replayed: false);
+            return new MemoryConfigurationResult(request.Enabled, Replayed: false, Changed: changed);
         }
     }
 
@@ -217,6 +218,7 @@ public sealed class LocalMemoryStore : IMemoryStore
                 string.Equals(record.Selector, normalized.Selector, StringComparison.Ordinal)
                 && IsSameStorageScope(record, normalized.Retention, normalized.SessionId));
             MemoryRecordDocument record;
+            bool saveChanged = true;
             if (existing is not null)
             {
                 if (!IsEquivalentExistingSave(existing, normalized))
@@ -225,6 +227,7 @@ public sealed class LocalMemoryStore : IMemoryStore
                 }
 
                 record = existing;
+                saveChanged = false;
             }
             else
             {
@@ -273,7 +276,7 @@ public sealed class LocalMemoryStore : IMemoryStore
                 Selector = record.Selector,
             });
             CommitMutationUnsafe(state);
-            return new MemorySaveResult(record.Id, record.Revision, record.Selector, Replayed: false);
+            return new MemorySaveResult(record.Id, record.Revision, record.Selector, Replayed: false, Changed: saveChanged);
         }
     }
 
@@ -405,7 +408,8 @@ public sealed class LocalMemoryStore : IMemoryStore
                 throw new MemoryConflictException();
             }
 
-            if (!string.Equals(record.Value, newValue, StringComparison.Ordinal))
+            bool correctChanged = !string.Equals(record.Value, newValue, StringComparison.Ordinal);
+            if (correctChanged)
             {
                 if (record.Revision == int.MaxValue)
                 {
@@ -429,7 +433,7 @@ public sealed class LocalMemoryStore : IMemoryStore
                 Selector = record.Selector,
             });
             CommitMutationUnsafe(state);
-            return new MemoryCorrectResult(record.Id, record.Revision, record.Selector, Replayed: false);
+            return new MemoryCorrectResult(record.Id, record.Revision, record.Selector, Replayed: false, Changed: correctChanged);
         }
     }
 

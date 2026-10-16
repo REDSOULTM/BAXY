@@ -57,7 +57,8 @@ public sealed record MemoryRecord(
 
 public sealed record MemoryConfigureRequest(string InvocationId, bool Enabled);
 
-public sealed record MemoryConfigurationResult(bool Enabled, bool Replayed);
+// Ronda final: Changed is false when the store was already as asked (nothing changed), never a change made.
+public sealed record MemoryConfigurationResult(bool Enabled, bool Replayed, bool Changed = true);
 
 public sealed record MemoryBeginSessionRequest(string SessionId);
 
@@ -91,7 +92,8 @@ public sealed record MemorySaveResult(
     Guid RecordId,
     int Revision,
     string Selector,
-    bool Replayed);
+    bool Replayed,
+    bool Changed = true);
 
 public sealed record MemoryRecallRequest(
     string Query,
@@ -121,7 +123,8 @@ public sealed record MemoryCorrectResult(
     Guid RecordId,
     int Revision,
     string Selector,
-    bool Replayed);
+    bool Replayed,
+    bool Changed = true);
 
 public sealed record MemoryForgetRequest(
     string InvocationId,

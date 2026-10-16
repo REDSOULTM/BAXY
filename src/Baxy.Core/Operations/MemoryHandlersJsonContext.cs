@@ -5,14 +5,16 @@ namespace Baxy.Core.Operations;
 internal sealed record MemoryConfigurationWireResult(
     int Version,
     bool Enabled,
-    bool Replayed);
+    bool Replayed,
+    bool Changed);
 
 internal sealed record MemoryMutationWireResult(
     int Version,
     string RecordId,
     int Revision,
     string Selector,
-    bool Replayed);
+    bool Replayed,
+    bool Changed);
 
 internal sealed record MemoryForgetWireResult(
     int Version,

@@ -83,7 +83,10 @@ def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
         argument, value = valued[op]
         if given.get(argument) == value:
             return True
-    return any(str(given.get(argument) or "").strip() for argument in conditional.get(op, ()))
+    # As the App reads them (IsTrue / Named): a boolean only when true, a text only when not blank; «false» is not held.
+    def set_(value) -> bool:
+        return value is True or (isinstance(value, str) and bool(value.strip()))
+    return any(set_(given.get(argument)) for argument in conditional.get(op, ()))
 
 
 def main() -> None:

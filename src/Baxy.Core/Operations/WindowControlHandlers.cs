@@ -180,6 +180,8 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
             writer.WriteNumber("desktopWindows", result.Found);
             writer.WriteNumber("minimized", result.Minimized);
             writer.WriteNumber("remainingVisible", result.Remaining);
+            if (result.Gone > 0)
+                writer.WriteNumber("goneMeanwhile", result.Gone);
             writer.WriteBoolean("allMinimized", true);
             writer.WriteString("authority", "win32_desktop_windows_postread");
             writer.WriteEndObject();

@@ -413,26 +413,33 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
 
         int remaining = targets.Count;
+        int minimizedSeen = 0;
+        int gone = 0;
         for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             remaining = 0;
+            minimizedSeen = 0;
+            gone = 0;
             foreach (WindowSnapshot target in targets)
             {
                 try
                 {
                     if (_platform.Observe(target.Identity).State != "minimized")
                         remaining++;
+                    else
+                        minimizedSeen++;
                 }
                 catch (Exception exception) when (exception is Win32Exception
                     or InvalidOperationException or WindowIdentityChangedException)
                 {
-                    // Gone windows are not visible windows.
+                    // Gone windows are not visible windows, nor windows this call minimized (ronda final).
+                    gone++;
                 }
             }
             if (remaining == 0)
             {
-                return new WindowMinimizeAllResult(true, true, desktop.Count, targets.Count, 0, null);
+                return new WindowMinimizeAllResult(true, true, desktop.Count, minimizedSeen, 0, null, Gone: gone);
             }
             if (attempt + 1 < StateVerificationAttempts)
             {
@@ -441,8 +448,8 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
 
         return new WindowMinimizeAllResult(
-            true, false, desktop.Count, targets.Count - remaining, remaining, WindowControlErrorCodes.VerificationFailed,
-            EffectMayHaveOccurred: true);
+            true, false, desktop.Count, minimizedSeen, remaining, WindowControlErrorCodes.VerificationFailed,
+            EffectMayHaveOccurred: true, Gone: gone);
     }
 
     // CLOSEALL1733 «cerrame todo»: every desktop window is asked to close the way

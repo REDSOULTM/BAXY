@@ -257,7 +257,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         return Success(
             invocation,
             opened.SessionId,
-            new MemoryConfigurationWireResult(PayloadVersion, result.Enabled, result.Replayed),
+            new MemoryConfigurationWireResult(PayloadVersion, result.Enabled, result.Replayed, result.Changed),
             MemoryHandlersJsonContext.Default.MemoryConfigurationWireResult);
     }
 
@@ -345,7 +345,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                 result.RecordId.ToString("D"),
                 result.Revision,
                 result.Selector,
-                result.Replayed),
+                result.Replayed,
+                result.Changed),
             MemoryHandlersJsonContext.Default.MemoryMutationWireResult);
     }
 
@@ -555,7 +556,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                 result.RecordId.ToString("D"),
                 result.Revision,
                 result.Selector,
-                result.Replayed),
+                result.Replayed,
+                result.Changed),
             MemoryHandlersJsonContext.Default.MemoryMutationWireResult);
     }
 
@@ -730,12 +732,25 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         JsonTypeInfo<T> typeInfo)
     {
         JsonElement clearResult = JsonSerializer.SerializeToElement(privateResult, typeInfo);
-        JsonElement sealedResult = _codec.SealResult(
-            Definition.Name,
-            invocation.MissionId,
-            invocation.InvocationId,
-            sessionId,
-            clearResult);
+        JsonElement sealedResult;
+        try
+        {
+            sealedResult = _codec.SealResult(
+                Definition.Name,
+                invocation.MissionId,
+                invocation.InvocationId,
+                sessionId,
+                clearResult);
+        }
+        catch (Exception exception) when (exception is ProtectedPayloadException or IOException
+            or UnauthorizedAccessException or CryptographicException)
+        {
+            // Ronda final: the change is committed and read back before its result is sealed; a seal that fails is a
+            // change that may stand (a read changed nothing).
+            return Failure("memory_protection_failed",
+                effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly);
+        }
+
         return OperationOutcome.PrivateSuccess(sealedResult);
     }
 
