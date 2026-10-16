@@ -28,11 +28,11 @@ internal static class HeartbeatMoment
     /// </summary>
     internal static bool Speaks(string activity) => activity is not (Away or Playing or InCall or Watching);
 
-    internal static string Activity(out bool fullscreen, out bool gpuBusy)
+    internal static string Activity(out bool fullscreen, out bool? gpuBusy)
     {
         gpuBusy = GpuBusy();
         string activity = Presence(out fullscreen);
-        return activity == Watching && gpuBusy ? Playing : activity;
+        return activity == Watching && gpuBusy == true ? Playing : activity;
     }
 
     /// <summary>What the person is doing, as far as no GPU reading is needed (a window filling the screen is watching).</summary>
@@ -58,7 +58,7 @@ internal static class HeartbeatMoment
         IEnumerable<string> events, IReadOnlyList<ConversationMessage> recent, string? connectivity)
     {
         DateTimeOffset now = DateTimeOffset.Now;
-        string activity = Activity(out bool fullscreen, out bool gpuBusy);
+        string activity = Activity(out bool fullscreen, out bool? gpuBusy);
         var context = new JsonObject
         {
             ["now"] = now.ToString("yyyy-MM-dd'T'HH:mm:sszzz", CultureInfo.InvariantCulture),
@@ -100,9 +100,15 @@ internal static class HeartbeatMoment
     }
 
     /// <param name="connectivity">Windows' internet check (internet, constrained, local, none); left out when unread.</param>
-    internal static JsonObject Machine(bool gpuBusy, string? connectivity)
+    /// <param name="gpuBusy">Left out when nvidia-smi was not read (ronda final: «gpu_busy=False» was said unread).</param>
+    internal static JsonObject Machine(bool? gpuBusy, string? connectivity)
     {
-        var pc = new JsonObject { ["gpu_busy"] = gpuBusy };
+        var pc = new JsonObject();
+        if (gpuBusy is { } busy)
+        {
+            pc["gpu_busy"] = busy;
+        }
+
         var memory = new MemoryStatus { Length = (uint)Marshal.SizeOf<MemoryStatus>() };
         if (GlobalMemoryStatusEx(ref memory))
         {
@@ -276,7 +282,7 @@ internal static class HeartbeatMoment
     }
 
     // The GPU is busy with something else (a game) when its load is high while BAXY is not deciding.
-    private static bool GpuBusy()
+    private static bool? GpuBusy()
     {
         try
         {
@@ -289,16 +295,16 @@ internal static class HeartbeatMoment
             });
             if (smi is null)
             {
-                return false;
+                return null;
             }
 
             string output = smi.StandardOutput.ReadToEnd();
             smi.WaitForExit(2000);
-            return int.TryParse(output.Split('\n')[0].Trim(), out int load) && load >= 40;
+            return int.TryParse(output.Split('\n')[0].Trim(), out int load) ? load >= 40 : null;
         }
         catch (System.ComponentModel.Win32Exception)
         {
-            return false;
+            return null;
         }
     }
 

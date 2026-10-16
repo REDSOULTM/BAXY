@@ -118,8 +118,8 @@ internal sealed class Heartbeat : IAsyncDisposable
             return;
         }
 
-        string activity = HeartbeatMoment.Activity(out _, out bool gpuBusy);
-        if (!changed && (activity == HeartbeatMoment.Playing || gpuBusy))
+        string activity = HeartbeatMoment.Activity(out _, out bool? gpuBusy);
+        if (!changed && (activity == HeartbeatMoment.Playing || gpuBusy == true))
         {
             // The five-minute look pauses while the person plays or the GPU is busy; a change still wakes it.
             _lastBeat = DateTimeOffset.UtcNow;
@@ -179,7 +179,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             _connectivity = connectivity;
         }
 
-        JsonObject pc = HeartbeatMoment.Machine(gpuBusy: false, connectivity: null);
+        JsonObject pc = HeartbeatMoment.Machine(gpuBusy: null, connectivity: null);
         if ((int?)pc["battery_pct"] is { } battery && (bool?)pc["plugged"] != true)
         {
             foreach (int threshold in new[] { 20, 10 })

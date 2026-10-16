@@ -236,8 +236,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 .ConfigureAwait(false);
         CdpBrowserSession browser = active ?? _browser;
         int launches = browser.Launches;
-        CdpPageReadResult page = await browser.ReadPageAsync(maximumCharacters, cancellationToken)
-            .ConfigureAwait(false);
+        CdpPageReadResult page;
+        try
+        {
+            page = await browser.ReadPageAsync(maximumCharacters, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or TimeoutException && browser.Launches > launches)
+        {
+            // Ronda final: the read opened its browser and then failed: a window was opened.
+            return ExternalJson.FailureAfterEffect(operation, "web_adapter_unavailable");
+        }
+
         bool launched = browser.Launches > launches;
         if (!page.Verified)
             return ExternalJson.Failure(operation, page.ErrorCode, launched);
@@ -310,8 +319,16 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 .ConfigureAwait(false);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         int launches = browser.Launches;
-        CdpBrowserTabsResult tabs = await browser.ListTabsAsync(limit, cancellationToken)
-            .ConfigureAwait(false);
+        CdpBrowserTabsResult tabs;
+        try
+        {
+            tabs = await browser.ListTabsAsync(limit, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or TimeoutException && browser.Launches > launches)
+        {
+            return ExternalJson.FailureAfterEffect(operation, "web_adapter_unavailable");
+        }
+
         bool launched = browser.Launches > launches;
         if (!tabs.Verified)
             return ExternalJson.Failure(operation, tabs.ErrorCode, launched);

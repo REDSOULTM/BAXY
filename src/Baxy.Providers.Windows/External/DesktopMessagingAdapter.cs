@@ -936,6 +936,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         byte[] beforeSend;
+        byte[] beforePane;
         try
         {
             SendText(text);
@@ -954,6 +955,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // composer, where the new outgoing bubble appears; the whole pane never
             // reads it (MSGSEND1845: «hola» sent and visible, pane OCR without it).
             beforeSend = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
+            // The same rows over the whole pane, the widest read below: an old bubble with these words anywhere there
+            // before Enter is not the delivery.
+            beforePane = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel, 0);
             SendKey(VirtualKeyReturn);
         }
         catch (LeasedInput.BurstStoppedException stop)
@@ -1008,7 +1012,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // Ronda final: a band that already showed the text before Enter (an old bubble with the same words) proves
         // nothing by showing it after: only text that was not there is the delivery.
         bool shownBefore = match is not null
-            && TextMatch(await ReadTextAsync(beforeSend, cancellationToken).ConfigureAwait(false), text) is not null;
+            && (TextMatch(await ReadTextAsync(beforeSend, cancellationToken).ConfigureAwait(false), text) is not null
+                || TextMatch(await ReadTextAsync(beforePane, cancellationToken).ConfigureAwait(false), text) is not null);
         bool delivered = changed && match is not null && !shownBefore && stillTarget;
         return new(
             delivered,

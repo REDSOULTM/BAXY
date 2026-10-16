@@ -176,7 +176,9 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             writer.WriteString("requested", requested);
             writer.WriteString("packageId", package.Id);
             writer.WriteString("name", package.Name);
-            writer.WriteString("packageVersion", package.Version);
+            // Ronda final: a package already there was found by its id alone; the version winget offers is not the one
+            // installed, which was never read.
+            writer.WriteString(processId is null ? "availableVersion" : "packageVersion", package.Version);
             writer.WriteString("packageSource", package.Source);
             writer.WriteString("resolvedBy", resolvedBy);
             writer.WriteBoolean("installed", true);
