@@ -203,6 +203,11 @@ def main() -> None:
     summary = {"label": args.label, "cases": args.cases, "conversations": len(transcripts), "lines": len(rows),
                "falsedades": len(false_lines), "casos_con_falsedad": sorted({r["id"] for r in false_lines}),
                "lineas_sin_juzgar": len(unjudged), "casos_sin_juzgar": sorted({r["id"] for r in unjudged}),
+               # Every line a person must review (decision 2 of the owner: only confirmed falsehoods count): any false
+               # vote of the three, a tie, or no readable verdict.
+               "lineas_a_revisar": [f"{r['id']} t{r['turn']}" for r in rows
+                                    if r.get("falsedad") or "unparsed" in r
+                                    or not str(r.get("votos_falsedad", "0/")).startswith("0/")],
                "setup_failed": [t["id"] for t in transcripts if t.get("status") == "setup_fallido"],
                # A turn that failed or left no line says nothing to judge: counted, never a silently shorter bank.
                "turnos": sum(len(t.get("turns") or []) for t in transcripts),

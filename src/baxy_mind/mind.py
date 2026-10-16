@@ -20,7 +20,7 @@ from .llm_server import LlmServer
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 
-# What BAXY says once when a turn of the person's has said nothing for 2 s and is still working (goal identity: a
+# What BAXY says once when a turn of the person's has said nothing for 2.5 s (SilenceNotice.After) and is still working (goal identity: a
 # notice that claims no result when the turn will go past 3 s in silence). The App times it; the words are the
 # persona's, so they live here with the prompt.
 NOTICE = "Un momento."
@@ -320,7 +320,7 @@ class Mind:
         arguments = pending.get("arguments")
         shown = f" {json.dumps(arguments, ensure_ascii=False)}" if isinstance(arguments, dict) else ""
         return (f"\n[Espera el sí de la persona: {wire}{shown}. Si sus palabras contestan a tu pregunta, llama a "
-                f"confirm_pending con approve true o false; llamar otra vez a {wire} sólo vuelve a preguntar.]")
+                f"confirm_pending con approve true o false.]")
 
     @staticmethod
     def _clock() -> str:
@@ -369,8 +369,8 @@ class Mind:
     def beat(self, request_id: Any, context: dict[str, Any]) -> dict[str, Any]:
         """The heartbeat: nobody spoke; the model looks at the moment in a conversation of its own (OpenClaw's isolated
         heartbeat session), says what is happening and whether to intervene, and only then acts, proposes or says
-        something. Same tools (the cached prefix: the template puts them first) and a system text without the guides and
-        the «¿ya lo hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
+        something. Same tools (the cached prefix: the template puts them first) and a system text without the «¿ya lo
+        hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
         started = time.monotonic()
         conv = [{"role": "user", "content": beat_message(context)}]
         # The decision whether to intervene is greedy: on the open scenes 32 → 34 of 40 sampled against greedy.

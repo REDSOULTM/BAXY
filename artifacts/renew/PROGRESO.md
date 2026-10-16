@@ -382,3 +382,18 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   18. El PC queda libre hasta las 12:00: el e2e y las falsedades del holdout nuevo se corren en el PC.
   19. Mientras el dueño duerme: ante cada decisión, la opción recomendada que respete las reglas, aplicada y anotada
       aquí para que la revise.
+- Guías de ejemplos (S1/S1v2/S1B) medidas y NO adoptadas (c10be4e47): subían el e2e de práctica (p13 26/30) pero en
+  decision2 la A hacía actuar sin el dato (P045 «pon el volumen» -> 50 sin preguntar) y la B sola perdía 13 casos
+  estables (229/229 sin guías vs 222/220, valores inventados en P047/P054). Las líneas «Entró: … guías S1v2» y «la B en
+  medición» de arriba quedan superadas por esto. e2e p15 (03:04, con la guía B y el aviso a 2,5 s): 20/30, primer
+  sonido de la respuesta p50 2575 ms. Brazo R1 del latido (motivo 5 «volvió tras ausencia» en el texto) NO entra: 25 vs
+  30 y rompe 3 silencios; el saludo al volver queda en la App (evento «volvió tras N min ausente», canal de voz) sin
+  texto extra en el latido.
+- Ronda B (4 agentes en el PC sobre d637a07af): mente y catálogo VIOLA (5: comentarios del aviso y de las guías, la nota
+  de confirmación pendiente prometía «sólo vuelve a preguntar» también para una propuesta del latido, que al volver a
+  llamarla se ejecuta —p. ej. system.power—, código muerto en FromStatus, protocol.py y el hello); App VIOLA (2: el
+  texto del bypass prometía no pedir nada aunque el latido sigue reteniendo; «no molestar» corría solo en el latido
+  haciendo clic en Configuración); proveedores VIOLA (2: datos del ping del worker que sólo leen pruebas; un comentario
+  de Spotify); bancos VIOLA (4: límite del latido viejo, guías dadas por adoptadas, código muerto del canal en el juez
+  de escenas, e2e que se acortaba en silencio con la sesión bloqueada). Arreglos de mente y bancos hechos por el PC; App
+  y proveedores, por el notebook.

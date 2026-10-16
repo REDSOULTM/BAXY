@@ -83,7 +83,7 @@
         "sellado": "2026-10-16T03:10:00-03:00"
       }
     },
-    "nota_v2": "holdout v2 creado por dos agentes aislados (decisión 15 del dueño); la sesión de ajuste no abrió ningún caso; sha256 verificados por el líder; se corre una vez con BAXY_RENEW_BANKS=F:\\BAXYeval\renew_v2 (D: en el notebook)."
+    "nota_v2": "holdout v2 creado por dos agentes aislados (decisión 15 del dueño); la sesión de ajuste no abrió ningún caso; sha256 verificados por el líder; se corre una vez con BAXY_RENEW_BANKS=F:/BAXYeval/renew_v2 (D:/BAXYeval/renew_v2 en el notebook)."
   },
   "metas": {
     "holdout": {
@@ -263,9 +263,9 @@
       "evidencia": "el build de producto y Baxy.Setup terminan (e2631eefe: lista de Field UI derivada del dist) y el paquete declara deployment.mind = not_included: no lleva la mente, el modelo GGUF, llama-server ni Piper; Renew se arranca con run_renew.cmd en una máquina que ya los tiene"
     },
     {
-      "limite": "el latido corre solo lo que ni el kernel confirma ni la App retiene (escribir un archivo nuevo, ajustes reversibles, memoria)",
+      "limite": "el latido corre solo lo que ni el kernel confirma ni la App retiene (decisiones del dueño 2026-10-16: media.control por controles del sistema, window.minimize/restore, memory.export, escribir un archivo, ajustes reversibles, memoria)",
       "estado": "aceptado: lo de riesgo lo confirma el kernel; lo que sale a la red o manda entrada a una ventana se retiene",
-      "evidencia": "la App retiene en un latido, para el «sí»: lo de riesgo (ProposedRisks), la entrada a ventanas (SendsInputToAWindow: input.*, clipboard, message.draft, client.channel.locate, browser.control, calculadora, window.*, media.control, media.seek.relative) y lo que sale de la máquina (ReachesTheNetwork: web.search, web.fetch, web.download, weather.current, network.ping, game.entitlement.named, system.time con lugar, app.open con placeValue, memory.export, peripheral.print, toda shell.command.run); la lista es por nombre porque el catálogo no tiene un atributo tipado para eso (NativeTurnLoop.cs, 4b6ab816d, f2a9c1b7e, 0edcd0509); el banco de escenas la lee del código"
+      "evidencia": "la App retiene en el latido lo de alto riesgo (ProposedRisks), lo que teclea, hace clic o pega en una ventana (SendsInputToAWindow, game.launch incluido porque pulsa «Jugar») y lo que sale de la máquina (ReachesTheNetwork); las listas exactas viven en src/Baxy.App/NativeTurnLoop.cs y el banco de escenas las lee del código; son por nombre porque el catálogo no tiene un atributo tipado para eso"
     }
   ],
   "resultados": {
@@ -341,10 +341,11 @@
     },
     "mejoras_posteriores_practica": {
       "estado": "no validadas en holdout",
-      "e2e": "p12 23/30, p13 26/30 (guías A+B), p14 25/30 (aviso 2,0 s: respuesta p50 3994 ms)",
-      "falsedades": "p9 2/26, p10 2/26 (+1 empate), p11 en curso",
+      "e2e": "p12 23/30, p13 26/30 (guías A+B), p14 25/30 (aviso 2,0 s: respuesta p50 3994 ms), p15 20/30 (sólo guía B, aviso 2,5 s: respuesta p50 2575 ms; corrió desde 03:04 con la guía B, antes de quitarla en c10be4e47)",
+      "falsedades": "p9 2/26, p10 2/26 (+1 empate), p11 1/26 (confirmada a mano: 'en descarga' sin respaldo)",
       "decision2": "notebook: base 224-232 según réplica; C1 227/230; guías A+B 231/227 con P045 actuando sin el dato",
-      "escenas": "30-32/39 según brazo; armF 33 con una falsedad; armO rompe un silencio"
+      "escenas": "30-32/39 según brazo; armF 33 con una falsedad; armO rompe un silencio",
+      "guias": "medidas y NO adoptadas (c10be4e47): subían el e2e de práctica pero en decision2 la A hacía actuar sin el dato (P045) y la B sola perdía 13 casos estables (229/229 sin guías vs 222/220)"
     },
     "holdout_v2": {
       "estado": "sellado; se corre una vez sobre el commit congelado",

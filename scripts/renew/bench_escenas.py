@@ -76,28 +76,6 @@ def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
     return any(str(given.get(argument) or "").strip() for argument in conditional.get(op, ()))
 
 
-def quiet_activities() -> set[str]:
-    """The activities in which a heartbeat only notifies, read from the App's rule
-    («Speaks(string activity) => activity is not (A or B …)» and A, B … as HeartbeatMoment's constants)."""
-    source = (ROOT / "src" / "Baxy.App" / "HeartbeatMoment.cs").read_text(encoding="utf-8")
-    rule = re.search(r"static bool Speaks\(string activity\) => activity is not \(([^)]*)\);", source)
-    if rule is None:
-        raise SystemExit("HeartbeatMoment.cs no longer says Speaks as «activity is not (…)»")
-    quiet = set()
-    for name in rule.group(1).split(" or "):
-        value = re.search(rf'internal const string {name.strip()} = "([^"]+)";', source)
-        if value is None:
-            raise SystemExit(f"HeartbeatMoment.cs no longer has {name.strip()}")
-        quiet.add(value.group(1))
-    return quiet
-
-
-def channel_for(activity: str, quiet: set[str]) -> str:
-    """The App's channel rule (HeartbeatMoment.Speaks): aloud, unless the person is away, plays, is in a call or
-    watches. A scene's return («volvió tras N min ausente», as the App notes it) goes in its context's events."""
-    return "notificacion" if activity in quiet else "voz"
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
@@ -115,7 +93,6 @@ def main() -> None:
     catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
     risk = {c["name"]: c.get("risk") for c in catalog["capabilities"]}
     holds = heartbeat_holds()
-    quiet = quiet_activities()
     runs = BANKS / "runs"
     runs.mkdir(parents=True, exist_ok=True)
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), log_name=f"escenas-{args.label}.log")
@@ -170,7 +147,6 @@ def main() -> None:
         expect = scene["expect"]
         effect = next((op for op in reversed(ops) if not (risk.get(op) == "read_only" or op in OBSERVING
                                                          or str(op).startswith("capture."))), None)
-        channel = None if verdict == "silence" else channel_for(context.get("owner_activity", ""), quiet)
         # A scene whose expected operations were all retired with nothing in their place (op null) is left out of the
         # count, as in the decision bench: no answer can meet an action BAXY no longer has.
         excluded = expect["kind"] in {"act", "propose"} and bool(expect.get("ops_any")) and all(

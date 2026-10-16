@@ -159,7 +159,6 @@ public static class OperationVisibleFacts
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(operation);
         ArgumentException.ThrowIfNullOrWhiteSpace(status);
-        bool pending = string.Equals(status, OperationStatuses.Pending, StringComparison.Ordinal);
         var payload = new JsonObject
         {
             ["status"] = status,

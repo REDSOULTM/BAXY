@@ -298,9 +298,16 @@ def main() -> None:
         sys.exit(2)
     env_base = dict(os.environ)
     rows = []
-    for case in cases:
+    stopped_before = None
+    for index, case in enumerate(cases):
         if session_locked():
+            # The cases left count as failures (the session was locked: nothing more could run), so the bank is
+            # never silently shorter than its cases (round B).
+            stopped_before = case["id"]
             print(json.dumps({"error": "sesion_bloqueada", "before": case["id"]}), flush=True)
+            rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
+                      "status": "sesion_bloqueada", "oracles": [], "replies": [], "steps": []}
+                     for left in cases[index:]]
             break
         case_dir = run_dir / case["id"]
         case_dir.mkdir(exist_ok=True)
@@ -317,6 +324,7 @@ def main() -> None:
     audio = [ms for row in rows for ms in row.get("first_audio_ms") or []]
     response_audio = [ms for row in rows for ms in row.get("first_response_audio_ms") or []]
     summary = {"label": args.label, "cases": args.cases, "ok": sum(r["ok"] for r in rows), "n": len(rows),
+               "stopped_before": stopped_before,
                "accuracy": round(sum(r["ok"] for r in rows) / max(1, len(rows)), 4), "areas": by_area,
                # The turn's first sound (the notice's when it came first) and its response's, each with the turns that
                # sounded later than 3 s.

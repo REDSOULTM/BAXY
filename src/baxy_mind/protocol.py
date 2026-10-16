@@ -27,8 +27,6 @@ class ProtocolViolation(Exception):
 
 
 def _decode_message(line: bytes) -> dict[str, Any]:
-    if not line:
-        raise ValueError("an empty byte sequence is EOF, not a message")
     if len(line) > MAX_LINE_BYTES:
         raise ProtocolViolation("line_too_large", f"{len(line)} bytes")
     try:
@@ -47,10 +45,10 @@ def _decode_message(line: bytes) -> dict[str, Any]:
     return message
 
 
-def read_message(stream=None) -> dict[str, Any] | None:
+def read_message() -> dict[str, Any] | None:
     """Lee una solicitud; None en EOF. Fail-closed ante línea inválida."""
 
-    stream = stream or sys.stdin.buffer
+    stream = sys.stdin.buffer
     # Request one byte beyond the contract so an unterminated or hostile line
     # is rejected before the stream allocates arbitrary input.
     line = stream.readline(MAX_LINE_BYTES + 1)
@@ -59,8 +57,8 @@ def read_message(stream=None) -> dict[str, Any] | None:
     return _decode_message(line)
 
 
-def write_message(message: dict[str, Any], stream=None) -> None:
-    stream = stream or sys.stdout.buffer
+def write_message(message: dict[str, Any]) -> None:
+    stream = sys.stdout.buffer
     payload = json.dumps(message, ensure_ascii=False, separators=(",", ":")).encode(
         "utf-8"
     )
