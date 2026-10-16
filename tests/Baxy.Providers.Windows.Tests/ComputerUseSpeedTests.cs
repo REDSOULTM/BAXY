@@ -637,9 +637,10 @@ public sealed class ComputerUseSpeedTests
 
     // Goal v3, analysis r3a M1: the worker reads the classic Win32 controls (combo boxes, trees, lists) as themselves,
     // through the client-side providers it registers once at start (without them, an opaque Pane). Only a combo box of
-    // this test, off the screen, is read.
+    // this test, off the screen, is read. The test waits on the thread that made the combo box: only that thread can
+    // destroy it, and one left behind (owned by a test thread that pumps no messages) hangs a later GetWindowText.
     [Test]
-    public async Task TheWorkerReadsAClassicComboBoxAsItself()
+    public void TheWorkerReadsAClassicComboBoxAsItself()
     {
         string worker = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
         Assume.That(File.Exists(worker), "the worker script is copied next to the tests");
@@ -652,15 +653,16 @@ public sealed class ComputerUseSpeedTests
                 $el=[System.Windows.Automation.AutomationElement]::FromHandle([IntPtr][long]$args[0])
                 [pscustomobject]@{ ok=$true; value=[string]$el.Current.ControlType.ProgrammaticName } | ConvertTo-Json -Compress
                 """;
-            using JsonDocument? read = await host.SendAsync(
-                "{\"cmd\":\"script\",\"script\":" + JsonSerializer.Serialize(probe) + ",\"args\":[\"" + (long)combo + "\"]}",
-                TimeSpan.FromSeconds(30), CancellationToken.None);
+            using JsonDocument? read = host.SendAsync(
+                    "{\"cmd\":\"script\",\"script\":" + JsonSerializer.Serialize(probe) + ",\"args\":[\"" + (long)combo + "\"]}",
+                    TimeSpan.FromSeconds(30), CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
 
             Assert.That(read?.RootElement.GetProperty("line").GetString(), Does.Contain("ControlType.ComboBox"));
         }
         finally
         {
-            _ = DestroyWindow(combo);
+            Assert.That(DestroyWindow(combo), Is.True, "the combo box is destroyed by the thread that made it");
         }
     }
 
