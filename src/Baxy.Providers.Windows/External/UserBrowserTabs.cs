@@ -99,18 +99,18 @@ internal sealed partial class UserBrowserSurface
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> NewTabAsync(TabStep step, CancellationToken cancellationToken)
     {
-        UserBrowserFrame? before = await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+        UserBrowserFrame? before = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
         if (before is null)
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         int count = before.Tabs.Count;
-        bool OneMore(UserBrowserFrame frame) => frame.Tabs.Count > count;
+        bool OneMore(UserBrowserFrame frame) => frame.TabsComplete && frame.Tabs.Count > count;
         if (PostTabCommand(step, BrowserCommandNewTab, AppCommandNew))
         {
             step.Boundary.Cross(CancellationToken.None);
             // The button is pressed only when a read shows the message was not run (as many tabs as before): a tab the
             // message opened late is said, and a strip that cannot be read is never pressed for a second tab.
             UserBrowserFrame? now = await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false)
-                ?? await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+                ?? await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
             if (now is not null && OneMore(now))
                 return Done(step, "tab_opened", now);
             if (now is null || now.Tabs.Count != count)
@@ -134,7 +134,7 @@ internal sealed partial class UserBrowserSurface
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> CloseTabAsync(TabStep step, CancellationToken cancellationToken)
     {
-        UserBrowserFrame? before = await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+        UserBrowserFrame? before = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
         UserBrowserTab? active = before?.Tabs.FirstOrDefault(tab => tab.Selected);
         if (before is null || active is null)
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
@@ -158,7 +158,7 @@ internal sealed partial class UserBrowserSurface
     private async ValueTask<ExternalCapabilityReceipt> CloseAllTabsAsync(
         TabStep step, CancellationToken cancellationToken)
     {
-        UserBrowserFrame? frame = await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+        UserBrowserFrame? frame = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
         if (frame is null || !frame.Tabs.Any(tab => tab.Selected))
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         if (frame.Tabs.Count <= 1)
@@ -208,7 +208,8 @@ internal sealed partial class UserBrowserSurface
                 continue;
             step.Boundary.Cross(CancellationToken.None);
             UserBrowserFrame? after = await AwaitFrameAsync(
-                step.Window, frame => frame.Tabs.Count == count - 1, cancellationToken).ConfigureAwait(false);
+                step.Window, frame => frame.TabsComplete && frame.Tabs.Count == count - 1, cancellationToken)
+                .ConfigureAwait(false);
             if (after is not null)
                 return after;
             resisting.Add(other.Title);
@@ -225,7 +226,7 @@ internal sealed partial class UserBrowserSurface
         TabStep step, UserBrowserFrame before, UserBrowserTab active, CancellationToken cancellationToken)
     {
         int count = before.Tabs.Count;
-        bool OneLess(UserBrowserFrame frame) => frame.Tabs.Count == count - 1;
+        bool OneLess(UserBrowserFrame frame) => frame.TabsComplete && frame.Tabs.Count == count - 1;
         UserBrowserFrame? after = null;
         if (PostTabCommand(step, BrowserCommandCloseTab, AppCommandClose))
         {
@@ -235,7 +236,7 @@ internal sealed partial class UserBrowserSurface
         if (after is null)
         {
             // The message was not run: the click goes only to the same tab, still active and still on screen.
-            UserBrowserFrame? now = await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+            UserBrowserFrame? now = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
             UserBrowserTab? same = now?.Tabs.FirstOrDefault(tab => tab.Selected);
             if (now is null || now.Tabs.Count != count || same is null || !same.Shown
                 || !string.Equals(same.Title, active.Title, StringComparison.Ordinal))
@@ -330,6 +331,18 @@ internal sealed partial class UserBrowserSurface
             return frame;
         await _platform.DelayAsync(FramePoll, cancellationToken).ConfigureAwait(false);
         return await _platform.ReadFrameAsync(window, cancellationToken).ConfigureAwait(false);
+    }
+
+    // Auditoría final (regla 3): a tab step counts tabs only on a strip read whole (UserBrowserFrame.TabsComplete): a tab
+    // that could not be read is never «the last tab», «nothing to close», «one tab less» or «one tab more».
+    private async ValueTask<UserBrowserFrame?> ReadTabsAsync(nint window, CancellationToken cancellationToken)
+    {
+        UserBrowserFrame? frame = await ReadFrameAsync(window, cancellationToken).ConfigureAwait(false);
+        if (frame is null or { TabsComplete: true })
+            return frame;
+        await _platform.DelayAsync(FramePoll, cancellationToken).ConfigureAwait(false);
+        frame = await _platform.ReadFrameAsync(window, cancellationToken).ConfigureAwait(false);
+        return frame is { TabsComplete: true } ? frame : null;
     }
 
     private async ValueTask<UserBrowserFrame?> AwaitFrameAsync(
