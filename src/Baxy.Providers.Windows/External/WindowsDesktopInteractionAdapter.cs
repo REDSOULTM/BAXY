@@ -227,6 +227,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 string error = root.TryGetProperty("error", out JsonElement errorValue)
                     ? errorValue.GetString() ?? "desktop_interaction_not_verified"
                     : "desktop_interaction_not_verified";
+                // Ronda B: DesktopKeyPress.ps1 stopped by a check before any input (no window in front, an empty
+                // clipboard, no on-screen keyboard) sent nothing: its own cause, before the effect.
+                if (!effect && root.TryGetProperty("beforeInput", out JsonElement beforeInput)
+                    && beforeInput.ValueKind == JsonValueKind.True)
+                    return ExternalJson.FailureBeforeEffect(operation, error);
                 return effectBoundary.Failure(operation, error, effect);
             }
             return ExternalJson.Success(operation, root.Clone(), effect);

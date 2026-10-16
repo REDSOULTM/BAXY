@@ -1916,6 +1916,55 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Ronda B: an empty clipboard stops the script before any key: its own cause, before the effect, never
+    // «clipboard_paste_sendinput_failed» with an uncertain effect.
+    [TestCase("{\"version\":1,\"ok\":false,\"effectObserved\":false,\"beforeInput\":true,\"error\":\"clipboard_empty\"}",
+        "clipboard_empty", false)]
+    [TestCase("{\"version\":1,\"ok\":false,\"effectObserved\":false,\"beforeInput\":false,\"error\":\"clipboard_paste_sendinput_failed\"}",
+        "clipboard_paste_sendinput_failed", true)]
+    public async Task ClipboardPasteStoppedBeforeAnyKeyKeepsItsCauseBeforeTheEffect(
+        string output, string errorCode, bool mayHaveOccurred)
+    {
+        using TemporaryDirectory temporary = new();
+        string folderScript = Path.Combine(temporary.Path, "KnownFolderOpen.ps1");
+        string fileScript = Path.Combine(temporary.Path, "KnownFileOpen.ps1");
+        string selectScript = Path.Combine(temporary.Path, "DesktopSelectAll.ps1");
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        foreach (string path in new[] { folderScript, fileScript, selectScript, keyScript })
+            await File.WriteAllTextAsync(path, "# test fixture");
+        var adapter = new WindowsDesktopInteractionAdapter(
+            new CapturingProcessRunner(output), folderScript, fileScript, selectScript, keyScript);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "clipboard.paste", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(errorCode));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.EqualTo(mayHaveOccurred));
+        });
+    }
+
+    // Every check the key script throws comes before any input: each one is in the list the script says was before it.
+    [Test]
+    public void EveryCauseTheKeyScriptThrowsIsToldAsBeforeInput()
+    {
+        string script = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "DesktopKeyPress.ps1"));
+        string[] thrown = System.Text.RegularExpressions.Regex.Matches(script, @"throw '([a-z_]+)'")
+            .Select(static match => match.Groups[1].Value).ToArray();
+        string list = script.Split('\n').Single(static line => line.Contains("$beforeInput=$cause -in", StringComparison.Ordinal));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(thrown, Is.EquivalentTo(new[]
+                { "foreground_window_missing", "sendinput_layout_invalid", "clipboard_empty", "on_screen_keyboard_missing" }));
+            foreach (string cause in thrown)
+                Assert.That(list, Does.Contain("'" + cause + "'"));
+        });
+    }
+
     [Test]
     public async Task ClipboardCopyRequiresStableFocusAcceptedChordAndSequenceChange()
     {
