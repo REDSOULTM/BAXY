@@ -66,7 +66,9 @@ public sealed record WindowActionResult(
     WindowRequestedSize? LargerThanRequested = null,
     // Round A: the failure came after the command reached the window (a state, a placement or a restore that was
     // sent and not read back as asked), so the window may have changed.
-    bool EffectMayHaveOccurred = false);
+    bool EffectMayHaveOccurred = false,
+    // Ronda final: the window already was as asked, read before anything was sent; nothing was sent.
+    bool AlreadyReached = false);
 
 // M159 (DEV-I v4w I-s048 «pasame la ventana de spotify a la derecha»): a placed
 // window whose own minimum size is larger than the half it was asked to take.

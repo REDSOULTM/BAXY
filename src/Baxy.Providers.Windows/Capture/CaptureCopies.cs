@@ -50,16 +50,31 @@ internal static partial class CaptureCopies
                 continue; // a file of that name is there already: it is never replaced
             }
 
-            using (stream)
+            try
             {
-                stream.Write(png);
-                stream.Flush(flushToDisk: true);
-            }
+                using (stream)
+                {
+                    stream.Write(png);
+                    stream.Flush(flushToDisk: true);
+                }
 
-            if (!string.Equals(Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path))), hash, StringComparison.Ordinal))
+                if (!string.Equals(Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path))), hash, StringComparison.Ordinal))
+                    throw new IOException("Saved capture verification failed.");
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
             {
-                File.Delete(path);
-                throw new IOException("Saved capture verification failed.");
+                // Ronda final: the file was created; a failure from here on takes it away, and when it cannot, the copy
+                // may stand in the person's folder (never a clean failure).
+                try
+                {
+                    File.Delete(path);
+                }
+                catch (Exception deleteFailure) when (deleteFailure is IOException or UnauthorizedAccessException)
+                {
+                    throw new CaptureCopyUnconfirmedException(exception);
+                }
+
+                throw;
             }
 
             return new SavedCaptureCopy(folder, name, hash);
@@ -201,3 +216,7 @@ internal static partial class CaptureCopies
     [LibraryImport("shell32.dll")]
     private static partial int SHGetKnownFolderPath(in Guid folderId, uint flags, nint token, out nint path);
 }
+
+/// <summary>A saved copy that failed after its file was created and could not be taken away: it may stand.</summary>
+public sealed class CaptureCopyUnconfirmedException(Exception innerException)
+    : IOException("The saved capture failed after its file was created and could not be removed.", innerException);

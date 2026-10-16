@@ -61,6 +61,16 @@ internal sealed class WindowActionHandler(string operation, WindowControlAction 
     {
         string windowId = invocation.Arguments.GetProperty("windowId").GetString()!;
         WindowActionResult result = await provider.ExecuteAsync(windowId, action, cancellationToken).ConfigureAwait(false);
+        if (result.Succeeded && result.Verified && result.Window is not null && result.AlreadyReached)
+        {
+            // Ronda final: already as asked, nothing sent: the model reads changed:false.
+            var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(
+                WindowControlResultJson.Serialize(result.Window).GetRawText())!;
+            unchanged["changed"] = false;
+            using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
+            return OperationOutcome.Success(document.RootElement.Clone());
+        }
+
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window))
             : OperationOutcome.Failure(

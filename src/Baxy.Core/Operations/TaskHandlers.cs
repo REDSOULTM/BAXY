@@ -96,7 +96,7 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
         _ => throw new JsonException("Unknown task status."),
     };
 
-    protected OperationOutcome VerifiedMutation(LocalTaskRecord changed)
+    protected OperationOutcome VerifiedMutation(LocalTaskRecord changed, long? expectedVersion = null)
     {
         LocalTaskRecord verified;
         try
@@ -117,7 +117,18 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
                 effectMayHaveOccurred: true);
         }
 
-        return OperationOutcome.Success(Serialize(ToResult(verified)));
+        JsonElement result = Serialize(ToResult(verified));
+        // Ronda final: a task already in the state asked (completed, open, deleted, restored) keeps its version: the
+        // state reached, changed:false, never a change this call made.
+        if (expectedVersion is { } version && verified.Version == version)
+        {
+            var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(result.GetRawText())!;
+            unchanged["changed"] = false;
+            using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
+            result = document.RootElement.Clone();
+        }
+
+        return OperationOutcome.Success(result);
     }
 
     protected static TaskResult ToResult(LocalTaskRecord task) => new(
@@ -163,7 +174,8 @@ internal sealed class CompleteTaskHandler(ILocalTaskStore store) : TaskHandlerBa
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {
         TaskCasArguments arguments = Parse(invocation.Arguments, CoreJsonContext.Default.TaskCasArguments);
-        return VerifiedMutation(Store.SetCompleted(ParseId(arguments.TaskId), arguments.ExpectedVersion, true));
+        return VerifiedMutation(Store.SetCompleted(ParseId(arguments.TaskId), arguments.ExpectedVersion, true),
+            arguments.ExpectedVersion);
     }
 }
 
@@ -174,7 +186,8 @@ internal sealed class ReopenTaskHandler(ILocalTaskStore store) : TaskHandlerBase
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {
         TaskCasArguments arguments = Parse(invocation.Arguments, CoreJsonContext.Default.TaskCasArguments);
-        return VerifiedMutation(Store.SetCompleted(ParseId(arguments.TaskId), arguments.ExpectedVersion, false));
+        return VerifiedMutation(Store.SetCompleted(ParseId(arguments.TaskId), arguments.ExpectedVersion, false),
+            arguments.ExpectedVersion);
     }
 }
 
@@ -188,7 +201,7 @@ internal sealed class DeleteTaskHandler(ILocalTaskStore store) : TaskHandlerBase
         return VerifiedMutation(Store.Delete(
             ParseId(arguments.TaskId),
             arguments.ExpectedVersion,
-            arguments.ReviewLabel));
+            arguments.ReviewLabel), arguments.ExpectedVersion);
     }
 }
 
@@ -199,7 +212,7 @@ internal sealed class RestoreTaskHandler(ILocalTaskStore store) : TaskHandlerBas
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {
         TaskCasArguments arguments = Parse(invocation.Arguments, CoreJsonContext.Default.TaskCasArguments);
-        return VerifiedMutation(Store.Restore(ParseId(arguments.TaskId), arguments.ExpectedVersion));
+        return VerifiedMutation(Store.Restore(ParseId(arguments.TaskId), arguments.ExpectedVersion), arguments.ExpectedVersion);
     }
 }
 

@@ -261,7 +261,8 @@ public static class BaxyKeyInput {
         if($window -ne [IntPtr]::Zero){
             $verified=[BaxyKeyInput]::IsWindowVisible($window)
         }
-        $accepted=$(if($verified){1}else{0});$expected=1
+        # Ronda final: ya visible antes, nada se envio: ni aceptado ni efecto.
+        $accepted=$(if($verified -and -not $alreadyReached){1}else{0});$expected=$(if($alreadyReached){0}else{1})
     } else {
         [uint16]$observedLayout=0
         $verified=[BaxyKeyInput]::ReadKeyboardLayout($before,[ref]$observedLayout)

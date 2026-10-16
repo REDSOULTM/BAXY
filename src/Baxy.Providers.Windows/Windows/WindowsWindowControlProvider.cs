@@ -311,6 +311,16 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
 
         cancellationToken.ThrowIfCancellationRequested();
+        // Ronda final: a window already minimized, maximized, restored or in front is the state reached (changed:false),
+        // never an action this call made.
+        if (action is WindowControlAction.Minimize or WindowControlAction.Maximize or WindowControlAction.Restore
+                or WindowControlAction.Focus
+            && WindowsWindowControlVerifier.MatchesExpectedAction(before, action))
+        {
+            return new WindowActionResult(true, true, ToCandidate(before, Issue(before.Identity)), null,
+                AlreadyReached: true);
+        }
+
         if (!_platform.Execute(before.Identity, action))
         {
             // Round A: focusing a minimized window restores it before bringing it to the front, and a refused front

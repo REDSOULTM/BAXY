@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -27,6 +28,16 @@ internal sealed partial class UserBrowserSurface
     // Review r10a finding 6: the front window already showed the destination before the link was opened and no window
     // changed; the arrival is that page still on show, not a page seen to open (said «ya estaba abierta», never «Abrí»).
     internal const string AlreadyShownAuthority = "user_browser_front_already_showed";
+
+    // Ronda final: the front showed the page before the link and still does: what is seen is the state from before,
+    // not a navigation; the link was sent (a tab may have opened) and nothing read what it did.
+    private static void WriteAlreadyShown(Utf8JsonWriter writer, PageObservation seen)
+    {
+        if (seen.Authority != AlreadyShownAuthority)
+            return;
+        writer.WriteBoolean("alreadyShown", true);
+        writer.WriteBoolean("effectReadBack", false);
+    }
 
     private static readonly TimeSpan Poll = TimeSpan.FromMilliseconds(250);
     private const int NavigationPolls = 40;
@@ -98,6 +109,7 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("browser", browser.DisplayName);
             writer.WriteString("browserFamily", browser.Family);
             writer.WriteString("authority", seen.Authority);
+            WriteAlreadyShown(writer, seen);
             writer.WriteEndObject();
         }));
     }
@@ -133,6 +145,7 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("resourceUri", landed.AbsoluteUri);
             writer.WriteString("browser", browser.DisplayName);
             writer.WriteString("authority", seen.Authority);
+            WriteAlreadyShown(writer, seen);
             writer.WriteEndObject();
         }));
     }

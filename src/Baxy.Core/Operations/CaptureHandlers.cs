@@ -53,6 +53,10 @@ internal sealed class ScreenshotCaptureHandler(
             {
                 return OperationOutcome.Failure(exception.Code);
             }
+            catch (CaptureCopyUnconfirmedException)
+            {
+                return OperationOutcome.Failure("capture_save_failed", effectMayHaveOccurred: true);
+            }
             catch (Exception exception) when (
                 exception is IOException or UnauthorizedAccessException or NotSupportedException)
             {
