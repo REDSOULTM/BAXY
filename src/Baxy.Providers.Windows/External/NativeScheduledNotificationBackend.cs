@@ -405,9 +405,10 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
 
 /// <summary>
 /// The task of one notification, element by element as Task Scheduler exports it: the ring script run by
-/// powershell.exe at the due time (once, daily or hourly), at most 10 minutes, started late when the PC was off, with
-/// the user's interactive token. It runs on battery and wakes a sleeping PC, so an alarm verified as set rings on a
-/// laptop unplugged or asleep (a PC shut down or hibernated does not wake).
+/// powershell.exe at the due time (once, daily or hourly), at most 10 minutes, with the user's interactive token. It
+/// asks to start on battery and not to stop when the PC goes on battery, to start as soon as it can after a start it
+/// missed (StartWhenAvailable), and to wake the PC to run (WakeToRun). Windows honors WakeToRun only when the power
+/// plan allows wake timers, so a task set says nothing about whether a sleeping PC rings.
 /// </summary>
 internal static class ScheduledNotificationTaskXml
 {
