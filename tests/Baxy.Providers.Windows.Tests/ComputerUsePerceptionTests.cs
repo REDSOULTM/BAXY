@@ -16,6 +16,34 @@ public sealed class ComputerUsePerceptionTests
 {
     private static JsonElement Json(string value) => JsonDocument.Parse(value).RootElement.Clone();
 
+    // The control that has the keyboard reaches the view as the worker read it (the model reads it as «Foco:»).
+    [Test]
+    public async Task TheViewCarriesTheFocusedControlTheWorkerRead()
+    {
+        // A handle no window has: nothing on the desktop is read or moved.
+        const long front = 0x7FFF_0F3A;
+        var worker = new ScriptedUiaWorker(
+            "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Trabajo\",\"controls\":[" +
+            "{\"kind\":\"Button\",\"name\":\"Ajustes\",\"id\":\"4.1\",\"state\":\"\",\"value\":null,\"rect\":null," +
+            "\"repeated\":0},{\"kind\":\"Edit\",\"name\":\"main Input\",\"id\":\"4.2\",\"state\":\"\"," +
+            "\"value\":\"hola\",\"rect\":null,\"repeated\":0}],\"controlCount\":2," +
+            "\"focused\":{\"kind\":\"Edit\",\"name\":\"main Input\",\"value\":\"hola\",\"i\":1}}");
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null,
+            requestedWindow: (_, _) => ValueTask.FromResult((nint)front));
+
+        ExternalCapabilityReceipt view = await adapter.InvokeAsync(
+            "input.visible.controls", Json("""{"application":"el navegador"}"""), CancellationToken.None);
+
+        JsonElement focused = view.Result!.Value.GetProperty("window").GetProperty("focused");
+        Assert.Multiple(() =>
+        {
+            Assert.That(view.Verified, Is.True);
+            Assert.That(focused.GetProperty("name").GetString(), Is.EqualTo("main Input"));
+            Assert.That(focused.GetProperty("value").GetString(), Is.EqualTo("hola"));
+            Assert.That(focused.GetProperty("i").GetInt32(), Is.EqualTo(1), "the index it clicks by in this view");
+        });
+    }
+
     [Test]
     public async Task VisibleButtonClickRequiresUiaPostreadThatTheControlChanged()
     {

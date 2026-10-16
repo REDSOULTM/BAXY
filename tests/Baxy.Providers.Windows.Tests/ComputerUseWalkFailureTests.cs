@@ -112,7 +112,7 @@ public sealed class ComputerUseWalkFailureTests
             """{"ok":false,"error":"visible_controls_uia_failed","detail":"x"}""", gone);
         ExternalCapabilityReceipt read = Look(
             "{\"ok\":true,\"error\":\"\",\"hwnd\":" + (long)gone + ",\"window\":\"Chats\",\"controls\":[" +
-            "{\"i\":0,\"kind\":\"Button\",\"name\":\"Chats\",\"id\":\"4.2\",\"state\":\"\",\"value\":null,\"rect\":null," +
+            "{\"kind\":\"Button\",\"name\":\"Chats\",\"id\":\"4.2\",\"state\":\"\",\"value\":null,\"rect\":null," +
             "\"repeated\":0}],\"controlCount\":1,\"focused\":null}", gone);
         ExternalCapabilityReceipt without = Look("""{"ok":true,"controls":[],"uiaFailed":"razon"}""", gone);
 

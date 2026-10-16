@@ -329,7 +329,7 @@ tecla VK 0xB9 como hotkey del hilo, inyectándola sin marca (cae en la ventana d
 que registró ese mismo hilo (lo medido): nada llega a la pantalla ni gana el permiso, y la espera se contesta con el
 `WM_HOTKEY` que el cliente esperaba. Cualquier otra entrada (ratón, otra tecla, un lote mezclado) se rechaza entera:
 no se envía y la llamada devuelve 0, así un patrón que necesitara entrada simulada no da por hecho lo que no pasó
-(`BaxyUiaQuietInput`; el ping dice `quietInput`, `uiaInputDropped`, `uiaInputRefused`, `uiaWaitAnswered`). Sin nadie
+(`BaxyUiaQuietInput`; el ping dice `quietInput`). Sin nadie
 tecleando, el cliente cede el permiso sin tecla. Por eso los comandos que actúan (`click`, `at`, `field`, `reveal`,
 `scroll`) corren bajo `BaxyFrontKeeper`, una red que devuelve el frente. Mientras actúan, y
 300 ms después si un patrón actuó de verdad (`invoke`, `select`, `toggle`, `legacy`, `message`, `setvalue`, un
@@ -338,7 +338,7 @@ una ventana que posee. Si toma el frente de la persona, se le devuelve con `SetF
 niega, el hilo de la red gana el derecho igual que el cliente: tiene registrado como hotkey propio una VK sin teclado
 (0x97, o la primera libre de su lista) con las 16 combinaciones de modificadores, la pulsa una vez con la marca de BAXY
 y, al llegar su `WM_HOTKEY`, devuelve el frente. El sistema se queda la pulsación y su subida: medido en vivo, ni la
-ventana de la persona ni la del objetivo reciben mensaje de teclado (`frontBids`, `frontBidsAnswered` en el ping).
+ventana de la persona ni la del objetivo reciben mensaje de teclado.
 Solo si el frente releído es de verdad el de la persona, el objetivo pasa justo debajo sin activarse. Si el retorno
 falla, el orden Z no se toca: la ventana que tiene el teclado sigue a la vista.
 
@@ -353,8 +353,8 @@ de molestia de la misión. Un frente devuelto sigue siendo un cambio, y un retor
 El recibo del clic por punto (`at`) todavía no lo copia. Medido en vivo: sobre 1b9b736e7, con la persona quieta, una
 excursión de 2399 ms y `frontReturnFailed`=2. Con el hotkey de la red (4 corridas seguidas de los dos regímenes),
 tecleando: 0 excursiones; quieta: excursiones de 5 a 12 ms (muestreo cada 5 ms) y `frontReturnFailed`=0. En los dos
-regímenes, 0 teclas ajenas en la ventana de la persona y 0 en la del objetivo, y los cuatro efectos hechos. Cambios de
-frente que llegan después de la vigilancia: solo se cuentan (`frontLate`, `frontLateMs`).
+regímenes, 0 teclas ajenas en la ventana de la persona y 0 en la del objetivo, y los cuatro efectos hechos. Un cambio de
+frente que llega después de la vigilancia no se pelea.
 Pruebas: `UiaQuietInputTests` y `UiaFrontReportTests`; en vivo, `UiaSinFrenteLiveCheck` (tecleando y quieta).
 
 **Devolución desde el proceso de BAXY (cu-v3-foco-segunda).** Toda devolución del frente que hace el propio proceso

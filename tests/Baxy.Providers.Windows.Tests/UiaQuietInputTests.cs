@@ -9,8 +9,8 @@ namespace Baxy.Providers.Windows.Tests;
 /// Goal v3 point 0 (r4a M1): the UI Automation client injects an unmarked key (VK 0xB9) to win the foreground
 /// permission it then hands to the application a pattern acts on, so a window behind came to the front and the key
 /// landed in the person's window. The worker takes SendInput (and the hotkey registration the client waits on) out of
-/// UIAutomationCore's import table: its input is dropped, and the hotkey message the client waits for after it is
-/// posted instead (no 2 s wait). The class is taken from the worker's text and run in a PowerShell of its own with the
+/// UIAutomationCore's import table: its input is dropped, and the wait that follows it is answered with the hotkey
+/// message it waits for, never placed in the thread's queue (no 2 s wait). The class is taken from the worker's text and run in a PowerShell of its own with the
 /// client loaded; no window is read, shown or touched, and nothing reaches the screen.
 /// </summary>
 [TestFixture]
@@ -218,9 +218,9 @@ public sealed class UiaQuietInputTests
             $still=(([QuietWatch]::Ours -eq 0) -and ((-not $moved) -or ([QuietWatch]::Others -gt 0)))
             [BaxyUiaQuietInput]::Restore()
             [Console]::Error.Write(('moved={0} ours={1} (mouse {2}) others={3}' -f $moved,[QuietWatch]::Ours,[QuietWatch]::OursMouse,[QuietWatch]::Others))
-            [Console]::Out.Write(('{0}|{1:X}|{2}|{3}{4}|{5}|{6}|{7}|{8:X}|{9}{10}{11:X}|{12}{13:X}|{14}|{15}|{16}|{17}' -f $other,$none,$registered,$down,$up,$woke,$fast,$read,$again,$mouse,$mixed,$mixedWait,$afterUnregister,$late,$still,[BaxyUiaQuietInput]::Dropped,[BaxyUiaQuietInput]::Refused,[BaxyUiaQuietInput]::Answered))
+            [Console]::Out.Write(('{0}|{1:X}|{2}|{3}{4}|{5}|{6}|{7}|{8:X}|{9}{10}{11:X}|{12}{13:X}|{14}' -f $other,$none,$registered,$down,$up,$woke,$fast,$read,$again,$mouse,$mixed,$mixedWait,$afterUnregister,$late,$still))
             """);
-        Assert.That(answer, Is.EqualTo("0|102|True|11|0|True|312:4242|102|00102|0102|True|2|4|1"),
+        Assert.That(answer, Is.EqualTo("0|102|True|11|0|True|312:4242|102|00102|0102|True"),
             "the hotkey's keys dropped, the wait answered at once and the hotkey read once; anything else refused whole");
     }
 

@@ -9,10 +9,10 @@ namespace Baxy.Providers.Windows.Tests;
 /// <summary>
 /// The tooltip stage on the real desktop, opt-in only (Explicit and BAXY_TOOLTIP_LIVE_CHECK): for each process named
 /// (comma-separated; «self» opens a WinForms window of the test's own with three icon buttons that have only a
-/// tooltip), its largest window is bound like a mission's and its candidates are hovered with the real worker, lease
-/// and OCR, never clicked. Prints, per window, the candidates and the label each tooltip gave (source: tooltipUia or
-/// tooltipOcr), and checks the cursor ends where it was. Only on «self» is a learned icon also pressed (its click
-/// changes the window's title). Labels go to a temporary cache, never to the person's data root.
+/// tooltip), its largest window is bound like a named window and its candidates are hovered with the real worker,
+/// lease and OCR, never clicked. Prints, per window, the candidates and the label each tooltip gave (source:
+/// tooltipUia or tooltipOcr), and checks the cursor ends where it was. Only on «self» is a learned icon also pressed
+/// (its click changes the window's title). Labels go to a temporary cache, never to the person's data root.
 /// </summary>
 [TestFixture]
 [Explicit("Moves the cursor over the named windows (in pauses of the person) and brings them up for a moment.")]

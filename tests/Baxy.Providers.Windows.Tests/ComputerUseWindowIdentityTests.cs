@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
-/// Which window a computer-use mission takes for its application while the application's process is unknown
+/// Which window a look or an act takes for the application it names while the application's process is unknown
 /// (safety review 2026-10-07): the executable first, else its description, else the title or its last segment; each
 /// compared exactly with the name asked, folded (auditoría final V3: no word of it, no alias); never an editor, a
 /// terminal, a console or BAXY that the request did not name. Pure rules; the last test only reads the list of
