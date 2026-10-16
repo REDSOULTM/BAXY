@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
 
@@ -219,6 +222,78 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Round A: a close Windows took with the window still there came back as a clean verification failure, as if the
+    // application never got it. It says the close may still act; a close Windows refused changed nothing.
+    [TestCase(true, WindowControlErrorCodes.VerificationFailed, true)]
+    [TestCase(false, WindowControlErrorCodes.ActionFailed, false)]
+    public async Task ACloseWindowsTookWithTheWindowStillThereMayStillAct(
+        bool accepted, string errorCode, bool effectMayHaveOccurred)
+    {
+        var platform = new FakePlatform
+        {
+            PrimaryCloseAccepted = accepted,
+            PrimaryCloseCloses = false,
+            SystemCloseAccepted = false,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new AppCloseHandler(provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(errorCode));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
+        });
+    }
+
+    // A state that never converges after the command was sent, and a focus refused after restoring a minimized window,
+    // may have changed the window; a maximize Windows refused did not.
+    [TestCase(WindowControlAction.Minimize, "normal", true, WindowControlErrorCodes.VerificationFailed, true)]
+    [TestCase(WindowControlAction.Focus, "minimized", false, WindowControlErrorCodes.ActionFailed, true)]
+    [TestCase(WindowControlAction.Maximize, "normal", false, WindowControlErrorCodes.ActionFailed, false)]
+    public async Task AWindowActionSaysWhetherItMayHaveChangedTheWindow(
+        WindowControlAction action, string initialState, bool accepted, string errorCode, bool effectMayHaveOccurred)
+    {
+        var platform = new FakePlatform { ExecuteAccepted = accepted, ActionConvergenceDelayCount = accepted ? 1000 : 0 };
+        platform.SetInitialState(initialState);
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(
+            new WindowActionHandler("window." + action.ToString().ToLowerInvariant(), action, provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(errorCode));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
+        });
+    }
+
+    // A maximized window is restored before it is placed; a placement Windows then refused leaves it restored.
+    [TestCase("maximized", true)]
+    [TestCase("normal", false)]
+    public async Task ASnapRefusedAfterTheRestoreSaysTheWindowMayHaveChanged(string initialState, bool effectMayHaveOccurred)
+    {
+        var platform = new FakePlatform { SetBoundsAccepted = false, WorkAreaBounds = new WindowBounds(0, 0, 1536, 816) };
+        platform.SetInitialState(initialState);
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new WindowSnapHandler(provider), new { windowId, side = "left" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.ActionFailed));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
+        });
+    }
+
+    private static ValueTask<OperationOutcome> Run(IOperationHandler handler, object arguments) =>
+        handler.ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", JsonSerializer.SerializeToElement(arguments)),
+            CancellationToken.None);
+
     [TestCase("")]
     [TestCase("C:\\Windows\\notepad.exe")]
     [TestCase("notepad:evil")]
@@ -254,6 +329,9 @@ public sealed class WindowsWindowControlProviderTests
         public bool PrimaryCloseCloses { get; set; } = true;
         public bool SystemCloseAccepted { get; set; }
         public bool SystemCloseCloses { get; set; }
+        public bool ExecuteAccepted { get; set; } = true;
+        public bool SetBoundsAccepted { get; set; } = true;
+        public WindowBounds? WorkAreaBounds { get; set; }
         private WindowControlAction? _pendingAction;
         public bool Foreground
         {
@@ -296,6 +374,8 @@ public sealed class WindowsWindowControlProviderTests
         {
             ExecuteCalls++;
             _ = Observe(identity);
+            if (!ExecuteAccepted)
+                return false;
             if (ActionConvergenceDelayCount > 0)
             {
                 _pendingAction = action;
@@ -354,9 +434,13 @@ public sealed class WindowsWindowControlProviderTests
         {
             SetBoundsCalls++;
             _ = Observe(identity);
+            if (!SetBoundsAccepted)
+                return false;
             _bounds = bounds;
             return true;
         }
+
+        public WindowBounds? WorkArea(WindowIdentity identity) => WorkAreaBounds;
 
         public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken)
         {

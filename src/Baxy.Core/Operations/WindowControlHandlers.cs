@@ -63,7 +63,8 @@ internal sealed class WindowActionHandler(string operation, WindowControlAction 
         WindowActionResult result = await provider.ExecuteAsync(windowId, action, cancellationToken).ConfigureAwait(false);
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window))
-            : OperationOutcome.Failure(result.ErrorCode ?? "window_action_failed");
+            : OperationOutcome.Failure(
+                result.ErrorCode ?? "window_action_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
     }
 }
 
@@ -98,7 +99,8 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
 
         if (!result.Succeeded || !result.Verified || result.ProcessId is null)
         {
-            return OperationOutcome.Failure(result.ErrorCode ?? "app_close_failed");
+            return OperationOutcome.Failure(
+                result.ErrorCode ?? "app_close_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
         }
 
         // Auditoría D7: «closed» only for a window that went away after BAXY's close; one already gone, or hidden instead
@@ -156,7 +158,8 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
         WindowMinimizeAllResult result = await provider.MinimizeAllAsync(cancellationToken).ConfigureAwait(false);
         if (!result.Succeeded || !result.Verified)
         {
-            return OperationOutcome.Failure(result.ErrorCode ?? "window_minimize_all_failed");
+            return OperationOutcome.Failure(
+                result.ErrorCode ?? "window_minimize_all_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
         }
 
         var buffer = new ArrayBufferWriter<byte>();
@@ -236,7 +239,8 @@ internal sealed class WindowBoundsHandler(string operation, IWindowControlProvid
             cancellationToken).ConfigureAwait(false);
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window))
-            : OperationOutcome.Failure(result.ErrorCode ?? "window_bounds_failed");
+            : OperationOutcome.Failure(
+                result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
     }
 }
 
@@ -255,7 +259,8 @@ internal sealed class WindowSnapHandler(IWindowControlProvider provider) : IOper
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Serialize(
                 result.Window, side, result.LargerThanRequested))
-            : OperationOutcome.Failure(result.ErrorCode ?? "window_bounds_failed");
+            : OperationOutcome.Failure(
+                result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
     }
 }
 
