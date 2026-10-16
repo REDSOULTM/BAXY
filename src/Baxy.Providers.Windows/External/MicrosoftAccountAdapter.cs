@@ -111,13 +111,12 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
     private readonly IExternalProcessRunner _runner;
     private readonly bool _requireOutlookProfileProbe;
 
-    internal MicrosoftAccountAdapter(string dataRoot)
+    internal MicrosoftAccountAdapter()
         : this(
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY"),
             new ExternalProcessRunner(),
             requireOutlookProfileProbe: true)
     {
-        _ = dataRoot;
     }
 
     internal MicrosoftAccountAdapter(
