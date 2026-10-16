@@ -11,8 +11,8 @@ namespace Baxy.App;
 /// <summary>
 /// The benches' driver: starts the same <see cref="MainWindowViewModel"/> the window uses, without the window, sends the
 /// turns of a file (the person's words, or their Sí/No on a pending confirmation) and writes everything that happened as
-/// JSON lines: each line BAXY published, each call the model made with its status and verification, when the voice
-/// started to speak, and how each turn ended.
+/// JSON lines: each line BAXY published, each call the model made with its status and verification, the notice of a
+/// silent turn, when the voice started to speak (the notice's utterance marked <c>notice</c>), and how each turn ended.
 /// <para>
 /// Usage: <c>Baxy.exe --conductor [--profile DIR] [--capture DIR] (--turns-file FILE | --text TEXT | --command-dir DIR)
 /// [--timeout-ms N]</c>. A turns file has one JSON object per line: <c>{"text":"…"}</c> or <c>{"confirm":true}</c>
@@ -26,7 +26,7 @@ internal static class ProductConductorHost
 {
     internal const string Argument = "--conductor";
 
-    // After the turn ends, how long the conductor waits for the voice to start saying its last line.
+    // After the turn ends, how long the conductor waits for the voice to start saying its response (not the notice).
     private static readonly TimeSpan SpeechWait = TimeSpan.FromSeconds(10);
 
     internal static bool IsRequested(IReadOnlyList<string> arguments)
@@ -79,7 +79,11 @@ internal static class ProductConductorHost
         await using var viewModel = new MainWindowViewModel();
         long turnStartedMs = 0;
         long? speechStartedMs = null;
+        long? responseSpeechStartedMs = null;
         string lastSaid = string.Empty;
+        // The voice says in order what it took: the notice it took sounds before the response published after it.
+        string? noticeAwaitingSound = null;
+        (string Text, bool Notice) utterance = (string.Empty, false);
         viewModel.MessageAdded += message =>
         {
             if (!message.IsUser)
@@ -94,6 +98,16 @@ internal static class ProductConductorHost
             ["route"] = message.Route,
             ["body"] = message.Body,
             ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
+            });
+        };
+        viewModel.NoticeSpoken += notice =>
+        {
+            noticeAwaitingSound = notice;
+            Emit(new JsonObject
+            {
+                ["type"] = "notice",
+                ["text"] = notice,
+                ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
             });
         };
         viewModel.StepCompleted += step => Emit(new JsonObject
@@ -120,13 +134,20 @@ internal static class ProductConductorHost
             if (viewModel.IsVoiceSpeaking)
             {
                 speechStartedMs ??= since;
+                utterance = noticeAwaitingSound is { } notice ? (notice, true) : (lastSaid, false);
+                noticeAwaitingSound = null;
+                if (!utterance.Notice)
+                {
+                    responseSpeechStartedMs ??= since;
+                }
             }
 
-            // Each utterance's start and end, with the line it says (the last one BAXY published).
+            // Each utterance's start and end, with the line it says: the notice, or the last one BAXY published.
             Emit(new JsonObject
             {
                 ["type"] = viewModel.IsVoiceSpeaking ? "speech.start" : "speech.end",
-                ["text"] = lastSaid,
+                ["text"] = utterance.Text,
+                ["notice"] = utterance.Notice,
                 ["since_turn_ms"] = since,
             });
         };
@@ -169,6 +190,8 @@ internal static class ProductConductorHost
                     // A heartbeat with a given moment (the scenes' context), spoken per the person's activity.
                     turnStartedMs = clock.ElapsedMilliseconds;
                     speechStartedMs = null;
+                    responseSpeechStartedMs = null;
+                    noticeAwaitingSound = null;
                     Emit(new JsonObject { ["type"] = "beat.start", ["moment"] = beatMoment.DeepClone() });
                     await viewModel.RunBeatAsync(
                             (JsonObject)beatMoment.DeepClone(),
@@ -193,6 +216,8 @@ internal static class ProductConductorHost
 
                 turnStartedMs = clock.ElapsedMilliseconds;
                 speechStartedMs = null;
+                responseSpeechStartedMs = null;
+                noticeAwaitingSound = null;
                 Emit(new JsonObject { ["type"] = "turn.start", ["index"] = index, ["input"] = turn.DeepClone() });
                 using var turnTimeout = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
                 turnTimeout.CancelAfter(parsed.TurnTimeout);
@@ -217,7 +242,7 @@ internal static class ProductConductorHost
 
                 long endedMs = clock.ElapsedMilliseconds - turnStartedMs;
                 var speechDeadline = Stopwatch.StartNew();
-                while (viewModel.CanSpeak && speechStartedMs is null && speechDeadline.Elapsed < SpeechWait
+                while (viewModel.CanSpeak && responseSpeechStartedMs is null && speechDeadline.Elapsed < SpeechWait
                     && !lifetime.IsCancellationRequested)
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(25), lifetime.Token).ConfigureAwait(true);
@@ -228,7 +253,9 @@ internal static class ProductConductorHost
                     ["type"] = "turn.end",
                     ["index"] = index,
                     ["ms"] = endedMs,
+                    // The turn's first sound, the notice's when it was said first; and its response's first sound.
                     ["speech_start_ms"] = speechStartedMs,
+                    ["response_speech_start_ms"] = responseSpeechStartedMs,
                     ["timedOut"] = turnTimeout.IsCancellationRequested && !lifetime.IsCancellationRequested,
                     ["failure"] = viewModel.LastTurnFailure,
                     ["pendingConfirmation"] = viewModel.HasPendingConfirmation,

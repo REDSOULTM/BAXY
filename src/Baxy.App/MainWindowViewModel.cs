@@ -86,6 +86,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, ShellTraceStages.TurnError,
                         failure);
                 },
+                // The notice is said aloud and nothing else: no line of the chat, the conversation log or the
+                // interface, so it never reads as the turn's answer.
+                Notice = notice =>
+                {
+                    if (_mindClient is { IsVoiceAvailable: true } mind)
+                    {
+                        _ = SpeakNoticeAsync(mind, notice);
+                    }
+                },
                 StepCompleted = step => StepCompleted?.Invoke(step),
                 MemoryChanged = () => MemoryChanged?.Invoke(),
             });
@@ -103,6 +112,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>A heartbeat's words for a person who is playing, in a call, watching or away: shown, not spoken.</summary>
     internal event Action<string>? NotificationRequested;
+
+    /// <summary>The voice took the mind's notice of a silent turn (<see cref="SilenceNotice"/>): it is not a message.</summary>
+    internal event Action<string>? NoticeSpoken;
 
     public ObservableCollection<ConversationMessage> Messages { get; }
 
@@ -1119,6 +1131,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _ = isUser
                 ? mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None)
                 : mind.VoiceSpeakAsync(body, TimeSpan.FromSeconds(5), CancellationToken.None);
+        }
+    }
+
+    private async Task SpeakNoticeAsync(MindSidecarClient mind, string notice)
+    {
+        if (await mind.VoiceSpeakAsync(notice, TimeSpan.FromSeconds(5), CancellationToken.None))
+        {
+            ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "notice.spoken");
+            NoticeSpoken?.Invoke(notice);
         }
     }
 

@@ -34,6 +34,10 @@ internal sealed record NativeTurnStep(
 /// held as a proposal and never reaches the kernel until the person says «sí» to that exact invocation; any other call
 /// runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
+/// <para>
+/// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after it started says the
+/// mind's notice once (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
+/// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
 {
@@ -58,6 +62,9 @@ internal sealed class NativeTurnLoop
         /// <summary>The turn could not reach an answer (mind down, core down): a state for the interface, not prose.</summary>
         internal required Action<string> Fail { get; init; }
 
+        /// <summary>Says the mind's notice aloud (<see cref="SilenceNotice"/>): a line that is not the turn's answer.</summary>
+        internal required Action<string> Notice { get; init; }
+
         internal Action<NativeTurnStep>? StepCompleted { get; init; }
 
         internal Action? MemoryChanged { get; init; }
@@ -72,6 +79,7 @@ internal sealed class NativeTurnLoop
     };
 
     private readonly Host _host;
+    private readonly SilenceNotice _notice = new(TimeProvider.System);
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
@@ -102,8 +110,31 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await DriveAsync(mind, await mind.DecideAsync(text, WaitingCall(), cancellationToken), cancellationToken)
-            ;
+        await PersonTurnAsync(mind, () => mind.DecideAsync(text, WaitingCall(), cancellationToken), cancellationToken);
+    }
+
+    // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
+    // notice when it has published nothing SilenceNotice.After after it started, unless what it waits for is a call this
+    // turn left waiting for the person's Sí or No (its question comes next); the call the person is answering does not
+    // hold it back. A heartbeat says none: nobody asked and nobody waits for it.
+    private async Task PersonTurnAsync(
+        MindSidecarClient mind,
+        Func<Task<MindStep?>> decide,
+        CancellationToken cancellationToken)
+    {
+        PreparedOperation? answered = WaitingPrepared();
+        _notice.Open(
+            mind.Notice,
+            () => WaitingPrepared() is not { } waiting || ReferenceEquals(waiting, answered),
+            _host.Notice);
+        try
+        {
+            await DriveAsync(mind, await decide(), cancellationToken);
+        }
+        finally
+        {
+            _notice.Close();
+        }
     }
 
     // The call that waits for the person's «sí», as the mind reads it with their next words: its operation, and its
@@ -139,11 +170,7 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await DriveAsync(
-                mind,
-                await mind.ConfirmAsync(approve, label, cancellationToken),
-                cancellationToken)
-            ;
+        await PersonTurnAsync(mind, () => mind.ConfirmAsync(approve, label, cancellationToken), cancellationToken);
     }
 
     /// <summary>
@@ -198,15 +225,15 @@ internal sealed class NativeTurnLoop
                 case { Kind: "silence" }:
                     return;
                 case { Kind: "reply" }:
-                    _host.Publish(step.Text, HasPendingConfirmation
+                    _notice.Publish(() => _host.Publish(step.Text, HasPendingConfirmation
                         ? PublicResponseRoute.Confirmation
-                        : PublicResponseRoute.Conversation);
+                        : PublicResponseRoute.Conversation));
                     return;
                 case { Kind: "question" }:
                     // A question about a call that waits for the person's «sí» is that confirmation (Sí/No buttons).
-                    _host.Publish(step.Text, HasPendingConfirmation
+                    _notice.Publish(() => _host.Publish(step.Text, HasPendingConfirmation
                         ? PublicResponseRoute.Confirmation
-                        : PublicResponseRoute.Clarification);
+                        : PublicResponseRoute.Clarification));
                     return;
             }
 
