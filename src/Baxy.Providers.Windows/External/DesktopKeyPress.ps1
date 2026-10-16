@@ -206,7 +206,7 @@ public static class BaxyKeyInput {
     if([BaxyKeyInput]::InputSize -ne $expectedInputSize){throw 'sendinput_layout_invalid'}
     $action=$PSCmdlet.ParameterSetName.ToLowerInvariant()
     $expected=0;$accepted=0;$verified=$false;$pointerX=$null;$pointerY=$null;$layoutLanguageId=$null;$openedProcessId=$null
-    $clipboardFormatCount=$null;$clipboardSequenceBefore=$null;$clipboardSequenceAfter=$null
+    $clipboardFormatCount=$null;$clipboardSequenceBefore=$null;$clipboardSequenceAfter=$null;$alreadyReached=$false
     if($PSCmdlet.ParameterSetName -eq 'Copy') {
         $clipboardSequenceBefore=[BaxyKeyInput]::GetClipboardSequenceNumber()
         $expected=4
@@ -229,13 +229,23 @@ public static class BaxyKeyInput {
         $verified=$accepted -eq $expected
     } elseif($PSCmdlet.ParameterSetName -eq 'Layout') {
         [uint16]$observedLayout=0
-        $verified=[BaxyKeyInput]::SetSpanishLayout($before,[ref]$observedLayout)
+        # Ronda final: leido antes. Un teclado que ya estaba en espanol es el estado alcanzado, no un cambio de este paso.
+        if([BaxyKeyInput]::ReadKeyboardLayout($before,[ref]$observedLayout) -and (($observedLayout -band 0x03ff) -eq 0x000a)){
+            $alreadyReached=$true;$verified=$true;$accepted=0;$expected=0
+        } else {
+            $verified=[BaxyKeyInput]::SetSpanishLayout($before,[ref]$observedLayout)
+            $accepted=$(if($verified){1}else{0});$expected=1
+        }
         $layoutLanguageId=('0x{0:x4}' -f $observedLayout)
-        $accepted=$(if($verified){1}else{0});$expected=1
     } elseif($PSCmdlet.ParameterSetName -eq 'Keyboard') {
         $oskPath=Join-Path ([Environment]::GetFolderPath('Windows')) 'System32\osk.exe'
         if(-not (Test-Path -LiteralPath $oskPath -PathType Leaf)){throw 'on_screen_keyboard_missing'}
-        [void](Start-Process -FilePath $oskPath -PassThru)
+        # Ronda final: un teclado en pantalla ya visible es el estado alcanzado; no se lanza otro ni se dice abierto.
+        $existing=Get-Process -Name 'osk' -ErrorAction SilentlyContinue | Where-Object {
+            $_.MainWindowHandle -ne [IntPtr]::Zero -and [BaxyKeyInput]::IsWindowVisible($_.MainWindowHandle)
+        } | Select-Object -First 1
+        if($null -ne $existing){ $alreadyReached=$true }
+        else { [void](Start-Process -FilePath $oskPath -PassThru) }
         $window=[IntPtr]::Zero
         for($attempt=0;$attempt -lt 50;$attempt++){
             Start-Sleep -Milliseconds 100
@@ -243,7 +253,7 @@ public static class BaxyKeyInput {
                 $_.MainWindowHandle -ne [IntPtr]::Zero
             } | Select-Object -First 1
             if($null -ne $candidate){
-                $openedProcessId=$candidate.Id
+                if(-not $alreadyReached){ $openedProcessId=$candidate.Id }
                 $window=$candidate.MainWindowHandle
                 break
             }
@@ -312,6 +322,7 @@ public static class BaxyKeyInput {
         language=$(if($null -ne $layoutLanguageId -and ([Convert]::ToUInt16($layoutLanguageId.Substring(2),16) -band 0x03ff) -eq 0x000a){'spanish'}else{'other'})
         openedProcessId=$openedProcessId
         acceptedEvents=$accepted
+        alreadyReached=$alreadyReached
         expectedEvents=$expected
         inputSize=[BaxyKeyInput]::InputSize
         lastWin32Error=$lastError

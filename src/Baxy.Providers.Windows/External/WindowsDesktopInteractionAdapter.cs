@@ -234,6 +234,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     return ExternalJson.FailureBeforeEffect(operation, error);
                 return effectBoundary.Failure(operation, error, effect);
             }
+            // Ronda final: a layout already Spanish or an on-screen keyboard already shown is the state reached
+            // (changed:false), never a change this call made.
+            if (root.TryGetProperty("alreadyReached", out JsonElement reached) && reached.ValueKind == JsonValueKind.True)
+                return ExternalJson.Switched(operation, root.Clone(), effectObserved: false);
             // Ronda final: a paste, a click or a scroll is what SendInput accepted, as the keyboard's (CU12): delivered,
             // not an effect seen (nothing reads what the window did with it).
             bool deliveredOnly = operation == "clipboard.paste"

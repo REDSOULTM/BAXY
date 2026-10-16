@@ -66,7 +66,12 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 writer.WriteNumber("version", 1);
                 writer.WriteString("query", title);
                 writer.WriteString("provider", provider);
-                writer.WriteBoolean("installed", distinct.Length > 0);
+                // Ronda final: what is read is the Steam and Epic manifests by the exact name; none named so is not «not
+                // installed» (another name, another store), so only a match says installed.
+                if (distinct.Length > 0)
+                    writer.WriteBoolean("installed", true);
+                else
+                    writer.WriteString("state", "no_steam_or_epic_manifest_with_that_name");
                 writer.WriteNumber("matchCount", distinct.Length);
                 writer.WriteStartArray("games");
                 foreach (InstalledGame game in distinct)

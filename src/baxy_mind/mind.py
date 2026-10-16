@@ -118,8 +118,10 @@ def _outcome(observation: str) -> str:
         # what it changed was not read back (ronda final: a shell command that exited 0) or that it was only delivered
         # (keys and text Windows accepted, with no read-back of what the window did with them).
         observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
+        # Ronda final: an observation left out for its size («observedLimit») cannot show it was more than delivered.
         if (facts.get("verified") is False or observed.get("effectReadBack") is False
-                or ("delivered" in observed and observed.get("readBack") is not True)):
+                or ("delivered" in observed and observed.get("readBack") is not True)
+                or facts.get("observedLimit") == "omitted"):
             return "completado sin verificar"
         return "completado y verificado"
     error = facts.get("error") or facts.get("cause")
