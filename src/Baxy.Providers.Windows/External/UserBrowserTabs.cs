@@ -276,8 +276,9 @@ internal sealed partial class UserBrowserSurface
             "scrolled" => Done(step, "scrolled", null, position: scrolled.After),
             // Already at that end, or a page that does not scroll: nothing moved, and it is said so.
             "boundary" or "not_scrollable" => ExternalJson.FailureBeforeEffect(step.Operation, ScrollBoundary),
-            "unmoved" => ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed),
-            _ => ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable),
+            "page_not_found" => ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable),
+            // Not seen moving, or UI Automation (or the script's deadline) failing, possibly after the scroll was sent.
+            _ => ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed),
         };
     }
 
@@ -294,8 +295,11 @@ internal sealed partial class UserBrowserSurface
             .ConfigureAwait(false);
         if (pressed.Step == "fullscreen_control_not_found")
             return ExternalJson.FailureBeforeEffect(step.Operation, FullscreenControlMissing);
-        if (pressed.Step != "invoked")
+        if (pressed.Step == "page_not_found")
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+        // UI Automation (or the script's deadline) failing, possibly after the button was pressed.
+        if (pressed.Step != "invoked")
+            return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
         for (int attempt = 0; attempt < FullscreenPolls && !coveredBefore; attempt++)
         {
             await _platform.DelayAsync(Poll, cancellationToken).ConfigureAwait(false);

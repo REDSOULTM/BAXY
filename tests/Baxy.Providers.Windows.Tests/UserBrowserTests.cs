@@ -1191,6 +1191,31 @@ public sealed class UserBrowserTests
         });
     }
 
+    // Ronda B: a failure of UI Automation or of the script (its deadline) may come after Scroll() or Invoke() was sent:
+    // it is uncertain, never «before the effect»; a page not found is before any act.
+    [TestCase("scroll_down", "uia_failed: ElementNotAvailableException", true)]
+    [TestCase("scroll_down", "script_failed", true)]
+    [TestCase("scroll_down", "page_not_found", false)]
+    [TestCase("fullscreen_video", "uia_failed: ElementNotAvailableException", true)]
+    [TestCase("fullscreen_video", "script_failed", true)]
+    [TestCase("fullscreen_video", "page_not_found", false)]
+    public async Task AFailureAfterTheActIsUncertain(string action, string step, bool mayHaveOccurred)
+    {
+        var platform = new FakePlatform(OperaGx) { ActResult = _ => new UserBrowserAct(step, -1, -1) };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await Control(harness, action);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.EqualTo(mayHaveOccurred));
+            Assert.That(receipt.ErrorCode, Is.EqualTo(mayHaveOccurred
+                ? UserBrowserSurface.TabStepUnconfirmed
+                : UserBrowserSurface.PageUnreadable));
+        });
+    }
+
     [Test]
     public async Task FullScreenIsTheWindowCoveringItsMonitor()
     {
