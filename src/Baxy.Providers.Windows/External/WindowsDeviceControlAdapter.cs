@@ -1740,6 +1740,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         ExternalEffectBoundary effectBoundary,
         CancellationToken token)
     {
+        // Round A: read first. Already disconnected is the request done with nothing changed (changed:false); it was
+        // an observed disconnection that never happened.
+        using (JsonDocument before = await WifiStatusAsync(token))
+        {
+            if (!Bool(before.RootElement, "connected"))
+                return ExternalJson.Switched(operation, WifiResult(null, false), effectObserved: false);
+        }
+
         effectBoundary.Cross(token);
         ExternalProcessResult dispatch = await _runner.RunAsync(
             "netsh.exe",

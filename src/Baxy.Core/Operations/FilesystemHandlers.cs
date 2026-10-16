@@ -79,7 +79,8 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
         }
         catch (FilesystemProviderException exception)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure(exception.Code, exception.Result));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                exception.Code, exception.Result, effectMayHaveOccurred: exception.EffectMayHaveOccurred));
         }
     }
 
@@ -99,7 +100,11 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
             FilesystemEntry hashed = _provider.Hash(result.ResourceId);
             if (!string.Equals(hashed.Sha256, result.Sha256, StringComparison.Ordinal))
             {
-                throw new FilesystemProviderException("verification_failed");
+                // The change was made unless the state was already there (round A: it was a clean failure).
+                throw new FilesystemProviderException("verification_failed")
+                {
+                    EffectMayHaveOccurred = !result.ReachedState,
+                };
             }
         }
 
@@ -112,7 +117,8 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
         if (!verified.Verified
             || !string.Equals(verified.Sha256, result.Sha256, StringComparison.Ordinal))
         {
-            throw new FilesystemProviderException("verification_failed");
+            // The backup was already copied into the backups folder.
+            throw new FilesystemProviderException("verification_failed") { EffectMayHaveOccurred = true };
         }
 
         return FilesystemResultJson.Backup(result);

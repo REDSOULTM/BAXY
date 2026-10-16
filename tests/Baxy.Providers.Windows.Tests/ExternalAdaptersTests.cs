@@ -2400,6 +2400,7 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
+            "{\"connected\":true,\"profile\":\"Casa\"}",
             "",
             "{\"connected\":false,\"profile\":\"\"}",
         ]);
@@ -2419,8 +2420,37 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("connected").GetBoolean(), Is.False);
-            Assert.That(runner.Calls, Is.EqualTo(2));
+            Assert.That(runner.Calls, Is.EqualTo(3));
             Assert.That(delays.Calls, Is.Zero);
+        });
+    }
+
+    // Round A: with the Wi-Fi already disconnected, «desconectá el wifi» ran netsh and answered an observed
+    // disconnection. It is read first: the request is done, nothing changed, and netsh is not run.
+    [Test]
+    public async Task WifiDisconnectWhenAlreadyDisconnectedChangesNothingAndSaysSo()
+    {
+        using TemporaryDirectory temporary = new();
+        var runner = new SequencedProcessRunner(["{\"connected\":false,\"profile\":\"\"}"]);
+        var adapter = new WindowsDeviceControlAdapter(
+            temporary.Path,
+            temporary.Path,
+            runner,
+            new RecordingDelay().DelayAsync);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "wifi.disconnect",
+            Json("{}"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("connected").GetBoolean(), Is.False);
+            Assert.That(runner.Calls, Is.EqualTo(1), "only the read; no netsh wlan disconnect");
         });
     }
 
@@ -2460,6 +2490,7 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
+            "{\"connected\":true,\"profile\":\"Casa\"}",
             "",
             "{\"connected\":true,\"profile\":\"Casa\"}",
         ]);
@@ -2478,7 +2509,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("wifi_disconnect_not_verified"));
-            Assert.That(runner.Calls, Is.EqualTo(22));
+            Assert.That(runner.Calls, Is.EqualTo(23));
             AssertRetryHorizon(delays, expectedIntervals: 20, intervalMilliseconds: 300);
         });
     }
@@ -3438,6 +3469,45 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Round A: Spotify with sessions at 40 and 20 set to 40: the loudest stays at 40 (the level read before and after)
+    // and the quieter one rises. That is an observed effect, not «external_effect_unobserved».
+    [Test]
+    public async Task AnAppVolumeChangeInAQuieterSessionIsAnObservedEffect()
+    {
+        var set = new WindowsAppVolumeSetAdapter((_, level, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 2, 40, level, false, "endpoint-1", Changed: true);
+        });
+        var adjust = new WindowsAppVolumeAdapter((_, _, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 2, 100, 100, false, "endpoint-1", Changed: true);
+        });
+        var unchanged = new WindowsAppVolumeSetAdapter((_, level, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 2, 40, level, false, "endpoint-1", Changed: false);
+        });
+
+        ExternalCapabilityReceipt raised = await set.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":40}"""), CancellationToken.None);
+        ExternalCapabilityReceipt upAtTheTop = await adjust.InvokeAsync(
+            "audio.app.volume.adjust", Json("""{"app":"Spotify","direction":"up","amount":10}"""), CancellationToken.None);
+        ExternalCapabilityReceipt already = await unchanged.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":40}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(raised.Verified, Is.True, raised.ErrorCode);
+            Assert.That(raised.EffectObserved, Is.True);
+            Assert.That(upAtTheTop.Verified, Is.True, upAtTheTop.ErrorCode);
+            Assert.That(upAtTheTop.EffectObserved, Is.True);
+            Assert.That(already.Verified, Is.True);
+            Assert.That(already.EffectObserved, Is.False);
+        });
+    }
+
     [Test]
     public async Task AppVolumeSetFixesTheSessionsAtAnAbsoluteLevelAndReportsThePostread()
     {
@@ -3447,7 +3517,7 @@ public sealed class ExternalAdaptersTests
         {
             beforeEffect?.Invoke();
             requested.Add((app, level));
-            return new ApplicationSessionAdjustment("Spotify", 2, 85, level, false, "endpoint-1");
+            return new ApplicationSessionAdjustment("Spotify", 2, 85, level, false, "endpoint-1", Changed: true);
         });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(

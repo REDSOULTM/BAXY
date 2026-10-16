@@ -54,11 +54,22 @@ public sealed class WindowsClipboardProvider : IClipboardProvider
         cancellationToken.ThrowIfCancellationRequested();
         _platform.ReplaceText(text);
         cancellationToken.ThrowIfCancellationRequested();
-        ClipboardTextSnapshot first = _platform.ReadText(MaximumCharacters);
-        ClipboardTextSnapshot second = _platform.ReadText(MaximumCharacters);
+        ClipboardTextSnapshot first;
+        ClipboardTextSnapshot second;
+        try
+        {
+            first = _platform.ReadText(MaximumCharacters);
+            second = _platform.ReadText(MaximumCharacters);
+        }
+        catch (ClipboardProviderException exception) when (!exception.EffectMayHaveOccurred)
+        {
+            // The text was written; the read-back did not answer.
+            throw new ClipboardProviderException(exception.Code) { EffectMayHaveOccurred = true };
+        }
+
         if (first != second || !string.Equals(first.Text, text, StringComparison.Ordinal) || first.Truncated)
         {
-            throw new ClipboardProviderException("verification_failed");
+            throw new ClipboardProviderException("verification_failed") { EffectMayHaveOccurred = true };
         }
 
         bool changed = beforeSequence != first.SequenceNumber
@@ -153,7 +164,8 @@ internal sealed partial class Win32ClipboardPlatform : IClipboardPlatform
                 if (!EmptyClipboard()) throw new ClipboardProviderException("clipboard_write_failed");
                 if (SetClipboardData(UnicodeText, memory) == 0)
                 {
-                    throw new ClipboardProviderException("clipboard_partial_write");
+                    // EmptyClipboard already emptied the person's clipboard.
+                    throw new ClipboardProviderException("clipboard_partial_write") { EffectMayHaveOccurred = true };
                 }
 
                 transferred = true;

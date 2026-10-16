@@ -21,6 +21,12 @@ public interface IClipboardProvider
 public class ClipboardProviderException(string code) : Exception(code)
 {
     public string Code { get; } = code;
+
+    /// <summary>
+    /// Round A: the failure came once the person's clipboard was emptied or written (a partial write, a read-back
+    /// that did not match or did not answer), so what it holds may already have changed.
+    /// </summary>
+    public bool EffectMayHaveOccurred { get; init; }
 }
 
 internal interface IClipboardPlatform

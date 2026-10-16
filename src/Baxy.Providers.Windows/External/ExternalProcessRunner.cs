@@ -6,6 +6,13 @@ namespace Baxy.Providers.Windows.External;
 
 internal sealed record ExternalProcessResult(int ExitCode, string Output, string Error);
 
+/// <summary>
+/// The child started and wrote past its capture bound, so it was terminated: it ran, unlike a child that never
+/// started, and a caller whose child may change something says so (round A: a console that overflowed was told as
+/// «not started»).
+/// </summary>
+internal sealed class ExternalProcessOutputTooLargeException(string message) : IOException(message);
+
 internal interface IExternalProcessRunner
 {
     ValueTask<ExternalProcessResult> RunAsync(
@@ -130,7 +137,7 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
 
             if (captured.Length + read > maximumCharacters)
             {
-                throw new IOException("External process output exceeded its bound.");
+                throw new ExternalProcessOutputTooLargeException("External process output exceeded its bound.");
             }
 
             captured.Append(chunk, 0, read);

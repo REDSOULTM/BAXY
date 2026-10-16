@@ -313,8 +313,11 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         cancellationToken.ThrowIfCancellationRequested();
         if (!_platform.Execute(before.Identity, action))
         {
+            // Round A: focusing a minimized window restores it before bringing it to the front, and a refused front
+            // may come after that restore.
             return new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.ActionFailed);
+                false, false, null, WindowControlErrorCodes.ActionFailed,
+                EffectMayHaveOccurred: action == WindowControlAction.Focus && before.State == "minimized");
         }
 
         for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
@@ -330,7 +333,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 or WindowIdentityChangedException)
             {
                 return new WindowActionResult(
-                    false, false, null, WindowControlErrorCodes.VerificationFailed);
+                    false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
             }
 
             if (WindowsWindowControlVerifier.MatchesExpectedAction(after, action))
@@ -353,7 +356,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
 
         return new WindowActionResult(
-            false, false, null, WindowControlErrorCodes.VerificationFailed);
+            false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
     }
 
     public async ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken)
@@ -428,7 +431,8 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
 
         return new WindowMinimizeAllResult(
-            true, false, desktop.Count, targets.Count - remaining, remaining, WindowControlErrorCodes.VerificationFailed);
+            true, false, desktop.Count, targets.Count - remaining, remaining, WindowControlErrorCodes.VerificationFailed,
+            EffectMayHaveOccurred: true);
     }
 
     // CLOSEALL1733 «cerrame todo»: every desktop window is asked to close the way
@@ -592,12 +596,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             or WindowIdentityChangedException)
         {
             return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.VerificationFailed));
+                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true));
         }
         if (after.Bounds != expected)
         {
             return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.VerificationFailed));
+                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true));
         }
 
         string refreshedId = Issue(after.Identity);
@@ -606,7 +610,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         {
             Revoke(refreshedId);
             return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.VerificationFailed));
+                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true));
         }
         return ValueTask.FromResult(new WindowActionResult(true, true, candidate, null));
     }
@@ -654,6 +658,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
 
         // A maximized or minimized window keeps no bounds of its own: it is
         // restored first, the way the desktop does before docking it.
+        bool restored = false;
         if (!string.Equals(before.State, "normal", StringComparison.Ordinal))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -662,6 +667,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 return new WindowActionResult(
                     false, false, null, WindowControlErrorCodes.ActionFailed);
             }
+            restored = true;
             await _platform.DelayAsync(VerificationDelay, cancellationToken)
                 .ConfigureAwait(false);
         }
@@ -675,8 +681,9 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         cancellationToken.ThrowIfCancellationRequested();
         if (!_platform.SetBounds(before.Identity, expected))
         {
+            // Round A: a window restored for the placement stays restored.
             return new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.ActionFailed);
+                false, false, null, WindowControlErrorCodes.ActionFailed, EffectMayHaveOccurred: restored);
         }
 
         (WindowSnapshot? placed, bool larger) = await ObserveSnapAsync(
@@ -685,7 +692,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         if (placed is null)
         {
             return new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.VerificationFailed);
+                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
         }
 
         WindowRequestedSize? largerThanRequested = null;
@@ -709,8 +716,9 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!_platform.SetBounds(before.Identity, flush))
                 {
+                    // The first placement already moved it.
                     return new WindowActionResult(
-                        false, false, null, WindowControlErrorCodes.ActionFailed);
+                        false, false, null, WindowControlErrorCodes.ActionFailed, EffectMayHaveOccurred: true);
                 }
                 (placed, _) = await ObserveSnapAsync(
                         before.Identity, flush, acceptLarger: false, workArea, cancellationToken)
@@ -718,7 +726,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 if (placed is null)
                 {
                     return new WindowActionResult(
-                        false, false, null, WindowControlErrorCodes.VerificationFailed);
+                        false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
                 }
             }
         }
@@ -731,7 +739,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
         Revoke(refreshedId);
         return new WindowActionResult(
-            false, false, null, WindowControlErrorCodes.VerificationFailed);
+            false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
     }
 
     // The placement read back: the exact target, or (acceptLarger) the window held at a
@@ -899,13 +907,16 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             return Prompted(identity!);
         }
 
+        // Round A: a close Windows took (WM_CLOSE or the system-menu close) and a window still there: the application
+        // got the request and may act on it later; it was a clean failure.
         return new WindowCloseResult(
             false,
             false,
             identity!.ProcessId,
             primaryAccepted || fallbackAccepted
                 ? WindowControlErrorCodes.VerificationFailed
-                : WindowControlErrorCodes.ActionFailed);
+                : WindowControlErrorCodes.ActionFailed,
+            EffectMayHaveOccurred: primaryAccepted || fallbackAccepted);
     }
 
     private static WindowCloseResult Ended(WindowIdentity identity, string? title, string outcome) =>

@@ -63,7 +63,10 @@ public sealed record WindowActionResult(
     bool Verified,
     WindowCandidate? Window,
     string? ErrorCode,
-    WindowRequestedSize? LargerThanRequested = null);
+    WindowRequestedSize? LargerThanRequested = null,
+    // Round A: the failure came after the command reached the window (a state, a placement or a restore that was
+    // sent and not read back as asked), so the window may have changed.
+    bool EffectMayHaveOccurred = false);
 
 // M159 (DEV-I v4w I-s048 «pasame la ventana de spotify a la derecha»): a placed
 // window whose own minimum size is larger than the half it was asked to take.
@@ -81,7 +84,9 @@ public sealed record WindowCloseResult(
     // closed window had, as Windows wrote it, read right before the close; the receipt names what it closed.
     string? Title = null,
     // Auditoría D7: what was observed of the window (WindowCloseOutcomes), never «closed» for what BAXY did not close.
-    string Outcome = WindowCloseOutcomes.Closed);
+    string Outcome = WindowCloseOutcomes.Closed,
+    // Round A: Windows took the close request and the window was still there when the reads ended.
+    bool EffectMayHaveOccurred = false);
 
 // Auditoría D7: closed (it went away after BAXY's close), alreadyGone (it was gone before BAXY's close reached it) or
 // hidden (it still exists, invisible: an application that hides in the notification area instead of closing).
@@ -100,11 +105,13 @@ public sealed record WindowMinimizeAllResult(
     int Found,
     int Minimized,
     int Remaining,
-    string? ErrorCode);
+    string? ErrorCode,
+    // Round A: the minimize was sent and some windows were not read back minimized.
+    bool EffectMayHaveOccurred = false);
 
 // CLOSEALL1733 «cerrame todo»: the desktop windows found before, how many were
 // verified closed, how many stayed visible, how many were kept on purpose
-// (the editor hosting the person's work and the terminal).
+// (BAXY's own windows, WindowsWindowControlProvider.OwnProcessNames).
 public sealed record WindowCloseAllResult(
     bool Succeeded,
     bool Verified,

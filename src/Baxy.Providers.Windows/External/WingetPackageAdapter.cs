@@ -140,12 +140,22 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             return effectBoundary.Failure(operation, "winget_install_not_started");
         int processId = launched.ProcessId;
 
-        bool exited = await WaitForExitAsync(processId, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
-        // WINGET2083 «instala 7-Zip»: the installer exits before the package
-        // appears in winget's installed list, and a single read right after it
-        // said «not installed» about a package that was in fact installed.
-        // The list is read again for a few seconds before answering.
-        bool installed = exited && await IsInstalledSoonAsync(package.Id, cancellationToken).ConfigureAwait(false);
+        bool exited;
+        bool installed;
+        try
+        {
+            exited = await WaitForExitAsync(processId, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
+            // WINGET2083 «instala 7-Zip»: the installer exits before the package
+            // appears in winget's installed list, and a single read right after it
+            // said «not installed» about a package that was in fact installed.
+            // The list is read again for a few seconds before answering.
+            installed = exited && await IsInstalledSoonAsync(package.Id, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (IsReadFailure(exception))
+        {
+            return WithOutcome(effectBoundary.Failure(operation, "winget_install_not_verified"), launched);
+        }
+
         if (exited && !installed)
             return WithOutcome(effectBoundary.Failure(operation, "winget_install_not_verified", effectObserved: true), launched);
         // An installer still running is a started install, not a verified one (BAXY Renew audit 2026-10-15: it was a
@@ -248,8 +258,18 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             return effectBoundary.Failure(operation, "winget_uninstall_not_started");
         int processId = launched.ProcessId;
 
-        bool exited = await WaitForExitAsync(processId, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
-        bool stillInstalled = await IsInstalledAsync(package.Id, cancellationToken).ConfigureAwait(false);
+        bool exited;
+        bool stillInstalled;
+        try
+        {
+            exited = await WaitForExitAsync(processId, QuickCompletionWait, cancellationToken).ConfigureAwait(false);
+            stillInstalled = await IsInstalledAsync(package.Id, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (IsReadFailure(exception))
+        {
+            return WithOutcome(effectBoundary.Failure(operation, "winget_uninstall_not_verified"), launched);
+        }
+
         if (exited && stillInstalled)
             return WithOutcome(effectBoundary.Failure(operation, "winget_uninstall_not_verified", effectObserved: true), launched);
         if (stillInstalled)
@@ -425,6 +445,13 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
     private static readonly Regex IdToken = new(
         @"(?<=\s)(?<id>[A-Za-z0-9][A-Za-z0-9.+_-]*\.[A-Za-z0-9.+_-]+|[0-9A-Z]{12,14}|ARP\\[^\s]+|MSIX\\[^\s]+)(?=\s|$)",
         RegexOptions.CultureInvariant);
+
+    // Round A: a read of winget that failed once the installer was launched (a list that timed out, a broken pipe)
+    // loses no effect: the run may have changed the package, so it is a failure after the effect (effectMayHaveOccurred),
+    // never one before it as the outer catch would make it.
+    private static bool IsReadFailure(Exception exception) => exception is TimeoutException or IOException
+        or UnauthorizedAccessException or JsonException or InvalidOperationException
+        or System.ComponentModel.Win32Exception;
 
     // A winget run BAXY started: its process and, once it ended, its exit code and the last line it wrote.
     internal sealed record WingetLaunch(int ProcessId, Func<(int ExitCode, string LastLine)?> Outcome);

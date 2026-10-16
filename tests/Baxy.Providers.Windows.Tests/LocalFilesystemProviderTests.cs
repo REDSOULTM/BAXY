@@ -246,6 +246,76 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Round A: a read-back that did not match once the file was written, or a provider failure after its move, came
+    // back as a clean failure, as if nothing had changed. It says the change may be on disk; a write whose content was
+    // already there changed nothing and says so.
+    [TestCase("nuevo.txt", true)]
+    [TestCase("dato.txt", false)]
+    public async Task AWriteWhoseReadBackDoesNotMatchSaysWhetherTheChangeMayBeOnDisk(string name, bool effectMayHaveOccurred)
+    {
+        using TemporaryDirectory temporary = new();
+        var provider = new MisreadingProvider(new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox")));
+        provider.WriteText("dato.txt", "igual", null);
+
+        OperationOutcome outcome = await Handle(
+            provider, "file.write", $$"""{"relativePath":"{{name}}","text":"igual"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
+        });
+    }
+
+    [Test]
+    public async Task AProviderFailureAfterTheMoveReachesTheOutcomeAsAPossibleEffect()
+    {
+        using TemporaryDirectory temporary = new();
+        var provider = new MisreadingProvider(new LocalFilesystemProvider(temporary.Path)) { TransferFailsAfterEffect = true };
+        FilesystemMutationResult source = provider.WriteText("origen.txt", "dato", null);
+
+        OperationOutcome outcome = await Handle(
+            provider, "filesystem.move",
+            $$"""{"resourceId":"{{source.ResourceId}}","destinationRelativePath":"destino.txt","expectedSha256":"{{source.Sha256}}"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    // The real provider, except that its hash read-back never matches (or its transfer fails after moving).
+    private sealed class MisreadingProvider(LocalFilesystemProvider inner) : IFilesystemProvider
+    {
+        internal bool TransferFailsAfterEffect { get; init; }
+
+        public FilesystemListResult List(string relativeDirectory, int limit) => inner.List(relativeDirectory, limit);
+        public FilesystemListResult Search(string query, int limit) => inner.Search(query, limit);
+        public FilesystemTextResult ReadText(string resourceId, int maximumBytes) => inner.ReadText(resourceId, maximumBytes);
+        public FilesystemEntry Hash(string resourceId) => inner.Hash(resourceId) with { Sha256 = new string('0', 64) };
+        public FilesystemMutationResult CreateDirectory(string relativePath, string? folder) =>
+            inner.CreateDirectory(relativePath, folder);
+        public FilesystemMutationResult WriteText(
+            string relativePath, string text, string? expectedSha256, string? folder = null, bool append = false) =>
+            inner.WriteText(relativePath, text, expectedSha256, folder, append);
+        public FilesystemMutationResult Transfer(
+            string resourceId, string destinationRelativePath, string expectedSha256, bool move)
+        {
+            FilesystemMutationResult moved = inner.Transfer(resourceId, destinationRelativePath, expectedSha256, move);
+            return TransferFailsAfterEffect
+                ? throw new FilesystemProviderException("verification_failed") { EffectMayHaveOccurred = true }
+                : moved;
+        }
+        public BackupReceipt CreateBackup(string resourceId, string expectedSha256) =>
+            inner.CreateBackup(resourceId, expectedSha256);
+        public BackupListResult ListBackups(int limit) => inner.ListBackups(limit);
+        public BackupReceipt VerifyBackup(string backupId) => inner.VerifyBackup(backupId);
+        public FilesystemMutationResult RestoreBackup(string backupId, string destinationRelativePath) =>
+            inner.RestoreBackup(backupId, destinationRelativePath);
+    }
+
     private static ValueTask<OperationOutcome> Handle(IFilesystemProvider provider, string operation, string arguments)
     {
         using JsonDocument document = JsonDocument.Parse(arguments);

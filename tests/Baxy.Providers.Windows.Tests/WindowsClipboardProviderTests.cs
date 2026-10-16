@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Clipboard;
 using NUnit.Framework;
 
@@ -97,6 +100,41 @@ public sealed class WindowsClipboardProviderTests
         });
     }
 
+    // Round A: a copy that failed once the person's clipboard was emptied or written came back as a clean failure. A
+    // partial write (EmptyClipboard done, SetClipboardData refused), a read-back of other text, and a read-back that
+    // did not answer each say the clipboard may already have changed; a write refused before touching it does not.
+    [TestCase("partial", "clipboard_partial_write", true)]
+    [TestCase("other", "verification_failed", true)]
+    [TestCase("busy", "clipboard_busy", true)]
+    [TestCase("refused", "clipboard_allocation_failed", false)]
+    public async Task ACopyThatFailedAfterTouchingTheClipboardSaysItMayHaveChanged(
+        string failure, string errorCode, bool effectMayHaveOccurred)
+    {
+        var platform = new FakeClipboardPlatform("antes", 1)
+        {
+            ReplaceFailure = failure switch
+            {
+                "partial" => new ClipboardProviderException("clipboard_partial_write") { EffectMayHaveOccurred = true },
+                "refused" => new ClipboardProviderException("clipboard_allocation_failed"),
+                _ => null,
+            },
+            WrittenInstead = failure == "other" ? "otro" : null,
+            BusyAfterReplace = failure == "busy",
+        };
+        using JsonDocument arguments = JsonDocument.Parse("{\"text\":\"nuevo\"}");
+
+        OperationOutcome outcome = await new ClipboardWriteTextHandler(new WindowsClipboardProvider(platform)).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", arguments.RootElement.Clone()),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo(errorCode));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
+        });
+    }
+
     private sealed class FakeClipboardPlatform(string text, uint sequence) : IClipboardPlatform
     {
         public string Text { get; private set; } = text;
@@ -109,10 +147,18 @@ public sealed class WindowsClipboardProviderTests
 
         public bool ChangeOnSecondRead { get; init; }
 
+        public ClipboardProviderException? ReplaceFailure { get; init; }
+
+        public string? WrittenInstead { get; init; }
+
+        public bool BusyAfterReplace { get; init; }
+
         public uint GetSequenceNumber() => Sequence;
 
         public ClipboardTextSnapshot ReadText(int maximumCharacters)
         {
+            if (BusyAfterReplace && ReplaceCount > 0)
+                throw new ClipboardProviderException("clipboard_busy");
             ReadCount++;
             if (ChangeOnSecondRead && ReadCount == 2)
             {
@@ -127,8 +173,10 @@ public sealed class WindowsClipboardProviderTests
 
         public void ReplaceText(string text)
         {
+            if (ReplaceFailure is not null)
+                throw ReplaceFailure;
             ReplaceCount++;
-            Text = text;
+            Text = WrittenInstead ?? text;
             Sequence++;
         }
     }

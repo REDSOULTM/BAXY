@@ -252,11 +252,10 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
             // A surface that changed after the person acted proves nothing of the wheel.
             if (burst.UserActed)
                 return effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true);
-            bool changed = after is { } later
-                && later.Hwnd == captured.Hwnd
-                && !string.Equals(later.Sha256, captured.Sha256, StringComparison.Ordinal);
-            if (!changed)
-                return effectBoundary.Failure(operation, "scroll_surface_unchanged", effectObserved: true);
+            if (WheelPostreadError(captured, after) is { } postreadError)
+                return postreadError == "scroll_postread_failed"
+                    ? effectBoundary.Failure(operation, postreadError)
+                    : effectBoundary.Failure(operation, postreadError, effectObserved: true);
             bool restored = burst.Restore();
             return ExternalJson.Success(
                 operation,
@@ -268,6 +267,17 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
             return effectBoundary.Failure(operation, "scroll_receipt_invalid");
         }
     }
+
+    // Round A: the window read again after the wheel, against the one before it. A read that failed (or came back from
+    // another window) says nothing of the surface: scroll_postread_failed, the wheel's effect uncertain; it said
+    // scroll_surface_unchanged. Null when the surface changed.
+    internal static string? WheelPostreadError(
+        VisibleControlSurface.CapturedWindow before, VisibleControlSurface.CapturedWindow? after) => after switch
+        {
+            { } later when later.Hwnd == before.Hwnd =>
+                string.Equals(later.Sha256, before.Sha256, StringComparison.Ordinal) ? "scroll_surface_unchanged" : null,
+            _ => "scroll_postread_failed",
+        };
 
     /// <summary>
     /// The element named <paramref name="label"/> brought into view in the mission's window by UI Automation alone:
