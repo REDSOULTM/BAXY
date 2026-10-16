@@ -40,8 +40,6 @@ internal static class UserBrowserScripts
     /// </summary>
     internal const string Address = Walk + """
         $ErrorActionPreference = 'Stop'
-        # The runner reads UTF-8: page text, tab and video titles keep their accents.
-        [Console]::OutputEncoding = [Text.Encoding]::UTF8
         function Emit([bool]$ok, [string]$value, [string]$reason) {
           [pscustomobject]@{ version = 1; ok = $ok; value = $value; error = $reason } | ConvertTo-Json -Compress
         }
@@ -100,8 +98,6 @@ internal static class UserBrowserScripts
     /// </summary>
     internal const string PagePlay = """
         $ErrorActionPreference = 'Stop'
-        # The runner reads UTF-8: page text, tab and video titles keep their accents.
-        [Console]::OutputEncoding = [Text.Encoding]::UTF8
         function Emit([bool]$ok, [string]$step, [string]$chosen, [string[]]$seen = @()) {
           [pscustomobject]@{ version = 1; ok = $ok; step = $step; chosen = $chosen; seen = @($seen) } | ConvertTo-Json -Compress
         }
@@ -326,8 +322,6 @@ internal static class UserBrowserScripts
     /// </summary>
     internal const string Frame = Walk + """
         $ErrorActionPreference = 'Stop'
-        # The runner reads UTF-8: page text, tab and video titles keep their accents.
-        [Console]::OutputEncoding = [Text.Encoding]::UTF8
         function Fail([string]$reason) {
           [pscustomobject]@{ version = 1; ok = $false; tabs = @(); error = $reason } | ConvertTo-Json -Compress
         }
@@ -428,7 +422,6 @@ internal static class UserBrowserScripts
     /// </summary>
     internal const string Act = Walk + """
         $ErrorActionPreference = 'Stop'
-        [Console]::OutputEncoding = [Text.Encoding]::UTF8
         function Emit([string]$step, [double]$before, [double]$after) {
           [pscustomobject]@{ version = 1; step = $step; before = $before; after = $after } | ConvertTo-Json -Compress
         }
@@ -543,8 +536,6 @@ internal static class UserBrowserScripts
     /// </summary>
     internal const string PageText = Walk + """
         $ErrorActionPreference = 'Stop'
-        # The runner reads UTF-8: page text, tab and video titles keep their accents.
-        [Console]::OutputEncoding = [Text.Encoding]::UTF8
         function Emit([bool]$ok, [string]$title, [string]$text, [bool]$truncated, [string]$reason) {
           [pscustomobject]@{ version = 1; ok = $ok; title = $title; text = $text; truncated = $truncated; error = $reason } | ConvertTo-Json -Compress
         }
