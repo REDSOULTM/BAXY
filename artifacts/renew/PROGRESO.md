@@ -513,6 +513,15 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   - Ronda final 6: el latido lista todas las ventanas abiertas (antes, 12 sin decirlo); el worker UIA de computer use
     marca su lectura parcial (hijos sin leer, tope de 400, 2500 nodos o profundidad 26), así que nada se dice ausente
     ni único desde ella.
+  - Rondas finales 7 y 8 (2a73bbd84 y siguiente): ninguna lista cortada se presenta como entera ni una búsqueda
+    cortada como ausencia (barrido de `Take(limit)` sin total en duplicados, Steam, archivos, copias, tareas, notas,
+    puertos, diff y presentación; el correo y los Office cortados lo dicen; páginas PDF ilegibles aparte; procesos con
+    `observationComplete`; bibliotecas de Steam sin montar; la búsqueda por nombre dice su alcance; el worker UIA marca
+    toda lectura parcial, también al comprobar que el lugar cambió). Latido: ventanas de otro escritorio aparte y
+    dichas, file.open retenido siempre, recordatorios y mensajes cortados marcados. Tres descripciones del catálogo
+    (`tool_descriptions.en.v1.json`: calendar.event.list, browser.tabs.list, storage.removable.list) prometían campos
+    que su resultado no trae y se corrigieron: desde entonces la mente del producto ya no es byte a byte la de
+    9eadc3d79 que midió el holdout v3 (cambio de texto, sin medir).
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -520,11 +529,13 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     riesgo). Latido 8/12 (silencio 7/7, actuar 0/2, proponer 0/1, decir 1/2; 0 molestas). Instinto 51/72 = 70,8 %.
   - e2e 22/40 = 55 % (herramientas 10/12, cu 4/10, agente 4/12, voz 4/6; primer sonido p50 2591 ms, primer sonido de
     la respuesta p50 4149 ms, 23 turnos sobre 3 s). Cinco casos no llegaron a prepararse en el notebook (setup_fallido:
-    su setup.ps1 abortó con `notepad_already_open` en E315, E316 y E340 y `settings_already_open` en E317 y E318, porque
-    el Bloc de notas o Configuración ya estaban abiertos): no dicen nada del modelo, pero la regla los cuenta. Sin
-    ellos, 22/35 = 62,9 %.
+    su setup.ps1 abortó con `notepad_already_open` en E315, E316 y E340 y `settings_already_open` en E317 y E318). Causa,
+    comprobada por el notebook en events.jsonl y results.jsonl (sin abrir el sealed.json): el entorno del notebook, con
+    un Bloc de notas (con texto sin guardar) y Configuración abiertos desde el 2026-10-15, antes de la corrida; ningún
+    paso del producto abrió ninguno de los dos. La regla los cuenta. Sin ellos, 22/35 = 62,9 %.
   - Combinado 176/212 = 83,0 % (decisión + e2e + latido, como en v2; 176/207 = 85,0 % sin los cinco setup_fallido).
-  - Falsedades: 36 conversaciones (6 setup_fallido en el notebook: F306, F307, F313, F315, F322 y F331). El servidor
+  - Falsedades: 36 conversaciones (6 setup_fallido en el notebook: F307, F313, F315 y F322 por el mismo Bloc de notas,
+    F331 por la misma Configuración, F306 por una ruta o clave que su setup.ps1 espera y el notebook no tiene). El servidor
     del juez 35B se cayó bajo F303 t1 en la primera corrida y bajo F308 t1 en la segunda y la tercera (ConnectionReset;
     cada corrida pisa el log de la anterior, así que su causa no se conserva). La cuarta, con `--judge-only` sobre el
     mismo transcripts.json (sha 046ce32b…) y el código de 0d2e5433b, reinició el servidor una vez y siguió, pero se

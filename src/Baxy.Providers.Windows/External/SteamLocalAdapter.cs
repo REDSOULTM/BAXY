@@ -155,7 +155,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             && queryValue.ValueKind == JsonValueKind.String
                 ? queryValue.GetString() ?? string.Empty
                 : string.Empty;
-        SteamLocalGame[] matching = _snapshot()
+        IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        int unreadLibraries = UnreadLibraries(catalog);
+        SteamLocalGame[] matching = catalog
             .Where(game => query.Length == 0
                 || game.AppId.Contains(query, StringComparison.OrdinalIgnoreCase)
                 || game.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase))
@@ -170,6 +172,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // Ronda final 7 (regla 3): the limit leaves some out: how many there are, and that the list is cut.
             writer.WriteNumber("totalCount", matching.Length);
             if (matching.Length > games.Length) writer.WriteBoolean("truncated", true);
+            if (unreadLibraries > 0) writer.WriteNumber("librariesUnread", unreadLibraries);
             writer.WriteStartArray("games");
             foreach (SteamLocalGame game in games)
             {
@@ -200,9 +203,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return EpicEntitlementNamed(operation, title);
         }
         string? appId = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        bool librariesUnread = UnreadLibraries(catalog) > 0;
         SteamLocalGame? game = appId is null
             ? null
-            : _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
+            : catalog.SingleOrDefault(candidate => candidate.AppId == appId);
         IReadOnlySet<string>? cache = _owned();
         bool owned = appId is not null && cache is not null && cache.Contains(appId);
         bool installed = game is { Installed: true };
@@ -220,9 +225,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             else if (appId is not null && !installed && cache is not null) writer.WriteBoolean("inLocalLibraryCache", false);
             // Auditoría final (regla 3): installed or not is read by the AppID's manifest; a title not resolved to one says
             // nothing of it.
-            if (appId is not null) writer.WriteBoolean("installed", installed);
+            // Ronda final 8: with a library unread, a game not found installed may be installed there.
+            if (appId is not null && (installed || !librariesUnread)) writer.WriteBoolean("installed", installed);
+            if (librariesUnread) writer.WriteBoolean("librariesUnread", true);
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
+                : librariesUnread ? "install_not_read"
                 : owned ? "owned_not_installed" : cache is not null ? "not_in_local_library_cache" : "library_cache_unavailable");
             writer.WriteString("authority", installed
                 ? "steam_local_appmanifest" : "steam_authenticated_library_cache");
@@ -899,14 +907,30 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private static string JobId(string appId) => "steam_job_"
         + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(appId)))[..24];
 
+    // Ronda final 8 (regla 3): the installed games read, with how many of Steam's libraries could not be read (a drive
+    // not mounted): while one is unread, the list is not all that is installed and «not installed» is not known.
+    internal sealed class InstalledCatalog(IList<SteamLocalGame> games, int unreadLibraries)
+        : System.Collections.ObjectModel.ReadOnlyCollection<SteamLocalGame>(games)
+    {
+        public int UnreadLibraries { get; } = unreadLibraries;
+    }
+
+    private static int UnreadLibraries(IReadOnlyList<SteamLocalGame> games) =>
+        games is InstalledCatalog catalog ? catalog.UnreadLibraries : 0;
+
     private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog()
     {
         (_, string[] libraries) = SteamRoots();
         var result = new Dictionary<string, SteamLocalGame>(StringComparer.Ordinal);
+        int unread = 0;
         foreach (string library in libraries)
         {
             string steamApps = Path.Combine(library, "steamapps");
-            if (!Directory.Exists(steamApps)) continue;
+            if (!Directory.Exists(steamApps))
+            {
+                unread++;
+                continue;
+            }
             foreach (string manifest in Directory.EnumerateFiles(steamApps, "appmanifest_*.acf"))
             {
                 byte[] bytes = File.ReadAllBytes(manifest);
@@ -928,7 +952,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                     flags, Math.Max(0, downloaded), Math.Max(0, total), installDirectory);
             }
         }
-        return result.Values.ToArray();
+        return new InstalledCatalog(result.Values.ToArray(), unread);
     }
 
     // Auditoría final (regla 3): ownership is the account's library cache alone (an installed manifest may be a shared

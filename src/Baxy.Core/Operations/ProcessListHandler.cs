@@ -143,7 +143,7 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
             _ => throw new InvalidOperationException(),
         };
         result = new ProcessListResult(2, publicSort, snapshot.ObservedProcessCount, items,
-            items.Length, "accessible_processes", snapshot.LogicalProcessorCount);
+            items.Length, "accessible_processes", snapshot.LogicalProcessorCount, snapshot.ObservationComplete);
         return true;
     }
 }

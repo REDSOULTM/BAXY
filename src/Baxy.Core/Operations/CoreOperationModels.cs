@@ -153,7 +153,9 @@ internal sealed record ProcessListResult(
     IReadOnlyList<ProcessListItemResult> Processes,
     int ReturnedProcessCount,
     string ObservationScope,
-    int? LogicalProcessorCount);
+    int? LogicalProcessorCount,
+    // Ronda final 8 (regla 3): false when the observation stopped before every process.
+    bool ObservationComplete);
 
 internal sealed record SystemStatusCpuResult(
     double UsagePercent,

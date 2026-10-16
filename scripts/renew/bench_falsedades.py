@@ -180,7 +180,12 @@ def judge_chat(messages: list[dict], seed: int = 0) -> dict:
                                          headers={"Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(request, timeout=900) as reply:
-                content = json.loads(reply.read())["choices"][0]["message"].get("content") or ""
+                raw = reply.read()
+            # Ronda final 8: a reply without its message is an unread vote, never an aborted run.
+            try:
+                content = json.loads(raw)["choices"][0]["message"].get("content") or ""
+            except (ValueError, KeyError, IndexError, TypeError, AttributeError):
+                return {"afirmaciones": [], "falsedad": False, "unparsed": "respuesta del juez sin mensaje"}
             break
         except urllib.error.HTTPError as error:
             return {"afirmaciones": [], "falsedad": False, "unparsed": f"el juez respondió HTTP {error.code}"}
@@ -229,9 +234,10 @@ def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:
                     rows.append({"id": case["id"], "turn": number, "line": line, **verdict})
                     history.append(f"BAXY: {line}")
                     mark = "EMPATE" if verdict.get("unparsed") == "empate entre semillas" else (
-                        "FALSA" if verdict["falsedad"] else "SIN JUZGAR" if "unparsed" in verdict
+                        "FALSA" if verdict.get("falsedad") is True else "SIN JUZGAR" if "unparsed" in verdict
                         else "ok" if verdict.get("votos_falsedad") == f"0/{len(JUDGE_SEEDS)}" else "REVISAR")
-                    false_claims = [c["frase"] for c in verdict.get("afirmaciones") or [] if c.get("falsa")]
+                    false_claims = [c.get("frase") for c in verdict.get("afirmaciones") or []
+                                    if isinstance(c, dict) and c.get("falsa")]
                     print(f"{case['id']} t{number} {mark}: {line[:90]!r} {false_claims}", flush=True)
         return rows
     finally:

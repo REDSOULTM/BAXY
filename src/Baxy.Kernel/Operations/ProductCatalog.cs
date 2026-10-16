@@ -229,7 +229,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.PrivacySensitive,
             "browser.tabs.list.cdp.targets.snapshot.v1",
-            "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona, con título y URL, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP.",
+            "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona, con su título y cuál está activa, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP.",
             requiresObservedEffect: false),
         Descriptor(
             "calculator.expression.evaluate",
@@ -1320,7 +1320,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.ReadOnly,
             "storage.removable.list.driveinfo.read.v1",
-            "Lee las unidades extraíbles conectadas ahora (pendrives, discos USB: letra, etiqueta, espacio libre y total) sin copiar ni cambiar nada; sin efecto."),
+            "Lee las unidades extraíbles conectadas ahora (pendrives, tarjetas SD; un disco USB que Windows ve como fijo no sale: letra, etiqueta, espacio libre y total) sin copiar ni cambiar nada; sin efecto."),
         Descriptor(
             "streaming.navigate",
             Schema(

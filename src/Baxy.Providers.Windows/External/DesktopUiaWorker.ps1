@@ -1590,9 +1590,14 @@ function Get-PlaceTrace([IntPtr]$top){
   $title=''
   try { $title=[string][BaxyUiaWorkerNative]::Text($top) } catch { $title='' }
   $items=@{}
+  # Ronda final 8 (regla 3): a trace read in part (the window not found, a walk cut, a read that raised) never shows
+  # that a control went or came: Test-PlaceMoved does not decide from it.
+  $partial=$true
   try {
     $found=Get-Root ([long]$top)
     if($null -ne $found -and $null -ne $found.root){
+      $script:Partial=$false
+      $partial=$false
       $position=0
       foreach($item in @(Get-Descendants $found.root)){
         $position++
@@ -1606,11 +1611,12 @@ function Get-PlaceTrace([IntPtr]$top){
           # Sin identidad, el tipo y el nombre: un cambio de nombre se ve como uno que se fue y otro que vino.
           if($key.Length -eq 0){ $key=$kind+'|'+$name+'#'+$position }
           $items[$key]=@{ kind=$kind; name=$name }
-        } catch {}
+        } catch { $partial=$true }
       }
+      if($script:Partial){ $partial=$true }
     }
-  } catch {}
-  return @{ title=$title; items=$items; volatile=@{} }
+  } catch { $partial=$true }
+  return @{ title=$title; items=$items; volatile=@{}; partial=$partial }
 }
 # Revision 2 de la ronda 24b (B1): la medida del lugar corre en cada pulsacion que elige un item, en cualquier marco, y
 # cada lectura recorre el arbol entero (0,2-0,6 s en una ventana corriente; segundos en una consola MMC grande). Su
@@ -1646,6 +1652,8 @@ function Get-SteadyPlace([IntPtr]$top){
   }
   foreach($key in @($second.items.Keys)){ if(-not $first.items.ContainsKey($key)){ $volatile[$key]=$true } }
   $second.volatile=$volatile
+  # Ronda final 8: what was volatile is learned only from two whole reads.
+  if($first.partial){ $second.partial=$true }
   return $second
 }
 # El lugar se movio: cambio el titulo, vino o se fue un control con nombre, o cambio el nombre de uno que no es texto.
@@ -1654,6 +1662,7 @@ function Get-SteadyPlace([IntPtr]$top){
 function Test-PlaceMoved($before,$after){
   if($null -eq $before -or $null -eq $after){ return $true }
   if([string]$before.title -ne [string]$after.title){ return $true }
+  if($before.partial -or $after.partial){ return $false }
   $volatile=$(if($null -ne $before.volatile){ $before.volatile } else { @{} })
   $was=$(if($null -ne $before.items){ $before.items } else { @{} })
   $now=$(if($null -ne $after.items){ $after.items } else { @{} })

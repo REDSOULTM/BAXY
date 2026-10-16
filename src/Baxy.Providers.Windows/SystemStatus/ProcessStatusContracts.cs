@@ -19,7 +19,9 @@ public sealed record ProcessStatusEntry(
 public sealed record ProcessStatusSnapshot(
     int ObservedProcessCount,
     IReadOnlyList<ProcessStatusEntry> Processes,
-    int? LogicalProcessorCount = null);
+    int? LogicalProcessorCount = null,
+    // Ronda final 8 (regla 3): false when a read stopped before every process (out of memory, the cap).
+    bool ObservationComplete = true);
 
 public interface IProcessStatusProvider
 {

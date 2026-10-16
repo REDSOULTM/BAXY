@@ -86,14 +86,30 @@ internal static class HeartbeatMoment
             context["foreground"] = frontWindow;
         }
 
-        // Ronda final 6 (regla 3): every open window is listed; a list cut short would read as all of them.
+        // Ronda final 6 (regla 3): every open window is listed; a list cut short would read as all of them. Ronda
+        // final 8: a window DWM cloaks (on another virtual desktop, or a suspended packaged app) is not on screen, so it
+        // is not listed with them, and the list says how many were left out that way.
         var windows = new JsonArray();
+        int cloaked = 0;
         foreach (nint window in TopLevelWindows().Where(window => window != front))
         {
-            if (Describe(window) is { } described)
+            if (IsCloaked(window))
+            {
+                cloaked++;
+            }
+            else if (Describe(window) is { } described)
             {
                 windows.Add(described);
             }
+        }
+
+        if (cloaked > 0)
+        {
+            windows.Add(new JsonObject
+            {
+                ["title"] = $"y {cloaked} más fuera de la vista (en otro escritorio o suspendidas)",
+                ["process"] = "sin leer",
+            });
         }
 
         context["windows"] = windows;
@@ -168,12 +184,18 @@ internal static class HeartbeatMoment
     internal static string? ProcessOf(nint window)
     {
         _ = GetWindowThreadProcessId(window, out uint processId);
+        // Ronda final 8 (regla 3): a window gone before its process was read (pid 0 is «Idle») has no process.
+        if (processId == 0)
+        {
+            return null;
+        }
+
         try
         {
             using Process process = Process.GetProcessById((int)processId);
             return process.ProcessName;
         }
-        catch (ArgumentException)
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             return null;
         }
@@ -198,7 +220,7 @@ internal static class HeartbeatMoment
             using Process process = Process.GetProcessById((int)processId);
             return new JsonObject { ["process"] = process.ProcessName, ["title"] = title };
         }
-        catch (ArgumentException)
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
         {
             return null;
         }
@@ -210,7 +232,7 @@ internal static class HeartbeatMoment
         _ = EnumWindows((window, _) =>
         {
             if (IsWindowVisible(window) && GetWindow(window, 4) == 0 && WindowTitle(window).Length > 0
-                && !IsToolWindow(window) && !IsCloaked(window))
+                && !IsToolWindow(window))
             {
                 windows.Add(window);
             }
@@ -236,7 +258,7 @@ internal static class HeartbeatMoment
     private static bool IsToolWindow(nint window) => (GetWindowLongPtr(window, -20) & 0x80) != 0;
 
     // Ronda final 7 (regla 3): DWMWA_CLOAKED (14), a window the shell hides (a suspended packaged app, another virtual
-    // desktop's) is visible to Win32 and seen by nobody, as WindowsInstalledApplicationOpenProvider reads it.
+    // desktop's) is visible to Win32 and not on screen, as WindowsInstalledApplicationOpenProvider reads it.
     private static bool IsCloaked(nint window) =>
         DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0;
 

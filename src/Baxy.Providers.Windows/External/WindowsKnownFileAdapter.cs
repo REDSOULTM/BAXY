@@ -123,6 +123,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteNumber("groupsFound", found.Length);
             if (found.Length > groups.Length) writer.WriteBoolean("truncated", true);
             if (candidatesCapped) writer.WriteBoolean("candidatesCapped", true);
+            WriteWalkScope(writer);
             writer.WriteStartArray("groups");
             foreach (var group in groups)
             {
@@ -435,6 +436,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                     .Select(item => item.Label).Distinct(StringComparer.Ordinal))
                     writer.WriteStringValue(label);
                 writer.WriteEndArray();
+                WriteWalkScope(writer);
                 writer.WriteEndObject();
             }), "known_file_not_found");
         }
@@ -584,13 +586,17 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         int totalLines = IntOf(root, "lines");
         int pages = IntOf(root, "pages");
         int textPages = IntOf(root, "textPages");
+        int unreadPages = IntOf(root, "unreadPages");
         return ExternalJson.Success(operation, ReadResult(
             file, "pdf", characters, totalLines, offset, text,
             writer =>
             {
                 writer.WriteNumber("pages", pages);
                 writer.WriteNumber("textPages", textPages);
-                writer.WriteBoolean("hasText", characters > 0);
+                // Ronda final 8 (regla 3): pages whose text could not be extracted are said apart, and «no text» is
+                // said only when every page was read.
+                if (unreadPages > 0) writer.WriteNumber("unreadPages", unreadPages);
+                if (characters > 0 || unreadPages == 0) writer.WriteBoolean("hasText", characters > 0);
             },
             Hash(info.FullName), "windows_known_pdf_pypdf_text_extraction"), effectObserved: false);
     }
@@ -804,7 +810,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                     Path.GetFileNameWithoutExtension(item.Path), stem, StringComparison.OrdinalIgnoreCase))
                 .Take(5)];
         string code = matches.Count > 1 ? "known_file_ambiguous" : "known_file_not_found";
-        if (candidates.Length == 0) return ExternalJson.Failure(operation, code);
+        if (candidates.Length == 0)
+        {
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                WriteWalkScope(writer);
+                writer.WriteEndObject();
+            }), code);
+        }
         return CandidatesRefusal(operation, code, candidates);
     }
 
@@ -885,11 +899,13 @@ def main() -> int:
                 return 2
         pages = len(reader.pages)
         chunks = []
+        unread = 0
         for page in reader.pages:
             try:
                 text = page.extract_text() or ""
-            except Exception:  # noqa: BLE001 - one damaged page does not void the rest
+            except Exception:  # noqa: BLE001 - one damaged page does not void the rest, and is counted unread
                 text = ""
+                unread += 1
             # Lone surrogates and control bytes from damaged fonts never reach the JSON.
             text = text.encode("utf-8", "replace").decode("utf-8", "replace")
             text = "".join(ch for ch in text if ch in "\n\t" or ord(ch) >= 32)
@@ -900,6 +916,7 @@ def main() -> int:
         print(json.dumps({
             "pages": pages,
             "textPages": len(chunks),
+            "unreadPages": unread,
             "characters": len(full),
             "lines": len(full.splitlines()),
             "encrypted": encrypted,
@@ -995,6 +1012,18 @@ if __name__ == "__main__":
                 return file.FullName;
         }
         return null;
+    }
+
+    // Ronda final 8 (regla 3): how far a walk of WalkOptions looks, so «not found» or «these are the duplicates» is
+    // never read as a search of everything.
+    private static void WriteWalkScope(Utf8JsonWriter writer)
+    {
+        writer.WriteStartObject("searchScope");
+        writer.WriteNumber("maxRecursionDepth", 12);
+        writer.WriteBoolean("ignoreInaccessible", true);
+        writer.WriteBoolean("skipReparsePoints", true);
+        writer.WriteBoolean("exhaustive", false);
+        writer.WriteEndObject();
     }
 
     // The profile root (home) holds AppData and the system's own hidden folders, which are not where the person keeps

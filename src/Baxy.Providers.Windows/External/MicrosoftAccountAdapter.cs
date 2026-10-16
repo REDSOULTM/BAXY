@@ -77,11 +77,11 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           if($null -eq $verified -or [string]$verified.EntryID -cne $entryId){throw 'outlook_latest_identity_mismatch'}
           $sender=[string]$verified.SenderEmailAddress
           try {$exchange=$verified.Sender.GetExchangeUser();if($null -ne $exchange -and $exchange.PrimarySmtpAddress){$sender=[string]$exchange.PrimarySmtpAddress}}catch{}
-          $body=[string]$verified.Body;if($body.Length -gt 65536){$body=$body.Substring(0,65536)}
+          $body=[string]$verified.Body;$bodyLength=$body.Length;if($body.Length -gt 65536){$body=$body.Substring(0,65536)}
           $subject=[string]$verified.Subject
           $received=([DateTime]$verified.ReceivedTime).ToUniversalTime()
           if($input.action -eq 'read') {
-            [pscustomobject]@{ok=$true;effectObserved=$false;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body}|ConvertTo-Json -Depth 4 -Compress
+            [pscustomobject]@{ok=$true;effectObserved=$false;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;bodyLength=$bodyLength}|ConvertTo-Json -Depth 4 -Compress
             exit 0
           }
           $text=[string]$input.text
@@ -103,7 +103,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             }
           }
           if($null -eq $sent){throw 'outlook_sent_postread_missing'}
-          [pscustomobject]@{ok=$true;effectObserved=$true;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O')}|ConvertTo-Json -Depth 4 -Compress
+          [pscustomobject]@{ok=$true;effectObserved=$true;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;bodyLength=$bodyLength;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O')}|ConvertTo-Json -Depth 4 -Compress
         } catch {
           $code=[string]$_.Exception.Message;if(@('outlook_inbox_has_no_mail_item','outlook_no_mail_in_latest_100_items','outlook_latest_identity_mismatch','outlook_sent_postread_missing') -notcontains $code){$code='outlook_mail_com_failed'}
           [pscustomobject]@{ok=$false;effectObserved=$effect;error=$code}|ConvertTo-Json -Compress
@@ -447,6 +447,8 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         string format = Path.GetExtension(path).TrimStart('.').ToLowerInvariant();
         string text = await Task.Run(() => ReadOfficeText(path, format), cancellationToken)
             .ConfigureAwait(false);
+        // Ronda final 8 (regla 3): a text cut at 256 000 characters says it was cut, and how long it is.
+        int textLength = text.Length;
         if (text.Length > 256_000)
         {
             text = text[..256_000];
@@ -457,6 +459,11 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("documentId", documentId); writer.WriteString("format", format);
             writer.WriteString("text", text); writer.WriteString("textSha256", sha256);
+            if (textLength > text.Length)
+            {
+                writer.WriteBoolean("textTruncated", true);
+                writer.WriteNumber("textLength", textLength);
+            }
             writer.WriteString("authority", "iso29500_ooxml_snapshot"); writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
@@ -549,7 +556,15 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteString("subject", root.GetProperty("subject").GetString());
             writer.WriteString("sender", root.GetProperty("sender").GetString());
             writer.WriteString("receivedUtc", root.GetProperty("receivedUtc").GetString());
-            writer.WriteString("body", root.GetProperty("body").GetString());
+            string? body = root.GetProperty("body").GetString();
+            writer.WriteString("body", body);
+            // Ronda final 8 (regla 3): a body cut at 65 536 characters says it was cut, and how long it is.
+            if (root.TryGetProperty("bodyLength", out JsonElement length) && length.TryGetInt32(out int whole)
+                && whole > (body?.Length ?? 0))
+            {
+                writer.WriteBoolean("bodyTruncated", true);
+                writer.WriteNumber("bodyLength", whole);
+            }
             if (replied)
             {
                 writer.WriteString("sentMessageId", Opaque("email", root.GetProperty("sentEntryId").GetString() ?? string.Empty));

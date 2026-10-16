@@ -25,15 +25,16 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
             ? new WindowsSystemStatusProbe().ReadLogicalProcessorCount()
             : null;
         Dictionary<ProcessIdentity, ProcessSample> first = Observe(
-            cancellationToken);
+            cancellationToken, out bool firstComplete);
         if (sort == ProcessStatusSort.Cpu)
         {
             await Task.Delay(WindowsSystemStatusProvider.DefaultCpuSamplingInterval,
                 cancellationToken).ConfigureAwait(false);
         }
         Dictionary<ProcessIdentity, ProcessSample> second = Observe(
-            cancellationToken);
-        return CreateSnapshot(first, second, sort, limit, logicalProcessorCount);
+            cancellationToken, out bool secondComplete);
+        return CreateSnapshot(first, second, sort, limit, logicalProcessorCount)
+            with { ObservationComplete = firstComplete && secondComplete };
     }
 
     internal static ProcessStatusSnapshot CreateSnapshot(
@@ -92,9 +93,11 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
     }
 
     private static Dictionary<ProcessIdentity, ProcessSample> Observe(
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        out bool complete)
     {
         Process[] processes = Process.GetProcesses();
+        complete = processes.Length <= MaximumObservedProcesses;
         try
         {
             var result = new Dictionary<ProcessIdentity, ProcessSample>();
@@ -127,7 +130,8 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
                     // Windows can temporarily refuse another process snapshot
                     // while the local model is consuming most committed memory.
                     // Preserve the already observed, verified subset instead of
-                    // failing the whole status request or repeatedly allocating.
+                    // failing the whole status request or repeatedly allocating, and say it is a subset.
+                    complete = false;
                     break;
                 }
             }
