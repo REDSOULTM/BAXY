@@ -589,8 +589,8 @@ internal sealed record VisibleClickTiming(
 /// Perception and the click of the computer-use engine
 /// (documentacion/computer-use/CONTRATO_VISTA_ACCION.md §1, §2).
 /// <c>input.visible.controls</c> is the compact view of the foreground window:
-/// up to sixty actionable controls with index, kind, label, state, rectangle,
-/// zone and dominant colour, the written text by zone (OCR), the window's
+/// up to sixty actionable controls with index, kind, label, state, rectangle
+/// and zone, the written text by zone (OCR), the window's
 /// title and process. <c>input.visible.click</c> invokes one control by label
 /// or by the identity the view handed out, through the persistent UIA worker,
 /// then OCR, then vision, and demands a post-read.
@@ -1513,7 +1513,7 @@ internal sealed class WindowsVisibleControlAdapter
             return new ViewResult(ExternalJson.Failure(operation, "active_window_not_found"), []);
 
         string command = ViewCommand(hwnd, limit, wanted, tail);
-        // One capture serves the colours and the written text;
+        // The capture serves the written text, asked for or read when the tree shows nothing to act on;
         // a window without an accessible tree (CEF, SDL, canvas) is
         // read from what is drawn, the case measured in a game launcher (UI1731).
         // The capture, and the text when it is asked for, are read while the
@@ -1612,7 +1612,6 @@ internal sealed class WindowsVisibleControlAdapter
             var windowRect = new Rect(left, top, right - left, bottom - top);
 
             VisibleControlSurface.CapturedWindow? captured = await captureTask.ConfigureAwait(false);
-            long colorMs = 0;
             long ocrMs = 0;
             Dictionary<string, List<string>> textZones = new(StringComparer.Ordinal);
             string? textAuthority = null;
@@ -1621,9 +1620,6 @@ internal sealed class WindowsVisibleControlAdapter
             var names = new List<string>();
             if (captured is { } capture)
             {
-                var colourWatch = Stopwatch.StartNew();
-                VisibleControlColors.Assign(capture, controls);
-                colorMs = colourWatch.ElapsedMilliseconds;
                 // Not asked for, the text is still read when the tree shows nothing to act on.
                 if (textTask is null && controls.Count <= 1)
                     textTask = ReadTextAsync(captureTask, limit, cancellationToken);
@@ -1782,7 +1778,6 @@ internal sealed class WindowsVisibleControlAdapter
                     else
                         writer.WriteNull("rect");
                     writer.WriteString("zone", control.Zone);
-                    writer.WriteString("color", control.Color);
                     if (control.Repeated > 0)
                         writer.WriteNumber("repeated", control.Repeated);
                     writer.WriteEndObject();
@@ -1865,7 +1860,6 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteStartObject("elapsedMs");
                 writer.WriteNumber("uia", uiaMs);
                 writer.WriteNumber("ocr", ocrMs);
-                writer.WriteNumber("color", colorMs);
                 writer.WriteNumber("total", stopwatch.ElapsedMilliseconds);
                 writer.WriteEndObject();
                 writer.WriteString("authority", controls.Count <= 1 && textAuthority == "windows_media_ocr_lines"
@@ -3170,144 +3164,9 @@ internal sealed class WindowsVisibleControlAdapter
         internal Rect? RectValue { get; set; }
         internal int Repeated { get; set; }
         internal string Zone { get; set; } = string.Empty;
-        internal string Color { get; set; } = string.Empty;
     }
 
     private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls);
 
     private readonly record struct ViewResult(ExternalCapabilityReceipt Receipt, IReadOnlyList<string> Names);
-}
-
-/// <summary>
-/// Dominant colour of each control's rectangle over the window capture
-/// (CONTRATO_VISTA_ACCION.md §1.5): an HSV histogram over the pixels, so
-/// «el botón rojo» resolves without a model.
-/// </summary>
-internal static class VisibleControlColors
-{
-    internal static readonly string[] Names =
-        ["red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink", "white", "black", "gray"];
-
-    internal static void Assign(
-        VisibleControlSurface.CapturedWindow capture,
-        IReadOnlyList<WindowsVisibleControlAdapter.ViewControl> controls)
-    {
-        byte[] bmp = capture.Bmp;
-        if (!TryParse(bmp, out int offset, out int width, out int height) || width <= 0 || height <= 0)
-            return;
-        foreach (WindowsVisibleControlAdapter.ViewControl control in controls)
-        {
-            if (control.RectValue is not { } rect)
-                continue;
-            int left = rect.X - capture.Left;
-            int top = rect.Y - capture.Top;
-            control.Color = Dominant(bmp, offset, width, height, left, top, rect.W, rect.H);
-        }
-    }
-
-    internal static bool TryParse(byte[] bmp, out int offset, out int width, out int height)
-    {
-        offset = width = height = 0;
-        if (bmp.Length < 54 || bmp[0] != (byte)'B' || bmp[1] != (byte)'M')
-            return false;
-        offset = BitConverter.ToInt32(bmp, 10);
-        width = BitConverter.ToInt32(bmp, 18);
-        height = BitConverter.ToInt32(bmp, 22);
-        short bits = BitConverter.ToInt16(bmp, 28);
-        if (bits != 32 || offset <= 0 || offset >= bmp.Length)
-            return false;
-        long needed = (long)offset + (long)Math.Abs(width) * Math.Abs(height) * 4;
-        return needed <= bmp.Length;
-    }
-
-    internal static string Dominant(
-        byte[] bmp, int offset, int width, int height,
-        int left, int top, int boxWidth, int boxHeight)
-    {
-        if (boxWidth <= 0 || boxHeight <= 0)
-            return string.Empty;
-        // Recorte del 10 % por lado: el borde de un control es su contorno,
-        // no su color.
-        int insetX = boxWidth / 10;
-        int insetY = boxHeight / 10;
-        int x0 = Math.Max(0, left + insetX);
-        int y0 = Math.Max(0, top + insetY);
-        int x1 = Math.Min(width, left + boxWidth - insetX);
-        int y1 = Math.Min(height, top + boxHeight - insetY);
-        if (x1 <= x0 || y1 <= y0)
-            return string.Empty;
-        int stepX = Math.Max(1, (x1 - x0) / 64);
-        int stepY = Math.Max(1, (y1 - y0) / 64);
-        bool bottomUp = height > 0;
-        int rows = Math.Abs(height);
-        int stride = width * 4;
-        int[] histogram = new int[Names.Length];
-        for (int y = y0; y < y1; y += stepY)
-        {
-            int row = bottomUp ? rows - 1 - y : y;
-            if (row < 0 || row >= rows)
-                continue;
-            for (int x = x0; x < x1; x += stepX)
-            {
-                int index = offset + row * stride + x * 4;
-                if (index + 2 >= bmp.Length)
-                    continue;
-                histogram[Classify(bmp[index + 2], bmp[index + 1], bmp[index])]++;
-            }
-        }
-
-        int best = 0;
-        for (int index = 1; index < histogram.Length; index++)
-        {
-            if (histogram[index] > histogram[best])
-                best = index;
-        }
-
-        return histogram[best] == 0 ? string.Empty : Names[best];
-    }
-
-    internal static int Classify(byte red, byte green, byte blue)
-    {
-        double r = red / 255.0;
-        double g = green / 255.0;
-        double b = blue / 255.0;
-        double max = Math.Max(r, Math.Max(g, b));
-        double min = Math.Min(r, Math.Min(g, b));
-        double delta = max - min;
-        double saturation = max <= 0 ? 0 : delta / max;
-        double value = max;
-        if (saturation < 0.18)
-        {
-            if (value >= 0.85)
-                return 8; // white
-            if (value <= 0.2)
-                return 9; // black
-            return 10; // gray
-        }
-
-        double hue;
-        if (delta <= 0)
-            hue = 0;
-        else if (max == r)
-            hue = 60 * (((g - b) / delta) % 6);
-        else if (max == g)
-            hue = 60 * ((b - r) / delta + 2);
-        else
-            hue = 60 * ((r - g) / delta + 4);
-        if (hue < 0)
-            hue += 360;
-        if (hue < 15 || hue >= 330)
-            return hue >= 330 && saturation < 0.55 ? 7 : 0; // pink or red
-        if (hue < 40)
-            return 1; // orange
-        if (hue < 70)
-            return 2; // yellow
-        if (hue < 170)
-            return 3; // green
-        if (hue < 200)
-            return 4; // cyan
-        if (hue < 270)
-            return 5; // blue
-        return hue < 300 ? 6 : 7; // purple / pink
-    }
 }
