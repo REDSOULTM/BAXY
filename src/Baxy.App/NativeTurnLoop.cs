@@ -353,7 +353,8 @@ internal sealed class NativeTurnLoop
             }, "arguments", operation, arguments).ToJsonString());
         }
 
-        return await SendAsync(core, prepared, arguments, confirmationToken: null, started, cancellationToken)
+        return await SendAsync(core, prepared, arguments, confirmationToken: null, answered: false, started,
+                cancellationToken)
             ;
     }
 
@@ -478,7 +479,8 @@ internal sealed class NativeTurnLoop
                 Observation("failed", "engine_unavailable", about: pending.Prepared.OperationName));
         }
 
-        return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, started, cancellationToken)
+        return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, answered: true, started,
+                cancellationToken)
             ;
     }
 
@@ -507,23 +509,27 @@ internal sealed class NativeTurnLoop
                 Observation("failed", "engine_unavailable", about: proposal.OperationName));
         }
 
-        string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, started,
-            cancellationToken);
+        string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, answered: true,
+            started, cancellationToken);
         if (_pending is { } challenge && ReferenceEquals(challenge.Prepared, proposal))
         {
             _pending = null;
-            observation = await SendAsync(core, proposal, arguments, challenge.Token, started, cancellationToken)
+            observation = await SendAsync(core, proposal, arguments, challenge.Token, answered: true, started,
+                    cancellationToken)
                 ;
         }
 
         return observation;
     }
 
+    // answered: the call a confirm_pending answered, which BAXY's own result names (Observation's about); the model's
+    // own call is the one its result answers.
     private async Task<string> SendAsync(
         CoreProcessClient core,
         PreparedOperation prepared,
         JsonObject arguments,
         string? confirmationToken,
+        bool answered,
         long started,
         CancellationToken cancellationToken)
     {
@@ -540,7 +546,7 @@ internal sealed class NativeTurnLoop
         {
             Resolve(prepared, memory);
             return Record(operation, arguments, started,
-                Observation("failed", "engine_no_answer", about: operation, effectUncertain: true));
+                Observation("failed", "engine_no_answer", about: answered ? operation : null, effectUncertain: true));
         }
 
         if (PendingOperationConfirmation.TryCreate(response, prepared, TimeProvider.System,
