@@ -9,9 +9,9 @@ namespace Baxy.App;
 
 /// <summary>
 /// What the heartbeat sees of the moment, observed with generic signals and no list of applications: the time, what the
-/// person is doing (away when idle, in a call when another program holds the microphone, playing or watching when a
-/// window fills the screen, with the GPU busy or not), the window in front and the other open ones, and the state of the
-/// PC. The model reads it as it is (<c>beat_message</c> in the mind); nothing here decides for it.
+/// person is doing (in a call when another program holds the microphone, playing or watching when a window fills the
+/// screen, with the GPU busy or not, otherwise away when idle), the window in front and the other open ones, and the
+/// state of the PC. The model reads it as it is (<c>beat_message</c> in the mind); nothing here decides for it.
 /// </summary>
 internal static class HeartbeatMoment
 {
@@ -23,24 +23,29 @@ internal static class HeartbeatMoment
 
     private static readonly TimeSpan AwayAfter = TimeSpan.FromMinutes(10);
 
-    /// <summary>Where a heartbeat's words go: aloud only when the person is free; otherwise a notification on screen.</summary>
-    internal static bool Speaks(string activity) => activity == Free;
+    /// <summary>
+    /// Where a heartbeat's words go (owner, 2026-10-16): aloud whatever the person does, except while they play, are in a
+    /// call or watch something, when they are only a notification on screen.
+    /// </summary>
+    internal static bool Speaks(string activity) => activity is not (Playing or InCall or Watching);
 
     internal static string Activity(out bool fullscreen, out bool gpuBusy)
     {
         fullscreen = ForegroundFillsTheScreen();
         gpuBusy = GpuBusy();
-        if (IdleTime() >= AwayAfter)
-        {
-            return Away;
-        }
-
+        // A call or a film goes on without the person's input: they are read before the idle time, or ten minutes into
+        // one the person would read as away and a heartbeat would speak over it (Speaks).
         if (MicrophoneHeldByAnotherProgram())
         {
             return InCall;
         }
 
-        return fullscreen ? (gpuBusy ? Playing : Watching) : Free;
+        if (fullscreen)
+        {
+            return gpuBusy ? Playing : Watching;
+        }
+
+        return IdleTime() >= AwayAfter ? Away : Free;
     }
 
     internal static JsonObject Observe(
