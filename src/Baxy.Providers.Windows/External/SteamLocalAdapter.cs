@@ -20,7 +20,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private const int LaunchDialogObservation = 10;
     private static readonly TimeSpan ObservationInterval = TimeSpan.FromMilliseconds(500);
     private readonly Func<IReadOnlyList<SteamLocalGame>> _snapshot;
-    private readonly Func<IReadOnlySet<string>> _owned;
+    private readonly Func<IReadOnlySet<string>?> _owned;
     private readonly ISteamClientAutomation _automation;
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
     private readonly Func<IReadOnlyList<SteamProcessObservation>>? _processSnapshot;
@@ -49,7 +49,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
     internal SteamLocalAdapter(
         Func<IReadOnlyList<SteamLocalGame>> snapshot,
-        Func<IReadOnlySet<string>> owned,
+        Func<IReadOnlySet<string>?> owned,
         ISteamClientAutomation automation,
         Func<TimeSpan, CancellationToken, ValueTask>? delay = null,
         Func<IReadOnlyList<SteamProcessObservation>>? processSnapshot = null,
@@ -199,7 +199,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         SteamLocalGame? game = appId is null
             ? null
             : _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
-        bool owned = appId is not null && _owned().Contains(appId);
+        IReadOnlySet<string>? cache = _owned();
+        bool owned = appId is not null && cache is not null && cache.Contains(appId);
         bool installed = game is { Installed: true };
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -212,11 +213,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // absent from the cache, never «not owned».
             // An installed manifest is not the account's ownership (a shared or free game): only the cache says owned.
             if (owned) writer.WriteBoolean("owned", true);
-            else if (appId is not null && !installed) writer.WriteBoolean("inLocalLibraryCache", false);
+            else if (appId is not null && !installed && cache is not null) writer.WriteBoolean("inLocalLibraryCache", false);
             writer.WriteBoolean("installed", installed);
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
-                : owned ? "owned_not_installed" : "not_in_local_library_cache");
+                : owned ? "owned_not_installed" : cache is not null ? "not_in_local_library_cache" : "library_cache_unavailable");
             writer.WriteString("authority", installed
                 ? "steam_local_appmanifest" : "steam_authenticated_library_cache");
             writer.WriteEndObject();
@@ -608,8 +609,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     {
         string appId = RequireAppId(arguments);
         SteamLocalGame? game = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
-        bool owned = _owned().Contains(appId);
-        if (game is null && !owned)
+        IReadOnlySet<string>? cache = _owned();
+        if (game is null && cache is null)
+        {
+            return ExternalJson.Failure(operation, "steam_library_cache_unavailable");
+        }
+        if (game is null && !cache!.Contains(appId))
         {
             return ExternalJson.Failure(operation, "steam_app_not_in_local_library_cache");
         }
@@ -914,16 +919,20 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return result.Values.ToArray();
     }
 
-    private static IReadOnlySet<string> ReadOwnedAppIds()
+    // Auditoría final (regla 3): ownership is the account's library cache alone (an installed manifest may be a shared
+    // or free game), and no cache read at all is null, never an empty library.
+    private static IReadOnlySet<string>? ReadOwnedAppIds()
     {
         (string root, _) = SteamRoots();
         var result = new HashSet<string>(StringComparer.Ordinal);
+        bool cacheRead = false;
         string userdata = Path.Combine(root, "userdata");
-        if (!Directory.Exists(userdata)) return result;
+        if (!Directory.Exists(userdata)) return null;
         foreach (string user in Directory.EnumerateDirectories(userdata))
         {
             string cache = Path.Combine(user, "config", "librarycache");
             if (!Directory.Exists(cache)) continue;
+            cacheRead = true;
             foreach (string file in Directory.EnumerateFiles(cache, "*.json"))
             {
                 string appId = Path.GetFileNameWithoutExtension(file);
@@ -933,8 +942,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 }
             }
         }
-        foreach (SteamLocalGame installed in ReadInstalledCatalog()) result.Add(installed.AppId);
-        return result;
+        return cacheRead ? result : null;
     }
 
     private static (string Root, string[] Libraries) SteamRoots()

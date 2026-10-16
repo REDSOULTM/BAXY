@@ -27,7 +27,7 @@ public static class ProductCatalog
             Schema([String("name", maximumUtf8Bytes: 256, nonWhitespace: true)], ["name"]),
             OperationRisks.ReadOnly,
             "app.installed.windows.catalog.snapshot.v1",
-            "Comprueba en el catálogo Inicio de Windows si una aplicación de nombre exacto está instalada, sin abrirla; si no lo está con ese nombre, dice los nombres instalados más cercanos."),
+            "Busca una aplicación por su nombre en el catálogo Inicio de Windows, sin abrirla; si el catálogo no la lista dice inStartCatalog false (lo que no está en Inicio no se ve) y los nombres más cercanos del catálogo."),
         Descriptor(
             "app.open",
             Schema(

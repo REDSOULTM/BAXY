@@ -1866,7 +1866,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         }
         if($current){$networks+=$current}
         if($networks.Count -ne $visible){[pscustomobject]@{ok=$false;error='wifi_scan_not_read'}|ConvertTo-Json -Compress;exit 0}
-        [pscustomobject]@{ok=$true;networks=@($networks|ForEach-Object {[pscustomobject]$_})}|ConvertTo-Json -Compress -Depth 4
+        [pscustomobject]@{ok=$true;visible=$visible;networks=@($networks|ForEach-Object {[pscustomobject]$_})}|ConvertTo-Json -Compress -Depth 4
         """;
 
     private async ValueTask<ExternalCapabilityReceipt> WifiScanAsync(
@@ -1884,6 +1884,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         {
             string code = String(root, "error");
             return ExternalJson.Failure(operation, string.IsNullOrWhiteSpace(code) ? "wifi_scan_not_read" : code);
+        }
+        if (!root.TryGetProperty("visible", out JsonElement visibleElement)
+            || visibleElement.ValueKind != JsonValueKind.Number
+            || !visibleElement.TryGetInt32(out int visible))
+        {
+            return ExternalJson.Failure(operation, "wifi_scan_not_read");
         }
         var networks = new List<(string Ssid, string Authentication, int? Signal)>();
         if (root.TryGetProperty("networks", out JsonElement list) && list.ValueKind == JsonValueKind.Array)
@@ -1905,7 +1911,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
-            writer.WriteNumber("networkCount", networks.Count);
+            // Auditoría final (regla 3): the count is the one netsh declared; a list cut at 50 says so.
+            writer.WriteNumber("networkCount", visible);
+            if (visible > networks.Count) writer.WriteNumber("listedCount", networks.Count);
             writer.WriteStartArray("networks");
             foreach ((string ssid, string authentication, int? signal) in networks)
             {

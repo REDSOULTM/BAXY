@@ -20,13 +20,16 @@ internal static class HeartbeatMoment
     internal const string InCall = "llamada";
     internal const string Playing = "jugando";
     internal const string Watching = "viendo";
+    // Auditoría final (regla 3): with no reading of the last input the person is not «libre»; as the mind already says.
+    internal const string Unknown = "desconocido";
 
     /// <summary>
     /// Where a heartbeat's words go (owner, 2026-10-16): aloud whatever the person does, except while they are away,
-    /// play, are in a call or watch something, when they are only a notification on screen. The heartbeat of their
-    /// return (<see cref="AwayWatch"/>) follows the same rule: aloud when they come back to anything else.
+    /// play, are in a call or watch something, or their activity was not read, when they are only a notification on
+    /// screen. The heartbeat of their return (<see cref="AwayWatch"/>) follows the same rule: aloud when they come back
+    /// to anything else.
     /// </summary>
-    internal static bool Speaks(string activity) => activity is not (Away or Playing or InCall or Watching);
+    internal static bool Speaks(string activity) => activity is not (Away or Playing or InCall or Watching or Unknown);
 
     internal static string Activity(out bool fullscreen, out bool? gpuBusy)
     {
@@ -51,7 +54,7 @@ internal static class HeartbeatMoment
             return Watching;
         }
 
-        return IdleTime() >= AwayWatch.After ? Away : Free;
+        return ReadIdleTime() is not { } idle ? Unknown : idle >= AwayWatch.After ? Away : Free;
     }
 
     internal static JsonObject Observe(
@@ -213,8 +216,6 @@ internal static class HeartbeatMoment
     }
 
     private static bool IsToolWindow(nint window) => (GetWindowLongPtr(window, -20) & 0x80) != 0;
-
-    internal static TimeSpan IdleTime() => ReadIdleTime() ?? TimeSpan.Zero;
 
     internal static TimeSpan? ReadIdleTime()
     {

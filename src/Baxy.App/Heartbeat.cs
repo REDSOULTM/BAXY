@@ -193,9 +193,10 @@ internal sealed class Heartbeat : IAsyncDisposable
             _battery = battery;
         }
 
-        TimeSpan idle = HeartbeatMoment.IdleTime();
-        if (_awayWatch.Look(DateTimeOffset.UtcNow, idle, HeartbeatMoment.Presence(out _) == HeartbeatMoment.Away)
-            is { } presence)
+        // Auditoría final (regla 3): an unread last input is neither an absence nor a return.
+        if (HeartbeatMoment.ReadIdleTime() is { } idle
+            && _awayWatch.Look(DateTimeOffset.UtcNow, idle, HeartbeatMoment.Presence(out _) == HeartbeatMoment.Away)
+                is { } presence)
         {
             Note(presence);
         }

@@ -183,6 +183,9 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
             if (result.Gone > 0)
                 writer.WriteNumber("goneMeanwhile", result.Gone);
             writer.WriteBoolean("allMinimized", true);
+            // Auditoría final (regla 3): nothing was minimized, so the desktop was already that way.
+            if (result.Minimized == 0)
+                writer.WriteBoolean("changed", false);
             writer.WriteString("authority", "win32_desktop_windows_postread");
             writer.WriteEndObject();
         }
