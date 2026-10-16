@@ -144,6 +144,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>Whether the mind speaks (its hello offers voice.speak): no speech request is sent otherwise.</summary>
     public bool IsVoiceAvailable => IsReady && _voiceAvailable;
 
+    /// <summary>The mind's notice phrase from its <c>catalog.ready</c> (<see cref="SilenceNotice"/>), or null.</summary>
+    internal string? Notice { get; private set; }
+
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
     public event Action<string>? TranscriptReceived;
 
@@ -267,9 +270,11 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             cancellationToken,
             returnProtocolError: true).ConfigureAwait(false);
         LastStartupFailure = MindStartupFailure.FromReply(reply);
-        return reply is not null
+        bool ready = reply is not null
             && (string?)reply["type"] == "catalog.ready"
             && (int?)reply["count"] == capabilities.Count;
+        Notice = ready ? SilenceNotice.PhraseOf(reply) : null;
+        return ready;
     }
 
     internal static JsonObject CreateCatalogConfigureRequest(
