@@ -45,7 +45,7 @@ public static class ProductCatalog
                 ["appId"]),
             OperationRisks.LowReversible,
             "app.open.process.window.focus.v1",
-            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso, ventana visible y foco; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos. También acepta windows.calculator."),
+            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso y su ventana visible, y dice si quedó al frente; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos. También acepta windows.calculator."),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(
