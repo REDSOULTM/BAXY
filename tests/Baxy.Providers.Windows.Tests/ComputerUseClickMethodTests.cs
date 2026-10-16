@@ -105,8 +105,9 @@ public sealed class ComputerUseClickMethodTests
         // r20b palanca 4 (v3-42 «Actualizar «Programas y características» (F5)», controlIdentity 42.12650936.4.1; v3-43
         // «Atrás a Opciones de energía» and «Actualizar…»): the proxy's Invoke pressed with the physical mouse (an
         // unmarked click at the button's point within 200 ms). A Win32 button of a toolbar seen through its MSAA proxy
-        // gets the press posted to the bar first; its Invoke stays as the reserve. Counter-cases: a native Win32 button
-        // (its own window, no 42.* identity), a XAML or WPF button, a row: unchanged.
+        // gets the press posted to the bar first; the reserve is the pointer the adapter presses inside its lease (Round A,
+        // fault 1), never the proxy's own ways (its default action, a physical click outside the lease). Counter-cases:
+        // a native Win32 button (its own window, no 42.* identity), a XAML or WPF button, a row: unchanged.
         string worker = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
         Assume.That(File.Exists(worker), "the worker script is copied next to the tests");
         const string cases = """
@@ -122,9 +123,9 @@ public sealed class ComputerUseClickMethodTests
         string answer = RunPlanner(worker, cases);
         Assert.That(answer.Split(','), Is.EqualTo(new[]
         {
-            "message invoke",          // v3-42/v3-43: the posted press first, the Invoke only as the reserve
-            "message invoke",
-            "message legacy pointer",  // no pattern: the posted press, then the ways it always had (never twice)
+            "message pointer",         // v3-42/v3-43: the posted press first, the leased pointer as the reserve
+            "message pointer",
+            "message pointer",         // no pattern: the same (its default action is the same physical click)
             "invoke",                  // counter-case: a native Win32 button (class Button, its own window)
             "invoke",                  // counter-case: a XAML or WPF button
             "invoke select message",   // counter-case: a classic row keeps its order
@@ -170,12 +171,14 @@ public sealed class ComputerUseClickMethodTests
     }
 
     [Test]
-    public void AToolbarButtonsInvokeIsOnlyTheReserveWhenNoBarIsAtItsPoint()
+    public void AToolbarButtonsReserveIsTheLeasedPointerNeverItsInvoke()
     {
         // The posted press goes only when the bar at the point and its own hit test give this button (ToolbarPress);
-        // another window or another button there sends nothing at all (the proxy's Invoke would click what is there with
-        // the physical mouse); no bar at the point (none) or no answer from it (nohit): the Invoke, as before. With
-        // -PatternsOnly (a point the locator read) the posted press still comes first.
+        // another window or another button there sends nothing at all. Round A (fault 1): no bar at the point (none, a
+        // scaled window), no answer from it (nohit) or a post that failed never fall to the proxy's Invoke (it pressed
+        // with the physical mouse, outside the lease: with the window behind, in the person's window); the worker hands
+        // the point to the adapter's leased pointer. With -PatternsOnly (a point the locator read) the posted press
+        // still comes first, and without it nothing is pressed here (the adapter decides the pointer at the read point).
         string worker = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
         Assume.That(File.Exists(worker), "the worker script is copied next to the tests");
         string answer = RunWorkerScript(worker, """
@@ -186,7 +189,7 @@ public sealed class ComputerUseClickMethodTests
             }
             '@
             function Get-ClickFacts($el){ return @{ invoke=$true; select=$false; toggle=$false; expand=$false; kind='Button'; value=$false; classic=$true; toolbarProxy=$true; toolbarWindow=[long]12650936; toolbarChild=1 } }
-            $answers=foreach($case in @(@{step='posted';only=$false},@{step='other';only=$false},@{step='none';only=$false},@{step='nohit';only=$false},@{step='posted';only=$true})){
+            $answers=foreach($case in @(@{step='posted';only=$false},@{step='other';only=$false},@{step='none';only=$false},@{step='nohit';only=$false},@{step='post-failed';only=$false},@{step='posted';only=$true},@{step='none';only=$true})){
               [BaxyUiaWorkerNative]::BarStep=$case.step
               [BaxyUiaWorkerNative]::BarAsked.Clear()
               [BaxyUiaTimedPress]::Invoked=0
@@ -202,9 +205,11 @@ public sealed class ComputerUseClickMethodTests
         {
             "message|0|60:35|12650936.1", // the bar and its hit test give the button: posted, no Invoke, no cursor
             "null|0|60:35|12650936.1",    // another window or button at the point: nothing is sent
-            "invoke|1|60:35|12650936.1",  // no bar at the point: the Invoke, as before
-            "invoke|1|60:35|12650936.1",  // the bar did not answer its hit test: the Invoke, as before
+            "pointer|0|60:35|12650936.1", // no bar at the point (a scaled window): the leased pointer, never the Invoke
+            "pointer|0|60:35|12650936.1", // the bar did not answer its hit test: the same
+            "pointer|0|60:35|12650936.1", // the post failed: the same
             "message|0|60:35|12650936.1", // -PatternsOnly keeps the posted press
+            "null|0|60:35|12650936.1",    // -PatternsOnly without the bar: nothing pressed, no Invoke
         }));
     }
 

@@ -2,8 +2,6 @@ namespace Baxy.Providers.Windows.Memory;
 
 public interface IMemoryStore
 {
-    string RootDirectory { get; }
-
     MemoryConfigurationResult Configure(MemoryConfigureRequest request);
 
     MemoryBeginSessionResult BeginSession(MemoryBeginSessionRequest request);

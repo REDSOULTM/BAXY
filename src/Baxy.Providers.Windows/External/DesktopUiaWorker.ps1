@@ -1445,14 +1445,13 @@ $script:ContainerKinds=@('List','Tree','DataGrid','Table')
 # elegirlo y abrirlo en el mismo acto), nunca con el clic de elegir.
 # r20b palanca 4: un boton de barra visto por el proxy MSAA (hecho «toolbarProxy») recibe primero la pulsacion enviada
 # como mensaje a la barra en su punto, sin cursor ni frente (Invoke-NamedControl comprueba antes que la barra y su
-# prueba de impacto dan ese boton en el punto); despues, como reserva, sus vias de siempre (Invoke, cuando la barra no
-# esta en el punto). Un boton Win32 con ventana propia, uno XAML o WPF no son proxies: sin cambios.
+# prueba de impacto dan ese boton en el punto). Ronda A (falta 1): la reserva es el puntero, que el adaptador pulsa solo
+# dentro de su lease; nunca las vias del proxy (Invoke, Toggle, ExpandCollapse, la accion por defecto), que son su accion
+# por defecto y pulsan con el raton fisico sin lease (QuietInput solo calla a UIAutomationCore): con la ventana detras,
+# ese clic caeria en la de la persona. Un boton Win32 con ventana propia, uno XAML o WPF no son proxies: sin cambios.
 $script:PatternMethods=@('invoke','select','toggle','expand','target','render')
 function Select-ClickMethods($facts){
-  if([bool]$facts.toolbarProxy){
-    $plain=$facts.Clone(); $plain.toolbarProxy=$false
-    return @(@('message')+@(Select-ClickMethods $plain | Where-Object { $_ -ne 'message' }))
-  }
+  if([bool]$facts.toolbarProxy){ return @('message','pointer') }
   $field=(@('Edit','Document') -contains [string]$facts.kind -and $facts.value)
   $render=[bool]$facts.render
   $choosing=([bool]$facts.select -and -not [bool]$facts.toggle -and @('ListItem','TreeItem','TabItem','DataItem') -contains [string]$facts.kind -and -not [bool]$facts.selected)
@@ -1709,7 +1708,7 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
     $facts.selected=[bool](Test-Selected $el)
   }
   $methods=@(Select-ClickMethods $facts)
-  # La pulsacion enviada a una barra (proxy MSAA) va tambien con -PatternsOnly: sin ella, su Invoke pulsaria con el raton.
+  # La pulsacion enviada a una barra (proxy MSAA) va tambien con -PatternsOnly (es su unica via sin puntero).
   if($PatternsOnly){ $methods=@($methods | Where-Object { $script:PatternMethods -contains $_ -or ($_ -eq 'message' -and [bool]$facts.toolbarProxy) }) }
   $choosing=([bool]$facts.select -and -not [bool]$facts.toggle -and @('ListItem','TreeItem','TabItem','DataItem') -contains [string]$facts.kind -and -not [bool]$facts.selected)
   # Ronda 20b, palanca 7 (v3-52): en un marco cuyo Select marca la fila sin hacerla actual, elegirla no prueba nada; lo
@@ -1840,8 +1839,9 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       if(([string]$action).Length -gt 0){ return @{ method='legacy' } }
     } elseif($method -eq 'message' -and [bool]$facts.toolbarProxy){
       # r20b palanca 4: la barra en el punto y su propia prueba de impacto dan este boton: la pulsacion va como mensaje.
-      # Otra ventana u otro boton en el punto: nada se envia, ni por Invoke (su clic fisico caeria en lo que hay ahi).
-      # Sin la barra en el punto o sin respuesta de su prueba de impacto: la siguiente via, como antes.
+      # Otra ventana u otro boton en el punto: nada se envia, ni por el puntero (caeria en lo que hay ahi).
+      # Sin la barra en el punto (o escalada), sin respuesta de su prueba de impacto o sin punto: el puntero del
+      # adaptador, dentro de su lease (con -PatternsOnly, nada: el adaptador decide el puntero en el punto leido).
       $point=Get-PressPoint $el
       $barStep='nopoint'
       if($null -ne $point){ try { $barStep=[string][BaxyUiaWorkerNative]::ToolbarPress($top,$point.x,$point.y,[IntPtr][long]$facts.toolbarWindow,[int]$facts.toolbarChild) } catch { $barStep='failed' } }
@@ -3964,7 +3964,7 @@ function Do-Field($request){
     } catch { $wholeSelected=$false }
   }
   $replaceable=$writable -and $enabled -and -not $password -and $kind -ne 'Document' -and ([string]::IsNullOrEmpty($value) -or $wholeSelected -or $replace)
-  $result=@{ ok=$true; error=''; kind=$kind; className=$className; nativeHwnd=$native; focused=$focused; password=$password; readOnly=$readOnly; enabled=$enabled; writable=$writable; replaceable=$replaceable; replace=$replace; valueLength=$(if($null -eq $value){-1}else{$value.Length}); method=''; delivered=$false }
+  $result=@{ ok=$true; error=''; kind=$kind; className=$className; nativeHwnd=$native; focused=$focused; password=$password; readOnly=$readOnly; enabled=$enabled; valueLength=$(if($null -eq $value){-1}else{$value.Length}); method=''; delivered=$false }
   $text=$request.text
   if($null -eq $text){ return $result }
   if(-not $replaceable){
@@ -3997,7 +3997,7 @@ function Do-Focus($request){
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
   $element=Find-ById $target.root ([string]$request.controlId)
   if($null -eq $element){ return @{ ok=$false; error='visible_control_identity_stale' } }
-  if(-not (Test-InFront $target.hwnd)){ return @{ ok=$true; error=''; focused=$false; behind=$true } }
+  if(-not (Test-InFront $target.hwnd)){ return @{ ok=$true; error=''; focused=$false } }
   # Un ComboBox escrito por su Edit interior (Do-Field): el foco va a ese Edit, como fue el valor.
   $kind=''
   try { $kind=([string]$element.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}

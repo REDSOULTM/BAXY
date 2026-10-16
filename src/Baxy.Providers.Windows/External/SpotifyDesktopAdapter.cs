@@ -223,25 +223,21 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         }
     }
 
-    // The script's own diagnostic fields: where it stopped (stage) and why (detail: the exception or code it caught).
-    // Private codes for the log, never a sentence for the person.
-    private static readonly string[] DiagnosticFields = ["stage", "detail", "timings"];
-
-    // A search whose press only resumed what the client had loaded also says what was pressed and what played.
-    private static readonly string[] NotConfirmedFields =
-        ["stage", "detail", "selectedControl", "beforeNowPlaying", "observedNowPlaying", "title"];
-
-    internal const string QueryResultNotConfirmed = "spotify_query_result_not_confirmed";
+    // What a failure carries from the script: where it stopped (stage) and why (detail: the exception or code it
+    // caught), private codes for the log, never a sentence for the person; and, once it pressed, what it pressed and
+    // what the client showed playing before and after, as it read them.
+    private static readonly string[] FailureFields =
+        ["stage", "detail", "timings", "selectedControl", "beforeNowPlaying", "observedNowPlaying", "title"];
 
     /// <summary>
     /// Ronda 19 (t1-c07 #1 «pon lo-fi para estudiar en spotify plis» → spotify_uia_failed with nothing to tell why):
-    /// a failure carries the script's stage and detail as its result, and an unconfirmed search what was pressed and
-    /// what played. A failure with none of them keeps no result.
+    /// a failure carries the script's stage and detail as its result. Round A (fault 2): every failure after the press
+    /// (an unconfirmed search, a press the client never showed playing) says what was pressed and what played, so the
+    /// model can tell the person what is sounding instead of a bare code. A failure with none of them keeps no result.
     /// </summary>
     internal static ExternalCapabilityReceipt WithDiagnostic(ExternalCapabilityReceipt failure, JsonElement response)
     {
-        string[] fields = failure.ErrorCode == QueryResultNotConfirmed ? NotConfirmedFields : DiagnosticFields;
-        if (fields.All(field => !response.TryGetProperty(field, out JsonElement value)
+        if (FailureFields.All(field => !response.TryGetProperty(field, out JsonElement value)
                 || value.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(value.GetString())))
         {
             return failure;
@@ -252,7 +248,7 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("provider", "spotify");
-            foreach (string field in fields)
+            foreach (string field in FailureFields)
             {
                 if (response.TryGetProperty(field, out JsonElement value)
                     && value.ValueKind == JsonValueKind.String

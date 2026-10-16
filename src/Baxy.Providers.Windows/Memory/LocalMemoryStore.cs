@@ -108,8 +108,6 @@ public sealed class LocalMemoryStore : IMemoryStore
         }
     }
 
-    public string RootDirectory => _rootDirectory;
-
     public MemoryConfigurationResult Configure(MemoryConfigureRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);

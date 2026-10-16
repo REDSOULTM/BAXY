@@ -1140,8 +1140,6 @@ public sealed class ForegroundSequenceTests
 
         public long LastReachingInputMs => Reaching ?? LastForeignInputMs;
 
-        public long LastOwnInputMs { get; set; }
-
         // BAXY's own inputs the detector saw so far (none by default).
         internal Func<long>? OwnCount { get; set; }
 
@@ -1162,8 +1160,6 @@ public sealed class ForegroundSequenceTests
         public long LastForeignInputMs => clock.NowMs;
 
         public long LastReachingInputMs => clock.NowMs;
-
-        public long LastOwnInputMs => 0;
 
         public long OwnInputCount => 0;
 

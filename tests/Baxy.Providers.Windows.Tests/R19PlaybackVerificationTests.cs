@@ -28,7 +28,7 @@ public sealed class R19PlaybackVerificationTests
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo(SpotifyDesktopAdapter.QueryResultNotConfirmed));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_query_result_not_confirmed"));
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("observedNowPlaying").GetString(),
                 Is.EqualTo("aruarian dance de nujabes"));
@@ -357,7 +357,7 @@ public sealed class R19PlaybackVerificationTests
     }
 
     private const string NotConfirmedOutput =
-        "{\"ok\":false,\"effectObserved\":true,\"error\":\"spotify_query_result_not_confirmed\",\"title\":\"Nujabes - aruarian dance\",\"selectedControl\":\"Reproducir\",\"beforeNowPlaying\":\"aruarian dance de nujabes\",\"observedNowPlaying\":\"aruarian dance de nujabes\",\"pauseBefore\":false,\"selectedFlipped\":false,\"processId\":42}";
+        "{\"ok\":false,\"effectObserved\":true,\"error\":\"spotify_query_result_not_confirmed\",\"title\":\"Nujabes - aruarian dance\",\"selectedControl\":\"Reproducir\",\"beforeNowPlaying\":\"aruarian dance de nujabes\",\"observedNowPlaying\":\"aruarian dance de nujabes\",\"processId\":42}";
 
     private static JsonElement Json(string text)
     {
