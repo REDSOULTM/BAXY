@@ -118,21 +118,18 @@ internal sealed class NativeTurnLoop
 
     // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
     // notice when it has published nothing SilenceNotice.After after they arrived (the turn may have waited for a
-    // heartbeat to end before it started), unless what it waits for is a call this turn left waiting for the person's Sí
-    // or No (its question comes next); the call the person is answering does not hold it back. A heartbeat says none:
-    // nobody asked and nobody waits for it.
+    // heartbeat to end before it started), unless a call waits for the person's Sí or No and this turn asked for it
+    // (_askedInTurn moved: its question comes next), even when it is the same invocation the person said «sí» to and the
+    // kernel asks again; a call left waiting by an earlier turn, the one the person is answering, does not hold it back.
+    // A heartbeat says none: nobody asked and nobody waits for it.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
         long arrivedAt,
         Func<Task<MindStep?>> decide,
         CancellationToken cancellationToken)
     {
-        PreparedOperation? answered = WaitingPrepared();
-        _notice.Open(
-            mind.Notice,
-            arrivedAt,
-            () => WaitingPrepared() is not { } waiting || ReferenceEquals(waiting, answered),
-            _host.Notice);
+        long asked = _askedInTurn;
+        _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedInTurn == asked, _host.Notice);
         try
         {
             await DriveAsync(mind, await decide(), cancellationToken);
