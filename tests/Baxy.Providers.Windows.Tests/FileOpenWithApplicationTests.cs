@@ -214,7 +214,7 @@ public sealed class FileOpenWithApplicationTests
         var pythonStore = new InstalledApplicationEntry("Python 3.12", "PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0!Python");
 
         FileActivation.HandOff For(InstalledApplicationEntry entry, FileActivation.Handler[] handlers) =>
-            FileActivation.HandOffFor(entry, WindowsInstalledApplicationPlatform.StrongExecutablePath(entry), handlers);
+            FileActivation.Match(entry, WindowsInstalledApplicationPlatform.StrongExecutablePath(entry), handlers).HandOff;
 
         Assert.Multiple(() =>
         {
@@ -256,7 +256,7 @@ public sealed class FileOpenWithApplicationTests
             TargetPath: @"C:\Users\usuario\AppData\Local\Programs\Microsoft VS Code\Code.exe");
 
         FileActivation.HandOff For(InstalledApplicationEntry entry) =>
-            FileActivation.HandOffFor(entry, WindowsInstalledApplicationPlatform.StrongExecutablePath(entry), ImageHandlersWithIds);
+            FileActivation.Match(entry, WindowsInstalledApplicationPlatform.StrongExecutablePath(entry), ImageHandlersWithIds).HandOff;
 
         Assert.Multiple(() =>
         {
@@ -266,7 +266,7 @@ public sealed class FileOpenWithApplicationTests
             Assert.That(For(snipping), Is.EqualTo(FileActivation.HandOff.None), "not in this list");
             Assert.That(For(pythonStore), Is.EqualTo(FileActivation.HandOff.None));
             Assert.That(For(code), Is.EqualTo(FileActivation.HandOff.Executable), "a desktop one by its executable");
-            Assert.That(FileActivation.HandOffFor(english, null, TextHandlers), Is.EqualTo(FileActivation.HandOff.None));
+            Assert.That(FileActivation.Match(english, null, TextHandlers).HandOff, Is.EqualTo(FileActivation.HandOff.None));
         });
     }
 

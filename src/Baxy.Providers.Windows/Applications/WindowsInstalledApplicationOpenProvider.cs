@@ -300,7 +300,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     .ConfigureAwait(false);
                 if (!takeFront && handBackTo != 0)
                 {
-                    LastFrontGuard = GuardFrontAsync(handBackTo, focused.ProcessId, _platform.FrontGuardStamp());
+                    _ = GuardFrontAsync(handBackTo, focused.ProcessId, _platform.FrontGuardStamp());
                 }
                 return Success(request, entry, focused, running, activated, restored, shownWithoutFocus: shown);
             }
@@ -722,9 +722,6 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // many times as it takes it (cu-v3-foco-segunda: a packaged editor took it again 30 ms after its hand-back, from a
     // window of another process of the same program). A hand-back Windows refused ends the guard: never fought.
     internal static readonly TimeSpan FrontGuard = TimeSpan.FromSeconds(3);
-
-    // The last guard started (what a test awaits).
-    internal Task? LastFrontGuard { get; private set; }
 
     // The guard ends the moment BAXY takes the front on purpose (its next act brings its window up, often well
     // inside the guard) or the person does something that moves the front (a click on the opened window
