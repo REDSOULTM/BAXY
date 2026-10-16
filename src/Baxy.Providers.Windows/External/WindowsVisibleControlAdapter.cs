@@ -416,7 +416,7 @@ internal static class LocatedPointPress
 /// <summary>
 /// The last resort of a click: the cursor on a point of a window, under the pause rule (GOAL_COMPUTER_USE_V3 point 0,
 /// fix 3). <see cref="AcquireAsync"/> waits for the person's pause and brings the window up in a burst of the
-/// foreground lease; <see cref="Prepare"/> says whether the point may be pressed now (the window bound to the mission
+/// foreground lease; <see cref="Prepare"/> says whether the point may be pressed now (the window the click is bound to
 /// is the one in front and holds the point); only then is <see cref="Click"/> called. The burst gives the cursor and
 /// the window in front back.
 /// </summary>
@@ -586,14 +586,14 @@ internal sealed record VisibleClickTiming(
 }
 
 /// <summary>
-/// Perception and the click of the computer-use engine
-/// (documentacion/computer-use/CONTRATO_VISTA_ACCION.md §1, §2).
-/// <c>input.visible.controls</c> is the compact view of the foreground window:
-/// up to sixty actionable controls with index, kind, label, state, rectangle,
-/// zone and dominant colour, the written text by zone (OCR), the window's
-/// title and process. <c>input.visible.click</c> invokes one control by label
-/// or by the identity the view handed out, through the persistent UIA worker,
-/// then OCR, then vision, and demands a post-read.
+/// Perception and the click of the computer-use engine.
+/// <c>input.visible.controls</c> is the view of a window: up to sixty actionable
+/// controls with index, kind, label, state, value and shortcut, the disabled ones
+/// by kind and label, the written text by zone (OCR), the window's title and
+/// process. <c>input.visible.click</c> invokes one control by label, by the index
+/// of the last view (resolved here to that control's identity, kept with the view
+/// and not written in it) or by an identity given as <c>controlId</c>, through the
+/// persistent UIA worker, then OCR, then vision, and demands a post-read.
 /// </summary>
 internal sealed class WindowsVisibleControlAdapter
     : IExternalOperationAdapter, IViewedFields, IPointPress, ISearchBurstActs, IDisposable
@@ -633,8 +633,6 @@ internal sealed class WindowsVisibleControlAdapter
         "visible_control_no_double_click",
         // Review of B3, finding 6: the arrow's list was already open; this step opened nothing.
         "visible_control_already_open",
-        // Ronda 20b, palanca 6 (review finding 1): the list to collapse was no longer open; nothing was sent.
-        "visible_control_not_open",
         // Ronda 21 (pasada r18 v3-65, v3-25): the worker's walk of what is shown ran out of its own time before it found
         // the control, and said so before the host's limit: nothing was pressed.
         "visible_lookup_timeout",
@@ -643,8 +641,8 @@ internal sealed class WindowsVisibleControlAdapter
         "visible_control_is_container",
     };
 
-    // Encargo IMP4: the lines a look read with their places keeps (a chat's whole pane: 79 lines measured on redpc); encargo
-    // WA-LEER: as many as the mission's facts carry (OperationVisibleFacts.ChatLines).
+    // Encargo IMP4: the lines a look that asks for «lines» reads, each by its place (a chat's whole pane: 79 lines
+    // measured on redpc); encargo WA-LEER: up to OperationVisibleFacts.ChatLines.
     private const int PlacedLinesRead = OperationVisibleFacts.ChatLines;
     private static readonly TimeSpan LabelWaitBudget = TimeSpan.FromSeconds(24);
     private static readonly TimeSpan LabelWaitInterval = TimeSpan.FromMilliseconds(1500);
@@ -697,7 +695,7 @@ internal sealed class WindowsVisibleControlAdapter
     internal IForegroundLease? BurstLease { get; init; }
 
     /// <summary>
-    /// The text of a search burst (<see cref="SearchBurst"/>), typed into the mission's window as
+    /// The text of a search burst (<see cref="SearchBurst"/>), typed into the named window as
     /// <c>input.text.type</c> types it (by its field's value or a message when it takes one, else by the keyboard, which
     /// stops at the person's first input); null (the test seams that name none) types nothing.
     /// </summary>
@@ -829,7 +827,7 @@ internal sealed class WindowsVisibleControlAdapter
         string label;
         int? index = null;
         string? controlId = null;
-        nint missionWindow = 0;
+        nint namedWindow = 0;
         string? search;
         string? choose;
         string? manner;
@@ -839,7 +837,7 @@ internal sealed class WindowsVisibleControlAdapter
             search = OptionalText(arguments, "search");
             choose = OptionalText(arguments, "choose");
             manner = OptionalText(arguments, "manner");
-            if (manner is not (null or "collapse" or "dismiss" or "double" or "menu" or "open"))
+            if (manner is not (null or "double" or "menu" or "open"))
                 throw new InvalidDataException("manner");
             // Revisión 1 de la ronda 21 (hallazgo 2): choose names the result of a search burst, never an item of an
             // opening: without search it would be dropped and the control pressed by its own action (a split button's
@@ -860,12 +858,12 @@ internal sealed class WindowsVisibleControlAdapter
                 controlId = identity.GetString()!.Trim();
             }
 
-            // The mission's window: the hwnd of the view the click was decided on (v3 point 0 review).
+            // The window the click names: the hwnd of the view it was decided on (v3 point 0 review).
             if (arguments.TryGetProperty("window", out JsonElement named) && named.ValueKind != JsonValueKind.Null)
             {
                 if (named.ValueKind != JsonValueKind.Number || !named.TryGetInt64(out long handle) || handle <= 0)
                     throw new InvalidDataException("window");
-                missionWindow = (nint)handle;
+                namedWindow = (nint)handle;
             }
         }
         catch (InvalidDataException)
@@ -873,7 +871,7 @@ internal sealed class WindowsVisibleControlAdapter
             return ExternalJson.FailureBeforeEffect(operation, "visible_click_argument_invalid");
         }
 
-        // The engine clicks by the identity the last view handed out. The
+        // The engine clicks by the identity the last view kept for the index. The
         // index is resolved against that view, and the label must name the
         // same control: an index that drifted is refused, never clicked.
         if (index is int position && controlId is null)
@@ -895,50 +893,51 @@ internal sealed class WindowsVisibleControlAdapter
 
         // Ronda 20 (P7): the opener the previous click noted is taken before any branch, so every click right after it
         // (by identity, by its manner, by a label of the last view) may reopen what it showed, and any other click takes it
-        // away. A click by a label alone right after an opener presses the one control of the mission's last view that the
-        // label names by its identity, so an item of the opening that closed is answered stale and reopened, never looked
-        // for by a cascade on a closed menu. It names it by its exact name (NamedInView), never a sentence that merely
-        // mentions it, and a press of that identity that failed before any effect leaves the label to its cascade
-        // (revision 1 of the branch).
+        // away. A click by a label alone right after an opener presses the one control of the named window's last view
+        // that the label names by its identity, so an item of the opening that closed is answered stale and reopened,
+        // never looked for by a cascade on a closed menu. It names it by its exact name (NamedInView), never a sentence
+        // that merely mentions it, and a press of that identity that failed before any effect leaves the label to its
+        // cascade (revision 1 of the branch).
         (nint Window, string Id, string Label, HashSet<string> NamesBefore, string? Manner)? opener = TakeOpener();
         bool namedByLabel = false;
         if (controlId is null && index is null && search is null && manner is null && opener is not null)
         {
-            controlId = NamedInView(missionWindow, label);
+            controlId = NamedInView(namedWindow, label);
             namedByLabel = controlId is not null;
         }
 
         if (search is not null)
-            return await SearchInBurstAsync(operation, label, controlId, missionWindow, search, choose, cancellationToken)
+            return await SearchInBurstAsync(operation, label, controlId, namedWindow, search, choose, cancellationToken)
                 .ConfigureAwait(false);
 
-        // Goal v3 B3: a control opened by its arrow, its context menu or a double click is pressed only by the identity
-        // the view handed out, through the accessible tree or a message, never by the pointer nor by the label's
-        // cascade (OCR, vision): a press found that way would be the ordinary click the manner exists to avoid (the
-        // split button's Invoke opened another tab, v3-37). A control that moved since the view is not pressed.
+        // Goal v3 B3: a control opened by its arrow, its context menu or a double click is pressed only by its identity
+        // (its index's in the last view, or a controlId), through the accessible tree or a message, never by the
+        // pointer nor by the label's cascade (OCR, vision): a press found that way would be the ordinary click the
+        // manner exists to avoid (the split button's Invoke opened another tab, v3-37). A control that moved since
+        // the view is not pressed.
         if (manner is not null)
         {
             if (search is not null || controlId is null)
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
-            HashSet<string>? shownBefore = ChainedNames(opener, missionWindow, controlId, ViewNames(missionWindow));
-            ExternalCapabilityReceipt pressed = await InvokeUiaAsync(operation, label, controlId, missionWindow, cancellationToken, manner)
+            HashSet<string>? shownBefore = ChainedNames(opener, namedWindow, controlId, ViewNames(namedWindow));
+            ExternalCapabilityReceipt pressed = await InvokeUiaAsync(operation, label, controlId, namedWindow, cancellationToken, manner)
                 .ConfigureAwait(false);
             // Ronda 20 (P7, v3-09): an item the opener showed (a collapsed ribbon's gallery) that the act's manner (its
             // arrow) found closed: the opener and the item, in that manner, go in one burst of the lease.
-            if (await ReopenShownAsync(operation, opener, pressed, label, controlId, missionWindow, manner, cancellationToken)
+            if (await ReopenShownAsync(operation, opener, pressed, label, controlId, namedWindow, manner, cancellationToken)
                     .ConfigureAwait(false) is { } reopenedInManner)
                 return reopenedInManner;
             // An arrow or a context menu opens a list or a menu by definition: noted as the opener of what it showed,
             // with its manner, so the burst that reopens it presses its arrow again, never its own action (v3-37).
             if (pressed.Verified && pressed.ErrorCode is null)
-                NoteOpenerIn(missionWindow, controlId, label, shownBefore, manner is "open" or "menu", manner);
+                NoteOpenerIn(namedWindow, controlId, label, shownBefore, manner is "open" or "menu", manner);
             return pressed;
         }
 
         // The window of the view the identity came from. The click by identity no longer brings it forward, so when
         // the identity went stale the cascade by label stays on that window: never on whatever the person has in
-        // front meanwhile (their editor, a chat), where its label would be looked for, read and pressed. A click a
-        // mission named its window for (v3 point 0 review, «window») stays on that one. Neither is brought to the
+        // front meanwhile (their editor, a chat), where its label would be looked for, read and pressed. A click that
+        // names its window (v3 point 0 review, «window») stays on that one. Neither is brought to the
         // front here: the accessible tree reaches it behind the person's window, and only the pointer, last, takes
         // the front, inside a burst of the foreground lease after the person's pause (fable/cu-v3-pausa).
         nint viewWindow = 0;
@@ -956,16 +955,16 @@ internal sealed class WindowsVisibleControlAdapter
 
         if (controlId is not null)
         {
-            HashSet<string>? namesBefore = ChainedNames(opener, missionWindow, controlId, ViewNames(missionWindow));
-            bool opens = OpensAgain(missionWindow, controlId);
+            HashSet<string>? namesBefore = ChainedNames(opener, namedWindow, controlId, ViewNames(namedWindow));
+            bool opens = OpensAgain(namedWindow, controlId);
             ExternalCapabilityReceipt identified = await InvokeUiaAsync(
-                operation, label, controlId, missionWindow, cancellationToken).ConfigureAwait(false);
-            if (await ReopenShownAsync(operation, opener, identified, label, controlId, missionWindow, null, cancellationToken)
+                operation, label, controlId, namedWindow, cancellationToken).ConfigureAwait(false);
+            if (await ReopenShownAsync(operation, opener, identified, label, controlId, namedWindow, null, cancellationToken)
                     .ConfigureAwait(false) is { } reopened)
                 return reopened;
 
             if (identified.Verified && identified.ErrorCode is null)
-                NoteOpener(missionWindow, controlId, label, namesBefore, opens);
+                NoteOpener(namedWindow, controlId, label, namesBefore, opens);
             // Revision 1 of the branch: an identity this adapter took from the label itself (NamedInView) that failed
             // before any effect leaves the label to its ordinary cascade, as a click by label alone always had.
             bool cascadeAfterNamed = namedByLabel && !identified.Verified && !identified.EffectObserved
@@ -997,7 +996,7 @@ internal sealed class WindowsVisibleControlAdapter
         // window. Any other click looks two or three times and answers.
         VisibleControlSurface.OpenedApplication? opened = _focus.TakeOpened();
         if (opened is { } seenOpening && _openedLooked is { } looked
-            && looked.Shows(seenOpening, missionWindow, label))
+            && looked.Shows(seenOpening, namedWindow, label))
         {
             // lat-apertura-clic: a look already read the opened application's window after its wait for it, the click
             // names that very window, and the look showed its label (a control so named, or a written line that is
@@ -1059,11 +1058,11 @@ internal sealed class WindowsVisibleControlAdapter
             if (look)
             {
                 lookingSince ??= DateTime.UtcNow;
-                // Bound to the opened application's window, to the mission's window or to the window of the view
+                // Bound to the opened application's window, to the window the click names or to the window of the view
                 // whose identity went stale: nothing is read or pressed on whatever else holds the front (the person
                 // took it). The accessible tree reaches the bound window behind; OCR and vision read its own image
                 // and press through the tree at the point, or with the pointer only inside a burst of the lease.
-                nint boundWindow = opened is not null ? surfaceWindow : missionWindow != 0 ? missionWindow : viewWindow;
+                nint boundWindow = opened is not null ? surfaceWindow : namedWindow != 0 ? namedWindow : viewWindow;
                 using IDisposable bound = VisibleControlSurface.RequireWindow(boundWindow);
                 _lookedTreeSize = -1;
                 uia = await InvokeUiaAsync(operation, label, null, boundWindow, cancellationToken)
@@ -1093,7 +1092,7 @@ internal sealed class WindowsVisibleControlAdapter
                 }
 
                 // A label no stage found yet may be an icon's: its tooltip is read once per click, on the window the
-                // click is bound to only (never the person's window outside a mission), in pauses of the person, and
+                // click is bound to only (never whatever the person has in front), in pauses of the person, and
                 // only on the last look: a page still drawing (UI1731: the navigation ten seconds after the window)
                 // shows its label to a later look first, and its controls are not hovered half drawn. On a look made
                 // when the label's wait is already over, before vision.
@@ -1350,8 +1349,8 @@ internal sealed class WindowsVisibleControlAdapter
             _openedLooked = new OpenedLook(opened.ProcessId, opened.NotedUtc, (nint)hwnd, [.. names]);
     }
 
-    /// <summary>Ronda 21: the goal's words the mission's look carries («wanted», declared in the catalog), at most 24
-    /// non-empty texts of at most 64 characters; anything else is no word.</summary>
+    /// <summary>Ronda 21: the words of what is looked for that a look carries («wanted», declared in the catalog), at
+    /// most 24 non-empty texts of at most 64 characters; anything else is no word.</summary>
     internal static IReadOnlyList<string> WantedWords(JsonElement arguments)
     {
         if (arguments.ValueKind != JsonValueKind.Object
@@ -1430,8 +1429,8 @@ internal sealed class WindowsVisibleControlAdapter
             writer.WriteEndObject();
         }), "application_window_not_found");
 
-    /// <summary>The worker's «view» request; the goal's words go only when there are some (a look outside a mission is
-    /// the one it always was).</summary>
+    /// <summary>The worker's «view» request; the words looked for go only when the look carries some (without them the
+    /// view is the usual one).</summary>
     internal static string ViewCommand(nint hwnd, int limit, IReadOnlyList<string>? wanted, bool tail = false)
     {
         var command = new JsonObject { ["cmd"] = "view", ["hwnd"] = hwnd, ["limit"] = limit };
@@ -1513,13 +1512,13 @@ internal sealed class WindowsVisibleControlAdapter
             return new ViewResult(ExternalJson.Failure(operation, "active_window_not_found"), []);
 
         string command = ViewCommand(hwnd, limit, wanted, tail);
-        // One capture serves the colours and the written text;
+        // The capture serves the written text, asked for or read when the tree shows nothing to act on;
         // a window without an accessible tree (CEF, SDL, canvas) is
         // read from what is drawn, the case measured in a game launcher (UI1731).
         // The capture, and the text when it is asked for, are read while the
         // worker walks the accessible tree: they do not wait on each other.
         // A window another process draws over is captured as it draws itself, never the screen where the cover is.
-        // Encargo IMP4: the written lines with their place («lines») are read from the window's own drawing, never from
+        // Encargo IMP4: the written lines a look asks for («lines») are read from the window's own drawing, never from
         // the screen (imp3: the screen copy of a chat client covered by another window read the other window's text).
         bool covered = cover != 0 || lines;
         nint firstLooked = hwnd;
@@ -1608,22 +1607,14 @@ internal sealed class WindowsVisibleControlAdapter
                 title = VisibleControlSurface.WindowTitle(hwnd);
             // A packaged app's frame names the app it hosts, never the frame host every packaged app shares.
             (int ownerProcessId, string processName) = VisibleControlSurface.ViewProcess(hwnd);
-            VisibleControlSurface.TryBounds(hwnd, out int left, out int top, out int right, out int bottom);
-            var windowRect = new Rect(left, top, right - left, bottom - top);
 
             VisibleControlSurface.CapturedWindow? captured = await captureTask.ConfigureAwait(false);
-            long colorMs = 0;
             long ocrMs = 0;
             Dictionary<string, List<string>> textZones = new(StringComparer.Ordinal);
             string? textAuthority = null;
-            IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? placedLines = null;
-            (int Width, int Height) placedIn = (0, 0);
             var names = new List<string>();
             if (captured is { } capture)
             {
-                var colourWatch = Stopwatch.StartNew();
-                VisibleControlColors.Assign(capture, controls);
-                colorMs = colourWatch.ElapsedMilliseconds;
                 // Not asked for, the text is still read when the tree shows nothing to act on.
                 if (textTask is null && controls.Count <= 1)
                     textTask = ReadTextAsync(captureTask, limit, cancellationToken);
@@ -1633,12 +1624,6 @@ internal sealed class WindowsVisibleControlAdapter
                         await textTask.ConfigureAwait(false);
                     if (read is not null)
                     {
-                        if (lines)
-                        {
-                            placedLines = read;
-                            placedIn = (capture.Width, capture.Height);
-                        }
-
                         textAuthority = "windows_media_ocr_lines";
                         foreach (WindowsVisibleOcrLocator.LayoutLine line in read)
                         {
@@ -1662,20 +1647,8 @@ internal sealed class WindowsVisibleControlAdapter
                 }
             }
 
-            foreach (ViewControl control in disabled)
-            {
-                control.Zone = control.RectValue is { } rect
-                    ? Zone(rect.X + rect.W / 2, rect.Y + rect.H / 2, windowRect)
-                    : string.Empty;
-            }
-
             foreach (ViewControl control in controls)
-            {
-                control.Zone = control.RectValue is { } rect
-                    ? Zone(rect.X + rect.W / 2, rect.Y + rect.H / 2, windowRect)
-                    : string.Empty;
                 names.Add(control.Name);
-            }
 
             lock (_viewLock)
             {
@@ -1689,14 +1662,6 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteNumber("version", 2);
                 writer.WriteBoolean("ok", true);
                 writer.WriteString("error", string.Empty);
-                // Fronts an application opened just before took by itself and the guard handed back (v3 point 0), and
-                // those Windows refused to hand back (the application kept the front).
-                long activationsReturned = Applications.ForegroundHandBack.TakeGuardReturns();
-                if (activationsReturned > 0)
-                    writer.WriteNumber("windowsActivationsReturned", activationsReturned);
-                long activationsKept = Applications.ForegroundHandBack.TakeGuardRefusals();
-                if (activationsKept > 0)
-                    writer.WriteNumber("windowsActivationsNotReturned", activationsKept);
                 writer.WriteStartObject("window");
                 writer.WriteString("title", title);
                 writer.WriteString("process", processName);
@@ -1764,11 +1729,6 @@ internal sealed class WindowsVisibleControlAdapter
                     writer.WriteNumber("i", control.Index);
                     writer.WriteString("kind", control.Kind);
                     writer.WriteString("name", control.Name);
-                    // Where a name came from when the control had no Name of its own (helpText, labeledBy,
-                    // automationId): absent for a control's own Name.
-                    if (control.NameSource.Length > 0)
-                        writer.WriteString("nameSource", control.NameSource);
-                    writer.WriteString("id", control.Id);
                     writer.WriteString("state", control.State);
                     if (control.Value is null)
                         writer.WriteNull("value");
@@ -1777,12 +1737,6 @@ internal sealed class WindowsVisibleControlAdapter
                     // Goal v3 B3: the key the application declares for the control (AcceleratorKey or AccessKey).
                     if (control.Shortcut.Length > 0)
                         writer.WriteString("shortcut", control.Shortcut);
-                    if (control.RectValue is { } rect)
-                        WriteRect(writer, "rect", rect);
-                    else
-                        writer.WriteNull("rect");
-                    writer.WriteString("zone", control.Zone);
-                    writer.WriteString("color", control.Color);
                     if (control.Repeated > 0)
                         writer.WriteNumber("repeated", control.Repeated);
                     writer.WriteEndObject();
@@ -1797,8 +1751,6 @@ internal sealed class WindowsVisibleControlAdapter
                         writer.WriteStartObject();
                         writer.WriteString("kind", control.Kind);
                         writer.WriteString("name", control.Name);
-                        writer.WriteString("state", "disabled");
-                        writer.WriteString("zone", control.Zone);
                         writer.WriteEndObject();
                     }
 
@@ -1842,30 +1794,11 @@ internal sealed class WindowsVisibleControlAdapter
 
                     writer.WriteEndObject();
                     writer.WriteString("textAuthority", textAuthority);
-                    if (placedLines is not null && placedIn.Width > 0 && placedIn.Height > 0)
-                    {
-                        // Encargo IMP4: each line read with its box, in fractions of the window's own drawing, in the
-                        // order read (a chat without an accessible tree is read from them, each line by its place).
-                        writer.WriteStartArray("textLines");
-                        foreach (WindowsVisibleOcrLocator.LayoutLine line in placedLines)
-                        {
-                            writer.WriteStartObject();
-                            writer.WriteString("text", line.Text);
-                            writer.WriteNumber("x", Math.Round(line.X / placedIn.Width, 4));
-                            writer.WriteNumber("y", Math.Round(line.Y / placedIn.Height, 4));
-                            writer.WriteNumber("w", Math.Round(line.Width / placedIn.Width, 4));
-                            writer.WriteNumber("h", Math.Round(line.Height / placedIn.Height, 4));
-                            writer.WriteEndObject();
-                        }
-
-                        writer.WriteEndArray();
-                    }
                 }
 
                 writer.WriteStartObject("elapsedMs");
                 writer.WriteNumber("uia", uiaMs);
                 writer.WriteNumber("ocr", ocrMs);
-                writer.WriteNumber("color", colorMs);
                 writer.WriteNumber("total", stopwatch.ElapsedMilliseconds);
                 writer.WriteEndObject();
                 writer.WriteString("authority", controls.Count <= 1 && textAuthority == "windows_media_ocr_lines"
@@ -1958,7 +1891,6 @@ internal sealed class WindowsVisibleControlAdapter
                 Index = controls.Count,
                 Kind = ReadString(item, "kind"),
                 Name = name,
-                NameSource = ReadString(item, "nameSource"),
                 Id = ReadString(item, "id"),
                 State = ReadString(item, "state"),
                 Value = item.TryGetProperty("value", out JsonElement value)
@@ -1985,19 +1917,9 @@ internal sealed class WindowsVisibleControlAdapter
             ? number
             : 0;
 
-    private static void WriteRect(Utf8JsonWriter writer, string name, Rect rect)
-    {
-        writer.WriteStartObject(name);
-        writer.WriteNumber("x", rect.X);
-        writer.WriteNumber("y", rect.Y);
-        writer.WriteNumber("w", rect.W);
-        writer.WriteNumber("h", rect.H);
-        writer.WriteEndObject();
-    }
-
     private static readonly string[] ZoneOrder = ["TL", "T", "TR", "L", "C", "R", "BL", "B", "BR"];
 
-    // Rejilla 3×3 sobre la ventana (contrato §1.4): la zona del centro.
+    // Rejilla 3×3 sobre la ventana: la zona del centro de una línea leída (el texto por zonas de la vista).
     internal static string Zone(double centerX, double centerY, Rect window)
     {
         if (window.W <= 0 || window.H <= 0)
@@ -2045,7 +1967,7 @@ internal sealed class WindowsVisibleControlAdapter
                 hwnd = recent.Hwnd;
             }
 
-            // Without a window named (a direct order outside a mission), the window in front, as the descriptor says.
+            // Without a window named, the window in front, as the descriptor says.
             if (hwnd == 0)
             {
                 // Read where it is: the worker no longer presses by coordinates (fable/cu-v3-clic), and the pointer
@@ -2072,9 +1994,9 @@ internal sealed class WindowsVisibleControlAdapter
     }
 
     /// <summary>
-    /// A click that names a search (<c>search</c>, goal v3 point 0, fix 3): the opener of the mission's window, by its
+    /// A click that names a search (<c>search</c>, goal v3 point 0, fix 3): the opener of the named window, by its
     /// identity in the last view, then the text and the result inside one burst of the lease (<see cref="SearchBurst"/>).
-    /// Only inside a mission (its window named) and on a control the view identified; nothing is pressed otherwise.
+    /// Only when the click names its window and on a control with an identity; nothing is pressed otherwise.
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> SearchInBurstAsync(
         string operation,
@@ -2178,27 +2100,28 @@ internal sealed class WindowsVisibleControlAdapter
         ExternalCapabilityReceipt pressed,
         string label,
         string controlId,
-        nint missionWindow,
+        nint namedWindow,
         string? manner,
         CancellationToken cancellationToken)
     {
-        if (missionWindow == 0 || opener is not { } shownBy || BurstLease is not { } reopenLease
+        if (namedWindow == 0 || opener is not { } shownBy || BurstLease is not { } reopenLease
             || !VisibleControlSurface.IsAlive(shownBy.Window) || _elevated(shownBy.Window)
-            || !ReopensShownItem(pressed.ErrorCode, label, controlId, missionWindow,
-                shownBy.Window, shownBy.Id, shownBy.NamesBefore, VisibleControlSurface.IsAlive(missionWindow),
-                missionWindow == shownBy.Window ? [] : PopupsOf(shownBy.Window), (shownBy.NamesBefore as OpenerNames)?.Described))
+            || !ReopensShownItem(pressed.ErrorCode, label, controlId, namedWindow,
+                shownBy.Window, shownBy.Id, shownBy.NamesBefore, VisibleControlSurface.IsAlive(namedWindow),
+                namedWindow == shownBy.Window ? [] : PopupsOf(shownBy.Window), (shownBy.NamesBefore as OpenerNames)?.Described))
             return null;
         _lookedWindow = shownBy.Window;
         return await new SearchBurst(reopenLease, SearchClock, this)
             .ReopenAsync(operation, shownBy.Window, shownBy.Label, shownBy.Id, label, cancellationToken,
-                shownIn: missionWindow == shownBy.Window ? 0 : missionWindow, openerManner: shownBy.Manner, itemManner: manner)
+                shownIn: namedWindow == shownBy.Window ? 0 : namedWindow, openerManner: shownBy.Manner, itemManner: manner)
             .ConfigureAwait(false);
     }
 
     /// <summary>
-    /// The one control of the mission's last view a label names, by its identity: the only control of exactly that name
-    /// (<see cref="SameLabel"/>). Null when the last view is of another window, the label names none or several, or the
-    /// control has no identity: the label is then left to its cascade, which presses nothing it does not name exactly.
+    /// The one control of the last view of <paramref name="window"/> a label names, by its identity: the only control
+    /// of exactly that name (<see cref="SameLabel"/>). Null when the last view is of another window, the label names
+    /// none or several, or the control has no identity: the label is then left to its cascade, which presses nothing it
+    /// does not name exactly.
     /// Auditoría P3: a control whose name only holds the label is never chosen for it.
     /// </summary>
     private string? NamedInView(nint window, string label)
@@ -2218,16 +2141,16 @@ internal sealed class WindowsVisibleControlAdapter
         "Text", "Group", "Pane", "Custom", "Document",
     };
 
-    // The last control of a mission's window pressed by its identity, with the names its view showed before the press:
+    // The last control of a named window pressed by its identity, with the names its view showed before the press:
     // a control of the next view that is none of those appeared with that press (v3-09: the gallery of a ribbon tab).
     // Review of the branch (finding 3): only a control that opens something by its structure (a tab, a combo box, one
     // that says it is collapsed: OpensAgain) is noted, and it holds for the very next view and click only (Views: the
     // count of views read when it was pressed), so a press that creates or deletes («Nuevo», «Eliminar») is never pressed
-    // again, and neither is any opener after a text, a key, another click or another mission's look.
+    // again, and neither is any opener after a text, a key, another click or a second look.
     // Ronda 20 (P7): with the manner it was pressed in (an arrow, a context menu), so it is reopened the same way.
     private (nint Window, string Id, string Label, HashSet<string> NamesBefore, long Views, string? Manner)? _opener;
 
-    // How many views this adapter has read (the mission reads one after every act).
+    // How many views this adapter has read (an opener holds for the very next one only).
     private long _viewsRead;
 
     private void NoteOpener(nint window, string controlId, string label, HashSet<string>? namesBefore, bool opens) =>
@@ -2779,8 +2702,9 @@ internal sealed class WindowsVisibleControlAdapter
 
     /// <summary>
     /// The receipt of a click that handed its effect to another process's window: done, the clicked window not said to
-    /// have changed, and <c>handedTo</c> naming that window (its handle, title, process and process id) for the mission
-    /// to follow (ronda 20b, palanca 8, objetivo 3).
+    /// have changed, and <c>handedTo</c> naming that window (its handle, title, process and process id, whether it was
+    /// born with the click, and how long ago the person's input went to it and to its process or the shell) (ronda 20b,
+    /// palanca 8, objetivo 3).
     /// </summary>
     private static ExternalCapabilityReceipt HandedOff(
         string operation, JsonElement clicked, UiaFrontReport? front, VisibleControlSurface.HandedWindow handed)
@@ -2798,7 +2722,8 @@ internal sealed class WindowsVisibleControlAdapter
             ["processId"] = handed.ProcessId,
             ["born"] = handed.Born,
         };
-        // Review 3 of palanca 8 (B1): where the person's input last went, for the mission's guard of their windows.
+        // Review 3 of palanca 8 (B1): how long ago the person's input went to that window, and to its process or the
+        // shell.
         if (handed.PersonInputAgoMs is long personAgo)
             ((JsonObject)node["handedTo"]!)["personInputAgoMs"] = personAgo;
         if (handed.PersonNearAgoMs is long nearAgo)
@@ -2898,9 +2823,6 @@ internal sealed class WindowsVisibleControlAdapter
         // Goal v3 B3: the list a control's arrow opened, or the context menu asked for, read open after the press.
         bool opened = root.TryGetProperty("opened", out JsonElement openedValue)
             && openedValue.ValueKind == JsonValueKind.True;
-        // Ronda 20b, palanca 6 (review finding 1): the list a failed mission left open, read closed after its collapse.
-        bool closed = root.TryGetProperty("closed", out JsonElement closedValue)
-            && closedValue.ValueKind == JsonValueKind.True;
         // Recibo del clic por estado (r15b v3-42, v3-51), review finding 1: a field (Edit, Document, ComboBox) that took
         // the keyboard's focus or changed its value with the press, and the click's window disabled by the modal dialog
         // the press opened, are the worker's post-read proofs, each under its own key.
@@ -2908,7 +2830,7 @@ internal sealed class WindowsVisibleControlAdapter
             && fieldValue.ValueKind == JsonValueKind.True;
         bool dialogOpened = root.TryGetProperty("dialogOpened", out JsonElement dialogValue)
             && dialogValue.ValueKind == JsonValueKind.True;
-        return dismissed || selected || toggled || surface || targeted || opened || closed || fieldTook || dialogOpened;
+        return dismissed || selected || toggled || surface || targeted || opened || fieldTook || dialogOpened;
     }
 
     private static ExternalCapabilityReceipt ReceiptFromWorker(
@@ -3010,7 +2932,7 @@ internal sealed class WindowsVisibleControlAdapter
 
     /// <summary>
     /// Ronda 28 (banco Br27: the first whole look of a session cost 1 041–1 200 ms, 190–340 ms once warm, with the worker
-    /// already started): the worker is started and asked one look ahead of the first mission, so what a first look
+    /// already started): the worker is started and asked one look ahead of the first one, so what a first look
     /// compiles and loads (the worker's view functions, UI Automation's client) is paid while the mind is still loading.
     /// The look is of the shell's desktop window, by the read-only «view» (no front, no key, no click, no capture, no
     /// text) and asks for one control; its answer is dropped here, never journaled nor handed to anyone. With no shell
@@ -3162,152 +3084,15 @@ internal sealed class WindowsVisibleControlAdapter
         internal int Index { get; set; }
         internal string Kind { get; set; } = string.Empty;
         internal string Name { get; set; } = string.Empty;
-        internal string NameSource { get; set; } = string.Empty;
         internal string Id { get; set; } = string.Empty;
         internal string State { get; set; } = string.Empty;
         internal string? Value { get; set; }
         internal string Shortcut { get; set; } = string.Empty;
         internal Rect? RectValue { get; set; }
         internal int Repeated { get; set; }
-        internal string Zone { get; set; } = string.Empty;
-        internal string Color { get; set; } = string.Empty;
     }
 
     private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls);
 
     private readonly record struct ViewResult(ExternalCapabilityReceipt Receipt, IReadOnlyList<string> Names);
-}
-
-/// <summary>
-/// Dominant colour of each control's rectangle over the window capture
-/// (CONTRATO_VISTA_ACCION.md §1.5): an HSV histogram over the pixels, so
-/// «el botón rojo» resolves without a model.
-/// </summary>
-internal static class VisibleControlColors
-{
-    internal static readonly string[] Names =
-        ["red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink", "white", "black", "gray"];
-
-    internal static void Assign(
-        VisibleControlSurface.CapturedWindow capture,
-        IReadOnlyList<WindowsVisibleControlAdapter.ViewControl> controls)
-    {
-        byte[] bmp = capture.Bmp;
-        if (!TryParse(bmp, out int offset, out int width, out int height) || width <= 0 || height <= 0)
-            return;
-        foreach (WindowsVisibleControlAdapter.ViewControl control in controls)
-        {
-            if (control.RectValue is not { } rect)
-                continue;
-            int left = rect.X - capture.Left;
-            int top = rect.Y - capture.Top;
-            control.Color = Dominant(bmp, offset, width, height, left, top, rect.W, rect.H);
-        }
-    }
-
-    internal static bool TryParse(byte[] bmp, out int offset, out int width, out int height)
-    {
-        offset = width = height = 0;
-        if (bmp.Length < 54 || bmp[0] != (byte)'B' || bmp[1] != (byte)'M')
-            return false;
-        offset = BitConverter.ToInt32(bmp, 10);
-        width = BitConverter.ToInt32(bmp, 18);
-        height = BitConverter.ToInt32(bmp, 22);
-        short bits = BitConverter.ToInt16(bmp, 28);
-        if (bits != 32 || offset <= 0 || offset >= bmp.Length)
-            return false;
-        long needed = (long)offset + (long)Math.Abs(width) * Math.Abs(height) * 4;
-        return needed <= bmp.Length;
-    }
-
-    internal static string Dominant(
-        byte[] bmp, int offset, int width, int height,
-        int left, int top, int boxWidth, int boxHeight)
-    {
-        if (boxWidth <= 0 || boxHeight <= 0)
-            return string.Empty;
-        // Recorte del 10 % por lado: el borde de un control es su contorno,
-        // no su color.
-        int insetX = boxWidth / 10;
-        int insetY = boxHeight / 10;
-        int x0 = Math.Max(0, left + insetX);
-        int y0 = Math.Max(0, top + insetY);
-        int x1 = Math.Min(width, left + boxWidth - insetX);
-        int y1 = Math.Min(height, top + boxHeight - insetY);
-        if (x1 <= x0 || y1 <= y0)
-            return string.Empty;
-        int stepX = Math.Max(1, (x1 - x0) / 64);
-        int stepY = Math.Max(1, (y1 - y0) / 64);
-        bool bottomUp = height > 0;
-        int rows = Math.Abs(height);
-        int stride = width * 4;
-        int[] histogram = new int[Names.Length];
-        for (int y = y0; y < y1; y += stepY)
-        {
-            int row = bottomUp ? rows - 1 - y : y;
-            if (row < 0 || row >= rows)
-                continue;
-            for (int x = x0; x < x1; x += stepX)
-            {
-                int index = offset + row * stride + x * 4;
-                if (index + 2 >= bmp.Length)
-                    continue;
-                histogram[Classify(bmp[index + 2], bmp[index + 1], bmp[index])]++;
-            }
-        }
-
-        int best = 0;
-        for (int index = 1; index < histogram.Length; index++)
-        {
-            if (histogram[index] > histogram[best])
-                best = index;
-        }
-
-        return histogram[best] == 0 ? string.Empty : Names[best];
-    }
-
-    internal static int Classify(byte red, byte green, byte blue)
-    {
-        double r = red / 255.0;
-        double g = green / 255.0;
-        double b = blue / 255.0;
-        double max = Math.Max(r, Math.Max(g, b));
-        double min = Math.Min(r, Math.Min(g, b));
-        double delta = max - min;
-        double saturation = max <= 0 ? 0 : delta / max;
-        double value = max;
-        if (saturation < 0.18)
-        {
-            if (value >= 0.85)
-                return 8; // white
-            if (value <= 0.2)
-                return 9; // black
-            return 10; // gray
-        }
-
-        double hue;
-        if (delta <= 0)
-            hue = 0;
-        else if (max == r)
-            hue = 60 * (((g - b) / delta) % 6);
-        else if (max == g)
-            hue = 60 * ((b - r) / delta + 2);
-        else
-            hue = 60 * ((r - g) / delta + 4);
-        if (hue < 0)
-            hue += 360;
-        if (hue < 15 || hue >= 330)
-            return hue >= 330 && saturation < 0.55 ? 7 : 0; // pink or red
-        if (hue < 40)
-            return 1; // orange
-        if (hue < 70)
-            return 2; // yellow
-        if (hue < 170)
-            return 3; // green
-        if (hue < 200)
-            return 4; // cyan
-        if (hue < 270)
-            return 5; // blue
-        return hue < 300 ? 6 : 7; // purple / pink
-    }
 }

@@ -256,56 +256,6 @@ public sealed class ComputerUsePerceptionTests
         Assert.That(WindowsVisibleControlAdapter.Zone(x, y, window), Is.EqualTo(expected));
     }
 
-    [TestCase(220, 30, 30, "red")]
-    [TestCase(240, 140, 20, "orange")]
-    [TestCase(30, 180, 60, "green")]
-    [TestCase(30, 60, 220, "blue")]
-    [TestCase(250, 250, 250, "white")]
-    [TestCase(10, 10, 10, "black")]
-    [TestCase(128, 128, 128, "gray")]
-    [TestCase(160, 40, 200, "purple")]
-    public void DominantColourClassesFollowTheHsvCuts(int red, int green, int blue, string expected)
-    {
-        int index = VisibleControlColors.Classify((byte)red, (byte)green, (byte)blue);
-        Assert.That(VisibleControlColors.Names[index], Is.EqualTo(expected));
-    }
-
-    [Test]
-    public void DominantColourIsReadFromTheControlRectangleOfABottomUpBitmap()
-    {
-        const int width = 8;
-        const int height = 8;
-        const int offset = 54;
-        byte[] bmp = new byte[offset + width * height * 4];
-        bmp[0] = (byte)'B';
-        bmp[1] = (byte)'M';
-        BitConverter.GetBytes(offset).CopyTo(bmp, 10);
-        BitConverter.GetBytes(width).CopyTo(bmp, 18);
-        BitConverter.GetBytes(height).CopyTo(bmp, 22);
-        BitConverter.GetBytes((short)32).CopyTo(bmp, 28);
-        // Top half red, bottom half blue, stored bottom-up.
-        for (int y = 0; y < height; y++)
-        {
-            int row = height - 1 - y;
-            for (int x = 0; x < width; x++)
-            {
-                int index = offset + row * width * 4 + x * 4;
-                bmp[index] = (byte)(y < 4 ? 20 : 220);      // B
-                bmp[index + 1] = 20;                          // G
-                bmp[index + 2] = (byte)(y < 4 ? 220 : 20);   // R
-                bmp[index + 3] = 255;
-            }
-        }
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(VisibleControlColors.TryParse(bmp, out int parsedOffset, out int parsedWidth, out int parsedHeight), Is.True);
-            Assert.That((parsedOffset, parsedWidth, parsedHeight), Is.EqualTo((offset, width, height)));
-            Assert.That(VisibleControlColors.Dominant(bmp, offset, width, height, 0, 0, 8, 4), Is.EqualTo("red"));
-            Assert.That(VisibleControlColors.Dominant(bmp, offset, width, height, 0, 4, 8, 4), Is.EqualTo("blue"));
-        });
-    }
-
     [Test]
     public async Task TheOcrReadsAWindowImageHeldInMemory()
     {

@@ -442,8 +442,8 @@ public static class ProductCatalog
                     // the default one.
                     String("application", maximumUtf8Bytes: 512, nonWhitespace: true),
                     String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
-                    // molestia-ayudantes: the person asked to see it (set by the App, as app.open's), so the opened
-                    // application keeps the front; a mission's file.open goes without it and stays behind.
+                    // The person asked to see it (the model sets it, as app.open's): the opened application keeps the
+                    // front; without it the file opens behind the person's window.
                     Boolean("foreground"),
                     String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
                 ],
@@ -839,10 +839,9 @@ public static class ProductCatalog
             "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput."),
         Descriptor(
             "input.visible.click",
-            // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): el clic por la
-            // identidad que la vista entregó (índice o RuntimeId) cuando la etiqueta
-            // se repite; la etiqueta sigue siendo obligatoria, debe nombrar ese
-            // mismo control y es lo que el revisor ve.
+            // El clic por el índice de la vista, o por la identidad que dio un clic, cuando la
+            // etiqueta se repite; la etiqueta sigue siendo obligatoria, debe nombrar ese mismo
+            // control y es lo que el revisor ve.
             Schema(
                 [
                     // Goal v3 punto 2: lo que el clic consuma y no se deshace según la
@@ -875,7 +874,7 @@ public static class ProductCatalog
                 ["label"]),
             OperationRisks.ExternalCommunication,
             "input.visible.click.windows.uia.invoke.postread.v2",
-            "Invoca un único control visible por etiqueta, o por el índice o la identidad que dio la vista, en la ventana en primer plano (UIA, luego OCR, luego visión) y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada."),
+            "Invoca un único control visible por etiqueta, o por el índice de la vista o la identidad que dio un clic, en la ventana en primer plano (UIA, luego OCR, luego visión) y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada."),
         Descriptor(
             "input.visible.controls",
             // La vista compacta que lee el modelo (ScreenViewProjection): número, tipo,
@@ -883,13 +882,13 @@ public static class ProductCatalog
             // y la espera acotada de una etiqueta que la aplicación aún no dibujó.
             Schema(
                 [
-                    // La aplicación a mirar: la ventana cuyo título la nombra es la
-                    // superficie mientras su proceso no se conoce o no muestra
-                    // ventana; «el navegador», la de delante del navegador de la persona.
+                    // La aplicación a mirar, por su nombre exacto (la ventana de su proceso o cuyo
+                    // título la nombra); sin ella, la ventana de delante.
                     String("application", types: NullableString, maximumUtf8Bytes: 128),
                     Boolean("includeText", types: NullableBoolean),
                     Integer("limit", 1, VisibleViewNumbering.Cap),
-                    // Encargo IMP4: the written lines with their boxes, read from the window's own drawing.
+                    // Encargo IMP4: the written lines read from the window's own drawing, each kept by its place (up to
+                    // OperationVisibleFacts.ChatLines).
                     Boolean("lines", types: NullableBoolean),
                     // Encargo IMP3: the cut of a look keeps the last entries of the window's tree (a conversation's
                     // newest messages).

@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-15T23:00:00-03:00",
+  "actualizado": "2026-10-15T23:45:00-03:00",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -52,38 +52,38 @@
   "metas": {
     "holdout": {
       "umbral": ">= 85 %",
-      "estado": "en_curso",
-      "evidencia": "práctica sobre el congelado 0417eec7b: decision2 ~225/268 en la GPU del notebook (con las descripciones exactas de ee435857e daba 234: cualquier edición mueve ±6-9, a prompt idéntico ±1), e2e 22/30 (p11), escenas 31-32/39; sellados en curso: notebook decisión+escenas+latido, PC e2e+falsedades+recursos"
+      "estado": "limite_honesto",
+      "evidencia": "sellado, una sola vez, sobre el congelado 0417eec7b (resúmenes en F:/BAXYeval/renew_v1/runs/final-*; decisión, escenas y latido en la GPU del notebook; e2e, falsedades y recursos en el escritorio del PC): 178/227 = 78,4 % (decisión 140/167 = 83,8 %, e2e 30/50 = 60 %, latido 8/10 = 80 %; ninguno excluido). Lo que más lo baja es el e2e: el área 'agente' (varios pasos) 4/15 y computer use 10/16; herramientas 12/13. En práctica: decision2 ~225-234/268 según descripciones (ruido de edición ±6-9), e2e 20-22/30."
     },
     "falsedades": {
       "umbral": "0 en el banco automático",
-      "estado": "en_curso",
-      "evidencia": "práctica: p5 3/26, p6 3/26, p7 3/26 (F009, F013, F015), p8 4/22 (F009, F015, F017, F019; F015 y F017 eran errores del juez: F015 corregido en el juez, F017 cae en la excepción del volumen 0-100 que el juez no aplicó); sellado pendiente"
+      "estado": "limite_honesto",
+      "evidencia": "sellado, una sola vez, sobre el congelado 0417eec7b (resúmenes en F:/BAXYeval/renew_v1/runs/final-*; decisión, escenas y latido en la GPU del notebook; e2e, falsedades y recursos en el escritorio del PC): 3 falsedades en 62 líneas de 42 conversaciones (F134, F136, F141), 1 línea sin juzgar (F136); 60 turnos, ninguno sin línea. Práctica: 3-4 por corrida (afirmar sin mirar, negar una capacidad sin intentarla)."
     },
     "instinto": {
       "umbral": ">= 80 % aciertos, 0 riesgo solo, <= 1 molesta / 20",
-      "estado": "en_curso",
-      "evidencia": "práctica: escenas 31/39 (e15, PC) y 32/39 (notebook), 0 molestas, 0 fallos; riesgo_solo 0 por construcción en el juez y en el producto: la App retiene para el «sí» toda llamada de riesgo del latido (ProposedRisks), así que el 0 lo garantiza la App, no el modelo"
+      "estado": "limite_honesto",
+      "evidencia": "sellado, una sola vez, sobre el congelado 0417eec7b (resúmenes en F:/BAXYeval/renew_v1/runs/final-*; decisión, escenas y latido en la GPU del notebook; e2e, falsedades y recursos en el escritorio del PC): escenas 39/59 = 66,1 % (S031 excluida por retirada), 1,36 molestas/20 (4, todas por intervenir en un silencio, ninguna por el canal de voz), 0 riesgo solo, 0 fallos; latido holdout 8/10, 2,0 molestas/20. riesgo_solo 0 lo garantiza la App, que retiene para el «sí» toda llamada de riesgo del latido. En práctica 31-32/39; de 39 fallos en 5 corridas, 6 son escenas que esperan 'actuar' con una operación que la App retiene por la regla del dueño (media.control) y el resto son del modelo (calla con un motivo escrito, actúa sin pedido)."
     },
     "velocidad_decision_p50": {
       "umbral": "<= 1 s",
-      "estado": "en_curso",
-      "evidencia": "decision2 270: d4 p50 0,672 s; con la presentación nueva d6 0,81 s, d7 0,758 s, f5 0,735 s (PC); notebook 0,84-0,93 s"
+      "estado": "cumplida",
+      "evidencia": "sellado, una sola vez, sobre el congelado 0417eec7b (resúmenes en F:/BAXYeval/renew_v1/runs/final-*; decisión, escenas y latido en la GPU del notebook; e2e, falsedades y recursos en el escritorio del PC): decisión holdout p50 0,812 s, p90 1,506 s (notebook); práctica PC 0,74-0,81 s."
     },
     "velocidad_texto_a_voz_p50": {
       "umbral": "<= 2,5 s",
-      "estado": "en_curso",
-      "evidencia": "primer sonido por orden en e2e práctica: p6 2316 ms, p7 2540, p9 3206 (prefijo 45,1k tokens con 304 significados de argumentos), p10 2459 (podado, 39,7k), p11 2602 (congelado); Piper 138-279 ms tras voice.speak; investigado y descartado: MTP (medido: p50 638 -> 744 ms con el GGUF MTP), draft 0,8B (no cabe en 4 GB), n-gramas, KV f16 (no cabe), checkpoints densos (+46 ms)"
+      "estado": "limite_honesto",
+      "evidencia": "sellado, una sola vez, sobre el congelado 0417eec7b (resúmenes en F:/BAXYeval/renew_v1/runs/final-*; decisión, escenas y latido en la GPU del notebook; e2e, falsedades y recursos en el escritorio del PC): primer sonido por orden en el e2e sellado p50 3887 ms (práctica 2459-2602 ms). Una decisión cuesta ~0,8 s y una orden con herramienta son al menos dos decisiones más la herramienta; Piper 138-279 ms. Investigado y descartado: MTP (peor, 638 -> 744 ms), draft 0,8B (no cabe), n-gramas, KV f16 (no cabe), checkpoints densos (+46 ms), prefijo más corto (los ejemplos son lo que acierta)."
     },
     "recursos": {
       "umbral": "<= 4 GB VRAM y <= 4 GB RAM (llama-server + mente)",
-      "estado": "en_curso",
-      "evidencia": "provisional (r2, anterior a ee435857e): PC RTX 4060 Ti, producto real todo cargado: VRAM 3913 MiB; RAM USS arnés 1649 MiB; total con k4 y Ultra 2617 MiB. decision2 de la base congelada: llama-server VRAM 3912 MiB (notebook), 3819-4009 MiB (PC según checkpoints); la medición final va en el sellado del PC"
+      "estado": "cumplida",
+      "evidencia": "sellado, una sola vez, sobre el congelado 0417eec7b (resúmenes en F:/BAXYeval/renew_v1/runs/final-*; decisión, escenas y latido en la GPU del notebook; e2e, falsedades y recursos en el escritorio del PC), measure_resources.py con el producto real: arnés (llama-server + mente + App + Core + Piper, sin oído) VRAM 3912 MiB y RAM USS 1648 MiB; total con k4 y Ultra cargados VRAM 3948 MiB y RAM 2615 MiB. 4 GB = 4096 MiB."
     },
     "ronda_final_auditoria": {
       "umbral": "nada que viole <reglas>",
-      "estado": "pendiente",
-      "evidencia": null
+      "estado": "en_curso",
+      "evidencia": "ronda final (4 agentes sobre 0417eec7b): mente/catálogo VIOLA (recibo de consola que pierde EffectMayHaveOccurred; campos muertos de voice.status), App/interfaz sin violaciones (grises de CSS), proveedores VIOLA (código muerto de la vista: color, zone, windowsActivations, textLines, frame, LargestTopLevelWindow), bancos/honestidad VIOLA (metas.json desactualizado: corregido; seis scripts muertos: borrados). Los arreglos entran después del sellado y una nueva ronda los revisa hasta que un agente no encuentre nada (pedido del dueño)."
     }
   },
   "tareas": [
@@ -231,5 +231,68 @@
       "estado": "aceptado: lo de riesgo lo confirma el kernel; lo que sale a la red o manda entrada a una ventana se retiene",
       "evidencia": "la App retiene en un latido, para el «sí»: lo de riesgo (ProposedRisks), la entrada a ventanas (SendsInputToAWindow: input.*, clipboard, message.draft, client.channel.locate, browser.control, calculadora, window.*, media.control) y lo que sale de la máquina (ReachesTheNetwork: web.search, web.fetch, web.download, weather.current, network.ping, game.entitlement.named, system.time con lugar, app.open con placeValue, memory.export, peripheral.print, shell.command.run hacia otra máquina, media.seek.relative); la lista es por nombre porque el catálogo no tiene un atributo tipado para eso (NativeTurnLoop.cs, 4b6ab816d, f2a9c1b7e, 0edcd0509); el banco de escenas la lee del código"
     }
-  ]
+  ],
+  "sellado_final": {
+    "commit": "0417eec7bab1df9078e585354f610bfc42318bf4",
+    "nota": "los bancos sellados se corrieron una vez sobre este commit; lo que cambie después se valida en práctica y se anota aparte. El instrumento renew_check.ps1 se arregló antes de correrlo (2a43f8133: -Only por comas); el producto medido es 0417eec7b.",
+    "decision": {
+      "ok": 140,
+      "n": 167,
+      "p50_s": 0.812,
+      "vram_mib": 3911
+    },
+    "escenas": {
+      "ok": 39,
+      "n": 59,
+      "molestas_por_20": 1.36,
+      "riesgo_solo": 0,
+      "fallos": 0
+    },
+    "latido": {
+      "ok": 8,
+      "n": 10,
+      "molestas_por_20": 2.0,
+      "riesgo_solo": 0
+    },
+    "e2e": {
+      "ok": 30,
+      "n": 50,
+      "primer_sonido_p50_ms": 3887,
+      "areas": {
+        "cu": [
+          10,
+          16
+        ],
+        "agente": [
+          4,
+          15
+        ],
+        "herramientas": [
+          12,
+          13
+        ],
+        "voz": [
+          4,
+          6
+        ]
+      }
+    },
+    "falsedades": {
+      "falsedades": 3,
+      "lineas": 62,
+      "conversaciones": 42,
+      "sin_juzgar": 1
+    },
+    "recursos": {
+      "arnes_vram_mib": 3912,
+      "arnes_ram_mib": 1648,
+      "con_voz_vram_mib": 3948,
+      "con_voz_ram_mib": 2615
+    },
+    "holdout_final": {
+      "ok": 178,
+      "n": 227,
+      "accuracy": 0.7841
+    }
+  }
 }

@@ -146,9 +146,7 @@ public static class OperationVisibleFacts
             json = payload.ToJsonString(JsonOptions);
         }
 
-        return json.Length <= messageLimit
-            ? json
-            : json[..messageLimit];
+        return json;
     }
 
     public static string FromStatus(string operation, string status, string? errorCode) =>
@@ -277,6 +275,41 @@ public static class OperationVisibleFacts
     private static string WithProjectedObservation(JsonObject payload, JsonNode observed, int limit)
     {
         payload[ObservedLimitKey] = ObservedProjected;
+        // A page of a text read by offset (file.read, web.fetch) keeps as much of its text as the message holds, not
+        // the first step's 2,000 characters (practice p11: six pages of 2,000 where 7,000 fit), and goes on from there.
+        if (observed is JsonObject page && page["text"] is JsonValue pageText && pageText.TryGetValue(out string? _)
+            && page["offset"] is JsonValue)
+        {
+            JsonObject probe = page.DeepClone().AsObject();
+            probe["text"] = string.Empty;
+            payload["observed"] = probe;
+            // At most the page's own length minus one, so the first try always cuts (a page that fits unescaped but
+            // not escaped would otherwise fall to the 2,000 step; round 3).
+            int room = Math.Min(limit - payload.ToJsonString(JsonOptions).Length - 64,
+                pageText.GetValue<string>().Length - 1);
+            // The room counts the text's characters, not its escaped JSON (each line break or quote takes two): a try
+            // that does not fit shrinks by what it went over and tries again (round 2: p11's pages went over by 140-260).
+            for (int attempt = 0; attempt < 3 && room > ObservedProjectionSteps[0].Text; attempt++)
+            {
+                bool cut = false;
+                JsonNode projected = Project(observed, null, room, int.MaxValue, ref cut);
+                if (!cut || projected is not JsonObject root)
+                {
+                    break;
+                }
+
+                root["truncated"] = true;
+                payload["observed"] = projected;
+                string json = payload.ToJsonString(JsonOptions);
+                if (json.Length <= limit)
+                {
+                    return json;
+                }
+
+                room -= json.Length - limit + 16;
+            }
+        }
+
         foreach ((int text, int items) in ObservedProjectionSteps)
         {
             bool cut = false;

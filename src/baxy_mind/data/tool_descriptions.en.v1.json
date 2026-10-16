@@ -218,7 +218,7 @@
    "search": "Text to type into the search box the click opens, in the same step; then the result named exactly as that text (or as choose) is pressed. If none is, nothing is pressed and the names seen are returned.",
    "choose": "With search: the exact name of the result to press among those the search shows. Judged like a label: one that sends, joins a call, buys or deletes makes BAXY ask the person first.",
    "manner": "How to press it: double (double click), menu (open its context menu), open (only open its drop-down or split arrow). Leave it out for a normal click.",
-   "controlId": "The id your last look gave for that control, when its label repeats on the screen; label must still name the same control."
+   "controlId": "The controlIdentity a click result gave for that control. A look gives no id: for a control of your last look pass its index, not here."
   },
   "memory.recall": {
    "selector": "With scope exact: the name the memory was saved under (as memory_list shows it). Case, accents and spacing do not matter; a part of the name does not match."

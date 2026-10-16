@@ -527,7 +527,7 @@ public sealed class ComputerUseSpeedTests
         // still cost 1 041–1 200 ms against 190–340 ms warm (banco Br27). It now asks the one read-only look that
         // pays that, of the shell's desktop window, with no operation invoked: nothing of it reaches a view.
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
-            """{"ok":true,"error":"","hwnd":4242,"window":"Program Manager","controls":[{"i":0,"kind":"List","name":"Desktop","id":"42.1","state":"","rect":[0,0,10,10]}],"controlCount":1}""");
+            """{"ok":true,"error":"","hwnd":4242,"window":"Program Manager","controls":[{"kind":"List","name":"Desktop","id":"42.1","state":"","rect":[0,0,10,10]}],"controlCount":1}""");
         var adapter = new WindowsVisibleControlAdapter(worker, null, null) { WarmupWindow = static () => 4242 };
 
         await adapter.PrewarmAsync();

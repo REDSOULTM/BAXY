@@ -83,7 +83,7 @@ public sealed class ComputerUseFrameOnlyViewTests
             function Get-Descendants($root){ return $script:Items }
             # Ronda 21: without the unfiltered box the search walks what is shown within its deadline (here, whole).
             function Get-ShownDescendants($root,[long]$hwnd=0,[double]$seconds=0){ return $script:Items }
-            function Get-ShownName($el){ return @{ name=[string]$el.Name } }
+            function Get-ShownName($el){ return [string]$el.Name }
             function Test-SystemMenu($el){ return $false }
             function Test-ItemHolds($el,$aliases){ return $false }
             function Merge-SharedViews($m){ return $m }

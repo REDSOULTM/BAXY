@@ -244,14 +244,6 @@ public static class BaxyUiaWorkerNative {
     IntPtr position=(IntPtr)(((y & 0xFFFF) << 16) | (x & 0xFFFF));
     return PostMessage(own,0x007B,own,position);
   }
-  // Ronda 20b, palanca 6, revision 2 (hallazgo 3): the Escape a popup's own window gets as its key (WM_KEYDOWN and
-  // WM_KEYUP of VK_ESCAPE posted to it), with neither the keyboard nor the front: the menu loop of a context menu and a
-  // flyout's host close on it. Never to a window that is not alive.
-  public static bool PostEscape(IntPtr popup) {
-    if(popup==IntPtr.Zero || !IsWindow(popup)) return false;
-    return PostMessage(popup,0x0100,(IntPtr)0x1B,(IntPtr)0x00010001)
-      && PostMessage(popup,0x0101,(IntPtr)0x1B,new IntPtr(unchecked((int)0xC0010001)));
-  }
   // fable/cu-v3-clic-chromium: the render surface of a Chromium host (WebView2, CEF, Electron), told by its window
   // class, never by an application's name. Measured live on a WebView2 messaging client behind the person's window: a
   // press posted to its render surface window in client coordinates gave its search field the keyboard's focus
@@ -1207,23 +1199,23 @@ function Get-ReadableId([string]$automationId,[string]$kind,[string]$className='
 }
 # Un control sin Name no queda mudo si su aplicacion lo nombra de otro modo: su texto de ayuda (el ToolTip de
 # WPF se publica como HelpText), el nombre del rotulo que lo etiqueta (LabeledBy, un campo de formulario) o su
-# AutomationId legible, en ese orden. «source» dice de donde salio; vacio si no hay nombre.
+# AutomationId legible, en ese orden; vacio si no hay nombre.
 function Get-FallbackName([string]$helpText,[string]$labelName,[string]$automationId,[string]$kind,[string]$className=''){
   $help=Format-Name $helpText
-  if($help.Length -gt 0){ return @{ name=$help; source='helpText' } }
+  if($help.Length -gt 0){ return $help }
   $label=Format-Name $labelName
-  if($label.Length -gt 0){ return @{ name=$label; source='labeledBy' } }
+  if($label.Length -gt 0){ return $label }
   $readable=Get-ReadableId $automationId $kind $className
-  if($readable.Length -gt 0){ return @{ name=$readable; source='automationId' } }
-  return @{ name=''; source='' }
+  if($readable.Length -gt 0){ return $readable }
+  return ''
 }
 # El nombre con que se muestra y se busca un control: su Name; sin el, y solo en un accionable (un panel o un
-# grupo sin nombre sigue sin informar de nada), el nombre de respaldo. source vacio = su propio Name.
+# grupo sin nombre sigue sin informar de nada), el nombre de respaldo.
 function Get-ShownName($el){
   $name=Get-Name $el
-  if($name.Length -gt 0){ return @{ name=$name; source='' } }
+  if($name.Length -gt 0){ return $name }
   $kind=([string](Get-Prop $el 'ControlType').ProgrammaticName) -replace '^ControlType\.',''
-  if($Actionable -notcontains $kind){ return @{ name=''; source='' } }
+  if($Actionable -notcontains $kind){ return '' }
   $labelName=''
   $label=Get-Prop $el 'LabeledBy'
   if($null -ne $label){ $labelName=Get-Name $label }
@@ -1331,7 +1323,7 @@ function Test-ItemHolds($el,[string[]]$aliases){
   try { $kind=[string]$el.Cached.ControlType.ProgrammaticName } catch { $kind='' }
   if($kind.Length -eq 0){ try { $kind=[string]$el.Current.ControlType.ProgrammaticName } catch { return $false } }
   if($script:TitledKinds -notcontains $kind){ return $false }
-  return (Test-NameHolds (Get-ShownName $el).name $aliases)
+  return (Test-NameHolds (Get-ShownName $el) $aliases)
 }
 function Test-NameHolds([string]$name,[string[]]$aliases){
   $words=' '+(Get-Folded $name)+' '
@@ -1478,7 +1470,7 @@ $script:ContainerKinds=@('List','Tree','DataGrid','Table')
 # cuadricula con SelectionItem, sin Toggle) y aun no esta elegido recibe una lista ordenada de vias, cada una solo si la
 # anterior no lo dejo elegido (Invoke-NamedControl lo relee): Invoke, despues Select, despues la pulsacion enviada como
 # mensaje en una ventana Win32 clasica. Un Toggle o un CheckBox nunca recibe una segunda via (dos pulsaciones lo dejarian
-# como estaba). Un elemento de arbol cerrado que la mision pide abrir se abre por su manera «open» (Invoke-MannerControl:
+# como estaba). Un elemento de arbol cerrado que se pide abrir se abre por su manera «open» (Invoke-MannerControl:
 # elegirlo y abrirlo en el mismo acto), nunca con el clic de elegir.
 # r20b palanca 4: un boton de barra visto por el proxy MSAA (hecho «toolbarProxy») recibe primero la pulsacion enviada
 # como mensaje a la barra en su punto, sin cursor ni frente (Invoke-NamedControl comprueba antes que la barra y su
@@ -1512,7 +1504,7 @@ function Select-ClickMethods($facts){
   $methods+='pointer'
   return $methods
 }
-# La ventana de la mision es la del frente (o la raiz de la del frente): solo entonces se puede dar el foco del
+# La ventana del pedido es la del frente (o la raiz de la del frente): solo entonces se puede dar el foco del
 # teclado a uno de sus campos sin traerla al frente.
 function Test-InFront([IntPtr]$top){
   if($top -eq [IntPtr]::Zero){ return $false }
@@ -1954,41 +1946,6 @@ function Get-HolderWindow($el){
   }
   return [IntPtr]::Zero
 }
-# Ronda 20b, palanca 6, revision 2 (hallazgo 3): las ventanas propias de los popups abiertos junto al control: un menu
-# (ControlType Menu) o el anfitrion de un popup (su clase de marco dice Popup) de nivel superior del mismo proceso y a
-# menos de 64 px del control (como Get-OpenMenus: nunca un menu que la persona abre en otra parte del proceso), o un menu
-# dentro de la ventana. Solo la ventana que contiene a cada uno y nunca la ventana de la mision misma ni su raiz: el
-# Escape nunca va al cuerpo de la ventana de la persona.
-function Get-BornPopups($root,$el,[IntPtr]$top){
-  $found=New-Object System.Collections.Generic.List[long]
-  $process=0
-  try { $process=[int]$el.Current.ProcessId } catch { $process=0 }
-  if($process -eq 0){ return @() }
-  $box=$null
-  try { $box=$el.Current.BoundingRectangle } catch { $box=$null }
-  $frame=[BaxyUiaWorkerNative]::GetAncestor($top,2)
-  $menuType=[System.Windows.Automation.ControlType]::Menu
-  $candidates=@()
-  try {
-    $own=New-Object System.Windows.Automation.PropertyCondition($AE::ProcessIdProperty,$process)
-    foreach($shown in @($AE::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children,$own))){
-      $isMenu=$false; $class=''
-      try { $isMenu=$shown.Current.ControlType -eq $menuType; $class=[string]$shown.Current.ClassName } catch { continue }
-      if(-not $isMenu -and $class -notmatch 'Popup'){ continue }
-      $r=$null
-      try { $r=$shown.Current.BoundingRectangle } catch { $r=$null }
-      if($null -eq $box -or $box.IsEmpty -or $null -eq $r -or $r.IsEmpty){ continue }
-      if($r.Right+64 -ge $box.Left -and $r.Left-64 -le $box.Right -and $r.Bottom+64 -ge $box.Top -and $r.Top-64 -le $box.Bottom){ $candidates+=$shown }
-    }
-  } catch {}
-  try { $candidates+=@($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,$menuType)))) } catch {}
-  foreach($candidate in $candidates){
-    $holder=Get-HolderWindow $candidate
-    if($holder -eq [IntPtr]::Zero -or $holder -eq $top -or $holder -eq $frame -or -not [BaxyUiaWorkerNative]::IsWindowVisible($holder)){ continue }
-    if(-not $found.Contains($holder.ToInt64())){ $found.Add($holder.ToInt64()) }
-  }
-  return @($found | ForEach-Object { [IntPtr]$_ })
-}
 function Invoke-MannerControl($el,$root,[IntPtr]$top,[string]$manner){
   $pattern=$null
   if($manner -eq 'open'){
@@ -2007,44 +1964,6 @@ function Invoke-MannerControl($el,$root,[IntPtr]$top,[string]$manner){
       Start-Sleep -Milliseconds 50
     }
     return @{ method='expand' }
-  }
-  # Ronda 20b, palanca 6 (revision, hallazgo 1, v3-40 b): la lista que la mision abrio y dejo abierta al no llegar se
-  # cierra por su propio ExpandCollapse, sin puntero ni teclado. No suelta la red: el frente vuelve a la persona como
-  # tras cualquier patron que actuo (KeptMethods). Lo que ya no estaba abierto no se toca.
-  # Revision 2 (hallazgo 3): sin ExpandCollapse abierto (el menu contextual de una pestana, el flyout de un boton dividido
-  # abierto por su flecha con el puntero), el popup que sigue abierto junto al control se cierra con Escape enviado como
-  # mensaje a su propia ventana (Get-BornPopups), nunca a la ventana de la persona ni por el teclado. Sin popup abierto
-  # no se envia nada (visible_control_not_open); cerrado es solo el que se lee cerrado despues.
-  # Revision 3 (hallazgo 1): 'collapse' es solo el ExpandCollapse de la lista que la mision abrio, nunca el de una rama
-  # de arbol (TreeItem: donde navega la persona); 'dismiss' es solo el Escape al popup nacido en la mision y nunca toca
-  # el ExpandCollapse del control (una rama o una lista de la persona junto al menu quedan como estaban).
-  if($manner -eq 'collapse'){
-    $expanded=[System.Windows.Automation.ExpandCollapseState]::Expanded
-    $treeItem=$false
-    try { $treeItem=$el.Current.ControlType -eq [System.Windows.Automation.ControlType]::TreeItem } catch { $treeItem=$true }
-    if($treeItem -or -not $el.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){
-      return @{ error='visible_control_not_open' }
-    }
-    $ec=([System.Windows.Automation.ExpandCollapsePattern]$pattern)
-    if($ec.Current.ExpandCollapseState -ne $expanded){ return @{ error='visible_control_not_open' } }
-    $ec.Collapse()
-    for($look=0;$look -lt 8;$look++){
-      if($ec.Current.ExpandCollapseState -ne $expanded){ return @{ method='collapse'; closed=$true } }
-      Start-Sleep -Milliseconds 50
-    }
-    return @{ method='collapse' }
-  }
-  if($manner -eq 'dismiss'){
-    $popups=@(Get-BornPopups $root $el $top)
-    if($popups.Count -eq 0){ return @{ error='visible_control_not_open' } }
-    $sent=$false
-    foreach($popup in $popups){ if([BaxyUiaWorkerNative]::PostEscape($popup)){ $sent=$true } }
-    if(-not $sent){ return @{ error='visible_control_not_open' } }
-    for($look=0;$look -lt 10;$look++){
-      Start-Sleep -Milliseconds 60
-      if(@(Get-BornPopups $root $el $top).Count -eq 0){ return @{ method='escape'; closed=$true } }
-    }
-    return @{ method='escape' }
   }
   $point=Get-PressPoint $el
   if($manner -eq 'menu'){
@@ -2403,7 +2322,7 @@ function ConvertTo-MenuViewEntries($menuEntries){
     # lleva a un lugar.
     elseif([bool]$menu.Checkable -or [bool]$menu.Checked){ $parts+='checkable' }
     $id=$(if([bool]$menu.FillsOnOpen -or [int]$menu.Id -le 0){ '' } else { 'hmenu.'+[int]$menu.Id })
-    $out+=@(@{ kind='MenuItem'; name=[string]$menu.Path; nameSource='menu'; id=$id; state=($parts -join ' '); value=$null; shortcut=[string]$menu.Shortcut; rect=$null; repeated=0 })
+    $out+=@(@{ kind='MenuItem'; name=[string]$menu.Path; id=$id; state=($parts -join ' '); value=$null; shortcut=[string]$menu.Shortcut; rect=$null; repeated=0 })
   }
   return $out
 }
@@ -2528,7 +2447,7 @@ function Get-BodySurface($item,[string]$kind,[string]$name,$rect,$box){
   $area=[double]$rect.w*[double]$rect.h
   if($area -lt $script:BodyShare*[double]$box.w*[double]$box.h){ return $null }
   $named=-not [string]::IsNullOrWhiteSpace($name)
-  return @{ item=$item; kind=$kind; name=$(if($named){ $name } else { '(' + $kind.ToLowerInvariant() + ')' }); nameSource=$(if($named){ 'name' } else { 'kind' }); id=(Get-Id $item); rect=$rect; area=$area }
+  return @{ item=$item; kind=$kind; name=$(if($named){ $name } else { '(' + $kind.ToLowerInvariant() + ')' }); id=(Get-Id $item); rect=$rect; area=$area }
 }
 # Revision 2: el cuerpo se anade fuera del tope solo a una vista que ya lista mas de un control. Una ventana que lista
 # como mucho uno (CEF, un lienzo) se lee por lo dibujado: el adaptador lee su texto sin pedirlo, con autoridad de
@@ -2544,7 +2463,7 @@ function Add-ViewBody($controls,$body,$elements){
   }
   if($null -ne $listed -and [bool]$listed.reserved){ [void]$controls.Remove($listed); $listed=$null }
   if($null -ne $listed -or $shown -le 1){ return }
-  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; nameSource=$body.nameSource; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0 })
+  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0 })
   if(([string]$body.id).Length -gt 0){ $elements[[string]$body.id]=$body.item }
 }
 function Select-BodySurface($surfaces,$primary){
@@ -2606,8 +2525,7 @@ function Do-View($request){
   foreach($item in $all){
     try {
       if($item.Cached.IsOffscreen -and -not $keepOffscreen){ continue }
-      $shown=Get-ShownName $item
-      $name=$shown.name
+      $name=Get-ShownName $item
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
       if($script:BodyKinds -contains $kind){
         $surface=Get-BodySurface $item $kind $name (Get-Rect $item) $box
@@ -2620,7 +2538,7 @@ function Do-View($request){
         # Un campo de formulario sin nombre ni LabeledBy lo nombra su rotulo: el texto mas cercano a su izquierda o
         # encima (punto 2 del goal v3: «poner el ancho en 800»).
         $near=Get-NearLabel $item $all
-        if($near.Length -gt 0){ $name=$near; $shown=@{ name=$near; source='nearText' } }
+        if($near.Length -gt 0){ $name=$near }
       }
       if([string]::IsNullOrWhiteSpace($name)){
         if($kind -eq 'Edit' -or $kind -eq 'Document'){ $name='(' + $kind.ToLowerInvariant() + ')' } else { continue }
@@ -2648,7 +2566,7 @@ function Do-View($request){
         foreach($bar in $titleBars){ if($inBar){ break }; if(Test-CenterWithin $bar $rect){ $inBar=$true } }
         if($inBar){ $systemMenu=(Test-SystemMenu $item) }
       }
-      $entry=@{ kind=$kind; name=$name; nameSource=$shown.source; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total }
+      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total }
       $seen[$key]=$entry
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
@@ -2674,10 +2592,8 @@ function Do-View($request){
   Add-ViewBody $controls $body $elements
   $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen }
   $ordered=@()
-  $position=0
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; nameSource=$entry.nameSource; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated })
-    $position++
+    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated })
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
   # controles que pulsar, y su recorrido ni los trae.
@@ -2690,7 +2606,7 @@ function Do-View($request){
     # Su indice en la vista, si la vista lo entrego: el campo al que va un texto dirigido (input.text.type «index»).
     $focusedIndex=$null
     for($k=0;$k -lt $ordered.Count;$k++){ if([object]::ReferenceEquals($controls[$k],$focused)){ $focusedIndex=$k; break } }
-    $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; nameSource=$focused.nameSource; value=$focused.value; i=$focusedIndex }
+    $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; value=$focused.value; i=$focusedIndex }
   }
   return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; frameOnly=$frameOnly; partial=$viewPartial }
 }
@@ -2711,12 +2627,12 @@ function Get-DisabledShown($found,[int]$shownCount,$seen){
     try {
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
       if($Actionable -notcontains $kind -or $kind -eq 'Edit' -or $kind -eq 'Document'){ continue }
-      $name=(Get-ShownName $item).name
+      $name=Get-ShownName $item
       if([string]::IsNullOrWhiteSpace($name)){ continue }
       $key=$kind+'|'+$name
       if($seen.ContainsKey($key) -or $named.ContainsKey($key)){ continue }
       $named[$key]=$true
-      [void]$out.Add([pscustomobject]@{ kind=$kind; name=$name; state='disabled'; rect=(Get-Rect $item) })
+      [void]$out.Add([pscustomobject]@{ kind=$kind; name=$name; rect=(Get-Rect $item) })
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
   }
   return ,$out.ToArray()
@@ -2808,7 +2724,7 @@ function Get-LineageEntry($el){
   try { $expand=$el.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern) } catch {}
   $kind=''
   try { $kind=([string]$el.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
-  return @{ name=(Get-ShownName $el).name; key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select; toggle=$toggle; expand=$expand; edit=($kind -eq 'Edit'); kind=$kind }
+  return @{ name=(Get-ShownName $el); key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select; toggle=$toggle; expand=$expand; edit=($kind -eq 'Edit'); kind=$kind }
 }
 # Los controles con ese nombre; sin ninguno igual, los que lo llevan como
 # palabras (el clic solo sigue si es uno). Los iguales de una sola linea de
@@ -3036,7 +2952,7 @@ function Find-Named($root,[string[]]$aliases,$offscreenBox=$null){
   foreach($item in $all){
     try {
       if(-not (Test-OffscreenUsable ([bool]$item.Cached.IsOffscreen) (Get-Rect $item) $offscreenBox)){ continue }
-      $name=(Get-ShownName $item).name
+      $name=Get-ShownName $item
       $exact=Test-NameMatch $name $aliases
       if($exact){ if(-not (Test-SystemMenu $item)){ $matches+=@($item) } }
       elseif((Test-ItemHolds $item $aliases) -and $script:NamedCandidates -notcontains $name -and -not (Test-SystemMenu $item)){ $script:NamedCandidates+=@($name) }
@@ -3353,13 +3269,13 @@ $script:LineageUp=3
 $script:LineageDown=2
 $script:LineageNodes=40
 function Test-SameShownName($el,[string]$name){
-  try { return [string]::Equals((Get-ShownName $el).name,$name,[StringComparison]::OrdinalIgnoreCase) } catch { return $false }
+  try { return [string]::Equals((Get-ShownName $el),$name,[StringComparison]::OrdinalIgnoreCase) } catch { return $false }
 }
 function Get-LineageWalker(){ return [System.Windows.Automation.TreeWalker]::RawViewWalker }
 function Get-SameNameLineage($el){
   $line=@($el)
   $name=''
-  try { $name=(Get-ShownName $el).name } catch { $name='' }
+  try { $name=Get-ShownName $el } catch { $name='' }
   if([string]::IsNullOrWhiteSpace($name)){ return $line }
   $walker=Get-LineageWalker
   try {
@@ -3438,8 +3354,8 @@ function Do-ClickJudged($request){
     $byId=Find-ById $root $controlId
     if($null -eq $byId -and $script:LookupPartial){ return (Click-Result $false $false 'visible_lookup_timeout' '' $controlId $false $false $false '') }
     if($null -eq $byId){ return (Click-Result $false $false 'visible_control_identity_stale' '' $controlId $false $false $false '') }
-    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-ShownName $byId).name $aliases)){
-      return (Click-Result $false $false 'visible_control_label_mismatch' (Get-ShownName $byId).name $controlId $false $false $false '')
+    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-ShownName $byId) $aliases)){
+      return (Click-Result $false $false 'visible_control_label_mismatch' (Get-ShownName $byId) $controlId $false $false $false '')
     }
     $matches=@($byId)
     # Ronda 21 (t-drag-4): por su identidad tambien se pulsa la linea de descendencia del mismo nombre (el ListItem de
@@ -3465,7 +3381,7 @@ function Do-ClickJudged($request){
     return (Click-Result $false $false 'visible_click_argument_invalid' '' '' $false $false $false '')
   }
   if($controlId.Length -eq 0 -and $script:AskingName.Length -gt 0 -and
-     @($matches | Where-Object { Test-NameMatch (Get-ShownName $_).name $aliases }).Count -eq 0){
+     @($matches | Where-Object { Test-NameMatch (Get-ShownName $_) $aliases }).Count -eq 0){
     return (Click-Result $false $false 'visible_control_needs_confirmation' $script:AskingName '' $false $false $false '')
   }
   # Revision 1 de la ronda 21 (hallazgo 4): una busqueda por nombre que el plazo corto no prueba que el control falte
@@ -3492,7 +3408,7 @@ function Do-ClickJudged($request){
     return $missing
   }
   if($matches.Count -ne 1){ return (Click-Result $false $false 'visible_button_ambiguous' '' '' $false $false $false '') }
-  $button=$matches[0];$name=(Get-ShownName $button).name;$identity=Get-Id $button
+  $button=$matches[0];$name=Get-ShownName $button;$identity=Get-Id $button
   $kind=$button.Current.ControlType.ProgrammaticName -replace '^ControlType\.',''
   # Encargo V: por su identidad, en su manera o por su etiqueta, lo que pide mas que su etiqueta no se pulsa (Get-AskingName).
   $asking=Get-AskingName $button $name $aliases $request.asks
@@ -3515,12 +3431,6 @@ function Do-ClickJudged($request){
       # La lista o el menu se leen abiertos: esa es la prueba del paso.
       $held=Click-Result $true $true '' $name $identity $false $false $false $kind
       $held.method=[string]$done.method; $held.opened=$true; $held.manner=$manner
-      return $held
-    }
-    if($done.closed){
-      # La lista que la mision dejo abierta se lee cerrada: esa es la prueba del cierre.
-      $held=Click-Result $true $true '' $name $identity $false $false $false $kind
-      $held.method=[string]$done.method; $held.closed=$true; $held.manner=$manner
       return $held
     }
     $pending=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
@@ -3761,7 +3671,7 @@ function Do-Scroll($request){
     try { $scroll.Scroll([System.Windows.Automation.ScrollAmount]::NoAmount,$step) } catch [System.InvalidOperationException] { break }
   }
   $after=[double]$scroll.Current.VerticalScrollPercent
-  return @{ ok=$true; error=''; scrolled=($after -ne $before); percentBefore=$before; percentAfter=$after; name=(Get-ShownName $element).name; container=(-not $owner.own) }
+  return @{ ok=$true; error=''; scrolled=($after -ne $before); percentBefore=$before; percentAfter=$after; name=(Get-ShownName $element); container=(-not $owner.own) }
 }
 # input.scroll con «label» (goal v3 punto 2, revelar): el elemento con ese nombre que esta fuera de vista se trae a la
 # vista sin rueda ni raton. Primero entre los que el arbol ya tiene (IsOffscreen) por su ScrollItemPattern; si no esta,
@@ -3778,7 +3688,7 @@ function Find-AnyNamed($root,[string[]]$aliases,$until=$null){
     # Each name read crosses to the window's process: a long walk stops at the deadline with what it found.
     if($null -ne $until -and [DateTime]::UtcNow -gt $until){ break }
     try {
-      $name=(Get-ShownName $item).name
+      $name=Get-ShownName $item
       if(Test-NameMatch $name $aliases){ $hits+=@($item) }
       elseif((Test-ItemHolds $item $aliases) -and $script:NamedCandidates -notcontains $name){ $script:NamedCandidates+=@($name) }
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
@@ -3790,7 +3700,7 @@ function Test-Shown($el){
 }
 function Reveal-Result([bool]$ok,[string]$error,[string]$method,$el){
   $name=''
-  if($null -ne $el){ $name=(Get-ShownName $el).name }
+  if($null -ne $el){ $name=Get-ShownName $el }
   $result=@{ ok=$ok; error=$error; method=$method; name=$name; revealed=($ok -and $method -ne 'already'); visible=($null -ne $el -and (Test-Shown $el)) }
   if(-not $ok -and $script:NamedCandidates.Count -gt 0){ $result.candidates=@($script:NamedCandidates | Select-Object -First 10) }
   return $result
@@ -3923,7 +3833,7 @@ function Do-Find($request){
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found'; count=0 } }
   $script:NamedCandidates=@()
   $matches=@(Find-Named $target.root $aliases)
-  $names=@($matches | ForEach-Object { (Get-ShownName $_).name })
+  $names=@($matches | ForEach-Object { Get-ShownName $_ })
   return @{ ok=$true; error=''; count=$matches.Count; names=$names }
 }
 # Ronda 24 (cliente en frio listo por interaccion): una ventana esta lista para usarse cuando expone contenido con el
@@ -4156,10 +4066,10 @@ function Do-Unnamed($request){
     try {
       if($item.Cached.IsOffscreen){ continue }
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
-      $shown=Get-ShownName $item
-      if($shown.name.Length -gt 0){ $named++; continue }
+      $name=Get-ShownName $item
+      if($name.Length -gt 0){ $named++; continue }
       $rect=Get-Rect $item
-      if(-not (Test-HoverCandidate $kind $shown.name $rect)){ continue }
+      if(-not (Test-HoverCandidate $kind $name $rect)){ continue }
       if($out.Count -lt $limit){ [void]$out.Add([pscustomobject]@{ kind=$kind; id=(Get-Id $item); rect=$rect }) }
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
   }
@@ -4174,7 +4084,7 @@ function Get-TipName([string]$kind,[string]$name,[string]$className,[string]$inn
   return ''
 }
 # Los tooltips visibles ahora: las ventanas de primer nivel pequenas de esos procesos (un tooltip es una ventana aparte)
-# y los ToolTip dentro de la ventana de la mision (una pagina que dibuja el suyo con role=tooltip). Solo lectura.
+# y los ToolTip dentro de la ventana del pedido (una pagina que dibuja el suyo con role=tooltip). Solo lectura.
 function Do-Tooltips($request){
   $tips=New-Object System.Collections.ArrayList
   $tipType=New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ToolTip)
@@ -4216,7 +4126,7 @@ function Do-Tooltips($request){
 # tenia. La cola solo sigue a un patron que actuo de verdad (pulso, eligio, alterno, escribio el valor, desplazo o
 # revelo): cualquier otra respuesta puede seguir con el puntero, la rueda o el teclado del adaptador, que toman el
 # frente a proposito dentro del lease, y la red no debe pelearlo.
-$script:KeptMethods=@('invoke','select','toggle','legacy','message','setvalue','render','collapse','escape')
+$script:KeptMethods=@('invoke','select','toggle','legacy','message','setvalue','render')
 function Test-ActedByPattern($result){
   if($null -eq $result){ return $false }
   if($script:KeptMethods -contains [string]$result.method){ return $true }
@@ -4224,7 +4134,7 @@ function Test-ActedByPattern($result){
 }
 # El parte de la vigilancia en curso (desde su Begin): si la familia del objetivo tomo el frente, si se devolvio
 # siempre, cuantas veces fallo y el retorno mas largo. Lo lleva la respuesta del comando y la de su postread (la cola
-# termina despues de la respuesta), y el adaptador lo copia al recibo para el medidor de molestia.
+# termina despues de la respuesta), y el adaptador lo copia al recibo.
 function Add-FrontReport($result){
   if($null -eq $result -or -not ($result -is [hashtable])){ return $result }
   $taken=[BaxyFrontKeeper]::WatchTaken

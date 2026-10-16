@@ -50,7 +50,7 @@ public sealed class ComputerUseHandoffTests
         Assert.Multiple(() =>
         {
             Assert.That(VisibleControlSurface.HandedTo(before, after, out bool born).Window, Is.EqualTo(SettingsFrame));
-            Assert.That(born, Is.False, "it was open before the click: never the mission's to clean up");
+            Assert.That(born, Is.False, "it was open before the click: not born with it");
         });
     }
 
@@ -209,7 +209,7 @@ public sealed class ComputerUseHandoffTests
     }
 
     // Review 3 of palanca 8 (B1): the receipt says where the person's input last went (to the window, to its process or
-    // the shell), what the mission's guard of their windows reads before following it.
+    // the shell).
     [Test]
     public async Task TheReceiptSaysWhereThePersonsInputLastWent()
     {

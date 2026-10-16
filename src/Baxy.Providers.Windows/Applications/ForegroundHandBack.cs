@@ -13,7 +13,7 @@ internal static partial class ForegroundHandBack
 {
     internal static long Foreground() => GetForegroundWindow();
 
-    // Every time BAXY takes the front on purpose (an act of a mission bringing its window up, keys sent to it): the
+    // Every time BAXY takes the front on purpose (an act bringing its window up, keys sent to it): the
     // guard that hands back a front an opened application took by itself stops there, so it never undoes BAXY's own
     // act nor the person's (an input of theirs that can move the front ends it as well; r4a M2: typing does not).
     private static long _frontTaken;
@@ -27,20 +27,6 @@ internal static partial class ForegroundHandBack
     /// after its opening, inside the opening's guard).
     /// </summary>
     internal static readonly SemaphoreSlim FrontGate = new(1, 1);
-
-    // The fronts an opened application took by itself after its opening was answered, handed back by the guard (v3
-    // point 0, fix 4): counted here and told by the next look (view «windowsActivationsReturned»), since the opening's
-    // receipt (its «windowsActivation») was already given. Only a hand-back read back as held counts; one Windows
-    // refused is counted apart (view «windowsActivationsNotReturned», cu-v3-foco-segunda).
-    private static long _guardReturns;
-    private static long _guardRefusals;
-
-    internal static void NoteGuardReturn(bool restored) =>
-        Interlocked.Increment(ref restored ? ref _guardReturns : ref _guardRefusals);
-
-    internal static long TakeGuardReturns() => Interlocked.Exchange(ref _guardReturns, 0);
-
-    internal static long TakeGuardRefusals() => Interlocked.Exchange(ref _guardRefusals, 0);
 
     internal readonly record struct GuardStamp(long FrontTaken, long LastPersonInput);
 

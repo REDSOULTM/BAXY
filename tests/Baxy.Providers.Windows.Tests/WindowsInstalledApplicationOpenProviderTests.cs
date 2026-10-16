@@ -743,15 +743,11 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     // cu-v3-foco-segunda: an application that takes the front again after a hand-back that held gets it handed back
-    // again inside the guard (measured: a packaged editor took it 30 ms after its hand-back); a refused hand-back is
-    // counted apart and ends the guard (never fought).
-    [TestCase(true, 2, 2, 0)]
-    [TestCase(false, 1, 0, 1)]
-    public async Task TheGuardHandsBackEachFrontTheApplicationTakesAndCountsWhatHeld(
-        bool holds,
-        int expectedHandBacks,
-        int expectedReturns,
-        int expectedRefusals)
+    // again inside the guard (measured: a packaged editor took it 30 ms after its hand-back); a refused hand-back
+    // ends the guard (never fought).
+    [TestCase(true, 2)]
+    [TestCase(false, 1)]
+    public async Task TheGuardHandsBackEachFrontTheApplicationTakes(bool holds, int expectedHandBacks)
     {
         var platform = new FakePlatform(Catalog)
         {
@@ -762,18 +758,11 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             HandBackHolds = holds,
         };
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
-        _ = ForegroundHandBack.TakeGuardReturns();
-        _ = ForegroundHandBack.TakeGuardRefusals();
 
         _ = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
         await provider.LastFrontGuard!.WaitAsync(TimeSpan.FromSeconds(10));
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(platform.HandedBack, Has.Count.EqualTo(expectedHandBacks));
-            Assert.That(ForegroundHandBack.TakeGuardReturns(), Is.EqualTo(expectedReturns));
-            Assert.That(ForegroundHandBack.TakeGuardRefusals(), Is.EqualTo(expectedRefusals));
-        });
+        Assert.That(platform.HandedBack, Has.Count.EqualTo(expectedHandBacks));
     }
 
     // cu-v3-foco-segunda: the window that takes the front may be the opened application's from another of its
@@ -799,7 +788,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     }
 
     // v3 point 0 review: the guard hands back only a front the application took by itself. When BAXY's next act took
-    // it on purpose (a mission's first click or key, inside the guard's 3 s) or the person clicked the new window,
+    // it on purpose (its first click or key, inside the guard's 3 s) or the person clicked the new window,
     // the front stays where it went; otherwise it goes back to the person's window.
     [TestCase(true, false)]
     [TestCase(false, true)]
@@ -813,7 +802,6 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             GuardInterrupted = interrupted,
         };
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
-        _ = ForegroundHandBack.TakeGuardReturns();
 
         ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
         await provider.LastFrontGuard!.WaitAsync(TimeSpan.FromSeconds(10));
@@ -823,8 +811,6 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(result.Verified, Is.True);
             Assert.That(result.WindowsActivation, Is.False);
             Assert.That(platform.HandedBack, Is.EqualTo(handedBack ? [0x500L] : Array.Empty<long>()));
-            // A front handed back after the receipt is counted for the next look (v3 point 0, fix 4); none otherwise.
-            Assert.That(ForegroundHandBack.TakeGuardReturns(), Is.EqualTo(handedBack ? 1 : 0));
         });
     }
 
