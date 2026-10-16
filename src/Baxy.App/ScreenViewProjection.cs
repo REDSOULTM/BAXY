@@ -26,7 +26,7 @@ internal static class ScreenViewProjection
         ("abajo", ["BL", "B", "BR"]),
     ];
 
-    /// <param name="message">The kernel's visible facts of the look (operation, status, verified, succeeded, error).</param>
+    /// <param name="message">The kernel's visible facts of the look (status, error, cause, effectUncertain).</param>
     /// <param name="result">The look's receipt: the whole view the reader returned.</param>
     internal static bool TryCreate(string message, JsonElement result, out string projected)
     {

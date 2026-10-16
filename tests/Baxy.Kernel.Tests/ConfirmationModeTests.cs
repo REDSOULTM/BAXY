@@ -11,6 +11,15 @@ namespace Baxy.Kernel.Tests;
 [TestFixture]
 public sealed class ConfirmationModeTests
 {
+    // Owner's decision (2026-10-16): sending to the Recycle Bin, or a note or task to its trash, asks for the yes.
+    [TestCase("filesystem.known.trash.named")]
+    [TestCase("note.trash")]
+    [TestCase("task.delete")]
+    public void SendingToATrashAsksInNormalMode(string operation) =>
+        Assert.That(
+            RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired(operation).Risk), ConfirmationMode.Normal, operation),
+            Is.EqualTo(PolicyDecision.RequireConfirmation));
+
     [Test]
     public async Task NormalModeLetsShutdownThroughAndChallengesDeleteOnTheSamePath()
     {

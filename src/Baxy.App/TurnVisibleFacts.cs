@@ -5,7 +5,8 @@ using System.Text.Json.Nodes;
 namespace Baxy.App;
 
 /// <summary>
-/// Hechos de un turno de shell. El modelo formula la frase; esto no se publica.
+/// Hechos de un resultado que la App proyecta (memoria), con la misma cabecera que el núcleo: «status» y, si falló,
+/// «error». El modelo formula la frase; esto no se publica.
 /// </summary>
 internal static class TurnVisibleFacts
 {
@@ -15,19 +16,13 @@ internal static class TurnVisibleFacts
     };
 
     internal static string Failure(string cause, JsonObject? extra = null) =>
-        Event("failure", "failure", cause, extra);
+        Event(new JsonObject { ["status"] = "failed", ["error"] = cause }, extra);
 
     internal static string Status(string cause, JsonObject? extra = null) =>
-        Event("status", "success", cause, extra);
+        Event(new JsonObject { ["status"] = "completed", ["cause"] = cause }, extra);
 
-    private static string Event(string kind, string polarity, string cause, JsonObject? extra)
+    private static string Event(JsonObject payload, JsonObject? extra)
     {
-        var payload = new JsonObject
-        {
-            ["kind"] = kind,
-            ["polarity"] = polarity,
-            ["cause"] = cause,
-        };
         Merge(payload, extra);
         return payload.ToJsonString(JsonOptions);
     }

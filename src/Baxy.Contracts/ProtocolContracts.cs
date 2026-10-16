@@ -54,16 +54,6 @@ public sealed record OperationRequest(
         + "Arguments = [REDACTED], ConfirmationToken = [REDACTED] }";
 }
 
-/// <summary>
-/// Autocorrección durable: la afirmación visible, la verificación que la
-/// desmintió y el texto con el que se corrige. Viaja en la respuesta
-/// terminal para que el journal y la App la lean igual.
-/// </summary>
-public sealed record HonestyCorrectionTrace(
-    [property: JsonRequired] string Claim,
-    [property: JsonRequired] string Verification,
-    [property: JsonRequired] string Correction);
-
 public sealed record OperationResponse(
     [property: JsonRequired] string Type,
     [property: JsonRequired] string RequestId,
@@ -78,17 +68,14 @@ public sealed record OperationResponse(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     bool EffectMayHaveOccurred = false,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    string? CauseCode = null,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    HonestyCorrectionTrace? HonestyCorrection = null)
+    string? CauseCode = null)
 {
     public override string ToString() =>
         $"{nameof(OperationResponse)} {{ Type = {Type}, RequestId = {RequestId}, "
         + $"MissionId = {MissionId}, InvocationId = {InvocationId}, Status = {Status}, "
         + $"Message = [REDACTED], Verified = {Verified}, Replayed = {Replayed}, "
         + $"Result = [REDACTED], ErrorCode = {ErrorCode}, "
-        + $"EffectMayHaveOccurred = {EffectMayHaveOccurred}, CauseCode = {CauseCode}, "
-        + $"HonestyCorrection = {(HonestyCorrection is null ? "null" : "[REDACTED]")} }}";
+        + $"EffectMayHaveOccurred = {EffectMayHaveOccurred}, CauseCode = {CauseCode} }}";
 }
 
 public sealed record ProtocolError(
