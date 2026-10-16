@@ -1211,15 +1211,37 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.FailureBeforeEffect(operation, refused);
         }
 
-        (ExternalProcessResult? watched, bool interrupted) = await LeasedInput.WatchHelperAsync(
-            burst, run => RunPowerShellAsync(ClientChannelLocateScript, [Encode(name)], run), token);
+        ExternalProcessResult? watched;
+        bool interrupted;
+        try
+        {
+            (watched, interrupted) = await LeasedInput.WatchHelperAsync(
+                burst, run => RunPowerShellAsync(ClientChannelLocateScript, [Encode(name)], run), token);
+        }
+        catch (Exception exception) when (exception is TimeoutException or IOException or InvalidDataException)
+        {
+            // Ronda final: the script types Esc, Ctrl+K and the name into the client: a failure from here on may have
+            // left them there.
+            return ExternalJson.FailureAfterEffect(operation, "client_quick_switcher_not_read");
+        }
+
         if (interrupted || watched is not { } process)
         {
             // The person acted while the switcher was being typed into: the script was stopped there.
             return ExternalJson.Failure(operation, LeasedInput.Interrupted, true);
         }
 
-        using JsonDocument document = ParseLastJson(process.Output);
+        JsonDocument document;
+        try
+        {
+            document = ParseLastJson(process.Output);
+        }
+        catch (JsonException)
+        {
+            return ExternalJson.FailureAfterEffect(operation, "client_quick_switcher_not_read");
+        }
+
+        using var parsed = document;
         JsonElement root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object)
         {
@@ -2069,6 +2091,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             response.RootElement.GetProperty("baselineValues").WriteTo(writer);
             writer.WritePropertyName("values");
             response.RootElement.GetProperty("values").WriteTo(writer);
+            // Ronda final: a step at the limit (up at 100, down at 0) changes nothing, and the receipt says so.
+            writer.WriteBoolean("changed", !JsonElement.DeepEquals(
+                response.RootElement.GetProperty("baselineValues"), response.RootElement.GetProperty("values")));
             writer.WriteString(
                 "authority",
                 "wmi_monitor_brightness_relative_postread");

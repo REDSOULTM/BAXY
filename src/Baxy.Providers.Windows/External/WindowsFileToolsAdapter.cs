@@ -537,8 +537,10 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 Registry.SetValue(@"HKEY_CURRENT_USER\Control Panel\Colors", "Background", value);
                 int[] elements = [1];
                 uint[] colors = [(uint)(rgb.Value.r | (rgb.Value.g << 8) | (rgb.Value.b << 16))];
-                _ = SetSysColors(1, elements, colors);
-                _ = SystemParametersInfo(SpiSetDeskWallpaper, 0, string.Empty, SpifUpdateIniFile | SpifSendChange);
+                // Ronda final: the registry read back below is not the desktop; these two are what repaint it.
+                if (!SetSysColors(1, elements, colors)
+                    | !SystemParametersInfo(SpiSetDeskWallpaper, 0, string.Empty, SpifUpdateIniFile | SpifSendChange))
+                    return effectBoundary.Failure(operation, "wallpaper_apply_unconfirmed", effectObserved: true);
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or System.Security.SecurityException)
             {

@@ -12,6 +12,8 @@ internal enum WindowsProcessTermination
     Terminated,
     AlreadyExited,
     NotTerminated,
+    // Ronda final: the kill was sent and the wait ran out; if the post-read finds it gone, this call ended it.
+    KillSent,
 }
 
 internal interface IWindowsProcessTerminationPlatform
@@ -56,7 +58,7 @@ internal sealed class WindowsProcessTerminationPlatform : IWindowsProcessTermina
             process.Kill(entireProcessTree: false);
             return process.WaitForExit(5000) && process.HasExited
                 ? WindowsProcessTermination.Terminated
-                : WindowsProcessTermination.NotTerminated;
+                : WindowsProcessTermination.KillSent;
         }
         catch (ArgumentException)
         {
@@ -104,6 +106,7 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
                 switch (_platform.Terminate(processName, identity))
                 {
                     case WindowsProcessTermination.Terminated:
+                    case WindowsProcessTermination.KillSent:
                         terminated++;
                         break;
                     case WindowsProcessTermination.AlreadyExited:
