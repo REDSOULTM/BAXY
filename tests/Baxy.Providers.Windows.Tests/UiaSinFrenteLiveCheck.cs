@@ -120,7 +120,7 @@ public sealed class UiaSinFrenteLiveCheck
             Assert.That(fronted, Is.True, "the person's window in front");
             using var host = new UiaWorkerHost(Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1"));
             using JsonDocument? ping = await host.SendAsync("""{"cmd":"ping"}""", TimeSpan.FromSeconds(30), CancellationToken.None);
-            Assert.That(ping?.RootElement.GetProperty("quietInput").GetString(), Is.EqualTo("on"), "the client's input is taken");
+            Assert.That(ping?.RootElement.GetProperty("ok").GetBoolean(), Is.True, "the worker is up before the person types");
 
             // The simulated person types in their window every 125 ms (only while it is in front: never elsewhere).
             Task typist = Task.Run(async () =>

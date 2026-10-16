@@ -18,7 +18,6 @@
 #      con «controlId», ese control del punto aunque no tenga nombre: el que su tooltip nombro)
 #   {"cmd":"postread"}   (el control del ultimo clic: ausente, seleccionado o conmutado)
 #   {"cmd":"scroll","hwnd":123,"controlId":"42.1837.4","direction":"down","amount":3}
-#   {"cmd":"find","hwnd":123,"aliases":["Biblioteca"]}
 #   {"cmd":"reveal","hwnd":123,"aliases":["Omega"],"direction":"down","amount":10}   (trae a la vista un elemento fuera de ella)
 #   {"cmd":"field","hwnd":123,"controlId":"42.1837.4","text":"hola","replace":false}   (texto dirigido; sin «text», solo lo lee)
 #   {"cmd":"script","script":"...","args":["123"]}   (un guion de UserBrowserScripts, $args como en -Command)
@@ -1061,12 +1060,11 @@ $AE=[System.Windows.Automation.AutomationElement]
 # SysTreeView32, SysListView32, Button, Static) llega como un Pane opaco con el texto de su ventana (medido: una tabla
 # de caracteres del sistema, 21 Pane y 1 Edit; con ellos, sus ComboBox, Button, Edit y ListItem; el arbol de carpetas del shell, de 0 a 21
 # TreeItem). Se registran una vez, despues de la primera llamada a UIA (antes de ella el registro falla con
-# NullReference), con la version, la cultura y la clave del propio cliente. El ping dice si se cargaron.
+# NullReference), con la version, la cultura y la clave del propio cliente.
 # Se registra su tabla por clase de ventana, sin la entrada sin clase (el puente MSAA nativo para cualquier ventana que
 # responde IAccessible por si misma): por ella el contenido de una ventana CEF sin UIA llegaba nodo a nodo entre procesos
 # (medido en vivo 2026-10-08: el lanzador de un juego, miles de nodos a ~10 ms cada uno, la vista agotaba sus 20 s y la
 # mision paraba con computer_use_view_unavailable; sin ella, 3 nodos en 16 ms y la vista sigue por lo dibujado).
-$script:ClientProviders=$false
 try {
   $null=$AE::RootElement
   $providers=$AE.Assembly.GetName()
@@ -1075,12 +1073,10 @@ try {
   $byClass=@($providerTable | Where-Object { -not [string]::IsNullOrEmpty($_.ClassName) })
   if($byClass.Count -gt 0){
     [System.Windows.Automation.ClientSettings]::RegisterClientSideProviders([System.Windows.Automation.ClientSideProviderDescription[]]$byClass)
-    $script:ClientProviders=$true
   }
 } catch {}
 # El cliente UIA ya esta cargado (RootElement): su SendInput deja de llegar a la pantalla (BaxyUiaQuietInput, r4a M1).
-$script:QuietInput='off'
-try { $script:QuietInput=[BaxyUiaQuietInput]::Install('UIAutomationCore.dll') } catch { $script:QuietInput='failed' }
+try { [void][BaxyUiaQuietInput]::Install('UIAutomationCore.dll') } catch {}
 # Ronda 21 (v3-64): un encabezado de columna (HeaderItem) se pulsa para ordenar por esa columna: es accionable.
 $Actionable=@('Button','MenuItem','ListItem','TabItem','Hyperlink','CheckBox','RadioButton','Edit','ComboBox','TreeItem','SplitButton','Slider','Document','HeaderItem')
 $script:LastView=@{ hwnd=[IntPtr]::Zero; elements=@{} }
@@ -1804,8 +1800,10 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
     } elseif($method -eq 'render'){
       # La pulsacion enviada a la superficie de render bajo el punto del control: sin frente ni cursor, y solo si la
       # pagina tiene ese control en el punto. Un campo solo es destino si tomo el foco del teclado (releido hasta
-      # 400 ms); si no, la siguiente via, como con «target». Un campo que ya tenia el foco es ya el destino: no se pulsa
-      # (su foco no probaria la pulsacion, y el clic dejaria el cursor de texto en medio de lo escrito).
+      # 400 ms). Un campo que ya tenia el foco es ya el destino: no se pulsa (su foco no probaria la pulsacion, y el
+      # clic dejaria el cursor de texto en medio de lo escrito).
+      # Ronda B (falta 2): enviada, la pulsacion cuenta como dada aunque el campo no tome el foco: ninguna via mas (la
+      # accion por defecto, el puntero) pulsa otra vez; su postread dice si el campo la tomo o si nada cambio.
       $field=(@('Edit','Document') -contains [string]$facts.kind -and $facts.value)
       if($field){
         $already=$false
@@ -1823,7 +1821,7 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
           try { $focused=[bool]$el.Current.HasKeyboardFocus } catch { $focused=$false }
         }
         if($focused){ return @{ method='target'; focused=$true; via='render' } }
-        $renderStep='unfocused'
+        return @{ method='render' }
       }
     } elseif($method -eq 'legacy'){
       $action=''
@@ -1846,7 +1844,8 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       $barStep='nopoint'
       if($null -ne $point){ try { $barStep=[string][BaxyUiaWorkerNative]::ToolbarPress($top,$point.x,$point.y,[IntPtr][long]$facts.toolbarWindow,[int]$facts.toolbarChild) } catch { $barStep='failed' } }
       if($barStep -eq 'posted'){ $ways+='message'; return @{ method='message'; ways=$ways } }
-      if($barStep -eq 'other'){ return $null }
+      # Ronda B (falta 3): esa salida no envio nada, y su recibo lo dice (visible_control_covered, antes de todo efecto).
+      if($barStep -eq 'other'){ return @{ method='covered' } }
     } elseif($method -eq 'message'){
       $point=Get-PressPoint $el
       # Una fila que se elige: solo si en su punto esta la ventana que la contiene (revision, hallazgo 2).
@@ -3420,6 +3419,7 @@ function Do-ClickJudged($request){
   catch { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
   if($null -eq $done){ return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
   if([string]$done.method -eq 'container'){ return (Click-Result $false $false 'visible_control_is_container' $name $identity $false $false $false $kind) }
+  if([string]$done.method -eq 'covered'){ return (Click-Result $false $false 'visible_control_covered' $name $identity $false $false $false $kind) }
   $pressed=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
   if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled }
   if($null -ne $script:Pending -and $null -ne $witness -and [string]$done.method -eq 'toggle'){
@@ -3577,7 +3577,7 @@ function Do-At($request){
     # corta: el siguiente de la cadena, la superficie de render, y sin via, visible_point_no_pattern (el adaptador pulsa
     # con el puntero en el punto leido, no en el centro del contenedor). Nada se envio: nunca un recibo de «pudo haber
     # efecto».
-    if([string]$done.method -eq 'container'){ continue }
+    if(@('container','covered') -contains [string]$done.method){ continue }
     if($null -ne $done){ return (Pressed-Result $done $button $name $identity $kind $toggleBefore @()) }
   }
   # Nada del arbol en el punto tiene via, pero el punto cae en la superficie de render de Chromium (de la ventana o de
@@ -3797,15 +3797,6 @@ function Do-Script($request){
     if($null -eq $line){ return @{ ok=$false; error='script_no_receipt' } }
     return @{ ok=$true; error=''; line=$line }
   } finally { $shell.Dispose() }
-}
-function Do-Find($request){
-  $aliases=@($request.aliases | ForEach-Object { [string]$_ })
-  $target=Get-Root ([long]$request.hwnd) -Front
-  if($null -eq $target){ return @{ ok=$false; error='active_window_not_found'; count=0 } }
-  $script:NamedCandidates=@()
-  $matches=@(Find-Named $target.root $aliases)
-  $names=@($matches | ForEach-Object { Get-ShownName $_ })
-  return @{ ok=$true; error=''; count=$matches.Count; names=$names }
 }
 # Ronda 24 (cliente en frio listo por interaccion): una ventana esta lista para usarse cuando expone contenido con el
 # que una persona interactua (un campo editable o una lista), no cuando tiene titulo; y un atajo abrio su buscador cuando
@@ -4145,14 +4136,13 @@ while($true){
     $request=$line | ConvertFrom-Json
     $cmd=[string]$request.cmd
     if($cmd -eq 'exit'){ Send-Line @{ ok=$true; bye=$true }; break }
-    elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true; renderClasses=@([BaxyUiaWorkerNative]::RenderClasses); clientProviders=$script:ClientProviders; quietInput=$script:QuietInput } }
+    elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true } }
     elseif($cmd -eq 'view'){ Send-Line (Do-View $request) }
     elseif($cmd -eq 'click'){ Send-Line (Invoke-Kept $request { param($r) Do-Click $r }) }
     elseif($cmd -eq 'at'){ Send-Line (Invoke-Kept $request { param($r) Do-At $r }) }
     elseif($cmd -eq 'postread'){ Send-Line (Add-FrontReport (Do-Postread $request)) }
     elseif($cmd -eq 'scroll'){ Send-Line (Invoke-Kept $request { param($r) Do-Scroll $r }) }
     elseif($cmd -eq 'script'){ Send-Line (Do-Script $request) }
-    elseif($cmd -eq 'find'){ Send-Line (Do-Find $request) }
     elseif($cmd -eq 'interaction'){ Send-Line (Do-Interaction $request) }
     elseif($cmd -eq 'field'){ Send-Line (Invoke-Kept $request { param($r) Do-Field $r }) }
     elseif($cmd -eq 'focus'){ Send-Line (Invoke-Kept $request { param($r) Do-Focus $r }) }

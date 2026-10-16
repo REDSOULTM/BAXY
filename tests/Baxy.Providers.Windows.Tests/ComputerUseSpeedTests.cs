@@ -636,17 +636,32 @@ public sealed class ComputerUseSpeedTests
     }
 
     // Goal v3, analysis r3a M1: the worker reads the classic Win32 controls (combo boxes, trees, lists) as themselves,
-    // through the client-side providers it registers once at start, and says so. Nothing on the desktop is read.
+    // through the client-side providers it registers once at start (without them, an opaque Pane). Only a combo box of
+    // this test, off the screen, is read.
     [Test]
-    public async Task TheWorkerRegistersTheClientSideProvidersAndSaysSo()
+    public async Task TheWorkerReadsAClassicComboBoxAsItself()
     {
         string worker = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
         Assume.That(File.Exists(worker), "the worker script is copied next to the tests");
-        using var host = new UiaWorkerHost(worker);
+        nint combo = CreateWindowEx(0x08000080, "COMBOBOX", "", 0x90000003u, -31000, -31000, 120, 200, 0, 0, 0, 0);
+        Assert.That(combo, Is.Not.Zero, $"CreateWindowEx failed: {Marshal.GetLastPInvokeError()}");
+        try
+        {
+            using var host = new UiaWorkerHost(worker);
+            const string probe = """
+                $el=[System.Windows.Automation.AutomationElement]::FromHandle([IntPtr][long]$args[0])
+                [pscustomobject]@{ ok=$true; value=[string]$el.Current.ControlType.ProgrammaticName } | ConvertTo-Json -Compress
+                """;
+            using JsonDocument? read = await host.SendAsync(
+                "{\"cmd\":\"script\",\"script\":" + JsonSerializer.Serialize(probe) + ",\"args\":[\"" + (long)combo + "\"]}",
+                TimeSpan.FromSeconds(30), CancellationToken.None);
 
-        using JsonDocument? ping = await host.SendAsync("{\"cmd\":\"ping\"}", TimeSpan.FromSeconds(30), CancellationToken.None);
-
-        Assert.That(ping?.RootElement.GetProperty("clientProviders").GetBoolean(), Is.True);
+            Assert.That(read?.RootElement.GetProperty("line").GetString(), Does.Contain("ControlType.ComboBox"));
+        }
+        finally
+        {
+            _ = DestroyWindow(combo);
+        }
     }
 
     [Test]

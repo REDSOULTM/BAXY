@@ -204,7 +204,7 @@ public sealed class ComputerUseClickMethodTests
         Assert.That(answer.Split(','), Is.EqualTo(new[]
         {
             "message|0|60:35|12650936.1", // the bar and its hit test give the button: posted, no Invoke, no cursor
-            "null|0|60:35|12650936.1",    // another window or button at the point: nothing is sent
+            "covered|0|60:35|12650936.1", // another window or button at the point: nothing is sent, and it says so
             "pointer|0|60:35|12650936.1", // no bar at the point (a scaled window): the leased pointer, never the Invoke
             "pointer|0|60:35|12650936.1", // the bar did not answer its hit test: the same
             "pointer|0|60:35|12650936.1", // the post failed: the same
@@ -345,7 +345,7 @@ public sealed class ComputerUseClickMethodTests
                 Assert.That(body, Does.Contain("Get-Root ([long]$request.hwnd)").And.Not.Contain("-Front"), acting);
             }
 
-            foreach (string reading in new[] { "Do-View", "Do-Find", "Do-Interaction", "Do-Unnamed" })
+            foreach (string reading in new[] { "Do-View", "Do-Interaction", "Do-Unnamed" })
             {
                 int at = script.IndexOf("function " + reading + "(", StringComparison.Ordinal);
                 string body = script[at..script.IndexOf("\nfunction ", at + 1, StringComparison.Ordinal)];
@@ -969,6 +969,84 @@ public sealed class ComputerUseClickMethodTests
                     Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
                     Assert.That(worker.Commands, Is.Not.Empty, "a window that is not elevated is looked at as before");
                 }
+            });
+        }
+        finally
+        {
+            _ = DestroyWindow(window);
+        }
+    }
+
+    [Test]
+    public void ATreePressWithoutAnAnswerEndsTheClickWithoutAnotherPress()
+    {
+        // Ronda B (falta 1): the worker took the press and its answer never came (no receipt): the control may have been
+        // pressed and nothing says which. No OCR, vision, tooltip or later look runs after it (each could press it, or
+        // its twin, again); the receipt says the effect is uncertain. The window is this test's own, off the screen.
+        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY unanswered fixture", 0x90000000u,
+            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        Assert.That(window, Is.Not.EqualTo(nint.Zero));
+        try
+        {
+            var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(answers: []);
+            var ocr = new BoundLocator("ocr");
+            var vision = new BoundLocator("vision");
+            var tooltip = new BoundLocator("tooltip");
+            var pointer = new RecordingPointer(ready: true);
+            var adapter = new WindowsVisibleControlAdapter(
+                worker, ocr, vision, timing: Quick, pointer: pointer, tooltip: tooltip, elevated: _ => false);
+
+            ExternalCapabilityReceipt receipt = adapter.InvokeAsync(
+                    "input.visible.click", Json("{\"label\":\"Enviar\",\"window\":" + (long)window + "}"),
+                    CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_no_receipt"));
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.True, "the press was sent: its effect is uncertain");
+                Assert.That(worker.Commands.Count(command => command.Contains("\"cmd\":\"click\"", StringComparison.Ordinal)),
+                    Is.EqualTo(1), "one press, never a second look that presses");
+                Assert.That(worker.Commands, Has.None.Contains("\"cmd\":\"at\""));
+                Assert.That(ocr.Calls + vision.Calls + tooltip.Calls, Is.Zero);
+                Assert.That(pointer.Clicks, Is.Empty);
+            });
+        }
+        finally
+        {
+            _ = DestroyWindow(window);
+        }
+    }
+
+    [Test]
+    public void AToolbarButtonCoveredAtItsPointSaysNothingWasPressed()
+    {
+        // Ronda B (fault 3): the bar at the button's point answered another window or button, and the worker sent nothing
+        // («visible_control_covered»): the receipt is before any effect, never «it may have been pressed».
+        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY covered fixture", 0x90000000u,
+            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        Assert.That(window, Is.Not.EqualTo(nint.Zero));
+        try
+        {
+            var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
+                "{\"version\":2,\"ok\":false,\"effectObserved\":false,\"error\":\"visible_control_covered\"," +
+                "\"name\":\"Actualizar\",\"controlIdentity\":\"42.12650936.4.1\",\"absentOrDisabled\":false,\"kind\":\"Button\"}");
+            var pointer = new RecordingPointer(ready: true);
+            var adapter = new WindowsVisibleControlAdapter(
+                worker, null, null, timing: Quick, pointer: pointer, elevated: _ => false);
+
+            ExternalCapabilityReceipt receipt = adapter.InvokeAsync(
+                    "input.visible.click", Json("{\"label\":\"Actualizar\",\"window\":" + (long)window + "}"),
+                    CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("visible_control_covered"));
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.False, "nothing was sent");
+                Assert.That(pointer.Clicks, Is.Empty);
             });
         }
         finally
