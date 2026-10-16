@@ -620,6 +620,11 @@ try {
     [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;playbackEvidence=$(if($Mode -eq 'query' -and $verified){$evidence}else{$null});processId=$process.Id}|ConvertTo-Json -Compress
 } catch {
     Add-BaxySpotifyMark
-    [pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_uia_failed';stage=$stage;detail=$_.Exception.Message;timings=$timings}|ConvertTo-Json -Compress
+    $cause=$_.Exception.Message
+    # Ronda B: past the press the failure also says what it pressed, what the client showed playing before it and
+    # at its last read after it, and the window title read now; before the press none of them is told.
+    $pressedTitle=$null
+    if($effect){try{$pressedTitle=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle}catch{}}
+    [pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_uia_failed';stage=$stage;detail=$cause;timings=$timings;selectedControl=$(if($effect){$selectedControlName}else{$null});beforeNowPlaying=$(if($effect){$beforeNowPlaying}else{$null});observedNowPlaying=$(if($effect){$observedNowPlaying}else{$null});title=$pressedTitle}|ConvertTo-Json -Compress
     exit 2
 }

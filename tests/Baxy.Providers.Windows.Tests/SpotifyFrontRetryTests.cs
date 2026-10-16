@@ -165,6 +165,24 @@ public sealed class SpotifyFrontRetryTests
         });
     }
 
+    // Ronda B: the script's last catch, past the press, also says what it pressed and what the client showed playing
+    // (the adapter's FailureFields), and only once the press happened ($effect).
+    [Test]
+    public void TheScriptsFailurePastThePressCarriesWhatItPressedAndWhatPlayed()
+    {
+        string script = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "SpotifyDesktopAutomation.ps1"));
+        string lastCatch = script[script.LastIndexOf("} catch {", StringComparison.Ordinal)..];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(lastCatch, Does.Contain("selectedControl=$(if($effect){$selectedControlName}else{$null})"));
+            Assert.That(lastCatch, Does.Contain("beforeNowPlaying=$(if($effect){$beforeNowPlaying}else{$null})"));
+            Assert.That(lastCatch, Does.Contain("observedNowPlaying=$(if($effect){$observedNowPlaying}else{$null})"));
+            Assert.That(lastCatch, Does.Contain("title=$pressedTitle"));
+            Assert.That(lastCatch, Does.Contain("detail=$cause"));
+        });
+    }
+
     private sealed class Runner(params string[] outputs) : IExternalProcessRunner
     {
         internal int Calls { get; private set; }
