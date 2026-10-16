@@ -368,8 +368,9 @@ internal sealed class NativeTurnLoop
     // BAXY's browser, which CDP drives by running a script in the page as a user gesture, in a window that holds the
     // person's session: it is held unless its sourceApp names a session other than that tab, which the tab's adapter
     // refuses before any effect (WebBrowserAdapter.ControlYouTubeTabAsync). media.seek.relative has only SMTC.
-    // game.launch hands Steam the game's address and clicks «Jugar» in the dialog Steam opens for it (the data's
-    // «confirm», SteamLocalAdapter.LaunchAsync). app.open reuses the window of an application that already runs, and
+    // game.launch is held only because it clicks «Jugar» in the dialog Steam opens for the game's address (the data's
+    // «confirm», SteamLocalAdapter.LaunchAsync): what Steam publishes by itself (its «playing») is not the person's
+    // data leaving through BAXY (owner, 2026-10-16). app.open reuses the window of an application that already runs, and
     // brings it to the front (foreground: ShowWindow and SetForegroundWindow), presses Ctrl+N in it (newDocument) or
     // hands it a place's address, which the application opens in its window and raises (place, ApplicationPlaceOpener);
     // whether one runs is read only as it opens, so without those three it is not held: the window that runs is left as
@@ -393,14 +394,14 @@ internal sealed class NativeTurnLoop
     // carries the person's memory, window titles and recent lines, and nothing of theirs leaves unasked (owner,
     // 2026-10-15; audit App H3). By name, read from the providers that use HTTP or ping: web.search's sources, web.fetch
     // and web.download, Open-Meteo for the weather and for a place's clock, the Steam store for whether a game is owned,
-    // ICMP to the host named, the export of the memory (its receipt says it may be redirected or synced: OneDrive), a
-    // console command (one that only reads still reaches \\host\share or another computer by name), and a print (the
-    // printer may be on the network). The ones with an external_communication or installation risk are held by
-    // ProposedRisks already, and app.open with a place (app_places builds spotify:search:{value} and Steam's store
-    // search from its value) by SendsInputToAWindow.
+    // ICMP to the host named, a console command (one that only reads still reaches \\host\share or another computer
+    // by name), and a print (the printer may be on the network). What an application syncs or publishes by itself (a
+    // memory export in a folder OneDrive syncs) is not the person's data leaving through BAXY (owner, 2026-10-16). The
+    // ones with an external_communication or installation risk are held by ProposedRisks already, and app.open with a
+    // place (app_places builds spotify:search:{value} and Steam's store search from its value) by SendsInputToAWindow.
     private static bool ReachesTheNetwork(string operation, JsonObject arguments) =>
         operation is "web.search" or "web.fetch" or "web.download" or "weather.current" or "network.ping"
-            or "game.entitlement.named" or "memory.export" or "shell.command.run" or "peripheral.print"
+            or "game.entitlement.named" or "shell.command.run" or "peripheral.print"
         || (operation == "system.time" && arguments["place"] is JsonValue place && Named(place));
 
     // The clipboard holds what the person copied: writing over it unasked is an effect on their data (audit, round A).
