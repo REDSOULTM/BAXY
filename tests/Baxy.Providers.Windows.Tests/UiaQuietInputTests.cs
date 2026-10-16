@@ -218,9 +218,9 @@ public sealed class UiaQuietInputTests
             $still=(([QuietWatch]::Ours -eq 0) -and ((-not $moved) -or ([QuietWatch]::Others -gt 0)))
             [BaxyUiaQuietInput]::Restore()
             [Console]::Error.Write(('moved={0} ours={1} (mouse {2}) others={3}' -f $moved,[QuietWatch]::Ours,[QuietWatch]::OursMouse,[QuietWatch]::Others))
-            [Console]::Out.Write(('{0}|{1:X}|{2}|{3}{4}|{5}|{6}|{7}|{8:X}|{9}{10}{11:X}|{12}{13:X}|{14}|{15}|{16}|{17}' -f $other,$none,$registered,$down,$up,$woke,$fast,$read,$again,$mouse,$mixed,$mixedWait,$afterUnregister,$late,$still,[BaxyUiaQuietInput]::Dropped,[BaxyUiaQuietInput]::Refused,[BaxyUiaQuietInput]::Answered))
+            [Console]::Out.Write(('{0}|{1:X}|{2}|{3}{4}|{5}|{6}|{7}|{8:X}|{9}{10}{11:X}|{12}{13:X}|{14}' -f $other,$none,$registered,$down,$up,$woke,$fast,$read,$again,$mouse,$mixed,$mixedWait,$afterUnregister,$late,$still))
             """);
-        Assert.That(answer, Is.EqualTo("0|102|True|11|0|True|312:4242|102|00102|0102|True|2|4|1"),
+        Assert.That(answer, Is.EqualTo("0|102|True|11|0|True|312:4242|102|00102|0102|True"),
             "the hotkey's keys dropped, the wait answered at once and the hotkey read once; anything else refused whole");
     }
 

@@ -521,10 +521,6 @@ public static class BaxyUiaQuietInput {
   private static PeekMessageCall _realPeek;
   // The hotkey message owed to each thread whose key was dropped: answered by the client's own wait and read.
   private static readonly Dictionary<uint, Hot> Owed = new Dictionary<uint, Hot>();
-  public static int Dropped;
-  // Calls refused whole: input that is not the client's hotkey key (never sent, answered 0).
-  public static int Refused;
-  public static int Answered;
   public static string State = "off";
 
   // The import slots of «function» in a loaded 64-bit module: the ordinary table and the delay-loaded one.
@@ -653,7 +649,8 @@ public static class BaxyUiaQuietInput {
   }
 
   private static uint QuietSend(uint count, IntPtr inputs, int size) {
-    if (inputs == IntPtr.Zero || size <= 0 || count == 0) { Interlocked.Increment(ref Refused); return 0; }
+    // Calls refused whole: input that is not the client's hotkey key (never sent, answered 0).
+    if (inputs == IntPtr.Zero || size <= 0 || count == 0) return 0;
     uint thread = GetCurrentThreadId();
     uint[] registered;
     lock (Gate) {
@@ -665,13 +662,12 @@ public static class BaxyUiaQuietInput {
       long item = inputs.ToInt64() + i * (long)size;
       uint type = (uint)Marshal.ReadInt32(new IntPtr(item));
       uint key = type == 1 ? (uint)(ushort)Marshal.ReadInt16(new IntPtr(item + 8)) : 0;
-      if (!IsOwnHotkey(type, key, registered)) { Interlocked.Increment(ref Refused); return 0; }
+      if (!IsOwnHotkey(type, key, registered)) return 0;
     }
     for (uint i = 0; i < count; i++) {
       long item = inputs.ToInt64() + i * (long)size;
       uint key = (ushort)Marshal.ReadInt16(new IntPtr(item + 8));
       uint flags = (uint)Marshal.ReadInt32(new IntPtr(item + 12));
-      Interlocked.Increment(ref Dropped);
       if ((flags & 0x0002) != 0) continue;
       lock (Gate) {
         foreach (Hot hot in Hots) {
@@ -714,7 +710,7 @@ public static class BaxyUiaQuietInput {
   // ...and reads it: the hotkey message it waited for, never placed in the thread's queue.
   private static int AnsweredGet(IntPtr msg, IntPtr hwnd, uint first, uint last) {
     Hot hot;
-    if (msg != IntPtr.Zero && TakeOwed(true, hwnd, first, last, out hot)) { Fill(msg, hot); Interlocked.Increment(ref Answered); return 1; }
+    if (msg != IntPtr.Zero && TakeOwed(true, hwnd, first, last, out hot)) { Fill(msg, hot); return 1; }
     return _realGet(msg, hwnd, first, last);
   }
 
@@ -722,7 +718,6 @@ public static class BaxyUiaQuietInput {
     Hot hot;
     if (msg != IntPtr.Zero && TakeOwed((remove & 0x0001) != 0, hwnd, first, last, out hot)) {
       Fill(msg, hot);
-      if ((remove & 0x0001) != 0) Interlocked.Increment(ref Answered);
       return true;
     }
     return _realPeek(msg, hwnd, first, last, remove);
