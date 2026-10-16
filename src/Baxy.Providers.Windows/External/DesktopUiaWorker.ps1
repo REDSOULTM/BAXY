@@ -737,7 +737,7 @@ public static class BaxyUiaQuietInput {
 // the order alone, so the window the keyboard goes to is never drawn under another one. A change the person made (a
 // click, a key that moves the front: Tab, Enter, Esc, Alt, Win, a function key; told by Raw Input, BAXY's own marked
 // input left out) is theirs and is never fought. Nothing is watched when the target was already in front or nothing
-// was. Each watch keeps its own report (taken, returned, failed, longest return), read by the command that ran under it.
+// was. Each watch keeps its own report (taken, failed, longest return), read by the command that ran under it.
 public static class BaxyFrontKeeper {
   private delegate void WinEventProc(IntPtr hook, uint eventType, IntPtr hwnd, int objectId, int childId, uint thread, uint time);
   private delegate bool EnumProc(IntPtr hwnd, IntPtr lParam);
@@ -789,22 +789,11 @@ public static class BaxyFrontKeeper {
   private static bool _personActed;
   // The report of the current watch (reset by Begin).
   public static int WatchTaken;
-  public static int WatchReturned;
   public static int WatchFailed;
   public static int WatchLongestMs = -1;
-  // Since the worker started (the ping).
-  public static int Returned;
-  public static int Failed;
-  public static int Yielded;
-  public static int LeaseYielded;
-  // Changes to the target's family that came after the watch had ended (up to 5 s after it, not after a Release), and
-  // how late the last one came: never fought, only counted.
-  public static int Late;
-  public static int LateMs = -1;
   // The block where BAXY's foreground lease says which window it is bringing up and when (LeaseFrontSignal.Name).
   public const string LeaseBlock = @"Local\BaxyLeaseFront";
   public static int LeaseFreshMs = 2000;
-  public static int LastReturnMs = -1;
   public static int TailMs = 300;
   // The bid for the right to give the front back (the way the UI Automation client wins it): a hotkey of this thread on
   // a virtual key no keyboard has, registered with every modifier combination, and one marked press of it. The system
@@ -813,13 +802,8 @@ public static class BaxyFrontKeeper {
   public static readonly uint[] BidKeys = { 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F, 0x88, 0x89, 0x8A, 0x8B };
   public const int BidId = 0x4258;
   public static uint BidKey;
-  public static int Bids;
-  public static int BidsAnswered;
   public static int BidBudgetMs = 200;
   private static bool _returning;
-
-  // Whether the person's input is told apart (Raw Input started); without it any input counts as theirs.
-  public static bool RawInput { get { return _raw; } }
 
   // Pure rule: is «foreground» (a root window of process «process», owned by «owner») the target's family taking the
   // person's front? Never when nothing was in front, when the target was already in front, or when the front is the
@@ -963,7 +947,6 @@ public static class BaxyFrontKeeper {
   // else of the queue is touched): true once it arrived, within «budget» ms.
   private static bool Bid(int budget) {
     if (BidKey == 0) return false;
-    Interlocked.Increment(ref Bids);
     Msg msg;
     while (PeekMessage(out msg, new IntPtr(-1), 0x0312, 0x0312, 0x0001)) { }
     // The press and its release at once, as the client does: measured live, the system takes both (neither the window
@@ -974,7 +957,7 @@ public static class BaxyFrontKeeper {
     while (true) {
       while (PeekMessage(out msg, new IntPtr(-1), 0x0312, 0x0312, 0x0001)) {
         long id = msg.WParam.ToInt64();
-        if (id >= BidId && id < BidId + 16) { Interlocked.Increment(ref BidsAnswered); return true; }
+        if (id >= BidId && id < BidId + 16) return true;
       }
       int left = budget - (Environment.TickCount - started);
       if (left <= 0) return false;
@@ -994,7 +977,7 @@ public static class BaxyFrontKeeper {
     lock (Gate) {
       _person = person; _top = top; _family = family; _acting = true; _tail = false; _released = false;
       _beganInput = LastInputTick(); _personActed = false;
-      WatchTaken = 0; WatchReturned = 0; WatchFailed = 0; WatchLongestMs = -1;
+      WatchTaken = 0; WatchFailed = 0; WatchLongestMs = -1;
     }
   }
 
@@ -1016,24 +999,20 @@ public static class BaxyFrontKeeper {
   }
 
   private static void OnForeground(IntPtr hook, uint eventType, IntPtr hwnd, int objectId, int childId, uint thread, uint time) {
-    IntPtr person; IntPtr top; uint[] family; bool late;
-    int after;
+    IntPtr person; IntPtr top; uint[] family;
     lock (Gate) {
-      after = unchecked(Environment.TickCount - _until);
-      late = !_acting && (!_tail || after > 0);
-      if (late && (_released || after > 5000)) return;
+      // Once the watch and its tail are over, a change of the front is never fought.
+      if (!_acting && (!_tail || unchecked(Environment.TickCount - _until) > 0)) return;
       person = _person; top = _top; family = _family;
     }
     IntPtr foreground = GetForegroundWindow();
     if (foreground == IntPtr.Zero) return;
     IntPtr root = GetAncestor(foreground, 2); if (root != IntPtr.Zero) foreground = root;
     if (!IsTheft(person, top, family, foreground, ProcessOf(foreground), GetWindow(foreground, 4))) return;
-    if (late) { Interlocked.Increment(ref Late); LateMs = after; return; }
     if (!IsWindow(person)) return;
     if (LeaseHolds(foreground, top)) {
       // BAXY's own lease brought it up on purpose (a fallback to the pointer, the wheel or the keyboard): the watch ends.
       lock (Gate) { _acting = false; _tail = false; }
-      Interlocked.Increment(ref LeaseYielded);
       return;
     }
     Drain();
@@ -1043,7 +1022,7 @@ public static class BaxyFrontKeeper {
       persons = _raw ? _personActed : unchecked((int)(LastInputTick() - _beganInput)) > 0;
       if (persons) { _acting = false; _tail = false; }
     }
-    if (persons) { Interlocked.Increment(ref Yielded); return; }
+    if (persons) return;
     if (_returning) return;
     Interlocked.Increment(ref WatchTaken);
     int started = Environment.TickCount;
@@ -1068,12 +1047,10 @@ public static class BaxyFrontKeeper {
     if (MayLower(person, now, nowRoot)) {
       SetWindowPos(top, person, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010 | 0x0200);
       int ms = Environment.TickCount - started;
-      Interlocked.Increment(ref Returned); Interlocked.Increment(ref WatchReturned);
-      LastReturnMs = ms;
       if (ms > WatchLongestMs) WatchLongestMs = ms;
     } else {
       // The target keeps the front and the keyboard where it is seen; the command's report says so.
-      Interlocked.Increment(ref Failed); Interlocked.Increment(ref WatchFailed);
+      Interlocked.Increment(ref WatchFailed);
     }
   }
   private static uint _ignored;
@@ -4173,7 +4150,7 @@ while($true){
     $request=$line | ConvertFrom-Json
     $cmd=[string]$request.cmd
     if($cmd -eq 'exit'){ Send-Line @{ ok=$true; bye=$true }; break }
-    elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true; pid=$PID; renderClasses=@([BaxyUiaWorkerNative]::RenderClasses); clientProviders=$script:ClientProviders; quietInput=$script:QuietInput; uiaInputDropped=[BaxyUiaQuietInput]::Dropped; uiaInputRefused=[BaxyUiaQuietInput]::Refused; uiaWaitAnswered=[BaxyUiaQuietInput]::Answered; frontReturned=[BaxyFrontKeeper]::Returned; frontReturnFailed=[BaxyFrontKeeper]::Failed; frontReturnMs=[BaxyFrontKeeper]::LastReturnMs; frontYielded=[BaxyFrontKeeper]::Yielded; frontLeaseYielded=[BaxyFrontKeeper]::LeaseYielded; frontRawInput=[BaxyFrontKeeper]::RawInput; frontBidKey=[BaxyFrontKeeper]::BidKey; frontBids=[BaxyFrontKeeper]::Bids; frontBidsAnswered=[BaxyFrontKeeper]::BidsAnswered; frontLate=[BaxyFrontKeeper]::Late; frontLateMs=[BaxyFrontKeeper]::LateMs } }
+    elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true; pid=$PID; renderClasses=@([BaxyUiaWorkerNative]::RenderClasses); clientProviders=$script:ClientProviders; quietInput=$script:QuietInput } }
     elseif($cmd -eq 'view'){ Send-Line (Do-View $request) }
     elseif($cmd -eq 'click'){ Send-Line (Invoke-Kept $request { param($r) Do-Click $r }) }
     elseif($cmd -eq 'at'){ Send-Line (Invoke-Kept $request { param($r) Do-At $r }) }

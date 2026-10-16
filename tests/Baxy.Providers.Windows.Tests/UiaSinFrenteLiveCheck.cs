@@ -151,7 +151,6 @@ public sealed class UiaSinFrenteLiveCheck
                 await Task.Delay(700);
             }
 
-            using JsonDocument? after = await host.SendAsync("""{"cmd":"ping"}""", TimeSpan.FromSeconds(10), CancellationToken.None);
             long longest = fronts.LongestMs;
             string timeline = fronts.Timeline;
             int excursions = fronts.Excursions;
@@ -186,7 +185,6 @@ public sealed class UiaSinFrenteLiveCheck
             TestContext.Out.WriteLine($"inyecciones: sin marca [{string.Join(", ", hook.Unmarked)}], con la marca de BAXY [{string.Join(", ", hook.Baxy)}]");
             TestContext.Out.WriteLine($"frente ajeno: {excursions} excursiones, la mayor {longest} ms");
             TestContext.Out.WriteLine($"cronologia ms: {timeline}");
-            TestContext.Out.WriteLine($"worker: {after?.RootElement}");
             Assert.Multiple(() =>
             {
                 Assert.That(notTheirs, Is.Empty, "no key but the person's reached the person's window");
