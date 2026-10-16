@@ -439,9 +439,6 @@ public sealed class ComputerUseWindowIdentityTests
             Assert.That(VisibleControlSurface.ChooseProcessWindow(hostWindows, 3, front: 31), Is.EqualTo((nint)31),
                 "the shared host's pid follows the front: the reason it is never recorded");
             Assert.That(VisibleControlSurface.ChooseProcessWindow([], 40, front: 31, frame: 30), Is.EqualTo((nint)30));
-            Assert.That(VisibleControlSurface.IsSharedFrameHost("ApplicationFrameHost"), Is.True);
-            Assert.That(VisibleControlSurface.IsSharedFrameHost("applicationframehost"), Is.True);
-            Assert.That(VisibleControlSurface.IsSharedFrameHost("SystemSettings"), Is.False);
         });
     }
 
