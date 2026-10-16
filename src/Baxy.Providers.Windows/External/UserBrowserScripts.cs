@@ -15,6 +15,9 @@ internal static class UserBrowserScripts
     /// walk fails the children are taken from the end, so the frame stays readable without touching the browser.
     /// </summary>
     private const string Walk = """
+        # Auditoría final (regla 3): a node whose children could not all be read (both walks failed, or 400 of them) marks
+        # the read partial, through a table the script and this function share (a block run by & { } has no $script:).
+        $WalkState = @{ partial = $false }
         function Children($walker, $node) {
           $kids = New-Object System.Collections.Generic.List[object]
           try {
@@ -24,8 +27,9 @@ internal static class UserBrowserScripts
             try {
               $child = $walker.GetLastChild($node)
               while ($child -ne $null -and $kids.Count -lt 400) { $kids.Add($child); $child = $walker.GetPreviousSibling($child) }
-            } catch { }
+            } catch { $WalkState.partial = $true }
           }
+          if ($child -ne $null) { $WalkState.partial = $true }
           return $kids
         }
 
@@ -80,7 +84,7 @@ internal static class UserBrowserScripts
             if ($depth -ge 24) { $unread = $true; continue }
             foreach ($child in (Children $walker $node)) { $queue.Enqueue(@($child, ($depth + 1))) }
           }
-          if (-not $unread -and $queue.Count -eq 0) { Emit $true '' ''; exit 0 }
+          if (-not $unread -and -not $WalkState.partial -and $queue.Count -eq 0) { Emit $true '' ''; exit 0 }
           Emit $false '' 'address_field_not_found'
         } catch {
           Emit $false '' ('uia_failed: ' + $_.Exception.GetType().Name)
@@ -400,7 +404,7 @@ internal static class UserBrowserScripts
                 }
               } catch { }
             }
-            if ($depth -ge 26) { continue }
+            if ($depth -ge 26) { $unreadNodes++; continue }
             foreach ($child in (Children $walker $node)) { $queue.Enqueue(@($child, ($depth + 1))) }
           }
           # The page of the active tab: the document whose name begins the window title (Opera GX also exposes its
@@ -421,7 +425,7 @@ internal static class UserBrowserScripts
             }
           }
           $reason = if ($tabs.Count -gt 0) { '' } else { 'tab_strip_not_found' }
-          $tabsComplete = $unreadNodes -eq 0 -and $queue.Count -eq 0
+          $tabsComplete = $unreadNodes -eq 0 -and $queue.Count -eq 0 -and -not $WalkState.partial
           [pscustomobject]@{
             version = 1; ok = ($tabs.Count -gt 0); tabs = $tabs.ToArray(); tabsComplete = $tabsComplete; back = $back; address = $address
             page = [pscustomobject]@{ id = $pageId; title = $pageTitle; scroll = $scroll }; error = $reason
@@ -613,7 +617,7 @@ internal static class UserBrowserScripts
               } catch { $failedNodes++ }
             }
             $text = $builder.ToString()
-            $walkCut = $queue.Count -gt 0 -and $builder.Length -le $Maximum
+            $walkCut = ($queue.Count -gt 0 -and $builder.Length -le $Maximum) -or $WalkState.partial
             if (-not $text -and ($failedNodes -gt 0 -or $walkCut)) { Emit $false '' '' $false 'page_text_not_read'; exit 0 }
           }
           # A node that failed lost its subtree: the text read is not the whole page either.
