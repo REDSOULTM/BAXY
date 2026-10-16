@@ -437,14 +437,15 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             }
         }
         bool installed = installedName is not null;
-        bool owned = installed || ownedMatches >= 1;
+        // Ronda final: as with Steam, an installed manifest is not the account's ownership: only the catalog cache says owned.
+        bool owned = ownedMatches >= 1;
         string? catalogItemId = installedCatalogId ?? ownedCatalogId;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("query", title);
             writer.WriteString("store", "epic");
-            writer.WriteBoolean("resolved", owned);
+            writer.WriteBoolean("resolved", owned || installed);
             if (catalogItemId is null) writer.WriteNull("appId"); else writer.WriteString("appId", catalogItemId);
             writer.WriteString("title", installedName ?? ownedName ?? title);
             // Ronda final: without the catalog cache read, the library was not looked at.
