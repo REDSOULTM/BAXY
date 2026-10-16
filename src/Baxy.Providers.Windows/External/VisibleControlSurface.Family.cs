@@ -199,71 +199,36 @@ internal static partial class VisibleControlSurface
         bool Cloaked, long ExStyle, nint Owner);
 
     /// <summary>
-    /// Ronda 20 P6: the content window chosen for a chrome-only frame (0 when none) and why: «above» or «under» when
-    /// taken; otherwise the reason the closest window was not («app_window»: a window of its own; «cloaked»;
-    /// «geometry»: a descendant's window that neither covers nor fills the frame; «not_descendant»: a window covering
-    /// it of a process the application did not start; «frame_content»: the frame's tree shows content where the
-    /// window lies; «none»: no window of another process over or under it), with that window's extended style and owner.
-    /// </summary>
-    internal readonly record struct ContentChoice(nint Window, string Reason, long ExStyle, nint Owner)
-    {
-        internal static ContentChoice Nothing => new(0, "none", 0, 0);
-    }
-
-    /// <summary>
     /// Ronda 20 P6: the content window of the application's window <paramref name="frame"/> among the windows
-    /// <paramref name="seen"/>, above or under it (<see cref="ChooseFamilySurface"/> with candidates under), and why
-    /// none when none is (<see cref="ContentChoice"/>). Only a visible, uncloaked window of a descendant process that
-    /// is no window of its own and covers or fills the frame (<see cref="IsContentOf"/>) is taken.
+    /// <paramref name="seen"/>, above or under it (<see cref="ChooseFamilySurface"/> with candidates under); 0 when
+    /// none is. Only a visible, uncloaked window of a descendant process that is no window of its own and covers or
+    /// fills the frame (<see cref="IsContentOf"/>) is taken.
     /// </summary>
-    internal static ContentChoice ChooseContentWindow(
+    internal static nint ChooseContentWindow(
         (int Left, int Top, int Right, int Bottom) frame,
         IEnumerable<SeenWindow> seen)
     {
-        var listed = seen.ToList();
         FamilyWindow AsFamily(SeenWindow window) => new(
             window.Window, window.ProcessId, window.Left, window.Top, window.Right, window.Bottom, window.AboveFrame,
             IsApplicationWindow(window.ExStyle, window.Owner));
-        var accepted = listed.Where(window => window.Descendant && !window.Cloaked).Select(AsFamily).ToList();
-        nint chosen = ChooseFamilySurface(frame, accepted, acceptUnder: true);
-        if (chosen != 0)
-        {
-            SeenWindow taken = listed.First(window => window.Window == chosen);
-            return new ContentChoice(chosen, taken.AboveFrame ? "above" : "under", taken.ExStyle, taken.Owner);
-        }
-
-        bool Covers(SeenWindow window) =>
-            CoversAsSurface(frame, (window.Left, window.Top, window.Right, window.Bottom));
-        (string Reason, Func<SeenWindow, bool> Test)[] reasons =
-        [
-            ("app_window", window => window.Descendant && !window.Cloaked && Covers(window)),
-            ("cloaked", window => window.Descendant && window.Cloaked && Covers(window)),
-            ("geometry", window => window.Descendant && !Covers(window)),
-            ("not_descendant", window => !window.Descendant && Covers(window)),
-        ];
-        foreach ((string reason, Func<SeenWindow, bool> test) in reasons)
-        {
-            if (listed.FirstOrDefault(test) is { Window: not 0 } closest)
-                return new ContentChoice(0, reason, closest.ExStyle, closest.Owner);
-        }
-
-        return ContentChoice.Nothing;
+        var accepted = seen.Where(window => window.Descendant && !window.Cloaked).Select(AsFamily).ToList();
+        return ChooseFamilySurface(frame, accepted, acceptUnder: true);
     }
 
     /// <summary>
     /// Ronda 20 P6: the content window of the family of <paramref name="frame"/>'s process lying over or under it
     /// (<see cref="ChooseContentWindow"/>), taken as its surface only when <paramref name="accept"/> holds for its
     /// rectangle (the frame's tree is only chrome around it): then the pair is linked as <see cref="FamilySurface"/>
-    /// links it, so the mission stays tied to the frame and the front held by either counts for the other. Never for
-    /// the shell's windows, this product's or a protected one.
+    /// links it, so the front held by either counts for the other. Never for the shell's windows, this product's or a
+    /// protected one.
     /// </summary>
-    internal static ContentChoice TakeContentWindow(nint frame, Func<(int Left, int Top, int Right, int Bottom), bool> accept)
+    internal static nint TakeContentWindow(nint frame, Func<(int Left, int Top, int Right, int Bottom), bool> accept)
     {
         if (frame == 0 || !TryBounds(frame, out int left, out int top, out int right, out int bottom))
-            return ContentChoice.Nothing;
+            return 0;
         _ = GetWindowThreadProcessId(frame, out uint owner);
         if (owner == 0 || owner == ShellProcess())
-            return ContentChoice.Nothing;
+            return 0;
         uint self = unchecked((uint)Environment.ProcessId);
         var found = new List<(nint Window, uint Process, int L, int T, int R, int B, bool Above, bool Cloaked, long ExStyle, nint Owner)>();
         bool frameSeen = false;
@@ -275,8 +240,9 @@ internal static partial class VisibleControlSurface
                 return true;
             }
 
-            // An owned window is seen too (its owner is said in the trace): one under the frame is owned by no window
-            // above it, and whether it is the content is told by its process, its style and where it lies.
+            // An owned window is seen too (its owner tells whether it is an application's window of its own): one under
+            // the frame is owned by no window above it, and whether it is the content is told by its process, its style
+            // and where it lies.
             if (!IsWindowVisible(candidate))
                 return true;
             _ = GetWindowThreadProcessId(candidate, out uint process);
@@ -292,21 +258,21 @@ internal static partial class VisibleControlSurface
         };
         _ = EnumWindows(callback, nint.Zero);
         if (!frameSeen || found.Count == 0 || StartTime(owner) is not { } rootStarted)
-            return ContentChoice.Nothing;
+            return 0;
         Dictionary<uint, uint> parents = ParentByProcess();
         var seen = found.Select(window => new SeenWindow(
             window.Window, window.Process, window.L, window.T, window.R, window.B, window.Above,
             DescendsFrom(window.Process, owner, rootStarted, parents)
                 && !ProtectedFrom(ProcessIdentity(window.Process).ProcessName, null),
             window.Cloaked, window.ExStyle, window.Owner)).ToList();
-        ContentChoice choice = ChooseContentWindow((left, top, right, bottom), seen);
-        if (choice.Window == 0)
-            return choice;
-        SeenWindow taken = seen.First(window => window.Window == choice.Window);
+        nint chosen = ChooseContentWindow((left, top, right, bottom), seen);
+        if (chosen == 0)
+            return 0;
+        SeenWindow taken = seen.First(window => window.Window == chosen);
         if (!accept((taken.Left, taken.Top, taken.Right, taken.Bottom)))
-            return choice with { Window = 0, Reason = "frame_content" };
+            return 0;
         LinkFamily(frame, owner, taken.Window, taken.ProcessId, FamilyOf(owner, rootStarted, parents));
-        return choice;
+        return chosen;
     }
 
     /// <summary>

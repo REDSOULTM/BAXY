@@ -61,12 +61,10 @@ public sealed class ComputerUseChromeFrameContentTests
     [Test]
     public void V3_15_TheEditorUnderTheFrameIsTakenAsItsContent()
     {
-        VisibleControlSurface.ContentChoice choice = VisibleControlSurface.ChooseContentWindow(Frame, [Seen(13373098, Editor)]);
+        nint choice = VisibleControlSurface.ChooseContentWindow(Frame, [Seen(13373098, Editor)]);
         Assert.Multiple(() =>
         {
-            Assert.That(choice.Window, Is.EqualTo((nint)13373098));
-            Assert.That(choice.Reason, Is.EqualTo("under"));
-            Assert.That(choice.ExStyle, Is.EqualTo(ContentStyle));
+            Assert.That(choice, Is.EqualTo((nint)13373098));
             // The surface rule of the view keeps its default: under the frame is no surface unless asked for.
             Assert.That(VisibleControlSurface.ChooseFamilySurface(Frame,
                 [new VisibleControlSurface.FamilyWindow(13373098, 41664, 169, 220, 1591, 891, AboveFrame: false)]), Is.EqualTo((nint)0));
@@ -79,13 +77,9 @@ public sealed class ComputerUseChromeFrameContentTests
     [Test]
     public void AContentWindowAboveTheFrameIsPreferredToOneUnderIt()
     {
-        VisibleControlSurface.ContentChoice choice = VisibleControlSurface.ChooseContentWindow(Frame,
+        nint choice = VisibleControlSurface.ChooseContentWindow(Frame,
             [Seen(10, (160, 160, 1600, 900)), Seen(11, Editor, above: true)]);
-        Assert.Multiple(() =>
-        {
-            Assert.That(choice.Window, Is.EqualTo((nint)11));
-            Assert.That(choice.Reason, Is.EqualTo("above"));
-        });
+        Assert.That(choice, Is.EqualTo((nint)11));
     }
 
     [Test]
@@ -118,42 +112,35 @@ public sealed class ComputerUseChromeFrameContentTests
     public void CounterCase_AWindowOfItsOwnUnderAChromeFrameIsNeverTaken()
     {
         // A browser or a game the application started (WS_EX_APPWINDOW), lying under the chrome-only frame.
-        VisibleControlSurface.ContentChoice browser = VisibleControlSurface.ChooseContentWindow(Frame,
+        nint browser = VisibleControlSurface.ChooseContentWindow(Frame,
             [Seen(20, Editor, exStyle: 0x02040100)]);
         // Unowned and neither a tool window nor a no-activate one: a window with its own taskbar button.
-        VisibleControlSurface.ContentChoice editorOfItsOwn = VisibleControlSurface.ChooseContentWindow(Frame,
+        nint editorOfItsOwn = VisibleControlSurface.ChooseContentWindow(Frame,
             [Seen(21, (160, 160, 1600, 900), exStyle: 0x00200100)]);
         Assert.Multiple(() =>
         {
-            Assert.That(browser.Window, Is.EqualTo((nint)0));
-            Assert.That(browser.Reason, Is.EqualTo("app_window"));
-            Assert.That(browser.ExStyle, Is.EqualTo(0x02040100));
-            Assert.That(editorOfItsOwn.Window, Is.EqualTo((nint)0));
-            Assert.That(editorOfItsOwn.Reason, Is.EqualTo("app_window"));
+            Assert.That(browser, Is.EqualTo((nint)0));
+            Assert.That(editorOfItsOwn, Is.EqualTo((nint)0));
         });
     }
 
     [Test]
     public void CounterCase_AnotherProcessesOrACloakedWindowIsNeverTaken()
     {
-        VisibleControlSurface.ContentChoice stranger = VisibleControlSurface.ChooseContentWindow(Frame,
+        nint stranger = VisibleControlSurface.ChooseContentWindow(Frame,
             [Seen(30, Editor, descendant: false)]);
-        VisibleControlSurface.ContentChoice cloaked = VisibleControlSurface.ChooseContentWindow(Frame,
+        nint cloaked = VisibleControlSurface.ChooseContentWindow(Frame,
             [Seen(31, Editor, cloaked: true)]);
-        VisibleControlSurface.ContentChoice small = VisibleControlSurface.ChooseContentWindow(Frame,
+        nint small = VisibleControlSurface.ChooseContentWindow(Frame,
             [Seen(32, (400, 400, 900, 700))]);
-        VisibleControlSurface.ContentChoice nothing = VisibleControlSurface.ChooseContentWindow(Frame, []);
+        nint nothing = VisibleControlSurface.ChooseContentWindow(Frame, []);
         Assert.Multiple(() =>
         {
-            Assert.That(stranger.Window, Is.EqualTo((nint)0));
-            Assert.That(stranger.Reason, Is.EqualTo("not_descendant"));
-            Assert.That(cloaked.Window, Is.EqualTo((nint)0));
-            Assert.That(cloaked.Reason, Is.EqualTo("cloaked"));
-            Assert.That(small.Window, Is.EqualTo((nint)0));
-            Assert.That(small.Reason, Is.EqualTo("geometry"));
+            Assert.That(stranger, Is.EqualTo((nint)0));
+            Assert.That(cloaked, Is.EqualTo((nint)0));
+            Assert.That(small, Is.EqualTo((nint)0));
             // The editor did not come (it is slow or it failed): nothing is taken and the frame stays the view.
-            Assert.That(nothing, Is.EqualTo(VisibleControlSurface.ContentChoice.Nothing));
-            Assert.That(nothing.Reason, Is.EqualTo("none"));
+            Assert.That(nothing, Is.EqualTo((nint)0));
         });
     }
 }

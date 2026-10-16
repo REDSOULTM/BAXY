@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
@@ -1537,9 +1536,7 @@ internal sealed class WindowsVisibleControlAdapter
         // caption buttons, the non-client input, a busy indicator) over the content window a process it started draws
         // under it (measured: a WinUI frame activated by a click lay above its WebView2 editor, and the view kept the
         // caption parts while the person saw the editor) is read through that content window, linked to it as the
-        // family surface over it is: the look's root stays the application's window. What was found, or why nothing was,
-        // is said.
-        VisibleControlSurface.ContentChoice? surfaceChoice = null;
+        // family surface over it is: the look's root stays the application's window.
         if (hwnd == windowRoot && VisibleControlSurface.SurfaceFamily(hwnd) is null
             && answer.RootElement.TryGetProperty("ok", out JsonElement frameOk) && frameOk.ValueKind == JsonValueKind.True
             && VisibleControlSurface.TryBounds(hwnd, out int frameLeft, out int frameTop, out int frameRight, out int frameBottom))
@@ -1548,14 +1545,12 @@ internal sealed class WindowsVisibleControlAdapter
             var frameControls = CaptionReading(answer.RootElement);
             if (VisibleControlSurface.MayShowOnlyCaption(frame, frameControls))
             {
-                VisibleControlSurface.ContentChoice choice = VisibleControlSurface.TakeContentWindow(
-                    hwnd, content => VisibleControlSurface.ShowsOnlyCaption(frame, content, frameControls));
-                surfaceChoice = choice;
-                if (choice.Window != 0)
+                nint content = VisibleControlSurface.TakeContentWindow(
+                    hwnd, box => VisibleControlSurface.ShowsOnlyCaption(frame, box, frameControls));
+                if (content != 0)
                 {
                     answer.Dispose();
                     Discard(captureTask, textTask);
-                    nint content = choice.Window;
                     hwnd = content;
                     cover = VisibleControlSurface.CoveringWindow(content);
                     bool contentCovered = cover != 0 || lines;
@@ -1721,25 +1716,14 @@ internal sealed class WindowsVisibleControlAdapter
                 else
                     VisibleControlSurface.NoteNamedProtected(windowRoot != 0 ? windowRoot : hwnd, processName);
                 // v3 point 1: the content of the application's window drawn by a process it started (WebView2, CEF):
-                // the application's process first, then the processes it started. The mission's keys and text are
-                // bound to this family and to no other process.
+                // the application's process first, then the processes it started. A look at it is the opened
+                // application's when that application's process is one of them (NoteOpenedLooked).
                 if (VisibleControlSurface.SurfaceFamily(hwnd) is { Length: > 0 } family)
                 {
                     writer.WriteStartArray("family");
                     foreach (uint member in family)
                         writer.WriteNumberValue(member);
                     writer.WriteEndArray();
-                }
-
-                // Ronda 20 P6: a frame showing only its caption parts says whether its family's content window was read
-                // instead, or why not, with that window's extended style and owner (the trace «computer_use.surface»).
-                if (surfaceChoice is { } surfaceRead)
-                {
-                    writer.WriteStartObject("surface");
-                    writer.WriteString("reason", surfaceRead.Reason);
-                    writer.WriteString("exStyle", surfaceRead.ExStyle.ToString("x8", CultureInfo.InvariantCulture));
-                    writer.WriteNumber("owner", surfaceRead.Owner);
-                    writer.WriteEndObject();
                 }
 
                 // Read in front or behind the person's window (v3 point 0): behind, «focused» cannot say where the
