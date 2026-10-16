@@ -37,6 +37,31 @@ public sealed class WindowsRecycleBinPutBackTests
         }, _ => items);
     }
 
+    // The file left its place and the call threw before anything put it back: the copy is all that is left of it, so
+    // it stays, visible, with its content; it is never deleted with nothing in the bin or in its place.
+    [Test]
+    public void WhenNeitherTheBinNorItsPlaceHoldsTheFileTheCopyStays()
+    {
+        using TemporaryDirectory temporary = new();
+        string file = Path.Combine(temporary.Path, "nota.txt");
+        File.WriteAllText(file, "contenido");
+        var bin = new WindowsRecycleBin(path =>
+        {
+            File.Delete(path);
+            throw new IOException("the shell failed after the file left");
+        }, _ => 3);
+
+        Assert.That(() => bin.Recycle(file), Throws.TypeOf<IOException>());
+
+        string[] left = Directory.GetFiles(temporary.Path);
+        Assert.Multiple(() =>
+        {
+            Assert.That(left, Has.Length.EqualTo(1));
+            Assert.That(File.ReadAllText(left[0]), Is.EqualTo("contenido"));
+            Assert.That(File.GetAttributes(left[0]).HasFlag(FileAttributes.Hidden), Is.False);
+        });
+    }
+
     [Test]
     public void AReadOnlyFileTheBinTookLeavesNoCopyBehind()
     {

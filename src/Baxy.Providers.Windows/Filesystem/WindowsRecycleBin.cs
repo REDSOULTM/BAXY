@@ -52,6 +52,7 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
         // The copy waits hidden; what goes back carries the attributes the person's file (and each folder inside) had.
         var attributes = new List<(string Relative, FileAttributes Value)> { ("", File.GetAttributes(full)) };
         if (folder) CopyFolder(full, keep, attributes); else File.Copy(full, keep);
+        bool taken = false;
         try
         {
             File.SetAttributes(keep, File.GetAttributes(keep) | FileAttributes.Hidden);
@@ -59,7 +60,11 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
             if (before < 0) return false;
             int status = _sendToBin(full);
             bool gone = folder ? !Directory.Exists(full) : !File.Exists(full);
-            if (status == 0 && gone && _items(drive) > before) return true;
+            if (status == 0 && gone && _items(drive) > before)
+            {
+                taken = true;
+                return true;
+            }
             if (gone)
             {
                 if (folder) Directory.Move(keep, full); else File.Move(keep, full);
@@ -70,8 +75,15 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
         }
         finally
         {
+            // The copy is the person's file while neither the bin nor its own place holds it (putting it back threw,
+            // or the shell's call did): it stays, no longer hidden, instead of being deleted with nothing left.
+            if (!taken && !(folder ? Directory.Exists(full) : File.Exists(full)))
+            {
+                if (Directory.Exists(keep) || File.Exists(keep))
+                    File.SetAttributes(keep, File.GetAttributes(keep) & ~FileAttributes.Hidden);
+            }
             // The copy keeps a read-only file's attribute, which would refuse the deletion and leave it behind.
-            if (Directory.Exists(keep))
+            else if (Directory.Exists(keep))
             {
                 foreach (string file in Directory.EnumerateFiles(keep, "*", SearchOption.AllDirectories))
                     File.SetAttributes(file, FileAttributes.Normal);
