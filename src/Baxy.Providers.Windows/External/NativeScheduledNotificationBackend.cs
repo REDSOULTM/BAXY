@@ -72,30 +72,28 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
         bool toastEnabled = toastSetting is null || toastSetting.Value != 0;
         List<FiredReceipt> fired = FiredReceipts(request.AlarmRoot);
         int firedNotShown = fired.Count(receipt => receipt.NotificationShown != true);
-        IReadOnlyList<ScheduledTaskSnapshot> observed;
-        bool schedulerRunning;
+        IReadOnlyList<ScheduledTaskSnapshot>? observed;
         try
         {
             using ITaskSchedulerSession session = host.Open();
             observed = session.Read("BAXY-");
-            schedulerRunning = true;
         }
         catch (TaskSchedulerHostException)
         {
-            // A Task Scheduler that does not answer is not running BAXY's notifications, whatever its service says.
-            observed = [];
-            schedulerRunning = false;
+            // A Task Scheduler that does not answer is not running BAXY's notifications, whatever its service says,
+            // and none of its tasks was read: the line gives no task count and no task list.
+            observed = null;
         }
-        int issueCount = observed.Count(task => !Acceptable(task.LastTaskResult)) + firedNotShown
-            + (toastEnabled ? 0 : 1) + (schedulerRunning ? 0 : 1);
+        int issueCount = (observed?.Count(task => !Acceptable(task.LastTaskResult)) ?? 1) + firedNotShown
+            + (toastEnabled ? 0 : 1);
         return Json(writer =>
         {
             writer.WriteNumber("version", 1);
             writer.WriteBoolean("ok", true);
-            writer.WriteBoolean("schedulerRunning", schedulerRunning);
+            writer.WriteBoolean("schedulerRunning", observed is not null);
             writer.WriteBoolean("toastEnabled", toastEnabled);
             writer.WriteBoolean("healthy", issueCount == 0);
-            writer.WriteNumber("taskCount", observed.Count);
+            if (observed is not null) writer.WriteNumber("taskCount", observed.Count);
             writer.WriteNumber("firedReceiptCount", fired.Count);
             writer.WriteNumber("firedNotShownCount", firedNotShown);
             writer.WriteNumber("issueCount", issueCount);
@@ -113,19 +111,22 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
-            writer.WriteStartArray("tasks");
-            foreach (ScheduledTaskSnapshot task in observed)
+            if (observed is not null)
             {
-                writer.WriteStartObject();
-                writer.WriteString("taskName", task.Name);
-                writer.WriteString("state", StateName(task.State));
-                WriteUtcOrNull(writer, "nextRunUtc", task.NextRunLocal);
-                WriteUtcOrNull(writer, "lastRunUtc", task.LastRunLocal);
-                writer.WriteNumber("lastTaskResult", (long)(uint)task.LastTaskResult);
-                writer.WriteBoolean("resultAcceptable", Acceptable(task.LastTaskResult));
-                writer.WriteEndObject();
+                writer.WriteStartArray("tasks");
+                foreach (ScheduledTaskSnapshot task in observed)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("taskName", task.Name);
+                    writer.WriteString("state", StateName(task.State));
+                    WriteUtcOrNull(writer, "nextRunUtc", task.NextRunLocal);
+                    WriteUtcOrNull(writer, "lastRunUtc", task.LastRunLocal);
+                    writer.WriteNumber("lastTaskResult", (long)(uint)task.LastTaskResult);
+                    writer.WriteBoolean("resultAcceptable", Acceptable(task.LastTaskResult));
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
             }
-            writer.WriteEndArray();
             writer.WriteString("authority", "windows_task_scheduler_notification_diagnostics_postread");
         });
     }

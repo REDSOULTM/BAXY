@@ -179,6 +179,7 @@ public sealed class ScheduledNotificationPruneTests
                 {
                     version = 1,
                     ok = true,
+                    schedulerRunning = true,
                     tasks = liveTasks.Select(name => new { taskName = name, state = "Ready" }).ToArray(),
                 }), string.Empty));
 

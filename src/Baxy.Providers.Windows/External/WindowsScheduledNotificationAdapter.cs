@@ -324,6 +324,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         JsonElement source = document.RootElement;
         if (!source.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
             return ExternalJson.Failure(operation, "notification_list_postread_failed");
+        // A scheduler that did not answer was not read: there is no list, not an empty one.
+        if (!SchedulerAnswered(source))
+            return ExternalJson.Failure(operation, "notification_scheduler_unavailable");
         List<(string Kind, string? Title, string? NextRunUtc, string State)> items = [];
         int staleTasks = 0;
         DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -612,6 +615,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         using JsonDocument document = JsonDocument.Parse(line);
         JsonElement source = document.RootElement;
         if (!source.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+            || !SchedulerAnswered(source)
             || !source.TryGetProperty("tasks", out JsonElement tasks) || tasks.ValueKind != JsonValueKind.Array)
             return null;
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -625,6 +629,11 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         }
         return names;
     }
+
+    // Whether the diagnosis read the scheduler's tasks (schedulerRunning:true); without it, its task list is no read.
+    private static bool SchedulerAnswered(JsonElement diagnosis) =>
+        diagnosis.TryGetProperty("schedulerRunning", out JsonElement running)
+        && running.ValueKind == JsonValueKind.True;
 
     // What rings: a Windows notification with the title (PowerShell's own AppUserModelID, which Windows registers;
     // msg.exe, used before, does not exist on Windows 11 Home, so the title was never shown there), then the sound.
