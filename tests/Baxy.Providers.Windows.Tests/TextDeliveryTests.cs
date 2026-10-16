@@ -128,7 +128,7 @@ public sealed class TextDeliveryTests
     {
         var keyboard = new FakeDesktopKeyboard();
         var fields = new FakeViewedFields(
-            """{"ok":true,"error":"","kind":"Edit","className":"","nativeHwnd":0,"focused":true,"replaceable":false,"method":"","delivered":false}""");
+            """{"ok":true,"error":"","kind":"Edit","className":"","nativeHwnd":0,"focused":true,"method":"","delivered":false}""");
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, new FakeFieldMessages(), fields).InvokeAsync(
             "input.text.type", Json("""{"text":"hola","window":4660,"index":2}"""), CancellationToken.None);

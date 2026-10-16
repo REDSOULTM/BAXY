@@ -3964,7 +3964,7 @@ function Do-Field($request){
     } catch { $wholeSelected=$false }
   }
   $replaceable=$writable -and $enabled -and -not $password -and $kind -ne 'Document' -and ([string]::IsNullOrEmpty($value) -or $wholeSelected -or $replace)
-  $result=@{ ok=$true; error=''; kind=$kind; className=$className; nativeHwnd=$native; focused=$focused; password=$password; readOnly=$readOnly; enabled=$enabled; writable=$writable; replaceable=$replaceable; replace=$replace; valueLength=$(if($null -eq $value){-1}else{$value.Length}); method=''; delivered=$false }
+  $result=@{ ok=$true; error=''; kind=$kind; className=$className; nativeHwnd=$native; focused=$focused; password=$password; readOnly=$readOnly; enabled=$enabled; valueLength=$(if($null -eq $value){-1}else{$value.Length}); method=''; delivered=$false }
   $text=$request.text
   if($null -eq $text){ return $result }
   if(-not $replaceable){
@@ -3997,7 +3997,7 @@ function Do-Focus($request){
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
   $element=Find-ById $target.root ([string]$request.controlId)
   if($null -eq $element){ return @{ ok=$false; error='visible_control_identity_stale' } }
-  if(-not (Test-InFront $target.hwnd)){ return @{ ok=$true; error=''; focused=$false; behind=$true } }
+  if(-not (Test-InFront $target.hwnd)){ return @{ ok=$true; error=''; focused=$false } }
   # Un ComboBox escrito por su Edit interior (Do-Field): el foco va a ese Edit, como fue el valor.
   $kind=''
   try { $kind=([string]$element.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
