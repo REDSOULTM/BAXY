@@ -1740,8 +1740,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         ExternalEffectBoundary effectBoundary,
         CancellationToken token)
     {
-        // Round A: read first. Already disconnected is the request done with nothing changed (changed:false); it was
-        // an observed disconnection that never happened.
+        // Round A: read first. Already disconnected is the request done with nothing changed, never an observed
+        // disconnection: the state already reached, which the external handler hands on as changed:false.
         using (JsonDocument before = await WifiStatusAsync(token))
         {
             if (!Bool(before.RootElement, "connected"))

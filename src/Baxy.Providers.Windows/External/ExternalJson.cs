@@ -40,7 +40,8 @@ internal static class ExternalJson
         new(operation, effectObserved, true, result, null);
 
     // v3 r6 lectores: a verified switch whose post-read already showed the requested state before any change: the
-    // effect was observed when something changed; otherwise the state was already reached (changed:false).
+    // effect was observed when something changed; otherwise the state was already reached, which the external
+    // handler hands to the model as changed:false in the result.
     internal static ExternalCapabilityReceipt Switched(
         string operation,
         JsonElement result,
