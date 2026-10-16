@@ -462,10 +462,9 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
     private async ValueTask<ExternalProcessResult> RunPowerShellAsync(
         string script,
         string input,
-        CancellationToken cancellationToken) => await _runner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-Command", "& {\n" + script + "\n}",
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(input))],
+        CancellationToken cancellationToken) => await _runner.RunPowerShellAsync(
+            script,
+            [Convert.ToBase64String(Encoding.UTF8.GetBytes(input))],
             TimeSpan.FromSeconds(60),
             cancellationToken).ConfigureAwait(false);
 

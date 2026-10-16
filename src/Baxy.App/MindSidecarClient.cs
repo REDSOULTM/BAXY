@@ -339,9 +339,23 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         return request;
     }
 
-    /// <summary>The person's words open a turn; the model answers with its first move.</summary>
-    public Task<MindStep?> DecideAsync(string text, CancellationToken cancellationToken) =>
-        TurnRequestAsync(new JsonObject { ["type"] = "turn.decide", ["text"] = text }, cancellationToken);
+    /// <summary>
+    /// The person's words open a turn; the model answers with its first move. <paramref name="pendingConfirmation"/> is
+    /// the call that waits for their «sí» when one does (its operation, and its arguments unless it is a memory call).
+    /// </summary>
+    public Task<MindStep?> DecideAsync(
+        string text,
+        JsonObject? pendingConfirmation,
+        CancellationToken cancellationToken)
+    {
+        var request = new JsonObject { ["type"] = "turn.decide", ["text"] = text };
+        if (pendingConfirmation is not null)
+        {
+            request["pendingConfirmation"] = pendingConfirmation;
+        }
+
+        return TurnRequestAsync(request, cancellationToken);
+    }
 
     /// <summary>
     /// The verified result of the model's last call goes back to it; it answers with its next move. With

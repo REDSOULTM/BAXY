@@ -84,13 +84,9 @@ internal sealed class WindowsApplicationCrashDiagnosticAdapter : IExternalOperat
             if (hours is < 1 or > 168 || limit is < 1 or > 50)
                 return ExternalJson.Failure(operation, "invalid_arguments");
 
-            ExternalProcessResult process = await _runner.RunAsync(
-                "powershell.exe",
+            ExternalProcessResult process = await _runner.RunPowerShellAsync(
+                DiagnosticScript,
                 [
-                    "-NoProfile",
-                    "-NonInteractive",
-                    "-Command",
-                    "& {\n" + DiagnosticScript + "\n}",
                     hours.ToString(CultureInfo.InvariantCulture),
                     limit.ToString(CultureInfo.InvariantCulture),
                 ],

@@ -263,13 +263,12 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
         cancellationToken.ThrowIfCancellationRequested();
         const string script = """
             $ErrorActionPreference = 'Stop'
-            [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
             Get-CimInstance -ClassName Win32_OperatingSystem -Property Caption,Version,ProductType |
                 Select-Object Caption,Version,ProductType | ConvertTo-Json -Compress
             """;
-        ExternalProcessResult result = await _processRunner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-Command", script],
+        ExternalProcessResult result = await _processRunner.RunPowerShellAsync(
+            script,
+            [],
             TimeSpan.FromSeconds(5),
             cancellationToken).ConfigureAwait(false);
         if (result.ExitCode != 0)

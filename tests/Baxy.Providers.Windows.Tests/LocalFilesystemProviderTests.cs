@@ -261,6 +261,34 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // The refusal says what the call can do instead only where the operation takes a folder (round 1: the model wrote
+    // a path of the person's without folder and read a bare path_outside_sandbox).
+    [Test]
+    public void APathOutsideTheWorkingFolderSaysToNameTheFolderOnlyWhereTheCallTakesOne()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        Directory.CreateDirectory(sandbox);
+        var provider = new LocalFilesystemProvider(sandbox);
+        string outside = Path.Combine(temporary.Path, "fuera");
+
+        FilesystemProviderException written = Assert.Throws<FilesystemProviderException>(
+            () => provider.WriteText(Path.Combine(outside, "nota.txt"), "uno", null))!;
+        FilesystemProviderException created = Assert.Throws<FilesystemProviderException>(
+            () => provider.CreateDirectory(outside, null))!;
+        FilesystemProviderException listed = Assert.Throws<FilesystemProviderException>(
+            () => provider.List(outside, 10))!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(written.Code, Is.EqualTo("path_outside_sandbox"));
+            Assert.That(written.Next, Does.Contain("folder").And.Contain("home"));
+            Assert.That(created.Next, Is.EqualTo(written.Next));
+            Assert.That(listed.Code, Is.EqualTo("path_outside_sandbox"));
+            Assert.That(listed.Next, Is.Null);
+        });
+    }
+
     private sealed class TemporaryDirectory : IDisposable
     {
         public TemporaryDirectory()

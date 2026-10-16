@@ -32,7 +32,7 @@
 param([switch]$DpiUnaware)
 $ErrorActionPreference='Stop'
 [Console]::InputEncoding=[System.Text.Encoding]::UTF8
-[Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false)
+[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
 Add-Type -ReferencedAssemblies Accessibility -TypeDefinition @'
@@ -2118,7 +2118,8 @@ function Get-NearLabel($field,$all){
       if($gap -ge -2 -and $gap -lt $distance){ $distance=$gap; $best=$text }
     } catch {}
   }
-  return ($best -replace '[:：]\s*$','').Trim()
+  # The file has no BOM, so PowerShell 5.1 reads it as ANSI: the full-width colon goes as an escape, not as its bytes.
+  return ($best -replace '[:\uFF1A]\s*$','').Trim()
 }
 # La vista pide al arbol solo lo que se ve (r13a, causa 4: el Visor de eventos tiene 2 973 elementos y su FindAll
 # tardaba 15-17 s; Servicios, mas de 40 s). La condicion IsEnabled y no IsOffscreen se evalua dentro de FindAll, nodo a

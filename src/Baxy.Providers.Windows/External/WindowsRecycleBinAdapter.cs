@@ -34,10 +34,8 @@ internal sealed class WindowsRecycleBinAdapter : IExternalOperationAdapter
         try
         {
             effectBoundary.Cross(cancellationToken);
-            ExternalProcessResult process = await _runner.RunAsync(
-                "powershell.exe",
-                ["-NoProfile", "-NonInteractive", "-Command", EmptyScript],
-                TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+            ExternalProcessResult process = await _runner.RunPowerShellAsync(
+                EmptyScript, [], TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
             string? line = process.Output.Split(
                 ['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
             if (process.ExitCode != 0 || line is null)

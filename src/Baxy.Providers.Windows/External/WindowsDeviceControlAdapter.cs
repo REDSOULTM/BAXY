@@ -2160,25 +2160,11 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return JsonDocument.Parse(process.Output);
     }
 
-    private async ValueTask<ExternalProcessResult> RunPowerShellAsync(
+    private ValueTask<ExternalProcessResult> RunPowerShellAsync(
         string script,
         IReadOnlyList<string> arguments,
-        CancellationToken token)
-    {
-        var processArguments = new List<string>
-        {
-            "-NoProfile",
-            "-NonInteractive",
-            "-Command",
-            "& {\n" + script + "\n}",
-        };
-        processArguments.AddRange(arguments);
-        return await _runner.RunAsync(
-            "powershell.exe",
-            processArguments,
-            TimeSpan.FromSeconds(60),
-            token);
-    }
+        CancellationToken token) =>
+        _runner.RunPowerShellAsync(script, arguments, TimeSpan.FromSeconds(60), token);
 
     private static JsonElement WifiResult(string? id, bool connected, string? place = null) =>
         ExternalJson.Create(writer =>

@@ -79,8 +79,17 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
         }
         catch (FilesystemProviderException exception)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure(exception.Code));
+            return ValueTask.FromResult(OperationOutcome.Failure(exception.Code, exception.Next is { } next
+                ? NextStep(next)
+                : null));
         }
+    }
+
+    // What the refusal says the call can do instead, as the result the model reads beside the code.
+    private static JsonElement NextStep(string next)
+    {
+        using JsonDocument document = JsonDocument.Parse(new System.Text.Json.Nodes.JsonObject { ["next"] = next }.ToJsonString());
+        return document.RootElement.Clone();
     }
 
     private FilesystemMutationResult TransferResult(JsonElement arguments, bool move) =>

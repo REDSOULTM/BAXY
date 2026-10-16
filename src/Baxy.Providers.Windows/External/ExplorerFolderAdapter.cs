@@ -71,9 +71,9 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
         string? explorerPath = null;
         try
         {
-            ExternalProcessResult probe = await _runner.RunAsync(
-                "powershell.exe",
-                ["-NoProfile", "-NonInteractive", "-Command", "& {\n" + ForegroundFolderScript + "\n}"],
+            ExternalProcessResult probe = await _runner.RunPowerShellAsync(
+                ForegroundFolderScript,
+                [],
                 TimeSpan.FromSeconds(20),
                 cancellationToken).ConfigureAwait(false);
             if (probe.ExitCode == 0 && probe.Output.TrimStart().StartsWith('{'))

@@ -244,10 +244,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     {
         string subject = text.Length <= 78 ? text : text[..75] + "…";
         string input = JsonObject(("to", forced), ("subject", subject), ("text", text)).GetRawText();
-        ExternalProcessResult process = await MailRunner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-Command", "& {\n" + MicrosoftAccountAdapter.SendMailScript + "\n}",
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(input))],
+        ExternalProcessResult process = await MailRunner.RunPowerShellAsync(
+            MicrosoftAccountAdapter.SendMailScript,
+            [Convert.ToBase64String(Encoding.UTF8.GetBytes(input))],
             TimeSpan.FromSeconds(90),
             cancellationToken).ConfigureAwait(false);
         string[] lines = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
