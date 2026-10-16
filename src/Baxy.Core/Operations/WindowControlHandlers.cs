@@ -185,8 +185,9 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
             // Auditoría final (regla 3): a desktop window that was there and not read leaves «all» unsaid.
             if (result.Unread > 0) writer.WriteNumber("unreadWindows", result.Unread);
             else writer.WriteBoolean("allMinimized", true);
-            // Auditoría final (regla 3): nothing was minimized, so the desktop was already that way.
-            if (result.Minimized == 0)
+            // Auditoría final (regla 3): nothing was sent to (no window to minimize, none gone meanwhile), so the
+            // desktop was already that way; a window that hid itself when sent the minimize was changed by it.
+            if (result.Minimized == 0 && result.Gone == 0)
                 writer.WriteBoolean("changed", false);
             writer.WriteString("authority", "win32_desktop_windows_postread");
             writer.WriteEndObject();

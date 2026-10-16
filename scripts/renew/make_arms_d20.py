@@ -87,7 +87,7 @@ ARMS["sysen"] = []
 ARMS["noparallel"] = [('"max_tokens": 512, "parallel_tool_calls": True,', '"max_tokens": 512, "parallel_tool_calls": False,')]
 
 # P9, the system text in English, rule by rule the same (the tool descriptions are English already): multilingual
-# models follow instructions written in English better than the same instructions in another language (Shi et al.,
+# models reason competitively or better with prompts written in English than in the task's language (Shi et al.,
 # «Language Models are Multilingual Chain-of-Thought Reasoners», ICLR 2023; Etxaniz et al., «Do Multilingual Language
 # Models Think Better in English?», NAACL 2024). The person is still answered in their own language (its first rule).
 SYSTEM_EN = '''SYSTEM = (

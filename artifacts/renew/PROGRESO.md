@@ -447,7 +447,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     Core y worker UIA. Fuente citada: Anthropic, «Writing effective tools for agents»
     (https://www.anthropic.com/engineering/writing-tools-for-agents); para el resumen [En este turno] (b965b4d2e) y el
     Prompt v2 (d72d89600), que entraron sin fuente (regla 4), se citan a posteriori ese artículo y Liu et al., «Lost in
-    the Middle» (TACL 2023, arXiv:2307.03172: lo relevante al final del contexto se usa mejor); la razón medida de
+    the Middle» (TACL 2024, arXiv:2307.03172: lo relevante al final del contexto se usa mejor); la razón medida de
     entonces fue decision2 226 contra 227.
   - d3a82c12c: lo sólo entregado (teclas, texto) y el encendido aceptado = «completado sin verificar»; Steam/Epic sin
     título o sin caché leída no afirman nada; Epic con manifiesto previo; cancel de descarga pausada; OCR y visión
@@ -507,3 +507,5 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   - 805618957: atrás/recargar con tabCount sólo de una barra entera; latido «desconocido» con micrófono o límites sin leer.
   - e91c31774: `fullscreen` del momento sólo con los límites leídos.
   - 25ef56681: el recorrido UIA del navegador marca su lectura parcial, y lo dicen la barra, la dirección y la página.
+  - e2888e0ce: Children sin hijos duplicados; atrás y recargar sólo con marcos leídos enteros.
+  - El commit de minimize.all: `changed:false` sólo si no se envió a ninguna ventana (una que se escondió al minimizarla fue un cambio).
