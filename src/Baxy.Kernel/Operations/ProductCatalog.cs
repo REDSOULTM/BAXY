@@ -1897,7 +1897,10 @@ public static class ProductCatalog
     internal static OperationRisk ToPolicyRisk(string exactRisk) => exactRisk switch
     {
         OperationRisks.ReadOnly => OperationRisk.ReadOnly,
-        OperationRisks.LowReversible or OperationRisks.RecoverableDelete => OperationRisk.Reversible,
+        OperationRisks.LowReversible => OperationRisk.Reversible,
+        // Decisión del dueño (2026-10-16): mandar a la Papelera, o una nota o tarea a su papelera, pide su «sí» como lo
+        // que no se deshace, aunque se pueda restaurar.
+        OperationRisks.RecoverableDelete => OperationRisk.Irreversible,
         OperationRisks.PrivacySensitive => OperationRisk.Sensitive,
         OperationRisks.ExternalCommunication => OperationRisk.External,
         // Decisión 8 del dueño (2026-10-10, PROMPT_ESTABILIZACION): en Normal se confirma lo que destruye datos y lo

@@ -12,7 +12,6 @@ namespace Baxy.Kernel.Journal;
 [JsonSerializable(typeof(JournalEnvelope))]
 [JsonSerializable(typeof(JournalUnsignedEnvelope))]
 [JsonSerializable(typeof(JournalPayload))]
-[JsonSerializable(typeof(HonestyCorrectionTrace))]
 [JsonSerializable(typeof(JournalAnchorPosition))]
 [JsonSerializable(typeof(JournalArchiveLink))]
 [JsonSerializable(typeof(JournalAnchorPayload))]
