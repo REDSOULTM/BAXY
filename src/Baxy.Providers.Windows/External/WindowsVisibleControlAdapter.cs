@@ -461,16 +461,16 @@ internal interface IPointerFallback
         ValueTask.FromResult((true, 0L));
 }
 
-internal sealed class ScreenPointer(IForegroundLease? lease = null) : IPointerFallback
+internal sealed class ScreenPointer : IPointerFallback
 {
     // r4a M3: no settle in front any more (it kept the front 250 ms per press). The settle was there because the image
     // before the press was taken in front, right after the window repainted its active caption; the baseline is now
     // the window's own drawing taken behind before the burst (CaptureBehindAsync), as the post-read sees it.
     public ValueTask<IInputBurst> AcquireAsync(nint window, CancellationToken cancellationToken) =>
-        (lease ?? ForegroundLease.Shared).AcquireAsync(window, cancellationToken);
+        ForegroundLease.Shared.AcquireAsync(window, cancellationToken);
 
     public ValueTask<(bool Paused, long WaitedMs)> PauseAsync(CancellationToken cancellationToken) =>
-        (lease ?? ForegroundLease.Shared).WaitForPauseAsync(cancellationToken);
+        ForegroundLease.Shared.WaitForPauseAsync(cancellationToken);
 
     public ValueTask<VisibleControlSurface.CapturedWindow?> CaptureBehindAsync(
         nint window, CancellationToken cancellationToken) =>

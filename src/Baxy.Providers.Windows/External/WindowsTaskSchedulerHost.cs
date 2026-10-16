@@ -47,9 +47,10 @@ internal interface ITaskSchedulerSession : IDisposable
 
 /// <summary>
 /// M119: the Task Scheduler 2.0 COM API in-process (CLSID TaskScheduler, ITaskService), so a
-/// notification does not pay a powershell.exe start for Register-ScheduledTask (~2 s per turn).
+/// notification does not pay a powershell.exe start for Register-ScheduledTask (~2 s per turn). The tasks live in the
+/// scheduler's root folder.
 /// </summary>
-internal sealed partial class WindowsTaskSchedulerHost(string folderPath = "\\") : ITaskSchedulerHost
+internal sealed partial class WindowsTaskSchedulerHost : ITaskSchedulerHost
 {
     private const string ToastSettingsKey =
         @"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings";
@@ -58,7 +59,7 @@ internal sealed partial class WindowsTaskSchedulerHost(string folderPath = "\\")
     {
         try
         {
-            return new Session(folderPath);
+            return new Session();
         }
         catch (TaskSchedulerHostException)
         {
@@ -143,7 +144,7 @@ internal sealed partial class WindowsTaskSchedulerHost(string folderPath = "\\")
         private ITaskSchedulerService? _service;
         private ITaskSchedulerFolder? _folder;
 
-        internal Session(string folderPath)
+        internal Session()
         {
             int initialized = CoInitializeEx(0, CoinitMultithreaded);
             if (initialized < 0 && initialized != RpcEChangedMode)
@@ -152,7 +153,7 @@ internal sealed partial class WindowsTaskSchedulerHost(string folderPath = "\\")
             try
             {
                 _service = Connect();
-                ThrowOnFailure(_service.GetFolder(folderPath, out ITaskSchedulerFolder? folder), "task_folder_open_failed");
+                ThrowOnFailure(_service.GetFolder("\\", out ITaskSchedulerFolder? folder), "task_folder_open_failed");
                 _folder = folder ?? throw new TaskSchedulerHostException("task_folder_missing");
             }
             catch
