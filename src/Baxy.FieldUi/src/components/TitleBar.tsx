@@ -84,7 +84,7 @@ export function TitleBar({ bypass }: { bypass: boolean }) {
             setting that stays on until it is switched off). */}
         {bypass && (
           <span className="titlebar-bypass" role="status">
-            bypass · sin confirmaciones
+            bypass · sin confirmar lo que pides
           </span>
         )}
       </div>

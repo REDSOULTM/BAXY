@@ -208,11 +208,14 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteBoolean("resolved", appId is not null);
             if (appId is null) writer.WriteNull("appId"); else writer.WriteString("appId", appId);
             writer.WriteString("title", game?.Name ?? title);
-            writer.WriteBoolean("owned", owned);
+            // Ronda final: the local library cache is incomplete (see InstallNamedAsync), so a game absent from it is
+            // absent from the cache, never «not owned».
+            if (owned || installed) writer.WriteBoolean("owned", true);
+            else writer.WriteBoolean("inLocalLibraryCache", false);
             writer.WriteBoolean("installed", installed);
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
-                : owned ? "owned_not_installed" : "not_in_library");
+                : owned ? "owned_not_installed" : "not_in_local_library_cache");
             writer.WriteString("authority", installed
                 ? "steam_local_appmanifest" : "steam_authenticated_library_cache");
             writer.WriteEndObject();
@@ -441,10 +444,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteBoolean("resolved", owned);
             if (catalogItemId is null) writer.WriteNull("appId"); else writer.WriteString("appId", catalogItemId);
             writer.WriteString("title", installedName ?? ownedName ?? title);
-            writer.WriteBoolean("owned", owned);
+            if (owned) writer.WriteBoolean("owned", true);
+            else writer.WriteBoolean("inLocalLibraryCache", false);
             writer.WriteBoolean("installed", installed);
             writer.WriteString("state", installed ? "installed"
-                : owned ? "owned_not_installed" : "not_in_library");
+                : owned ? "owned_not_installed" : "not_in_local_library_cache");
             writer.WriteString("authority", installed
                 ? "epic_launcher_local_manifest" : "epic_launcher_catalog_cache");
             writer.WriteEndObject();
@@ -571,7 +575,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         bool owned = _owned().Contains(appId);
         if (game is null && !owned)
         {
-            return ExternalJson.Failure(operation, "steam_app_not_in_authenticated_library");
+            return ExternalJson.Failure(operation, "steam_app_not_in_local_library_cache");
         }
         JsonElement result = ExternalJson.Create(writer =>
         {

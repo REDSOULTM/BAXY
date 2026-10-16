@@ -125,12 +125,22 @@ class Conductor:
                         pass
 
 
+def _dones(conductor: Conductor) -> list[int]:
+    return [i for i, e in enumerate(conductor.events.all) if e["type"] == "command.done"]
+
+
 def run_turn(conductor: Conductor, command: dict, timeout: float) -> list[dict]:
-    """Sends one turn and returns its events up to its command.done (or what came before the timeout)."""
+    """Sends one turn and returns its own events, up to its command.done (or what came before the timeout). Every
+    command but exit ends in one command.done, so the n-th command's is the n-th: after a timeout, the late end of the
+    turn before is that turn's, never this one's (ronda final: F119's timeout shifted F120-F124 by one)."""
     start = conductor.send(command)
-    done = conductor.events.wait(lambda e: e["type"] == "command.done", timeout)
+    n = conductor.sequence
+    done = conductor.events.wait(lambda e: len(_dones(conductor)) >= n, timeout)
     conductor.events.poll()
-    events = conductor.events.all[start:]
+    dones = _dones(conductor)
+    begin = start if n == 1 else (dones[n - 2] + 1 if len(dones) >= n - 1 else len(conductor.events.all))
+    end = dones[n - 1] + 1 if len(dones) >= n else len(conductor.events.all)
+    events = conductor.events.all[max(begin, 0):end]
     if done is None:
         events.append({"type": "bench.timeout"})
     return events

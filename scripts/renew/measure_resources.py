@@ -40,6 +40,8 @@ def product_processes() -> dict[str, list[psutil.Process]]:
                 else "piper" if name == "piper.exe"
                 else "app" if name == "baxy.exe"
                 else "core" if name == "baxy-core.exe"
+                # Ronda final: the persistent UIA worker the core prewarms (UiaWorkerHost) is the product's too.
+                else "worker-uia" if name.startswith("powershell") and "DesktopUiaWorker" in cmdline
                 else None)
         if role:
             found.setdefault(role, []).append(process)
@@ -79,8 +81,10 @@ def measure(label: str, ear: bool) -> dict:
         time.sleep(1)
     conductor.close()
     harness = sum(peak.get(role, 0) for role in ("llama-server", "mente", "piper"))
+    # Ronda final: the whole product as well (App, Core and the UIA worker beside the harness), so no process is left out.
     return {"oido_cargado": ear, "vram_mib": (gpu - before) if gpu is not None and before is not None else None,
-            "uss_mib": peak, "arnes_ram_mib": harness, "gpu_before_mib": before, "gpu_peak_mib": gpu}
+            "uss_mib": peak, "arnes_ram_mib": harness, "producto_ram_mib": sum(peak.values()),
+            "gpu_before_mib": before, "gpu_peak_mib": gpu}
 
 
 def main() -> None:

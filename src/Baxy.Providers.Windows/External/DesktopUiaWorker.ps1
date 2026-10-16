@@ -1919,6 +1919,9 @@ function Get-HolderWindow($el){
 function Invoke-MannerControl($el,$root,[IntPtr]$top,[string]$manner){
   $pattern=$null
   if($manner -eq 'open'){
+    # Ronda final (limite 5): en un boton de barra visto por su proxy MSAA, Expand es la accion por defecto del proxy y
+    # pulsa con el raton fisico sin lease (ver Select-ClickMethods): no se abre de esa manera y nada se envia.
+    if([bool](Get-ClickFacts $el).toolbarProxy){ return @{ error='visible_control_cannot_open' } }
     if(-not $el.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){ return @{ error='visible_control_cannot_open' } }
     $ec=([System.Windows.Automation.ExpandCollapsePattern]$pattern)
     $expanded=[System.Windows.Automation.ExpandCollapseState]::Expanded

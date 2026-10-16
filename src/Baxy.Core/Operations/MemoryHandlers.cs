@@ -249,8 +249,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
 
         MemoryConfigurationResult result = _store.Configure(
             new MemoryConfigureRequest(invocation.InvocationId, enabled));
-        MemoryStatusResult status = _store.Status(new MemoryStatusRequest());
-        if (status.Enabled != result.Enabled)
+        if (!ReadsBack(() => _store.Status(new MemoryStatusRequest()).Enabled == result.Enabled))
         {
             return Failure("verification_failed", effectMayHaveOccurred: true);
         }
@@ -333,7 +332,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             invocation.MissionId,
             now,
             storeSessionId));
-        if (!SavedRecordMatches(result, value, storeSessionId))
+        if (!ReadsBack(() => SavedRecordMatches(result, value, storeSessionId)))
         {
             return Failure("verification_failed", effectMayHaveOccurred: true);
         }
@@ -386,7 +385,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             _ => throw new JsonException("The forget scope is invalid."),
         };
         MemoryForgetResult result = _store.Forget(request);
-        if (!ForgottenStateMatches(request, result))
+        if (!ReadsBack(() => ForgottenStateMatches(request, result)))
         {
             return Failure("verification_failed", effectMayHaveOccurred: true);
         }
@@ -420,12 +419,12 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             invocation.InvocationId,
             MemoryForgetScope.Session,
             SessionId: opened.SessionId));
-        if (!ForgottenStateMatches(
+        if (!ReadsBack(() => ForgottenStateMatches(
                 new MemoryForgetRequest(
                     invocation.InvocationId,
                     MemoryForgetScope.Session,
                     SessionId: opened.SessionId),
-                result))
+                result)))
         {
             return Failure("verification_failed", effectMayHaveOccurred: true);
         }
@@ -540,10 +539,10 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             SourceMissionId: invocation.MissionId,
             CapturedAtUtc: now,
             SessionId: opened.SessionId));
-        if (!SavedRecordMatches(
+        if (!ReadsBack(() => SavedRecordMatches(
                 new MemorySaveResult(result.RecordId, result.Revision, result.Selector, result.Replayed),
                 newValue,
-                opened.SessionId))
+                opened.SessionId)))
         {
             return Failure("verification_failed", effectMayHaveOccurred: true);
         }
@@ -766,6 +765,25 @@ internal sealed class MemoryOperationHandler : IOperationHandler
     // topic, session or everything); other memories that remain do not make a correct forget a failure.
     private bool ForgottenStateMatches(MemoryForgetRequest request, MemoryForgetResult result) =>
         result.DeletedCount <= 0 || !_store.Holds(request);
+
+    // Ronda final: the change is committed before its read-back, so a read-back that throws is a change that may stand
+    // (verification_failed with the effect possible), never the clean store failure of the outer catch.
+    private static bool ReadsBack(Func<bool> check)
+    {
+        try
+        {
+            return check();
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException
+            or CryptographicException
+            or MemoryStoreException
+            or ProtectedPayloadException
+            or JsonException)
+        {
+            return false;
+        }
+    }
 
     private static OperationOutcome Failure(
         string errorCode,

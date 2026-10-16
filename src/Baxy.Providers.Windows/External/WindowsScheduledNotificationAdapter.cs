@@ -448,7 +448,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 Recurrence = recurrence,
             },
             cancellationToken).ConfigureAwait(false);
-        return Parse(operation, process, taskName, effectBoundary, writer =>
+        ExternalCapabilityReceipt scheduled = Parse(operation, process, taskName, effectBoundary, writer =>
         {
             writer.WriteString("kind", kind);
             writer.WriteString("title", title);
@@ -457,6 +457,13 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
             if (recurrence is not null) writer.WriteString("recurrence", recurrence);
         });
+        // Ronda final (limite 6): a scheduler that took nothing leaves nothing behind, so «before any effect» holds.
+        if (!scheduled.Verified && !scheduled.EffectObserved && !scheduled.EffectMayHaveOccurred)
+        {
+            try { File.Delete(ringScript); } catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { }
+        }
+
+        return scheduled;
     }
 
     private async ValueTask<ExternalCapabilityReceipt> CancelAsync(

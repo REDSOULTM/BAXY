@@ -114,8 +114,12 @@ def _outcome(observation: str) -> str:
     if status == "pending" or facts.get("effectUncertain"):
         return "sin confirmar: pudo o no ocurrir"
     if status == "completed":
-        # A completed call is verified unless its result says it is not (the App's own completed-but-unreadable).
-        return "completado sin verificar" if facts.get("verified") is False else "completado y verificado"
+        # A completed call is verified unless its result says it is not (the App's own completed-but-unreadable) or
+        # that what it changed was not read back (ronda final: a shell command that exited 0).
+        observed = facts.get("observed")
+        if facts.get("verified") is False or (isinstance(observed, dict) and observed.get("effectReadBack") is False):
+            return "completado sin verificar"
+        return "completado y verificado"
     error = facts.get("error") or facts.get("cause")
     return f"falló ({error})" if error else "falló"
 
@@ -276,7 +280,7 @@ class Mind:
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
-                description += " The person's game library: " + "; ".join(games) + "."
+                description += " The person's installed games: " + "; ".join(games) + "."
             raw = cap.get("argumentsSchema")
             constants: dict[str, Any] = {}
             schema = _model_schema(raw if isinstance(raw, dict) else {}, constants)

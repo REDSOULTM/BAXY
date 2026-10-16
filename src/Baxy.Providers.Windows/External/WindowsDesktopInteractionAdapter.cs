@@ -1037,7 +1037,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteBoolean("ok", true);
-            writer.WriteBoolean("effectObserved", true);
+            // Ronda final: a queued key is delivered as the keyboard's is (CU12), not an effect seen; the other methods
+            // read the field back.
+            writer.WriteBoolean(delivery.Method == "postmessage" ? "delivered" : "effectObserved", true);
             writer.WriteString("action", key is null ? "text" : "key");
             if (key is null)
                 writer.WriteNull("key");

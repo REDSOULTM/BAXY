@@ -462,11 +462,12 @@ internal sealed class NativeTurnLoop
     private const string AskThePerson =
         "ask the person whether to do it; when they answer, call confirm_pending with their answer";
 
-    // The call held for the person's «sí»: nothing ran, and calling it again only asks again (e2e E021: after «sí»
-    // the model called shell_command_run again instead of confirm_pending).
+    // The call held for the person's «sí»: nothing ran, and calling it again is not their answer (e2e E021: after «sí»
+    // the model called shell_command_run again instead of confirm_pending). Ronda final: «only asks again» was false
+    // in the next turn, where the same call runs (DropPending).
     private static string AskThePersonAbout(string operation) =>
         "nothing ran: ask the person whether to do it; their answer goes in confirm_pending (approve true or false); "
-        + $"calling {operation.Replace('.', '_')} again only asks again";
+        + $"calling {operation.Replace('.', '_')} again is not their answer: it is a new call";
 
     // What BAXY says of a call it held or could not prepare carries the call's arguments, except a memory call's: they
     // stay sealed (the observation reaches the model and, with the conductor, its local events). A memory call that ran

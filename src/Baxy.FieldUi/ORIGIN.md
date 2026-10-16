@@ -118,3 +118,13 @@ BAXY propone por su cuenta (el latido) sigue esperando su sí, y borrar en el pa
 - `dist/index.html`: `548E75C082BE6AAA80253EC96F69111C037BD277B3CA7136870596D2B7F12AFF`
 - `dist/assets/index-COQjHLMx.css`: sin cambios
 - `dist/assets/index-DiHBS7rP.js`: `05C457592758E4EA44ACAF14A184ED40DFF48F86C4DC72F3D26B85AE20BDD241`
+
+## Ronda final de auditoría (PC) de 2026-10-16
+
+La etiqueta de la barra de título en bypass dice «bypass · sin confirmar lo que pides» (antes «sin confirmaciones»,
+que decía de más: el latido sigue esperando el sí y el panel de memoria sigue en dos pasos). Build deliberado
+`pnpm build` con el grafo fijado.
+
+- `dist/index.html`: `A24E2D2725F2C9B8B4E71EAC54056362344B68AB175C89EB870D70FBB83804FF`
+- `dist/assets/index-COQjHLMx.css`: sin cambios
+- `dist/assets/index-zFPW0PcQ.js`: `393B498C5ED9646698C28F0E0D4164FE7562DA4FA0E7D892E58954C12BA342C9`
