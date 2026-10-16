@@ -82,7 +82,11 @@ internal static class ProductConductorHost
         long? speechStartedMs = null;
         long? responseSpeechStartedMs = null;
         string lastSaid = string.Empty;
-        // The voice says in order what it took: the notice it took sounds before the response published after it.
+        // The voice says in order what it queued, and each utterance that reaches its first sound gives one start and
+        // one end: the first start after the notice was queued is the notice's (it was queued before the response). The
+        // voice's events name no utterance, so a notice it drops before its first sound (Piper or the device failing on
+        // that phrase) leaves no event at all, and the response's start that follows is read as the notice's; telling
+        // them apart takes the voice saying which utterance starts.
         string? noticeAwaitingSound = null;
         (string Text, bool Notice) utterance = (string.Empty, false);
         viewModel.MessageAdded += message =>
