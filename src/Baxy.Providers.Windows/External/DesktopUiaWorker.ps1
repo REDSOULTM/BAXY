@@ -4150,7 +4150,7 @@ while($true){
     $request=$line | ConvertFrom-Json
     $cmd=[string]$request.cmd
     if($cmd -eq 'exit'){ Send-Line @{ ok=$true; bye=$true }; break }
-    elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true; pid=$PID; renderClasses=@([BaxyUiaWorkerNative]::RenderClasses); clientProviders=$script:ClientProviders; quietInput=$script:QuietInput } }
+    elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true; renderClasses=@([BaxyUiaWorkerNative]::RenderClasses); clientProviders=$script:ClientProviders; quietInput=$script:QuietInput } }
     elseif($cmd -eq 'view'){ Send-Line (Do-View $request) }
     elseif($cmd -eq 'click'){ Send-Line (Invoke-Kept $request { param($r) Do-Click $r }) }
     elseif($cmd -eq 'at'){ Send-Line (Invoke-Kept $request { param($r) Do-At $r }) }
