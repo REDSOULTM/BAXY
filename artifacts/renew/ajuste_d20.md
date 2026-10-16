@@ -100,7 +100,7 @@ Ninguna palanca medida supera a `base` por encima del ruido sin romper una condi
 - **Ya aplicadas:** P3 y P8.
 - **Descartada por la latencia:** P4.
 
-El producto se congeló en **ff863b47f** (tag `renew-d20-congelado`), sin ningún cambio de la mente respecto de `base9e` (la mente de 9eadc3d79: ninguna palanca entró). El holdout v3, sellado por agentes aislados en `F:\BAXYeval\renew_v3`, se corrió una sola vez sobre ese commit (cifras en `PROGRESO.md` y `metas.json`), y su resultado es el techo alcanzado con Qwen3.5-4B en este harness.
+El producto se congeló en **ff863b47f** (tag `renew-d20-congelado`), sin ningún cambio de la mente respecto de `base9e` (la mente de 9eadc3d79: ninguna palanca entró). El holdout v3, sellado por agentes aislados en `F:\BAXYeval\renew_v3`, se corrió una sola vez sobre ese commit (cifras en `PROGRESO.md`, y en `metas.json` al cerrar el juicio de falsedades), y su resultado es el techo alcanzado con Qwen3.5-4B en este harness.
 
 **P10, una llamada por decisión (`noparallel`, PC, contra `base9e`):** decisión 230, 233 y 233 (media 232,0, la misma que `base9e`; dispersión 3 contra 0), p50 0,938 s (más lento); escenas 30/39, 0 molestas. **No gana.**
 

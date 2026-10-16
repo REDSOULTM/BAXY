@@ -479,6 +479,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     instalado) en 35d1f37f0. Corrección de este registro: «Producto final: 97df86ba1» y «11d7a5542» de arriba
     quedaron superados: el PRODUCTO FINAL es 13eca00da (sin holdout propio; el holdout v2 es de 026c7af91). Sobre
     13eca00da no cupo otra ronda antes del tope (08:49): ronda_final_auditoria = límite honesto con su evidencia.
+    (Superado a su vez por la decisión 20: el congelado es ff863b47f, con el holdout v3; ver abajo.)
 
 ## Decisión 20 del dueño (2026-10-16 ~12:00): ajuste reabierto
 
@@ -509,3 +510,21 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   - 25ef56681: el recorrido UIA del navegador marca su lectura parcial, y lo dicen la barra, la dirección y la página.
   - e2888e0ce: Children sin hijos duplicados; atrás y recargar sólo con marcos leídos enteros.
   - 24a8d7e95: minimize.all `changed:false` sólo si no se envió a ninguna ventana (una que se escondió al minimizarla fue un cambio).
+  - Ronda final 6: el latido lista todas las ventanas abiertas (antes, 12 sin decirlo); el worker UIA de computer use
+    marca su lectura parcial (hijos sin leer, tope de 400, 2500 nodos o profundidad 26), así que nada se dice ausente
+    ni único desde ella.
+- Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
+  de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
+  - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
+  - Escenas 43/60 = 71,7 % (silencio 33/35, actuar 6/10, proponer 2/6, decir 2/9; 2 molestas = 0,67 por 20; 0 de
+    riesgo). Latido 8/12 (silencio 7/7, actuar 0/2, proponer 0/1, decir 1/2; 0 molestas). Instinto 51/72 = 70,8 %.
+  - e2e 22/40 = 55 % (herramientas 10/12, cu 4/10, agente 4/12, voz 4/6; primer sonido p50 2591 ms, primer sonido de
+    la respuesta p50 4149 ms, 23 turnos sobre 3 s). Cinco casos no llegaron a prepararse en el notebook (setup_fallido:
+    su setup.ps1 abortó con `notepad_already_open` en E315, E316 y E340 y `settings_already_open` en E317 y E318, porque
+    el Bloc de notas o Configuración ya estaban abiertos): no dicen nada del modelo, pero la regla los cuenta. Sin
+    ellos, 22/35 = 62,9 %.
+  - Combinado 176/212 = 83,0 % (decisión + e2e + latido, como en v2; 176/207 = 85,0 % sin los cinco setup_fallido).
+  - Falsedades: 36 conversaciones (6 setup_fallido en el notebook: F306, F307, F313, F315, F322 y F331). El juez 35B
+    murió tres veces en la misma petición (F308) sin nada en su log; el juicio se repitió con `--judge-only` sobre el
+    mismo transcripts.json (sha 046ce32b…) tras 0d2e5433b, que reinicia el servidor y deja sin juzgar el voto que no
+    pudo leer. Ese cambio y el de la ronda 6 sólo tocan al juez, nunca a las conversaciones, que ya estaban escritas.

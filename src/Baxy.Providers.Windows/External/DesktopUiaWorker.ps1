@@ -2034,18 +2034,23 @@ $script:Cache.TreeScope=[System.Windows.Automation.TreeScope]::Element
 # tras abrir una pestana nueva) deja un primer hijo muerto: GetFirstChild falla
 # alli y FindAll desde la ventana no encuentra nada, mientras los hijos vivos
 # siguen alcanzandose desde el ultimo hacia atras (como UserBrowserScripts).
+# Ronda final 6 (regla 3): a node whose children were not all read (both walks raised, or more than 400) marks the
+# read partial ($script:Partial for the view and the lookup, $script:RevealCut for reveal), so nothing is said absent
+# or the only one from it.
 function Get-Children($walker,$node){
   $kids=New-Object System.Collections.Generic.List[object]
   try {
     $child=$walker.GetFirstChild($node,$script:Cache)
     while($null -ne $child -and $kids.Count -lt 400){ $kids.Add($child); $child=$walker.GetNextSibling($child,$script:Cache) }
+    if($null -ne $child){ $script:Partial=$true; $script:RevealCut=$true }
     return ,$kids
   } catch {}
   $kids.Clear()
   try {
     $child=$walker.GetLastChild($node,$script:Cache)
     while($null -ne $child -and $kids.Count -lt 400){ $kids.Insert(0,$child); $child=$walker.GetPreviousSibling($child,$script:Cache) }
-  } catch {}
+    if($null -ne $child){ $script:Partial=$true; $script:RevealCut=$true }
+  } catch { $script:Partial=$true; $script:RevealCut=$true }
   return ,$kids
 }
 # El arbol recorrido nodo a nodo, acotado, cuando FindAll no devuelve nada.
@@ -2060,8 +2065,11 @@ function Get-WalkedDescendants($root){
     foreach($child in (Get-Children $walker $pair[0])){
       try { if($child.Cached.IsEnabled){ $found.Add($child) } } catch {}
       if($pair[1] -lt 26){ $queue.Enqueue(@($child,($pair[1]+1))) }
+      else { $script:Partial=$true; $script:RevealCut=$true }
     }
   }
+  # Ronda final 6 (regla 3): stopped at 2500 nodes with nodes still to read is a partial read.
+  if($queue.Count -gt 0){ $script:Partial=$true; $script:RevealCut=$true }
   return ,$found
 }
 function Get-Descendants($root){
@@ -2907,7 +2915,13 @@ function Get-ClientRootFor([IntPtr]$hwnd){
 # IsOffscreen (lo unico que acepta lo marcado fuera de pantalla), el recorrido de lo visible con plazo y todas sus filas
 # que se ven; si el plazo corta el recorrido, la busqueda lo dice (visible_lookup_timeout) y no que no hay nada.
 function Get-LookupScope($root,$offscreenBox){
-  if($null -ne $offscreenBox){ return (Get-Descendants $root) }
+  if($null -ne $offscreenBox){
+    # Ronda final 6 (regla 3): a walk that read part of the tree leaves the lookup undecided here too.
+    $script:Partial=$false
+    $all=Get-Descendants $root
+    if($script:Partial){ $script:LookupPartial=$true }
+    return $all
+  }
   $hwnd=0
   try { $hwnd=[long]$root.Current.NativeWindowHandle } catch { $hwnd=0 }
   $script:AllRows=$true

@@ -86,8 +86,9 @@ internal static class HeartbeatMoment
             context["foreground"] = frontWindow;
         }
 
+        // Ronda final 6 (regla 3): every open window is listed; a list cut short would read as all of them.
         var windows = new JsonArray();
-        foreach (nint window in TopLevelWindows().Where(window => window != front).Take(12))
+        foreach (nint window in TopLevelWindows().Where(window => window != front))
         {
             if (Describe(window) is { } described)
             {

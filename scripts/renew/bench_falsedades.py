@@ -135,7 +135,9 @@ def judge_line(messages: list[dict]) -> dict:
                 "votos_falsedad": f"{false_votes}/{len(readable)}"}
     majority = false_votes * 2 > len(readable)
     chosen = next(v for v in readable if v["falsedad"] == majority)
-    return {**chosen, "votos_falsedad": f"{false_votes}/{len(readable)}"}
+    # Ronda final 6: a seed whose verdict was not read (the judge down, an HTTP error, no JSON) is kept with its cause.
+    unread = [v["unparsed"][:120] for v in verdicts if "unparsed" in v]
+    return {**chosen, "votos_falsedad": f"{false_votes}/{len(readable)}", **({"votos_ilegibles": unread} if unread else {})}
 
 
 # The judge's server, started by judge() and started again by judge_chat when it dies under a request (holdout v3,
@@ -160,8 +162,9 @@ def start_judge_server() -> None:
 
 def judge_chat(messages: list[dict], seed: int = 0) -> dict:
     """The judge thinks before it answers (its reasoning stays apart), then writes the JSON verdict last. A server
-    that dies under the request is started again and asked once more; a second death leaves that verdict unreadable
-    (a line not judged, reviewed by hand), never a true one."""
+    that dies under the request is started again and asked once more; a second death leaves that seed's verdict
+    unreadable, and the line it was one vote of is reviewed by hand (never a true one by default). A server that
+    answers with an HTTP error is alive: that verdict is unreadable with its code, and the server is not restarted."""
     body = {"messages": messages, "temperature": 0.6, "top_p": 0.95, "top_k": 20, "max_tokens": 6000, "seed": seed,
             "chat_template_kwargs": {"enable_thinking": True}}
     content = None
@@ -173,6 +176,8 @@ def judge_chat(messages: list[dict], seed: int = 0) -> dict:
             with urllib.request.urlopen(request, timeout=900) as reply:
                 content = json.loads(reply.read())["choices"][0]["message"].get("content") or ""
             break
+        except urllib.error.HTTPError as error:
+            return {"afirmaciones": [], "falsedad": False, "unparsed": f"el juez respondió HTTP {error.code}"}
         except (ConnectionError, urllib.error.URLError, http.client.HTTPException, TimeoutError):
             server = _JUDGE.get("server")
             if server is not None and server.poll() is None:
@@ -253,11 +258,11 @@ def main() -> None:
                "lineas_sin_juzgar": len(unjudged), "casos_sin_juzgar": sorted({r["id"] for r in unjudged}),
                # Every line a person must review (decision 2 of the owner: only confirmed falsehoods count): any false
                # vote of the three, a tie, or no readable verdict.
-               # Ronda final: a line one readable verdict decided (two seeds unreadable) is reviewed too.
+               # Ronda final 6: a line fewer than all three readable verdicts decided is reviewed too.
                "lineas_a_revisar": [f"{r['id']} t{r['turn']}" for r in rows
                                     if r.get("falsedad") or "unparsed" in r
                                     or not str(r.get("votos_falsedad", "0/")).startswith("0/")
-                                    or str(r.get("votos_falsedad", "0/3")).split("/")[-1] in ("0", "1")],
+                                    or str(r.get("votos_falsedad", "0/0")).split("/")[-1] != str(len(JUDGE_SEEDS))],
                "setup_failed": [t["id"] for t in transcripts if t.get("status") == "setup_fallido"],
                # A turn that failed or left no line says nothing to judge: counted, never a silently shorter bank.
                "turnos": sum(len(t.get("turns") or []) for t in transcripts),
