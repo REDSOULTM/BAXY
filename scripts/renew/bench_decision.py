@@ -82,7 +82,9 @@ def judge(expect, result, arguments):
                 return True
         return False
     if expect["kind"] == "ask":
-        return kind == "clarify" or (kind == "conversation" and str(result.get("reply", "")).strip().endswith("?"))
+        # A spoken answer that asks the person something is a question, wherever its «?» is («¿Qué juego quieres
+        # abrir? Necesito el nombre.»).
+        return kind == "clarify" or (kind == "conversation" and "?" in str(result.get("reply", "")))
     if expect["kind"] == "text":
         return kind == "conversation" and bool(str(result.get("reply", "")).strip())
     raise ValueError(expect)
