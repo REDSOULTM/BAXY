@@ -113,8 +113,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>A heartbeat's words for a person who is playing, in a call, watching or away: shown, not spoken.</summary>
     internal event Action<string>? NotificationRequested;
 
-    /// <summary>The voice took the mind's notice of a silent turn (<see cref="SilenceNotice"/>): it is not a message.</summary>
-    internal event Action<string>? NoticeSpoken;
+    /// <summary>
+    /// The voice accepted the mind's notice of a silent turn (<see cref="SilenceNotice"/>) into its queue: it sounds
+    /// after what the voice already holds, or not at all if the voice drops it. It is not a message.
+    /// </summary>
+    internal event Action<string>? NoticeQueued;
 
     public ObservableCollection<ConversationMessage> Messages { get; }
 
@@ -1148,8 +1151,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         if (await mind.VoiceSpeakAsync(notice, TimeSpan.FromSeconds(5), CancellationToken.None))
         {
-            ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "notice.spoken");
-            NoticeSpoken?.Invoke(notice);
+            ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "notice.queued");
+            NoticeQueued?.Invoke(notice);
         }
     }
 

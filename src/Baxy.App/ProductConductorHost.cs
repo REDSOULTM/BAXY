@@ -12,7 +12,8 @@ namespace Baxy.App;
 /// The benches' driver: starts the same <see cref="MainWindowViewModel"/> the window uses, without the window, sends the
 /// turns of a file (the person's words, or their Sí/No on a pending confirmation) and writes everything that happened as
 /// JSON lines: each line BAXY published, each call the model made with its status and verification, the notice of a
-/// silent turn, when the voice started to speak (the notice's utterance marked <c>notice</c>), and how each turn ended.
+/// silent turn once the voice queued it, when the voice started to speak (the notice's utterance marked
+/// <c>notice</c>), and how each turn ended.
 /// <para>
 /// Usage: <c>Baxy.exe --conductor [--profile DIR] [--capture DIR] (--turns-file FILE | --text TEXT | --command-dir DIR)
 /// [--timeout-ms N]</c>. A turns file has one JSON object per line: <c>{"text":"…"}</c> or <c>{"confirm":true}</c>
@@ -100,12 +101,12 @@ internal static class ProductConductorHost
             ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
             });
         };
-        viewModel.NoticeSpoken += notice =>
+        viewModel.NoticeQueued += notice =>
         {
             noticeAwaitingSound = notice;
             Emit(new JsonObject
             {
-                ["type"] = "notice",
+                ["type"] = "notice.queued",
                 ["text"] = notice,
                 ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
             });
