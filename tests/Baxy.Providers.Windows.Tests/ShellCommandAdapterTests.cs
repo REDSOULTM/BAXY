@@ -40,7 +40,7 @@ public sealed class ShellCommandAdapterTests
             Assert.That(result.GetProperty("effectReadBack").GetBoolean(), Is.False);
             Assert.That(runner.Executable, Is.EqualTo("powershell.exe"));
             Assert.That(runner.Arguments, Does.Contain("-NoProfile").And.Contain("-NonInteractive"));
-            Assert.That(runner.Arguments[^1], Does.StartWith(PowerShellCommand.Utf8Output + "Set-Location -LiteralPath '").And.Contain("; git status; exit $LASTEXITCODE"));
+            Assert.That(runner.Arguments[^1], Does.StartWith(PowerShellCommand.Utf8Output + "Set-Location -LiteralPath '").And.EndWith("; git status" + ShellCommandAdapter.ExitTail));
             Assert.That(result.GetProperty("exitCode").GetInt32(), Is.EqualTo(0));
             Assert.That(result.GetProperty("succeeded").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("lineCount").GetInt32(), Is.EqualTo(2));
@@ -86,6 +86,53 @@ public sealed class ShellCommandAdapterTests
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.False);
+        });
+    }
+
+    // Round A: a cmdlet that fails leaves $LASTEXITCODE unset, and «exit $LASTEXITCODE» exited 0 (succeeded:true for
+    // «Get-Item <missing>»). A real console runs the same script the product runs: the failed cmdlet exits non-zero,
+    // a native command keeps its own code, and one that ran well exits 0. Only reads and «cmd /c exit»; nothing changes.
+    [TestCase("Get-Item -LiteralPath 'MISSING'", 1)]
+    [TestCase("cmd /c exit 5", 5)]
+    [TestCase("cmd /c exit 4; Get-Date | Out-Null", 4)]
+    [TestCase("Get-Date | Out-Null", 0)]
+    public async Task ARealConsoleExitsWithTheStatusOfWhatRan(string command, int exitCode)
+    {
+        string cwd = Path.GetTempPath();
+        string missing = Path.Combine(cwd, "baxy-missing-" + Guid.NewGuid().ToString("N"));
+        var adapter = new ShellCommandAdapter(new ExternalProcessRunner(), cwd);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "shell.command.run",
+            JsonSerializer.SerializeToElement(new { command = command.Replace("MISSING", missing) }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result!.Value.GetProperty("exitCode").GetInt32(), Is.EqualTo(exitCode));
+            Assert.That(receipt.Result!.Value.GetProperty("succeeded").GetBoolean(), Is.EqualTo(exitCode == 0));
+            Assert.That(receipt.ErrorCode, Is.EqualTo(exitCode == 0 ? null : "shell_command_exit_nonzero"));
+        });
+    }
+
+    // Round A: a console whose output passed the runner's bound ran and was stopped; it was told as «not started».
+    [TestCase("git pull", true)]
+    [TestCase("Get-ChildItem", false)]
+    public async Task AConsoleThatOverflowedRanAndSaysWhatItMayHaveChanged(string command, bool mayChange)
+    {
+        var adapter = new ShellCommandAdapter(new OverflowingRunner(), Path.GetTempPath());
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "shell.command.run",
+            JsonSerializer.SerializeToElement(new { command }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("shell_command_output_too_large"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.EqualTo(mayChange));
         });
     }
 
@@ -202,6 +249,16 @@ public sealed class ShellCommandAdapterTests
             Arguments = arguments;
             return ValueTask.FromResult(new ExternalProcessResult(exitCode, output, error));
         }
+    }
+
+    private sealed class OverflowingRunner : IExternalProcessRunner
+    {
+        public ValueTask<ExternalProcessResult> RunAsync(
+            string executable,
+            IReadOnlyList<string> arguments,
+            TimeSpan timeout,
+            CancellationToken cancellationToken) =>
+            throw new ExternalProcessOutputTooLargeException("External process output exceeded its bound.");
     }
 
     [Test]

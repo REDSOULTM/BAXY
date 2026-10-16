@@ -16,6 +16,12 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
     internal static readonly TimeSpan CommandTimeout = TimeSpan.FromSeconds(60);
     internal const int MaximumOutputCharacters = 8 * 1024;
 
+    // Round A: the console's exit code is the last native command's when it failed, else 1 when the last statement
+    // failed (a cmdlet sets $? but leaves $LASTEXITCODE as it was, so «Get-Item <missing>; exit $LASTEXITCODE» exited
+    // 0 and the receipt said succeeded:true). $? and not $Error: $Error keeps errors the command itself handled. A
+    // native command that failed earlier still marks the run as failed, as the plain «exit $LASTEXITCODE» did.
+    internal const string ExitTail = "; if ($LASTEXITCODE) { exit $LASTEXITCODE } elseif (-not $?) { exit 1 }";
+
     private readonly IExternalProcessRunner _runner;
     private readonly string _defaultWorkingDirectory;
 
@@ -108,8 +114,10 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
 
         // La consola se coloca en la carpeta antes del comando, dentro de la misma
         // orden, para que el corredor no necesite un directorio de trabajo propio.
-        string script = "Set-Location -LiteralPath " + QuoteLiteral(workingDirectory) + "; " + command
-            + "; exit $LASTEXITCODE";
+        string script = "Set-Location -LiteralPath " + QuoteLiteral(workingDirectory) + "; " + command + ExitTail;
+        // Auditoría final 2: what ran is an effect only when the command may change something (the kernel's own reading
+        // of it, RiskPolicy.ShellMayChange); a command that only reads changed nothing.
+        bool mayChange = Baxy.Kernel.Policy.RiskPolicy.ShellMayChange(operation, arguments);
         var effectBoundary = new ExternalEffectBoundary();
         DateTime started = DateTime.UtcNow;
         ExternalProcessResult process;
@@ -126,6 +134,15 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
         {
             return effectBoundary.Failure(operation, "shell_command_timeout", effectObserved: true);
         }
+        catch (ExternalProcessOutputTooLargeException)
+        {
+            // The command ran and wrote more than the runner keeps, and was stopped there: what it changed before that
+            // is uncertain when it may change something.
+            return new ExternalCapabilityReceipt(operation, false, false, null, "shell_command_output_too_large")
+            {
+                EffectMayHaveOccurred = mayChange,
+            };
+        }
         catch (Exception exception) when (exception is IOException or System.ComponentModel.Win32Exception)
         {
             return effectBoundary.Failure(operation, "shell_command_not_started");
@@ -135,10 +152,7 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
         (string stderr, bool stderrTruncated) = Bound(process.Error);
         // Auditoría final: the output goes once, as stdout; its lines are counted, not repeated beside it.
         int lineCount = stdout.Split('\n').Count(line => line.Trim().Length > 0);
-        // Auditoría final 2: what ran is an effect only when the command may change something (the kernel's own reading
-        // of it, RiskPolicy.ShellMayChange); a command that only reads changed nothing. A non-zero exit is a failure,
-        // with its output and error text.
-        bool mayChange = Baxy.Kernel.Policy.RiskPolicy.ShellMayChange(operation, arguments);
+        // A non-zero exit is a failure, with its output and error text.
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
