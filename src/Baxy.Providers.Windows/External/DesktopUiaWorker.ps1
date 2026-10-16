@@ -18,7 +18,6 @@
 #      con «controlId», ese control del punto aunque no tenga nombre: el que su tooltip nombro)
 #   {"cmd":"postread"}   (el control del ultimo clic: ausente, seleccionado o conmutado)
 #   {"cmd":"scroll","hwnd":123,"controlId":"42.1837.4","direction":"down","amount":3}
-#   {"cmd":"find","hwnd":123,"aliases":["Biblioteca"]}
 #   {"cmd":"reveal","hwnd":123,"aliases":["Omega"],"direction":"down","amount":10}   (trae a la vista un elemento fuera de ella)
 #   {"cmd":"field","hwnd":123,"controlId":"42.1837.4","text":"hola","replace":false}   (texto dirigido; sin «text», solo lo lee)
 #   {"cmd":"script","script":"...","args":["123"]}   (un guion de UserBrowserScripts, $args como en -Command)
@@ -3802,15 +3801,6 @@ function Do-Script($request){
     return @{ ok=$true; error=''; line=$line }
   } finally { $shell.Dispose() }
 }
-function Do-Find($request){
-  $aliases=@($request.aliases | ForEach-Object { [string]$_ })
-  $target=Get-Root ([long]$request.hwnd) -Front
-  if($null -eq $target){ return @{ ok=$false; error='active_window_not_found'; count=0 } }
-  $script:NamedCandidates=@()
-  $matches=@(Find-Named $target.root $aliases)
-  $names=@($matches | ForEach-Object { Get-ShownName $_ })
-  return @{ ok=$true; error=''; count=$matches.Count; names=$names }
-}
 # Ronda 24 (cliente en frio listo por interaccion): una ventana esta lista para usarse cuando expone contenido con el
 # que una persona interactua (un campo editable o una lista), no cuando tiene titulo; y un atajo abrio su buscador cuando
 # un campo editable de esa ventana tiene el foco. Solo lectura: aqui nada se pulsa, se enfoca ni se escribe.
@@ -4156,7 +4146,6 @@ while($true){
     elseif($cmd -eq 'postread'){ Send-Line (Add-FrontReport (Do-Postread $request)) }
     elseif($cmd -eq 'scroll'){ Send-Line (Invoke-Kept $request { param($r) Do-Scroll $r }) }
     elseif($cmd -eq 'script'){ Send-Line (Do-Script $request) }
-    elseif($cmd -eq 'find'){ Send-Line (Do-Find $request) }
     elseif($cmd -eq 'interaction'){ Send-Line (Do-Interaction $request) }
     elseif($cmd -eq 'field'){ Send-Line (Invoke-Kept $request { param($r) Do-Field $r }) }
     elseif($cmd -eq 'focus'){ Send-Line (Invoke-Kept $request { param($r) Do-Focus $r }) }

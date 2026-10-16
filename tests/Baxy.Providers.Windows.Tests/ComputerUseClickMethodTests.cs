@@ -345,7 +345,7 @@ public sealed class ComputerUseClickMethodTests
                 Assert.That(body, Does.Contain("Get-Root ([long]$request.hwnd)").And.Not.Contain("-Front"), acting);
             }
 
-            foreach (string reading in new[] { "Do-View", "Do-Find", "Do-Interaction", "Do-Unnamed" })
+            foreach (string reading in new[] { "Do-View", "Do-Interaction", "Do-Unnamed" })
             {
                 int at = script.IndexOf("function " + reading + "(", StringComparison.Ordinal);
                 string body = script[at..script.IndexOf("\nfunction ", at + 1, StringComparison.Ordinal)];
