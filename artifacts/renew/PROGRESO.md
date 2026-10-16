@@ -500,9 +500,10 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   36 (a3d06dd0…). Incidente de aislamiento: un agente dejó sus generadores en el scratchpad de la sesión de ajuste; el
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
-- CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base`.
+- CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
   El holdout v3 se corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
   - 805618957: atrás/recargar con tabCount sólo de una barra entera; latido «desconocido» con micrófono o límites sin leer.
-  - El siguiente: `fullscreen` del momento sólo con los límites leídos.
+  - e91c31774: `fullscreen` del momento sólo con los límites leídos.
+  - 25ef56681: el recorrido UIA del navegador marca su lectura parcial, y lo dicen la barra, la dirección y la página.
