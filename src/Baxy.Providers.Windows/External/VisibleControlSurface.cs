@@ -1580,8 +1580,6 @@ internal static partial class VisibleControlSurface
         return best != 0 ? best : minimized;
     }
 
-    internal static nint LargestTopLevelWindow(int processId) => ProcessWindow(processId, 0);
-
     internal static nint ProcessWindow(int processId, nint front) =>
         ChooseProcessWindow(TopLevelWindowsOf(unchecked((uint)processId)), unchecked((uint)processId), front);
 

@@ -218,7 +218,7 @@ public sealed class ClassicControlsLiveDesktopCheck
         opened.Add(information.ProcessId);
         for (int attempt = 0; attempt < 80; attempt++)
         {
-            nint window = VisibleControlSurface.LargestTopLevelWindow(information.ProcessId);
+            nint window = VisibleControlSurface.ProcessWindow(information.ProcessId, 0);
             if (window != 0)
                 return (window, information.ProcessId);
             await Task.Delay(250);
