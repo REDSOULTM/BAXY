@@ -95,6 +95,25 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
+    // Round 1 (2026-10-15): a cut page keeps as much text as the message holds, not the first step's 2,000 characters.
+    [Test]
+    public void ACutPageKeepsAsMuchTextAsTheMessageHolds()
+    {
+        string page = string.Join(' ', Enumerable.Range(0, 3_000).Select(static index => "w" + index));
+        JsonElement result = JsonSerializer.SerializeToElement(new { offset = 0, hasMore = true, nextOffset = page.Length, text = page });
+
+        string message = OperationVisibleFacts.FromOutcome("web.fetch", OperationOutcome.Success(result));
+        using JsonDocument parsed = JsonDocument.Parse(message);
+        string shown = parsed.RootElement.GetProperty("observed").GetProperty("text").GetString()!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message.Length, Is.LessThanOrEqualTo(8_192));
+            Assert.That(shown.Length, Is.GreaterThan(6_000));
+            Assert.That(parsed.RootElement.GetProperty("observed").GetProperty("nextOffset").GetInt32(), Is.EqualTo(shown.Length - 1));
+        });
+    }
+
     // Auditoría final V2: a list cut to what the observation shows says how many it shows, and the observation says
     // something was left out, where the model reads it (window.resolve with limit 50 showed 20 under count 50).
     [Test]

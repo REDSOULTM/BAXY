@@ -64,9 +64,8 @@ class Voice:
 
     def status(self) -> dict[str, Any]:
         stt = self._recognizer is not None
+        # What the App reads of it (MindSidecarClient): whether the ear works and whether it is still loading.
         return {"available": stt and self._input, "input": self._input, "stt": stt,
-                "tts": self.speech.ready, "mode": self._mode,
-                "listening": self._mode != "off", "speaking": self.speech.speaking,
                 "pending": not self._loaded.is_set()}
 
     def start(self, mode: str) -> bool:

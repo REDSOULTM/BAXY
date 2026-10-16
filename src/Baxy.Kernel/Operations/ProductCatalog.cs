@@ -442,8 +442,8 @@ public static class ProductCatalog
                     // the default one.
                     String("application", maximumUtf8Bytes: 512, nonWhitespace: true),
                     String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
-                    // molestia-ayudantes: the person asked to see it (set by the App, as app.open's), so the opened
-                    // application keeps the front; a mission's file.open goes without it and stays behind.
+                    // The person asked to see it (the model sets it, as app.open's): the opened application keeps the
+                    // front; without it the file opens behind the person's window.
                     Boolean("foreground"),
                     String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
                 ],
@@ -883,9 +883,8 @@ public static class ProductCatalog
             // y la espera acotada de una etiqueta que la aplicación aún no dibujó.
             Schema(
                 [
-                    // La aplicación a mirar: la ventana cuyo título la nombra es la
-                    // superficie mientras su proceso no se conoce o no muestra
-                    // ventana; «el navegador», la de delante del navegador de la persona.
+                    // La aplicación a mirar, por su nombre exacto (la ventana de su proceso o cuyo
+                    // título la nombra); sin ella, la ventana de delante.
                     String("application", types: NullableString, maximumUtf8Bytes: 128),
                     Boolean("includeText", types: NullableBoolean),
                     Integer("limit", 1, VisibleViewNumbering.Cap),

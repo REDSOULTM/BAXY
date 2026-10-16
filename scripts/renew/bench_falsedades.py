@@ -78,6 +78,7 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
             if end.get("pendingConfirmation") and reply:
                 events += run_turn(conductor, {"text": reply}, 180)
             turns.append({
+                "failure": end.get("failure"),
                 "person": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "person"],
                 "baxy": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"],
                 "steps": [{"operation": e["operation"], "arguments": e["arguments"], "status": e["status"],
@@ -96,9 +97,26 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
     return transcripts
 
 
-def judge_chat(messages: list[dict]) -> dict:
+JUDGE_SEEDS = (0, 1, 2)
+
+
+def judge_line(messages: list[dict]) -> dict:
+    """The majority of three verdicts on one line; the first verdict that agrees with it is kept, with the count."""
+    verdicts = [judge_chat(messages, seed) for seed in JUDGE_SEEDS]
+    readable = [v for v in verdicts if "unparsed" not in v]
+    if not readable:
+        return verdicts[0]
+    for verdict in readable:
+        verdict["falsedad"] = any(c.get("falsa") for c in verdict.get("afirmaciones") or [])
+    false_votes = sum(v["falsedad"] for v in readable)
+    majority = false_votes * 2 > len(readable)
+    chosen = next(v for v in readable if v["falsedad"] == majority)
+    return {**chosen, "votos_falsedad": f"{false_votes}/{len(readable)}"}
+
+
+def judge_chat(messages: list[dict], seed: int = 0) -> dict:
     """The judge thinks before it answers (its reasoning stays apart), then writes the JSON verdict last."""
-    body = {"messages": messages, "temperature": 0.6, "top_p": 0.95, "top_k": 20, "max_tokens": 6000, "seed": 0,
+    body = {"messages": messages, "temperature": 0.6, "top_p": 0.95, "top_k": 20, "max_tokens": 6000, "seed": seed,
             "chat_template_kwargs": {"enable_thinking": True}}
     request = urllib.request.Request(f"http://127.0.0.1:{JUDGE_PORT}/v1/chat/completions",
                                      data=json.dumps(body).encode("utf-8"),
@@ -139,7 +157,7 @@ def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:
                     # The case's trap (what its author expected a weak model to claim) focuses the judge; every
                     # claim of the reply is still checked.
                     focus = f"\n\nRiesgo a vigilar en esta conversación: {case['trap']}" if case.get("trap") else ""
-                    verdict = judge_chat([{"role": "system", "content": JUDGE_SYSTEM},
+                    verdict = judge_line([{"role": "system", "content": JUDGE_SYSTEM},
                                           {"role": "user", "content": "Conversación hasta ahora:\n" + "\n".join(history)
                                            + focus + f"\n\nRespuesta de BAXY a auditar:\n{line}"}])
                     rows.append({"id": case["id"], "turn": number, "line": line, **verdict})
@@ -180,7 +198,13 @@ def main() -> None:
     summary = {"label": args.label, "cases": args.cases, "conversations": len(transcripts), "lines": len(rows),
                "falsedades": len(false_lines), "casos_con_falsedad": sorted({r["id"] for r in false_lines}),
                "lineas_sin_juzgar": len(unjudged), "casos_sin_juzgar": sorted({r["id"] for r in unjudged}),
-               "setup_failed": [t["id"] for t in transcripts if t.get("status") == "setup_fallido"]}
+               "setup_failed": [t["id"] for t in transcripts if t.get("status") == "setup_fallido"],
+               # A turn that failed or left no line says nothing to judge: counted, never a silently shorter bank.
+               "turnos": sum(len(t.get("turns") or []) for t in transcripts),
+               "turnos_fallidos": sorted({t["id"] for t in transcripts for turn in t.get("turns") or []
+                                          if turn.get("failure")}),
+               "turnos_sin_linea": sorted({t["id"] for t in transcripts for turn in t.get("turns") or []
+                                           if not any(str(b).strip() for b in turn.get("baxy") or [])})}
     with (run_dir / "results.jsonl").open("w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
         for row in rows:

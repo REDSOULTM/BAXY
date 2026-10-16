@@ -103,7 +103,7 @@ def _outcome(observation: str) -> str:
         return "resultado arriba"
     status = str(facts.get("status") or ("completed" if facts.get("succeeded") else "failed"))
     if status == "needs_confirmation":
-        return "espera el sí de la persona"
+        return "no se ejecutó: espera el sí de la persona"
     if status == "cancelled":
         return "cancelado por la persona"
     if facts.get("polarity") == "pending" or facts.get("effectUncertain"):
@@ -156,6 +156,9 @@ NOT_RUN = json.dumps({"status": "not_run", "reason": "the turn ended before this
 # A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
 # 2026-10-15: the model read «not run» for a call the core had executed).
 NO_RESULT = json.dumps({"status": "unknown", "reason": "no result came back for this call: it may have run or not"})
+# A question of the model's the person saw and did not answer before the turn ended.
+ASKED = json.dumps({"status": "asked", "reason": "the person saw the question; their answer, if it comes, is their "
+                                                 "next message"})
 
 # The operation the App reads as «the person answered the pending confirmation» (the kernel's challenge): the App sends
 # the exact invocation the kernel challenged again with its token, or drops it.
@@ -302,6 +305,18 @@ class Mind:
         return BEAT_SYSTEM if beat else SYSTEM
 
     @staticmethod
+    def _pending_note(pending: dict[str, Any] | None) -> str:
+        """The call the kernel holds for the person's yes, when one is: after «sí» the model called that tool again
+        instead of answering it (e2e practice E021, 3 of 3), and the kernel only asked again."""
+        if not isinstance(pending, dict) or not pending.get("operation"):
+            return ""
+        wire = str(pending["operation"]).replace(".", "_")
+        arguments = pending.get("arguments")
+        shown = f" {json.dumps(arguments, ensure_ascii=False)}" if isinstance(arguments, dict) else ""
+        return (f"\n[Espera el sí de la persona: {wire}{shown}. Si sus palabras contestan a tu pregunta, llama a "
+                f"confirm_pending con approve true o false; llamar otra vez a {wire} sólo vuelve a preguntar.]")
+
+    @staticmethod
     def _clock() -> str:
         # The time is a message of its own just before the person's words (the end of the prompt, the only part that is
         # new anyway). Appended to their words it was copied into arguments: a clipboard text and a web query carried
@@ -323,7 +338,7 @@ class Mind:
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
-    def decide(self, request_id: Any, text: str) -> dict[str, Any]:
+    def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None) -> dict[str, Any]:
         turn = self._turn
         if turn and turn.get("asked"):
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
@@ -332,10 +347,10 @@ class Mind:
             turn["conv"].append({"role": "tool", "tool_call_id": turn.pop("asked"), "content": text})
             for later in turn.pop("after_asked", []):
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
-            turn["text"], turn["private"] = text, False
+            turn["text"] = text
             return self._next(request_id, "turn.decide", turn)
         self._close_open_calls()
-        self.conversation.append({"role": "user", "content": self._clock()})
+        self.conversation.append({"role": "user", "content": self._clock() + self._pending_note(pending)})
         self.conversation.append({"role": "user", "content": text})
         self._trim()
         self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
@@ -364,8 +379,8 @@ class Mind:
         if not isinstance(decision, dict) or not isinstance(decision.get("intervenir"), bool):
             # Unreadable (cut by the token budget, or not the schema): said as what it is, never as a silence.
             self._log("turn.beat.decide", started, reply, text="[latido]", content=content, failure="unreadable")
-            return {"type": "turn.result", "id": request_id, "kind": "failure", "failure": "beat_decision_unreadable",
-                    "operation": None, "arguments": None, "question": "", "reply": ""}
+            return {"type": "turn.result", "id": request_id, "kind": "failure", "operation": None, "arguments": None,
+                    "question": "", "reply": ""}
         intervene = decision["intervenir"]
         self._log("turn.beat.decide", started, reply, text="[latido]", content=content, intervene=intervene)
         self._beat = {"conv": conv, "queue": [], "awaiting": None, "text": "[latido]", "beat": True,
@@ -387,8 +402,10 @@ class Mind:
             return
         if beat.get("awaiting"):
             beat["conv"].append({"role": "tool", "tool_call_id": beat["awaiting"], "content": NO_RESULT})
+        if beat.get("asked"):
+            beat["conv"].append({"role": "tool", "tool_call_id": beat["asked"], "content": ASKED})
         pending = [c["id"] for c in beat.get("queue") or []]
-        for call_id in [beat.get("asked"), *beat.get("after_asked", []), *pending]:
+        for call_id in [*beat.get("after_asked", []), *pending]:
             if call_id:
                 beat["conv"].append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
         self._close_open_calls()
@@ -401,8 +418,10 @@ class Mind:
         turn = self._turn or {}
         if turn.get("awaiting"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
+        if turn.get("asked"):
+            self.conversation.append({"role": "tool", "tool_call_id": turn["asked"], "content": ASKED})
         pending = [c["id"] for c in turn.get("queue") or []]
-        for call_id in [turn.get("asked"), *turn.get("after_asked", []), *pending]:
+        for call_id in [*turn.get("after_asked", []), *pending]:
             if call_id:
                 self.conversation.append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
         self._turn = None
@@ -422,8 +441,9 @@ class Mind:
 
     def continue_turn(self, request_id: Any, observation: str, final: bool = False,
                       beat: bool = False) -> dict[str, Any]:
-        """The verified result of the call the App ran goes back as that call's tool message. ``final``: the App's step
-        budget is spent, so the model answers now in text from what the results show. ``beat``: the heartbeat's turn."""
+        """The verified result of the call the App ran goes back as that call's tool message. ``final``: the App closes
+        the turn (steps spent, engine down, or a confirmation waiting), so the model answers now in text from what the
+        results show. ``beat``: the heartbeat's turn."""
         turn = self._beat if beat else self._turn
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
@@ -434,7 +454,14 @@ class Mind:
         done = turn.setdefault("done", [])
         calling = str(turn.get("calling", "?"))
         calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
-        done.append(f"{calling} → {_outcome(observation)}")
+        entry, same = f"{calling} → {_outcome(observation)}", turn.get("last_call")
+        turn["last_call"] = (calling, turn.get("calling_args"))
+        if done and same == turn["last_call"]:
+            turn["repeats"] = turn.get("repeats", 1) + 1
+            done[-1] = f"{calling} ×{turn['repeats']} con los mismos argumentos → {_outcome(observation)}"
+        else:
+            turn["repeats"] = 1
+            done.append(entry)
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
@@ -534,6 +561,7 @@ class Mind:
                     else self.wire_to_op.get(call["wire"], call["wire"]))
             turn["awaiting"] = call["id"]
             turn["calling"] = name
+            turn["calling_args"] = json.dumps(call["arguments"], sort_keys=True, ensure_ascii=False)
             arguments = {**call["arguments"], **self.constants.get(name, {})}
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:

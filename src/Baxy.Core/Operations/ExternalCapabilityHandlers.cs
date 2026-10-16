@@ -331,6 +331,10 @@ internal sealed class ExternalCapabilityHandler(
                     : "external_effect_unobserved");
         }
 
-        return OperationOutcome.Success(receipt.Result.Value);
+        // A success that may have changed something nobody read back (a console command that is not read-only) is
+        // done but not verified: the model says it ran, never that its effect was seen (final audit 2026-10-15).
+        return receipt.EffectMayHaveOccurred && !receipt.EffectObserved
+            ? new OperationOutcome(true, false, receipt.Result.Value, null)
+            : OperationOutcome.Success(receipt.Result.Value);
     }
 }

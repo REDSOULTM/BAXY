@@ -146,9 +146,7 @@ public static class OperationVisibleFacts
             json = payload.ToJsonString(JsonOptions);
         }
 
-        return json.Length <= messageLimit
-            ? json
-            : json[..messageLimit];
+        return json;
     }
 
     public static string FromStatus(string operation, string status, string? errorCode) =>
@@ -277,6 +275,32 @@ public static class OperationVisibleFacts
     private static string WithProjectedObservation(JsonObject payload, JsonNode observed, int limit)
     {
         payload[ObservedLimitKey] = ObservedProjected;
+        // A page of a text read by offset (file.read, web.fetch) keeps as much of its text as the message holds, not
+        // the first step's 2,000 characters (practice p11: six pages of 2,000 where 7,000 fit), and goes on from there.
+        if (observed is JsonObject page && page["text"] is JsonValue pageText && pageText.TryGetValue(out string? _)
+            && page["offset"] is JsonValue)
+        {
+            JsonObject probe = page.DeepClone().AsObject();
+            probe["text"] = string.Empty;
+            payload["observed"] = probe;
+            int room = limit - payload.ToJsonString(JsonOptions).Length - 64;
+            if (room > ObservedProjectionSteps[0].Text)
+            {
+                bool cut = false;
+                JsonNode projected = Project(observed, null, room, int.MaxValue, ref cut);
+                if (cut && projected is JsonObject root)
+                {
+                    root["truncated"] = true;
+                    payload["observed"] = projected;
+                    string json = payload.ToJsonString(JsonOptions);
+                    if (json.Length <= limit)
+                    {
+                        return json;
+                    }
+                }
+            }
+        }
+
         foreach ((int text, int items) in ObservedProjectionSteps)
         {
             bool cut = false;
