@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import datetime as _dt
 import os
+import queue
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -40,17 +42,50 @@ def main() -> int:
                      "session.new",
                      "voice.start", "voice.stop", "voice.status", "voice.speak", "voice.cancel", "shutdown"],
     })
-    try:
+    # Speech and cancellation are answered by the reader as they arrive, so they never wait for an inference (the
+    # App's notice at 2 s of silence and a barge-in's cancel reached the voice only after the model finished, round 2
+    # of nb-aviso); every other request keeps its order on this loop. None ends it (the App closed stdin, or shutdown);
+    # a protocol violation is its exit code.
+    pending: queue.Queue[dict | int | None] = queue.Queue()
+
+    def read() -> None:
         while True:
             try:
                 message = protocol.read_message()
             except protocol.ProtocolViolation as violation:
                 protocol.write_message(protocol.error_reply(None, violation.code, violation.detail))
-                return 65
+                pending.put(65)
+                return
             if message is None:
-                break
+                pending.put(None)
+                return
             if not message:
                 continue
+            kind = str(message.get("type"))
+            if kind == "voice.speak":
+                protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
+                                        "accepted": voice.speech.speak(str(message.get("text") or ""))})
+            elif kind == "voice.cancel":
+                voice.speech.cancel()
+                protocol.write_message({"type": "voice.cancelled", "id": message.get("id")})
+            elif kind == "voice.status":
+                protocol.write_message({"type": "voice.status.result", "id": message.get("id"),
+                                        "status": voice.status()})
+            elif kind == "shutdown":
+                protocol.write_message({"type": "shutdown.ack", "id": message.get("id")})
+                pending.put(None)
+                return
+            else:
+                pending.put(message)
+
+    threading.Thread(target=read, name="mind-reader", daemon=True).start()
+    try:
+        while True:
+            message = pending.get()
+            if isinstance(message, int):
+                return message
+            if message is None:
+                break
             request_id, kind = message.get("id"), str(message.get("type"))
             try:
                 if kind == "catalog.configure":
@@ -94,17 +129,6 @@ def main() -> int:
                 elif kind == "voice.stop":
                     voice.stop()
                     protocol.write_message({"type": "voice.stopped", "id": request_id})
-                elif kind == "voice.status":
-                    protocol.write_message({"type": "voice.status.result", "id": request_id, "status": voice.status()})
-                elif kind == "voice.speak":
-                    protocol.write_message({"type": "voice.speak.result", "id": request_id,
-                                            "accepted": voice.speech.speak(str(message.get("text") or ""))})
-                elif kind == "voice.cancel":
-                    voice.speech.cancel()
-                    protocol.write_message({"type": "voice.cancelled", "id": request_id})
-                elif kind == "shutdown":
-                    protocol.write_message({"type": "shutdown.ack", "id": request_id})
-                    break
                 else:
                     protocol.write_message(protocol.error_reply(request_id, "unknown_request", kind))
             except Exception as error:  # noqa: BLE001 - one failed request never ends the sidecar
