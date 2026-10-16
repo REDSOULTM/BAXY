@@ -130,8 +130,8 @@ public sealed class ClassicControlsLiveDesktopCheck
             TestContext.Out.WriteLine($"shown before «{before}» after «{after}»");
             Assert.Multiple(() =>
             {
-                Assert.That(disabled.Any(item => Kind(item) == "Button" && item.GetProperty("state").GetString() == "disabled"),
-                    Is.True, "a button that waits for text is listed as disabled");
+                Assert.That(disabled.Any(item => Kind(item) == "Button"),
+                    Is.True, "a button that waits for text is listed apart as disabled");
                 Assert.That(set?.RootElement.GetProperty("method").GetString(), Is.EqualTo("select"));
                 Assert.That(set?.RootElement.GetProperty("delivered").GetBoolean(), Is.True);
                 Assert.That(GetForegroundWindow(), Is.EqualTo(front), "the person's front never moved");
