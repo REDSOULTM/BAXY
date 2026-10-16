@@ -2400,6 +2400,7 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
+            "{\"connected\":true,\"profile\":\"Casa\"}",
             "",
             "{\"connected\":false,\"profile\":\"\"}",
         ]);
@@ -2419,8 +2420,37 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("connected").GetBoolean(), Is.False);
-            Assert.That(runner.Calls, Is.EqualTo(2));
+            Assert.That(runner.Calls, Is.EqualTo(3));
             Assert.That(delays.Calls, Is.Zero);
+        });
+    }
+
+    // Round A: with the Wi-Fi already disconnected, «desconectá el wifi» ran netsh and answered an observed
+    // disconnection. It is read first: the request is done, nothing changed, and netsh is not run.
+    [Test]
+    public async Task WifiDisconnectWhenAlreadyDisconnectedChangesNothingAndSaysSo()
+    {
+        using TemporaryDirectory temporary = new();
+        var runner = new SequencedProcessRunner(["{\"connected\":false,\"profile\":\"\"}"]);
+        var adapter = new WindowsDeviceControlAdapter(
+            temporary.Path,
+            temporary.Path,
+            runner,
+            new RecordingDelay().DelayAsync);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "wifi.disconnect",
+            Json("{}"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("connected").GetBoolean(), Is.False);
+            Assert.That(runner.Calls, Is.EqualTo(1), "only the read; no netsh wlan disconnect");
         });
     }
 
@@ -2460,6 +2490,7 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
+            "{\"connected\":true,\"profile\":\"Casa\"}",
             "",
             "{\"connected\":true,\"profile\":\"Casa\"}",
         ]);
@@ -2478,7 +2509,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("wifi_disconnect_not_verified"));
-            Assert.That(runner.Calls, Is.EqualTo(22));
+            Assert.That(runner.Calls, Is.EqualTo(23));
             AssertRetryHorizon(delays, expectedIntervals: 20, intervalMilliseconds: 300);
         });
     }
