@@ -264,6 +264,58 @@ public sealed class WingetPackageAdapterTests
         });
     }
 
+    // Round A: once the installer ran, a list that timed out or broke fell to the adapter's outer catch and was a failure
+    // before any effect. It is a failure after the launch: what winget changed is uncertain.
+    [Test]
+    public async Task AnInstallWhoseReadBackFailsAfterTheLaunchMayHaveHadItsEffect()
+    {
+        bool launchedOnce = false;
+        var runner = new ScriptedRunner(args =>
+            args[0] == "search" ? (0, SearchSpotify)
+            : args[0] == "list" && launchedOnce ? throw new TimeoutException("winget list exceeded its budget")
+            : args[0] == "list" ? (1, Nothing)
+            : (1, string.Empty));
+        var adapter = new WingetPackageAdapter(runner, _ => { launchedOnce = true; return new(999_999, () => null); });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "package.install",
+            JsonSerializer.SerializeToElement(new { packageId = "spotify" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(launchedOnce, Is.True);
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("winget_install_not_verified"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    [Test]
+    public async Task AnUninstallWhoseReadBackFailsAfterTheLaunchMayHaveHadItsEffect()
+    {
+        bool launchedOnce = false;
+        var runner = new ScriptedRunner(args =>
+            args[0] == "list" && !args.Contains("--exact") ? (0, ListDiscord)
+            : args[0] == "list" && launchedOnce ? throw new IOException("pipe broken")
+            : (1, string.Empty));
+        var adapter = new WingetPackageAdapter(runner, _ => { launchedOnce = true; return new(999_999, () => null); });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "package.uninstall",
+            JsonSerializer.SerializeToElement(new { packageId = "discord" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(launchedOnce, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("winget_uninstall_not_verified"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
     [Test]
     public async Task MissingWingetIsAStableFailure()
     {
