@@ -589,8 +589,8 @@ internal sealed record VisibleClickTiming(
 /// Perception and the click of the computer-use engine
 /// (documentacion/computer-use/CONTRATO_VISTA_ACCION.md §1, §2).
 /// <c>input.visible.controls</c> is the compact view of the foreground window:
-/// up to sixty actionable controls with index, kind, label, state, rectangle
-/// and zone, the written text by zone (OCR), the window's
+/// up to sixty actionable controls with index, kind, label, state, rectangle,
+/// the written text by zone (OCR), the window's
 /// title and process. <c>input.visible.click</c> invokes one control by label
 /// or by the identity the view handed out, through the persistent UIA worker,
 /// then OCR, then vision, and demands a post-read.
@@ -1608,8 +1608,6 @@ internal sealed class WindowsVisibleControlAdapter
                 title = VisibleControlSurface.WindowTitle(hwnd);
             // A packaged app's frame names the app it hosts, never the frame host every packaged app shares.
             (int ownerProcessId, string processName) = VisibleControlSurface.ViewProcess(hwnd);
-            VisibleControlSurface.TryBounds(hwnd, out int left, out int top, out int right, out int bottom);
-            var windowRect = new Rect(left, top, right - left, bottom - top);
 
             VisibleControlSurface.CapturedWindow? captured = await captureTask.ConfigureAwait(false);
             long ocrMs = 0;
@@ -1658,20 +1656,8 @@ internal sealed class WindowsVisibleControlAdapter
                 }
             }
 
-            foreach (ViewControl control in disabled)
-            {
-                control.Zone = control.RectValue is { } rect
-                    ? Zone(rect.X + rect.W / 2, rect.Y + rect.H / 2, windowRect)
-                    : string.Empty;
-            }
-
             foreach (ViewControl control in controls)
-            {
-                control.Zone = control.RectValue is { } rect
-                    ? Zone(rect.X + rect.W / 2, rect.Y + rect.H / 2, windowRect)
-                    : string.Empty;
                 names.Add(control.Name);
-            }
 
             lock (_viewLock)
             {
@@ -1777,7 +1763,6 @@ internal sealed class WindowsVisibleControlAdapter
                         WriteRect(writer, "rect", rect);
                     else
                         writer.WriteNull("rect");
-                    writer.WriteString("zone", control.Zone);
                     if (control.Repeated > 0)
                         writer.WriteNumber("repeated", control.Repeated);
                     writer.WriteEndObject();
@@ -1792,8 +1777,6 @@ internal sealed class WindowsVisibleControlAdapter
                         writer.WriteStartObject();
                         writer.WriteString("kind", control.Kind);
                         writer.WriteString("name", control.Name);
-                        writer.WriteString("state", "disabled");
-                        writer.WriteString("zone", control.Zone);
                         writer.WriteEndObject();
                     }
 
@@ -1991,7 +1974,7 @@ internal sealed class WindowsVisibleControlAdapter
 
     private static readonly string[] ZoneOrder = ["TL", "T", "TR", "L", "C", "R", "BL", "B", "BR"];
 
-    // Rejilla 3×3 sobre la ventana (contrato §1.4): la zona del centro.
+    // Rejilla 3×3 sobre la ventana: la zona del centro de una línea leída (el texto por zonas de la vista).
     internal static string Zone(double centerX, double centerY, Rect window)
     {
         if (window.W <= 0 || window.H <= 0)
@@ -3163,7 +3146,6 @@ internal sealed class WindowsVisibleControlAdapter
         internal string Shortcut { get; set; } = string.Empty;
         internal Rect? RectValue { get; set; }
         internal int Repeated { get; set; }
-        internal string Zone { get; set; } = string.Empty;
     }
 
     private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls);
