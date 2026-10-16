@@ -320,11 +320,15 @@ class Mind:
     def _clock() -> str:
         # The time is a message of its own just before the person's words (the end of the prompt, the only part that is
         # new anyway). Appended to their words it was copied into arguments: a clipboard text and a web query carried
-        # «[Thursday 15/10/2026 04:21 hora local…]» (2026-10-15).
+        # «[Thursday 15/10/2026 04:21 hora local…]» (2026-10-15). It also says no tool has run yet in this turn: the
+        # last «[En este turno: …]» the model saw was the previous turn's, and lines of turns without calls were false
+        # 24 % of the time against 6 % (falsedades p5-p8); decision2 on the notebook gained by that mechanism (P041
+        # stopped inventing, P049 stopped looking up the clock): 227/230 vs 226.
         now = _dt.datetime.now().astimezone()
         offset = now.strftime("%z")
         return (f"{CLOCK_MARK} {now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
-                "los campos que terminan en Utc van en UTC]")
+                "los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna herramienta en este "
+                "turno]")
 
     # ---- turn ----------------------------------------------------------------------------------------------
     # One conversation for the whole session (native loop): every tool call the model made, every verified result that
