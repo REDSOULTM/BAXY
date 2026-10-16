@@ -114,7 +114,7 @@
     "recursos": {
       "umbral": "<= 4 GB VRAM y <= 4 GB RAM (arnés: llama-server + mente + Piper, como en el goal; se anota también el producto bajo el conductor, sin la ventana)",
       "estado": "cumplida",
-      "evidencia": "holdout v2 (creado por agentes aislados, sellado con sha, la sesión de ajuste no lo vio), corrido UNA vez sobre el congelado 026c7af91 con el PC libre (decisión, escenas y latido en la GPU del notebook quieto; e2e, falsedades y recursos en el escritorio del PC): VRAM 3911 MiB; RAM USS del arnés (llama-server + mente + Piper) 1647 MiB; con k4 y Ultra VRAM 3911 MiB y RAM 2615 MiB. 4 GB = 4096 MiB. Medido otra vez sobre f61f2da38 (2026-10-16 07:32, final-f61f-recursos.json) con el producto entero que corre el conductor: VRAM 3910 MiB; RAM USS del arnés 1651 MiB y del producto (con App, Core y el worker UIA) 1828 MiB; con k4 y Ultra 2617 y 2792 MiB. No medido: el WebView2 de la ventana y el worker UIA del navegador (no corren bajo el conductor); el pico es de 5 muestras en reposo tras 3 turnos de texto."
+      "evidencia": "holdout v2 (creado por agentes aislados, sellado con sha, la sesión de ajuste no lo vio), corrido UNA vez sobre el congelado 026c7af91 con el PC libre (decisión, escenas y latido en la GPU del notebook quieto; e2e, falsedades y recursos en el escritorio del PC): VRAM 3911 MiB; RAM USS del arnés (llama-server + mente + Piper) 1647 MiB; con k4 y Ultra VRAM 3911 MiB y RAM 2615 MiB. 4 GB = 4096 MiB. Medido otra vez sobre f61f2da38 (2026-10-16 07:32, final-f61f-recursos.json) con el producto entero que corre el conductor: VRAM 3910 MiB; RAM USS del arnés 1651 MiB y del producto (con App, Core y el worker UIA) 1828 MiB; con k4 y Ultra 2617 y 2792 MiB. No medido: el WebView2 de la ventana y el worker UIA del navegador (no corren bajo el conductor); el pico es de 5 muestras en reposo tras 3 turnos de texto. Con la ventana (WebView2) sobre 13eca00da (2026-10-16 08:47, final-13ec-recursos-ventana.json; latido y oído apagados para no actuar sobre el escritorio ni escuchar): VRAM 3928 MiB; RAM USS del producto entero bajo Baxy.exe 1942 MiB (WebView2 210 MiB). 4096 MiB de tope: margen de VRAM 168 MiB."
     },
     "ronda_final_auditoria": {
       "umbral": "nada que viole <reglas>",
@@ -513,9 +513,28 @@
         "Una ronda 4+4 completa sin hallazgos sobre 13eca00da (no cupo antes del tope).",
         "WindowsVisibleTooltipLocator y el resto de WindowsDeviceControlAdapter sin auditar a fondo en esta ronda.",
         "Recuperar con presentación el silencio P019 y el recordatorio L005 que perdieron los arreglos de texto (medido en práctica).",
-        "Medir una vez el producto con ventana (WebView2) en VRAM: el margen medido es 186 MiB.",
         "Push a origin (GitHub público): pide la confirmación del dueño."
-      ]
+      ],
+      "recursos_con_ventana": {
+        "label": "final-13ec",
+        "ventana": true,
+        "latido": false,
+        "oido_cargado": false,
+        "vram_mib": 3928,
+        "gpu_before_mib": 600,
+        "gpu_peak_mib": 4528,
+        "uss_mib": {
+          "baxy.exe": 187,
+          "baxy-core.exe": 30,
+          "msedgewebview2.exe": 210,
+          "python.exe": 39,
+          "conhost.exe": 6,
+          "llama-server.exe": 1243,
+          "piper.exe": 101,
+          "powershell.exe": 126
+        },
+        "producto_ram_mib": 1942
+      }
     }
   }
 }
