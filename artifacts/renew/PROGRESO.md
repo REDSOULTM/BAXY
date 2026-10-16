@@ -479,3 +479,18 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     instalado) en 35d1f37f0. Corrección de este registro: «Producto final: 97df86ba1» y «11d7a5542» de arriba
     quedaron superados: el PRODUCTO FINAL es 13eca00da (sin holdout propio; el holdout v2 es de 026c7af91). Sobre
     13eca00da no cupo otra ronda antes del tope (08:49): ronda_final_auditoria = límite honesto con su evidencia.
+
+## Decisión 20 del dueño (2026-10-16 ~12:00): ajuste reabierto
+
+- Reabrir el ajuste dentro del goal para sacar el máximo de Qwen3.5-4B, palanca por palanca y con fuente, medida por
+  separado en práctica (nunca en sellados), quedándose sólo con lo que gane por encima del ruido sin romper `<reglas>`
+  ni los 4 GB. Cuando ninguna gane: congelar, crear y correr UNA vez un holdout nuevo sellado, y documentar el techo.
+- Plan, fuentes, protocolo y resultados: `artifacts/renew/ajuste_d20.md`. Brazos: `scripts/renew/make_arms_d20.py`
+  (copias de la mente con una palanca cambiada, tres semillas); resumen: `scripts/renew/summarize_arms_d20.py`.
+- Reparto: decisión y escenas en las GPUs del PC y del notebook. El e2e y las falsedades van en el notebook, porque el
+  dueño usa el PC desde las 12:00 y esos bancos manejan el escritorio; el juez de falsedades (35B) corre en el PC sobre
+  los transcripts que sube el notebook.
+- Holdout v3: dos agentes aislados lo crean en `F:\BAXYeval\renew_v3` (mismas cinco partes que el v2, sellado con sha;
+  la sesión de ajuste no lo ve). Se corre una sola vez al final sobre el commit congelado.
+- Las rondas de auditoría siguieron en paralelo, y cada violación se arregló (regla «una violación se arregla
+  siempre»). La ronda sobre 7cc3e04d1 dio SIN VIOLACIONES en computer use y en mente/App/decisión 20.

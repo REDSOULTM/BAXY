@@ -80,6 +80,17 @@ En el notebook (D:, misma mente):
 
 **No gana.** Las reglas en español, el idioma de las personas y de los casos, le van mejor a este 4B que la misma regla en inglés.
 
+**E2E de práctica (notebook, 30 casos, producto 9eadc3d79), semillas 0 y 1:**
+
+| Brazo | Aciertos | Media | Primera respuesta p50 | Observaciones |
+|---|---|---|---|---|
+| `base` | 19, 20 | 19,5 | 3864 / 2996 ms | |
+| `head` (P6) | 18, 21 | 19,5 | 2768 / 2677 ms | |
+| `cuex` (P7) | 20, 19 | 19,5 | 2832 / 2914 ms | en escenas pierde silencios |
+| `thinkcont` (P2 por etapa) | 19, 21 | 20,0 | 4708 / 4574 ms | +1 s por paso que razona; la mitad de pasos encadenados; turnos sin respuesta |
+
+Ninguno sale del ±1 de `base` en aciertos. **`thinkcont` no gana** (más lento y deja turnos sin respuesta). **`cuex` no gana** (empata y pierde silencios en escenas). `head` empata en aciertos y baja la primera respuesta, pero `cuex` también la baja, así que los 3864 ms de `base` s0 pueden ser el valor atípico. Lo deciden una tercera semilla de `base` y de `head` y el banco de falsedades de práctica (en curso).
+
 **P10, una llamada por decisión (`noparallel`, PC, contra `base9e`):** decisión 230, 233 y 233 (media 232,0, la misma que `base9e`; dispersión 3 contra 0), p50 0,938 s (más lento); escenas 30/39, 0 molestas. **No gana.**
 
 **P7 (`cuex`), PC:** decisión 232, 229 y 232 (media 231,0, dispersión 3, p50 0,735 s), dentro del ruido de `base`. Escenas 29, 29 y 28, con **3 molestas en total** (1 por semilla): pierde silencios. **No gana**; el ejemplo en el sistema hace que el latido actúe de más. (Sus brazos se escribieron sobre 9eadc3d79, que cambió tres descripciones; `base` se mide otra vez sobre esa mente, `base9e`.)
