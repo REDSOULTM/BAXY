@@ -5,6 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\TestInfrastructure\NtfsTestJunction.cs" Link="TestInfrastructure\NtfsTestJunction.cs" />
+    <!-- The App has no test project: its notice of a silent turn is one file with no App dependency. -->
+    <Compile Include="..\..\src\Baxy.App\SilenceNotice.cs" Link="App\SilenceNotice.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
