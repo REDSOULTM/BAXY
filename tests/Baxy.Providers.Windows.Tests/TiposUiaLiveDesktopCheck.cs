@@ -85,7 +85,6 @@ public sealed class TiposUiaLiveDesktopCheck
             TestContext.Out.WriteLine($"revelar: {revealed!.RootElement}");
             Assert.Multiple(() =>
             {
-                Assert.That(width.GetProperty("nameSource").GetString(), Is.EqualTo("nearText"));
                 Assert.That(replaced.RootElement.GetProperty("delivered").GetBoolean(), Is.True, "1366 → 800 by SetValue");
                 Assert.That(chosen.RootElement.GetProperty("delivered").GetBoolean(), Is.True, "the combo's entry by pattern");
                 Assert.That(revealed.RootElement.GetProperty("visible").GetBoolean(), Is.True, "the 250th row in view");

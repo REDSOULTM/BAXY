@@ -677,7 +677,7 @@ internal static partial class VisibleControlSurface
 
     /// <summary>
     /// The process a view names as its window's: the hosted app's for an ApplicationFrameHost frame (the shared host
-    /// is never a mission's process), else the window's own.
+    /// is never the process a look names), else the window's own.
     /// </summary>
     internal static (int ProcessId, string ProcessName) ViewProcess(nint hwnd)
     {
@@ -1552,22 +1552,14 @@ internal static partial class VisibleControlSurface
     /// not a shell surface. Measured live: explorer.exe holds the desktop, the
     /// taskbar and a cloaked untitled frame larger than its folder windows,
     /// and with two folder windows open the largest is not
-    /// necessarily the one the person is looking at. A process drawn inside an
-    /// ApplicationFrameHost <paramref name="frame"/> has that frame as its
-    /// window: its own top-level windows are its pop-ups. Measured live on a
-    /// packaged app: a click on its search field opened the history flyout
-    /// («Host de ventanas emergentes»), the process's only titled window; it
-    /// was taken and brought over the frame, the view lost the search field,
-    /// and a history entry was clicked as if it were the search.
+    /// necessarily the one the person is looking at.
     /// Estabilización D2 (banco h1, s11 and u1: a chat client and a music player already running and minimized; the
     /// view read the person's editor in their place): a process with no usable window but a minimized one a person would restore has
     /// that one, the topmost; the look shows it behind the person's window without activating it
     /// (<see cref="ShowBehind"/>) and an act brings it up restored.
     /// </summary>
-    internal static nint ChooseProcessWindow(IEnumerable<TopLevelWindow> windows, uint processId, nint front, nint frame = 0)
+    internal static nint ChooseProcessWindow(IEnumerable<TopLevelWindow> windows, uint processId, nint front)
     {
-        if (frame != 0)
-            return frame;
         nint best = 0;
         long bestArea = 0;
         nint minimized = 0;
@@ -1587,8 +1579,6 @@ internal static partial class VisibleControlSurface
         }
         return best != 0 ? best : minimized;
     }
-
-    internal static nint LargestTopLevelWindow(int processId) => ProcessWindow(processId, 0);
 
     internal static nint ProcessWindow(int processId, nint front) =>
         ChooseProcessWindow(TopLevelWindowsOf(unchecked((uint)processId)), unchecked((uint)processId), front);

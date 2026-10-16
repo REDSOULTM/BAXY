@@ -9,7 +9,7 @@ namespace Baxy.Providers.Windows.Tests;
 /// <summary>
 /// A control without a UI Automation Name is not mute when its application names it another way (v3, point 3): its
 /// help text (WPF publishes a text ToolTip there), the name of the label that labels it (LabeledBy, a form field) or
-/// its AutomationId read as words, in that order. The view lists it with <c>nameSource</c> and a click by label finds
+/// its AutomationId read as words, in that order. The view lists it by that name and a click by label finds
 /// it. The worker's own functions are taken from the script by its syntax tree and run on described elements: no
 /// window is read or touched.
 /// </summary>
@@ -84,18 +84,18 @@ public sealed class ComputerUseFallbackNameTests
               (Fake '' 'Button' '   ' '12345' $null),
               (Fake '' 'Pane' 'Panel lateral' 'SidebarPane' $null),
               (Fake '' 'Group' '' 'ToolbarGroup' $null))
-            [Console]::Out.Write((ConvertTo-Json -Compress @($elements | ForEach-Object { $s=Get-ShownName $_; $s.name+'|'+$s.source })))
+            [Console]::Out.Write((ConvertTo-Json -Compress @($elements | ForEach-Object { Get-ShownName $_ })))
             """);
 
         Assert.That(answer.EnumerateArray().Select(item => item.GetString()), Is.EqualTo(new[]
         {
-            "Guardar|",                         // its own Name rules: the help text never replaces it
-            "Ajustes|helpText",                 // help text first, trimmed
-            "Correo electrónico|labeledBy",     // a form field takes its label's name
-            "Notifications|automationId",       // last, the readable AutomationId
-            "|",                                // a blank help text and a number name nothing
-            "|",                                // a pane without a Name stays nameless: it is not actionable
-            "|",                                // nor a group
+            "Guardar",              // its own Name rules: the help text never replaces it
+            "Ajustes",              // help text first (before its label), trimmed
+            "Correo electrónico",   // a form field takes its label's name (before its AutomationId)
+            "Notifications",        // last, the readable AutomationId
+            "",                     // a blank help text and a number name nothing
+            "",                     // a pane without a Name stays nameless: it is not actionable
+            "",                     // nor a group
         }));
     }
 
@@ -200,48 +200,14 @@ public sealed class ComputerUseFallbackNameTests
     }
 
     [Test]
-    public void TheWorkerCachesTheFallbackSourcesAndEmitsWhereTheNameCameFrom()
+    public void TheWorkerCachesTheFallbackSources()
     {
         string script = File.ReadAllText(WorkerPath());
         Assert.Multiple(() =>
         {
             foreach (string property in new[] { "$AE::HelpTextProperty", "$AE::AutomationIdProperty", "$AE::LabeledByProperty" })
                 Assert.That(script, Does.Contain(property), "read in the same cached call as the other properties");
-            Assert.That(script, Does.Contain("nameSource=$shown.source"));
-            Assert.That(script, Does.Contain("nameSource=$entry.nameSource"), "emitted with each control");
-            Assert.That(script, Does.Contain("nameSource=$focused.nameSource"),
-                "the focused control says its name is a fallback: the mind never frees Enter on it (RiskPolicy asks)");
             Assert.That(script, Does.Contain("$AE::ClassNameProperty"), "an id equal to the control's class names nothing");
-        });
-    }
-
-    [Test]
-    public async Task TheViewCarriesWhereAFallbackNameCameFrom()
-    {
-        // A handle no window has: nothing on the desktop is read or moved.
-        const long front = 0x7FFF_0F3A;
-        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
-            "{\"ok\":true,\"error\":\"\",\"hwnd\":" + front + ",\"window\":\"Trabajo\",\"controls\":[" +
-            "{\"i\":0,\"kind\":\"Button\",\"name\":\"Ajustes\",\"nameSource\":\"helpText\",\"id\":\"4.1\",\"state\":\"\"," +
-            "\"value\":null,\"rect\":null,\"repeated\":0}," +
-            "{\"i\":1,\"kind\":\"Button\",\"name\":\"Inicio\",\"nameSource\":\"\",\"id\":\"4.2\",\"state\":\"\"," +
-            "\"value\":null,\"rect\":null,\"repeated\":0}],\"controlCount\":2," +
-            "\"focused\":{\"kind\":\"Edit\",\"name\":\"main Input\",\"nameSource\":\"automationId\",\"value\":null}}");
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _) => ValueTask.FromResult((nint)front));
-
-        ExternalCapabilityReceipt view = await adapter.InvokeAsync(
-            "input.visible.controls", JsonDocument.Parse("""{"application":"el navegador"}""").RootElement.Clone(),
-            CancellationToken.None);
-
-        JsonElement controls = view.Result!.Value.GetProperty("controls");
-        Assert.Multiple(() =>
-        {
-            Assert.That(view.Verified, Is.True);
-            Assert.That(controls[0].GetProperty("name").GetString(), Is.EqualTo("Ajustes"));
-            Assert.That(controls[0].GetProperty("nameSource").GetString(), Is.EqualTo("helpText"));
-            Assert.That(controls[1].TryGetProperty("nameSource", out _), Is.False, "a control's own Name carries no source");
-            Assert.That(view.Result!.Value.GetProperty("window").GetProperty("focused").GetProperty("nameSource").GetString(),
-                Is.EqualTo("automationId"), "the focused control keeps where its name came from");
         });
     }
 

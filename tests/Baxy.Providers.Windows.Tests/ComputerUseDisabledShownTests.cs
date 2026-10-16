@@ -27,7 +27,7 @@ public sealed class ComputerUseDisabledShownTests
         $Actionable=@('Button','MenuItem','ListItem','Edit','Document')
         $script:Cache=New-Object psobject
         $script:Cache | Add-Member -MemberType ScriptMethod -Name Activate -Value { $done=New-Object psobject; $done | Add-Member -MemberType ScriptMethod -Name Dispose -Value {}; return $done }
-        function Get-ShownName($item){ return @{ name=$item.Shown } }
+        function Get-ShownName($item){ return $item.Shown }
         function Get-Rect($item){ return @{ x=10; y=20; w=80; h=24 } }
         function New-Control($kind,$name,$enabled){
           $control=[pscustomobject]@{ Shown=$name; Cached=[pscustomobject]@{ IsEnabled=$enabled; ControlType=[pscustomobject]@{ ProgrammaticName=('ControlType.'+$kind) } } }

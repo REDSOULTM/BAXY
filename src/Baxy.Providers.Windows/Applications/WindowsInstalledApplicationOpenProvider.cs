@@ -726,8 +726,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // The last guard started (what a test awaits).
     internal Task? LastFrontGuard { get; private set; }
 
-    // The guard ends the moment BAXY takes the front on purpose (the next act of a mission brings its window up,
-    // often well inside the guard) or the person does something that moves the front (a click on the opened window
+    // The guard ends the moment BAXY takes the front on purpose (its next act brings its window up, often well
+    // inside the guard) or the person does something that moves the front (a click on the opened window
     // is theirs to keep; r4a M2: typing in their own window is not, and does not end it): only a front the
     // application took by itself is handed back. r4a M4 (w1): each look reads and hands back under the front's gate,
     // which the foreground lease holds while it brings a window up, so the guard never undoes a burst's front.
@@ -751,7 +751,6 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     {
                         bool restored = await ReturnForegroundWithinBudgetAsync(previousFront, front, CancellationToken.None)
                             .ConfigureAwait(false);
-                        ForegroundHandBack.NoteGuardReturn(restored);
                         if (!restored)
                             return;
                     }

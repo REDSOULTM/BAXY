@@ -31,7 +31,7 @@ public sealed class ScrollRevealWorkerTests
         function Row([string]$name,[string]$kind='ControlType.ListItem'){
           [pscustomobject]@{ Name=$name; Current=[pscustomobject]@{ ControlType=[pscustomobject]@{ ProgrammaticName=$kind } } }
         }
-        function Get-ShownName($el){ return @{ name=$el.Name } }
+        function Get-ShownName($el){ return $el.Name }
 
         """;
 
@@ -86,7 +86,7 @@ public sealed class ScrollRevealWorkerTests
         // Each name read crosses to the window's process: past the worker's deadline the walk stops with what it has.
         string output = Run("""
             $script:reads=0
-            function Get-ShownName($el){ $script:reads++; Start-Sleep -Milliseconds 25; return @{ name=$el.Name } }
+            function Get-ShownName($el){ $script:reads++; Start-Sleep -Milliseconds 25; return $el.Name }
             function Get-Descendants($root){ return @(1..40 | ForEach-Object { Row "Otra fila $_" }) }
             $until=[DateTime]::UtcNow.AddMilliseconds(200)
             $hits=@(Find-AnyNamed $null @('bloc de notas') $until)

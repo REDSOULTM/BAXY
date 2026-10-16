@@ -568,15 +568,6 @@ public sealed class ComputerUseClickMethodTests
                 "{\"ok\":true,\"effectObserved\":true,\"opened\":true,\"method\":\"expand\",\"manner\":\"open\"}")), Is.True);
             Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
                 "{\"ok\":true,\"effectObserved\":true,\"opened\":false,\"method\":\"contextmenu\",\"manner\":\"menu\"}")), Is.False);
-            // Ronda 20b, palanca 6 (review finding 1): the list read closed after its collapse; a collapse tried is no proof.
-            Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
-                "{\"ok\":true,\"effectObserved\":true,\"closed\":true,\"method\":\"collapse\",\"manner\":\"collapse\"}")), Is.True);
-            Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
-                "{\"ok\":true,\"effectObserved\":true,\"closed\":false,\"method\":\"collapse\",\"manner\":\"collapse\"}")), Is.False);
-            Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
-                "{\"ok\":true,\"effectObserved\":true,\"closed\":true,\"method\":\"escape\",\"manner\":\"dismiss\"}")), Is.True);
-            Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
-                "{\"ok\":true,\"effectObserved\":true,\"method\":\"escape\",\"manner\":\"dismiss\"}")), Is.False);
         });
     }
 
@@ -606,33 +597,6 @@ public sealed class ComputerUseClickMethodTests
             Assert.That(read.IndexOf("[string]$pending.manner -eq 'double'", StringComparison.Ordinal),
                 Is.GreaterThan(0).And.LessThan(read.IndexOf("Test-Selected $button", StringComparison.Ordinal)));
             Assert.That(open, Does.Contain("$r.Right+64 -ge $box.Left"));
-            // Ronda 20b, palanca 6 (review finding 1): a list no longer open is not touched, the collapse never releases
-            // the net (the front goes back to the person after it) and its pattern counts as an act for that net.
-            // Review 2 (finding 3): ExpandCollapse only on what is read expanded; otherwise Escape is posted only to a
-            // popup read open beside the control, never to the mission's window or its root, and nothing is sent
-            // without one.
-            // Review 3 (finding 1): the list's collapse and the popup's dismiss are apart: the collapse never folds a tree
-            // branch (TreeItem refused before any Collapse) and the dismiss never touches the control's ExpandCollapse.
-            int collapse = manner.IndexOf("$manner -eq 'collapse'", StringComparison.Ordinal);
-            int dismiss = manner.IndexOf("$manner -eq 'dismiss'", StringComparison.Ordinal);
-            Assert.That(dismiss, Is.GreaterThan(collapse));
-            string collapsing = manner[collapse..dismiss];
-            string dismissing = manner[dismiss..manner.IndexOf("$point=Get-PressPoint", dismiss, StringComparison.Ordinal)];
-            Assert.That(collapsing.IndexOf("ControlType]::TreeItem", StringComparison.Ordinal),
-                Is.GreaterThan(0).And.LessThan(collapsing.IndexOf("$ec.Collapse()", StringComparison.Ordinal)));
-            Assert.That(collapsing.IndexOf("ExpandCollapseState -ne $expanded){ return @{ error='visible_control_not_open' }", StringComparison.Ordinal),
-                Is.GreaterThan(0).And.LessThan(collapsing.IndexOf("$ec.Collapse()", StringComparison.Ordinal)));
-            Assert.That(collapsing, Does.Not.Contain("PostEscape"));
-            Assert.That(dismissing, Does.Not.Contain("ExpandCollapse"));
-            Assert.That(dismissing.IndexOf("visible_control_not_open", StringComparison.Ordinal),
-                Is.GreaterThan(0).And.LessThan(dismissing.IndexOf("::PostEscape(", StringComparison.Ordinal)));
-            Assert.That(collapsing + dismissing, Does.Not.Contain("[BaxyFrontKeeper]::Release()"));
-            Assert.That(dismissing, Does.Contain("method='escape'; closed=$true"));
-            int born = script.IndexOf("function Get-BornPopups(", StringComparison.Ordinal);
-            string popups = script[born..script.IndexOf("\nfunction ", born + 10, StringComparison.Ordinal)];
-            Assert.That(popups, Does.Contain("$holder -eq $top -or $holder -eq $frame"));
-            Assert.That(popups, Does.Contain("$r.Right+64 -ge $box.Left"));
-            Assert.That(script, Does.Contain("'render','collapse','escape')"));
             Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
                 "{\"ok\":false,\"effectObserved\":false,\"error\":\"visible_control_already_open\",\"manner\":\"open\"}")), Is.False);
         });

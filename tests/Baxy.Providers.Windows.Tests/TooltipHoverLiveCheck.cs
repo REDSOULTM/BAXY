@@ -52,7 +52,7 @@ public sealed class TooltipHoverLiveCheck
                 else
                 {
                     window = Process.GetProcessesByName(name)
-                        .Select(process => VisibleControlSurface.LargestTopLevelWindow(process.Id))
+                        .Select(process => VisibleControlSurface.ProcessWindow(process.Id, 0))
                         .FirstOrDefault(handle => handle != 0);
                 }
 

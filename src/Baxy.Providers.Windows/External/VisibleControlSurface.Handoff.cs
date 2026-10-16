@@ -27,11 +27,11 @@ internal static partial class VisibleControlSurface
     /// </summary>
     internal static long PersonInputMark(IUserInputPause pause) => pause.LastReachingInputMs;
 
-    /// <summary>The window a click handed its effect to, as the receipt names it; <paramref name="Born"/> when it came
-    /// with the click (not one already open that took the front): only such a window is the mission's to clean up.
+    /// <summary>The window a click handed its effect to, as the receipt names it («handedTo»); <paramref name="Born"/>
+    /// when it came with the click (not one already open that took the front);
     /// <paramref name="PersonInputAgoMs"/>: how long ago the person's last input went to it;
-    /// <paramref name="PersonNearAgoMs"/>: to its process or the shell (null when none or not told): what the mission's
-    /// guard of the person's windows reads (review 3, B1).</summary>
+    /// <paramref name="PersonNearAgoMs"/>: to its process or the shell (null when none or not told). The receipt says
+    /// the three (review 3, B1).</summary>
     internal readonly record struct HandedWindow(
         nint Window, int ProcessId, string Process, string Title, bool Born = false, long? PersonInputAgoMs = null,
         long? PersonNearAgoMs = null);
@@ -95,8 +95,8 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The handed window as the receipt names it; null when it is gone or is a window the mission never acts on (an
-    /// editor, a console, BAXY: «Seguridad v2», told by its process).
+    /// The handed window as the receipt names it; null when it is gone or is a window no act reaches (an editor, a
+    /// console, BAXY: «Seguridad v2», told by its process).
     /// </summary>
     internal static HandedWindow? DescribeHanded(RootWindow window)
     {
