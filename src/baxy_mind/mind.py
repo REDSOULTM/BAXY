@@ -458,11 +458,13 @@ class Mind:
         done = turn.setdefault("done", [])
         calling = str(turn.get("calling", "?"))
         calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
-        entry, same = f"{calling} → {_outcome(observation)}", turn.get("last_call")
-        turn["last_call"] = (calling, turn.get("calling_args"))
+        outcome = _outcome(observation)
+        entry, same = f"{calling} → {outcome}", turn.get("last_call")
+        # Grouped only when the result is the same too: a click that worked and then failed are two facts (round 2).
+        turn["last_call"] = (calling, turn.get("calling_args"), outcome)
         if done and same == turn["last_call"]:
             turn["repeats"] = turn.get("repeats", 1) + 1
-            done[-1] = f"{calling} ×{turn['repeats']} con los mismos argumentos → {_outcome(observation)}"
+            done[-1] = f"{calling} ×{turn['repeats']} con los mismos argumentos → {outcome}"
         else:
             turn["repeats"] = 1
             done.append(entry)
@@ -558,8 +560,11 @@ class Mind:
                 # beside it is its answer.
                 for call_id in [call["id"], *later]:
                     turn["conv"].append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
-                if content:
-                    result.update(reply=content)
+                if not content:
+                    # Nothing to say beside it: the model answers in words from what ran (an empty reply after an
+                    # action was a failed turn that never told what happened; round 2).
+                    return self._next(request_id, stage, turn, final=True)
+                result.update(reply=content)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))

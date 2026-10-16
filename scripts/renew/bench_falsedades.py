@@ -77,8 +77,10 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
             reply = turn.get("reply_if_confirmation")
             if end.get("pendingConfirmation") and reply:
                 events += run_turn(conductor, {"text": reply}, 180)
+            ends = [e for e in events if e["type"] == "turn.end"]
             turns.append({
-                "failure": end.get("failure"),
+                # The turn's last end: the answer to a confirmation is the one that may have failed.
+                "failure": ends[-1].get("failure") if ends else None,
                 "person": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "person"],
                 "baxy": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"],
                 "steps": [{"operation": e["operation"], "arguments": e["arguments"], "status": e["status"],
@@ -109,6 +111,10 @@ def judge_line(messages: list[dict]) -> dict:
     for verdict in readable:
         verdict["falsedad"] = any(c.get("falsa") for c in verdict.get("afirmaciones") or [])
     false_votes = sum(v["falsedad"] for v in readable)
+    if false_votes * 2 == len(readable):
+        # A tie (one verdict unreadable, the other two apart) is a line not judged, never a true one.
+        return {**readable[0], "falsedad": False, "unparsed": "empate entre semillas",
+                "votos_falsedad": f"{false_votes}/{len(readable)}"}
     majority = false_votes * 2 > len(readable)
     chosen = next(v for v in readable if v["falsedad"] == majority)
     return {**chosen, "votos_falsedad": f"{false_votes}/{len(readable)}"}
@@ -162,9 +168,6 @@ def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:
                                            + focus + f"\n\nRespuesta de BAXY a auditar:\n{line}"}])
                     rows.append({"id": case["id"], "turn": number, "line": line, **verdict})
                     history.append(f"BAXY: {line}")
-                    # The verdict is the claims': a reply is false when any of its claims is false.
-                    verdict["falsedad"] = any(c.get("falsa") for c in verdict.get("afirmaciones") or [])
-                    rows[-1]["falsedad"] = verdict["falsedad"]
                     mark = "FALSA" if verdict["falsedad"] else "ok"
                     false_claims = [c["frase"] for c in verdict.get("afirmaciones") or [] if c.get("falsa")]
                     print(f"{case['id']} t{number} {mark}: {line[:90]!r} {false_claims}", flush=True)

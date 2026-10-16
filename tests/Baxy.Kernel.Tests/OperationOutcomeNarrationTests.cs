@@ -99,7 +99,8 @@ public sealed class OperationOutcomeNarrationTests
     [Test]
     public void ACutPageKeepsAsMuchTextAsTheMessageHolds()
     {
-        string page = string.Join(' ', Enumerable.Range(0, 3_000).Select(static index => "w" + index));
+        // Line breaks and quotes take two characters each in the message's JSON (a real page has dozens per 2,000).
+        string page = string.Join(' ', Enumerable.Range(0, 3_000).Select(static index => index % 20 == 0 ? "\"w\"\n" : "w" + index));
         JsonElement result = JsonSerializer.SerializeToElement(new { offset = 0, hasMore = true, nextOffset = page.Length, text = page });
 
         string message = OperationVisibleFacts.FromOutcome("web.fetch", OperationOutcome.Success(result));

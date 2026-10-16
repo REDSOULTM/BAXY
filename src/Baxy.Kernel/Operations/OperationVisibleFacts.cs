@@ -284,20 +284,26 @@ public static class OperationVisibleFacts
             probe["text"] = string.Empty;
             payload["observed"] = probe;
             int room = limit - payload.ToJsonString(JsonOptions).Length - 64;
-            if (room > ObservedProjectionSteps[0].Text)
+            // The room counts the text's characters, not its escaped JSON (each line break or quote takes two): a try
+            // that does not fit shrinks by what it went over and tries again (round 2: p11's pages went over by 140-260).
+            for (int attempt = 0; attempt < 3 && room > ObservedProjectionSteps[0].Text; attempt++)
             {
                 bool cut = false;
                 JsonNode projected = Project(observed, null, room, int.MaxValue, ref cut);
-                if (cut && projected is JsonObject root)
+                if (!cut || projected is not JsonObject root)
                 {
-                    root["truncated"] = true;
-                    payload["observed"] = projected;
-                    string json = payload.ToJsonString(JsonOptions);
-                    if (json.Length <= limit)
-                    {
-                        return json;
-                    }
+                    break;
                 }
+
+                root["truncated"] = true;
+                payload["observed"] = projected;
+                string json = payload.ToJsonString(JsonOptions);
+                if (json.Length <= limit)
+                {
+                    return json;
+                }
+
+                room -= json.Length - limit + 16;
             }
         }
 

@@ -135,6 +135,10 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
         (string stderr, bool stderrTruncated) = Bound(process.Error);
         // Auditoría final: the output goes once, as stdout; its lines are counted, not repeated beside it.
         int lineCount = stdout.Split('\n').Count(line => line.Trim().Length > 0);
+        // Auditoría final 2: what ran is an effect only when the command may change something (the kernel's own reading
+        // of it, RiskPolicy.ShellMayChange); a command that only reads changed nothing. A non-zero exit is a failure,
+        // with its output and error text.
+        bool mayChange = Baxy.Kernel.Policy.RiskPolicy.ShellMayChange(operation, arguments);
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -150,14 +154,14 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
             writer.WriteNumber("durationMs", (long)(DateTime.UtcNow - started).TotalMilliseconds);
             writer.WriteString("shell", "powershell_noprofile_noninteractive");
             writer.WriteString("authority", "shell_process_exit_and_captured_output");
+            // A command that may change something ran and exited; nothing read back what it changed (round 2: said as a
+            // fact of the result, not as a failure of the run).
+            if (mayChange)
+                writer.WriteBoolean("effectReadBack", false);
             writer.WriteEndObject();
         });
-        // Auditoría final 2: what ran is an effect only when the command may change something (the kernel's own reading
-        // of it, RiskPolicy.ShellMayChange); a command that only reads changed nothing. A non-zero exit is a failure,
-        // with its output and error text.
-        bool mayChange = Baxy.Kernel.Policy.RiskPolicy.ShellMayChange(operation, arguments);
         return process.ExitCode == 0
-            ? ExternalJson.Success(operation, result, effectObserved: false) with { EffectMayHaveOccurred = mayChange }
+            ? ExternalJson.Success(operation, result, effectObserved: false)
             : new ExternalCapabilityReceipt(operation, false, false, result, "shell_command_exit_nonzero")
             {
                 EffectMayHaveOccurred = mayChange,
