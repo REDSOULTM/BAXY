@@ -235,10 +235,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             return await _userBrowser.ReadPageAsync(operation, userBrowser, maximumCharacters, cancellationToken)
                 .ConfigureAwait(false);
         CdpBrowserSession browser = active ?? _browser;
+        int launches = browser.Launches;
         CdpPageReadResult page = await browser.ReadPageAsync(maximumCharacters, cancellationToken)
             .ConfigureAwait(false);
+        bool launched = browser.Launches > launches;
         if (!page.Verified)
-            return ExternalJson.Failure(operation, page.ErrorCode);
+            return ExternalJson.Failure(operation, page.ErrorCode, launched);
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -248,6 +250,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("title", page.Title);
             writer.WriteString("text", page.Text);
             writer.WriteBoolean("truncated", page.Truncated);
+            if (launched) writer.WriteBoolean("browserLaunched", true);
             writer.WriteString("authority", "cdp_dom_visible_text_snapshot");
             writer.WriteEndObject();
         }), effectObserved: false);
@@ -306,10 +309,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             return await _userBrowser.ListTabsAsync(operation, userBrowser, limit, cancellationToken)
                 .ConfigureAwait(false);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
+        int launches = browser.Launches;
         CdpBrowserTabsResult tabs = await browser.ListTabsAsync(limit, cancellationToken)
             .ConfigureAwait(false);
+        bool launched = browser.Launches > launches;
         if (!tabs.Verified)
-            return ExternalJson.Failure(operation, tabs.ErrorCode);
+            return ExternalJson.Failure(operation, tabs.ErrorCode, launched);
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -326,6 +331,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
+            // The tabs of a browser this list had to open are that browser's, not the person's.
+            if (launched) writer.WriteBoolean("browserLaunched", true);
             writer.WriteString("authority", "cdp_page_targets_snapshot");
             writer.WriteEndObject();
         }), effectObserved: false);
@@ -1283,6 +1290,9 @@ internal sealed class CdpBrowserSessionContext
 
 internal class CdpBrowserSession : IDisposable
 {
+    // Ronda final: how many times this session launched its own browser, so a read that had to open one says so.
+    internal int Launches { get; private set; }
+
     private readonly string _profile;
     private readonly string? _browserExecutable;
     private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(10) };
@@ -2397,6 +2407,7 @@ internal class CdpBrowserSession : IDisposable
             _ownedProcess = processId > 0
                 ? Process.GetProcessById(processId)
                 : throw new IOException("CDP browser could not start.");
+            Launches++;
             await File.WriteAllTextAsync(
                 Path.Combine(_profile, OwnerRecordName),
                 OwnerRecord(processId, _ownedProcess.StartTime.ToUniversalTime().Ticks),

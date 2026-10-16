@@ -1168,7 +1168,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # The product and its console compete for the foreground while this runs; a lost focus can drop the
         # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
         # and confirming it held, until the switcher shows matches; nothing is joined or opened.
-        $items=@();$foreground=$false
+        $items=@();$foreground=$false;$read=$false
         for($round=0;$round -lt 5 -and $items.Count -eq 0;$round++){
           [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
@@ -1178,10 +1178,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){[void][BaxyMarkedKeys]::Press(0x1B,$false);continue}
           [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
+          $read=$true
           for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
           [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
         }
         if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground'}|ConvertTo-Json -Compress;exit 3}
+        # Ronda final: the switcher never kept the front long enough to be read: nothing is said of its rows.
+        if(-not $read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read'}|ConvertTo-Json -Compress;exit 3}
         [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items)}|ConvertTo-Json -Compress
         """;
 
