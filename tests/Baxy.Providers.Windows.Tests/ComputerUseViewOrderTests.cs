@@ -205,7 +205,7 @@ public sealed class ComputerUseViewOrderTests
         string answer = Run(["Add-ViewBody"], """
             function New-List($entries){ $list=New-Object System.Collections.ArrayList; foreach($e in $entries){ [void]$list.Add($e) }; return ,$list }
             function Show($list){ return ((@($list | ForEach-Object { $_.kind + ':' + $_.id + ':' + [bool]$_.reserved })) -join ' ') }
-            $body=@{ item='el'; kind='Pane'; name='(pane)'; nameSource='kind'; id='9.1'; rect=@{ x=0; y=40; w=800; h=500 }; area=400000 }
+            $body=@{ item='el'; kind='Pane'; name='(pane)'; id='9.1'; rect=@{ x=0; y=40; w=800; h=500 }; area=400000 }
             $elements=@{}
             $one=New-List @(@{ kind='Button'; name='Jugar'; id='1.1' })
             Add-ViewBody $one $body $elements
@@ -256,7 +256,7 @@ public sealed class ComputerUseViewOrderTests
           for($k=0;$k -lt $siblings.Count-1;$k++){ if([object]::ReferenceEquals($siblings[$k],$n)){ return $siblings[$k+1] } }
           return $null }
         function Get-LineageWalker(){ return $script:Walker }
-        function Get-ShownName($el){ return @{ name=[string]$el.name } }
+        function Get-ShownName($el){ return [string]$el.name }
         function Get-Toggle($el){ return $el.toggle }
         function Get-LineageEntry($el){
           $ancestors=@(); $up=$el.parent
@@ -338,7 +338,7 @@ public sealed class ComputerUseViewOrderTests
               [void]$primary.Add(@{ kind='Button'; name=$name; id=('1.'+$k); rect=@{ x=$k; y=0; w=10; h=10 }; systemMenu=$false })
             }
             $joined=Join-ViewControls $primary @() @() $script:ViewCap @('objetivo')
-            $body=@{ item='el'; kind='Pane'; name='(pane)'; nameSource='kind'; id='9.9'; rect=@{ x=0; y=40; w=800; h=500 }; area=400000 }
+            $body=@{ item='el'; kind='Pane'; name='(pane)'; id='9.9'; rect=@{ x=0; y=40; w=800; h=500 }; area=400000 }
             Add-ViewBody $joined.controls $body @{}
             [Console]::Out.Write((@([string]$script:ViewCap, [string]$script:WantedRoom, [string]($joined.controls.Count-1), [string]$joined.controls[$joined.controls.Count-1].id) -join ','))
             """);

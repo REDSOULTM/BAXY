@@ -84,18 +84,18 @@ public sealed class ComputerUseFallbackNameTests
               (Fake '' 'Button' '   ' '12345' $null),
               (Fake '' 'Pane' 'Panel lateral' 'SidebarPane' $null),
               (Fake '' 'Group' '' 'ToolbarGroup' $null))
-            [Console]::Out.Write((ConvertTo-Json -Compress @($elements | ForEach-Object { $s=Get-ShownName $_; $s.name+'|'+$s.source })))
+            [Console]::Out.Write((ConvertTo-Json -Compress @($elements | ForEach-Object { Get-ShownName $_ })))
             """);
 
         Assert.That(answer.EnumerateArray().Select(item => item.GetString()), Is.EqualTo(new[]
         {
-            "Guardar|",                         // its own Name rules: the help text never replaces it
-            "Ajustes|helpText",                 // help text first, trimmed
-            "Correo electrónico|labeledBy",     // a form field takes its label's name
-            "Notifications|automationId",       // last, the readable AutomationId
-            "|",                                // a blank help text and a number name nothing
-            "|",                                // a pane without a Name stays nameless: it is not actionable
-            "|",                                // nor a group
+            "Guardar",              // its own Name rules: the help text never replaces it
+            "Ajustes",              // help text first (before its label), trimmed
+            "Correo electrónico",   // a form field takes its label's name (before its AutomationId)
+            "Notifications",        // last, the readable AutomationId
+            "",                     // a blank help text and a number name nothing
+            "",                     // a pane without a Name stays nameless: it is not actionable
+            "",                     // nor a group
         }));
     }
 
@@ -200,16 +200,13 @@ public sealed class ComputerUseFallbackNameTests
     }
 
     [Test]
-    public void TheWorkerCachesTheFallbackSourcesAndEmitsWhereTheNameCameFrom()
+    public void TheWorkerCachesTheFallbackSources()
     {
         string script = File.ReadAllText(WorkerPath());
         Assert.Multiple(() =>
         {
             foreach (string property in new[] { "$AE::HelpTextProperty", "$AE::AutomationIdProperty", "$AE::LabeledByProperty" })
                 Assert.That(script, Does.Contain(property), "read in the same cached call as the other properties");
-            Assert.That(script, Does.Contain("nameSource=$shown.source"));
-            Assert.That(script, Does.Contain("nameSource=$entry.nameSource"), "emitted with each control");
-            Assert.That(script, Does.Contain("nameSource=$focused.nameSource"), "emitted with the focused control");
             Assert.That(script, Does.Contain("$AE::ClassNameProperty"), "an id equal to the control's class names nothing");
         });
     }

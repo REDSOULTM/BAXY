@@ -1199,23 +1199,23 @@ function Get-ReadableId([string]$automationId,[string]$kind,[string]$className='
 }
 # Un control sin Name no queda mudo si su aplicacion lo nombra de otro modo: su texto de ayuda (el ToolTip de
 # WPF se publica como HelpText), el nombre del rotulo que lo etiqueta (LabeledBy, un campo de formulario) o su
-# AutomationId legible, en ese orden. «source» dice de donde salio; vacio si no hay nombre.
+# AutomationId legible, en ese orden; vacio si no hay nombre.
 function Get-FallbackName([string]$helpText,[string]$labelName,[string]$automationId,[string]$kind,[string]$className=''){
   $help=Format-Name $helpText
-  if($help.Length -gt 0){ return @{ name=$help; source='helpText' } }
+  if($help.Length -gt 0){ return $help }
   $label=Format-Name $labelName
-  if($label.Length -gt 0){ return @{ name=$label; source='labeledBy' } }
+  if($label.Length -gt 0){ return $label }
   $readable=Get-ReadableId $automationId $kind $className
-  if($readable.Length -gt 0){ return @{ name=$readable; source='automationId' } }
-  return @{ name=''; source='' }
+  if($readable.Length -gt 0){ return $readable }
+  return ''
 }
 # El nombre con que se muestra y se busca un control: su Name; sin el, y solo en un accionable (un panel o un
-# grupo sin nombre sigue sin informar de nada), el nombre de respaldo. source vacio = su propio Name.
+# grupo sin nombre sigue sin informar de nada), el nombre de respaldo.
 function Get-ShownName($el){
   $name=Get-Name $el
-  if($name.Length -gt 0){ return @{ name=$name; source='' } }
+  if($name.Length -gt 0){ return $name }
   $kind=([string](Get-Prop $el 'ControlType').ProgrammaticName) -replace '^ControlType\.',''
-  if($Actionable -notcontains $kind){ return @{ name=''; source='' } }
+  if($Actionable -notcontains $kind){ return '' }
   $labelName=''
   $label=Get-Prop $el 'LabeledBy'
   if($null -ne $label){ $labelName=Get-Name $label }
@@ -1323,7 +1323,7 @@ function Test-ItemHolds($el,[string[]]$aliases){
   try { $kind=[string]$el.Cached.ControlType.ProgrammaticName } catch { $kind='' }
   if($kind.Length -eq 0){ try { $kind=[string]$el.Current.ControlType.ProgrammaticName } catch { return $false } }
   if($script:TitledKinds -notcontains $kind){ return $false }
-  return (Test-NameHolds (Get-ShownName $el).name $aliases)
+  return (Test-NameHolds (Get-ShownName $el) $aliases)
 }
 function Test-NameHolds([string]$name,[string[]]$aliases){
   $words=' '+(Get-Folded $name)+' '
@@ -2321,7 +2321,7 @@ function ConvertTo-MenuViewEntries($menuEntries){
     # lleva a un lugar.
     elseif([bool]$menu.Checkable -or [bool]$menu.Checked){ $parts+='checkable' }
     $id=$(if([bool]$menu.FillsOnOpen -or [int]$menu.Id -le 0){ '' } else { 'hmenu.'+[int]$menu.Id })
-    $out+=@(@{ kind='MenuItem'; name=[string]$menu.Path; nameSource='menu'; id=$id; state=($parts -join ' '); value=$null; shortcut=[string]$menu.Shortcut; rect=$null; repeated=0 })
+    $out+=@(@{ kind='MenuItem'; name=[string]$menu.Path; id=$id; state=($parts -join ' '); value=$null; shortcut=[string]$menu.Shortcut; rect=$null; repeated=0 })
   }
   return $out
 }
@@ -2446,7 +2446,7 @@ function Get-BodySurface($item,[string]$kind,[string]$name,$rect,$box){
   $area=[double]$rect.w*[double]$rect.h
   if($area -lt $script:BodyShare*[double]$box.w*[double]$box.h){ return $null }
   $named=-not [string]::IsNullOrWhiteSpace($name)
-  return @{ item=$item; kind=$kind; name=$(if($named){ $name } else { '(' + $kind.ToLowerInvariant() + ')' }); nameSource=$(if($named){ 'name' } else { 'kind' }); id=(Get-Id $item); rect=$rect; area=$area }
+  return @{ item=$item; kind=$kind; name=$(if($named){ $name } else { '(' + $kind.ToLowerInvariant() + ')' }); id=(Get-Id $item); rect=$rect; area=$area }
 }
 # Revision 2: el cuerpo se anade fuera del tope solo a una vista que ya lista mas de un control. Una ventana que lista
 # como mucho uno (CEF, un lienzo) se lee por lo dibujado: el adaptador lee su texto sin pedirlo, con autoridad de
@@ -2462,7 +2462,7 @@ function Add-ViewBody($controls,$body,$elements){
   }
   if($null -ne $listed -and [bool]$listed.reserved){ [void]$controls.Remove($listed); $listed=$null }
   if($null -ne $listed -or $shown -le 1){ return }
-  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; nameSource=$body.nameSource; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0 })
+  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0 })
   if(([string]$body.id).Length -gt 0){ $elements[[string]$body.id]=$body.item }
 }
 function Select-BodySurface($surfaces,$primary){
@@ -2524,8 +2524,7 @@ function Do-View($request){
   foreach($item in $all){
     try {
       if($item.Cached.IsOffscreen -and -not $keepOffscreen){ continue }
-      $shown=Get-ShownName $item
-      $name=$shown.name
+      $name=Get-ShownName $item
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
       if($script:BodyKinds -contains $kind){
         $surface=Get-BodySurface $item $kind $name (Get-Rect $item) $box
@@ -2538,7 +2537,7 @@ function Do-View($request){
         # Un campo de formulario sin nombre ni LabeledBy lo nombra su rotulo: el texto mas cercano a su izquierda o
         # encima (punto 2 del goal v3: «poner el ancho en 800»).
         $near=Get-NearLabel $item $all
-        if($near.Length -gt 0){ $name=$near; $shown=@{ name=$near; source='nearText' } }
+        if($near.Length -gt 0){ $name=$near }
       }
       if([string]::IsNullOrWhiteSpace($name)){
         if($kind -eq 'Edit' -or $kind -eq 'Document'){ $name='(' + $kind.ToLowerInvariant() + ')' } else { continue }
@@ -2566,7 +2565,7 @@ function Do-View($request){
         foreach($bar in $titleBars){ if($inBar){ break }; if(Test-CenterWithin $bar $rect){ $inBar=$true } }
         if($inBar){ $systemMenu=(Test-SystemMenu $item) }
       }
-      $entry=@{ kind=$kind; name=$name; nameSource=$shown.source; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total }
+      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total }
       $seen[$key]=$entry
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
@@ -2594,7 +2593,7 @@ function Do-View($request){
   $ordered=@()
   $position=0
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; nameSource=$entry.nameSource; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated })
+    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated })
     $position++
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
@@ -2608,7 +2607,7 @@ function Do-View($request){
     # Su indice en la vista, si la vista lo entrego: el campo al que va un texto dirigido (input.text.type «index»).
     $focusedIndex=$null
     for($k=0;$k -lt $ordered.Count;$k++){ if([object]::ReferenceEquals($controls[$k],$focused)){ $focusedIndex=$k; break } }
-    $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; nameSource=$focused.nameSource; value=$focused.value; i=$focusedIndex }
+    $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; value=$focused.value; i=$focusedIndex }
   }
   return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; frameOnly=$frameOnly; partial=$viewPartial }
 }
@@ -2629,7 +2628,7 @@ function Get-DisabledShown($found,[int]$shownCount,$seen){
     try {
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
       if($Actionable -notcontains $kind -or $kind -eq 'Edit' -or $kind -eq 'Document'){ continue }
-      $name=(Get-ShownName $item).name
+      $name=Get-ShownName $item
       if([string]::IsNullOrWhiteSpace($name)){ continue }
       $key=$kind+'|'+$name
       if($seen.ContainsKey($key) -or $named.ContainsKey($key)){ continue }
@@ -2726,7 +2725,7 @@ function Get-LineageEntry($el){
   try { $expand=$el.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern) } catch {}
   $kind=''
   try { $kind=([string]$el.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
-  return @{ name=(Get-ShownName $el).name; key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select; toggle=$toggle; expand=$expand; edit=($kind -eq 'Edit'); kind=$kind }
+  return @{ name=(Get-ShownName $el); key=(Get-Id $el); ancestors=$ancestors; rect=(Get-Rect $el); invoke=$invoke; select=$select; toggle=$toggle; expand=$expand; edit=($kind -eq 'Edit'); kind=$kind }
 }
 # Los controles con ese nombre; sin ninguno igual, los que lo llevan como
 # palabras (el clic solo sigue si es uno). Los iguales de una sola linea de
@@ -2954,7 +2953,7 @@ function Find-Named($root,[string[]]$aliases,$offscreenBox=$null){
   foreach($item in $all){
     try {
       if(-not (Test-OffscreenUsable ([bool]$item.Cached.IsOffscreen) (Get-Rect $item) $offscreenBox)){ continue }
-      $name=(Get-ShownName $item).name
+      $name=Get-ShownName $item
       $exact=Test-NameMatch $name $aliases
       if($exact){ if(-not (Test-SystemMenu $item)){ $matches+=@($item) } }
       elseif((Test-ItemHolds $item $aliases) -and $script:NamedCandidates -notcontains $name -and -not (Test-SystemMenu $item)){ $script:NamedCandidates+=@($name) }
@@ -3271,13 +3270,13 @@ $script:LineageUp=3
 $script:LineageDown=2
 $script:LineageNodes=40
 function Test-SameShownName($el,[string]$name){
-  try { return [string]::Equals((Get-ShownName $el).name,$name,[StringComparison]::OrdinalIgnoreCase) } catch { return $false }
+  try { return [string]::Equals((Get-ShownName $el),$name,[StringComparison]::OrdinalIgnoreCase) } catch { return $false }
 }
 function Get-LineageWalker(){ return [System.Windows.Automation.TreeWalker]::RawViewWalker }
 function Get-SameNameLineage($el){
   $line=@($el)
   $name=''
-  try { $name=(Get-ShownName $el).name } catch { $name='' }
+  try { $name=Get-ShownName $el } catch { $name='' }
   if([string]::IsNullOrWhiteSpace($name)){ return $line }
   $walker=Get-LineageWalker
   try {
@@ -3356,8 +3355,8 @@ function Do-ClickJudged($request){
     $byId=Find-ById $root $controlId
     if($null -eq $byId -and $script:LookupPartial){ return (Click-Result $false $false 'visible_lookup_timeout' '' $controlId $false $false $false '') }
     if($null -eq $byId){ return (Click-Result $false $false 'visible_control_identity_stale' '' $controlId $false $false $false '') }
-    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-ShownName $byId).name $aliases)){
-      return (Click-Result $false $false 'visible_control_label_mismatch' (Get-ShownName $byId).name $controlId $false $false $false '')
+    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-ShownName $byId) $aliases)){
+      return (Click-Result $false $false 'visible_control_label_mismatch' (Get-ShownName $byId) $controlId $false $false $false '')
     }
     $matches=@($byId)
     # Ronda 21 (t-drag-4): por su identidad tambien se pulsa la linea de descendencia del mismo nombre (el ListItem de
@@ -3383,7 +3382,7 @@ function Do-ClickJudged($request){
     return (Click-Result $false $false 'visible_click_argument_invalid' '' '' $false $false $false '')
   }
   if($controlId.Length -eq 0 -and $script:AskingName.Length -gt 0 -and
-     @($matches | Where-Object { Test-NameMatch (Get-ShownName $_).name $aliases }).Count -eq 0){
+     @($matches | Where-Object { Test-NameMatch (Get-ShownName $_) $aliases }).Count -eq 0){
     return (Click-Result $false $false 'visible_control_needs_confirmation' $script:AskingName '' $false $false $false '')
   }
   # Revision 1 de la ronda 21 (hallazgo 4): una busqueda por nombre que el plazo corto no prueba que el control falte
@@ -3410,7 +3409,7 @@ function Do-ClickJudged($request){
     return $missing
   }
   if($matches.Count -ne 1){ return (Click-Result $false $false 'visible_button_ambiguous' '' '' $false $false $false '') }
-  $button=$matches[0];$name=(Get-ShownName $button).name;$identity=Get-Id $button
+  $button=$matches[0];$name=Get-ShownName $button;$identity=Get-Id $button
   $kind=$button.Current.ControlType.ProgrammaticName -replace '^ControlType\.',''
   # Encargo V: por su identidad, en su manera o por su etiqueta, lo que pide mas que su etiqueta no se pulsa (Get-AskingName).
   $asking=Get-AskingName $button $name $aliases $request.asks
@@ -3673,7 +3672,7 @@ function Do-Scroll($request){
     try { $scroll.Scroll([System.Windows.Automation.ScrollAmount]::NoAmount,$step) } catch [System.InvalidOperationException] { break }
   }
   $after=[double]$scroll.Current.VerticalScrollPercent
-  return @{ ok=$true; error=''; scrolled=($after -ne $before); percentBefore=$before; percentAfter=$after; name=(Get-ShownName $element).name; container=(-not $owner.own) }
+  return @{ ok=$true; error=''; scrolled=($after -ne $before); percentBefore=$before; percentAfter=$after; name=(Get-ShownName $element); container=(-not $owner.own) }
 }
 # input.scroll con «label» (goal v3 punto 2, revelar): el elemento con ese nombre que esta fuera de vista se trae a la
 # vista sin rueda ni raton. Primero entre los que el arbol ya tiene (IsOffscreen) por su ScrollItemPattern; si no esta,
@@ -3690,7 +3689,7 @@ function Find-AnyNamed($root,[string[]]$aliases,$until=$null){
     # Each name read crosses to the window's process: a long walk stops at the deadline with what it found.
     if($null -ne $until -and [DateTime]::UtcNow -gt $until){ break }
     try {
-      $name=(Get-ShownName $item).name
+      $name=Get-ShownName $item
       if(Test-NameMatch $name $aliases){ $hits+=@($item) }
       elseif((Test-ItemHolds $item $aliases) -and $script:NamedCandidates -notcontains $name){ $script:NamedCandidates+=@($name) }
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
@@ -3702,7 +3701,7 @@ function Test-Shown($el){
 }
 function Reveal-Result([bool]$ok,[string]$error,[string]$method,$el){
   $name=''
-  if($null -ne $el){ $name=(Get-ShownName $el).name }
+  if($null -ne $el){ $name=Get-ShownName $el }
   $result=@{ ok=$ok; error=$error; method=$method; name=$name; revealed=($ok -and $method -ne 'already'); visible=($null -ne $el -and (Test-Shown $el)) }
   if(-not $ok -and $script:NamedCandidates.Count -gt 0){ $result.candidates=@($script:NamedCandidates | Select-Object -First 10) }
   return $result
@@ -3835,7 +3834,7 @@ function Do-Find($request){
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found'; count=0 } }
   $script:NamedCandidates=@()
   $matches=@(Find-Named $target.root $aliases)
-  $names=@($matches | ForEach-Object { (Get-ShownName $_).name })
+  $names=@($matches | ForEach-Object { Get-ShownName $_ })
   return @{ ok=$true; error=''; count=$matches.Count; names=$names }
 }
 # Ronda 24 (cliente en frio listo por interaccion): una ventana esta lista para usarse cuando expone contenido con el
@@ -4068,10 +4067,10 @@ function Do-Unnamed($request){
     try {
       if($item.Cached.IsOffscreen){ continue }
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
-      $shown=Get-ShownName $item
-      if($shown.name.Length -gt 0){ $named++; continue }
+      $name=Get-ShownName $item
+      if($name.Length -gt 0){ $named++; continue }
       $rect=Get-Rect $item
-      if(-not (Test-HoverCandidate $kind $shown.name $rect)){ continue }
+      if(-not (Test-HoverCandidate $kind $name $rect)){ continue }
       if($out.Count -lt $limit){ [void]$out.Add([pscustomobject]@{ kind=$kind; id=(Get-Id $item); rect=$rect }) }
     } catch [System.Windows.Automation.ElementNotAvailableException] {}
   }

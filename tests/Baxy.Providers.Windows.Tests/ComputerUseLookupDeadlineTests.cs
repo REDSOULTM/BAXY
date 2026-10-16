@@ -34,7 +34,7 @@ public sealed class ComputerUseLookupDeadlineTests
             function Get-ClientRootFor($hwnd){ return $null }
             function Test-NameMatch($name,$aliases){ return $true }
             function Test-ItemHolds($el,$aliases){ return $false }
-            function Get-ShownName($el){ return @{ name=[string]$el.Name } }
+            function Get-ShownName($el){ return [string]$el.Name }
             function Get-Id($el){ return [string]$el.Id }
             # Past the guard the click reads the control's toggle state: the case says it got that far.
             function Get-Toggle($el){ throw 'pressing' }
