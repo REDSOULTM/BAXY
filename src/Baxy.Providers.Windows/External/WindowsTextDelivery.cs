@@ -284,7 +284,7 @@ internal sealed class WindowsTextDelivery
     internal bool ReadsBack(TypedMark mark, string text)
     {
         int after = _messages.TextLength(mark.Field);
-        return after == mark.Expected && Holds(mark.Field, text, after);
+        return after == mark.Expected && after <= ReadableText && Holds(mark.Field, text, after);
     }
 
     // The length a control's text has once a text of «length» characters is inserted at its caret, replacing its

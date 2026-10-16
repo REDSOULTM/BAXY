@@ -180,6 +180,26 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // A refused write leaves nothing behind, not even the folder a new file would have gone in (the receipt says no
+    // effect happened).
+    [Test]
+    public async Task ARefusedWriteOfANewFileInANewFolderLeavesNoFolder()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+
+        OperationOutcome outcome = await Handle(
+            provider, "file.write", """{"relativePath":"viaje/plan.txt","text":"hola","expectedSha256":""}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("expected_hash_for_missing_file"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(Directory.Exists(Path.Combine(sandbox, "viaje")), Is.False);
+        });
+    }
+
     [Test]
     public async Task AVersionConflictSaysTheFileIsThereAndWhere()
     {
