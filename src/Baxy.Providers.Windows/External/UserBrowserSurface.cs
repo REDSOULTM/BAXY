@@ -380,10 +380,9 @@ internal sealed partial class UserBrowserSurface
     /// words arrived too. The browser's segment is <paramref name="browserSegment"/>, learned from the titles before
     /// the link (<see cref="BrowserTitleSegment"/>); with none learned the last segment is taken for it.
     /// </summary>
-    internal static bool SearchTitleArrives(
-        Uri target, string? title, string? browserSegment = null, IReadOnlyList<SearchAddress>? engines = null)
+    internal static bool SearchTitleArrives(Uri target, string? title, string? browserSegment = null)
     {
-        if (string.IsNullOrWhiteSpace(title) || SearchAddresses.SearchedText(target, engines) is not { } searched)
+        if (string.IsNullOrWhiteSpace(title) || SearchAddresses.SearchedText(target) is not { } searched)
             return false;
         string asked = Fold(searched);
         if (asked.Length == 0)

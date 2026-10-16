@@ -28,8 +28,8 @@ internal static partial class ForegroundRight
     internal const int PauseMs = 60;
     internal const int BidBudgetMs = 200;
 
-    /// <summary>What one hand-back did: whether the window holds the front at the end, and the bids it took.</summary>
-    internal readonly record struct Outcome(bool Held, int Tries, int Bids);
+    /// <summary>What one hand-back did: whether the window holds the front at the end.</summary>
+    internal readonly record struct Outcome(bool Held);
 
     /// <summary>
     /// The rule of a hand-back, over its steps: set the front and read it back; when it did not hold, bid for the right
@@ -38,24 +38,22 @@ internal static partial class ForegroundRight
     /// </summary>
     internal static Outcome Give(Action set, Func<bool> holds, Func<bool> bid, Action pause, int attempts = Attempts)
     {
-        int bids = 0;
         for (int attempt = 1; attempt <= attempts; attempt++)
         {
             if (attempt > 1)
                 pause();
             set();
             if (holds())
-                return new Outcome(true, attempt, bids);
-            bids++;
+                return new Outcome(true);
             if (bid())
             {
                 set();
                 if (holds())
-                    return new Outcome(true, attempt, bids);
+                    return new Outcome(true);
             }
         }
 
-        return new Outcome(false, attempts, bids);
+        return new Outcome(false);
     }
 
     /// <summary>
@@ -65,7 +63,7 @@ internal static partial class ForegroundRight
     internal static Outcome Give(nint window)
     {
         if (window == 0 || !IsWindow(window))
-            return new Outcome(false, 0, 0);
+            return new Outcome(false);
         ushort key = 0;
         try
         {

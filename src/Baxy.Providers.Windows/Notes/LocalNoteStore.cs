@@ -71,8 +71,6 @@ public sealed class LocalNoteStore : INoteStore
         }
     }
 
-    public string RootDirectory => _rootDirectory;
-
     public NoteRecord Create(string title, string content, string? idempotencyKey = null)
     {
         string normalizedTitle = ValidateAndNormalizeText(
