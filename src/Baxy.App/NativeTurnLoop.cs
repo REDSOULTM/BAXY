@@ -441,7 +441,10 @@ internal sealed class NativeTurnLoop
         "nothing ran: ask the person whether to do it; their answer goes in confirm_pending (approve true or false); "
         + $"calling {operation.Replace('.', '_')} again only asks again";
 
-    // A memory call's values never travel in an observation (it reaches the trace and the conductor's events).
+    // What BAXY says of a call it held or could not prepare carries the call's arguments, except a memory call's: they
+    // stay sealed (the observation reaches the model and, with the conductor, its local events). A memory call that ran
+    // is another thing: MemoryObservation opens its result, and the model reads what the person asked to remember (the
+    // value saved, what recall and list read, sensitive values redacted), and so do the conductor's events.
     private static JsonObject WithArguments(JsonObject facts, string key, string operation, JsonObject arguments)
     {
         if (!MemoryOperationProtector.IsMemoryOperation(operation))
