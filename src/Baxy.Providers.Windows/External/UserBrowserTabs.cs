@@ -93,8 +93,9 @@ internal sealed partial class UserBrowserSurface
     }
 
     /// <summary>
-    /// A new tab: Chromium's IDC_NEW_TAB by message; a browser that does not run it (Opera GX) gets its tab strip's
-    /// new-tab button pressed through UI Automation. Seen as one tab more.
+    /// A new tab: Chromium's IDC_NEW_TAB by message; a browser that does not run it (Opera GX, or a message read back
+    /// with as many tabs as before) gets its tab strip's new-tab button pressed through UI Automation. Seen as one tab
+    /// more.
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> NewTabAsync(TabStep step, CancellationToken cancellationToken)
     {
@@ -103,20 +104,24 @@ internal sealed partial class UserBrowserSurface
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         int count = before.Tabs.Count;
         bool OneMore(UserBrowserFrame frame) => frame.Tabs.Count > count;
-        UserBrowserFrame? after = null;
         if (PostTabCommand(step, BrowserCommandNewTab, AppCommandNew))
         {
             step.Boundary.Cross(CancellationToken.None);
-            after = await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false);
+            // The button is pressed only when a read shows the message was not run (as many tabs as before): a tab the
+            // message opened late is said, and a strip that cannot be read is never pressed for a second tab.
+            UserBrowserFrame? now = await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false)
+                ?? await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+            if (now is not null && OneMore(now))
+                return Done(step, "tab_opened", now);
+            if (now is null || now.Tabs.Count != count)
+                return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
         }
-        if (after is null)
-        {
-            step.Boundary.Cross(CancellationToken.None);
-            UserBrowserAct pressed = await _platform.ActAsync(step.Window, "new_tab", cancellationToken)
-                .ConfigureAwait(false);
-            if (pressed.Step == "invoked")
-                after = await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false);
-        }
+        step.Boundary.Cross(CancellationToken.None);
+        UserBrowserAct pressed = await _platform.ActAsync(step.Window, "new_tab", cancellationToken)
+            .ConfigureAwait(false);
+        UserBrowserFrame? after = pressed.Step == "invoked"
+            ? await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false)
+            : null;
         return after is null
             ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
             : Done(step, "tab_opened", after);
