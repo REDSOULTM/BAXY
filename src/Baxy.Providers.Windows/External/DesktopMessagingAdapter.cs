@@ -1005,7 +1005,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             recipient.Channel,
             recipient.Name,
             cancellationToken).ConfigureAwait(false) is not null;
-        bool delivered = changed && match is not null && stillTarget;
+        // Ronda final: a band that already showed the text before Enter (an old bubble with the same words) proves
+        // nothing by showing it after: only text that was not there is the delivery.
+        bool shownBefore = match is not null
+            && TextMatch(await ReadTextAsync(beforeSend, cancellationToken).ConfigureAwait(false), text) is not null;
+        bool delivered = changed && match is not null && !shownBefore && stillTarget;
         return new(
             delivered,
             true,
