@@ -248,7 +248,7 @@ public static class ProductCatalog
                 ["endUtc", "startUtc", "title"]),
             OperationRisks.ExternalCommunication,
             "calendar.event.create.account.postread.v1",
-            "Crea un evento en el calendario predeterminado del Outlook clásico de la persona, que lo sincroniza con su cuenta: sale de la máquina, así que pide su confirmación antes; verifica la identidad del evento creado."),
+            "Crea un evento en el calendario predeterminado del Outlook clásico de la persona, que lo sincroniza con su cuenta si la cuenta sincroniza (se relee en este PC): sale de la máquina, así que pide su confirmación antes; verifica la identidad del evento creado."),
         Descriptor(
             "calendar.event.list",
             Schema(

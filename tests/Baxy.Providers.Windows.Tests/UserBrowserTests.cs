@@ -824,6 +824,20 @@ public sealed class UserBrowserTests
     }
 
     [Test]
+    public void ASessionThePersonAlreadyHadWithTheTitleIsNeverThePagesOrPressed()
+    {
+        var theirs = new UserMediaSession("Opera GXStable", "Never Gonna Give You Up", "Rick Astley", "playing");
+        var paused = theirs with { PlaybackStatus = "paused" };
+        Assert.Multiple(() =>
+        {
+            Assert.That(UserBrowserSurface.PlaybackCandidate(
+                OperaGx, "Never Gonna Give You Up", [theirs], [theirs], anyNewBrowserSession: false), Is.Null);
+            Assert.That(UserBrowserSurface.MayPressPlay(OperaGx, "Never Gonna Give You Up", [paused], paused, false),
+                Is.False);
+        });
+    }
+
+    [Test]
     public void ARunningBrowsersNewSessionWithAnotherTitleIsStillNotTheVideo()
     {
         var other = new UserMediaSession("Opera GXStable", "Another video", "", "playing");

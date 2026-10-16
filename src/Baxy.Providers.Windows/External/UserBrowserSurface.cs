@@ -165,8 +165,13 @@ internal sealed partial class UserBrowserSurface
             writer.WriteNumber("version", 1);
             writer.WriteString("provider", "youtube");
             writer.WriteString("query", query);
-            writer.WriteString("title", playing.Title.Length > 0 ? playing.Title : video.Title);
-            writer.WriteString("finalUrl", video.WatchUri.AbsoluteUri);
+            // Ronda final: what played as the session read it; the page BAXY opened is the opened one, not a read
+            // address.
+            if (playing.Title.Length > 0)
+                writer.WriteString("title", playing.Title);
+            else
+                writer.WriteString("requestedTitle", video.Title);
+            writer.WriteString("openedUrl", video.WatchUri.AbsoluteUri);
             writer.WriteString("browser", browser.DisplayName);
             writer.WriteString("sourceAppUserModelId", playing.SourceAppUserModelId);
             writer.WriteString("playbackStatus", "playing");
@@ -680,8 +685,7 @@ internal sealed partial class UserBrowserSurface
         if (expectedTitle.Length > 0)
         {
             UserMediaSession? titled = sessions
-                .Where(session => TitlesMatch(session.Title, expectedTitle)
-                    && !(anyNewBrowserSession && AlreadyThere(session, before)))
+                .Where(session => TitlesMatch(session.Title, expectedTitle) && !AlreadyThere(session, before))
                 .OrderByDescending(session => browser.OwnsMediaSession(session.SourceAppUserModelId))
                 .ThenByDescending(session => session.PlaybackStatus == "playing")
                 .FirstOrDefault();
@@ -713,8 +717,9 @@ internal sealed partial class UserBrowserSurface
         IReadOnlyList<UserMediaSession> before,
         UserMediaSession candidate,
         bool coldLaunch) =>
-        TitlesMatch(candidate.Title, expectedTitle)
-        || (coldLaunch && browser.OwnsMediaSession(candidate.SourceAppUserModelId) && !AlreadyThere(candidate, before));
+        !AlreadyThere(candidate, before)
+        && (TitlesMatch(candidate.Title, expectedTitle)
+            || (coldLaunch && browser.OwnsMediaSession(candidate.SourceAppUserModelId)));
 
     /// <summary>
     /// The person's browser shows exactly the media sessions it showed before the page was opened: the same

@@ -627,7 +627,16 @@ public sealed class LocalMemoryStore : IMemoryStore
 
             AtomicWriteUnsafe(_intentPath, intentEnvelope);
             InvokeCrashHook(MemoryCommitStage.IntentDurable);
-            RollForwardIntentUnsafe(intent);
+            try
+            {
+                RollForwardIntentUnsafe(intent);
+            }
+            catch (Exception exception) when (IsRecoverableStoreReadFailure(exception))
+            {
+                // Ronda final: the intent is already durable and the next load rolls it forward, so a failure from
+                // here on is a change that may stand, never a clean failure.
+                throw new MemoryCommitUnconfirmedException(exception);
+            }
         }
         finally
         {

@@ -547,6 +547,31 @@ public sealed class LocalMemoryStoreTests
     }
 
     [Test]
+    public void ARollForwardThatFailsAfterTheDurableIntentIsAChangeThatMayStand()
+    {
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        _ = EnabledStore(temporary.Path, protector);
+        LocalMemoryStore failing = new(
+            temporary.Path,
+            protector,
+            timeProvider: null,
+            crashHook: stage =>
+            {
+                if (stage == MemoryCommitStage.CurrentDurable)
+                {
+                    throw new IOException("disk");
+                }
+            });
+
+        Assert.That(
+            () => failing.Save(Save("save-io", "disco", "durable")),
+            Throws.TypeOf<MemoryCommitUnconfirmedException>());
+        LocalMemoryStore recovered = CreateStore(temporary.Path, protector);
+        Assert.That(recovered.Recall(new("disco")).Records.Single().Value, Is.EqualTo("durable"));
+    }
+
+    [Test]
     public void CorruptCurrentRepairsFromExactRecoveryButHigherGenerationNeverRollsBack()
     {
         using TemporaryDirectory temporary = new();

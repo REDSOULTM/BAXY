@@ -77,7 +77,7 @@ BEAT_DECIDE = ("Responde en JSON, revisando cada motivo con lo que ves arriba: p
                "cumple ahora, o «ninguno»; preferencia = qué preferencia suya aplica ahora, o «ninguna»; vence = qué "
                "vence ahora o muy pronto, o «nada»; bloqueo = qué la bloquea o le hará perder trabajo, o «nada»; "
                "analisis = en una frase, qué está pasando; intervenir = true si algún motivo es real, false si no.")
-BEAT_ACT = ("Interviene ahora según tu análisis; lo que recuerdas de la persona ya está arriba, no lo busques. Si "
+BEAT_ACT = ("Interviene ahora según tu análisis; lo que alcanzaste a leer de su memoria ya está arriba, no lo busques. Si "
             "basta con avisarle algo (lo que pidió saber, un recordatorio que "
             "vence, una alerta), díselo en una frase sin usar herramientas. Si hay que hacer algo de bajo riesgo, hazlo "
             "con su herramienta. Lo de alto riesgo (borrar, vaciar la papelera, enviar un mensaje, apagar o reiniciar, "

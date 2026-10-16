@@ -175,6 +175,10 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         {
             return ValueTask.FromResult(Failure("memory_capacity_reached"));
         }
+        catch (MemoryCommitUnconfirmedException)
+        {
+            return ValueTask.FromResult(Failure("memory_store_unavailable", effectMayHaveOccurred: true));
+        }
         catch (MemoryStoreCorruptException)
         {
             return ValueTask.FromResult(Failure("memory_store_unavailable"));

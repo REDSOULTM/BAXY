@@ -484,7 +484,14 @@ internal sealed class NativeTurnLoop
 
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
-        bool approve = arguments["approve"] is JsonValue value && value.TryGetValue(out bool approved) && approved;
+        if (arguments["approve"] is not JsonValue value || !value.TryGetValue(out bool approve))
+        {
+            // Ronda final: an answer without a boolean approve is not the person's «no»; the waiting call stays and
+            // the model reads what it gave, as with any other call whose arguments do not fit.
+            return Record(MindStep.ConfirmationAnswer, arguments, started, Observation("failed", "invalid_arguments",
+                new JsonObject { ["argumentsGiven"] = arguments.DeepClone() }));
+        }
+
         if (HasPendingConfirmation && !ConfirmationAsk.Answers(_askedAt, _personAt))
         {
             // Only the person answers, and only a call asked before their words or their press: the waiting call stays

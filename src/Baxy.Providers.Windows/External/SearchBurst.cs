@@ -99,6 +99,7 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         bool effect = false;
         string? stopped = null;
         WindowsVisibleControlAdapter.ViewControl? chosen = null;
+        bool? chosenSurface = null;
         // Auditoría B1: what the last look showed as results, said when none of them was the one named.
         IReadOnlyList<string> seen = [];
         bool restored;
@@ -127,7 +128,8 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
             {
                 writer.WriteString("name", chosen.Name);
                 writer.WriteString("kind", chosen.Kind);
-                writer.WriteBoolean("surfaceChanged", true);
+                if (chosenSurface is { } surface)
+                    writer.WriteBoolean("surfaceChanged", surface);
             }
 
             if (stopped == ResultNotFound && seen.Count > 0)
@@ -216,6 +218,7 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
             if (!picked.Verified || picked.ErrorCode is not null)
                 return picked.ErrorCode ?? "visible_click_failed";
             chosen = result;
+            chosenSurface = SurfaceChanged(picked);
             return null;
         }
 
@@ -283,6 +286,7 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         bool effect = false;
         string? stopped;
         WindowsVisibleControlAdapter.ViewControl? chosen = null;
+        bool? chosenSurface = null;
         bool restored;
         try
         {
@@ -307,7 +311,8 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
             {
                 writer.WriteString("name", chosen.Name);
                 writer.WriteString("kind", chosen.Kind);
-                writer.WriteBoolean("surfaceChanged", true);
+                if (chosenSurface is { } surface)
+                    writer.WriteBoolean("surfaceChanged", surface);
             }
 
             writer.WriteNumber("waitedMs", burst.WaitedMs);
@@ -390,9 +395,19 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
             if (!picked.Verified || picked.ErrorCode is not null)
                 return picked.ErrorCode ?? "visible_click_failed";
             chosen = item;
+            chosenSurface = SurfaceChanged(picked);
             return null;
         }
     }
+
+    // Ronda final: the burst says the surface changed only as its last press read it (a press verified by its
+    // selection or its opening says nothing of the surface).
+    private static bool? SurfaceChanged(ExternalCapabilityReceipt receipt) =>
+        receipt.Result is { ValueKind: JsonValueKind.Object } result
+        && result.TryGetProperty("surfaceChanged", out JsonElement value)
+        && value.ValueKind is JsonValueKind.True or JsonValueKind.False
+            ? value.GetBoolean()
+            : null;
 
     // A sub-act as the receipt says it: what it was, on what, and its own answer.
     private static JsonObject Act(string operation, string key, string named, ExternalCapabilityReceipt receipt)

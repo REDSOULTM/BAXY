@@ -66,6 +66,14 @@ public sealed class MemoryStoreCorruptException : MemoryStoreException
     }
 }
 
+public sealed class MemoryCommitUnconfirmedException : MemoryStoreException
+{
+    internal MemoryCommitUnconfirmedException(Exception innerException)
+        : base("The memory change is durable as an intent and did not read back; the next load applies it.", innerException)
+    {
+    }
+}
+
 public sealed class UnsafeMemoryStorePathException : MemoryStoreException
 {
     public UnsafeMemoryStorePathException()
