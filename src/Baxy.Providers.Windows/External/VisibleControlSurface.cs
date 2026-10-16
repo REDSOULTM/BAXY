@@ -708,10 +708,6 @@ internal static partial class VisibleControlSurface
         return owners;
     }
 
-    /// <summary>Whether a process name is the frame host shared by the packaged apps (never one app's process).</summary>
-    internal static bool IsSharedFrameHost(string? processName) =>
-        string.Equals(processName, "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase);
-
     /// <summary>Every visible frame by the process it hosts, read in one pass over the desktop.</summary>
     internal static Dictionary<uint, nint> HostedFrames()
     {
@@ -1618,6 +1614,15 @@ internal static partial class VisibleControlSurface
         _ = EnumWindows(callback, nint.Zero);
         return windows;
     }
+
+    // A minimized top-level window a person would restore: titled, uncloaked, no shell surface.
+    private static bool MinimizedDocumentWindow(nint window) =>
+        IsIconic(window) && GetWindowTextLengthW(window) > 0 && !IsShellSurface(window)
+        && !(DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0);
+
+    /// <summary>The process of a window; 0 when it cannot be told.</summary>
+    internal static uint ProcessOf(nint window) =>
+        window != 0 && GetWindowThreadProcessId(window, out uint process) != 0 ? process : 0;
 
     internal static bool HasUsableSurface(nint window)
     {

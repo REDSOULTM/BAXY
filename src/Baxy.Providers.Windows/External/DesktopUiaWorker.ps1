@@ -11,8 +11,6 @@
 # Comandos:
 #   {"cmd":"ping"}
 #   {"cmd":"view","hwnd":123,"limit":60}
-#   {"cmd":"signature","hwnd":123,"limit":60,"budgetMs":1200}   (tipo y nombre de los primeros controles y si hay texto
-#      seleccionado, acotado en tiempo; no toca la ultima vista: Do-Signature)
 #   {"cmd":"click","hwnd":123,"aliases":["Biblioteca"],"controlId":"42.1837.4"}
 #      (con «manner»: open | menu | double, ese control de la vista abierto por su flecha, su menu contextual o un doble
 #      clic, solo por su identidad: Invoke-MannerControl)
@@ -2122,7 +2120,7 @@ function Get-Toggle($el){
 $script:Cache=New-Object System.Windows.Automation.CacheRequest
 foreach($prop in @($AE::NameProperty,$AE::ControlTypeProperty,$AE::IsOffscreenProperty,$AE::BoundingRectangleProperty,
                    $AE::HasKeyboardFocusProperty,$AE::IsPasswordProperty,$AE::IsEnabledProperty,$AE::RuntimeIdProperty,
-                   $AE::ItemTypeProperty,$AE::HelpTextProperty,$AE::AutomationIdProperty,$AE::LabeledByProperty,
+                   $AE::HelpTextProperty,$AE::AutomationIdProperty,$AE::LabeledByProperty,
                    $AE::ClassNameProperty,$AE::AcceleratorKeyProperty,$AE::AccessKeyProperty)){ $script:Cache.Add($prop) }
 foreach($pat in @([System.Windows.Automation.TogglePattern]::Pattern,[System.Windows.Automation.SelectionItemPattern]::Pattern,
                   [System.Windows.Automation.ExpandCollapsePattern]::Pattern,[System.Windows.Automation.ValuePattern]::Pattern,
@@ -2404,7 +2402,7 @@ function ConvertTo-MenuViewEntries($menuEntries){
     # lleva a un lugar.
     elseif([bool]$menu.Checkable -or [bool]$menu.Checked){ $parts+='checkable' }
     $id=$(if([bool]$menu.FillsOnOpen -or [int]$menu.Id -le 0){ '' } else { 'hmenu.'+[int]$menu.Id })
-    $out+=@(@{ kind='MenuItem'; name=[string]$menu.Path; nameSource='menu'; id=$id; state=($parts -join ' '); value=$null; itemType=''; shortcut=[string]$menu.Shortcut; rect=$null; repeated=0 })
+    $out+=@(@{ kind='MenuItem'; name=[string]$menu.Path; nameSource='menu'; id=$id; state=($parts -join ' '); value=$null; shortcut=[string]$menu.Shortcut; rect=$null; repeated=0 })
   }
   return $out
 }
@@ -2532,9 +2530,9 @@ function Get-BodySurface($item,[string]$kind,[string]$name,$rect,$box){
   return @{ item=$item; kind=$kind; name=$(if($named){ $name } else { '(' + $kind.ToLowerInvariant() + ')' }); nameSource=$(if($named){ 'name' } else { 'kind' }); id=(Get-Id $item); rect=$rect; area=$area }
 }
 # Revision 2: el cuerpo se anade fuera del tope solo a una vista que ya lista mas de un control. Una ventana que lista
-# como mucho uno (CEF, un lienzo) se lee por lo dibujado: el adaptador lee su texto sin pedirlo, con autoridad de lineas
-# y marcas de tinta, y la mision firma su cambio por el texto; un cuerpo anadido la sacaria de ese regimen. Ya listado,
-# solo se marca; un cuerpo que solo entro por la reserva sale de ella y va al final como siempre (la base no cambia).
+# como mucho uno (CEF, un lienzo) se lee por lo dibujado: el adaptador lee su texto sin pedirlo, con autoridad de
+# lineas; un cuerpo anadido la sacaria de ese regimen. Ya listado, se queda donde esta; un cuerpo que solo entro por la
+# reserva sale de ella y va al final como siempre (la base no cambia).
 function Add-ViewBody($controls,$body,$elements){
   if($null -eq $body){ return }
   $listed=$null
@@ -2544,9 +2542,8 @@ function Add-ViewBody($controls,$body,$elements){
     if($null -eq $listed -and ([string]$entry.id).Length -gt 0 -and [string]$entry.id -eq [string]$body.id){ $listed=$entry }
   }
   if($null -ne $listed -and [bool]$listed.reserved){ [void]$controls.Remove($listed); $listed=$null }
-  if($null -ne $listed){ $listed.body=$true; return }
-  if($shown -le 1){ return }
-  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; nameSource=$body.nameSource; id=$body.id; state=''; value=$null; itemType=''; shortcut=''; rect=$body.rect; repeated=0; systemMenu=$false; body=$true })
+  if($null -ne $listed -or $shown -le 1){ return }
+  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; nameSource=$body.nameSource; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0 })
   if(([string]$body.id).Length -gt 0){ $elements[[string]$body.id]=$body.item }
 }
 function Select-BodySurface($surfaces,$primary){
@@ -2583,14 +2580,14 @@ function Do-View($request){
   $viewPartial=$script:Partial
   # Ronda 20b, palanca 8: una vista solo de marco se relee (Get-ClientReread); sin contenido tampoco alli, sale marcada
   # «frameOnly» (sin arbol: el OCR la lee como hoy).
-  $clientFrom='';$frameOnly=$false;$keepOffscreen=$false;$clientRoot=$null
+  $frameOnly=$false;$keepOffscreen=$false;$clientRoot=$null
   if(Test-FrameOnlyView $all){
     $reread=Get-ClientReread $root $target.hwnd
     if($null -ne $reread){
       $merged=New-Object System.Collections.Generic.List[object]
       foreach($el in $all){ $merged.Add($el) }
       foreach($el in $reread.items){ $merged.Add($el) }
-      $all=$merged;$clientFrom=$reread.from;$keepOffscreen=($reread.from -eq 'unfiltered');$clientRoot=$reread.root
+      $all=$merged;$keepOffscreen=($reread.from -eq 'unfiltered');$clientRoot=$reread.root
     } else { $frameOnly=$true }
   }
   # Las TitleBar de la vista: un MenuBar o MenuItem dibujado dentro de una se mira por su cadena (Test-SystemMenu).
@@ -2635,11 +2632,6 @@ function Do-View($request){
       }
       $total++
       $id=Get-Id $item
-      # Lo que la aplicacion dice que es un elemento de lista o arbol (una carpeta, un acceso directo, una aplicacion).
-      $itemType=''
-      if($kind -eq 'ListItem' -or $kind -eq 'DataItem' -or $kind -eq 'TreeItem'){
-        try { $itemType=[string]$item.Cached.ItemType; if($null -eq $itemType){ $itemType='' } else { $itemType=($itemType -replace '\s+',' ').Trim() } } catch { $itemType='' }
-      }
       # Goal v3 B3 (atajos): la tecla que la propia aplicacion declara para el control (AcceleratorKey, o su
       # AccessKey), leida del cache del arbol: el prompt la muestra junto al control, sin lista por aplicacion.
       $shortcut=''
@@ -2655,7 +2647,7 @@ function Do-View($request){
         foreach($bar in $titleBars){ if($inBar){ break }; if(Test-CenterWithin $bar $rect){ $inBar=$true } }
         if($inBar){ $systemMenu=(Test-SystemMenu $item) }
       }
-      $entry=@{ kind=$kind; name=$name; nameSource=$shown.source; id=$id; state=$stateInfo.state; value=$stateInfo.value; itemType=$itemType; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total }
+      $entry=@{ kind=$kind; name=$name; nameSource=$shown.source; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total }
       $seen[$key]=$entry
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
@@ -2676,14 +2668,14 @@ function Do-View($request){
   $joined=Join-ViewControls $primary $secondary $menuView $limit $wanted ([bool]$request.tail)
   $controls=$joined.controls
   $total+=[int]$joined.menuListed
-  # Ronda 21 (t-drag-4): el cuerpo de la ventana va siempre, fuera del tope: ya listado, solo se marca.
+  # Ronda 21 (t-drag-4): el cuerpo de la ventana va siempre, fuera del tope: ya listado, se queda donde esta.
   $body=Select-BodySurface $surfaces $primary
   Add-ViewBody $controls $body $elements
   $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen }
   $ordered=@()
   $position=0
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; nameSource=$entry.nameSource; id=$entry.id; state=$entry.state; value=$entry.value; itemType=$entry.itemType; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; systemMenu=[bool]$entry.systemMenu; body=[bool]$entry.body; reserved=[bool]$entry.reserved })
+    $ordered+=@([pscustomobject]@{ i=$position; kind=$entry.kind; name=$entry.name; nameSource=$entry.nameSource; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated })
     $position++
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
@@ -2699,72 +2691,7 @@ function Do-View($request){
     for($k=0;$k -lt $ordered.Count;$k++){ if([object]::ReferenceEquals($controls[$k],$focused)){ $focusedIndex=$k; break } }
     $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; nameSource=$focused.nameSource; value=$focused.value; i=$focusedIndex }
   }
-  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; clientProviders=$script:ClientProviders; disabled=$disabled; clientFrom=$clientFrom; frameOnly=$frameOnly; partial=$viewPartial }
-}
-# Ronda 21, revision 1 (B2, B4): la firma barata de una ventana, para buscar el destino de un pedido sin aplicacion. Un
-# recorrido en anchura del arbol de control acotado en nodos y en tiempo (budgetMs), sin releer el cliente, sin las
-# entradas del HMENU ni la segunda lectura de deshabilitados, y sin tocar la ultima vista ($script:LastView): solo tipo y
-# nombre de los primeros controles que se ven, y si un Document o un Edit tiene una seleccion de texto no vacia
-# (TextPattern.GetSelection), leida, nunca supuesta.
-# Revision 1 de la ronda 24 (B1): cada control que esta dentro de un Document (el contenido de una pagina, el boton
-# «Guardar» de un video) sale con content=true, para que el destino nunca tome el contenido por el marco de la ventana.
-$script:SignatureNodes=600
-$script:SignatureTexts=4
-function Test-TextSelected($el){
-  $pattern=$null
-  try {
-    if(-not $el.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$pattern)){ return $false }
-    foreach($range in @(([System.Windows.Automation.TextPattern]$pattern).GetSelection())){
-      if(-not [string]::IsNullOrWhiteSpace([string]$range.GetText(256))){ return $true }
-    }
-  } catch {}
-  return $false
-}
-function Do-Signature($request){
-  $watch=[System.Diagnostics.Stopwatch]::StartNew()
-  $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt $script:ViewCap){$limit=$script:ViewCap}
-  $budget=[int]$request.budgetMs; if($budget -lt 100){$budget=100}; if($budget -gt 4000){$budget=4000}
-  if([long]$request.hwnd -le 0){ return @{ ok=$false; error='active_window_not_found' } }
-  $target=Get-Root ([long]$request.hwnd) -Front
-  if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='visible_controls_root_unavailable' } }
-  $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
-  $queue=New-Object System.Collections.Generic.Queue[object]
-  $inside=New-Object System.Collections.Generic.Queue[bool]
-  $queue.Enqueue($target.root)
-  $inside.Enqueue($false)
-  $controls=New-Object System.Collections.ArrayList
-  $seen=@{}
-  $texts=0;$selection=$false;$visited=0;$complete=$true
-  while($queue.Count -gt 0 -and $complete){
-    $node=$queue.Dequeue()
-    $nodeContent=$inside.Dequeue()
-    $child=$null
-    try { $child=$walker.GetFirstChild($node,$script:Cache) } catch { $child=$null }
-    while($null -ne $child){
-      if($watch.ElapsedMilliseconds -ge $budget -or $visited -ge $script:SignatureNodes){ $complete=$false; break }
-      $visited++
-      $shown=$false;$kind='';$name=''
-      try {
-        $shown=-not $child.Cached.IsOffscreen
-        $kind=$child.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
-        $name=Format-Name ([string]$child.Cached.Name)
-      } catch { $shown=$false }
-      if($shown -and -not $selection -and $texts -lt $script:SignatureTexts -and ($kind -eq 'Document' -or $kind -eq 'Edit')){
-        $texts++
-        $selection=Test-TextSelected $child
-      }
-      $key=$kind+'|'+$name+'|'+$nodeContent
-      if($shown -and $name.Length -gt 0 -and $controls.Count -lt $limit -and -not $seen.ContainsKey($key)){
-        $seen[$key]=$true
-        if($nodeContent){ [void]$controls.Add([pscustomobject]@{ kind=$kind; name=$name; content=$true }) }
-        else { [void]$controls.Add([pscustomobject]@{ kind=$kind; name=$name }) }
-      }
-      $queue.Enqueue($child)
-      $inside.Enqueue(($nodeContent -or $kind -eq 'Document'))
-      try { $child=$walker.GetNextSibling($child,$script:Cache) } catch { $child=$null }
-    }
-  }
-  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; controls=@($controls); selection=$selection; complete=$complete; visited=$visited; elapsedMs=[long]$watch.ElapsedMilliseconds }
+  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; frameOnly=$frameOnly; partial=$viewPartial }
 }
 # Los accionables que se ven pero estan deshabilitados (pasada r15b, v3-27 y v3-29: «Copiar» y «Buscar» del Mapa de
 # caracteres esperan texto en su campo y la vista los quitaba, asi que el modelo no sabia que existian). Van aparte de
@@ -4338,7 +4265,6 @@ while($true){
     if($cmd -eq 'exit'){ Send-Line @{ ok=$true; bye=$true }; break }
     elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true; pid=$PID; renderClasses=@([BaxyUiaWorkerNative]::RenderClasses); clientProviders=$script:ClientProviders; quietInput=$script:QuietInput; uiaInputDropped=[BaxyUiaQuietInput]::Dropped; uiaInputRefused=[BaxyUiaQuietInput]::Refused; uiaWaitAnswered=[BaxyUiaQuietInput]::Answered; frontReturned=[BaxyFrontKeeper]::Returned; frontReturnFailed=[BaxyFrontKeeper]::Failed; frontReturnMs=[BaxyFrontKeeper]::LastReturnMs; frontYielded=[BaxyFrontKeeper]::Yielded; frontLeaseYielded=[BaxyFrontKeeper]::LeaseYielded; frontRawInput=[BaxyFrontKeeper]::RawInput; frontBidKey=[BaxyFrontKeeper]::BidKey; frontBids=[BaxyFrontKeeper]::Bids; frontBidsAnswered=[BaxyFrontKeeper]::BidsAnswered; frontLate=[BaxyFrontKeeper]::Late; frontLateMs=[BaxyFrontKeeper]::LateMs } }
     elseif($cmd -eq 'view'){ Send-Line (Do-View $request) }
-    elseif($cmd -eq 'signature'){ Send-Line (Do-Signature $request) }
     elseif($cmd -eq 'click'){ Send-Line (Invoke-Kept $request { param($r) Do-Click $r }) }
     elseif($cmd -eq 'at'){ Send-Line (Invoke-Kept $request { param($r) Do-At $r }) }
     elseif($cmd -eq 'postread'){ Send-Line (Add-FrontReport (Do-Postread $request)) }

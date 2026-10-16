@@ -195,16 +195,16 @@ public sealed class ComputerUseViewOrderTests
     }
 
     // Revision 2: a window whose tree lists at most one control (CEF, a canvas: one host Pane or one Button) is read by
-    // what is drawn: the adapter reads its text unasked, with the OCR lines' authority and the ink marks, and the mission
-    // signs its change by that text. The body is never added to such a view (it would make two controls and take the
-    // window out of that regime); one already listed is only marked. Contracase: a view that lists more gets it at the
-    // end, and a body that came only by the reservation leaves it and goes at the end as always.
+    // what is drawn: the adapter reads its text unasked, with the OCR lines' authority. The body is never added to such
+    // a view (it would make two controls and take the window out of that regime); one already listed stays where it is.
+    // Contracase: a view that lists more gets it at the end, and a body that came only by the reservation leaves it and
+    // goes at the end as always.
     [Test]
     public void TheBodyIsNotAddedToAViewThatListsAtMostOneControl()
     {
         string answer = Run(["Add-ViewBody"], """
             function New-List($entries){ $list=New-Object System.Collections.ArrayList; foreach($e in $entries){ [void]$list.Add($e) }; return ,$list }
-            function Show($list){ return ((@($list | ForEach-Object { $_.kind + ':' + [bool]$_.body + ':' + [bool]$_.reserved })) -join ' ') }
+            function Show($list){ return ((@($list | ForEach-Object { $_.kind + ':' + $_.id + ':' + [bool]$_.reserved })) -join ' ') }
             $body=@{ item='el'; kind='Pane'; name='(pane)'; nameSource='kind'; id='9.1'; rect=@{ x=0; y=40; w=800; h=500 }; area=400000 }
             $elements=@{}
             $one=New-List @(@{ kind='Button'; name='Jugar'; id='1.1' })
@@ -222,9 +222,9 @@ public sealed class ComputerUseViewOrderTests
             """);
         Assert.That(answer.Split('|'), Is.EqualTo(new[]
         {
-            "Button:False:False", "0", "Pane:True:False", "0",
-            "Button:False:False Button:False:False Pane:True:False", "1",
-            "Button:False:False Button:False:False Pane:True:False",
+            "Button:1.1:False", "0", "Pane:9.1:False", "0",
+            "Button:1.1:False Button:1.2:False Pane:9.1:False", "1",
+            "Button:1.1:False Button:1.2:False Pane:9.1:False",
         }));
     }
 
@@ -340,7 +340,7 @@ public sealed class ComputerUseViewOrderTests
             $joined=Join-ViewControls $primary @() @() $script:ViewCap @('objetivo')
             $body=@{ item='el'; kind='Pane'; name='(pane)'; nameSource='kind'; id='9.9'; rect=@{ x=0; y=40; w=800; h=500 }; area=400000 }
             Add-ViewBody $joined.controls $body @{}
-            [Console]::Out.Write((@([string]$script:ViewCap, [string]$script:WantedRoom, [string]($joined.controls.Count-1), [string][bool]$joined.controls[$joined.controls.Count-1].body) -join ','))
+            [Console]::Out.Write((@([string]$script:ViewCap, [string]$script:WantedRoom, [string]($joined.controls.Count-1), [string]$joined.controls[$joined.controls.Count-1].id) -join ','))
             """);
         string[] parts = answer.Split(',');
         int highest = int.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture);
@@ -349,7 +349,7 @@ public sealed class ComputerUseViewOrderTests
         {
             Assert.That(parts[0], Is.EqualTo(VisibleViewNumbering.Cap.ToString(System.Globalization.CultureInfo.InvariantCulture)));
             Assert.That(parts[1], Is.EqualTo(VisibleViewNumbering.WantedRoom.ToString(System.Globalization.CultureInfo.InvariantCulture)));
-            Assert.That(parts[3], Is.EqualTo("True"), "the body is the last control of the view");
+            Assert.That(parts[3], Is.EqualTo("9.9"), "the body is the last control of the view");
             Assert.That(highest, Is.EqualTo(VisibleViewNumbering.HighestIndex));
             foreach ((string operation, string argument, string rest) in new[]
             {

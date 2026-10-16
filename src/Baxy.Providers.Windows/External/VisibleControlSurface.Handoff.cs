@@ -110,6 +110,6 @@ internal static partial class VisibleControlSurface
             window.Window, window.ProcessId, process, WindowTitle(window.Window),
             PersonInputAgoMs: pause.PersonInputAgoMs(window.Window),
             PersonNearAgoMs: pause.PersonInputToProcessesAgoMs(
-                ProcessOf(window.Window), unchecked((uint)window.ProcessId), ShellProcessId));
+                ProcessOf(window.Window), unchecked((uint)window.ProcessId), ShellProcess()));
     }
 }
