@@ -128,15 +128,16 @@ def _outcome(observation: str) -> str:
         return "resultado arriba"
     if not isinstance(facts, dict):
         return "resultado arriba"
-    status = str(facts.get("status") or ("completed" if facts.get("succeeded") else "failed"))
+    status = str(facts.get("status") or "failed")
     if status == "needs_confirmation":
         return "no se ejecutó: espera el sí de la persona"
     if status == "cancelled":
         return "cancelado por la persona"
-    if facts.get("polarity") == "pending" or facts.get("effectUncertain"):
+    if status == "pending" or facts.get("effectUncertain"):
         return "sin confirmar: pudo o no ocurrir"
-    if facts.get("succeeded") or status == "completed":
-        return "completado y verificado" if facts.get("verified") else "completado sin verificar"
+    if status == "completed":
+        # A completed call is verified unless its result says it is not (the App's own completed-but-unreadable).
+        return "completado sin verificar" if facts.get("verified") is False else "completado y verificado"
     error = facts.get("error") or facts.get("cause")
     return f"falló ({error})" if error else "falló"
 

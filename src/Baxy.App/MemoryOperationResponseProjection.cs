@@ -122,7 +122,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        message = CompletedFacts(operationName, "memory_configuration",
+        message = CompletedFacts("memory_configuration",
             new JsonObject { ["enabled"] = enabled }, responseReplayed || replayed);
         return true;
     }
@@ -179,7 +179,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             // («Listo, me acuerdo: tu color favorito es el verde.»).
             observed["selector"] = selector.ToLowerInvariant();
         }
-        message = CompletedFacts(operationName, "memory_updated", observed, responseReplayed || replayed);
+        message = CompletedFacts("memory_updated", observed, responseReplayed || replayed);
         return true;
     }
 
@@ -229,7 +229,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
 
         message = deleted == 0 && operationName != "memory.session.clear"
             ? TurnVisibleFacts.Failure("memory_forget_empty")
-            : CompletedFacts(operationName, "memory_deleted", observed, responseReplayed || replayed);
+            : CompletedFacts("memory_deleted", observed, responseReplayed || replayed);
         return true;
     }
 
@@ -264,7 +264,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        message = CompletedFacts("memory.status", "memory_status", new JsonObject
+        message = CompletedFacts("memory_status", new JsonObject
         {
             ["enabled"] = enabled,
             ["totalRecords"] = total,
@@ -312,7 +312,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        message = CompletedFacts("memory.export", "memory_exported", new JsonObject
+        message = CompletedFacts("memory_exported", new JsonObject
         {
             ["fullPath"] = path,
             ["recordCount"] = count,
@@ -535,10 +535,10 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         };
         return shown == 0
             ? TurnVisibleFacts.Failure(cause, extra)
-            : CompletedFacts(operationName, cause, extra, responseReplayed);
+            : CompletedFacts(cause, extra, responseReplayed);
     }
 
-    private static string CompletedFacts(string operation, string cause, JsonObject observed, bool replayed)
+    private static string CompletedFacts(string cause, JsonObject observed, bool replayed)
     {
         if (replayed)
         {
@@ -546,9 +546,6 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         }
         return TurnVisibleFacts.Status(cause, new JsonObject
         {
-            ["operation"] = operation,
-            ["verified"] = true,
-            ["succeeded"] = true,
             ["observed"] = observed,
         });
     }

@@ -44,7 +44,7 @@ public static class OperationVisibleFacts
         "query", "url", "host", "site", "folder", "askedFolder", "relativePath", "path", "fileName",
         "dueUtc", "due", "utc", "date", "time", "localTime", "weekday", "when", "at",
         "start", "startUtc", "end", "endUtc", "receivedUtc", "createdUtc",
-        "state", "status", "mode", "kind", "operation", "authority", "unit",
+        "state", "status", "mode", "kind", "operation", "unit",
         "app", "application", "process", "processName", "window", "windowTitle",
         "ssid", "device", "location", "city", "condition",
     };
@@ -64,13 +64,11 @@ public static class OperationVisibleFacts
         bool consoleOutput = operation == "shell.command.run";
         int messageLimit = processInventory || ocrObservation || consoleOutput ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageChars;
 
+        // One header: the status says how the call ended (a completed call is a verified one: the engine turns an
+        // unverified success into a failure); the operation is the one the model just called.
         var payload = new JsonObject
         {
-            ["kind"] = "operation",
-            ["operation"] = operation,
-            ["polarity"] = success ? "success" : "failure",
-            ["verified"] = outcome.Verified,
-            ["succeeded"] = outcome.Succeeded,
+            ["status"] = success ? OperationStatuses.Completed : OperationStatuses.Failed,
         };
         if (!string.IsNullOrWhiteSpace(outcome.ErrorCode))
         {
@@ -164,9 +162,6 @@ public static class OperationVisibleFacts
         bool pending = string.Equals(status, OperationStatuses.Pending, StringComparison.Ordinal);
         var payload = new JsonObject
         {
-            ["kind"] = "operation",
-            ["operation"] = operation,
-            ["polarity"] = pending ? "pending" : "failure",
             ["status"] = status,
         };
         if (!string.IsNullOrWhiteSpace(errorCode))
@@ -436,6 +431,16 @@ public static class OperationVisibleFacts
     // cut sets «cut». A list cut under a name says how many items it shows («<name>Shown»: a count or a next offset
     // of the provider speaks of all of them) and, when the observation carries no count of its own, how many it had
     // («<name>Count»).
+    // Bookkeeping of a provider's receipt that no operation takes and the model never needs to tell (round 1, results
+    // agent: endpoint hashes, the adapter's cascade stage, SendInput counters, Win32 error numbers, the evidence's
+    // authority): the receipt keeps them for the journal; the model reads what happened.
+    private static readonly HashSet<string> OpaqueKeys = new(StringComparer.Ordinal)
+    {
+        "endpointIdHash", "cascadeStage", "waitedMs", "acceptedEvents", "expectedEvents", "inputSize",
+        "lastWin32Error", "foregroundProcessIdBefore", "foregroundProcessIdAfter", "sequenceNumber", "executablePath",
+        "authority", "taskName",
+    };
+
     private static JsonNode? Sanitize(
         JsonElement element, ref bool cut, int depth = 0, bool processInventory = false, bool ocrObservation = false,
         bool captureObservation = false)
@@ -453,6 +458,11 @@ public static class OperationVisibleFacts
                 foreach (JsonProperty property in element.EnumerateObject())
                 {
                     string key = property.Name;
+                    if (OpaqueKeys.Contains(key) && depth == 0)
+                    {
+                        continue;
+                    }
+
                     if ((key is "hwnd" or "handle" or "pid" or "processId" or "fingerprint"
                         or "invocationId" or "requestId" or "missionId" or "token")
                         && !(processInventory && key == "processId")
