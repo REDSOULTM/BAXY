@@ -5,9 +5,8 @@ Each scene's context goes to Mind.beat as the App would send it. What the model 
 <banks>/escenas/README.md: observing (read-only calls) changes nothing and gets the scene's own context back as its
 result; a call the App holds in a heartbeat for the person's «sí» is a proposal (the high risks, and what sends input
 to a window or something out of the PC, read from src/Baxy.App/NativeTurnLoop.cs as the App has them); any other
-effect is an action; words alone are a message; LATIDO_OK is silence. The channel is the owner's rule (decision 5, 2026-10-16:
-a notification while the person plays, is on a call or watches something, the voice otherwise), the App's and not
-the model's: it is not scored (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
+effect is an action; words alone are a message; LATIDO_OK is silence. The channel (voice or a notification) is the
+App's (HeartbeatMoment.Speaks), not the model's, and is not judged (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
 """
 import argparse
 import json
@@ -76,28 +75,6 @@ def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
     return any(str(given.get(argument) or "").strip() for argument in conditional.get(op, ()))
 
 
-def quiet_activities() -> set[str]:
-    """The activities in which a heartbeat only notifies, read from the App's rule
-    («Speaks(string activity) => activity is not (A or B …)» and A, B … as HeartbeatMoment's constants)."""
-    source = (ROOT / "src" / "Baxy.App" / "HeartbeatMoment.cs").read_text(encoding="utf-8")
-    rule = re.search(r"static bool Speaks\(string activity\) => activity is not \(([^)]*)\);", source)
-    if rule is None:
-        raise SystemExit("HeartbeatMoment.cs no longer says Speaks as «activity is not (…)»")
-    quiet = set()
-    for name in rule.group(1).split(" or "):
-        value = re.search(rf'internal const string {name.strip()} = "([^"]+)";', source)
-        if value is None:
-            raise SystemExit(f"HeartbeatMoment.cs no longer has {name.strip()}")
-        quiet.add(value.group(1))
-    return quiet
-
-
-def channel_for(activity: str, quiet: set[str]) -> str:
-    """The App's channel rule (HeartbeatMoment.Speaks): aloud, unless the person is away, plays, is in a call or
-    watches. A scene's return («volvió tras N min ausente», as the App notes it) goes in its context's events."""
-    return "notificacion" if activity in quiet else "voz"
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
@@ -115,7 +92,6 @@ def main() -> None:
     catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
     risk = {c["name"]: c.get("risk") for c in catalog["capabilities"]}
     holds = heartbeat_holds()
-    quiet = quiet_activities()
     runs = BANKS / "runs"
     runs.mkdir(parents=True, exist_ok=True)
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), log_name=f"escenas-{args.label}.log")
@@ -170,7 +146,6 @@ def main() -> None:
         expect = scene["expect"]
         effect = next((op for op in reversed(ops) if not (risk.get(op) == "read_only" or op in OBSERVING
                                                          or str(op).startswith("capture."))), None)
-        channel = None if verdict == "silence" else channel_for(context.get("owner_activity", ""), quiet)
         # A scene whose expected operations were all retired with nothing in their place (op null) is left out of the
         # count, as in the decision bench: no answer can meet an action BAXY no longer has.
         excluded = expect["kind"] in {"act", "propose"} and bool(expect.get("ops_any")) and all(
