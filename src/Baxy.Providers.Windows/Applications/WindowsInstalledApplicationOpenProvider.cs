@@ -76,9 +76,6 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     {
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
-        // v3 point 1 review: a new opening replaces the one the looks while an application starts hand the front back
-        // for; only an opening that leaves the person's window in front notes itself again below.
-        _platform.ForgetOpening();
         if (!ApplicationIds.IsValidRequest(request.ApplicationId))
         {
             return Failure(request, string.Empty, ApplicationOpenErrorCodes.InvalidApplication);
@@ -304,8 +301,6 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 if (!takeFront && handBackTo != 0)
                 {
                     LastFrontGuard = GuardFrontAsync(handBackTo, focused.ProcessId, _platform.FrontGuardStamp());
-                    // v3 point 1: the looks while the application starts hand back a front it takes later.
-                    _platform.NoteOpening(handBackTo, focused.ProcessId);
                 }
                 return Success(request, entry, focused, running, activated, restored, shownWithoutFocus: shown);
             }
@@ -1267,16 +1262,6 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
 
     bool FrontGuardInterrupted(ForegroundHandBack.GuardStamp stamp) => false;
 
-    // The opening left the person's window in front: the looks while the application starts keep it there.
-    void NoteOpening(long previousFront, int processId)
-    {
-    }
-
-    // A new opening: the previous one no longer hands back a front (v3 point 1 review).
-    void ForgetOpening()
-    {
-    }
-
     // The front goes back to «previous» and the opened window right behind it, without activating it; whether the
     // front is back.
     bool ReturnForeground(long previous, long opened) => false;
@@ -2158,10 +2143,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     public ForegroundHandBack.GuardStamp FrontGuardStamp() => ForegroundHandBack.Stamp();
 
     public bool FrontGuardInterrupted(ForegroundHandBack.GuardStamp stamp) => ForegroundHandBack.Interrupted(stamp);
-
-    public void NoteOpening(long previousFront, int processId) => ForegroundHandBack.NoteOpening(previousFront, processId);
-
-    public void ForgetOpening() => ForegroundHandBack.ForgetOpening();
 
     public bool SameApplication(int opened, int process) =>
         opened > 0 && process > 0
