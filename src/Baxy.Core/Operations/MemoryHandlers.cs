@@ -187,6 +187,10 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         {
             return ValueTask.FromResult(Failure("memory_export_conflict"));
         }
+        catch (MemoryExportPublishedUnverifiedException)
+        {
+            return ValueTask.FromResult(Failure("memory_export_unavailable", effectMayHaveOccurred: true));
+        }
         catch (MemoryExportException)
         {
             return ValueTask.FromResult(Failure("memory_export_unavailable"));
