@@ -161,6 +161,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (method == "POST" && route == "/confirmation/answer")
         {
+            long arrivedAt = System.Diagnostics.Stopwatch.GetTimestamp();
             JsonObject? answer = ParseBody(body);
             if (answer?["approve"] is not JsonValue approveValue || !approveValue.TryGetValue(out bool approve))
             {
@@ -172,7 +173,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return Error("nothing_pending", 409);
             }
 
-            await _viewModel.AnswerConfirmationAsync(approve, _lifetimeCancellation).ConfigureAwait(true);
+            await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation).ConfigureAwait(true);
             return Json(new JsonObject { ["ok"] = true });
         }
 
@@ -428,6 +429,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private async Task<FieldHttpResponse> HandleTurnAsync(string? body)
     {
+        // The person's words arrived now; the turn may still wait for the engine's recovery or a heartbeat.
+        long arrivedAt = System.Diagnostics.Stopwatch.GetTimestamp();
         string turnId = "t" + Interlocked.Increment(ref _turnSequence)
             .ToString(CultureInfo.InvariantCulture);
         ShellTraceSink.Record(
@@ -468,6 +471,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             await _viewModel.SubmitAsync(
                     new MissionInput(text, MissionInputSource.Text),
+                    arrivedAt,
                     _lifetimeCancellation)
                 .ConfigureAwait(true);
         }

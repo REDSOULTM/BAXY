@@ -4,11 +4,11 @@ namespace Baxy.App;
 
 /// <summary>
 /// The goal's notice (PROMPT_GOAL_RENEW.md, identity: «un aviso que no afirma resultado si el turno va a pasar de 3 s en
-/// silencio»): a turn the person opened that has published nothing <see cref="After"/> after it started, and is still
-/// working, says once the mind's own notice phrase (the <c>notice</c> of its <c>catalog.ready</c>). The words are the
-/// mind's: with no phrase from it there is no notice. The notice is not the turn's answer: it is only said aloud, never
-/// a line of the conversation. Whatever comes first closes it, the turn's own line or the notice, under one gate, so the
-/// notice is never said after the answer nor twice.
+/// silencio»): a turn the person opened that has published nothing <see cref="After"/> after the person's words (or
+/// press) arrived, and is still working, says once the mind's own notice phrase (the <c>notice</c> of its
+/// <c>catalog.ready</c>). The words are the mind's: with no phrase from it there is no notice. The notice is not the
+/// turn's answer: it is only said aloud, never a line of the conversation. Whatever comes first closes it, the turn's
+/// own line or the notice, under one gate, so the notice is never said after the answer nor twice.
 /// </summary>
 internal sealed class SilenceNotice
 {
@@ -37,12 +37,15 @@ internal sealed class SilenceNotice
                 : null;
 
     /// <summary>
-    /// A turn the person opened starts: <see cref="After"/> later, if the turn has published nothing, has not ended and
-    /// <paramref name="mayNotice"/> holds, <paramref name="say"/> gets <paramref name="phrase"/> once. The timer fires on
-    /// the thread pool; the check and the notice run on the context the turn runs on (the interface's thread, where the
-    /// turn publishes too), when it has one.
+    /// A turn the person opened starts; their words or press arrived at <paramref name="arrivedAt"/>, a timestamp of this
+    /// notice's clock (<see cref="System.Diagnostics.Stopwatch.GetTimestamp"/> for the system's), maybe well before the
+    /// turn started (it waited for a heartbeat to end). <see cref="After"/> after that moment, if the turn has published
+    /// nothing, has not ended and <paramref name="mayNotice"/> holds, <paramref name="say"/> gets <paramref name="phrase"/>
+    /// once; with that moment already past, the check and the notice run now, on the turn's thread. Otherwise the timer
+    /// fires on the thread pool and the check and the notice run on the context the turn runs on (the interface's thread,
+    /// where the turn publishes too), when it has one.
     /// </summary>
-    internal void Open(string? phrase, Func<bool> mayNotice, Action<string> say)
+    internal void Open(string? phrase, long arrivedAt, Func<bool> mayNotice, Action<string> say)
     {
         ArgumentNullException.ThrowIfNull(mayNotice);
         ArgumentNullException.ThrowIfNull(say);
@@ -56,8 +59,15 @@ internal sealed class SilenceNotice
             }
 
             _open = true;
-            SynchronizationContext? context = SynchronizationContext.Current;
             Action notice = () => Notice(turn, phrase, mayNotice, say);
+            TimeSpan due = After - _time.GetElapsedTime(arrivedAt);
+            if (due <= TimeSpan.Zero)
+            {
+                notice();
+                return;
+            }
+
+            SynchronizationContext? context = SynchronizationContext.Current;
             _timer = _time.CreateTimer(
                 _ =>
                 {
@@ -71,7 +81,7 @@ internal sealed class SilenceNotice
                     }
                 },
                 null,
-                After,
+                due,
                 Timeout.InfiniteTimeSpan);
         }
     }

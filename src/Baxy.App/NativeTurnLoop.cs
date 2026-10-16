@@ -35,8 +35,8 @@ internal sealed record NativeTurnStep(
 /// runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// <para>
-/// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after it started says the
-/// mind's notice once (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
+/// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
+/// arrived says the mind's notice once (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
 /// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
@@ -100,8 +100,10 @@ internal sealed class NativeTurnLoop
         (_pending is { } pending && pending.ExpiresAtUtc > DateTimeOffset.UtcNow)
         || (_proposal is not null && _proposalExpiresUtc > DateTimeOffset.UtcNow);
 
-    /// <summary>The person's words open a turn.</summary>
-    internal async Task RunAsync(string text, CancellationToken cancellationToken)
+    /// <summary>
+    /// The person's words open a turn; they arrived at <paramref name="arrivedAt"/> (<see cref="Stopwatch.GetTimestamp"/>).
+    /// </summary>
+    internal async Task RunAsync(string text, long arrivedAt, CancellationToken cancellationToken)
     {
         MindSidecarClient? mind = _host.Mind();
         if (mind is not { IsTurnAvailable: true })
@@ -110,23 +112,24 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await PersonTurnAsync(mind, () => mind.DecideAsync(text, WaitingCall(), cancellationToken), cancellationToken);
+        await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, WaitingCall(), cancellationToken),
+            cancellationToken);
     }
 
     // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
-    // notice when it has published nothing SilenceNotice.After after it started, unless what it waits for is a call this
-    // turn left waiting for the person's Sí or No (its question comes next); the call the person is answering does not
-    // hold it back. A heartbeat says none: nobody asked and nobody waits for it.
+    // notice when it has published nothing SilenceNotice.After after they arrived (the turn may have waited for a
+    // heartbeat to end before it started), unless a call waits for the person's Sí or No and this turn asked for it
+    // (_askedInTurn moved: its question comes next), even when it is the same invocation the person said «sí» to and the
+    // kernel asks again; a call left waiting by an earlier turn, the one the person is answering, does not hold it back.
+    // A heartbeat says none: nobody asked and nobody waits for it.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
+        long arrivedAt,
         Func<Task<MindStep?>> decide,
         CancellationToken cancellationToken)
     {
-        PreparedOperation? answered = WaitingPrepared();
-        _notice.Open(
-            mind.Notice,
-            () => WaitingPrepared() is not { } waiting || ReferenceEquals(waiting, answered),
-            _host.Notice);
+        long asked = _askedInTurn;
+        _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedInTurn == asked, _host.Notice);
         try
         {
             await DriveAsync(mind, await decide(), cancellationToken);
@@ -160,8 +163,15 @@ internal sealed class NativeTurnLoop
         : _proposal is not null && _proposalExpiresUtc > DateTimeOffset.UtcNow ? _proposal
         : null;
 
-    /// <summary>The person pressed Sí or No on the pending confirmation.</summary>
-    internal async Task AnswerConfirmationAsync(bool approve, string label, CancellationToken cancellationToken)
+    /// <summary>
+    /// The person pressed Sí or No on the pending confirmation; the press arrived at <paramref name="arrivedAt"/>
+    /// (<see cref="Stopwatch.GetTimestamp"/>).
+    /// </summary>
+    internal async Task AnswerConfirmationAsync(
+        bool approve,
+        string label,
+        long arrivedAt,
+        CancellationToken cancellationToken)
     {
         MindSidecarClient? mind = _host.Mind();
         if (mind is not { IsTurnAvailable: true })
@@ -170,7 +180,8 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await PersonTurnAsync(mind, () => mind.ConfirmAsync(approve, label, cancellationToken), cancellationToken);
+        await PersonTurnAsync(mind, arrivedAt, () => mind.ConfirmAsync(approve, label, cancellationToken),
+            cancellationToken);
     }
 
     /// <summary>

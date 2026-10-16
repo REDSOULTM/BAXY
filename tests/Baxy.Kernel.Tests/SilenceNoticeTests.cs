@@ -6,7 +6,7 @@ namespace Baxy.Kernel.Tests;
 
 /// <summary>
 /// The App's notice of a silent turn (src/Baxy.App/SilenceNotice.cs, linked here: the App has no test project). The
-/// timer is the test's own, so each case fires it when it says.
+/// clock and the timer are the test's own, so each case moves the time and fires the timer when it says.
 /// </summary>
 [TestFixture]
 public sealed class SilenceNoticeTests
@@ -28,7 +28,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", () => true, said.Add);
+        notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
 
         Assert.That(time.Timers, Has.Count.EqualTo(1));
         Assert.That(time.Timers[0].DueTime, Is.EqualTo(TimeSpan.FromSeconds(2.0)));
@@ -40,13 +40,65 @@ public sealed class SilenceNoticeTests
     }
 
     [Test]
+    public void TheTimeThePersonAlreadyWaitedShortensTheDelay()
+    {
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+        long arrived = time.GetTimestamp();
+        // The person's words waited 1.5 s for a heartbeat to end before their turn started.
+        time.Advance(TimeSpan.FromSeconds(1.5));
+
+        notice.Open("Dame un momento.", arrived, () => true, said.Add);
+
+        Assert.That(time.Timers, Has.Count.EqualTo(1));
+        Assert.That(time.Timers[0].DueTime, Is.EqualTo(TimeSpan.FromSeconds(0.5)));
+        Assert.That(said, Is.Empty);
+        time.Timers[0].Fire();
+        Assert.That(said, Is.EqualTo(new[] { "Dame un momento." }));
+    }
+
+    [Test]
+    public void WhenThePersonAlreadyWaitedLongerTheNoticeIsSaidAtOnceOnTheTurnsThreadAndOnce()
+    {
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+        var turnContext = new QueuedContext();
+        long arrived = time.GetTimestamp();
+        time.Advance(TimeSpan.FromSeconds(3.0));
+        SynchronizationContext? previous = SynchronizationContext.Current;
+        SynchronizationContext.SetSynchronizationContext(turnContext);
+        try
+        {
+            notice.Open("Dame un momento.", arrived, () => true, said.Add);
+        }
+        finally
+        {
+            SynchronizationContext.SetSynchronizationContext(previous);
+        }
+
+        Assert.That(time.Timers, Is.Empty);
+        Assert.That(turnContext.Posted, Is.Empty);
+        Assert.That(said, Is.EqualTo(new[] { "Dame un momento." }));
+        notice.Publish(() => said.Add("answer"));
+        Assert.That(said, Is.EqualTo(new[] { "Dame un momento.", "answer" }));
+
+        // Already past and a call this turn raised waits for the person: still nothing, now or later.
+        said.Clear();
+        notice.Open("Dame un momento.", arrived, () => false, said.Add);
+        Assert.That(time.Timers, Is.Empty);
+        Assert.That(said, Is.Empty);
+    }
+
+    [Test]
     public void NoNoticeFollowsTheTurnsOwnLine()
     {
         var time = new ManualTime();
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", () => true, said.Add);
+        notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
         notice.Publish(() => said.Add("answer"));
         time.Timers[0].Fire();
 
@@ -61,7 +113,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", () => false, said.Add);
+        notice.Open("Dame un momento.", time.GetTimestamp(), () => false, said.Add);
         time.Timers[0].Fire();
 
         Assert.That(said, Is.Empty);
@@ -74,7 +126,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", () => true, said.Add);
+        notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
         notice.Close();
         time.Timers[0].Fire();
         // A heartbeat opens no notice: its own line is only published.
@@ -90,9 +142,9 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", () => true, said.Add);
+        notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
         notice.Close();
-        notice.Open("Dame un momento.", () => true, said.Add);
+        notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
         time.Timers[0].Fire();
         Assert.That(said, Is.Empty);
 
@@ -106,7 +158,7 @@ public sealed class SilenceNoticeTests
         var time = new ManualTime();
         var notice = new SilenceNotice(time);
 
-        notice.Open(null, () => true, _ => Assert.Fail("no phrase, no notice"));
+        notice.Open(null, time.GetTimestamp(), () => true, _ => Assert.Fail("no phrase, no notice"));
 
         Assert.That(time.Timers, Is.Empty);
     }
@@ -122,7 +174,7 @@ public sealed class SilenceNoticeTests
         SynchronizationContext.SetSynchronizationContext(turnContext);
         try
         {
-            notice.Open("Dame un momento.", () => true, said.Add);
+            notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
         }
         finally
         {
@@ -152,7 +204,15 @@ public sealed class SilenceNoticeTests
 
     private sealed class ManualTime : TimeProvider
     {
+        private long _now;
+
         internal List<ManualTimer> Timers { get; } = [];
+
+        public override long TimestampFrequency => TimeSpan.TicksPerSecond;
+
+        public override long GetTimestamp() => _now;
+
+        internal void Advance(TimeSpan by) => _now += by.Ticks;
 
         public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
         {

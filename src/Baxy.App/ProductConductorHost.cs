@@ -12,7 +12,8 @@ namespace Baxy.App;
 /// The benches' driver: starts the same <see cref="MainWindowViewModel"/> the window uses, without the window, sends the
 /// turns of a file (the person's words, or their Sí/No on a pending confirmation) and writes everything that happened as
 /// JSON lines: each line BAXY published, each call the model made with its status and verification, the notice of a
-/// silent turn, when the voice started to speak (the notice's utterance marked <c>notice</c>), and how each turn ended.
+/// silent turn once the voice queued it, when the voice started to speak (the notice's utterance marked
+/// <c>notice</c>), and how each turn ended.
 /// <para>
 /// Usage: <c>Baxy.exe --conductor [--profile DIR] [--capture DIR] (--turns-file FILE | --text TEXT | --command-dir DIR)
 /// [--timeout-ms N]</c>. A turns file has one JSON object per line: <c>{"text":"…"}</c> or <c>{"confirm":true}</c>
@@ -81,7 +82,11 @@ internal static class ProductConductorHost
         long? speechStartedMs = null;
         long? responseSpeechStartedMs = null;
         string lastSaid = string.Empty;
-        // The voice says in order what it took: the notice it took sounds before the response published after it.
+        // The voice says in order what it queued, and each utterance that reaches its first sound gives one start and
+        // one end: the first start after the notice was queued is the notice's (it was queued before the response). The
+        // voice's events name no utterance, so a notice it drops before its first sound (Piper or the device failing on
+        // that phrase) leaves no event at all, and the response's start that follows is read as the notice's; telling
+        // them apart takes the voice saying which utterance starts.
         string? noticeAwaitingSound = null;
         (string Text, bool Notice) utterance = (string.Empty, false);
         viewModel.MessageAdded += message =>
@@ -100,12 +105,12 @@ internal static class ProductConductorHost
             ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
             });
         };
-        viewModel.NoticeSpoken += notice =>
+        viewModel.NoticeQueued += notice =>
         {
             noticeAwaitingSound = notice;
             Emit(new JsonObject
             {
-                ["type"] = "notice",
+                ["type"] = "notice.queued",
                 ["text"] = notice,
                 ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
             });
@@ -223,7 +228,8 @@ internal static class ProductConductorHost
                 turnTimeout.CancelAfter(parsed.TurnTimeout);
                 if (turn["confirm"] is JsonValue confirm && confirm.TryGetValue(out bool approve))
                 {
-                    await viewModel.AnswerConfirmationAsync(approve, turnTimeout.Token).ConfigureAwait(true);
+                    await viewModel.AnswerConfirmationAsync(approve, Stopwatch.GetTimestamp(), turnTimeout.Token)
+                        .ConfigureAwait(true);
                 }
                 else
                 {
@@ -231,6 +237,7 @@ internal static class ProductConductorHost
                     {
                         await viewModel.SubmitAsync(
                                 new MissionInput((string?)turn["text"] ?? string.Empty, MissionInputSource.Text),
+                                Stopwatch.GetTimestamp(),
                                 turnTimeout.Token)
                             .ConfigureAwait(true);
                     }
