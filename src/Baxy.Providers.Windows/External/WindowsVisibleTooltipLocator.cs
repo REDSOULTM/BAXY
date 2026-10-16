@@ -1056,6 +1056,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             }
         }
         // A remembered place is pressed only where the tree shows no control of its size with another name.
+        long pressedAt = Environment.TickCount64;
         LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
             press, operation, learned.Window, learned.Screen.CenterX, learned.Screen.CenterY, learned.Label,
             null, null, cancellationToken, learned.ControlId,
@@ -1087,6 +1088,9 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             }
         }
 
+        // Auditoría final (regla 3): without a burst nothing else watches the person: their touch of that window since
+        // the press was sent ends the proof by its image.
+        userActed |= burst is null && WindowsUserInputPause.PersonTouched(learned.Window, pressedAt);
         changed &= !userActed && !animated;
         bool targeted = pressed.Method == "target" && pressed.Focused;
         bool ok = changed || targeted;

@@ -2359,6 +2359,8 @@ internal sealed class WindowsVisibleControlAdapter
         CancellationToken cancellationToken,
         string? manner = null)
     {
+        // Auditoría final (regla 3): the person's touch of the window counts from here, before anything is sent.
+        _pressStartedMs = Environment.TickCount64;
         // The descriptor admits «surface changed» as post-read. A Calculator
         // digit stays enabled and unselected after Invoke, so the surface is
         // the only evidence (UI1273); it is compared before/after the click.
@@ -2724,7 +2726,13 @@ internal sealed class WindowsVisibleControlAdapter
                     (ExternalCapabilityReceipt? held, front) = await LastAnswerAsync(
                         operation, askControl && watch.Elapsed < _timing.ControlPostread, front, effectBoundary,
                         cancellationToken).ConfigureAwait(false);
-                    return held is { } answered ? NotedPress(answered, clicked) : SurfaceChanged(operation, clicked, front);
+                    if (held is { } answered)
+                        return NotedPress(answered, clicked);
+                    // An image the person may have changed (their input to that window, their pointer over it) proves
+                    // nothing of the press.
+                    return WindowsUserInputPause.PersonTouched(captured.Hwnd, _pressStartedMs)
+                        ? effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true)
+                        : SurfaceChanged(operation, clicked, front);
                 }
             }
 
@@ -2739,7 +2747,11 @@ internal sealed class WindowsVisibleControlAdapter
                 (ExternalCapabilityReceipt? held, front) = await LastAnswerAsync(
                     operation, askControl && watch.Elapsed < _timing.ControlPostread, front, effectBoundary,
                     cancellationToken).ConfigureAwait(false);
-                return held is { } answered ? NotedPress(answered, clicked) : SurfaceChanged(operation, clicked, front, popupBorn: true);
+                if (held is { } answered)
+                    return NotedPress(answered, clicked);
+                return WindowsUserInputPause.PersonTouched(watched.Window, _pressStartedMs)
+                    ? effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true)
+                    : SurfaceChanged(operation, clicked, front, popupBorn: true);
             }
 
             // Ronda 20b, palanca 8, objetivo 3 (v3-44): a window of another process born or brought to the front within
@@ -3006,6 +3018,9 @@ internal sealed class WindowsVisibleControlAdapter
 
     /// <summary>The worker's answer to a point on the control the tree already pressed in this click.</summary>
     internal const string PointAlreadyPressed = "visible_point_already_pressed";
+
+    // When the running press started (Environment.TickCount64): the person's touch of the window since then is theirs.
+    private long _pressStartedMs;
 
     // The identity of the control the tree pressed in the running click and saw nothing change from (finding 4).
     private string? _pressedUnchanged;

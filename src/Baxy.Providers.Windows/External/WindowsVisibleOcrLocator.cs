@@ -68,6 +68,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // Auditoría final (regla 3): a window that changes by itself proves nothing by a changed image.
             bool animated = baseline is not { } still
                 || await VisibleControlSurface.ForegroundAnimatesAsync(still, cancellationToken).ConfigureAwait(false);
+            // Auditoría final (regla 3): the person's touch counts from before the press is sent.
+            long pressedAt = Environment.TickCount64;
             LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
                 press, operation, before.Hwnd, screenX, screenY, label, before, Relocate, cancellationToken)
                 .ConfigureAwait(false);
@@ -80,7 +82,6 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 before = now;
             string method = pressed.Method;
             IInputBurst? burst = pressed.Burst;
-            long pressedAt = Environment.TickCount64;
             VisibleControlSurface.CapturedWindow? after = null;
             bool changed = false;
             bool userActed = false;
@@ -132,7 +133,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // that changed after the person acted proves nothing of the click.
             bool targeted = method == "target" && pressed.Focused;
             // Without a burst nothing else watches the person: their input to that window since the press ends the proof.
-            userActed |= burst is null && WindowsUserInputPause.PersonActedOn(before.Hwnd, pressedAt);
+            userActed |= burst is null && WindowsUserInputPause.PersonTouched(before.Hwnd, pressedAt);
             bool ok = (changed && !userActed && !animated) || targeted;
             JsonElement result = ExternalJson.Create(writer =>
             {

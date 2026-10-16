@@ -136,12 +136,19 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     internal static WindowsUserInputPause Shared => SharedInstance.Value;
 
     /// <summary>
-    /// Auditoría final (regla 3): the person's input reached <paramref name="window"/> since <paramref name="sinceMs"/>
-    /// (<see cref="Environment.TickCount64"/>), as the Core's running detector saw it; false when no detector runs.
+    /// Auditoría final (regla 3): the person touched <paramref name="window"/> since <paramref name="sinceMs"/>
+    /// (<see cref="Environment.TickCount64"/>): an input of theirs reached it, or their pointer passed over it (a hover
+    /// redraws: a highlight, a fade, a tooltip). Without Raw Input the system's last input stands for theirs, so any
+    /// input then counts. False when no detector runs in this process.
     /// </summary>
-    internal static bool PersonActedOn(nint window, long sinceMs) =>
-        SharedInstance.IsValueCreated && Shared.PersonInputAgoMs(window) is long ago
-        && ago <= Environment.TickCount64 - sinceMs;
+    internal static bool PersonTouched(nint window, long sinceMs)
+    {
+        if (!SharedInstance.IsValueCreated)
+            return false;
+        WindowsUserInputPause pause = Shared;
+        return (pause.PersonInputAgoMs(window) is long ago && ago <= Environment.TickCount64 - sinceMs)
+            || pause.LastPointerOverMs(window) >= sinceMs;
+    }
 
     public bool TellsOwnInput => _rawInput;
 

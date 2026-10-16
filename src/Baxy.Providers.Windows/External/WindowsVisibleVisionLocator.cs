@@ -95,6 +95,8 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 return ExternalJson.FailureBeforeEffect(operation, "input_window_not_in_front");
             // Auditoría final (regla 3): a window that changes by itself proves nothing by a changed image.
             bool animated = await VisibleControlSurface.ForegroundAnimatesAsync(baseline, cancellationToken).ConfigureAwait(false);
+            // Auditoría final (regla 3): the person's touch counts from before the press is sent.
+            long pressedAt = Environment.TickCount64;
             LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
                 press, operation, before.Hwnd, screenX, screenY, label, before, null, cancellationToken)
                 .ConfigureAwait(false);
@@ -104,7 +106,6 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             before = pressed.Before ?? baseline;
             string method = pressed.Method;
             IInputBurst? burst = pressed.Burst;
-            long pressedAt = Environment.TickCount64;
             bool changed = false;
             bool userActed = false;
             bool restored = true;
@@ -130,7 +131,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             }
 
             // A surface that changed after the person acted proves nothing of the click.
-            userActed |= burst is null && WindowsUserInputPause.PersonActedOn(before.Hwnd, pressedAt);
+            userActed |= burst is null && WindowsUserInputPause.PersonTouched(before.Hwnd, pressedAt);
             changed &= !userActed && !animated;
             bool targeted = method == "target" && pressed.Focused;
             bool ok = changed || targeted;

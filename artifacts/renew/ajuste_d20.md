@@ -80,6 +80,8 @@ En el notebook (D:, misma mente):
 
 **No gana.** Las reglas en español, el idioma de las personas y de los casos, le van mejor a este 4B que la misma regla en inglés.
 
+**P10, una llamada por decisión (`noparallel`, PC, contra `base9e`):** decisión 230, 233 y 233 (media 232,0, dispersión 3, igual que `base9e`), p50 0,938 s (más lento); escenas 30/39, 0 molestas. **No gana.**
+
 **P7 (`cuex`), PC:** decisión 232, 229 y 232 (media 231,0, dispersión 3, p50 0,735 s), dentro del ruido de `base`. Escenas 29, 29 y 28, con **3 molestas**: pierde silencios. **No gana**; el ejemplo en el sistema hace que el latido actúe de más. (Sus brazos se escribieron sobre 9eadc3d79, que cambió tres descripciones; `base` se mide otra vez sobre esa mente, `base9e`.)
 
 **`base9e`** (la mente de 9eadc3d79, PC): decisión 232, 232 y 232 (las semillas fallan casos distintos y el total coincide), media 232,0, p50 0,859 s; escenas 30, 30 y 30, 0 molestas. Contra esta base, `cuex` (231,0; 28–29 con 3 molestas) sigue sin ganar.
