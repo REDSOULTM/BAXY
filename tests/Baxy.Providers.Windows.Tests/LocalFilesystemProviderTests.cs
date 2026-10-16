@@ -1,5 +1,8 @@
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Filesystem;
 using NUnit.Framework;
 
@@ -148,6 +151,87 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(provider.WriteText("logs/nuevo.txt", "", null, append: true).ReachedState, Is.True);
             Assert.That(bin.Recycled, Is.Empty);
         });
+    }
+
+    // BAXY Renew (notebook): a hash expected of a file that is not there is said as that, not as another version;
+    // the refusal says what it saw, and nothing is written.
+    [TestCase("")]
+    [TestCase("0000000000000000000000000000000000000000000000000000000000000000")]
+    public async Task AWriteExpectingAHashOfAMissingFileSaysTheFileIsNotThere(string expected)
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+
+        OperationOutcome outcome = await Handle(
+            provider, "file.write",
+            $$"""{"relativePath":"nuevo.txt","text":"hola","expectedSha256":"{{expected}}"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("expected_hash_for_missing_file"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("exists").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("fullPath").GetString(),
+                Is.EqualTo(Path.Combine(sandbox, "nuevo.txt")));
+            Assert.That(outcome.Result!.Value.GetProperty("append").GetBoolean(), Is.False);
+            Assert.That(File.Exists(Path.Combine(sandbox, "nuevo.txt")), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task AVersionConflictSaysTheFileIsThereAndWhere()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+        provider.WriteText("dato.txt", "uno", null);
+
+        OperationOutcome outcome = await Handle(
+            provider, "file.write", """{"relativePath":"dato.txt","text":"dos"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("version_conflict"));
+            Assert.That(outcome.Result!.Value.GetProperty("exists").GetBoolean(), Is.True);
+            Assert.That(outcome.Result!.Value.GetProperty("fullPath").GetString(),
+                Is.EqualTo(Path.Combine(sandbox, "dato.txt")));
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "dato.txt")), Is.EqualTo("uno"));
+        });
+    }
+
+    // The list says which folder it read and whether its limit left entries out.
+    [Test]
+    public async Task AListSaysItsFolderAndWhetherTheLimitLeftEntriesOut()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+        foreach (string name in new[] { "a.txt", "b.txt", "c.txt" }) provider.WriteText("notas/" + name, name, null);
+
+        OperationOutcome cut = await Handle(
+            provider, "filesystem.list", """{"relativeDirectory":"notas","limit":2}""");
+        OperationOutcome whole = await Handle(provider, "filesystem.list", """{"relativeDirectory":"notas"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(cut.Succeeded, Is.True, cut.ErrorCode);
+            Assert.That(cut.Result!.Value.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(sandbox, "notas")));
+            Assert.That(cut.Result!.Value.GetProperty("count").GetInt32(), Is.EqualTo(2));
+            Assert.That(cut.Result!.Value.GetProperty("totalCount").GetInt32(), Is.EqualTo(3));
+            Assert.That(cut.Result!.Value.GetProperty("hasMore").GetBoolean(), Is.True);
+            Assert.That(whole.Result!.Value.GetProperty("count").GetInt32(), Is.EqualTo(3));
+            Assert.That(whole.Result!.Value.GetProperty("hasMore").GetBoolean(), Is.False);
+        });
+    }
+
+    private static ValueTask<OperationOutcome> Handle(IFilesystemProvider provider, string operation, string arguments)
+    {
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        return new FilesystemHandler(operation, provider).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", document.RootElement.Clone()),
+            CancellationToken.None);
     }
 
     [Test]

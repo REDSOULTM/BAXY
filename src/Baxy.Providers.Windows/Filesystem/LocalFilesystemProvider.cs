@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using Baxy.Providers.Windows.External;
 
 namespace Baxy.Providers.Windows.Filesystem;
 
@@ -52,13 +53,12 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         {
             string directory = Resolve(relativeDirectory, allowMissingLeaf: false);
             if (!Directory.Exists(directory)) throw Error("directory_not_found");
-            FilesystemEntry[] entries = Directory.EnumerateFileSystemEntries(directory)
+            string[] paths = Directory.EnumerateFileSystemEntries(directory)
                 .Where(path => !IsReserved(path))
                 .OrderBy(Path.GetFileName, StringComparer.OrdinalIgnoreCase)
-                .Take(limit)
-                .Select(IssueEntry)
                 .ToArray();
-            return new FilesystemListResult(entries, entries.Length);
+            FilesystemEntry[] entries = paths.Take(limit).Select(IssueEntry).ToArray();
+            return new FilesystemListResult(entries, entries.Length, Path.GetFullPath(directory), paths.Length);
         }
     }
 
@@ -166,7 +166,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 : append
                     ? expectedSha256 is not null && !string.Equals(current, expectedSha256, StringComparison.Ordinal)
                     : !IsHash(expectedSha256) || !string.Equals(current, expectedSha256, StringComparison.Ordinal);
-            if (conflict) throw Error("version_conflict");
+            // BAXY Renew (notebook): a hash expected of a file that is not there is no other version of it.
+            if (conflict)
+                throw WriteRefused(
+                    current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append);
 
             string temporary = Path.Combine(
                 Path.GetDirectoryName(path)!, ".baxy-write-" + Guid.NewGuid().ToString("N") + ".tmp");
@@ -182,7 +185,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 }
                 if (exists && append)
                 {
-                    if (!string.Equals(HashFile(path), current, StringComparison.Ordinal)) throw Error("version_conflict");
+                    if (!string.Equals(HashFile(path), current, StringComparison.Ordinal))
+                        throw WriteRefused("version_conflict", path, exists, append);
                     File.Move(temporary, path, overwrite: true);
                 }
                 else if (exists)
@@ -469,6 +473,20 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         && value.All(static character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
     private static string Hex(byte[] value) => Convert.ToHexStringLower(value);
     private static FilesystemProviderException Error(string code) => new(code);
+
+    // What a refused write saw: whether the file is there, where, and whether the call appended.
+    private static FilesystemProviderException WriteRefused(string code, string path, bool exists, bool append) =>
+        new(code)
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("exists", exists);
+                writer.WriteString("fullPath", Path.GetFullPath(path));
+                writer.WriteBoolean("append", append);
+                writer.WriteEndObject();
+            }),
+        };
 
     private sealed record Handle(string Path, string Root, DateTime LastWriteUtc, long Size, DateTimeOffset IssuedAt);
 }

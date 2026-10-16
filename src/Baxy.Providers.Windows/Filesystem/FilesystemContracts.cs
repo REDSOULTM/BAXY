@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Baxy.Providers.Windows.Filesystem;
 
 public sealed record FilesystemEntry(
@@ -10,7 +12,11 @@ public sealed record FilesystemEntry(
 
 public sealed record FilesystemListResult(
     IReadOnlyList<FilesystemEntry> Entries,
-    int Count);
+    int Count,
+    // BAXY Renew (notebook): the folder a list read and how many entries it holds, so the receipt says where and
+    // whether the limit left some out.
+    string? FullPath = null,
+    int? TotalCount = null);
 
 public sealed record FilesystemTextResult(
     string ResourceId,
@@ -77,4 +83,7 @@ public interface IFilesystemProvider
 public class FilesystemProviderException(string code) : Exception(code)
 {
     public string Code { get; } = code;
+
+    /// <summary>What the refused call had observed, when it helps the model act (where, whether it exists).</summary>
+    public JsonElement? Result { get; init; }
 }

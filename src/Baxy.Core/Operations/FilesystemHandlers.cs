@@ -79,7 +79,7 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
         }
         catch (FilesystemProviderException exception)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure(exception.Code));
+            return ValueTask.FromResult(OperationOutcome.Failure(exception.Code, exception.Result));
         }
     }
 
@@ -141,6 +141,12 @@ internal static class FilesystemResultJson
         foreach (FilesystemEntry entry in result.Entries) WriteEntry(writer, entry);
         writer.WriteEndArray();
         writer.WriteNumber("count", result.Count);
+        if (result.FullPath is not null) writer.WriteString("fullPath", result.FullPath);
+        if (result.TotalCount is int total)
+        {
+            writer.WriteNumber("totalCount", total);
+            writer.WriteBoolean("hasMore", total > result.Count);
+        }
     });
 
     public static JsonElement Text(FilesystemTextResult result) => Write(writer =>
