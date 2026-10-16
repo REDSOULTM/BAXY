@@ -95,8 +95,8 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The handed window as the receipt names it; null when it is gone or is a window no act reaches (an editor, a
-    /// console, BAXY: «Seguridad v2», told by its process).
+    /// The handed window as the receipt names it; null when it is gone or is a developer's or BAXY's own window (an
+    /// editor, a console, BAXY: «Seguridad v2», told by its process), whether a look named it or not.
     /// </summary>
     internal static HandedWindow? DescribeHanded(RootWindow window)
     {
