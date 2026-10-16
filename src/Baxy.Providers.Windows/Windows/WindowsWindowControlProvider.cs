@@ -1430,16 +1430,29 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             Owned: GetWindow(identity.Handle, OwnerWindow) != 0);
     }
 
-    public bool Execute(WindowIdentity identity, WindowControlAction action)
+    public bool Execute(WindowIdentity identity, WindowControlAction action) =>
+        Act(Observe(identity), action, ShowWindowAsync, SetForegroundWindow);
+
+    // Each of these acts moves the front because it was asked for (focus, maximize and restore activate the window,
+    // a snap restores it first; minimize hands the front to the next window): the front is noted as taken on purpose
+    // first, so the guard of an opening (ForegroundHandBack) never hands it back to the window it had before.
+    internal static bool Act(
+        WindowSnapshot snapshot,
+        WindowControlAction action,
+        Func<nint, int, bool> showWindowAsync,
+        Func<nint, bool> setForegroundWindow)
     {
-        WindowSnapshot snapshot = Observe(identity);
+        if (action is not (WindowControlAction.Focus or WindowControlAction.Minimize
+            or WindowControlAction.Maximize or WindowControlAction.Restore))
+            return false;
+        ForegroundHandBack.NoteFrontTaken();
+        nint handle = snapshot.Identity.Handle;
         return action switch
         {
-            WindowControlAction.Focus => ExecuteFocus(snapshot, ShowWindowAsync, SetForegroundWindow),
-            WindowControlAction.Minimize => ShowWindowAsync(identity.Handle, ShowMinimized),
-            WindowControlAction.Maximize => ShowWindowAsync(identity.Handle, ShowMaximized),
-            WindowControlAction.Restore => ShowWindowAsync(identity.Handle, Restore),
-            _ => false,
+            WindowControlAction.Focus => ExecuteFocus(snapshot, showWindowAsync, setForegroundWindow),
+            WindowControlAction.Minimize => showWindowAsync(handle, ShowMinimized),
+            WindowControlAction.Maximize => showWindowAsync(handle, ShowMaximized),
+            _ => showWindowAsync(handle, Restore),
         };
     }
 

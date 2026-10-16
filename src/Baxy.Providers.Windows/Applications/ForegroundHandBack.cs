@@ -13,9 +13,11 @@ internal static partial class ForegroundHandBack
 {
     internal static long Foreground() => GetForegroundWindow();
 
-    // Every time BAXY takes the front on purpose (an act bringing its window up, keys sent to it): the
-    // guard that hands back a front an opened application took by itself stops there, so it never undoes BAXY's own
-    // act nor the person's (an input of theirs that can move the front ends it as well; r4a M2: typing does not).
+    // Noted by every act that takes the front on purpose: the foreground lease bringing a window up for keys or a
+    // click, VisibleControlSurface.BringToFront, and the window acts asked for (focus, minimize, maximize, restore,
+    // the restore before a snap: Win32WindowControlPlatform.Act). The guard that hands back a front an opened
+    // application took by itself stops there, so it never undoes BAXY's own act nor the person's (an input of theirs
+    // that can move the front ends it as well; r4a M2: typing does not).
     private static long _frontTaken;
 
     internal static void NoteFrontTaken() => Interlocked.Increment(ref _frontTaken);
