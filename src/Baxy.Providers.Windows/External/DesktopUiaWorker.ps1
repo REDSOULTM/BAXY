@@ -649,7 +649,6 @@ public static class BaxyUiaQuietInput {
   }
 
   private static uint QuietSend(uint count, IntPtr inputs, int size) {
-    // Calls refused whole: input that is not the client's hotkey key (never sent, answered 0).
     if (inputs == IntPtr.Zero || size <= 0 || count == 0) return 0;
     uint thread = GetCurrentThreadId();
     uint[] registered;

@@ -9,8 +9,8 @@ namespace Baxy.Providers.Windows.Tests;
 /// Goal v3 point 0 (r4a M1): the UI Automation client injects an unmarked key (VK 0xB9) to win the foreground
 /// permission it then hands to the application a pattern acts on, so a window behind came to the front and the key
 /// landed in the person's window. The worker takes SendInput (and the hotkey registration the client waits on) out of
-/// UIAutomationCore's import table: its input is dropped, and the hotkey message the client waits for after it is
-/// posted instead (no 2 s wait). The class is taken from the worker's text and run in a PowerShell of its own with the
+/// UIAutomationCore's import table: its input is dropped, and the wait that follows it is answered with the hotkey
+/// message it waits for, never placed in the thread's queue (no 2 s wait). The class is taken from the worker's text and run in a PowerShell of its own with the
 /// client loaded; no window is read, shown or touched, and nothing reaches the screen.
 /// </summary>
 [TestFixture]
