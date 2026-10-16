@@ -309,3 +309,13 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
 - 304 significados de argumentos (agente, verificados en código): decisión 229 (neutro), e2e práctica p9 20/30 (mejor
   hasta ahora) pero el prefijo subió de 37,6k a 45,1k tokens, 18,1 ms/token y primer sonido p50 3206 ms, con sólo 4k
   tokens libres para un turno. Podados a 84 donde hay fallos o trampas (ae88641a8); se mide en p10.
+- SELLADOS (una sola vez, congelado 0417eec7b; decisión/escenas/latido en la GPU del notebook, e2e/falsedades/recursos
+  en el escritorio del PC): decisión 140/167 (83,8 %, p50 0,81 s); escenas 39/59 (66,1 %, 1,36 molestas/20, 0 riesgo
+  solo); latido 8/10; e2e 30/50 (agente 4/15, cu 10/16, herramientas 12/13, voz 4/6; primer sonido p50 3887 ms);
+  falsedades 3 en 62 líneas; recursos: arnés VRAM 3912 MiB y RAM 1648 MiB, con voz 3948/2615. Holdout combinado
+  178/227 = 78,4 %. Cumplidas: velocidad de decisión y recursos. Límites honestos: holdout, instinto, falsedades, voz
+  por orden. Antes de correr, renew_check.ps1 se arregló (-Only por comas: con -File no corría ningún banco).
+- Ronda final de auditoría sobre 0417eec7b y ronda 1 de optimización (8 agentes en las dos máquinas): todos con
+  cambios. Se aplican después del sellado y se validan en práctica; nuevas rondas hasta que un agente no encuentre
+  nada (pedido del dueño). Restos de bancos en C:\Users\usuario borrados con permiso del dueño (hola.txt, de abril, y
+  BAXY-bench quedan).
