@@ -8,7 +8,7 @@
       "F:/BAXYeval/renew_v1/e2e/practice.json",
       "F:/BAXYeval/renew_v1/falsedades/practice.json"
     ],
-    "sellados": {
+    "sellados_v1": {
       "holdout_decision": {
         "archivo": "F:/BAXYeval/renew_v1/holdout/decision.json",
         "casos": 167,
@@ -47,7 +47,43 @@
         "sellado": "2026-10-15T12:24:45-03:00",
         "nota": "sello del subagente (SEALED-falsedades.md), igual al calculado por el líder a las 04:09"
       }
-    }
+    },
+    "sellados": {
+      "holdout_decision": {
+        "archivo": "F:/BAXYeval/renew_v2/holdout/decision.json",
+        "casos": 160,
+        "sha256": "f0bb20910b5fb060a2e1dc262e73ffa65ad7a0ca237680b8331a34fb15fa23a0",
+        "sellado": "2026-10-16T03:05:00-03:00"
+      },
+      "escenas": {
+        "archivo": "F:/BAXYeval/renew_v2/escenas/sealed.json",
+        "casos": 60,
+        "sha256": "aa19434374dd410cb0a4950739fc829f582b0c605849b6df6c92fc0d7dd90d29",
+        "sellado": "2026-10-16T03:05:00-03:00",
+        "mezcla": "35 silencio, 10 actuar, 6 proponer, 9 decir (3 'volvió tras ausencia')"
+      },
+      "holdout_latido": {
+        "archivo": "F:/BAXYeval/renew_v2/escenas/holdout_latido.json",
+        "casos": 12,
+        "sha256": "3ba57d78c43dc53d45fd19102ba482257271f694454d2ad669367a4f522920e3",
+        "sellado": "2026-10-16T03:05:00-03:00"
+      },
+      "e2e": {
+        "archivo": "F:/BAXYeval/renew_v2/e2e/sealed.json",
+        "casos": 40,
+        "sha256": "69d492e819a103fe3a7bd4e8bae5f170ed3c8b18839555fa6d71e9e670e1726a",
+        "lib_bench_ps1_sha256": "d82eed38d13aba469ed3d421320eb808e4625a0690bd7d64f0ebda46aaa05372",
+        "sellado": "2026-10-16T03:10:00-03:00",
+        "areas": "herramientas 12, cu 10, agente 12, voz 6"
+      },
+      "falsedades": {
+        "archivo": "F:/BAXYeval/renew_v2/falsedades/sealed.json",
+        "casos": 36,
+        "sha256": "67e9b5e096c87a8f5d45c9577f1f4d0cb3cf75065f7c97cbc96143a01de8b64c",
+        "sellado": "2026-10-16T03:10:00-03:00"
+      }
+    },
+    "nota_v2": "holdout v2 creado por dos agentes aislados (decisión 15 del dueño); la sesión de ajuste no abrió ningún caso; sha256 verificados por el líder; se corre una vez con BAXY_RENEW_BANKS=F:\\BAXYeval\renew_v2 (D: en el notebook)."
   },
   "metas": {
     "holdout": {
@@ -311,7 +347,7 @@
       "escenas": "30-32/39 según brazo; armF 33 con una falsedad; armO rompe un silencio"
     },
     "holdout_v2": {
-      "estado": "en creación (agentes aislados); se corre una vez al final",
+      "estado": "sellado; se corre una vez sobre el commit congelado",
       "ubicacion": "F:/BAXYeval/renew_v2"
     }
   }

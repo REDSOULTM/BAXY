@@ -25,13 +25,6 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 # persona's, so they live here with the prompt.
 NOTICE = "Un momento."
 
-_GUIDES = (
-    "\nGuía (ejemplo de llamadas; los valores son de ejemplo):\n"
-    "«abre <app> y escribe X»: app_open, input_visible_controls de esa app, input_text_type {\"window\": <el "
-    "número tras «window» en tu mirada>, \"text\": \"X\"}, y vuelve a mirarla antes de contarlo. file_write sólo si "
-    "pide un archivo."
-)
-
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
     "herramientas. Eres un él. Hablas en el idioma de la persona (español neutro, inglés o spanglish), tuteas, eres "
@@ -60,7 +53,6 @@ SYSTEM = (
     "input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo.\n"
     "10. Los identificadores (windowId, ids de notas, tareas o redes) salen del resultado de la herramienta que los "
     "lista; nunca los inventes ni uses un número de otro campo."
-    + _GUIDES
 )
 
 # The heartbeat reads the same rules without the answer to «¿ya lo hiciste?», which only a person asks: with it, the
@@ -71,7 +63,7 @@ _ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo o cómo está algo del PC
                   "conversación: sin una herramienta que lo hiciera, no lo hiciste, y sin una que lo mirara, no lo "
                   "sabes: míralo con su herramienta antes de responder.")
 assert _ASKED_IF_DONE in SYSTEM
-BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "").replace(_GUIDES, "")
+BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "")
 
 # The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
 # reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
