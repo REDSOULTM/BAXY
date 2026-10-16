@@ -58,7 +58,14 @@ internal sealed record OpenApplicationResult(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? WindowId = null,
     // ProcessName (BAXY Renew, notebook): the program whose window this opening verified, from that process's own
     // executable.
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? ProcessName = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? ProcessName = null,
+    // Foreground (BAXY Renew, notebook, F004): whether the window this opening verified holds the front when the opening
+    // answers, asked in front or not; ForegroundHeldBy: the window in front instead (none when Windows reports none).
+    bool Foreground = false,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] WindowName? ForegroundHeldBy = null);
+
+// A window as the receipts name it: its title and the program a view names it by.
+internal sealed record WindowName(string Title, string Process);
 
 internal sealed record AudioVolumeArguments(
     [property: JsonRequired] int Level);

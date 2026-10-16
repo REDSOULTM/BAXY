@@ -9,7 +9,8 @@ namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
 /// BAXY Renew (notebook): what app.open says back. A place its application does not have is refused with what was
-/// asked; a verified opening names the program whose window it verified.
+/// asked; a verified opening names the program whose window it verified, and whether that window holds the front as the
+/// opening answers (F004: the window of another application did).
 /// </summary>
 [TestFixture]
 public sealed class AppOpenHandlerTests
@@ -49,9 +50,68 @@ public sealed class AppOpenHandlerTests
         });
     }
 
-    private static AppOpenHandler Handler(IApplicationOpenProvider provider) => new(
+    [Test]
+    public async Task AnOpenedWindowThatHoldsTheFrontSaysSo()
+    {
+        var provider = new VerifiedOpening(@"C:\Windows\System32\notepad.exe");
+        var read = new List<long>();
+
+        OperationOutcome outcome = await Handler(provider, window =>
+        {
+            read.Add(window);
+            return new OpenedWindowFront(true);
+        }).ExecuteAsync(Invocation("""{"appId":"Bloc de notas","foreground":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(read, Is.EqualTo(new[] { 777L }));
+            Assert.That(outcome.Result!.Value.GetProperty("foreground").GetBoolean(), Is.True);
+            Assert.That(outcome.Result!.Value.TryGetProperty("foregroundHeldBy", out _), Is.False);
+        });
+    }
+
+    // F004: «abre la calculadora y luego escribe hola en el bloc de notas». The Notepad window is verified open, and the
+    // Calculator opened just before holds the front: the opening says so, by the window's title and program.
+    [Test]
+    public async Task AnOpenedWindowBehindAnotherApplicationNamesTheWindowInFront()
+    {
+        var provider = new VerifiedOpening(@"C:\Windows\System32\notepad.exe");
+
+        OperationOutcome outcome = await Handler(provider, static _ => new OpenedWindowFront(false, "Calculadora", "CalculatorApp"))
+            .ExecuteAsync(Invocation("""{"appId":"Bloc de notas","foreground":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("foreground").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("foregroundHeldBy").GetProperty("title").GetString(),
+                Is.EqualTo("Calculadora"));
+            Assert.That(outcome.Result!.Value.GetProperty("foregroundHeldBy").GetProperty("process").GetString(),
+                Is.EqualTo("CalculatorApp"));
+        });
+    }
+
+    // Nobody in front (Windows reports no foreground window): not held, and no window is named.
+    [Test]
+    public async Task NoWindowInFrontIsNotTheOpenedOneAndNamesNone()
+    {
+        var provider = new VerifiedOpening(@"C:\Windows\System32\notepad.exe");
+
+        OperationOutcome outcome = await Handler(provider, static _ => new OpenedWindowFront(false))
+            .ExecuteAsync(Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Result!.Value.GetProperty("foreground").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.TryGetProperty("foregroundHeldBy", out _), Is.False);
+        });
+    }
+
+    private static AppOpenHandler Handler(IApplicationOpenProvider provider, Func<long, OpenedWindowFront>? frontOf = null) => new(
         provider,
-        new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)));
+        new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+        frontOf: frontOf ?? (static _ => new OpenedWindowFront(true)));
 
     private static OperationInvocation Invocation(string arguments)
     {

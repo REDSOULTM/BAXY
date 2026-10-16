@@ -14,6 +14,10 @@ internal interface IDesktopKeyboard
     /// <summary>The window in front (0 when nobody holds the foreground), its process and title.</summary>
     DesktopForeground Foreground();
 
+    /// <summary>The program a view names this window by: a packaged app's own for its frame (never ApplicationFrameHost),
+    /// else its process's name; empty when it cannot be read.</summary>
+    string ProcessName(nint window);
+
     /// <summary>Presses the keys in order and releases them in reverse; the events Windows accepted.</summary>
     uint PressChord(IReadOnlyList<ushort> virtualKeys);
 
@@ -79,6 +83,8 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
         _ = GetWindowThreadProcessId(window, out uint processId);
         return new DesktopForeground(window, unchecked((int)processId), VisibleControlSurface.WindowTitle(window));
     }
+
+    public string ProcessName(nint window) => VisibleControlSurface.ViewProcess(window).ProcessName;
 
     public uint PressChord(IReadOnlyList<ushort> virtualKeys)
     {

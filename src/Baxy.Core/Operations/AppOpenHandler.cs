@@ -9,13 +9,15 @@ internal sealed class AppOpenHandler(
     IApplicationOpenProvider provider,
     LaunchProvenance? provenance = null,
     IApplicationPlaceOpener? places = null,
-    Func<nint, string?>? windowIdFor = null)
+    Func<nint, string?>? windowIdFor = null,
+    Func<long, OpenedWindowFront>? frontOf = null)
     : IOperationHandler
 {
     private readonly IApplicationOpenProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
     private readonly LaunchProvenance _provenance = provenance ?? LaunchProvenance.Shared;
     private readonly IApplicationPlaceOpener _places = places ?? new ShellApplicationPlaceOpener();
+    private readonly Func<long, OpenedWindowFront> _frontOf = frontOf ?? OpenedWindowFront.Read;
 
     public OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("app.open");
@@ -117,6 +119,9 @@ internal sealed class AppOpenHandler(
             return OperationOutcome.Failure("launch_failed", effectMayHaveOccurred: true);
         }
 
+        // BAXY Renew (notebook), F004: whether the window this opening verified holds the front as it answers (after
+        // its place too), and the window that holds it when it does not. Read once; nothing is done about it.
+        OpenedWindowFront front = _frontOf(providerResult.WindowHandle.GetValueOrDefault());
         var result = new OpenApplicationResult(
             arguments.AppId,
             providerResult.DisplayName,
@@ -130,7 +135,9 @@ internal sealed class AppOpenHandler(
             PlaceRequested: place is not null,
             FrontChanged: place?.FrontChanged == true,
             WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()),
-            ProcessName: Path.GetFileNameWithoutExtension(providerResult.Receipt.ExecutablePath));
+            ProcessName: Path.GetFileNameWithoutExtension(providerResult.Receipt.ExecutablePath),
+            Foreground: front.Held,
+            ForegroundHeldBy: front.HolderTitle is { } title ? new WindowName(title, front.HolderProcess ?? string.Empty) : null);
         JsonElement serialized = JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.OpenApplicationResult);
