@@ -650,6 +650,9 @@ internal sealed class WindowsVisibleControlAdapter
         // Ronda 24b (banco r23 u9): a list, tree, grid or table with neither Invoke nor SelectionItem is no thing to press
         // (its pointer click chose whatever row was at its centre): refused before anything was sent.
         "visible_control_is_container",
+        // Ronda B (falta 3): a toolbar button seen through its MSAA proxy whose bar answers another window or another
+        // button at its point: nothing was sent, neither as a message nor by the pointer.
+        "visible_control_covered",
     };
 
     // Encargo IMP4: the lines a look that asks for «lines» reads, each by its place (a chat's whole pane: 79 lines

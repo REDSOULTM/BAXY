@@ -1848,7 +1848,8 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       $barStep='nopoint'
       if($null -ne $point){ try { $barStep=[string][BaxyUiaWorkerNative]::ToolbarPress($top,$point.x,$point.y,[IntPtr][long]$facts.toolbarWindow,[int]$facts.toolbarChild) } catch { $barStep='failed' } }
       if($barStep -eq 'posted'){ $ways+='message'; return @{ method='message'; ways=$ways } }
-      if($barStep -eq 'other'){ return $null }
+      # Ronda B (falta 3): esa salida no envio nada, y su recibo lo dice (visible_control_covered, antes de todo efecto).
+      if($barStep -eq 'other'){ return @{ method='covered' } }
     } elseif($method -eq 'message'){
       $point=Get-PressPoint $el
       # Una fila que se elige: solo si en su punto esta la ventana que la contiene (revision, hallazgo 2).
@@ -3422,6 +3423,7 @@ function Do-ClickJudged($request){
   catch { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
   if($null -eq $done){ return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
   if([string]$done.method -eq 'container'){ return (Click-Result $false $false 'visible_control_is_container' $name $identity $false $false $false $kind) }
+  if([string]$done.method -eq 'covered'){ return (Click-Result $false $false 'visible_control_covered' $name $identity $false $false $false $kind) }
   $pressed=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
   if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled }
   if($null -ne $script:Pending -and $null -ne $witness -and [string]$done.method -eq 'toggle'){
@@ -3579,7 +3581,7 @@ function Do-At($request){
     # corta: el siguiente de la cadena, la superficie de render, y sin via, visible_point_no_pattern (el adaptador pulsa
     # con el puntero en el punto leido, no en el centro del contenedor). Nada se envio: nunca un recibo de «pudo haber
     # efecto».
-    if([string]$done.method -eq 'container'){ continue }
+    if(@('container','covered') -contains [string]$done.method){ continue }
     if($null -ne $done){ return (Pressed-Result $done $button $name $identity $kind $toggleBefore @()) }
   }
   # Nada del arbol en el punto tiene via, pero el punto cae en la superficie de render de Chromium (de la ventana o de
