@@ -1,7 +1,6 @@
 # Ronda de verificación y optimización de BAXY Renew para su modelo
 
-Eres un agente de una ronda de verificación. El dueño pide rondas sucesivas hasta que un agente, revisando a fondo, no
-encuentre NADA que arreglar ni agregar. Tu trabajo es encontrar lo que falta o está mal en TU FOCO (abajo), con
+Eres un agente de una ronda de verificación. El dueño pide rondas sucesivas hasta una ronda limpia (sin violaciones; ver «Criterio de cierre»). Tu trabajo es encontrar lo que falta o está mal en TU FOCO (abajo), con
 evidencia, o declarar con argumentos que no queda nada.
 
 ## Qué es
@@ -53,7 +52,19 @@ SEALED-*.md, y los final-*.jsonl de runs más allá de su primera línea (resume
   1. Hallazgos CONCRETOS, priorizados: qué (archivo:línea o texto exacto), por qué (evidencia: caso de práctica,
      código, fuente con URL), cambio propuesto exacto, cómo medirlo y riesgo. Separa «viola una regla» de «mejora».
   2. Lo que revisaste y está bien.
-  3. Última línea obligatoria, una de dos: `VEREDICTO: NADA QUE AGREGAR` (sólo si de verdad revisaste todo tu foco
-     y no hay nada con evidencia) o `VEREDICTO: HAY CAMBIOS (n)`.
+  3. Separa VIOLACIONES (de <reglas> o de la identidad: ayuda al modelo en código —regex, regla semántica, veto,
+     lista de palabras, paso dictado—; un recibo, respuesta, comentario o documento que dice más de lo que se ejecutó y
+     verificó; algo del dueño que sale sin pedido; un click o tecleo en su ventana sin pedido; código muerto; pasarse de
+     4 GB de VRAM o RAM) de las MEJORAS GRISES (todo lo demás: se anotan en PROGRESO y no obligan a otra ronda).
+  4. Última línea obligatoria, una de dos: `VEREDICTO: VIOLA (n)` o `VEREDICTO: SIN VIOLACIONES`, y aparte la lista
+     de mejoras grises.
+
+## Criterio de cierre (dueño, 2026-10-16 01:48)
+Ronda limpia = ningún agente encuentra una violación. 4 agentes por ronda en el PC y 4 en el notebook con focos
+fijos: mente y catálogo; App e interfaz; proveedores; bancos y honestidad (metas.json, PROGRESO, jueces). Una
+violación se arregla siempre; una mejora entra sólo si gana en práctica caso por caso por encima del ruido
+(decision2 ±6-9, escenas ±2) sin perder silencios del latido ni sumar falsedades; lo que no se mida o no gane queda
+pendiente. Tope: 2 rondas más o hasta 2026-10-16 07:48, lo que llegue antes; al tope, las violaciones que queden van
+como límite honesto en metas.json con su evidencia.
 
 ## Tu foco

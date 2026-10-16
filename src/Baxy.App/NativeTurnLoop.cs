@@ -34,6 +34,10 @@ internal sealed record NativeTurnStep(
 /// held as a proposal and never reaches the kernel until the person says «sí» to that exact invocation; any other call
 /// runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
+/// <para>
+/// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
+/// arrived says the mind's notice once (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
+/// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
 {
@@ -58,6 +62,9 @@ internal sealed class NativeTurnLoop
         /// <summary>The turn could not reach an answer (mind down, core down): a state for the interface, not prose.</summary>
         internal required Action<string> Fail { get; init; }
 
+        /// <summary>Says the mind's notice aloud (<see cref="SilenceNotice"/>): a line that is not the turn's answer.</summary>
+        internal required Action<string> Notice { get; init; }
+
         internal Action<NativeTurnStep>? StepCompleted { get; init; }
 
         internal Action? MemoryChanged { get; init; }
@@ -72,6 +79,7 @@ internal sealed class NativeTurnLoop
     };
 
     private readonly Host _host;
+    private readonly SilenceNotice _notice = new(TimeProvider.System);
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
@@ -92,8 +100,10 @@ internal sealed class NativeTurnLoop
         (_pending is { } pending && pending.ExpiresAtUtc > DateTimeOffset.UtcNow)
         || (_proposal is not null && _proposalExpiresUtc > DateTimeOffset.UtcNow);
 
-    /// <summary>The person's words open a turn.</summary>
-    internal async Task RunAsync(string text, CancellationToken cancellationToken)
+    /// <summary>
+    /// The person's words open a turn; they arrived at <paramref name="arrivedAt"/> (<see cref="Stopwatch.GetTimestamp"/>).
+    /// </summary>
+    internal async Task RunAsync(string text, long arrivedAt, CancellationToken cancellationToken)
     {
         MindSidecarClient? mind = _host.Mind();
         if (mind is not { IsTurnAvailable: true })
@@ -102,8 +112,32 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await DriveAsync(mind, await mind.DecideAsync(text, WaitingCall(), cancellationToken), cancellationToken)
-            ;
+        await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, WaitingCall(), cancellationToken),
+            cancellationToken);
+    }
+
+    // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
+    // notice when it has published nothing SilenceNotice.After after they arrived (the turn may have waited for a
+    // heartbeat to end before it started), unless a call waits for the person's Sí or No and this turn asked for it
+    // (_askedInTurn moved: its question comes next), even when it is the same invocation the person said «sí» to and the
+    // kernel asks again; a call left waiting by an earlier turn, the one the person is answering, does not hold it back.
+    // A heartbeat says none: nobody asked and nobody waits for it.
+    private async Task PersonTurnAsync(
+        MindSidecarClient mind,
+        long arrivedAt,
+        Func<Task<MindStep?>> decide,
+        CancellationToken cancellationToken)
+    {
+        long asked = _askedInTurn;
+        _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedInTurn == asked, _host.Notice);
+        try
+        {
+            await DriveAsync(mind, await decide(), cancellationToken);
+        }
+        finally
+        {
+            _notice.Close();
+        }
     }
 
     // The call that waits for the person's «sí», as the mind reads it with their next words: its operation, and its
@@ -129,8 +163,15 @@ internal sealed class NativeTurnLoop
         : _proposal is not null && _proposalExpiresUtc > DateTimeOffset.UtcNow ? _proposal
         : null;
 
-    /// <summary>The person pressed Sí or No on the pending confirmation.</summary>
-    internal async Task AnswerConfirmationAsync(bool approve, string label, CancellationToken cancellationToken)
+    /// <summary>
+    /// The person pressed Sí or No on the pending confirmation; the press arrived at <paramref name="arrivedAt"/>
+    /// (<see cref="Stopwatch.GetTimestamp"/>).
+    /// </summary>
+    internal async Task AnswerConfirmationAsync(
+        bool approve,
+        string label,
+        long arrivedAt,
+        CancellationToken cancellationToken)
     {
         MindSidecarClient? mind = _host.Mind();
         if (mind is not { IsTurnAvailable: true })
@@ -139,11 +180,8 @@ internal sealed class NativeTurnLoop
             return;
         }
 
-        await DriveAsync(
-                mind,
-                await mind.ConfirmAsync(approve, label, cancellationToken),
-                cancellationToken)
-            ;
+        await PersonTurnAsync(mind, arrivedAt, () => mind.ConfirmAsync(approve, label, cancellationToken),
+            cancellationToken);
     }
 
     /// <summary>
@@ -198,15 +236,15 @@ internal sealed class NativeTurnLoop
                 case { Kind: "silence" }:
                     return;
                 case { Kind: "reply" }:
-                    _host.Publish(step.Text, HasPendingConfirmation
+                    _notice.Publish(() => _host.Publish(step.Text, HasPendingConfirmation
                         ? PublicResponseRoute.Confirmation
-                        : PublicResponseRoute.Conversation);
+                        : PublicResponseRoute.Conversation));
                     return;
                 case { Kind: "question" }:
                     // A question about a call that waits for the person's «sí» is that confirmation (Sí/No buttons).
-                    _host.Publish(step.Text, HasPendingConfirmation
+                    _notice.Publish(() => _host.Publish(step.Text, HasPendingConfirmation
                         ? PublicResponseRoute.Confirmation
-                        : PublicResponseRoute.Clarification);
+                        : PublicResponseRoute.Clarification));
                     return;
             }
 

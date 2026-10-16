@@ -319,3 +319,20 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   cambios. Se aplican después del sellado y se validan en práctica; nuevas rondas hasta que un agente no encuentre
   nada (pedido del dueño). Restos de bancos en C:\Users\usuario borrados con permiso del dueño (hola.txt, de abril, y
   BAXY-bench quedan).
+- Después del sellado (práctica; lo sellado sigue siendo 0417eec7b). Rondas de verificación con agentes en las dos
+  máquinas; criterio del dueño desde 2026-10-16 01:48: ronda limpia = sin violaciones, tope 2 rondas o 07:48.
+  Entró: recibos honestos (consola completada con effectReadBack:false —tras una regresión mía que la volvía failed—;
+  app.open dice si su ventana quedó al frente y quién lo tiene; un tecleo sin window sólo es verificado si se relee:
+  falsedades p9 F004 escribió «hola» en la Calculadora creyendo que era el Bloc de notas), schedule.alarms list/diagnose
+  ya no falla siempre (el latido del producto se quedaba sin recordatorios), PowerShell en UTF-8, código muerto de la
+  vista y de la misión, C1 (el reloj dice que aún no corrió ninguna herramienta en el turno), resultados tras
+  ask_user en orden, ×N para llamadas iguales con el mismo resultado, página por offset con todo el texto que cabe,
+  juez de falsedades por mayoría de 3 semillas con turnos fallidos contados, aviso de silencio a los 2,0 s («Dame un
+  momento.», identidad), guías S1v2 (ejemplos de llamada: archivos de la persona; abrir una app y escribir en ella).
+  Medido: e2e práctica p12 23/30, p13 26/30 (con guías); falsedades p9 2/26, p10 2/26 (+1 empate); decision2 base del
+  notebook 224-226, C1 227/230.
+- Grises de la ronda A (bancos y honestidad), pendientes: desde el aviso, first_audio_p50_ms incluye «Dame un momento.»
+  y la meta de voz se lee de first_response_audio_p50_ms; el oráculo de E030 dio por bueno un archivo fuera de
+  BAXY-bench (p13); rangos de práctica y estados de tareas viejos en metas.json; p10-falsedades se cortó al juzgar
+  F019 la primera vez; el juez de falsedades marcó falsa una afirmación que la mirada respaldaba (F019 p10: la vista
+  mostraba la biblioteca); el error protected_window no dice «pasa el window de tu mirada».
