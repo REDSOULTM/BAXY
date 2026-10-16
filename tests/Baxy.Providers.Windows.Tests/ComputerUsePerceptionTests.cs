@@ -191,9 +191,9 @@ public sealed class ComputerUsePerceptionTests
     {
         VisibleControlSurface.DestinationWindow[] desktop =
         [
-            new(0x10, 11, "chrome", "Nueva pestaña - Google Chrome", null, Cloaked: false),
-            new(0x20, 12, "ApplicationFrameHost", "Configuración", null, Cloaked: true),
-            new(0x30, 13, "notepad++", "notas.txt - Notepad++", null, Cloaked: false),
+            new("chrome", "Nueva pestaña - Google Chrome", Cloaked: false),
+            new("ApplicationFrameHost", "Configuración", Cloaked: true),
+            new("notepad++", "notas.txt - Notepad++", Cloaked: false),
         ];
 
         ExternalCapabilityReceipt receipt = WindowsVisibleControlAdapter.NamedWindowNotFound("input.visible.controls", desktop);

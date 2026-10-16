@@ -1484,7 +1484,7 @@ internal sealed class WindowsVisibleControlAdapter
             // Auditoría final V3: an application named that no window is, exactly, is never read in another window's
             // place (the person's in front): the visible windows go back as candidates and nothing is looked at.
             if (hwnd == 0 && application is not null)
-                return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop().Windows), []);
+                return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop()), []);
             if (hwnd == 0)
             {
                 hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
