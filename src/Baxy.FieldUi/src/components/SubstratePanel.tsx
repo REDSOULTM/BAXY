@@ -22,7 +22,7 @@ interface Props {
    *  explicit confirmation below, and off with one press. */
   confirmation: ConfirmationPolicy;
   onConfirmation: (p: ConfirmationPolicy) => void;
-  /** is the assistant alive (backend reachable)? Drives the online/standby dot.
+  /** is the assistant alive (backend reachable)? Drives the voice row's tooltip.
    *  Independent of the mic: text mode keeps the app online with voice off. */
   online: boolean;
   /** is the mic loop up? Drives the voice toggle's on/off state. */
@@ -141,9 +141,9 @@ export function SubstratePanel({
       </div>
 
       {/* ---- voice toggle. Muting the mic does NOT power the app down: the row
-           toggles VOICE only, while the dot still reports the assistant's
-           online/standby liveness (backend reachable) so text mode stays
-           visibly alive with the mic off. ---- */}
+           and its dot follow VOICE only, while the tooltip still reports
+           whether the assistant is online (backend reachable), so text mode
+           stays alive with the mic off. ---- */}
       <button
         type="button"
         className={`power-row ${voiceOn ? 'on' : 'off'}`}

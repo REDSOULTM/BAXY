@@ -9,16 +9,19 @@ using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
-/// <summary>
-/// Shared product admission, turn, session and public-event projection.
-/// Field UI (WebView bridge) and the windowless conductor both call this
-/// type. Origin policy stays on the UI adapter; this channel has none.
-/// </summary>
+/// <summary>Where <see cref="FieldProductChannel"/> publishes its events (<see cref="FieldUiBridge"/> posts them to
+/// the view).</summary>
 internal interface IFieldEventSink
 {
     bool Publish(JsonObject eventData);
 }
 
+/// <summary>
+/// The Field view's routes and public events: turn admission, sessions, voice,
+/// settings and the events it publishes. Only <see cref="FieldUiBridge"/> (the
+/// WebView adapter) calls this type; the origin policy stays on that adapter,
+/// this channel has none.
+/// </summary>
 internal sealed class FieldProductChannel : IAsyncDisposable
 {
     internal const int MaximumRequestBodyCharacters = 65_536;

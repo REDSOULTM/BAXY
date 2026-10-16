@@ -16,7 +16,7 @@ export interface Toast {
 }
 
 const BUS = new EventTarget();
-const EV = 'gemma4:toast';
+const EV = 'baxy:toast';
 
 let _seq = 0;
 function nextId(): string {

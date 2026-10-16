@@ -165,7 +165,6 @@ export default function App() {
 
   const setConfirmation = useCallback(async (policy: ConfirmationPolicy) => {
     try {
-      // Its own route: the settings panel's «apply» never carries the confirmation mode.
       const r = await fetch('/confirmation', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -186,10 +185,9 @@ export default function App() {
   // muting the mic just mutes the mic.
   const convState = stream.convState;
 
-  // global keyboard shortcuts. mirror the legacy QShortcut bindings so users
-  // of the PyQt6 GUI find the same muscle memory here. shortcuts that hit
-  // network endpoints (clear/new) are fired via plain fetch — no race with
-  // React state.
+  // global keyboard shortcuts (onHelp below lists them). shortcuts that hit
+  // host routes (clear/new) are fired via plain fetch — no race with React
+  // state.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       // ignore shortcuts when typing in an input/textarea, except Escape
@@ -357,8 +355,7 @@ export default function App() {
   }, [setMicModeAsync]);
 
   // clicking a surface card BOTH marks it active (visual carmesí border) AND
-  // opens the matching modal — sessions opens SessionsPanel, memory/tools open
-  // the generic InfoPanel with the right endpoint.
+  // opens the matching modal — SessionsPanel, MemoryPanel or ToolsPanel.
   const onSurface = useCallback((id: SurfaceId) => {
     setActiveSurface(id);
     setOpenPanel(id);
