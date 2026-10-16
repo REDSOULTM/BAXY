@@ -92,6 +92,7 @@ internal sealed class NativeTurnLoop
     // waits when it starts), after the person's last moment.
     private long _personAt;
     private long _askedAt;
+    private long _turnStarted;
 
     internal NativeTurnLoop(Host host)
     {
@@ -133,6 +134,7 @@ internal sealed class NativeTurnLoop
     {
         _personAt = arrivedAt;
         long started = Stopwatch.GetTimestamp();
+        _turnStarted = started;
         _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedAt < started, _host.Notice);
         try
         {
@@ -208,6 +210,7 @@ internal sealed class NativeTurnLoop
         }
 
         _beat = true;
+        _turnStarted = Stopwatch.GetTimestamp();
         try
         {
             await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken),
@@ -238,15 +241,10 @@ internal sealed class NativeTurnLoop
                 case { Kind: "silence" }:
                     return;
                 case { Kind: "reply" }:
-                    _notice.Publish(() => _host.Publish(step.Text, HasPendingConfirmation
-                        ? PublicResponseRoute.Confirmation
-                        : PublicResponseRoute.Conversation));
+                    Publish(step.Text, PublicResponseRoute.Conversation);
                     return;
                 case { Kind: "question" }:
-                    // A question about a call that waits for the person's «sí» is that confirmation (Sí/No buttons).
-                    _notice.Publish(() => _host.Publish(step.Text, HasPendingConfirmation
-                        ? PublicResponseRoute.Confirmation
-                        : PublicResponseRoute.Clarification));
+                    Publish(step.Text, PublicResponseRoute.Clarification);
                     return;
             }
 
@@ -264,6 +262,14 @@ internal sealed class NativeTurnLoop
             step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }
+
+    // A line about a call that waits for the person's «sí» is that confirmation (Sí/No buttons), when the model can be
+    // asking about it: the turn's own call or the one offered to it with the person's words (ConfirmationAsk).
+    private void Publish(string text, string route) =>
+        _notice.Publish(() => _host.Publish(text,
+            ConfirmationAsk.Asks(HasPendingConfirmation, _askedAt, _turnStarted, _personAt)
+                ? PublicResponseRoute.Confirmation
+                : route));
 
     private async Task<string> ExecuteAsync(string operation, JsonObject arguments, CancellationToken cancellationToken)
     {

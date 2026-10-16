@@ -11,6 +11,8 @@
     <Compile Include="..\..\src\Baxy.App\ScreenViewProjection.cs" Link="App\ScreenViewProjection.cs" />
     <!-- The heartbeat's reading of the person's absence and return: one file with no App dependency. -->
     <Compile Include="..\..\src\Baxy.App\AwayWatch.cs" Link="App\AwayWatch.cs" />
+    <!-- When BAXY's line is the confirmation of the call that waits: one file with no App dependency. -->
+    <Compile Include="..\..\src\Baxy.App\ConfirmationAsk.cs" Link="App\ConfirmationAsk.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
