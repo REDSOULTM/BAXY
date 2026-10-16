@@ -115,6 +115,24 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
+    // Round 3: a page that fits unescaped but not escaped is still cut to what the message holds, not to 2,000.
+    [Test]
+    public void APageThatFitsOnlyUnescapedIsCutToWhatTheMessageHolds()
+    {
+        string page = string.Concat(Enumerable.Range(0, 770).Select(static index => index % 4 == 0 ? "\"a\"\n line " : "word word "));
+        Assert.That(page.Length, Is.InRange(7_600, 7_800));
+        JsonElement result = JsonSerializer.SerializeToElement(new { offset = 0, returnedCharacters = page.Length, hasMore = false, text = page });
+
+        string message = OperationVisibleFacts.FromOutcome("file.read", OperationOutcome.Success(result));
+        using JsonDocument parsed = JsonDocument.Parse(message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message.Length, Is.LessThanOrEqualTo(8_192));
+            Assert.That(parsed.RootElement.GetProperty("observed").GetProperty("returnedCharacters").GetInt32(), Is.GreaterThan(2_000));
+        });
+    }
+
     // Auditoría final V2: a list cut to what the observation shows says how many it shows, and the observation says
     // something was left out, where the model reads it (window.resolve with limit 50 showed 20 under count 50).
     [Test]

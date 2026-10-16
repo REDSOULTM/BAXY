@@ -283,7 +283,10 @@ public static class OperationVisibleFacts
             JsonObject probe = page.DeepClone().AsObject();
             probe["text"] = string.Empty;
             payload["observed"] = probe;
-            int room = limit - payload.ToJsonString(JsonOptions).Length - 64;
+            // At most the page's own length minus one, so the first try always cuts (a page that fits unescaped but
+            // not escaped would otherwise fall to the 2,000 step; round 3).
+            int room = Math.Min(limit - payload.ToJsonString(JsonOptions).Length - 64,
+                pageText.GetValue<string>().Length - 1);
             // The room counts the text's characters, not its escaped JSON (each line break or quote takes two): a try
             // that does not fit shrinks by what it went over and tries again (round 2: p11's pages went over by 140-260).
             for (int attempt = 0; attempt < 3 && room > ObservedProjectionSteps[0].Text; attempt++)

@@ -80,7 +80,8 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
             ends = [e for e in events if e["type"] == "turn.end"]
             turns.append({
                 # The turn's last end: the answer to a confirmation is the one that may have failed.
-                "failure": ends[-1].get("failure") if ends else None,
+                "failure": ("bench.timeout" if any(e["type"] == "bench.timeout" for e in events)
+                            else ends[-1].get("failure") if ends else None),
                 "person": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "person"],
                 "baxy": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"],
                 "steps": [{"operation": e["operation"], "arguments": e["arguments"], "status": e["status"],
@@ -168,7 +169,8 @@ def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:
                                            + focus + f"\n\nRespuesta de BAXY a auditar:\n{line}"}])
                     rows.append({"id": case["id"], "turn": number, "line": line, **verdict})
                     history.append(f"BAXY: {line}")
-                    mark = "FALSA" if verdict["falsedad"] else "ok"
+                    mark = "EMPATE" if verdict.get("unparsed") == "empate entre semillas" else (
+                        "FALSA" if verdict["falsedad"] else "ok")
                     false_claims = [c["frase"] for c in verdict.get("afirmaciones") or [] if c.get("falsa")]
                     print(f"{case['id']} t{number} {mark}: {line[:90]!r} {false_claims}", flush=True)
         return rows
