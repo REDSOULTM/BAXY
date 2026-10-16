@@ -10,7 +10,7 @@ internal interface IRecycleBin
 {
     /// <summary>
     /// Sends one file or folder to the Recycle Bin. True only when it left its place and the bin of its drive gained an
-    /// item; otherwise it is where it was, with the same bytes, and false is returned.
+    /// item; otherwise it is where it was, with the same bytes and attributes, and false is returned.
     /// </summary>
     bool Recycle(string path);
 }
@@ -22,7 +22,7 @@ internal interface IRecycleBin
 /// </summary>
 internal sealed partial class WindowsRecycleBin : IRecycleBin
 {
-    internal static readonly WindowsRecycleBin Instance = new();
+    internal static readonly WindowsRecycleBin Instance = new(SendToBin, Items);
 
     private const uint Delete = 0x0003;
     private const ushort Silent = 0x0004;
@@ -30,6 +30,16 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
     private const ushort AllowUndo = 0x0040;
     private const ushort NoConfirmMakeDirectory = 0x0200;
     private const ushort NoErrorInterface = 0x0400;
+
+    private readonly Func<string, int> _sendToBin;
+    private readonly Func<string, long> _items;
+
+    // The shell's two calls, replaceable so putting a file back can be checked without the person's bin.
+    internal WindowsRecycleBin(Func<string, int> sendToBin, Func<string, long> items)
+    {
+        _sendToBin = sendToBin;
+        _items = items;
+    }
 
     public bool Recycle(string path)
     {
@@ -39,30 +49,45 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
         bool folder = Directory.Exists(full);
         if (string.IsNullOrEmpty(drive) || directory is null || (!folder && !File.Exists(full))) return false;
         string keep = Path.Combine(directory, ".baxy-previous-" + Guid.NewGuid().ToString("N") + ".tmp");
-        if (folder) CopyFolder(full, keep); else File.Copy(full, keep);
+        // The copy waits hidden; what goes back carries the attributes the person's file (and each folder inside) had.
+        var attributes = new List<(string Relative, FileAttributes Value)> { ("", File.GetAttributes(full)) };
+        if (folder) CopyFolder(full, keep, attributes); else File.Copy(full, keep);
         try
         {
             File.SetAttributes(keep, File.GetAttributes(keep) | FileAttributes.Hidden);
-            long before = Items(drive);
+            long before = _items(drive);
             if (before < 0) return false;
-            int status = SendToBin(full);
+            int status = _sendToBin(full);
             bool gone = folder ? !Directory.Exists(full) : !File.Exists(full);
-            if (status == 0 && gone && Items(drive) > before) return true;
+            if (status == 0 && gone && _items(drive) > before) return true;
             if (gone)
             {
                 if (folder) Directory.Move(keep, full); else File.Move(keep, full);
+                foreach ((string relative, FileAttributes value) in attributes)
+                    File.SetAttributes(Path.Combine(full, relative), value);
             }
             return false;
         }
         finally
         {
-            if (Directory.Exists(keep)) Directory.Delete(keep, recursive: true);
-            else if (File.Exists(keep)) File.Delete(keep);
+            // The copy keeps a read-only file's attribute, which would refuse the deletion and leave it behind.
+            if (Directory.Exists(keep))
+            {
+                foreach (string file in Directory.EnumerateFiles(keep, "*", SearchOption.AllDirectories))
+                    File.SetAttributes(file, FileAttributes.Normal);
+                Directory.Delete(keep, recursive: true);
+            }
+            else if (File.Exists(keep))
+            {
+                File.SetAttributes(keep, FileAttributes.Normal);
+                File.Delete(keep);
+            }
         }
     }
 
-    // The folder's own tree (links are not followed), for putting it back when the bin did not take it.
-    private static void CopyFolder(string source, string destination)
+    // The folder's own tree (links are not followed), for putting it back when the bin did not take it. A file copy
+    // keeps the file's attributes; a folder made anew does not, so each folder's are noted for the putting back.
+    private static void CopyFolder(string source, string destination, List<(string Relative, FileAttributes Value)> attributes)
     {
         var options = new EnumerationOptions
         {
@@ -72,7 +97,11 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
         };
         Directory.CreateDirectory(destination);
         foreach (string folder in Directory.EnumerateDirectories(source, "*", options))
-            Directory.CreateDirectory(Path.Combine(destination, Path.GetRelativePath(source, folder)));
+        {
+            string relative = Path.GetRelativePath(source, folder);
+            Directory.CreateDirectory(Path.Combine(destination, relative));
+            attributes.Add((relative, File.GetAttributes(folder)));
+        }
         foreach (string file in Directory.EnumerateFiles(source, "*", options))
             File.Copy(file, Path.Combine(destination, Path.GetRelativePath(source, file)));
     }
