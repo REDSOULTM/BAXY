@@ -64,6 +64,29 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
+    // An Enter that closes its dialog, or a text whose window closes as it ends: once sent there is no program left to
+    // name, and the receipt names the one read before the first key.
+    [TestCase("input.key.press", """{"key":"enter"}""")]
+    [TestCase("input.text.type", """{"text":"hola"}""")]
+    public async Task TheWindowTheKeysWereSentToIsNamedAsItWasBeforeThem(string operation, string arguments)
+    {
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(0x2222, 4242, "Guardar como"),
+            FrontProcess = "Notepad",
+            ProcessOnceSent = string.Empty,
+        };
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(keyboard.ProcessName(0x2222), Is.Empty, "the window is gone once the keys went");
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("title").GetString(), Is.EqualTo("Guardar como"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("process").GetString(), Is.EqualTo("Notepad"));
+        });
+    }
+
     [Test]
     public async Task AKeyOutsideTheCatalogIsRefusedBeforeAnythingIsSent()
     {
@@ -905,7 +928,12 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
     // The program a view names the window in front by.
     internal string FrontProcess { get; init; } = "Editor";
 
-    public string ProcessName(nint window) => FrontProcess;
+    // The program named once a key or a text was sent (null: FrontProcess still); a key that closes its window leaves
+    // none to name.
+    internal string? ProcessOnceSent { get; init; }
+
+    public string ProcessName(nint window) =>
+        Chords.Count + Texts.Count > 0 && ProcessOnceSent is string after ? after : FrontProcess;
 
     internal int? AcceptOnly { get; init; }
 
