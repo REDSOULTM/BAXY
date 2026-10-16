@@ -139,8 +139,9 @@ Después hay que:
   DPI;
 - confirmar que no hubo red externa.
 
-El servidor `pnpm dev` sirve únicamente para iteración visual aislada. No
-reproduce el bridge nativo ni demuestra la conducta integrada.
+`pnpm dev` levanta el servidor de Vite sin `field-native-bridge.js` y sin proxy: no hay
+rutas ni `/events`, y sin `window.pywebview` la barra de título lanza al montarse y React
+desmonta la vista. No sirve para ver la interfaz; sólo `Baxy.App` la carga con el bridge.
 
 ## Extensión preferida
 

@@ -326,31 +326,6 @@ html[data-maximized="true"] .window-root {
 }
 /* traveling red light — handled by .app-frame pseudo-elements */
 
-/* ------- top + bottom bars ------- */
-
-/* top + bottom bars */
-.bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 14px;
-  border-bottom: 1px solid var(--hair);
-  font-size: 11px;
-  color: var(--t-muted);
-  gap: 12px;
-}
-.bar.bottom {
-  border-bottom: none;
-  border-top: 1px solid var(--hair);
-  font-size: 10px;
-}
-.bar .left, .bar .right { display: flex; align-items: center; gap: 10px; }
-.bar .title { color: var(--t-bone); font-size: 11px; font-weight: 500; }
-.bar .title .dim { color: var(--t-muted); font-weight: 400; }
-.bar .title .accent { color: var(--carmine); font-weight: 500; }
-.bar .clock { font-family: var(--mono); font-size: 11px; color: var(--t-second); font-feature-settings: "tnum"; }
-.bar.bottom .clock { font-size: 10px; color: var(--t-muted); }
-
 /* ------- icon buttons ------- */
 .ibtn {
   width: 26px; height: 26px;
@@ -392,10 +367,6 @@ html[data-maximized="true"] .window-root {
   background: var(--carmine);
   color: var(--bg-base);
 }
-@keyframes recPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
 
 /* tooltip on icon button */
 .ibtn[data-tip]:hover::after {
@@ -413,11 +384,6 @@ html[data-maximized="true"] .window-root {
   white-space: nowrap;
   z-index: 50;
   pointer-events: none;
-}
-
-@keyframes pulseDot {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
 }
 
 /* ------- columns ------- */
@@ -450,7 +416,6 @@ html[data-maximized="true"] .window-root {
 .left-header .name {
   font-size: 13px; font-weight: 500; color: var(--t-bone); letter-spacing: 0.005em;
 }
-.left-header .dots { color: var(--carmine); font-size: 12px; letter-spacing: 0.15em; }
 .left-header .sub {
   font-family: var(--mono); font-size: 10px; color: var(--t-muted);
   letter-spacing: 0.04em;
@@ -475,62 +440,6 @@ html[data-maximized="true"] .window-root {
   font-feature-settings: "tnum";
 }
 .hair { height: 1px; background: var(--hair); margin: 4px 0; }
-
-/* ------- metric rows w/ progress bars ------- */
-.metric {
-  display: grid;
-  grid-template-columns: 30px 1fr;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 0;
-}
-.metric .body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-.metric .label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--t-bone);
-  text-transform: lowercase;
-}
-.metric .value {
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--t-bone);
-  font-feature-settings: "tnum";
-  line-height: 1;
-}
-.metric .value .unit {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--t-muted);
-  margin-left: 2px;
-}
-.metric .spec {
-  font-size: 10px;
-  color: var(--t-muted);
-  letter-spacing: 0.02em;
-  line-height: 1;
-}
-.metric .bar {
-  position: relative;
-  height: 1px;
-  background: var(--hair);
-}
-.metric .bar::before {
-  content: "";
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  background: var(--p-blue);
-  width: var(--fill, 0%);
-  opacity: 0.85;
-}
-.metric.hot .bar::before { background: var(--carmine); }
-.metric.hot .value { color: var(--carmine); }
-
 
 /* ------- key/val list ------- */
 .kv { display: flex; flex-direction: column; gap: 5px; }
@@ -664,7 +573,6 @@ html[data-maximized="true"] .window-root {
   font-family: var(--mono); font-size: 13px;
   color: var(--t-bone); font-feature-settings: "tnum"; line-height: 1;
 }
-.m-val.hot { color: var(--carmine); }
 .m-unit { font-size: 10px; color: var(--t-muted); margin-left: 3px; }
 .m-bar {
   position: relative; width: 100%; height: 3px;
@@ -676,7 +584,6 @@ html[data-maximized="true"] .window-root {
   border-radius: 2px;
   transition: width 600ms ease, background-color 700ms ease;
 }
-.m-bar.hot span { background: var(--carmine); }
 
 /* accessibility profiles — icon + label rows */
 .profile-list { display: flex; flex-direction: column; gap: 4px; }
@@ -760,7 +667,7 @@ html[data-maximized="true"] .window-root {
 .ibtn.xs.labeled:hover { background: color-mix(in srgb, var(--carmine) 14%, transparent); border-color: var(--carmine); color: var(--carmine); }
 .ibtn.xs.labeled.active { background: var(--carmine); color: var(--bg-base); }
 
-/* power / standby toggle (left rail) */
+/* voice toggle (left rail): the row and its dot follow the voice, on or off */
 .power-row {
   display: flex; align-items: center; gap: 9px;
   width: 100%;
