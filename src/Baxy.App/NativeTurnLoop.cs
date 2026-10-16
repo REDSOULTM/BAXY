@@ -85,11 +85,13 @@ internal sealed class NativeTurnLoop
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
     private bool _beat;
-    // The person's answer is the person's: it counts only as the first move of a later turn they opened (their words or
-    // the Sí/No buttons), never in the turn that raised the question nor in a heartbeat (audit 2026-10-15, App 11).
-    private long _turn;
-    private long _askedInTurn;
-    private int _moves;
+    // The person's answer is the person's: it answers only a call asked before their words or their press arrived
+    // (_askedAt before _personAt, both Stopwatch timestamps), never one asked in the turn that answers nor in a
+    // heartbeat (audit 2026-10-15, App 11), nor a heartbeat's proposal made while their words waited for the turn
+    // (audit, round A: they were said before it existed). In a heartbeat every call that waits was asked in it (none
+    // waits when it starts), after the person's last moment.
+    private long _personAt;
+    private long _askedAt;
 
     internal NativeTurnLoop(Host host)
     {
@@ -120,17 +122,18 @@ internal sealed class NativeTurnLoop
     // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
     // notice when it has published nothing SilenceNotice.After after they arrived (the turn may have waited for a
     // heartbeat to end before it started), unless a call waits for the person's Sí or No and this turn asked for it
-    // (_askedInTurn moved: its question comes next), even when it is the same invocation the person said «sí» to and the
-    // kernel asks again; a call left waiting by an earlier turn, the one the person is answering, does not hold it back.
-    // A heartbeat says none: nobody asked and nobody waits for it.
+    // (asked after the turn started: its question comes next), even when it is the same invocation the person said «sí»
+    // to and the kernel asks again; a call left waiting before the turn started, by an earlier turn or by a heartbeat it
+    // waited for, does not hold it back. A heartbeat says none: nobody asked and nobody waits for it.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
         long arrivedAt,
         Func<Task<MindStep?>> decide,
         CancellationToken cancellationToken)
     {
-        long asked = _askedInTurn;
-        _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedInTurn == asked, _host.Notice);
+        _personAt = arrivedAt;
+        long started = Stopwatch.GetTimestamp();
+        _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedAt < started, _host.Notice);
         try
         {
             await DriveAsync(mind, await decide(), cancellationToken);
@@ -141,11 +144,11 @@ internal sealed class NativeTurnLoop
         }
     }
 
-    // The call that waits for the person's «sí», as the mind reads it with their next words: its operation, and its
-    // arguments unless it is a memory call (their values stay sealed).
+    // The call that waits for the person's «sí», as the mind reads it with their next words when it was asked before
+    // they arrived: its operation, and its arguments unless it is a memory call (their values stay sealed).
     private JsonObject? WaitingCall()
     {
-        if (WaitingPrepared() is not { } prepared)
+        if (WaitingPrepared() is not { } prepared || _askedAt >= _personAt)
         {
             return null;
         }
@@ -225,8 +228,6 @@ internal sealed class NativeTurnLoop
 
     private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken)
     {
-        _turn++;
-        _moves = 0;
         for (int calls = 1; ; calls++)
         {
             switch (step)
@@ -249,7 +250,6 @@ internal sealed class NativeTurnLoop
                     return;
             }
 
-            _moves++;
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
             // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same
@@ -346,7 +346,7 @@ internal sealed class NativeTurnLoop
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
             _proposalExpiresUtc = DateTimeOffset.UtcNow + ProposalLifetime;
-            _askedInTurn = _turn;
+            _askedAt = Stopwatch.GetTimestamp();
             return Record(operation, arguments, started, WithArguments(new JsonObject
             {
                 ["status"] = "needs_confirmation",
@@ -455,9 +455,10 @@ internal sealed class NativeTurnLoop
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
         bool approve = arguments["approve"] is JsonValue value && value.TryGetValue(out bool approved) && approved;
-        if (HasPendingConfirmation && (_beat || _moves != 1 || _askedInTurn >= _turn))
+        if (HasPendingConfirmation && _askedAt >= _personAt)
         {
-            // Only the person answers: the waiting call stays as it is until they do.
+            // Only the person answers, and only a call asked before their words or their press: the waiting call stays
+            // as it is until they do.
             return Record(MindStep.ConfirmationAnswer, arguments, started, new JsonObject
             {
                 ["status"] = "rejected",
@@ -571,7 +572,7 @@ internal sealed class NativeTurnLoop
             // The kernel asks for the person's «sí» for this exact invocation: the model asks; the answer comes back
             // as confirm_pending, and only then is this same invocation sent again with the token.
             _pending = challenge;
-            _askedInTurn = _turn;
+            _askedAt = Stopwatch.GetTimestamp();
             JsonObject asked = WithArguments(new JsonObject
             {
                 ["status"] = "needs_confirmation",
