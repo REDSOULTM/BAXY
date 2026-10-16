@@ -2578,6 +2578,10 @@ internal sealed class WindowsVisibleControlAdapter
         // surface that changes, as for any press at a point.
         if (method is "invoke" or "select" or "toggle" or "expand" or "render")
             return new PointPressed(PointPressOutcome.Pressed, method, name, kind);
+        // Ronda final: a field that already had the focus was not pressed (via «prefocused»): nothing is claimed here.
+        if (method == "target" && focused && root.TryGetProperty("via", out JsonElement via)
+            && via.ValueKind == JsonValueKind.String && via.GetString() == "prefocused")
+            return PointPressed.AlreadyPressed;
         // A field is the text's destination only with the keyboard's focus; any other answer is not known to be safe.
         return method == "target" && focused
             ? new PointPressed(PointPressOutcome.Pressed, method, name, kind, Focused: true)
@@ -2880,6 +2884,10 @@ internal sealed class WindowsVisibleControlAdapter
                 : effectBoundary.Failure(operation, error, effect);
         }
 
+        // Ronda final: a field that already had the keyboard's focus was not pressed: the state reached (changed:false).
+        if (!effect && root.TryGetProperty("alreadyReached", out JsonElement reached)
+            && reached.ValueKind == JsonValueKind.True && PostreadHolds(root))
+            return ExternalJson.Switched(operation, root.Clone(), effectObserved: false);
         if (!effect || !PostreadHolds(root))
             return effectBoundary.Failure(operation, "visible_click_postread_invalid", effect);
         return ExternalJson.Success(operation, root.Clone(), true);

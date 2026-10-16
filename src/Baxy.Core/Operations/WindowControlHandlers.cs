@@ -249,7 +249,8 @@ internal sealed class WindowBoundsHandler(string operation, IWindowControlProvid
             move ? null : invocation.Arguments.GetProperty("height").GetInt32(),
             cancellationToken).ConfigureAwait(false);
         return result.Succeeded && result.Verified && result.Window is not null
-            ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window))
+            ? OperationOutcome.Success(WindowControlResultJson.Unchanged(
+                WindowControlResultJson.Serialize(result.Window), result.AlreadyReached))
             : OperationOutcome.Failure(
                 result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
     }
@@ -268,8 +269,8 @@ internal sealed class WindowSnapHandler(IWindowControlProvider provider) : IOper
         WindowActionResult result = await provider.SnapAsync(
             windowId, side, cancellationToken).ConfigureAwait(false);
         return result.Succeeded && result.Verified && result.Window is not null
-            ? OperationOutcome.Success(WindowControlResultJson.Serialize(
-                result.Window, side, result.LargerThanRequested))
+            ? OperationOutcome.Success(WindowControlResultJson.Unchanged(WindowControlResultJson.Serialize(
+                result.Window, side, result.LargerThanRequested), result.AlreadyReached))
             : OperationOutcome.Failure(
                 result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
     }
@@ -355,6 +356,17 @@ internal static class WindowControlResultJson
             writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
+    }
+
+    // Ronda final: the window already was as asked and nothing was sent: the model reads changed:false.
+    public static JsonElement Unchanged(JsonElement result, bool alreadyReached)
+    {
+        if (!alreadyReached)
+            return result;
+        var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(result.GetRawText())!;
+        unchanged["changed"] = false;
+        using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
         return document.RootElement.Clone();
     }
 

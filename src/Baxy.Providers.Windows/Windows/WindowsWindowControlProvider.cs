@@ -590,6 +590,13 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             width ?? before.Bounds.Width,
             height ?? before.Bounds.Height);
         cancellationToken.ThrowIfCancellationRequested();
+        // Ronda final: a window already at those bounds, read before, is the state reached (changed:false); nothing sent.
+        if (before.Bounds == expected)
+        {
+            return ValueTask.FromResult(new WindowActionResult(
+                true, true, ToCandidate(before, Issue(before.Identity)), null, AlreadyReached: true));
+        }
+
         if (!_platform.SetBounds(before.Identity, expected))
         {
             return ValueTask.FromResult(new WindowActionResult(
@@ -664,6 +671,19 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         {
             return new WindowActionResult(
                 false, false, null, WindowControlErrorCodes.InventoryFailed);
+        }
+
+        // Ronda final: a normal window already on that half, read before, is the state reached (changed:false).
+        int alreadyHalf = workArea.Width / 2;
+        var alreadyExpected = new WindowBounds(
+            left ? workArea.X : workArea.X + alreadyHalf,
+            workArea.Y,
+            left ? alreadyHalf : workArea.Width - alreadyHalf,
+            workArea.Height);
+        if (string.Equals(before.State, "normal", StringComparison.Ordinal) && before.Bounds == alreadyExpected)
+        {
+            return new WindowActionResult(
+                true, true, ToCandidate(before, Issue(before.Identity)), null, AlreadyReached: true);
         }
 
         // A maximized or minimized window keeps no bounds of its own: it is

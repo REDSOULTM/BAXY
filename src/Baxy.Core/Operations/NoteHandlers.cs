@@ -90,6 +90,43 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         return id;
     }
 
+    // Ronda final: the note as it was before a trash or a restore, when the selector names one (by id, or by a title only
+    // one note has); null when it cannot be told, and then nothing is said about whether it changed.
+    protected NoteRecord? Before(NoteSelectorArguments arguments)
+    {
+        try
+        {
+            if (arguments.NoteId is { } noteId && Guid.TryParseExact(noteId, "D", out Guid id))
+                return Store.Read(id, includeTrashed: true);
+            if (arguments.Title is { } title)
+            {
+                NoteRecord[] named = Store.List(NoteListScope.All)
+                    .Where(note => string.Equals(note.Title, title, StringComparison.OrdinalIgnoreCase)).ToArray();
+                return named.Length == 1 ? named[0] : null;
+            }
+        }
+        catch (NoteNotFoundException)
+        {
+        }
+
+        return null;
+    }
+
+    // Ronda final: the same revision before and after is the state reached (changed:false), never a change made.
+    protected static OperationOutcome Verified(NoteRecord verified, long? revisionBefore)
+    {
+        JsonElement result = Serialize(ToResult(verified));
+        if (revisionBefore is { } revision && verified.Revision == revision)
+        {
+            var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(result.GetRawText())!;
+            unchanged["changed"] = false;
+            using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
+            result = document.RootElement.Clone();
+        }
+
+        return OperationOutcome.Success(result);
+    }
+
     protected static NoteRecord SelectNote(
         NoteSelectorArguments arguments,
         Func<Guid, NoteRecord> selectById,
@@ -296,6 +333,7 @@ internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store
         NoteSelectorArguments arguments = Parse(
             invocation.Arguments,
             CoreJsonContext.Default.NoteSelectorArguments);
+        NoteRecord? before = Before(arguments);
         NoteRecord trashed = SelectNote(
             arguments,
             Store.Trash,
@@ -320,7 +358,7 @@ internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store
                 effectMayHaveOccurred: true);
         }
 
-        return OperationOutcome.Success(Serialize(ToResult(verified)));
+        return Verified(verified, before?.Id == verified.Id ? before.Revision : null);
     }
 }
 
@@ -365,6 +403,7 @@ internal sealed class RestoreNoteHandler(INoteStore store) : NoteHandlerBase(sto
         NoteSelectorArguments arguments = Parse(
             invocation.Arguments,
             CoreJsonContext.Default.NoteSelectorArguments);
+        NoteRecord? before = Before(arguments);
         NoteRecord restored = SelectNote(
             arguments,
             Store.Restore,
@@ -389,7 +428,7 @@ internal sealed class RestoreNoteHandler(INoteStore store) : NoteHandlerBase(sto
                 effectMayHaveOccurred: true);
         }
 
-        return OperationOutcome.Success(Serialize(ToResult(verified)));
+        return Verified(verified, before?.Id == verified.Id ? before.Revision : null);
     }
 }
 
@@ -431,7 +470,7 @@ internal sealed class UpdateNoteHandler(INoteStore store) : NoteHandlerBase(stor
                 "verification_failed",
                 effectMayHaveOccurred: true);
         }
-        return OperationOutcome.Success(Serialize(ToResult(verified)));
+        return Verified(verified, arguments.ExpectedRevision);
     }
 }
 

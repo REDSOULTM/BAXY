@@ -3194,9 +3194,12 @@ function Test-FieldTook($el,$before){
 # el puntero responde sin efecto, con el punto que el adaptador pulsara; el resto queda pendiente de su postread.
 function Pressed-Result($done,$button,[string]$name,[string]$identity,[string]$kind,$toggleBefore,$lineage){
   if($done.method -eq 'target'){
-    $result=Click-Result $true $true '' $name $identity $false $false $false $kind
+    # Ronda final: un campo que ya tenia el foco no se pulsa; el estado ya estaba, no es un efecto de este clic.
+    $prefocused=([string]$done.via) -eq 'prefocused'
+    $result=Click-Result $true (-not $prefocused) '' $name $identity $false $false $false $kind
     $result.method='target'; $result.targeted=$true; $result.focused=[bool]$done.focused
     if(([string]$done.via).Length -gt 0){ $result.via=[string]$done.via }
+    if($prefocused){ $result.alreadyReached=$true }
     return $result
   }
   # Las marcas de la linea leidas por Do-Click antes de pulsar valen solo para esta pulsacion.

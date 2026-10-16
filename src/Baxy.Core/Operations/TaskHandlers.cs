@@ -228,7 +228,7 @@ internal sealed class UpdateTaskHandler(ILocalTaskStore store) : TaskHandlerBase
             arguments.ExpectedVersion,
             arguments.Title,
             arguments.Details,
-            arguments.Due));
+            arguments.Due), arguments.ExpectedVersion);
     }
 }
 

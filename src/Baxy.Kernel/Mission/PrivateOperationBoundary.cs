@@ -82,13 +82,16 @@ internal static class PrivateOperationBoundary
         // contenido, y perderlo convertiría «pudo haber ocurrido» en «no
         // ocurrió», que es justo lo que empuja a repetir una operación privada
         // ya aplicada a medias.
+        // Ronda final: a handler that succeeded and whose result failed this check (a file changed or locked between the
+        // two reads) did apply its change: it may stand.
+        bool mayHaveOccurred = outcome.EffectMayHaveOccurred || outcome.Succeeded;
         return outcome.Retryable
             ? OperationOutcome.RetryableFailure(
                 errorCode,
-                effectMayHaveOccurred: outcome.EffectMayHaveOccurred)
+                effectMayHaveOccurred: mayHaveOccurred)
             : OperationOutcome.Failure(
                 errorCode,
-                effectMayHaveOccurred: outcome.EffectMayHaveOccurred);
+                effectMayHaveOccurred: mayHaveOccurred);
     }
 
     internal static OperationResponse NormalizeReplay(
