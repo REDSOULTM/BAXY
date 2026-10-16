@@ -116,11 +116,18 @@ public sealed class ShellCommandAdapterTests
     }
 
     // Round A: a console whose output passed the runner's bound ran and was stopped; it was told as «not started».
-    [TestCase("git pull", true)]
-    [TestCase("Get-ChildItem", false)]
-    public async Task AConsoleThatOverflowedRanAndSaysWhatItMayHaveChanged(string command, bool mayChange)
+    // Ronda B: a console stopped at its deadline was told as an observed effect, even for a command that only reads.
+    [TestCase("git pull", true, false)]
+    [TestCase("Get-ChildItem", false, false)]
+    [TestCase("git pull", true, true)]
+    [TestCase("Get-ChildItem", false, true)]
+    public async Task AConsoleThatWasStoppedRanAndSaysWhatItMayHaveChanged(string command, bool mayChange, bool timedOut)
     {
-        var adapter = new ShellCommandAdapter(new OverflowingRunner(), Path.GetTempPath());
+        var adapter = new ShellCommandAdapter(
+            new StoppingRunner(timedOut
+                ? new TimeoutException("External process timed out.")
+                : new ExternalProcessOutputTooLargeException("External process output exceeded its bound.")),
+            Path.GetTempPath());
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "shell.command.run",
@@ -130,7 +137,8 @@ public sealed class ShellCommandAdapterTests
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("shell_command_output_too_large"));
+            Assert.That(receipt.ErrorCode,
+                Is.EqualTo(timedOut ? "shell_command_timeout" : "shell_command_output_too_large"));
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.EqualTo(mayChange));
         });
@@ -251,14 +259,14 @@ public sealed class ShellCommandAdapterTests
         }
     }
 
-    private sealed class OverflowingRunner : IExternalProcessRunner
+    private sealed class StoppingRunner(Exception stop) : IExternalProcessRunner
     {
         public ValueTask<ExternalProcessResult> RunAsync(
             string executable,
             IReadOnlyList<string> arguments,
             TimeSpan timeout,
             CancellationToken cancellationToken) =>
-            throw new ExternalProcessOutputTooLargeException("External process output exceeded its bound.");
+            throw stop;
     }
 
     [Test]
