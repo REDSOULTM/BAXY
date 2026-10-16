@@ -116,7 +116,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         string root = RootFor(folder);
         lock (_gate)
         {
-            string path = ResolveIn(root, relativePath, allowMissingLeaf: true);
+            string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
             if (File.Exists(path)) throw Error("destination_exists");
             bool reached = Directory.Exists(path);
             if (!reached) Directory.CreateDirectory(path);
@@ -143,7 +143,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
         lock (_gate)
         {
-            string path = ResolveIn(root, relativePath, allowMissingLeaf: true);
+            string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
             if (Directory.Exists(path)) throw Error("destination_is_directory");
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
@@ -392,7 +392,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private string Resolve(string relative, bool allowMissingLeaf) =>
         ResolveIn(_root, relative, allowMissingLeaf);
 
-    private string ResolveIn(string root, string relative, bool allowMissingLeaf)
+    // takesFolder: the operation has a folder argument, so a path outside the working folder can name the person's.
+    private string ResolveIn(string root, string relative, bool allowMissingLeaf, bool takesFolder = false)
     {
         relative ??= string.Empty;
         // A full path inside the folder is the same place as its relative path: the model copies the path the person
@@ -402,8 +403,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         string full = Path.GetFullPath(Path.Combine(root, relative.Replace('/', Path.DirectorySeparatorChar)));
         if (!full.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
             && !string.Equals(full, root, StringComparison.OrdinalIgnoreCase))
-            throw Error(string.Equals(root, _root, StringComparison.OrdinalIgnoreCase)
-                ? "path_outside_sandbox" : "path_outside_folder");
+            throw string.Equals(root, _root, StringComparison.OrdinalIgnoreCase)
+                ? new FilesystemProviderException("path_outside_sandbox", takesFolder ? OutsideTheWorkingFolder : null)
+                : Error("path_outside_folder");
         if (string.Equals(root, _root, StringComparison.OrdinalIgnoreCase) && IsReserved(full)) throw Error("path_reserved");
         EnsureSafePathIn(root, full, allowMissingLeaf);
         return full;
@@ -469,6 +471,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         && value.All(static character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
     private static string Hex(byte[] value) => Convert.ToHexStringLower(value);
     private static FilesystemProviderException Error(string code) => new(code);
+
+    private const string OutsideTheWorkingFolder =
+        "without folder, relativePath is read inside your working folder; a folder of the person's needs folder "
+        + "(desktop, documents, downloads, or home for C:\\Users\\<name>\\...) with the rest of the path in relativePath";
 
     private sealed record Handle(string Path, string Root, DateTime LastWriteUtc, long Size, DateTimeOffset IssuedAt);
 }

@@ -74,7 +74,10 @@ public interface IFilesystemProvider
     FilesystemMutationResult RestoreBackup(string backupId, string destinationRelativePath);
 }
 
-public class FilesystemProviderException(string code) : Exception(code)
+public class FilesystemProviderException(string code, string? next = null) : Exception(code)
 {
     public string Code { get; } = code;
+
+    /// <summary>What the call can do instead, when the refusal has a next step the model can take.</summary>
+    public string? Next { get; } = next;
 }
