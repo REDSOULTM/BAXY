@@ -1672,14 +1672,6 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteNumber("version", 2);
                 writer.WriteBoolean("ok", true);
                 writer.WriteString("error", string.Empty);
-                // Fronts an application opened just before took by itself and the guard handed back (v3 point 0), and
-                // those Windows refused to hand back (the application kept the front).
-                long activationsReturned = Applications.ForegroundHandBack.TakeGuardReturns();
-                if (activationsReturned > 0)
-                    writer.WriteNumber("windowsActivationsReturned", activationsReturned);
-                long activationsKept = Applications.ForegroundHandBack.TakeGuardRefusals();
-                if (activationsKept > 0)
-                    writer.WriteNumber("windowsActivationsNotReturned", activationsKept);
                 writer.WriteStartObject("window");
                 writer.WriteString("title", title);
                 writer.WriteString("process", processName);
