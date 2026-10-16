@@ -85,13 +85,19 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             // box was located on a capture taken before the model's answer and the wait: the window is read again
             // inside the burst, and anything but the same drawing at the same place refuses (no relocation: asking
             // the model again would hold the front for seconds).
+            // Ronda B (falta 4): the post-read's baseline is the window as it is right before the press, after the
+            // model's answer; compared with the capture the model read, any redraw during that wait passed for the
+            // press's effect. The window in front is no longer the one read: nothing is pressed.
+            VisibleControlSurface.CapturedWindow? current =
+                await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+            if (current is not { } baseline || baseline.Hwnd != before.Hwnd)
+                return ExternalJson.FailureBeforeEffect(operation, "input_window_not_in_front");
             LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
                 press, operation, before.Hwnd, screenX, screenY, label, before, null, cancellationToken)
                 .ConfigureAwait(false);
             if (pressed.Failure is { } refused)
                 return refused;
-            if (pressed.Before is { } fresh)
-                before = fresh;
+            before = pressed.Before ?? baseline;
             string method = pressed.Method;
             IInputBurst? burst = pressed.Burst;
             bool changed = false;
