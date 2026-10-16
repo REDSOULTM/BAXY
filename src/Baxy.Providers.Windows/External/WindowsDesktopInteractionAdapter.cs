@@ -477,6 +477,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         DesktopForeground before = _keyboard.Foreground();
         if (before.Window == 0 || _keyboard.InputSize != (IntPtr.Size == 8 ? 40 : 28))
             return ExternalJson.FailureBeforeEffect(operation, "key_press_sendinput_failed");
+        string sentToProcess = _keyboard.ProcessName(before.Window);
         // v3 point 0: something may take the front back between fronting the window and the press (the person, or an
         // application opened behind that Windows activated late): the key is checked against the window right before
         // it goes, never sent to whatever holds the front now.
@@ -663,7 +664,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad).
             writer.WriteStartObject("sentTo");
             writer.WriteString("title", before.Title);
-            writer.WriteString("process", _keyboard.ProcessName(before.Window));
+            writer.WriteString("process", sentToProcess);
             writer.WriteEndObject();
             if (typing && window == 0)
                 writer.WriteBoolean("readBack", readBack);

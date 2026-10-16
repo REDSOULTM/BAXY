@@ -1485,13 +1485,6 @@ internal static partial class VisibleControlSurface
         return surface;
     }
 
-    // The top-level window a window is part of (itself when it is one, or when Windows names no parent).
-    internal static nint Root(nint hwnd)
-    {
-        nint root = hwnd == 0 ? 0 : GetAncestor(hwnd, 2);
-        return root == 0 ? hwnd : root;
-    }
-
     internal static string WindowTitle(nint hwnd)
     {
         int length = GetWindowTextLengthW(hwnd);
