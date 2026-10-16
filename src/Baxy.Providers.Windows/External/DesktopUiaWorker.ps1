@@ -1478,7 +1478,7 @@ $script:ContainerKinds=@('List','Tree','DataGrid','Table')
 # cuadricula con SelectionItem, sin Toggle) y aun no esta elegido recibe una lista ordenada de vias, cada una solo si la
 # anterior no lo dejo elegido (Invoke-NamedControl lo relee): Invoke, despues Select, despues la pulsacion enviada como
 # mensaje en una ventana Win32 clasica. Un Toggle o un CheckBox nunca recibe una segunda via (dos pulsaciones lo dejarian
-# como estaba). Un elemento de arbol cerrado que la mision pide abrir se abre por su manera «open» (Invoke-MannerControl:
+# como estaba). Un elemento de arbol cerrado que se pide abrir se abre por su manera «open» (Invoke-MannerControl:
 # elegirlo y abrirlo en el mismo acto), nunca con el clic de elegir.
 # r20b palanca 4: un boton de barra visto por el proxy MSAA (hecho «toolbarProxy») recibe primero la pulsacion enviada
 # como mensaje a la barra en su punto, sin cursor ni frente (Invoke-NamedControl comprueba antes que la barra y su
@@ -1512,7 +1512,7 @@ function Select-ClickMethods($facts){
   $methods+='pointer'
   return $methods
 }
-# La ventana de la mision es la del frente (o la raiz de la del frente): solo entonces se puede dar el foco del
+# La ventana del pedido es la del frente (o la raiz de la del frente): solo entonces se puede dar el foco del
 # teclado a uno de sus campos sin traerla al frente.
 function Test-InFront([IntPtr]$top){
   if($top -eq [IntPtr]::Zero){ return $false }
@@ -1957,7 +1957,7 @@ function Get-HolderWindow($el){
 # Ronda 20b, palanca 6, revision 2 (hallazgo 3): las ventanas propias de los popups abiertos junto al control: un menu
 # (ControlType Menu) o el anfitrion de un popup (su clase de marco dice Popup) de nivel superior del mismo proceso y a
 # menos de 64 px del control (como Get-OpenMenus: nunca un menu que la persona abre en otra parte del proceso), o un menu
-# dentro de la ventana. Solo la ventana que contiene a cada uno y nunca la ventana de la mision misma ni su raiz: el
+# dentro de la ventana. Solo la ventana que contiene a cada uno y nunca la ventana del pedido misma ni su raiz: el
 # Escape nunca va al cuerpo de la ventana de la persona.
 function Get-BornPopups($root,$el,[IntPtr]$top){
   $found=New-Object System.Collections.Generic.List[long]

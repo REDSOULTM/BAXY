@@ -416,7 +416,7 @@ internal static class LocatedPointPress
 /// <summary>
 /// The last resort of a click: the cursor on a point of a window, under the pause rule (GOAL_COMPUTER_USE_V3 point 0,
 /// fix 3). <see cref="AcquireAsync"/> waits for the person's pause and brings the window up in a burst of the
-/// foreground lease; <see cref="Prepare"/> says whether the point may be pressed now (the window bound to the mission
+/// foreground lease; <see cref="Prepare"/> says whether the point may be pressed now (the window the click is bound to
 /// is the one in front and holds the point); only then is <see cref="Click"/> called. The burst gives the cursor and
 /// the window in front back.
 /// </summary>
@@ -697,7 +697,7 @@ internal sealed class WindowsVisibleControlAdapter
     internal IForegroundLease? BurstLease { get; init; }
 
     /// <summary>
-    /// The text of a search burst (<see cref="SearchBurst"/>), typed into the mission's window as
+    /// The text of a search burst (<see cref="SearchBurst"/>), typed into the named window as
     /// <c>input.text.type</c> types it (by its field's value or a message when it takes one, else by the keyboard, which
     /// stops at the person's first input); null (the test seams that name none) types nothing.
     /// </summary>
@@ -860,7 +860,7 @@ internal sealed class WindowsVisibleControlAdapter
                 controlId = identity.GetString()!.Trim();
             }
 
-            // The mission's window: the hwnd of the view the click was decided on (v3 point 0 review).
+            // The window the click names: the hwnd of the view it was decided on (v3 point 0 review).
             if (arguments.TryGetProperty("window", out JsonElement named) && named.ValueKind != JsonValueKind.Null)
             {
                 if (named.ValueKind != JsonValueKind.Number || !named.TryGetInt64(out long handle) || handle <= 0)
@@ -895,11 +895,11 @@ internal sealed class WindowsVisibleControlAdapter
 
         // Ronda 20 (P7): the opener the previous click noted is taken before any branch, so every click right after it
         // (by identity, by its manner, by a label of the last view) may reopen what it showed, and any other click takes it
-        // away. A click by a label alone right after an opener presses the one control of the mission's last view that the
-        // label names by its identity, so an item of the opening that closed is answered stale and reopened, never looked
-        // for by a cascade on a closed menu. It names it by its exact name (NamedInView), never a sentence that merely
-        // mentions it, and a press of that identity that failed before any effect leaves the label to its cascade
-        // (revision 1 of the branch).
+        // away. A click by a label alone right after an opener presses the one control of the named window's last view
+        // that the label names by its identity, so an item of the opening that closed is answered stale and reopened,
+        // never looked for by a cascade on a closed menu. It names it by its exact name (NamedInView), never a sentence
+        // that merely mentions it, and a press of that identity that failed before any effect leaves the label to its
+        // cascade (revision 1 of the branch).
         (nint Window, string Id, string Label, HashSet<string> NamesBefore, string? Manner)? opener = TakeOpener();
         bool namedByLabel = false;
         if (controlId is null && index is null && search is null && manner is null && opener is not null)
@@ -938,8 +938,8 @@ internal sealed class WindowsVisibleControlAdapter
 
         // The window of the view the identity came from. The click by identity no longer brings it forward, so when
         // the identity went stale the cascade by label stays on that window: never on whatever the person has in
-        // front meanwhile (their editor, a chat), where its label would be looked for, read and pressed. A click a
-        // mission named its window for (v3 point 0 review, «window») stays on that one. Neither is brought to the
+        // front meanwhile (their editor, a chat), where its label would be looked for, read and pressed. A click that
+        // names its window (v3 point 0 review, «window») stays on that one. Neither is brought to the
         // front here: the accessible tree reaches it behind the person's window, and only the pointer, last, takes
         // the front, inside a burst of the foreground lease after the person's pause (fable/cu-v3-pausa).
         nint viewWindow = 0;
@@ -1060,7 +1060,7 @@ internal sealed class WindowsVisibleControlAdapter
             if (look)
             {
                 lookingSince ??= DateTime.UtcNow;
-                // Bound to the opened application's window, to the mission's window or to the window of the view
+                // Bound to the opened application's window, to the window the click names or to the window of the view
                 // whose identity went stale: nothing is read or pressed on whatever else holds the front (the person
                 // took it). The accessible tree reaches the bound window behind; OCR and vision read its own image
                 // and press through the tree at the point, or with the pointer only inside a burst of the lease.
@@ -1094,7 +1094,7 @@ internal sealed class WindowsVisibleControlAdapter
                 }
 
                 // A label no stage found yet may be an icon's: its tooltip is read once per click, on the window the
-                // click is bound to only (never the person's window outside a mission), in pauses of the person, and
+                // click is bound to only (never whatever the person has in front), in pauses of the person, and
                 // only on the last look: a page still drawing (UI1731: the navigation ten seconds after the window)
                 // shows its label to a later look first, and its controls are not hovered half drawn. On a look made
                 // when the label's wait is already over, before vision.
@@ -1351,8 +1351,8 @@ internal sealed class WindowsVisibleControlAdapter
             _openedLooked = new OpenedLook(opened.ProcessId, opened.NotedUtc, (nint)hwnd, [.. names]);
     }
 
-    /// <summary>Ronda 21: the goal's words the mission's look carries («wanted», declared in the catalog), at most 24
-    /// non-empty texts of at most 64 characters; anything else is no word.</summary>
+    /// <summary>Ronda 21: the words of what is looked for that a look carries («wanted», declared in the catalog), at
+    /// most 24 non-empty texts of at most 64 characters; anything else is no word.</summary>
     internal static IReadOnlyList<string> WantedWords(JsonElement arguments)
     {
         if (arguments.ValueKind != JsonValueKind.Object
@@ -1431,8 +1431,8 @@ internal sealed class WindowsVisibleControlAdapter
             writer.WriteEndObject();
         }), "application_window_not_found");
 
-    /// <summary>The worker's «view» request; the goal's words go only when there are some (a look outside a mission is
-    /// the one it always was).</summary>
+    /// <summary>The worker's «view» request; the words looked for go only when the look carries some (without them the
+    /// view is the usual one).</summary>
     internal static string ViewCommand(nint hwnd, int limit, IReadOnlyList<string>? wanted, bool tail = false)
     {
         var command = new JsonObject { ["cmd"] = "view", ["hwnd"] = hwnd, ["limit"] = limit };
@@ -1969,7 +1969,7 @@ internal sealed class WindowsVisibleControlAdapter
                 hwnd = recent.Hwnd;
             }
 
-            // Without a window named (a direct order outside a mission), the window in front, as the descriptor says.
+            // Without a window named, the window in front, as the descriptor says.
             if (hwnd == 0)
             {
                 // Read where it is: the worker no longer presses by coordinates (fable/cu-v3-clic), and the pointer
@@ -1996,9 +1996,9 @@ internal sealed class WindowsVisibleControlAdapter
     }
 
     /// <summary>
-    /// A click that names a search (<c>search</c>, goal v3 point 0, fix 3): the opener of the mission's window, by its
+    /// A click that names a search (<c>search</c>, goal v3 point 0, fix 3): the opener of the named window, by its
     /// identity in the last view, then the text and the result inside one burst of the lease (<see cref="SearchBurst"/>).
-    /// Only inside a mission (its window named) and on a control the view identified; nothing is pressed otherwise.
+    /// Only when the click names its window and on a control with an identity; nothing is pressed otherwise.
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> SearchInBurstAsync(
         string operation,
@@ -2120,9 +2120,10 @@ internal sealed class WindowsVisibleControlAdapter
     }
 
     /// <summary>
-    /// The one control of the mission's last view a label names, by its identity: the only control of exactly that name
-    /// (<see cref="SameLabel"/>). Null when the last view is of another window, the label names none or several, or the
-    /// control has no identity: the label is then left to its cascade, which presses nothing it does not name exactly.
+    /// The one control of the last view of <paramref name="window"/> a label names, by its identity: the only control
+    /// of exactly that name (<see cref="SameLabel"/>). Null when the last view is of another window, the label names
+    /// none or several, or the control has no identity: the label is then left to its cascade, which presses nothing it
+    /// does not name exactly.
     /// Auditoría P3: a control whose name only holds the label is never chosen for it.
     /// </summary>
     private string? NamedInView(nint window, string label)
@@ -2142,16 +2143,16 @@ internal sealed class WindowsVisibleControlAdapter
         "Text", "Group", "Pane", "Custom", "Document",
     };
 
-    // The last control of a mission's window pressed by its identity, with the names its view showed before the press:
+    // The last control of a named window pressed by its identity, with the names its view showed before the press:
     // a control of the next view that is none of those appeared with that press (v3-09: the gallery of a ribbon tab).
     // Review of the branch (finding 3): only a control that opens something by its structure (a tab, a combo box, one
     // that says it is collapsed: OpensAgain) is noted, and it holds for the very next view and click only (Views: the
     // count of views read when it was pressed), so a press that creates or deletes («Nuevo», «Eliminar») is never pressed
-    // again, and neither is any opener after a text, a key, another click or another mission's look.
+    // again, and neither is any opener after a text, a key, another click or a second look.
     // Ronda 20 (P7): with the manner it was pressed in (an arrow, a context menu), so it is reopened the same way.
     private (nint Window, string Id, string Label, HashSet<string> NamesBefore, long Views, string? Manner)? _opener;
 
-    // How many views this adapter has read (the mission reads one after every act).
+    // How many views this adapter has read (an opener holds for the very next one only).
     private long _viewsRead;
 
     private void NoteOpener(nint window, string controlId, string label, HashSet<string>? namesBefore, bool opens) =>
@@ -2703,8 +2704,9 @@ internal sealed class WindowsVisibleControlAdapter
 
     /// <summary>
     /// The receipt of a click that handed its effect to another process's window: done, the clicked window not said to
-    /// have changed, and <c>handedTo</c> naming that window (its handle, title, process and process id) for the mission
-    /// to follow (ronda 20b, palanca 8, objetivo 3).
+    /// have changed, and <c>handedTo</c> naming that window (its handle, title, process and process id, whether it was
+    /// born with the click, and how long ago the person's input went to it and to its process or the shell) (ronda 20b,
+    /// palanca 8, objetivo 3).
     /// </summary>
     private static ExternalCapabilityReceipt HandedOff(
         string operation, JsonElement clicked, UiaFrontReport? front, VisibleControlSurface.HandedWindow handed)
@@ -2722,7 +2724,8 @@ internal sealed class WindowsVisibleControlAdapter
             ["processId"] = handed.ProcessId,
             ["born"] = handed.Born,
         };
-        // Review 3 of palanca 8 (B1): where the person's input last went, for the mission's guard of their windows.
+        // Review 3 of palanca 8 (B1): how long ago the person's input went to that window, and to its process or the
+        // shell.
         if (handed.PersonInputAgoMs is long personAgo)
             ((JsonObject)node["handedTo"]!)["personInputAgoMs"] = personAgo;
         if (handed.PersonNearAgoMs is long nearAgo)
@@ -2822,7 +2825,7 @@ internal sealed class WindowsVisibleControlAdapter
         // Goal v3 B3: the list a control's arrow opened, or the context menu asked for, read open after the press.
         bool opened = root.TryGetProperty("opened", out JsonElement openedValue)
             && openedValue.ValueKind == JsonValueKind.True;
-        // Ronda 20b, palanca 6 (review finding 1): the list a failed mission left open, read closed after its collapse.
+        // Ronda 20b, palanca 6 (review finding 1): the list a click left open, read closed after its collapse.
         bool closed = root.TryGetProperty("closed", out JsonElement closedValue)
             && closedValue.ValueKind == JsonValueKind.True;
         // Recibo del clic por estado (r15b v3-42, v3-51), review finding 1: a field (Edit, Document, ComboBox) that took
@@ -2934,7 +2937,7 @@ internal sealed class WindowsVisibleControlAdapter
 
     /// <summary>
     /// Ronda 28 (banco Br27: the first whole look of a session cost 1 041–1 200 ms, 190–340 ms once warm, with the worker
-    /// already started): the worker is started and asked one look ahead of the first mission, so what a first look
+    /// already started): the worker is started and asked one look ahead of the first one, so what a first look
     /// compiles and loads (the worker's view functions, UI Automation's client) is paid while the mind is still loading.
     /// The look is of the shell's desktop window, by the read-only «view» (no front, no key, no click, no capture, no
     /// text) and asks for one control; its answer is dropped here, never journaled nor handed to anyone. With no shell
