@@ -89,7 +89,16 @@ En el notebook (D:, misma mente):
 | `cuex` (P7) | 20, 19 | 19,5 | 2832 / 2914 ms | en escenas pierde silencios |
 | `thinkcont` (P2 por etapa) | 19, 21 | 20,0 | 4708 / 4574 ms | +1 s por paso que razona; la mitad de pasos encadenados; turnos sin respuesta |
 
-Ninguno sale del ±1 de `base` en aciertos. **`thinkcont` no gana** (más lento y deja turnos sin respuesta). **`cuex` no gana** (empata y pierde silencios en escenas). `head` empata en aciertos y baja la primera respuesta, pero `cuex` también la baja, así que los 3864 ms de `base` s0 pueden ser el valor atípico. Lo deciden una tercera semilla de `base` y de `head` y el banco de falsedades de práctica (en curso).
+Ninguno sale del ±1 de `base` en aciertos. **`thinkcont` no gana** (más lento y deja turnos sin respuesta). **`cuex` no gana** (empata y pierde silencios en escenas). `head` empata en aciertos y baja la primera respuesta, pero `cuex` también la baja, así que los 3864 ms de `base` s0 pueden ser el valor atípico. Con una tercera semilla: `base` 19 (primera respuesta 2827 ms) y `head` 19 (3346 ms, con los mismos 11 fallos que `base`). En tres semillas, aciertos `base` 19,3 = `head` 19,3, y primera respuesta `base` media 3229 ms (de 2827 a 3864), `head` 2930 ms (de 2677 a 3346). La diferencia de ~300 ms queda dentro del ruido de `base`, y en s2 `head` fue más lento. **`head` (P6) no gana.** Las falsedades de práctica de `head` ya no se juzgaron, porque no entra.
+
+## Cierre de la decisión 20
+
+Ninguna palanca medida supera a `base` por encima del ruido sin romper una condición (aciertos, silencios, falsedades, p50 ≤ 1 s, 4 GB):
+- **No ganan:** P1, P2, P2 por etapa, P5, P6, P7, P9 y P10.
+- **Ya aplicadas:** P3 y P8.
+- **Descartada por la latencia:** P4.
+
+El producto se congeló en **ff863b47f** (tag `renew-d20-congelado`), sin ningún cambio de la mente respecto de `base`. El holdout v3, sellado por agentes aislados en `F:\BAXYevalenew_v3`, se corre una sola vez sobre ese commit, y su resultado es el techo alcanzado con Qwen3.5-4B en este harness.
 
 **P10, una llamada por decisión (`noparallel`, PC, contra `base9e`):** decisión 230, 233 y 233 (media 232,0, la misma que `base9e`; dispersión 3 contra 0), p50 0,938 s (más lento); escenas 30/39, 0 molestas. **No gana.**
 
