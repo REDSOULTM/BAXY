@@ -104,6 +104,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             before = pressed.Before ?? baseline;
             string method = pressed.Method;
             IInputBurst? burst = pressed.Burst;
+            long pressedAt = Environment.TickCount64;
             bool changed = false;
             bool userActed = false;
             bool restored = true;
@@ -116,7 +117,8 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                     ? await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false)
                     : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
                         .ConfigureAwait(false);
-                changed = after is not null && after.Value.Sha256 != before.Sha256;
+                // Auditoría final (regla 3): only the same window's image counts; another window in front is no proof.
+                changed = after is { } later && later.Hwnd == before.Hwnd && later.Sha256 != before.Sha256;
             }
             finally
             {
@@ -128,6 +130,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             }
 
             // A surface that changed after the person acted proves nothing of the click.
+            userActed |= burst is null && WindowsUserInputPause.PersonActedOn(before.Hwnd, pressedAt);
             changed &= !userActed && !animated;
             bool targeted = method == "target" && pressed.Focused;
             bool ok = changed || targeted;

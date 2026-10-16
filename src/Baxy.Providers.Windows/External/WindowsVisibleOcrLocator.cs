@@ -80,6 +80,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 before = now;
             string method = pressed.Method;
             IInputBurst? burst = pressed.Burst;
+            long pressedAt = Environment.TickCount64;
             VisibleControlSurface.CapturedWindow? after = null;
             bool changed = false;
             bool userActed = false;
@@ -97,7 +98,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                         ? await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false)
                         : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
                             .ConfigureAwait(false);
-                    changed = after is not null && after.Value.Sha256 != before.Sha256;
+                    // Auditoría final (regla 3): only the same window's image counts; another window in front is no proof.
+                    changed = after is { } later && later.Hwnd == before.Hwnd && later.Sha256 != before.Sha256;
                 }
             }
             finally
@@ -129,6 +131,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // A field made the text's destination is proved by the designation itself, not by a redraw; a surface
             // that changed after the person acted proves nothing of the click.
             bool targeted = method == "target" && pressed.Focused;
+            // Without a burst nothing else watches the person: their input to that window since the press ends the proof.
+            userActed |= burst is null && WindowsUserInputPause.PersonActedOn(before.Hwnd, pressedAt);
             bool ok = (changed && !userActed && !animated) || targeted;
             JsonElement result = ExternalJson.Create(writer =>
             {

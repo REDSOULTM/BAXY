@@ -135,6 +135,14 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
 
     internal static WindowsUserInputPause Shared => SharedInstance.Value;
 
+    /// <summary>
+    /// Auditoría final (regla 3): the person's input reached <paramref name="window"/> since <paramref name="sinceMs"/>
+    /// (<see cref="Environment.TickCount64"/>), as the Core's running detector saw it; false when no detector runs.
+    /// </summary>
+    internal static bool PersonActedOn(nint window, long sinceMs) =>
+        SharedInstance.IsValueCreated && Shared.PersonInputAgoMs(window) is long ago
+        && ago <= Environment.TickCount64 - sinceMs;
+
     public bool TellsOwnInput => _rawInput;
 
     public string Source => _rawInput ? "raw_input" : "last_input_info";

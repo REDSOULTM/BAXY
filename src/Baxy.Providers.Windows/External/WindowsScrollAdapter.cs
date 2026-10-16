@@ -259,19 +259,23 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
             bool restored = burst.Restore();
             // Auditoría final (regla 3): a page that scrolled settles; one that keeps changing (a video, an ad, a caret)
             // gives no proof of the wheel by its image, and the scroll is said as not verified.
-            await Task.Delay(450, cancellationToken).ConfigureAwait(false);
-            VisibleControlSurface.CapturedWindow? later = null;
-            try
+            // Two looks, ~300 ms and ~600 ms after, so a caret's blink (about every 530 ms) falls inside.
+            for (int look = 0; look < 2; look++)
             {
-                later = await capture(captured.Hwnd, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+                VisibleControlSurface.CapturedWindow? later = null;
+                try
+                {
+                    later = await capture(captured.Hwnd, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception exception) when (exception is IOException or InvalidOperationException)
+                {
+                    later = null;
+                }
+                if (later is not { } settled || after is not { } moved
+                    || !string.Equals(settled.Sha256, moved.Sha256, StringComparison.Ordinal))
+                    return effectBoundary.Failure(operation, "scroll_surface_unsettled", effectObserved: true);
             }
-            catch (Exception exception) when (exception is IOException or InvalidOperationException)
-            {
-                later = null;
-            }
-            if (later is not { } settled || after is not { } moved
-                || !string.Equals(settled.Sha256, moved.Sha256, StringComparison.Ordinal))
-                return effectBoundary.Failure(operation, "scroll_surface_unsettled", effectObserved: true);
             return ExternalJson.Success(
                 operation,
                 Result(direction, amount, index, "win32_wheel_surface_postread", burst: (burst.WaitedMs, restored)),

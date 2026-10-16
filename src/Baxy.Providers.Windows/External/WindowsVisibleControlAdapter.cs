@@ -634,6 +634,34 @@ internal sealed class WindowsVisibleControlAdapter
     // it is refused all the same (nothing is pressed where UIPI may block it), as not read.
     internal const string WindowElevationUnread = "window_elevation_unread";
 
+    // Whether the window changes by itself after the capture `first` (VisibleControlSurface.AnimationProbes).
+    private async ValueTask<bool> AnimatesFromAsync(
+        nint hwnd, VisibleControlSurface.CapturedWindow first, CancellationToken cancellationToken)
+    {
+        foreach (TimeSpan wait in VisibleControlSurface.AnimationProbes)
+        {
+            await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
+            VisibleControlSurface.CapturedWindow? again = await _capture(hwnd, first.SelfDrawn, cancellationToken)
+                .ConfigureAwait(false);
+            if (again is not { } next || !string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
+                return true;
+        }
+        return false;
+    }
+
+    private async ValueTask<bool> WindowAnimatesAsync(nint hwnd, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _capture(hwnd, null, cancellationToken).ConfigureAwait(false) is not { } first
+                || await AnimatesFromAsync(hwnd, first, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            return true;
+        }
+    }
+
     private static string ElevatedCode(nint window)
     {
         int processId = VisibleControlSurface.WindowProcess(window).ProcessId;
@@ -2339,22 +2367,10 @@ internal sealed class WindowsVisibleControlAdapter
         {
             before = await _capture(hwnd, null, cancellationToken).ConfigureAwait(false);
             // Auditoría final (regla 3): a window that changes by itself (a video, a caret, a spinner) gives no proof of
-            // the click by its image: two captures before it that differ leave the surface out of the post-read (the
+            // the click by its image: captures before it that differ leave the surface out of the post-read (the
             // control's own answer, a popup or a window it handed to still prove it).
-            if (before is { } first)
-            {
-                foreach (TimeSpan wait in VisibleControlSurface.AnimationProbes)
-                {
-                    await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
-                    VisibleControlSurface.CapturedWindow? again = await _capture(hwnd, first.SelfDrawn, cancellationToken)
-                        .ConfigureAwait(false);
-                    if (again is not { } next || !string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
-                    {
-                        before = null;
-                        break;
-                    }
-                }
-            }
+            if (before is { } first && await AnimatesFromAsync(hwnd, first, cancellationToken).ConfigureAwait(false))
+                before = null;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
         {
@@ -2442,12 +2458,15 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         HandoffWatch? roots = RootsBefore(hwnd);
+        // Auditoría final (regla 3): the same probe as the tree's press, before the pointer's: a window that changes by
+        // itself gives no proof of the press by its image.
+        bool animated = await WindowAnimatesAsync(hwnd, cancellationToken).ConfigureAwait(false);
         PointerPressed pointed = await LocatedPointPress.PointerAsync(
             _pointer, hwnd, x, y, null, null, cancellationToken, PopupsOf).ConfigureAwait(false);
         if (!pointed.Pressed)
             return ExternalJson.FailureBeforeEffect(operation, pointed.Refusal ?? "input_window_not_in_front");
 
-        VisibleControlSurface.CapturedWindow? before = pointed.Before;
+        VisibleControlSurface.CapturedWindow? before = animated ? null : pointed.Before;
         JsonObject node = JsonNode.Parse(answer.GetRawText())!.AsObject();
         node.Remove("needsPointer");
         node["pending"] = true;

@@ -1202,7 +1202,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
           while($null -ne $node -and $node.Current.ControlType -ne [System.Windows.Automation.ControlType]::Document -and $node.Current.NativeWindowHandle -ne $h.ToInt32()){
             $found=$node.FindAll([System.Windows.Automation.TreeScope]::Descendants,$row)
-            if($found.Count -gt 0){$script:read=$true;foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}};break}
+            if($found.Count -gt 0){$state.read=$true;foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}};break}
             $node=$walker.GetParent($node)
           }
           ,$r
@@ -1210,7 +1210,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # The product and its console compete for the foreground while this runs; a lost focus can drop the
         # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
         # and confirming it held, until the switcher shows matches; nothing is joined or opened.
-        $items=@();$foreground=$false;$read=$false
+        # The script runs as a block (& { }): a function sets the flag through a table both share, never $script:.
+        $items=@();$foreground=$false;$state=@{read=$false}
         for($round=0;$round -lt 5 -and $items.Count -eq 0;$round++){
           [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
@@ -1225,7 +1226,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         }
         if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground'}|ConvertTo-Json -Compress;exit 3}
         # Ronda final: the switcher never kept the front long enough to be read: nothing is said of its rows.
-        if(-not $read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read'}|ConvertTo-Json -Compress;exit 3}
+        if(-not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read'}|ConvertTo-Json -Compress;exit 3}
         [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items)}|ConvertTo-Json -Compress
         """;
 
