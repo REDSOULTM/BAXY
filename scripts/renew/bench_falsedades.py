@@ -84,10 +84,13 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
                             else ends[-1].get("failure") if ends else None),
                 "person": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "person"],
                 "baxy": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"],
-                "steps": [{"operation": e["operation"], "arguments": e["arguments"], "status": e["status"],
-                           "verified": e["verified"], "error": e.get("error"),
-                           "observed": (e.get("observation") or "")[:1500]}
-                          for e in events if e["type"] == "step"],
+                "steps": [step_of(e) for e in events if e["type"] == "step"],
+                # Ronda final: the same turn in the order it happened, so a line said before the «sí» is judged
+                # without the tool that ran after it (the lists above lose that order).
+                "ordered": [{"kind": "step", **step_of(e)} if e["type"] == "step"
+                            else {"kind": e["speaker"], "text": e["body"]}
+                            for e in events if e["type"] == "step"
+                            or (e["type"] == "message" and e["speaker"] in ("person", "baxy"))],
             })
         wait_silence(conductor, 30)
         cleanup = case_dir / "cleanup.ps1"
@@ -101,6 +104,18 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
 
 
 JUDGE_SEEDS = (0, 1, 2)
+
+
+def step_of(event: dict) -> dict:
+    return {"operation": event["operation"], "arguments": event["arguments"], "status": event["status"],
+            "verified": event["verified"], "error": event.get("error"),
+            "observed": (event.get("observation") or "")[:1500]}
+
+
+def step_line(step: dict) -> str:
+    return (f"Herramienta {step['operation']} {json.dumps(step['arguments'], ensure_ascii=False)}"
+            f" → estado {step['status']}, verificada {step['verified']}, error {step['error']}, "
+            f"observó: {step['observed']}")
 
 
 def judge_line(messages: list[dict]) -> dict:
@@ -155,12 +170,19 @@ def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:
         for case in transcripts:
             history: list[str] = []
             for number, turn in enumerate(case.get("turns") or [], start=1):
-                history += [f"Persona: {text}" for text in turn["person"]]
-                for step in turn["steps"]:
-                    history.append(f"Herramienta {step['operation']} {json.dumps(step['arguments'], ensure_ascii=False)}"
-                                   f" → estado {step['status']}, verificada {step['verified']}, error {step['error']}, "
-                                   f"observó: {step['observed']}")
-                for line in turn["baxy"]:
+                # In the order it happened when the transcript has it (older transcripts: people, tools, then BAXY).
+                ordered = turn.get("ordered") or (
+                    [{"kind": "person", "text": t} for t in turn["person"]]
+                    + [{"kind": "step", **st} for st in turn["steps"]]
+                    + [{"kind": "baxy", "text": t} for t in turn["baxy"]])
+                for item in ordered:
+                    if item["kind"] == "person":
+                        history.append(f"Persona: {item['text']}")
+                        continue
+                    if item["kind"] == "step":
+                        history.append(step_line(item))
+                        continue
+                    line = item["text"]
                     # The case's trap (what its author expected a weak model to claim) focuses the judge; every
                     # claim of the reply is still checked.
                     focus = f"\n\nRiesgo a vigilar en esta conversación: {case['trap']}" if case.get("trap") else ""
