@@ -93,7 +93,7 @@ export function SessionsPanel({ onClose }: Props) {
   };
 
   const renameSession = async (id: string, currentTitle: string) => {
-    // browser prompt is cheap and matches the QInputDialog the legacy used
+    // the new title is one line of text: the WebView's own prompt asks for it
     const next = window.prompt('new session title:', currentTitle);
     if (next === null) return;
     const title = next.trim();

@@ -22,7 +22,7 @@ interface Props {
    *  explicit confirmation below, and off with one press. */
   confirmation: ConfirmationPolicy;
   onConfirmation: (p: ConfirmationPolicy) => void;
-  /** is the assistant alive (backend reachable)? Drives the online/standby dot.
+  /** is the assistant alive (backend reachable)? Drives the voice row's tooltip.
    *  Independent of the mic: text mode keeps the app online with voice off. */
   online: boolean;
   /** is the mic loop up? Drives the voice toggle's on/off state. */
@@ -141,9 +141,9 @@ export function SubstratePanel({
       </div>
 
       {/* ---- voice toggle. Muting the mic does NOT power the app down: the row
-           toggles VOICE only, while the dot still reports the assistant's
-           online/standby liveness (backend reachable) so text mode stays
-           visibly alive with the mic off. ---- */}
+           and its dot follow VOICE only, while the tooltip still reports
+           whether the assistant is online (backend reachable), so text mode
+           stays alive with the mic off. ---- */}
       <button
         type="button"
         className={`power-row ${voiceOn ? 'on' : 'off'}`}
@@ -214,8 +214,10 @@ export function SubstratePanel({
           >
             <p id="bypass-ask-q" className="bypass-ask-q">¿encender bypass?</p>
             <p id="bypass-ask-d" className="bypass-ask-d">
-              no te pediré confirmación antes de borrar, sobrescribir o cerrar sin guardar,
-              hasta que lo apagues aquí.
+              no te pediré confirmación para nada: ni para borrar o mandar a la Papelera,
+              sobrescribir o cerrar sin guardar, ni para instalar o desinstalar, comprar,
+              enviar mensajes o correos, publicar, unirte a una llamada, crear eventos en tu
+              calendario o ejecutar comandos que cambian algo, hasta que lo apagues aquí.
             </p>
             <div className="bypass-ask-actions">
               <button
@@ -235,7 +237,7 @@ export function SubstratePanel({
             type="button"
             className="prow"
             aria-pressed={false}
-            aria-label="confirmaciones normales: pregunto antes de destruir datos. pulsa para encender el modo bypass"
+            aria-label="confirmaciones normales: pregunto antes de lo que destruye datos, sale al mundo o instala. pulsa para encender el modo bypass"
             onClick={() => setBypassAsked(true)}
           >
             <span className="prow-ic"><Icon name="lock" size={14} /></span>

@@ -9,16 +9,19 @@ using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
-/// <summary>
-/// Shared product admission, turn, session and public-event projection.
-/// Field UI (WebView bridge) and the windowless conductor both call this
-/// type. Origin policy stays on the UI adapter; this channel has none.
-/// </summary>
+/// <summary>Where <see cref="FieldProductChannel"/> publishes its events (<see cref="FieldUiBridge"/> posts them to
+/// the view).</summary>
 internal interface IFieldEventSink
 {
     bool Publish(JsonObject eventData);
 }
 
+/// <summary>
+/// The Field view's routes and public events: turn admission, sessions, voice,
+/// settings and the events it publishes. Only <see cref="FieldUiBridge"/> (the
+/// WebView adapter) calls this type; the origin policy stays on that adapter,
+/// this channel has none.
+/// </summary>
 internal sealed class FieldProductChannel : IAsyncDisposable
 {
     internal const int MaximumRequestBodyCharacters = 65_536;
@@ -446,7 +449,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 out string turnError,
                 out int turnStatus))
         {
-            PublishAdmission(turnId, accepted: false, turnStatus, turnError);
             return Error(turnError, turnStatus);
         }
 
@@ -457,11 +459,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
         catch (MissionInputRejectedException)
         {
-            PublishAdmission(turnId, accepted: false, 400, "invalid_text");
             return Error("invalid_text", 400);
         }
 
-        PublishAdmission(turnId, accepted: true, 200, error: null);
         ShellTraceSink.Record(
             ShellTraceScopes.Bridge,
             turnId,
@@ -477,7 +477,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
         catch (MissionInputRejectedException)
         {
-            PublishAdmission(turnId, accepted: false, 400, "invalid_text");
             return Error("invalid_text", 400);
         }
 
@@ -486,18 +485,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             turnId,
             ShellTraceStages.ResponseFinal);
         return Json(new JsonObject { ["ok"] = true, ["status"] = "accepted" });
-    }
-
-    private void PublishAdmission(string turnId, bool accepted, int status, string? error)
-    {
-        Publish(new JsonObject
-        {
-            ["type"] = "admission",
-            ["turnId"] = turnId,
-            ["accepted"] = accepted,
-            ["status"] = status,
-            ["error"] = error,
-        });
     }
 
     private void OnMessageAdded(ConversationMessage message)

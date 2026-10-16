@@ -15,8 +15,8 @@ namespace Baxy.App;
 /// records it; there is no second way to the store. The person confirms a forget in the panel itself (its own two-step
 /// button, never a browser dialog) and the panel answers the kernel's challenge with that request's token. Forgetting
 /// everything has its own request (<c>DELETE /memory</c> with <c>{"scope":"all"}</c>); no entry's key means «all».
-/// The channel reaches this only from the App's own document (<see cref="HistoricalFieldOriginPolicy"/>) or the
-/// windowless conductor; web content cannot.
+/// The channel reaches this only from the App's own document (<see cref="HistoricalFieldOriginPolicy"/>); web content
+/// cannot.
 /// </summary>
 internal sealed class MemoryPanel
 {

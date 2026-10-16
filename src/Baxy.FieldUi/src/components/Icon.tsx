@@ -2,7 +2,7 @@
    from prototype/components/icons.jsx so the visual matches. */
 
 export type IconName =
-  | 'send' | 'mic' | 'mic-off' | 'mic-ptt' | 'settings' | 'plus'
+  | 'send' | 'mic' | 'mic-off' | 'settings' | 'plus'
   | 'help' | 'bolt' | 'search' | 'x' | 'person' | 'eye-off' | 'lock'
   | 'win-min' | 'win-max' | 'win-restore';
 
@@ -50,17 +50,6 @@ export function Icon({ name, size = 14, strokeWidth = 1.25 }: Props) {
           <path d="M 8 12 L 8 14" />
           <path d="M 6 14 L 10 14" />
           <path d="M 2 2 L 14 14" />
-        </svg>
-      );
-    case 'mic-ptt':
-      // mic with a small filled dot bottom-right — indicates manual / push-to-talk
-      return (
-        <svg {...common}>
-          <rect x="6" y="2.5" width="4" height="7" rx="2" />
-          <path d="M 3.5 8 Q 3.5 12 8 12 Q 12.5 12 12.5 8" />
-          <path d="M 8 12 L 8 14" />
-          <path d="M 6 14 L 10 14" />
-          <circle cx="12.5" cy="3.5" r="1.4" fill="currentColor" stroke="none" />
         </svg>
       );
     case 'settings':

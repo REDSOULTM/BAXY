@@ -12,7 +12,7 @@ internal static class FieldBridgeContract
 
     /// <summary>
     /// Chat and voice stay closed until the shell has a verified ready
-    /// terminal. A rejected turn never starts a mission.
+    /// terminal. A rejected turn is never submitted.
     /// </summary>
     internal static bool TryAcceptTurn(
         bool isInputEnabled,

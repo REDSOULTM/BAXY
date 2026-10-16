@@ -13,21 +13,18 @@ import { useEventStream } from './hooks/useEventStream';
 import type { SurfacesCount } from './hooks/useEventStream';
 import { toastError } from './hooks/useToast';
 import { startNewSession } from './hooks/newSession';
-import type { ConvState } from './types';
-// the prototype's styles.css is loaded literal — this is the single source of
-// truth for all cosmetic rules. additions live at the bottom of that file.
+// the cosmetic rules: the prototype's stylesheet with this app's additions.
 import './styles/prototype.css';
 
 type OpenPanel = 'settings' | 'sessions' | 'memory' | 'tools' | null;
 type SurfaceId = 'sessions' | 'memory' | 'tools';
 
-/** Mic has three modes. `listening` = always-on wake word; `ptt` = push-to-talk
- *  (mic loop is up, but capture only fires on right-click trigger); `off` =
- *  voice loop fully stopped. Click-left cycles listening↔off; click-right
- *  toggles ptt against the previous on-mode. */
-export type MicMode = 'listening' | 'ptt' | 'off';
+/** The voice is on or off. `listening` = the voice loop is up and saying «Baxy»
+ *  starts a request; a right click also starts one at once, without the wake
+ *  word, and the voice goes back to waiting for «Baxy» after it. `off` = the
+ *  voice loop is stopped. */
+export type MicMode = 'listening' | 'off';
 
-const STATE_CYCLE: ConvState[] = ['idle', 'listening', 'thinking', 'speaking', 'standby'];
 // The interface's two presentations. The profile's file on the host is the only
 // source (GET/PUT /accessibility); the chat switches the same file.
 export type AccessMode = 'normal' | 'accessible';
@@ -38,21 +35,20 @@ export default function App() {
   const stream = useEventStream();
 
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
-  // mic mode reflects the voice loop on the backend. defaults to 'listening'
-  // (always-on wake word) since server.py auto-enables voice on boot. mode
-  // is persisted to localStorage so it survives reloads.
+  // mic mode reflects the voice loop on the host. defaults to 'listening' (the
+  // wake word armed), which the mount auto-start below brings up. mode is
+  // persisted to localStorage so it survives reloads; an earlier 'ptt' ran the
+  // same wake-word loop, so it reads as 'listening'.
   const [micMode, setMicMode] = useState<MicMode>(() => {
     const stored = localStorage.getItem('field.mic_mode');
-    if (stored === 'listening' || stored === 'ptt' || stored === 'off') return stored;
-    return 'listening';
+    return stored === 'off' ? 'off' : 'listening';
   });
   useEffect(() => { localStorage.setItem('field.mic_mode', micMode); }, [micMode]);
 
   // poll /voice/status once after mount + every 4s while the page is open,
   // so a backend-driven voice state change (load failed, mic device went
-  // away, etc.) shows up in the UI. backend only knows on/off — we keep our
-  // own ptt/listening distinction client-side; if backend reports running
-  // false while we think we're on, flip to 'off' so the icon stays honest.
+  // away, etc.) shows up in the UI. if the backend reports running false
+  // while we think we're on, flip to 'off' so the icon stays honest.
   // Guards the status-sync from fighting the mount auto-start: until the
   // auto-start has had its chance (and while a start is in flight), we must NOT
   // flip the UI to 'off' just because the backend loop hasn't finished booting.
@@ -168,7 +164,6 @@ export default function App() {
 
   const setConfirmation = useCallback(async (policy: ConfirmationPolicy) => {
     try {
-      // Its own route: the settings panel's «apply» never carries the confirmation mode.
       const r = await fetch('/confirmation', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -182,35 +177,16 @@ export default function App() {
     }
   }, []);
 
-  // debug override + auto-cycler when WS is down
-  const [debugState, setDebugState] = useState<ConvState | null>(null);
-  const debugOn =
-    typeof window !== 'undefined'
-    && new URLSearchParams(window.location.search).has('debug');
-
-  useEffect(() => {
-    if (!debugOn || stream.connected) return;
-    let i = 0;
-    const id = window.setInterval(() => {
-      i = (i + 1) % STATE_CYCLE.length;
-      setDebugState(STATE_CYCLE[i]);
-    }, 3500);
-    return () => window.clearInterval(id);
-  }, [debugOn, stream.connected]);
-
-  // when the WS is live, debug override is ignored so real events win.
   // The mic being OFF does NOT deactivate the app: text mode is a fully alive
   // mode. We keep the real conversational state (idle stays idle, alive) so the
   // field, neurons and border keep breathing while the user types. Only an
   // actual backend disconnect drops us to a degraded look (see `online` below);
   // muting the mic just mutes the mic.
-  const effectiveState: ConvState =
-    stream.connected ? stream.convState : (debugState ?? stream.convState);
+  const convState = stream.convState;
 
-  // global keyboard shortcuts. mirror the legacy QShortcut bindings so users
-  // of the PyQt6 GUI find the same muscle memory here. shortcuts that hit
-  // network endpoints (clear/new) are fired via plain fetch — no race with
-  // React state.
+  // global keyboard shortcuts (onHelp below lists them). shortcuts that hit
+  // host routes (clear/new) are fired via plain fetch — no race with React
+  // state.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       // ignore shortcuts when typing in an input/textarea, except Escape
@@ -295,19 +271,13 @@ export default function App() {
     );
   }, [postActivity]);
 
-  // Mic has three modes — see MicMode docstring. Left click cycles
-  // listening↔off (the common case: just want to mute the mic). Right click
-  // toggles ptt mode: if you're in listening it enters ptt and immediately
-  // arms a capture; if already in ptt it goes back to listening. Right click
-  // while in off turns voice on into ptt (so the user can opt-in to manual
-  // capture without going through always-listen first).
-  //
-  // Backend only knows on/off through /voice/start and /voice/stop. We map:
-  //   listening → /voice/start  (mic loop up, wake-word armed)
-  //   ptt       → /voice/start  (mic loop up; capture only via /voice/trigger)
-  //   off       → /voice/stop
-  // /voice/trigger fires the wake event manually so the next phrase is
-  // captured without saying 'gemma'.
+  // See MicMode. Left click cycles listening↔off (mute the mic). Right click
+  // starts a request now: it turns the voice on if it was off, then captures
+  // the next phrase without the wake word.
+  //   listening   → /voice/start   (mic loop up, wake word armed)
+  //   off         → /voice/stop
+  //   right click → /voice/trigger (one phrase without saying «Baxy»; the voice
+  //                                 then waits for «Baxy» again)
   // True while /voice/start is loading the models (VAD + wake + STT +
   // Piper, ~1-3s blocking on the backend). Drives the mic button's
   // "loading" animation so the icon stays lit + pulsing instead of
@@ -327,7 +297,7 @@ export default function App() {
       }
       return;
     }
-    // listening / ptt need the loop running. The backend blocks while it
+    // listening needs the loop running. The backend blocks while it
     // loads models, so show the loading state and DON'T revert just
     // because it took a few seconds — only revert on an explicit failure.
     setMicLoading(true);
@@ -350,9 +320,9 @@ export default function App() {
   }, [micMode]);
 
   // AUTO-START voice on mount, but RESPECT the user's choice. The persisted
-  // micMode ('listening'/'ptt'/'off') is the source of truth: if it's not
-  // 'off' we boot the backend voice loop automatically (so the mic is armed AND
-  // Gemma's TTS plays without the user having to click the mic first). If the
+  // micMode ('listening'/'off') is the source of truth: if it's not 'off' we
+  // boot the backend voice loop automatically (so the mic is armed AND BAXY's
+  // spoken replies play without the user having to click the mic first). If the
   // user previously turned the mic OFF, we honor that and stay silent — we do
   // NOT auto-start. One-shot: runs once after mount.
   const didAutoStartVoice = useRef(false);
@@ -374,25 +344,17 @@ export default function App() {
   }, []);
 
   const onMicLeftClick = useCallback(() => {
-    // listening → off. off → listening. ptt → off (so left click is always
-    // "mute me"; to leave ptt the user right-clicks again).
+    // listening → off. off → listening.
     setMicModeAsync(micMode === 'off' ? 'listening' : 'off');
   }, [micMode, setMicModeAsync]);
 
+  // the person wants to speak NOW without the wake word.
   const onMicRightClick = useCallback(() => {
-    // toggle ptt vs the previous on-mode. when leaving 'off' via right click
-    // we go straight to ptt and arm a capture; that's the whole point of the
-    // gesture (user wants to speak NOW without the wake word).
-    if (micMode === 'ptt') {
-      setMicModeAsync('listening');
-    } else {
-      setMicModeAsync('ptt', { triggerAfter: true });
-    }
-  }, [micMode, setMicModeAsync]);
+    setMicModeAsync('listening', { triggerAfter: true });
+  }, [setMicModeAsync]);
 
   // clicking a surface card BOTH marks it active (visual carmesí border) AND
-  // opens the matching modal — sessions opens SessionsPanel, memory/tools open
-  // the generic InfoPanel with the right endpoint.
+  // opens the matching modal — SessionsPanel, MemoryPanel or ToolsPanel.
   const onSurface = useCallback((id: SurfaceId) => {
     setActiveSurface(id);
     setOpenPanel(id);
@@ -411,8 +373,8 @@ export default function App() {
   const voiceOn = micMode !== 'off';
   const poweredRef = useRef(online);
   useEffect(() => { poweredRef.current = online; }, [online]);
-  const visualStateRef = useRef(effectiveState);
-  useEffect(() => { visualStateRef.current = effectiveState; }, [effectiveState]);
+  const visualStateRef = useRef(convState);
+  useEffect(() => { visualStateRef.current = convState; }, [convState]);
 
   // Drive the traveling border without forcing a style/layout update at display
   // refresh rate while BAXY is resting. Active conversation remains at 30 Hz.
@@ -466,29 +428,28 @@ export default function App() {
 
   // Recolor the border, the chrome accent (--carmine) and the metric bars
   // (--bar-color) per state — the prototype's SET table, verbatim. Chrome stays
-  // carmesí at rest (idle/standby) and only takes the contrast color during an
+  // carmesí at rest (idle) and only takes the contrast color during an
   // active conversation state (listening/thinking/speaking), then returns to red.
   useEffect(() => {
     const frame = document.querySelector<HTMLElement>('.app-frame');
     if (!frame) return;
     const SET: Record<string, { base: string; mid: string; hi: string; peak: string; glow: string; bar: string }> = {
       error:     { base: '#7A1E2B', mid: '#B83A4A', hi: '#E55366', peak: '#FFE9EC', glow: 'rgba(229,83,102,0.9)', bar: '#E55366' },
-      standby:   { base: '#2a2f3a', mid: '#5B6580', hi: '#8B95A8', peak: '#D8DCE6', glow: 'rgba(139,149,168,0.75)', bar: '#5B6580' },
       idle:      { base: '#5a1a22', mid: '#B83A4A', hi: '#FF4D63', peak: '#FFE3E7', glow: 'rgba(255,77,99,0.9)',    bar: '#5B7FDB' },
       listening: { base: '#7A1E2B', mid: '#E55366', hi: '#FF6677', peak: '#FFFFFF', glow: 'rgba(255,102,119,0.95)', bar: '#6FA8B0' },
       thinking:  { base: '#1B2A5E', mid: '#2E4BA0', hi: '#5B7FDB', peak: '#C8D6F5', glow: 'rgba(91,127,219,0.9)',   bar: '#C9A66B' },
       speaking:  { base: '#6B5A2F', mid: '#C9A66B', hi: '#E8C98E', peak: '#F8EED2', glow: 'rgba(232,201,142,0.9)',  bar: '#7B95D9' },
     };
-    const c = SET[effectiveState] || SET.idle;
+    const c = SET[convState] || SET.idle;
     frame.style.setProperty('--bd-base', c.base);
     frame.style.setProperty('--bd-mid', c.mid);
     frame.style.setProperty('--bd-hi', c.hi);
     frame.style.setProperty('--bd-peak', c.peak);
     frame.style.setProperty('--bd-glow', c.glow);
     frame.style.setProperty('--bar-color', c.bar);
-    const active = effectiveState === 'listening' || effectiveState === 'thinking' || effectiveState === 'speaking';
+    const active = convState === 'listening' || convState === 'thinking' || convState === 'speaking';
     frame.style.setProperty('--carmine', active ? c.bar : '#B83A4A');
-  }, [effectiveState]);
+  }, [convState]);
 
   return (
     <div className="window-root">
@@ -498,7 +459,7 @@ export default function App() {
         <div className="cols">
           <div className="col left">
             <SubstratePanel
-              convState={effectiveState}
+              convState={convState}
               wsModel={stream.model}
               accessMode={accessMode}
               onAccessMode={setAccessMode}
@@ -514,8 +475,7 @@ export default function App() {
           </div>
           <div className="col center">
             <FieldCenter
-              convState={effectiveState}
-              onDebugState={debugOn ? setDebugState : null}
+              convState={convState}
               micMode={micMode}
               micLoading={micLoading}
               voiceError={voiceError}

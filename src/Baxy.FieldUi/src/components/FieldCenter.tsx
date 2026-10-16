@@ -7,8 +7,6 @@ import { Icon, type IconName } from './Icon';
 
 interface Props {
   convState: ConvState;
-  /** if non-null, render the debug chip row. clicking a chip flips the state. */
-  onDebugState: ((s: ConvState) => void) | null;
   micMode: MicMode;
   /** true while /voice/start is loading the voice models on the backend.
    *  keeps the mic icon lit + pulsing so it doesn't flicker red→black. */
@@ -17,7 +15,7 @@ interface Props {
   voiceError: string | null;
   /** left click: cycle listening↔off (mute toggle). */
   onMicLeftClick: () => void;
-  /** right click: toggle push-to-talk vs the previous on-mode. */
+  /** right click: start a request now, without the wake word (turning the voice on if it is off). */
   onMicRightClick: () => void;
   /** the shell's gate. while !ready, the chat input is disabled; a failure is shown by its code. */
   agent: AgentStatus;
@@ -25,26 +23,21 @@ interface Props {
 
 const MIC_ICON: Record<MicMode, IconName> = {
   listening: 'mic',
-  ptt: 'mic-ptt',
   off: 'mic-off',
 };
 
 const MIC_TIP: Record<MicMode, string> = {
-  listening: 'voice · always listening · right-click for push-to-talk · left-click to mute',
-  ptt: 'voice · push-to-talk · right-click again to arm capture · left-click to mute',
-  off: 'voice · off · left-click to enable always-listen · right-click to enable push-to-talk',
+  listening: 'voice · say «Baxy» or right-click to speak now · left-click to mute',
+  off: 'voice · off · left-click to listen for «Baxy» · right-click to speak now',
 };
 
 const MIC_ARIA: Record<MicMode, string> = {
-  listening: 'microphone always listening',
-  ptt: 'microphone push-to-talk',
+  listening: 'microphone listening for «Baxy»',
   off: 'microphone off',
 };
 
-const DEBUG_STATES: ConvState[] = ['standby', 'idle', 'listening', 'thinking', 'speaking'];
-
 export function FieldCenter({
-  convState, onDebugState, micMode, micLoading, voiceError, onMicLeftClick, onMicRightClick, agent,
+  convState, micMode, micLoading, voiceError, onMicLeftClick, onMicRightClick, agent,
 }: Props) {
   const [draft, setDraft] = useState('');
 
@@ -94,7 +87,7 @@ export function FieldCenter({
           <div className="chat-actions">
             <button
               type="button"
-              className={`ibtn mic-btn mic-${micMode}${micMode !== 'off' ? ' active' : ''}${micLoading ? ' mic-loading' : ''}`}
+              className={`ibtn mic-btn${micMode !== 'off' ? ' active' : ''}${micLoading ? ' mic-loading' : ''}`}
               data-tip={micLoading ? 'voice · cargando modelos…' : voiceError ? `voice · ${voiceError}` : MIC_TIP[micMode]}
               onClick={onMicLeftClick}
               onContextMenu={(e) => { e.preventDefault(); onMicRightClick(); }}
@@ -114,21 +107,6 @@ export function FieldCenter({
             </button>
           </div>
         </form>
-
-        {onDebugState && (
-          <div className="profile-chips" style={{ marginTop: 8 }} aria-label="debug state switcher">
-            {DEBUG_STATES.map((s) => (
-              <button
-                key={s}
-                type="button"
-                className={`chip${convState === s ? ' on' : ''}`}
-                onClick={() => onDebugState(s)}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
