@@ -114,6 +114,9 @@ public sealed class ComputerUseSpeedTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("input_effect_not_verified"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            // The keys went somewhere: the failure still names where.
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("title").GetString(), Is.EqualTo("Documento - Editor"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("process").GetString(), Is.EqualTo("Editor"));
         });
     }
 
