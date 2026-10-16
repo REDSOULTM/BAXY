@@ -643,8 +643,8 @@ internal sealed class WindowsVisibleControlAdapter
         "visible_control_is_container",
     };
 
-    // Encargo IMP4: the lines a look read with their places keeps (a chat's whole pane: 79 lines measured on redpc); encargo
-    // WA-LEER: as many as the mission's facts carry (OperationVisibleFacts.ChatLines).
+    // Encargo IMP4: the lines a look that asks for «lines» reads, each by its place (a chat's whole pane: 79 lines
+    // measured on redpc); encargo WA-LEER: up to OperationVisibleFacts.ChatLines.
     private const int PlacedLinesRead = OperationVisibleFacts.ChatLines;
     private static readonly TimeSpan LabelWaitBudget = TimeSpan.FromSeconds(24);
     private static readonly TimeSpan LabelWaitInterval = TimeSpan.FromMilliseconds(1500);
@@ -1520,7 +1520,7 @@ internal sealed class WindowsVisibleControlAdapter
         // The capture, and the text when it is asked for, are read while the
         // worker walks the accessible tree: they do not wait on each other.
         // A window another process draws over is captured as it draws itself, never the screen where the cover is.
-        // Encargo IMP4: the written lines with their place («lines») are read from the window's own drawing, never from
+        // Encargo IMP4: the written lines a look asks for («lines») are read from the window's own drawing, never from
         // the screen (imp3: the screen copy of a chat client covered by another window read the other window's text).
         bool covered = cover != 0 || lines;
         nint firstLooked = hwnd;
@@ -1614,8 +1614,6 @@ internal sealed class WindowsVisibleControlAdapter
             long ocrMs = 0;
             Dictionary<string, List<string>> textZones = new(StringComparer.Ordinal);
             string? textAuthority = null;
-            IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? placedLines = null;
-            (int Width, int Height) placedIn = (0, 0);
             var names = new List<string>();
             if (captured is { } capture)
             {
@@ -1628,12 +1626,6 @@ internal sealed class WindowsVisibleControlAdapter
                         await textTask.ConfigureAwait(false);
                     if (read is not null)
                     {
-                        if (lines)
-                        {
-                            placedLines = read;
-                            placedIn = (capture.Width, capture.Height);
-                        }
-
                         textAuthority = "windows_media_ocr_lines";
                         foreach (WindowsVisibleOcrLocator.LayoutLine line in read)
                         {
@@ -1804,24 +1796,6 @@ internal sealed class WindowsVisibleControlAdapter
 
                     writer.WriteEndObject();
                     writer.WriteString("textAuthority", textAuthority);
-                    if (placedLines is not null && placedIn.Width > 0 && placedIn.Height > 0)
-                    {
-                        // Encargo IMP4: each line read with its box, in fractions of the window's own drawing, in the
-                        // order read (a chat without an accessible tree is read from them, each line by its place).
-                        writer.WriteStartArray("textLines");
-                        foreach (WindowsVisibleOcrLocator.LayoutLine line in placedLines)
-                        {
-                            writer.WriteStartObject();
-                            writer.WriteString("text", line.Text);
-                            writer.WriteNumber("x", Math.Round(line.X / placedIn.Width, 4));
-                            writer.WriteNumber("y", Math.Round(line.Y / placedIn.Height, 4));
-                            writer.WriteNumber("w", Math.Round(line.Width / placedIn.Width, 4));
-                            writer.WriteNumber("h", Math.Round(line.Height / placedIn.Height, 4));
-                            writer.WriteEndObject();
-                        }
-
-                        writer.WriteEndArray();
-                    }
                 }
 
                 writer.WriteStartObject("elapsedMs");
