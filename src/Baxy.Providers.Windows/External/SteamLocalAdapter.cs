@@ -252,7 +252,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 writer.WriteString("state", "already_installed");
                 writer.WriteString("authority", "steam_local_appmanifest"); writer.WriteEndObject();
             });
-            return ExternalJson.Success(operation, installed, effectObserved: false);
+            return ExternalJson.Switched(operation, installed, effectObserved: false);
         }
         return await DispatchInstallAsync(operation, appId, effectBoundary, cancellationToken)
             .ConfigureAwait(false);
@@ -675,7 +675,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .Select(game => game.AppId).Distinct(StringComparer.Ordinal).ToArray();
         if (remaining.Length != 0)
             return ExternalJson.Failure(operation, "steam_active_downloads_remain", active.Length > 0);
-        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
+        return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteNumber("canceledCount", active.Length);

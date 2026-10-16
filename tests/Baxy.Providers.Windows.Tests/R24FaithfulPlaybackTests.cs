@@ -82,6 +82,7 @@ public sealed class R24FaithfulPlaybackTests
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.EffectObserved, Is.False, "nothing was pressed");
+            Assert.That(receipt.StateAlreadyReached, Is.True, "already playing is the request done, not unobserved");
             Assert.That(result.GetProperty("alreadyPlaying").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("title").GetString(), Is.EqualTo("Los Bunkers - Vida de perros"));
             Assert.That(result.GetProperty("observedNowPlaying").GetString(), Is.EqualTo("vida de perros de los bunkers"));
@@ -147,7 +148,7 @@ public sealed class R24FaithfulPlaybackTests
     [TestCase("https://es.wikipedia.org/wiki/Cercan%C3%ADas_Madrid", "Cercanías Madrid - Wikipedia - Opera", false)]
     [TestCase("https://www.google.com/maps?q=madrid", "madrid - Google Maps - Opera", false)]
     public void ASearchTitleArrivesOnlyWithEveryWordSearched(string target, string title, bool arrives) =>
-        Assert.That(UserBrowserSurface.SearchTitleArrives(new Uri(target), title, "Opera", Engines), Is.EqualTo(arrives));
+        Assert.That(UserBrowserSurface.SearchTitleArrives(new Uri(target), title, "Opera"), Is.EqualTo(arrives));
 
     // Revisión 1 r24u (bloqueante 2): the words are looked for only in the page part of the title, never in the
     // browser's own segment nor in a page that merely names them.
@@ -168,7 +169,7 @@ public sealed class R24FaithfulPlaybackTests
     [TestCase("https://www.google.com/search?q=opera", "Opera de París en vivo - YouTube - Opera", "Opera", false)]
     [TestCase("https://www.google.com/search?q=clima+curico", "clima curicó en vivo - YouTube - Opera", "Opera", false)]
     public void ASearchTitleIsReadWithoutTheBrowsersSegment(string target, string title, string? segment, bool arrives) =>
-        Assert.That(UserBrowserSurface.SearchTitleArrives(new Uri(target), title, segment, Engines), Is.EqualTo(arrives));
+        Assert.That(UserBrowserSurface.SearchTitleArrives(new Uri(target), title, segment), Is.EqualTo(arrives));
 
     [Test]
     public void TheBrowsersSegmentIsLearnedFromTheTitlesBeforeTheLink()
@@ -190,12 +191,12 @@ public sealed class R24FaithfulPlaybackTests
     {
         Assert.Multiple(() =>
         {
-            Assert.That(SearchAddresses.SearchedText(new Uri("https://duckduckgo.com/?q=pivot+table"), Engines),
+            Assert.That(SearchAddresses.SearchedText(new Uri("https://duckduckgo.com/?q=pivot+table")),
                 Is.EqualTo("pivot table"));
-            Assert.That(SearchAddresses.SearchedText(new Uri("https://search.yahoo.com/search?p=hola"), Engines),
+            Assert.That(SearchAddresses.SearchedText(new Uri("https://search.yahoo.com/search?p=hola")),
                 Is.EqualTo("hola"));
-            Assert.That(SearchAddresses.SearchedText(new Uri("https://www.google.com/search?tbm=isch"), Engines), Is.Null);
-            Assert.That(SearchAddresses.SearchedText(new Uri("https://notgoogle.com/search?q=x"), Engines), Is.Null);
+            Assert.That(SearchAddresses.SearchedText(new Uri("https://www.google.com/search?tbm=isch")), Is.Null);
+            Assert.That(SearchAddresses.SearchedText(new Uri("https://notgoogle.com/search?q=x")), Is.Null);
         });
     }
 

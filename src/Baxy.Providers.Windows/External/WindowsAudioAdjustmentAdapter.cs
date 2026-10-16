@@ -294,7 +294,7 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
                 writer.WriteString("authority", "windows_core_audio_session_postread");
                 writer.WriteEndObject();
             });
-            return ValueTask.FromResult(ExternalJson.Success(
+            return ValueTask.FromResult(ExternalJson.Switched(
                 operation, result, effectObserved: adjusted.Changed));
         }
         catch (OperationCanceledException) when (

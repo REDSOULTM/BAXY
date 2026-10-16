@@ -287,7 +287,6 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                         json.WriteString("provider", "youtube"); json.WriteString("query", query);
                         json.WriteString("title", title ?? query); json.WriteString("playbackStatus", "playing");
                         json.WriteBoolean("titleObserved", title is not null);
-                        json.WriteString("playerLog", logFile);
                         json.WriteString("progressClock", clockAdvanced ? "audio_clock" : "demuxer_reader");
                         json.WriteNumber("processId", player.Id);
                         json.WriteString("authority", "yt_dlp_mpv_ipc_postread");

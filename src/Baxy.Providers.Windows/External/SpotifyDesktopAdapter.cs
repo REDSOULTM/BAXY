@@ -181,7 +181,7 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                     return WithDiagnostic(failure, response.RootElement);
                 }
                 // BAXY Renew audit 2026-10-15 (S4): an exact title the client was already playing is answered with
-                // nothing pressed; the receipt says so and carries the script's own effect (none), never a press.
+                // nothing pressed: the request already reached (alreadyPlaying, changed:false), never a press.
                 bool alreadyPlaying = response.RootElement.TryGetProperty("alreadyPlaying", out JsonElement already)
                     && already.ValueKind == JsonValueKind.True;
                 JsonElement result = ExternalJson.Create(writer =>
@@ -207,7 +207,9 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                     writer.WriteNumber("processId", response.RootElement.GetProperty("processId").GetInt32());
                     writer.WriteString("authority", "spotify_windows_uia_postread"); writer.WriteEndObject();
                 });
-                return ExternalJson.Success(operation, result, effectObserved: effect);
+                return alreadyPlaying
+                    ? ExternalJson.Switched(operation, result, effect)
+                    : ExternalJson.Success(operation, result, effectObserved: effect);
             }
             return effectBoundary.Failure(
                 operation, "spotify_exact_selection_not_verified");

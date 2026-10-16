@@ -49,11 +49,11 @@ internal static class SearchAddresses
     /// What <paramref name="address"/> searches when it is the results page of a known engine (its host, one of its
     /// paths, its parameter with a value); null for any other address.
     /// </summary>
-    internal static string? SearchedText(Uri address, IReadOnlyList<SearchAddress>? engines = null)
+    internal static string? SearchedText(Uri address)
     {
         string host = address.Host.Trim().TrimEnd('.').ToLowerInvariant();
         string path = Uri.UnescapeDataString(address.AbsolutePath).TrimEnd('/');
-        foreach (SearchAddress engine in engines ?? All)
+        foreach (SearchAddress engine in All)
         {
             bool hostMatches = host == engine.Host || (engine.HostSuffix && host.EndsWith("." + engine.Host, StringComparison.Ordinal));
             if (!hostMatches || !engine.Paths.Contains(path, StringComparer.OrdinalIgnoreCase))

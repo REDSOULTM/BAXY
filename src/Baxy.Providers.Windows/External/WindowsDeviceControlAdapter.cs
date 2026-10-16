@@ -414,7 +414,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "bluetooth_identity_expired");
         DeviceInformation item = await DeviceInformation.CreateFromIdAsync(nativeId);
         if (item.Pairing.IsPaired)
-            return ExternalJson.Success(operation, BluetoothPairResult(id, item.Name), false);
+            return ExternalJson.Switched(operation, BluetoothPairResult(id, item.Name), effectObserved: false);
         if (!item.Pairing.CanPair) return ExternalJson.Failure(operation, "bluetooth_device_cannot_pair");
         effectBoundary.Cross(cancellationToken);
         DevicePairingResult paired = await item.Pairing.PairAsync(DevicePairingProtectionLevel.Default);
@@ -1740,8 +1740,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         ExternalEffectBoundary effectBoundary,
         CancellationToken token)
     {
-        // Round A: read first. Already disconnected is the request done with nothing changed (changed:false); it was
-        // an observed disconnection that never happened.
+        // Round A: read first. Already disconnected is the request done with nothing changed, never an observed
+        // disconnection: the state already reached, which the external handler hands on as changed:false.
         using (JsonDocument before = await WifiStatusAsync(token))
         {
             if (!Bool(before.RootElement, "connected"))
@@ -1963,7 +1963,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     "windows_uia_notifications_toggle_postread");
                 writer.WriteEndObject();
             });
-            return ExternalJson.Success(operation, quietResult, quietEffect);
+            return ExternalJson.Switched(operation, quietResult, quietEffect);
         }
 
         if (setting != "brightness")

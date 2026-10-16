@@ -132,16 +132,15 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
         }
         catch (TimeoutException)
         {
-            return effectBoundary.Failure(operation, "shell_command_timeout", effectObserved: true);
+            // Ronda B: a command stopped at its deadline ran without anything observed of what it did: what it changed
+            // before that is uncertain only when it may change something, like an overflow.
+            return Stopped(operation, "shell_command_timeout", mayChange);
         }
         catch (ExternalProcessOutputTooLargeException)
         {
             // The command ran and wrote more than the runner keeps, and was stopped there: what it changed before that
             // is uncertain when it may change something.
-            return new ExternalCapabilityReceipt(operation, false, false, null, "shell_command_output_too_large")
-            {
-                EffectMayHaveOccurred = mayChange,
-            };
+            return Stopped(operation, "shell_command_output_too_large", mayChange);
         }
         catch (Exception exception) when (exception is IOException or System.ComponentModel.Win32Exception)
         {
@@ -189,6 +188,9 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
             ? (normalized, false)
             : (normalized[..MaximumOutputCharacters], true);
     }
+
+    private static ExternalCapabilityReceipt Stopped(string operation, string errorCode, bool mayChange) =>
+        new(operation, false, false, null, errorCode) { EffectMayHaveOccurred = mayChange };
 
     private static string QuoteLiteral(string value) => "'" + value.Replace("'", "''") + "'";
 }

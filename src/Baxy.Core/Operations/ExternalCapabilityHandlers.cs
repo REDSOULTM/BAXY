@@ -318,8 +318,8 @@ internal sealed class ExternalCapabilityHandler(
                 causeCode: effectMayHaveOccurred ? "external_effect_ambiguous" : null);
         }
 
-        // v3 r6 lectores (t2-r4 c15): a switch whose verified post-read already showed the requested state is done with
-        // changed:false; with neither an observed effect nor that verified state the request is not done.
+        // v3 r6 lectores (t2-r4 c15): a switch whose verified post-read already showed the requested state is done;
+        // with neither an observed effect nor that verified state the request is not done.
         if (Definition.ProductDescriptor!.RequiresObservedEffect && !receipt.EffectObserved
             && !(receipt.StateAlreadyReached && !receipt.EffectMayHaveOccurred))
         {
@@ -331,6 +331,34 @@ internal sealed class ExternalCapabilityHandler(
                     : "external_effect_unobserved");
         }
 
-        return OperationOutcome.Success(receipt.Result.Value);
+        return OperationOutcome.Success(receipt.StateAlreadyReached
+            ? Unchanged(receipt.Result.Value)
+            : receipt.Result.Value);
+    }
+
+    // Ronda B: the state already reached travels to the model as changed:false in the result (a disconnection that
+    // was already done reads apart from one that happened); a result that says changed itself keeps its own.
+    private static JsonElement Unchanged(JsonElement result)
+    {
+        if (result.ValueKind != JsonValueKind.Object || result.TryGetProperty("changed", out _))
+        {
+            return result;
+        }
+
+        using var buffer = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            foreach (JsonProperty property in result.EnumerateObject())
+            {
+                property.WriteTo(writer);
+            }
+
+            writer.WriteBoolean("changed", false);
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.ToArray());
+        return document.RootElement.Clone();
     }
 }

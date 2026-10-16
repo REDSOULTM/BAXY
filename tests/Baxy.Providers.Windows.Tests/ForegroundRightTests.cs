@@ -21,7 +21,7 @@ public sealed class ForegroundRightTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(outcome, Is.EqualTo(new ForegroundRight.Outcome(true, 1, 0)));
+            Assert.That(outcome, Is.EqualTo(new ForegroundRight.Outcome(true)));
             Assert.That(steps, Is.EqualTo(new[] { "set" }));
         });
     }
@@ -38,7 +38,7 @@ public sealed class ForegroundRightTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(outcome, Is.EqualTo(new ForegroundRight.Outcome(true, 1, 1)));
+            Assert.That(outcome, Is.EqualTo(new ForegroundRight.Outcome(true)));
             Assert.That(steps, Is.EqualTo(new[] { "set", "bid", "set" }));
         });
     }
@@ -55,7 +55,7 @@ public sealed class ForegroundRightTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(outcome, Is.EqualTo(new ForegroundRight.Outcome(true, 2, 1)));
+            Assert.That(outcome, Is.EqualTo(new ForegroundRight.Outcome(true)));
             Assert.That(steps, Is.EqualTo(new[] { "set", "bid", "set", "pause", "set" }));
         });
     }
@@ -72,7 +72,7 @@ public sealed class ForegroundRightTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(outcome, Is.EqualTo(new ForegroundRight.Outcome(false, 2, 2)));
+            Assert.That(outcome, Is.EqualTo(new ForegroundRight.Outcome(false)));
             Assert.That(steps, Is.EqualTo(new[] { "set", "bid", "pause", "set", "bid" }));
         });
     }

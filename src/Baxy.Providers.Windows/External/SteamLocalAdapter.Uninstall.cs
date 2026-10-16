@@ -133,7 +133,7 @@ internal sealed partial class SteamLocalAdapter
                 writer.WriteString("store", "epic"); writer.WriteString("state", "already_installed");
                 writer.WriteString("authority", "epic_launcher_local_manifest"); writer.WriteEndObject();
             });
-            return ExternalJson.Success(operation, installed, effectObserved: false);
+            return ExternalJson.Switched(operation, installed, effectObserved: false);
         }
 
         if (ns is null || appName is null)

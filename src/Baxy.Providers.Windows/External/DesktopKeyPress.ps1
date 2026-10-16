@@ -323,11 +323,16 @@ public static class BaxyKeyInput {
     } | ConvertTo-Json -Compress
     if(-not $verified){exit 2}
 } catch {
+    # Ronda B: a check that stops the script before any input keeps its own cause and says nothing was sent; only a
+    # failure past those checks is told as the input's.
+    $cause=[string]$_.Exception.Message
+    $beforeInput=$cause -in @('foreground_window_missing','sendinput_layout_invalid','clipboard_empty','on_screen_keyboard_missing')
     [pscustomobject]@{
         version=1
         ok=$false
         effectObserved=$effect
-        error=$(if($PSCmdlet.ParameterSetName -eq 'Copy'){'clipboard_copy_sendinput_failed'}elseif($PSCmdlet.ParameterSetName -eq 'Paste'){'clipboard_paste_sendinput_failed'}else{'key_press_sendinput_failed'})
+        beforeInput=$beforeInput
+        error=$(if($beforeInput){$cause}elseif($PSCmdlet.ParameterSetName -eq 'Copy'){'clipboard_copy_sendinput_failed'}elseif($PSCmdlet.ParameterSetName -eq 'Paste'){'clipboard_paste_sendinput_failed'}else{'key_press_sendinput_failed'})
     } | ConvertTo-Json -Compress
     exit 2
 }
