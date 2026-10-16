@@ -473,3 +473,9 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     Sobre 11d7a5542 ya no cupo otra ronda antes del tope (08:49): ronda_final_auditoria queda como límite honesto
     (metas.json), con la tendencia medida (026c7af91: hallazgos en los 4 focos; 97df86ba1: sólo en proveedores y en
     una línea del banco). Producto final: 11d7a5542 (sin holdout propio; el holdout v2 es de 026c7af91).
+  - Rondas 4+4 sobre 11d7a5542 y 35d1f37f0 (08:26-08:38): el notebook, limpio en los 4 focos sobre 11d7a5542 y en
+    mente, App y proveedores sobre 35d1f37f0; el PC halló 1-2 por ronda en recibos del latido (plugged desconocido) y
+    del navegador propio (excepciones tras lanzarlo), arreglados en c2f39fc98 y 13eca00da, más Epic (owned por
+    instalado) en 35d1f37f0. Corrección de este registro: «Producto final: 97df86ba1» y «11d7a5542» de arriba
+    quedaron superados: el PRODUCTO FINAL es 13eca00da (sin holdout propio; el holdout v2 es de 026c7af91). Sobre
+    13eca00da no cupo otra ronda antes del tope (08:49): ronda_final_auditoria = límite honesto con su evidencia.

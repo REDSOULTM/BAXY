@@ -471,7 +471,7 @@
       }
     },
     "despues_del_holdout_v2": {
-      "commit": "11d7a5542",
+      "commit": "35d1f37f0",
       "que_es": "el congelado 026c7af91 + la prueba colgada arreglada en tests/ (0d798fa09) + los arreglos de honestidad de la ronda final (regla 3; 'una violación se arregla siempre'). El holdout v2 midió 026c7af91: estos cambios NO se midieron en el holdout (se corre una sola vez).",
       "practica_notebook_no_sellada": "Notebook, práctica no sellada (x2 por commit) contra 026c7af91: decisión 229 → 232 (a1c1ecde2) → 230 (f61f2da38) de 268, perdida estable P206 (lee el correo antes de responder), ganadas P105 y P173; escenas 29/39 → 31/39 en a1c1ecde2 y en f61f2da38; silencios 23/23 en a1c1ecde2, 22/23 en f61f2da38 (pierde el silencio estable P019, salud_sistema: llama lecturas sin que se las pidan, 0 de riesgo); latido 7/10 → 7 y 6 (a1c1ecde2) → 6 y 6 (f61f2da38), con L005 (recordatorio del laboratorio) perdido desde a1c1ecde2, coherente con el BEAT_ACT nuevo. Son el efecto medido de arreglos de honestidad (una violación se arregla siempre), no mejoras; d3a82c12c (x2): idéntico a f61f2da38 caso por caso (escenas 31 y 31, silencio 22/23 con P019 perdido, determinista; latido 6 y 6 con L005 perdido; 0 de riesgo; p50 ~2,44 s). dd4d09d40 y posteriores sólo tocan recibos de proveedores y el latido real, que la práctica simula: no se midieron en GPU.",
       "recursos": {
@@ -510,7 +510,7 @@
         }
       },
       "pendientes": [
-        "Una ronda 4+4 completa sin hallazgos sobre 11d7a5542 (no cupo antes del tope).",
+        "Una ronda 4+4 completa sin hallazgos sobre el commit final (ver ronda_final_auditoria).",
         "WindowsVisibleTooltipLocator y el resto de WindowsDeviceControlAdapter sin auditar a fondo en esta ronda.",
         "Recuperar con presentación el silencio P019 y el recordatorio L005 que perdieron los arreglos de texto (medido en práctica).",
         "Medir una vez el producto con ventana (WebView2) en VRAM: el margen medido es 186 MiB.",
