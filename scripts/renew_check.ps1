@@ -21,6 +21,8 @@ $runs = Join-Path $banks "runs"
 New-Item -ItemType Directory -Force -Path $runs | Out-Null
 $scripts = Join-Path $repo "scripts\renew"
 
+# With -File, «-Only e2e,falsedades» arrives as one string: split it, or no bench would match and none would run.
+$Only = @($Only | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 function Want([string]$name) { return $Only.Count -eq 0 -or $Only -contains $name }
 
 if ($Holdout) {
