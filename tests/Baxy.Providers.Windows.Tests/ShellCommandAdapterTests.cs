@@ -34,7 +34,7 @@ public sealed class ShellCommandAdapterTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(runner.Executable, Is.EqualTo("powershell.exe"));
             Assert.That(runner.Arguments, Does.Contain("-NoProfile").And.Contain("-NonInteractive"));
-            Assert.That(runner.Arguments[^1], Does.StartWith("Set-Location -LiteralPath '").And.Contain("; git status; exit $LASTEXITCODE"));
+            Assert.That(runner.Arguments[^1], Does.StartWith(PowerShellCommand.Utf8Output + "Set-Location -LiteralPath '").And.Contain("; git status; exit $LASTEXITCODE"));
             Assert.That(result.GetProperty("exitCode").GetInt32(), Is.EqualTo(0));
             Assert.That(result.GetProperty("succeeded").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("lineCount").GetInt32(), Is.EqualTo(2));
