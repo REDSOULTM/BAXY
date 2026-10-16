@@ -57,9 +57,6 @@ internal interface IUserInputPause
     /// </summary>
     long UnexplainedInputMs => 0;
 
-    /// <summary>The last input carrying BAXY's mark that reached the detector (0 when none, or not told apart).</summary>
-    long LastOwnInputMs => 0;
-
     /// <summary>
     /// How many inputs carrying BAXY's mark reached the detector so far: Windows routed each one to its window before
     /// Raw Input delivered it (0 when not told apart).
@@ -281,8 +278,6 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
                 _ = Interlocked.Decrement(ref _helpersSending);
         }
     }
-
-    public long LastOwnInputMs => _rawInput ? Interlocked.Read(ref _lastOwn) : 0;
 
     public long OwnInputCount => _rawInput ? Interlocked.Read(ref _ownCount) : 0;
 
