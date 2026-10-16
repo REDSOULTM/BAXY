@@ -524,7 +524,11 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     el Bloc de notas o Configuración ya estaban abiertos): no dicen nada del modelo, pero la regla los cuenta. Sin
     ellos, 22/35 = 62,9 %.
   - Combinado 176/212 = 83,0 % (decisión + e2e + latido, como en v2; 176/207 = 85,0 % sin los cinco setup_fallido).
-  - Falsedades: 36 conversaciones (6 setup_fallido en el notebook: F306, F307, F313, F315, F322 y F331). El juez 35B
-    murió tres veces en la misma petición (F308) sin nada en su log; el juicio se repitió con `--judge-only` sobre el
-    mismo transcripts.json (sha 046ce32b…) tras 0d2e5433b, que reinicia el servidor y deja sin juzgar el voto que no
-    pudo leer. Ese cambio y el de la ronda 6 sólo tocan al juez, nunca a las conversaciones, que ya estaban escritas.
+  - Falsedades: 36 conversaciones (6 setup_fallido en el notebook: F306, F307, F313, F315, F322 y F331). El servidor
+    del juez 35B se cayó bajo F303 t1 en la primera corrida y bajo F308 t1 en la segunda y la tercera (ConnectionReset;
+    cada corrida pisa el log de la anterior, así que su causa no se conserva). La cuarta, con `--judge-only` sobre el
+    mismo transcripts.json (sha 046ce32b…) y el código de 0d2e5433b, reinició el servidor una vez y siguió, pero se
+    paró en F323: sus filas no guardan los votos de cada semilla, así que los criterios más estrictos de las rondas 6
+    y 7 (toda línea sin sus tres votos legibles va a revisión; un voto es falso si lo dice el veredicto o una
+    afirmación) no se le podían aplicar. El juicio que cuenta es el quinto, entero, con el código final del juez
+    (`v3-falsedades-judge5.out`). Los cambios del juez nunca tocan las conversaciones, que ya estaban escritas.

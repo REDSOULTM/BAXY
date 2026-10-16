@@ -29,7 +29,9 @@ internal sealed class NetworkPortHandler(INetworkPortProvider provider) : IOpera
             writer.WriteNumber("version", 1);
             writer.WriteNumber("firstObservationCount", snapshot.FirstObservationCount);
             writer.WriteNumber("secondObservationCount", snapshot.SecondObservationCount);
-            writer.WriteNumber("stableCount", snapshot.Endpoints.Count);
+            writer.WriteNumber("stableCount", snapshot.StableCount);
+            // Ronda final 7 (regla 3): the limit leaves some out.
+            if (snapshot.StableCount > snapshot.Endpoints.Count) writer.WriteBoolean("truncated", true);
             writer.WriteStartArray("endpoints");
             foreach (NetworkPortEndpoint endpoint in snapshot.Endpoints)
             {

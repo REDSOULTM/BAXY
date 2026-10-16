@@ -374,7 +374,8 @@ internal sealed class SearchNotesHandler(INoteStore store) : NoteHandlerBase(sto
     {
         NoteSearchArguments arguments = Parse(invocation.Arguments, CoreJsonContext.Default.NoteSearchArguments);
         int limit = arguments.Limit ?? 20;
-        NoteSummaryRecord[] found = Store.Search(arguments.Query, arguments.IncludeTrashed ?? false, limit).ToArray();
+        NoteSearchResult search = Store.Search(arguments.Query, arguments.IncludeTrashed ?? false, limit);
+        NoteSummaryRecord[] found = search.Notes.ToArray();
         foreach (NoteSummaryRecord summary in found)
         {
             NoteRecord verified = Store.Read(summary.Id, includeTrashed: true);
@@ -389,7 +390,8 @@ internal sealed class SearchNotesHandler(INoteStore store) : NoteHandlerBase(sto
         }
 
         NoteSummaryResult[] notes = found.Select(ToSummary).ToArray();
-        var result = new NoteListResult(notes, notes.Length, notes.Length, "search", limit, 0, null);
+        // Ronda final 7 (regla 3): totalCount is how many match, not how many the limit let through.
+        var result = new NoteListResult(notes, notes.Length, search.MatchCount, "search", limit, 0, null);
         return OperationOutcome.Success(
             JsonSerializer.SerializeToElement(result, CoreJsonContext.Default.NoteListResult));
     }

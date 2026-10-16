@@ -19,15 +19,18 @@ public sealed record LocalTaskRecord(
     DateTimeOffset UpdatedAtUtc,
     long Version);
 
+// Ronda final 7: the tasks listed (at most the limit) and how many match.
+public sealed record LocalTaskQuery(IReadOnlyList<LocalTaskRecord> Tasks, int MatchCount);
+
 public interface ILocalTaskStore
 {
     LocalTaskRecord Create(string title, string details, string? due);
 
     LocalTaskRecord Read(Guid id, bool includeDeleted = false);
 
-    IReadOnlyList<LocalTaskRecord> List(TaskListStatus status, bool includeDeleted, int limit);
+    LocalTaskQuery List(TaskListStatus status, bool includeDeleted, int limit);
 
-    IReadOnlyList<LocalTaskRecord> Search(string query, TaskListStatus status, int limit);
+    LocalTaskQuery Search(string query, TaskListStatus status, int limit);
 
     LocalTaskRecord Update(Guid id, long expectedVersion, string title, string details, string? due);
 

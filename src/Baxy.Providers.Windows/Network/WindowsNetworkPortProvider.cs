@@ -8,7 +8,9 @@ public sealed record NetworkPortEndpoint(string Protocol, string Address, int Po
 public sealed record NetworkPortSnapshot(
     IReadOnlyList<NetworkPortEndpoint> Endpoints,
     int FirstObservationCount,
-    int SecondObservationCount);
+    int SecondObservationCount,
+    // Ronda final 7: endpoints seen in both reads, the first «limit» of them listed.
+    int StableCount);
 
 public interface INetworkPortProvider
 {
@@ -42,10 +44,9 @@ public sealed class WindowsNetworkPortProvider : INetworkPortProvider
             .OrderBy(endpoint => endpoint.Port)
             .ThenBy(endpoint => endpoint.Protocol, StringComparer.Ordinal)
             .ThenBy(endpoint => endpoint.Address, StringComparer.Ordinal)
-            .Take(limit)
             .ToArray();
         return ValueTask.FromResult(new NetworkPortSnapshot(
-            stable, first.Count, second.Count));
+            stable.Take(limit).ToArray(), first.Count, second.Count, stable.Length));
     }
 }
 

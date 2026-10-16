@@ -213,6 +213,8 @@ internal static class FilesystemResultJson
         }
         writer.WriteEndArray();
         writer.WriteNumber("count", result.Count);
+        writer.WriteNumber("totalCount", result.TotalCount);
+        writer.WriteBoolean("hasMore", result.TotalCount > result.Count);
     });
 
     private static void WriteEntry(Utf8JsonWriter writer, FilesystemEntry entry)

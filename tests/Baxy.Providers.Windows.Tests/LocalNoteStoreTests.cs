@@ -41,8 +41,8 @@ public sealed class LocalNoteStoreTests
         NoteRecord content = store.Create("Ideas", "revisar atlas mañana");
         store.Trash(content.Id);
 
-        IReadOnlyList<NoteSummaryRecord> active = store.Search("ATLAS", false, 10);
-        IReadOnlyList<NoteSummaryRecord> all = store.Search("atlas", true, 10);
+        IReadOnlyList<NoteSummaryRecord> active = store.Search("ATLAS", false, 10).Notes;
+        IReadOnlyList<NoteSummaryRecord> all = store.Search("atlas", true, 10).Notes;
 
         Assert.Multiple(() =>
         {

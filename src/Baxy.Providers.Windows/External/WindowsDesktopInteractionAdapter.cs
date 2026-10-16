@@ -836,6 +836,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 bool ok = root.TryGetProperty("ok", out JsonElement okValue) && okValue.ValueKind == JsonValueKind.True;
                 if (!ok && error is "visible_control_identity_stale" or "active_window_not_found")
                     return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
+                // Ronda final 7: the lookup was cut short before anything was set: not found is not said.
+                if (!ok && error == "visible_lookup_timeout")
+                    return ExternalJson.FailureBeforeEffect(operation, "visible_lookup_timeout");
                 // SetValue refused: nothing was set, the field's own window may still take the text by messages.
                 if (!ok && error != "field_setvalue_refused")
                     return effectBoundary.Failure(operation, error is { Length: > 0 } ? error : "field_no_receipt", true);
@@ -945,6 +948,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             bool ok = root.TryGetProperty("ok", out JsonElement okValue) && okValue.ValueKind == JsonValueKind.True;
             if (!ok && error is "visible_control_identity_stale" or "active_window_not_found")
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
+            if (!ok && error == "visible_lookup_timeout")
+                return ExternalJson.FailureBeforeEffect(operation, "visible_lookup_timeout");
             if (!ok)
                 return effectBoundary.Failure(operation, error is { Length: > 0 } ? error : "field_no_receipt", true);
             // Auditoría C9: no entry is called so (folded); nothing was chosen, and the list's entries go back as they read.

@@ -75,14 +75,14 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 AttributesToSkip = FileAttributes.ReparsePoint,
                 IgnoreInaccessible = false,
             };
-            FilesystemEntry[] entries = Directory.EnumerateFileSystemEntries(_root, "*", options)
+            string[] matching = Directory.EnumerateFileSystemEntries(_root, "*", options)
                 .Where(path => !IsReserved(path)
                     && Path.GetFileName(path).Contains(normalized, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(path => Path.GetRelativePath(_root, path), StringComparer.OrdinalIgnoreCase)
-                .Take(limit)
-                .Select(IssueEntry)
                 .ToArray();
-            return new FilesystemListResult(entries, entries.Length);
+            FilesystemEntry[] entries = matching.Take(limit).Select(IssueEntry).ToArray();
+            // Ronda final 7 (regla 3): the receipt says how many match, so a cut list is never read as all of them.
+            return new FilesystemListResult(entries, entries.Length, TotalCount: matching.Length);
         }
     }
 
@@ -291,15 +291,17 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         if (limit is < 1 or > 50) throw Error("invalid_limit");
         lock (_gate)
         {
-            BackupReceipt[] backups = Directory.EnumerateFiles(
+            FileInfo[] all = Directory.EnumerateFiles(
                     _backups, "backup_????????????????????????????????.bin", SearchOption.TopDirectoryOnly)
                 .Select(path => new FileInfo(path))
                 .OrderByDescending(static info => info.LastWriteTimeUtc)
                 .ThenBy(static info => info.Name, StringComparer.Ordinal)
+                .ToArray();
+            BackupReceipt[] backups = all
                 .Take(limit)
                 .Select(info => VerifyBackupUnsafe(Path.GetFileNameWithoutExtension(info.Name)))
                 .ToArray();
-            return new BackupListResult(backups, backups.Length);
+            return new BackupListResult(backups, backups.Length, all.Length);
         }
     }
 

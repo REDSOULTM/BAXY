@@ -88,8 +88,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             .GroupBy(item => item.Length)
             .Where(group => group.Count() > 1)
             .SelectMany(group => group)
-            .Take(10_000)
+            .Take(10_001)
             .ToArray();
+        // Ronda final 7 (regla 3): past 10 000 candidates the rest is not hashed, so the groups are not all of them.
+        bool candidatesCapped = candidates.Length > 10_000;
+        if (candidatesCapped)
+            candidates = candidates[..10_000];
         var hashed = new List<(string Label, string Path, long Length, string Sha256)>();
         foreach (var candidate in candidates)
         {
@@ -100,9 +104,11 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             hashed.Add((candidate.Label, candidate.Path, candidate.Length,
                 Convert.ToHexStringLower(SHA256.HashData(stream))));
         }
-        var groups = hashed
+        var found = hashed
             .GroupBy(item => (item.Length, item.Sha256))
             .Where(group => group.Count() > 1)
+            .ToArray();
+        var groups = found
             .OrderByDescending(group => group.Key.Length)
             .ThenBy(group => group.Key.Sha256, StringComparer.Ordinal)
             .Take(limit)
@@ -112,7 +118,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteNumber("groupCount", groups.Length); writer.WriteStartArray("groups");
+            writer.WriteNumber("groupCount", groups.Length);
+            // Ronda final 7 (regla 3): how many were found, and whether the listing or the search was cut.
+            writer.WriteNumber("groupsFound", found.Length);
+            if (found.Length > groups.Length) writer.WriteBoolean("truncated", true);
+            if (candidatesCapped) writer.WriteBoolean("candidatesCapped", true);
+            writer.WriteStartArray("groups");
             foreach (var group in groups)
             {
                 writer.WriteStartObject(); writer.WriteNumber("size", group[0].Length);

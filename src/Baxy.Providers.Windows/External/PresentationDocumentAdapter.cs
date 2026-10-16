@@ -46,6 +46,7 @@ internal sealed class PresentationDocumentAdapter : IExternalOperationAdapter
         if (!arguments.TryGetProperty("slides", out JsonElement slidesElement) || slidesElement.ValueKind != JsonValueKind.Array)
             return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(operation, "presentation_argument_invalid"));
         var slides = new List<(string Title, string[] Bullets)>();
+        int linesLeftOut = 0;
         foreach (JsonElement item in slidesElement.EnumerateArray())
         {
             if (item.ValueKind != JsonValueKind.String)
@@ -55,6 +56,7 @@ internal sealed class PresentationDocumentAdapter : IExternalOperationAdapter
             if (lines.Length == 0)
                 continue;
             slides.Add((lines[0], lines.Skip(1).Take(8).ToArray()));
+            linesLeftOut += Math.Max(0, lines.Length - 9);
         }
 
         if (slides.Count == 0 || slides.Count > 12)
@@ -104,6 +106,8 @@ internal sealed class PresentationDocumentAdapter : IExternalOperationAdapter
             writer.WriteString("folder", folder);
             writer.WriteString("name", Path.GetFileName(path));
             writer.WriteNumber("slideCount", observedSlides);
+            // Ronda final 7 (regla 3): a slide holds eight bullets; what was asked past them is not in the file.
+            if (linesLeftOut > 0) writer.WriteNumber("bulletLinesLeftOut", linesLeftOut);
             writer.WriteStartArray("slideTitles");
             foreach ((string slideTitle, _) in slides)
                 writer.WriteStringValue(slideTitle);

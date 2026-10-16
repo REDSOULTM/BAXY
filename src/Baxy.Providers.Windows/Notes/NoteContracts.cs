@@ -28,6 +28,9 @@ public sealed record NoteRecord(
 /// <summary>
 /// A bounded list projection that intentionally omits note content.
 /// </summary>
+// Ronda final 7: the notes listed (at most the limit) and how many match.
+public sealed record NoteSearchResult(IReadOnlyList<NoteSummaryRecord> Notes, int MatchCount);
+
 public sealed record NoteSummaryRecord(
     Guid Id,
     string Title,
@@ -91,7 +94,7 @@ public interface INoteStore
 
     NotePage ListPage(NoteListScope scope, int limit, int offset);
 
-    IReadOnlyList<NoteSummaryRecord> Search(string query, bool includeTrashed, int limit);
+    NoteSearchResult Search(string query, bool includeTrashed, int limit);
 
     NoteRecord Trash(Guid id);
 

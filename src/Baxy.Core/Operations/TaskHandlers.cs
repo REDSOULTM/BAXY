@@ -240,16 +240,16 @@ internal sealed class ListTasksHandler(ILocalTaskStore store) : TaskHandlerBase(
     {
         TaskListArguments arguments = Parse(invocation.Arguments, CoreJsonContext.Default.TaskListArguments);
         int limit = arguments.Limit ?? 20;
-        IReadOnlyList<LocalTaskRecord> found = Store.List(
+        LocalTaskQuery found = Store.List(
             ParseStatus(arguments.Status, TaskListStatus.Open),
             arguments.IncludeDeleted ?? false,
             limit);
         return VerifiedList(found, "tasks", limit);
     }
 
-    private OperationOutcome VerifiedList(IReadOnlyList<LocalTaskRecord> found, string mode, int limit)
+    private OperationOutcome VerifiedList(LocalTaskQuery found, string mode, int limit)
     {
-        foreach (LocalTaskRecord task in found)
+        foreach (LocalTaskRecord task in found.Tasks)
         {
             if (Store.Read(task.Id, includeDeleted: true) != task)
             {
@@ -257,7 +257,8 @@ internal sealed class ListTasksHandler(ILocalTaskStore store) : TaskHandlerBase(
             }
         }
 
-        var result = new TaskListResult(found.Select(ToSummary).ToArray(), found.Count, mode, limit);
+        var result = new TaskListResult(
+            found.Tasks.Select(ToSummary).ToArray(), found.Tasks.Count, found.MatchCount, mode, limit);
         return OperationOutcome.Success(JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.TaskListResult));
@@ -272,16 +273,17 @@ internal sealed class SearchTasksHandler(ILocalTaskStore store) : TaskHandlerBas
     {
         TaskSearchArguments arguments = Parse(invocation.Arguments, CoreJsonContext.Default.TaskSearchArguments);
         int limit = arguments.Limit ?? 20;
-        IReadOnlyList<LocalTaskRecord> found = Store.Search(
+        LocalTaskQuery found = Store.Search(
             arguments.Query,
             ParseStatus(arguments.Status, TaskListStatus.All),
             limit);
-        foreach (LocalTaskRecord task in found)
+        foreach (LocalTaskRecord task in found.Tasks)
         {
             if (Store.Read(task.Id) != task) return OperationOutcome.Failure("verification_failed");
         }
 
-        var result = new TaskListResult(found.Select(ToSummary).ToArray(), found.Count, "search", limit);
+        var result = new TaskListResult(
+            found.Tasks.Select(ToSummary).ToArray(), found.Tasks.Count, found.MatchCount, "search", limit);
         return OperationOutcome.Success(JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.TaskListResult));
@@ -329,5 +331,7 @@ internal sealed record TaskSummaryResult(
 internal sealed record TaskListResult(
     TaskSummaryResult[] Tasks,
     int Count,
+    // Ronda final 7 (regla 3): how many match; more than Count means the limit cut the list.
+    int TotalCount,
     string Mode,
     int Limit);

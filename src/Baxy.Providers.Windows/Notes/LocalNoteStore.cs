@@ -328,7 +328,7 @@ public sealed class LocalNoteStore : INoteStore
         }
     }
 
-    public IReadOnlyList<NoteSummaryRecord> Search(string query, bool includeTrashed, int limit)
+    public NoteSearchResult Search(string query, bool includeTrashed, int limit)
     {
         string normalized = ValidateAndNormalizeText(
             query, nameof(query), MaximumTitleUtf8Bytes,
@@ -339,16 +339,15 @@ public sealed class LocalNoteStore : INoteStore
         {
             EnsureSafeStorageTreeUnsafe();
             DeleteAbandonedTemporaryFilesUnsafe();
-            return EnumerateStoredIdsUnsafe()
+            var matching = EnumerateStoredIdsUnsafe()
                 .Select(ReadDocumentWithRecoveryUnsafe)
                 .Where(document => (includeTrashed || !document.TrashedAtUtc.HasValue)
                     && (document.Title.Contains(normalized, StringComparison.OrdinalIgnoreCase)
                         || document.Content.Contains(normalized, StringComparison.OrdinalIgnoreCase)))
                 .OrderByDescending(static document => document.UpdatedAtUtc)
                 .ThenBy(static document => document.Id)
-                .Take(limit)
-                .Select(ToSummary)
                 .ToArray();
+            return new NoteSearchResult(matching.Take(limit).Select(ToSummary).ToArray(), matching.Length);
         }
     }
 

@@ -397,7 +397,9 @@ internal sealed class NativeTurnLoop
     // hands it a place's address, which the application opens in its window and raises (place, ApplicationPlaceOpener);
     // whether one runs is read only as it opens, so without those three it is not held: the window that runs is left as
     // it is, or a new process starts and the front goes back where it was. input.keyboard.open starts osk.exe, which
-    // sends nothing to any window and does not take the focus (DesktopKeyPress.ps1): it is not held either.
+    // sends nothing to any window and does not take the focus (DesktopKeyPress.ps1): it is not held either. file.open
+    // with an application named hands the file to it, which raises its window when it already runs, and with
+    // foreground brings it to the front (ronda final 7): held, as app.open's.
     // system.settings.set with do_not_disturb opens ms-settings:notifications (it takes the front) and presses its switch
     // by UI Automation's Toggle (WindowsDeviceControlAdapter's DoNotDisturbScript): held; with airplane_mode it goes
     // through the radios API and reaches no window. The setting is a string by then: the catalog's schema checked it.
@@ -410,6 +412,8 @@ internal sealed class NativeTurnLoop
         || (operation == "app.open" && arguments["foreground"] is JsonValue front && IsTrue(front))
         || (operation == "app.open" && arguments["newDocument"] is JsonValue fresh && IsTrue(fresh))
         || (operation == "app.open" && arguments["place"] is JsonValue place && Named(place))
+        || (operation == "file.open" && ((arguments["foreground"] is JsonValue shown && IsTrue(shown))
+            || (arguments["application"] is JsonValue with && Named(with))))
         || (operation == "system.settings.set" && (string?)arguments["setting"] == "do_not_disturb")
         || (operation == "media.control" && !(arguments["sourceApp"] is JsonValue source && Named(source)
             && !string.Equals((string?)source, WindowsExternalCapabilityProvider.YouTubeTabMediaSource,

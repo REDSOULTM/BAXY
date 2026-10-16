@@ -2194,7 +2194,8 @@ function Add-ShownSubtree($node,$out){
   $activated=$script:Cache.Activate()
   try {
     $found=$null
-    try { $found=$node.FindAll([System.Windows.Automation.TreeScope]::Descendants,(Get-WalkCondition)) } catch { $found=$null }
+    # Ronda final 7 (regla 3): a subtree that could not be read leaves the view partial.
+    try { $found=$node.FindAll([System.Windows.Automation.TreeScope]::Descendants,(Get-WalkCondition)) } catch { $found=$null; $script:Partial=$true }
     if($null -ne $found){ foreach($el in $found){ $out.Add($el) } }
   } finally { $activated.Dispose() }
 }
@@ -2206,9 +2207,10 @@ function Add-ShownRows($list,$out){
   $rowsRead=$(if($script:AllRows){ [int]::MaxValue } else { $script:RowsRead })
   $seen=$false;$read=0
   $row=$null
-  try { $row=$walker.GetFirstChild($list,$script:RowCache) } catch { $row=$null }
+  # Ronda final 7 (regla 3): rows not read (a failed step, the rows' own deadline) leave the view partial.
+  try { $row=$walker.GetFirstChild($list,$script:RowCache) } catch { $row=$null; $script:Partial=$true }
   while($null -ne $row -and -not (Test-PastDeadline)){
-    if([DateTime]::UtcNow -gt $until){ break }
+    if([DateTime]::UtcNow -gt $until){ $script:Partial=$true; break }
     try {
       $isRow=$script:RowKinds -contains [string]$row.Cached.ControlType.ProgrammaticName
       if(-not $isRow){
@@ -2232,8 +2234,8 @@ function Add-ShownRows($list,$out){
         $state=$row.GetCachedPropertyValue([System.Windows.Automation.ExpandCollapsePattern]::ExpandCollapseStateProperty)
         if($state -is [System.Windows.Automation.ExpandCollapseState] -and $state -ne [System.Windows.Automation.ExpandCollapseState]::Collapsed -and $state -ne [System.Windows.Automation.ExpandCollapseState]::LeafNode){ Add-ShownSubtree $row $out }
       }
-    } catch [System.Windows.Automation.ElementNotAvailableException] {}
-    try { $row=$walker.GetNextSibling($row,$script:RowCache) } catch { $row=$null }
+    } catch [System.Windows.Automation.ElementNotAvailableException] { $script:Partial=$true }
+    try { $row=$walker.GetNextSibling($row,$script:RowCache) } catch { $row=$null; $script:Partial=$true }
   }
 }
 # Lo que se ve bajo $node, en orden de documento, sin entrar fila a fila en las listas largas: un hijo que no lleva
@@ -2497,6 +2499,8 @@ function Do-View($request){
       foreach($el in $all){ $merged.Add($el) }
       foreach($el in $reread.items){ $merged.Add($el) }
       $all=$merged;$keepOffscreen=($reread.from -eq 'unfiltered');$clientRoot=$reread.root
+      # Ronda final 7 (regla 3): a dialog read in part leaves the view partial too.
+      $viewPartial=($viewPartial -or $script:Partial)
     } else { $frameOnly=$true }
   }
   # Las TitleBar de la vista: un MenuBar o MenuItem dibujado dentro de una se mira por su cadena (Test-SystemMenu).
@@ -2641,9 +2645,12 @@ function Find-ById($root,[string]$controlId){
   # Ronda 20b, palanca 8: el contenido de un dialogo que la vista leyo bajo su ventana duena.
   $client=$script:LastView.client
   if($null -ne $client -and -not [System.Windows.Automation.Automation]::Compare($client,$root)){
+    $script:Partial=$false
     foreach($item in (Get-Descendants $client)){
       try { if((Get-Id $item) -eq $controlId){ return $item } } catch [System.Windows.Automation.ElementNotAvailableException] {}
     }
+    # Ronda final 7 (regla 3): the dialog's walk read part of it: the lookup did not decide.
+    if($script:Partial){ $script:LookupPartial=$true }
   }
   return $null
 }
@@ -3680,7 +3687,10 @@ function Find-ScrollOwner($element,$root){
 function Do-Scroll($request){
   $target=Get-Root ([long]$request.hwnd)
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
+  # Ronda final 7 (regla 3): a lookup cut short (its deadline, a partial walk) never says the control is gone.
+  $script:LookupPartial=$false
   $element=Find-ById $target.root ([string]$request.controlId)
+  if($null -eq $element -and $script:LookupPartial){ return @{ ok=$false; error='visible_lookup_timeout' } }
   if($null -eq $element){ return @{ ok=$false; error='visible_control_identity_stale' } }
   $owner=Find-ScrollOwner $element $target.root
   if($null -eq $owner){ return @{ ok=$false; error='scroll_pattern_unavailable' } }
@@ -3992,7 +4002,10 @@ function Wait-ValueSet([scriptblock]$read,[string]$text,[int]$limitMs){
 function Do-Field($request){
   $target=Get-Root ([long]$request.hwnd)
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
+  # Ronda final 7 (regla 3): a lookup cut short (its deadline, a partial walk) never says the control is gone.
+  $script:LookupPartial=$false
   $element=Find-ById $target.root ([string]$request.controlId)
+  if($null -eq $element -and $script:LookupPartial){ return @{ ok=$false; error='visible_lookup_timeout' } }
   if($null -eq $element){ return @{ ok=$false; error='visible_control_identity_stale' } }
   $replace=[bool]$request.replace
   $kind='';$className='';$native=0;$password=$false;$enabled=$true
@@ -4068,7 +4081,10 @@ function Do-Field($request){
 function Do-Focus($request){
   $target=Get-Root ([long]$request.hwnd)
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
+  # Ronda final 7 (regla 3): a lookup cut short (its deadline, a partial walk) never says the control is gone.
+  $script:LookupPartial=$false
   $element=Find-ById $target.root ([string]$request.controlId)
+  if($null -eq $element -and $script:LookupPartial){ return @{ ok=$false; error='visible_lookup_timeout' } }
   if($null -eq $element){ return @{ ok=$false; error='visible_control_identity_stale' } }
   if(-not (Test-InFront $target.hwnd)){ return @{ ok=$true; error=''; focused=$false } }
   # Un ComboBox escrito por su Edit interior (Do-Field): el foco va a ese Edit, como fue el valor.

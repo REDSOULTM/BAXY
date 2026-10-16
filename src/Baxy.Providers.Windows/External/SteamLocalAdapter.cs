@@ -155,18 +155,22 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             && queryValue.ValueKind == JsonValueKind.String
                 ? queryValue.GetString() ?? string.Empty
                 : string.Empty;
-        SteamLocalGame[] games = _snapshot()
+        SteamLocalGame[] matching = _snapshot()
             .Where(game => query.Length == 0
                 || game.AppId.Contains(query, StringComparison.OrdinalIgnoreCase)
                 || game.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase))
             .OrderBy(game => game.Name, StringComparer.CurrentCultureIgnoreCase)
-            .Take(limit)
             .ToArray();
+        SteamLocalGame[] games = matching.Take(limit).ToArray();
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("source", "steam_local_appmanifests");
-            writer.WriteNumber("count", games.Length); writer.WriteStartArray("games");
+            writer.WriteNumber("count", games.Length);
+            // Ronda final 7 (regla 3): the limit leaves some out: how many there are, and that the list is cut.
+            writer.WriteNumber("totalCount", matching.Length);
+            if (matching.Length > games.Length) writer.WriteBoolean("truncated", true);
+            writer.WriteStartArray("games");
             foreach (SteamLocalGame game in games)
             {
                 WriteGame(writer, game);

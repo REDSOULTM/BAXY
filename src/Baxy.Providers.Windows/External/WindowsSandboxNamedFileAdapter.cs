@@ -91,14 +91,19 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
                 index < leftLines.Length ? leftLines[index] : null,
                 index < rightLines.Length ? rightLines[index] : null,
                 StringComparison.Ordinal))
-            .Take(100).ToArray();
+            .ToArray();
+        int changedLineCount = changes.Length;
+        changes = changes.Take(100).ToArray();
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("leftName", Path.GetFileName(left));
             writer.WriteString("rightName", Path.GetFileName(right));
             writer.WriteString("leftSha256", Hash(left)); writer.WriteString("rightSha256", Hash(right));
-            writer.WriteNumber("changedLineCount", changes.Length); writer.WriteStartArray("changedLines");
+            // Ronda final 7 (regla 3): the count is of every changed line; the list stops at 100 and says so.
+            writer.WriteNumber("changedLineCount", changedLineCount);
+            if (changedLineCount > changes.Length) writer.WriteBoolean("changedLinesTruncated", true);
+            writer.WriteStartArray("changedLines");
             foreach (int line in changes) writer.WriteNumberValue(line + 1);
             writer.WriteEndArray(); writer.WriteString("authority", "sandbox_named_diff_hash_snapshot");
             writer.WriteEndObject();

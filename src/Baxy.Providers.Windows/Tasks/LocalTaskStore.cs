@@ -42,34 +42,36 @@ public sealed class LocalTaskStore : ILocalTaskStore
     public LocalTaskRecord Read(Guid id, bool includeDeleted = false) =>
         ToTask(ReadDocument(id, includeDeleted));
 
-    public IReadOnlyList<LocalTaskRecord> List(
+    public LocalTaskQuery List(
         TaskListStatus status,
         bool includeDeleted,
         int limit)
     {
         ValidateList(status, limit);
-        return _documents.List(includeDeleted ? NoteListScope.All : NoteListScope.Active)
+        return Page(_documents.List(includeDeleted ? NoteListScope.All : NoteListScope.Active)
             .Select(ToTask)
-            .Where(task => MatchesStatus(task, status))
-            .OrderByDescending(static task => task.UpdatedAtUtc)
-            .ThenBy(static task => task.Id)
-            .Take(limit)
-            .ToArray();
+            .Where(task => MatchesStatus(task, status)), limit);
     }
 
-    public IReadOnlyList<LocalTaskRecord> Search(string query, TaskListStatus status, int limit)
+    public LocalTaskQuery Search(string query, TaskListStatus status, int limit)
     {
         string normalized = NormalizeText(query, nameof(query), MaximumQueryUtf8Bytes, false, false);
         ValidateList(status, limit);
-        return _documents.List(NoteListScope.Active)
+        return Page(_documents.List(NoteListScope.Active)
             .Select(ToTask)
             .Where(task => MatchesStatus(task, status)
                 && (task.Title.Contains(normalized, StringComparison.OrdinalIgnoreCase)
-                    || task.Details.Contains(normalized, StringComparison.OrdinalIgnoreCase)))
+                    || task.Details.Contains(normalized, StringComparison.OrdinalIgnoreCase))), limit);
+    }
+
+    // Newest first, the first «limit» of them, with how many match (ronda final 7: a cut list says it is cut).
+    private static LocalTaskQuery Page(IEnumerable<LocalTaskRecord> matching, int limit)
+    {
+        LocalTaskRecord[] all = matching
             .OrderByDescending(static task => task.UpdatedAtUtc)
             .ThenBy(static task => task.Id)
-            .Take(limit)
             .ToArray();
+        return new LocalTaskQuery(all.Take(limit).ToArray(), all.Length);
     }
 
     public LocalTaskRecord Update(

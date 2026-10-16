@@ -398,7 +398,7 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
             return error switch
             {
                 "scroll_pattern_unavailable" => null,
-                "visible_control_identity_stale" or "active_window_not_found" =>
+                "visible_control_identity_stale" or "active_window_not_found" or "visible_lookup_timeout" =>
                     ExternalJson.FailureBeforeEffect(operation, error),
                 _ => effectBoundary.Failure(operation, "scroll_receipt_invalid"),
             };

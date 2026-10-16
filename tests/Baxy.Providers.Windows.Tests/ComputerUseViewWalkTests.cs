@@ -145,7 +145,9 @@ public sealed class ComputerUseViewWalkTests
             string scope = Function(script, "Get-LookupScope");
             Assert.That(named, Does.Contain("Get-LookupScope $root $offscreenBox"), "the click by label goes through the lookup scope");
             Assert.That(scope, Does.Contain("$script:AllRows=$true"), "the lookup reads every row, never the view's row cap");
-            Assert.That(scope, Does.Contain("return (Get-Descendants $root)"), "with an offscreen box it searches the whole tree");
+            Assert.That(scope, Does.Contain("$all=Get-Descendants $root"), "with an offscreen box it searches the whole tree");
+            Assert.That(scope, Does.Contain("if($script:Partial){ $script:LookupPartial=$true }"),
+                "a whole-tree walk read in part leaves the lookup undecided");
             Assert.That(named, Does.Contain("$item.Cached.IsOffscreen"), "read from the cache, never one call per node");
             Assert.That(named, Does.Not.Contain(".Current.IsOffscreen"));
             Assert.That(any, Does.Contain("Get-Descendants $root"), "the reveal searches the whole tree, shown or not");

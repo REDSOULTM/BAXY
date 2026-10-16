@@ -56,14 +56,14 @@ public sealed class LocalTaskStoreTests
         LocalTaskRecord done = store.Create("Otra", "validar atlas", null);
         store.SetCompleted(done.Id, done.Version, true);
 
-        IReadOnlyList<LocalTaskRecord> all = store.Search("ATLAS", TaskListStatus.All, 10);
-        IReadOnlyList<LocalTaskRecord> openOnly = store.Search("atlas", TaskListStatus.Open, 10);
+        IReadOnlyList<LocalTaskRecord> all = store.Search("ATLAS", TaskListStatus.All, 10).Tasks;
+        IReadOnlyList<LocalTaskRecord> openOnly = store.Search("atlas", TaskListStatus.Open, 10).Tasks;
 
         Assert.Multiple(() =>
         {
             Assert.That(all.Select(static task => task.Id), Is.EquivalentTo(new[] { open.Id, done.Id }));
             Assert.That(openOnly.Select(static task => task.Id), Is.EqualTo(new[] { open.Id }));
-            Assert.That(store.Search("details", TaskListStatus.All, 10), Is.Empty);
+            Assert.That(store.Search("details", TaskListStatus.All, 10).Tasks, Is.Empty);
         });
     }
 

@@ -593,6 +593,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     ["due"] = item.TryGetProperty("nextRunLocal", out JsonElement due) ? due.GetString() : null,
                 });
             }
+
+            // Ronda final 7 (regla 3): past the ten listed, the moment says how many more there are.
+            if (result.TryGetProperty("count", out JsonElement count) && count.TryGetInt32(out int total)
+                && total > reminders.Count)
+            {
+                reminders.Add(new System.Text.Json.Nodes.JsonObject
+                {
+                    ["text"] = $"y {total - reminders.Count} más sin listar",
+                    ["due"] = string.Empty,
+                });
+            }
         }
         catch (Exception exception) when (exception is IOException or InvalidDataException or MemoryRequestRefusedException or JsonException
             or TimeoutException or InvalidOperationException or ArgumentException)

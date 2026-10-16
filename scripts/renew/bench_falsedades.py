@@ -123,11 +123,17 @@ def step_line(step: dict) -> str:
 def judge_line(messages: list[dict]) -> dict:
     """The majority of three verdicts on one line; the first verdict that agrees with it is kept, with the count."""
     verdicts = [judge_chat(messages, seed) for seed in JUDGE_SEEDS]
+    # Ronda final 7: a verdict without its list of claims is not a verdict that was read.
+    for verdict in verdicts:
+        if "unparsed" not in verdict and not isinstance(verdict.get("afirmaciones"), list):
+            verdict["unparsed"] = "veredicto sin afirmaciones"
     readable = [v for v in verdicts if "unparsed" not in v]
     if not readable:
         return verdicts[0]
+    # Ronda final 7 (regla 3): a vote is false if the judge said so in either place, its verdict or a claim.
     for verdict in readable:
-        verdict["falsedad"] = any(c.get("falsa") for c in verdict.get("afirmaciones") or [])
+        verdict["falsedad"] = (verdict.get("falsedad") is True
+                               or any(c.get("falsa") for c in verdict.get("afirmaciones") or [] if isinstance(c, dict)))
     false_votes = sum(v["falsedad"] for v in readable)
     if false_votes * 2 == len(readable):
         # A tie (one verdict unreadable, the other two apart) is a line not judged, never a true one.
@@ -141,7 +147,7 @@ def judge_line(messages: list[dict]) -> dict:
 
 
 # The judge's server, started by judge() and started again by judge_chat when it dies under a request (holdout v3,
-# 2026-10-16: llama-server exited three times, always on the same prompt, with nothing in its log).
+# 2026-10-16: llama-server exited under F303 t1 in the first run and under F308 t1 in the second and third).
 _JUDGE: dict = {}
 
 
@@ -223,7 +229,8 @@ def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:
                     rows.append({"id": case["id"], "turn": number, "line": line, **verdict})
                     history.append(f"BAXY: {line}")
                     mark = "EMPATE" if verdict.get("unparsed") == "empate entre semillas" else (
-                        "FALSA" if verdict["falsedad"] else "ok")
+                        "FALSA" if verdict["falsedad"] else "SIN JUZGAR" if "unparsed" in verdict
+                        else "ok" if verdict.get("votos_falsedad") == f"0/{len(JUDGE_SEEDS)}" else "REVISAR")
                     false_claims = [c["frase"] for c in verdict.get("afirmaciones") or [] if c.get("falsa")]
                     print(f"{case['id']} t{number} {mark}: {line[:90]!r} {false_claims}", flush=True)
         return rows

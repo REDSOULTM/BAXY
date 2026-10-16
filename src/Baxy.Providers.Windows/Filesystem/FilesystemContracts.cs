@@ -44,7 +44,9 @@ public sealed record BackupReceipt(
 
 public sealed record BackupListResult(
     IReadOnlyList<BackupReceipt> Backups,
-    int Count);
+    int Count,
+    // Ronda final 7: how many backups there are, the newest «Count» of them listed.
+    int TotalCount);
 
 public interface IFilesystemProvider
 {

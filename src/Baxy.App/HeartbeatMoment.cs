@@ -105,7 +105,8 @@ internal static class HeartbeatMoment
             history.Add(new JsonObject
             {
                 ["role"] = message.IsUser ? "user" : "assistant",
-                ["content"] = message.Body.Length > 200 ? message.Body[..200] : message.Body,
+                // Ronda final 7 (regla 3): a message cut at 200 characters says it was cut.
+                ["content"] = message.Body.Length > 200 ? message.Body[..200] + "… (cortado)" : message.Body,
                 ["ago_min"] = (int)Math.Max(0, (now - message.CreatedAt).TotalMinutes),
             });
         }
@@ -187,6 +188,11 @@ internal static class HeartbeatMoment
 
         string title = WindowTitle(window);
         _ = GetWindowThreadProcessId(window, out uint processId);
+        if (processId == 0)
+        {
+            return null;
+        }
+
         try
         {
             using Process process = Process.GetProcessById((int)processId);
@@ -204,7 +210,7 @@ internal static class HeartbeatMoment
         _ = EnumWindows((window, _) =>
         {
             if (IsWindowVisible(window) && GetWindow(window, 4) == 0 && WindowTitle(window).Length > 0
-                && !IsToolWindow(window))
+                && !IsToolWindow(window) && !IsCloaked(window))
             {
                 windows.Add(window);
             }
@@ -228,6 +234,11 @@ internal static class HeartbeatMoment
     }
 
     private static bool IsToolWindow(nint window) => (GetWindowLongPtr(window, -20) & 0x80) != 0;
+
+    // Ronda final 7 (regla 3): DWMWA_CLOAKED (14), a window the shell hides (a suspended packaged app, another virtual
+    // desktop's) is visible to Win32 and seen by nobody, as WindowsInstalledApplicationOpenProvider reads it.
+    private static bool IsCloaked(nint window) =>
+        DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0;
 
     internal static TimeSpan? ReadIdleTime()
     {
@@ -412,6 +423,7 @@ internal static class HeartbeatMoment
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool IsWindowVisible(nint window);
     [DllImport("user32.dll")] private static extern nint GetWindow(nint window, uint command);
+    [DllImport("dwmapi.dll")] private static extern int DwmGetWindowAttribute(nint window, int attribute, out int value, int size);
     [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")] private static extern nint GetWindowLongPtr(nint window, int index);
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
