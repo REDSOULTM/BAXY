@@ -334,6 +334,52 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // Ronda B: a draft typed and not seen in the composer is cleared; the keys reached it, so the send and the draft
+    // both say an effect may have occurred (never a clean failure, never an observed effect).
+    [TestCase("message.send.test", """{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}""")]
+    [TestCase("message.draft", """{"channel":"whatsapp","recipient":"Letras","text":"Hola"}""")]
+    public async Task ADraftTypedAndNotSeenSaysAnEffectMayHaveOccurred(string operation, string arguments)
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            DesktopMessageObservation.DraftNotVerified());
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_draft_not_verified"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    [TestCase("SendInBurstAsync(")]
+    [TestCase("DraftInBurstAsync(")]
+    public void BothFlowsClearAnUnseenDraftWithThePossibleEffect(string flow)
+    {
+        string source = AdapterSource();
+        int start = source.IndexOf("private static async ValueTask<DesktopMessageObservation> " + flow, StringComparison.Ordinal);
+        int cleared = source.IndexOf("SendKey(VirtualKeyBack);", Math.Max(start, 0), StringComparison.Ordinal);
+        int returned = source.IndexOf("return ", Math.Max(cleared, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(start, Is.GreaterThan(0));
+            Assert.That(cleared, Is.GreaterThan(start));
+            Assert.That(source[returned..], Does.StartWith("return DesktopMessageObservation.DraftNotVerified();"));
+        });
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {
@@ -363,7 +409,7 @@ public sealed class DesktopMessagingAdapterTests
             ResolvedRecipient recipient,
             string text,
             CancellationToken cancellationToken) =>
-            throw new InvalidOperationException("no draft in these tests");
+            ValueTask.FromResult(send);
 
         public ValueTask<DesktopRecipientObservation> ResolveAsync(
             string channel,

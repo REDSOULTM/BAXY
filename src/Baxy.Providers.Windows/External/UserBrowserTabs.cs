@@ -93,8 +93,9 @@ internal sealed partial class UserBrowserSurface
     }
 
     /// <summary>
-    /// A new tab: Chromium's IDC_NEW_TAB by message; a browser that does not run it (Opera GX) gets its tab strip's
-    /// new-tab button pressed through UI Automation. Seen as one tab more.
+    /// A new tab: Chromium's IDC_NEW_TAB by message; a browser that does not run it (Opera GX, or a message read back
+    /// with as many tabs as before) gets its tab strip's new-tab button pressed through UI Automation. Seen as one tab
+    /// more.
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> NewTabAsync(TabStep step, CancellationToken cancellationToken)
     {
@@ -103,20 +104,24 @@ internal sealed partial class UserBrowserSurface
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         int count = before.Tabs.Count;
         bool OneMore(UserBrowserFrame frame) => frame.Tabs.Count > count;
-        UserBrowserFrame? after = null;
         if (PostTabCommand(step, BrowserCommandNewTab, AppCommandNew))
         {
             step.Boundary.Cross(CancellationToken.None);
-            after = await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false);
+            // The button is pressed only when a read shows the message was not run (as many tabs as before): a tab the
+            // message opened late is said, and a strip that cannot be read is never pressed for a second tab.
+            UserBrowserFrame? now = await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false)
+                ?? await ReadFrameAsync(step.Window, cancellationToken).ConfigureAwait(false);
+            if (now is not null && OneMore(now))
+                return Done(step, "tab_opened", now);
+            if (now is null || now.Tabs.Count != count)
+                return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
         }
-        if (after is null)
-        {
-            step.Boundary.Cross(CancellationToken.None);
-            UserBrowserAct pressed = await _platform.ActAsync(step.Window, "new_tab", cancellationToken)
-                .ConfigureAwait(false);
-            if (pressed.Step == "invoked")
-                after = await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false);
-        }
+        step.Boundary.Cross(CancellationToken.None);
+        UserBrowserAct pressed = await _platform.ActAsync(step.Window, "new_tab", cancellationToken)
+            .ConfigureAwait(false);
+        UserBrowserFrame? after = pressed.Step == "invoked"
+            ? await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false)
+            : null;
         return after is null
             ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
             : Done(step, "tab_opened", after);
@@ -271,8 +276,9 @@ internal sealed partial class UserBrowserSurface
             "scrolled" => Done(step, "scrolled", null, position: scrolled.After),
             // Already at that end, or a page that does not scroll: nothing moved, and it is said so.
             "boundary" or "not_scrollable" => ExternalJson.FailureBeforeEffect(step.Operation, ScrollBoundary),
-            "unmoved" => ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed),
-            _ => ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable),
+            "page_not_found" => ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable),
+            // Not seen moving, or UI Automation (or the script's deadline) failing, possibly after the scroll was sent.
+            _ => ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed),
         };
     }
 
@@ -289,8 +295,11 @@ internal sealed partial class UserBrowserSurface
             .ConfigureAwait(false);
         if (pressed.Step == "fullscreen_control_not_found")
             return ExternalJson.FailureBeforeEffect(step.Operation, FullscreenControlMissing);
-        if (pressed.Step != "invoked")
+        if (pressed.Step == "page_not_found")
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+        // UI Automation (or the script's deadline) failing, possibly after the button was pressed.
+        if (pressed.Step != "invoked")
+            return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
         for (int attempt = 0; attempt < FullscreenPolls && !coveredBefore; attempt++)
         {
             await _platform.DelayAsync(Poll, cancellationToken).ConfigureAwait(false);

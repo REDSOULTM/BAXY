@@ -264,7 +264,20 @@ public sealed class LocalMemoryExportWriter : IMemoryExportWriter
             published = true;
             candidate.Dispose();
             candidate = null;
-            EnsureExistingMatches(root, targetPath, utf8);
+            _writeHook?.Invoke(MemoryExportWriteStage.Published);
+            try
+            {
+                EnsureExistingMatches(root, targetPath, utf8);
+            }
+            catch (Exception exception) when (exception is MemoryExportException
+                or IOException
+                or UnauthorizedAccessException
+                or NotSupportedException
+                or SecurityException)
+            {
+                // Ronda B: the export is already in Documents\BAXY; only its read-back failed.
+                throw new MemoryExportPublishedUnverifiedException();
+            }
             return new MemoryExportResult(targetPath, recordCount, contentHash, Replayed: false);
         }
         finally
@@ -697,4 +710,17 @@ public sealed class LocalMemoryExportWriter : IMemoryExportWriter
 internal enum MemoryExportWriteStage
 {
     CandidateFlushed,
+    Published,
+}
+
+/// <summary>
+/// Ronda B: the export file was published (renamed into its place in Documents\BAXY) and its read-back failed: the
+/// failure says the export may be there, never a clean memory_export_unavailable.
+/// </summary>
+public sealed class MemoryExportPublishedUnverifiedException : MemoryExportException
+{
+    public MemoryExportPublishedUnverifiedException()
+        : base("The local memory export was published and did not read back.")
+    {
+    }
 }

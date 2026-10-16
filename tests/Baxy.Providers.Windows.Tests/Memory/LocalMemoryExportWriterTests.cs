@@ -67,7 +67,8 @@ public sealed class LocalMemoryExportWriterTests
             temporary.Path,
             stage =>
             {
-                Assert.That(stage, Is.EqualTo(MemoryExportWriteStage.CandidateFlushed));
+                if (stage != MemoryExportWriteStage.CandidateFlushed)
+                    return;
                 blocker = new FileStream(
                     targetPath,
                     FileMode.CreateNew,
@@ -107,8 +108,10 @@ public sealed class LocalMemoryExportWriterTests
         string movedRoot = Path.Combine(temporary.Path, "moved-private-export");
         var writer = new LocalMemoryExportWriter(
             temporary.Path,
-            _ =>
+            stage =>
             {
+                if (stage != MemoryExportWriteStage.CandidateFlushed)
+                    return;
                 Directory.Move(exportRoot, movedRoot);
                 Directory.CreateDirectory(exportRoot);
             });
@@ -122,6 +125,27 @@ public sealed class LocalMemoryExportWriterTests
             Assert.That(Directory.EnumerateFiles(exportRoot), Is.Empty);
             Assert.That(Directory.Exists(movedRoot), Is.False);
         });
+    }
+
+    // Ronda B: an export already published whose read-back fails says it may be there (it came out as a clean
+    // memory_export_unavailable).
+    [Test]
+    public void APublishedExportThatDoesNotReadBackSaysItMayBeThere()
+    {
+        using TemporaryDirectory temporary = new();
+        string invocationId = Guid.NewGuid().ToString("D");
+        string exportRoot = Path.Combine(temporary.Path, LocalMemoryExportWriter.ExportDirectoryName);
+        var writer = new LocalMemoryExportWriter(
+            temporary.Path,
+            stage =>
+            {
+                if (stage == MemoryExportWriteStage.Published)
+                    File.WriteAllText(Directory.EnumerateFiles(exportRoot, "*.json").Single(), "{}", new UTF8Encoding(false));
+            });
+
+        Assert.That(
+            () => writer.Export(new MemoryExportRequest(invocationId, [Record()])),
+            Throws.TypeOf<MemoryExportPublishedUnverifiedException>());
     }
 
     private static MemoryRecord Record()

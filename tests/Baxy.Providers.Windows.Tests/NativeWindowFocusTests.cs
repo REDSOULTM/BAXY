@@ -1,3 +1,4 @@
+using Baxy.Providers.Windows.Applications;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
 
@@ -64,6 +65,39 @@ public sealed class NativeWindowFocusTests
             Assert.That(calls, Is.EqualTo(state == "minimized"
                 ? new[] { "show:9", "focus" }
                 : new[] { "focus" }));
+        });
+    }
+
+    // Ronda B: a window act asked for moves the front on purpose, so the guard of an app.open started before it stops
+    // instead of handing the front back to the window that had it (it undid a window.focus asked within its 3 s).
+    [TestCase(WindowControlAction.Focus, "focus")]
+    [TestCase(WindowControlAction.Minimize, "show:6")]
+    [TestCase(WindowControlAction.Maximize, "show:3")]
+    [TestCase(WindowControlAction.Restore, "show:9")]
+    public void ARequestedWindowActStopsTheGuardOfAnOpening(WindowControlAction action, string call)
+    {
+        var calls = new List<string>();
+        var identity = new WindowIdentity((nint)0x1234, 42, 123, "example", DateTimeOffset.UnixEpoch);
+        var snapshot = new WindowSnapshot(identity, "normal", false, new WindowBounds(0, 0, 800, 600));
+        ForegroundHandBack.GuardStamp guard = ForegroundHandBack.Stamp();
+
+        bool result = Win32WindowControlPlatform.Act(snapshot, action,
+            (_, command) =>
+            {
+                calls.Add($"show:{command}");
+                return true;
+            },
+            _ =>
+            {
+                calls.Add("focus");
+                return true;
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.True);
+            Assert.That(calls, Is.EqualTo(new[] { call }));
+            Assert.That(ForegroundHandBack.Interrupted(guard), Is.True);
         });
     }
 

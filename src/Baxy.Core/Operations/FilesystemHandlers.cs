@@ -97,7 +97,21 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
     {
         if (result.Sha256 is not null)
         {
-            FilesystemEntry hashed = _provider.Hash(result.ResourceId);
+            FilesystemEntry hashed;
+            try
+            {
+                hashed = _provider.Hash(result.ResourceId);
+            }
+            catch (FilesystemProviderException exception) when (!result.ReachedState)
+            {
+                // The handle of what was just changed no longer resolves (resource_changed, path_not_found): the change
+                // was made, and may be on disk.
+                throw new FilesystemProviderException(exception.Code)
+                {
+                    Result = exception.Result,
+                    EffectMayHaveOccurred = true,
+                };
+            }
             if (!string.Equals(hashed.Sha256, result.Sha256, StringComparison.Ordinal))
             {
                 // The change was made unless the state was already there (round A: it was a clean failure).

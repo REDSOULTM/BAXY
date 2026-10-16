@@ -119,9 +119,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
             if (File.Exists(path)) throw Error("destination_exists");
             bool reached = Directory.Exists(path);
+            EnsureHandleRoom();
             if (!reached) Directory.CreateDirectory(path);
             EnsureSafePathIn(root, path, allowMissingLeaf: false);
-            return Mutation(Issue(path, root), path, reached);
+            return Mutation(path, root, reached);
         }
     }
 
@@ -158,7 +159,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string desiredHash = Hex(SHA256.HashData(bytes));
             string? current = !exists ? null : append ? Hex(SHA256.HashData(previous)) : HashFile(path);
             if (current is not null && string.Equals(current, desiredHash, StringComparison.Ordinal))
-                return Mutation(Issue(path, root), path, reachedState: true, previousVersionRecycled: false);
+                return Mutation(path, root, reachedState: true, previousVersionRecycled: false);
             bool conflict = current is null
                 ? expectedSha256 is not null
                 : append
@@ -170,6 +171,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                     current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append);
 
             // A refused write leaves nothing behind: the folder of a new file is made only now.
+            EnsureHandleRoom();
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
             string temporary = Path.Combine(
@@ -209,7 +211,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             }
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
-            return Mutation(Issue(path, root), path, reachedState: false, previousVersionRecycled: recycled);
+            return Mutation(path, root, reachedState: false, previousVersionRecycled: recycled);
         }
     }
 
@@ -250,6 +252,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 throw Error("version_conflict");
             string destination = Resolve(destinationRelativePath, allowMissingLeaf: true);
             if (File.Exists(destination) || Directory.Exists(destination)) throw Error("destination_exists");
+            EnsureHandleRoom();
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
             EnsureSafePath(Path.GetDirectoryName(destination)!, allowMissingLeaf: false);
             if (move) File.Move(source, destination);
@@ -258,7 +261,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 || !string.Equals(HashFile(destination), sourceHash, StringComparison.Ordinal)
                 || (move && File.Exists(source)))
                 throw AfterEffect("verification_failed");
-            return Mutation(Issue(destination), destination, reachedState: false);
+            return Mutation(destination, _root, reachedState: false);
         }
     }
 
@@ -314,12 +317,13 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string source = Path.Combine(_backups, backupId + ".bin");
             string destination = Resolve(destinationRelativePath, allowMissingLeaf: true);
             if (File.Exists(destination) || Directory.Exists(destination)) throw Error("destination_exists");
+            EnsureHandleRoom();
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
             EnsureSafePath(Path.GetDirectoryName(destination)!, allowMissingLeaf: false);
             File.Copy(source, destination);
             if (!string.Equals(HashFile(destination), receipt.Sha256, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
-            return Mutation(Issue(destination), destination, reachedState: false);
+            return Mutation(destination, _root, reachedState: false);
         }
     }
 
@@ -358,9 +362,25 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             includeHash && !directory ? HashFile(path) : null);
     }
 
-    private static FilesystemMutationResult Mutation(
-        string id, string path, bool reachedState, bool? previousVersionRecycled = null)
+    // The handle of what a mutation left, issued after its change: room for it was made sure before the change
+    // (EnsureHandleRoom), and a path gone or changed meanwhile fails with the change possibly on disk, unless the state
+    // was already there.
+    private FilesystemMutationResult Mutation(
+        string path, string root, bool reachedState, bool? previousVersionRecycled = null)
     {
+        string id;
+        try
+        {
+            id = Issue(path, root);
+        }
+        catch (FilesystemProviderException exception)
+        {
+            throw new FilesystemProviderException(exception.Code)
+            {
+                Result = exception.Result,
+                EffectMayHaveOccurred = !reachedState,
+            };
+        }
         FilesystemEntry entry = Entry(id, path, includeHash: File.Exists(path));
         return new FilesystemMutationResult(
             entry.ResourceId, entry.Name, entry.Kind, entry.Size, entry.Sha256, reachedState, previousVersionRecycled,
@@ -372,13 +392,20 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private string Issue(string path, string root)
     {
         EnsureSafePathIn(root, path, allowMissingLeaf: false);
-        Prune();
-        if (_handles.Count >= MaximumHandles) throw Error("handle_capacity_reached");
+        EnsureHandleRoom();
         string id = "fs_" + Guid.NewGuid().ToString("N");
         FileSystemInfo info = File.Exists(path) ? new FileInfo(path) : new DirectoryInfo(path);
         _handles[id] = new Handle(path, root, info.LastWriteTimeUtc, File.Exists(path) ? ((FileInfo)info).Length : 0,
             _time.GetUtcNow());
         return id;
+    }
+
+    // A full table of handles refuses; checked before a mutation's change too, so a change is never made whose handle
+    // cannot be issued (under the gate the count only shrinks until Issue).
+    private void EnsureHandleRoom()
+    {
+        Prune();
+        if (_handles.Count >= MaximumHandles) throw Error("handle_capacity_reached");
     }
 
     private string ResolveHandle(string id, bool requireFile)

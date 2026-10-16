@@ -1009,6 +1009,40 @@ public sealed class UserBrowserTests
         });
     }
 
+    // Ronda B: after IDC_NEW_TAB with no read showing one tab more, the button is pressed only when a read shows as many
+    // tabs as before; a strip that cannot be read is uncertain, never pressed for a second tab, and a late tab is said.
+    [Test]
+    public async Task ANewTabMessageNotSeenIsReadAgainBeforeTheButtonIsPressed()
+    {
+        var unreadable = new FakePlatform(Chrome);
+        unreadable.Frames.AddRange([Frame("doc-1", tabs: 2), null]);
+        var notRun = new FakePlatform(Chrome);
+        notRun.Frames.AddRange([.. Enumerable.Repeat(Frame("doc-1", tabs: 2), 6), Frame("doc-2", tabs: 3)]);
+        var late = new FakePlatform(Chrome);
+        late.Frames.AddRange([.. Enumerable.Repeat(Frame("doc-1", tabs: 2), 5), Frame("doc-2", tabs: 3)]);
+        using Harness first = new(unreadable);
+        using Harness second = new(notRun);
+        using Harness third = new(late);
+
+        ExternalCapabilityReceipt uncertain = await Control(first, "new_tab");
+        ExternalCapabilityReceipt pressed = await Control(second, "new_tab");
+        ExternalCapabilityReceipt lateTab = await Control(third, "new_tab");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(uncertain.Verified, Is.False);
+            Assert.That(uncertain.EffectMayHaveOccurred, Is.True);
+            Assert.That(uncertain.ErrorCode, Is.EqualTo(UserBrowserSurface.TabStepUnconfirmed));
+            Assert.That(unreadable.Acts, Is.Empty, "a strip that cannot be read is never pressed for a second tab");
+            Assert.That(pressed.Verified, Is.True);
+            Assert.That(notRun.BrowserCommands, Is.EqualTo(new[] { UserBrowserSurface.BrowserCommandNewTab }));
+            Assert.That(notRun.Acts, Is.EqualTo(new[] { "new_tab" }));
+            Assert.That(lateTab.Verified, Is.True);
+            Assert.That(lateTab.Result?.GetProperty("tabCount").GetInt32(), Is.EqualTo(3));
+            Assert.That(late.Acts, Is.Empty);
+        });
+    }
+
     [Test]
     public async Task TheActiveTabIsClosedWhereItIsAndSeenAsOneTabLess()
     {
@@ -1154,6 +1188,31 @@ public sealed class UserBrowserTests
             Assert.That(down.Result?.GetProperty("scrollPercent").GetDouble(), Is.EqualTo(21.0));
             Assert.That(end.ErrorCode, Is.EqualTo(UserBrowserSurface.ScrollBoundary));
             Assert.That(end.EffectObserved || end.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
+    // Ronda B: a failure of UI Automation or of the script (its deadline) may come after Scroll() or Invoke() was sent:
+    // it is uncertain, never «before the effect»; a page not found is before any act.
+    [TestCase("scroll_down", "uia_failed: ElementNotAvailableException", true)]
+    [TestCase("scroll_down", "script_failed", true)]
+    [TestCase("scroll_down", "page_not_found", false)]
+    [TestCase("fullscreen_video", "uia_failed: ElementNotAvailableException", true)]
+    [TestCase("fullscreen_video", "script_failed", true)]
+    [TestCase("fullscreen_video", "page_not_found", false)]
+    public async Task AFailureAfterTheActIsUncertain(string action, string step, bool mayHaveOccurred)
+    {
+        var platform = new FakePlatform(OperaGx) { ActResult = _ => new UserBrowserAct(step, -1, -1) };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await Control(harness, action);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.EqualTo(mayHaveOccurred));
+            Assert.That(receipt.ErrorCode, Is.EqualTo(mayHaveOccurred
+                ? UserBrowserSurface.TabStepUnconfirmed
+                : UserBrowserSurface.PageUnreadable));
         });
     }
 

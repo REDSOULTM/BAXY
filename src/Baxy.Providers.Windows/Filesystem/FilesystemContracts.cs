@@ -91,8 +91,9 @@ public class FilesystemProviderException(string code) : Exception(code)
     public JsonElement? Result { get; init; }
 
     /// <summary>
-    /// Round A: the call already wrote, moved or copied when it failed (a read-back that did not match), so the change
-    /// may be on disk; a refusal before any change leaves it false.
+    /// Round A: the call already wrote, moved or copied when it failed (a read-back that did not match; ronda B: or the
+    /// handle of what it changed that could not be issued or resolved), so the change may be on disk; a refusal before
+    /// any change leaves it false.
     /// </summary>
     public bool EffectMayHaveOccurred { get; init; }
 }
