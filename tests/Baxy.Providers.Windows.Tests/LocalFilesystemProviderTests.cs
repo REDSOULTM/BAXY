@@ -286,15 +286,72 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
-    // The real provider, except that its hash read-back never matches (or its transfer fails after moving).
+    // Ronda B: a full table of handles refuses a write, a new folder, a copy and a move before anything is touched,
+    // instead of after the change (it came out as a clean handle_capacity_reached with the change on disk).
+    [Test]
+    public void AFullTableOfHandlesRefusesBeforeTheChange()
+    {
+        using TemporaryDirectory temporary = new();
+        var provider = new LocalFilesystemProvider(temporary.Path);
+        FilesystemMutationResult source = provider.WriteText("origen.txt", "dato", null);
+        for (int issued = 1; issued < 512; issued++)
+            _ = provider.WriteText("origen.txt", "dato", null);
+
+        Assert.Multiple(() =>
+        {
+            foreach (TestDelegate change in new TestDelegate[]
+            {
+                () => provider.WriteText("nuevo/escrito.txt", "dato", null),
+                () => provider.CreateDirectory("carpeta", null),
+                () => provider.Transfer(source.ResourceId, "copia/copia.txt", source.Sha256!, move: false),
+                () => provider.Transfer(source.ResourceId, "movido/movido.txt", source.Sha256!, move: true),
+            })
+            {
+                Assert.That(change, Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("handle_capacity_reached")
+                    .And.Property(nameof(FilesystemProviderException.EffectMayHaveOccurred)).False);
+            }
+            Assert.That(Directory.GetFileSystemEntries(temporary.Path).Select(Path.GetFileName),
+                Is.EquivalentTo(new[] { "origen.txt", ".backups" }));
+            Assert.That(File.ReadAllText(Path.Combine(temporary.Path, "origen.txt")), Is.EqualTo("dato"));
+        });
+    }
+
+    // Ronda B: the handle of what was just written no longer resolving (the file changed or went meanwhile) says the
+    // change may be on disk; a write whose content was already there changed nothing.
+    [TestCase("nuevo.txt", true)]
+    [TestCase("dato.txt", false)]
+    public async Task AHandleThatNoLongerResolvesAfterAWriteSaysWhetherTheChangeMayBeOnDisk(string name, bool effectMayHaveOccurred)
+    {
+        using TemporaryDirectory temporary = new();
+        var provider = new MisreadingProvider(new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox")))
+        {
+            HashFailure = "resource_changed",
+        };
+        provider.WriteText("dato.txt", "igual", null);
+
+        OperationOutcome outcome = await Handle(
+            provider, "file.write", $$"""{"relativePath":"{{name}}","text":"igual"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("resource_changed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
+        });
+    }
+
+    // The real provider, except that its hash read-back never matches (or fails, or its transfer fails after moving).
     private sealed class MisreadingProvider(LocalFilesystemProvider inner) : IFilesystemProvider
     {
         internal bool TransferFailsAfterEffect { get; init; }
+        internal string? HashFailure { get; init; }
 
         public FilesystemListResult List(string relativeDirectory, int limit) => inner.List(relativeDirectory, limit);
         public FilesystemListResult Search(string query, int limit) => inner.Search(query, limit);
         public FilesystemTextResult ReadText(string resourceId, int maximumBytes) => inner.ReadText(resourceId, maximumBytes);
-        public FilesystemEntry Hash(string resourceId) => inner.Hash(resourceId) with { Sha256 = new string('0', 64) };
+        public FilesystemEntry Hash(string resourceId) => HashFailure is { } code
+            ? throw new FilesystemProviderException(code)
+            : inner.Hash(resourceId) with { Sha256 = new string('0', 64) };
         public FilesystemMutationResult CreateDirectory(string relativePath, string? folder) =>
             inner.CreateDirectory(relativePath, folder);
         public FilesystemMutationResult WriteText(
