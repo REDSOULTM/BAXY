@@ -7,8 +7,7 @@ namespace Baxy.App;
 /// <summary>
 /// BAXY's heartbeat (owner, 2026-10-15; OpenClaw's heartbeat): every five minutes and when something changes (an
 /// application opens, a file appears in Downloads, Windows' internet check changes, the battery runs low, the person
-/// leaves),
-/// the moment goes to the model, which decides by instinct. The five-minute look pauses while the person plays or the
+/// leaves or comes back), the moment goes to the model, which decides by instinct. The five-minute look pauses while the person plays or the
 /// GPU is busy; a change still wakes it. <c>BAXY_RENEW_HEARTBEAT=0</c> turns it off.
 /// </summary>
 internal sealed class Heartbeat : IAsyncDisposable
@@ -29,7 +28,7 @@ internal sealed class Heartbeat : IAsyncDisposable
     private HashSet<string> _windows = [];
     private string? _connectivity;
     private int? _battery;
-    private bool _away;
+    private readonly AwayWatch _awayWatch = new();
     private DateTimeOffset _lastBeat = DateTimeOffset.UtcNow;
     private Task _loop = Task.CompletedTask;
 
@@ -194,13 +193,12 @@ internal sealed class Heartbeat : IAsyncDisposable
             _battery = battery;
         }
 
-        bool away = (int?)pc["idle_min"] >= 10;
-        if (away && !_away)
+        TimeSpan idle = HeartbeatMoment.IdleTime();
+        if (_awayWatch.Look(DateTimeOffset.UtcNow, idle, HeartbeatMoment.Presence(out _) == HeartbeatMoment.Away)
+            is { } presence)
         {
-            Note($"user idle: {(int?)pc["idle_min"]} min");
+            Note(presence);
         }
-
-        _away = away;
     }
 
     private void FileAppeared(string? name)

@@ -7,6 +7,8 @@
     <Compile Include="..\TestInfrastructure\NtfsTestJunction.cs" Link="TestInfrastructure\NtfsTestJunction.cs" />
     <!-- The App has no test project: its notice of a silent turn is one file with no App dependency. -->
     <Compile Include="..\..\src\Baxy.App\SilenceNotice.cs" Link="App\SilenceNotice.cs" />
+    <!-- The heartbeat's reading of the person's absence and return: one file with no App dependency. -->
+    <Compile Include="..\..\src\Baxy.App\AwayWatch.cs" Link="App\AwayWatch.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />

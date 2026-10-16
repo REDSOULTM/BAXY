@@ -21,20 +21,26 @@ internal static class HeartbeatMoment
     internal const string Playing = "jugando";
     internal const string Watching = "viendo";
 
-    private static readonly TimeSpan AwayAfter = TimeSpan.FromMinutes(10);
-
     /// <summary>
-    /// Where a heartbeat's words go (owner, 2026-10-16): aloud whatever the person does, except while they play, are in a
-    /// call or watch something, when they are only a notification on screen.
+    /// Where a heartbeat's words go (owner, 2026-10-16): aloud whatever the person does, except while they are away,
+    /// play, are in a call or watch something, when they are only a notification on screen. The heartbeat of their
+    /// return (<see cref="AwayWatch"/>) follows the same rule: aloud when they come back to anything else.
     /// </summary>
-    internal static bool Speaks(string activity) => activity is not (Playing or InCall or Watching);
+    internal static bool Speaks(string activity) => activity is not (Away or Playing or InCall or Watching);
 
     internal static string Activity(out bool fullscreen, out bool gpuBusy)
     {
-        fullscreen = ForegroundFillsTheScreen();
         gpuBusy = GpuBusy();
+        string activity = Presence(out fullscreen);
+        return activity == Watching && gpuBusy ? Playing : activity;
+    }
+
+    /// <summary>What the person is doing, as far as no GPU reading is needed (a window filling the screen is watching).</summary>
+    internal static string Presence(out bool fullscreen)
+    {
+        fullscreen = ForegroundFillsTheScreen();
         // A call or a film goes on without the person's input: they are read before the idle time, or ten minutes into
-        // one the person would read as away and a heartbeat would speak over it (Speaks).
+        // one the person would read as away and a heartbeat would only notify of what it saw.
         if (MicrophoneHeldByAnotherProgram())
         {
             return InCall;
@@ -42,10 +48,10 @@ internal static class HeartbeatMoment
 
         if (fullscreen)
         {
-            return gpuBusy ? Playing : Watching;
+            return Watching;
         }
 
-        return IdleTime() >= AwayAfter ? Away : Free;
+        return IdleTime() >= AwayWatch.After ? Away : Free;
     }
 
     internal static JsonObject Observe(
@@ -194,7 +200,7 @@ internal static class HeartbeatMoment
 
     private static bool IsToolWindow(nint window) => (GetWindowLongPtr(window, -20) & 0x80) != 0;
 
-    private static TimeSpan IdleTime()
+    internal static TimeSpan IdleTime()
     {
         var info = new LastInputInfo { Size = (uint)Marshal.SizeOf<LastInputInfo>() };
         return GetLastInputInfo(ref info)

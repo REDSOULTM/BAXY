@@ -93,7 +93,8 @@ def quiet_activities() -> set[str]:
 
 
 def channel_for(activity: str, quiet: set[str]) -> str:
-    """The App's channel rule (HeartbeatMoment.Speaks): aloud, unless the person plays, is in a call or watches."""
+    """The App's channel rule (HeartbeatMoment.Speaks): aloud, unless the person is away, plays, is in a call or
+    watches. A scene's return («volvió tras N min ausente», as the App notes it) goes in its context's events."""
     return "notificacion" if activity in quiet else "voz"
 
 
