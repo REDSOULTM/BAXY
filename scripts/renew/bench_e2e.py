@@ -223,10 +223,13 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
     bounds = turn_from + [len(every)]
     for number in range(1, len(turn_from) + 1):
         window = range(bounds[number - 1], bounds[number])
-        turn_start = next((every[i]["t_ms"] for i in window if every[i]["type"] == "turn.start"), None)
+        start_at = next((i for i in window if every[i]["type"] == "turn.start"), None)
+        turn_start = every[start_at]["t_ms"] if start_at is not None else None
         for i in window:
             event = every[i]
-            if event["type"] != "speech.start":
+            # Ronda final: the late voice of a turn that timed out arrives before this turn's turn.start: it is not
+            # this turn's first sound (it gave negative latencies).
+            if event["type"] != "speech.start" or start_at is None or i < start_at:
                 continue
             stop = next((e for e in every[i + 1:] if e["type"] == "speech.end"), None)
             stop_ms = stop["t_ms"] if stop else 10**12

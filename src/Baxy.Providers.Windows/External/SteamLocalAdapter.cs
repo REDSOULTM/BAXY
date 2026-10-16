@@ -210,8 +210,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteString("title", game?.Name ?? title);
             // Ronda final: the local library cache is incomplete (see InstallNamedAsync), so a game absent from it is
             // absent from the cache, never «not owned».
-            if (owned || installed) writer.WriteBoolean("owned", true);
-            else if (appId is not null) writer.WriteBoolean("inLocalLibraryCache", false);
+            // An installed manifest is not the account's ownership (a shared or free game): only the cache says owned.
+            if (owned) writer.WriteBoolean("owned", true);
+            else if (appId is not null && !installed) writer.WriteBoolean("inLocalLibraryCache", false);
             writer.WriteBoolean("installed", installed);
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"

@@ -122,6 +122,10 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
 
         if (await IsInstalledAsync(package.Id, cancellationToken).ConfigureAwait(false))
         {
+            // Ronda final: the installed list is read by id alone; with a version asked, the one installed was never
+            // compared, so the state asked is not said to be reached (nothing ran).
+            if (version is not null)
+                return ExternalJson.FailureBeforeEffect(operation, "winget_installed_version_not_verified");
             return ExternalJson.Switched(operation, Receipt(requested, package, resolvedBy, processId: null),
                 effectObserved: false);
         }
