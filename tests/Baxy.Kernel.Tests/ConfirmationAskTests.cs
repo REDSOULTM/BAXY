@@ -30,6 +30,22 @@ public sealed class ConfirmationAskTests
     }
 
     [Test]
+    public void ACallWhoseQuestionIsNotPublishedIsTheTurnsAndNoWordsAnswerIt()
+    {
+        Assert.That(ConfirmationAsk.Asks(waiting: true, ConfirmationAsk.Unpublished, turnStarted: 40, personAt: 30),
+            Is.True);
+        Assert.That(ConfirmationAsk.Answers(ConfirmationAsk.Unpublished, personAt: long.MaxValue - 1), Is.False);
+    }
+
+    [Test]
+    public void OnlyWordsAfterTheQuestionWasPublishedAnswerIt()
+    {
+        Assert.That(ConfirmationAsk.Answers(askedAt: 35, personAt: 30), Is.False);
+        Assert.That(ConfirmationAsk.Answers(askedAt: 35, personAt: 35), Is.False);
+        Assert.That(ConfirmationAsk.Answers(askedAt: 35, personAt: 36), Is.True);
+    }
+
+    [Test]
     public void WithNothingWaitingNoLineIsAConfirmation()
     {
         Assert.That(ConfirmationAsk.Asks(waiting: false, askedAt: 50, turnStarted: 40, personAt: 30), Is.False);
