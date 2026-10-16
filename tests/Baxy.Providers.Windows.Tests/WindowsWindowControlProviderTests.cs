@@ -289,6 +289,31 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Round A: «cerrame todo» keeps only BAXY's own windows open; the receipt said «editorKeptOpen» of them.
+    [Test]
+    public async Task CloseAllSaysItKeptBaxysOwnWindowsAndNeverAnEditor()
+    {
+        var platform = new FakePlatform
+        {
+            Desktop =
+            [
+                new WindowSnapshot(
+                    new WindowIdentity((nint)0x99, 7, 638_880_000_000_000_000, "Baxy", DateTimeOffset.UnixEpoch),
+                    "normal", true, new WindowBounds(0, 0, 400, 600)),
+            ],
+        };
+
+        OperationOutcome outcome = await Run(new WindowCloseAllHandler(new WindowsWindowControlProvider(platform)), new { });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("keptOpen").GetInt32(), Is.EqualTo(1));
+            Assert.That(outcome.Result!.Value.GetProperty("keptProcesses")[0].GetString(), Is.EqualTo("Baxy"));
+            Assert.That(outcome.Result!.Value.TryGetProperty("editorKeptOpen", out _), Is.False);
+        });
+    }
+
     private static ValueTask<OperationOutcome> Run(IOperationHandler handler, object arguments) =>
         handler.ExecuteAsync(
             new OperationInvocation("request", "mission", "invocation", JsonSerializer.SerializeToElement(arguments)),
@@ -332,6 +357,7 @@ public sealed class WindowsWindowControlProviderTests
         public bool ExecuteAccepted { get; set; } = true;
         public bool SetBoundsAccepted { get; set; } = true;
         public WindowBounds? WorkAreaBounds { get; set; }
+        public IReadOnlyList<WindowSnapshot> Desktop { get; set; } = [];
         private WindowControlAction? _pendingAction;
         public bool Foreground
         {
@@ -441,6 +467,8 @@ public sealed class WindowsWindowControlProviderTests
         }
 
         public WindowBounds? WorkArea(WindowIdentity identity) => WorkAreaBounds;
+
+        public IReadOnlyList<WindowSnapshot> DesktopWindows() => Desktop;
 
         public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken)
         {

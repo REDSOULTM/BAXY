@@ -202,6 +202,8 @@ internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : I
             writer.WriteNumber("hidden", result.Hidden);
             writer.WriteNumber("alreadyGone", result.AlreadyGone);
             writer.WriteNumber("remainingVisible", result.Remaining);
+            // Round A: what is kept open is BAXY's own windows (keptProcesses names them), never an editor of the
+            // person's; the «editorKeptOpen» that said so is gone.
             writer.WriteNumber("keptOpen", result.Kept);
             writer.WriteStartArray("keptProcesses");
             foreach (string name in result.KeptProcesses) writer.WriteStringValue(name);
@@ -210,7 +212,6 @@ internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : I
             foreach (string name in result.RemainingProcesses) writer.WriteStringValue(name);
             writer.WriteEndArray();
             writer.WriteBoolean("allClosed", result.Remaining == 0 && result.Hidden == 0);
-            writer.WriteBoolean("editorKeptOpen", result.Kept > 0);
             writer.WriteString("authority", "win32_desktop_windows_close_postread");
             writer.WriteEndObject();
         }
