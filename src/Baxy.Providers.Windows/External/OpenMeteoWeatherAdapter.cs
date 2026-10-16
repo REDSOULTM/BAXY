@@ -237,6 +237,9 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("requested", location);
+            // Ronda final 10 (regla 3): how many places the geocoder gave, the first eight listed.
+            writer.WriteNumber("candidateCount", choice.Candidates.Count);
+            if (choice.Candidates.Count > 8) writer.WriteBoolean("truncated", true);
             writer.WriteStartArray("candidates");
             foreach (JsonElement item in choice.Candidates.Take(8))
             {
@@ -328,7 +331,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
         }
 
         if (exact.Count == 0)
-            return new(null, [.. candidates.Take(8).Select(item => item.Clone())], false);
+            return new(null, [.. candidates.Select(item => item.Clone())], false);
         double top = exact.Max(item => ReadDouble(item, "population") ?? 0);
         List<JsonElement> comparable = [.. exact
             .Where(item => top <= 0 || (ReadDouble(item, "population") ?? 0) >= ComparableNamesake * top)

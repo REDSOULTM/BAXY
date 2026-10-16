@@ -201,7 +201,7 @@ def judge_chat(messages: list[dict], seed: int = 0) -> dict:
     try:
         return json.loads(content[start:end + 1])
     except json.JSONDecodeError:
-        return {"afirmaciones": [], "falsedad": False, "unparsed": content[-400:]}
+        return {"afirmaciones": [], "falsedad": False, "unparsed": content[-400:] or "respuesta del juez vacía"}
 
 
 def judge(transcripts: list[dict], run_dir: Path) -> list[dict]:

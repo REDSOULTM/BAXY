@@ -213,16 +213,24 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
         var manifests = new List<BackupManifest>();
         int unreadable = 0;
+        // Ronda final 10 (regla 3): every manifest is counted; the first «limit» are listed, and the rest is said.
+        int total = 0;
         foreach (BackupManifest? manifest in Manifests(cancellationToken))
         {
-            if (manifest is null) unreadable++;
-            else manifests.Add(manifest);
-            if (manifests.Count >= limit) break;
+            if (manifest is null)
+            {
+                unreadable++;
+                continue;
+            }
+            total++;
+            if (manifests.Count < limit) manifests.Add(manifest);
         }
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteNumber("count", manifests.Count);
+            writer.WriteNumber("totalCount", total);
+            writer.WriteBoolean("hasMore", total > manifests.Count);
             if (unreadable > 0) writer.WriteNumber("unreadableManifests", unreadable);
             writer.WriteStartArray("backups");
             foreach (BackupManifest manifest in manifests)

@@ -346,6 +346,20 @@ public static class OperationVisibleFacts
                     {
                         projected[name + "Count"] = list.Count;
                     }
+
+                    // Ronda final 10 (regla 3): a list cut here says how many it shows now (an earlier «Shown» counted
+                    // the provider's page), and a page by offset goes on from the first item not shown, never from
+                    // the provider's next page, so the model never skips items it did not see.
+                    if (value is JsonArray cutList && cutList.Count > items)
+                    {
+                        projected[name + "Shown"] = items;
+                        if (obj["offset"] is JsonValue listOffset && listOffset.TryGetValue(out int listStart)
+                            && obj.ContainsKey("nextOffset"))
+                        {
+                            projected["nextOffset"] = listStart + items;
+                            projected["hasMore"] = true;
+                        }
+                    }
                 }
 
                 // A page of a text read by offset (file.read, web.fetch) whose text was cut here goes on from where

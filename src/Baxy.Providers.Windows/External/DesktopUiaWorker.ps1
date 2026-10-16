@@ -1894,8 +1894,8 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       return @{ method='pointer'; point=$point; rect=(Get-CurrentRect $el); legacyStep=$legacyStep; renderStep=$renderStep }
     }
   }
-  # Ronda final 9 (regla 3): an Invoke already sent and not seen to act ends the press here, so the postread judges
-  # it; another way or another candidate would press a second time.
+  # Ronda final 9 (regla 3): when every way was tried and the Invoke sent was not seen to act, the press ends here
+  # with it, so the postread judges it and the caller (Do-At) never presses another candidate a second time.
   if($ways -contains 'invoke'){ return @{ method='invoke'; ways=$ways; selectable=$choosing } }
   return $null
   }

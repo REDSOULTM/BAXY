@@ -175,11 +175,24 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         if (UserBrowserHoldsThePage)
             return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
+        int launches = browser.Launches;
         effectBoundary.Cross(cancellationToken);
-        CdpBrowserControlResult control = await browser.ControlAsync(action, cancellationToken)
-            .ConfigureAwait(false);
+        CdpBrowserControlResult control;
+        try
+        {
+            control = await browser.ControlAsync(action, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (!(exception is OperationCanceledException && cancellationToken.IsCancellationRequested)
+            && browser.Launches > launches)
+        {
+            // Ronda final 10 (regla 3): the control opened its browser and then failed: a window may have been opened.
+            return ExternalJson.FailureAfterEffect(operation, "web_adapter_unavailable");
+        }
+        // Ronda final 10 (regla 3): a control that opened BAXY's browser first changed the desktop, so «at the start»
+        // or «at the end» of a page it just opened is never the state already reached.
+        bool launched = browser.Launches > launches;
         if (!control.Verified)
-            return effectBoundary.Failure(operation, control.ErrorCode, control.EffectObserved);
+            return effectBoundary.Failure(operation, control.ErrorCode, control.EffectObserved || launched);
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -187,12 +200,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("action", control.Action);
             writer.WriteString("targetId", control.TargetId);
             writer.WriteString("observedState", control.ObservedState);
+            if (launched) writer.WriteBoolean("browserLaunched", true);
             writer.WriteString("authority", "cdp_postread");
             writer.WriteEndObject();
         });
         // Ronda final: verified with no effect is the state reached before anything was sent (a video already in full
         // screen): changed:false, never a change made.
-        return control.EffectObserved
+        return control.EffectObserved || launched
             ? ExternalJson.Success(operation, result, true)
             : ExternalJson.Switched(operation, result, effectObserved: false);
     }
@@ -289,7 +303,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         SearchPageReader.PageRead read = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
         if (read.Html is null || read.Final is null)
             return ExternalJson.Failure(operation, read.Error ?? "web_fetch_page_unreadable");
-        (string title, string whole) = PageText.Prose(read.Html);
+        (string title, string whole, int skipped) = PageText.Prose(read.Html);
         int start = Math.Min(offset, whole.Length);
         string text = whole.Substring(start, Math.Min(maximumCharacters, whole.Length - start));
         bool hasMore = start + text.Length < whole.Length;
@@ -301,6 +315,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("finalUrl", read.Final.AbsoluteUri);
             writer.WriteString("title", title);
             writer.WriteNumber("totalCharacters", whole.Length);
+            // Ronda final 10 (regla 3): text in menus, headers, footers, side panels and buttons is skipped; how much.
+            if (skipped > 0) writer.WriteNumber("skippedSectionCharacters", skipped);
             // The body is read up to 1.5 MB: past it the page goes on, unread, and its text here ends there.
             writer.WriteBoolean("bodyTruncated", read.Truncated);
             writer.WriteNumber("offset", start);
@@ -400,7 +416,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.Failure(operation, "streaming_authentication_required", true);
         }
-        JsonElement result = NavigationResult(navigation, "authenticated_cdp");
+        // Ronda final 10 (regla 3): the session is not read, so the result says where it went, never that it is
+        // signed in; an address on a sign-in page is still refused above.
+        JsonElement result = NavigationResult(navigation, "cdp_navigation");
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -408,7 +426,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("service", service);
             writer.WriteString("resourceUri", result.GetProperty("finalUrl").GetString());
             writer.WriteString("targetId", result.GetProperty("targetId").GetString());
-            writer.WriteString("authority", "authenticated_cdp_session");
+            writer.WriteBoolean("signInRead", false);
+            writer.WriteString("authority", "cdp_navigation_postread");
             writer.WriteEndObject();
         }));
     }

@@ -342,6 +342,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                     {
                         writer.WriteStartObject();
                         writer.WriteNumber("version", 1);
+                        // Ronda final 10 (regla 3): the eight listed are never read as all the chat list held.
+                        writer.WriteNumber("candidateCount", Math.Max(observation.CandidateCount, candidates.Count));
+                        if (observation.CandidateCount > candidates.Count) writer.WriteBoolean("truncated", true);
                         writer.WriteStartArray("candidates");
                         foreach (string candidate in candidates)
                         {
@@ -418,6 +421,9 @@ internal sealed record DesktopRecipientObservation(
     string? Shown = null)
 {
     internal IReadOnlyList<string>? Candidates { get; init; }
+
+    // Ronda final 10: how many distinct lines the chat list gave; Candidates holds the first eight.
+    internal int CandidateCount { get; init; }
 }
 
 // Read and Match (C4): the text read where the message was looked for, and «exact» or «tolerant» (TextMatch).
@@ -757,6 +763,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                         : rows.Hits.Count == 0 ? RecipientNotFound : "recipient_ambiguous")
                     {
                         Candidates = rows.Lines?.Select(line => line.Text).Distinct().Take(8).ToArray(),
+                        CandidateCount = rows.Lines?.Select(line => line.Text).Distinct().Count() ?? 0,
                     };
                 }
 
