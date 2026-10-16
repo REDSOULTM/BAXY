@@ -46,7 +46,7 @@ internal sealed class EspnScheduleSource
     // one played.
     internal sealed record MatchAsk(string Team, Wanted Wants);
 
-    internal readonly record struct TeamHit(string Id, string Name, string Sport, string League);
+    internal readonly record struct TeamHit(string Id, string Name, string Sport);
 
     // --- Which team that is ----------------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ internal sealed class EspnScheduleSource
                     "soccer" => IsReadSoccer(league),
                     _ => false,
                 };
-                if (read) return new TeamHit(id, name, sport, league);
+                if (read) return new TeamHit(id, name, sport);
             }
         }
         return null;

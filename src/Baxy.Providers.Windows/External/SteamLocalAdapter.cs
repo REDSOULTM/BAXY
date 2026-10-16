@@ -842,7 +842,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
     private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog()
     {
-        (string root, string[] libraries) = SteamRoots();
+        (_, string[] libraries) = SteamRoots();
         var result = new Dictionary<string, SteamLocalGame>(StringComparer.Ordinal);
         foreach (string library in libraries)
         {
@@ -866,10 +866,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 string installDirectory = fields.TryGetValue("installdir", out string? installDir)
                     ? Path.Combine(steamApps, "common", installDir) : string.Empty;
                 result[appId] = new(appId, name, Convert.ToHexStringLower(SHA256.HashData(bytes)),
-                    flags, Math.Max(0, downloaded), Math.Max(0, total), installDirectory, manifest);
+                    flags, Math.Max(0, downloaded), Math.Max(0, total), installDirectory);
             }
         }
-        _ = root;
         return result.Values.ToArray();
     }
 
@@ -926,8 +925,7 @@ internal sealed record SteamLocalGame(
     ulong StateFlags = 4,
     long BytesDownloaded = 0,
     long BytesToDownload = 0,
-    string InstallDirectory = "",
-    string ManifestPath = "")
+    string InstallDirectory = "")
 {
     internal bool Installed => (StateFlags & 4UL) != 0;
 }
@@ -935,8 +933,7 @@ internal sealed record SteamLocalGame(
 internal sealed record SteamDispatchResult(
     bool Accepted,
     bool EffectObserved,
-    IReadOnlySet<nint>? VisibleSteamWindowsBefore = null,
-    string? ErrorCode = null);
+    IReadOnlySet<nint>? VisibleSteamWindowsBefore = null);
 
 internal sealed record SteamProcessObservation(int ProcessId, string? ExecutablePath);
 
@@ -1036,7 +1033,7 @@ internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomat
 
             if (pressed.EffectObserved || pressed.EffectMayHaveOccurred)
             {
-                return new(false, true, ErrorCode: pressed.ErrorCode);
+                return new(false, true);
             }
         }
 

@@ -21,9 +21,9 @@ public sealed class EspnScheduleSourceTests
 
     private static readonly Uri Source = new("https://site.api.espn.com/");
 
-    private static readonly TeamHit Lakers = new("13", "Los Angeles Lakers", "basketball", "nba");
+    private static readonly TeamHit Lakers = new("13", "Los Angeles Lakers", "basketball");
 
-    private static readonly TeamHit Boca = new("5", "Boca Juniors", "soccer", "arg.1");
+    private static readonly TeamHit Boca = new("5", "Boca Juniors", "soccer");
 
     // The first team ESPN ranks whose calendar is read here, as ESPN names it: an NBA team, a football team of a league
     // read, or a national side; never a women's league (coded «.w»), a college team or another sport.
@@ -34,7 +34,7 @@ public sealed class EspnScheduleSourceTests
         {
             Assert.That(PickTeam(Fixture("search_lakers.json")), Is.EqualTo(Lakers));
             Assert.That(PickTeam(Fixture("search_boca.json")), Is.EqualTo(Boca));
-            Assert.That(PickTeam(Fixture("search_chile.json")), Is.EqualTo(new TeamHit("207", "Chile", "soccer", "fifa.worldq.conmebol")));
+            Assert.That(PickTeam(Fixture("search_chile.json")), Is.EqualTo(new TeamHit("207", "Chile", "soccer")));
             Assert.That(PickTeam(Fixture("search_america.json"))?.Id, Is.EqualTo("227"));
             Assert.That(PickTeam(Fixture("search_arsenal.json"))?.Id, Is.EqualTo("359"));
             // ESPN ranks the NBA's Spurs first for «spurs»: that is the team, and the receipt names it.
