@@ -269,9 +269,22 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         SteamLocalGame? before = _snapshot().SingleOrDefault(game => game.AppId == appId);
-        // Ronda final: a download already running grows by itself, so it cannot show this request's start: it is the
-        // state reached (changed:false), read before, and nothing is sent.
-        if (before is { Installed: false } running && InstallState(running) == "downloading")
+        // Ronda final: a download already running grows by itself, so it cannot show this request's start. A manifest
+        // that reads «downloading» may also be a download cut with Steam closed: only bytes seen growing between two
+        // reads, before anything is sent, are the state reached (changed:false); otherwise the second read is the
+        // baseline and the request goes on.
+        SteamLocalGame? running = null;
+        if (before is { Installed: false } first && InstallState(first) == "downloading")
+        {
+            await _delay(ObservationInterval, cancellationToken).ConfigureAwait(false);
+            SteamLocalGame? second = _snapshot().SingleOrDefault(game => game.AppId == appId);
+            if (second is { Installed: false } && second.BytesDownloaded > first.BytesDownloaded)
+                running = second;
+            else
+                before = second;
+        }
+
+        if (running is not null)
         {
             JsonElement downloading = ExternalJson.Create(writer =>
             {
@@ -281,7 +294,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 writer.WriteString("state", "downloading");
                 writer.WriteNumber("bytesDownloaded", running.BytesDownloaded);
                 writer.WriteNumber("bytesTotal", running.BytesToDownload);
-                writer.WriteString("authority", "steam_manifest_preread"); writer.WriteEndObject();
+                writer.WriteString("authority", "steam_manifest_growth_preread"); writer.WriteEndObject();
             });
             return ExternalJson.Switched(operation, downloading, effectObserved: false);
         }

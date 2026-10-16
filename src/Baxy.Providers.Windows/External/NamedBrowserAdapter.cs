@@ -84,7 +84,8 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         {
             string? executable = ResolveBrowser(browser);
             if (executable is null)
-                return ExternalJson.Failure(operation, family + "_not_installed");
+                // Ronda final: only the usual install folders are read; not there is not «not installed».
+                return ExternalJson.Failure(operation, family + "_not_found_in_known_locations");
             // La sesion de un navegador con nombre tambien es del equipo, no del
             // turno: vive donde la del navegador por defecto y sobrevive igual.
             session = new CdpBrowserSession(

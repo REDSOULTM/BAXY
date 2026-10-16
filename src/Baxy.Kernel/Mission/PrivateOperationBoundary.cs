@@ -146,7 +146,10 @@ internal static class PrivateOperationBoundary
         // fallo sin ella haría que el replay de la misma invocationId dijera
         // «no ocurrió» sobre un efecto que sí pudo aplicarse, que es justo lo
         // que empuja a repetirlo. `causeCode` sigue descartado: es texto libre
-        // del handler y podría llevar detalle privado.
+        // del handler y podría llevar detalle privado. Ronda final: un replay de una respuesta completada que no pasa la
+        // autenticación también pudo aplicarse.
+        bool replayMayHaveOccurred = response.EffectMayHaveOccurred
+            || string.Equals(response.Status, OperationStatuses.Completed, StringComparison.Ordinal);
         return new OperationResponse(
             ProtocolTypes.OperationResponse,
             request.RequestId,
@@ -157,12 +160,12 @@ internal static class PrivateOperationBoundary
                 request.Operation,
                 OperationOutcome.Failure(
                     errorCode,
-                    effectMayHaveOccurred: response.EffectMayHaveOccurred)),
+                    effectMayHaveOccurred: replayMayHaveOccurred)),
             false,
             true,
             null,
             errorCode,
-            response.EffectMayHaveOccurred);
+            replayMayHaveOccurred);
     }
 
     private static bool AuthenticateResult(

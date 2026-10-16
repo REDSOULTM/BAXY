@@ -88,12 +88,12 @@ public sealed class M120ClienteCerradoTests
     public async Task AClientThatIsNotInstalledIsSaidAndNothingIsTouched()
     {
         (ExternalCapabilityReceipt receipt, List<string> steps) =
-            await DraftAsync(new(false, false, "whatsapp_client_not_installed"));
+            await DraftAsync(new(false, false, "whatsapp_client_not_found"));
 
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("whatsapp_client_not_installed"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("whatsapp_client_not_found"));
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(steps, Is.EqualTo(new[] { "ensure:whatsapp" }));
         });
@@ -202,7 +202,7 @@ public sealed class M120ClienteCerradoTests
             Assert.That(
                 WindowsDesktopMessagingAutomation.ClientOpenFailure(
                     "whatsapp", Opened(false, ApplicationOpenErrorCodes.ApplicationNotFound, false)),
-                Is.EqualTo(new DesktopClientReadiness(false, false, "whatsapp_client_not_installed")));
+                Is.EqualTo(new DesktopClientReadiness(false, false, "whatsapp_client_not_found")));
             Assert.That(
                 WindowsDesktopMessagingAutomation.ClientOpenFailure(
                     "discord", Opened(false, ApplicationOpenErrorCodes.VerificationFailed, true)),

@@ -169,6 +169,13 @@ public static class BaxyKeyInput {
         return observedLanguageId != 0;
     }
 
+    // Ronda final: the pointer already at the centre, read before anything is sent.
+    public static bool AtCenter(out POINT observed) {
+        int x = Math.Max(0, GetSystemMetrics(0) / 2);
+        int y = Math.Max(0, GetSystemMetrics(1) / 2);
+        return GetCursorPos(out observed) && Math.Abs(observed.x - x) <= 1 && Math.Abs(observed.y - y) <= 1;
+    }
+
     public static bool MoveCenter(out POINT observed) {
         int x = Math.Max(0, GetSystemMetrics(0) / 2);
         int y = Math.Max(0, GetSystemMetrics(1) / 2);
@@ -221,8 +228,14 @@ public static class BaxyKeyInput {
         $verified=$accepted -eq $expected
     } elseif($PointerAction -eq 'move_center') {
         $point=New-Object BaxyKeyInput+POINT
-        $verified=[BaxyKeyInput]::MoveCenter([ref]$point)
-        $pointerX=$point.x;$pointerY=$point.y;$accepted=$(if($verified){1}else{0});$expected=1
+        if([BaxyKeyInput]::AtCenter([ref]$point)){
+            # Ronda final: ya en el centro antes: el estado alcanzado, nada se envia.
+            $alreadyReached=$true;$verified=$true;$accepted=0;$expected=0
+        } else {
+            $verified=[BaxyKeyInput]::MoveCenter([ref]$point)
+            $accepted=$(if($verified){1}else{0});$expected=1
+        }
+        $pointerX=$point.x;$pointerY=$point.y
     } elseif($PSCmdlet.ParameterSetName -eq 'Pointer') {
         $expected=$(if($PointerAction -eq 'click'){2}else{1})
         $accepted=[BaxyKeyInput]::MouseAction($PointerAction -eq 'click')

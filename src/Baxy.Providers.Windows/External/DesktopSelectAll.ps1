@@ -157,6 +157,41 @@ public static class BaxyDesktopSelectAllNative
         [Windows.Automation.TextPattern]::Pattern,
         [ref]$pattern)
     $text=if($hasTextPattern){[Windows.Automation.TextPattern]$pattern}else{$null}
+    # Ronda final: everything already selected, read before anything is sent, is the state reached (changed:false).
+    $alreadyAll=$false
+    try {
+        if($hasTextPattern){
+            $before=@($text.GetSelection())
+            $alreadyAll=$before.Count -eq 1 -and
+                ([string]$text.DocumentRange.GetText(1)).Length -gt 0 -and
+                $before[0].CompareEndpoints(
+                    [Windows.Automation.Text.TextPatternRangeEndpoint]::Start,
+                    $text.DocumentRange,
+                    [Windows.Automation.Text.TextPatternRangeEndpoint]::Start) -eq 0 -and
+                $before[0].CompareEndpoints(
+                    [Windows.Automation.Text.TextPatternRangeEndpoint]::End,
+                    $text.DocumentRange,
+                    [Windows.Automation.Text.TextPatternRangeEndpoint]::End) -eq 0
+        } elseif($nativeHandle -ne [IntPtr]::Zero){
+            $lengthBefore=[BaxyDesktopSelectAllNative]::ReadTextLength($nativeHandle)
+            [uint32]$startBefore=0
+            [uint32]$endBefore=0
+            [BaxyDesktopSelectAllNative]::ReadSelection($nativeHandle,[ref]$startBefore,[ref]$endBefore)
+            $alreadyAll=$lengthBefore -gt 0 -and $startBefore -eq 0 -and $endBefore -eq [uint32]$lengthBefore
+        }
+    } catch { $alreadyAll=$false }
+    if($alreadyAll){
+        [pscustomobject]@{
+            version=1
+            ok=$true
+            effectObserved=$false
+            alreadyReached=$true
+            processId=$processId
+            authority='selection_preread'
+            error=$null
+        }|ConvertTo-Json -Compress
+        exit 0
+    }
     $accepted=$null
     $expected=$null
     if($hasTextPattern){

@@ -125,7 +125,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
 
         // Ronda final: the memory already as asked is the state reached (changed:false), not a switch made.
         var configured = new JsonObject { ["enabled"] = enabled };
-        if (!changed)
+        if (!changed && !(responseReplayed || replayed))
             configured["changed"] = false;
         message = CompletedFacts("memory_configuration", configured, responseReplayed || replayed);
         return true;
@@ -162,12 +162,14 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         // and used to be verbalized as «no se realizaron correcciones ni
         // acciones de replay» (MEMORY1247); a secret stays unspoken.
         var observed = new JsonObject { ["saved"] = true };
-        if (operationName == "memory.correct")
+        // Ronda final: the same datum already kept (save) or the same value (correct): nothing changed. A replay does not
+        // know whether its first run changed anything, so it says neither.
+        bool replay = responseReplayed || replayed;
+        if (operationName == "memory.correct" && !replay)
         {
             observed["corrected"] = mutationChanged;
         }
-        // Ronda final: the same datum already kept (save) or the same value (correct): nothing changed.
-        if (!mutationChanged)
+        if (!mutationChanged && !replay)
         {
             observed["changed"] = false;
         }

@@ -853,6 +853,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                         && root.TryGetProperty("focused", out JsonElement focusedValue) && focusedValue.ValueKind == JsonValueKind.False
                             ? (identity, controlId, _fields.Clicks, Ticks())
                             : null;
+                    // Ronda final: a field that already held that value, or a list with that entry already chosen (read
+                    // before), is the state reached: nothing was written (changed:false).
+                    if (whole && root.TryGetProperty("alreadyReached", out JsonElement reached)
+                        && reached.ValueKind == JsonValueKind.True)
+                        return ExternalJson.Switched(operation, root.Clone(), effectObserved: false);
                     // «select»: a list-only combo box took the entry of that name (its selection re-read), said as read.
                     return FieldReceipt(operation, key, text, identity, frontBefore, new FieldDelivery(
                         method.GetString()!, whole, true, whole ? null : "input_effect_not_verified", fieldClass,

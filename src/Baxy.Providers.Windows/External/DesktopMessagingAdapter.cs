@@ -654,13 +654,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     internal static string ClientApplicationName(string channel) =>
         string.Equals(channel, "whatsapp", StringComparison.Ordinal) ? "WhatsApp" : "Discord";
 
-    // Not installed is said as such; any other open failure leaves the client
-    // unverified (the launch may have happened).
+    // Not found in the installed applications' catalog is said as such (ronda final: not «not installed», the catalog
+    // is what was read); any other open failure leaves the client unverified (the launch may have happened).
     internal static DesktopClientReadiness? ClientOpenFailure(string channel, ApplicationOpenResult opened) =>
         opened.Succeeded && opened.Verified
             ? null
             : string.Equals(opened.ErrorCode, ApplicationOpenErrorCodes.ApplicationNotFound, StringComparison.Ordinal)
-                ? new(false, false, $"{channel}_client_not_installed")
+                ? new(false, false, $"{channel}_client_not_found")
                 : new(false, opened.Receipt.LaunchIssued, $"{channel}_client_open_not_verified");
 
     public async ValueTask<DesktopRecipientObservation> ResolveAsync(

@@ -1793,6 +1793,10 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       # el texto siguiente iria al control que su ventana tenia enfocado. SetFocus del cliente UIA trae al frente una
       # ventana tapada (robo de foco), asi que solo se pide con la ventana ya al frente; detras, la siguiente via.
       if(Test-InFront $top){
+        # Ronda final: leido antes. Un campo que ya tenia el foco es ya el destino: nada se envia (como en render).
+        $already=$false
+        try { $already=[bool]$el.Current.HasKeyboardFocus } catch { $already=$false }
+        if($already){ return @{ method='target'; focused=$true; via='prefocused' } }
         $focused=$false
         try { $el.SetFocus(); $focused=[bool]$el.Current.HasKeyboardFocus } catch {}
         if($focused){ return @{ method='target'; focused=$true } }
@@ -3882,6 +3886,8 @@ function Select-ComboEntry($combo,[string]$text){
     $items=@($combo.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem))))
     $chosen=Find-EntryNamed $items $text
     if($null -eq $chosen){ $script:ComboEntries=@($items | ForEach-Object { Get-Name $_ } | Where-Object { $_.Length -gt 0 } | Select-Object -First 30) }
+    # Ronda final: la entrada ya elegida antes es el estado alcanzado; no se vuelve a elegir.
+    if($null -ne $chosen -and [bool](Test-Selected $chosen)){ return @{ entry=(Get-Name $chosen); delivered=$true; alreadyReached=$true } }
     if($null -ne $chosen){
       $select=$null
       if($chosen.TryGetCurrentPattern([System.Windows.Automation.ScrollItemPattern]::Pattern,[ref]$select)){ try { ([System.Windows.Automation.ScrollItemPattern]$select).ScrollIntoView() } catch {} }
@@ -3968,11 +3974,13 @@ function Do-Field($request){
     # Un ComboBox de solo lista (sin texto que escribir): su entrada con ese nombre, elegida por patron.
     if($kind -eq 'ComboBox' -and $enabled -and -not $writable -and $null -eq $combo){
       $picked=Select-ComboEntry $element ([string]$text)
-      if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; return $result }
+      if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; if([bool]$picked.alreadyReached){ $result.alreadyReached=$true }; return $result }
       if($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
     }
     return $result
   }
+  # Ronda final: un campo que ya tenia ese valor (leido antes) es el estado alcanzado: nada se escribe.
+  if($null -ne $value -and $value -eq [string]$text){ $result.method='setvalue'; $result.delivered=$true; $result.alreadyReached=$true; return $result }
   try { $vp.SetValue([string]$text) } catch { $result.ok=$false; $result.error='field_setvalue_refused'; return $result }
   $result.method='setvalue'
   $after=Wait-ValueSet { [string]$vp.Current.Value } ([string]$text) 300
