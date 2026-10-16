@@ -898,7 +898,7 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
-    // Contracase: a click that did change the window is still verified by its surface (the two images before it, taken to
+    // Contracase: a click that did change the window is still verified by its surface (the three images before it, taken to
     // tell a window that changes by itself, are the same).
     [Test]
     public async Task AClickThatChangedTheWindowIsVerifiedByItsSurface()
@@ -907,7 +907,7 @@ public sealed class ComputerUseSpeedTests
         int captures = 0;
         ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint window, bool? selfDrawn, CancellationToken token) =>
             ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
-                new VisibleControlSurface.CapturedWindow(window, [], 0, 0, 10, 10, captures++ < 2 ? "before" : "after"));
+                new VisibleControlSurface.CapturedWindow(window, [], 0, 0, 10, 10, captures++ < 3 ? "before" : "after"));
 
         var adapter = new WindowsVisibleControlAdapter(
             worker, null, null, new NamedWindowFocus(true), capture: Capture);

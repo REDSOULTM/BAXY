@@ -630,7 +630,6 @@ internal sealed class WindowsVisibleControlAdapter
 {
     // The code of a click refused because its window runs as administrator (contract §4, «window_elevated»).
     internal const string WindowElevated = "window_elevated";
-    private static readonly TimeSpan AnimationProbe = TimeSpan.FromMilliseconds(120);
     // Auditoría final (regla 3): a window whose process token could not be read is not said to run as administrator;
     // it is refused all the same (nothing is pressed where UIPI may block it), as not read.
     internal const string WindowElevationUnread = "window_elevation_unread";
@@ -2344,10 +2343,17 @@ internal sealed class WindowsVisibleControlAdapter
             // control's own answer, a popup or a window it handed to still prove it).
             if (before is { } first)
             {
-                await Task.Delay(AnimationProbe, cancellationToken).ConfigureAwait(false);
-                VisibleControlSurface.CapturedWindow? second = await _capture(hwnd, first.SelfDrawn, cancellationToken).ConfigureAwait(false);
-                if (second is not { } next || !string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
-                    before = null;
+                foreach (TimeSpan wait in VisibleControlSurface.AnimationProbes)
+                {
+                    await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
+                    VisibleControlSurface.CapturedWindow? again = await _capture(hwnd, first.SelfDrawn, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (again is not { } next || !string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
+                    {
+                        before = null;
+                        break;
+                    }
+                }
             }
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)

@@ -1041,6 +1041,20 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             return null;
         PixelBox relative = learned.Screen.Offset(-learned.Capture.Left, -learned.Capture.Top);
         PixelBox[] marks = [relative.Inflate(6), (learned.Tip ?? HoverStrip(relative)).Inflate(8)];
+        // Auditoría final (regla 3): a window that changes by itself beyond the hover's marks proves nothing by a changed
+        // image after the press.
+        bool animated = false;
+        foreach (TimeSpan wait in VisibleControlSurface.AnimationProbes)
+        {
+            await _desktop.DelayAsync((int)wait.TotalMilliseconds, cancellationToken).ConfigureAwait(false);
+            VisibleControlSurface.CapturedWindow? again = await _desktop.CaptureAsync(
+                learned.Window, before.SelfDrawn, cancellationToken).ConfigureAwait(false);
+            if (again is not { } next || (next.Sha256 != before.Sha256 && ChangedBeyond(before, next, marks)))
+            {
+                animated = true;
+                break;
+            }
+        }
         // A remembered place is pressed only where the tree shows no control of its size with another name.
         LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
             press, operation, learned.Window, learned.Screen.CenterX, learned.Screen.CenterY, learned.Label,
@@ -1073,7 +1087,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             }
         }
 
-        changed &= !userActed;
+        changed &= !userActed && !animated;
         bool targeted = pressed.Method == "target" && pressed.Focused;
         bool ok = changed || targeted;
         if (!ok && learned.FromCache && !userActed)

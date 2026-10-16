@@ -5,19 +5,26 @@ namespace Baxy.Providers.Windows.External;
 
 internal static partial class VisibleControlSurface
 {
-    private static readonly TimeSpan AnimationProbe = TimeSpan.FromMilliseconds(120);
+    // The waits between the captures that tell a window that changes by itself: ~150 ms catches a video or a spinner,
+    // ~600 ms in all a caret (it blinks about every 530 ms).
+    internal static readonly TimeSpan[] AnimationProbes = [TimeSpan.FromMilliseconds(150), TimeSpan.FromMilliseconds(450)];
 
     /// <summary>
-    /// Auditoría final (regla 3): whether the window in front changes by itself (a video, a caret, a spinner): a second
-    /// capture a moment after <paramref name="first"/> that differs, or that could not be taken. On such a window an
-    /// image that differs after a press is no proof of it.
+    /// Auditoría final (regla 3): whether the window in front changes by itself (a video, a caret, a spinner): a later
+    /// capture that differs from <paramref name="first"/>, or that could not be taken. On such a window an image that
+    /// differs after a press is no proof of it.
     /// </summary>
     internal static async ValueTask<bool> ForegroundAnimatesAsync(CapturedWindow first, CancellationToken cancellationToken)
     {
-        await Task.Delay(AnimationProbe, cancellationToken).ConfigureAwait(false);
-        CapturedWindow? second = await CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
-        return second is not { } again || again.Hwnd != first.Hwnd
-            || !string.Equals(again.Sha256, first.Sha256, StringComparison.Ordinal);
+        foreach (TimeSpan wait in AnimationProbes)
+        {
+            await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
+            CapturedWindow? again = await CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+            if (again is not { } next || next.Hwnd != first.Hwnd
+                || !string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
+                return true;
+        }
+        return false;
     }
 
     internal static async ValueTask<CapturedWindow?> CaptureForegroundAsync(

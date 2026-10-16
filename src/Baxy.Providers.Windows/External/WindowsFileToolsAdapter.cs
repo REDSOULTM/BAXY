@@ -385,7 +385,9 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         string? Path,
         string? Error,
         IReadOnlyList<(string Folder, string RelativePath)> SeenElsewhere,
-        bool SearchComplete);
+        bool SearchComplete,
+        // Auditoría final (regla 3): false when nothing was searched (a name with subfolders is looked for only there).
+        bool Searched = true);
 
     internal OpenTarget LocateOpenTarget(
         string folder,
@@ -402,7 +404,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         if (File.Exists(path))
             return new(path, null, [], true);
         if (name.IndexOfAny(['\\', '/']) >= 0)
-            return new(null, "file_not_found", [], true);
+            return new(null, "file_not_found", [], false, Searched: false);
         string leaf = System.IO.Path.GetFileName(path);
         TimeSpan limit = budget ?? OpenSearchBudget;
         var found = new List<(string Folder, string RelativePath)>();
@@ -481,6 +483,13 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             writer.WriteEndObject();
         }
         writer.WriteEndArray();
+        if (!target.Searched)
+        {
+            // Only the path named was looked at: no other place was searched.
+            writer.WriteBoolean("searchedElsewhere", false);
+            writer.WriteEndObject();
+            return;
+        }
         writer.WriteBoolean("searchComplete", target.SearchComplete);
         // What the search covers, as it was made: the four known folders, four levels down, without hidden, system or
         // unreadable folders and without links.

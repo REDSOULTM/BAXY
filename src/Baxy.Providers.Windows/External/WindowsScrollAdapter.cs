@@ -257,6 +257,21 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
                     ? effectBoundary.Failure(operation, postreadError)
                     : effectBoundary.Failure(operation, postreadError, effectObserved: true);
             bool restored = burst.Restore();
+            // Auditoría final (regla 3): a page that scrolled settles; one that keeps changing (a video, an ad, a caret)
+            // gives no proof of the wheel by its image, and the scroll is said as not verified.
+            await Task.Delay(450, cancellationToken).ConfigureAwait(false);
+            VisibleControlSurface.CapturedWindow? later = null;
+            try
+            {
+                later = await capture(captured.Hwnd, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or InvalidOperationException)
+            {
+                later = null;
+            }
+            if (later is not { } settled || after is not { } moved
+                || !string.Equals(settled.Sha256, moved.Sha256, StringComparison.Ordinal))
+                return effectBoundary.Failure(operation, "scroll_surface_unsettled", effectObserved: true);
             return ExternalJson.Success(
                 operation,
                 Result(direction, amount, index, "win32_wheel_surface_postread", burst: (burst.WaitedMs, restored)),

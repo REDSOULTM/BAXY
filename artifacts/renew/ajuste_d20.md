@@ -67,6 +67,13 @@ En el notebook (D:, misma mente):
 
 **No gana.** Queda por medir el razonamiento por etapa (`thinkcont`) en el e2e, mirando el mismo riesgo.
 
+**P5, recordatorio de reglas al final del turno (`tail`, notebook):**
+- Decisión: 201, 195 y 202 (media 199,3, dispersión 7), 32 casos por debajo de `base`. Pierde sobre todo en MASSIVE (83/120 contra 103), con erratas, spanglish y la cola larga del catálogo.
+- De los 33 casos perdidos en s0, 23 son porque **contesta en texto en vez de llamar la herramienta**, a veces repitiendo la orden («Pausa la música que está sonando.») y a veces inventando un dato («la descarga va al 45 %» sin leerla).
+- Escenas: 32/39, igual que `base`.
+
+**No gana**, y añade falsedades. «Lost in the Middle» describe dónde atiende mejor el modelo; con este 4B, repetir las reglas tras las palabras de la persona hace que les conteste a ellas. La réplica del PC se detuvo en la semilla 1: lo medido en el notebook ya decide.
+
 **P7 (`cuex`), PC:** decisión 232, 229 y 232 (media 231,0, dispersión 3, p50 0,735 s), dentro del ruido de `base`. Escenas 29, 29 y 28, con **3 molestas**: pierde silencios. **No gana**; el ejemplo en el sistema hace que el latido actúe de más. (Sus brazos se escribieron sobre 9eadc3d79, que cambió tres descripciones; `base` se mide otra vez sobre esa mente, `base9e`.)
 
 **`base9e`** (la mente de 9eadc3d79, PC): decisión 232, 232 y 232 (las semillas fallan casos distintos y el total coincide), media 232,0, p50 0,859 s; escenas 30, 30 y 30, 0 molestas. Contra esta base, `cuex` (231,0; 28–29 con 3 molestas) sigue sin ganar.
