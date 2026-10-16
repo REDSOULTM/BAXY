@@ -146,7 +146,12 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
         if (!SharedInstance.IsValueCreated)
             return false;
         WindowsUserInputPause pause = Shared;
-        return (pause.PersonInputAgoMs(window) is long ago && ago <= Environment.TickCount64 - sinceMs)
+        long elapsed = Environment.TickCount64 - sinceMs;
+        // The window's book keeps only the last window typed in; their input to the window's process counts as well, so
+        // typing there and then elsewhere still counts.
+        int processId = VisibleControlSurface.WindowProcess(window).ProcessId;
+        return (pause.PersonInputAgoMs(window) is long ago && ago <= elapsed)
+            || (processId > 0 && pause.PersonInputToProcessesAgoMs((uint)processId) is long toProcess && toProcess <= elapsed)
             || pause.LastPointerOverMs(window) >= sinceMs;
     }
 
