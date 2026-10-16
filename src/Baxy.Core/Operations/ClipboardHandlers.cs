@@ -34,7 +34,7 @@ internal abstract class ClipboardHandlerBase(IClipboardProvider provider) : IOpe
         }
         catch (ClipboardProviderException exception)
         {
-            return OperationOutcome.Failure(exception.Code);
+            return OperationOutcome.Failure(exception.Code, effectMayHaveOccurred: exception.EffectMayHaveOccurred);
         }
     }
 
@@ -93,9 +93,19 @@ internal sealed class ClipboardWriteTextHandler(IClipboardProvider provider)
         ClipboardWriteResult written = await Provider.WriteTextAsync(
             arguments.Text,
             cancellationToken).ConfigureAwait(false);
-        ClipboardTextSnapshot observed = await Provider.ReadTextAsync(
-            Math.Max(arguments.Text.Length, 1),
-            cancellationToken).ConfigureAwait(false);
+        ClipboardTextSnapshot observed;
+        try
+        {
+            observed = await Provider.ReadTextAsync(
+                Math.Max(arguments.Text.Length, 1),
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (ClipboardProviderException exception)
+        {
+            // Round A: the text was written; a read-back that did not answer does not undo it.
+            return OperationOutcome.Failure(exception.Code, effectMayHaveOccurred: true);
+        }
+
         if (!string.Equals(observed.Text, arguments.Text, StringComparison.Ordinal))
         {
             return OperationOutcome.Failure(
