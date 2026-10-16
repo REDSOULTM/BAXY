@@ -956,6 +956,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                             .Select(entry => entry.GetString()!)]
                         : []);
             bool whole = root.TryGetProperty("delivered", out JsonElement read) && read.ValueKind == JsonValueKind.True;
+            // Ronda final: the entry already chosen (read before) is the state reached: nothing was chosen (changed:false).
+            if (whole && root.TryGetProperty("alreadyReached", out JsonElement reached) && reached.ValueKind == JsonValueKind.True)
+                return ExternalJson.Switched(operation, root.Clone(), effectObserved: false);
             string fieldClass = root.TryGetProperty("className", out JsonElement named) && named.ValueKind == JsonValueKind.String
                 ? named.GetString() ?? string.Empty
                 : string.Empty;

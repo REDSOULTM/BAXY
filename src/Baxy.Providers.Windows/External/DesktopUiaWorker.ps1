@@ -3917,7 +3917,8 @@ function Wait-ValueSet([scriptblock]$read,[string]$text,[int]$limitMs){
   $after=$null
   while($true){
     try { $after=[string](& $read) } catch { $after=$null }
-    if($after -eq $text -or $watch.ElapsedMilliseconds -ge $limit){ return $after }
+    # Ronda final: comparado con sus mayusculas (-ceq): «juan perez» no es «Juan Perez».
+    if($after -ceq $text -or $watch.ElapsedMilliseconds -ge $limit){ return $after }
     Start-Sleep -Milliseconds 40
   }
 }
@@ -3939,7 +3940,7 @@ function Do-Field($request){
     if($kind -ne 'ComboBox' -or -not $enabled -or $password -or [string]::IsNullOrWhiteSpace([string]$request.text)){ return $result }
     try { $result.className=[string]$element.Current.ClassName } catch {}
     $picked=Select-ComboEntry $element ([string]$request.text)
-    if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry }
+    if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; if([bool]$picked.alreadyReached){ $result.alreadyReached=$true } }
     elseif($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
     return $result
   }
@@ -3980,11 +3981,11 @@ function Do-Field($request){
     return $result
   }
   # Ronda final: un campo que ya tenia ese valor (leido antes) es el estado alcanzado: nada se escribe.
-  if($null -ne $value -and $value -eq [string]$text){ $result.method='setvalue'; $result.delivered=$true; $result.alreadyReached=$true; return $result }
+  if($null -ne $value -and $value -ceq [string]$text){ $result.method='setvalue'; $result.delivered=$true; $result.alreadyReached=$true; return $result }
   try { $vp.SetValue([string]$text) } catch { $result.ok=$false; $result.error='field_setvalue_refused'; return $result }
   $result.method='setvalue'
   $after=Wait-ValueSet { [string]$vp.Current.Value } ([string]$text) 300
-  $result.delivered=($after -eq [string]$text)
+  $result.delivered=($after -ceq [string]$text)
   $result.valueLength=$(if($null -eq $after){-1}else{$after.Length})
   # Revision 1 de r24b (v1): SetValue escribe sin mover el foco del teclado; el adaptador lo lee para la tecla
   # siguiente (Enter), que iria al control que la ventana tenia enfocado.

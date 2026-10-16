@@ -190,7 +190,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("authority", "cdp_postread");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, control.EffectObserved);
+        // Ronda final: verified with no effect is the state reached before anything was sent (a video already in full
+        // screen): changed:false, never a change made.
+        return control.EffectObserved
+            ? ExternalJson.Success(operation, result, true)
+            : ExternalJson.Switched(operation, result, effectObserved: false);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> NavigateAsync(
@@ -1632,6 +1636,13 @@ internal class CdpBrowserSession : IDisposable
 
         if (action == "fullscreen_video")
         {
+            // Ronda final: a video already in full screen, read before, is the state reached (changed:false).
+            string already = await EvaluateStringAsync(
+                socket,
+                "document.fullscreenElement ? document.fullscreenElement.tagName : ''",
+                cancellationToken).ConfigureAwait(false);
+            if (already == "VIDEO")
+                return new(true, false, action, targetId, "fullscreen:VIDEO", string.Empty);
             string dispatch = await EvaluateStringAsync(
                 socket,
                 "(()=>{const v=document.querySelector('video');if(!v)return 'video_missing';" +

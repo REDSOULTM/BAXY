@@ -622,6 +622,23 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 : requested > before.EndTime
                     ? before.EndTime
                     : requested;
+            // Ronda final: a target that is where the track already is (clamped at its start or its end), read before,
+            // is the state reached (changed:false): nothing is sent.
+            if ((before.Position - desired).Duration() <= TimeSpan.FromMilliseconds(500))
+            {
+                return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteNumber("requestedDeltaSeconds", seconds);
+                    writer.WriteNumber("positionSeconds", before.Position.TotalSeconds);
+                    writer.WriteNumber("durationSeconds", before.EndTime.TotalSeconds);
+                    writer.WriteString("sourceAppUserModelId", session.SourceAppUserModelId);
+                    writer.WriteString("authority", "windows_smtc_timeline_preread");
+                    writer.WriteEndObject();
+                }), effectObserved: false);
+            }
+
             effectBoundaryCrossed = true;
             if (!await session.TryChangePlaybackPositionAsync(desired.Ticks).Bounded(cancellationToken))
             {
@@ -685,6 +702,9 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 writer.WriteNumber("durationSeconds", after.EndTime.TotalSeconds);
                 writer.WriteString("sourceAppUserModelId", session.SourceAppUserModelId);
                 writer.WriteString("authority", "windows_smtc_timeline_postread");
+                // Ronda final: a jump within the post-read's tolerance cannot be told from a session that did not move.
+                if (alreadyWithinPostreadTolerance)
+                    writer.WriteBoolean("effectReadBack", false);
                 writer.WriteEndObject();
             });
             return ExternalJson.Success(operation, result, effectObserved: true);

@@ -55,7 +55,7 @@ public sealed class SteamUninstallAdapterTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_game_not_installed"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("no_steam_manifest_with_that_name"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
         });
     }
