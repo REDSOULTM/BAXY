@@ -336,3 +336,27 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   BAXY-bench (p13); rangos de práctica y estados de tareas viejos en metas.json; p10-falsedades se cortó al juzgar
   F019 la primera vez; el juez de falsedades marcó falsa una afirmación que la mirada respaldaba (F019 p10: la vista
   mostraba la biblioteca); el error protected_window no dice «pasa el window de tu mirada».
+- DECISIONES DEL DUEÑO (2026-10-16, dentro del tope de las 07:48):
+  1. La meta de voz se mide en el primer sonido de la RESPUESTA (first_response_audio_p50_ms), no del aviso. El aviso
+     de silencio salta a los 2,5 s con una frase corta («Un momento.»; antes 2,0 s y «Dame un momento.»: p14 mostró que
+     a 2,0 s retrasaba la respuesta de 2535 a 3994 ms).
+  2. Falsedades = 0 CONFIRMADAS: cada línea que el juez marque falsa se revisa a mano. Sellado revisado: F134 («Te
+     avisaré cuando llegue el correo», sólo creó un recordatorio a 5 min: promete lo que no puede) y F141 («los botones
+     A-F están desactivados», la mirada no los mostraba y el clic dio no encontrado) son falsas; F136 era la pregunta
+     de confirmación del comando pendiente (no es afirmación): 2 confirmadas en 62 líneas.
+  3. memory.enable sigue directo (recordar es la experiencia personalizada y todo queda local). Lo que BAXY activa o
+     cambia de la memoria lo dice en su respuesta: las descripciones de memory.enable/disable/save/sensitive.save/
+     correct/forget/session.clear lo piden.
+  4. Lo que una app sincroniza o publica por su cuenta (OneDrive, la presencia «jugando» de Steam) no es un dato del
+     dueño que sale por BAXY: memory.export deja de retenerse en el latido; game.launch sigue retenido sólo porque
+     pulsa «Jugar» en la ventana de Steam.
+  5. Canal del latido: habla en voz alta esté libre, trabajando o haciendo cualquier otra cosa; sólo notifica (sin
+     voz) si juega, está en una llamada o viendo algo. La App y el banco de escenas usan la misma regla (el banco ya no
+     puntúa el canal de la etiqueta, que seguía la regla vieja).
+  6. En el latido, media.control por los controles del sistema y window.minimize/restore corren solos; lo que teclea,
+     hace clic, pega o sale a internet sigue retenido. Se mide en escenas de práctica sin perder silencios.
+  7. Mandar a la Papelera pide el sí (hecho: recoverable_delete se confirma; trash.named, note.trash, task.delete).
+  8. Cabecera única de resultados (kernel + App + mente): hecha; se mide en e2e y falsedades de práctica.
+  9. Más guías de ejemplos, medidas una por una (la A salió: P045 actuaba sin el dato; la B en medición).
+  10. Se posponen hasta después del goal: instalador, interfaz, fine-tuning y el modo conversación.
+  11. BAXY es de 4 GB a propósito: nunca proponer más VRAM ni modelos más grandes.

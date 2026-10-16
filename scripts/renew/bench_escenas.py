@@ -5,9 +5,9 @@ Each scene's context goes to Mind.beat as the App would send it. What the model 
 <banks>/escenas/README.md: observing (read-only calls) changes nothing and gets the scene's own context back as its
 result; a call the App holds in a heartbeat for the person's «sí» is a proposal (the high risks, and what sends input
 to a window or something out of the PC, read from src/Baxy.App/NativeTurnLoop.cs as the App has them); any other
-effect is an action; words alone are a message; LATIDO_OK is silence. The channel follows the README's rule (voice when the
-person is free or working, a notification otherwise), so a spoken notice while they play cannot happen here: the
-channel is not measured, only checked against the label. Writes <banks>/runs/<label>-escenas.jsonl (summary first).
+effect is an action; words alone are a message; LATIDO_OK is silence. The channel is the owner's rule (decision 5, 2026-10-16:
+a notification while the person plays, is on a call or watches something, the voice otherwise), the App's and not
+the model's: it is not scored (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
 """
 import argparse
 import json
@@ -25,7 +25,7 @@ BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
 HIGH_RISK = {"work_loss", "recoverable_delete", "external_communication", "installation"}
 OBSERVING = {"ocr.read", "vision.describe", "browser.page.read", "browser.tabs.list"}
 INTRUSIVE = {"clipboard.paste", "message.draft", "calculator.expression.evaluate"}
-VOICE_ACTIVITIES = {"libre", "trabajando"}
+NOTIFY_ACTIVITIES = {"jugando", "llamada", "viendo"}
 MAX_CALLS = 4
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_decision import current  # noqa: E402
@@ -59,8 +59,9 @@ def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
 
 
 def channel_for(activity: str) -> str:
-    """The README's channel rule: speak only when the person is free or working; otherwise a notification."""
-    return "voz" if activity in VOICE_ACTIVITIES else "notificacion"
+    """The owner's channel rule (decision 5, 2026-10-16), as the App applies it: a notification while the person plays,
+    is on a call or watches something; the voice otherwise."""
+    return "notificacion" if activity in NOTIFY_ACTIVITIES else "voz"
 
 
 def main() -> None:
@@ -143,8 +144,6 @@ def main() -> None:
         if ok and verdict in {"act", "propose"}:
             # Operations named before the catalog changed are met by the ones that replaced them.
             ok = effect in {current(op)[0] for op in expect.get("ops_any") or []}
-        if ok and expect.get("channel"):
-            ok = channel == expect["channel"]
         # Writing or clicking in the person's window bothers whatever the scene: counted when it ran, not when proposed.
         intrusive = verdict == "act" and (str(effect).startswith("input.") or effect in INTRUSIVE)
         # A failure is counted as a failure, not as an intervention that bothered anyone.
