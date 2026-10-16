@@ -3810,7 +3810,7 @@ public sealed class ExternalAdaptersTests
     public async Task SpotifyQueryPressNotSeenPlayingIsNeverRetried()
     {
         var runner = new SequencedProcessRunner([
-            "{\"ok\":false,\"effectObserved\":true,\"error\":\"spotify_play_clicked_not_verified\",\"title\":\"Spotify Premium\",\"selectedControl\":\"Reproducir Reggaetón Mix\",\"beforeNowPlaying\":\"after de conep\",\"observedNowPlaying\":\"after de conep\",\"pauseBefore\":false,\"selectedFlipped\":false,\"presses\":2,\"processId\":42}",
+            "{\"ok\":false,\"effectObserved\":true,\"error\":\"spotify_play_clicked_not_verified\",\"title\":\"Spotify Premium\",\"selectedControl\":\"Reproducir Reggaetón Mix\",\"beforeNowPlaying\":\"after de conep\",\"observedNowPlaying\":\"after de conep\",\"processId\":42}",
             "{\"ok\":true,\"effectObserved\":true,\"title\":\"Wrong retry\",\"processId\":42}",
         ]);
         var adapter = new SpotifyDesktopAdapter(runner);
@@ -3826,7 +3826,11 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_play_clicked_not_verified"));
-            Assert.That(receipt.Result, Is.Null);
+            // Round A (fault 2): what was pressed and what the client kept playing, as the script read them.
+            Assert.That(receipt.Result?.GetProperty("selectedControl").GetString(), Is.EqualTo("Reproducir Reggaetón Mix"));
+            Assert.That(receipt.Result?.GetProperty("beforeNowPlaying").GetString(), Is.EqualTo("after de conep"));
+            Assert.That(receipt.Result?.GetProperty("observedNowPlaying").GetString(), Is.EqualTo("after de conep"));
+            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("Spotify Premium"));
             Assert.That(runner.Calls, Is.EqualTo(1));
         });
     }
@@ -3837,7 +3841,7 @@ public sealed class ExternalAdaptersTests
     public async Task SpotifyQueryPlaybackSeenAfterThePressIsVerified()
     {
         var runner = new StubProcessRunner(
-            "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Conep - After (feat. Young Miko)\",\"selectedControl\":\"Reproducir Reggaetón Mix\",\"beforeNowPlaying\":\"after feat young miko de conep young miko\",\"observedNowPlaying\":\"after feat young miko de conep young miko\",\"pauseBefore\":false,\"selectedFlipped\":false,\"presses\":1,\"processId\":42}");
+            "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Conep - After (feat. Young Miko)\",\"selectedControl\":\"Reproducir Reggaetón Mix\",\"beforeNowPlaying\":\"after feat young miko de conep young miko\",\"observedNowPlaying\":\"after feat young miko de conep young miko\",\"processId\":42}");
         var adapter = new SpotifyDesktopAdapter(runner);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -3869,7 +3873,7 @@ public sealed class ExternalAdaptersTests
     {
         var time = new SteppingTimeProvider();
         var runner = new TimedSequencedProcessRunner(time, [
-            (TimeSpan.FromSeconds(23), "{\"ok\":false,\"effectObserved\":false,\"error\":\"spotify_exact_result_not_found\",\"searches\":2,\"coldStart\":false,\"elements\":334}"),
+            (TimeSpan.FromSeconds(23), "{\"ok\":false,\"effectObserved\":false,\"error\":\"spotify_exact_result_not_found\"}"),
         ]);
         var adapter = new SpotifyDesktopAdapter(runner, time: time);
 

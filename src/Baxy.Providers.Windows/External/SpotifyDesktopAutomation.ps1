@@ -617,7 +617,7 @@ try {
     if(-not $verified -and $null -ne $playObservationError){throw $playObservationError}
     $failure=if($verified){$null}elseif($resumedOnly){'spotify_query_result_not_confirmed'}else{'spotify_'+$stage+'_not_verified'}
     $observedTitle=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle
-    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;pauseBefore=$pauseAlready;selectedFlipped=$selectedFlipped;playbackEvidence=$(if($Mode -eq 'query' -and $verified){$evidence}else{$null});presses=$presses;pressIgnored=$pressIgnored;searches=$searches;coldStart=$coldStart;processId=$process.Id}|ConvertTo-Json -Compress
+    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;playbackEvidence=$(if($Mode -eq 'query' -and $verified){$evidence}else{$null});processId=$process.Id}|ConvertTo-Json -Compress
 } catch {
     Add-BaxySpotifyMark
     [pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_uia_failed';stage=$stage;detail=$_.Exception.Message;timings=$timings}|ConvertTo-Json -Compress
