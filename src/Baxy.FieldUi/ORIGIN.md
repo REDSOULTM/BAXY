@@ -108,3 +108,12 @@ y después (vista por defecto, cada panel, ventana estrecha y modo accesible), n
 - `dist/index.html`: `AE7473B0D5DDD11C6AC4D4701DB705E5D2C28A777B735BF03063E29E42F20732`
 - `dist/assets/index-COQjHLMx.css`: `8DE4457A681B697B4B51D7F1794EA110C090BB50DC36AF05F2F269AD331380F6`
 - `dist/assets/index-QIqCwDlN.js`: `ADF10A563BB172CF40E31357B03E5D4EE8077DCC99F0D2010A8329CF1BA74578`
+
+## Reapertura de honestidad (notebook, ronda B) de 2026-10-16
+
+El aviso de bypass y su etiqueta accesible dicen hasta dónde llega: deja de confirmar lo que la persona pide; lo que
+BAXY propone por su cuenta (el latido) sigue esperando su sí. Build deliberado `pnpm build` con el grafo fijado.
+
+- `dist/index.html`: `E6EC08DA9A89579EE3EEDFC79AA299306563258BD73762DFE5797BD7C7952802`
+- `dist/assets/index-COQjHLMx.css`: sin cambios
+- `dist/assets/index-Dbo167mL.js`: `BD33AF95731F05AFA695DE2930A00D960968E329E2A80D124557FF93EEB84265`
