@@ -399,7 +399,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task RunTurnAsync(string visibleUserText, Func<Task> turn, CancellationToken cancellationToken)
     {
-        await _turnGate.WaitAsync(cancellationToken);
+        // Ronda final 41 (regla: doble pulsación): a turn waiting for a heartbeat to end is already busy, so a second
+        // Enter (nothing visible had happened yet) is refused instead of queued to run the same request twice.
+        IsBusy = true;
+        try
+        {
+            await _turnGate.WaitAsync(cancellationToken);
+        }
+        catch
+        {
+            IsBusy = false;
+            throw;
+        }
+
         try
         {
             await RunGatedTurnAsync(visibleUserText, turn, cancellationToken);

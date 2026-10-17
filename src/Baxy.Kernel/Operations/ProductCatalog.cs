@@ -21,7 +21,7 @@ public static class ProductCatalog
             WindowIdSchema(),
             OperationRisks.WorkLoss,
             "app.close.identity.window.absence.v1",
-            "Solicita el cierre de una ventana resuelta y verifica su ausencia sin forzar la terminacion del proceso."),
+            "Solicita el cierre de una ventana resuelta y verifica su ausencia sin forzar la terminacion del proceso; el windowId caduca a los 5 minutos."),
         Descriptor(
             "app.installed",
             Schema([String("name", maximumUtf8Bytes: 256, nonWhitespace: true)], ["name"]),
@@ -122,13 +122,13 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.LowReversible,
             "backup.known.create.windows.zip.hash.postread.v1",
-            "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256."),
+            "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256; no incluye vínculos ni marcadores de OneDrive, archivos que no puede abrir ni lo que pase de 32 niveles, y los cuenta."),
         Descriptor(
             "backup.known.list",
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.ReadOnly,
             "backup.known.list.windows.manifest.hash.snapshot.v1",
-            "Lista los backups ZIP de carpetas conocidas y vuelve a verificar sus hashes."),
+            "Lista los backups ZIP de carpetas conocidas (20 por defecto, 50 como mucho) y vuelve a verificar sus hashes."),
         Descriptor(
             "backup.known.restore.latest",
             Schema(
@@ -150,7 +150,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.ReadOnly,
             "backup.list.sandbox.hash.snapshot.v1",
-            "Lista las copias privadas, desde la más reciente, y dice de cada una si su SHA-256 sigue siendo el registrado al crearla, sin exponer rutas internas."),
+            "Lista las copias privadas, desde la más reciente, y dice de cada una si su SHA-256 sigue siendo el registrado al crearla, sin exponer rutas internas; 20 por defecto (totalCount dice cuántos hay)."),
         Descriptor(
             "backup.restore",
             Schema(
@@ -198,7 +198,7 @@ public static class ProductCatalog
                 ["back", "close", "close_all", "fullscreen_video", "new_tab", "reload", "scroll_down", "scroll_up"])], ["action"]),
             OperationRisks.LowReversible,
             "browser.control.cdp.postread.v1",
-            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas salvo la última, que se deja porque cerrarla cerraría la ventana) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP."),
+            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas salvo la última, que se deja porque cerrarla cerraría la ventana) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP; cerrar todas para a las 50 pestañas o a los 40 segundos y dice cuántas cerró (closedTabs)."),
         Descriptor(
             "browser.navigate",
             Schema([String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["url"]),
@@ -221,7 +221,7 @@ public static class ProductCatalog
             Schema([Integer("maximumCharacters", 256, 32_768)], []),
             OperationRisks.PrivacySensitive,
             "browser.page.read.cdp.dom.snapshot.v1",
-            "Lee el título, la URL y el texto visible de la página de delante del navegador predeterminado de la persona por UI Automation, sin modificarla y con el contenido acotado; si BAXY abrió la última página en otro navegador (uno nombrado), lee ésa por CDP.",
+            "Lee el título, la URL y el texto visible de la página de delante del navegador predeterminado de la persona por UI Automation, sin modificarla y con el contenido acotado; si BAXY abrió la última página en otro navegador (uno nombrado), lee ésa por CDP; 12.000 caracteres por defecto (truncated).",
             // WEB1541: a read observes no effect; the receipt says so truthfully.
             requiresObservedEffect: false),
         Descriptor(
@@ -229,7 +229,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.PrivacySensitive,
             "browser.tabs.list.cdp.targets.snapshot.v1",
-            "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona, con su título y cuál está activa, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP.",
+            "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona (20 por defecto, 50 como mucho), con su título y cuál está activa, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP.",
             requiresObservedEffect: false),
         Descriptor(
             "calculator.expression.evaluate",
@@ -259,7 +259,7 @@ public static class ProductCatalog
                 ["endUtc", "startUtc"]),
             OperationRisks.ReadOnly,
             "calendar.event.list.account.snapshot.v1",
-            "Lista los eventos del calendario predeterminado de Outlook entre dos fechas, como mucho 200 (pasado el tope el resultado lo dice), sin modificarlos."),
+            "Lista los eventos del calendario predeterminado de Outlook entre dos fechas separadas por un año como mucho (un rango mayor se rechaza), como mucho 200 (pasado el tope el resultado lo dice), sin modificarlos."),
         // Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a capture the person asks to
         // keep is also saved as a PNG in the known folder named («folder»; pictures: its screenshots subfolder), with
         // a dated name that never overwrites, read back against its hash. Without «folder» it stays private only.
@@ -306,7 +306,7 @@ public static class ProductCatalog
             Schema([Integer("maxCharacters", 1, 65_536)], []),
             OperationRisks.PrivacySensitive,
             "clipboard.read.text.sequence.secondread.v1",
-            "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos."),
+            "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos; 8.192 caracteres por defecto; truncated dice si se cortó."),
         Descriptor(
             "clipboard.write.text",
             Schema([String("text", maximumLength: 65_536)], ["text"]),
@@ -328,7 +328,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.LowReversible,
             "desktop.wallpaper.set.spi.registry.postread.v1",
-            "Cambia el fondo de escritorio a un color liso (#RRGGBB) o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior."),
+            "Cambia el fondo de escritorio a un color liso (#RRGGBB) o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior; sólo una imagen directa de la carpeta."),
         Descriptor(
             "display.status",
             EmptySchema(),
@@ -362,13 +362,13 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "email.latest.read.outlook.mapi.snapshot.v1",
-            "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI."),
+            "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 65.536 caracteres se corta (bodyTruncated)."),
         Descriptor(
             "email.latest.reply",
             Schema([String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true)], ["text"]),
             OperationRisks.ExternalCommunication,
             "email.latest.reply.outlook.sent.postread.v1",
-            "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora."),
+            "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada."),
         // Fase 7 (D4, 2026-09-20): correo a una dirección libre desde el perfil clásico de
         // Outlook del dueño, confirmado en modo normal; la copia en Elementos enviados
         // (destinatario, texto, hora) es la prueba. Sin Outlook clásico se dice el límite.
@@ -383,7 +383,7 @@ public static class ProductCatalog
                 ["text", "to"]),
             OperationRisks.ExternalCommunication,
             "email.send.outlook.sent.postread.v1",
-            "Envía un correo a la dirección indicada (asunto opcional; sin asunto, el comienzo del texto) desde el perfil clásico de Outlook del dueño y verifica la copia en Elementos enviados por destinatario, texto y hora."),
+            "Envía un correo a la dirección indicada (asunto opcional; sin asunto, el comienzo del texto) desde el perfil clásico de Outlook del dueño y verifica la copia en Elementos enviados por destinatario, texto y hora; sin asunto usa la primera línea, cortada a 78 caracteres."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0542 «… comprímela y luego abre
         // el zip», D11): comprimir un archivo o carpeta de una carpeta conocida a un
         // zip al lado, verificado abriendo el zip; y abrir por nombre un archivo seguro
@@ -398,7 +398,7 @@ public static class ProductCatalog
                 ["folder", "name"]),
             OperationRisks.LowReversible,
             "file.compress.zip.archive.postread.v1",
-            "Comprime un archivo o una carpeta de una carpeta conocida en un zip con el mismo nombre al lado y verifica que el zip existe y tiene entradas."),
+            "Comprime un archivo o una carpeta de una carpeta conocida en un zip con el mismo nombre al lado y verifica que el zip existe y tiene entradas; sólo un elemento directo de la carpeta."),
         // BAXY Renew, herramientas de agente (2026-10-15): editar, buscar, leer y escribir archivos como las
         // herramientas edit/find/read/write de los agentes (OpenCode, OpenClaw, Claude Code). file.find sustituye a
         // filesystem.known.list y .search; file.read a document.text.read y document.pdf.read; file.write a
@@ -418,7 +418,7 @@ public static class ProductCatalog
                 ["fileName", "folder", "newText", "oldText"]),
             OperationRisks.LowReversible,
             "file.edit.windows.known.exact.replace.recycle.postread.v1",
-            "Reemplaza un texto exacto en un archivo de texto nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo."),
+            "Reemplaza un texto exacto en un archivo de texto de hasta 4 MB nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles."),
         Descriptor(
             "file.find",
             Schema(
@@ -433,7 +433,7 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.ReadOnly,
             "file.find.windows.known.name.content.bounded.v1",
-            "Lista el primer nivel de una carpeta conocida de Windows, o busca bajo ella archivos por nombre (parte del nombre o patrón con * y ?) o por un texto dentro de sus archivos de texto, de forma acotada (hasta 12 niveles; por contenido, hasta 2000 archivos de texto de 1 MB; una búsqueda por contenido para en el límite de aciertos y sólo ordena esos) y sin seguir puntos de reanálisis; devuelve cada archivo con su ruta relativa a la carpeta, nunca la absoluta; sin efecto."),
+            "Lista el primer nivel de una carpeta conocida de Windows, o busca bajo ella archivos por nombre (parte del nombre o patrón con * y ?) o por un texto dentro de sus archivos de texto, de forma acotada (20 resultados por defecto, 50 en el listado del primer nivel (sin ocultos ni de sistema), y 100 como mucho; hasta 12 niveles y 8 segundos, y una búsqueda cortada por el plazo lo dice; por contenido, mira hasta 2000 archivos de cualquier tipo y sólo lee los de texto de hasta 1 MB, y para en el límite de aciertos y sólo ordena esos) y sin seguir puntos de reanálisis; devuelve cada archivo con su ruta relativa a la carpeta, nunca la absoluta; sin efecto."),
         Descriptor(
             "file.open",
             Schema(
@@ -450,7 +450,7 @@ public static class ProductCatalog
                 ["folder", "name"]),
             OperationRisks.LowReversible,
             "file.open.shell.window.process.postread.v1",
-            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece. Un archivo que no está en esa carpeta no se abre: el recibo dice dónde se vio uno con ese nombre exacto."),
+            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece. Un archivo que no está en esa carpeta no se abre: el recibo dice dónde se vio uno con ese nombre exacto; dónde se vio busca 4 niveles en escritorio, documentos, descargas e imágenes, 5 lugares y 3 segundos como mucho (searchComplete); sólo abre documentos, imágenes, audio, vídeo y zip o 7z."),
         Descriptor(
             "file.read",
             Schema(
@@ -464,7 +464,7 @@ public static class ProductCatalog
                 ["fileName", "folder"]),
             OperationRisks.ReadOnly,
             "file.read.windows.known.text.pdf.paged.v1",
-            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR); dice qué tipo leyó, el largo total y si queda más; sin efecto."),
+            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR), hasta 4 MB de texto o 64 MB de PDF; dice qué tipo leyó, el largo total y si queda más; sin efecto; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles; la extracción de un PDF para a los 90 segundos."),
         Descriptor(
             "file.write",
             Schema(
@@ -481,7 +481,7 @@ public static class ProductCatalog
                 ["relativePath", "text"]),
             OperationRisks.LowReversible,
             "file.write.sandbox.known.cas.recycle.hash.v1",
-            "Escribe UTF-8 atómicamente en el sandbox o en una carpeta conocida; reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído."),
+            "Escribe UTF-8 atómicamente en el sandbox o en una carpeta conocida; reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído; append rechaza un archivo de más de 10 MB."),
         Descriptor(
             "filesystem.copy",
             FilesystemTransferSchema(),
@@ -514,13 +514,13 @@ public static class ProductCatalog
                 ["extension"]),
             OperationRisks.ReadOnly,
             "filesystem.explorer.count.foreground.folder.toplevel.v1",
-            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta."),
+            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta; no cuenta los archivos ocultos ni los de sistema."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
             OperationRisks.LowReversible,
             "filesystem.file.open.latest.windows.shell.process.postread.v1",
-            "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y lo da por abierto sólo con una ventana nueva (o del proceso lanzado) cuyo título lo nombra; si no, dice que no se pudo verificar."),
+            "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y lo da por abierto sólo con una ventana nueva (o del proceso lanzado) cuyo título lo nombra; si no, dice que no se pudo verificar; sólo mira el primer nivel de la carpeta, sin ocultos ni de sistema."),
         Descriptor(
             "filesystem.folder.open",
             Schema(
@@ -542,7 +542,7 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.ReadOnly,
             "filesystem.known.duplicates.windows.size.hash.snapshot.v1",
-            "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos."),
+            "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos (20 grupos por defecto; mira como mucho 10.000 archivos y lo dice si corta); busca hasta 12 niveles."),
         Descriptor(
             "filesystem.known.trash.named",
             Schema(
@@ -554,7 +554,7 @@ public static class ProductCatalog
                 ["fileName", "folder"]),
             OperationRisks.RecoverableDelete,
             "filesystem.known.trash.named.windows.absence.v1",
-            "Resuelve un archivo nombrado de forma única y lo envía a la Papelera de reciclaje de Windows, de donde la persona lo recupera, y verifica que ya no está en su carpeta."),
+            "Resuelve un archivo nombrado de forma única y lo envía a la Papelera de reciclaje de Windows, de donde la persona lo recupera, y verifica que ya no está en su carpeta; con un nombre repetido da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles."),
         Descriptor(
             "filesystem.list",
             Schema(
@@ -565,7 +565,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "filesystem.list.sandbox.identities.v1",
-            "Lista entradas acotadas del sandbox y emite identificadores opacos de corta vida."),
+            "Lista entradas acotadas del sandbox y emite identificadores opacos de corta vida; 50 por defecto (totalCount); los ids duran 5 minutos."),
         Descriptor(
             "filesystem.move",
             FilesystemTransferSchema(),
@@ -593,7 +593,7 @@ public static class ProductCatalog
                 ["leftFileName", "rightFileName"]),
             OperationRisks.ReadOnly,
             "filesystem.sandbox.diff.named.hash.snapshot.v1",
-            "Compara dos archivos de texto del sandbox nombrados por su nombre de archivo exacto (único en el sandbox) y devuelve hashes y líneas diferentes."),
+            "Compara dos archivos de texto del sandbox nombrados por su nombre de archivo exacto (único en el sandbox) y devuelve hashes y líneas diferentes; archivos de hasta 2 MB; lista 100 líneas cambiadas como mucho (changedLinesTruncated); compara las líneas por posición."),
         Descriptor(
             "filesystem.sandbox.move.named",
             Schema(
@@ -615,7 +615,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "filesystem.search.sandbox.identities.v1",
-            "Busca nombres dentro del sandbox sin seguir puntos de reanálisis."),
+            "Busca nombres dentro del sandbox sin seguir puntos de reanálisis; 50 por defecto (totalCount)."),
         Descriptor(
             "game.catalog.list",
             Schema(
@@ -626,7 +626,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "game.catalog.list.steam.snapshot.v1",
-            "Lista el catálogo local de Steam mediante una sesión resuelta y acotada."),
+            "Lista el catálogo local de Steam mediante una sesión resuelta y acotada; 50 por defecto; totalCount dice cuántos hay."),
         Descriptor(
             "game.entitlement.named",
             Schema(
@@ -641,7 +641,7 @@ public static class ProductCatalog
                 ["title"]),
             OperationRisks.ReadOnly,
             "game.entitlement.named.steam.librarycache.manifest.postread.v1",
-            "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos."),
+            "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos; sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes)."),
         Descriptor(
             "game.install.cancel",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
@@ -665,7 +665,7 @@ public static class ProductCatalog
                 ["title"]),
             OperationRisks.Installation,
             "game.install.named.steam.manifest.postread.v1",
-            "Resuelve el título de un juego de Steam (sus manifiestos locales o la búsqueda pública de la tienda; o de Epic Games) a su identidad, abre la instalación por su dirección, confirma el diálogo propio de Steam y verifica la transición del manifiesto local."),
+            "Resuelve el título de un juego de Steam (sus manifiestos locales o la búsqueda pública de la tienda; o de Epic Games) a su identidad, abre la instalación por su dirección, confirma el diálogo propio de Steam y verifica la transición del manifiesto local; sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes)."),
         Descriptor(
             "game.install.status",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
@@ -703,7 +703,7 @@ public static class ProductCatalog
                 ["title"]),
             OperationRisks.WorkLoss,
             "game.uninstall.named.steam.manifest.absence.postread.v1",
-            "Resuelve un título instalado de Steam a su AppID, abre su desinstalación por su dirección, confirma el diálogo propio de Steam y verifica que el manifiesto local ya no lo declare instalado."),
+            "Resuelve un título instalado de Steam a su AppID, abre su desinstalación por su dirección, confirma el diálogo propio de Steam y verifica que el manifiesto local ya no lo declare instalado; sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes)."),
         Descriptor(
             "input.key.press",
             Schema([
@@ -836,7 +836,7 @@ public static class ProductCatalog
                 ["text"]),
             OperationRisks.PrivacySensitive,
             "input.text.type.win32.sendinput.accepted.v1",
-            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput."),
+            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput; como mucho 4.096 caracteres, sin saltos de línea ni tabuladores; si no, se rechaza y no se escribe nada."),
         Descriptor(
             "input.visible.click",
             // El clic por el índice de la vista, o por la identidad que dio un clic, cuando la
@@ -946,7 +946,7 @@ public static class ProductCatalog
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
             OperationRisks.ExternalCommunication,
             "media.play.youtube.cdp.video.postread.v1",
-            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; con el reproductor propio instalado, sólo el sonido (audioOnly) en una ventana «BAXY YouTube»."),
+            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; con el reproductor propio instalado, sólo el sonido (audioOnly) en una ventana «BAXY YouTube»; en el navegador reproduce el primer vídeo que lista YouTube."),
         Descriptor(
             "media.seek.relative",
             Schema([Integer("seconds", -3_600, 3_600)], ["seconds"]),
@@ -1022,7 +1022,7 @@ public static class ProductCatalog
                 ["limit", "offset", "version"]),
             OperationRisks.ReadOnly,
             "memory.list.protected.page.v1",
-            "Lista memoria local visible de forma acotada."),
+            "Lista la memoria local visible, 20 recuerdos como mucho por vista (dice cuántos hay)."),
         Descriptor(
             "memory.recall",
             Schema(
@@ -1034,19 +1034,19 @@ public static class ProductCatalog
                 ["scope", "selector", "version"]),
             OperationRisks.ReadOnly,
             "memory.recall.protected.records.v1",
-            "Recupera memorias locales visibles para la sesión actual."),
+            "Recupera memorias locales visibles para la sesión actual; 5 como mucho (dice cuántos hay)."),
         Descriptor(
             "memory.save",
             MemorySaveSchema(["normal", "personal"]),
             OperationRisks.LowReversible,
             "memory.save.protected.postread.v1",
-            "Guarda una memoria explícita local no secreta."),
+            "Guarda una memoria explícita local no secreta; hasta 512 recuerdos; con la memoria llena, falla."),
         Descriptor(
             "memory.sensitive.save",
             MemorySaveSchema(["secret", "sensitive"]),
             OperationRisks.PrivacySensitive,
             "memory.sensitive.save.protected.postread.v1",
-            "Guarda una memoria sensible local."),
+            "Guarda una memoria sensible local; hasta 512 recuerdos; con la memoria llena, falla."),
         Descriptor(
             "memory.session.clear",
             Schema(
@@ -1084,7 +1084,7 @@ public static class ProductCatalog
                 ["channel", "recipient", "text"]),
             OperationRisks.PrivacySensitive,
             "message.draft.client.composer.visible.postread.v1",
-            "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), deja el mensaje escrito en el cuadro de redacción, lo corrobora en pantalla y se detiene sin enviarlo: la persona lo envía."),
+            "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), deja el mensaje escrito en el cuadro de redacción, lo corrobora en pantalla y se detiene sin enviarlo: la persona lo envía; en WhatsApp, hasta 8 candidatos (candidateCount)."),
         Descriptor(
             "message.send.test",
             Schema(
@@ -1124,7 +1124,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 100)], []),
             OperationRisks.ReadOnly,
             "network.port.list.windows.listeners.secondread.v1",
-            "Enumera puertos TCP y UDP locales en escucha y solo devuelve endpoints presentes en dos observaciones consecutivas."),
+            "Enumera puertos TCP y UDP locales en escucha y solo devuelve endpoints presentes en dos observaciones consecutivas; 50 por defecto (truncated)."),
         Descriptor(
             "network.status",
             EmptySchema(),
@@ -1141,7 +1141,7 @@ public static class ProductCatalog
                 ["content", "title"]),
             OperationRisks.LowReversible,
             "note.create.local.reopen.v1",
-            "Crea una nota privada local y verifica su relectura."),
+            "Crea una nota privada local y verifica su relectura; hasta 512 notas; llena, falla."),
         Descriptor(
             "note.list",
             Schema(
@@ -1153,7 +1153,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "note.list.local.snapshot.v1",
-            "Enumera notas privadas locales activas o enviadas a la papelera."),
+            "Enumera notas privadas locales activas o enviadas a la papelera; 50 por defecto (totalCount; nextOffset sigue)."),
         Descriptor(
             "note.read",
             NoteSelectorSchema(),
@@ -1177,7 +1177,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "note.search.local.reopen.v1",
-            "Busca texto en notas locales y verifica por relectura cada resultado acotado."),
+            "Busca texto en notas locales y verifica por relectura cada resultado acotado; 20 por defecto (totalCount)."),
         Descriptor(
             "note.trash",
             NoteSelectorSchema(),
@@ -1208,7 +1208,7 @@ public static class ProductCatalog
                 ["captureId"]),
             OperationRisks.PrivacySensitive,
             "ocr.read.windows.capture.binding.v1",
-            "Ejecuta OCR local sobre una captura identificada y un language pack disponible.",
+            "Ejecuta OCR local sobre una captura identificada y un language pack disponible; sólo se guardan las 16 últimas capturas.",
             requiresObservedEffect: false),
         Descriptor(
             "office.document.create",
@@ -1248,7 +1248,7 @@ public static class ProductCatalog
             Schema([String("packageId", maximumUtf8Bytes: 256, nonWhitespace: true)], ["packageId"]),
             OperationRisks.WorkLoss,
             "package.uninstall.winget.absence.postread.v1",
-            "Desinstala mediante winget el paquete instalado que se nombra (por su id exacto o su nombre único) y verifica su ausencia en la lista de paquetes instalados."),
+            "Desinstala mediante winget el paquete instalado que se nombra (por su id exacto o su nombre único) y verifica su ausencia en la lista de paquetes instalados; hasta 8 candidatos (candidateCount); a los 12 segundos dice winget_uninstall_still_running (sigue desinstalando)."),
         Descriptor(
             "peripheral.list",
             Schema([String("kind", values:
@@ -1289,7 +1289,7 @@ public static class ProductCatalog
                 ["action"]),
             OperationRisks.LowReversible,
             "schedule.windows.task.local.clock.postread.v1",
-            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, el de esa hora local o el último; y verifica la tarea en Windows."),
+            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, el de esa hora local o el último; al listar, las próximas 20 por hora como mucho (dice cuántas hay); y verifica la tarea en Windows."),
         Descriptor(
             "shell.command.run",
             Schema(
@@ -1300,7 +1300,7 @@ public static class ProductCatalog
                 ["command"]),
             OperationRisks.LowReversible,
             "shell.command.run.powershell.captured.output.v1",
-            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y su salida tal cual acotada; un código distinto de cero es un fallo con su salida y su error; lo que no sólo lee (escribe, borra, instala, envía o corre un programa) se confirma antes con el comando exacto.",
+            "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y los primeros 8.192 caracteres de su salida (con más de un millón de caracteres se detiene y no devuelve nada); un código distinto de cero es un fallo con su salida y su error; lo que no sólo lee (escribe, borra, instala, envía o corre un programa) se confirma antes con el comando exacto.",
             // A command that only reads ran with no effect; one that may change something reports what ran.
             requiresObservedEffect: false),
         Descriptor(
@@ -1348,7 +1348,7 @@ public static class ProductCatalog
                 ["service", "title"]),
             OperationRisks.ExternalCommunication,
             "streaming.play.named.netflix.cdp.video.progress.v1",
-            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce."),
+            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; hasta 10 candidatos."),
         Descriptor(
             "system.application.crash.diagnose",
             Schema(
@@ -1359,7 +1359,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "system.application.crash.diagnose.windows.eventlog.recordid.secondread.v1",
-            "Consulta fallos y bloqueos recientes de aplicaciones en el registro Application de Windows y solo devuelve eventos con RecordId presentes en dos observaciones."),
+            "Consulta fallos y bloqueos recientes de aplicaciones en el registro Application de Windows y solo devuelve eventos con RecordId presentes en dos observaciones; mira las últimas 24 horas, 20 eventos por defecto; sus recuentos paran en 200."),
         Descriptor(
             "system.identity",
             EmptySchema(),
@@ -1382,7 +1382,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "system.process.list.windows.identity.secondread.v1",
-            "Enumera procesos locales acotados por CPU, memoria o nombre y verifica PID, nombre y tiempo de creacion con dos observaciones; no expone rutas ni argumentos."),
+            "Enumera procesos locales acotados por CPU, memoria o nombre y verifica PID, nombre y tiempo de creacion con dos observaciones; no expone rutas ni argumentos; 10 por defecto (observedProcessCount es el total)."),
         Descriptor(
             "system.process.terminate.named",
             Schema([String("name", maximumLength: 128, nonWhitespace: true)], ["name"]),
@@ -1511,7 +1511,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "task.list.local.reopen.v1",
-            "Lista de forma acotada tareas locales abiertas, completadas o eliminadas."),
+            "Lista de forma acotada tareas locales abiertas, completadas o eliminadas; 20 por defecto (totalCount); sin status, sólo las abiertas."),
         Descriptor(
             "task.reopen",
             TaskCasSchema(),
@@ -1535,7 +1535,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "task.search.local.reopen.v1",
-            "Busca en título y detalles de tareas locales sin crear índices de texto plano."),
+            "Busca en título y detalles de tareas locales sin crear índices de texto plano; 20 por defecto (totalCount); no busca en las borradas."),
         Descriptor(
             "task.update",
             Schema(
@@ -1560,7 +1560,7 @@ public static class ProductCatalog
                 ["captureId"]),
             OperationRisks.PrivacySensitive,
             "vision.describe.provider.capture.binding.v1",
-            "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured."),
+            "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured; sólo se guardan las 16 últimas capturas."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
         // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:
         // geocodificación del lugar nombrado, o la ubicación de este PC por su IP) con
@@ -1582,7 +1582,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "weather.current.openmeteo.read.v1",
-            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad que ese servicio deduce, cuando no se nombra ninguno)."),
+            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad que ese servicio deduce, cuando no se nombra ninguno); hasta 8 candidatos (candidateCount)."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0077 «descarga la imagen de
         // portada de wikipedia.org y guardala en el escritorio», H0069; D11): bajar un
         // archivo o imagen de una dirección a una carpeta conocida, verificado por el
@@ -1598,7 +1598,7 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
-            "Descarga un archivo o una imagen de una dirección web a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
+            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho."),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
         // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.
@@ -1613,7 +1613,7 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.ReadOnly,
             "web.fetch.public.http.text.v1",
-            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset)."),
+            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset); sólo páginas HTML, y de una página de más de 1,5 MB sólo el principio; 3 redirecciones como mucho."),
         // BAXY Renew (2026-10-15): el modelo elige la fuente (source) y llena sus argumentos tipados; el proveedor
         // pregunta sólo a esa fuente y devuelve lo que ella devolvió. Lo que significa cada argumento lo dice la
         // descripción de la herramienta (tool_descriptions.en.v1.json).
@@ -1647,7 +1647,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "web.search.provider.results.v1",
-            "Busca en la fuente pública que elige el modelo (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; con nearby, añade la ciudad y el país de este PC a la consulta."),
+            "Busca en la fuente pública que elige el modelo (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; con nearby, añade la ciudad y el país de este PC a la consulta; 5 resultados por defecto."),
         Descriptor(
             "wifi.connect",
             Schema([String("profileId", maximumLength: 128, nonWhitespace: true)], ["profileId"]),
@@ -1734,19 +1734,19 @@ public static class ProductCatalog
             WindowIdSchema(),
             OperationRisks.LowReversible,
             "window.focus.identity.foreground.v1",
-            "Enfoca una ventana resuelta previamente y verifica su identidad y foco."),
+            "Enfoca una ventana resuelta previamente y verifica su identidad y foco; el windowId caduca a los 5 minutos."),
         Descriptor(
             "window.maximize",
             WindowIdSchema(),
             OperationRisks.LowReversible,
             "window.maximize.identity.state.v1",
-            "Maximiza una ventana resuelta previamente y verifica su identidad y estado."),
+            "Maximiza una ventana resuelta previamente y verifica su identidad y estado; el windowId caduca a los 5 minutos."),
         Descriptor(
             "window.minimize",
             WindowIdSchema(),
             OperationRisks.LowReversible,
             "window.minimize.identity.state.v1",
-            "Minimiza una ventana resuelta previamente y verifica su identidad y estado."),
+            "Minimiza una ventana resuelta previamente y verifica su identidad y estado; el windowId caduca a los 5 minutos."),
         Descriptor(
             "window.minimize.all",
             EmptySchema(),
@@ -1822,7 +1822,7 @@ public static class ProductCatalog
                 .Distinct(StringComparer.Ordinal).Count() != Catalog.Length)
         {
             throw new InvalidOperationException(
-                "The product operation catalog must have stable unique operation and verifier identities.");
+                "The product operation catalog must have stable unique operation and verifier identities; el windowId caduca a los 5 minutos.");
         }
     }
 

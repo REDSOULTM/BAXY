@@ -422,7 +422,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             .Concat(EnumerateDirectories(roots))
             .Where(item => string.Equals(
                 Path.GetFileName(item.Path), fileName, StringComparison.OrdinalIgnoreCase))
-            .Take(5)
+            .Take(CandidatesShown + 1)
             .ToArray();
         // BAXY Renew (notebook): none says the known folders it walked; two or more, their places as file.read
         // gives them, so the next call can name the right one.
@@ -796,7 +796,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         {
             matches.AddRange(Enumerate(roots)
                 .Where(item => string.Equals(Path.GetFileName(item.Path), name, StringComparison.OrdinalIgnoreCase))
-                .Take(5));
+                .Take(CandidatesShown + 1));
         }
         if (matches.Count == 1)
         {
@@ -809,7 +809,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             : [.. Enumerate(roots)
                 .Where(item => string.Equals(
                     Path.GetFileNameWithoutExtension(item.Path), stem, StringComparison.OrdinalIgnoreCase))
-                .Take(5)];
+                .Take(CandidatesShown + 1)];
         string code = matches.Count > 1 ? "known_file_ambiguous" : "known_file_not_found";
         if (candidates.Length == 0)
         {
@@ -823,14 +823,21 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         return CandidatesRefusal(operation, code, candidates);
     }
 
+    // Ronda final 41 (regla 3): at most this many candidates are given, and a list cut there says so
+    // (candidatesTruncated), never read as all the places with that name.
+    private const int CandidatesShown = 5;
+
     // A refusal with the places it saw: each one's name, known folder and path relative to that folder.
     private ExternalCapabilityReceipt CandidatesRefusal(
         string operation, string code, IEnumerable<KnownEntry> candidates) =>
         new(operation, false, false, ExternalJson.Create(writer =>
         {
+            KnownEntry[] all = [.. candidates];
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            if (all.Length > CandidatesShown)
+                writer.WriteBoolean("candidatesTruncated", true);
             writer.WriteStartArray("candidates");
-            foreach (KnownEntry candidate in candidates)
+            foreach (KnownEntry candidate in all.Take(CandidatesShown))
             {
                 writer.WriteStartObject();
                 writer.WriteString("name", Path.GetFileName(candidate.Path));

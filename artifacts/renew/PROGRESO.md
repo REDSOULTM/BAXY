@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 52 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 40, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 89 descripciones del catálogo y 17 entradas de argumentos tras la ronda final 41, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -882,13 +882,32 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     en limit antes de ordenar; el texto en español de la presentación que ve la persona; el código de error de la
     presentación, que el kernel rechaza antes con invalid_arguments). Arregladas: la cabecera cuenta las líneas
     recibidas y, pasado el tope, dice «80 of N entries» (dist reconstruido, hashes en ORIGIN.md); las descripciones en
-    inglés y los textos en español de esas operaciones, y de window.close.all y window.minimize.all, dicen sus topes y
-    lo que dejan fuera; memory.list y web.fetch también. B arregladas: calendar.event.list ordena por [Start] antes de
+    inglés de esas operaciones, de window.close.all, window.minimize.all, memory.list y web.fetch dicen sus topes y lo
+    que dejan fuera; de los textos en español sólo cambiaron los de calendar.event.list, document.presentation.create,
+    file.find, window.close.all y window.minimize.all (la ronda 41 corrigió esta frase, que decía «y los textos en
+    español de esas operaciones», y completó los demás). B arregladas: calendar.event.list ordena por [Start] antes de
     IncludeRecurrences, el orden que pide la documentación de Outlook (Items.IncludeRecurrences); client.channel.locate
     acepta el ComboBox del buscador de Discord 1.0.9261 (la lectura del notebook) como campo con el nombre; el latido
     sólo avisa de batería con el cargador leído como desenchufado; la entrada de la ronda 29 dice que el notebook mandó
     su mente. Nuevas B pendientes b_r40_*. Desde ff863b47f cambiaron 52 descripciones y 8 entradas de
     argumentos. Suites: 564/69/477/2189. Sin medir.
+  - Ronda final 41 (sobre 41341397a), con la vara estricta: notebook A 8 (mente: los topes de largo de los
+    argumentos que mind.py quita del esquema y los valores por defecto de limit que el esquema no escribe; la salida de
+    más de 1 M de shell.command.run, que no devuelve nada; schedule.alarms prometía 50 y el kernel corta a 20; español:
+    web.download, web.fetch, file.find, y file.read y file.edit en las dos lenguas con 4 MB de texto y 64 MB de PDF);
+    PC A 6+1+0+3 (topes callados de file.find, memory.recall, streaming.play.named, message.draft y weather.current; el
+    doble Enter durante un latido, que ponía en cola dos turnos con el mismo pedido; PROGRESO de la 40 decía que los
+    textos en español de esas operaciones ya decían sus topes, y sólo cambiaron cinco). Arreglos: un turno que espera a
+    un latido ya cuenta como ocupado; las descripciones y los textos en español de 45 operaciones dicen sus topes,
+    valores por defecto, plazos, filtros y candidatos, tras un barrido de las 144 operaciones del alcance contra su
+    código (77 seguidas hasta el proveedor, 67 por barrido mecánico); los argumentos de texto libre (input.text.type,
+    correo, mensajes, file.write, clipboard.write.text, file.edit) dicen su tope de largo. Ese barrido halló además que
+    el tope que la ronda 41 había escrito para input.text.type (8.192 bytes) era falso: el adaptador rechaza más de
+    4.096 caracteres y los saltos de línea; ahora lo dice. B arregladas: las listas de candidatos de archivos conocidos
+    marcan candidatesTruncated. Los topes de largo de los demás argumentos (títulos, consultas) siguen fuera del esquema
+    que ve el modelo, por coste de tokens (2026-10-15); se rechazan con invalid_arguments antes de cualquier efecto.
+    Nuevas B pendientes b_r41_*. Desde ff863b47f cambiaron 89 descripciones y 17 entradas de argumentos.
+    Suites: 564/69/477/2189. Sin medir: las descripciones más largas alargan el prefijo del modelo.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
