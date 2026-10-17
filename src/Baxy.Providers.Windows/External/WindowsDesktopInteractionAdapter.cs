@@ -717,6 +717,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             : new ExternalCapabilityReceipt(operation, effect, false, result, unread) { EffectMayHaveOccurred = true };
     }
 
+    // The entries a combo's list showed, as the worker read them.
+    private static IReadOnlyList<string> Entries(JsonElement root) =>
+        root.TryGetProperty("entries", out JsonElement entries) && entries.ValueKind == JsonValueKind.Array
+            ? [.. entries.EnumerateArray().Where(entry => entry.ValueKind == JsonValueKind.String)
+                .Select(entry => entry.GetString()!)]
+            : [];
+
     // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad), by its title
     // and the program a view names it by, read before the first key.
     private static void WriteSentTo(Utf8JsonWriter writer, DesktopForeground before, string process)
@@ -867,6 +874,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                         ChosenEntry(root)), keeper);
                 }
 
+                // Ronda final 16 (regla 3): a list-only combo whose list was opened and closed without the entry
+                // changed the window: an effect that may have occurred, never «nothing sent».
+                if (Flag(root, "expanded", false))
+                    return WindowsVisibleControlAdapter.NotNamed(operation, "input_entry_not_found", Entries(root))
+                        with { EffectMayHaveOccurred = true };
+
                 // Nothing was set (the worker sets no read-only, password or disabled field): neither its edit
                 // control's messages nor the keyboard write there.
                 if (Flag(root, "readOnly", false) || Flag(root, "password", false) || !Flag(root, "enabled", true))
@@ -955,11 +968,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // Auditoría C9: no entry is called so (folded); nothing was chosen, and the list's entries go back as they read.
             if (!root.TryGetProperty("method", out JsonElement method) || method.ValueKind != JsonValueKind.String
                 || method.GetString() != "select")
-                return WindowsVisibleControlAdapter.NotNamed(operation, "input_entry_not_found",
-                    root.TryGetProperty("entries", out JsonElement entries) && entries.ValueKind == JsonValueKind.Array
-                        ? [.. entries.EnumerateArray().Where(entry => entry.ValueKind == JsonValueKind.String)
-                            .Select(entry => entry.GetString()!)]
-                        : []);
+                return WindowsVisibleControlAdapter.NotNamed(operation, "input_entry_not_found", Entries(root))
+                    with { EffectMayHaveOccurred = Flag(root, "expanded", false) };
             bool whole = root.TryGetProperty("delivered", out JsonElement read) && read.ValueKind == JsonValueKind.True;
             // Ronda final: the entry already chosen (read before) is the state reached: nothing was chosen (changed:false).
             if (whole && root.TryGetProperty("alreadyReached", out JsonElement reached) && reached.ValueKind == JsonValueKind.True)

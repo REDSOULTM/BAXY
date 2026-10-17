@@ -3975,10 +3975,12 @@ function Find-EntryNamed($items,[string]$text){
 }
 function Select-ComboEntry($combo,[string]$text){
   $script:ComboEntries=@()
+  # Ronda final 16 (regla 3): the list opened (and closed) is an effect on the window even when no entry was chosen.
+  $script:ComboExpanded=$false
   $pattern=$null
   if(-not $combo.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){ return $null }
   $expand=[System.Windows.Automation.ExpandCollapsePattern]$pattern
-  try { $expand.Expand() } catch { return $null }
+  try { $expand.Expand(); $script:ComboExpanded=$true } catch { return $null }
   $chosen=$null
   try {
     $items=@($combo.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem))))
@@ -4053,6 +4055,7 @@ function Do-Field($request){
     $picked=Select-ComboEntry $element ([string]$request.text)
     if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; if([bool]$picked.alreadyReached){ $result.alreadyReached=$true } }
     elseif($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
+    if($null -eq $picked -and $script:ComboExpanded){ $result.expanded=$true }
     return $result
   }
   $combo=$null
@@ -4088,6 +4091,7 @@ function Do-Field($request){
       $picked=Select-ComboEntry $element ([string]$text)
       if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; if([bool]$picked.alreadyReached){ $result.alreadyReached=$true }; return $result }
       if($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
+      if($script:ComboExpanded){ $result.expanded=$true }
     }
     return $result
   }

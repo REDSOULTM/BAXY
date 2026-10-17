@@ -480,6 +480,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("targetId", playback.TargetId);
             writer.WriteString("playbackStatus", "playing");
             writer.WriteNumber("observedProgressSeconds", playback.ObservedProgressSeconds);
+            // Ronda final 16 (regla 3): an advertisement advances the same player; it is not ruled out here.
+            writer.WriteBoolean("adRuledOut", false);
             writer.WriteString("authority", service == "disney_plus"
                 ? "disney_cdp_video_progress_postread" : "netflix_cdp_video_progress_postread");
             writer.WriteEndObject();
@@ -2094,6 +2096,7 @@ internal class CdpBrowserSession : IDisposable
         string lastObserved = string.Empty;
         string chosenName = string.Empty;
         string failure = "netflix_title_or_play_control_not_found";
+        bool searched = false;
         // Con la sesión iniciada el camino es más largo de lo que era: elegir perfil,
         // volver a la búsqueda, abrir el título y esperar al reproductor son tres
         // navegaciones. A 250 ms por vuelta, 120 daban treinta segundos y se agotaban
@@ -2140,10 +2143,8 @@ internal class CdpBrowserSession : IDisposable
                 + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
                 + "if(cards.length&&still(cards)){"
                 + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,'no_exact','',named.map(x=>x.n).filter(n=>n).join('\\u001e')].join('\\u001f');}}"
-                + "if(!auth&&!location.pathname.includes('/watch/')){const controls=[...document.querySelectorAll('[data-uia=\"play-button\"],button,a')];"
-                + "const play=controls.find(e=>{const s=((e.getAttribute('aria-label')||'')+' '+(e.innerText||'')).toLowerCase();"
-                + "return s==='play'||s.includes('reproducir')||s.startsWith('play ');});"
-                + "if(play){play.click();action='play_clicked';}}"
+                // Ronda final 16 (regla 3): no generic «play» is pressed outside the card named as asked (it could be
+                // another title's preview); only the chosen card leads to the player.
                 + "const v=document.querySelector('video');if(v&&v.paused){v.play().catch(()=>{});}"
                 + "const matched=fold(document.title+' '+(document.body?.innerText||'')).includes(wanted);"
                 + "return [location.href,document.title,auth?'auth':'ok',matched?'matched':'unmatched',"
@@ -2183,7 +2184,10 @@ internal class CdpBrowserSession : IDisposable
             // episodio al que Netflix redirige. Exigir que la URL lleve el id elegido
             // rechazaba una reproducción correcta. Basta con haber elegido la ficha y
             // estar en un reproductor: la redirección es suya, no nuestra.
-            bool opened = chosenId.Length > 0 || fields[3] == "matched";
+            // Ronda final 16 (regla 3): only the card named as asked proves what opened; the page merely containing the
+            // name (another title that holds it) never does.
+            bool opened = chosenId.Length > 0;
+            if (lastUrl.Contains("netflix.com/search", StringComparison.OrdinalIgnoreCase)) searched = true;
             if (watch && opened && ready
                 && fields[5] == "playing" && progressing)
             {
@@ -2196,7 +2200,9 @@ internal class CdpBrowserSession : IDisposable
                 failure = "netflix_video_progress_not_observed";
             }
         }
-        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
+        // Ronda final 16 (regla 3): a search page never reached is not a title not found.
+        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+            searched || failure != "netflix_title_or_play_control_not_found" ? failure : "netflix_search_not_reached",
             lastObserved + "|remembered=" + chosenId + "/" + chosenName);
     }
 
@@ -2250,6 +2256,8 @@ internal class CdpBrowserSession : IDisposable
         // Tras una recarga de la búsqueda el cuadro vuelve vacío: se escribe de nuevo, pocas veces.
         int typed = 0;
         string failure = "disney_title_or_play_control_not_found";
+        string videoKey = string.Empty;
+        bool searched = false;
         for (int attempt = 0; attempt <= 240; attempt++)
         {
             if (attempt > 0)
@@ -2320,7 +2328,7 @@ internal class CdpBrowserSession : IDisposable
                 + "const vids=[...document.querySelectorAll('video')];"
                 + "const v=vids.find(x=>x.readyState>=2&&!x.paused)||vids.find(x=>x.readyState>=2)||vids[vids.length-1];"
                 + "if(v&&v.paused&&v.readyState>=2){v.play().catch(()=>{});}"
-                + "return [location.href,document.title,auth?'auth':'ok',v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,'','',p.includes('/play/')?'player':'other'].join('\\u001f');})()",
+                + "return [location.href,document.title,auth?'auth':'ok',v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,'','',p.includes('/play/')?'player:'+vids.indexOf(v):'other'].join('\\u001f');})()",
                 cancellationToken,
                 userGesture: true).ConfigureAwait(false);
             lastObserved = observed;
@@ -2345,7 +2353,15 @@ internal class CdpBrowserSession : IDisposable
                 typed++;
                 continue;
             }
-            bool player = fields[9] == "player";
+            // Ronda final 16 (regla 3): the progress is of one same <video> (its index on the page): a baseline from
+            // another element (a background video, a trailer) never proves this one advanced.
+            bool player = fields[9].StartsWith("player", StringComparison.Ordinal);
+            if (fields[9] != videoKey)
+            {
+                videoKey = fields[9];
+                baseline = null;
+            }
+            if (fields[0].Contains("/browse/search", StringComparison.OrdinalIgnoreCase)) searched = true;
             bool ready = int.TryParse(fields[3], NumberStyles.Integer,
                 CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
             bool progressing = double.TryParse(fields[5], NumberStyles.Float,
@@ -2366,7 +2382,9 @@ internal class CdpBrowserSession : IDisposable
                 failure = "disney_video_progress_not_observed";
             }
         }
-        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
+        // Ronda final 16 (regla 3): a search page never reached (a profile screen, a PIN) is not a title not found.
+        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+            searched || failure != "disney_title_or_play_control_not_found" ? failure : "disney_search_not_reached",
             lastObserved + "|remembered=" + chosenHref + "/" + chosenName);
     }
 

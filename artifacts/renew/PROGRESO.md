@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 27 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 29 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -573,6 +573,12 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     browser.page.read y browser.tabs.list (pueden arrancar el navegador propio delante); message.draft dice cómo elige
     chat Discord; filesystem.known.trash.named dice que también manda carpetas enteras (con ellas, 27 descripciones y 6
     entradas de argumentos cambiadas desde ff863b47f, por diff de claves). Suites: 564/69/477/2171. Sin medir.
+  - Ronda final 16: Netflix y Disney+ por el navegador propio dicen adRuledOut:false; Netflix ya no pulsa un «play»
+    genérico fuera de la ficha pedida ni da el título por subcadena de la página; Disney mide el avance de un mismo
+    <video>; los dos dicen *_search_not_reached si nunca llegaron a buscar; un ComboBox abierto y cerrado sin la entrada
+    es efecto posible; el backup sin nada copiado no dice «vacío» (known_backup_nothing_copied); descripciones de
+    backup.known.create (qué se omite y cuándo hay contadores) y capture.* (pictures va a Screenshots); con ellas, 29
+    descripciones y 6 entradas de argumentos cambiadas desde ff863b47f, por diff de claves. Suites: 564/69/477/2171. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

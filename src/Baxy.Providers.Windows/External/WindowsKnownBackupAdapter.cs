@@ -199,8 +199,10 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
             if (fileCount == 0)
             {
                 (int linkedFiles, int linkedFolders) = ReparsePointFiles(roots);
+                // Ronda final 16: folders that could not be opened or lie past 32 levels are not counted, so «empty»
+                // is said only of a source the walk saw with nothing left out it can count, and never as a fact.
                 throw new InvalidDataException(unreadableFiles > 0 || linkedFiles > 0 || linkedFolders > 0
-                    ? "known_backup_nothing_readable" : "known_backup_source_empty");
+                    ? "known_backup_nothing_readable" : "known_backup_nothing_copied");
             }
             File.Move(partialPath, archivePath);
         }
