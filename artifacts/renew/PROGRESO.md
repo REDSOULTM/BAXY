@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 39 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 25, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 39 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 26, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -693,6 +693,15 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     su ventana). B: descripciones de input.key.press e input.text.type; la latencia del e2e resuelta como del entorno;
     líneas de B al día; nuevas B pendientes b_r25_*. Descripciones cambiadas desde ff863b47f: 39 y 8 entradas de
     argumentos. Suites: 564/69/477/2183. Sin medir.
+  - Ronda final 26 (sobre 3ae65d552; arreglos en f69925d80): A en el notebook 1 (bancos) y en el PC 1+0+1+2.
+    Arregladas: en Discord, client.channel.locate y message.draft pulsaban Escape a ciegas antes de Ctrl+K (en Discord
+    cancela una edición, rechaza una llamada o marca el canal como leído): ya no hay Escape sin el buscador visto abierto;
+    client.channel.locate vuelve a minimizar Discord si lo estaba y el recibo dice si quedó a la vista
+    (restoredFromMinimized, leftShown); los textos en español cambiados ya no llevan una cifra que se desfasa; el juicio 5
+    de falsedades corrió con el código de 740d4af97, no con «0d2e5433b». La App en las dos máquinas, sin A, con la
+    confirmación revisada de punta a punta. B: texto de la ventana protegida para la de BAXY; ORIGIN.md; nuevas B
+    pendientes b_r26_* (una, por verificar en vivo: restaurar una ventana maximizada podría devolverla sin maximizar).
+    Descripciones cambiadas desde ff863b47f: 39 y 8 entradas de argumentos. Suites: 564/69/477/2183. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
