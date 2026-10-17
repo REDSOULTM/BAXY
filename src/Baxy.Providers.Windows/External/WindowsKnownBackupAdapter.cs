@@ -155,6 +155,7 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         string archivePath = Path.Combine(_backupRoot, backupId + ".zip");
         string partialPath = archivePath + ".partial";
         int fileCount = 0;
+        int unreadableFiles = 0;
         long sourceBytes = 0;
         try
         {
@@ -172,12 +173,22 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
                     string relative = Path.GetRelativePath(root, file);
                     string entryName = (rootLabel + "/" + relative)
                         .Replace(Path.DirectorySeparatorChar, '/');
+                    // Ronda final 14 (regla 3): a file another program holds (Outlook's .pst) is skipped and counted,
+                    // opened before its entry so the ZIP never holds an empty one in its place.
+                    FileStream source;
+                    try
+                    {
+                        source = new(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                    }
+                    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+                    {
+                        unreadableFiles++;
+                        continue;
+                    }
+                    using FileStream opened = source;
                     ZipArchiveEntry entry = archive.CreateEntry(
                         entryName, CompressionLevel.SmallestSize);
                     using Stream destination = entry.Open();
-                    using FileStream source = new(
-                        file, FileMode.Open, FileAccess.Read,
-                        FileShare.ReadWrite | FileShare.Delete);
                     sourceBytes += source.Length;
                     source.CopyTo(destination);
                     fileCount++;
@@ -193,7 +204,7 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         }
 
         string sha256 = HashFile(archivePath);
-        int cloudOnly = CloudOnlyFiles(roots);
+        (int reparseFiles, int reparseFolders) = ReparsePointFiles(roots);
         var manifest = new BackupManifest(
             1, backupId, folder, DateTimeOffset.UtcNow, fileCount,
             sourceBytes, new FileInfo(archivePath).Length, sha256);
@@ -203,7 +214,7 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         if (postread.BackupId != backupId || !File.Exists(archivePath)
             || !string.Equals(HashFile(archivePath), sha256, StringComparison.Ordinal))
             return ExternalJson.Failure(operation, "known_backup_postread_failed", true);
-        return ExternalJson.Success(operation, ManifestResult(postread, verified: true, cloudOnly), true);
+        return ExternalJson.Success(operation, ManifestResult(postread, verified: true, reparseFiles, unreadableFiles, reparseFolders), true);
     }
 
     private ExternalCapabilityReceipt List(
@@ -310,8 +321,8 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         return existing;
     }
 
-    // The files the walk leaves out as reparse points (cloud placeholders), in the folders it walks.
-    private static int CloudOnlyFiles(string[] roots)
+    // The files the walk leaves out as reparse points (OneDrive's placeholders, links), in the folders it walks.
+    private static (int Files, int Folders) ReparsePointFiles(string[] roots)
     {
         var walk = new EnumerationOptions
         {
@@ -321,16 +332,22 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
             MaxRecursionDepth = 32,
         };
         var here = new EnumerationOptions { IgnoreInaccessible = true, AttributesToSkip = 0 };
-        int count = 0;
+        int files = 0;
+        int folders = 0;
         foreach (string root in roots)
         {
             foreach (string folder in Directory.EnumerateDirectories(root, "*", walk).Prepend(root))
             {
-                count += new DirectoryInfo(folder).EnumerateFiles("*", here)
+                var info = new DirectoryInfo(folder);
+                files += info.EnumerateFiles("*", here)
                     .Count(static file => (file.Attributes & FileAttributes.ReparsePoint) != 0);
+                // Ronda final 14 (regla 3): a folder that is itself a reparse point (a OneDrive placeholder, a link)
+                // is left out whole, with everything under it.
+                folders += info.EnumerateDirectories("*", here)
+                    .Count(static sub => (sub.Attributes & FileAttributes.ReparsePoint) != 0);
             }
         }
-        return count;
+        return (files, folders);
     }
 
     private static IEnumerable<(string Root, string File)> Enumerate(string[] roots)
@@ -352,14 +369,18 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         }
     }
 
-    private static JsonElement ManifestResult(BackupManifest manifest, bool verified, int skippedCloudFiles = 0) =>
+    private static JsonElement ManifestResult(
+        BackupManifest manifest, bool verified, int skippedReparsePointFiles = 0, int skippedUnreadableFiles = 0,
+        int skippedReparsePointFolders = 0) =>
         ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             WriteManifest(writer, manifest); writer.WriteBoolean("verified", verified);
-            // Ronda final 13 (regla 3): the files only in the cloud (OneDrive's placeholders, reparse points) are not in
-            // the ZIP; how many. Unreadable files are skipped too, and are not counted.
-            if (skippedCloudFiles > 0) writer.WriteNumber("skippedCloudFiles", skippedCloudFiles);
+            // Ronda final 13-14 (regla 3): what is not in the ZIP and how many: files Windows marks as reparse points
+            // (OneDrive's placeholders, links), and files that could not be opened (held by another program).
+            if (skippedReparsePointFiles > 0) writer.WriteNumber("skippedReparsePointFiles", skippedReparsePointFiles);
+            if (skippedUnreadableFiles > 0) writer.WriteNumber("skippedUnreadableFiles", skippedUnreadableFiles);
+            if (skippedReparsePointFolders > 0) writer.WriteNumber("skippedReparsePointFolders", skippedReparsePointFolders);
             writer.WriteString("authority", "windows_known_backup_zip_hash_postread");
             writer.WriteEndObject();
         });

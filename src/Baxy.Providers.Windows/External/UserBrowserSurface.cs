@@ -194,6 +194,9 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("browser", browser.DisplayName);
             writer.WriteString("sourceAppUserModelId", playing.SourceAppUserModelId);
             writer.WriteString("playbackStatus", "playing");
+            // Ronda final 14 (regla 3): the system's media session says playing for an advertisement too, and the
+            // person's page is not read here: an advertisement is not ruled out.
+            writer.WriteBoolean("adRuledOut", false);
             writer.WriteString("authority", "user_browser_smtc_postread");
             writer.WriteEndObject();
         }));
@@ -255,6 +258,9 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("browser", browser.DisplayName);
             writer.WriteString("sourceAppUserModelId", playing.SourceAppUserModelId);
             writer.WriteString("playbackStatus", "playing");
+            // Ronda final 14 (regla 3): the system's media session says playing for an advertisement too, and the
+            // person's page is not read here: an advertisement is not ruled out.
+            writer.WriteBoolean("adRuledOut", false);
             writer.WriteString("authority", "user_browser_smtc_postread");
             writer.WriteEndObject();
         }));

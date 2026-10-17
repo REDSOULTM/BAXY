@@ -1969,7 +1969,7 @@ internal class CdpBrowserSession : IDisposable
         // is its watch page (its v= id), no advertisement shows in the player, and its time advances from a baseline.
         string? wantedId = System.Web.HttpUtility.ParseQueryString(watchUri.Query)["v"];
         double? baseline = null;
-        bool adSeen = false;
+        bool adLast = false;
         for (int attempt = 0; attempt <= 180; attempt++)
         {
             if (attempt > 0)
@@ -2031,10 +2031,11 @@ internal class CdpBrowserSession : IDisposable
                 && fields[3] == "playing"
                 && double.TryParse(fields[8], NumberStyles.Float, CultureInfo.InvariantCulture, out double now))
             {
-                if (fields[7] == "ad")
+                // Ronda final 14 (regla 3): «an advertisement is playing» is said only of the last read.
+                adLast = fields[7] == "ad";
+                if (adLast)
                 {
                     // An advertisement plays in the same <video>: its time is not the video's, so the baseline waits.
-                    adSeen = true;
                     baseline = null;
                     continue;
                 }
@@ -2050,7 +2051,7 @@ internal class CdpBrowserSession : IDisposable
             }
         }
         return new(false, true, query, string.Empty, string.Empty, targetId,
-            adSeen ? "youtube_ad_playing" : playbackFailure);
+            adLast ? "youtube_ad_playing" : playbackFailure);
     }
 
     // Lo común a las búsquedas de Netflix y Disney+: fold pliega mayúsculas, tildes y

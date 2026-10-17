@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde d4bb323e7 cambiaron 25 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 25 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -540,9 +540,9 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     YouTube distingue una página no leída; lugares con place_area_not_resolved y el tope de la fuente; mensajería:
     la búsqueda escrita es un efecto, Discord sin filas leídas no es «no encontrado», el envío dice que la entrega
     por la red no se leyó; el scroll del navegador propio no dice «al final» de una página que no se desplaza; close.all
-    y minimize.all no dicen «todas» con ventanas encubiertas (otro escritorio); 11 descripciones más (bluetooth pair,
-    game.catalog.list, backup.create, task.update, wifi.connect.named, system.status, crash.diagnose, streaming.play,
-    web.search news y sports). Sin medir.
+    y minimize.all no dicen «todas» con ventanas encubiertas (otro escritorio); 9 descripciones más (bluetooth pair,
+    game.catalog.list, backup.create, task.update, wifi.connect.named, system.status, crash.diagnose, streaming.play y
+    web.search, en news y sports; el mensaje de 0f89ab012 dice 11, eran 9). Sin medir.
   - Ronda final 12: la proyección conserva un nextOffset null y pagina sólo una operación cuyo esquema toma offset
     (note.search no recibe una página que no tiene); cloakedWindows cuenta sólo ventanas en otro escritorio virtual
     (IVirtualDesktopManager.IsWindowOnCurrentVirtualDesktop, la API documentada del shell), no las del sistema ni las de
@@ -552,13 +552,19 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     contenido. metas.json: la auditoría pasa a «pendiente» (no es un límite del modelo) y se corrigen la cuenta de
     descripciones (25), P4 (descartada por la cuenta, no medida) y el commit de la medida con voz (f61f2da38). Sin medir.
     Corrección: el mensaje de 206c61daa dice «seek con la posición verificada», pero ese parche no se aplicó (falló su
-    ancla); entró en la ronda 13. Y la cuenta de 25 de entonces era 23 (la ronda 12 sumó 11 donde eran 9).
+    ancla); entró en la ronda 13. Y su cuenta de 25 descripciones era 23: la ronda 11 (0f89ab012) cambió 9, no 11.
   - Ronda final 13: el seek dice la posición que verificó; VirtualDesktops sin métodos COM sin uso y con FinalRelease;
     YouTube en el navegador propio se verifica por su v=, sin anuncio y con el tiempo avanzando (no por «playing», que
     deja el propio play()); package.uninstall confirma que el id leído está instalado antes de desinstalar (una clave
     ARP con espacios leída en parte daba «desinstalado»); backup.known.create dice skippedCloudFiles y que all_known no
     lleva projects; schedule.alarms cancela y lista con su kind; memory.session.clear dice que los temporales quedan.
     Descripciones cambiadas desde ff863b47f, por diff de claves: 25 y 6 entradas de argumentos. Sin medir.
+  - Ronda final 14: el latido retiene también filesystem.file.open.latest y filesystem.folder.open (abren o levantan
+    una ventana); el backup de carpetas salta y cuenta lo que no puede abrir (antes un .pst abierto lo hacía fallar
+    entero) y nombra con exactitud lo que omite (puntos de reanálisis: archivos y carpetas); YouTube dice
+    youtube_ad_playing sólo de la última lectura, y en el navegador de la persona el recibo dice adRuledOut:false;
+    schedule.alarms: list da todos con su kind, cancel con at HH:mm. Suites tras estos arreglos: 564/69/477/2171.
+    Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
