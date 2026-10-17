@@ -396,8 +396,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     // installed games as one JSON manifest each (%ProgramData%\Epic\EpicGamesLauncher\
     // Data\Manifests\*.item: DisplayName, AppName, CatalogItemId, InstallLocation) and
     // the authenticated account's catalog as a base64 JSON list (Data\Catalog\
-    // catcache.bin: id, title, namespace). Both are read, nothing is written; a title
-    // that matches exactly one catalog entry is resolved, anything else is not.
+    // catcache.bin: id, title, namespace). Both are read, nothing is written; the
+    // first catalog entry with that title (case and accents aside) is taken.
     private static string EpicLauncherDataRoot => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
         "Epic", "EpicGamesLauncher", "Data");

@@ -218,10 +218,10 @@ public static class ProductCatalog
             "Navega el navegador Chromium indicado (Opera, Opera GX, Chrome, Edge o Brave) mediante un perfil CDP privado y verifica ejecutable y URL final."),
         Descriptor(
             "browser.page.read",
-            Schema([Integer("maximumCharacters", 256, 32_768)], []),
+            Schema([Integer("maximumCharacters", 256, 6_000)], []),
             OperationRisks.PrivacySensitive,
             "browser.page.read.cdp.dom.snapshot.v1",
-            "Lee el título, la URL y el texto visible de la página de delante del navegador predeterminado de la persona por UI Automation, sin modificarla y con el contenido acotado; si BAXY abrió la última página en otro navegador (uno nombrado), lee ésa por CDP; 12.000 caracteres por defecto (truncated).",
+            "Lee el título, la URL y el texto visible de la página de delante del navegador predeterminado de la persona por UI Automation, sin modificarla y con el contenido acotado; si BAXY abrió la última página en otro navegador (uno nombrado), lee ésa por CDP; 6.000 caracteres como mucho (truncated).",
             // WEB1541: a read observes no effect; the receipt says so truthfully.
             requiresObservedEffect: false),
         Descriptor(
@@ -303,10 +303,10 @@ public static class ProductCatalog
             "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V."),
         Descriptor(
             "clipboard.read.text",
-            Schema([Integer("maxCharacters", 1, 40_000)], []),
+            Schema([Integer("maxCharacters", 1, 6_000)], []),
             OperationRisks.PrivacySensitive,
             "clipboard.read.text.sequence.secondread.v1",
-            "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos; 8.192 caracteres por defecto y 40.000 como mucho; truncated dice si se cortó."),
+            "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos; 6.000 caracteres como mucho; truncated dice si se cortó."),
         Descriptor(
             "clipboard.write.text",
             Schema([String("text", maximumLength: 65_536)], ["text"]),
@@ -362,7 +362,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "email.latest.read.outlook.mapi.snapshot.v1",
-            "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 40.000 caracteres se corta (bodyTruncated)."),
+            "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 6.000 caracteres se corta (bodyTruncated)."),
         Descriptor(
             "email.latest.reply",
             Schema([String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true)], ["text"]),
@@ -940,7 +940,7 @@ public static class ProductCatalog
                 ["provider", "query"]),
             OperationRisks.ExternalCommunication,
             "media.play.query.session.postread.v1",
-            "Busca en Spotify y reproduce el primer resultado de su propia búsqueda y verifica now-playing."),
+            "Busca en Spotify y reproduce el primer resultado de su propia búsqueda (o el titulado como la búsqueda, si Spotify muestra uno) y verifica now-playing."),
         Descriptor(
             "media.play.youtube",
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
@@ -1598,7 +1598,7 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
-            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; se abandona si el servidor tarda más de 40 segundos en responder (cada redirección incluida); la transferencia no tiene plazo."),
+            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; se abandona si el servidor tarda más de 40 segundos en responder (cada redirección incluida); la descarga entera debe acabar en unos 100 segundos (lo que BAXY espera a una operación) o falla sin escribir nada."),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
         // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.

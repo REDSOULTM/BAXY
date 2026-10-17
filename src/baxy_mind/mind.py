@@ -168,6 +168,11 @@ CLOCK_MARK = "[Reloj:"
 # model is hybrid: its cache is reused from the front, so the middle of the prompt is never edited).
 HISTORY_TURNS = 8
 HISTORY_CHARS = 24000
+# Ronda final 44: the context also holds the tool prefix (about 42k of its 49,152 tokens with the descriptions of the
+# rondas finales, 37.5k at ff863b47f), so 24,000 characters of history (~7.9k tokens) no longer always fit beside it and
+# a turn failed whole. The history keeps the tokens the prefix leaves, less room for the turn: its reply (512) and one
+# result within the kernel's 8 KiB (~3k tokens).
+TURN_ROOM_TOKENS = 3584
 
 NOT_RUN = json.dumps({"status": "not_run", "reason": "the turn ended before this call ran"})
 # A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
@@ -262,6 +267,8 @@ class Mind:
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
+        # The tools and the system prompt in tokens, as the server counted them at warm-up (0 before it).
+        self.prefix_tokens = 0
         self.constants: dict[str, dict[str, Any]] = {}
         english = json.loads(_ENGLISH_FILE.read_text(encoding="utf-8")) if _ENGLISH_FILE.is_file() else {}
         self.english: dict[str, str] = english.get("tools") or {}
@@ -312,10 +319,11 @@ class Mind:
         self.call_tokens = self.server.tokenize("<tool_call>")
         if len(self.call_tokens) != 1:
             raise RuntimeError(f"<tool_call> is not one token of this model: {self.call_tokens}")
-        self.server.chat({"messages": [{"role": "system", "content": self._system()},
-                                           {"role": "user", "content": "hola"}],
-                              "tools": self.tools, "max_tokens": 1,
-                          "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+        reply = self.server.chat({"messages": [{"role": "system", "content": self._system()},
+                                                   {"role": "user", "content": "hola"}],
+                                  "tools": self.tools, "max_tokens": 1,
+                                  "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+        self.prefix_tokens = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
 
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
@@ -450,11 +458,17 @@ class Mind:
     def _trim(self) -> None:
         """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result."""
         starts = self._turn_starts()
-        while len(starts) > 1 and (len(starts) > HISTORY_TURNS
-                                   or sum(len(json.dumps(m, ensure_ascii=False)) for m in self.conversation)
-                                   > HISTORY_CHARS):
+        while len(starts) > 1 and (len(starts) > HISTORY_TURNS or self._history_too_long()):
             self.conversation = self.conversation[starts[1]:]
             starts = self._turn_starts()
+
+    def _history_too_long(self) -> bool:
+        text = "".join(json.dumps(m, ensure_ascii=False) for m in self.conversation)
+        if len(text) > HISTORY_CHARS:
+            return True
+        if not self.prefix_tokens:
+            return False
+        return len(self.server.tokenize(text)) > self.server.context - self.prefix_tokens - TURN_ROOM_TOKENS
 
     def _turn_starts(self) -> list[int]:
         return [i for i, m in enumerate(self.conversation)

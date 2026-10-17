@@ -265,18 +265,18 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
-    // Ronda final 43 (regla 3): a page read and a clipboard read keep their own bounds, not the 8 KiB budget (a page of
-    // the default 12,000 characters reached the model as 2,000).
+    // Rondas finales 43-44 (regla 3): a page read of its 6,000 characters fits the 8 KiB budget whole (a page of the
+    // former default 12,000 characters reached the model as 2,000).
     [Test]
-    public void APageReadOfTwelveThousandCharactersReachesTheModelWhole()
+    public void APageReadOfSixThousandCharactersReachesTheModelWhole()
     {
-        string text = new('a', 12_000);
+        string text = new('a', 6_000);
         JsonElement read = JsonSerializer.SerializeToElement(new { title = "t", text, truncated = false });
 
         using JsonDocument facts = JsonDocument.Parse(
             OperationVisibleFacts.FromOutcome("browser.page.read", OperationOutcome.Success(read)));
 
-        Assert.That(facts.RootElement.GetProperty("observed").GetProperty("text").GetString(), Has.Length.EqualTo(12_000));
+        Assert.That(facts.RootElement.GetProperty("observed").GetProperty("text").GetString(), Has.Length.EqualTo(6_000));
     }
 
     [Test]

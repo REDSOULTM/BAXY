@@ -177,12 +177,13 @@ internal sealed partial class UserBrowserSurface
                 return StoppedClosing(step, PageUnreadable, closed);
             if (closed >= CloseAllTabs || System.Diagnostics.Stopwatch.GetElapsedTime(started) > CloseAllTime)
                 return StoppedClosing(step, CloseAllIncomplete, closed);
-            (UserBrowserFrame? after, bool commandPosted) = resisting.Contains(active.Title)
+            (UserBrowserFrame? after, bool pressed) = resisting.Contains(active.Title)
                 ? (null, false)
                 : await CloseActiveTabAsync(step, frame, active, cancellationToken).ConfigureAwait(false);
-            // Rondas finales 42-43 (regla: doble pulsación): a close command posted and not seen run may still run: the
-            // closing stops unconfirmed, never goes on to click other tabs (a late close would take one too many).
-            if (after is null && commandPosted)
+            // Rondas finales 42-44 (regla: doble pulsación): a close command or click sent and not seen run may still
+            // run: the closing stops unconfirmed, never goes on to click other tabs (a late close would take one too
+            // many). Another tab is clicked only when nothing at all was sent for the active one.
+            if (after is null && pressed)
                 return StoppedClosing(step, TabStepUnconfirmed, closed);
             if (after is null)
             {
@@ -225,9 +226,9 @@ internal sealed partial class UserBrowserSurface
 
     /// <summary>
     /// Closes the active tab of <paramref name="before"/>: the frame read with one tab less, or null when none was
-    /// seen (the step's boundary says whether anything was posted), and whether the browser's close command was posted.
+    /// seen (the step's boundary says whether anything was posted), and whether a close command or click was sent.
     /// </summary>
-    private async ValueTask<(UserBrowserFrame? After, bool CommandPosted)> CloseActiveTabAsync(
+    private async ValueTask<(UserBrowserFrame? After, bool Pressed)> CloseActiveTabAsync(
         TabStep step, UserBrowserFrame before, UserBrowserTab active, CancellationToken cancellationToken)
     {
         int count = before.Tabs.Count;
@@ -250,7 +251,7 @@ internal sealed partial class UserBrowserSurface
             if (_platform.PostMiddleClick(step.Window, same.X, same.Y))
             {
                 step.Boundary.Cross(CancellationToken.None);
-                after = await AwaitFrameAsync(step.Window, OneLess, cancellationToken).ConfigureAwait(false);
+                return (await AwaitFrameAsync(step.Window, OneLess, cancellationToken).ConfigureAwait(false), true);
             }
         }
         return (after, false);

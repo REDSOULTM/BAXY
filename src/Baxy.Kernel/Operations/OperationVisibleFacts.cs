@@ -62,15 +62,14 @@ public static class OperationVisibleFacts
         bool paged = ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
             && descriptor.ArgumentsSchema.Properties.Any(static property => property.Name == "offset");
         // SHELL2075 «ejecutá dir en el escritorio»: the console adapter already
-        // bounds what it returns (8 KiB of output and sixty lines), and with the
-        // lines beside the text that bundle crosses 8 KiB, so the observation was
+        // bounds what it returns (8 KiB of output), and with the rest of the
+        // result beside it that bundle crosses 8 KiB, so the observation was
         // dropped whole and the final could say nothing of what came out.
         bool consoleOutput = operation == "shell.command.run";
-        // Ronda final 43 (regla 3): the clipboard's, the page's and the email's text are bounded by their own operations
-        // (40,000, 32,768 and 40,000 characters); under the 8 KiB budget a page read of the default 12,000 reached the
-        // model as 2,000.
-        bool textRead = operation is "clipboard.read.text" or "browser.page.read" or "email.latest.read";
-        int messageLimit = processInventory || ocrObservation || consoleOutput || textRead
+        // Rondas finales 43-44 (regla 3 and the model's context): the clipboard's, the page's and the email's text are
+        // bounded by their own operations at 6,000 characters, so they fit this 8 KiB budget whole (40,000 let through
+        // beside the tool prefix and the history could overflow the model's 49,152 tokens).
+        int messageLimit = processInventory || ocrObservation || consoleOutput
             ? ProtocolLimits.MaximumOperationResponseMessageChars
             : MaximumMessageChars;
 

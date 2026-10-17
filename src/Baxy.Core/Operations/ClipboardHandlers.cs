@@ -64,7 +64,7 @@ internal sealed class ClipboardReadTextHandler(IClipboardProvider provider)
             invocation.Arguments,
             CoreJsonContext.Default.ClipboardReadArguments);
         ClipboardTextSnapshot snapshot = await Provider.ReadTextAsync(
-            arguments.MaxCharacters ?? 8_192,
+            arguments.MaxCharacters ?? 6_000,
             cancellationToken).ConfigureAwait(false);
         var result = new ClipboardReadResult(
             snapshot.Text,

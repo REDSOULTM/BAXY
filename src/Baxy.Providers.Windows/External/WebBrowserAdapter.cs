@@ -244,7 +244,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         int maximumCharacters = Math.Clamp(
-            ExternalJson.OptionalInt(arguments, "maximumCharacters", 12_000), 256, 32_768);
+            ExternalJson.OptionalInt(arguments, "maximumCharacters", 6_000), 256, 6_000);
         // The page read is the one BAXY last opened: a page it opened in a browser of its own (a named browser that is
         // not the person's default) is read there, not in the person's browser in front of it (2026-10-15 E016: Chrome
         // showed example.com and the read returned the person's Opera tab).
@@ -1734,7 +1734,7 @@ internal class CdpBrowserSession : IDisposable
         int maximumCharacters,
         CancellationToken cancellationToken)
     {
-        if (maximumCharacters is < 256 or > 32_768)
+        if (maximumCharacters is < 256 or > 6_000)
             return new(false, string.Empty, string.Empty, string.Empty, string.Empty, false,
                 "browser_page_limit_invalid");
         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);

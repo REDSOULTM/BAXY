@@ -18,7 +18,8 @@ internal sealed record OperationResponseProjection(string Message)
         }
 
         // The kernel's visible facts as they came: it bounds them (8 KiB; 48 000 characters for the process list, a
-        // console's output and OCR) and the protocol checks every message non-empty and within 48 000 (ContractValidator).
+        // console's output and OCR; the clipboard, page and email reads stop at 6 000 characters of their own) and the
+        // protocol checks every message non-empty and within 48 000 (ContractValidator).
         return new OperationResponseProjection(Replay(response, response.Message.Trim()));
     }
 

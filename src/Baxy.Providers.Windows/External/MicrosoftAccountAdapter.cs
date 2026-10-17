@@ -78,7 +78,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           if($null -eq $verified -or [string]$verified.EntryID -cne $entryId){throw 'outlook_latest_identity_mismatch'}
           $sender=[string]$verified.SenderEmailAddress
           try {$exchange=$verified.Sender.GetExchangeUser();if($null -ne $exchange -and $exchange.PrimarySmtpAddress){$sender=[string]$exchange.PrimarySmtpAddress}}catch{}
-          $body=[string]$verified.Body;$bodyLength=$body.Length;if($body.Length -gt 40000){$body=$body.Substring(0,40000)}
+          $body=[string]$verified.Body;$bodyLength=$body.Length;if($body.Length -gt 6000){$body=$body.Substring(0,6000)}
           $subject=[string]$verified.Subject
           $received=([DateTime]$verified.ReceivedTime).ToUniversalTime()
           if($input.action -eq 'read') {
@@ -562,7 +562,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteString("receivedUtc", root.GetProperty("receivedUtc").GetString());
             string? body = root.GetProperty("body").GetString();
             writer.WriteString("body", body);
-            // Ronda final 8 (regla 3): a body cut (at 40 000 characters since the ronda 43) says it was cut, and how long it is.
+            // Ronda final 8 (regla 3): a body cut (at 6 000 characters since the ronda 44) says it was cut, and how long it is.
             if (root.TryGetProperty("bodyLength", out JsonElement length) && length.TryGetInt32(out int whole)
                 && whole > (body?.Length ?? 0))
             {
