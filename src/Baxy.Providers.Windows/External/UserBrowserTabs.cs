@@ -109,14 +109,13 @@ internal sealed partial class UserBrowserSurface
         if (PostTabCommand(step, BrowserCommandNewTab, AppCommandNew))
         {
             step.Boundary.Cross(CancellationToken.None);
-            // The button is pressed only when a read shows the message was not run (as many tabs as before): a tab the
-            // message opened late is said, and a strip that cannot be read is never pressed for a second tab.
+            // A tab the message opened late is said; the button is pressed only when no message could be posted.
             UserBrowserFrame? now = await AwaitFrameAsync(step.Window, OneMore, cancellationToken).ConfigureAwait(false)
                 ?? await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
             if (now is not null && OneMore(now))
                 return Done(step, "tab_opened", now);
-            if (now is null || now.Tabs.Count != count)
-                return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
+            // Ronda final 42 (regla: doble pulsación): the posted message may still run; the button is not pressed too.
+            return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
         }
         step.Boundary.Cross(CancellationToken.None);
         UserBrowserAct pressed = await _platform.ActAsync(step.Window, "new_tab", cancellationToken)
@@ -233,9 +232,10 @@ internal sealed partial class UserBrowserSurface
         if (PostTabCommand(step, BrowserCommandCloseTab, AppCommandClose))
         {
             step.Boundary.Cross(CancellationToken.None);
-            after = await AwaitFrameAsync(step.Window, OneLess, cancellationToken).ConfigureAwait(false);
+            // Ronda final 42 (regla: doble pulsación): a command posted and not seen run may still run (a busy browser
+            // answers the reads first): it is said unconfirmed, never followed by a click that would close the next tab.
+            return await AwaitFrameAsync(step.Window, OneLess, cancellationToken).ConfigureAwait(false);
         }
-        if (after is null)
         {
             // The message was not run: the click goes only to the same tab, still active and still on screen.
             UserBrowserFrame? now = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);

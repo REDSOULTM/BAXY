@@ -1046,10 +1046,11 @@ public sealed class UserBrowserTests
         });
     }
 
-    // Ronda B: after IDC_NEW_TAB with no read showing one tab more, the button is pressed only when a read shows as many
-    // tabs as before; a strip that cannot be read is uncertain, never pressed for a second tab, and a late tab is said.
+    // Ronda B: after IDC_NEW_TAB with no read showing one tab more, a strip that cannot be read is uncertain and a late tab
+    // is said. Ronda final 42 (regla: doble pulsación): a strip read with as many tabs as before does not prove the message
+    // was not run (a busy browser answers the reads first), so the button is never pressed after it: unconfirmed.
     [Test]
-    public async Task ANewTabMessageNotSeenIsReadAgainBeforeTheButtonIsPressed()
+    public async Task ANewTabMessageNotSeenIsUnconfirmedAndTheButtonIsNotPressed()
     {
         var unreadable = new FakePlatform(Chrome);
         unreadable.Frames.AddRange([Frame("doc-1", tabs: 2), null]);
@@ -1062,7 +1063,7 @@ public sealed class UserBrowserTests
         using Harness third = new(late);
 
         ExternalCapabilityReceipt uncertain = await Control(first, "new_tab");
-        ExternalCapabilityReceipt pressed = await Control(second, "new_tab");
+        ExternalCapabilityReceipt notSeen = await Control(second, "new_tab");
         ExternalCapabilityReceipt lateTab = await Control(third, "new_tab");
 
         Assert.Multiple(() =>
@@ -1071,9 +1072,11 @@ public sealed class UserBrowserTests
             Assert.That(uncertain.EffectMayHaveOccurred, Is.True);
             Assert.That(uncertain.ErrorCode, Is.EqualTo(UserBrowserSurface.TabStepUnconfirmed));
             Assert.That(unreadable.Acts, Is.Empty, "a strip that cannot be read is never pressed for a second tab");
-            Assert.That(pressed.Verified, Is.True);
+            Assert.That(notSeen.Verified, Is.False);
+            Assert.That(notSeen.EffectMayHaveOccurred, Is.True);
+            Assert.That(notSeen.ErrorCode, Is.EqualTo(UserBrowserSurface.TabStepUnconfirmed));
             Assert.That(notRun.BrowserCommands, Is.EqualTo(new[] { UserBrowserSurface.BrowserCommandNewTab }));
-            Assert.That(notRun.Acts, Is.EqualTo(new[] { "new_tab" }));
+            Assert.That(notRun.Acts, Is.Empty, "a posted message not seen run is never followed by the button");
             Assert.That(lateTab.Verified, Is.True);
             Assert.That(lateTab.Result?.GetProperty("tabCount").GetInt32(), Is.EqualTo(3));
             Assert.That(late.Acts, Is.Empty);

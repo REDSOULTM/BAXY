@@ -122,13 +122,13 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.LowReversible,
             "backup.known.create.windows.zip.hash.postread.v1",
-            "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256; no incluye vínculos ni marcadores de OneDrive, archivos que no puede abrir ni lo que pase de 32 niveles, y los cuenta."),
+            "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256; no incluye vínculos ni marcadores de OneDrive, archivos que no puede abrir ni lo que pase de 32 niveles; cuenta los vínculos y los archivos ilegibles, no lo demás."),
         Descriptor(
             "backup.known.list",
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.ReadOnly,
             "backup.known.list.windows.manifest.hash.snapshot.v1",
-            "Lista los backups ZIP de carpetas conocidas (20 por defecto, 50 como mucho) y vuelve a verificar sus hashes."),
+            "Lista los backups ZIP de carpetas conocidas (20 por defecto, 50 como mucho) y vuelve a verificar sus hashes; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "backup.known.restore.latest",
             Schema(
@@ -150,7 +150,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.ReadOnly,
             "backup.list.sandbox.hash.snapshot.v1",
-            "Lista las copias privadas, desde la más reciente, y dice de cada una si su SHA-256 sigue siendo el registrado al crearla, sin exponer rutas internas; 20 por defecto (totalCount dice cuántos hay)."),
+            "Lista las copias privadas, desde la más reciente, y dice de cada una si su SHA-256 sigue siendo el registrado al crearla, sin exponer rutas internas; 20 por defecto (totalCount dice cuántos hay); una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "backup.restore",
             Schema(
@@ -229,7 +229,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.PrivacySensitive,
             "browser.tabs.list.cdp.targets.snapshot.v1",
-            "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona (20 por defecto, 50 como mucho), con su título y cuál está activa, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP.",
+            "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona (20 por defecto, 50 como mucho), con su título y cuál está activa, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí).",
             requiresObservedEffect: false),
         Descriptor(
             "calculator.expression.evaluate",
@@ -259,7 +259,7 @@ public static class ProductCatalog
                 ["endUtc", "startUtc"]),
             OperationRisks.ReadOnly,
             "calendar.event.list.account.snapshot.v1",
-            "Lista los eventos del calendario predeterminado de Outlook entre dos fechas separadas por un año como mucho (un rango mayor se rechaza), como mucho 200 (pasado el tope el resultado lo dice), sin modificarlos."),
+            "Lista los eventos del calendario predeterminado de Outlook entre dos fechas separadas por un año como mucho (un rango mayor se rechaza), como mucho 200 leídos (pasado el tope lo dice) y una vista muestra los 20 primeros, sin modificarlos."),
         // Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a capture the person asks to
         // keep is also saved as a PNG in the known folder named («folder»; pictures: its screenshots subfolder), with
         // a dated name that never overwrites, read back against its hash. Without «folder» it stays private only.
@@ -383,7 +383,7 @@ public static class ProductCatalog
                 ["text", "to"]),
             OperationRisks.ExternalCommunication,
             "email.send.outlook.sent.postread.v1",
-            "Envía un correo a la dirección indicada (asunto opcional; sin asunto, el comienzo del texto) desde el perfil clásico de Outlook del dueño y verifica la copia en Elementos enviados por destinatario, texto y hora; sin asunto usa la primera línea, cortada a 78 caracteres."),
+            "Envía un correo a la dirección indicada (asunto opcional; sin asunto, el comienzo del texto) desde el perfil clásico de Outlook del dueño y verifica la copia en Elementos enviados por destinatario, texto y hora; sin asunto usa la primera línea (de más de 78 caracteres, se corta a 75 y «…»)."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0542 «… comprímela y luego abre
         // el zip», D11): comprimir un archivo o carpeta de una carpeta conocida a un
         // zip al lado, verificado abriendo el zip; y abrir por nombre un archivo seguro
@@ -418,7 +418,7 @@ public static class ProductCatalog
                 ["fileName", "folder", "newText", "oldText"]),
             OperationRisks.LowReversible,
             "file.edit.windows.known.exact.replace.recycle.postread.v1",
-            "Reemplaza un texto exacto en un archivo de texto de hasta 4 MB nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles."),
+            "Reemplaza un texto exacto en un archivo de texto de hasta 4 MiB nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles."),
         Descriptor(
             "file.find",
             Schema(
@@ -433,7 +433,7 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.ReadOnly,
             "file.find.windows.known.name.content.bounded.v1",
-            "Lista el primer nivel de una carpeta conocida de Windows, o busca bajo ella archivos por nombre (parte del nombre o patrón con * y ?) o por un texto dentro de sus archivos de texto, de forma acotada (20 resultados por defecto, 50 en el listado del primer nivel (sin ocultos ni de sistema), y 100 como mucho; hasta 12 niveles y 8 segundos, y una búsqueda cortada por el plazo lo dice; por contenido, mira hasta 2000 archivos de cualquier tipo y sólo lee los de texto de hasta 1 MB, y para en el límite de aciertos y sólo ordena esos) y sin seguir puntos de reanálisis; devuelve cada archivo con su ruta relativa a la carpeta, nunca la absoluta; sin efecto."),
+            "Lista el primer nivel de una carpeta conocida de Windows, o busca bajo ella archivos por nombre (parte del nombre o patrón con * y ?) o por un texto dentro de sus archivos de texto, de forma acotada (20 resultados por defecto, 50 en el listado del primer nivel (sin ocultos ni de sistema), y 100 como mucho; hasta 12 niveles y 8 segundos, y una búsqueda cortada por el plazo lo dice; por contenido, mira hasta 2000 archivos de cualquier tipo y sólo lee los de texto de hasta 1 MiB, y para en el límite de aciertos y sólo ordena esos) y sin seguir puntos de reanálisis; devuelve cada archivo con su ruta relativa a la carpeta, nunca la absoluta; sin efecto; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "file.open",
             Schema(
@@ -464,7 +464,7 @@ public static class ProductCatalog
                 ["fileName", "folder"]),
             OperationRisks.ReadOnly,
             "file.read.windows.known.text.pdf.paged.v1",
-            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR), hasta 4 MB de texto o 64 MB de PDF; dice qué tipo leyó, el largo total y si queda más; sin efecto; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles; la extracción de un PDF para a los 90 segundos."),
+            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR), hasta 4 MiB de texto o 64 MiB de PDF; dice qué tipo leyó, el largo total y si queda más; sin efecto; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles; la extracción de un PDF para a los 90 segundos."),
         Descriptor(
             "file.write",
             Schema(
@@ -481,7 +481,7 @@ public static class ProductCatalog
                 ["relativePath", "text"]),
             OperationRisks.LowReversible,
             "file.write.sandbox.known.cas.recycle.hash.v1",
-            "Escribe UTF-8 atómicamente en el sandbox o en una carpeta conocida; reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído; append rechaza un archivo de más de 10 MB."),
+            "Escribe UTF-8 atómicamente en el sandbox o en una carpeta conocida; reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído; append rechaza un archivo de más de 10 MiB."),
         Descriptor(
             "filesystem.copy",
             FilesystemTransferSchema(),
@@ -542,7 +542,7 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.ReadOnly,
             "filesystem.known.duplicates.windows.size.hash.snapshot.v1",
-            "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos (20 grupos por defecto; mira como mucho 10.000 archivos y lo dice si corta); busca hasta 12 niveles."),
+            "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos (20 grupos por defecto; calcula el hash de 10.000 archivos candidatos como mucho y lo dice si corta); busca hasta 12 niveles; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "filesystem.known.trash.named",
             Schema(
@@ -565,7 +565,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "filesystem.list.sandbox.identities.v1",
-            "Lista entradas acotadas del sandbox y emite identificadores opacos de corta vida; 50 por defecto (totalCount); los ids duran 5 minutos."),
+            "Lista entradas acotadas del sandbox y emite identificadores opacos de corta vida; 50 por defecto (totalCount); los ids duran 5 minutos; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "filesystem.move",
             FilesystemTransferSchema(),
@@ -593,7 +593,7 @@ public static class ProductCatalog
                 ["leftFileName", "rightFileName"]),
             OperationRisks.ReadOnly,
             "filesystem.sandbox.diff.named.hash.snapshot.v1",
-            "Compara dos archivos de texto del sandbox nombrados por su nombre de archivo exacto (único en el sandbox) y devuelve hashes y líneas diferentes; archivos de hasta 2 MB; lista 100 líneas cambiadas como mucho (changedLinesTruncated); compara las líneas por posición."),
+            "Compara dos archivos de texto del sandbox nombrados por su nombre de archivo exacto (único en el sandbox) y devuelve hashes y líneas diferentes; archivos de hasta 2 MiB; lista 100 números de línea cambiados como mucho (changedLinesTruncated); compara las líneas por posición."),
         Descriptor(
             "filesystem.sandbox.move.named",
             Schema(
@@ -615,7 +615,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "filesystem.search.sandbox.identities.v1",
-            "Busca nombres dentro del sandbox sin seguir puntos de reanálisis; 50 por defecto (totalCount)."),
+            "Busca nombres dentro del sandbox sin seguir puntos de reanálisis; 50 por defecto (totalCount); una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "game.catalog.list",
             Schema(
@@ -626,7 +626,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "game.catalog.list.steam.snapshot.v1",
-            "Lista el catálogo local de Steam mediante una sesión resuelta y acotada; 50 por defecto; totalCount dice cuántos hay."),
+            "Lista el catálogo local de Steam mediante una sesión resuelta y acotada; 50 por defecto, una vista muestra 20; totalCount dice cuántos hay."),
         Descriptor(
             "game.entitlement.named",
             Schema(
@@ -1124,7 +1124,7 @@ public static class ProductCatalog
             Schema([Integer("limit", 1, 100)], []),
             OperationRisks.ReadOnly,
             "network.port.list.windows.listeners.secondread.v1",
-            "Enumera puertos TCP y UDP locales en escucha y solo devuelve endpoints presentes en dos observaciones consecutivas; 50 por defecto (truncated)."),
+            "Enumera puertos TCP y UDP locales en escucha y solo devuelve endpoints presentes en dos observaciones consecutivas; 50 por defecto (truncated); una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "network.status",
             EmptySchema(),
@@ -1141,7 +1141,7 @@ public static class ProductCatalog
                 ["content", "title"]),
             OperationRisks.LowReversible,
             "note.create.local.reopen.v1",
-            "Crea una nota privada local y verifica su relectura; hasta 512 notas; llena, falla."),
+            "Crea una nota privada local y verifica su relectura; hasta 512 notas, contando las de la papelera; llena, falla."),
         Descriptor(
             "note.list",
             Schema(
@@ -1153,7 +1153,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "note.list.local.snapshot.v1",
-            "Enumera notas privadas locales activas o enviadas a la papelera; 50 por defecto (totalCount; nextOffset sigue)."),
+            "Enumera notas privadas locales activas o enviadas a la papelera; 50 por defecto, pero una vista muestra 20 como mucho; nextOffset sigue (totalCount dice cuántas)."),
         Descriptor(
             "note.read",
             NoteSelectorSchema(),
@@ -1177,7 +1177,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "note.search.local.reopen.v1",
-            "Busca texto en notas locales y verifica por relectura cada resultado acotado; 20 por defecto (totalCount)."),
+            "Busca texto en notas locales y verifica por relectura cada resultado acotado; 20 por defecto (totalCount); una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "note.trash",
             NoteSelectorSchema(),
@@ -1348,7 +1348,7 @@ public static class ProductCatalog
                 ["service", "title"]),
             OperationRisks.ExternalCommunication,
             "streaming.play.named.netflix.cdp.video.progress.v1",
-            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; hasta 10 candidatos."),
+            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; en el navegador de la persona, hasta 10 candidatos."),
         Descriptor(
             "system.application.crash.diagnose",
             Schema(
@@ -1359,7 +1359,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "system.application.crash.diagnose.windows.eventlog.recordid.secondread.v1",
-            "Consulta fallos y bloqueos recientes de aplicaciones en el registro Application de Windows y solo devuelve eventos con RecordId presentes en dos observaciones; mira las últimas 24 horas, 20 eventos por defecto; sus recuentos paran en 200."),
+            "Consulta fallos y bloqueos recientes de aplicaciones en el registro Application de Windows y solo devuelve eventos con RecordId presentes en dos observaciones; mira las últimas 24 horas, 20 eventos por defecto; sus recuentos paran en cuatro veces limit (80 por defecto, 200 como mucho); una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "system.identity",
             EmptySchema(),
@@ -1511,7 +1511,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "task.list.local.reopen.v1",
-            "Lista de forma acotada tareas locales abiertas, completadas o eliminadas; 20 por defecto (totalCount); sin status, sólo las abiertas."),
+            "Lista de forma acotada tareas locales abiertas, completadas o eliminadas; 20 por defecto (totalCount); sin status, sólo las abiertas; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "task.reopen",
             TaskCasSchema(),
@@ -1535,7 +1535,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "task.search.local.reopen.v1",
-            "Busca en título y detalles de tareas locales sin crear índices de texto plano; 20 por defecto (totalCount); no busca en las borradas."),
+            "Busca en título y detalles de tareas locales sin crear índices de texto plano; 20 por defecto (totalCount); no busca en las borradas; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "task.update",
             Schema(
@@ -1598,7 +1598,7 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
-            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho."),
+            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; la descarga se abandona a los 40 segundos."),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
         // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.
@@ -1613,7 +1613,7 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.ReadOnly,
             "web.fetch.public.http.text.v1",
-            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset); sólo páginas HTML, y de una página de más de 1,5 MB sólo el principio; 3 redirecciones como mucho."),
+            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset); sólo páginas HTML, y de una página de más de 1,5 MB (1.500.000 bytes) sólo el principio; 3 redirecciones como mucho."),
         // BAXY Renew (2026-10-15): el modelo elige la fuente (source) y llena sus argumentos tipados; el proveedor
         // pregunta sólo a esa fuente y devuelve lo que ella devolvió. Lo que significa cada argumento lo dice la
         // descripción de la herramienta (tool_descriptions.en.v1.json).
@@ -1807,7 +1807,7 @@ public static class ProductCatalog
                 ["side", "windowId"]),
             OperationRisks.LowReversible,
             "window.snap.identity.bounds.v1",
-            "Coloca una ventana resuelta en la mitad izquierda o derecha del área de trabajo de su monitor (la restaura antes si estaba maximizada o minimizada) y verifica sus límites exactos."),
+            "Coloca una ventana resuelta en la mitad izquierda o derecha del área de trabajo de su monitor (la restaura antes si estaba maximizada o minimizada) y verifica sus límites exactos; el windowId caduca a los 5 minutos."),
     ];
 
     private static readonly IReadOnlyList<ProductOperationDescriptor> ReadOnlyCatalog =
@@ -1822,7 +1822,7 @@ public static class ProductCatalog
                 .Distinct(StringComparer.Ordinal).Count() != Catalog.Length)
         {
             throw new InvalidOperationException(
-                "The product operation catalog must have stable unique operation and verifier identities; el windowId caduca a los 5 minutos.");
+                "The product operation catalog must have stable unique operation and verifier identities.");
         }
     }
 

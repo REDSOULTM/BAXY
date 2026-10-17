@@ -401,24 +401,24 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         // Ronda final 41 (regla: doble pulsación): a turn waiting for a heartbeat to end is already busy, so a second
         // Enter (nothing visible had happened yet) is refused instead of queued to run the same request twice.
-        IsBusy = true;
+        // Ronda final 42: whatever throws (the wait cancelled, a view handler before the turn's own try), the turn ends
+        // not busy and the gate is released only when it was taken.
+        bool entered = false;
         try
         {
+            IsBusy = true;
             await _turnGate.WaitAsync(cancellationToken);
-        }
-        catch
-        {
-            IsBusy = false;
-            throw;
-        }
-
-        try
-        {
+            entered = true;
             await RunGatedTurnAsync(visibleUserText, turn, cancellationToken);
         }
         finally
         {
-            _turnGate.Release();
+            if (entered)
+            {
+                _turnGate.Release();
+            }
+
+            IsBusy = false;
         }
     }
 

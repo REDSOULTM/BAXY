@@ -235,6 +235,32 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
+    // Ronda final 42 (regla 3): a provider's shownCount and hasMore spoke of its list before the kernel's cut to 20; they
+    // say what the model sees after it.
+    [Test]
+    public void AProvidersShownCountAndHasMoreFollowTheKernelsCut()
+    {
+        JsonElement listed = JsonSerializer.SerializeToElement(new
+        {
+            entries = Enumerable.Range(0, 35).Select(static index => new { name = "e" + index }).ToArray(),
+            shownCount = 35,
+            totalCount = 35,
+            hasMore = false,
+        });
+
+        using JsonDocument cut = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("filesystem.list", OperationOutcome.Success(listed)));
+        JsonElement observed = cut.RootElement.GetProperty("observed");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.GetProperty("entriesShown").GetInt32(), Is.EqualTo(20));
+            Assert.That(observed.GetProperty("shownCount").GetInt32(), Is.EqualTo(20));
+            Assert.That(observed.GetProperty("hasMore").GetBoolean(), Is.True);
+            Assert.That(observed.GetProperty("totalCount").GetInt32(), Is.EqualTo(35));
+        });
+    }
+
     [Test]
     public void AListWithoutACountKeepsItsLengthAndADeepValueLeftOutIsSaid()
     {

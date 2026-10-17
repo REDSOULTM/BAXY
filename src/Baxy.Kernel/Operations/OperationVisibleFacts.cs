@@ -536,6 +536,17 @@ public static class OperationVisibleFacts
                 if (cleanShown is int keptItems)
                 {
                     PageFrom(clean["offset"], paged && element.TryGetProperty("nextOffset", out _), keptItems, clean);
+                    // Ronda final 42 (regla 3): the provider's own «shownCount» and «hasMore» spoke of the list before
+                    // this cut; they now say what the model sees (a shownCount of 35 over 20 entries read as a total).
+                    if (clean.ContainsKey("shownCount"))
+                    {
+                        clean["shownCount"] = keptItems;
+                    }
+
+                    if (clean.ContainsKey("hasMore"))
+                    {
+                        clean["hasMore"] = true;
+                    }
                 }
 
                 return clean;

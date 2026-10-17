@@ -343,9 +343,10 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
             _webView.CoreWebView2.PostWebMessageAsJson(envelope.ToJsonString());
             return true;
         }
-        catch (InvalidOperationException)
+        catch (Exception exception) when (exception is InvalidOperationException
+            or System.Runtime.InteropServices.COMException)
         {
-            // Navigation or teardown raced the event; the next state replay wins.
+            // Navigation or teardown raced the event, or the view's process went away; the next state replay wins.
             return false;
         }
     }
