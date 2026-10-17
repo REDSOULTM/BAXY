@@ -105,3 +105,10 @@ Passed!  - Failed:     0, Passed:    69, Skipped:     0, Total:    69, Duration:
 Passed!  - Failed:     0, Passed:   477, Skipped:     0, Total:   477, Duration: 50 s - Baxy.Setup.Tests.dll (net10.0)
 Passed!  - Failed:     0, Passed:  2189, Skipped:     0, Total:  2189, Duration: 5 m 5 s - Baxy.Providers.Windows.Tests.dll (net10.0)
     0 Error(s)
+
+## Consolidación (v2 de las descripciones), 2026-10-17 13:46
+Passed!  - Failed:     0, Passed:   567, Skipped:     0, Total:   567, Duration: 16 s - Baxy.Kernel.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:    69, Skipped:     0, Total:    69, Duration: 348 ms - Baxy.Contracts.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:   477, Skipped:     0, Total:   477, Duration: 53 s - Baxy.Setup.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:  2189, Skipped:     0, Total:  2189, Duration: 5 m 13 s - Baxy.Providers.Windows.Tests.dll (net10.0)
+    0 Error(s)

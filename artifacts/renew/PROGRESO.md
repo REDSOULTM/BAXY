@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 91 descripciones del catálogo y 19 entradas de argumentos tras la ronda final 45, y mind.py en _outcome (ronda 37), en el recorte del historial por tokens (ronda 44) y en sus avisos de lo
+  (Era la mente congelada; desde ff863b47f cambiaron 94 descripciones del catálogo y 19 entradas de argumentos tras la ronda final 45 y la consolidación, y mind.py en _outcome (ronda 37), en el recorte del historial por tokens (ronda 44) y en sus avisos de lo
   recortado (ronda 45), sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
@@ -1151,6 +1151,45 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
   corriendo (E006, E007, E014, E023 y E024, s1, dos veces cada uno): ff863b47f 3748 y 3927 ms de media, 14cfe53be 3145
   y 3232; app.open en E007 unos 800 ms en los dos. La subida es del entorno de ese día, no de los commits; las
   latencias se comparan sólo intercaladas en la misma sesión.
+
+## Consolidación (decisión del dueño del 2026-10-17): bancos de desarrollo y arreglo de la caída
+
+Bancos de desarrollo de la decisión 20 sobre 7a512dda7 (cierre de la ronda 45), una vez, en la GPU del notebook,
+con las semillas y la configuración de la base (temperatura 0.2, Qwen3.5-4B-Q4_K_M, mismo llama-server; mente con su
+semilla; catálogo volcado de su kernel):
+
+- Decisión (decision2, 268): 225, 223 y 223 = 223,67 frente a la base d20-base 231,67: -8,0, FUERA del ruido (±3).
+  E_ask 7-8 de 10 (base 9,7), H_massive 96-97 de 120 (base 102,7). prompt_n del calentamiento 41.573 (c7699f276
+  37.813; d20-base 37.063). p50 0,836-0,859 s (base 0,846).
+- Escenas (practice, 39): sin tocar 30, con 3 perturbaciones neutras 30, 33 y 33 = 31,5 frente a la familia de
+  ff863b47f 32,5: -1,0, dentro del ruido (±2); 0 riesgos solos; 1 molesta (P019, la escena sensible de siempre) sólo
+  en la corrida sin tocar.
+- E2E de práctica (30, producto de 7a512dda7, con turno de calentamiento): 18, 19 y 18 = 18,33 frente a 19,33: -1,0,
+  en el borde del ruido (±1); primera respuesta p50 3933 ms (14cfe53be el mismo día, 3828). MSConfig: 0 servicios
+  deshabilitados en las 3 h.
+
+Diagnóstico (paso 3): (a) la mente y el catálogo de 7a512dda7 con las descripciones en inglés de ff863b47f, decisión
+s0 en el notebook, 229 (E_ask 10/10; prompt_n 37.097); (b) la mente y las descripciones de 7a512dda7 con el catálogo
+volcado de c7699f276, 223: la causa estaba en las descripciones, no en el catálogo. Caso por caso, P098 («noticias de
+hoy») y P173 («news») fallaban en las tres semillas porque web.search ya no llevaba al modelo a source news: la ronda
+de las descripciones había quitado, con razón, «the latest ones when none is named» (no hay lista de titulares sin
+consulta) y dejado «a topic: there is no list of the latest headlines without one». En la GPU del PC, con el
+catálogo del producto: 7a512dda7 229, la misma mente con las descripciones de ff863b47f 230 y la base 232 (s0): allí
+las descripciones no movían nada, y P098 y P173 fallaban ya en la base.
+
+Arreglo por presentación, sin quitar ninguna promesa ni aviso de corte:
+- v1: ««news»: a Google News search for the query; for the news in general, search «noticias» (or the person's
+  words) with source news, as there is no separate list of headlines». Decisión en el notebook 228, 230 y 228 = 228,67
+  (-3,0, en el borde del ruido; +5,0 sobre 7a512dda7); E_ask 10, 8 y 9; prompt_n 41.590 (el mismo tamaño: era el
+  contenido, no el largo).
+- v2 = v1 más una condensación de 37 descripciones (1.560 caracteres menos; un guardián comprobó, descripción por
+  descripción, que cada cifra, código de error, campo, «…» y negación sigue y que «Use when», «Do not use when» y los
+  ejemplos no cambian). Decisión en el notebook 230, 228 y 231 = 229,67 (-2,0, dentro del ruido; +1,0 sobre v1);
+  prompt_n 41.268. En el PC, s0: v1 230, v2 231. Queda v2 (el producto). Condensar más sin quitar promesas no
+  daba más: la condensación entera son ~320 tokens de los 4.200 que creció el prefijo.
+
+Desde ff863b47f cambiaron 94 descripciones y 19 entradas de argumentos. Suites: 567/69/477/2189. Las escenas y
+el e2e sobre el HEAD con v2 los corre el notebook a continuación.
 
 ## Incidente del 2026-10-15: BAXY deshabilitó 256 servicios del PC del dueño (descubierto el 2026-10-17)
 
