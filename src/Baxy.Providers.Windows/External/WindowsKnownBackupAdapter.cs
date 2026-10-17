@@ -194,8 +194,14 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
                     fileCount++;
                 }
             }
+            // Ronda final 15 (regla 3): «empty» only when the walk found nothing at all; files it found and could not
+            // copy (held by another program, reparse points such as OneDrive's placeholders) are not an empty folder.
             if (fileCount == 0)
-                throw new InvalidDataException("known_backup_source_empty");
+            {
+                (int linkedFiles, int linkedFolders) = ReparsePointFiles(roots);
+                throw new InvalidDataException(unreadableFiles > 0 || linkedFiles > 0 || linkedFolders > 0
+                    ? "known_backup_nothing_readable" : "known_backup_source_empty");
+            }
             File.Move(partialPath, archivePath);
         }
         finally

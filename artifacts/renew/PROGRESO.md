@@ -561,10 +561,17 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     Descripciones cambiadas desde ff863b47f, por diff de claves: 25 y 6 entradas de argumentos. Sin medir.
   - Ronda final 14: el latido retiene también filesystem.file.open.latest y filesystem.folder.open (abren o levantan
     una ventana); el backup de carpetas salta y cuenta lo que no puede abrir (antes un .pst abierto lo hacía fallar
-    entero) y nombra con exactitud lo que omite (puntos de reanálisis: archivos y carpetas); YouTube dice
+    entero) y nombra con exactitud lo que omite (puntos de reanálisis: archivos y carpetas), salvo las carpetas que no se
+    pueden abrir, que se saltan sin contarse; YouTube dice
     youtube_ad_playing sólo de la última lectura, y en el navegador de la persona el recibo dice adRuledOut:false;
     schedule.alarms: list da todos con su kind, cancel con at HH:mm. Suites tras estos arreglos: 564/69/477/2171.
     Sin medir.
+  - Ronda final 15: youtube_ad_playing de verdad sólo de la última lectura (cada lectura empieza sin anuncio; en
+    72e5a8b34 una lectura que no pasaba el filtro conservaba el anuncio de una anterior); el backup sin nada copiado dice
+    known_backup_nothing_readable si encontró archivos que no pudo copiar, y «vacío» sólo si no encontró nada; metas:
+    el límite viejo de 3887 ms marcado (v1), limpieza de código muerto pendiente con la auditoría; el latido retiene
+    browser.page.read y browser.tabs.list (pueden arrancar el navegador propio delante); message.draft dice cómo elige
+    chat Discord; filesystem.known.trash.named dice que también manda carpetas enteras. Suites: 564/69/477/2171. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

@@ -1977,6 +1977,8 @@ internal class CdpBrowserSession : IDisposable
                 await Task.Delay(250, cancellationToken).ConfigureAwait(false);
             }
 
+            // Ronda final 15 (regla 3): each read starts with no advertisement known; only this read's can set it.
+            adLast = false;
             string observed = await EvaluateStringAsync(
                 socket,
                 "(()=>{const v=document.querySelector('video');if(!v)return 'video_missing';"

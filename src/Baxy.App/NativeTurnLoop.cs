@@ -401,7 +401,9 @@ internal sealed class NativeTurnLoop
     // is held always (ronda final 8): with an application named or foreground it raises a window, and without them the
     // default application may be one that already runs and takes the file in the person's window (a single-instance
     // editor), or a packaged app Windows activates by itself. filesystem.file.open.latest opens the same way, and
-    // filesystem.folder.open starts or raises an Explorer window in front (ronda final 14): held too.
+    // filesystem.folder.open starts or raises an Explorer window in front (ronda final 14): held too. browser.page.read
+    // and browser.tabs.list read BAXY's own browser when its session is the one in use, and start it in front when it
+    // is not running (ronda final 15): held too.
     // system.settings.set with do_not_disturb opens ms-settings:notifications (it takes the front) and presses its switch
     // by UI Automation's Toggle (WindowsDeviceControlAdapter's DoNotDisturbScript): held; with airplane_mode it goes
     // through the radios API and reaches no window. The setting is a string by then: the catalog's schema checked it.
@@ -411,6 +413,7 @@ internal sealed class NativeTurnLoop
             or "message.draft" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
             or "game.launch" or "window.focus" or "window.maximize" or "window.minimize.all" or "window.move"
             or "window.resize" or "window.snap" or "file.open" or "filesystem.file.open.latest" or "filesystem.folder.open"
+            or "browser.page.read" or "browser.tabs.list"
         || (operation == "app.open" && arguments["foreground"] is JsonValue front && IsTrue(front))
         || (operation == "app.open" && arguments["newDocument"] is JsonValue fresh && IsTrue(fresh))
         || (operation == "app.open" && arguments["place"] is JsonValue place && Named(place))

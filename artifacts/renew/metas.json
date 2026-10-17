@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-16T21:35:00-03:00",
+  "actualizado": "2026-10-16T21:55:00-03:00",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -155,7 +155,7 @@
     "ronda_final_auditoria": {
       "umbral": "nada que viole <reglas>",
       "estado": "pendiente",
-      "evidencia": "Rondas finales 4+4 tras el congelado ff863b47f (2026-10-16, desde las 17:00), sólo contra las 5 <reglas>, agentes de sólo lectura con focos fijos (mente y catálogo; App e interfaz; proveedores; bancos y honestidad) en el PC y en el notebook, cada una sobre el commit anterior con sus arreglos: sobre ff863b47f, 93a25d0c3, 805618957, 25ef56681, e2888e0ce, 431ec4284, 740d4af97, 2a73bbd84, d4bb323e7, af70fae8e y b2d90137f. Violaciones por ronda, PC+notebook: 1.ª 1+0, 2.ª 1+1, 3.ª 0+1, 4.ª 1+1, 5.ª 1+0, 6.ª 3+1, 7.ª 8+4, 8.ª 10+3, 9.ª 9+13 (más 8 menores del notebook), 10.ª 6+4, 11.ª 9+13, 12.ª 7+5 (sobre 0f89ab012), 13.ª 9+2 (sobre 33fe16b20), 14.ª 7+1 (sobre c71c5f293; el notebook, 3 de sus 4 focos limpios); la 15.ª, en curso al escribir esto. Todo lo hallado se arregló; las suites, corridas tras los arreglos de la ronda 14 (el commit que la cierra): Kernel 564, Contracts 69, Setup 477, Providers 2171, en verde. Ninguno de la regla 1 (ninguna ayuda al modelo en código); casi todos de la regla 3 y de una sola clase: una lectura acotada, parcial o fallida presentada como entera (listas y candidatos cortados sin total, búsquedas cortadas dadas por ausencia, recorridos UIA parciales, la proyección de 8 KiB), descripciones del catálogo que prometían campos o conductas que su código no tiene, y textos de los informes. Por qué está pendiente y no cumplida (no es un límite del modelo, es trabajo que sigue: cada hallazgo se arregla): ninguna ronda 4+4 salió sin hallazgos; cada ronda que mira una zona nueva del catálogo o de los proveedores (172 herramientas, 30+ adaptadores) encuentra casos nuevos de esa clase, y las zonas ya revisadas dos veces salen limpias (App y bancos SIN en el notebook desde la ronda 9; los arreglos de cada ronda se verificaron limpios en la siguiente). Lo que quedó sin revisar a fondo lo nombra cada informe de ronda en el buzón."
+      "evidencia": "Rondas finales 4+4 tras el congelado ff863b47f (2026-10-16, desde las 17:00), sólo contra las 5 <reglas>, agentes de sólo lectura con focos fijos (mente y catálogo; App e interfaz; proveedores; bancos y honestidad) en el PC y en el notebook, cada una sobre el commit anterior con sus arreglos: sobre ff863b47f, 93a25d0c3, 805618957, 25ef56681, e2888e0ce, 431ec4284, 740d4af97, 2a73bbd84, d4bb323e7, af70fae8e y b2d90137f. Violaciones por ronda, PC+notebook: 1.ª 1+0, 2.ª 1+1, 3.ª 0+1, 4.ª 1+1, 5.ª 1+0, 6.ª 3+1, 7.ª 8+4, 8.ª 10+3, 9.ª 9+13 (más 8 menores del notebook), 10.ª 6+4, 11.ª 9+13, 12.ª 7+5 (sobre 0f89ab012), 13.ª 9+2 (sobre 33fe16b20), 14.ª 7+1 (sobre c71c5f293; el notebook, 3 de sus 4 focos limpios), 15.ª 8+1 (sobre 72e5a8b34; el notebook, 3 de 4 limpios); la 16.ª, en curso al escribir esto. Todo lo hallado se arregló; las suites, corridas tras los arreglos de la ronda 14 (el commit que la cierra): Kernel 564, Contracts 69, Setup 477, Providers 2171, en verde. Ninguno de la regla 1 (ninguna ayuda al modelo en código); casi todos de la regla 3 y de una sola clase: una lectura acotada, parcial o fallida presentada como entera (listas y candidatos cortados sin total, búsquedas cortadas dadas por ausencia, recorridos UIA parciales, la proyección de 8 KiB), descripciones del catálogo que prometían campos o conductas que su código no tiene, y textos de los informes. Por qué está pendiente y no cumplida (no es un límite del modelo, es trabajo que sigue: cada hallazgo se arregla): ninguna ronda 4+4 salió sin hallazgos; cada ronda que mira una zona nueva del catálogo o de los proveedores (172 herramientas, 30+ adaptadores) encuentra casos nuevos de esa clase, y las zonas ya revisadas dos veces salen limpias (App y bancos SIN en el notebook desde la ronda 9; los arreglos de cada ronda se verificaron limpios en la siguiente). Lo que quedó sin revisar a fondo lo nombra cada informe de ronda en el buzón."
     }
   },
   "tareas": [
@@ -221,7 +221,7 @@
       "id": "herramientas_agente",
       "estado": "cumplida",
       "quien": "NB",
-      "evidencia": "notebook: file.find/read/write/edit, web.fetch, shell que confirma lo no-lectura, schedule.alarms, carpeta home; e2e práctica agente 3/8 (p3), límites de subcarpetas pedidos al notebook"
+      "evidencia": "(superado por el holdout v3 sobre ff863b47f: agente 4/12, ver resultados.holdout_v3) notebook: file.find/read/write/edit, web.fetch, shell que confirma lo no-lectura, schedule.alarms, carpeta home; e2e práctica agente 3/8 (p3), límites de subcarpetas pedidos al notebook"
     },
     {
       "id": "latido",
@@ -231,9 +231,9 @@
     },
     {
       "id": "limpieza_codigo_muerto",
-      "estado": "limite_honesto",
+      "estado": "pendiente",
       "quien": "NB",
-      "evidencia": "(superado: las rondas finales tras ff863b47f revisan el código muerto en cada foco; ver metas.ronda_final_auditoria) rondas A y B quitaron lo hallado; quedan los puntos (2) y (3) de la ronda B del bloque anterior (ya no en metas.ronda_final_auditoria) (código que sólo leen pruebas)"
+      "evidencia": "ver metas.ronda_final_auditoria: cada ronda final revisa el código muerto en su foco y lo hallado se quita (p. ej. ronda 13: dos métodos COM sin uso); queda pendiente con la auditoría. Historia del bloque anterior: rondas A y B quitaron lo hallado; quedan los puntos (2) y (3) de la ronda B del bloque anterior (ya no se conservan) (código que sólo leen pruebas)"
     },
     {
       "id": "perfil_4gb",
@@ -257,7 +257,7 @@
       "id": "auditoria_final",
       "estado": "pendiente",
       "quien": "PC",
-      "evidencia": "superado: ver metas.ronda_final_auditoria (rondas finales tras el congelado ff863b47f, pendiente)"
+      "evidencia": "ver metas.ronda_final_auditoria (rondas finales tras el congelado ff863b47f); la evidencia del bloque anterior (holdout v2, rondas A y B) quedó superada."
     },
     {
       "id": "exposicion_herramientas",
@@ -298,7 +298,7 @@
     },
     {
       "limite": "velocidad del texto al primer sonido en el borde de 2,5 s",
-      "estado": "límite: el e2e sellado dio p50 3887 ms (lo sube el área agente, varios pasos); práctica 2316-2616 ms sin aviso; desde el aviso de silencio (nb-aviso) la meta se lee del primer sonido de la RESPUESTA (first_response_audio_p50_ms), no del primer sonido, que incluye el aviso",
+      "estado": "(v1 sobre 0417eec7b; superado: el v3 dio 4149 ms al primer sonido de la respuesta, ver metas.velocidad_texto_a_voz_p50) límite: el e2e sellado dio p50 3887 ms (lo sube el área agente, varios pasos); práctica 2316-2616 ms sin aviso; desde el aviso de silencio (nb-aviso) la meta se lee del primer sonido de la RESPUESTA (first_response_audio_p50_ms), no del primer sonido, que incluye el aviso",
       "evidencia": "primer sonido por orden en e2e práctica: p6 2316 ms, p7 2540, p9 3206 (prefijo 45,1k tokens con 304 significados de argumentos), p10 2459 (podado, 39,7k), p11 2602 (congelado); Piper 138-279 ms tras voice.speak; investigado y descartado: MTP (medido: p50 638 -> 744 ms con el GGUF MTP), draft 0,8B (no cabe en 4 GB), n-gramas, KV f16 (no cabe), checkpoints densos (+46 ms)"
     },
     {
