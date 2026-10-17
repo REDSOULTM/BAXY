@@ -23,13 +23,16 @@ internal sealed class SystemStatusHandler : IOperationHandler
 
     private readonly ISystemStatusProvider _provider;
     private readonly IGpuStatusProvider _gpuProvider;
+    private readonly ISecurityStatusProvider _securityProvider;
 
     public SystemStatusHandler(
         ISystemStatusProvider provider,
-        IGpuStatusProvider gpuProvider)
+        IGpuStatusProvider gpuProvider,
+        ISecurityStatusProvider? securityProvider = null)
     {
         _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         _gpuProvider = gpuProvider ?? throw new ArgumentNullException(nameof(gpuProvider));
+        _securityProvider = securityProvider ?? new WindowsSecurityStatusProvider();
     }
 
     public OperationDefinition Definition { get; } =
@@ -59,6 +62,17 @@ internal sealed class SystemStatusHandler : IOperationHandler
         }
 
         string requestedScope = arguments.Scope ?? "summary";
+        // Auditoría de los pedidos reales (2026-10-17): the firewall and Windows Update, read without changing anything.
+        if (requestedScope is "firewall" or "updates")
+        {
+            SecurityStatusReading reading = await _securityProvider.ReadAsync(
+                requestedScope,
+                cancellationToken).ConfigureAwait(false);
+            return reading.Result is { } read
+                ? OperationOutcome.Success(read)
+                : OperationOutcome.Failure(reading.ErrorCode ?? "system_status_unavailable");
+        }
+
         if (TryMapGpuScope(requestedScope, out GpuStatusScope gpuScope))
         {
             return await ExecuteGpuAsync(
