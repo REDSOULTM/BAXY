@@ -178,7 +178,12 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 .ConfigureAwait(false);
         }
 
-        HashSet<nint> windowsBefore = TopLevelWindows();
+        // Ronda final 31 (regla 3): without the windows read before the launch, a window already open would pass for new.
+        if (TopLevelWindows() is not { } windowsBefore)
+        {
+            return ExternalJson.Failure(operation, "file_open_windows_not_read", false);
+        }
+
         var effectBoundary = new ExternalEffectBoundary();
         effectBoundary.Cross(cancellationToken);
         int? processId = null;
@@ -253,7 +258,11 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         bool foreground,
         CancellationToken cancellationToken)
     {
-        HashSet<nint> windowsBefore = TopLevelWindows();
+        if (TopLevelWindows() is not { } windowsBefore)
+        {
+            return ExternalJson.Failure(operation, "file_open_windows_not_read", false);
+        }
+
         Dictionary<nint, string> titlesBefore = windowsBefore.ToDictionary(window => window, WindowTitle);
         var effectBoundary = new ExternalEffectBoundary();
         effectBoundary.Cross(cancellationToken);
@@ -888,7 +897,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         }
     }
 
-    private static HashSet<nint> TopLevelWindows()
+    private static HashSet<nint>? TopLevelWindows()
     {
         var handles = new HashSet<nint>();
         EnumWindowsProc callback = (handle, _) =>
@@ -897,8 +906,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 handles.Add(handle);
             return true;
         };
-        _ = EnumWindows(callback, 0);
-        return handles;
+        return EnumWindows(callback, 0) ? handles : null;
     }
 
     private static (nint, string)? NewWindowTitled(HashSet<nint> before, string stem, string fileName) =>

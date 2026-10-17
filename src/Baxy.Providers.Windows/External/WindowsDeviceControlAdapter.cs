@@ -1281,8 +1281,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           }
           # The switcher is closed only with Discord still in front (an Escape never reaches another window). Ronda final
           # 29 (regla 3): a switcher not closed, or still holding the focus after the Escape, is said (leftOpen).
+          # Ronda final 31 (regla 3): and only with the focus still inside the switcher's dialog (an Escape on Discord's
+          # own view declines a call).
           $state.leftOpen=$true
-          if([BaxyClientWin]::GetForegroundWindow() -eq $h){
+          if([BaxyClientWin]::GetForegroundWindow() -eq $h -and $null -ne (Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement))){
             [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
             $state.leftOpen=$null -ne (Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement))
           }
@@ -1424,10 +1426,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 writer.WriteBoolean("restoredFromMinimized", true);
                 writer.WriteBoolean("leftShown", Bool(root, "leftShown"));
             }
-            // Ronda final 29 (regla 3): the switcher could not be closed (the front left Discord) or still held the focus.
+            // Ronda final 29 (regla 3): BAXY did not close the switcher (the front or the focus left it) or it still held the focus.
             if (Bool(root, "leftOpen"))
             {
-                writer.WriteBoolean("switcherLeftOpen", true);
+                writer.WriteBoolean("switcherNotClosed", true);
             }
 
             writer.WriteString("authority", "client_quick_switcher_uia_read");

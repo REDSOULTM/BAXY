@@ -286,6 +286,8 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                         json.WriteStartObject(); json.WriteNumber("version", 1);
                         json.WriteString("provider", "youtube"); json.WriteString("query", query);
                         json.WriteString("title", title ?? query); json.WriteString("playbackStatus", "playing");
+                        // Ronda final 31 (regla 3): the player asks for the audio format only, in its own window.
+                        json.WriteBoolean("audioOnly", true); json.WriteString("window", "BAXY YouTube");
                         json.WriteBoolean("titleObserved", title is not null);
                         json.WriteString("progressClock", clockAdvanced ? "audio_clock" : "demuxer_reader");
                         json.WriteNumber("processId", player.Id);

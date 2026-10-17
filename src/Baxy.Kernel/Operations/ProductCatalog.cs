@@ -946,7 +946,7 @@ public static class ProductCatalog
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
             OperationRisks.ExternalCommunication,
             "media.play.youtube.cdp.video.postread.v1",
-            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce."),
+            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; con el reproductor propio instalado, sólo el sonido (audioOnly) en una ventana «BAXY YouTube»."),
         Descriptor(
             "media.seek.relative",
             Schema([Integer("seconds", -3_600, 3_600)], ["seconds"]),

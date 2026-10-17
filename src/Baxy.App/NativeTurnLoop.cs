@@ -278,7 +278,8 @@ internal sealed class NativeTurnLoop
     }
 
     // A line about a call that waits for the person's «sí» is that confirmation (Sí/No buttons), when the model can be
-    // asking about it: the turn's own call or the one offered to it with the person's words (ConfirmationAsk).
+    // asking about it: the turn's own call (ConfirmationAsk; ronda final 30: a call only offered with the person's
+    // words is answered by those words, never by buttons under this turn's line).
     // Its question is asked once it is published: from then on the person's words answer it.
     private void Publish(string text, string route) =>
         _notice.Publish(() =>
