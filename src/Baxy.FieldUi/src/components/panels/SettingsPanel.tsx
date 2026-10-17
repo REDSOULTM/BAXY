@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Icon, Globe } from '../Icon';
 import { Seg, Toggle } from '../Panel';
 import { getJson } from '../../api';
+import { spoken } from '../../duration';
 import type { GeneralSettings, Metrics, MicMode, NetEntry } from '../../types';
 
 /* Settings (design settings.jsx BxSettings). The theme, text size and contrast are this view's own presentation; the
@@ -48,10 +49,12 @@ interface Props {
   onGeneral: (patch: Partial<GeneralSettings>) => void;
   metrics: Metrics | null;
   netLog: NetEntry[];
+  /** how long the engine's confirmation waits (the host's), null while unknown */
+  confirmSeconds: number | null;
   onMemory: () => void;
 }
 
-export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, micAvailable, onMic, a11y, onA11y, general, onGeneral, metrics, netLog, onMemory }: Props) {
+export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, micAvailable, onMic, a11y, onA11y, general, onGeneral, metrics, netLog, confirmSeconds, onMemory }: Props) {
   const [tab, setTab] = useState<Tab>('general');
   const [voice, setVoice] = useState<{ tts?: { name?: string; downloaded?: boolean }; wake?: { downloaded?: boolean } } | null>(null);
   const [model, setModel] = useState<{ modelAlias?: string } | null>(null);
@@ -83,10 +86,10 @@ export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, 
             </Row>
           </>) : null}
           {tab === 'confirmacion' ? (<>
-            <Row label="Nivel de confirmación" hint="El interruptor del panel cambia entre tu nivel elegido y bypass">
+            <Row label="Nivel de confirmación" hint="Lo mismo que el interruptor del panel: Normal o Bypass">
               <Seg value={bypass ? 'never' : 'risk'} onChange={(v) => onBypass(v === 'never')} options={[['risk', 'Lo arriesgado'], ['never', 'Nada']]} />
             </Row>
-            <div className="st-tip">Con <b className="bone">lo arriesgado</b>, BAXY pregunta antes de: borrar o perder trabajo sin guardar, enviar un mensaje o un correo, crear un evento en tu calendario, instalar, y un comando o un clic que cambia algo que no se puede deshacer. La tarjeta aparece en la conversación, nunca encima de tu ventana, y vence a los 10 minutos sin hacer nada.</div>
+            <div className="st-tip">Con <b className="bone">lo arriesgado</b>, BAXY pregunta antes de: borrar o perder trabajo sin guardar, enviar un mensaje o un correo, crear un evento en tu calendario, instalar, y un comando o un clic que cambia algo que no se puede deshacer. Con <b className="bone">nada</b> (bypass), lo hace sin preguntar y la conversación lo dice. La tarjeta aparece en la conversación, nunca encima de tu ventana, y espera tu respuesta {spoken(confirmSeconds)}; si no contestas, no se hace nada.</div>
           </>) : null}
           {tab === 'voz' ? (<>
             <Row label="Palabra de activación" ro hint={voice?.wake?.downloaded === false ? 'El modelo de activación no está en disco' : undefined}><span className="bxs-fixed">BAXY</span></Row>

@@ -95,7 +95,7 @@ function RailView({ state, powered, onPower, bypass, onMode, metrics, net, profi
       </button>
       <div className="min-block">
         <div className="sec-head"><span>confirmación</span></div>
-        <button className={'bx-modebtn ' + (bypass ? 'bypass' : 'normal')} onClick={onMode} title="Acceso rápido · el nivel exacto se elige en Ajustes">
+        <button className={'bx-modebtn ' + (bypass ? 'bypass' : 'normal')} onClick={onMode} title={bypass ? 'Bypass: hace todo sin preguntar · pulsa para volver a Normal' : 'Normal: pregunta antes de lo arriesgado · pulsa para Bypass'}>
           <span className="ic"><Icon name={bypass ? 'bolt' : 'check'} size={14} /></span>
           <span className="tx"><span className="n">{bypass ? 'Bypass' : 'Normal'}</span><span className="s">{bypass ? 'Sin frenos' : 'Si hay riesgo'}</span></span>
           <span className="sw"><i></i></span>

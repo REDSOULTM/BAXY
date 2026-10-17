@@ -95,7 +95,8 @@ internal sealed class NativeTurnLoop
         internal Action? MemoryChanged { get; init; }
     }
 
-    private static readonly TimeSpan ProposalLifetime = TimeSpan.FromMinutes(10);
+    /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
+    internal static readonly TimeSpan ProposalLifetime = TimeSpan.FromMinutes(10);
 
     // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, instalar, cerrar con trabajo).
     private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)

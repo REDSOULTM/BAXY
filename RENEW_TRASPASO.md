@@ -230,5 +230,9 @@ La vista `src/Baxy.FieldUi` es ahora el rediseño v4, conectado a datos reales (
 - **Aceptación:** `scripts/test_field_ui.ps1` (Playwright por CDP contra la app real): 17/17 el 2026-10-17.
 - **Propuestas en silencio:** notificación de Windows con Sí/No (`ProposalToast`, AUMID en HKCU); no se probó con un
   clic real (sin acceso a la pantalla); si Windows la rechaza sale la de la bandeja.
-- **Pendiente:** adjuntar archivos (sin contrato tipado); mostrar datos sensibles (el almacén no los devuelve); el token
-  de confirmación del kernel vence a los 2 min, no a los 10 del diseño (la tarjeta muestra el plazo real).
+- **Pendiente:** adjuntar archivos (sin contrato tipado); mostrar datos sensibles (el almacén no los devuelve).
+- **Adaptado a lo que BAXY es (pedido del dueño):** donde el diseño prometía algo que BAXY no hace, la vista dice lo
+  real. La tarjeta espera lo que dura el token del kernel (2 min, `ConfirmationLifetime.Challenge`) y la propuesta del
+  latido 10 min (`NativeTurnLoop.ProposalLifetime`); los dos plazos los informa `GET /confirmation`. Hay dos niveles,
+  Normal («lo arriesgado») y Bypass («nada»), y ningún texto menciona un tercero. El arranque ya no promete «12 a 18 s»:
+  muestra cuánto tardó la carga anterior en este PC.

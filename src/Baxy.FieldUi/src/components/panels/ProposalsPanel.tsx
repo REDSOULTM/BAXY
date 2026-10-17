@@ -1,5 +1,6 @@
 import { Panel, Seg, Toggle } from '../Panel';
 import type { ProposalSettings, QuietSpan } from '../../types';
+import { spoken } from '../../duration';
 
 /* Proposals (design panels4.jsx BxProposals): what the heartbeat may suggest on its own. «No me interrumpas durante…»
    keeps BAXY from speaking in those moments (a proposal then arrives as a Windows notification); silencing stops the
@@ -7,7 +8,7 @@ import type { ProposalSettings, QuietSpan } from '../../types';
 
 const OPTS: [QuietSpan, string][] = [['30m', '30 min'], ['1h', '1 hora'], ['tomorrow', 'Hasta mañana']];
 
-export function ProposalsPanel({ value, onChange, onClose }: { value: ProposalSettings | null; onChange: (v: Partial<ProposalSettings>) => void; onClose: () => void }) {
+export function ProposalsPanel({ value, proposalSeconds, onChange, onClose }: { value: ProposalSettings | null; proposalSeconds: number | null; onChange: (v: Partial<ProposalSettings>) => void; onClose: () => void }) {
   const ctx = value?.ctx ?? { game: true, call: true, video: true };
   const quiet = value?.quiet ?? null;
   const until = value?.quietUntil ? new Date(value.quietUntil).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' }) : null;
@@ -27,7 +28,7 @@ export function ProposalsPanel({ value, onChange, onClose }: { value: ProposalSe
           <Seg<QuietSpan | ''> value={quiet ?? ''} options={OPTS} onChange={(v) => onChange({ quiet: v === quiet ? null : (v || null) })} />
         </div>
       </div>
-      <div className="st-tip">Las propuestas usan la misma tarjeta Sí / No que las confirmaciones y vencen a los 10 minutos sin hacer nada.</div>
+      <div className="st-tip">Las propuestas usan la misma tarjeta Sí / No que las confirmaciones y esperan tu respuesta {spoken(proposalSeconds)}; si no contestas, no se hace nada.</div>
     </Panel>
   );
 }

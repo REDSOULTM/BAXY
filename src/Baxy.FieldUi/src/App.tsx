@@ -73,6 +73,8 @@ export default function App() {
 
   // ---- the host's settings ----
   const [bypass, setBypassState] = useState(false);
+  // how long a card waits for the person, as the host says: the engine's confirmation and a heartbeat's proposal
+  const [cardLife, setCardLife] = useState<{ confirm: number; proposal: number } | null>(null);
   const [general, setGeneral] = useState<GeneralSettings | null>(null);
   const [proposals, setProposals] = useState<ProposalSettings | null>(null);
   const [powered, setPowered] = useState(true);
@@ -112,13 +114,17 @@ export default function App() {
     let cancelled = false;
     const sync = async () => {
       const [c, a, g, p] = await Promise.all([
-        getJson<{ confirmationPolicy?: string }>('/confirmation'),
+        getJson<{ confirmationPolicy?: string; confirmSeconds?: number; proposalSeconds?: number }>('/confirmation'),
         getJson<{ active?: string }>('/accessibility'),
         getJson<GeneralSettings>('/settings/general'),
         getJson<ProposalSettings>('/proposals'),
       ]);
       if (cancelled) return;
       if (c) setBypassState(c.confirmationPolicy === 'bypass');
+      if (c && typeof c.confirmSeconds === 'number' && typeof c.proposalSeconds === 'number') {
+        const life = { confirm: c.confirmSeconds, proposal: c.proposalSeconds };
+        setCardLife((x) => (x && x.confirm === life.confirm && x.proposal === life.proposal ? x : life));
+      }
       if (a) setA11yState((x) => ({ ...x, on: a.active === 'accessible' }));
       if (g) setGeneral(g);
       if (p) setProposals(p);
@@ -167,6 +173,11 @@ export default function App() {
   const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
   const errorText = voiceError ?? (s.agent.failure ? FAILURE[s.agent.failure] ?? 'Algo falló' : 'Algo falló');
   const label = state === 'error' ? (voiceError ? LABEL.error : FAILURE[s.agent.failure ?? ''] ?? 'Algo falló') : LABEL[state];
+
+  // how long the model took this time, kept as this view's note for the next start (never a promise)
+  useEffect(() => {
+    if (s.boot?.readyAt) keep('baxy.lastLoad', String(Math.round((s.boot.readyAt - s.boot.startedAt) / 1000)));
+  }, [s.boot?.readyAt, s.boot?.startedAt]);
 
   // a voice error shows for a few seconds, then BAXY waits again
   useEffect(() => {
@@ -428,12 +439,12 @@ export default function App() {
       {panel === 'triggers' ? <TriggersPanel onClose={() => setPanel(null)} /> : null}
       {panel === 'catalog' ? <CatalogPanel onClose={() => setPanel(null)} /> : null}
       {panel === 'sessions' ? <SessionsPanel onClose={() => setPanel(null)} onNew={onNewChat} revision={s.session?.id + ':' + s.session?.label} /> : null}
-      {panel === 'proposals' ? <ProposalsPanel value={proposals} onChange={(p) => void onProposals(p)} onClose={() => setPanel(null)} /> : null}
+      {panel === 'proposals' ? <ProposalsPanel value={proposals} proposalSeconds={cardLife?.proposal ?? null} onChange={(p) => void onProposals(p)} onClose={() => setPanel(null)} /> : null}
       {panel === 'settings' ? (
         <SettingsPanel onClose={() => setPanel(null)} theme={theme} onTheme={(t) => { setTheme(t); keep('baxy.theme', t); }}
           bypass={bypass} onBypass={(v) => void setBypass(v)} mic={mic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)}
           a11y={a11y} onA11y={(a) => void setA11y(a)} general={general} onGeneral={(p) => void onGeneral(p)} metrics={metrics}
-          netLog={s.netLog} onMemory={() => setPanel('memory')} />
+          netLog={s.netLog} confirmSeconds={cardLife?.confirm ?? null} onMemory={() => setPanel('memory')} />
       ) : null}
     </div>
   );

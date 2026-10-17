@@ -42,6 +42,12 @@ internal readonly record struct ConfirmationBinding(
         new(request.InvocationId, request.MissionId, requestFingerprint);
 }
 
+/// <summary>How long the person has to answer a confirmation the engine asks for (the view says it, design v4).</summary>
+public static class ConfirmationLifetime
+{
+    public static TimeSpan Challenge => InMemoryConfirmationAuthority.DefaultLifetime;
+}
+
 internal sealed class InMemoryConfirmationAuthority : IDisposable
 {
     internal const int DefaultCapacity = 64;

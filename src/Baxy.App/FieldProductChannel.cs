@@ -671,9 +671,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         return Json(written);
     }
 
+    // The mode, and how long a card waits for the person: the engine's confirmation and a heartbeat's proposal (the
+    // view says these, never the design's own 10 minutes).
     private static JsonObject ConfirmationPolicy(string root) => new()
     {
         ["confirmationPolicy"] = ConfirmationModeStore.Read(root) == ConfirmationMode.Bypass ? "bypass" : "normal",
+        ["confirmSeconds"] = (int)Baxy.Kernel.Mission.ConfirmationLifetime.Challenge.TotalSeconds,
+        ["proposalSeconds"] = (int)NativeTurnLoop.ProposalLifetime.TotalSeconds,
     };
 
     private static JsonObject PresentationMode(bool accessible) => new()

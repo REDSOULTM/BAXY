@@ -41,8 +41,19 @@ export function Caption({ state, sub, subGone, live, step, waiting, error }: Cap
   return <div className="bx-cap">{sub ? <Sub key={sub.key} text={sub.text} animate={state === 'speaking'} gone={subGone} /> : null}</div>;
 }
 
+// How long the model took to load the last time on this PC (this view's own note), never a promise of how long it takes.
+function lastLoad(): number | null {
+  try {
+    const v = Number(localStorage.getItem('baxy.lastLoad'));
+    return Number.isFinite(v) && v > 0 ? v : null;
+  } catch {
+    return null;
+  }
+}
+
 export function Boot({ boot }: { boot: BootPieces }) {
   const [now, setNow] = useState(() => Date.now());
+  const [previous] = useState(lastLoad);
   useEffect(() => {
     if (boot.model || boot.failed) return;
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -63,7 +74,9 @@ export function Boot({ boot }: { boot: BootPieces }) {
       ))}
       {!boot.model && !boot.failed ? <div className="bar"><i></i></div> : null}
       <div className="el">
-        {boot.model ? 'Listo · cargó en ' + secs + ' s' : boot.failed ? 'El modelo no arrancó' : secs + ' s · suele tardar entre 12 y 18 s'}
+        {boot.model ? 'Listo · cargó en ' + secs + ' s'
+          : boot.failed ? 'El modelo no arrancó'
+            : secs + ' s' + (previous ? ' · la última vez tardó ' + previous + ' s' : '')}
       </div>
     </div>
   );
