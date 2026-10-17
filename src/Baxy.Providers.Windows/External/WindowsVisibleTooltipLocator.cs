@@ -1063,6 +1063,9 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             learned.FromCache ? (learned.Screen.W, learned.Screen.H) : null).ConfigureAwait(false);
         if (pressed.Failure is { } refused)
             return refused;
+        // Ronda final 20 (regla 3): a burst that waited for the person and gave no baseline leaves only the capture of
+        // before that wait: a change against it may be anyone's, so it proves nothing (as in the OCR stage).
+        bool baselineFresh = pressed.Before is not null || pressed.Burst is null;
         if (pressed.Before is { } fresh)
             before = fresh;
         IInputBurst? burst = pressed.Burst;
@@ -1079,7 +1082,8 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
                 VisibleControlSurface.CapturedWindow? after = await _desktop.CaptureAsync(
                     learned.Window, before.SelfDrawn, cancellationToken).ConfigureAwait(false);
                 read |= after is not null;
-                changed = after is { } later && later.Sha256 != before.Sha256 && ChangedBeyond(before, later, marks);
+                changed = baselineFresh && after is { } later && later.Sha256 != before.Sha256
+                    && ChangedBeyond(before, later, marks);
             }
         }
         finally
@@ -1094,10 +1098,13 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
         // Auditoría final (regla 3): without a burst nothing else watches the person: their touch of that window since
         // the press was sent ends the proof by its image.
         userActed |= burst is null && WindowsUserInputPause.PersonTouched(learned.Window, pressedAt);
+        // Ronda final 20 (regla 3): «unchanged» only from a read-back read, of a window that does not change by itself,
+        // that did not change; a change the animation or the person's touch voids is unread, never «unchanged».
+        bool seenUnchanged = read && baselineFresh && !animated && !changed;
         changed &= !userActed && !animated;
         bool targeted = pressed.Method == "target" && pressed.Focused;
         bool ok = changed || targeted;
-        if (!ok && learned.FromCache && !userActed && read)
+        if (!ok && learned.FromCache && !userActed && seenUnchanged)
             _cache.Forget(learned.Signature, learned.Place);
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -1106,7 +1113,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             writer.WriteBoolean("ok", ok);
             writer.WriteBoolean("effectObserved", true);
             writer.WriteString("error", ok ? "" : userActed ? "input_user_interrupted"
-                : read ? "visible_button_postread_unchanged" : "visible_click_postread_unread");
+                : seenUnchanged ? "visible_button_postread_unchanged" : "visible_click_postread_unread");
             writer.WriteString("name", learned.Label);
             writer.WriteString("nameSource", learned.Source);
             writer.WriteBoolean("learnedBefore", learned.FromCache);
@@ -1130,7 +1137,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
         return ok
             ? ExternalJson.Success(operation, result, true)
             : ExternalJson.Failure(operation, userActed ? "input_user_interrupted"
-                : read ? "visible_button_postread_unchanged" : "visible_click_postread_unread", true);
+                : seenUnchanged ? "visible_button_postread_unchanged" : "visible_click_postread_unread", true);
     }
 }
 

@@ -1582,7 +1582,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "weather.current.openmeteo.read.v1",
-            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad donde está este PC cuando no se nombra ninguno)."),
+            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad que ese servicio deduce, cuando no se nombra ninguno)."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0077 «descarga la imagen de
         // portada de wikipedia.org y guardala en el escritorio», H0069; D11): bajar un
         // archivo o imagen de una dirección a una carpeta conocida, verificado por el

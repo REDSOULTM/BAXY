@@ -1787,7 +1787,12 @@ internal sealed class WindowsVisibleControlAdapter
                 // may be acted on.
                 if (VisibleControlSurface.ProtectedFrom(processName, application,
                         () => VisibleControlSurface.ProcessDescription(unchecked((uint)ownerProcessId))))
+                {
                     writer.WriteBoolean("protected", true);
+                    // Incidente del 2026-10-15: a system configuration tool, which no name opens to acts.
+                    if (VisibleControlSurface.SystemTool(processName))
+                        writer.WriteBoolean("systemTool", true);
+                }
                 else
                     VisibleControlSurface.NoteNamedProtected(windowRoot != 0 ? windowRoot : hwnd, processName);
                 // v3 point 1: the content of the application's window drawn by a process it started (WebView2, CEF):
@@ -1866,6 +1871,10 @@ internal sealed class WindowsVisibleControlAdapter
 
                     writer.WriteEndArray();
                 }
+
+                // Ronda final 20 (regla 3): disabled controls left unlisted (a large tree, or past the cap) are said.
+                if (root.TryGetProperty("disabledCut", out JsonElement disabledCut) && disabledCut.ValueKind == JsonValueKind.True)
+                    writer.WriteBoolean("disabledCut", true);
 
                 writer.WriteNumber("controlCount", counted);
                 // Ronda 20b, palanca 8 (v3-51, v3-62): a look that brought only the window's frame, read again by the
@@ -2728,6 +2737,7 @@ internal sealed class WindowsVisibleControlAdapter
         TimeSpan budget = before is null ? _timing.ControlPostread : _timing.SurfacePostread;
         bool surfaceRead = false;
         bool controlSaidUnchanged = false;
+        bool arrivedUncaused = false;
         while (true)
         {
             if (askControl && watch.Elapsed < _timing.ControlPostread)
@@ -2807,6 +2817,8 @@ internal sealed class WindowsVisibleControlAdapter
             // by the 20 unchanged clicks of 3 runs of the bank and found no window in any).
             if (watch.Elapsed >= _timing.SurfaceFirstSample && Handed(roots) is { } handedNow)
                 return HandedOff(operation, clicked, front, handedNow);
+            if (!arrivedUncaused && watch.Elapsed >= _timing.SurfaceFirstSample)
+                arrivedUncaused = ArrivedUncaused(roots);
 
             if (watch.Elapsed >= budget)
                 break;
@@ -2816,6 +2828,10 @@ internal sealed class WindowsVisibleControlAdapter
         // Ronda final 18 (regla 3): «unchanged» only from a read-back that was read; none read is said as such.
         if (!surfaceRead && !controlSaidUnchanged)
             return effectBoundary.Failure(operation, "visible_click_postread_unread", effectObserved: true);
+        // Ronda final 20 (regla 3): another process's window came meanwhile with nothing showing the click caused it:
+        // the click's effect is uncertain, never «unchanged» (the model would press again: a second browser tab).
+        if (arrivedUncaused)
+            return effectBoundary.Failure(operation, "visible_click_handoff_uncertain", effectObserved: true);
         // Pressed and seen unchanged: no later stage of this click presses that control again (finding 4).
         _pressedUnchanged = PressedIdentity(clicked);
         return effectBoundary.Failure(operation, "visible_button_postread_unchanged", effectObserved: true);
@@ -2836,6 +2852,21 @@ internal sealed class WindowsVisibleControlAdapter
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
         {
             return null;
+        }
+    }
+
+    // Ronda final 20: a window of another process that came now without proof the click caused it (or no watch: false).
+    private bool ArrivedUncaused(HandoffWatch? watch)
+    {
+        if (watch is null || RootWindows is not { } roots)
+            return false;
+        try
+        {
+            return VisibleControlSurface.ArrivedUncaused(watch.Before, roots(watch.Window)) != 0;
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            return false;
         }
     }
 

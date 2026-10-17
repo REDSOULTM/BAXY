@@ -515,16 +515,46 @@ internal static partial class VisibleControlSurface
     // (the bypass switch and its question), which only the person changes.
     private static readonly HashSet<string> OwnProcesses = new(StringComparer.OrdinalIgnoreCase) { "Baxy", "baxy-core" };
 
+    // Incidente del 2026-10-15 (banco e2e de práctica p6, «abre la configuración de sonido»): BAXY abrió la
+    // Configuración del sistema (msconfig), pulsó «Servicios», «Deshabilitar todos» y «Aceptar» sin pedir nada, y 256
+    // servicios quedaron deshabilitados: el PC del dueño arrancó días después sin red ni sonido. The tools that
+    // configure Windows itself (its start, its services, its registry, its users, its system properties, its tasks and
+    // processes) are never acted on, named or not, as BAXY's own window: what they change takes the whole machine, often
+    // only at the next start, and no post-read can tell it. BAXY may open and look at them; the person acts in them.
+    // Told by their exact process names (identity, not interpretation); the MMC host carries services.msc, devmgmt.msc,
+    // compmgmt.msc, gpedit.msc, taskschd.msc, eventvwr.msc, diskmgmt.msc and lusrmgr.msc.
+    private static readonly HashSet<string> SystemToolProcesses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "msconfig", "mmc", "regedit", "regedt32", "Taskmgr", "resmon", "SystemPropertiesAdvanced",
+        "SystemPropertiesComputerName", "SystemPropertiesDataExecutionPrevention", "SystemPropertiesHardware",
+        "SystemPropertiesPerformance", "SystemPropertiesProtection", "SystemPropertiesRemote",
+        "UserAccountControlSettings", "netplwiz", "rstrui", "cleanmgr", "dfrgui", "iscsicpl", "odbcad32",
+        // Windows Security: its switches turn the machine's protection off (the notebook's p2 run of 2026-10-15 pressed
+        // «Configuración» in it twice for the same request).
+        "SecHealthUI",
+    };
+
+    /// <summary>A tool that configures Windows itself (msconfig, an MMC console, the registry editor, the Task Manager,
+    /// the system properties): never acted on, named or not (incidente del 2026-10-15).</summary>
+    internal static bool SystemTool(string? processName)
+    {
+        string process = (processName ?? string.Empty).Trim();
+        if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            process = process[..^4];
+        return SystemToolProcesses.Contains(process);
+    }
+
     /// <summary>
     /// A developer's or BAXY's own process that the request did not name: <paramref name="application"/> is neither
-    /// its process name nor its executable's <paramref name="description"/>, folded. BAXY's own is always protected.
+    /// its process name nor its executable's <paramref name="description"/>, folded. BAXY's own and the system's
+    /// configuration tools (<see cref="SystemTool"/>) are always protected.
     /// </summary>
     internal static bool ProtectedFrom(string? processName, string? application, Func<string>? description = null)
     {
         string process = (processName ?? string.Empty).Trim();
         if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
             process = process[..^4];
-        if (OwnProcesses.Contains(process))
+        if (OwnProcesses.Contains(process) || SystemToolProcesses.Contains(process))
             return true;
         if (!ProtectedProcesses.Contains(process))
             return false;

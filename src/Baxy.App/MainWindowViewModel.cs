@@ -519,6 +519,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             var remembered = new List<string>();
             Collect(facts, remembered);
+            // Ronda final 20 (regla 3): the first twenty of more say so, as the reminders do.
+            if ((int?)facts["observed"]?["total"] is int total && total > remembered.Count)
+                remembered.Add($"y {total - remembered.Count} más sin listar");
             return remembered;
         }
         catch (Exception exception) when (exception is IOException or InvalidDataException or MemoryRequestRefusedException or JsonException

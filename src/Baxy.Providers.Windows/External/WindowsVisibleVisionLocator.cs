@@ -138,6 +138,8 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
 
             // A surface that changed after the person acted proves nothing of the click.
             userActed |= burst is null && WindowsUserInputPause.PersonTouched(before.Hwnd, pressedAt);
+            // Ronda final 20 (regla 3): «unchanged» only when the window did not change and does not change by itself.
+            bool seenUnchanged = read && !animated && !changed;
             changed &= !userActed && !animated;
             bool targeted = method == "target" && pressed.Focused;
             bool ok = changed || targeted;
@@ -148,7 +150,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 writer.WriteBoolean("ok", ok);
                 writer.WriteBoolean("effectObserved", true);
                 writer.WriteString("error", ok ? "" : userActed ? "input_user_interrupted"
-                    : read ? "visible_button_postread_unchanged" : "visible_click_postread_unread");
+                    : seenUnchanged ? "visible_button_postread_unchanged" : "visible_click_postread_unread");
                 writer.WriteString("name", label);
                 writer.WriteString("controlIdentity", "vision." + x + "." + y);
                 writer.WriteBoolean("absentOrDisabled", false);
@@ -169,7 +171,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             return ok
                 ? ExternalJson.Success(operation, result, true)
                 : ExternalJson.Failure(operation, userActed ? "input_user_interrupted"
-                    : read ? "visible_button_postread_unchanged" : "visible_click_postread_unread", true);
+                    : seenUnchanged ? "visible_button_postread_unchanged" : "visible_click_postread_unread", true);
         }
         catch (Exception exception) when (exception is IOException
             or HttpRequestException

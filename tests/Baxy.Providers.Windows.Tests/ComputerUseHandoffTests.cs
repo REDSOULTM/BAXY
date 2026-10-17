@@ -276,7 +276,8 @@ public sealed class ComputerUseHandoffTests
         });
     }
 
-    // Contracase: a window the receipt cannot name (gone, or an editor, a console, BAXY) is not followed.
+    // Contracase: a window the receipt cannot name (gone, or an editor, a console, BAXY) is not followed; ronda final 20
+    // (regla 3): nor is the click «unchanged» with a window come meanwhile: its effect is uncertain.
     [Test]
     public async Task AWindowThatCannotBeNamedIsNotFollowed()
     {
@@ -295,6 +296,10 @@ public sealed class ComputerUseHandoffTests
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Ver dispositivos e impresoras","window":4660}"""), CancellationToken.None);
 
-        Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_postread_unchanged"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_handoff_uncertain"));
+            Assert.That(receipt.Result, Is.Null, "no window is named");
+        });
     }
 }

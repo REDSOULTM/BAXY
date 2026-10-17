@@ -76,6 +76,31 @@ internal static partial class VisibleControlSurface
         return default;
     }
 
+    /// <summary>
+    /// Ronda final 20 (regla 3): a window of another process that came during the click (born, or brought to the front)
+    /// although nothing shows the click caused it (its process was already running: «open in the browser» with the
+    /// browser open; or the processes could not be read). It is no proof of the click, and neither is the click
+    /// «unchanged»: its effect is uncertain. 0 when none, or when the person's input came in between.
+    /// </summary>
+    internal static nint ArrivedUncaused(RootSnapshot before, RootSnapshot now)
+    {
+        if (now.PersonInput != before.PersonInput)
+            return 0;
+        var earlier = new HashSet<nint>(before.Windows.Select(window => window.Window));
+        foreach (RootWindow window in now.Windows)
+        {
+            if (window.Window != 0 && window.ProcessId > 0 && !before.Clicked.Contains(window.ProcessId)
+                && !earlier.Contains(window.Window))
+                return window.Window;
+        }
+
+        return now.Front != 0 && now.Front != before.Front && earlier.Contains(now.Front)
+            && now.Windows.FirstOrDefault(window => window.Window == now.Front) is { Window: not 0 } forward
+            && forward.ProcessId > 0 && !before.Clicked.Contains(forward.ProcessId)
+                ? forward.Window
+                : 0;
+    }
+
     /// <summary>The desktop's root windows now, for a click on <paramref name="clicked"/>.</summary>
     internal static RootSnapshot RootWindowsNow(nint clicked)
     {

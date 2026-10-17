@@ -142,6 +142,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // Without a burst nothing else watches the person: their input to that window since the press ends the proof.
             userActed |= burst is null && WindowsUserInputPause.PersonTouched(before.Hwnd, pressedAt);
             bool ok = (changed && !userActed && !animated) || targeted;
+            // Ronda final 20 (regla 3): «unchanged» only when the window did not change and does not change by itself.
+            bool seenUnchanged = read && baselineFresh && !animated && !changed;
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
@@ -150,7 +152,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 writer.WriteBoolean("effectObserved", true);
                 writer.WriteString(
                     "error",
-                    ok ? "" : userActed ? "input_user_interrupted" : Unchanged(read, baselineFresh));
+                    ok ? "" : userActed ? "input_user_interrupted" : Unchanged(seenUnchanged));
                 writer.WriteBoolean("labelStillOnScreen", surfaceObserved);
                 writer.WriteString("name", hit.Text);
                 writer.WriteString("controlIdentity", "ocr." + hit.CenterX + "." + hit.CenterY);
@@ -173,7 +175,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             return ok
                 ? ExternalJson.Success(operation, result, true)
                 : ExternalJson.Failure(
-                    operation, userActed ? "input_user_interrupted" : Unchanged(read, baselineFresh), true);
+                    operation, userActed ? "input_user_interrupted" : Unchanged(seenUnchanged), true);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -186,10 +188,10 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         }
     }
 
-    // Ronda final 19 (regla 3): «unchanged» only from a read-back of the same window against a baseline of right before
-    // the press; otherwise the press stands unread.
-    private static string Unchanged(bool read, bool baselineFresh) =>
-        read && baselineFresh ? "visible_button_postread_unchanged" : "visible_click_postread_unread";
+    // Ronda final 19-20 (regla 3): «unchanged» only from a read-back of the same window against a baseline of right
+    // before the press, of a window that does not change by itself and did not change; otherwise the press stands unread.
+    private static string Unchanged(bool seenUnchanged) =>
+        seenUnchanged ? "visible_button_postread_unchanged" : "visible_click_postread_unread";
 
     // The one word or run of words that reads the label on a capture, through both OCR passes.
     private static async ValueTask<WordHit?> LocateAsync(

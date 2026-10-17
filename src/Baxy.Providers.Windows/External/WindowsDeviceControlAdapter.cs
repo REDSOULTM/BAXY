@@ -535,7 +535,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         if (radios.Length == 0)
             return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radios_not_found");
         RadioState desired = value == 1 ? RadioState.Off : RadioState.On;
-        var before = radios.ToDictionary(radio => radio.Name + "|" + radio.Kind, radio => radio.State == RadioState.On);
+        // Ronda final 20: two radios of the same name and kind leave «wasOn» unsaid for them (never an exception).
+        var before = radios.GroupBy(radio => radio.Name + "|" + radio.Kind)
+            .ToDictionary(group => group.Key, group => group.Count() == 1 ? group.First().State == RadioState.On : (bool?)null);
         // AIRPLANE2043 «sacá el modo avión» with every radio already on: nothing to
         // switch cannot be observed as an effect; the honest fact is the state,
         // said before any boundary is crossed (same contract as the microphone).
@@ -580,7 +582,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 writer.WriteString("kind", radio.Kind.ToString());
                 writer.WriteString("name", radio.Name);
                 writer.WriteString("state", radio.State.ToString());
-                writer.WriteBoolean("wasOn", before.GetValueOrDefault(radio.Name + "|" + radio.Kind));
+                if (before.GetValueOrDefault(radio.Name + "|" + radio.Kind) is bool wasOn)
+                    writer.WriteBoolean("wasOn", wasOn);
                 writer.WriteEndObject();
             }
 

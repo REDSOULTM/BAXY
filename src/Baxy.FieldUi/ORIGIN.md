@@ -127,4 +127,4 @@ que decía de más: el latido sigue esperando el sí y el panel de memoria sigue
 
 - `dist/index.html`: `A24E2D2725F2C9B8B4E71EAC54056362344B68AB175C89EB870D70FBB83804FF`
 - `dist/assets/index-COQjHLMx.css`: sin cambios
-- `dist/assets/index-zFPW0PcQ.js`: `393B498C5ED9646698C28F0E0D4164FE7562DA4FA0E7D892E58954C12BA342C9`
+- `dist/assets/index-q_ZKkled.js`: `7B0F15C4AB6785018743F8BBCE695A991B4580C237DAB8B17C604DE8A2743C7A` (reconstruido en la ronda final 18 de BAXY Renew: SubstratePanel y types)

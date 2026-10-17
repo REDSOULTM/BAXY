@@ -39,6 +39,7 @@ Sobre c7699f276 ese diff son 83 archivos (+1877 −435):
 | 3 | `artifacts/renew` |
 | 2 | `src/Baxy.Kernel/Operations` |
 | 2 | `scripts/renew` |
+| 1 | `tests/Baxy.Kernel.Tests` |
 | 1 | `src/baxy_mind/data` (las descripciones) |
 | — | El resto: `Providers.Windows/{Windows,Tasks,SystemStatus,Notes,Filesystem,Network,Capture,Applications}` y `Baxy.FieldUi` |
 
@@ -53,7 +54,8 @@ Bancos de los que salen:
 - `renew_v3/runs`: decisión, escenas, latido y e2e;
 - `renew_v1`: práctica y brazos de la decisión 20.
 
-Ningún `sealed.json` se abrió para sacar la lista. Son 143 de las 172 operaciones:
+Ningún `sealed.json` se abrió para sacar la lista. Son 144 de las 172 operaciones (143 en la primera versión; la ronda
+final 20 encontró `memory.correct` en las escenas de práctica de la decisión 20, P035, y la pasó a esta lista):
 
 app.close, app.installed, app.open, audio.app.volume.adjust, audio.app.volume.set, audio.microphone.mute, audio.mute,
 audio.status, audio.volume, audio.volume.adjust, backup.known.create, backup.known.list, backup.known.restore.latest,
@@ -68,7 +70,7 @@ filesystem.sandbox.diff.named, filesystem.sandbox.move.named, filesystem.search,
 game.entitlement.named, game.install.cancel.active, game.install.named, game.install.status, game.installed.named,
 game.launch, game.uninstall.named, input.key.press, input.keyboard.layout, input.keyboard.open, input.pointer.control,
 input.select.all, input.text.type, input.visible.click, input.visible.controls, media.control, media.play.exact,
-media.play.query, media.play.youtube, media.seek.relative, media.status, memory.disable, memory.enable, memory.export,
+media.play.query, media.play.youtube, media.seek.relative, media.status, memory.correct, memory.disable, memory.enable, memory.export,
 memory.forget, memory.list, memory.recall, memory.save, memory.sensitive.save, memory.session.clear, memory.status,
 message.draft, message.send.test, network.dns.status, network.ip.list, network.port.list, network.status, note.create,
 note.list, note.read, note.search, note.trash, note.update, ocr.read, office.document.create, package.uninstall,
@@ -80,10 +82,13 @@ vision.describe, weather.current, web.download, web.fetch, web.search, wifi.conn
 wifi.profile.list, wifi.radio.set, wifi.scan, window.active, window.application.status, window.close.all, window.focus,
 window.maximize, window.minimize, window.minimize.all, window.resolve, window.snap.
 
-Las 29 que ningún banco ejercita quedan **fuera** del alcance, salvo lo que de ellas entre por a) o c):
+Las 28 que no ejercitan los bancos de decisión, e2e, escenas y latido quedan **fuera** del alcance, salvo lo que de
+ellas entre por a) o c). El banco de falsedades del v3 ejercita además dos de ellas: wifi.status (F303) y
+package.install (F333). Corregido en la ronda final 20, que encontró falsa la frase «29 que ningún banco ejercita» y
+`memory.correct` en un resultado de escenas:
 
 backup.create, backup.known.verify.latest, backup.restore, backup.verify, filesystem.copy, filesystem.move,
-filesystem.read.text, game.install.cancel, input.keyboard.status, input.scroll, memory.correct, network.ping,
+filesystem.read.text, game.install.cancel, input.keyboard.status, input.scroll, network.ping,
 note.restore, office.document.read, package.install, peripheral.print, peripheral.scan, streaming.navigate,
 system.identity, task.reopen, task.restore, task.update, wifi.connect, wifi.ensure.connected, wifi.radio.status,
 wifi.status, window.move, window.resize, window.restore.

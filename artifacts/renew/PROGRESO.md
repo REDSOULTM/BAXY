@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 33 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 19, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 34 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 20, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -615,6 +615,19 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     sobrecarga de HandedTo que sólo usaban las pruebas, quitados. B pendientes, en metas.json (tareas b_r19_*).
     Descripciones cambiadas desde ff863b47f, por diff de claves: 33 y 8 entradas de argumentos. Suites: 564/69/477/2173.
     Sin medir.
+  - Ronda final 20 (sobre a7509669d, la primera con el alcance fijo de alcance_auditoria.md y la gravedad A/B): A en
+    el notebook 3 y en el PC 3, una de ellas la misma en los dos. Arregladas: file.open ya no da el archivo por abierto
+    porque su proceso siga vivo (file_open_not_verified con el processId como dato); el globo de ayuda, el OCR y la
+    visión dicen «sin cambios» sólo de una ventana leída que no se anima sola y no cambió (la ronda 19 lo había abierto
+    con una ventana animada que sí cambió); window.minimize.all dice que deja la ventana de BAXY; el alcance tenía dos
+    cifras falsas («29 que ningún banco ejercita», y memory.correct, que sí sale en las escenas de práctica: ahora 144 y
+    28). Subida de B a A: una ventana de otro proceso que llega durante el clic sin prueba de que el clic la causara ya
+    no deja el clic en «sin cambios» (visible_click_handoff_uncertain, efecto posible), porque el modelo volvería a
+    pulsar. B arregladas: la base vieja del globo de ayuda tras esperar a la persona, dos radios del mismo nombre en el
+    modo avión, los recuerdos del latido dicen cuántos no lista, los desactivados sin listar se dicen, «la lectura quedó
+    incompleta» en vez de «se cortó por tiempo», el bundle de ORIGIN.md, «todo lo hallado se arregló» precisado.
+    B pendientes en metas (b_r20_*). Descripciones cambiadas desde ff863b47f, por diff de claves: 34 y 8 entradas de
+    argumentos. Suites, con el arreglo del incidente del 2026-10-15 (sección propia, abajo): 564/69/477/2180. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -704,3 +717,58 @@ Tal cual la dio el dueño:
 >
 > Empieza ya: escribe alcance_auditoria.md, manda al notebook los bancos de desarrollo por el buzón
 > y clasifica en A/B los hallazgos de la ronda 19 en curso.
+
+## Producto actual, banco de desarrollo, no holdout (decisión 21, punto 3; 2026-10-16/17, notebook)
+
+Bancos de desarrollo de la decisión 20 sobre c7699f276 (HEAD de hub al pedirlo), en la GPU del notebook, con la
+configuración de los brazos (temperatura 0.2, Qwen3.5-4B-Q4_K_M, mismo llama-server y flags; mente = src/baxy_mind del
+commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuelve a correr.
+
+- Decisión (decision2, 268 medidos): 230, 229 y 232 (media 230,3; p50 medio 0,847 s). Control en la misma GPU,
+  d20-base de 7a4030054 (mente y catálogo iguales a ff863b47f salvo una línea de tool_descriptions): 231, 234 y 230
+  (media 231,7; p50 0,846 s). Diferencia -1,4, dentro del ruido (±3). Frente a la base medida en la GPU del PC
+  (232, 232, 232): -1,7.
+- E2E de práctica (30 casos, producto compilado de c7699f276): 19, 19 y 19 (media 19,0) frente a 19, 20 y 19 de la
+  base (media 19,3): dentro de ±1 caso, así que no hubo bisect. Primera respuesta p50 3887, 2883 y 3925 ms (media
+  3565) frente a 3864, 2996 y 2827 (media 3229): +336 ms con la misma dispersión. La semilla 0 corrió sin turno de
+  calentamiento por un error del script del notebook (su primer caso, en frío).
+- Escenas (practice, 39): c7699f276 dio 32, 32 y 32 con 1 molesta en las tres (P019, que espera silencio, llamó a
+  system.process.list y habló de la CPU); la base en la misma GPU, 32, 32 y 32 sin molestas. Bisect por commits
+  (semilla 0, mente, catálogo y banco de cada commit): ff863b47f 34 (P019 en silencio), d4bb323e7 34, af70fae8e 29,
+  0f89ab012 31 con P019 molesta (primer commit con ella), 206c61daa 30 con P019 molesta, c7699f276 32 con P019
+  molesta, a7509669d 30, 30 y 30 sin molestas (P019 en silencio otra vez).
+- Ruido de las escenas medido por perturbación: ff863b47f con un solo espacio final añadido a la descripción de una
+  herramienta que ninguna escena usa (calculator.expression.evaluate, note.list o game.catalog.list) dio 32, 32 y
+  32 frente a 34 sin tocar, y 7 escenas cambian en alguna perturbación (P004, P008, P015, P023, P024, P028, P035).
+  Las semillas no miden ese ruido (dan lo mismo); un cambio de texto sin significado mueve el total ±2. a7509669d
+  (30) queda a -2,5 de la familia de ff863b47f (34, 32, 32, 32: media 32,5), en el límite de ese ruido. No se busca
+  la clave dentro de 0f89ab012: P019 cambia con 3 de 6 commits de descripciones y no con el espacio, y perseguirla
+  sería perseguir azar. Las escenas se miden en adelante con perturbaciones neutras en vez de semillas.
+
+## Incidente del 2026-10-15: BAXY deshabilitó 256 servicios del PC del dueño (descubierto el 2026-10-17)
+
+- Qué pasó: en el e2e de práctica del PC del 15/10 (F:/BAXYeval/renew_v1/runs/p6-e2e, turno 15 «abre la configuración
+  de sonido»), BAXY abrió la Configuración del sistema (msconfig), pulsó «Servicios», «Deshabilitar todos» y «Aceptar»
+  sin pedir confirmación. El registro System guarda 256 eventos 7040 «a deshabilitado» del 15/10 a las 14:38. El cambio
+  se hizo efectivo en el siguiente arranque: el 17/10 a las 00:38 el PC se reinició de golpe (un cierre inesperado,
+  evento 6008) y arrancó sin red, sin sonido y sin casi nada. El dueño lo restauró con msconfig a las 01:17 (evento
+  1074, msconfig.exe; los 7040 de vuelta a su inicio normal); la clave MSConfig\services quedó vacía.
+- El mismo caso llevó a BAXY a msconfig en otras cuatro corridas (p1, p3, p5 y p8): en p3 y p5 llegó a la pestaña
+  «Servicios» y en p3 pulsó «Cerrar» y «Aceptar»; sólo p6 pulsó «Deshabilitar todos». Ninguna sesión ni subagente de
+  este goal ejecutó comandos de msconfig, bcdedit o servicios: fue el producto, dentro de un banco.
+- Por qué pasó: el riesgo de un clic se juzgaba sólo por su etiqueta, y «Deshabilitar todos» no estaba entre los verbos
+  que piden el «sí»; y una ventana protegida se abría a los actos cuando una mirada la nombraba por su aplicación, que
+  es lo que hizo el modelo con «Configuración del sistema».
+- Arreglo (kernel: riesgo y confirmación; proveedor: su barrera de seguridad «Seguridad v2», nunca una ayuda a
+  entender): las herramientas que configuran Windows (msconfig, la consola MMC con services.msc, devmgmt, compmgmt,
+  gpedit, taskschd, eventvwr, diskmgmt y lusrmgr, el editor del registro, el Administrador de tareas, el Monitor de
+  recursos, las propiedades del sistema, el control de cuentas, netplwiz, Restaurar sistema, el Liberador de espacio,
+  Optimizar unidades, iSCSI, ODBC y Seguridad de Windows) quedan protegidas siempre, como la ventana de BAXY: se pueden abrir y mirar, nunca
+  pulsar ni escribir en ellas, y la vista lo dice («herramienta de configuración del sistema: lo hace la persona»).
+  «Deshabilitar todos», «Desactivar todo» y «Disable all» piden el «sí» en cualquier aplicación.
+- El e2e de desarrollo del notebook de la noche del 16/10 corrió el mismo caso tres veces: se le pidió revisar su
+  máquina sólo leyendo y no correr más e2e hasta que el arreglo esté en hub.
+  Su revisión (01:26): ningún servicio deshabilitado por BAXY; en dos corridas suyas del 15/10 BAXY llegó a msconfig
+  y lo frenó la UIPI (msconfig corre elevado y BAXY no: window_elevated), no la política; en la corrida p2 pulsó
+  «Configuración» en Seguridad de Windows. En el PC nada lo frenó: los bancos corrían con derechos que la UIPI no
+  separaba. El arreglo ya no depende de la elevación.

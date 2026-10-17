@@ -2627,7 +2627,7 @@ function Do-View($request){
     for($k=0;$k -lt $ordered.Count;$k++){ if([object]::ReferenceEquals($controls[$k],$focused)){ $focusedIndex=$k; break } }
     $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; value=$focused.value; i=$focusedIndex }
   }
-  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; frameOnly=$frameOnly; partial=$viewPartial }
+  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; disabledCut=($withDimmed -and [bool]$script:DisabledCut); frameOnly=$frameOnly; partial=$viewPartial }
 }
 # Los accionables que se ven pero estan deshabilitados (pasada r15b, v3-27 y v3-29: «Copiar» y «Buscar» del Mapa de
 # caracteres esperan texto en su campo y la vista los quitaba, asi que el modelo no sabia que existian). Van aparte de
@@ -2637,12 +2637,15 @@ function Do-View($request){
 # Devuelve un arreglo plano (envuelto con la coma para que la tuberia no lo desarme): se asigna tal cual, sin @().
 $script:DisabledShownTree=150
 $script:DisabledShownMax=12
+# Ronda final 20: $script:DisabledCut dice si quedaron deshabilitados sin listar (arbol grande o tope), para que la vista
+# no los de por inexistentes.
 function Get-DisabledShown($found,[int]$shownCount,$seen){
   $out=New-Object System.Collections.ArrayList
-  if($shownCount -gt $script:DisabledShownTree){ return ,$out.ToArray() }
+  $script:DisabledCut=$false
+  if($shownCount -gt $script:DisabledShownTree){ $script:DisabledCut=(@($found).Count -gt 0); return ,$out.ToArray() }
   $named=@{}
   foreach($item in $found){
-    if($out.Count -ge $script:DisabledShownMax){ break }
+    if($out.Count -ge $script:DisabledShownMax){ $script:DisabledCut=$true; break }
     try {
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
       if($Actionable -notcontains $kind -or $kind -eq 'Edit' -or $kind -eq 'Document'){ continue }

@@ -193,8 +193,10 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         }
 
         // El archivo se abre en su aplicación o, un zip, en una ventana del
-        // Explorador: una ventana nueva cuyo título lleva el nombre, o un
-        // proceso nuevo que sigue vivo, es la prueba.
+        // Explorador: una ventana nueva cuyo título lleva el nombre es la prueba.
+        // Ronda final 20 (regla 3): un proceso vivo no lo es (Word abierto con
+        // «el archivo está dañado» sigue vivo); va como dato, sin dar la
+        // apertura por hecha.
         string stem = Path.GetFileNameWithoutExtension(path);
         string fileName = Path.GetFileName(path);
         for (int attempt = 0; attempt < 16; attempt++)
@@ -227,12 +229,12 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 writer.WriteNumber("version", 1);
                 writer.WriteString("folder", folder);
                 writer.WriteString("name", fileName);
-                WriteOpenedPlace(writer, folder, path);
                 writer.WriteNumber("processId", processId.Value);
+                writer.WriteBoolean("windowTitledWithFileSeen", false);
                 writer.WriteString("authority", "shell_open_process_postread");
                 writer.WriteEndObject();
             });
-            return ExternalJson.Success(operation, result, effectObserved: true);
+            return new ExternalCapabilityReceipt(operation, true, false, result, "file_open_not_verified");
         }
 
         return effectBoundary.Failure(operation, "file_open_not_verified", effectObserved: true);

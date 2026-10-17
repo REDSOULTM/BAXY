@@ -153,7 +153,8 @@ public sealed class RiskPolicyWorldActsTests
             "Papelera de reciclaje", "Comprar ahora", "Proceed to checkout", "Realizar pedido", "Quitar de la biblioteca",
             "Vaciar la papelera cuando el disco se llena de archivos viejos", "Limpiar historial", "Clear all",
             "Enviar búsqueda", "Submit search", "En\u200Bviar mensaje", "Desinstalar (Supr)", "Choche, Llamada de voz en curso",
-            "Ajustes de voz y video", "Abrir Discord", "Steam", "Tienda",
+            "Ajustes de voz y video", "Abrir Discord", "Steam", "Tienda", "Deshabilitar todos", "Disable all",
+            "Desactivar todo", "Deshabilitado", "Habilitar todos",
         ];
         string[] differ =
         [
@@ -167,6 +168,12 @@ public sealed class RiskPolicyWorldActsTests
             Assert.That(RiskPolicy.LabelAsks("general (canal de texto)"), Is.False);
             Assert.That(RiskPolicy.LabelAsks("Eliminar pruebas"), Is.True);
             Assert.That(RiskPolicy.LabelAsks("Vaciar la papelera cuando el disco se llena de archivos viejos"), Is.False);
+            // Incidente del 2026-10-15 (msconfig): turning everything off at once asks; a state or the reverse does not.
+            Assert.That(RiskPolicy.LabelAsks("Deshabilitar todos"), Is.True);
+            Assert.That(RiskPolicy.LabelAsks("Disable all"), Is.True);
+            Assert.That(RiskPolicy.LabelAsks("Desactivar todo"), Is.True);
+            Assert.That(RiskPolicy.LabelAsks("Deshabilitado"), Is.False);
+            Assert.That(RiskPolicy.LabelAsks("Habilitar todos"), Is.False);
         });
     }
 

@@ -368,9 +368,10 @@ public static partial class RiskPolicy
     // bin, removing, emptying, clearing, deleting, uninstalling («No guardar», «Don't save», «Descartar cambios»,
     // «Mover a la papelera», «Vaciar papelera de reciclaje», «Empty Recycle Bin», «Quitar de la biblioteca»,
     // «Remove», «Limpiar historial», «Clear all»). Only verb forms count: «Eliminados», «Deleted items» or
-    // «Papelera de reciclaje» name a place, not an act.
+    // «Papelera de reciclaje» name a place, not an act. Incidente del 2026-10-15 (msconfig, «Deshabilitar todos»): turning
+    // off everything a list holds at once («Deshabilitar todos», «Desactivar todo», «Disable all») asks too.
     [GeneratedRegex(
-        @"\b(?:no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|descartar|descarta|discard|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
+        @"\b(?:deshabilitar\s+tod[oa]s?|deshabilita\s+tod[oa]s?|desactivar\s+tod[oa]s?|desactiva\s+tod[oa]s?|disable\s+all|turn\s+off\s+all|no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|descartar|descarta|discard|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
         RegexOptions.CultureInvariant)]
     private static partial Regex DestructiveVerb();
 }

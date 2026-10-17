@@ -370,6 +370,14 @@ public sealed class ComputerUseWindowIdentityTests
     // Estabilización U (revisión H2): BAXY's own window stays protected even when the request names BAXY.
     [TestCase("Baxy", "BAXY", "BAXY", true)]
     [TestCase("baxy-core", "baxy-core", null, true)]
+    // Incidente del 2026-10-15: the system's configuration tools stay protected even when the request names them.
+    [TestCase("msconfig", "Configuración del sistema", "Configuración del sistema", true)]
+    [TestCase("msconfig.exe", "msconfig", null, true)]
+    [TestCase("mmc", "Servicios", "Microsoft Management Console", true)]
+    [TestCase("regedit", "regedit", "Editor del Registro", true)]
+    [TestCase("Taskmgr", "Administrador de tareas", "Administrador de tareas", true)]
+    [TestCase("SecHealthUI", "Seguridad de Windows", "Seguridad de Windows", true)]
+    [TestCase("SystemSettings", "Configuración", null, false)]
     public void AnEditorATerminalOrBaxyIsTheApplicationOnlyWhenNamed(
         string process, string? application, string? description, bool protectedFrom)
     {

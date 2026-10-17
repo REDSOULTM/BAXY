@@ -74,7 +74,12 @@ internal static class ScreenViewProjection
                 text.Append(", es el diálogo modal que bloquea la ventana");
             }
 
-            if ((bool?)window["protected"] == true)
+            if ((bool?)window["systemTool"] == true)
+            {
+                // Incidente del 2026-10-15: no name opens a system configuration tool to acts.
+                text.Append(", herramienta de configuración del sistema (BAXY no pulsa ni escribe en ella: lo hace la persona)");
+            }
+            else if ((bool?)window["protected"] == true)
             {
                 text.Append(", ventana protegida (no se actúa en ella salvo que una mirada la nombre por su aplicación)");
             }
@@ -121,10 +126,16 @@ internal static class ScreenViewProjection
                 .Select(static control => $"{(string?)control["kind"]} «{(string?)control["name"]}»"))).Append('\n');
         }
 
+        // Ronda final 20 (regla 3): disabled controls the look did not list are not controls that do not exist.
+        if ((bool?)view["disabledCut"] == true)
+        {
+            text.Append("(hay controles desactivados sin listar)\n");
+        }
+
         // What the reader said about its own reading.
         if ((bool?)view["partial"] == true)
         {
-            text.Append("(la lectura se cortó por tiempo: puede haber más controles sin listar)\n");
+            text.Append("(la lectura quedó incompleta: puede haber más controles sin listar)\n");
         }
 
         if ((bool?)view["frameOnly"] == true)
