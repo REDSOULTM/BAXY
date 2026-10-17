@@ -126,7 +126,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation
     internal static readonly TimeSpan ClientContentBudget = TimeSpan.FromSeconds(15);
 
     // The shortcut that opens the client's chat search gets this long to put a new input in focus (the old fixed
-    // wait), and once more, after Escape, when the first press showed nothing.
+    // wait), and once more (with no Escape before it, ronda final 26-27) when the first press showed nothing.
     internal static readonly TimeSpan SearchInputBudget = TimeSpan.FromMilliseconds(1400);
     internal static readonly TimeSpan SearchInputRetryBudget = TimeSpan.FromMilliseconds(2500);
     internal static readonly TimeSpan InteractionPoll = TimeSpan.FromMilliseconds(150);
@@ -152,6 +152,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation
             ? before is null || !before.Editable || !SameElement(before, after)
             : SearchRowKinds.Contains(after.Kind, StringComparer.Ordinal) && (before is null || !SameElement(before, after)));
 
+    /// <summary>
+    /// Ronda final 27 (regla 3): the search is already open when the focus, before any shortcut, is on a result row (the
+    /// way UI Automation reports a web client's open switcher, <see cref="SearchRowKinds"/>). Then Ctrl+K would close
+    /// it and send the focus back to the conversation's composer, where the name would be typed: it is not sent.
+    /// </summary>
+    internal static bool SearchAlreadyOpen(ClientFocus? focus) =>
+        focus is { Editable: false } row && SearchRowKinds.Contains(row.Kind, StringComparer.Ordinal);
+
     // Revisión 2 de r24: a search whose input points at its active result (aria-activedescendant in a web client)
     // is reported by UI Automation with the focus on that result row, not on the input (a4cfabc66: the quick
     // switcher's field «the tree does not report focused»). A row of a list that newly holds the focus after the
@@ -164,29 +172,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation
             : string.Equals(one.Kind, other.Kind, StringComparison.Ordinal)
               && string.Equals(one.Name, other.Name, StringComparison.Ordinal);
 
-    // Revisión 2 de r24: a client whose process started this long ago or less is the cold one of t1-c09, t2-c07 and
-    // t3-c07 (opened by this turn or just before it). Only there may a search that was not seen open stop the name
-    // from being typed: on a client running for longer the read cannot outvote the path that sent before the branch
-    // (t4-c03 reached the confirmation in 8.6 s), so an unseen search keeps the old fixed wait and the name is typed.
-    internal static readonly TimeSpan ColdClientSpan = TimeSpan.FromSeconds(90);
-
-    internal static bool ClientStartedRecently(DateTime? startedAt, DateTime now) =>
-        startedAt is { } started && now >= started && now - started < ColdClientSpan;
-
-    internal static DateTime? ProcessStartTime(int processId)
-    {
-        try
-        {
-            using Process process = Process.GetProcessById(processId);
-            return process.StartTime;
-        }
-        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
-            or System.ComponentModel.Win32Exception or NotSupportedException)
-        {
-            return null;
-        }
-    }
-
     /// <summary>What the search does after waiting for the shortcut's input.</summary>
     internal enum SearchStep
     {
@@ -196,13 +181,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation
     }
 
     /// <summary>
-    /// After a wait for the shortcut's input: seen (or nothing readable), the name is typed. Not seen on a client
-    /// started just now (<see cref="ClientStartedRecently"/>): Escape and the shortcut once more, then the name is
-    /// never typed. Not seen on a client running for longer: typed as before the branch, after the same fixed wait,
-    /// and the turn never says the composer was untouched (<see cref="ComposerUntouched"/> needs a seen input).
+    /// After a wait for the shortcut's input: the name is typed only into the switcher seen open and focused. Ronda final
+    /// 27 (regla 3): not seen, on any client, or a window that could not be read: the shortcut once more, then the name
+    /// is never typed (typed blind, it went into the person's message box when the switcher was already open and
+    /// Ctrl+K closed it), on a client started just now or long ago alike.
     /// </summary>
-    internal static SearchStep AfterSearchWait(InputWait input, bool clientStartedRecently, bool retried) =>
-        input != InputWait.NotOpened || !clientStartedRecently
+    internal static SearchStep AfterSearchWait(InputWait input, bool retried) =>
+        input == InputWait.Opened
             ? SearchStep.Type
             : retried ? SearchStep.Refuse : SearchStep.Retry;
 

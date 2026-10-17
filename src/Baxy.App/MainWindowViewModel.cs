@@ -650,6 +650,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         try
         {
             await AwaitStartupVoiceAsync();
+            // Ronda final 27 (regla 3): nothing listening is already off, whatever the mind's state (a mind that ended
+            // turned the flags off): stopping it is done, never «still running».
+            if (!enabled && !IsListening && !IsWakeListening)
+            {
+                return true;
+            }
+
             MindSidecarClient? mind = _mindClient;
             if (mind is not { IsReady: true })
             {
@@ -1022,6 +1029,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         mind.TranscriptReceived -= OnMindTranscript;
         mind.VoiceEventReceived -= OnMindVoiceEvent;
         mind.ReadyLost -= OnMindReadyLost;
+        // Ronda final 27 (regla 3): the voice was that mind's: a new one starts nothing listening until it says so.
+        IsListening = false;
+        IsWakeListening = false;
+        IsVoiceSpeaking = false;
     }
 
     // ---- core ----------------------------------------------------------------------------------------------

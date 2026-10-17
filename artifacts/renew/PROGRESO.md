@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 39 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 26, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 40 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 27, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -698,10 +698,22 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     cancela una edición, rechaza una llamada o marca el canal como leído): ya no hay Escape sin el buscador visto abierto;
     client.channel.locate vuelve a minimizar Discord si lo estaba y el recibo dice si quedó a la vista
     (restoredFromMinimized, leftShown); los textos en español cambiados ya no llevan una cifra que se desfasa; el juicio 5
-    de falsedades corrió con el código de 740d4af97, no con «0d2e5433b». La App en las dos máquinas, sin A, con la
+    de falsedades corrió con un código que no era 0d2e5433b (la ronda 28 precisó: el de la ronda 7, sin commit a esa hora). La App en las dos máquinas, sin A, con la
     confirmación revisada de punta a punta. B: texto de la ventana protegida para la de BAXY; ORIGIN.md; nuevas B
     pendientes b_r26_* (una, por verificar en vivo: restaurar una ventana maximizada podría devolverla sin maximizar).
     Descripciones cambiadas desde ff863b47f: 39 y 8 entradas de argumentos. Suites: 564/69/477/2183. Sin medir.
+  - Ronda final 27 (sobre bdc5e4b14): A en el notebook 2 y en el PC 1+0+2+2. Arregladas: sin el Escape previo, con
+    el buscador de Discord ya abierto Ctrl+K lo cerraba y el nombre se escribía en el cuadro de mensaje de la persona
+    (message.draft y client.channel.locate): ahora un buscador ya abierto (su fila activa con el foco) se usa tal cual,
+    el nombre sólo se escribe con el buscador visto abierto y enfocado (si no, un reintento y luego se niega, en
+    cualquier cliente; la lógica del «cliente recién abierto» quedó sin uso y se quitó), y no queda ningún Escape sobre
+    un foco no leído como el buscador; calculator.expression.evaluate no pulsa nada fuera del modo Estándar
+    (calculator_mode_not_standard: el botón de paréntesis lo delata) y su descripción lo dice, igual que borra la
+    pantalla; el juicio 5 de falsedades corrió con el código de la ronda 7, sin commit a las 18:53 (no con 740d4af97,
+    como dijo la ronda 26); la ronda 26 fue 4+1, no 1+4. B: /voice/stop responde apagado sin nada escuchando; una mente
+    nueva no hereda el estado de escucha; el Escape de cierre del buscador sólo con Discord al frente; nuevas B
+    pendientes b_r27_*. Desde ff863b47f cambiaron 40 descripciones y 8 entradas de argumentos. Suites:
+    564/69/477/2183. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -726,7 +738,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     y 7 (toda línea sin sus tres votos legibles va a revisión; un voto es falso si lo dice el veredicto o una
     afirmación) no se le podían aplicar; lo paró el PC a mano para juzgar todo otra vez. El juicio que cuenta es el
     quinto (`v3-falsedades-judge5.out`), entero sobre las mismas conversaciones, con el código del juez cargado a las
-    18:53 (740d4af97, el de la ronda 6, en commit desde las 18:47; la ronda 7 aún sin commit). No lleva el cambio de d4bb323e7 (una respuesta del juez sin mensaje = voto
+    18:53: el bench_falsedades.py de la ronda 7, aún sin commit a esa hora y luego en 2a73bbd84 (lo prueban las marcas REVISAR del .out, que no existen en 740d4af97). No lleva el cambio de d4bb323e7 (una respuesta del juez sin mensaje = voto
     ilegible): sin él, una respuesta así habría abortado la corrida, nunca la habría falseado. Los cambios del juez
     nunca tocan las conversaciones, que ya estaban escritas.
 

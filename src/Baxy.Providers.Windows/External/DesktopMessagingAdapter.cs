@@ -802,12 +802,21 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // that looks the same once the search is closed lets the turn say nothing was written (revisión 1 de r24:
             // a cold client can focus its composer by itself while the shortcut does nothing yet).
             byte[]? composerBefore = TryCaptureComposer(handle, channel);
-            // Revisión 2 de r24: only a client started just now may stop the name for a search not seen open.
-            bool coldClient = ClientStartedRecently(ProcessStartTime(processId), DateTime.Now);
-            SendChord(VirtualKeyControl, VirtualKeyK);
-            InputWait input = await AwaitOpenedInputAsync(
-                Read, before, SearchInputBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
-            if (AfterSearchWait(input, coldClient, retried: false) == SearchStep.Retry)
+            // Ronda final 27 (regla 3): a search already open (its active row holds the focus) is used as it is: Ctrl+K
+            // would close it and the name would go into the person's message box.
+            InputWait input;
+            if (SearchAlreadyOpen(before.Focused))
+            {
+                input = InputWait.Opened;
+            }
+            else
+            {
+                SendChord(VirtualKeyControl, VirtualKeyK);
+                input = await AwaitOpenedInputAsync(
+                    Read, before, SearchInputBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (AfterSearchWait(input, retried: false) == SearchStep.Retry)
             {
                 // The shortcut once more, without an Escape onto whatever holds the focus.
                 SendChord(VirtualKeyControl, VirtualKeyK);
@@ -815,7 +824,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     Read, before, SearchInputRetryBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
             }
 
-            if (AfterSearchWait(input, coldClient, retried: true) == SearchStep.Refuse)
+            if (AfterSearchWait(input, retried: true) == SearchStep.Refuse)
             {
                 // Ronda final 12 (regla 3): Ctrl+K reached the client: an effect, though nothing was typed (ronda final
                 // 26: no Escape onto a focus not read as the switcher's).
@@ -868,7 +877,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // is closed. After a named row that did not open the chat, the search is closed only when it was seen
             // open. The name should have gone only into the switcher's own input: the composer is pictured again; a
             // composer that changed (or cannot be read) may hold the name.
-            if (!named || input == InputWait.Opened)
+            // Ronda final 27 (regla 3): only a switcher seen open is closed (the name is typed only into one now).
+            if (input == InputWait.Opened)
             {
                 SendKey(VirtualKeyEscape);
                 await Task.Delay(300, cancellationToken).ConfigureAwait(false);

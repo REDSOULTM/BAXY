@@ -248,11 +248,11 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     }
 
     // Bloqueante 1, escenario de la revisión: Discord already running on another person's DM, «mandale a Ron92 por
-    // discord que llego en 10 min»; the read after Ctrl+K still shows the composer. The search is not refused: the
-    // name is typed after the old fixed wait, as t4-c03 did before the branch, and the turn never claims the composer
-    // untouched. Only a client started just now retries and then refuses.
+    // discord que llego en 10 min»; the read after Ctrl+K still shows the composer. Ronda final 27 (regla 3): the name is
+    // never typed into a switcher not seen open (with the switcher already open, Ctrl+K closed it and the name went into
+    // the person's message box): the shortcut once more, then refused, on any client.
     [Test]
-    public async Task ARunningClientWhoseSearchIsNotSeenKeepsThePathThatSent()
+    public async Task ARunningClientWhoseSearchIsNotSeenRetriesAndThenRefuses()
     {
         WindowsDesktopMessagingAutomation.InputWait wait = await WindowsDesktopMessagingAutomation.AwaitOpenedInputAsync(
             Script(Focused(Composer)), Focused(Composer), TimeSpan.FromMilliseconds(60), TimeSpan.FromMilliseconds(5),
@@ -260,45 +260,42 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         Assert.That(wait, Is.EqualTo(WindowsDesktopMessagingAutomation.InputWait.NotOpened));
         Assert.Multiple(() =>
         {
-            Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(wait, clientStartedRecently: false, retried: false),
-                Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Type));
-            Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(wait, clientStartedRecently: false, retried: true),
-                Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Type));
+            Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(wait, retried: false),
+                Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Retry));
+            Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(wait, retried: true),
+                Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Refuse));
             Assert.That(WindowsDesktopMessagingAutomation.ComposerUntouched(wait, composerChanged: false), Is.False);
             // Contracaso: the cold client of t1-c09 retries once and then never types.
-            Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(wait, clientStartedRecently: true, retried: false),
+            Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(wait, retried: false),
                 Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Retry));
-            Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(wait, clientStartedRecently: true, retried: true),
+            Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(wait, retried: true),
                 Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Refuse));
-            // A seen input, or a window nobody can read, types on any client.
+            // Only a seen input types, on any client; a window nobody can read is refused after the retry.
             Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(
-                    WindowsDesktopMessagingAutomation.InputWait.Opened, clientStartedRecently: true, retried: true),
+                    WindowsDesktopMessagingAutomation.InputWait.Opened, retried: true),
                 Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Type));
             Assert.That(WindowsDesktopMessagingAutomation.AfterSearchWait(
-                    WindowsDesktopMessagingAutomation.InputWait.Unanswered, clientStartedRecently: true, retried: true),
-                Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Type));
+                    WindowsDesktopMessagingAutomation.InputWait.Unanswered, retried: true),
+                Is.EqualTo(WindowsDesktopMessagingAutomation.SearchStep.Refuse));
         });
     }
 
+    // Ronda final 27 (regla 3): a search already open (the focus on its active row) is not toggled shut by Ctrl+K; a
+    // composer or a field holding the focus is no open search.
     [Test]
-    public void AClientIsColdOnlyRightAfterItsProcessStarted()
+    public void ASearchWhoseRowHoldsTheFocusIsAlreadyOpen()
     {
-        var now = new DateTime(2026, 10, 9, 21, 0, 0);
         Assert.Multiple(() =>
         {
-            Assert.That(WindowsDesktopMessagingAutomation.ClientStartedRecently(now.AddSeconds(-20), now), Is.True);
-            Assert.That(WindowsDesktopMessagingAutomation.ClientStartedRecently(now.AddMinutes(-5), now), Is.False);
-            // A start time that cannot be read is a running client: the path that sent before is kept.
-            Assert.That(WindowsDesktopMessagingAutomation.ClientStartedRecently(null, now), Is.False);
-            Assert.That(WindowsDesktopMessagingAutomation.ClientStartedRecently(now.AddSeconds(5), now), Is.False);
-            // This test's own process started just now; one that does not exist has no start time.
-            Assert.That(WindowsDesktopMessagingAutomation.ProcessStartTime(Environment.ProcessId), Is.Not.Null);
-            Assert.That(WindowsDesktopMessagingAutomation.ProcessStartTime(-1), Is.Null);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchAlreadyOpen(new ClientFocus("ListItem", "Ana", false, "7.1")), Is.True);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchAlreadyOpen(new ClientFocus("Edit", "Mensaje", true, "7.2")), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchAlreadyOpen(new ClientFocus("Button", "Llamar", false, "7.3")), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchAlreadyOpen(null), Is.False);
         });
     }
 
     [Test]
-    public void TheDiscordSearchRefusesOnlyOnAClientStartedJustNow()
+    public void TheDiscordSearchTypesOnlyIntoASwitcherSeenOpen()
     {
         DirectoryInfo? root = new(AppContext.BaseDirectory);
         while (root is not null && !File.Exists(Path.Combine(root.FullName, "Baxy.slnx")))
@@ -311,8 +308,8 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             root!.FullName, "src", "Baxy.Providers.Windows", "External", "DesktopMessagingAdapter.cs"));
         Assert.Multiple(() =>
         {
-            Assert.That(source, Does.Contain("bool coldClient = ClientStartedRecently(ProcessStartTime(processId), DateTime.Now);"));
-            Assert.That(source, Does.Contain("AfterSearchWait(input, coldClient, retried: true) == SearchStep.Refuse"));
+            Assert.That(source, Does.Contain("AfterSearchWait(input, retried: true) == SearchStep.Refuse"));
+            Assert.That(source, Does.Not.Contain("ClientStartedRecently"));
             Assert.That(source, Does.Not.Contain("if (input == InputWait.NotOpened)"));
         });
     }

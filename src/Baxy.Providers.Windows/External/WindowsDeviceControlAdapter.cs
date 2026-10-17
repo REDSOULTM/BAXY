@@ -828,6 +828,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $keys=($expr -replace '[^0-9+\-*/.]','')
         if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}
+        # Ronda final 27 (regla 3): the expression is pressed in the order typed, which only the Standard mode computes so
+        # (Scientific follows precedence): a keypad with the parenthesis button (any other mode) presses nothing.
+        $parenCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'openParenthesisButton')
+        if($null -ne $calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$parenCond)){[pscustomobject]@{ok=$false;error='calculator_mode_not_standard'}|ConvertTo-Json -Compress;exit 9}
         $buttonCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
         $buttons=@($calc.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttonCond))
         $names=[string[]]@($buttons | ForEach-Object { [string]$_.Current.Name })
@@ -1216,7 +1220,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
         # and confirming it held, until the switcher shows matches; nothing is joined or opened.
         # The script runs as a block (& { }): a function sets the flag through a table both share, never $script:.
-        $items=@();$foreground=$false;$state=@{read=$false}
+        $items=@();$foreground=$false;$state=@{read=$false;notOpened=$false}
         for($round=0;$round -lt 5 -and $items.Count -eq 0;$round++){
           [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
@@ -1224,17 +1228,34 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           # Ronda final 25-26 (regla 3): no Escape before the switcher is seen open: in Discord it marks the open channel
           # read, declines a call or cancels an edit of the person's; nor one when the front left Discord (it would reach
           # another window).
-          [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
-          if([BaxyClientWin]::GetForegroundWindow() -ne $h){continue}
+          # Ronda final 27 (regla 3): the name is typed only into the switcher seen open: after Ctrl+K a new editable
+          # field of Discord's must hold the focus (with the switcher already open, Ctrl+K closes it and the focus goes
+          # back to the person's message box).
+          $focusBefore=[System.Windows.Automation.AutomationElement]::FocusedElement
+          $idBefore=$(if($null -ne $focusBefore){[string]::Join('.',$focusBefore.GetRuntimeId())}else{''})
+          # An open switcher reports its active result row as the focus (ListItem, DataItem, TreeItem): then Ctrl+K
+          # would close it and send the focus back to the message box. Used as it is.
+          $rowKinds=@([System.Windows.Automation.ControlType]::ListItem,[System.Windows.Automation.ControlType]::DataItem,[System.Windows.Automation.ControlType]::TreeItem)
+          $alreadyOpen=$null -ne $focusBefore -and $focusBefore.Current.ProcessId -eq $clientPid -and $rowKinds -contains $focusBefore.Current.ControlType
+          if(-not $alreadyOpen){
+            [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
+            if([BaxyClientWin]::GetForegroundWindow() -ne $h){continue}
+            $focusNow=[System.Windows.Automation.AutomationElement]::FocusedElement
+            $newFocus=$null -ne $focusNow -and $focusNow.Current.ProcessId -eq $clientPid -and [string]::Join('.',$focusNow.GetRuntimeId()) -ne $idBefore
+            $switcherOpen=$newFocus -and ($focusNow.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit -or $rowKinds -contains $focusNow.Current.ControlType)
+            if(-not $switcherOpen){$state.notOpened=$true;continue}
+          }
           [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
           for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
-          [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
+          # The switcher is closed only with Discord still in front (an Escape never reaches another window).
+          if([BaxyClientWin]::GetForegroundWindow() -eq $h){[void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300}
         }
         # Ronda final 26 (regla 3): a window the look restored from minimized goes back to minimized (SW_SHOWMINNOACTIVE),
         # read back; the receipt says how it was left.
         $leftShown=$false
         if($wasMinimized){[void][BaxyClientWin]::ShowWindow($h,7);Start-Sleep -Milliseconds 150;$leftShown=-not [BaxyClientWin]::IsIconic($h)}
         if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
+        if($state.notOpened -and -not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_opened';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
         # Ronda final: the switcher never kept the front long enough to be read: nothing is said of its rows.
         if(-not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
         [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items);restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress
@@ -1307,7 +1328,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             string code = root.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
                 ? error.GetString() ?? "client_quick_switcher_not_read"
                 : "client_quick_switcher_not_read";
-            return ExternalJson.Failure(operation, code, code == "client_quick_switcher_not_read");
+            // Ronda final 27: Ctrl+K reached the client even when its switcher was not seen open (an effect possible).
+            return ExternalJson.Failure(operation, code,
+                code is "client_quick_switcher_not_read" or "client_quick_switcher_not_opened" || Bool(root, "leftShown"));
         }
         var items = new List<string>();
         if (root.TryGetProperty("items", out JsonElement itemsElement) && itemsElement.ValueKind == JsonValueKind.Array)
