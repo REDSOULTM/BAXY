@@ -25,7 +25,7 @@ internal sealed class Heartbeat : IAsyncDisposable
     private readonly object _gate = new();
     private readonly FileSystemWatcher? _downloads;
     private readonly WindowsNetworkStatusProvider _network = new();
-    private HashSet<string> _windows = [];
+    private HashSet<string>? _windows;
     private string? _connectivity;
     private int? _battery;
     private readonly AwayWatch _awayWatch = new();
@@ -160,13 +160,20 @@ internal sealed class Heartbeat : IAsyncDisposable
     // What changed since the last look, as the lines the model reads («app opened: …», «internet connectivity: …» …).
     private async Task NoteChangesAsync(CancellationToken cancellationToken)
     {
-        HashSet<string> windows = CurrentApplications();
-        foreach (string opened in windows.Except(_windows))
+        // Ronda final 30 (regla 3): only two lists both read say what opened in between.
+        HashSet<string>? windows = CurrentApplications();
+        if (windows is not null && _windows is not null)
         {
-            Note($"app opened: {opened}");
+            foreach (string opened in windows.Except(_windows))
+            {
+                Note($"app opened: {opened}");
+            }
         }
 
-        _windows = windows;
+        if (windows is not null)
+        {
+            _windows = windows;
+        }
         // Windows' own internet check, the signal network.status reads; a reading that changed between its two looks
         // is left for the next one.
         if ((await _network.ReadVerifiedAsync(cancellationToken).ConfigureAwait(false))?.Connectivity is { } connectivity)
@@ -228,8 +235,8 @@ internal sealed class Heartbeat : IAsyncDisposable
     }
 
     // Applications by process: a window's title changes with every page or song, an application opening does not.
-    private static HashSet<string> CurrentApplications() =>
-        HeartbeatMoment.TopLevelWindows()
+    private static HashSet<string>? CurrentApplications() =>
+        HeartbeatMoment.TopLevelWindows()?
             .Select(static window => HeartbeatMoment.ProcessOf(window))
             .OfType<string>()
             .ToHashSet(StringComparer.OrdinalIgnoreCase);

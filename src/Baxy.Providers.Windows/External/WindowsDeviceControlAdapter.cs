@@ -1270,7 +1270,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           # Ronda final 29 (regla 3): Discord draws the filter 0.6-2.6 s after the name (X1, measured on the notebook), so
           # the rows count as read only once the switcher's field holds the name and the rows differ from the ones shown
           # before typing; else the switcher is not read, never «no channel».
+          # The rows before typing are taken once two reads agree (a slow client draws its recent rows late).
           $rowsBefore=(Read-Items) -join "`n"
+          for($settle=0;$settle -lt 5;$settle++){Start-Sleep -Milliseconds 300;$again=(Read-Items) -join "`n";if($again -eq $rowsBefore){break};$rowsBefore=$again}
           [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
           for($poll=0;$poll -lt 10;$poll++){
             $now=Read-Items

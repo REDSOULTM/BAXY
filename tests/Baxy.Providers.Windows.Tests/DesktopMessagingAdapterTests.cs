@@ -46,6 +46,10 @@ public sealed class DesktopMessagingAdapterTests
     // A quick-switcher row writes the account after the name; it is opened on the name's whole words (C1).
     [TestCase("Ron92 .wolfsoultm.4191", "Ron92", true)]
     [TestCase("Ronaldo", "Ron", false)]
+    // Ronda final 30: a voice channel's row is never opened (it could join the call); a text channel's is.
+    [TestCase("Sala de Pedro, Canal de voz, Amigos", "Pedro", false)]
+    [TestCase("Pedro's room, Voice channel, Friends", "Pedro", false)]
+    [TestCase("pedro, Canal de texto, Amigos", "Pedro", true)]
     public void ASwitcherRowHoldsTheRecipientsWholeWords(string row, string recipient, bool named) =>
         Assert.That(WindowsDesktopMessagingAutomation.RowNamesRecipient(row, recipient), Is.EqualTo(named));
 

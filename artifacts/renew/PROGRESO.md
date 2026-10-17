@@ -502,9 +502,9 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 40 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 27, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 41 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 30, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
-  de las rondas finales:
+  y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
   - 805618957: atrás/recargar con tabCount sólo de una barra entera; latido «desconocido» con micrófono o límites sin leer.
   - e91c31774: `fullscreen` del momento sólo con los límites leídos.
@@ -739,11 +739,25 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     diálogo; el texto en español lo dice. (3) Las filas se aceptaban aunque fueran las de antes del filtro (Discord lo
     dibuja 0,6-2,6 s tarde, X1): ahora cuentan sólo con el campo del buscador mostrando el nombre y filas distintas de
     las de antes de escribir; si no, client_quick_switcher_not_read. (4) metas decía «27.ª, A 2+5»: es 5+2. B
-    arregladas: un turno que ejecutó una operación y se queda sin decisión falla con
-    decision_unavailable_after_operation; message.draft no manda ninguna tecla si la primera lectura no responde, y
+    arregladas: un turno que hizo una llamada (ejecutada o no) y se queda sin decisión falla con un código propio
+    (decision_unavailable_after_operation, renombrado decision_unavailable_after_call en la ronda 30); message.draft no manda ninguna tecla si la primera lectura no responde, y
     su Escape final sólo sale con el foco releído dentro del buscador (lo que la ronda 27 dijo de «ningún Escape sobre
     un foco no leído» no era exacto hasta ahora). Nuevas B pendientes b_r29_*. Desde ff863b47f siguen 40
     descripciones y 8 entradas de argumentos. Suites: 564/69/477/2184. Sin medir.
+  - Ronda final 30 (sobre 7dc35b8f9): A en el PC 0+1+0+1; el notebook no respondió en esta ronda (en línea, sin
+    mensajes desde las 04:31). (1) Los botones Sí/No salían también bajo una línea de un turno al que sólo se le
+    ofreció la llamada que esperaba: una respuesta sólo de palabras («Vale, no lo cierro. ¿Guardo algo primero?»)
+    llevaba Sí/No, y un «Sí» ejecutaba la llamada vieja. Ahora sólo la pregunta del propio turno lleva botones; la
+    llamada ofrecida se sigue contestando con palabras, por el modelo (ConfirmationAsk). (2) ajuste_d20 decía que el
+    e2e de práctica era «sólo en el PC»: fue en el notebook. B arregladas: una fila de Discord nombrada y pulsada que no
+    abre el chat dice efecto; message.draft nunca pulsa la fila de un canal de voz (podría unir a la llamada);
+    client.channel.locate toma las filas de antes de escribir cuando dos lecturas coinciden, su descripción dice que
+    cierra el buscador sólo con Discord al frente, que lo dice si queda abierto y que sin filas es not_read, y el texto
+    en español dice «efecto» también en los fallos; el código del turno sin decisión pasa a
+    decision_unavailable_after_call (también cuenta una llamada no ejecutada) y la frase de la ronda 29 se corrigió;
+    el latido no anota «app opened» si Windows no enumeró las ventanas, y el momento lo dice; PROGRESO dice que tras
+    ff863b47f entraron también arreglos de seguridad. Nuevas B pendientes b_r30_*. Desde ff863b47f cambiaron 41
+    descripciones y 8 entradas de argumentos. Suites: 564/69/477/2187. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

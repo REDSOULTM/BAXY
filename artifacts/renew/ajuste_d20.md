@@ -10,7 +10,7 @@ holdout nuevo sellado, y documentar el techo como límite honesto con su evidenc
 - **Bancos:** sólo los abiertos de práctica.
   - `renew_v1/practica/decision2.json`: 270 turnos, decisión (268 medidos: dos casos de operaciones retiradas quedan fuera).
   - `renew_v1/escenas/practice.json`: 39 escenas, instinto y silencio.
-  - `renew_v1/e2e/practice.json`: computer use y voz, sólo en el PC.
+  - `renew_v1/e2e/practice.json`: computer use y voz, en el notebook (ver «E2E de práctica (notebook, …)» más abajo; ronda final 30: decía «sólo en el PC», y ninguna corrida e2e de la decisión 20 es del PC).
 
   Ningún banco sellado se abre.
 - **Brazos:** `scripts/renew/make_arms_d20.py` escribe cada brazo como una copia de `src/baxy_mind` con una sola
@@ -101,7 +101,7 @@ Ninguna palanca (medida, o descartada por su cuenta como P4) supera a `base` por
 - **Descartada por la latencia:** P4.
 
 El producto se congeló en **ff863b47f** (tag `renew-d20-congelado`), sin ningún cambio de la mente respecto de `base9e` (la mente de 9eadc3d79: ninguna palanca entró). El holdout v3, sellado por agentes aislados en `F:\BAXYeval\renew_v3`, se corrió una sola vez sobre ese commit (cifras en `PROGRESO.md` y en `metas.json`; los arreglos de honestidad
-posteriores, entre ellos 40 descripciones del catálogo y 8 entradas de argumentos cambiadas desde ff863b47f tras la ronda final 27 (diff de claves), no se midieron en él), y su resultado es el techo medido con Qwen3.5-4B en este harness: una sola corrida sellada de esa configuración.
+posteriores, entre ellos 41 descripciones del catálogo y 8 entradas de argumentos cambiadas desde ff863b47f tras la ronda final 30 (diff de claves), no se midieron en él), y su resultado es el techo medido con Qwen3.5-4B en este harness: una sola corrida sellada de esa configuración.
 
 **P10, una llamada por decisión (`noparallel`, PC, contra `base9e`):** decisión 230, 233 y 233 (media 232,0, la misma que `base9e`; dispersión 3 contra 0), p50 0,938 s (más lento); escenas 30/39, 0 molestas. **No gana.**
 

@@ -248,9 +248,9 @@ internal sealed class NativeTurnLoop
                         return;
                     }
 
-                    // Ronda final 29 (regla 3): after an operation ran in this turn the code says so (it may have had an
+                    // Ronda final 29 (regla 3): after a call was made in this turn the code says so (it may have had an
                     // effect), never only that no decision came.
-                    _host.Fail(calls > 1 ? "decision_unavailable_after_operation" : "decision_unavailable");
+                    _host.Fail(calls > 1 ? "decision_unavailable_after_call" : "decision_unavailable");
                     return;
                 case { Kind: "silence" }:
                     return;
@@ -283,7 +283,7 @@ internal sealed class NativeTurnLoop
     private void Publish(string text, string route) =>
         _notice.Publish(() =>
         {
-            if (!ConfirmationAsk.Asks(HasPendingConfirmation, _askedAt, _turnStarted, _personAt))
+            if (!ConfirmationAsk.Asks(HasPendingConfirmation, _askedAt, _turnStarted))
             {
                 _host.Publish(text, route);
                 return;

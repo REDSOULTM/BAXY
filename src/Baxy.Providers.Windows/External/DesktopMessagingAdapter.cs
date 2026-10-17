@@ -893,7 +893,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             }
 
             DesktopRecipientObservation unverified = UnverifiedChat(handle, processId, ComposerUntouched(input, composerChanged));
-            return named ? unverified : NotNamedInSearch(unverified, row);
+            // Ronda final 30 (regla 3): a named row was clicked: the shortcut, the name and the click reached the client.
+            return named ? unverified with { EffectObserved = true } : NotNamedInSearch(unverified, row);
         }
 
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
@@ -1323,8 +1324,17 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
     // A row of Discord's quick switcher writes the name and, after it, the account («Ron92 .wolfsoultm.4191»): the row is
     // opened when it holds the recipient's whole words (C1), and the window title, exact, decides whether it was them.
+    // Ronda final 30 (regla 3): a voice channel's row («Sala de Pedro, Canal de voz, Servidor», the kind read as
+    // client.channel.locate reads it) is never clicked: opening it could join the person to the call.
     internal static bool RowNamesRecipient(string row, string recipient) =>
-        Fold(recipient).Length > 0 && ContainsPhrase(row, recipient);
+        Fold(recipient).Length > 0 && ContainsPhrase(row, recipient) && !VoiceChannelRow(row);
+
+    internal static bool VoiceChannelRow(string row)
+    {
+        string[] parts = row.Split(", ", StringSplitOptions.TrimEntries);
+        string kind = parts.Length > 1 ? parts[1].ToLowerInvariant() : string.Empty;
+        return kind.Contains("voz", StringComparison.Ordinal) || kind.Contains("voice", StringComparison.Ordinal);
+    }
 
     // C2: the header crop excludes the search box and the chat list, so the only chat name in it is the open
     // conversation's; its name and the status under it («en línea») are read as separate lines, and the line that is

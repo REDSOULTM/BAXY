@@ -91,7 +91,8 @@ internal static class HeartbeatMoment
         // is not listed with them, and the list says how many were left out that way.
         var windows = new JsonArray();
         int cloaked = 0;
-        foreach (nint window in TopLevelWindows().Where(window => window != front))
+        IReadOnlyList<nint>? listed = TopLevelWindows();
+        foreach (nint window in (listed ?? []).Where(window => window != front))
         {
             if (IsCloaked(window))
             {
@@ -110,6 +111,11 @@ internal static class HeartbeatMoment
                 ["title"] = $"y {cloaked} más que Windows oculta (encubiertas: no se ven en la pantalla)",
                 ["process"] = "sin leer",
             });
+        }
+
+        if (listed is null)
+        {
+            windows.Add(new JsonObject { ["title"] = "las ventanas no se pudieron leer", ["process"] = "sin leer" });
         }
 
         context["windows"] = windows;
@@ -226,10 +232,12 @@ internal static class HeartbeatMoment
         }
     }
 
-    internal static IReadOnlyList<nint> TopLevelWindows()
+    /// <summary>The visible top-level windows; null when Windows could not enumerate them (ronda final 30: never an
+    /// empty list, which a heartbeat would read as every application closed and then opened again).</summary>
+    internal static IReadOnlyList<nint>? TopLevelWindows()
     {
         var windows = new List<nint>();
-        _ = EnumWindows((window, _) =>
+        bool read = EnumWindows((window, _) =>
         {
             if (IsWindowVisible(window) && GetWindow(window, 4) == 0 && WindowTitle(window).Length > 0
                 && !IsToolWindow(window))
@@ -239,7 +247,7 @@ internal static class HeartbeatMoment
 
             return true;
         }, 0);
-        return windows;
+        return read ? windows : null;
     }
 
     internal static string WindowTitle(nint window)
