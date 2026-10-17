@@ -223,6 +223,7 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
             {
                 return ExternalJson.Failure(operation, "windows_ocr_language_not_available");
             }
+            HelperProcessJob.Assign(process);
             Task<string> stdout = ReadBoundedAsync(
                 process.StandardOutput,
                 MaximumOcrCharacters,

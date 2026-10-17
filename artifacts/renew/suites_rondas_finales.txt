@@ -49,3 +49,10 @@ Passed!  - Failed:     0, Passed:    69, Skipped:     0, Total:    69, Duration:
 Passed!  - Failed:     0, Passed:   477, Skipped:     0, Total:   477, Duration: 1 m 2 s - Baxy.Setup.Tests.dll (net10.0)
 Passed!  - Failed:     0, Passed:  2189, Skipped:     0, Total:  2189, Duration: 5 m 6 s - Baxy.Providers.Windows.Tests.dll (net10.0)
     0 Error(s)
+
+## Ronda final 38, 2026-10-17 08:38
+Passed!  - Failed:     0, Passed:   564, Skipped:     0, Total:   564, Duration: 18 s - Baxy.Kernel.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:    69, Skipped:     0, Total:    69, Duration: 345 ms - Baxy.Contracts.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:   477, Skipped:     0, Total:   477, Duration: 1 m 2 s - Baxy.Setup.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:  2189, Skipped:     0, Total:  2189, Duration: 5 m 20 s - Baxy.Providers.Windows.Tests.dll (net10.0)
+    0 Error(s)

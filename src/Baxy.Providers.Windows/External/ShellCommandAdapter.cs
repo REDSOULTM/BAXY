@@ -30,7 +30,7 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
         // nombrada, el comando corre en una carpeta de trabajo propia y vacía del producto
         // (<datos>/shell-cwd), nunca en el perfil del usuario, donde «pytest» o «dir /s»
         // recorrerían y ejecutarían cosas ajenas. Una carpeta conocida se nombra en `cwd`.
-        : this(new ExternalProcessRunner(), DefaultWorkingDirectory())
+        : this(new ExternalProcessRunner(killTree: true), DefaultWorkingDirectory())
     {
     }
 

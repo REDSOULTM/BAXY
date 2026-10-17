@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 45 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 37, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 45 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 38, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -857,6 +857,13 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     dice «no se ejecutó de nuevo» de una respuesta repetida; «tapado» también con una capa pequeña leída antes del
     documento; líneas al día en cinco tareas B. Nuevas B pendientes b_r37_*. Desde ff863b47f cambiaron 45
     descripciones y 8 entradas de argumentos. Suites: 564/69/477/2189. Sin medir.
+  - Ronda final 38 (sobre e442597ba): A en el PC 0+1+0+1, dos distintas; el notebook no respondió. (1) Cuando la
+    entrada de la persona o el presupuesto cortaban un script, el runner lo mataba con todo su árbol, y con él lo que el
+    script había abierto para la persona (Spotify arrancado por spotify:, el teclado en pantalla): ahora sólo se mata
+    al ayudante, salvo en shell.command.run, cuyo árbol es la orden de la persona. (2) La ronda 37 decía que tesseract
+    entraba en el job de ayudantes: sólo el de mensajería; ahora también el de ocr.read y el extractor de PDF de
+    file.read. Además, PROGRESO dice ya que mind.py cambió en la ronda 37 (_outcome). Nuevas B pendientes: ninguna.
+    Desde ff863b47f cambiaron 45 descripciones y 8 entradas de argumentos. Suites: 564/69/477/2189. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

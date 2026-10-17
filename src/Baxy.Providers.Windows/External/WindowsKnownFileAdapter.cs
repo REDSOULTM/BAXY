@@ -547,6 +547,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             {
                 if (!process.Start())
                     return ExternalJson.Failure(operation, "pdf_text_extractor_unavailable");
+                HelperProcessJob.Assign(process);
                 Task<string> stdout = process.StandardOutput.ReadToEndAsync(cancellationToken);
                 Task<string> stderr = process.StandardError.ReadToEndAsync(cancellationToken);
                 if (!process.WaitForExit(PdfExtractionTimeout))

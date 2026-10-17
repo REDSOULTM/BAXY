@@ -26,6 +26,18 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
 {
     internal const int MaximumCapturedCharacters = 1024 * 1024;
     private const int CaptureChunkCharacters = 8 * 1024;
+    private readonly bool _killTree;
+
+    /// <summary>
+    /// Ronda final 38 (regla: efecto en la ventana de la persona sin pedido): a run cut short (the person's input, its
+    /// budget) ends the helper alone. Its whole tree held what it opened for the person (Spotify started by spotify:, the
+    /// on-screen keyboard), and the cut closed it. Only a run whose tree is the person's own command
+    /// (<paramref name="killTree"/>, shell.command.run) ends the tree.
+    /// </summary>
+    internal ExternalProcessRunner(bool killTree = false)
+    {
+        _killTree = killTree;
+    }
 
     public async ValueTask<ExternalProcessResult> RunAsync(
         string executable,
@@ -64,8 +76,8 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
         bool completed = false;
         try
         {
-            Task<string> output = CaptureAsync(process, process.StandardOutput, linked.Token);
-            Task<string> error = CaptureAsync(process, process.StandardError, linked.Token);
+            Task<string> output = CaptureAsync(process, process.StandardOutput, _killTree, linked.Token);
+            Task<string> error = CaptureAsync(process, process.StandardError, _killTree, linked.Token);
             await process.WaitForExitAsync(linked.Token).ConfigureAwait(false);
             string capturedOutput = await output.ConfigureAwait(false);
             string capturedError = await error.ConfigureAwait(false);
@@ -84,7 +96,7 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
         {
             if (!completed)
             {
-                TryTerminate(process);
+                TryTerminate(process, _killTree);
             }
         }
     }
@@ -98,6 +110,7 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
     private static async Task<string> CaptureAsync(
         Process process,
         TextReader reader,
+        bool killTree,
         CancellationToken cancellationToken)
     {
         try
@@ -107,7 +120,7 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
         }
         catch (IOException)
         {
-            TryTerminate(process);
+            TryTerminate(process, killTree);
             throw;
         }
     }
@@ -145,13 +158,13 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
         }
     }
 
-    private static void TryTerminate(Process process)
+    private static void TryTerminate(Process process, bool killTree)
     {
         try
         {
             if (!process.HasExited)
             {
-                process.Kill(entireProcessTree: true);
+                process.Kill(entireProcessTree: killTree);
             }
         }
         catch (Exception exception) when (exception is InvalidOperationException

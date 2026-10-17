@@ -5,8 +5,8 @@ namespace Baxy.Providers.Windows.External;
 
 /// <summary>
 /// Ronda final 37 (regla: efecto en la ventana de la persona sin pedido): the Core's own helpers (its PowerShell scripts,
-/// the UI Automation worker, tesseract, winget, yt-dlp and mpv) die with the Core. Since the ronda 36 the App's job lets
-/// every process the Core starts leave it (so what the Core opens for the person survives BAXY), and a script halfway
+/// the UI Automation worker, both tesseracts, the PDF text extractor, winget, yt-dlp and mpv) die with the Core. Since
+/// the ronda 36 the App's job lets every process the Core starts leave it (so what the Core opens for the person survives BAXY), and a script halfway
 /// through bringing Spotify to the front and clicking went on for up to a minute after BAXY closed. This job is the
 /// Core's: kill-on-close, its handle closes when the Core ends, and the helpers' own children leave it silently (the
 /// application a script opens for the person, spotify: or a document, is theirs). Assigning is best-effort: a helper
