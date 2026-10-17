@@ -1238,3 +1238,28 @@ Dentro del ruido: se cierra (decisión del dueño). No se abren más rondas ni s
   «Configuración» en Seguridad de Windows. En el PC nada lo frenó; la causa probable, no comprobada: el PC eleva sin
   preguntar (ConsentPromptBehaviorAdmin=0), así que BAXY pudo correr elevado. Desde la ronda final 21 el arreglo ya no
   depende de la elevación (la barrera juzga la ventana real de cada acto).
+
+## Auditoría de los pedidos reales del dueño (PROMPT_AUDITORIA_REALES.md, 2026-10-17)
+
+Producto de partida 845d652ad. El detalle caso por caso (textos del dueño) vive fuera del repo, en
+F:/BAXYeval/reales_v1; aquí sólo van cifras, ids y descripciones genéricas. Rama de trabajo `auditoria-reales`
+(worktree BAXY-Renew-aud), porque el dueño tiene abierto el BAXY compilado desde el árbol de baxy-renew.
+
+### Fase 0: separar antes de mirar
+
+- Fuente: historical_missions.jsonl de BAXY Definitivo (2.084 misiones, sha256 96e4f505…), copiada a
+  F:/BAXYeval/reales_v1 (el worktree de BAXY Definitivo no se tocó).
+- La sesión líder imprimió 49 misiones al inspeccionar el formato antes de dividir; se forzaron fuera del holdout.
+- Un subagente aislado escribió la división (dividir.py, semilla 20261017, estratificada por class, 70/30):
+  ajuste 1.445, holdout 619 (sellado: holdout/holdout_reales.sealed.jsonl, sha256 fcd7d7d6…, SEALED_REALES.md) y
+  20 sólo-decisión (historical_operations con message.send, game.purchase o filesystem.trash). Hashes en
+  metas.json, auditoria_reales.fase0.
+- Hallazgo de formato: de las 1.445 misiones de ajuste, 993 son product_requirement y 203 engineering_instruction,
+  casi todas mensajes del dueño a agentes de código (contexto de IDE, logs, notas de diseño), no pedidos a BAXY; los
+  historical_operations son familias viejas (media.play, task.manage…) que catalog_equivalence.json no mapea, y en
+  una misma misión se mezclan pedidos y texto de desarrollo. Por eso el oráculo es por ejemplo, con juicio propio
+  anotado (F:/BAXYeval/reales_v1/etiquetas_1.txt y _2.txt): call/any (operación del catálogo actual), ask, text,
+  noact, out (fuera de diseño), falta (ninguna operación lo hace), solo (sólo decisión: efectos sobre terceros) y
+  dev (texto de desarrollo: se espera que BAXY no actúe). 1.839 casos (ejemplos deduplicados): dev 1.200, any 352,
+  call 99, ask 58, text 34, noact 25, falta 23, out 21, solo 27. El notebook hizo un triage independiente que se
+  cruza con éste como segunda opinión.

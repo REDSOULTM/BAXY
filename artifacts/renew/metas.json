@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-17 (cierre: producto final 845d652ad, banco de desarrollo, no holdout)",
+  "actualizado": "2026-10-17 (auditoría de los pedidos reales: fase 0)",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -1691,5 +1691,68 @@
     "producto_final": "845d652ad",
     "informe": "artifacts/renew/INFORME_FINAL.md",
     "nota": "criterios de término cerrados: cada meta cumplida o límite honesto con su evidencia (decisiones del dueño de 2026-10-17); bancos de desarrollo del producto final dentro del ruido"
+  },
+  "auditoria_reales": {
+    "prompt": "PROMPT_AUDITORIA_REALES.md (2026-10-17), producto de partida 845d652ad",
+    "ubicacion": "F:/BAXYeval/reales_v1 (fuera del repo: textos literales del dueño; el repo sólo lleva cifras e ids)",
+    "fuente": {
+      "archivo": "BAXY Definitivo/tests/data/historical_missions.jsonl (copia en F:/BAXYeval/reales_v1)",
+      "misiones": 2084,
+      "sha256": "96e4f50566b657ec2f0dea89ddf6655dce2dc2ac63f17d0593ae05e9cc0c86d1"
+    },
+    "fase0": {
+      "division": "subagente aislado, semilla 20261017, estratificada por class, 70/30; script F:/BAXYeval/reales_v1/dividir.py (sha256 47cd69f360a4f21dd3bbfa1a643754b047dfdc3cf85c7e8199a5d29d4639e78d)",
+      "vistas_antes_de_dividir": "49 misiones que la sesión líder imprimió al inspeccionar el archivo (muestra de 12 por clase de cuatro clases y la primera línea): forzadas a ajuste (48) o a solo_decision (1), nunca al holdout",
+      "exclusion": "historical_operations con message.send, game.purchase o filesystem.trash (efectos sobre terceros, compras o borrado fuera del sandbox): 20 misiones a solo_decision.jsonl, clasificadas sólo por la decisión",
+      "ajuste": {
+        "archivo": "F:/BAXYeval/reales_v1/ajuste.jsonl",
+        "misiones": 1445,
+        "sha256": "9eeb769d9cab656a3bab32b8ce7d2cda898b4d70d9019ce530c9612e19a69b28"
+      },
+      "holdout": {
+        "archivo": "F:/BAXYeval/reales_v1/holdout/holdout_reales.sealed.jsonl",
+        "misiones": 619,
+        "sha256": "fcd7d7d62b9a497eae8c82333cef94bb21d1cbbbe65d0d38b3de1b9fe6b54dfb",
+        "sellado": "2026-10-17",
+        "nota": "sellado por el subagente (SEALED_REALES.md); no se abre hasta la fase 4"
+      },
+      "solo_decision": {
+        "archivo": "F:/BAXYeval/reales_v1/solo_decision.jsonl",
+        "misiones": 20,
+        "sha256": "b667d7f9903ca9a58b344dcaaba4bfbe9a221656c2912c6d15fcd5d0a539ac27"
+      },
+      "por_clase": {
+        "ajuste": {
+          "conversation_question": 3,
+          "engineering_instruction": 203,
+          "feedback_failure": 55,
+          "no_action_constraint": 9,
+          "preference": 8,
+          "product_requirement": 993,
+          "safety_instruction": 0,
+          "user_mission": 174
+        },
+        "holdout": {
+          "conversation_question": 1,
+          "engineering_instruction": 87,
+          "feedback_failure": 24,
+          "no_action_constraint": 4,
+          "preference": 4,
+          "product_requirement": 425,
+          "safety_instruction": 0,
+          "user_mission": 74
+        },
+        "solo_decision": {
+          "conversation_question": 0,
+          "engineering_instruction": 0,
+          "feedback_failure": 1,
+          "no_action_constraint": 0,
+          "preference": 0,
+          "product_requirement": 3,
+          "safety_instruction": 1,
+          "user_mission": 15
+        }
+      }
+    }
   }
 }
