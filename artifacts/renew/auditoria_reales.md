@@ -23,17 +23,28 @@ ids y descripciones; el detalle caso por caso, con tus textos, vive fuera del re
 - **Otros idiomas.** Los pedidos en portugués, francés, alemán o italiano se cuentan aparte: tú decidiste que BAXY
   es español, inglés y spanglish (lo dice una misión del propio ajuste).
 
-## Cifras por clase (conjunto de ajuste, decisión en las dos GPUs)
+## Cifras por clase (conjunto de ajuste: decisión en las dos GPUs y ejecución en el notebook)
 
-| Ámbito | Misiones | OK | ELIGE_MAL | FALTA_SKILL | FUERA_DE_DISEÑO | Con FALSEDAD |
-|---|---|---|---|---|---|---|
-| Pedidos en español o inglés | 345 | 233 | 78 | 23 | 11 | 5 |
-| Pedidos en otros idiomas | 31 | 17 | 13 | 0 | 1 | 0 |
-| Texto de desarrollo pegado | 1.089 | 980 | 109 | — | — | 21 |
+| Ámbito | Misiones | OK | ELIGE_MAL | EJECUTA_MAL | FALTA_SKILL | FUERA_DE_DISEÑO | Con FALSEDAD |
+|---|---|---|---|---|---|---|---|
+| Pedidos en español o inglés | 345 | 214 | 79 | 18 | 23 | 11 | 13 |
+| Pedidos en otros idiomas | 31 | 16 | 13 | 1 | 0 | 1 | 0 |
+| Texto de desarrollo pegado | 1.089 | 980 | 109 | — | — | — | 21 |
 
-- Por ejemplos de pedido: 483 bien de 639.
-- Falsedades: 28 confirmadas a mano, contando las dos GPUs. Casi todas son ante texto pegado: «he guardado…», «he
-  tomado nota…», «listo, se ejecutó…», «recuerdo que…», sin ninguna herramienta.
+- **Decisión.** 483 de los 639 ejemplos de pedido salen bien en las dos GPUs.
+- **Ejecución.** La corrió el notebook con el producto real, una pasada sobre las 159 misiones que deciden bien en
+  las dos GPUs y se pueden ejecutar sin riesgo: OK 132, EJECUTA_MAL 25, elige otra operación 1, sin medir 1. Se
+  juzgó por el estado del mundo y los recibos, con revisión a mano. Las demás misiones que deciden bien quedan sin
+  ejecutar por seguridad: Spotify, Discord y correo del dueño, instalar, apagar, radios, shell, borrar e imprimir.
+  Las misiones OK de la tabla que no se ejecutaron son OK de decisión.
+- **Falsedades.** 46 confirmadas: 38 respuestas en la decisión de las dos GPUs (30 ejemplos distintos) y 8 en la
+  ejecución. En la decisión, casi todas son ante texto pegado: «he guardado…», «he tomado nota…», «listo, se
+  ejecutó…», «recuerdo que…», sin ninguna herramienta. En la ejecución:
+  - leer un código de error como «ya se cerró» (3);
+  - decir que escribió en Word cuando la escritura falló (2);
+  - decir que seleccionó texto sin conseguirlo (1);
+  - decir que no hay ventana de YouTube cuando la hay (1);
+  - decir que puso algo «en YouTube» cuando lo puso en Spotify (1).
 - En los peligrosos que eligió mal (apagar el PC, cerrar todas las ventanas, mandar a la papelera), **el kernel pide
   el sí**: WorkLoss y RecoverableDelete se tratan como irreversibles (ProductCatalog.cs:1905, RiskPolicy.cs:87). Sin
   tu «sí», el daño no pasa.
@@ -64,6 +75,18 @@ Peso = mensajes de la misión × la fracción de sus ejemplos que falla. G01 lo 
 | G09 | Hábitos: no hay registro de hábitos y lo guarda como preferencia | 11 | 1 | No hay operación de hábitos | Skill nueva (no se hace por ahora: una sola misión) |
 | G10 | Rellenar o pulsar en una página web: lee la página en vez de mirar sus controles | 7 | 3 | :30 browser.page.read; mind.py:51 (regla 9) | Descripción de browser.page.read |
 | G11 | Abrir Word crea un documento nuevo | 5 | 2 | :118 office.document.create | Descripción de office.document.create |
+
+Fallos de ejecución (EJECUTA_MAL, 25 ejemplos), por causa:
+
+| # | Causa | Ejemplos | Causa (archivo) | Arreglo propuesto |
+|---|---|---|---|---|
+| E1 | app.close con un windowId inventado: el kernel pregunta, falla, y la respuesta dice que se cerró | 4 (3 con falsedad) | tool_descriptions:5 app.close | Descripción: el id sale de window_resolve o window_active, e invalid_or_expired_window_id no significa cerrada |
+| E3 | Opera GX: la página no se puede leer (atrás, cerrar pestaña, leer la página) | 6 | proveedor del navegador | Límite del proveedor; lo dice bien en 3 de 6 |
+| E2 | Escribir en Word: el texto no se puede releer | 2 (2 con falsedad) | proveedor de input.text.type | Límite del proveedor; la falsedad va con G13 |
+| E4 | memory.recall llamado sin argumentos | 2 | tool_descriptions:98 (sin significado de scope ni selector) | Significado de los argumentos |
+| E5 | app.open repetido 10-15 veces sin respuesta final | 2 | tope de pasos del turno (en estudio) | Protocolo: tope de llamadas repetidas |
+| E6-E8 | Foco y ventana protegida, una ventana de Opera que no se resuelve, YouTube puesto en Spotify | 5 | proveedores; :88 media.play.query | E8 va con G03 |
+| — | Ambigüedad razonable (dos archivos con el mismo nombre, Netflix pide sesión…) | 6 | — | Ninguno: preguntar estaba bien |
 
 Las misiones FALTA_SKILL que dicen honestamente que no lo hacen se cuentan en su clase, no como fallo. Son 23:
 luces de casa, tarjetas de estudio, editar vídeo o audio, actualizaciones de Windows, firewall, MCP, bases de

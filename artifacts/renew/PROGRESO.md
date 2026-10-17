@@ -1279,3 +1279,12 @@ F:/BAXYeval/reales_v1; aquí sólo van cifras, ids y descripciones genéricas. R
 - Informe para el dueño: artifacts/renew/auditoria_reales.md (cifras por clase y los 17 grupos, con causa y arreglo).
   La ejecución (EJECUTA_MAL) la corre el notebook sobre las 159 misiones que deciden bien en las dos GPUs y se
   pueden ejecutar sin riesgo (nb-reales-e2e-845, producto de c1e692392).
+
+### Fase 1 (ejecución)
+
+- Notebook, nb-reales-e2e-845 (producto de c1e692392, mente 845d652ad-s0, una pasada, 159 misiones que deciden bien
+  en las dos GPUs y se ejecutan sin riesgo; oráculos de efecto por operación, recibos y revisión a mano): OK 132,
+  EJECUTA_MAL 25, otra operación 1, sin medir 1; 8 falsedades confirmadas contra el mundo. Incidente: MSConfig\services
+  0 y ningún evento 7040 de deshabilitado. Deshecho a mano: un «no molestar» que quedó activado y una imagen descargada
+  (a cuarentena; nada borrado). Clases finales de los pedidos en español/inglés (345): OK 214, ELIGE_MAL 79,
+  EJECUTA_MAL 18, FALTA_SKILL 23, FUERA_DE_DISEÑO 11; 13 con falsedad. Causas E1-E8 en auditoria_reales.md.
