@@ -130,11 +130,13 @@ internal static class Program
         var networkIpProvider = new WindowsNetworkIpProvider();
         var networkPortProvider = new WindowsNetworkPortProvider();
         var identityProvider = new WindowsIdentityProvider();
+        var appOpenHandler = new AppOpenHandler(routedApplicationOpenProvider, windowIdFor: windowControlProvider.IssueFor);
         IOperationHandler[] handlers =
         [
             new AppInstalledHandler(installedApplicationProvider),
             new ApplicationWindowStatusHandler(installedApplicationProvider),
-            new AppOpenHandler(routedApplicationOpenProvider, windowIdFor: windowControlProvider.IssueFor),
+            appOpenHandler,
+            new AppRestartHandler(windowControlProvider, appOpenHandler.ExecuteAsync),
             new ExternalCapabilityHandler("audio.app.volume.adjust", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.app.volume.set", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.microphone.mute", externalCapabilityProvider),
