@@ -1,5 +1,4 @@
 import { useEffect, useReducer } from 'react';
-import { getJson } from './api';
 import type {
   AgentStatus, BootPieces, ChatItem, Fam, HostState, NetEntry, ServerEvent, Step, Surfaces, VoiceStatus,
 } from './types';
@@ -68,6 +67,10 @@ function moodOf(steps: Step[]): Mood {
   return null;
 }
 
+function netOf(items: ChatItem[]): NetEntry[] {
+  return items.flatMap((it) => (it.who === 'baxy' ? it.steps.filter((st) => st.net).map((st) => ({ what: st.net!, ts: it.ts })) : []));
+}
+
 function upsert(items: ChatItem[], item: ChatItem): ChatItem[] {
   const i = items.findIndex((x) => x.id === item.id);
   if (i < 0) return [...items, item].slice(-MAX_ITEMS);
@@ -85,7 +88,8 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
     case 'agent':
       return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation } };
     case 'transcript':
-      return { ...s, items: ev.items.slice(-MAX_ITEMS), sub: null, mood: null, journey: null };
+      // a session opened or started: its internet log is its own calls' (Ajustes → Privacidad says «de esta sesión»)
+      return { ...s, items: ev.items.slice(-MAX_ITEMS), sub: null, mood: null, journey: null, netLog: netOf(ev.items) };
     case 'item': {
       const before = s.items.find((x) => x.id === ev.item.id);
       const items = upsert(s.items, ev.item);
@@ -129,8 +133,6 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
       return { ...s, session: { id: ev.id, label: ev.label } };
     case 'context':
       return { ...s, activity: ev.activity };
-    case 'log_clear':
-      return { ...s, items: [], sub: null, mood: null, journey: null };
     default:
       return s;
   }
@@ -139,11 +141,7 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
 /** subscribes to the host's event socket (`/events`, the native bridge's WebSocket) and mirrors its events into one
  *  state object; reconnects with backoff when the socket drops (the host replays the current state on connect). */
 export function useBaxy(): BaxyStore {
-  const [state, dispatch] = useReducer(
-    (s: BaxyStore, a: ServerEvent | { type: '_connected'; value: boolean } | { type: '_patch'; patch: Partial<BaxyStore> }) =>
-      a.type === '_patch' ? { ...s, ...a.patch } : reduce(s, a),
-    INITIAL,
-  );
+  const [state, dispatch] = useReducer(reduce, INITIAL);
 
   useEffect(() => {
     let cancelled = false;
@@ -188,13 +186,6 @@ export function useBaxy(): BaxyStore {
       if (timer !== null) window.clearTimeout(timer);
       if (ws && ws.readyState !== WebSocket.CLOSED) ws.close();
     };
-  }, []);
-
-  // the internet log of this run, read once (events add to it from then on).
-  useEffect(() => {
-    void getJson<{ items: NetEntry[] }>('/privacy/netlog').then((r) => {
-      if (r?.items) dispatch({ type: '_patch', patch: { netLog: r.items } });
-    });
   }, []);
 
   return state;

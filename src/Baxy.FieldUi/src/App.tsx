@@ -185,14 +185,20 @@ export default function App() {
   const subGone = !s.sub || (done.sub === s.sub.key && state !== 'speaking');
   const mood = s.sub && done.mood !== s.sub.key ? s.mood : null;
 
-  // ---- what left the PC: the banner for 4.2 s, the rail and the antenna for 20 s ----
+  // ---- what left the PC: the banner for 4.2 s; the rail and the antenna for the rest of the turn and 20 s after ----
+  const turnRunning = s.hostState === 'thinking';
   useEffect(() => {
     if (!s.net) return;
-    const b = finish('banner', s.net.at, 4200), n = finish('net', s.net.at, 20000);
-    return () => { window.clearTimeout(b); window.clearTimeout(n); };
+    const b = finish('banner', s.net.at, 4200);
+    return () => window.clearTimeout(b);
   }, [s.net, finish]);
+  useEffect(() => {
+    if (!s.net || turnRunning) return;
+    const n = finish('net', s.net.at, 20000);
+    return () => window.clearTimeout(n);
+  }, [s.net, turnRunning, finish]);
   const banner = s.net && done.banner !== s.net.at ? s.net.what : null;
-  const netShown = s.net && done.net !== s.net.at ? s.net.what : null;
+  const netShown = s.net && (turnRunning || done.net !== s.net.at) ? s.net.what : null;
 
   useEffect(() => {
     if (!notice) return;
@@ -354,10 +360,12 @@ export default function App() {
         : ({ standby: 'sleep', booting: 'sleep', idle: 'neutral', listening: 'listen', thinking: 'think', speaking: 'neutral', confirm: pendingCard?.risk ? 'serious' : 'curious' } as Record<string, string>)[state] ?? 'neutral';
   const waiting = pendingCard ? (s.activity === 'game' && pendingCard.kind === 'proposal' ? 'Propuesta enviada como notificación de Windows' : 'Esperando tu ok en la conversación') : null;
 
+  // the conversation's own count: its requests and the calls of this session that went out to the internet
   const nReq = s.items.filter((x) => x.who === 'you').length;
+  const nNet = s.items.reduce((n, x) => n + (x.who === 'baxy' ? x.steps.filter((st) => st.net).length : 0), 0);
   const meta = state === 'booting' ? 'Arrancando'
     : nReq === 0 ? 'Sin pedidos aún'
-      : nReq + (nReq === 1 ? ' pedido' : ' pedidos') + (s.netLog.length ? ' · ' + s.netLog.length + (s.netLog.length === 1 ? ' salida' : ' salidas') + ' a internet' : ' · todo local');
+      : nReq + (nReq === 1 ? ' pedido' : ' pedidos') + (nNet ? ' · ' + nNet + (nNet === 1 ? ' salida' : ' salidas') + ' a internet' : ' · todo local');
   const title = s.session?.label || 'Conversación';
   const counts = { sessions: s.surfaces?.sessions ?? null, memory: s.surfaces?.memory ?? null, triggers: s.surfaces?.triggers ?? null, catalog: s.surfaces?.tools ?? null };
   const chatShown = chatOpen || (!!pendingCard && done.card !== pendingCard.id);

@@ -119,7 +119,9 @@ internal static class FieldStepProjection
     {
         JsonObject? facts = Parse(step.Observation);
         string raw = step.Status;
-        if (raw == "needs_confirmation" || step.Operation == MindStep.ConfirmationAnswer)
+        // A call the kernel challenged (or a heartbeat held) did not run: its card stands for it, never a chip.
+        if (raw == "needs_confirmation" || (string?)facts?["status"] == "needs_confirmation"
+            || step.Operation == MindStep.ConfirmationAnswer)
         {
             return null;
         }
@@ -269,6 +271,7 @@ internal static class FieldStepProjection
     private static string? RiskLabel(string operation, string risk, JsonObject arguments) => risk switch
     {
         OperationRisks.RecoverableDelete => "borra datos",
+        _ when operation == "system.recyclebin.empty" => "borra datos",
         OperationRisks.WorkLoss => operation == "system.process.terminate.named" ? "fuerza el cierre" : "puede perder trabajo",
         OperationRisks.ExternalCommunication => "llega a otra persona",
         OperationRisks.Installation => "instala o desinstala",

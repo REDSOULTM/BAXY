@@ -78,6 +78,20 @@ internal sealed class FieldTranscript
         return Clone(_open);
     }
 
+    /// <summary>A started call that is no step of its own (held for the person's «sí»: the card shows it) leaves the
+    /// open reply; null when there was nothing to remove.</summary>
+    internal JsonObject? Drop(string stepId)
+    {
+        if (_open?["steps"] is not JsonArray steps
+            || steps.FirstOrDefault(s => (string?)s?["id"] == stepId) is not { } step)
+        {
+            return null;
+        }
+
+        steps.Remove(step);
+        return Clone(_open);
+    }
+
     /// <summary>BAXY's words: they complete the open reply (its steps came first) and close the turn's reply.</summary>
     internal JsonObject Words(string text, string? silent)
     {

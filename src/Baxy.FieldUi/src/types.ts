@@ -132,5 +132,4 @@ export type ServerEvent =
   | ({ type: 'net' } & NetEntry)
   | ({ type: 'surfaces' } & Surfaces)
   | { type: 'session'; id: string; label: string }
-  | { type: 'context'; activity: 'free' | 'game' | 'call' | 'video' | 'away' }
-  | { type: 'log_clear' };
+  | { type: 'context'; activity: 'free' | 'game' | 'call' | 'video' | 'away' };

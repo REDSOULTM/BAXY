@@ -214,3 +214,20 @@ regla vital.
   - Si Baxy.exe tiene tomados los archivos, `main.py` cierra la ventana antes de copiar.
 - **Manifiesto compartido:** `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` es de BAXY Definitivo; no se edita.
   Renew usa sus propias variables `BAXY_RENEW_*` y las de `BAXY_MIND_*` que fija el lanzador.
+
+## Interfaz v4 (2026-10-17, encargo del dueño con `design_handoff_baxy`)
+
+La vista `src/Baxy.FieldUi` es ahora el rediseño v4, conectado a datos reales (ver su README y ORIGIN.md).
+
+- **Decisiones del dueño:** chips con un título corto en español por operación (`Baxy.App/Assets/operation-labels.v1.json`)
+  y los hechos del proveedor tal cual como «lo que observó»; dos niveles de confirmación (Normal = «lo arriesgado»,
+  Bypass = «nada»); construir todo el backend que pide el diseño.
+- **Backend nuevo:** `FieldTranscript` (conversación con pasos y tarjetas, la guarda el host), `FieldStepProjection`
+  (`ok` sólo completado y verificado), `FieldSessionStore` (sesiones con la conversación de la mente:
+  `session.export/load`), `FieldSettings` (arranque con Windows, bandeja, voz muda, sonido al despertar, web/clima/
+  pantalla, «no me interrumpas», silencio), triggers = `schedule.alarms`, temperatura por D3DKMT y memoria de la
+  mente y su llama-server (`WindowsModelResourceReader`), transcripción en vivo y soltar-para-hablar en `voice.py`.
+- **Aceptación:** `scripts/test_field_ui.ps1` (Playwright por CDP contra la app real): 17/17 el 2026-10-17.
+- **Pendiente:** notificación de Windows con botones Sí/No para propuestas (hoy sale la notificación de la bandeja,
+  sólo texto); adjuntar archivos (sin contrato tipado); mostrar datos sensibles (el almacén no los devuelve); el token
+  de confirmación del kernel vence a los 2 min, no a los 10 del diseño (la tarjeta muestra el plazo real).

@@ -19,7 +19,7 @@ dice tu goal.
 | Cambiar el **protocolo** mente↔kernel | `src/Baxy.Contracts/ProtocolContracts.cs` | `src/baxy_mind/protocol.py` — **los dos extremos, siempre**; `tests/Baxy.Contracts.Tests` |
 | Cambiar un **efecto real** sobre Windows | `src/Baxy.Providers.Windows/<Audio\|Applications\|Filesystem\|Capture\|Network\|Windows\|…>/` | `tests/Baxy.Providers.Windows.Tests` |
 | Cambiar **lo que lee la persona** | Nunca con texto fijo en la App. Ver invariante 5: lo formula el modelo, en `src/baxy_mind/`: el redactor es `llm_compose.py` (`compose_user_message`), con su payload en `compose_payload.py`, sus vetos en `visible_defect.py` y `payload_fact_checks.py` y sus finales sin borrador en `deterministic_finals.py`; la charla, en `llm_chat.py` | `src/Baxy.App/` sólo transporta; los prompts, en `llm_prompts.py` |
-| Cambiar la **GUI** | `src/Baxy.FieldUi/src/` | `src/Baxy.FieldUi/dist/` es un sello histórico (ADR-0008): **no se regenera de paso** |
+| Cambiar la **GUI** | `src/Baxy.FieldUi/src/` (diseño v4), su contrato en `src/Baxy.App/FieldProductChannel.cs` | se entrega con `pnpm build` (`dist/` versionado) y `scripts/test_field_ui.ps1` |
 | Cambiar **voz / wake / STT / TTS** | `src/baxy_mind/voice.py`; AEC en `webrtc_aec.py` (paquete: `scripts/build_webrtc_runtime.py`), captura en `voice_capture.py`, loopback/ducking en `voice_aec.py`, salida en `voice_output.py`/`piper_tts.py`; `scripts/setup_mind_voice.ps1`; extensión ASR y receta en `runtime_wheels/README.md` y `scripts/build_sherpa_runtime.py` | `documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md` |
 | Cambiar **instalación o empaquetado** | `src/Baxy.Setup/` | `scripts/build_product.ps1`, `scripts/package_product.ps1`, `tests/Baxy.Setup.Tests` |
 | Cambiar la **evidencia de un turno** | `src/baxy_mind/turn_evidence*.py` | `tests/data/turn_evidence_public_holdout.v1.jsonl` (3 MB — nunca entero) |
@@ -62,7 +62,7 @@ histórica (corridas, corpus, la biblioteca de los BAXY anteriores, experimentos
 |---|---|
 | `bin/`, `obj/`, `__pycache__/`, `.ruff_cache/`, `.pytest_cache/` | Generados. Nunca se editan ni se leen |
 | `src/Baxy.FieldUi/node_modules/` | Dependencias de la GUI. Nunca se recorren |
-| `src/Baxy.FieldUi/dist/` | Versionado a propósito: artefacto visual sellado por ADR-0008 |
+| `src/Baxy.FieldUi/dist/` | Versionado a propósito: el payload que sirve la App (se regenera con `pnpm build`) |
 
 ## Ficheros que no se leen enteros
 

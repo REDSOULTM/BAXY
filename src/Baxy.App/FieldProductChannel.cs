@@ -26,7 +26,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 {
     internal const int MaximumRequestBodyCharacters = 65_536;
     internal const int MaximumPathCharacters = 2_048;
-    private const int MaximumNetLog = 200;
     private const int MaximumSessionLabel = 80;
 
     private readonly MainWindowViewModel _viewModel;
@@ -35,7 +34,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private readonly CancellationToken _lifetimeCancellation;
     private readonly FieldTranscript _transcript = new();
     private readonly FieldSessionStore _sessions = FieldSessionStore.CreateDefault();
-    private readonly List<JsonObject> _netLog = [];
     private string _sessionId = NewSessionId();
     private string? _sessionLabel;
     private DateTimeOffset _sessionCreated = DateTimeOffset.UtcNow;
@@ -166,8 +164,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return RenameSession(ParseBody(body));
             case ("GET", "/catalog"):
                 return Json(FieldStepProjection.Catalog());
-            case ("GET", "/privacy/netlog"):
-                return Json(new JsonObject { ["items"] = new JsonArray([.. _netLog.Select(static n => (JsonNode)n.DeepClone())]) });
             case ("GET", "/triggers"):
                 return await TriggersAsync().ConfigureAwait(true);
             case ("POST", "/triggers/cancel"):
@@ -284,27 +280,25 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         JsonObject? view = FieldStepProjection.Finished(step.Id, step, net);
         if (view is null)
         {
+            if (_transcript.Drop(step.Id) is { } reply)
+            {
+                Publish(ItemEvent(reply));
+            }
+
             return;
         }
 
         Publish(ItemEvent(_transcript.Step(view)));
         Publish(StepEvent("end", view));
+        // The view lights «Salió a internet» and adds it to the session's log (the step keeps it in the transcript).
         if (net is not null)
         {
-            var entry = new JsonObject
+            Publish(new JsonObject
             {
+                ["type"] = "net",
                 ["what"] = net,
                 ["ts"] = DateTimeOffset.Now.ToString("HH:mm", CultureInfo.InvariantCulture),
-            };
-            _netLog.Add(entry);
-            if (_netLog.Count > MaximumNetLog)
-            {
-                _netLog.RemoveAt(0);
-            }
-
-            JsonObject netEvent = (JsonObject)entry.DeepClone();
-            netEvent["type"] = "net";
-            Publish(netEvent);
+            });
         }
 
         // Bypass ran a call normal mode would have asked about: the conversation says so (design v4).

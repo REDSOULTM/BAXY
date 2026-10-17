@@ -1,169 +1,75 @@
 # BAXY FieldUi
 
-FieldUi es la presentación React/TypeScript que `Baxy.App` muestra dentro de
-WebView2. No es una SPA desplegada, un servidor ni el backend de BAXY.
-
-La arquitectura completa está en
-[`documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/README.md`](../../documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/README.md).
-
-## Estado de procedencia
-
-ADR-0008 restauró literalmente la interfaz histórica solicitada por el usuario.
-La procedencia exacta está en [ORIGIN.md](ORIGIN.md):
-
-- `src/` conserva la presentación histórica con las reaperturas documentadas en ADR-0008;
-- `dist/` contiene los tres blobs que carga el producto;
-- ambos tienen tests y hashes de procedencia y del sello vigente;
-- el `dist/` versionado es una excepción deliberada a la regla de outputs
-  generados.
-
-No ejecutes `pnpm build` como parte de una prueba rutinaria: reemplazaría el
-payload histórico. Modificar la presentación o regenerar `dist/` requiere
-reabrir ADR-0008, actualizar source, bridge, procedencia y pruebas como una
-unidad.
+FieldUi es la presentación React/TypeScript que `Baxy.App` muestra dentro de WebView2: el rediseño v4
+(`design_handoff_baxy`, ver [ORIGIN.md](ORIGIN.md)). No es una SPA desplegada, un servidor ni el backend de BAXY.
 
 ## Runtime
 
 ```text
 Baxy.App (WPF)
-  → MainWindowSurfacePresenter
-  → WebView2 local
+  → WebView2 local (https://baxy.local, sin puerto ni red)
   → Baxy.FieldUi/dist
-  → field-native-bridge.js
-  → mensajes baxy.field.v1
-  → FieldUiBridge.cs
-  → MainWindowViewModel
+  → field-native-bridge.js        (fetch y WebSocket → mensajes baxy.field.v1)
+  → FieldUiBridge.cs → FieldProductChannel.cs → MainWindowViewModel / NativeTurnLoop
 ```
 
-No se abre un puerto HTTP. La App configura un virtual host local, inyecta
-`src/Baxy.App/Assets/field-native-bridge.js` antes del documento y bloquea:
+La App bloquea la navegación externa, las ventanas nuevas y los requests de red arbitrarios. FieldUi no recibe
+autoridad del sistema operativo y nunca habla directamente con Core, Mind o Providers.
 
-- navegación externa;
-- ventanas nuevas;
-- requests de red arbitrarios;
-- ejecución directa de JSON/tools;
-- adjuntos sin contrato tipado.
+## Regla de producto
 
-FieldUi no recibe autoridad del sistema operativo y nunca habla directamente
-con Core, Mind o Providers.
+La vista nunca afirma que algo se hizo si no se ejecutó y verificó. Todo lo que muestra llega del host:
+
+| Lo que se ve | De dónde sale |
+|---|---|
+| Conversación, chips de paso y tarjetas Sí/No | `FieldTranscript` (el host la guarda; el evento `item` cambia un elemento, `transcript` la manda entera) |
+| Estado de cada paso | `FieldStepProjection`: `ok` sólo si el proveedor completó **y** verificó; `maybe`, `fail`, `skip` con su motivo |
+| Título del paso y del catálogo | `Baxy.App/Assets/operation-labels.v1.json`, una entrada por operación del catálogo (se comprueba al arrancar) |
+| «Salió a internet» y su registro | `NativeTurnLoop.ReachesTheNetwork` de una llamada que llegó a su proveedor |
+| Métricas del riel | `FieldTelemetrySampler`: CPU, GPU, temperatura (D3DKMT) y memoria de la mente y su llama-server; `—` si no se pudo leer |
+| Arranque | piezas que la mente informa (`voice.status`: stt, wake, tts) y el modelo listo; sin porcentajes |
+| Memoria, triggers, sesiones | la operación del chat por el kernel (`MemoryPanel`, `schedule.alarms`, `FieldSessionStore`) |
+
+El tema, el tamaño de texto, el contraste, el perfil, el micrófono elegido y la pestaña de Ajustes son presentación
+propia de la vista (`localStorage`); el resto de ajustes los guarda el host (`FieldSettings`, `ConfirmationModeStore`,
+`PresentationModeStore`).
 
 ## Estructura
 
 | Ruta | Rol |
 |---|---|
-| `src/App.tsx` | composición de la interfaz y estado de paneles |
-| `src/components/` | superficies visuales |
-| `src/hooks/useEventStream.ts` | consumo del stream adaptado |
-| `src/hooks/useToast.ts` | mensajes de presentación |
-| `src/types.ts` | tipos del contrato visible |
-| `src/styles/prototype.css` | estilo histórico |
-| `src/main.tsx` | entrypoint React |
-| `dist/` | payload exacto servido por App |
-| `vite.config.ts` | build histórico verificable |
-| `pnpm-lock.yaml` | grafo JS fijado |
-| `ORIGIN.md` | commits/hashes de procedencia |
+| `index.html` | documento de entrada y script de escala (720p → 8K, nada a 0×0) |
+| `src/App.tsx` | composición, estado derivado, anillo del borde, atajos y acciones |
+| `src/store.ts` | socket `/events` y reducer de eventos |
+| `src/api.ts`, `src/types.ts` | rutas del host y contrato visible |
+| `src/components/` | riel, chat, subtítulos y arranque, entrada y micrófono, cara (`face/`), cosmos |
+| `src/components/panels/` | memoria, qué puedo hacer, sesiones, triggers, propuestas, ajustes |
+| `src/styles/` | fuentes y la cascada del diseño (`base` → `baxy` → `v4`) más `shell.css` |
+| `e2e/` | aceptación con Playwright contra la app real |
+| `dist/` | payload servido por la App (versionado: lo empaqueta `Baxy.Setup`) |
 
-El perfil y la superficie seleccionada usan `localStorage` del origen local
-solo como estado de presentación. El estado autoritativo de misión, plan,
-memoria y providers reside en App/Core.
-
-## Contrato del bridge
-
-El canal es `baxy.field.v1`. El bridge adapta los `fetch` y WebSocket que
-esperaba la interfaz histórica a mensajes WebView2 tipados.
-
-Familias expuestas:
-
-- estado de agente, modelo, métricas y hardware;
-- superficies;
-- voz;
-- envío de turnos y actividad;
-- sesiones;
-- proyecciones acotadas de memoria, triggers y tools;
-- perfil, accesibilidad y settings administrados;
-- inventario y lifecycle controlado.
-
-`src/Baxy.App/FieldUiBridge.cs` es el consumidor autoritativo. Una route nueva
-o un cambio de shape exige:
-
-1. versión/compatibilidad explícita;
-2. cambio coordinado en JS y C#;
-3. validación de origen, método, payload y límites;
-4. test en `Baxy.Integration.Tests`;
-5. actualización de la guía de contratos;
-6. revisión del sello visual si cambia `dist/`.
-
-No agregues un proxy genérico para invocar operaciones.
-
-## Preparar dependencias
+## Preparar, validar y construir
 
 Desde esta carpeta:
 
 ```powershell
 pnpm install --frozen-lockfile
-```
-
-El repositorio fija el grafo en `pnpm-lock.yaml`, pero todavía no fija la
-versión de Node ni de pnpm. Si una diferencia de toolchain modifica el lock o
-los bytes producidos, detente y no la normalices silenciosamente.
-
-## Validar sin regenerar
-
-```powershell
 .\node_modules\.bin\eslint.cmd . --max-warnings 0
-.\node_modules\.bin\tsc.cmd --noEmit --incremental false `
-  --pretty false -p .\tsconfig.app.json
-.\node_modules\.bin\tsc.cmd --noEmit --incremental false `
-  --pretty false -p .\tsconfig.node.json
-```
-
-Desde la raíz del repositorio, `scripts/test_source_quality.ps1` ejecuta los
-tres checks. No emite archivos y no toca `dist/`.
-
-## Build deliberado
-
-Solo después de autorizar la reapertura del sello:
-
-```powershell
+.\node_modules\.bin\tsc.cmd --noEmit --incremental false --pretty false -p .\tsconfig.app.json
 pnpm build
 ```
 
-Después hay que:
+`pnpm build` regenera `dist/`, que se versiona: un cambio de la vista se entrega con su `dist/`.
 
-- revisar cada cambio visual y de bundle;
-- actualizar `ORIGIN.md`;
-- actualizar hashes y tests de blobs;
-- validar el bridge;
-- ejecutar la compuerta completa;
-- abrir BAXY físicamente y revisar WebView2, foco, navegación, accesibilidad y
-  DPI;
-- confirmar que no hubo red externa.
+`pnpm dev` no sirve para ver la interfaz: sin `field-native-bridge.js` no hay rutas ni `/events`.
 
-`pnpm dev` levanta el servidor de Vite sin `field-native-bridge.js` y sin proxy: no hay
-rutas ni `/events`, y sin `window.pywebview` la barra de título lanza al montarse y React
-desmonta la vista. No sirve para ver la interfaz; sólo `Baxy.App` la carga con el bridge.
+## Aceptación
 
-## Extensión preferida
+```powershell
+powershell -ExecutionPolicy Bypass -File ..\..\scripts\test_field_ui.ps1
+```
 
-Para una nueva vista nativa que no exige alterar la interfaz histórica, usa la
-costura bajo `src/Baxy.App/Presentation`:
-
-- `AppSurfaceCatalog`;
-- `AppSurfaceNavigator`;
-- `MainWindowSurfacePresenter`;
-- una factory lazy que devuelve `AppSurfaceSession`.
-
-Esa ruta permite agregar una superficie WPF con ownership y lifecycle propios
-sin mutar el Field sellado. Añadir una entrada desde React sigue siendo un
-cambio del bridge.
-
-## Pruebas relacionadas
-
-- `tests/Baxy.Integration.Tests/MainWindowShellContractTests.cs`;
-- `tests/Baxy.Integration.Tests/AppSurfaceNavigatorTests.cs`;
-- tests de `FieldUiBridge` y contrato del shell dentro de Integration;
-- tests que fijan hashes/procedencia de ADR-0008;
-- ESLint y ambos proyectos TypeScript en la compuerta de calidad.
-
-Una captura visual es evidencia útil, pero no sustituye tests de contrato,
-teclado, foco, accesibilidad o bloqueo de navegación.
+Lanza BAXY con el puerto de depuración de WebView2 y corre `e2e/`: escala, cielo, red y bocas; humo en 11 tamaños
+de 720p a 8K (marco lleno, nada fuera, ningún texto cortado, texto ≥ 7 px, lienzos dentro de su tope, cara
+centrada, chat plegado 12 veces sin línea de puntos, Ajustes cabe); arranque con la ventana a 0×0 y cambio de tamaño
+en vivo. Con BAXY ya abierto con el puerto: `-NoLaunch`.

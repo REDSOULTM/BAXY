@@ -138,3 +138,20 @@ fijado.
 - `dist/index.html`: `949D417241189CFB53542206E1CB8DF2C8663E99685A546D13D772B2C1FCA3D6` (apunta al bundle nuevo)
 - `dist/assets/index-COQjHLMx.css`: sin cambios
 - `dist/assets/index-CaampMEG.js`: `E4ABA773D9C51DA4C94D1DDFC1FE283E671F0AB83D93F6290583AEA27D66D0DF` (sustituye a `index-CyCfzHRV.js`)
+
+## Rediseño v4 de 2026-10-17 (rama `baxy-renew`)
+
+El dueño entregó un rediseño completo (`design_handoff_baxy`: README, REQUISITOS, prototipo HTML/React y sus CSS
+`styles.css` → `baxy/baxy.css` → `baxy/v4.css`) y pidió recrearlo dentro de esta vista, conectado a datos reales.
+Sustituye por entero la composición histórica descrita arriba: ese source y su sello ADR-0008 quedan como historia en
+Git, no como base visual.
+
+- `src/styles/base.css`, `baxy.css` y `v4.css` son los tres CSS del diseño en su cascada, sin las reglas que ningún
+  componente puede producir; `shell.css` añade lo propio de la ventana sin marco (minimizar, maximizar, cerrar).
+- `src/components/face/` y `Cosmos.tsx` portan `face.jsx` y `cosmos.jsx` casi tal cual (capas cacheadas, 30/60 fps,
+  topes de 4,5 y 4 MP, DPR ≤ 1,25). Único cambio: el recorrido de la red crece con las llamadas reales del turno.
+- `index.html` lleva el script de escala del diseño (720p → 8K, nada a 0×0).
+- Fuentes Chakra Petch, Inter y JetBrains Mono empaquetadas desde `@fontsource` (woff2, subconjunto latino).
+- Nada de datos de demostración: `flows.js`, las métricas simuladas, el catálogo de muestra y `tweaks-panel.jsx` no
+  entraron. Todo lo que se ve viene de `Baxy.App` por `baxy.field.v1`.
+- Aceptación: `e2e/` porta `Baxy pruebas.html` a Playwright contra la app real (`scripts/test_field_ui.ps1`).
