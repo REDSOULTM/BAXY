@@ -56,10 +56,14 @@ try {
     function Count-Showing {
         $count=0;$script:unread=0
         foreach($window in @($shell.Windows())){
+            # Ronda final 34: only a window whose location cannot be read is unread; an empty or non-file location
+            # (Inicio, Este equipo) is read and does not show the folder.
+            try {$location=[string]$window.LocationURL} catch {$script:unread++;continue}
+            if(-not $location.StartsWith('file:',[StringComparison]::OrdinalIgnoreCase)){continue}
             try {
-                $observed=[Uri]::UnescapeDataString(([Uri]$window.LocationURL).LocalPath).TrimEnd('\')
+                $observed=[Uri]::UnescapeDataString(([Uri]$location).LocalPath).TrimEnd('\')
                 if([string]::Equals([IO.Path]::GetFullPath($observed),$path.TrimEnd('\'),[StringComparison]::OrdinalIgnoreCase)){$count++}
-            } catch {$script:unread++}
+            } catch {}
         }
         $count
     }

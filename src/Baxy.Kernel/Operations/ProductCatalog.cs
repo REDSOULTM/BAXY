@@ -1066,7 +1066,7 @@ public static class ProductCatalog
                 ]),
             OperationRisks.LowReversible,
             "memory.session.clear.protected.scope.v1",
-            "Elimina únicamente la memoria temporal de la sesión actual."),
+            "Elimina lo recordado con retención de sesión desde que BAXY arrancó (no por conversación: una conversación nueva del panel no empieza otra sesión de memoria); las memorias temporales de 24 h y las permanentes quedan."),
         Descriptor(
             "memory.status",
             Schema([Version()], ["version"]),
