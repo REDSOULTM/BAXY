@@ -426,6 +426,9 @@ internal sealed class NativeTurnLoop
         || (operation == "app.open" && arguments["newDocument"] is JsonValue fresh && IsTrue(fresh))
         || (operation == "app.open" && arguments["place"] is JsonValue place && Named(place))
         || (operation == "system.settings.set" && (string?)arguments["setting"] == "do_not_disturb")
+        // Ronda final 25: a look at an application by its name shows its window behind the person's when it is
+        // minimized (ShowBehind), and it stays shown: held in a beat, as a window raised unasked.
+        || (operation == "input.visible.controls" && arguments["application"] is JsonValue looked && Named(looked))
         || (operation == "media.control" && !(arguments["sourceApp"] is JsonValue source && Named(source)
             && !string.Equals((string?)source, WindowsExternalCapabilityProvider.YouTubeTabMediaSource,
                 StringComparison.OrdinalIgnoreCase)));

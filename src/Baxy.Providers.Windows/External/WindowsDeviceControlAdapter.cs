@@ -1190,12 +1190,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes
 
         """ + MarkedKeysType + """
-        $sig='using System;using System.Runtime.InteropServices;public static class BaxyClientWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);}'
+        $sig='using System;using System.Runtime.InteropServices;public static class BaxyClientWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);[DllImport("user32.dll")] public static extern bool IsIconic(IntPtr h);}'
         if(-not ([System.Management.Automation.PSTypeName]'BaxyClientWin').Type){Add-Type -TypeDefinition $sig}
         # The client's window is the main window of the Discord process, never a window found by its title.
         $w=$null;foreach($p in @(Get-Process -Name 'Discord' -ErrorAction SilentlyContinue)){if($p.MainWindowHandle -ne [IntPtr]::Zero){$w=[System.Windows.Automation.AutomationElement]::FromHandle($p.MainWindowHandle);break}}
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
-        $h=[IntPtr]$w.Current.NativeWindowHandle;$clientPid=$w.Current.ProcessId;[void][BaxyClientWin]::ShowWindow($h,9)
+        $h=[IntPtr]$w.Current.NativeWindowHandle;$clientPid=$w.Current.ProcessId;if([BaxyClientWin]::IsIconic($h)){[void][BaxyClientWin]::ShowWindow($h,9)}
         # The switcher's rows, as the switcher shows them: the list items of the nearest container of the focused
         # switcher input, below the page itself (the document holds the conversation's own list items).
         function Read-Items {

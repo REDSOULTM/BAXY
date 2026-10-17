@@ -44,7 +44,9 @@ export function ActivityPanel({
   // The question the buttons answer: BAXY's newest line about a call that waits for the person.
   const asking = useMemo(() => {
     if (!pendingConfirmation) return null;
-    const latest = [...entries].reverse().find((e) => e.src !== 'YOU');
+    // ronda final 25: entries are newest first (useEventStream prepends), so the first non-person line is the newest;
+    // reversing them put the buttons under the oldest question, whose «sí» then answered the pending one.
+    const latest = entries.find((e) => e.src !== 'YOU');
     return latest && latest.route === 'confirmation' ? latest.id : null;
   }, [entries, pendingConfirmation]);
 

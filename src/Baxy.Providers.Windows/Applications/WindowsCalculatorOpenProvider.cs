@@ -151,7 +151,9 @@ internal sealed partial class WindowsCalculatorPlatform : ICalculatorPlatform
     public void RequestForeground(long windowHandle)
     {
         nint handle = checked((nint)windowHandle);
-        _ = ShowWindowAsync(handle, 9); _ = SetForegroundWindow(handle);
+        if (IsIconic(handle))
+            _ = ShowWindowAsync(handle, 9);
+        _ = SetForegroundWindow(handle);
     }
 
     public async ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>
@@ -175,6 +177,11 @@ internal sealed partial class WindowsCalculatorPlatform : ICalculatorPlatform
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool ShowWindowAsync(nint window, int command);
+
+    // Ronda final 25: a window is restored only when minimized (SW_RESTORE on a maximized one un-maximizes it).
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsIconic(nint window);
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool SetForegroundWindow(nint window);

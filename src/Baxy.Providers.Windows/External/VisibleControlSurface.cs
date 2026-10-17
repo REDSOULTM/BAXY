@@ -1198,7 +1198,10 @@ internal static partial class VisibleControlSurface
         }
         else
         {
-            HashSet<uint> family = ProcessFamily(opened);
+            // Ronda final 25: an application that was running already is followed only through its own process (the
+            // Explorer or Steam reused are the parents of much the person started: a closed or minimized Explorer
+            // window must not hand the click to their Chrome); the family counts only for one launched now.
+            HashSet<uint> family = opened.Launched ? ProcessFamily(opened) : [unchecked((uint)opened.ProcessId)];
             if (family.Count == 0)
                 return default;
             target = LargestUsableWindow(family);

@@ -1220,7 +1220,7 @@ public static class ProductCatalog
                 ["format", "title"]),
             OperationRisks.LowReversible,
             "office.document.create.adapter.postread.v1",
-            "Crea un documento mediante un adapter Office autenticado y devuelve su identidad."),
+            "Escribe en este PC un documento de Office mínimo (.docx o .xlsx) con ese título en Documentos\\BAXY, verifica el paquete releído y devuelve su identidad; no usa Office ni ninguna cuenta."),
         Descriptor(
             "office.document.read",
             Schema([String("documentId", maximumLength: 128, nonWhitespace: true)], ["documentId"]),

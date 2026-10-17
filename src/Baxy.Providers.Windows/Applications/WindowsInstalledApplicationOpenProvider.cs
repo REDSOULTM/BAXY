@@ -2195,7 +2195,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             && AttachThreadInput(currentThread, foregroundThread, attach: true);
         try
         {
-            _ = ShowWindowAsync(handle, 9);
+            if (IsIconic(handle))
+                _ = ShowWindowAsync(handle, 9);
             _ = BringWindowToTop(handle);
             _ = SetForegroundWindow(handle);
         }
@@ -2335,6 +2336,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool ShowWindowAsync(nint window, int command);
+
+    // Ronda final 25: a window is restored only when minimized (SW_RESTORE on a maximized one un-maximizes it).
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsIconic(nint window);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
