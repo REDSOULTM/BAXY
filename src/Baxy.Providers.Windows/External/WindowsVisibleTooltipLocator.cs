@@ -1069,6 +1069,8 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
         bool changed = false;
         bool userActed = false;
         bool restored = true;
+        // Ronda final 18 (regla 3): «unchanged» only from a read-back that was read.
+        bool read = false;
         try
         {
             for (int look = 0; look < PostReadLooks && !changed && burst is not { UserActed: true }; look++)
@@ -1076,6 +1078,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
                 await _desktop.DelayAsync(look == 0 ? 300 : 220, cancellationToken).ConfigureAwait(false);
                 VisibleControlSurface.CapturedWindow? after = await _desktop.CaptureAsync(
                     learned.Window, before.SelfDrawn, cancellationToken).ConfigureAwait(false);
+                read |= after is not null;
                 changed = after is { } later && later.Sha256 != before.Sha256 && ChangedBeyond(before, later, marks);
             }
         }
@@ -1094,7 +1097,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
         changed &= !userActed && !animated;
         bool targeted = pressed.Method == "target" && pressed.Focused;
         bool ok = changed || targeted;
-        if (!ok && learned.FromCache && !userActed)
+        if (!ok && learned.FromCache && !userActed && read)
             _cache.Forget(learned.Signature, learned.Place);
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -1102,7 +1105,8 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             writer.WriteNumber("version", 1);
             writer.WriteBoolean("ok", ok);
             writer.WriteBoolean("effectObserved", true);
-            writer.WriteString("error", ok ? "" : userActed ? "input_user_interrupted" : "visible_button_postread_unchanged");
+            writer.WriteString("error", ok ? "" : userActed ? "input_user_interrupted"
+                : read ? "visible_button_postread_unchanged" : "visible_click_postread_unread");
             writer.WriteString("name", learned.Label);
             writer.WriteString("nameSource", learned.Source);
             writer.WriteBoolean("learnedBefore", learned.FromCache);

@@ -752,6 +752,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
+    // Ronda final 18 (regla 3): a mind that ended mid-session is no longer shown ready (IsMindReady reads its process).
+    private void OnMindEnded() => _uiContext.Post(
+        _ =>
+        {
+            if (!_isDisposed)
+                OnPropertyChanged(nameof(IsMindReady));
+        },
+        null);
+
     private void OnMindVoiceEvent(System.Text.Json.Nodes.JsonObject voiceEvent)
     {
         string eventName = (string?)voiceEvent["event"] ?? string.Empty;
@@ -914,6 +923,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             mind.TranscriptReceived += OnMindTranscript;
             mind.VoiceEventReceived += OnMindVoiceEvent;
+            mind.Ended += OnMindEnded;
             Volatile.Write(ref _personVoiceChoice, 0);
             _mindClient = mind;
             _mindStartupState = MindStartupState.Ready;

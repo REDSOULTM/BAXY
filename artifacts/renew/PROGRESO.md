@@ -587,6 +587,17 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     y no «no encontrado» tras abrir el título; SelectAll y el foco pedido son efecto posible; el español de
     streaming.play.named dice cómo se verifica en cada navegador; W18 y W19 de web.search, abiertos como estaban.
     Suites: 564/69/477/2172. Sin medir.
+  - Ronda final 18: el clic visible ya no dice «sin cambios» sin haber leído nada después de pulsar (ni el control ni
+    la ventana: visible_click_postread_unread), ni la relectura antes de pulsar da «cambió» a una ventana que no pudo
+    leer (visible_surface_unread), ni el globo de ayuda «sin cambios» sin una copia leída; tras una pulsación que pudo
+    actuar, cualquiera que no se vio sin cambios, la cascada ya no prueba otra etapa (antes sólo con tres códigos); la
+    vista de la ventana dice el texto «unavailable» si se pidió o tocaba leerlo y no hubo copia; un clic tras abrir una
+    app cuya ventana nunca salió dice visible_opened_window_not_shown, no «botón no encontrado»; un control que pide el
+    «sí» de la persona en un punto conserva visible_control_needs_confirmation, no «otro control»; en mensajería, una
+    copia negra no prueba el envío, y el borrador de la persona y el foco no confirmado son efecto posible; el texto
+    con replace y nada encolado es efecto posible; la App avisa cuando la mente termina y /model dice mind_unavailable
+    (la interfaz muestra «sin modelo», no «loading»); el globo de la bandeja cortado lleva «…»; el español de
+    media.play.youtube. Suites: 564/69/477/2172. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

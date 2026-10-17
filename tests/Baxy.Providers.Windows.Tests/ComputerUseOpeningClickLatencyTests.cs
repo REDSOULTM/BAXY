@@ -156,8 +156,9 @@ public sealed class ComputerUseOpeningClickLatencyTests
     }
 
     // Review of fable/cu-v3-recibo-del-clic-por-estado (finding 1, double press): the worker answered the press as done
-    // with nothing the adapter takes as proof («visible_click_postread_invalid»). The OCR stage still looks for the label,
-    // but its point on that same control is refused: pressed once, as for a press seen unchanged.
+    // with nothing the adapter takes as proof («visible_click_postread_invalid»). Ronda final 18 (regla 3): a press that
+    // may have acted ends the click; no later stage looks for the label or presses anything (only a press seen unchanged
+    // goes on).
     [Test]
     public async Task APressWhosePostreadIsInvalidIsNeverPressedAgainByOcr()
     {
@@ -183,12 +184,9 @@ public sealed class ComputerUseOpeningClickLatencyTests
         {
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_postread_invalid"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.True, "it pressed");
-            Assert.That(ocr.Calls, Is.GreaterThanOrEqualTo(1), "the OCR stage still looked");
-            Assert.That(worker.Commands.Count(command => command["cmd"]?.GetValue<string>() == "at"), Is.GreaterThanOrEqualTo(1));
+            Assert.That(ocr.Calls, Is.Zero, "no later stage");
+            Assert.That(worker.Commands.Count(command => command["cmd"]?.GetValue<string>() == "at"), Is.Zero);
             Assert.That(worker.Commands.Count(command => (string?)command["cmd"] == "click"), Is.EqualTo(1));
-            Assert.That(worker.Commands.Where(command => (string?)command["cmd"] == "at")
-                    .Select(command => command["pressed"]?.GetValue<string>()),
-                Is.All.EqualTo("1.2.3"), "every later point names the control the tree pressed");
             Assert.That(worker.Pressed, Is.Zero, "no second press");
         });
     }
@@ -324,7 +322,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_opened_window_not_shown"));
             Assert.That(focus.FrontCalls, Is.GreaterThan(0));
             Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(OpeningTiming.LaunchSurface - TimeSpan.FromMilliseconds(50)));
         });

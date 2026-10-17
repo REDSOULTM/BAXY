@@ -150,6 +150,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
     public event Action<string>? TranscriptReceived;
 
+    // Ronda final 18 (regla 3): the mind's process ended (its output pump returned), so whoever shows it ready is told.
+    public event Action? Ended;
+
     /// <summary>Estado no sensible de la tubería de voz (hilo del pump).</summary>
     public event Action<JsonObject>? VoiceEventReceived;
 
@@ -213,6 +216,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             var helloCompletion = new TaskCompletionSource<JsonObject>(
                 TaskCreationOptions.RunContinuationsAsynchronously);
             _pump = PumpAsync(sidecar.Process, helloCompletion, _pumpCancellation.Token);
+            _ = _pump.ContinueWith(static (_, state) => ((MindSidecarClient)state!).Ended?.Invoke(), this,
+                CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 
             JsonObject hello = await helloCompletion.Task
                 .WaitAsync(startupCancellation.Token)

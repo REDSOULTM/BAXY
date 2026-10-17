@@ -45,6 +45,12 @@ internal enum PointPressOutcome
     Refused,
 
     /// <summary>
+    /// Ronda final 18 (regla 3): the control at the point is one RiskPolicy holds for the person's «yes»: nothing was
+    /// pressed, and the receipt says so with its code (visible_control_needs_confirmation), never «another control».
+    /// </summary>
+    NeedsConfirmation,
+
+    /// <summary>
     /// Review of lat-apertura-clic (finding 4): the point lies on the control the accessible tree already pressed in
     /// this click and saw nothing change from: neither its way nor the pointer presses it a second time.
     /// </summary>
@@ -71,6 +77,8 @@ internal sealed record PointPressed(
     internal static PointPressed Unconfirmed { get; } = new(PointPressOutcome.Unconfirmed);
 
     internal static PointPressed Refused { get; } = new(PointPressOutcome.Refused);
+
+    internal static PointPressed HeldForConfirmation { get; } = new(PointPressOutcome.NeedsConfirmation);
 
     internal static PointPressed AlreadyPressed { get; } = new(PointPressOutcome.AlreadyPressed);
 }
@@ -121,7 +129,8 @@ internal interface IPointPress
     /// <summary>
     /// The same for a remembered place of a control without a name, <paramref name="width"/>×<paramref name="height"/>
     /// (the tooltip stage's cache): a control there of about that size with another name refuses the press
-    /// (<see cref="PointPressOutcome.Refused"/>), so the pointer does not press it either.
+    /// (<see cref="PointPressOutcome.Refused"/>, or <see cref="PointPressOutcome.NeedsConfirmation"/> for a control
+    /// held for the person's «yes»), so the pointer does not press it either.
     /// </summary>
     ValueTask<PointPressed> PressRememberedAtAsync(
         nint window, int screenX, int screenY, int width, int height, string label, CancellationToken cancellationToken) =>
@@ -195,6 +204,12 @@ internal static class LocatedPointPress
         {
             return new Outcome(
                 ExternalJson.FailureBeforeEffect(operation, "visible_point_named_other"),
+                string.Empty, false, string.Empty, null);
+        }
+        if (pressed.Outcome == PointPressOutcome.NeedsConfirmation)
+        {
+            return new Outcome(
+                ExternalJson.FailureBeforeEffect(operation, WindowsVisibleControlAdapter.NeedsConfirmation),
                 string.Empty, false, string.Empty, null);
         }
         if (pressed.Outcome == PointPressOutcome.AlreadyPressed)
@@ -377,7 +392,10 @@ internal static class LocatedPointPress
         VisibleControlSurface.SurfaceAfterWait recheck = await VisibleControlSurface
             .SurfaceAfterWaitAsync(seen, (hwnd, token) => ReadAsync(capture, hwnd, token), cancellationToken)
             .ConfigureAwait(false);
-        if (recheck.Again is not { } again || recheck.Moved)
+        // Ronda final 18 (regla 3): a window not read again is said unread, never «changed».
+        if (recheck.Again is not { } again)
+            return new PointerChecked(screenX, screenY, null, false, VisibleControlSurface.SurfaceUnread);
+        if (recheck.Moved)
             return new PointerChecked(screenX, screenY, null, false, VisibleControlSurface.SurfaceChangedWhileWaiting);
         if (!recheck.Redrawn)
             return new PointerChecked(screenX, screenY, again, false, null);
@@ -677,17 +695,6 @@ internal sealed class WindowsVisibleControlAdapter
     {
         "visible_button_not_found",
         "active_window_not_found",
-    };
-
-    // Ronda B (falta 1): the tree's press was sent and its answer never came back («no receipt») or came back unreadable:
-    // the control may have been pressed and nothing says which one, so no later stage (OCR, tooltip, vision, another look)
-    // could keep off it. The click ends with that press, its effect uncertain; nothing is pressed a second time.
-    private static readonly HashSet<string> PressUnanswered = new(StringComparer.Ordinal)
-    {
-        "visible_click_no_receipt",
-        "visible_click_receipt_invalid",
-        // Auditoría final (regla 3): the press raised once sent; it may have acted, so no later stage presses again.
-        "visible_press_raised",
     };
 
     // H0096 «aprieta en Among Us»: el worker sólo emite este código después de
@@ -1151,7 +1158,12 @@ internal sealed class WindowsVisibleControlAdapter
                 // An administrator's window refuses every stage alike (UIPI): no OCR, tooltip or vision is tried on it.
                 if (uia.ErrorCode is WindowElevated or WindowElevationUnread or NeedsConfirmation)
                     return uia;
-                if (uia.EffectMayHaveOccurred && uia.ErrorCode is { } unanswered && PressUnanswered.Contains(unanswered))
+                // Ronda B (falta 1) and ronda final 18 (regla 3): any failure of a press that may have acted (no
+                // receipt, an unreadable one, a raise once sent, a read-back not read, the person's touch, no answer to
+                // the post-read) ends the click with that press: no later stage presses again. Only a press seen
+                // unchanged goes on, to a stage that never presses that same control (below).
+                if ((uia.EffectMayHaveOccurred || uia.EffectObserved)
+                    && uia.ErrorCode != "visible_button_postread_unchanged")
                     return uia;
                 // lat-apertura-clic (r13a), review of the branch (finding 4): the tree found the control and pressed it,
                 // and its post-read saw nothing change. A later stage still looks for the label (the tree may have
@@ -1250,9 +1262,10 @@ internal sealed class WindowsVisibleControlAdapter
             await Task.Delay(_timing.Interval, cancellationToken).ConfigureAwait(false);
         }
 
-        // Nothing looked at means nothing pressed: no window of the opened application ever showed.
+        // Nothing looked at means nothing pressed: no window of the opened application ever showed (ronda final 18:
+        // said so, never «no such button», which was never looked for).
         if (uia is null)
-            return ExternalJson.FailureBeforeEffect(operation, "visible_button_not_found");
+            return ExternalJson.FailureBeforeEffect(operation, "visible_opened_window_not_shown");
         return uia.ErrorCode is null
             ? ExternalJson.Failure(operation, "visible_button_not_found")
             : uia;
@@ -1726,6 +1739,12 @@ internal sealed class WindowsVisibleControlAdapter
                         textAuthority = "unavailable";
                     }
                 }
+            }
+            // Ronda final 18 (regla 3): the text asked for (or due, the tree showing nothing) with no capture to read it
+            // from is said unread, never an empty window.
+            else if (textTask is not null || controls.Count <= 1)
+            {
+                textAuthority = "unavailable";
             }
 
             foreach (ViewControl control in controls)
@@ -2632,7 +2651,9 @@ internal sealed class WindowsVisibleControlAdapter
             || (root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True);
         if (!pressed)
         {
-            if (!effect && error is "visible_point_named_other" or NeedsConfirmation)
+            if (!effect && error == NeedsConfirmation)
+                return PointPressed.HeldForConfirmation;
+            if (!effect && error == "visible_point_named_other")
                 return PointPressed.Refused;
             if (!effect && error == PointAlreadyPressed)
                 return PointPressed.AlreadyPressed;
@@ -2684,6 +2705,8 @@ internal sealed class WindowsVisibleControlAdapter
         // The front net's report: the click's own answer, then each post-read (they also see the tail after it).
         UiaFrontReport? front = UiaFrontReport.Read(clicked);
         TimeSpan budget = before is null ? _timing.ControlPostread : _timing.SurfacePostread;
+        bool surfaceRead = false;
+        bool controlSaidUnchanged = false;
         while (true)
         {
             if (askControl && watch.Elapsed < _timing.ControlPostread)
@@ -2705,6 +2728,8 @@ internal sealed class WindowsVisibleControlAdapter
                 if (root.TryGetProperty("error", out JsonElement doubt) && doubt.ValueKind == JsonValueKind.String
                     && doubt.GetString() is ToggleUncorroborated or ChoiceUncorroborated)
                     return NotedPress(ReceiptFromWorker(operation, root, effectBoundary), clicked);
+                controlSaidUnchanged |= root.TryGetProperty("error", out JsonElement said)
+                    && said.ValueKind == JsonValueKind.String && said.GetString() == "visible_button_postread_unchanged";
                 // Anything but «not yet» ends the questions to the control; the surface may still answer.
                 askControl = root.TryGetProperty("error", out JsonElement error)
                     && error.ValueKind == JsonValueKind.String
@@ -2715,6 +2740,7 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 string? surface = await SurfaceAsync(captured.Hwnd, captured.SelfDrawn, cancellationToken)
                     .ConfigureAwait(false);
+                surfaceRead |= surface is not null;
                 // lat-apertura-clic (r13a, 33 right clicks at 1.5–2.6 s, 94 s): the first image that differs from the
                 // one before the click answers «changed». The verdict was already that (an image that differed once
                 // ended as changed at the budget); waiting for two equal images only paid the whole budget on a window
@@ -2766,6 +2792,9 @@ internal sealed class WindowsVisibleControlAdapter
             await Task.Delay(_timing.PostreadPeriod, cancellationToken).ConfigureAwait(false);
         }
 
+        // Ronda final 18 (regla 3): «unchanged» only from a read-back that was read; none read is said as such.
+        if (!surfaceRead && !controlSaidUnchanged)
+            return effectBoundary.Failure(operation, "visible_click_postread_unread", effectObserved: true);
         // Pressed and seen unchanged: no later stage of this click presses that control again (finding 4).
         _pressedUnchanged = PressedIdentity(clicked);
         return effectBoundary.Failure(operation, "visible_button_postread_unchanged", effectObserved: true);

@@ -1033,6 +1033,8 @@ internal static partial class VisibleControlSurface
 
     /// <summary>The refusal of a point located on a surface that changed while the person's pause was waited for.</summary>
     internal const string SurfaceChangedWhileWaiting = "visible_surface_changed_while_waiting";
+    // Ronda final 18: the window could not be read again before the press (a black copy, a window gone).
+    internal const string SurfaceUnread = "visible_surface_unread";
 
     /// <summary>
     /// The same window, at the same place and size, drawn the same: a point located on one capture still means the

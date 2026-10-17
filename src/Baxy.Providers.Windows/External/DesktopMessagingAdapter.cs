@@ -937,7 +937,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
         if (!FocusComposer(recipient.WindowHandle, recipient.Channel))
         {
-            return new(false, false, string.Empty, "message_composer_not_focused");
+            // Ronda final 18 (regla 3): part of the click may have reached the window before the focus failed.
+            return new(false, false, string.Empty, "message_composer_not_focused") { EffectMayHaveOccurred = true };
         }
 
         await Task.Delay(200, cancellationToken).ConfigureAwait(false);
@@ -946,7 +947,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         if (await ComposerHoldsTextAsync(recipient.WindowHandle, recipient.Channel, before, cancellationToken)
                 .ConfigureAwait(false))
         {
-            return new(false, false, string.Empty, ComposerHasPersonDraft);
+            // Ronda final 18 (regla 3): the composer was already clicked into (FocusComposer): an effect, though
+            // nothing was typed over the person's draft.
+            return new(false, false, string.Empty, ComposerHasPersonDraft) { EffectMayHaveOccurred = true };
         }
 
         byte[] beforeSend;
@@ -1078,7 +1081,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
         if (!FocusComposer(recipient.WindowHandle, recipient.Channel))
         {
-            return new(false, false, string.Empty, "message_composer_not_focused");
+            // Ronda final 18 (regla 3): part of the click may have reached the window before the focus failed.
+            return new(false, false, string.Empty, "message_composer_not_focused") { EffectMayHaveOccurred = true };
         }
 
         await Task.Delay(200, cancellationToken).ConfigureAwait(false);
@@ -1087,7 +1091,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         if (await ComposerHoldsTextAsync(recipient.WindowHandle, recipient.Channel, before, cancellationToken)
                 .ConfigureAwait(false))
         {
-            return new(false, false, string.Empty, ComposerHasPersonDraft);
+            // Ronda final 18 (regla 3): the composer was already clicked into (FocusComposer): an effect, though
+            // nothing was typed over the person's draft.
+            return new(false, false, string.Empty, ComposerHasPersonDraft) { EffectMayHaveOccurred = true };
         }
 
         MessageVisualObservation draftObservation;
@@ -2111,6 +2117,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     throw new IOException("Messaging evidence pixels are unavailable.");
                 }
 
+                // Ronda final 18 (regla 3): a copy all black (a window with display affinity, a locked session) is not
+                // a reading of the composer: «unchanged» or «empty» is never said from it.
+                if (Baxy.Providers.Windows.Capture.WindowsScreenshotProvider.IsBlack(
+                        new Baxy.Providers.Windows.Capture.ScreenshotFrame(width, height, pixels)))
+                    throw new IOException("Messaging evidence capture came back black.");
                 return EncodeBmp(width, height, pixels);
             }
             finally

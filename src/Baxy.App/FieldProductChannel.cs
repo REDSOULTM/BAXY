@@ -84,7 +84,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (method == "GET" && route == "/model")
         {
             // Ronda final 17 (regla 3): the model is said loaded only once the mind that serves it is ready.
-            return _viewModel.IsMindReady ? Json(ModelInfo()) : Error("model_not_loaded", 503);
+            return _viewModel.IsMindReady ? Json(ModelInfo())
+                : Error(MindUnavailable ? "mind_unavailable" : "model_not_loaded", 503);
         }
 
         if (method == "GET" && route == "/metrics")
@@ -701,7 +702,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private bool MindUnavailable => !_viewModel.IsMindReady && !_viewModel.IsMindPreparing;
 
-    // The model event: its identity once the mind serving it is ready, null (loading) before.
+    // The model event: its identity once the mind serving it is ready, null before (the interface then asks /model,
+    // which says whether it is still loading or the mind is unavailable).
     private JsonObject ModelEvent() =>
         new() { ["type"] = "model", ["info"] = _viewModel.IsMindReady ? ModelInfo() : null };
 

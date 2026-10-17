@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Baxy.App;
 
 /// <summary>
-/// Registers a queryable Win32 window class and a Shell_NotifyIcon entry.
+/// Registers a Win32 window class for its own messages and a Shell_NotifyIcon entry.
 /// </summary>
 internal sealed class PresenceTrayIcon : IDisposable
 {
@@ -253,7 +253,7 @@ internal sealed class PresenceTrayIcon : IDisposable
                 HWnd = hwnd,
                 UId = 1,
                 UFlags = 0x00000010,
-                SzInfo = text.Length > 255 ? text[..255] : text,
+                SzInfo = text.Length > 255 ? text[..254] + "…" : text,
                 SzInfoTitle = "BAXY",
                 DwInfoFlags = 0x00000001,
                 SzTip = string.Empty,

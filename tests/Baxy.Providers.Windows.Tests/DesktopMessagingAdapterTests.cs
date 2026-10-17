@@ -150,7 +150,7 @@ public sealed class DesktopMessagingAdapterTests
             Assert.That(start, Is.GreaterThan(0));
             Assert.That(read, Is.GreaterThan(0));
             Assert.That(source[start..typed], Does.Contain("ComposerHoldsTextAsync("));
-            Assert.That(source[start..typed], Does.Contain("return new(false, false, string.Empty, ComposerHasPersonDraft);"));
+            Assert.That(source[start..typed], Does.Contain("return new(false, false, string.Empty, ComposerHasPersonDraft) { EffectMayHaveOccurred = true };"));
             Assert.That(source[start..typed], Does.Not.Contain("VirtualKeyBack"));
             Assert.That(source[read..readEnd], Does.Not.Contain("VirtualKeyBack"));
         });

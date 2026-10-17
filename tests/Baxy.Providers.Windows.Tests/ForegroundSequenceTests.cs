@@ -946,7 +946,7 @@ public sealed class ForegroundSequenceTests
         Assert.Multiple(() =>
         {
             Assert.That(pressed.Pressed, Is.False);
-            Assert.That(pressed.Refusal, Is.EqualTo(VisibleControlSurface.SurfaceChangedWhileWaiting));
+            Assert.That(pressed.Refusal, Is.EqualTo(VisibleControlSurface.SurfaceUnread));
             Assert.That(desktop.Fronted, Is.Empty);
         });
     }

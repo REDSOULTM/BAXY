@@ -47,7 +47,7 @@ export type ServerEvent =
       tools: number;
     }
   | { type: 'session'; id: string; label: string }
-  | { type: 'model'; info: ModelInfo }
+  | { type: 'model'; info: ModelInfo | null }
   | {
       /** the shell's gate: the chat input is disabled until a turn is accepted. */
       type: 'agent';

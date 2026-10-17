@@ -93,7 +93,12 @@ export function SubstratePanel({
       try {
         const r = await fetch('/model');
         if (cancelled) return;
-        if (r.status === 503) { setModel({ status: 'loading' }); return; }
+        // 503: still loading, or the mind is unavailable (then there is no model to show, never «loading»).
+        if (r.status === 503) {
+          const body = (await r.json().catch(() => null)) as { error?: string } | null;
+          setModel({ status: body?.error === 'mind_unavailable' ? 'error' : 'loading' });
+          return;
+        }
         if (!r.ok) { setModel({ status: 'error' }); return; }
         setModel({ status: 'ready', info: (await r.json()) as ModelInfo });
       } catch {
@@ -132,7 +137,8 @@ export function SubstratePanel({
         <div className="row">
           <span className="mark"><LogoMark size={14} state={convState} /></span>
           <span className="name">
-            {loaded ? loaded.family : <span className="dim">loading…</span>}
+            {loaded ? loaded.family
+              : <span className="dim">{model.status === 'error' ? 'sin modelo' : 'loading…'}</span>}
           </span>
         </div>
         <div className="sub">
@@ -150,7 +156,7 @@ export function SubstratePanel({
         onClick={onToggleVoice}
         aria-pressed={voiceOn}
         aria-label={voiceOn ? 'voice on — click to mute' : 'voice off — click to listen'}
-        data-tip={online ? 'asistente online' : 'asistente sin conexión'}
+        data-tip={online ? 'interfaz conectada a BAXY' : 'interfaz sin conexión con BAXY'}
       >
         <span className="power-ic"><Icon name={voiceOn ? 'mic' : 'mic-off'} size={15} /></span>
         <span className="power-lbl">{voiceOn ? 'voz' : 'voz off'}</span>

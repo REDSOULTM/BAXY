@@ -214,13 +214,14 @@ public sealed class ComputerUsePressedNameTests
         });
     }
 
-    // At a point the refusal is no «nothing there»: the pointer does not press it either.
+    // At a point the refusal is no «nothing there»: the pointer does not press it either, and (ronda final 18) it keeps
+    // its own outcome, held for the person's «yes», never «another control».
     [Test]
     public void AtAPointTheRefusalStopsThePointer()
     {
         using JsonDocument answer = JsonDocument.Parse(
             """{"ok":false,"effectObserved":false,"error":"visible_control_needs_confirmation","name":"General (canal de voz)"}""");
-        Assert.That(WindowsVisibleControlAdapter.PointPressFrom(answer.RootElement), Is.SameAs(PointPressed.Refused));
+        Assert.That(WindowsVisibleControlAdapter.PointPressFrom(answer.RootElement), Is.SameAs(PointPressed.HeldForConfirmation));
     }
 
     // The receipt says nothing was pressed and names the control, for the step that names it.

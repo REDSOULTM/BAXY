@@ -304,6 +304,9 @@ public sealed class ComputerUseTooltipTests
                 """{"ok":false,"effectObserved":false,"error":"visible_point_named_other"}""").RootElement).Outcome,
                 Is.EqualTo(PointPressOutcome.Refused));
             Assert.That(WindowsVisibleControlAdapter.PointPressFrom(JsonDocument.Parse(
+                """{"ok":false,"effectObserved":false,"error":"visible_control_needs_confirmation"}""").RootElement).Outcome,
+                Is.EqualTo(PointPressOutcome.NeedsConfirmation), "ronda final 18: held for the person's «yes», not «another control»");
+            Assert.That(WindowsVisibleControlAdapter.PointPressFrom(JsonDocument.Parse(
                 """{"ok":false,"effectObserved":false,"error":"visible_point_no_pattern"}""").RootElement).Outcome,
                 Is.EqualTo(PointPressOutcome.NothingThere), "counter-case: nothing there still leaves it to the pointer");
         });

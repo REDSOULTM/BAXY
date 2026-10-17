@@ -229,8 +229,9 @@ internal sealed class WindowsTextDelivery
             queued++;
         }
 
+        // Ronda final 18 (regla 3): with replace, the select-all and EM_REPLACESEL were already sent.
         if (queued == 0)
-            return new FieldDelivery("wm_char", false, false,
+            return new FieldDelivery("wm_char", false, replace,
                 Same(identity) ? "input_effect_not_verified" : "input_window_changed", fieldClass);
         try
         {

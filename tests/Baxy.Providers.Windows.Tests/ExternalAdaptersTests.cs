@@ -1252,7 +1252,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_opened_window_not_shown"));
             Assert.That(worker.Commands.Count, Is.Zero);
             Assert.That(ocr.Calls, Is.Zero);
         });
