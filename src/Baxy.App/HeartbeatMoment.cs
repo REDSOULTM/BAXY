@@ -134,6 +134,8 @@ internal static class HeartbeatMoment
         }
 
         context["history"] = history;
+        if (recent.Count > 6)
+            context["history_omitted"] = recent.Count - 6;
         return context;
     }
 

@@ -502,7 +502,8 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 91 descripciones del catálogo y 17 entradas de argumentos tras la ronda final 44, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 91 descripciones del catálogo y 19 entradas de argumentos tras la ronda final 45, y mind.py en _outcome (ronda 37), en el recorte del historial por tokens (ronda 44) y en sus avisos de lo
+  recortado (ronda 45), sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -947,19 +948,37 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     una operación (30 + 70 de reconciliación) y el archivo sólo se escribe al final; ahora lo dice. (3) El texto en
     español de media.play.query prometía el primer resultado; dice también el titulado como la búsqueda. (4) El
     contexto del modelo: medido en vivo sobre este árbol, el prefijo de herramientas y sistema son 42.282 de los 49.152
-    tokens (37,5k en ff863b47f, por cómputo del auditor de bancos: las descripciones de las rondas finales lo
-    alargaron); con 24.000 caracteres de historial (~5,7-7,9k tokens) y una lectura de texto exenta de hasta 48.000
+    tokens (37.999 en ff863b47f, medidos en el calentamiento del holdout v3, %LOCALAPPDATA%\BAXY\renew\
+    bench-v3-decision.log; la ronda 44 decía «37,5k», la aproximación del auditor de bancos del PC, corregida en la 45:
+    las descripciones de las rondas finales lo alargaron en 4.283); con 24.000 caracteres de historial (~5,7-7,9k tokens) y una lectura de texto exenta de hasta 48.000
     caracteres (~13k tokens, ronda 43) el turno podía pasar del contexto y fallar entero. Las tres lecturas
     (portapapeles, página y cuerpo del correo) vuelven al presupuesto de 8 KiB con un tope propio de 6.000 caracteres,
     y la mente recorta el historial por tokens: guarda lo que deja el prefijo contado por el servidor al calentar, menos
     3.584 para la respuesta y un resultado. Medido en vivo (Qwen3.5-4B, -c 49152): una sesión de 23.317 caracteres de
-    historial (5.656 tokens), que el tope viejo guardaba entera, se queda en sus 4 últimos turnos y el turno responde
-    (system.time, 2,17 s). (5) B arregladas: wifi.scan dice listedCount y networkCount; epic_launcher_data_not_found en
+    historial (5.656 tokens), que el tope viejo guardaba entera, se queda en sus 3 últimos turnos más el nuevo y el turno
+    responde (system.time, 2,14 s de turn.decide en la traza; artifacts/renew/medida_historial_r45.txt la repite). (5) B arregladas: wifi.scan dice listedCount y networkCount; epic_launcher_data_not_found en
     game.entitlement.named y game.install.named; comentarios de OperationVisibleFacts, OperationResponseProjection y
     SteamLocalAdapter; archivo:línea en cinco tareas b_r39 a b_r43. La entrada de la ronda 43 decía dos cosas falsas
     (el respaldo de Opera sin otra pulsación tras un clic no visto; la transferencia sin plazo): quedan corregidas
     ahí. Desde ff863b47f cambiaron 91 descripciones y 17 entradas de argumentos. Suites: 566/69/477/2189. El
-    holdout v3 se midió sobre ff863b47f con el prefijo de 37,5k: con 42,3k no está medido.
+    holdout v3 se midió sobre ff863b47f con el prefijo de 37.999: con 42.282 no está medido.
+  - Ronda final 45 (sobre 6aa377b5f, con la vara literal; la última: el dueño cerró las rondas el 2026-10-17):
+    notebook A 1; PC A 2+0+1+1. (1) El recorte del historial era mudo (ya lo era en ff863b47f con 8 turnos o 24.000
+    caracteres; el corte por tokens lo hizo frecuente) y la regla del sistema manda negar lo que no está en la
+    conversación: ahora delante de lo que queda va «[Conversación recortada: los N turnos más antiguos de esta sesión
+    ya no se muestran; lo que pasó en ellos no lo sabes]», medido en vivo (artifacts/renew/medida_historial_r45.txt:
+    prefijo 42.282, 3 turnos y el nuevo, el aviso delante, system.time en 1,83 s). (2) web.download prometía «falla
+    sin escribir nada»: pasados los ~100 s el núcleo no se para hasta que acaba el turno, así que una descarga que
+    acabe justo después se escribe; la descripción lo dice. (3) La entrada de la ronda 44 daba 37,5k de prefijo en
+    ff863b47f (una aproximación): los registros del calentamiento del holdout v3 dan 37.999; corregido allí y en
+    mind.py. Arreglos de B (puntos 1 y 4 de la decisión): ocr.read deja fuera las cajas de las palabras (layout
+    available false) pasados los 8 KiB y conserva el texto (con ellas, ~150 palabras en pantalla ya no cabían junto al
+    prefijo; prueba nueva en Kernel); email.latest.reply dice que su recibo trae el cuerpo cortado a 6.000;
+    epic_launcher_data_not_found dice «la caché de la biblioteca no está o no se pudo leer»; window.close.all y
+    window.minimize.all nombran unreadWindows; memory.save y memory.sensitive.save explican los pares de retention y
+    expiryPolicy; el latido dice cuántos mensajes de la conversación no muestra y un recordatorio sin título sale «sin
+    título», no «None»; archivo:línea en las tareas que no lo tenían. Desde ff863b47f cambiaron 91 descripciones y
+    19 entradas de argumentos. Suites: 567/69/477/2189.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -1067,6 +1086,36 @@ Tal cual la dio el dueño, durante la ronda final 44 (se aplica desde ella):
 >   y lo anotas.
 > - Los arreglos ya hechos con la vara estricta se quedan.
 > Comunícalo al notebook por el buzón con la ronda siguiente, y que sus auditores clasifiquen igual.
+
+## Decisión del dueño (2026-10-17): bancos de desarrollo sobre el HEAD final antes del cierre
+
+Tal cual la dio el dueño, durante la ronda final 45:
+
+> Decisión del dueño: antes del cierre, tras la ronda limpia, el notebook corre una vez los bancos de
+> desarrollo de la decisión 20 (decisión, escenas y e2e) sobre el HEAD final, con las semillas y la
+> configuración de la base. Dentro del ruido (±1 caso en el e2e): se anota como «producto final, banco
+> de desarrollo, no holdout» y se cierra. Si cae más allá: bisect por commits y arreglo sólo por
+> presentación o protocolo. No se abren más rondas de auditoría ni se vuelve a correr el holdout.
+
+## Decisión del dueño (2026-10-17): no más rondas; consolidación y cierre
+
+Tal cual la dio el dueño, durante la ronda final 45 (sustituye a la de los bancos finales en lo que la amplía):
+
+> Decisión del dueño (2026-10-17), anótala tal cual en PROGRESO.md y metas.json: no se abren más
+> rondas de auditoría; el objetivo ahora es el mejor producto posible con lo ya hecho.
+> 1. Termina la ronda 45: arregla sus A, 4 suites, diff verificado, commit y push a hub. Cierra
+>    ronda_final_auditoria como límite honesto con su evidencia (A de las rondas 19-45 arregladas y
+>    probadas; B pendientes con archivo:línea).
+> 2. Consolidación: el notebook corre una vez los bancos de desarrollo de la decisión 20 (decisión,
+>    escenas y e2e) sobre el HEAD, con las semillas y la configuración de la base.
+> 3. Si caen más allá del ruido, o para devolver contexto al historial: condensa por presentación las
+>    descripciones del catálogo (sin quitar ninguna promesa ni aviso de corte), mide el prefijo y
+>    vuelve a correr los bancos; queda sólo lo que no baje. Si sigue cayendo, bisect por commits y
+>    arreglo sólo por presentación o protocolo.
+> 4. Arregla las B pendientes que tocan rutas de uso normal y cuestan menos de 15 minutos.
+> 5. Cierre: metas y PROGRESO al día, commit, push a hub, borrar el recordatorio horario e informe
+>    final corto para el dueño (qué hace BAXY, qué no, cifras medidas y lo pendiente).
+> Avísale al notebook por el buzón.
 
 ## Producto actual, banco de desarrollo, no holdout (decisión 21, punto 3; 2026-10-16/17, notebook)
 

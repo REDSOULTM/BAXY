@@ -67,8 +67,9 @@ public static class OperationVisibleFacts
         // dropped whole and the final could say nothing of what came out.
         bool consoleOutput = operation == "shell.command.run";
         // Rondas finales 43-44 (regla 3 and the model's context): the clipboard's, the page's and the email's text are
-        // bounded by their own operations at 6,000 characters, so they fit this 8 KiB budget whole (40,000 let through
-        // beside the tool prefix and the history could overflow the model's 49,152 tokens).
+        // bounded by their own operations at 6,000 characters, so they fit this 8 KiB budget whole unless their escapes
+        // take them past it (then the projection's steps cut them, with truncated); 40,000 let through beside the tool
+        // prefix and the history could overflow the model's 49,152 tokens.
         int messageLimit = processInventory || ocrObservation || consoleOutput
             ? ProtocolLimits.MaximumOperationResponseMessageChars
             : MaximumMessageChars;
@@ -127,18 +128,18 @@ public static class OperationVisibleFacts
         {
             json = WithProjectedObservation(payload, sanitized, messageLimit, paged);
         }
+        // Ronda final 45 (the model's context): past the 8 KiB budget an OCR's word boxes go first, said as layout
+        // available false; with them, ~150 words on screen no longer fit beside the 42k-token tool prefix.
+        if (ocrObservation && json.Length > MaximumMessageChars
+            && payload["observed"] is JsonObject observed && observed.ContainsKey("layout"))
+        {
+            observed["layout"] = OcrSizeLimit();
+            json = payload.ToJsonString(JsonOptions);
+        }
         if (ocrObservation && json.Length > messageLimit)
         {
-            if (payload["observed"] is JsonObject observed && observed.ContainsKey("layout"))
-            {
-                observed["layout"] = OcrSizeLimit();
-                json = payload.ToJsonString(JsonOptions);
-            }
-            if (json.Length > messageLimit)
-            {
-                payload["observed"] = OcrSizeLimit();
-                json = payload.ToJsonString(JsonOptions);
-            }
+            payload["observed"] = OcrSizeLimit();
+            json = payload.ToJsonString(JsonOptions);
             if (json.Length > messageLimit)
             {
                 payload.Remove("error");

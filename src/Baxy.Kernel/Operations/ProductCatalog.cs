@@ -368,7 +368,7 @@ public static class ProductCatalog
             Schema([String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true)], ["text"]),
             OperationRisks.ExternalCommunication,
             "email.latest.reply.outlook.sent.postread.v1",
-            "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada."),
+            "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; el resultado trae el cuerpo del correo respondido, cortado a 6.000 caracteres (bodyTruncated)."),
         // Fase 7 (D4, 2026-09-20): correo a una dirección libre desde el perfil clásico de
         // Outlook del dueño, confirmado en modo normal; la copia en Elementos enviados
         // (destinatario, texto, hora) es la prueba. Sin Outlook clásico se dice el límite.
@@ -1598,7 +1598,7 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
-            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; se abandona si el servidor tarda más de 40 segundos en responder (cada redirección incluida); la descarga entera debe acabar en unos 100 segundos (lo que BAXY espera a una operación) o falla sin escribir nada."),
+            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; se abandona si el servidor tarda más de 40 segundos en responder (cada redirección incluida); la descarga entera debe acabar en unos 100 segundos (lo que BAXY espera a una operación) o BAXY dice que falló (una que acabe justo después puede escribirse igual)."),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
         // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.

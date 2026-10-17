@@ -279,6 +279,32 @@ public sealed class OperationOutcomeNarrationTests
         Assert.That(facts.RootElement.GetProperty("observed").GetProperty("text").GetString(), Has.Length.EqualTo(6_000));
     }
 
+    // Ronda final 45 (the model's context): an OCR whose word boxes pass 8 KiB keeps its text and says the boxes are out.
+    [Test]
+    public void AnOcrPastEightKibLeavesItsWordBoxesOutAndKeepsItsText()
+    {
+        var words = Enumerable.Range(0, 300)
+            .Select(static i => new { text = $"palabra{i}", boundingRect = new { x = i, y = i, width = 40, height = 12 } })
+            .ToArray();
+        string text = string.Join(' ', words.Select(static word => word.text));
+        JsonElement read = JsonSerializer.SerializeToElement(new
+        {
+            text,
+            layout = new { available = true, lines = new[] { new { text, words } } },
+        });
+
+        using JsonDocument facts = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("ocr.read", OperationOutcome.Success(read)));
+
+        JsonElement observed = facts.RootElement.GetProperty("observed");
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.GetProperty("text").GetString(), Is.EqualTo(text));
+            Assert.That(observed.GetProperty("layout").GetProperty("available").GetBoolean(), Is.False);
+            Assert.That(facts.RootElement.GetRawText(), Has.Length.LessThanOrEqualTo(8_192));
+        });
+    }
+
     [Test]
     public void AListWithoutACountKeepsItsLengthAndADeepValueLeftOutIsSaid()
     {

@@ -153,12 +153,16 @@ def beat_message(context: dict[str, Any]) -> str:
             lines.append(f"{title}: " + "; ".join(values))
     history = context.get("history") or []
     if history:
-        lines.append("Conversación reciente: " + " / ".join(
+        # Ronda final 45 (regla 3): the older messages left out are said, as the session's own trim says them.
+        omitted = int(context.get("history_omitted") or 0)
+        shown = f" (los {omitted} mensajes anteriores no se muestran)" if omitted else ""
+        lines.append(f"Conversación reciente{shown}: " + " / ".join(
             f"{'persona' if h.get('role') == 'user' else 'tú'} (hace {h.get('ago_min', '?')} min): {h.get('content', '')}"
             for h in history))
     reminders = context.get("reminders") or []
     if reminders:
-        lines.append("Recordatorios: " + "; ".join(f"{r.get('text', '')} ({r.get('due', '')})" for r in reminders))
+        lines.append("Recordatorios: " + "; ".join(f"{r.get('text') or 'sin título'} ({r.get('due', '')})"
+                                                   for r in reminders))
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
 
@@ -169,10 +173,14 @@ CLOCK_MARK = "[Reloj:"
 HISTORY_TURNS = 8
 HISTORY_CHARS = 24000
 # Ronda final 44: the context also holds the tool prefix (about 42k of its 49,152 tokens with the descriptions of the
-# rondas finales, 37.5k at ff863b47f), so 24,000 characters of history (~7.9k tokens) no longer always fit beside it and
+# rondas finales, 37,999 at ff863b47f), so 24,000 characters of history (~7.9k tokens) no longer always fit beside it and
 # a turn failed whole. The history keeps the tokens the prefix leaves, less room for the turn: its reply (512) and one
 # result within the kernel's 8 KiB (~3k tokens).
 TURN_ROOM_TOKENS = 3584
+# Ronda final 45 (regla 3): what is cut is said where the model reads, or it took what is left for the whole session
+# («nunca me lo dijiste» about a turn no longer shown).
+TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "
+           "no lo sabes]")
 
 NOT_RUN = json.dumps({"status": "not_run", "reason": "the turn ended before this call ran"})
 # A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
@@ -267,6 +275,7 @@ class Mind:
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
+        self.trimmed_turns = 0
         # The tools and the system prompt in tokens, as the server counted them at warm-up (0 before it).
         self.prefix_tokens = 0
         self.constants: dict[str, dict[str, Any]] = {}
@@ -364,6 +373,7 @@ class Mind:
     def new_session(self, history: list[dict[str, Any]] | None = None) -> None:
         """Start a fresh conversation, optionally from earlier plain exchanges (a bench case's context)."""
         self._turn = self._beat = None
+        self.trimmed_turns = 0
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
@@ -458,9 +468,15 @@ class Mind:
     def _trim(self) -> None:
         """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result."""
         starts = self._turn_starts()
+        dropped = 0
         while len(starts) > 1 and (len(starts) > HISTORY_TURNS or self._history_too_long()):
+            # From the second turn's clock on: an earlier note of what was cut goes with the first turn.
             self.conversation = self.conversation[starts[1]:]
+            dropped += 1
             starts = self._turn_starts()
+        if dropped:
+            self.trimmed_turns += dropped
+            self.conversation.insert(0, {"role": "user", "content": TRIMMED.format(n=self.trimmed_turns)})
 
     def _history_too_long(self) -> bool:
         text = "".join(json.dumps(m, ensure_ascii=False) for m in self.conversation)
