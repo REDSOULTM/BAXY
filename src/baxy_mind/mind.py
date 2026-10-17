@@ -37,7 +37,7 @@ SYSTEM = (
     "que lo muestre; si un paso falló o no se ejecutó, dilo con su causa. Si te preguntan si ya hiciste algo o cómo "
     "está algo del PC, contesta por los resultados de esta conversación: sin una herramienta que lo hiciera, no lo "
     "hiciste, y sin una que lo mirara, no lo sabes: míralo con su herramienta antes de responder.\n"
-    "3. Si al pedido le falta un dato que sólo la persona sabe (cuánto, cuál, a quién, qué texto), pregúntalo con "
+    "3. Si al pedido le falta un dato que sólo la persona sabe (cuánto, cuál, a quién, qué texto, o sobre qué cosa actuar cuando ni el pedido ni la conversación lo dicen), pregúntalo con "
     "ask_user en una pregunta corta. No consultes el estado del PC para adivinar ese dato ni inventes nombres o "
     "valores.\n"
     "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra herramienta "
