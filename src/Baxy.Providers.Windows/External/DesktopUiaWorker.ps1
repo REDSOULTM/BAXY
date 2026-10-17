@@ -1529,8 +1529,11 @@ function Test-HitLeavesElement($chain,$el){
   if($box.IsEmpty){ return $false }
   $name=''
   try { $name=([string]$el.Current.Name).Trim() } catch { $name='' }
+  # Ronda final 37: el documento o la ventana como primer nodo no muestra nada; alcanzados tras leer un nodo de la pagina
+  # dentro de la caja que no es el elemento (una capa pequena, el documento de un marco encima), si: otra cosa leida.
+  $readOther=$false
   foreach($node in @($chain)){
-    if(@(15,9,10) -contains [int]$node.Role){ return $false }
+    if(@(15,9,10) -contains [int]$node.Role){ return $readOther }
     if($node.Width -le 0 -or $node.Height -le 0){ continue }
     # Otro control con la misma caja y otro nombre tambien es otra cosa leida en el punto.
     $same=([math]::Abs($node.Left-$box.X) -le 2 -and [math]::Abs($node.Top-$box.Y) -le 2 -and
@@ -1539,6 +1542,7 @@ function Test-HitLeavesElement($chain,$el){
     if($same -and $name.Length -gt 0 -and $nodeName.Length -gt 0 -and -not [string]::Equals($nodeName,$name,[StringComparison]::OrdinalIgnoreCase)){ return $true }
     if($node.Left -lt $box.X-2 -or $node.Top -lt $box.Y-2 -or ($node.Left+$node.Width) -gt ($box.X+$box.Width+2) -or
       ($node.Top+$node.Height) -gt ($box.Y+$box.Height+2)){ return $true }
+    if(-not $same){ $readOther=$true }
   }
   return $false
 }

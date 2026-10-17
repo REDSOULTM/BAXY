@@ -177,6 +177,7 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
         try
         {
             process = Process.Start(start);
+            HelperProcessJob.Assign(process);
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException
             or System.ComponentModel.Win32Exception)

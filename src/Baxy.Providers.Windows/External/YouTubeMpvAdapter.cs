@@ -161,6 +161,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         start.ArgumentList.Add("urls");
         start.ArgumentList.Add("ytsearch1:" + query);
         using Process process = Process.Start(start) ?? throw new IOException("yt-dlp did not start.");
+        HelperProcessJob.Assign(process);
         Task<string> outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
         Task<string> errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -224,6 +225,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             start.ArgumentList.Add(argument);
         }
         Process player = Process.Start(start) ?? throw new IOException("mpv did not start.");
+        HelperProcessJob.Assign(player);
         try
         {
             using var pipe = new NamedPipeClientStream(

@@ -106,6 +106,9 @@ def _outcome(observation: str) -> str:
         return "resultado arriba"
     if not isinstance(facts, dict):
         return "resultado arriba"
+    # Ronda final 37 (regla 3): the journal's answer to the same call made earlier (the App's «replayed») ran nothing now.
+    if facts.get("replayed"):
+        return "respuesta de la misma llamada hecha antes: no se ejecutó de nuevo"
     status = str(facts.get("status") or "failed")
     if status == "needs_confirmation":
         return "no se ejecutó: espera el sí de la persona"

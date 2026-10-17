@@ -1663,6 +1663,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             start.ArgumentList.Add("6");
             using Process process = Process.Start(start)
                 ?? throw new IOException("Tesseract did not start.");
+            HelperProcessJob.Assign(process);
             return await ReadRedirectedOutputAsync(process, cancellationToken)
                 .ConfigureAwait(false);
         }

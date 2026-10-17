@@ -56,6 +56,7 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
 
         using Process process = Process.Start(start)
             ?? throw new IOException($"Could not start {executable}.");
+        HelperProcessJob.Assign(process);
         using var timeoutSource = new CancellationTokenSource(timeout);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,

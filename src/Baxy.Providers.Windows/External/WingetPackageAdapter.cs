@@ -527,6 +527,7 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         foreach (string argument in arguments)
             start.ArgumentList.Add(argument);
         Process? process = Process.Start(start);
+        HelperProcessJob.Assign(process);
         if (process is null)
             return null;
         // Las salidas se drenan para que winget no se bloquee en un tubo lleno, y su última línea se guarda.

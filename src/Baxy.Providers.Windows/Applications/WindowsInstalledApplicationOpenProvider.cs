@@ -1438,6 +1438,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         startInfo.ArgumentList.Add(CatalogScript);
         using Process process = Process.Start(startInfo)
             ?? throw new InvalidOperationException("PowerShell could not start.");
+        External.HelperProcessJob.Assign(process);
         Task<string> outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
         Task<string> errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
         try

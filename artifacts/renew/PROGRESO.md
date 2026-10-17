@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 45 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 36, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 45 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 37, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -700,7 +700,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     cancela una edición, rechaza una llamada o marca el canal como leído): ya no hay Escape sin el buscador visto abierto;
     client.channel.locate vuelve a minimizar Discord si lo estaba y el recibo dice si quedó a la vista
     (restoredFromMinimized, leftShown); los textos en español cambiados ya no llevan una cifra que se desfasa; el juicio 5
-    de falsedades corrió con un código que no era 0d2e5433b (la ronda 28 precisó: el de la ronda 7, sin commit a esa hora). La App en las dos máquinas, sin A; el notebook revisó la
+    de falsedades corrió con un código que no era 0d2e5433b (la ronda 27 precisó: el de la ronda 7, sin commit a esa hora; el notebook lo confirmó en la 28). La App en las dos máquinas, sin A; el notebook revisó la
     confirmación de punta a punta (su App, «A: SIN; B: 0», dentro del mensaje de bancos, buzón 03:41; la ronda final 33
     lo negó por error y la 35 lo restauró). B: texto de la ventana protegida para la de BAXY; ORIGIN.md; nuevas B
     pendientes b_r26_* (una, por verificar en vivo: restaurar una ventana maximizada podría devolverla sin maximizar).
@@ -808,8 +808,8 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     arranca y «+ new» no la renueva, así que también borra lo dicho en la conversación anterior: ahora lo dicen el
     inglés y el español (que además llamaba «temporal» a lo que no lo es). B arregladas: folder.open volvía a fallar
     siempre con una ventana del Explorador en Inicio o Este equipo (regresión de la ronda 33: una dirección vacía
-    contaba como no leída; ahora sólo una que no se puede leer, comprobado en PowerShell 5.1 que [Uri]'' no lanza
-    pero su LocalPath sí); la descripción de system.settings.set dice que un fallo también deja Configuración
+    contaba como no leída; ahora sólo una que no se puede leer, en PowerShell 5.1 [Uri]'' y su LocalPath no lanzan;
+    lo que lanzaba era [IO.Path]::GetFullPath(''), medido en la ronda 37; la ronda 34 lo dio por comprobado al revés); la descripción de system.settings.set dice que un fallo también deja Configuración
     abierta. Una B del auditor de bancos no se aplicó: resolver la llamada cancelada para que la siguiente igual tome
     otro id haría que se ejecutara dos veces; la respuesta del kernel por repetición sólo sale si la cancelada sí se
     ejecutó, así que «hecho» es cierto. La frase de la ronda 31 («la misma dos veces más una») queda en «dos, una vista
@@ -844,6 +844,19 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     medición del auditor de la App dice que el llama-server ya moría con el job de la mente antes de la ronda 35: el
     comentario lo dice. Nuevas B pendientes b_r36_*. Desde ff863b47f cambiaron 45 descripciones y 8 entradas de
     argumentos. Suites: 564/69/477/2189. Sin medir.
+  - Ronda final 37 (sobre 9b3e5b8dc): A en el PC 1+1+1+3, cuatro distintas; el notebook no respondió. (1) El
+    arreglo de la ronda 36 sacaba del job a todos los hijos del núcleo, también a sus ayudantes: un script de Spotify a
+    medias seguía trayendo ventanas al frente y haciendo clics hasta un minuto después de cerrar BAXY. Ahora el núcleo
+    tiene su propio job de ayudantes (HelperProcessJob: kill-on-close con silent breakaway para sus hijos), y en él
+    entran los scripts de PowerShell, el worker de UI Automation, tesseract, winget, yt-dlp y mpv; lo que se abre para
+    la persona sigue fuera. Medido con una simulación de los tres niveles: al cerrar el job de la App mueren el núcleo y
+    su script, y lo que el script abrió por el shell sigue vivo. (2) Las descripciones de los actos con window no decían
+    que un diálogo de la misma ventana (Guardar como) vuelve detrás con ella. (3) PROGRESO atribuía a la ronda 28 la
+    precisión del juicio 5, que hizo la 27. (4) La ronda 34 dio por comprobado que [Uri]'' no lanza pero su LocalPath sí:
+    ninguno lanza; lo que lanzaba era [IO.Path]::GetFullPath(''), medido ahora. B arregladas: el resumen de la mente
+    dice «no se ejecutó de nuevo» de una respuesta repetida; «tapado» también con una capa pequeña leída antes del
+    documento; líneas al día en cinco tareas B. Nuevas B pendientes b_r37_*. Desde ff863b47f cambiaron 45
+    descripciones y 8 entradas de argumentos. Suites: 564/69/477/2189. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
