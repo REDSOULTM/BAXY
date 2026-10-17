@@ -25,7 +25,7 @@ Decisiones del dueño, tomadas con casillas de opciones:
 | Pedido imposible | Decir que no lo hace |
 | Volumen sin cantidad | Que decida el modelo |
 | Voz | Primero «después»; el 2026-10-15 pidió conectar la wake word y la transcripción (hecho, ver abajo) |
-| Voz que habla | Piper como antes |
+| Voz que habla | Piper como antes; el 2026-10-17 el dueño la cambió por una voz propia en Supertonic 3 (ver «Voz de BAXY») |
 | Computer use y herramientas genéricas | Lo que recomienden los papers, la documentación, los usuarios y la evidencia de BAXY |
 | Meta final | Metas medibles: holdout nuevo ≥ 85 %, cero falsedades en banco automático, ≤ 4 GB + 4 GB; si no llega, límite honesto y cierra |
 
@@ -58,7 +58,7 @@ al máximo para Qwen3.5-4B.
 | Decisiones del dueño | Pregunta con opciones y además le manda una notificación push al celular. Mientras espera, sigue con lo que no depende de la respuesta |
 | Uso agotado | Un recordatorio cada hora retoma el goal si quedó parado. Las dos sesiones quedan abiertas |
 | Hardware | **PC (redpc):** RTX 4060 Ti 16 GB, i9-12900HX, 32 GB de RAM, modelos en el M.2 `F:`. **Notebook (rednote):** RTX 3060 Laptop de 6 GB, Ryzen 7 5800H, 16 GB de RAM |
-| Reparto según rendimiento | **PC:** el arnés nuevo, computer use (las apps reales del dueño), el latido, la integración y la medición final. Con 16 GB caben dos llama-server a la vez, así que puede correr dos bancos en paralelo. **Notebook:** la voz que habla (Piper, CPU), las herramientas de agente, la limpieza de código muerto, el banco de escenas y la investigación. Con su GPU cerca del límite de 4 GB, mide el perfil de 4 GB (IQ4_XS con un hueco) en hardware real |
+| Reparto según rendimiento | **PC:** el arnés nuevo, computer use (las apps reales del dueño), el latido, la integración y la medición final. Con 16 GB caben dos llama-server a la vez, así que puede correr dos bancos en paralelo. **Notebook:** la voz que habla (Supertonic, CPU), las herramientas de agente, la limpieza de código muerto, el banco de escenas y la investigación. Con su GPU cerca del límite de 4 GB, mide el perfil de 4 GB (IQ4_XS con un hueco) en hardware real |
 
 ## Qué es Renew hoy
 
@@ -146,7 +146,8 @@ regla vital.
    - Con una confirmación pendiente, «cierra chrome» recibió «No puedo cerrar Chrome porque mi última orden pendiente
      era cerrar la ventana 18titans». Hay que revisar cómo se reemplaza un plan pendiente.
 2. **Medir la ronda 1** (`r1`) y comparar con `en02v2`.
-3. **Voz que habla, con Piper como antes** (decisión del dueño):
+3. **Voz que habla, con Piper como antes** (decisión del dueño; hecho, y el 2026-10-17 cambiado por Supertonic: ver
+   «Voz de BAXY»):
    - Es la voz es_MX que usaba BAXY Definitivo; su ruta está en `tts_model` del manifiesto.
    - Se porta de Definitivo (`src/baxy_mind/voice_output.py`, `voice_aec.py` y lo que use `voice.py`) sólo lo
      necesario: `voice.speak`, `voice.cancel`, la interrupción al hablar encima, y la cancelación de eco y la bajada de
@@ -195,7 +196,7 @@ regla vital.
   - Como máximo una acción molesta cada 20 escenas.
 - **Velocidad (p50):**
   - La decisión, en ≤ 1 s.
-  - Desde que el texto de una orden llega a la mente hasta que Piper empieza a sonar, ≤ 2,5 s.
+  - Desde que el texto de una orden llega a la mente hasta que la voz empieza a sonar, ≤ 2,5 s.
 - **Alcance de la medición (decisión del dueño):** sólo se mide y optimiza el arnés.
   - La wake word k4 y la transcripción Parakeet Ultra son piezas fijas: no se miden, no se ajustan y sus errores no
     cuentan. Los bancos entran como texto.
@@ -214,6 +215,34 @@ regla vital.
   - Si Baxy.exe tiene tomados los archivos, `main.py` cierra la ventana antes de copiar.
 - **Manifiesto compartido:** `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` es de BAXY Definitivo; no se edita.
   Renew usa sus propias variables `BAXY_RENEW_*` y las de `BAXY_MIND_*` que fija el lanzador.
+
+## Voz de BAXY (2026-10-17, elegida por el dueño de oído)
+
+La voz que habla ya no es Piper: es una voz propia hecha con **Supertonic 3** (sherpa-onnx INT8, CPU, en el mismo
+proceso de la mente; el runtime ya traía sherpa-onnx 1.13.4 y scipy, sin dependencias nuevas).
+
+- **Por qué:** el dueño encontró artificiales todas las voces Piper y Kokoro. `es_MX-claude-high` es femenina (~180 Hz)
+  y de tamaño medium aunque diga «high»; bajarle el tono no da un hombre natural (formantes). Supertonic fue el motor
+  más natural que cabe en CPU sin entrenar.
+- **La voz «G»:** mezcla de estilos 50 % M1 (sid 5) + 30 % M2 (sid 6) + 20 % M4 (sid 8), +0,5 semitono, 10 pasos,
+  velocidad 1,0, semilla 7. La construye `scripts/voice/make_baxy_voice.py` en
+  `%LOCALAPPDATA%\BAXYRuntime\assets\voice\baxy-supertonic` (`BAXY_RENEW_TTS_DIR`), con `baxy-voice.json` (la receta).
+  **En el notebook** hay que copiar esa carpeta a `D:\BAXYRuntime\assets\voice\baxy-supertonic`.
+- **Personaje:** la mascota es un robot pequeño hecho de constelaciones, curioso y cálido; la voz es de chico joven,
+  seria y con cuerpo (el dueño rechazó las versiones infantiles por chillonas).
+- **Texto hablado:** `src/baxy_mind/speech_text.py` pasa números (con género), horas, fechas, dinero, porcentajes,
+  unidades y abreviaturas a palabras, y reescribe las marcas en inglés como se dicen (`data/speech_respellings.v1.json`).
+  Supertonic no normaliza nada y sherpa no cambia de idioma dentro de una frase.
+- **Medido en el PC:**
+  - Fuera de la app: 231 MB de RAM al cargar; la primera frase tarda 0,92 s con 8 pasos, 1,16 s con 10 y 1,31 s con
+    12. Con 2 hilos tarda lo mismo que con 4, y con 8 es más lenta. Con Parakeet, 5,8–8,1 % de palabras mal según la
+    semilla (incluye los errores del propio Parakeet).
+  - En la app (`measure_resources.py voz-supertonic`): mente 311 MB USS, frente a 38 + 103 MB de mente y Piper en
+    `final`. Desde que la respuesta está escrita hasta que suena: 0,6–1,4 s (con Piper, 0,05–0,3 s).
+  - En esa corrida la GPU ya tenía 8,9 GB ocupados por otras sesiones, y llama-server marcó 3,8 GB USS y respuestas
+    más lentas. Hay que repetir la medición del arnés con la GPU libre antes de compararla con la meta de 2,5 s.
+- **Licencia:** el modelo es OpenRAIL-M. Para distribuirlo hay que incluir la licencia y avisar que la voz es
+  sintética. El repositorio de Supertonic está archivado.
 
 ## Interfaz v4 (2026-10-17, encargo del dueño con `design_handoff_baxy`)
 

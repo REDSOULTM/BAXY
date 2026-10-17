@@ -2,7 +2,7 @@
 
 usage: py -3.12 -X utf8 scripts/renew/measure_resources.py <label>
 Two runs of the real product through the conductor, each with a few spoken turns:
-- «arnés»: llama-server, the mind and Piper, without the wake word k4 and Parakeet Ultra (outside the measurement by
+- «arnés»: llama-server and the mind (BAXY's voice, Supertonic, runs inside it), without the wake word k4 and Parakeet Ultra (outside the measurement by
   the owner's decision): BAXY_RENEW_WAKE_DIR and BAXY_RENEW_STT_DIR point nowhere.
 - «total con la voz»: the same with k4 and Ultra loaded.
 RAM is each process's USS (memory it alone holds: llama-server's working set counts the mapped GGUF and its private
@@ -37,7 +37,6 @@ def product_processes() -> dict[str, list[psutil.Process]]:
         cmdline = " ".join(process.info["cmdline"] or [])
         role = ("llama-server" if name == "llama-server.exe" and "BAXYeval" in cmdline
                 else "mente" if name.startswith("python") and "baxy_mind" in cmdline
-                else "piper" if name == "piper.exe"
                 else "app" if name == "baxy.exe"
                 else "core" if name == "baxy-core.exe"
                 # Ronda final: the persistent UIA worker the core prewarms (UiaWorkerHost) is the product's too.
@@ -83,7 +82,7 @@ def measure(label: str, ear: bool) -> dict:
             peak[role] = max(peak.get(role, 0), round(uss / 2**20))
         time.sleep(1)
     conductor.close()
-    harness = sum(peak.get(role, 0) for role in ("llama-server", "mente", "piper"))
+    harness = sum(peak.get(role, 0) for role in ("llama-server", "mente"))
     # Ronda final: the product as the conductor runs it as well (App, Core and the UIA worker beside the harness); the
     # window's WebView2 and the browser's own UIA worker do not run under the conductor and are not measured.
     return {"oido_cargado": ear, "vram_mib": (gpu - before) if gpu is not None and before is not None else None,

@@ -874,12 +874,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             parameterMatch.Success ? parameterMatch.Groups["value"].Value.ToLowerInvariant() : "unknown");
     }
 
-    // The voice models are the launcher's (BAXY_RENEW_STT_DIR, _TTS_MODEL, _WAKE_DIR): each is named by its path and
+    // The voice models are the launcher's (BAXY_RENEW_STT_DIR, _TTS_DIR, _WAKE_DIR): each is named by its path and
     // shown as on disk only when the file the mind loads is there (voice.py, voice_output.py).
     private static JsonObject VoiceInventory()
     {
         string stt = Environment.GetEnvironmentVariable("BAXY_RENEW_STT_DIR") ?? string.Empty;
-        string tts = Environment.GetEnvironmentVariable("BAXY_RENEW_TTS_MODEL") ?? string.Empty;
+        string tts = Environment.GetEnvironmentVariable("BAXY_RENEW_TTS_DIR") ?? string.Empty;
         string wake = Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_DIR") ?? string.Empty;
         return new JsonObject
         {
@@ -890,8 +890,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             },
             ["tts"] = new JsonObject
             {
-                ["name"] = Path.GetFileNameWithoutExtension(tts),
-                ["downloaded"] = tts.Length > 0 && File.Exists(tts) && File.Exists(tts + ".json"),
+                ["name"] = Path.GetFileName(tts.TrimEnd('\\', '/')),
+                ["downloaded"] = tts.Length > 0 && File.Exists(Path.Combine(tts, "baxy-voice.json"))
+                    && File.Exists(Path.Combine(tts, "voice.bin")),
             },
             ["wake"] = new JsonObject
             {

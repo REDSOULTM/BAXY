@@ -830,7 +830,7 @@ function New-BaxyBuildManifest {
             native_libraries = 'adjacent_no_self_extraction'
             core = 'native_aot_self_contained'
             symbols = 'excluded_from_user_payload'
-            # Renew's mind (src/baxy_mind and its Python runtime), the GGUF model, llama-server and Piper are not in
+            # Renew's mind (src/baxy_mind and its Python runtime), the GGUF model, llama-server and the voice are not in
             # the package: Renew runs with scripts/run_renew.cmd where they are registered (a measured limit).
             mind = 'not_included'
         }

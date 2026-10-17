@@ -64,7 +64,7 @@ export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, 
   }, []);
   const g = general;
   const lock = g === null;
-  const tts = voice?.tts?.name ? 'Piper · ' + voice.tts.name + (voice.tts.downloaded ? '' : ' · no está en disco') : '—';
+  const tts = voice?.tts?.name ? 'Supertonic · ' + voice.tts.name + (voice.tts.downloaded ? '' : ' · no está en disco') : '—';
   return (
     <div className="panel-shroud" onClick={onClose}>
       <div className="panel settings-panel bxs" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Ajustes">

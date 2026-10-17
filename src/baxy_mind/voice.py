@@ -1,4 +1,5 @@
-"""Voice for BAXY Renew: the microphone, the k4 wake word and Parakeet Ultra (sherpa-onnx, CPU), and Piper speaking.
+"""Voice for BAXY Renew: the microphone, the k4 wake word and Parakeet Ultra (sherpa-onnx, CPU), and BAXY's voice
+speaking (Supertonic, voice_output.py).
 
 Only the connection: what the person says after «Baxy» reaches the App as voice.transcript, the same as a typed
 message. The segmentation is WakewordBaxy/probar_baxy.py's, measured there with the owner's voice; the recognizer is
