@@ -1195,7 +1195,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # The client's window is the main window of the Discord process, never a window found by its title.
         $w=$null;foreach($p in @(Get-Process -Name 'Discord' -ErrorAction SilentlyContinue)){if($p.MainWindowHandle -ne [IntPtr]::Zero){$w=[System.Windows.Automation.AutomationElement]::FromHandle($p.MainWindowHandle);break}}
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
-        $h=[IntPtr]$w.Current.NativeWindowHandle;$clientPid=$w.Current.ProcessId;if([BaxyClientWin]::IsIconic($h)){[void][BaxyClientWin]::ShowWindow($h,9)}
+        $h=[IntPtr]$w.Current.NativeWindowHandle;$clientPid=$w.Current.ProcessId;$wasMinimized=[BaxyClientWin]::IsIconic($h);if($wasMinimized){[void][BaxyClientWin]::ShowWindow($h,9)}
         # The switcher's rows, as the switcher shows them: the list items of the nearest container of the focused
         # switcher input, below the page itself (the document holds the conversation's own list items).
         function Read-Items {
@@ -1221,18 +1221,23 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
           $foreground=$true
-          [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 250
-          [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 150
+          # Ronda final 25-26 (regla 3): no Escape before the switcher is seen open: in Discord it marks the open channel
+          # read, declines a call or cancels an edit of the person's; nor one when the front left Discord (it would reach
+          # another window).
           [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
-          if([BaxyClientWin]::GetForegroundWindow() -ne $h){[void][BaxyMarkedKeys]::Press(0x1B,$false);continue}
+          if([BaxyClientWin]::GetForegroundWindow() -ne $h){continue}
           [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
           for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
           [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
         }
-        if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground'}|ConvertTo-Json -Compress;exit 3}
+        # Ronda final 26 (regla 3): a window the look restored from minimized goes back to minimized (SW_SHOWMINNOACTIVE),
+        # read back; the receipt says how it was left.
+        $leftShown=$false
+        if($wasMinimized){[void][BaxyClientWin]::ShowWindow($h,7);Start-Sleep -Milliseconds 150;$leftShown=-not [BaxyClientWin]::IsIconic($h)}
+        if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
         # Ronda final: the switcher never kept the front long enough to be read: nothing is said of its rows.
-        if(-not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read'}|ConvertTo-Json -Compress;exit 3}
-        [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items)}|ConvertTo-Json -Compress
+        if(-not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
+        [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items);restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress
         """;
 
     private static readonly Regex ClientChannelName = new(
@@ -1349,10 +1354,18 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteString("channelKind", channelKind);
             writer.WriteString("server", server);
             writer.WriteBoolean("joined", false);
+            // Ronda final 26 (regla 3): Discord was minimized; it was shown for the switcher and minimized again (or, read
+            // back, left shown).
+            if (Bool(root, "restoredFromMinimized"))
+            {
+                writer.WriteBoolean("restoredFromMinimized", true);
+                writer.WriteBoolean("leftShown", Bool(root, "leftShown"));
+            }
             writer.WriteString("authority", "client_quick_switcher_uia_read");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effectObserved: false);
+        // A window left shown is an effect on the person's window, said as such.
+        return ExternalJson.Success(operation, result, effectObserved: Bool(root, "leftShown"));
     }
 
     private static ExternalCapabilityReceipt DisplayStatus(string operation)

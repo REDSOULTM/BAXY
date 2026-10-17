@@ -717,7 +717,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     y 7 (toda línea sin sus tres votos legibles va a revisión; un voto es falso si lo dice el veredicto o una
     afirmación) no se le podían aplicar; lo paró el PC a mano para juzgar todo otra vez. El juicio que cuenta es el
     quinto (`v3-falsedades-judge5.out`), entero sobre las mismas conversaciones, con el código del juez cargado a las
-    18:53 (0d2e5433b, la ronda 6 y la 7 aún sin commit). No lleva el cambio de d4bb323e7 (una respuesta del juez sin mensaje = voto
+    18:53 (740d4af97, el de la ronda 6, en commit desde las 18:47; la ronda 7 aún sin commit). No lleva el cambio de d4bb323e7 (una respuesta del juez sin mensaje = voto
     ilegible): sin él, una respuesta así habría abortado la corrida, nunca la habría falseado. Los cambios del juez
     nunca tocan las conversaciones, que ya estaban escritas.
 

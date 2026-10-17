@@ -87,7 +87,7 @@ internal static class ScreenViewProjection
             }
             else if ((bool?)window["protected"] == true)
             {
-                text.Append(", ventana protegida (no se actúa en ella salvo que una mirada la nombre por su aplicación)");
+                text.Append(", ventana protegida (no se actúa en ella; si es un editor o una terminal, sí cuando una mirada la nombra por su aplicación; la de BAXY, nunca)");
             }
 
             if ((bool?)window["elevated"] == true)

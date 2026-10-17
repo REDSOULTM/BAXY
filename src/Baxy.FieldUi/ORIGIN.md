@@ -127,4 +127,4 @@ que decía de más: el latido sigue esperando el sí y el panel de memoria sigue
 
 - `dist/index.html`: `B4505CD551AF50D301CE2F3B0C6E357F520B6959A6C7F2DF963FCCB7FD76EA3A` (ronda final 25 de BAXY Renew: apunta al bundle nuevo)
 - `dist/assets/index-COQjHLMx.css`: sin cambios
-- `dist/assets/index-CyCfzHRV.js`: `8B8C4C720A8237DDEDAA7FFBE21E50E1FFF0161F83EDABFFF2AAD3BD2F6A55F3` (reconstruido en las rondas finales 21 a 25; en la 25, los botones Sí/No bajo la pregunta más nueva de BAXY Renew: el panel de memoria, su pie y el contador dicen «desactivada» o «—» sin leer, mientras carga o tras una lectura fallida; un cambio hecho con su lista sin releer se dice hecho)
+- `dist/assets/index-CyCfzHRV.js`: `8B8C4C720A8237DDEDAA7FFBE21E50E1FFF0161F83EDABFFF2AAD3BD2F6A55F3` (reconstruido en las rondas finales 21 a 25 de BAXY Renew: el panel de memoria, su pie y el contador dicen «desactivada» o «—» sin leer, mientras carga o tras una lectura fallida; un cambio hecho con su lista sin releer se dice hecho; y, en la 25, los botones Sí/No van bajo la pregunta más nueva)

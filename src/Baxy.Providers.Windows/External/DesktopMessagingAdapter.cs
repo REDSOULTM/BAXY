@@ -795,10 +795,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // the focus, maybe a composer) and nothing was written. Nothing seen on a client running for longer, or a
             // window that cannot be read at all: the timed path of before is kept (revisión 2 de r24).
             ValueTask<ClientInteraction> Read(CancellationToken token) => probe.ReadAsync(handle, content: false, token);
-            SendKey(VirtualKeyEscape);
-            await Task.Delay(300, cancellationToken).ConfigureAwait(false);
-            // The focus before the shortcut is read once anything open was closed: a search left open is not taken
-            // for the conversation's field.
+            // Ronda final 26 (regla 3): no Escape before the switcher is seen open: in Discord it marks the open channel
+            // read, declines a call or cancels an edit of the person's. The focus before the shortcut is read as it is.
             ClientInteraction before = await Read(cancellationToken).ConfigureAwait(false);
             // The open conversation's composer, pictured before the shortcut (MSGSEND1845's check): only a composer
             // that looks the same once the search is closed lets the turn say nothing was written (revisión 1 de r24:
@@ -811,8 +809,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 Read, before, SearchInputBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
             if (AfterSearchWait(input, coldClient, retried: false) == SearchStep.Retry)
             {
-                SendKey(VirtualKeyEscape);
-                await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+                // The shortcut once more, without an Escape onto whatever holds the focus.
                 SendChord(VirtualKeyControl, VirtualKeyK);
                 input = await AwaitOpenedInputAsync(
                     Read, before, SearchInputRetryBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
@@ -820,8 +817,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
             if (AfterSearchWait(input, coldClient, retried: true) == SearchStep.Refuse)
             {
-                SendKey(VirtualKeyEscape);
-                // Ronda final 12 (regla 3): Ctrl+K and Escape reached the client: an effect, though nothing was typed.
+                // Ronda final 12 (regla 3): Ctrl+K reached the client: an effect, though nothing was typed (ronda final
+                // 26: no Escape onto a focus not read as the switcher's).
                 return UnverifiedChat(handle, processId, composerUntouched: true) with { EffectObserved = true };
             }
 
