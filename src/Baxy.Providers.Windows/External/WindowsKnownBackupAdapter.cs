@@ -193,6 +193,7 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         }
 
         string sha256 = HashFile(archivePath);
+        int cloudOnly = CloudOnlyFiles(roots);
         var manifest = new BackupManifest(
             1, backupId, folder, DateTimeOffset.UtcNow, fileCount,
             sourceBytes, new FileInfo(archivePath).Length, sha256);
@@ -202,7 +203,7 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         if (postread.BackupId != backupId || !File.Exists(archivePath)
             || !string.Equals(HashFile(archivePath), sha256, StringComparison.Ordinal))
             return ExternalJson.Failure(operation, "known_backup_postread_failed", true);
-        return ExternalJson.Success(operation, ManifestResult(postread, verified: true), true);
+        return ExternalJson.Success(operation, ManifestResult(postread, verified: true, cloudOnly), true);
     }
 
     private ExternalCapabilityReceipt List(
@@ -309,6 +310,29 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         return existing;
     }
 
+    // The files the walk leaves out as reparse points (cloud placeholders), in the folders it walks.
+    private static int CloudOnlyFiles(string[] roots)
+    {
+        var walk = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.ReparsePoint,
+            MaxRecursionDepth = 32,
+        };
+        var here = new EnumerationOptions { IgnoreInaccessible = true, AttributesToSkip = 0 };
+        int count = 0;
+        foreach (string root in roots)
+        {
+            foreach (string folder in Directory.EnumerateDirectories(root, "*", walk).Prepend(root))
+            {
+                count += new DirectoryInfo(folder).EnumerateFiles("*", here)
+                    .Count(static file => (file.Attributes & FileAttributes.ReparsePoint) != 0);
+            }
+        }
+        return count;
+    }
+
     private static IEnumerable<(string Root, string File)> Enumerate(string[] roots)
     {
         var options = new EnumerationOptions
@@ -328,11 +352,14 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
         }
     }
 
-    private static JsonElement ManifestResult(BackupManifest manifest, bool verified) =>
+    private static JsonElement ManifestResult(BackupManifest manifest, bool verified, int skippedCloudFiles = 0) =>
         ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             WriteManifest(writer, manifest); writer.WriteBoolean("verified", verified);
+            // Ronda final 13 (regla 3): the files only in the cloud (OneDrive's placeholders, reparse points) are not in
+            // the ZIP; how many. Unreadable files are skipped too, and are not counted.
+            if (skippedCloudFiles > 0) writer.WriteNumber("skippedCloudFiles", skippedCloudFiles);
             writer.WriteString("authority", "windows_known_backup_zip_hash_postread");
             writer.WriteEndObject();
         });

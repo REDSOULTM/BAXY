@@ -256,6 +256,17 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         if (named.Count > 1)
             return Candidates(operation, "winget_package_ambiguous", requested, named);
         PackageRow package = named[0];
+        // Ronda final 13 (regla 3): the id read from the table is the one the absence will be read by, so it must name
+        // the installed package first (an ARP key with spaces read in part names nothing, and would read «gone»).
+        try
+        {
+            if (!await IsInstalledAsync(package.Id, cancellationToken).ConfigureAwait(false))
+                return ExternalJson.FailureBeforeEffect(operation, "winget_package_id_not_read");
+        }
+        catch (Exception exception) when (IsReadFailure(exception))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "winget_package_id_not_read");
+        }
 
         var effectBoundary = new ExternalEffectBoundary();
         effectBoundary.Cross(cancellationToken);

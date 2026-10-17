@@ -1965,6 +1965,11 @@ internal class CdpBrowserSession : IDisposable
         // M89 (DEV-D v3r D-w10-t4, the run's first watch page): it stayed so for all
         // 45 s again, and the next watch page of the same profile played in 6 s. A
         // page stalled that way for 15 s is reloaded once, within the same 45 s.
+        // Ronda final 13 (regla 3): «playing» is what BAXY's own play() leaves; the video asked is playing when the page
+        // is its watch page (its v= id), no advertisement shows in the player, and its time advances from a baseline.
+        string? wantedId = System.Web.HttpUtility.ParseQueryString(watchUri.Query)["v"];
+        double? baseline = null;
+        bool adSeen = false;
         for (int attempt = 0; attempt <= 180; attempt++)
         {
             if (attempt > 0)
@@ -1979,12 +1984,13 @@ internal class CdpBrowserSession : IDisposable
                 + "const gate=body.includes('sign in to confirm')?'bot':"
                 + "body.includes('video unavailable')?'unavailable':"
                 + "body.includes('before you continue')?'consent':'none';"
+                + "const ad=document.querySelector('#movie_player')?.classList.contains('ad-showing')?'ad':'content';"
                 + "return [location.href,document.title,v.readyState,v.paused?'paused':'playing',"
-                + "v.networkState,v.currentSrc?'source':'no_source',gate].join('\\u001f');})()",
+                + "v.networkState,v.currentSrc?'source':'no_source',gate,ad,v.currentTime].join('\\u001f');})()",
                 cancellationToken,
                 userGesture: true).ConfigureAwait(false);
             string[] fields = observed.Split('\u001f');
-            if (fields.Length == 7)
+            if (fields.Length == 9)
             {
                 bool watchPage = fields[0].Contains(
                     "youtube.com/watch", StringComparison.OrdinalIgnoreCase)
@@ -2015,19 +2021,36 @@ internal class CdpBrowserSession : IDisposable
                         .ConfigureAwait(false);
                 }
             }
-            if (fields.Length == 7
+            if (fields.Length == 9
                 && (fields[0].Contains("youtube.com/watch", StringComparison.OrdinalIgnoreCase)
                     || fields[0].Contains("youtube.com/embed/", StringComparison.OrdinalIgnoreCase))
+                && (wantedId is null || fields[0].Contains(wantedId, StringComparison.Ordinal))
                 && int.TryParse(fields[2], NumberStyles.Integer, CultureInfo.InvariantCulture,
                     out int readyState)
                 && readyState >= 2
-                && fields[3] == "playing")
+                && fields[3] == "playing"
+                && double.TryParse(fields[8], NumberStyles.Float, CultureInfo.InvariantCulture, out double now))
             {
-                return new(true, true, query, fields[0], fields[1], targetId, string.Empty);
+                if (fields[7] == "ad")
+                {
+                    // An advertisement plays in the same <video>: its time is not the video's, so the baseline waits.
+                    adSeen = true;
+                    baseline = null;
+                    continue;
+                }
+
+                if (baseline is null)
+                {
+                    baseline = now;
+                    continue;
+                }
+
+                if (now - baseline.Value >= 0.5)
+                    return new(true, true, query, fields[0], fields[1], targetId, string.Empty);
             }
         }
         return new(false, true, query, string.Empty, string.Empty, targetId,
-            playbackFailure);
+            adSeen ? "youtube_ad_playing" : playbackFailure);
     }
 
     // Lo común a las búsquedas de Netflix y Disney+: fold pliega mayúsculas, tildes y

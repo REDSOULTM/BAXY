@@ -686,6 +686,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             GlobalSystemMediaTransportControlsSessionTimelineProperties after = before;
             bool alreadyWithinPostreadTolerance =
                 (positionBefore - desired).Duration() <= TimeSpan.FromSeconds(2.5);
+            // Ronda final 13 (regla 3): the receipt says the position the check read (PositionNow), not the raw report.
+            TimeSpan positionAfter = positionBefore;
             bool verified = false;
             Exception? observationError = null;
             for (int attempt = 0; attempt <= SmtcPostreadPollIntervals; attempt++)
@@ -696,7 +698,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                     bool playing = session.GetPlaybackInfo().PlaybackStatus
                         == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
                     TimeSpan tolerance = TimeSpan.FromSeconds(playing ? 2.5 : 1.0);
-                    verified = (PositionNow(after, playing) - desired).Duration() <= tolerance;
+                    positionAfter = PositionNow(after, playing);
+                    verified = (positionAfter - desired).Duration() <= tolerance;
                     observationError = null;
                 }
                 catch (Exception exception) when (!cancellationToken.IsCancellationRequested
@@ -736,7 +739,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 writer.WriteNumber("version", 1);
                 writer.WriteNumber("requestedDeltaSeconds", seconds);
                 writer.WriteNumber("previousPositionSeconds", positionBefore.TotalSeconds);
-                writer.WriteNumber("positionSeconds", after.Position.TotalSeconds);
+                writer.WriteNumber("positionSeconds", positionAfter.TotalSeconds);
                 writer.WriteNumber("durationSeconds", after.EndTime.TotalSeconds);
                 writer.WriteString("sourceAppUserModelId", session.SourceAppUserModelId);
                 writer.WriteString("authority", "windows_smtc_timeline_postread");

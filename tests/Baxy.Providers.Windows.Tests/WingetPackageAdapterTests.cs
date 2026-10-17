@@ -316,6 +316,8 @@ public sealed class WingetPackageAdapterTests
         var runner = new ScriptedRunner(args =>
             args[0] == "list" && !args.Contains("--exact") ? (0, ListDiscord)
             : args[0] == "list" && launchedOnce ? throw new IOException("pipe broken")
+            // Ronda final 13: before the launch the id read is checked installed (it names the package).
+            : args[0] == "list" ? (0, ListDiscord)
             : (1, string.Empty));
         var adapter = new WingetPackageAdapter(runner, _ => { launchedOnce = true; return new(999_999, () => null); });
 

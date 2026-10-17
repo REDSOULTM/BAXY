@@ -41,7 +41,8 @@ internal static partial class VirtualDesktops
                 }
                 finally
                 {
-                    (manager as IDisposable)?.Dispose();
+                    // The wrapper made for this call alone lets its reference go now, not at its finalizer.
+                    ((ComObject)(object)manager).FinalRelease();
                 }
             }
             finally
@@ -77,12 +78,8 @@ internal static partial class VirtualDesktops
 [Guid("a5cd92ff-29be-454c-8d04-d82879fb3f1b")]
 internal partial interface IVirtualDesktopManager
 {
+    // The interface's first method; the two after it (GetWindowDesktopId, MoveWindowToDesktop) are not declared:
+    // nothing reads a desktop's id or moves a window.
     [PreserveSig]
     int IsWindowOnCurrentVirtualDesktop(nint topLevelWindow, out int onCurrentDesktop);
-
-    [PreserveSig]
-    int GetWindowDesktopId(nint topLevelWindow, out Guid desktopId);
-
-    [PreserveSig]
-    int MoveWindowToDesktop(nint topLevelWindow, in Guid desktopId);
 }

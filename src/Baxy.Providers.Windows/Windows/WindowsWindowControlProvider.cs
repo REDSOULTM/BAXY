@@ -1593,7 +1593,9 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         unread = failed;
         // Ronda final 12 (regla 3): of the cloaked windows, those on another virtual desktop are left open elsewhere;
         // one the shell does not place is counted too (not known to be here), a suspended app on this desktop is not.
-        cloakedTitled = VirtualDesktops.OnAnotherDesktop(cloakedTitledWindows).Count(static elsewhere => elsewhere != false);
+        // Only the whole desktop's read (below 0) reports them; the windows behind a front one do not need it.
+        cloakedTitled = below != 0 ? 0
+            : VirtualDesktops.OnAnotherDesktop(cloakedTitledWindows).Count(static elsewhere => elsewhere != false);
         return found;
     }
 

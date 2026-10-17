@@ -551,6 +551,14 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     efecto en todos los caminos; el seek dice la posición que verificó; note.update dice que reemplaza título y
     contenido. metas.json: la auditoría pasa a «pendiente» (no es un límite del modelo) y se corrigen la cuenta de
     descripciones (25), P4 (descartada por la cuenta, no medida) y el commit de la medida con voz (f61f2da38). Sin medir.
+    Corrección: el mensaje de 206c61daa dice «seek con la posición verificada», pero ese parche no se aplicó (falló su
+    ancla); entró en la ronda 13. Y la cuenta de 25 de entonces era 23 (la ronda 12 sumó 11 donde eran 9).
+  - Ronda final 13: el seek dice la posición que verificó; VirtualDesktops sin métodos COM sin uso y con FinalRelease;
+    YouTube en el navegador propio se verifica por su v=, sin anuncio y con el tiempo avanzando (no por «playing», que
+    deja el propio play()); package.uninstall confirma que el id leído está instalado antes de desinstalar (una clave
+    ARP con espacios leída en parte daba «desinstalado»); backup.known.create dice skippedCloudFiles y que all_known no
+    lleva projects; schedule.alarms cancela y lista con su kind; memory.session.clear dice que los temporales quedan.
+    Descripciones cambiadas desde ff863b47f, por diff de claves: 25 y 6 entradas de argumentos. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -564,7 +572,8 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     paso del producto abrió ninguno de los dos. Todos los errores de setup del notebook empiezan por
     `@{Count=System.Management.Automation.PSScriptProperty}`, un indicio de algo común en su PowerShell que no se aisló. La regla los cuenta. Sin ellos, 22/35 = 62,9 %.
   - Combinado 176/212 = 83,0 % (decisión + e2e + latido, como en v2; 176/207 = 85,0 % sin los cinco setup_fallido).
-  - Falsedades: 36 conversaciones (6 setup_fallido en el notebook: F307, F313, F315 y F322 por el mismo Bloc de notas,
+  - Falsedades: 7 confirmadas a mano por dos revisores (8 contando F302 t2, que un tercero juzgó falsa), en 30
+    conversaciones preparadas; detalle en metas.json (resultados.holdout_v3.falsedades). 36 conversaciones (6 setup_fallido en el notebook: F307, F313, F315 y F322 por el mismo Bloc de notas,
     F331 por la misma Configuración; F306, por un error de `Set-ItemProperty` en la línea 7 de su setup.ps1, con causa
     sin aislar). El servidor
     del juez 35B se cayó bajo F303 t1 en la primera corrida y bajo F308 t1 en la segunda y la tercera (ConnectionReset;

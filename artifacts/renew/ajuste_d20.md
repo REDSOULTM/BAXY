@@ -95,13 +95,13 @@ Ninguno sale del ±1 de `base` en aciertos. **`thinkcont` no gana** (más lento 
 
 ## Cierre de la decisión 20
 
-Ninguna palanca medida supera a `base` por encima del ruido sin romper una condición (aciertos, silencios, falsedades, p50 ≤ 1 s, 4 GB):
+Ninguna palanca (medida, o descartada por su cuenta como P4) supera a `base` por encima del ruido sin romper una condición (aciertos, silencios, falsedades, p50 ≤ 1 s, 4 GB):
 - **No ganan:** P1, P2, P2 por etapa, P5, P6, P7, P9 y P10.
 - **Ya aplicadas:** P3 y P8.
 - **Descartada por la latencia:** P4.
 
 El producto se congeló en **ff863b47f** (tag `renew-d20-congelado`), sin ningún cambio de la mente respecto de `base9e` (la mente de 9eadc3d79: ninguna palanca entró). El holdout v3, sellado por agentes aislados en `F:\BAXYeval\renew_v3`, se corrió una sola vez sobre ese commit (cifras en `PROGRESO.md` y en `metas.json`; los arreglos de honestidad
-posteriores, entre ellos 25 descripciones del catálogo y 6 entradas de argumentos cambiadas desde d4bb323e7, no se midieron en él), y su resultado es el techo medido con Qwen3.5-4B en este harness: una sola corrida sellada de esa configuración.
+posteriores, entre ellos 25 descripciones del catálogo y 6 entradas de argumentos cambiadas desde d4bb323e7 (diff de claves contra ff863b47f), no se midieron en él), y su resultado es el techo medido con Qwen3.5-4B en este harness: una sola corrida sellada de esa configuración.
 
 **P10, una llamada por decisión (`noparallel`, PC, contra `base9e`):** decisión 230, 233 y 233 (media 232,0, la misma que `base9e`; dispersión 3 contra 0), p50 0,938 s (más lento); escenas 30/39, 0 molestas. **No gana.**
 
