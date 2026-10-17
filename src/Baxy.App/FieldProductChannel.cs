@@ -692,7 +692,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         string? name = eventArgs.PropertyName;
         if (name is nameof(MainWindowViewModel.IsReady) or nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.Failure) or nameof(MainWindowViewModel.IsMindPreparing)
-            or nameof(MainWindowViewModel.IsMindReady) or nameof(MainWindowViewModel.HasPendingConfirmation))
+            or nameof(MainWindowViewModel.IsMindReady) or nameof(MainWindowViewModel.HasPendingConfirmation)
+            or nameof(MainWindowViewModel.IsPowered))
         {
             Publish(AgentEvent());
         }
@@ -757,6 +758,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["ready"] = _viewModel.IsReady && _viewModel.IsMindReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
         ["failure"] = _viewModel.Failure ?? (MindUnavailable ? "mind_unavailable" : null),
         ["pendingConfirmation"] = _viewModel.HasPendingConfirmation,
+        // At rest or active: the rail's power row and the tray menu change it, the view only shows it.
+        ["powered"] = _viewModel.IsPowered,
     };
 
     private JsonObject VoiceEvent()

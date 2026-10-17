@@ -9,6 +9,7 @@ internal sealed class PresenceHost : IDisposable
     private PresenceTrayIcon? _tray;
     private Heartbeat? _heartbeat;
     private ProposalToast? _toast;
+    private Presentation.TrayMenu? _menu;
     private MainWindow? _window;
     private MainWindowViewModel? _viewModel;
     private bool _exitRequested;
@@ -34,7 +35,7 @@ internal sealed class PresenceHost : IDisposable
         {
             _autostart.EnsureRegistered(arguments);
         }
-        _tray = new PresenceTrayIcon(ShowMainWindow, ToggleListen, RequestExit);
+        _tray = new PresenceTrayIcon(ShowMainWindow, ShowMenu);
         _tray.Start();
     }
 
@@ -43,13 +44,7 @@ internal sealed class PresenceHost : IDisposable
         ArgumentNullException.ThrowIfNull(window);
         ArgumentNullException.ThrowIfNull(viewModel);
         _window = window;
-        if (_viewModel is not null)
-        {
-            _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
-        }
-
         _viewModel = viewModel;
-        _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         _viewModel.NotificationRequested += text => _tray?.Notify(text);
         MainWindowViewModel answering = viewModel;
         _toast = new ProposalToast(approve => window.Dispatcher.InvokeAsync(() => answering.AnswerConfirmationAsync(
@@ -77,7 +72,6 @@ internal sealed class PresenceHost : IDisposable
             _heartbeat.Start();
         }
 
-        SyncTray();
     }
 
     internal void ShowMainWindow()
@@ -101,6 +95,29 @@ internal sealed class PresenceHost : IDisposable
         }
 
         _ = window.Dispatcher.BeginInvoke(ShowMainWindow);
+    }
+
+    // BAXY's own tray menu (design v4) at the pointer, with what BAXY is doing now; one open at a time.
+    private void ShowMenu(int x, int y)
+    {
+        MainWindowViewModel? viewModel = _viewModel;
+        _menu?.Close();
+        var state = new Presentation.TrayMenu.State(
+            viewModel is { IsListening: true } or { IsWakeListening: true },
+            viewModel?.IsMicAvailable == true,
+            viewModel?.IsPowered != false,
+            viewModel is { IsReady: true, IsMindReady: true });
+        _menu = new Presentation.TrayMenu(state, ShowMainWindow, ToggleListen, TogglePower, RequestExit);
+        _menu.Closed += (_, _) => _menu = null;
+        _menu.ShowAt(x, y);
+    }
+
+    private void TogglePower()
+    {
+        if (_viewModel is { } viewModel)
+        {
+            _ = viewModel.SetPowerAsync(!viewModel.IsPowered, CancellationToken.None);
+        }
     }
 
     internal void ToggleListen()
@@ -140,10 +157,6 @@ internal sealed class PresenceHost : IDisposable
         _ = window.Dispatcher.BeginInvoke(window.Close);
     }
 
-    // The tray's listen item follows the view.
-    private void SyncTray() =>
-        _tray?.SetListening(_viewModel is { IsListening: true } or { IsWakeListening: true });
-
     public void Dispose()
     {
         if (_disposed)
@@ -152,19 +165,13 @@ internal sealed class PresenceHost : IDisposable
         }
 
         _disposed = true;
-        if (_viewModel is not null)
-        {
-            _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
-            _viewModel = null;
-        }
-
+        _viewModel = null;
+        _menu?.Close();
+        _menu = null;
         _ = _heartbeat?.DisposeAsync().AsTask();
         _heartbeat = null;
         _tray?.Dispose();
         _tray = null;
         _window = null;
     }
-
-    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs eventArgs) =>
-        SyncTray();
 }

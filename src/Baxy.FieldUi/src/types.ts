@@ -53,6 +53,8 @@ export interface AgentStatus {
   ready: boolean;
   failure?: string | null;
   pendingConfirmation?: boolean;
+  /** active or at rest (the rail's power row and the tray menu change it) */
+  powered?: boolean;
 }
 
 export type MicMode = 'off' | 'always' | 'ptt';
@@ -121,7 +123,7 @@ export interface GeneralSettings {
  *  list when the view connects or a session is opened. */
 export type ServerEvent =
   | { type: 'state'; value: HostState }
-  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean }
+  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean }
   | { type: 'item'; item: ChatItem }
   | { type: 'transcript'; items: ChatItem[] }
   | ({ type: 'step'; phase: 'start' | 'end'; turn: string } & Step)

@@ -77,7 +77,8 @@ export default function App() {
   const [cardLife, setCardLife] = useState<{ confirm: number; proposal: number } | null>(null);
   const [general, setGeneral] = useState<GeneralSettings | null>(null);
   const [proposals, setProposals] = useState<ProposalSettings | null>(null);
-  const [powered, setPowered] = useState(true);
+  // at rest or active is the host's: the rail and the tray menu change it
+  const powered = s.agent.powered !== false;
   const [metrics, setMetrics] = useState<Metrics | null>(null);
 
   // ---- layout ----
@@ -263,10 +264,9 @@ export default function App() {
 
   // ---- actions ----
   const submit = useCallback(async (text: string) => {
-    if (!powered) { setPowered(true); void send('POST', '/power', { on: true }); }
     const r = await send('POST', '/turn', { text });
     if (r === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
-  }, [powered]);
+  }, []);
   const answer = useCallback((approve: boolean) => { void send('POST', '/confirmation/answer', { approve }); }, []);
   const newSession = useCallback(async () => {
     if (await send('POST', '/sessions/new') === null) setNotice({ b: 'Sesión', t: 'espera a que BAXY termine' });
@@ -315,8 +315,8 @@ export default function App() {
   }, []);
   const togglePower = useCallback(async () => {
     const r = await send<{ on?: boolean }>('POST', '/power', { on: !powered });
-    if (r && typeof r.on === 'boolean') setPowered(r.on);
-  }, [powered]);
+    if (r?.on) void applyMic(mic); // back from rest, the microphone mode the person chose comes back
+  }, [powered, applyMic, mic]);
   const wake = useCallback(() => {
     if (state !== 'idle' || mic !== 'always') return;
     void send('POST', '/voice/trigger');
@@ -385,6 +385,9 @@ export default function App() {
   const focusX = fw ? (RAIL + (fw - RAIL - (chatVisible ? CHATW : 0)) / 2) / fw : 0.5;
   const quiet = !!proposals?.quiet;
   const canSend = s.agent.built && !booting;
+  // what the microphone is really doing (the tray menu can switch the ear on or off): the person's push-to-talk choice,
+  // else the host's own mode
+  const shownMic: MicMode = mic === 'ptt' ? 'ptt' : s.voice.mode === 'wake' ? 'always' : s.agent.built && s.voice.mode === 'off' ? 'off' : mic;
 
   return (
     <div className="app-frame">
@@ -398,7 +401,7 @@ export default function App() {
             metrics={metrics} net={netShown} profile={profile} onProfile={(p) => { setProfile(p); keep('baxy.profile', p); }}
             counts={counts} quiet={quiet} onPanel={setPanel} />
           <div className="bx-center">
-            <div className={'bx-graph' + (state === 'idle' && mic === 'always' ? ' wakeable' : '')} onClick={wake}>
+            <div className={'bx-graph' + (state === 'idle' && shownMic === 'always' ? ' wakeable' : '')} onClick={wake}>
               <Face state={gState} expr={expr} talking={state === 'speaking'} journey={s.journey} hold={state === 'confirm'} light={theme === 'light'} net={!!netShown} />
             </div>
             <div className="bx-ctop pywebview-drag-region" onDoubleClick={(e) => { if (e.target === e.currentTarget) void win('toggle_maximize'); }}>
@@ -426,7 +429,7 @@ export default function App() {
                 : notice ? <div className="bx-notice" key={notice.t}><b>{notice.b}</b> · {notice.t}</div> : null}
               {booting && s.boot ? <Boot boot={s.boot} />
                 : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} error={errorText} />}
-              <VoiceInput mic={mic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
+              <VoiceInput mic={shownMic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
                 onSubmit={(t) => void submit(t)} state={state} canSend={canSend} />
             </div>
           </div>
@@ -442,7 +445,7 @@ export default function App() {
       {panel === 'proposals' ? <ProposalsPanel value={proposals} proposalSeconds={cardLife?.proposal ?? null} onChange={(p) => void onProposals(p)} onClose={() => setPanel(null)} /> : null}
       {panel === 'settings' ? (
         <SettingsPanel onClose={() => setPanel(null)} theme={theme} onTheme={(t) => { setTheme(t); keep('baxy.theme', t); }}
-          bypass={bypass} onBypass={(v) => void setBypass(v)} mic={mic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)}
+          bypass={bypass} onBypass={(v) => void setBypass(v)} mic={shownMic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)}
           a11y={a11y} onA11y={(a) => void setA11y(a)} general={general} onGeneral={(p) => void onGeneral(p)} metrics={metrics}
           netLog={s.netLog} confirmSeconds={cardLife?.confirm ?? null} onMemory={() => setPanel('memory')} />
       ) : null}

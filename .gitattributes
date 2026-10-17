@@ -479,3 +479,4 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /tests/data/cu_semejanza_e5.npy -text
 # Fonts packaged with the Field view are binary: the text=auto rule above would rewrite their bytes.
 *.woff2 binary
+*.ico binary

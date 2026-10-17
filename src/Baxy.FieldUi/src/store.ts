@@ -86,7 +86,7 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
     case 'state':
       return { ...s, hostState: ev.value, live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null };
     case 'agent':
-      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation } };
+      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, powered: ev.powered !== false } };
     case 'transcript':
       // a session opened or started: its internet log is its own calls' (Ajustes → Privacidad says «de esta sesión»)
       return { ...s, items: ev.items.slice(-MAX_ITEMS), sub: null, mood: null, journey: null, netLog: netOf(ev.items) };

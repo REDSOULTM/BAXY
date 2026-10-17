@@ -5,6 +5,8 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>Baxy</AssemblyName>
     <RootNamespace>Baxy.App</RootNamespace>
+    <!-- BAXY's face (design v4): the executable's icon, which the taskbar and the tray draw. -->
+    <ApplicationIcon>Assets\baxy.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" />
@@ -29,6 +31,8 @@
     <EmbeddedResource Include="..\baxy_mind\data\memory_subjects.v1.json" LogicalName="Baxy.App.MemorySubjects.json" />
     <!-- Design v4: the short Spanish title, theme and face family of each catalog operation (FieldStepProjection). -->
     <EmbeddedResource Include="Assets\operation-labels.v1.json" LogicalName="Baxy.App.OperationLabels.json" />
+    <!-- The same icon for the window and the tray menu (pack://application:,,,/Assets/baxy.ico). -->
+    <Resource Include="Assets\baxy.ico" />
   </ItemGroup>
   <Target Name="CopyDevelopmentCore"
           AfterTargets="Build"

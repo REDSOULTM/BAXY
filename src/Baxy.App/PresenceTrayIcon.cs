@@ -4,14 +4,13 @@ using System.Runtime.InteropServices;
 namespace Baxy.App;
 
 /// <summary>
-/// Registers a Win32 window class for its own messages and a Shell_NotifyIcon entry.
+/// Registers a Win32 window class for its own messages and a Shell_NotifyIcon entry. A click (or Enter) on the icon
+/// opens BAXY; the right button (or the menu key) asks for BAXY's own menu at the pointer
+/// (<see cref="Presentation.TrayMenu"/>), drawn by the presence instead of a native popup menu.
 /// </summary>
 internal sealed class PresenceTrayIcon : IDisposable
 {
     internal const uint CallbackMessage = 0x8000 + 32;
-    internal const uint CommandShow = 1;
-    internal const uint CommandListen = 2;
-    internal const uint CommandExit = 3;
 
     private readonly WndProc _wndProc;
     private nint _classAtom;
@@ -20,24 +19,18 @@ internal sealed class PresenceTrayIcon : IDisposable
     private bool _iconOwned;
     private bool _added;
     private bool _disposed;
-    private bool _listening;
 
-    internal PresenceTrayIcon(
-        Action showWindow,
-        Action toggleListen,
-        Action exit)
+    internal PresenceTrayIcon(Action showWindow, Action<int, int> showMenu)
     {
         ShowWindow = showWindow ?? throw new ArgumentNullException(nameof(showWindow));
-        ToggleListen = toggleListen ?? throw new ArgumentNullException(nameof(toggleListen));
-        Exit = exit ?? throw new ArgumentNullException(nameof(exit));
+        ShowMenu = showMenu ?? throw new ArgumentNullException(nameof(showMenu));
         _wndProc = OnWindowMessage;
     }
 
     internal Action ShowWindow { get; }
 
-    internal Action ToggleListen { get; }
-
-    internal Action Exit { get; }
+    /// <summary>BAXY's menu at this point of the screen (device pixels).</summary>
+    internal Action<int, int> ShowMenu { get; }
 
     internal bool IsRegistered => _hwnd != 0 && _added;
 
@@ -94,8 +87,6 @@ internal sealed class PresenceTrayIcon : IDisposable
         }
     }
 
-    internal void SetListening(bool listening) => _listening = listening;
-
     internal bool Notify(string text) => IsRegistered && ShellNotifyIcon.Notify(_hwnd, text);
 
     public void Dispose()
@@ -130,97 +121,47 @@ internal sealed class PresenceTrayIcon : IDisposable
     {
         if (message == CallbackMessage)
         {
+            // NOTIFYICON_VERSION_4: the event is lParam's low word. A click or NIN_SELECT/NIN_KEYSELECT opens BAXY;
+            // the right button or WM_CONTEXTMENU (the menu key) asks for the menu. (The native menu this replaced was
+            // opened with TPM_RETURNCMD and its choice was dropped: no row ever ran.)
             int eventCode = unchecked((int)lParam.ToInt64() & 0xFFFF);
-            if (eventCode is 0x0202 or 0x0400)
+            if (eventCode is 0x0202 or 0x0400 or 0x0401)
             {
                 ShowWindow();
                 return nint.Zero;
             }
 
-            if (eventCode == 0x0205)
+            if (eventCode is 0x0205 or 0x007B)
             {
-                ShowContextMenu();
+                _ = NativeMethods.GetCursorPos(out Point point);
+                ShowMenu(point.X, point.Y);
                 return nint.Zero;
             }
-        }
-
-        if (message == 0x0111)
-        {
-            uint command = unchecked((uint)wParam.ToInt64() & 0xFFFF);
-            if (command == CommandShow)
-            {
-                ShowWindow();
-            }
-            else if (command == CommandListen)
-            {
-                ToggleListen();
-            }
-            else if (command == CommandExit)
-            {
-                Exit();
-            }
-
-            return nint.Zero;
         }
 
         return NativeMethods.DefWindowProc(hwnd, message, wParam, lParam);
     }
 
-    private void ShowContextMenu()
-    {
-        nint menu = NativeMethods.CreatePopupMenu();
-        if (menu == 0)
-        {
-            return;
-        }
-
-        try
-        {
-            _ = NativeMethods.AppendMenu(menu, 0, new nint(CommandShow), "Mostrar BAXY");
-            _ = NativeMethods.AppendMenu(
-                menu,
-                _listening ? 0x00000008u : 0,
-                new nint(CommandListen),
-                _listening ? "Dejar de escuchar" : "Escuchar");
-            _ = NativeMethods.AppendMenu(menu, 0, new nint(CommandExit), "Salir");
-            _ = NativeMethods.GetCursorPos(out Point point);
-            _ = NativeMethods.SetForegroundWindow(_hwnd);
-            _ = NativeMethods.TrackPopupMenu(
-                menu,
-                0x0100,
-                point.X,
-                point.Y,
-                0,
-                _hwnd,
-                nint.Zero);
-        }
-        finally
-        {
-            _ = NativeMethods.DestroyMenu(menu);
-        }
-    }
-
+    // BAXY's icon (the executable's, ApplicationIcon) at the size the notification area draws at this DPI.
     private nint ExtractOwnedIcon()
     {
         string exe = WindowsAutostartRegistration.ResolveCurrentExecutable();
-        nint large = 0;
-        nint small = 0;
-        int extracted = NativeMethods.ExtractIconEx(exe, 0, out large, out small, 1);
-        if (extracted > 0 && small != 0)
+        int size = NativeMethods.GetSystemMetricsForDpi(49, NativeMethods.GetDpiForSystem()); // SM_CXSMICON
+        if (size <= 0)
         {
-            if (large != 0 && large != small)
+            size = 16;
+        }
+
+        if (NativeMethods.SHDefExtractIcon(exe, 0, 0, out nint large, out nint small, (uint)(size << 16 | size)) == 0
+            && small != 0)
+        {
+            if (large != 0)
             {
                 _ = NativeMethods.DestroyIcon(large);
             }
 
             _iconOwned = true;
             return small;
-        }
-
-        if (large != 0)
-        {
-            _iconOwned = true;
-            return large;
         }
 
         _iconOwned = false;
@@ -376,40 +317,25 @@ internal sealed class PresenceTrayIcon : IDisposable
         internal static extern bool DestroyIcon(nint hIcon);
 
         [DllImport("user32.dll")]
-        internal static extern nint CreatePopupMenu();
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        internal static extern bool AppendMenu(nint hMenu, uint uFlags, nint uIDNewItem, string lpNewItem);
-
-        [DllImport("user32.dll")]
-        internal static extern bool DestroyMenu(nint hMenu);
-
-        [DllImport("user32.dll")]
         internal static extern bool GetCursorPos(out Point lpPoint);
 
         [DllImport("user32.dll")]
-        internal static extern bool SetForegroundWindow(nint hWnd);
+        internal static extern uint GetDpiForSystem();
 
         [DllImport("user32.dll")]
-        internal static extern bool TrackPopupMenu(
-            nint hMenu,
-            uint uFlags,
-            int x,
-            int y,
-            int nReserved,
-            nint hWnd,
-            nint prcRect);
+        internal static extern int GetSystemMetricsForDpi(int nIndex, uint dpi);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         internal static extern nint GetModuleHandle(string? lpModuleName);
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        internal static extern int ExtractIconEx(
-            string lpszFile,
-            int nIconIndex,
+        internal static extern int SHDefExtractIcon(
+            string pszIconFile,
+            int iIndex,
+            uint uFlags,
             out nint phiconLarge,
             out nint phiconSmall,
-            uint nIcons);
+            uint nIconSize);
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         internal static extern bool Shell_NotifyIcon(uint dwMessage, ref NotifyIconData lpData);
