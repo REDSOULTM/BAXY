@@ -1288,3 +1288,34 @@ F:/BAXYeval/reales_v1; aquí sólo van cifras, ids y descripciones genéricas. R
   0 y ningún evento 7040 de deshabilitado. Deshecho a mano: un «no molestar» que quedó activado y una imagen descargada
   (a cuarentena; nada borrado). Clases finales de los pedidos en español/inglés (345): OK 214, ELIGE_MAL 79,
   EJECUTA_MAL 18, FALTA_SKILL 23, FUERA_DE_DISEÑO 11; 13 con falsedad. Causas E1-E8 en auditoria_reales.md.
+
+### Fase 3: arreglos medidos
+
+Método: cada variante se mide primero sola en la GPU del PC (su familia de casos del ajuste o, si toca el prompt, el
+subconjunto de 758 casos: los 639 pedidos más los textos de desarrollo que fallaban o mentían; y decision2 s0), y
+las que suben su grupo sin bajar decision2 van a un lote que pasa los tres bancos completos (decision2 s0-2 en el
+PC, escenas sin tocar + 3 perturbaciones y e2e s0-2 en el notebook), con bisect si baja algo. Base del día en el PC:
+decision2 230/224/229 = 227,67; subconjunto (juez propio) pedidos 487/639, texto de desarrollo 33/119.
+Rechazadas o sin efecto (detalle en F:/BAXYeval/reales_v1/variantes/resultados.md):
+- pcG1 y nb-arr-G5b (system.power sólo con el PC nombrado): decision2 225 y 226 en el PC (226,00 en el notebook).
+- nb-arr-G1 (YouTube con el ejemplo de buscar en browser.navigate): decision2 223 en el PC (−7).
+- nb-arr-G4 (pegar): no sube su grupo; 223,00 en el notebook.
+- pcG7 (regla 2 con lo recordado): 222 (−8).
+- pcG9 (Hz y resolución en system.settings.set): no sube su grupo; 227.
+- pcG4 y pcG4b (el resourceId de filesystem.read.text): sin efecto, G06 límite.
+- pcG7b («guardaste»): sin señal fiable sobre las falsedades; G13 queda como límite.
+
+**Lote 1 (e96064701), ACEPTADO:**
+- pc-arr-G12: regla 1, un texto que no pide nada se contesta en una frase sin herramientas.
+- pc-arr-G2: regla 3, también «sobre qué cosa actuar» cuando nada lo dice.
+- nb-arr-G5: una ventana o la activa es app.close, no window.close.all.
+- nb-arr-G2: instalar es game.install.named, aunque se pregunte.
+- pc-arr-G1b: media.play.youtube sólo para reproducir; YouTube nombrado no es Spotify.
+
+Medida del lote 1:
+- decision2 en el PC 231/229/232 = 230,67 frente a 227,67 (+3,0).
+- Escenas en el notebook 29/29/32/29 = 29,75 frente a 30,5 (−0,75, dentro de ±2), 0 riesgos solos.
+- E2E de práctica en el notebook 19/19/19 = 19,00 frente a 19,67 (−0,67, dentro de ±1).
+- Prefijo 42.250 frente a 42.168 (+82 tokens).
+- Grupos en el subconjunto: pedidos 487→492, texto de desarrollo 33→50, G02 0→8/35, G03 2→4/13, G01 1→2/6.
+- Suites del lote 1: Kernel 567, Contracts 69, Setup 477, Providers 2189, todo verde; App compila (0 avisos, 0 errores).
