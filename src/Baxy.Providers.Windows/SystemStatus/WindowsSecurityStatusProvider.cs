@@ -14,9 +14,9 @@ public interface ISecurityStatusProvider
 }
 
 /// <summary>
-/// Auditoría de los pedidos reales (2026-10-17): «¿el firewall está prendido?», «¿hay actualizaciones de Windows
-/// esperando?». Both are read without changing anything and without administrator rights, through Windows PowerShell
-/// (the core is published AOT, so no late-bound COM there): the firewall as Windows applies it now (NetSecurity,
+/// Auditoría de los pedidos reales (2026-10-17): whether the firewall is on and whether Windows updates are waiting.
+/// Both are read without changing anything and without administrator rights, through Windows PowerShell (the core is
+/// published AOT, so no late-bound COM there): the firewall as Windows applies it now (NetSecurity,
 /// ActiveStore), with the network profiles connected now; Windows Update from the Update Agent's local cache (an
 /// offline search: what the last Windows search found, with its date), whether a restart is pending, and the titles of
 /// the first 10 updates waiting.
