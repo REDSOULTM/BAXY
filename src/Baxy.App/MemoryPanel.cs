@@ -110,6 +110,17 @@ internal sealed class MemoryPanel
         (JsonObject? listed, string? error) = await ListAsync(client, protector, PageSize, cancellationToken);
         if (listed is null)
         {
+            // Ronda final 23 (regla 3): a change done and verified is never told as failed because the list after it
+            // could not be read: it is said done, its list unread.
+            if (failed is null && method != "GET")
+            {
+                return FieldHttpResponse.Json(new JsonObject
+                {
+                    ["listUnread"] = true,
+                    ["error"] = error ?? "memory_unavailable",
+                });
+            }
+
             return Failure(failed ?? error ?? "memory_unavailable", failed is null ? 409 : 503);
         }
 
@@ -158,6 +169,8 @@ internal sealed class MemoryPanel
 
             if (error is not null)
             {
+                // Ronda final 23 (regla 3): a count not read again is not told as the current one.
+                Count = null;
                 return (null, error);
             }
 

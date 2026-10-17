@@ -80,9 +80,11 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
     setPending(true);
     try {
       const r = await fetch(path, init);
-      const data = (await r.json().catch(() => ({}))) as { error?: string; unconfirmed?: boolean };
+      const data = (await r.json().catch(() => ({}))) as { error?: string; unconfirmed?: boolean; listUnread?: boolean };
       if (!r.ok) toastError(`${verb} · falló · ${data.error ?? `estado ${r.status}`}`);
       else if (data.unconfirmed) toastError(`${verb} · sin confirmar · se muestra lo guardado`);
+      // ronda final 23: done and verified, but the list after it could not be read
+      else if (data.listUnread) toastError(`${verb} · hecho · la lista no se pudo volver a leer`);
     } catch (e) {
       toastError(`${verb} · falló · ${String(e).replace(/^Error: /, '')}`);
     } finally {
@@ -131,6 +133,10 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
     <Panel title="memoria" onClose={onClose} width={620}>
       <div className="session-list">
         {loading && <div className="muted" style={{ padding: 14 }}>cargando la memoria…</div>}
+        {/* ronda final 23: a reading that failed with rows on screen says those rows may be old */}
+        {!loading && err && items.length > 0 && (
+          <div className="muted" style={{ padding: 14 }}>{`error al volver a leer · ${err} · la lista puede no estar al día`}</div>
+        )}
         {!loading && items.length === 0 && (
           <div className="muted" style={{ padding: 14 }}>
             {err ? `error · ${err}`
@@ -212,7 +218,7 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
         )}
         <span className="muted" style={{ marginLeft: 'auto' }}>
           {/* ronda final 21-22: no count when the memory is off or the list could not be read */}
-          {off || err ? '—' : total > items.length ? `${items.length} de ${total} recuerdos` : `${items.length} recuerdos`}
+          {loading || off || err ? '—' : total > items.length ? `${items.length} de ${total} recuerdos` : `${items.length} recuerdos`}
         </span>
         <button
           type="button"

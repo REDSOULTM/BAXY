@@ -377,6 +377,7 @@ public sealed class ComputerUseWindowIdentityTests
     [TestCase("regedit", "regedit", "Editor del Registro", true)]
     [TestCase("Taskmgr", "Administrador de tareas", "Administrador de tareas", true)]
     [TestCase("SecHealthUI", "Seguridad de Windows", "Seguridad de Windows", true)]
+    [TestCase("perfmon", "Monitor de recursos", "Monitor de rendimiento", true)]
     [TestCase("SystemSettings", "Configuración", null, false)]
     public void AnEditorATerminalOrBaxyIsTheApplicationOnlyWhenNamed(
         string process, string? application, string? description, bool protectedFrom)

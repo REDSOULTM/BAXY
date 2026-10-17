@@ -35,6 +35,12 @@ try {
     $startInfo=[Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName=$file.FullName
     $startInfo.UseShellExecute=$true
+    # Ronda final 23 (regla 3): only a window that comes now (or the launched process's own) can prove the opening, never
+    # one already open that happens to carry the name (a mail «Factura de octubre» in the browser).
+    $windowsBefore=@{}
+    foreach($open in @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 })){
+        $windowsBefore[[long]$open.MainWindowHandle]=$true
+    }
     $process=[Diagnostics.Process]::Start($startInfo)
     $effect=$true
     # Ronda final 22 (regla 3): a live process is no proof the file opened (Word alive under «el archivo está dañado»):
@@ -44,7 +50,8 @@ try {
     for($look=0;$look -lt 16 -and $null -eq $title;$look++){
         Start-Sleep -Milliseconds 250
         $shown=Get-Process -ErrorAction SilentlyContinue | Where-Object {
-            $_.MainWindowTitle -and $_.MainWindowTitle.IndexOf($stem,[StringComparison]::OrdinalIgnoreCase) -ge 0 } |
+            $_.MainWindowTitle -and $_.MainWindowTitle.IndexOf($stem,[StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+            ((-not $windowsBefore.ContainsKey([long]$_.MainWindowHandle)) -or ($null -ne $process -and $_.Id -eq $process.Id)) } |
             Select-Object -First 1
         if($null -ne $shown){$title=$shown.MainWindowTitle}
     }

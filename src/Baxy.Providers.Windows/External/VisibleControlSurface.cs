@@ -525,7 +525,8 @@ internal static partial class VisibleControlSurface
     // compmgmt.msc, gpedit.msc, taskschd.msc, eventvwr.msc, diskmgmt.msc and lusrmgr.msc.
     private static readonly HashSet<string> SystemToolProcesses = new(StringComparer.OrdinalIgnoreCase)
     {
-        "msconfig", "mmc", "regedit", "regedt32", "Taskmgr", "resmon", "SystemPropertiesAdvanced",
+        // resmon only launches the Resource Monitor's window in perfmon (perfmon.exe /res).
+        "msconfig", "mmc", "regedit", "regedt32", "Taskmgr", "resmon", "perfmon", "SystemPropertiesAdvanced",
         "SystemPropertiesComputerName", "SystemPropertiesDataExecutionPrevention", "SystemPropertiesHardware",
         "SystemPropertiesPerformance", "SystemPropertiesProtection", "SystemPropertiesRemote",
         "UserAccountControlSettings", "netplwiz", "rstrui", "cleanmgr", "dfrgui", "iscsicpl", "odbcad32", "optionalfeatures",
@@ -1269,7 +1270,7 @@ internal static partial class VisibleControlSurface
         return (double)best / sampled;
     }
 
-    private static HashSet<uint> ProcessFamily(OpenedApplication opened)
+    internal static HashSet<uint> ProcessFamily(OpenedApplication opened)
     {
         var family = new HashSet<uint>();
         Dictionary<uint, List<uint>> children = ChildrenByParent();

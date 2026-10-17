@@ -101,11 +101,11 @@ Ninguna palanca (medida, o descartada por su cuenta como P4) supera a `base` por
 - **Descartada por la latencia:** P4.
 
 El producto se congeló en **ff863b47f** (tag `renew-d20-congelado`), sin ningún cambio de la mente respecto de `base9e` (la mente de 9eadc3d79: ninguna palanca entró). El holdout v3, sellado por agentes aislados en `F:\BAXYeval\renew_v3`, se corrió una sola vez sobre ese commit (cifras en `PROGRESO.md` y en `metas.json`; los arreglos de honestidad
-posteriores, entre ellos 35 descripciones del catálogo y 8 entradas de argumentos cambiadas desde ff863b47f tras la ronda final 22 (diff de claves), no se midieron en él), y su resultado es el techo medido con Qwen3.5-4B en este harness: una sola corrida sellada de esa configuración.
+posteriores, entre ellos 37 descripciones del catálogo y 8 entradas de argumentos cambiadas desde ff863b47f tras la ronda final 23 (diff de claves), no se midieron en él), y su resultado es el techo medido con Qwen3.5-4B en este harness: una sola corrida sellada de esa configuración.
 
 **P10, una llamada por decisión (`noparallel`, PC, contra `base9e`):** decisión 230, 233 y 233 (media 232,0, la misma que `base9e`; dispersión 3 contra 0), p50 0,938 s (más lento); escenas 30/39, 0 molestas. **No gana.**
 
-**P7 (`cuex`), PC:** decisión 232, 229 y 232 (media 231,0, dispersión 3, p50 0,735 s), dentro del ruido de `base`. Escenas 29, 29 y 28, con **3 molestas en total** (1 por semilla): pierde silencios. **No gana**; el ejemplo en el sistema hace que el latido actúe de más. (Sus brazos se escribieron sobre 9eadc3d79, que cambió tres descripciones; `base` se mide otra vez sobre esa mente, `base9e`.)
+**P7 (`cuex`), PC:** decisión 232, 229 y 232 (media 231,0, dispersión 3, p50 0,735 s), dentro del ruido de `base`. Escenas 29, 29 y 28, con **3 molestas en total** (1 por semilla): pierde silencios. **No gana**; el ejemplo en el sistema hace que el latido actúe de más. (Sus brazos se escribieron sobre 9eadc3d79, que cambió una descripción, la de filesystem.explorer.count (diff de claves 7a4030054..9eadc3d79; las otras dos diferencias del volcado eran las listas de apps y juegos de la máquina); `base` se mide otra vez sobre esa mente, `base9e`.)
 
 **`base9e`** (la mente de 9eadc3d79, PC): decisión 232, 232 y 232 (las semillas fallan casos distintos y el total coincide), media 232,0, p50 0,859 s; escenas 30, 30 y 30, 0 molestas. Contra esta base, `cuex` (231,0; 28–29 con 3 molestas) sigue sin ganar.
 

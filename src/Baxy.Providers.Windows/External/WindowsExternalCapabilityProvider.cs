@@ -225,10 +225,12 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// <summary>
     /// M105 (DEV-D v4a D-s047 «cuál es el nombre de la música que se está reproduciendo»): the system media session
     /// read nothing playing (<c>media_session_not_found</c>), then the YouTube tab adapter found no tab of its own and
-    /// its <c>youtube_tab_not_found</c> replaced the system read, so the reply spoke only of a YouTube video.
+    /// its <c>youtube_tab_not_found</c> replaced the system read, so the reply spoke only of a YouTube video. Ronda final
+    /// 23 (regla 3): a system read that failed (<c>smtc_session_access_failed</c>) is kept too, never replaced by «no tab».
     /// </summary>
     private static bool OnlyNarrowsAnEarlierRead(ExternalCapabilityReceipt? earlier, ExternalCapabilityReceipt later) =>
-        earlier?.ErrorCode == "media_session_not_found" && later.ErrorCode == "youtube_tab_not_found";
+        earlier?.ErrorCode is "media_session_not_found" or "smtc_session_access_failed"
+        && later.ErrorCode == "youtube_tab_not_found";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,

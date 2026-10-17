@@ -840,11 +840,11 @@ internal sealed class WindowsVisibleControlAdapter
     internal Func<nint, bool>? ActRefused { get; init; }
 
     /// <summary>
-    /// Ronda final 22: whether <paramref name="window"/> is drawn by the process <c>processId</c> (or hosts it): a
-    /// click that names another process's window is not bound to the application just opened. Null (the test seams that
-    /// name none) binds as before.
+    /// Ronda final 22-23: whether a window is the opened application's (drawn or hosted by its process, or by the
+    /// family of processes its launch started, as a launcher's child): a click that names another process's window is
+    /// not bound to the application just opened. Null (the test seams that name none) binds as before.
     /// </summary>
-    internal Func<nint, int, bool>? WindowOfProcess { get; init; }
+    internal Func<nint, VisibleControlSurface.OpenedApplication, bool>? WindowOfProcess { get; init; }
 
     private bool Refuses(nint window) => window != 0 && ActRefused?.Invoke(window) == true;
 
@@ -880,8 +880,13 @@ internal sealed class WindowsVisibleControlAdapter
     {
         RootWindows = VisibleControlSurface.RootWindowsNow;
         ActRefused = VisibleControlSurface.ActRefused;
-        WindowOfProcess = static (window, processId) => VisibleControlSurface.ViewProcess(window).ProcessId == processId
-            || VisibleControlSurface.DrawingProcesses(window).Contains(processId);
+        WindowOfProcess = static (window, opened) =>
+        {
+            HashSet<uint> family = VisibleControlSurface.ProcessFamily(opened);
+            family.Add(unchecked((uint)opened.ProcessId));
+            return family.Contains(unchecked((uint)VisibleControlSurface.ViewProcess(window).ProcessId))
+                || VisibleControlSurface.DrawingProcesses(window).Any(process => family.Contains(unchecked((uint)process)));
+        };
         BurstLease = ForegroundLease.Shared;
     }
 
@@ -1133,8 +1138,11 @@ internal sealed class WindowsVisibleControlAdapter
         // Ronda final 22 (regla 3): a click that names a window of another process than the application just opened
         // («abre Spotify», then «en Chrome pulsa Aceptar» with Chrome's window) acts in the window it names, never in
         // the opened one.
-        if (opened is { } openedNow && namedWindow != 0 && WindowOfProcess is { } ofProcess
-            && !ofProcess(namedWindow, openedNow.ProcessId))
+        // Ronda final 23: the same for a click by index without a window, whose identity went stale: the window of the
+        // last look, not the opened application, when that look was of another process.
+        nint askedWindow = namedWindow != 0 ? namedWindow : viewWindow;
+        if (opened is { } openedNow && askedWindow != 0 && WindowOfProcess is { } ofProcess
+            && !ofProcess(askedWindow, openedNow))
             opened = null;
         if (opened is { } seenOpening && _openedLooked is { } looked
             && looked.Shows(seenOpening, namedWindow, label))

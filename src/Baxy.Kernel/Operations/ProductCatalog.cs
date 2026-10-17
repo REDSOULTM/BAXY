@@ -198,7 +198,7 @@ public static class ProductCatalog
                 ["back", "close", "close_all", "fullscreen_video", "new_tab", "reload", "scroll_down", "scroll_up"])], ["action"]),
             OperationRisks.LowReversible,
             "browser.control.cdp.postread.v1",
-            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas sus pestañas) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP."),
+            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas salvo la última, que se deja porque cerrarla cerraría la ventana) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP."),
         Descriptor(
             "browser.navigate",
             Schema([String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["url"]),
@@ -520,7 +520,7 @@ public static class ProductCatalog
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
             OperationRisks.LowReversible,
             "filesystem.file.open.latest.windows.shell.process.postread.v1",
-            "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y verifica el proceso observado."),
+            "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y lo da por abierto sólo con una ventana nueva (o del proceso lanzado) cuyo título lo nombra; si no, dice que no se pudo verificar."),
         Descriptor(
             "filesystem.folder.open",
             Schema(
@@ -874,7 +874,7 @@ public static class ProductCatalog
                 ["label"]),
             OperationRisks.ExternalCommunication,
             "input.visible.click.windows.uia.invoke.postread.v2",
-            "Invoca un único control visible por etiqueta, o por el índice de la vista o la identidad que dio un clic, en la ventana en primer plano (UIA, luego OCR, luego visión) y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada."),
+            "Invoca un único control visible por etiqueta, o por el índice de la vista o la identidad que dio un clic, en la ventana nombrada o, sin ella, en la de la última mirada (con índice), en la aplicación recién abierta o en la de delante (UIA, luego OCR, luego el globo de ayuda, y visión sólo si está configurada), nunca en una ventana protegida, y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada."),
         Descriptor(
             "input.visible.controls",
             // La vista compacta que lee el modelo (ScreenViewProjection): número, tipo,
@@ -1560,7 +1560,7 @@ public static class ProductCatalog
                 ["captureId"]),
             OperationRisks.PrivacySensitive,
             "vision.describe.provider.capture.binding.v1",
-            "Describe una captura identificada mediante un VLM configurado sin aceptar rutas arbitrarias."),
+            "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
         // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:
         // geocodificación del lugar nombrado, o la ubicación de este PC por su IP) con

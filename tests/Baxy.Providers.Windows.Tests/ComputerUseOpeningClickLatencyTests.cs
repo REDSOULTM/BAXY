@@ -339,7 +339,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
             worker, new Locator("ocr"), null, focus, OpeningTiming,
             surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"))
         {
-            WindowOfProcess = (window, processId) => false,
+            WindowOfProcess = (window, opened) => false,
         };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(

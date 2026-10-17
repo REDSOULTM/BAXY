@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 35 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 22, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 37 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 23, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -656,6 +656,20 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     CryptSvc en Manual). B: el rechazo del scroll es antes del efecto, las líneas de las B pendientes al día; nueva B
     pendiente b_r22_*. Descripciones cambiadas desde ff863b47f, por diff de claves: 35 y 8 entradas de argumentos.
     Suites: 564/69/477/2182. Sin medir.
+  - Ronda final 23 (sobre 14cfe53be): A en el notebook 1 y en el PC 1+2+2+4. Arregladas: filesystem.file.open.latest
+    sólo da por abierto con una ventana nueva o del proceso lanzado (una pestaña ya abierta con el nombre no prueba
+    nada); un clic por índice sin ventana cuya identidad caducó no se ata a la app recién abierta si la mirada fue de
+    otro proceso, y la comprobación mira la familia de procesos de la apertura; el panel de memoria dice «—» mientras
+    carga, «hecho» cuando la relectura tras un cambio falla, y avisa si muestra filas viejas; el contador no publica
+    una cifra vieja; browser.control dice que deja la última pestaña; vision.describe dice que sólo funciona con un
+    modelo de visión local configurado; el Monitor de recursos (su ventana es de perfmon) queda protegido; tres textos
+    de los informes (la restauración suma 256 con BITS; una frase de metas que daba zonas por limpias; ajuste_d20 cambió
+    una descripción en 9eadc3d79, no tres). B: media.status conserva un fallo de lectura de la sesión; textos en
+    español de input.visible.click y filesystem.file.open.latest; nuevas B pendientes b_r23_*. Escenas de práctica
+    sobre 01f209bee (notebook, sin tocar y 3 perturbaciones): 31, 32, 30 y 32 de 39 (media 31,25), 0 molestas, silencio
+    23/23: -1,25 frente a la familia de ff863b47f, dentro del ruido. E2E s0 sobre 01f209bee: 18/30 (en el límite; el
+    notebook corre s0-2 sobre 14cfe53be para decidirlo). Descripciones cambiadas desde ff863b47f: 37 y 8 entradas de
+    argumentos. Suites: 564/69/477/2183. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -781,9 +795,9 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
   se hizo efectivo en el siguiente arranque: el 17/10 a las 00:38:47 el PC se cerró de golpe (evento 6008; según el
   dueño, por un proceso que lanzó él, no por este cambio) y al arrancar, a las 01:12, lo hizo sin red, sin sonido y sin
   casi nada, por los servicios deshabilitados. El dueño restauró con msconfig a las 01:17 (evento 1074,
-  msconfig.exe): volvieron 245 servicios (eventos 7040); otros 7 habían vuelto antes por otros caminos (sshd a las
-  14:42:09 del 15/10, CryptSvc, Windows Update, WAP push, dos de edgeupdate y Copilot); Epic Games Updater, BattlEye
-  y GIGABYTE Update no tienen evento de vuelta pero hoy están en su tipo original. «Servicios de cifrado» (CryptSvc),
+  msconfig.exe): volvieron 245 servicios (eventos 7040); otros 8 habían vuelto antes por otros caminos (sshd a las
+  14:42:09 del 15/10, CryptSvc, Windows Update, WAP push, dos de edgeupdate, Copilot y BITS a las 17:57:39); Epic Games Updater, BattlEye
+  y GIGABYTE Update no tienen evento de vuelta pero hoy están en su tipo original (245 + 8 + 3 = 256). «Servicios de cifrado» (CryptSvc),
   antes en Automático, pasó a Manual el 15/10 a las 14:39:01 y así sigue (corriendo): se le avisó al dueño, que
   decide. La clave MSConfig\services quedó vacía.
 - El mismo caso llevó a BAXY a msconfig en otras cuatro corridas (p1, p3, p5 y p8): en p3 y p5 llegó a la pestaña
@@ -796,7 +810,7 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
 - Arreglo (kernel: riesgo y confirmación; proveedor: su barrera de seguridad «Seguridad v2», nunca una ayuda a
   entender): las herramientas que configuran Windows (msconfig, la consola MMC con services.msc, devmgmt, compmgmt,
   gpedit, taskschd, eventvwr, diskmgmt y lusrmgr, el editor del registro, el Administrador de tareas, el Monitor de
-  recursos, las propiedades del sistema, el control de cuentas, netplwiz, Restaurar sistema, el Liberador de espacio,
+  recursos, las propiedades del sistema, el control de cuentas, netplwiz, el Monitor de recursos (su ventana es de perfmon), Restaurar sistema, el Liberador de espacio,
   Optimizar unidades, iSCSI, ODBC, características de Windows y Seguridad de Windows) quedan protegidas siempre, como la ventana de BAXY: se pueden abrir y mirar, nunca
   pulsar ni escribir en ellas, y la vista lo dice («herramienta de configuración del sistema: lo hace la persona»).
   «Deshabilitar todos», «Desactivar todo» y «Disable all» piden el «sí» en cualquier aplicación.
