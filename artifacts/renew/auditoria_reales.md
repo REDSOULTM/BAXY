@@ -37,14 +37,15 @@ ids y descripciones; el detalle caso por caso, con tus textos, vive fuera del re
   juzgó por el estado del mundo y los recibos, con revisión a mano. Las demás misiones que deciden bien quedan sin
   ejecutar por seguridad: Spotify, Discord y correo del dueño, instalar, apagar, radios, shell, borrar e imprimir.
   Las misiones OK de la tabla que no se ejecutaron son OK de decisión.
-- **Falsedades.** 46 confirmadas: 38 respuestas en la decisión de las dos GPUs (30 ejemplos distintos) y 8 en la
-  ejecución. En la decisión, casi todas son ante texto pegado: «he guardado…», «he tomado nota…», «listo, se
+- **Falsedades.** 43 confirmadas: 38 respuestas en la decisión de las dos GPUs (30 ejemplos distintos) y 5 en la
+  ejecución. A ellas se suman 3 respuestas de la ejecución que dan por hecho algo que no se verificó. En la decisión, casi todas son ante texto pegado: «he guardado…», «he tomado nota…», «listo, se
   ejecutó…», «recuerdo que…», sin ninguna herramienta. En la ejecución:
   - leer un código de error como «ya se cerró» (3);
-  - decir que escribió en Word cuando la escritura falló (2);
-  - decir que seleccionó texto sin conseguirlo (1);
   - decir que no hay ventana de YouTube cuando la hay (1);
   - decir que puso algo «en YouTube» cuando lo puso en Spotify (1).
+
+  Las 3 sin verificar son «escribí» en Word (2) y «seleccioné» (1): las teclas entraron, pero no se releyó lo escrito
+  (WindowsDesktopInteractionAdapter.cs:669).
 - En los peligrosos que eligió mal (apagar el PC, cerrar todas las ventanas, mandar a la papelera), **el kernel pide
   el sí**: WorkLoss y RecoverableDelete se tratan como irreversibles (ProductCatalog.cs:1905, RiskPolicy.cs:87). Sin
   tu «sí», el daño no pasa.
@@ -82,7 +83,7 @@ Fallos de ejecución (EJECUTA_MAL, 25 ejemplos), por causa:
 |---|---|---|---|---|
 | E1 | app.close con un windowId inventado: el kernel pregunta, falla, y la respuesta dice que se cerró | 4 (3 con falsedad) | tool_descriptions:5 app.close | Descripción: el id sale de window_resolve o window_active, e invalid_or_expired_window_id no significa cerrada |
 | E3 | Opera GX: la página no se puede leer (atrás, cerrar pestaña, leer la página) | 6 | proveedor del navegador | Límite del proveedor; lo dice bien en 3 de 6 |
-| E2 | Escribir en Word: el texto no se puede releer | 2 (2 con falsedad) | proveedor de input.text.type | Límite del proveedor; la falsedad va con G13 |
+| E2 | Escribir en Word: el texto no se puede releer | 2 (2 dicen «escribí» sin verlo) | :83 input.text.type no explica input_text_not_read_back | Descripción: qué significa y que se diga «escrito sin verlo ahí» |
 | E4 | memory.recall llamado sin argumentos | 2 | tool_descriptions:98 (sin significado de scope ni selector) | Significado de los argumentos |
 | E5 | app.open repetido 10-15 veces sin respuesta final | 2 | tope de pasos del turno (en estudio) | Protocolo: tope de llamadas repetidas |
 | E6-E8 | Foco y ventana protegida, una ventana de Opera que no se resuelve, YouTube puesto en Spotify | 5 | proveedores; :88 media.play.query | E8 va con G03 |
