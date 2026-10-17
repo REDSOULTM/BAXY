@@ -57,6 +57,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isDisposed;
     private bool _turnExecutionActive;
     private long _turnTraceSequence;
+    private bool _isPowered = true;
+    private string _beatActivity = string.Empty;
+    private MindVoiceStatus? _voicePieces;
+    private DateTimeOffset _mindStartedAt = DateTimeOffset.UtcNow;
+    private DateTimeOffset? _mindReadyAt;
 
     public MainWindowViewModel()
     {
@@ -74,7 +79,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 {
                     // A heartbeat speaks only when the person is free; otherwise its words are a notification.
                     bool quiet = _beatActive && !_beatSpeaks;
-                    AddMessageCore("BAXY", text, isUser: false, route, speak: !quiet);
+                    AddMessageCore("BAXY", text, isUser: false, route, speak: !quiet,
+                        silent: quiet ? SilentBecause(_beatActivity) : null);
                     if (_beatActive && quiet)
                     {
                         NotificationRequested?.Invoke(text);
@@ -96,9 +102,58 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     }
                 },
                 StepCompleted = step => StepCompleted?.Invoke(step),
+                StepStarted = (id, operation, arguments) => StepStarted?.Invoke(id, operation, arguments),
+                ConfirmationAsked = asked => ConfirmationAsked?.Invoke(asked, _beatActive ? _beatActivity : null),
+                ConfirmationResolved = outcome => ConfirmationResolved?.Invoke(outcome),
+                Refuse = Settings.Refusal,
                 MemoryChanged = () => MemoryChanged?.Invoke(),
             });
     }
+
+    /// <summary>What the owner chose in the view's Settings and Proposals panels.</summary>
+    internal FieldSettings Settings { get; } = FieldSettings.CreateDefault();
+
+    /// <summary>A call is about to run (the view's chip in progress).</summary>
+    internal event Action<string, string, System.Text.Json.Nodes.JsonObject>? StepStarted;
+
+    /// <summary>A call waits for the person's Sí or No; the second value is the heartbeat's reading of the person
+    /// when the call is its proposal.</summary>
+    internal event Action<NativeTurnConfirmation, string?>? ConfirmationAsked;
+
+    internal event Action<string>? ConfirmationResolved;
+
+    /// <summary>What the ear has heard of the request so far (live captions); it starts nothing.</summary>
+    internal event Action<string>? VoicePartial;
+
+    /// <summary>«Baxy» was heard.</summary>
+    internal event Action? VoiceWake;
+
+    /// <summary>Active (true) or resting: at rest nothing listens and the heartbeat waits.</summary>
+    public bool IsPowered
+    {
+        get => _isPowered;
+        private set => SetField(ref _isPowered, value);
+    }
+
+    /// <summary>The start's pieces as the mind reported them (null until it says), and when the model started and was ready.</summary>
+    internal MindVoiceStatus? VoicePieces => _voicePieces;
+
+    internal int? MindProcessId => _mindClient?.ProcessId;
+
+    internal DateTimeOffset MindStartedAt => _mindStartedAt;
+
+    internal DateTimeOffset? MindReadyAt => _mindReadyAt;
+
+    internal bool MindFailed => _mindStartupState is MindStartupState.Failed or MindStartupState.NotConfigured;
+
+    private static string SilentBecause(string activity) => activity switch
+    {
+        HeartbeatMoment.Playing => "estás jugando",
+        HeartbeatMoment.InCall => "estás en una llamada",
+        HeartbeatMoment.Watching => "estás viendo algo",
+        HeartbeatMoment.Away => "no estabas",
+        _ => "aviso en pantalla",
+    };
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -369,7 +424,98 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     }
 
     /// <summary>Whether a heartbeat may run now: everything is up and nothing holds the turn or waits for the person.</summary>
-    internal bool CanBeat => IsReady && IsMindReady && !IsBusy && !_beatActive && !_loop.HasPendingConfirmation;
+    internal bool CanBeat => IsReady && IsMindReady && !IsBusy && !_beatActive && !_loop.HasPendingConfirmation
+        && IsPowered && Settings.QuietUntil is null;
+
+    /// <summary>Rest (off) stops listening and holds the heartbeat; active (on) lets them run again (the view turns its
+    /// microphone mode back on).</summary>
+    internal async Task<bool> SetPowerAsync(bool on, CancellationToken cancellationToken)
+    {
+        if (!on && !await SetWakeVoiceAsync(false, cancellationToken))
+        {
+            return IsPowered;
+        }
+
+        IsPowered = on;
+        return on;
+    }
+
+    /// <summary>The session's conversation as the mind holds it, to keep with the session the view shows.</summary>
+    internal async Task<System.Text.Json.Nodes.JsonArray?> ExportMindSessionAsync(CancellationToken cancellationToken) =>
+        _mindClient is { IsReady: true } mind ? await mind.SessionExportAsync(cancellationToken) : null;
+
+    /// <summary>Opens a kept session: nothing pending survives, the mind gets its conversation back and the transcript
+    /// the heartbeat reads is that session's words.</summary>
+    internal async Task<bool> OpenSessionAsync(System.Text.Json.Nodes.JsonArray? mindConversation,
+        IReadOnlyList<ConversationMessage> messages, CancellationToken cancellationToken)
+    {
+        if (IsBusy || _beatActive || _mindClient is not { IsReady: true } mind)
+        {
+            return false;
+        }
+
+        bool loaded = mindConversation is { Count: > 0 }
+            ? await mind.SessionLoadAsync(mindConversation, cancellationToken)
+            : await mind.NewSessionAsync(cancellationToken);
+        if (!loaded)
+        {
+            return false;
+        }
+
+        _loop.Reset();
+        Messages.Clear();
+        foreach (ConversationMessage message in messages)
+        {
+            Messages.Add(message);
+        }
+
+        OnPropertyChanged(nameof(HasPendingConfirmation));
+        StatusDescription = IdleStatus();
+        return true;
+    }
+
+    /// <summary>What the heartbeat last saw the person doing (libre, jugando, llamada, viendo, ausente…).</summary>
+    internal string OwnerActivity { get; private set; } = string.Empty;
+
+    internal void ReportActivity(string activity)
+    {
+        if (OwnerActivity != activity)
+        {
+            OwnerActivity = activity;
+            OnPropertyChanged(nameof(OwnerActivity));
+        }
+    }
+
+    /// <summary>
+    /// A panel of the view runs the chat's own catalog operation (the triggers panel: schedule.alarms), through the
+    /// kernel like any call, never around it; null when the engine is not ready or did not answer.
+    /// </summary>
+    internal async Task<OperationResponse?> SendPanelOperationAsync(string operation,
+        System.Text.Json.Nodes.JsonObject arguments, CancellationToken cancellationToken)
+    {
+        if (_coreClient is not { IsReady: true } core || _retryableOperations is not { } registry)
+        {
+            return null;
+        }
+
+        PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation(operation, arguments));
+        try
+        {
+            return await core.SendOperationAsync(prepared, TimeSpan.FromSeconds(15), cancellationToken);
+        }
+        catch (Exception exception) when (exception is TimeoutException or IOException or InvalidOperationException)
+        {
+            return null;
+        }
+        finally
+        {
+            registry.MarkResolved(prepared);
+        }
+    }
+
+    /// <summary>Push-to-talk let go.</summary>
+    internal async Task<bool> ReleaseDirectVoiceAsync(CancellationToken cancellationToken) =>
+        _mindClient is { IsReady: true } mind && await mind.VoiceReleaseAsync(TimeSpan.FromSeconds(5), cancellationToken);
 
     /// <summary>One heartbeat with the moment observed; <paramref name="speak"/>: its words may be said aloud.</summary>
     internal async Task RunBeatAsync(System.Text.Json.Nodes.JsonObject moment, bool speak, CancellationToken cancellationToken)
@@ -384,6 +530,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, "beat.start", speak ? "voz" : "notificacion");
         _beatActive = true;
         _beatSpeaks = speak;
+        _beatActivity = (string?)moment["owner_activity"] ?? string.Empty;
         try
         {
             await _loop.RunBeatAsync(moment, cancellationToken);
@@ -797,6 +944,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string eventName = (string?)voiceEvent["event"] ?? string.Empty;
         string mode = (string?)voiceEvent["mode"] ?? string.Empty;
         bool? speaking = (bool?)voiceEvent["speaking"];
+        string? partial = (string?)voiceEvent["text"];
         _uiContext.Post(
             _ =>
             {
@@ -815,8 +963,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     case "wake_detected":
                         VoiceFailure = null;
                         StatusDescription = "Te escucho…";
+                        VoiceWake?.Invoke();
+                        if (Settings.WakeSound)
+                        {
+                            WakeChime.Play();
+                        }
+
                         break;
                     case "partial":
+                        VoiceFailure = null;
+                        if (partial is { Length: > 0 })
+                        {
+                            VoicePartial?.Invoke(partial);
+                        }
+
+                        break;
+                    case "transcribing":
                         VoiceFailure = null;
                         StatusDescription = "Transcribiendo…";
                         break;
@@ -834,6 +996,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         CancellationToken cancellationToken)
     {
         IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
+        SetVoicePieces(voice);
         if (!StartupWakeApplies(
                 voice,
                 WakeOnStartRequested(),
@@ -925,6 +1088,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken, startupAbandoned, _mindLifetimeCancellation.Token);
         _mindStartupState = MindStartupState.Starting;
+        _mindStartedAt = DateTimeOffset.UtcNow;
+        _mindReadyAt = null;
+        OnPropertyChanged(nameof(MindStartedAt));
         MindSidecarClient? mind = null;
         try
         {
@@ -960,9 +1126,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _mindStartupState = MindStartupState.Ready;
             _mindStartupFailureCount = 0;
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindReady);
+            _mindReadyAt = DateTimeOffset.UtcNow;
             OnPropertyChanged(nameof(IsMindReady));
             MindVoiceStatus? voice = await mind.VoiceStatusAsync(TimeSpan.FromSeconds(10), linked.Token);
             IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
+            SetVoicePieces(voice);
             if (voice?.Pending == true)
             {
                 // The voice runtime is still importing: the mind serves turns now and the voice settles beside them.
@@ -1187,9 +1355,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     // ---- publishing ----------------------------------------------------------------------------------------
 
-    private void AddMessageCore(string speaker, string body, bool isUser, string? route = null, bool speak = true)
+    // A voice status that is no longer pending names the start's pieces (the view's start list).
+    private void SetVoicePieces(MindVoiceStatus? voice)
     {
-        var message = new ConversationMessage(speaker, body, isUser, DateTimeOffset.Now, route);
+        if (voice is not null && !voice.Pending)
+        {
+            _voicePieces = voice;
+            OnPropertyChanged(nameof(VoicePieces));
+        }
+    }
+
+    private void AddMessageCore(string speaker, string body, bool isUser, string? route = null, bool speak = true,
+        string? silent = null)
+    {
+        // The owner silenced BAXY's voice (Settings): it answers in writing only.
+        speak = speak && !Settings.VoiceMuted;
+        var message = new ConversationMessage(speaker, body, isUser, DateTimeOffset.Now, route, silent);
         Messages.Add(message);
         MessageAdded?.Invoke(message);
         // The private log of the conversation (owner, 2026-09-20): text, route and time of each turn, local only.

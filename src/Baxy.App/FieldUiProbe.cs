@@ -38,37 +38,35 @@ internal static class FieldUiProbe
     /// <summary>Cuánto se espera a que el campo vuelva a ser legible antes de un turno.</summary>
     private static readonly TimeSpan SurfaceBudget = TimeSpan.FromSeconds(15);
 
-    /// <summary>Escribe el texto en el input de React y envía el formulario.</summary>
+    /// <summary>Escribe el texto en el compositor de React y pulsa su botón de enviar (design v4: sin formulario).</summary>
     private const string SendScript = """
         (function (text) {
-          const input = document.querySelector('input[aria-label="message input"]');
+          const input = document.querySelector('input[aria-label="Escribe a BAXY"]');
           if (!input) { return 'no_input'; }
-          if (input.disabled) { return 'input_disabled'; }
+          if (input.dataset.ready !== 'true') { return 'input_disabled'; }
           const setter = Object.getOwnPropertyDescriptor(
             window.HTMLInputElement.prototype, 'value').set;
           setter.call(input, text);
           input.dispatchEvent(new Event('input', { bubbles: true }));
-          const form = input.closest('form');
-          if (!form) { return 'no_form'; }
-          form.requestSubmit
-            ? form.requestSubmit()
-            : form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+          const send = document.querySelector('.bx-line .bx-send:not(.hide)');
+          if (!send) { return 'no_send'; }
+          send.click();
           return 'sent';
         })
         """;
 
-    /// <summary>Lee las líneas que la ventana está mostrando ahora mismo.</summary>
+    /// <summary>Lee las líneas que la ventana está mostrando ahora mismo, la más nueva primero.</summary>
     private const string ReadScript = """
         (function () {
-          const rows = Array.from(document.querySelectorAll('.activity-scroll .act'));
+          const rows = Array.from(document.querySelectorAll(
+            '.bx-c4-list > .bx-c4-you, .bx-c4-list > .bx-c4-baxy, .bx-c4-list > .bx-c4-sys')).reverse();
           return JSON.stringify(rows.map(function (row) {
-            const src = row.querySelector('.src');
-            const msg = row.querySelector('.msg');
-            const ts = row.querySelector('.ts');
+            const baxy = row.classList.contains('bx-c4-baxy');
+            const text = baxy ? row.querySelector('.tx') : row;
             return {
-              src: src ? src.textContent : '',
-              msg: msg ? msg.textContent : '',
-              ts: ts ? ts.textContent : ''
+              src: baxy ? 'BAXY' : row.classList.contains('bx-c4-you') ? 'YOU' : 'SYSTEM',
+              msg: text ? text.textContent : '',
+              ts: ''
             };
           }));
         })()
@@ -76,21 +74,22 @@ internal static class FieldUiProbe
 
     /// <summary>
     /// Lo que decide si un turno terminó: el input existe y está habilitado, el
-    /// borrador quedó vacío (el compositor lo vacía cuando <c>/turn</c> vuelve),
-    /// cuántas filas hay y cuál va en cabeza. La lista se
-    /// pinta con la más nueva primero y se recorta a un tope: al llegar a él el
-    /// recuento ya no cambia y sólo la cabeza dice que llegó una fila.
+    /// borrador quedó vacío (el compositor lo vacía al enviar),
+    /// cuántas filas hay y cuál es la más nueva (la conversación del diseño v4
+    /// pinta la más nueva al final y se recorta a un tope: al llegar a él el
+    /// recuento ya no cambia y sólo la más nueva dice que llegó una fila).
     /// </summary>
     private const string SurfaceScript = """
         (function () {
-          const input = document.querySelector('input[aria-label="message input"]');
-          const rows = document.querySelectorAll('.activity-scroll .act');
+          const input = document.querySelector('input[aria-label="Escribe a BAXY"]');
+          const rows = document.querySelectorAll(
+            '.bx-c4-list > .bx-c4-you, .bx-c4-list > .bx-c4-baxy, .bx-c4-list > .bx-c4-sys');
           return JSON.stringify({
             input: !!input,
-            enabled: !!input && !input.disabled,
+            enabled: !!input && input.dataset.ready === 'true',
             draft: input ? input.value.length : 0,
             rows: rows.length,
-            head: rows.length > 0 ? (rows[0].textContent || '') : ''
+            head: rows.length > 0 ? (rows[rows.length - 1].textContent || '') : ''
           });
         })()
         """;

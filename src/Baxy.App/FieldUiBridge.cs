@@ -37,7 +37,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
     internal const string Channel = "baxy.field.v1";
     internal const string TraceMarkKind = "trace_mark";
     private const int MaximumBridgeMessageCharacters = 1_048_576;
-    internal const double AccessibleZoom = 1.25;
 
     private readonly Window _window;
     private readonly WebView2 _webView;
@@ -59,21 +58,8 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         ArgumentNullException.ThrowIfNull(viewModel);
         _telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
         _lifetimeCancellation = lifetimeCancellation;
-        _channel = new FieldProductChannel(
-            viewModel,
-            this,
-            telemetry,
-            lifetimeCancellation)
-        {
-            // Estabilización U: larger text in the accessible mode is the host's zoom, which reflows the whole view
-            // as a browser's zoom does; the view keeps its own contrast, focus and motion styles.
-            ApplyPresentation = accessible =>
-            {
-                double zoom = accessible ? AccessibleZoom : 1.0;
-                if (Math.Abs(_webView.ZoomFactor - zoom) > 0.001)
-                    _webView.ZoomFactor = zoom;
-            },
-        };
+        // Design v4: the view scales itself (720p to 8K, its own accessible sizes); the host keeps the zoom at 1.
+        _channel = new FieldProductChannel(viewModel, this, telemetry, lifetimeCancellation);
         _webView.WebMessageReceived += OnWebMessageReceived;
     }
 

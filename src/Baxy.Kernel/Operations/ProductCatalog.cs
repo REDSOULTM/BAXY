@@ -1896,7 +1896,7 @@ public static class ProductCatalog
         }
     }
 
-    internal static OperationRisk ToPolicyRisk(string exactRisk) => exactRisk switch
+    public static OperationRisk ToPolicyRisk(string exactRisk) => exactRisk switch
     {
         OperationRisks.ReadOnly => OperationRisk.ReadOnly,
         OperationRisks.LowReversible => OperationRisk.Reversible,

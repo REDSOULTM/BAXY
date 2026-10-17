@@ -20,6 +20,8 @@ internal sealed class Heartbeat : IAsyncDisposable
     private readonly Func<IReadOnlyList<ConversationMessage>> _recent;
     private readonly Func<Task<IReadOnlyList<string>>> _remembered;
     private readonly Func<Task<JsonArray>> _reminders;
+    private readonly Func<string, bool>? _quietDuring;
+    private readonly Action<string>? _observed;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly List<string> _events = [];
     private readonly object _gate = new();
@@ -40,8 +42,12 @@ internal sealed class Heartbeat : IAsyncDisposable
         Func<bool> canBeat,
         Func<IReadOnlyList<ConversationMessage>> recent,
         Func<Task<IReadOnlyList<string>>> remembered,
-        Func<Task<JsonArray>> reminders)
+        Func<Task<JsonArray>> reminders,
+        Func<string, bool>? quietDuring = null,
+        Action<string>? observed = null)
     {
+        _quietDuring = quietDuring;
+        _observed = observed;
         _reminders = reminders;
         _beat = beat;
         _canBeat = canBeat;
@@ -106,6 +112,9 @@ internal sealed class Heartbeat : IAsyncDisposable
     private async Task LookAsync(CancellationToken cancellationToken)
     {
         await NoteChangesAsync(cancellationToken).ConfigureAwait(false);
+        // What the person is doing, every look: the view says «Jugando · aviso por Windows» from it.
+        string activity = HeartbeatMoment.Activity(out _, out bool? gpuBusy);
+        _observed?.Invoke(activity);
         bool changed;
         lock (_gate)
         {
@@ -118,7 +127,6 @@ internal sealed class Heartbeat : IAsyncDisposable
             return;
         }
 
-        string activity = HeartbeatMoment.Activity(out _, out bool? gpuBusy);
         if (!changed && (activity == HeartbeatMoment.Playing || gpuBusy == true))
         {
             // The five-minute look pauses while the person plays or the GPU is busy; a change still wakes it.
@@ -153,7 +161,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             throw;
         }
 
-        await _beat(moment, HeartbeatMoment.Speaks((string?)moment["owner_activity"] ?? string.Empty))
+        await _beat(moment, HeartbeatMoment.Speaks((string?)moment["owner_activity"] ?? string.Empty, _quietDuring))
             .ConfigureAwait(false);
     }
 

@@ -7,7 +7,9 @@ using Baxy.Security.Windows;
 
 namespace Baxy.App;
 
-/// <summary>One call the model made and what came of it, for the trace and the benches' audit against the journal.</summary>
+/// <summary>One call the model made and what came of it, for the trace, the benches' audit against the journal and
+/// the view's step chips. <paramref name="Id"/> names the call from its start (<see cref="NativeTurnLoop.Host.StepStarted"/>);
+/// <paramref name="Sent"/>: the call reached its provider (it may have had an effect, or sent something out).</summary>
 internal sealed record NativeTurnStep(
     string Operation,
     JsonObject Arguments,
@@ -15,7 +17,17 @@ internal sealed record NativeTurnStep(
     bool Verified,
     string? ErrorCode,
     long ElapsedMs,
-    string Observation);
+    string Observation,
+    string Id = "",
+    bool Sent = false);
+
+/// <summary>A call waiting for the person's Sí or No, as its question is published (the view's card).</summary>
+internal sealed record NativeTurnConfirmation(
+    string Operation,
+    JsonObject Arguments,
+    string Risk,
+    DateTimeOffset ExpiresUtc,
+    bool Proposal);
 
 /// <summary>
 /// BAXY Renew's harness: the native tool loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop). The
@@ -68,6 +80,18 @@ internal sealed class NativeTurnLoop
 
         internal Action<NativeTurnStep>? StepCompleted { get; init; }
 
+        /// <summary>A call is about to run: its id, operation and arguments (a memory call's arguments stay sealed).</summary>
+        internal Action<string, string, JsonObject>? StepStarted { get; init; }
+
+        /// <summary>The question about a waiting call was published: the person can answer it now.</summary>
+        internal Action<NativeTurnConfirmation>? ConfirmationAsked { get; init; }
+
+        /// <summary>That call's end: approved, declined, expired, or dropped because the person asked something else.</summary>
+        internal Action<string>? ConfirmationResolved { get; init; }
+
+        /// <summary>The owner's switch that refuses a call before it runs (FieldSettings.Refusal), as its code.</summary>
+        internal Func<string, JsonObject, string?>? Refuse { get; init; }
+
         internal Action? MemoryChanged { get; init; }
     }
 
@@ -95,6 +119,10 @@ internal sealed class NativeTurnLoop
     private long _personAt;
     private long _askedAt;
     private long _turnStarted;
+    // The call running now (its step id) and whether a published question waits for its end.
+    private string _stepId = string.Empty;
+    private long _stepSequence;
+    private bool _asking;
 
     internal NativeTurnLoop(Host host)
     {
@@ -294,16 +322,49 @@ internal sealed class NativeTurnLoop
             if (_askedAt == ConfirmationAsk.Unpublished)
             {
                 _askedAt = Stopwatch.GetTimestamp();
+                if (Waiting() is { } asked)
+                {
+                    _asking = true;
+                    _host.ConfirmationAsked?.Invoke(asked);
+                }
             }
         });
+
+    // The waiting call as the view's card shows it: the kernel's challenge or a heartbeat's proposal.
+    private NativeTurnConfirmation? Waiting()
+    {
+        PreparedOperation? prepared = WaitingPrepared();
+        if (prepared is null || !ProductCatalog.TryGet(prepared.OperationName, out ProductOperationDescriptor? descriptor)
+            || descriptor is null)
+        {
+            return null;
+        }
+
+        bool proposal = ReferenceEquals(prepared, _proposal);
+        return new NativeTurnConfirmation(prepared.OperationName, PrivateArguments(prepared), descriptor.Risk,
+            proposal ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, proposal);
+    }
+
+    private void Resolved(string outcome)
+    {
+        if (_asking)
+        {
+            _asking = false;
+            _host.ConfirmationResolved?.Invoke(outcome);
+        }
+    }
 
     private async Task<string> ExecuteAsync(string operation, JsonObject arguments, CancellationToken cancellationToken)
     {
         long started = Stopwatch.GetTimestamp();
+        _stepId = "c" + Interlocked.Increment(ref _stepSequence).ToString(System.Globalization.CultureInfo.InvariantCulture);
         if (operation == MindStep.ConfirmationAnswer)
         {
             return await AnswerPendingAsync(arguments, started, cancellationToken);
         }
+
+        _host.StepStarted?.Invoke(_stepId, operation,
+            MemoryOperationProtector.IsMemoryOperation(operation) ? new JsonObject() : (JsonObject)arguments.DeepClone());
 
         // Anything else the person asked for replaces a confirmation still waiting: it is dropped, never run later (a
         // heartbeat never starts with one waiting, RunBeatAsync).
@@ -320,6 +381,12 @@ internal sealed class NativeTurnLoop
             // events, since no schema says what it may carry (a made-up memory call with the person's values).
             return Record(operation, new JsonObject(), started,
                 Observation("rejected", "unknown_operation"));
+        }
+
+        // The owner switched this kind of call off in Settings (privacy): it does not run, and the model reads why.
+        if (_host.Refuse?.Invoke(operation, arguments) is { } refusal)
+        {
+            return Record(operation, arguments, started, Observation("rejected", refusal));
         }
 
         PreparedOperation prepared;
@@ -446,7 +513,7 @@ internal sealed class NativeTurnLoop
     // memory export in a folder OneDrive syncs) is not the person's data leaving through BAXY (owner, 2026-10-16). The
     // ones with an external_communication or installation risk are held by ProposedRisks already, and app.open with a
     // place (app_places builds spotify:search:{value} and Steam's store search from its value) by SendsInputToAWindow.
-    private static bool ReachesTheNetwork(string operation, JsonObject arguments) =>
+    internal static bool ReachesTheNetwork(string operation, JsonObject arguments) =>
         operation is "web.search" or "web.fetch" or "web.download" or "weather.current" or "network.ping"
             or "game.entitlement.named" or "shell.command.run" or "peripheral.print"
         || (operation == "system.time" && arguments["place"] is JsonValue place && Named(place));
@@ -537,6 +604,7 @@ internal sealed class NativeTurnLoop
             // A call that waited and ran out of time is not «nothing was asked» (audit 2026-10-15, App 3): the model
             // says the question expired and can ask again.
             string? expired = _pending?.Prepared.OperationName ?? _proposal?.OperationName;
+            Resolved("expired");
             DropPending();
             return Record(MindStep.ConfirmationAnswer, arguments, started, expired is null
                 ? Observation("failed", "nothing_pending")
@@ -544,6 +612,7 @@ internal sealed class NativeTurnLoop
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);
+        Resolved(approve ? "approved" : "declined");
         if (!approve)
         {
             DropPending();
@@ -575,6 +644,7 @@ internal sealed class NativeTurnLoop
     {
         JsonObject arguments = PrivateArguments(proposal);
         _proposal = null;
+        Resolved(approve ? "approved" : "declined");
         if (!approve)
         {
             Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
@@ -627,7 +697,8 @@ internal sealed class NativeTurnLoop
         {
             Resolve(prepared, memory);
             return Record(operation, arguments, started,
-                Observation("failed", "engine_no_answer", about: answered ? operation : null, effectUncertain: true));
+                Observation("failed", "engine_no_answer", about: answered ? operation : null, effectUncertain: true),
+                sent: true);
         }
 
         if (PendingOperationConfirmation.TryCreate(response, prepared, TimeProvider.System,
@@ -643,7 +714,7 @@ internal sealed class NativeTurnLoop
                 ["next"] = AskThePersonAbout(operation),
             }, "arguments", operation, arguments);
             asked["effectStarted"] = challenge.ReconciliationRequired;
-            return Record(operation, arguments, started, asked.ToJsonString(), response);
+            return Record(operation, arguments, started, asked.ToJsonString(), response, sent: challenge.ReconciliationRequired);
         }
 
         Resolve(prepared, memory);
@@ -720,6 +791,7 @@ internal sealed class NativeTurnLoop
 
     private void DropPending()
     {
+        Resolved("dropped");
         if (_proposal is { } proposal)
         {
             _proposal = null;
@@ -741,7 +813,8 @@ internal sealed class NativeTurnLoop
         JsonObject arguments,
         long started,
         string observation,
-        OperationResponse? response = null)
+        OperationResponse? response = null,
+        bool? sent = null)
     {
         long elapsed = (long)Stopwatch.GetElapsedTime(started).TotalMilliseconds;
         var step = new NativeTurnStep(
@@ -751,7 +824,10 @@ internal sealed class NativeTurnLoop
             response?.Verified ?? false,
             response?.ErrorCode,
             elapsed,
-            observation);
+            observation,
+            _stepId,
+            // A call reaches its provider when the kernel let it through, whatever its outcome.
+            sent ?? response?.Status is OperationStatuses.Completed or OperationStatuses.Failed);
         ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.step",
             $"{operation}.{step.Status}.{(step.Verified ? "verified" : "unverified")}.ms.{elapsed}");
         _host.StepCompleted?.Invoke(step);

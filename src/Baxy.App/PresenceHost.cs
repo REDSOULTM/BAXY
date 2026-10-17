@@ -28,7 +28,11 @@ internal sealed class PresenceHost : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         StartHidden = WindowsAutostartRegistration.IsStartHidden(arguments);
-        _autostart.EnsureRegistered(arguments);
+        // The owner may switch the sign-in start off in Settings; then it is never written back on its own.
+        if (FieldSettings.CreateDefault().AutostartWanted)
+        {
+            _autostart.EnsureRegistered(arguments);
+        }
         _tray = new PresenceTrayIcon(ShowMainWindow, ToggleListen, RequestExit);
         _tray.Start();
     }
@@ -55,7 +59,9 @@ internal sealed class PresenceHost : IDisposable
                 () => window.Dispatcher.Invoke(() => beating.CanBeat),
                 () => window.Dispatcher.Invoke(() => (IReadOnlyList<ConversationMessage>)[.. beating.Messages]),
                 () => window.Dispatcher.InvokeAsync(() => beating.RememberedAsync(CancellationToken.None)).Task.Unwrap(),
-                () => window.Dispatcher.InvokeAsync(() => beating.PendingRemindersAsync(CancellationToken.None)).Task.Unwrap());
+                () => window.Dispatcher.InvokeAsync(() => beating.PendingRemindersAsync(CancellationToken.None)).Task.Unwrap(),
+                beating.Settings.QuietDuring,
+                activity => window.Dispatcher.BeginInvoke(() => beating.ReportActivity(activity)));
             _heartbeat.Start();
         }
 

@@ -29,7 +29,12 @@ internal static class HeartbeatMoment
     /// screen. The heartbeat of their return (<see cref="AwayWatch"/>) follows the same rule: aloud when they come back
     /// to anything else.
     /// </summary>
-    internal static bool Speaks(string activity) => activity is not (Away or Playing or InCall or Watching or Unknown);
+    /// <para>The owner may let BAXY speak while they play, are in a call or watch something (design v4, Proposals: «No me
+    /// interrumpas durante…»): <paramref name="quietDuring"/> says, for those three, whether to keep quiet (always, by
+    /// default).</para>
+    internal static bool Speaks(string activity, Func<string, bool>? quietDuring = null) =>
+        activity is not (Away or Unknown)
+        && !(activity is Playing or InCall or Watching && (quietDuring?.Invoke(activity) ?? true));
 
     internal static string Activity(out bool? fullscreen, out bool? gpuBusy)
     {

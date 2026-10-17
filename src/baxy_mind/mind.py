@@ -377,6 +377,19 @@ class Mind:
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
+    def export_session(self) -> list[dict[str, Any]]:
+        """The session's conversation as it stands (calls and results included), for the App to keep with the session it
+        shows (design v4, Sessions); it is asked for between turns."""
+        return json.loads(json.dumps(self.conversation, ensure_ascii=False))
+
+    def load_session(self, conversation: list[Any]) -> None:
+        """Go back to a kept session: its conversation exactly as exported, so the model reads what really ran."""
+        self._turn = self._beat = None
+        self.trimmed_turns = 0
+        self.conversation = [m for m in conversation if isinstance(m, dict)
+                             and m.get("role") in {"user", "assistant", "tool"}]
+        self._trim()
+
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None) -> dict[str, Any]:
         turn = self._turn
         if turn and turn.get("asked"):

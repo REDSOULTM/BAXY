@@ -1,515 +1,432 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { SubstratePanel } from './components/SubstratePanel';
-import { ActivityPanel } from './components/ActivityPanel';
-import { FieldCenter } from './components/FieldCenter';
-import { TitleBar } from './components/TitleBar';
-import { SettingsPanel } from './components/SettingsPanel';
-import { SessionsPanel } from './components/SessionsPanel';
-import { MemoryPanel } from './components/MemoryPanel';
-import { ToolsPanel } from './components/ToolsPanel';
-import { ToastHost } from './components/ToastHost';
-import { useClock } from './hooks/useClock';
-import { useEventStream } from './hooks/useEventStream';
-import type { SurfacesCount } from './hooks/useEventStream';
-import { toastError } from './hooks/useToast';
-import { startNewSession } from './hooks/newSession';
-// the cosmetic rules: the prototype's stylesheet with this app's additions.
-import './styles/prototype.css';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useBaxy } from './store';
+import { getJson, send } from './api';
+import { Rail, type PanelId, type Profile } from './components/Rail';
+import { Chat } from './components/Chat';
+import { Boot, Caption } from './components/Caption';
+import { VoiceInput } from './components/VoiceInput';
+import { Cosmos } from './components/Cosmos';
+import { Face } from './components/face/Face';
+import { Globe, Icon } from './components/Icon';
+import { MemoryPanel } from './components/panels/MemoryPanel';
+import { CatalogPanel } from './components/panels/CatalogPanel';
+import { SessionsPanel } from './components/panels/SessionsPanel';
+import { TriggersPanel } from './components/panels/TriggersPanel';
+import { ProposalsPanel } from './components/panels/ProposalsPanel';
+import { SettingsPanel, type A11y } from './components/panels/SettingsPanel';
+import type { BaxyState, GeneralSettings, Metrics, MicMode, ProposalSettings } from './types';
 
-type OpenPanel = 'settings' | 'sessions' | 'memory' | 'tools' | null;
-type SurfaceId = 'sessions' | 'memory' | 'tools';
+/* BAXY v4 (design_handoff_baxy): rail · face and neural network · conversation, over the cosmos, inside the frame's
+   travelling ring. Everything shown comes from Baxy.App; this file only composes it and sends what the person does. */
 
-/** The voice is on or off. `listening` = the voice loop is up and saying «Baxy»
- *  starts a request; a right click also starts one at once, without the wake
- *  word, and the voice goes back to waiting for «Baxy» after it. `off` = the
- *  voice loop is stopped. */
-export type MicMode = 'listening' | 'off';
+const NARROW = 1100; /* below this layout width the chat floats over the face */
+const RAIL = 192, CHATW = 330;
 
-// The interface's two presentations. The profile's file on the host is the only
-// source (GET/PUT /accessibility); the chat switches the same file.
-export type AccessMode = 'normal' | 'accessible';
-export type ConfirmationPolicy = 'normal' | 'bypass';
+function stored<T extends string>(key: string, allowed: readonly T[], fallback: T): T {
+  try {
+    const v = localStorage.getItem(key);
+    return v && (allowed as readonly string[]).includes(v) ? (v as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+function keep(key: string, value: string) {
+  try { localStorage.setItem(key, value); } catch { /* presentation only */ }
+}
+
+// the shell's failure codes (MainWindowViewModel.Failure, FieldProductChannel.AgentStatus) said as the state they are.
+const FAILURE: Record<string, string> = {
+  mind_unavailable: 'El modelo no está disponible',
+  decision_unavailable: 'El modelo no respondió',
+  decision_unavailable_after_call: 'El modelo no respondió después de actuar',
+  core_disconnected: 'El motor local se desconectó',
+  retry_without_close: 'El motor local no arrancó',
+  turn_failed: 'El turno no pudo terminar',
+  voice_error: 'No te entendí bien. ¿Lo repites?',
+};
+
+// the frame's ring per state (design app.jsx SET).
+const RING: Record<string, string[]> = {
+  standby: ['#2a2f3a', '#5B6580', '#8B95A8', '#D8DCE6', 'rgba(139,149,168,0.75)', '#5B6580'],
+  idle: ['#5a1a22', '#B83A4A', '#FF4D63', '#FFE3E7', 'rgba(255,77,99,0.9)', '#5B7FDB'],
+  listening: ['#7A1E2B', '#E55366', '#FF6677', '#FFFFFF', 'rgba(255,102,119,0.95)', '#6FA8B0'],
+  thinking: ['#1B2A5E', '#2E4BA0', '#5B7FDB', '#C8D6F5', 'rgba(91,127,219,0.9)', '#C9A66B'],
+  speaking: ['#6B5A2F', '#C9A66B', '#E8C98E', '#F8EED2', 'rgba(232,201,142,0.9)', '#7B95D9'],
+  error: ['#5a1a22', '#D9364C', '#FF4D63', '#FFD0D6', 'rgba(255,77,99,0.95)', '#FF6677'],
+};
+
+const LABEL: Record<BaxyState, string> = {
+  booting: 'Arrancando', standby: 'En reposo', idle: 'En espera', listening: 'Escuchando', thinking: 'Pensando',
+  speaking: 'Hablando', confirm: 'Esperando tu ok', error: 'No te entendí',
+};
 
 export default function App() {
-  const { clock } = useClock();
-  const stream = useEventStream();
+  const s = useBaxy();
 
-  const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
-  // mic mode reflects the voice loop on the host. defaults to 'listening' (the
-  // wake word armed), which the mount auto-start below brings up. mode is
-  // persisted to localStorage so it survives reloads; an earlier 'ptt' ran the
-  // same wake-word loop, so it reads as 'listening'.
-  const [micMode, setMicMode] = useState<MicMode>(() => {
-    const stored = localStorage.getItem('field.mic_mode');
-    return stored === 'off' ? 'off' : 'listening';
-  });
-  useEffect(() => { localStorage.setItem('field.mic_mode', micMode); }, [micMode]);
+  // ---- presentation (this view's own, kept in localStorage) ----
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => stored('baxy.theme', ['dark', 'light'] as const, 'dark'));
+  const [profile, setProfile] = useState<Profile>(() => stored('baxy.profile', ['normal', 'novidente', 'movilidad'] as const, 'normal'));
+  const [a11y, setA11yState] = useState<A11y>(() => ({
+    on: false, size: stored('baxy.a11y.size', ['m', 'l', 'xl'] as const, 'm'), contrast: stored('baxy.a11y.contrast', ['0', '1'] as const, '0') === '1',
+  }));
+  const [mic, setMicState] = useState<MicMode>(() => stored('baxy.mic', ['off', 'always', 'ptt'] as const, 'always'));
 
-  // poll /voice/status once after mount + every 4s while the page is open,
-  // so a backend-driven voice state change (load failed, mic device went
-  // away, etc.) shows up in the UI. if the backend reports running false
-  // while we think we're on, flip to 'off' so the icon stays honest.
-  // Guards the status-sync from fighting the mount auto-start: until the
-  // auto-start has had its chance (and while a start is in flight), we must NOT
-  // flip the UI to 'off' just because the backend loop hasn't finished booting.
-  const voiceBootSettled = useRef(false);
-  // the voice's last trouble the host observed (voice_unavailable, voice_error, voice_dropped_busy), shown on the mic.
-  const [voiceError, setVoiceError] = useState<string | null>(null);
+  // ---- the host's settings ----
+  const [bypass, setBypassState] = useState(false);
+  const [general, setGeneral] = useState<GeneralSettings | null>(null);
+  const [proposals, setProposals] = useState<ProposalSettings | null>(null);
+  const [powered, setPowered] = useState(true);
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
+
+  // ---- layout ----
+  const [panel, setPanel] = useState<PanelId | null>(null);
+  const bx2 = useRef<HTMLDivElement>(null);
+  const [fw, setFw] = useState(0);
+  const narrow = fw > 0 && fw < NARROW;
+  const [chatOpen, setChatOpen] = useState(true);
+  const [notice, setNotice] = useState<{ b: string; t: string } | null>(null);
+  const [maximized, setMaximized] = useState(false);
+  // timed things are keyed by what started them: a timer marks that key done, so nothing is set during render or in an
+  // effect's body (captions, mood, the internet banner and dot, the voice error, the unread dot, a card's auto-open).
+  const [done, setDone] = useState<Record<string, string | number>>({});
+  const finish = useCallback((k: string, v: string | number, ms: number) => window.setTimeout(() => setDone((d) => ({ ...d, [k]: v })), ms), []);
+
+  useEffect(() => {
+    const el = bx2.current;
+    if (!el) return;
+    let was = false;
+    const ro = new ResizeObserver(() => {
+      const w = el.clientWidth;
+      // narrowing the window folds the chat once; widening leaves it as the person had it.
+      const now = w > 0 && w < NARROW;
+      if (now && !was) setChatOpen(false);
+      was = now;
+      setFw(w);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // ---- read the host's settings now, and the ones the chat can change every few seconds ----
   useEffect(() => {
     let cancelled = false;
     const sync = async () => {
-      try {
-        const r = await fetch('/voice/status');
-        if (cancelled || !r.ok) return;
-        const data = (await r.json()) as { running?: boolean; last_error?: string | null };
-        setVoiceError(data.last_error ?? null);
-        if (typeof data.running !== 'boolean') return;
-        setMicMode((prev) => {
-          if (data.running && prev === 'off') return 'listening';
-          // Only DROP to 'off' once the auto-start boot has settled — otherwise
-          // the first poll (backend still loading models) would wrongly mute the
-          // UI and cancel the auto-start. After boot, a genuine backend stop
-          // (device lost, load failed) still flips us off as before.
-          if (!data.running && prev !== 'off' && voiceBootSettled.current) return 'off';
-          return prev;
-        });
-      } catch { /* ignore */ }
+      const [c, a, g, p] = await Promise.all([
+        getJson<{ confirmationPolicy?: string }>('/confirmation'),
+        getJson<{ active?: string }>('/accessibility'),
+        getJson<GeneralSettings>('/settings/general'),
+        getJson<ProposalSettings>('/proposals'),
+      ]);
+      if (cancelled) return;
+      if (c) setBypassState(c.confirmationPolicy === 'bypass');
+      if (a) setA11yState((x) => ({ ...x, on: a.active === 'accessible' }));
+      if (g) setGeneral(g);
+      if (p) setProposals(p);
     };
-    sync();
+    void sync();
     const id = window.setInterval(sync, 4000);
     return () => { cancelled = true; window.clearInterval(id); };
   }, []);
-
-  // Modo de la interfaz (normal | accessible) and the confirmation policy
-  // (normal | bypass): both live in the profile on the host and are read from
-  // it on mount and every few seconds, so a change made by chat shows here too.
-  // The view only PUTs what the person chose in it.
-  const [accessMode, setAccessModeState] = useState<AccessMode>('normal');
-  const [confirmation, setConfirmationState] = useState<ConfirmationPolicy>('normal');
-  const [activeSurface, setActiveSurface] = useState<SurfaceId>(() => {
-    const stored = localStorage.getItem('field.surface');
-    if (stored === 'sessions' || stored === 'memory' || stored === 'tools') {
-      return stored;
-    }
-    return 'memory';
-  });
-
-  // persist surface so the chip selection survives reloads
+  // the panels' counters: the memory's is read by the host when asked (it publishes it as an event), the triggers' by
+  // reading BAXY's alarms once BAXY is up; the surfaces again every 15 s
   useEffect(() => {
-    localStorage.setItem('field.surface', activeSurface);
-  }, [activeSurface]);
-
-  // poll /surfaces every 5s for counts (WS event wins when present). Lifted here
-  // from ActivityPanel so BOTH columns share the same live counts — the redesign
-  // splits the surfaces: tools on the left, sessions/memory on the right.
-  const [polledSurfaces, setPolledSurfaces] = useState<SurfacesCount | null>(null);
+    if (!s.agent.built) return;
+    void getJson('/triggers');
+    void getJson('/surfaces');
+    const id = window.setInterval(() => { void getJson('/surfaces'); }, 15_000);
+    return () => window.clearInterval(id);
+  }, [s.agent.built]);
+  // the PC's readings every 1.5 s while the view is visible
   useEffect(() => {
     let cancelled = false;
-    const fetchSurfaces = async () => {
-      try {
-        const r = await fetch('/surfaces');
-        if (cancelled || !r.ok) return;
-        setPolledSurfaces((await r.json()) as SurfacesCount);
-      } catch { /* ignore */ }
+    const read = async () => {
+      if (document.hidden) return;
+      const m = await getJson<Metrics>('/metrics');
+      if (!cancelled) setMetrics(m);
     };
-    fetchSurfaces();
-    const id = window.setInterval(fetchSurfaces, 5000);
-    return () => { cancelled = true; window.clearInterval(id); };
-  }, []);
-  const liveSurfaces = stream.surfaces ?? polledSurfaces;
-
-  // Read both settings from the profile now and every 4s (the chat may change
-  // the accessible mode, and bypass stays on until it is switched off).
-  useEffect(() => {
-    let cancelled = false;
-    const sync = async () => {
-      try {
-        const [a, s] = await Promise.all([fetch('/accessibility'), fetch('/confirmation')]);
-        if (cancelled) return;
-        if (a.ok) {
-          const data = (await a.json()) as { active?: string };
-          setAccessModeState(data.active === 'accessible' ? 'accessible' : 'normal');
-        }
-        if (s.ok) {
-          const data = (await s.json()) as { confirmationPolicy?: string };
-          setConfirmationState(data.confirmationPolicy === 'bypass' ? 'bypass' : 'normal');
-        }
-      } catch { /* backend offline: keep what is shown */ }
-    };
-    sync();
-    const id = window.setInterval(sync, 4000);
+    void read();
+    const id = window.setInterval(read, 1500);
     return () => { cancelled = true; window.clearInterval(id); };
   }, []);
 
-  // The presentation hangs from the document root: the stylesheet's accessible
-  // rules (contrast, focus, no motion) and the paint loops read it.
+  // ---- the view's state: the host's, plus starting, resting and a card waiting ----
+  const pendingCard = useMemo(() => {
+    for (let i = s.items.length - 1; i >= 0; i--) {
+      const it = s.items[i];
+      if (it.who === 'card' && it.status === 'pending') return it;
+    }
+    return null;
+  }, [s.items]);
+  const voiceError = s.voiceErrorAt !== null && done.voiceError !== s.voiceErrorAt ? FAILURE.voice_error : null;
+  const booting = !!s.boot && !s.boot.model && !s.boot.failed;
+  const state: BaxyState = booting ? 'booting'
+    : !powered ? 'standby'
+      : voiceError ? 'error'
+        : s.hostState === 'idle' && pendingCard ? 'confirm'
+          : s.hostState;
+  const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
+  const errorText = voiceError ?? (s.agent.failure ? FAILURE[s.agent.failure] ?? 'Algo falló' : 'Algo falló');
+  const label = state === 'error' ? (voiceError ? LABEL.error : FAILURE[s.agent.failure ?? ''] ?? 'Algo falló') : LABEL[state];
+
+  // a voice error shows for a few seconds, then BAXY waits again
   useEffect(() => {
-    document.documentElement.dataset.access = accessMode;
-  }, [accessMode]);
+    if (s.voiceErrorAt === null) return;
+    const id = finish('voiceError', s.voiceErrorAt, 2800);
+    return () => window.clearTimeout(id);
+  }, [s.voiceErrorAt, finish]);
 
-  const setAccessMode = useCallback(async (mode: AccessMode) => {
-    try {
-      const r = await fetch('/accessibility', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode }),
-      });
-      if (!r.ok) throw new Error(`status ${r.status}`);
-      const data = (await r.json()) as { active?: string };
-      setAccessModeState(data.active === 'accessible' ? 'accessible' : 'normal');
-    } catch (e) {
-      toastError(`modo accesible sin cambiar · ${String(e).replace(/^Error: /, '')}`);
-    }
+  // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
+  useEffect(() => {
+    if (!s.sub) return;
+    const read = Math.max(2200, s.sub.text.split(' ').length * 290);
+    const hide = finish('sub', s.sub.key, read + 4200), calm = finish('mood', s.sub.key, read + 2800);
+    return () => { window.clearTimeout(hide); window.clearTimeout(calm); };
+  }, [s.sub, finish]);
+  const subGone = !s.sub || (done.sub === s.sub.key && state !== 'speaking');
+  const mood = s.sub && done.mood !== s.sub.key ? s.mood : null;
+
+  // ---- what left the PC: the banner for 4.2 s, the rail and the antenna for 20 s ----
+  useEffect(() => {
+    if (!s.net) return;
+    const b = finish('banner', s.net.at, 4200), n = finish('net', s.net.at, 20000);
+    return () => { window.clearTimeout(b); window.clearTimeout(n); };
+  }, [s.net, finish]);
+  const banner = s.net && done.banner !== s.net.at ? s.net.what : null;
+  const netShown = s.net && done.net !== s.net.at ? s.net.what : null;
+
+  useEffect(() => {
+    if (!notice) return;
+    const id = window.setTimeout(() => setNotice(null), 2600);
+    return () => window.clearTimeout(id);
+  }, [notice]);
+
+  // ---- presentation classes on <html> ----
+  useEffect(() => {
+    const h = document.documentElement;
+    h.classList.toggle('lt', theme === 'light');
+    h.classList.toggle('a11y', a11y.on);
+    h.classList.toggle('a11y-l', a11y.on && a11y.size === 'l');
+    h.classList.toggle('a11y-xl', a11y.on && a11y.size === 'xl');
+    h.classList.toggle('hc', a11y.contrast);
+  }, [theme, a11y]);
+
+  // ---- the frame's ring: turns with the state (1.5× and a second comet in bypass), stops at rest ----
+  const R = useRef({ powered, bypass });
+  useEffect(() => { R.current = { powered, bypass }; }, [powered, bypass]);
+  useEffect(() => {
+    const frame = document.querySelector<HTMLElement>('.app-frame');
+    if (!frame) return;
+    const spins = [...frame.querySelectorAll<HTMLElement>('.bd-spin')];
+    let raf = 0, last = performance.now(), acc = 0, angle = 0, speed = 1;
+    const loop = (now: number) => {
+      raf = requestAnimationFrame(loop);
+      acc += now - last; last = now;
+      if (acc < 32 || document.hidden) return; // 30 fps is enough for a slow ring
+      const dt = Math.min(0.05, acc / 1000); acc = 0;
+      const tg = R.current.powered ? (R.current.bypass ? 1.5 : 1) : 0;
+      speed += (tg - speed) * Math.min(1, dt * 2.6);
+      if (tg === 0 && speed < 0.012) speed = 0;
+      if (speed === 0) return;
+      angle = (angle + speed * (360 / 3.4) * dt) % 360;
+      const tr = 'rotate(' + angle.toFixed(2) + 'deg)';
+      spins.forEach((el) => { el.style.transform = tr; });
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  useEffect(() => {
+    const frame = document.querySelector<HTMLElement>('.app-frame');
+    if (!frame) return;
+    const c = RING[gState] ?? RING.idle;
+    ['base', 'mid', 'hi', 'peak', 'glow'].forEach((k, i) => frame.style.setProperty('--bd-' + k, c[i]));
+    frame.style.setProperty('--bar-color', c[5]);
+    frame.style.setProperty('--carmine', ['listening', 'thinking', 'speaking'].includes(gState) ? c[5] : '#B83A4A');
+    frame.classList.toggle('bx-bypass', bypass);
+  }, [gState, bypass]);
+
+  // ---- actions ----
+  const submit = useCallback(async (text: string) => {
+    if (!powered) { setPowered(true); void send('POST', '/power', { on: true }); }
+    const r = await send('POST', '/turn', { text });
+    if (r === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
+  }, [powered]);
+  const answer = useCallback((approve: boolean) => { void send('POST', '/confirmation/answer', { approve }); }, []);
+  const newSession = useCallback(async () => {
+    if (await send('POST', '/sessions/new') === null) setNotice({ b: 'Sesión', t: 'espera a que BAXY termine' });
+    else setPanel(null);
+  }, []);
+  const setBypass = useCallback(async (on: boolean) => {
+    const r = await send<{ confirmationPolicy?: string }>('PUT', '/confirmation', { confirmationPolicy: on ? 'bypass' : 'normal' });
+    if (!r) { setNotice({ b: 'Confirmación', t: 'no se pudo cambiar' }); return; }
+    const now = r.confirmationPolicy === 'bypass';
+    setBypassState(now);
+    setNotice(now ? { b: 'Bypass', t: 'sin frenos hasta que lo apagues' } : { b: 'Normal', t: 'pregunto antes de lo arriesgado' });
+  }, []);
+  const setA11y = useCallback(async (next: A11y) => {
+    setA11yState(next);
+    keep('baxy.a11y.size', next.size); keep('baxy.a11y.contrast', next.contrast ? '1' : '0');
+    const r = await send<{ active?: string }>('PUT', '/accessibility', { mode: next.on ? 'accessible' : 'normal' });
+    if (r) setA11yState((x) => ({ ...x, on: r.active === 'accessible' }));
+  }, []);
+  const applyMic = useCallback(async (m: MicMode) => {
+    const r = m === 'always' ? await send<{ running?: boolean }>('POST', '/voice/start') : await send('POST', '/voice/stop');
+    return r !== null && (m !== 'always' || (r as { running?: boolean }).running !== false);
+  }, []);
+  const setMic = useCallback(async (m: MicMode) => {
+    const ok = await applyMic(m);
+    if (!ok) { setNotice({ b: 'Voz', t: 'no se pudo cambiar el micrófono' }); return; }
+    setMicState(m); keep('baxy.mic', m);
+    setNotice({ b: 'Voz', t: { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY»', ptt: 'mantén el botón o espacio para hablar' }[m] });
+  }, [applyMic]);
+  // the person's microphone choice is applied once BAXY can take voice commands
+  const micApplied = useRef(false);
+  useEffect(() => {
+    if (micApplied.current || !s.agent.built) return;
+    micApplied.current = true;
+    void applyMic(mic);
+  }, [s.agent.built, mic, applyMic]);
+  const ptt = useRef(false);
+  const pttStart = useCallback(() => {
+    if (ptt.current || !['idle', 'speaking', 'standby'].includes(state)) return;
+    ptt.current = true;
+    void send('POST', '/voice/trigger');
+  }, [state]);
+  const pttEnd = useCallback(() => {
+    if (!ptt.current) return;
+    ptt.current = false;
+    void send('POST', '/voice/release');
+  }, []);
+  const togglePower = useCallback(async () => {
+    const r = await send<{ on?: boolean }>('POST', '/power', { on: !powered });
+    if (r && typeof r.on === 'boolean') setPowered(r.on);
+  }, [powered]);
+  const wake = useCallback(() => {
+    if (state !== 'idle' || mic !== 'always') return;
+    void send('POST', '/voice/trigger');
+  }, [state, mic]);
+  const onGeneral = useCallback(async (p: Partial<GeneralSettings>) => {
+    const r = await send<GeneralSettings>('PUT', '/settings/general', p);
+    if (r) setGeneral(r); else setNotice({ b: 'Ajustes', t: 'no se pudo guardar' });
+  }, []);
+  const onProposals = useCallback(async (p: Partial<ProposalSettings>) => {
+    const r = await send<ProposalSettings>('PUT', '/proposals', p);
+    if (r) setProposals(r); else setNotice({ b: 'Propuestas', t: 'no se pudo guardar' });
+  }, []);
+  // the last reply or card: unread while the chat is folded and it is not the one the person saw last; a waiting card
+  // opens the chat by itself until the person folds it again.
+  const lastReply = useMemo(() => {
+    for (let i = s.items.length - 1; i >= 0; i--) if (s.items[i].who === 'baxy' || s.items[i].who === 'card') return s.items[i].id;
+    return '';
+  }, [s.items]);
+  const toggleChat = useCallback((v: boolean) => {
+    setChatOpen(v);
+    setDone((d) => ({ ...d, seen: lastReply, card: v ? '' : pendingCard?.id ?? '' }));
+  }, [lastReply, pendingCard]);
+  const collapse = useCallback(() => toggleChat(false), [toggleChat]);
+  const onNewChat = useCallback(() => { void newSession(); }, [newSession]);
+  const win = useCallback(async (command: 'minimize' | 'toggle_maximize' | 'close') => {
+    const api = (window as unknown as { pywebview?: { api: Record<string, () => Promise<unknown>> } }).pywebview?.api;
+    if (!api) return;
+    if (command === 'minimize') await api.win_minimize();
+    else if (command === 'close') await api.win_close();
+    else setMaximized(!!(await api.win_toggle_maximize()));
   }, []);
 
-  const setConfirmation = useCallback(async (policy: ConfirmationPolicy) => {
-    try {
-      const r = await fetch('/confirmation', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ confirmationPolicy: policy }),
-      });
-      if (!r.ok) throw new Error(`status ${r.status}`);
-      const data = (await r.json()) as { confirmationPolicy?: string };
-      setConfirmationState(data.confirmationPolicy === 'bypass' ? 'bypass' : 'normal');
-    } catch (e) {
-      toastError(`confirmaciones sin cambiar · ${String(e).replace(/^Error: /, '')}`);
-    }
-  }, []);
-
-  // The mic being OFF does NOT deactivate the app: text mode is a fully alive
-  // mode. We keep the real conversational state (idle stays idle, alive) so the
-  // field, neurons and border keep breathing while the user types. Only an
-  // actual backend disconnect drops us to a degraded look (see `online` below);
-  // muting the mic just mutes the mic.
-  const convState = stream.convState;
-
-  // global keyboard shortcuts (onHelp below lists them). shortcuts that hit
-  // host routes (clear/new) are fired via plain fetch — no race with React
-  // state.
+  // ---- keys: Sí = Enter, No = Esc for a waiting card; Esc closes a panel; space held talks in push-to-talk ----
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      // ignore shortcuts when typing in an input/textarea, except Escape
-      const tgt = e.target as HTMLElement | null;
-      const tag = tgt?.tagName;
-      const inField = tag === 'INPUT' || tag === 'TEXTAREA';
-
-      if (e.key === 'Escape') {
-        setOpenPanel(null);
-        return;
-      }
-      if (inField) return;
-
-      // F11 → toggle fullscreen
-      if (e.key === 'F11') {
-        e.preventDefault();
-        if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => { /* ignore */ });
-        } else {
-          document.documentElement.requestFullscreen().catch(() => { /* ignore */ });
-        }
-        return;
-      }
-      // "/" → focus chat input
-      if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault();
-        const input = document.querySelector<HTMLInputElement>('.chat .line input');
-        input?.focus();
-        return;
-      }
-
-      // ctrl + ... shortcuts
-      if (!e.ctrlKey && !e.metaKey) return;
-      const k = e.key.toLowerCase();
-      if (k === 'l') {
-        e.preventDefault();
-        fetch('/log/clear', { method: 'POST' }).catch(() => { /* ignore */ });
-      } else if (k === 'n' && !e.shiftKey) {
-        e.preventDefault();
-        void startNewSession();
-      } else if (k === ',') {
-        e.preventDefault();
-        setOpenPanel('settings');
-      } else if (k === 's' && e.shiftKey) {
-        e.preventDefault();
-        setOpenPanel('sessions');
-      } else if (k === 'm' && !e.shiftKey) {
-        e.preventDefault();
-        setOpenPanel('memory');
-      } else if (k === 'e' && !e.shiftKey) {
-        e.preventDefault();
-        setOpenPanel('tools');
-      }
+      const a = document.activeElement as HTMLInputElement | null;
+      const typing = !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') && !!a.value.trim();
+      if (pendingCard && !panel && !typing && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); answer(e.key === 'Enter'); return; }
+      if (e.key === 'Escape' && panel) setPanel(null);
+      if (e.key === ' ' && mic === 'ptt' && !e.repeat && !panel && !(a && a.tagName === 'INPUT' && a.value)) { e.preventDefault(); pttStart(); }
     };
+    const onUp = (e: KeyboardEvent) => { if (e.key === ' ' && ptt.current) { e.preventDefault(); pttEnd(); } };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
+    window.addEventListener('keyup', onUp);
+    return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onUp); };
+  }, [pendingCard, panel, mic, answer, pttStart, pttEnd]);
 
-  const closePanel = useCallback(() => setOpenPanel(null), []);
+  // ---- what the face shows ----
+  const expr = state === 'error' ? 'sad'
+    : mood && (state === 'idle' || state === 'speaking') ? mood
+      : s.activity === 'game' ? 'sleep'
+        : ({ standby: 'sleep', booting: 'sleep', idle: 'neutral', listening: 'listen', thinking: 'think', speaking: 'neutral', confirm: pendingCard?.risk ? 'serious' : 'curious' } as Record<string, string>)[state] ?? 'neutral';
+  const waiting = pendingCard ? (s.activity === 'game' && pendingCard.kind === 'proposal' ? 'Propuesta enviada como notificación de Windows' : 'Esperando tu ok en la conversación') : null;
 
-  // A line of the view itself (the host shows it as SYSTEM).
-  const postActivity = useCallback(async (msg: string) => {
-    try {
-      await fetch('/activity', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ msg }),
-      });
-    } catch {
-      /* server down — silently drop; this is UI flavor, not state */
-    }
-  }, []);
-
-  // top-bar "+ new" → POST /sessions/new; the host clears the log itself (log_clear) and a refusal shows its code.
-  const onNewSession = useCallback(() => { void startNewSession(); }, []);
-
-  // the shortcuts this view handles (the keydown handler above), as a SYSTEM line.
-  const onHelp = useCallback(() => {
-    postActivity(
-      'shortcuts: enter sends · / focus · ctrl+l clears the log · ctrl+n new session · ctrl+, settings'
-        + ' · ctrl+shift+s sessions · ctrl+m memory · ctrl+e tools · f11 fullscreen · esc closes panel',
-    );
-  }, [postActivity]);
-
-  // See MicMode. Left click cycles listening↔off (mute the mic). Right click
-  // starts a request now: it turns the voice on if it was off, then captures
-  // the next phrase without the wake word.
-  //   listening   → /voice/start   (mic loop up, wake word armed)
-  //   off         → /voice/stop
-  //   right click → /voice/trigger (one phrase without saying «Baxy»; the voice
-  //                                 then waits for «Baxy» again)
-  // True while /voice/start is loading the models (VAD + wake + STT +
-  // Piper, ~1-3s blocking on the backend). Drives the mic button's
-  // "loading" animation so the icon stays lit + pulsing instead of
-  // flickering red→black while the request is in flight.
-  const [micLoading, setMicLoading] = useState(false);
-  const setMicModeAsync = useCallback(async (next: MicMode, opts?: { triggerAfter?: boolean }) => {
-    const prev = micMode;
-    // Optimistic: light the icon immediately so the click feels responsive.
-    setMicMode(next);
-    if (next === 'off') {
-      try {
-        const r = await fetch('/voice/stop', { method: 'POST' });
-        if (!r.ok) throw new Error(`stop ${r.status}`);
-      } catch (e) {
-        setMicMode(prev);
-        toastError(`mic off failed · ${String(e).replace(/^Error: /, '')}`);
-      }
-      return;
-    }
-    // listening needs the loop running. The backend blocks while it
-    // loads models, so show the loading state and DON'T revert just
-    // because it took a few seconds — only revert on an explicit failure.
-    setMicLoading(true);
-    try {
-      const r = await fetch('/voice/start', { method: 'POST' });
-      if (!r.ok) throw new Error(`start ${r.status}`);
-      const data = (await r.json()) as { ok?: boolean; running?: boolean; last_error?: string | null };
-      if (data.ok === false || data.running === false) {
-        throw new Error(data.last_error || 'voice failed to start');
-      }
-      if (opts?.triggerAfter) {
-        await fetch('/voice/trigger', { method: 'POST' });
-      }
-    } catch (e) {
-      setMicMode(prev);
-      toastError(`mic ${next} failed · ${String(e).replace(/^Error: /, '')}`);
-    } finally {
-      setMicLoading(false);
-    }
-  }, [micMode]);
-
-  // AUTO-START voice on mount, but RESPECT the user's choice. The persisted
-  // micMode ('listening'/'off') is the source of truth: if it's not 'off' we
-  // boot the backend voice loop automatically (so the mic is armed AND BAXY's
-  // spoken replies play without the user having to click the mic first). If the
-  // user previously turned the mic OFF, we honor that and stay silent — we do
-  // NOT auto-start. One-shot: runs once after mount.
-  const didAutoStartVoice = useRef(false);
-  useEffect(() => {
-    if (didAutoStartVoice.current) return;
-    didAutoStartVoice.current = true;
-    if (micMode !== 'off') {
-      // bring the backend loop up to match the persisted on-state. Don't
-      // arm a capture (no triggerAfter) — just enable wake-word + TTS.
-      const id = window.setTimeout(() => {
-        setMicModeAsync(micMode).finally(() => { voiceBootSettled.current = true; });
-      }, 0);
-      return () => window.clearTimeout(id);
-    } else {
-      // user chose 'off' — nothing to start; let the sync act normally.
-      voiceBootSettled.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onMicLeftClick = useCallback(() => {
-    // listening → off. off → listening.
-    setMicModeAsync(micMode === 'off' ? 'listening' : 'off');
-  }, [micMode, setMicModeAsync]);
-
-  // the person wants to speak NOW without the wake word.
-  const onMicRightClick = useCallback(() => {
-    setMicModeAsync('listening', { triggerAfter: true });
-  }, [setMicModeAsync]);
-
-  // clicking a surface card BOTH marks it active (visual carmesí border) AND
-  // opens the matching modal — SessionsPanel, MemoryPanel or ToolsPanel.
-  const onSurface = useCallback((id: SurfaceId) => {
-    setActiveSurface(id);
-    setOpenPanel(id);
-  }, []);
-
-  // ---- aliveness vs. mic. These used to be the same thing (mic off → whole app
-  // to standby), which made muting the mic look like powering the assistant down.
-  // They are now independent:
-  //   * `online`  — is the assistant alive? It is, as long as the backend is
-  //                 reachable. This drives the traveling border. Text mode works
-  //                 whenever the agent is ready, mic or no mic.
-  //   * `voiceOn` — is the mic loop up? Drives the left-rail voice toggle only.
-  // So with the mic off the app stays online (border travels, neurons breathe,
-  // chat works); only the voice toggle reads "off". ----
-  const online = stream.connected;
-  const voiceOn = micMode !== 'off';
-  const poweredRef = useRef(online);
-  useEffect(() => { poweredRef.current = online; }, [online]);
-  const visualStateRef = useRef(convState);
-  useEffect(() => { visualStateRef.current = convState; }, [convState]);
-
-  // Drive the traveling border without forcing a style/layout update at display
-  // refresh rate while BAXY is resting. Active conversation remains at 30 Hz.
-  useEffect(() => {
-    const frame = document.querySelector<HTMLElement>('.app-frame');
-    if (!frame) return;
-    let timer = 0;
-    let last = performance.now();
-    let angle = 0;
-    let speed = 1; // 0..1 fraction of full speed
-    const FULL = 360 / 3.4; // deg/s at full speed
-    const schedule = () => {
-      const state = visualStateRef.current;
-      const active = state === 'listening' || state === 'thinking' || state === 'speaking';
-      const still = document.hidden || document.documentElement.dataset.access === 'accessible';
-      const interval = still ? 1000 : 1000 / (active ? 30 : 4);
-      timer = window.setTimeout(() => loop(performance.now()), interval);
-    };
-    const loop = (now: number) => {
-      // Hidden, or the accessible presentation (no motion): the border stays still.
-      if (document.hidden || document.documentElement.dataset.access === 'accessible') {
-        last = now;
-        schedule();
-        return;
-      }
-      const state = visualStateRef.current;
-      const active = state === 'listening' || state === 'thinking' || state === 'speaking';
-      // Four paints per second keep the slow idle border visibly alive without
-      // making WebView the dominant process while nobody is interacting.
-      const dt = Math.min(active ? 0.05 : 0.25, (now - last) / 1000);
-      last = now;
-      const target = poweredRef.current ? 1 : 0;
-      speed += (target - speed) * Math.min(1, dt * 2.6);
-      if (target === 0 && speed < 0.012) speed = 0;
-      angle = (angle + speed * FULL * dt) % 360;
-      frame.style.setProperty('--bd-angle', angle.toFixed(2) + 'deg');
-      schedule();
-    };
-    const onVisibilityChange = () => {
-      window.clearTimeout(timer);
-      last = performance.now();
-      schedule();
-    };
-    document.addEventListener('visibilitychange', onVisibilityChange);
-    schedule();
-    return () => {
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-      window.clearTimeout(timer);
-    };
-  }, []);
-
-  // Recolor the border, the chrome accent (--carmine) and the metric bars
-  // (--bar-color) per state — the prototype's SET table, verbatim. Chrome stays
-  // carmesí at rest (idle) and only takes the contrast color during an
-  // active conversation state (listening/thinking/speaking), then returns to red.
-  useEffect(() => {
-    const frame = document.querySelector<HTMLElement>('.app-frame');
-    if (!frame) return;
-    const SET: Record<string, { base: string; mid: string; hi: string; peak: string; glow: string; bar: string }> = {
-      error:     { base: '#7A1E2B', mid: '#B83A4A', hi: '#E55366', peak: '#FFE9EC', glow: 'rgba(229,83,102,0.9)', bar: '#E55366' },
-      idle:      { base: '#5a1a22', mid: '#B83A4A', hi: '#FF4D63', peak: '#FFE3E7', glow: 'rgba(255,77,99,0.9)',    bar: '#5B7FDB' },
-      listening: { base: '#7A1E2B', mid: '#E55366', hi: '#FF6677', peak: '#FFFFFF', glow: 'rgba(255,102,119,0.95)', bar: '#6FA8B0' },
-      thinking:  { base: '#1B2A5E', mid: '#2E4BA0', hi: '#5B7FDB', peak: '#C8D6F5', glow: 'rgba(91,127,219,0.9)',   bar: '#C9A66B' },
-      speaking:  { base: '#6B5A2F', mid: '#C9A66B', hi: '#E8C98E', peak: '#F8EED2', glow: 'rgba(232,201,142,0.9)',  bar: '#7B95D9' },
-    };
-    const c = SET[convState] || SET.idle;
-    frame.style.setProperty('--bd-base', c.base);
-    frame.style.setProperty('--bd-mid', c.mid);
-    frame.style.setProperty('--bd-hi', c.hi);
-    frame.style.setProperty('--bd-peak', c.peak);
-    frame.style.setProperty('--bd-glow', c.glow);
-    frame.style.setProperty('--bar-color', c.bar);
-    const active = convState === 'listening' || convState === 'thinking' || convState === 'speaking';
-    frame.style.setProperty('--carmine', active ? c.bar : '#B83A4A');
-  }, [convState]);
+  const nReq = s.items.filter((x) => x.who === 'you').length;
+  const meta = state === 'booting' ? 'Arrancando'
+    : nReq === 0 ? 'Sin pedidos aún'
+      : nReq + (nReq === 1 ? ' pedido' : ' pedidos') + (s.netLog.length ? ' · ' + s.netLog.length + (s.netLog.length === 1 ? ' salida' : ' salidas') + ' a internet' : ' · todo local');
+  const title = s.session?.label || 'Conversación';
+  const counts = { sessions: s.surfaces?.sessions ?? null, memory: s.surfaces?.memory ?? null, triggers: s.surfaces?.triggers ?? null, catalog: s.surfaces?.tools ?? null };
+  const chatShown = chatOpen || (!!pendingCard && done.card !== pendingCard.id);
+  const chatVisible = chatShown && !narrow;
+  const unread = !chatShown && !!lastReply && done.seen !== lastReply;
+  const focusX = fw ? (RAIL + (fw - RAIL - (chatVisible ? CHATW : 0)) / 2) / fw : 0.5;
+  const quiet = !!proposals?.quiet;
+  const canSend = s.agent.built && !booting;
 
   return (
-    <div className="window-root">
-      <TitleBar bypass={confirmation === 'bypass'} />
-      <div className="app-frame">
+    <div className="app-frame">
+      <div className="bd-ring"><i className="bd-spin"></i></div>
+      <div className="bd-glow"><i className="bd-spin"></i></div>
       <div className="shell">
-        <div className="cols">
-          <div className="col left">
-            <SubstratePanel
-              convState={convState}
-              wsModel={stream.model}
-              accessMode={accessMode}
-              onAccessMode={setAccessMode}
-              confirmation={confirmation}
-              onConfirmation={setConfirmation}
-              online={online}
-              voiceOn={voiceOn}
-              onToggleVoice={onMicLeftClick}
-              surfaces={liveSurfaces}
-              activeSurface={activeSurface}
-              onSurface={onSurface}
-            />
+        <div ref={bx2} className={'bx2 p-' + profile + (chatShown ? '' : ' chat-off') + (narrow ? ' narrow' : '')}
+          style={{ '--rail': RAIL + 'px', '--chatw': chatVisible ? CHATW + 'px' : '0px', '--chatfull': CHATW + 'px' } as CSSProperties}>
+          <Cosmos state={gState} light={theme === 'light'} focusX={focusX} />
+          <Rail state={state} powered={powered} onPower={togglePower} bypass={bypass} onMode={() => void setBypass(!bypass)}
+            metrics={metrics} net={netShown} profile={profile} onProfile={(p) => { setProfile(p); keep('baxy.profile', p); }}
+            counts={counts} quiet={quiet} onPanel={setPanel} />
+          <div className="bx-center">
+            <div className={'bx-graph' + (state === 'idle' && mic === 'always' ? ' wakeable' : '')} onClick={wake}>
+              <Face state={gState} expr={expr} talking={state === 'speaking'} journey={s.journey} hold={state === 'confirm'} light={theme === 'light'} net={!!netShown} />
+            </div>
+            <div className="bx-ctop pywebview-drag-region" onDoubleClick={(e) => { if (e.target === e.currentTarget) void win('toggle_maximize'); }}>
+              <span className={'bx-statel ' + state + (['listening', 'thinking', 'speaking', 'confirm', 'error'].includes(state) ? ' live' : '')}>
+                <i></i>{label}
+                {bypass ? <span className="bp"><Icon name="bolt" size={10} />bypass</span> : null}
+                {s.activity === 'game' ? <span className="bx-ctxp">Jugando · aviso por Windows</span> : null}
+              </span>
+              <span className="bx-ctr">
+                {!chatShown ? (
+                  <button className="bx-ib" title="Mostrar conversación" onClick={() => toggleChat(true)}>
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"><path d="M2.5 4Q2.5 2.8 3.7 2.8H12.3Q13.5 2.8 13.5 4V9.6Q13.5 10.8 12.3 10.8H7L4.2 13.2V10.8H3.7Q2.5 10.8 2.5 9.6Z"></path><path d="M5.3 6.8h.01M8 6.8h.01M10.7 6.8h.01" strokeWidth="1.8" strokeLinecap="round"></path></svg>
+                    {unread ? <span className="dot"></span> : null}
+                  </button>
+                ) : null}
+                <span className="bx-win">
+                  <button className="bx-ib plain" title="Minimizar" onClick={() => void win('minimize')}><Icon name="win-min" size={12} /></button>
+                  <button className="bx-ib plain" title={maximized ? 'Restaurar' : 'Maximizar'} onClick={() => void win('toggle_maximize')}><Icon name={maximized ? 'win-restore' : 'win-max'} size={12} /></button>
+                  <button className="bx-ib plain bx-close" title="Cerrar" onClick={() => void win('close')}><Icon name="x" size={12} /></button>
+                </span>
+              </span>
+            </div>
+            <div className="bx-cbot">
+              {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>Salió a internet</b><span>· {banner}</span></div>
+                : notice ? <div className="bx-notice" key={notice.t}><b>{notice.b}</b> · {notice.t}</div> : null}
+              {booting && s.boot ? <Boot boot={s.boot} />
+                : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} error={errorText} />}
+              <VoiceInput mic={mic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
+                onSubmit={(t) => void submit(t)} state={state} canSend={canSend} />
+            </div>
           </div>
-          <div className="col center">
-            <FieldCenter
-              convState={convState}
-              micMode={micMode}
-              micLoading={micLoading}
-              voiceError={voiceError}
-              onMicLeftClick={onMicLeftClick}
-              onMicRightClick={onMicRightClick}
-              agent={stream.agent}
-            />
-          </div>
-          <div className="col right">
-            <ActivityPanel
-              entries={stream.entries}
-              entriesSeen={stream.entriesSeen}
-              session={stream.session}
-              surfaces={liveSurfaces}
-              activeSurface={activeSurface}
-              onSurface={onSurface}
-              clock={clock}
-              settingsOpen={openPanel === 'settings'}
-              onSettings={() => setOpenPanel(openPanel === 'settings' ? null : 'settings')}
-              onNewSession={onNewSession}
-              onHelp={onHelp}
-              pendingConfirmation={!!stream.agent.pendingConfirmation}
-            />
+          <div className="bx-right">
+            <Chat items={s.items} title={title} meta={meta} busy={state === 'thinking'} onAnswer={answer} onCollapse={collapse} onNew={onNewChat} />
           </div>
         </div>
-
-        {openPanel === 'settings' && <SettingsPanel onClose={closePanel} />}
-        {openPanel === 'sessions' && <SessionsPanel onClose={closePanel} />}
-        {openPanel === 'memory' && <MemoryPanel onClose={closePanel} revision={liveSurfaces?.memory_revision ?? 0} />}
-        {openPanel === 'tools' && <ToolsPanel onClose={closePanel} />}
-
-        <ToastHost />
       </div>
-      </div>
+      {panel === 'memory' ? <MemoryPanel onClose={() => setPanel(null)} revision={s.surfaces?.memory_revision ?? 0} /> : null}
+      {panel === 'triggers' ? <TriggersPanel onClose={() => setPanel(null)} /> : null}
+      {panel === 'catalog' ? <CatalogPanel onClose={() => setPanel(null)} /> : null}
+      {panel === 'sessions' ? <SessionsPanel onClose={() => setPanel(null)} onNew={onNewChat} revision={s.session?.id + ':' + s.session?.label} /> : null}
+      {panel === 'proposals' ? <ProposalsPanel value={proposals} onChange={(p) => void onProposals(p)} onClose={() => setPanel(null)} /> : null}
+      {panel === 'settings' ? (
+        <SettingsPanel onClose={() => setPanel(null)} theme={theme} onTheme={(t) => { setTheme(t); keep('baxy.theme', t); }}
+          bypass={bypass} onBypass={(v) => void setBypass(v)} mic={mic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)}
+          a11y={a11y} onA11y={(a) => void setA11y(a)} general={general} onGeneral={(p) => void onGeneral(p)} metrics={metrics}
+          netLog={s.netLog} onMemory={() => setPanel('memory')} />
+      ) : null}
     </div>
   );
 }

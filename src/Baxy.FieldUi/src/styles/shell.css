@@ -1,0 +1,13 @@
+/* The shell's own additions to the design's cascade: the window has no system frame (WindowChrome), so the centre's top
+   row is the drag region and carries minimize, maximize and close, in the design's icon-button style. */
+.bx-win{display:inline-flex;align-items:center;gap:2px;margin-left:4px}
+.bx-win .bx-ib{width:26px;height:26px}
+.bx-win .bx-close:hover{color:#fff;background:var(--carmine);border-color:var(--carmine)}
+.bx-ctop.pywebview-drag-region{cursor:default}
+.bx-ctop button,.bx-ctop .bx-statel{cursor:pointer}
+.bx-ctop .bx-statel{cursor:default}
+button:disabled{cursor:default;opacity:.55}
+.bx-micmenu button:disabled .s{color:var(--bad)}
+/* A folded chat (wide layout) keeps a 0 px grid track but its 1 px border would stay outside the frame (3 px at 4K):
+   once the fold's transition ends it is hidden, out of the keyboard's reach too. */
+.bx2.chat-off:not(.narrow) .bx-right{visibility:hidden;transition:visibility 0s .45s}

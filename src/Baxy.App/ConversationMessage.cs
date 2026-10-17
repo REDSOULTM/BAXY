@@ -5,4 +5,5 @@ internal sealed record ConversationMessage(
     string Body,
     bool IsUser,
     DateTimeOffset CreatedAt,
-    string? Route = null);
+    string? Route = null,
+    string? Silent = null);

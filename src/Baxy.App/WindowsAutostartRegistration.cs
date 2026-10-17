@@ -111,6 +111,39 @@ internal sealed class WindowsAutostartRegistration
         }
     }
 
+    /// <summary>«Arrancar con Windows» (design v4, Settings): whether the Run key starts this executable; null when this
+    /// copy may not own the sign-in start (a worktree build, another profile).</summary>
+    internal bool? IsRegisteredForCurrent()
+    {
+        string executable = _executablePath();
+        return MayRegister(executable, Environment.GetCommandLineArgs())
+            ? string.Equals(_runKey.Read(PresenceLimits.AutostartValueName), BuildCommand(executable), StringComparison.OrdinalIgnoreCase)
+            : null;
+    }
+
+    /// <summary>The owner's switch: registers this executable, or removes only its own entry. False when this copy
+    /// may not own the sign-in start.</summary>
+    internal bool SetForCurrent(bool on, IReadOnlyList<string> arguments)
+    {
+        string executable = _executablePath();
+        if (!MayRegister(executable, arguments))
+        {
+            return false;
+        }
+
+        string command = BuildCommand(executable);
+        if (on)
+        {
+            _runKey.Write(PresenceLimits.AutostartValueName, command);
+        }
+        else if (string.Equals(_runKey.Read(PresenceLimits.AutostartValueName), command, StringComparison.OrdinalIgnoreCase))
+        {
+            _runKey.Delete(PresenceLimits.AutostartValueName);
+        }
+
+        return true;
+    }
+
     internal bool MayRegister(string executable, IReadOnlyList<string> arguments)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(executable);

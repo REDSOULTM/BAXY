@@ -6,10 +6,45 @@
     <title>BAXY</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23080606'/%3E%3Cpath d='M8 17h16M16 9v16' stroke='%23c42b32' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230A0E14'/%3E%3Cpath d='M8 17h16M16 9v16' stroke='%23B83A4A' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"
     />
-    <script type="module" crossorigin src="./assets/index-CaampMEG.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-COQjHLMx.css">
+    <script>
+      /* BAXY UI scale (design v4): base 1280×720. 720p = 1×, 1080p = 1.5×, 1440p = 2×, 4K = 3×, 8K = 6×; small
+         windows shrink down to 0.8×. A window that measures 0×0 (BAXY starting hidden in the tray, the host keeps
+         the view collapsed) applies nothing and waits: no default values. Every change fires «bx-scale». */
+      (function () {
+        function bxScale(W, H) {
+          var u = Math.min(W / 1280, H / 720);
+          return Math.round(Math.max(0.8, Math.min(6, u)) * 1000) / 1000;
+        }
+        window.bxScale = bxScale;
+        var d = document.documentElement, lw = -1, lh = -1;
+        function apply() {
+          var W = innerWidth || d.clientWidth, H = innerHeight || d.clientHeight;
+          if (!W || !H) return;
+          if (W === lw && H === lh) return;
+          lw = W; lh = H;
+          var u = bxScale(W, H), s = d.style;
+          s.setProperty('--ui', u);
+          s.setProperty('--vw', W / u + 'px');
+          s.setProperty('--vh', H / u + 'px');
+          dispatchEvent(new Event('bx-scale'));
+        }
+        window.bxApplyScale = function () { lw = lh = -1; apply(); };
+        d.classList.add('bx-scaled');
+        apply();
+        addEventListener('resize', apply);
+        addEventListener('load', apply);
+        addEventListener('pageshow', apply);
+        addEventListener('focus', apply);
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) apply(); });
+        if (window.ResizeObserver) new ResizeObserver(apply).observe(d);
+        if (window.visualViewport) visualViewport.addEventListener('resize', apply);
+        var n = 0, iv = setInterval(function () { apply(); if (++n > 40) clearInterval(iv); }, 250);
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-B55oOaDQ.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DBfEAYfY.css">
   </head>
   <body>
     <div id="root"></div>

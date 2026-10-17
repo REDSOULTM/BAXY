@@ -1,0 +1,201 @@
+import { useEffect, useReducer } from 'react';
+import { getJson } from './api';
+import type {
+  AgentStatus, BootPieces, ChatItem, Fam, HostState, NetEntry, ServerEvent, Step, Surfaces, VoiceStatus,
+} from './types';
+
+/** the path the face's network walks this turn: the families of the calls in the order the model made them. */
+export interface Journey {
+  turn: string;
+  path: string[];
+  fail: Fam | null;
+}
+
+export type Mood = 'happy' | 'sad' | 'curious' | null;
+
+export interface BaxyStore {
+  connected: boolean;
+  hostState: HostState;
+  agent: AgentStatus;
+  items: ChatItem[];
+  session: { id: string; label: string } | null;
+  surfaces: Surfaces | null;
+  boot: BootPieces | null;
+  voice: VoiceStatus;
+  /** what the ear transcribed so far while listening. */
+  live: string;
+  /** the call running now, for the caption under the face. */
+  running: string | null;
+  journey: Journey | null;
+  /** what left the PC last (shown for a while on the rail and above the captions). */
+  net: { what: string; at: number } | null;
+  netLog: NetEntry[];
+  activity: 'free' | 'game' | 'call' | 'video' | 'away';
+  /** BAXY's last words (the captions), with a key that changes with every new reply. */
+  sub: { text: string; key: string } | null;
+  mood: Mood;
+  /** when the ear last failed on what it heard (voice_error), for the face's «No te entendí». */
+  voiceErrorAt: number | null;
+}
+
+const INITIAL: BaxyStore = {
+  connected: false,
+  hostState: 'idle',
+  agent: { built: false, ready: false },
+  items: [],
+  session: null,
+  surfaces: null,
+  boot: null,
+  voice: { available: false, mode: 'off', speaking: false },
+  live: '',
+  running: null,
+  journey: null,
+  net: null,
+  netLog: [],
+  activity: 'free',
+  sub: null,
+  mood: null,
+  voiceErrorAt: null,
+};
+
+const MAX_ITEMS = 150;
+
+/** the mood a reply leaves on the face, from what its calls really did. */
+function moodOf(steps: Step[]): Mood {
+  if (steps.some((s) => s.status === 'fail')) return 'sad';
+  if (steps.some((s) => s.status === 'maybe')) return 'curious';
+  if (steps.some((s) => s.status === 'ok')) return 'happy';
+  return null;
+}
+
+function upsert(items: ChatItem[], item: ChatItem): ChatItem[] {
+  const i = items.findIndex((x) => x.id === item.id);
+  if (i < 0) return [...items, item].slice(-MAX_ITEMS);
+  const next = items.slice();
+  next[i] = item;
+  return next;
+}
+
+function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boolean }): BaxyStore {
+  switch (ev.type) {
+    case '_connected':
+      return { ...s, connected: ev.value };
+    case 'state':
+      return { ...s, hostState: ev.value, live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null };
+    case 'agent':
+      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation } };
+    case 'transcript':
+      return { ...s, items: ev.items.slice(-MAX_ITEMS), sub: null, mood: null, journey: null };
+    case 'item': {
+      const before = s.items.find((x) => x.id === ev.item.id);
+      const items = upsert(s.items, ev.item);
+      const it = ev.item;
+      // a reply's words arrived (new, or the steps' holder got its text): captions, mood and the walk's end.
+      if (it.who === 'baxy' && it.text && !(before && before.who === 'baxy' && before.text === it.text)) {
+        const journey = s.journey ? { ...s.journey, path: [...s.journey.path.filter((p) => p !== 'verificar'), 'verificar'] } : s.journey;
+        return { ...s, items, sub: { text: it.text, key: it.id + ':' + it.text.length }, mood: moodOf(it.steps), journey, running: null };
+      }
+      return { ...s, items };
+    }
+    case 'step': {
+      if (ev.phase === 'start') {
+        const same = s.journey && s.journey.turn === ev.turn;
+        const path = same ? s.journey!.path : ['mente'];
+        const next = path[path.length - 1] === ev.fam ? path : [...path, ev.fam];
+        return { ...s, running: ev.label + '…', journey: { turn: ev.turn, path: next, fail: same ? s.journey!.fail : null } };
+      }
+      const journey = s.journey && ev.status === 'fail' ? { ...s.journey, fail: ev.fam } : s.journey;
+      return { ...s, journey, running: null };
+    }
+    case 'net':
+      return { ...s, net: { what: ev.what, at: Date.now() }, netLog: [...s.netLog, { what: ev.what, ts: ev.ts }].slice(-200) };
+    case 'voice': {
+      const failed = ev.last_error === 'voice_error' && s.voice.last_error !== 'voice_error';
+      return {
+        ...s,
+        voice: { available: ev.available, mode: ev.mode, speaking: ev.speaking, last_error: ev.last_error ?? null },
+        voiceErrorAt: failed ? Date.now() : s.voiceErrorAt,
+      };
+    }
+    case 'voice_partial':
+      return { ...s, live: ev.text };
+    case 'voice_wake':
+      return { ...s, live: '' };
+    case 'boot':
+      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null } };
+    case 'surfaces':
+      return { ...s, surfaces: { sessions: ev.sessions, memory: ev.memory, memory_revision: ev.memory_revision, tools: ev.tools, triggers: ev.triggers } };
+    case 'session':
+      return { ...s, session: { id: ev.id, label: ev.label } };
+    case 'context':
+      return { ...s, activity: ev.activity };
+    case 'log_clear':
+      return { ...s, items: [], sub: null, mood: null, journey: null };
+    default:
+      return s;
+  }
+}
+
+/** subscribes to the host's event socket (`/events`, the native bridge's WebSocket) and mirrors its events into one
+ *  state object; reconnects with backoff when the socket drops (the host replays the current state on connect). */
+export function useBaxy(): BaxyStore {
+  const [state, dispatch] = useReducer(
+    (s: BaxyStore, a: ServerEvent | { type: '_connected'; value: boolean } | { type: '_patch'; patch: Partial<BaxyStore> }) =>
+      a.type === '_patch' ? { ...s, ...a.patch } : reduce(s, a),
+    INITIAL,
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    let retry = 0;
+    let timer: number | null = null;
+    let ws: WebSocket | null = null;
+    const schedule = () => {
+      if (cancelled) return;
+      retry = Math.min(retry + 1, 6);
+      timer = window.setTimeout(connect, Math.min(8000, 500 * 2 ** (retry - 1)));
+    };
+    const connect = () => {
+      timer = null;
+      if (cancelled) return;
+      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      try {
+        ws = new WebSocket(`${proto}//${window.location.host}/events`);
+      } catch {
+        schedule();
+        return;
+      }
+      ws.onopen = () => {
+        if (cancelled) { ws?.close(); return; }
+        retry = 0;
+        dispatch({ type: '_connected', value: true });
+      };
+      ws.onmessage = (e) => {
+        if (cancelled) return;
+        try {
+          dispatch(JSON.parse(e.data as string) as ServerEvent);
+        } catch { /* a malformed event changes nothing */ }
+      };
+      ws.onclose = () => {
+        if (cancelled) return;
+        dispatch({ type: '_connected', value: false });
+        schedule();
+      };
+    };
+    connect();
+    return () => {
+      cancelled = true;
+      if (timer !== null) window.clearTimeout(timer);
+      if (ws && ws.readyState !== WebSocket.CLOSED) ws.close();
+    };
+  }, []);
+
+  // the internet log of this run, read once (events add to it from then on).
+  useEffect(() => {
+    void getJson<{ items: NetEntry[] }>('/privacy/netlog').then((r) => {
+      if (r?.items) dispatch({ type: '_patch', patch: { netLog: r.items } });
+    });
+  }, []);
+
+  return state;
+}

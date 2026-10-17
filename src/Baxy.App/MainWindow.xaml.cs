@@ -160,7 +160,7 @@ public partial class MainWindow : Window
             this,
             FieldWebView,
             _viewModel,
-            new FieldTelemetrySampler(),
+            new FieldTelemetrySampler(() => _viewModel.MindProcessId),
             _lifetimeCancellation.Token);
         core.Navigate(HistoricalFieldOriginPolicy.EntryPoint);
         await UpdateFieldActivityAsync();
@@ -300,7 +300,7 @@ public partial class MainWindow : Window
             if (!payload || payload.channel !== 'baxy.field.v1') { return; }
             if (payload.kind !== 'socket_event' || payload.event !== 'message') { return; }
             if (typeof payload.data !== 'string') { return; }
-            if (payload.data.indexOf('"type":"activity"') < 0) { return; }
+            if (payload.data.indexOf('"type":"item"') < 0) { return; }
             armed = 1;
           });
           var observe = function () {
@@ -503,10 +503,19 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (_presence is { IsExitRequested: false })
+        if (_presence is { IsExitRequested: false } presence)
         {
             eventArgs.Cancel = true;
-            Hide();
+            // «Al cerrar la ventana» (Settings): BAXY stays in the tray, or closes for good as the tray's Exit does.
+            if (_viewModel.Settings.CloseToTray)
+            {
+                Hide();
+            }
+            else
+            {
+                _ = Dispatcher.BeginInvoke(presence.RequestExit);
+            }
+
             return;
         }
 

@@ -2,33 +2,41 @@ using Baxy.Providers.Windows.SystemStatus;
 
 namespace Baxy.App;
 
-/// <summary>
-/// What the PC reported; each reading is null when the PC did not give it (no GPU counter, no CPU sample yet, no memory
-/// or disk figures, no boot time), never a 0 that would read as measured (audit 2026-10-15, App 16).
-/// </summary>
+/// <summary>The rail's readings (design v4); each is null when the PC did not give it, and the view shows «—».</summary>
 internal sealed record FieldMetricSnapshot(
     double? Cpu,
-    double? Mem,
-    double? MemUsedGb,
     double? Gpu,
-    double? Dsk,
-    string? Uptime);
+    double? GpuTemperature,
+    double? ModelVramGb,
+    double? ModelRamGb);
 
+/// <summary>
+/// Reads the PC's processor and graphics use, the graphics card's temperature and what BAXY's model takes (llama-server
+/// and the mind: video memory and RAM), at most once per 900 ms however often the view asks (it asks every 1.5 s).
+/// </summary>
 internal sealed class FieldTelemetrySampler : IAsyncDisposable
 {
     private static readonly TimeSpan CacheLifetime = TimeSpan.FromMilliseconds(900);
+    private const double Gibibyte = 1_073_741_824d;
+
     private readonly WindowsSystemStatusProvider _system = new();
     private readonly WindowsGpuStatusProvider _gpu = new();
+    private readonly Func<int?> _mindProcess;
     private readonly SemaphoreSlim _sampleLock = new(1, 1);
     private DateTimeOffset _cachedAt;
     private FieldMetricSnapshot? _cachedMetrics;
     private bool _disposed;
 
+    /// <param name="mindProcess">The mind's process id while it runs (its llama-server is found by its executable).</param>
+    internal FieldTelemetrySampler(Func<int?> mindProcess)
+    {
+        _mindProcess = mindProcess ?? throw new ArgumentNullException(nameof(mindProcess));
+    }
+
     internal async Task<FieldMetricSnapshot> SampleAsync(CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        if (_cachedMetrics is not null
-            && DateTimeOffset.UtcNow - _cachedAt <= CacheLifetime)
+        if (_cachedMetrics is not null && DateTimeOffset.UtcNow - _cachedAt <= CacheLifetime)
         {
             return _cachedMetrics;
         }
@@ -36,23 +44,24 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
         await _sampleLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            if (_cachedMetrics is not null
-                && DateTimeOffset.UtcNow - _cachedAt <= CacheLifetime)
+            if (_cachedMetrics is not null && DateTimeOffset.UtcNow - _cachedAt <= CacheLifetime)
             {
                 return _cachedMetrics;
             }
 
-            Task<SystemStatusSnapshot> systemTask = _system
-                .GetStatusAsync(SystemStatusScope.All, cancellationToken)
-                .AsTask();
-            Task<GpuStatusSnapshot> gpuTask = _gpu
-                .GetStatusAsync(GpuStatusScope.Usage, cancellationToken)
-                .AsTask();
-            await Task.WhenAll(systemTask, gpuTask).ConfigureAwait(false);
+            Task<SystemStatusSnapshot> systemTask = _system.GetStatusAsync(SystemStatusScope.Cpu, cancellationToken).AsTask();
+            Task<GpuStatusSnapshot> gpuTask = _gpu.GetStatusAsync(GpuStatusScope.Usage, cancellationToken).AsTask();
+            Task<(double? Temperature, double? Vram, double? Ram)> modelTask = Task.Run(ReadModel, cancellationToken);
+            await Task.WhenAll(systemTask, gpuTask, modelTask).ConfigureAwait(false);
 
             SystemStatusSnapshot system = await systemTask.ConfigureAwait(false);
             GpuStatusSnapshot gpu = await gpuTask.ConfigureAwait(false);
-            _cachedMetrics = CreateMetrics(system, gpu);
+            (double? temperature, double? vram, double? ram) = await modelTask.ConfigureAwait(false);
+            double? gpuPercent = gpu.Adapters
+                .Where(static adapter => adapter.UsagePercent.HasValue)
+                .Select(static adapter => (double?)adapter.UsagePercent!.Value)
+                .Max();
+            _cachedMetrics = new FieldMetricSnapshot(Percent(system.Cpu?.UsagePercent), Percent(gpuPercent), temperature, vram, ram);
             _cachedAt = DateTimeOffset.UtcNow;
             return _cachedMetrics;
         }
@@ -62,47 +71,25 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
         }
     }
 
-    private static FieldMetricSnapshot CreateMetrics(
-        SystemStatusSnapshot system,
-        GpuStatusSnapshot gpu)
+    // The model's processes: the mind (a virtual environment's python.exe starts the real interpreter as its child) and
+    // the llama-server it started. Only BAXY's own: a bench's llama-server runs the same executable.
+    private (double? Temperature, double? Vram, double? Ram) ReadModel()
     {
-        double? memoryPercent = null;
-        double? memoryUsedGb = null;
-        if (system.Memory is { TotalBytes: > 0 } memory)
+        double? temperature = WindowsModelResourceReader.GpuTemperatureCelsius();
+        if (_mindProcess() is not { } mind)
         {
-            ulong usedBytes = memory.TotalBytes - memory.AvailableBytes;
-            memoryPercent = 100d * usedBytes / memory.TotalBytes;
-            memoryUsedGb = usedBytes / 1_073_741_824d;
+            return (temperature, null, null);
         }
 
-        double? diskPercent = null;
-        if (system.SystemDisk is { TotalBytes: > 0 } disk)
-        {
-            diskPercent = 100d * (disk.TotalBytes - disk.AvailableBytes) / disk.TotalBytes;
-        }
+        List<int> processes = [mind, .. WindowsModelResourceReader.ChildrenOf(mind, "python")];
+        processes.AddRange([.. processes.SelectMany(static id => WindowsModelResourceReader.ChildrenOf(id, "llama-server"))]);
 
-        double? gpuPercent = gpu.Adapters
-            .Where(static adapter => adapter.UsagePercent.HasValue)
-            .Select(static adapter => (double?)adapter.UsagePercent!.Value)
-            .Max();
-
-        string? uptimeText = null;
-        if (system.UptimeSeconds is { } seconds and >= 0)
-        {
-            TimeSpan uptime = TimeSpan.FromSeconds(seconds);
-            uptimeText = $"{(long)uptime.TotalHours:00}:{uptime.Minutes:00}:{uptime.Seconds:00}";
-        }
-
-        return new FieldMetricSnapshot(
-            Clamp(system.Cpu?.UsagePercent),
-            Clamp(memoryPercent),
-            memoryUsedGb is { } usedGb && double.IsFinite(usedGb) ? Math.Max(0, usedGb) : null,
-            Clamp(gpuPercent),
-            Clamp(diskPercent),
-            uptimeText);
+        long? vram = WindowsModelResourceReader.DedicatedVideoBytes(processes);
+        long? ram = WindowsModelResourceReader.WorkingSetBytes(processes);
+        return (temperature, vram / Gibibyte, ram / Gibibyte);
     }
 
-    private static double? Clamp(double? value) =>
+    private static double? Percent(double? value) =>
         value is { } measured && double.IsFinite(measured) ? Math.Clamp(measured, 0, 100) : null;
 
     public ValueTask DisposeAsync()

@@ -27,6 +27,8 @@
     </Content>
     <!-- Estabilización M2: each datum's name in the person's words, for the memory panel (one file with the mind). -->
     <EmbeddedResource Include="..\baxy_mind\data\memory_subjects.v1.json" LogicalName="Baxy.App.MemorySubjects.json" />
+    <!-- Design v4: the short Spanish title, theme and face family of each catalog operation (FieldStepProjection). -->
+    <EmbeddedResource Include="Assets\operation-labels.v1.json" LogicalName="Baxy.App.OperationLabels.json" />
   </ItemGroup>
   <Target Name="CopyDevelopmentCore"
           AfterTargets="Build"

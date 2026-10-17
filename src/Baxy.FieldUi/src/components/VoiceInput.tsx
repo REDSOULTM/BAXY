@@ -1,0 +1,81 @@
+import { useEffect, useState } from 'react';
+import { Icon, type IconName } from './Icon';
+import type { BaxyState, MicMode } from '../types';
+
+/* The input bar (design parts.jsx BxInput): the voice button with its three modes, the text field and the send button.
+   Attaching files waits for a typed contract on the host (README: «adjuntos sin contrato tipado» are blocked), so the
+   button says so instead of pretending to attach. */
+
+const MIC: { id: MicMode; icon: IconName; label: string; sub: string }[] = [
+  { id: 'off', icon: 'mic-off', label: 'Apagado', sub: 'Solo texto' },
+  { id: 'always', icon: 'mic', label: 'Siempre activo', sub: 'Responde a «BAXY»' },
+  { id: 'ptt', icon: 'wave', label: 'Mantener para hablar', sub: 'O mantén la barra espaciadora' },
+];
+
+interface Props {
+  mic: MicMode;
+  micAvailable: boolean;
+  onMic: (m: MicMode) => void;
+  onPttStart: () => void;
+  onPttEnd: () => void;
+  onSubmit: (text: string) => void;
+  state: BaxyState;
+  canSend: boolean;
+}
+
+export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onSubmit, state, canSend }: Props) {
+  const [draft, setDraft] = useState('');
+  const [menu, setMenu] = useState(false);
+  const cur = MIC.find((m) => m.id === mic) ?? MIC[1];
+  const talking = mic === 'ptt' && state === 'listening';
+  const armed = draft.trim().length > 0 && canSend;
+  useEffect(() => {
+    if (!menu) return;
+    const close = (e: PointerEvent) => { if (!(e.target as Element | null)?.closest('.bx-micwrap')) setMenu(false); };
+    window.addEventListener('pointerdown', close);
+    return () => window.removeEventListener('pointerdown', close);
+  }, [menu]);
+  const send = () => { if (!armed) return; onSubmit(draft.trim()); setDraft(''); };
+  const ph = state === 'booting' ? 'Cargando el modelo…'
+    : state === 'confirm' ? '↵ sí · esc no'
+      : mic === 'ptt' ? 'Escribe o mantén espacio'
+        : mic === 'off' ? 'Escribe a BAXY'
+          : 'Escribe o di «BAXY»';
+  return (
+    <div className="bx-line">
+      <div className="bx-micwrap">
+        {menu ? (
+          <div className="bx-micmenu">
+            {MIC.map((m) => {
+              const blocked = m.id !== 'off' && !micAvailable;
+              return (
+                <button key={m.id} className={m.id === mic ? 'on' : ''} disabled={blocked}
+                  title={blocked ? 'No hay micrófono disponible' : undefined}
+                  onClick={() => { onMic(m.id); setMenu(false); }}>
+                  <Icon name={m.icon} size={14} />
+                  <span className="l"><span>{m.label}</span><span className="s">{blocked ? 'No hay micrófono' : m.sub}</span></span>
+                  {m.id === mic ? <Icon name="check" size={12} /> : null}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+        <button
+          className={'bx-mic' + (mic !== 'off' ? ' on' : '') + (mic === 'always' && state === 'idle' ? ' breath' : '') + (talking ? ' talking' : '')}
+          onClick={() => { if (mic !== 'ptt') setMenu(!menu); }}
+          onPointerDown={(e) => { if (mic === 'ptt') { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); onPttStart(); } }}
+          onPointerUp={() => { if (mic === 'ptt') onPttEnd(); }}
+          title={mic === 'ptt' ? 'Mantén para hablar' : cur.label}
+        ><Icon name={cur.icon} size={15} /></button>
+        <button className={'bx-caret' + (menu ? ' open' : '')} onClick={() => setMenu(!menu)} title="Modo de micrófono">
+          <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M1.5 5 L4 2.5 L6.5 5"></path></svg>
+        </button>
+      </div>
+      <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={ph} spellCheck={false} autoFocus
+        aria-label="Escribe a BAXY" data-ready={canSend ? 'true' : 'false'}
+        onKeyDown={(e) => { if (e.key === 'Enter' && armed) { e.preventDefault(); e.stopPropagation(); send(); } }} />
+      <button className="bx-att" disabled title="Adjuntar archivos aún no está disponible"><Icon name="attach" size={15} /></button>
+      <button className={'bx-send' + (armed ? '' : ' hide')} onClick={send} title="Enviar"><Icon name="send" size={14} /></button>
+    </div>
+  );
+}

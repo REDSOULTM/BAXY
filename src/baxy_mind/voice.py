@@ -37,6 +37,7 @@ NO_COMMAND_S = 4.0      # after the trigger, time for the request to start
 DIRECT_WAIT_S = 6.0     # direct mode (microphone button): time for the request to start
 MAX_S = 12.0
 KEEP_S = 30.0
+PARTIAL_S = 0.8         # while a request is heard, what was said so far is decoded again this often (live captions)
 
 
 class Voice:
@@ -66,6 +67,7 @@ class Voice:
         stt = self._recognizer is not None
         # What the App reads of it (MindSidecarClient): whether the ear works and whether it is still loading.
         return {"available": stt and self._input, "input": self._input, "stt": stt,
+                "wake": self._detector is not None, "tts": self.speech.ready,
                 "pending": not self._loaded.is_set()}
 
     def start(self, mode: str) -> bool:
@@ -86,6 +88,12 @@ class Voice:
                 return False
         self._state()
         return True
+
+    def release(self) -> None:
+        """Push-to-talk let go: a direct request ends now instead of after its silence."""
+        with self._lock:
+            if self._mode == "direct" and self._start is not None:
+                self._released = True
 
     def stop(self) -> None:
         with self._lock:
@@ -170,6 +178,9 @@ class Voice:
         self._first = 0                 # absolute index of self._audio[0]
         self._total = 0                 # samples heard since the mode started
         self._start: float | None = 0.0 if self._mode == "direct" else None  # the request window's opening
+        self._released = False          # push-to-talk let go (direct mode)
+        self._partial_at = 0.0          # when what was said so far was last decoded
+        self._partial = ""
         if self._detector is not None:
             self._detector.reset()
 
@@ -202,6 +213,22 @@ class Voice:
         start = self._start
         if start is not None and self._over(start):
             self._finish(start)
+        elif start is not None:
+            self._live(start)
+
+    def _live(self, start: float) -> None:
+        """Live captions: the request heard so far, decoded again every PARTIAL_S with the same recognizer and the same
+        cut of the call as the final transcript; only a changed text is sent, and it starts nothing."""
+        now = self._total / RATE
+        if now - self._partial_at < PARTIAL_S or now - start < WORD_TAIL_S + PARTIAL_S:
+            return
+        self._partial_at = now
+        wake = self._mode == "wake"
+        begin = max(0.0, start - BEFORE_S) if wake else 0.0
+        text = self._transcribe(self._segment(begin, now), wake_at=start - begin if wake else None)
+        if text and text != self._partial:
+            self._partial = text
+            self._write({"type": "voice.event", "event": "partial", "mode": self._mode, "text": text})
 
     def _segment(self, start_s: float, stop_s: float) -> np.ndarray:
         a = max(0, int(start_s * RATE) - self._first)
@@ -209,6 +236,8 @@ class Voice:
         return self._audio[a:b]
 
     def _over(self, start: float) -> bool:
+        if self._released:
+            return True
         now = self._total / RATE
         if now - start >= MAX_S:
             return True
@@ -226,7 +255,7 @@ class Voice:
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
         audio = self._segment(begin, self._total / RATE)
-        self._event("partial")
+        self._event("transcribing")
         text = self._transcribe(audio, wake_at=start - begin if wake else None)
         if text:
             self._write({"type": "voice.transcript", "text": text})

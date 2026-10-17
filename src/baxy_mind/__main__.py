@@ -39,8 +39,8 @@ def main() -> int:
         "type": "hello", "protocol": protocol.PROTOCOL,
         "models": {"llm": server.name},
         "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
-                     "session.new",
-                     "voice.start", "voice.stop", "voice.status", "voice.speak", "voice.cancel"],
+                     "session.new", "session.export", "session.load",
+                     "voice.start", "voice.stop", "voice.release", "voice.status", "voice.speak", "voice.cancel"],
     })
     # The reader answers voice.speak, voice.cancel and voice.status as they arrive, so they never wait for an inference
     # (the App's notice at 2 s of silence and a barge-in's cancel reached the voice only after the model finished, round
@@ -72,6 +72,9 @@ def main() -> int:
                 elif kind == "voice.status":
                     protocol.write_message({"type": "voice.status.result", "id": message.get("id"),
                                             "status": voice.status()})
+                elif kind == "voice.release":
+                    voice.release()
+                    protocol.write_message({"type": "voice.released", "id": message.get("id")})
                 else:
                     pending.put(message)
         except Exception as error:  # noqa: BLE001 - the pipe failed: the loop ends instead of waiting forever
@@ -120,6 +123,13 @@ def main() -> int:
                                                         str(message.get("label") or "")))
                 elif kind == "session.new":
                     mind.new_session()
+                    protocol.write_message({"type": "session.ready", "id": request_id})
+                elif kind == "session.export":
+                    protocol.write_message({"type": "session.exported", "id": request_id,
+                                            "conversation": mind.export_session()})
+                elif kind == "session.load":
+                    conversation = message.get("conversation")
+                    mind.load_session(conversation if isinstance(conversation, list) else [])
                     protocol.write_message({"type": "session.ready", "id": request_id})
                 elif kind == "voice.start":
                     mode = str(message.get("mode") or "direct")

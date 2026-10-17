@@ -1,63 +1,136 @@
-/* shared types — match server WS payload contract and HTTP endpoints. */
+/* The view's contract with Baxy.App (FieldProductChannel, channel baxy.field.v1). Every value here comes from the
+   host; a reading the host could not take travels as null and the view shows «—», never a 0. */
 
-export type ConvState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
+/** what the host says BAXY is doing (FieldProductChannel.CurrentConversationState). */
+export type HostState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
 
-/** who wrote the line: the person, BAXY (what the model wrote), or the view itself. */
-export type SourceTag = 'YOU' | 'BAXY' | 'SYSTEM';
+/** what the view shows: the host's state plus the shell's own (booting, resting, a card waiting for the person). */
+export type BaxyState = 'booting' | 'standby' | HostState | 'confirm';
 
-export interface ActivityEntry {
+/** the tool families the face's network lights (FieldStepProjection.Family). */
+export type Fam = 'apps' | 'ventanas' | 'archivos' | 'web' | 'musica' | 'memoria' | 'alarmas';
+
+/** a call the model made: «ok» was executed and verified, «fail» failed, «skip» did not run, «maybe» may have run. */
+export type StepStatus = 'run' | 'ok' | 'fail' | 'skip' | 'maybe';
+
+export interface Step {
   id: string;
-  src: SourceTag;
-  msg: string;
-  ts: string; // 'HH:MM:SS'
-  /** what the line is: the model's answer, its question, or its question about a call waiting for a «sí». */
-  route?: string;
+  label: string;
+  fam: Fam;
+  status: StepStatus;
+  /** what the provider observed (required with ok). */
+  obs?: string;
+  /** why it failed, did not run or may have run (required with fail, skip and maybe). */
+  reason?: string;
+  /** what left the PC, when the call went out to the internet. */
+  net?: string;
 }
 
-export interface ModelInfo {
-  family: string;
-  params: string;
-  runtime: 'local' | 'remote' | 'mock';
-  context_size: number;
+export type CardStatus = 'pending' | 'yes' | 'no' | 'expired' | 'dropped';
+
+/** a risky call waiting for the person's Sí or No (the kernel's challenge) or a heartbeat's proposal. */
+export interface Confirmation {
+  id: string;
+  kind: 'confirm' | 'proposal';
+  risk?: string | null;
+  title: string;
+  target: string;
+  context?: string | null;
+  /** when the kernel's token expires, ms since the epoch. */
+  expires: number;
+  status: CardStatus;
+  via?: string | null;
 }
 
-/** Each reading is null when the PC did not give it; the view shows «—», never a 0 as if measured. */
-export interface MetricSnapshot {
+export type ChatItem =
+  | { who: 'you'; id: string; text: string; ts: string }
+  | { who: 'baxy'; id: string; text: string; ts: string; steps: Step[]; net?: string | null; silent?: string | null }
+  | { who: 'sys'; id: string; text: string; ts: string }
+  | ({ who: 'card'; ts: string } & Confirmation);
+
+export interface AgentStatus {
+  built: boolean;
+  ready: boolean;
+  failure?: string | null;
+  pendingConfirmation?: boolean;
+}
+
+export type MicMode = 'off' | 'always' | 'ptt';
+
+export interface VoiceStatus {
+  available: boolean;
+  /** off, wake (answers to «BAXY») or direct (one phrase). */
+  mode: 'off' | 'wake' | 'direct';
+  speaking: boolean;
+  last_error?: string | null;
+}
+
+/** each piece is null while the host has not read it, false when it is not there. */
+export interface BootPieces {
+  stt: boolean | null;
+  wake: boolean | null;
+  tts: boolean | null;
+  model: boolean;
+  /** when the host started loading the model, ms since the epoch. */
+  startedAt: number;
+  /** when the model was ready, ms since the epoch; null while it loads. */
+  readyAt: number | null;
+  failed?: string | null;
+}
+
+export interface Metrics {
   cpu: number | null;
-  mem: number | null;
-  /** memory used in gb (display value for the mem row), separate from the %
-   *  that drives the bar. */
-  mem_used_gb?: number | null;
-  /** null when no GPU adapter reports a usage counter. */
   gpu: number | null;
-  dsk: number | null;
-  /** time since Windows started, "HH:MM:SS". */
-  uptime?: string | null;
+  /** °C of the graphics card (the PC's hottest reading BAXY can take without administrator rights). */
+  temp: number | null;
+  /** the model's own memory: llama-server and the mind. */
+  model_vram_gb: number | null;
+  model_ram_gb: number | null;
 }
 
-/* WS event union — matches the contract in the task brief */
+export interface Surfaces {
+  sessions: number;
+  memory: number | null;
+  memory_revision?: number;
+  tools: number;
+  triggers: number | null;
+}
+
+export interface NetEntry { what: string; ts: string }
+
+export type QuietSpan = '30m' | '1h' | 'tomorrow';
+
+export interface ProposalSettings {
+  /** proposals are silenced until this moment (ms since the epoch), null when they are on. */
+  quietUntil: number | null;
+  quiet: QuietSpan | null;
+  ctx: { game: boolean; call: boolean; video: boolean };
+}
+
+export interface GeneralSettings {
+  autostart: boolean | null;
+  closeToTray: boolean;
+  voiceMuted: boolean;
+  wakeSound: boolean;
+  web: boolean;
+  weather: boolean;
+  screen: boolean;
+}
+
+/** the host keeps the conversation (FieldTranscript): it sends an item whenever one is added or changes, and the whole
+ *  list when the view connects or a session is opened. */
 export type ServerEvent =
-  | { type: 'state'; value: ConvState }
-  | { type: 'activity'; entry: ActivityEntry }
-  | {
-      type: 'surfaces';
-      sessions: number;
-      /** null before the first read and while the memory is off (it keeps what it holds). */
-      memory: number | null;
-      memory_revision?: number;
-      tools: number;
-    }
+  | { type: 'state'; value: HostState }
+  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean }
+  | { type: 'item'; item: ChatItem }
+  | { type: 'transcript'; items: ChatItem[] }
+  | ({ type: 'step'; phase: 'start' | 'end'; turn: string } & Step)
+  | ({ type: 'voice' } & VoiceStatus)
+  | { type: 'voice_partial'; text: string }
+  | { type: 'voice_wake' }
+  | ({ type: 'boot' } & BootPieces)
+  | ({ type: 'net' } & NetEntry)
+  | ({ type: 'surfaces' } & Surfaces)
   | { type: 'session'; id: string; label: string }
-  | { type: 'model'; info: ModelInfo | null }
-  | {
-      /** the shell's gate: the chat input is disabled until a turn is accepted. */
-      type: 'agent';
-      built: boolean;
-      ready: boolean;
-      /** the observed failure's code (the engine's or the last turn's), null when there is none */
-      failure?: string | null;
-      /** a risky call waits for the person's Sí or No */
-      pendingConfirmation?: boolean;
-    }
-  /** wipe the activity log everywhere — fired by POST /log/clear. */
+  | { type: 'context'; activity: 'free' | 'game' | 'call' | 'video' | 'away' }
   | { type: 'log_clear' };

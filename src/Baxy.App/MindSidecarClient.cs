@@ -64,7 +64,9 @@ internal sealed record MindVoiceStatus(
     bool Available,
     bool InputAvailable,
     bool SttAvailable,
-    bool Pending);
+    bool Pending,
+    bool? WakeAvailable = null,
+    bool? SpeechAvailable = null);
 
 /// <summary>
 /// Reads the voice state again while the sidecar still reports it as
@@ -134,6 +136,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     private bool _disposed;
 
     public bool IsReady => _ready && _sidecar?.Process is { HasExited: false };
+
+    /// <summary>The mind's process while it runs (the rail reads the memory the model takes).</summary>
+    public int? ProcessId => _sidecar?.Process is { HasExited: false } process ? process.Id : null;
 
     /// <summary>Why the last catalog handshake found the model down, or null.</summary>
     internal MindStartupFailure? LastStartupFailure { get; private set; }
@@ -407,6 +412,38 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             cancellationToken);
 
     /// <summary>A new conversation: the model forgets the session's turns.</summary>
+    /// <summary>The session's conversation as the mind holds it (calls and results included), or null.</summary>
+    public async Task<JsonArray?> SessionExportAsync(CancellationToken cancellationToken)
+    {
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "session.export" },
+            TurnRequestTimeout,
+            cancellationToken).ConfigureAwait(false);
+        return reply is not null && (string?)reply["type"] == "session.exported" && reply["conversation"] is JsonArray conversation
+            ? (JsonArray)conversation.DeepClone()
+            : null;
+    }
+
+    /// <summary>Gives the mind a kept session's conversation back, exactly as it was exported.</summary>
+    public async Task<bool> SessionLoadAsync(JsonArray conversation, CancellationToken cancellationToken)
+    {
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "session.load", ["conversation"] = conversation.DeepClone() },
+            TurnRequestTimeout,
+            cancellationToken).ConfigureAwait(false);
+        return reply is not null && (string?)reply["type"] == "session.ready";
+    }
+
+    /// <summary>Push-to-talk let go: the direct request being heard ends now.</summary>
+    public async Task<bool> VoiceReleaseAsync(TimeSpan timeout, CancellationToken cancellationToken)
+    {
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "voice.release" },
+            timeout,
+            cancellationToken).ConfigureAwait(false);
+        return reply is not null && (string?)reply["type"] == "voice.released";
+    }
+
     public async Task<bool> NewSessionAsync(CancellationToken cancellationToken)
     {
         JsonObject? reply = await RequestAsync(
@@ -503,7 +540,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             (bool?)status["available"] ?? false,
             (bool?)status["input"] ?? false,
             (bool?)status["stt"] ?? false,
-            (bool?)status["pending"] ?? false);
+            (bool?)status["pending"] ?? false,
+            (bool?)status["wake"],
+            (bool?)status["tts"]);
     }
 
     public async Task<bool> VoiceSpeakAsync(
