@@ -19,7 +19,7 @@ namespace Baxy.Providers.Windows.Tests;
 public sealed class R24ClienteEnFrioListoPorInteraccionTests
 {
     private static readonly ClientFocus Composer = new("Edit", "Message @Ana", true, "42.7.1");
-    private static readonly ClientFocus SearchInput = new("Edit", "Quick switcher", true, "42.9.3");
+    private static readonly ClientFocus SearchInput = new("Edit", "Quick switcher", true, "42.9.3", InDialog: true);
     private static readonly ClientFocus Button = new("Button", "Settings", false, "42.2.2");
 
     private static Func<CancellationToken, ValueTask<ClientInteraction>> Script(params ClientInteraction[] reads)
@@ -159,14 +159,15 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     }
 
     // Revisión 1, caso (b): a cold client whose focus was on a panel (or nowhere) mounts and focuses the composer by
-    // itself while the shortcut does nothing yet. The focus alone cannot tell it from a search input, so the
-    // composer's picture decides: changed (the name is there as a draft) or unreadable keeps the possible effect.
+    // itself while the shortcut does nothing yet. Ronda final 28: a composer, outside any dialog, is never taken for
+    // the search; and a composer whose picture changed (the name is there as a draft) or is unreadable keeps the
+    // possible effect.
     [TestCase(false)]
     [TestCase(true)]
     public void AComposerFocusedByItselfIsNotSaidUntouchedWhenItsPictureChanged(bool beforeOnAPanel)
     {
         ClientFocus? before = beforeOnAPanel ? Button : null;
-        Assert.That(WindowsDesktopMessagingAutomation.ShortcutOpenedInput(before, Composer), Is.True);
+        Assert.That(WindowsDesktopMessagingAutomation.ShortcutOpenedInput(before, Composer), Is.False);
         bool untouched = WindowsDesktopMessagingAutomation.ComposerUntouched(
             WindowsDesktopMessagingAutomation.InputWait.Opened, composerChanged: true);
         DesktopRecipientObservation observation = WindowsDesktopMessagingAutomation.UnverifiedChat(42, 7, untouched);
@@ -224,7 +225,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
 
     // Revisión 2 de r24, bloqueante 1: a web client's search keeps the keys in its input but UI Automation reports the
     // focus on the active result row (aria-activedescendant). A newly focused row is the search open.
-    private static readonly ClientFocus ActiveRow = new("ListItem", "Ron92", false, "42.9.8");
+    private static readonly ClientFocus ActiveRow = new("ListItem", "Ron92", false, "42.9.8", InDialog: true);
 
     [Test]
     public async Task AnActiveResultRowThatTakesTheFocusIsTheOpenedSearch()
@@ -280,17 +281,29 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         });
     }
 
-    // Ronda final 27 (regla 3): a search already open (the focus on its active row) is not toggled shut by Ctrl+K; a
-    // composer or a field holding the focus is no open search.
+    // Ronda final 28 (regla 3): a focus inside a dialog (the switcher already open, on its field or its active row)
+    // sends no key; a channel or message row, or the composer, outside any dialog, is no open switcher. After the
+    // shortcut only a new focus inside a dialog is the switcher: the composer that takes the focus when Ctrl+K closed
+    // an open switcher is not, and neither are the rows of Discord's own lists.
     [Test]
-    public void ASearchWhoseRowHoldsTheFocusIsAlreadyOpen()
+    public void OnlyAFocusInsideADialogIsTheSwitcher()
     {
+        var composer = new ClientFocus("Edit", "Mensaje @Ana", true, "7.2");
+        var channelRow = new ClientFocus("TreeItem", "general", false, "7.4");
+        var switcherField = new ClientFocus("Edit", "Buscador", true, "9.1", InDialog: true);
+        var switcherRow = new ClientFocus("ListItem", "Ana", false, "9.2", InDialog: true);
         Assert.Multiple(() =>
         {
-            Assert.That(WindowsDesktopMessagingAutomation.SearchAlreadyOpen(new ClientFocus("ListItem", "Ana", false, "7.1")), Is.True);
-            Assert.That(WindowsDesktopMessagingAutomation.SearchAlreadyOpen(new ClientFocus("Edit", "Mensaje", true, "7.2")), Is.False);
-            Assert.That(WindowsDesktopMessagingAutomation.SearchAlreadyOpen(new ClientFocus("Button", "Llamar", false, "7.3")), Is.False);
-            Assert.That(WindowsDesktopMessagingAutomation.SearchAlreadyOpen(null), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchStateUnknown(switcherRow), Is.True);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchStateUnknown(switcherField), Is.True);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchStateUnknown(channelRow), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchStateUnknown(composer), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.SearchStateUnknown(null), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.ShortcutOpenedInput(composer, switcherField), Is.True);
+            Assert.That(WindowsDesktopMessagingAutomation.ShortcutOpenedInput(channelRow, switcherRow), Is.True);
+            Assert.That(WindowsDesktopMessagingAutomation.ShortcutOpenedInput(switcherField, composer), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.ShortcutOpenedInput(composer, channelRow), Is.False);
+            Assert.That(WindowsDesktopMessagingAutomation.ShortcutOpenedInput(null, composer), Is.False);
         });
     }
 
@@ -451,7 +464,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     public async Task TheProbeAsksTheWorkerOnlyOnceItIsUpAndReadsItsAnswer()
     {
         var worker = new ScriptedWorker(
-            """{"ok":true,"error":"","content":true,"focused":{"kind":"Edit","name":"Quick switcher","editable":true,"id":"42.9.3"}}""");
+            """{"ok":true,"error":"","content":true,"focused":{"kind":"Edit","name":"Quick switcher","editable":true,"id":"42.9.3","dialog":true}}""");
         var probe = new UiaClientInteractionProbe(worker);
         probe.Prewarm();
         ClientInteraction read = ClientInteraction.Unanswered;

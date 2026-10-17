@@ -6,9 +6,10 @@ namespace Baxy.Providers.Windows.External;
 
 /// <summary>
 /// The element of a client's window that holds the keyboard focus, as UI Automation reads it: its control type, its
-/// name, whether text typed now would go into it, and its runtime id (two reads of the same field share it).
+/// name, whether text typed now would go into it, its runtime id (two reads of the same field share it), and whether
+/// it sits inside a dialog of the window's page (ronda final 28: a web client's quick switcher is one).
 /// </summary>
-internal sealed record ClientFocus(string Kind, string Name, bool Editable, string Id);
+internal sealed record ClientFocus(string Kind, string Name, bool Editable, string Id, bool InDialog = false);
 
 /// <summary>
 /// One read-only look at a client's window (ronda 24, «cliente en frío listo por interacción»): Answered is false
@@ -98,7 +99,8 @@ internal sealed class UiaClientInteractionProbe : IClientInteractionProbe
                 Text(focus, "kind"),
                 Text(focus, "name"),
                 focus.TryGetProperty("editable", out JsonElement editable) && editable.ValueKind == JsonValueKind.True,
-                Text(focus, "id"));
+                Text(focus, "id"),
+                focus.TryGetProperty("dialog", out JsonElement dialog) && dialog.ValueKind == JsonValueKind.True);
         }
 
         return new ClientInteraction(true, shown, focused);
@@ -141,24 +143,23 @@ internal sealed partial class WindowsDesktopMessagingAutomation
 
     /// <summary>
     /// A shortcut opened an input when, after it, an editable field of the window has the focus and it is not the
-    /// field that had it before (a conversation's composer keeps its id; the search input is a new one). With no
-    /// editable field before (a cold client's focus on a panel), a composer the window focuses by itself also passes:
-    /// this says where typing goes, not that it is a search, so the caller still checks the composer's picture
-    /// before saying nothing was written (revisión 1 de r24).
+    /// field that had it before (a conversation's composer keeps its id; the search input is a new one). Ronda final
+    /// 28 (regla 3): only a focus inside a dialog of the page is the switcher (with the switcher open before, Ctrl+K
+    /// closes it and the composer, a new field outside any dialog, takes the focus; a cold client's own composer is
+    /// no switcher either).
     /// </summary>
     internal static bool ShortcutOpenedInput(ClientFocus? before, ClientFocus? after) =>
-        after is not null
+        after is { InDialog: true }
         && (after.Editable
             ? before is null || !before.Editable || !SameElement(before, after)
             : SearchRowKinds.Contains(after.Kind, StringComparer.Ordinal) && (before is null || !SameElement(before, after)));
 
     /// <summary>
-    /// Ronda final 27 (regla 3): the search is already open when the focus, before any shortcut, is on a result row (the
-    /// way UI Automation reports a web client's open switcher, <see cref="SearchRowKinds"/>). Then Ctrl+K would close
-    /// it and send the focus back to the conversation's composer, where the name would be typed: it is not sent.
+    /// Ronda final 28 (regla 3): the focus, before any shortcut, sits inside a dialog of the page: the switcher already
+    /// open (its field or its active result) or another of the client's dialogs. Ctrl+K would close an open switcher
+    /// and the name would go to the conversation's composer: no key is sent.
     /// </summary>
-    internal static bool SearchAlreadyOpen(ClientFocus? focus) =>
-        focus is { Editable: false } row && SearchRowKinds.Contains(row.Kind, StringComparer.Ordinal);
+    internal static bool SearchStateUnknown(ClientFocus? focus) => focus is { InDialog: true };
 
     // Revisión 2 de r24: a search whose input points at its active result (aria-activedescendant in a web client)
     // is reported by UI Automation with the focus on that result row, not on the input (a4cfabc66: the quick
@@ -298,7 +299,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation
         while (true)
         {
             ClientInteraction now = await read(cancellationToken).ConfigureAwait(false);
-            if (now.Answered && now.Focused is { } focus && SearchRowKinds.Contains(focus.Kind, StringComparer.Ordinal))
+            // Ronda final 28 (regla 3): only a row inside the switcher's dialog is a result (not a message or a channel).
+            if (now.Answered && now.Focused is { InDialog: true } focus
+                && SearchRowKinds.Contains(focus.Kind, StringComparer.Ordinal))
             {
                 if (namesRecipient(focus.Name))
                 {

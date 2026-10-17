@@ -26,9 +26,9 @@ public sealed class TzDc2WorkerDelCoreTests
     private const string OtherChatComposer =
         """{"ok":true,"error":"","content":true,"focused":{"kind":"Edit","name":"Enviar mensaje a #general","editable":true,"id":"42.7.1"}}""";
     private const string SwitcherInput =
-        """{"ok":true,"error":"","content":true,"focused":{"kind":"Edit","name":"Quick switcher","editable":true,"id":"42.9.3"}}""";
+        """{"ok":true,"error":"","content":true,"focused":{"kind":"Edit","name":"Quick switcher","editable":true,"id":"42.9.3","dialog":true}}""";
     private const string RecipientRow =
-        """{"ok":true,"error":"","content":true,"focused":{"kind":"ListItem","name":"Ron92 .wolfsoultm.4191","editable":false,"id":"42.9.8"}}""";
+        """{"ok":true,"error":"","content":true,"focused":{"kind":"ListItem","name":"Ron92 .wolfsoultm.4191","editable":false,"id":"42.9.8","dialog":true}}""";
 
     private static readonly TimeSpan Poll = TimeSpan.FromMilliseconds(5);
 

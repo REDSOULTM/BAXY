@@ -16,9 +16,9 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class X1EnvioBusquedaTests
 {
-    private static readonly ClientFocus RecipientRow = new("ListItem", "Ron92 .wolfsoultm.4191", false, "42.9.8");
-    private static readonly ClientFocus RecentRow = new("ListItem", "general, Canal de texto, Servidor", false, "42.9.5");
-    private static readonly ClientFocus SearchInput = new("Edit", "Quick switcher", true, "42.9.3");
+    private static readonly ClientFocus RecipientRow = new("ListItem", "Ron92 .wolfsoultm.4191", false, "42.9.8", InDialog: true);
+    private static readonly ClientFocus RecentRow = new("ListItem", "general, Canal de texto, Servidor", false, "42.9.5", InDialog: true);
+    private static readonly ClientFocus SearchInput = new("Edit", "Quick switcher", true, "42.9.3", InDialog: true);
     private static readonly TimeSpan Poll = TimeSpan.FromMilliseconds(5);
     private static readonly TimeSpan Slack = TimeSpan.FromMilliseconds(15);
 

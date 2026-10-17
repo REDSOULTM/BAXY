@@ -3927,7 +3927,21 @@ function Do-Interaction($request){
       if($f.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp)){
         try { $editable=-not ([System.Windows.Automation.ValuePattern]$vp).Current.IsReadOnly } catch {}
       } elseif($kind -eq 'Edit'){ $editable=$true }
-      $focusedOut=@{ kind=$kind; name=[string]$f.Current.Name; editable=$editable; id=((@($f.GetRuntimeId()) | ForEach-Object { [string]$_ }) -join '.') }
+      # Ronda final 28 (regla 3): whether the focus sits inside a dialog of the window's page (Chromium exposes
+      # role=dialog as a UIA Window, ax_platform_node_win.cc: kDialog -> UIA_WindowControlTypeId), read up to the page
+      # (Document) or the window itself; a read that fails says no dialog.
+      $inDialog=$false
+      try {
+        $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
+        $topHandle=[int]$root.Current.NativeWindowHandle
+        $node=$walker.GetParent($f)
+        for($up=0;$up -lt 60 -and $null -ne $node;$up++){
+          if([int]$node.Current.NativeWindowHandle -eq $topHandle -or $node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Document){ break }
+          if($node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Window){ $inDialog=$true; break }
+          $node=$walker.GetParent($node)
+        }
+      } catch { $inDialog=$false }
+      $focusedOut=@{ kind=$kind; name=[string]$f.Current.Name; editable=$editable; id=((@($f.GetRuntimeId()) | ForEach-Object { [string]$_ }) -join '.'); dialog=$inDialog }
     }
   } catch { $focusedOut=$null }
   $content=$false

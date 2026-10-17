@@ -1200,27 +1200,36 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $w=$null;foreach($p in @(Get-Process -Name 'Discord' -ErrorAction SilentlyContinue)){if($p.MainWindowHandle -ne [IntPtr]::Zero){$w=[System.Windows.Automation.AutomationElement]::FromHandle($p.MainWindowHandle);break}}
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $h=[IntPtr]$w.Current.NativeWindowHandle;$clientPid=$w.Current.ProcessId;$wasMinimized=[BaxyClientWin]::IsIconic($h);if($wasMinimized){[void][BaxyClientWin]::ShowWindow($h,9)}
-        # The switcher's rows, as the switcher shows them: the list items of the nearest container of the focused
-        # switcher input, below the page itself (the document holds the conversation's own list items).
-        function Read-Items {
-          $r=@();$node=[System.Windows.Automation.AutomationElement]::FocusedElement
-          if($null -eq $node -or $node.Current.ProcessId -ne $clientPid){return ,$r}
-          # Auditoría final (regla 3): the switcher counts as read only with its rows found: a focused field holding the
-          # typed name may be the message box (a lost Ctrl+K), so no rows is the switcher not read, never «no channel».
-          $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
-          $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
-          while($null -ne $node -and $node.Current.ControlType -ne [System.Windows.Automation.ControlType]::Document -and $node.Current.NativeWindowHandle -ne $h.ToInt32()){
-            $found=$node.FindAll([System.Windows.Automation.TreeScope]::Descendants,$row)
-            if($found.Count -gt 0){$state.read=$true;foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}};break}
+        # Ronda final 28 (regla 3): the dialog of the page that holds an element (Chromium exposes role=dialog as a UIA
+        # Window, ax_platform_node_win.cc), read up to the page or the window itself; $null when it is in none. The
+        # quick switcher is such a dialog; the server, channel and message lists and the message box are in none.
+        function Dialog-Of($element) {
+          if($null -eq $element -or $element.Current.ProcessId -ne $clientPid){return $null}
+          $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker;$node=$walker.GetParent($element)
+          for($up=0;$up -lt 60 -and $null -ne $node;$up++){
+            if($node.Current.NativeWindowHandle -eq $h.ToInt32() -or $node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Document){return $null}
+            if($node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Window){return $node}
             $node=$walker.GetParent($node)
           }
+          $null
+        }
+        # The switcher's rows, as the switcher shows them: the list items inside the dialog that holds the focus (never
+        # the conversation's own list items outside it).
+        function Read-Items {
+          $r=@();$dialog=Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)
+          if($null -eq $dialog){return ,$r}
+          # Auditoría final (regla 3): the switcher counts as read only with its rows found: no rows is the switcher not
+          # read, never «no channel».
+          $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
+          $found=$dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants,$row)
+          if($found.Count -gt 0){$state.read=$true;foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}}
           ,$r
         }
         # The product and its console compete for the foreground while this runs; a lost focus can drop the
         # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
         # and confirming it held, until the switcher shows matches; nothing is joined or opened.
         # The script runs as a block (& { }): a function sets the flag through a table both share, never $script:.
-        $items=@();$foreground=$false;$state=@{read=$false;notOpened=$false}
+        $items=@();$foreground=$false;$state=@{read=$false;notOpened=$false;dialogFocus=$false}
         for($round=0;$round -lt 5 -and $items.Count -eq 0;$round++){
           [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
@@ -1233,18 +1242,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           # back to the person's message box).
           $focusBefore=[System.Windows.Automation.AutomationElement]::FocusedElement
           $idBefore=$(if($null -ne $focusBefore){[string]::Join('.',$focusBefore.GetRuntimeId())}else{''})
-          # An open switcher reports its active result row as the focus (ListItem, DataItem, TreeItem): then Ctrl+K
-          # would close it and send the focus back to the message box. Used as it is.
-          $rowKinds=@([System.Windows.Automation.ControlType]::ListItem,[System.Windows.Automation.ControlType]::DataItem,[System.Windows.Automation.ControlType]::TreeItem)
-          $alreadyOpen=$null -ne $focusBefore -and $focusBefore.Current.ProcessId -eq $clientPid -and $rowKinds -contains $focusBefore.Current.ControlType
-          if(-not $alreadyOpen){
-            [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
-            if([BaxyClientWin]::GetForegroundWindow() -ne $h){continue}
-            $focusNow=[System.Windows.Automation.AutomationElement]::FocusedElement
-            $newFocus=$null -ne $focusNow -and $focusNow.Current.ProcessId -eq $clientPid -and [string]::Join('.',$focusNow.GetRuntimeId()) -ne $idBefore
-            $switcherOpen=$newFocus -and ($focusNow.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit -or $rowKinds -contains $focusNow.Current.ControlType)
-            if(-not $switcherOpen){$state.notOpened=$true;continue}
-          }
+          # Ronda final 28 (regla 3): a focus inside a dialog may be the switcher already open (Ctrl+K would close it
+          # and the name would go to the message box): no key is sent. After Ctrl+K the switcher is open only with a
+          # new focus inside a dialog (the message box and the channel and message lists are in none).
+          if($null -ne (Dialog-Of $focusBefore)){$state.dialogFocus=$true;break}
+          [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
+          if([BaxyClientWin]::GetForegroundWindow() -ne $h){continue}
+          $focusNow=[System.Windows.Automation.AutomationElement]::FocusedElement
+          $newFocus=$null -ne $focusNow -and $focusNow.Current.ProcessId -eq $clientPid -and [string]::Join('.',$focusNow.GetRuntimeId()) -ne $idBefore
+          $switcherOpen=$newFocus -and $null -ne (Dialog-Of $focusNow)
+          if(-not $switcherOpen){$state.notOpened=$true;continue}
           [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
           for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
           # The switcher is closed only with Discord still in front (an Escape never reaches another window).
@@ -1255,6 +1262,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $leftShown=$false
         if($wasMinimized){[void][BaxyClientWin]::ShowWindow($h,7);Start-Sleep -Milliseconds 150;$leftShown=-not [BaxyClientWin]::IsIconic($h)}
         if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
+        if($state.dialogFocus -and -not $state.read){[pscustomobject]@{ok=$false;error='client_focus_in_a_dialog';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
         if($state.notOpened -and -not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_opened';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
         # Ronda final: the switcher never kept the front long enough to be read: nothing is said of its rows.
         if(-not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}

@@ -802,19 +802,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // that looks the same once the search is closed lets the turn say nothing was written (revisión 1 de r24:
             // a cold client can focus its composer by itself while the shortcut does nothing yet).
             byte[]? composerBefore = TryCaptureComposer(handle, channel);
-            // Ronda final 27 (regla 3): a search already open (its active row holds the focus) is used as it is: Ctrl+K
-            // would close it and the name would go into the person's message box.
-            InputWait input;
-            if (SearchAlreadyOpen(before.Focused))
+            // Ronda final 28 (regla 3): a focus inside a dialog may be the switcher already open: no key is sent
+            // (Ctrl+K would close it and the name would reach the person's message box).
+            if (SearchStateUnknown(before.Focused))
             {
-                input = InputWait.Opened;
+                return UnverifiedChat(handle, processId, composerUntouched: true);
             }
-            else
-            {
-                SendChord(VirtualKeyControl, VirtualKeyK);
-                input = await AwaitOpenedInputAsync(
-                    Read, before, SearchInputBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
-            }
+
+            SendChord(VirtualKeyControl, VirtualKeyK);
+            InputWait input = await AwaitOpenedInputAsync(
+                Read, before, SearchInputBudget, InteractionPoll, cancellationToken).ConfigureAwait(false);
 
             if (AfterSearchWait(input, retried: false) == SearchStep.Retry)
             {
