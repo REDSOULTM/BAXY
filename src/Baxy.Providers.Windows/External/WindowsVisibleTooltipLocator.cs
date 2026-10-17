@@ -1057,6 +1057,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
         }
         // A remembered place is pressed only where the tree shows no control of its size with another name.
         long pressedAt = Environment.TickCount64;
+        object? roots = press?.WatchRoots(learned.Window);
         LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
             press, operation, learned.Window, learned.Screen.CenterX, learned.Screen.CenterY, learned.Label,
             null, null, cancellationToken, learned.ControlId,
@@ -1134,6 +1135,10 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
             writer.WriteString("authority", "tooltip_hover_locate_click_postread");
             writer.WriteEndObject();
         });
+        // Ronda final 21 (regla 3): a window of another process came with the press: its effect is uncertain, never
+        // «unchanged» (the model would press again).
+        if (!ok && !userActed && press?.AnotherWindowCame(roots) == true)
+            return ExternalJson.Failure(operation, "visible_click_handoff_uncertain", true);
         return ok
             ? ExternalJson.Success(operation, result, true)
             : ExternalJson.Failure(operation, userActed ? "input_user_interrupted"

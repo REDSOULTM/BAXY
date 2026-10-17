@@ -26,6 +26,12 @@ internal interface IVisibleControlLocator
 /// <summary>How a press at a point without the mouse went.</summary>
 internal enum PointPressOutcome
 {
+    /// <summary>
+    /// Ronda final 21 (seguridad, el cauce del incidente del 2026-10-15): the window the point is on is a protected one
+    /// (a system configuration tool, a developer's or BAXY's own window no look named): nothing was pressed.
+    /// </summary>
+    Protected,
+
     /// <summary>A control there was pressed (or a field there made the text's destination) by its way.</summary>
     Pressed,
 
@@ -80,6 +86,8 @@ internal sealed record PointPressed(
 
     internal static PointPressed HeldForConfirmation { get; } = new(PointPressOutcome.NeedsConfirmation);
 
+    internal static PointPressed InProtectedWindow { get; } = new(PointPressOutcome.Protected);
+
     internal static PointPressed AlreadyPressed { get; } = new(PointPressOutcome.AlreadyPressed);
 }
 
@@ -117,6 +125,16 @@ internal interface IPointPress
 {
     ValueTask<PointPressed> PressAtAsync(
         nint window, int screenX, int screenY, string label, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Ronda final 21 (regla 3): the desktop's root windows before a stage's press on <paramref name="window"/>, so a
+    /// window of another process that comes with it is not told «unchanged» (<see cref="AnotherWindowCame"/>); null
+    /// watches nothing.
+    /// </summary>
+    object? WatchRoots(nint window) => null;
+
+    /// <summary>A window of another process came since <paramref name="watch"/> (handed to, or of unproved cause).</summary>
+    bool AnotherWindowCame(object? watch) => false;
 
     /// <summary>
     /// The same for a control the caller already identified at the point (the tooltip stage, CONTRATO §8.2: a control
@@ -210,6 +228,12 @@ internal static class LocatedPointPress
         {
             return new Outcome(
                 ExternalJson.FailureBeforeEffect(operation, WindowsVisibleControlAdapter.NeedsConfirmation),
+                string.Empty, false, string.Empty, null);
+        }
+        if (pressed.Outcome == PointPressOutcome.Protected)
+        {
+            return new Outcome(
+                ExternalJson.FailureBeforeEffect(operation, "protected_window"),
                 string.Empty, false, string.Empty, null);
         }
         if (pressed.Outcome == PointPressOutcome.AlreadyPressed)
@@ -806,6 +830,21 @@ internal sealed class WindowsVisibleControlAdapter
     /// </summary>
     internal Func<nint, VisibleControlSurface.RootSnapshot>? RootWindows { get; init; }
 
+    /// <summary>
+    /// Ronda final 21 (seguridad, el cauce del incidente del 2026-10-15): the provider's gate judges the window an act
+    /// names or the one in front, and this adapter acts, without a window named, in the application just opened, the
+    /// window of the last look or the one a control's identity belongs to. Every act of it is judged again on the window
+    /// it resolved, right before it is sent (<see cref="VisibleControlSurface.ActRefused"/>); null (the test seams that
+    /// name none) judges nothing.
+    /// </summary>
+    internal Func<nint, bool>? ActRefused { get; init; }
+
+    private bool Refuses(nint window) => window != 0 && ActRefused?.Invoke(window) == true;
+
+    // A worker answer for an act refused before it is sent: nothing reached the window.
+    private static JsonDocument RefusedAnswer() =>
+        JsonDocument.Parse("{\"ok\":false,\"effectObserved\":false,\"error\":\"protected_window\"}");
+
     /// <summary>The window a click handed its effect to, as its receipt names it
     /// (<see cref="VisibleControlSurface.DescribeHanded"/>).</summary>
     internal Func<VisibleControlSurface.RootWindow, VisibleControlSurface.HandedWindow?> DescribeHanded { get; init; } =
@@ -833,6 +872,7 @@ internal sealed class WindowsVisibleControlAdapter
             tooltip: new WindowsVisibleTooltipLocator(worker))
     {
         RootWindows = VisibleControlSurface.RootWindowsNow;
+        ActRefused = VisibleControlSurface.ActRefused;
         BurstLease = ForegroundLease.Shared;
     }
 
@@ -2116,6 +2156,9 @@ internal sealed class WindowsVisibleControlAdapter
         // (live v3-21: «add the command line column» answered as a missing label). Only the view marked it before.
         if (_elevated(hwnd))
             return ExternalJson.FailureBeforeEffect(operation, ElevatedCode(hwnd));
+        // Ronda final 21 (seguridad): judged on the window resolved, not only on the one the provider's gate saw.
+        if (Refuses(hwnd))
+            return ExternalJson.FailureBeforeEffect(operation, "protected_window");
         _lookedWindow = hwnd;
 
         return await PressUiaAsync(operation, label, controlId, hwnd, effectBoundary, cancellationToken, manner)
@@ -2138,6 +2181,8 @@ internal sealed class WindowsVisibleControlAdapter
     {
         if (window == 0 || !VisibleControlSurface.IsAlive(window))
             return ExternalJson.FailureBeforeEffect(operation, "visible_click_argument_invalid");
+        if (Refuses(window))
+            return ExternalJson.FailureBeforeEffect(operation, "protected_window");
         if (controlId is null)
             return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
         if (BurstLease is not { } lease || TypeInWindow is null)
@@ -2234,7 +2279,7 @@ internal sealed class WindowsVisibleControlAdapter
         CancellationToken cancellationToken)
     {
         if (namedWindow == 0 || opener is not { } shownBy || BurstLease is not { } reopenLease
-            || !VisibleControlSurface.IsAlive(shownBy.Window) || _elevated(shownBy.Window)
+            || !VisibleControlSurface.IsAlive(shownBy.Window) || _elevated(shownBy.Window) || Refuses(shownBy.Window)
             || !ReopensShownItem(pressed.ErrorCode, label, controlId, namedWindow,
                 shownBy.Window, shownBy.Id, shownBy.NamesBefore, VisibleControlSurface.IsAlive(namedWindow),
                 namedWindow == shownBy.Window ? [] : PopupsOf(shownBy.Window), (shownBy.NamesBefore as OpenerNames)?.Described))
@@ -2584,6 +2629,9 @@ internal sealed class WindowsVisibleControlAdapter
     {
         if (window == 0)
             return PointPressed.NothingThere;
+        // Ronda final 21 (seguridad): neither by its way nor by the pointer.
+        if (Refuses(window))
+            return PointPressed.InProtectedWindow;
         var request = new JsonObject
         {
             ["cmd"] = "at",
@@ -2854,6 +2902,13 @@ internal sealed class WindowsVisibleControlAdapter
             return null;
         }
     }
+
+    /// <inheritdoc/>
+    public object? WatchRoots(nint window) => RootsBefore(window);
+
+    /// <inheritdoc/>
+    public bool AnotherWindowCame(object? watch) =>
+        watch is HandoffWatch roots && (Handed(roots) is not null || ArrivedUncaused(roots));
 
     // Ronda final 20: a window of another process that came now without proof the click caused it (or no watch: false).
     private bool ArrivedUncaused(HandoffWatch? watch)
@@ -3166,7 +3221,7 @@ internal sealed class WindowsVisibleControlAdapter
         string? text,
         bool replace,
         CancellationToken cancellationToken) =>
-        _worker.SendAsync(
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
             new JsonObject
             {
                 ["cmd"] = "field",
@@ -3185,7 +3240,7 @@ internal sealed class WindowsVisibleControlAdapter
         string controlId,
         string text,
         CancellationToken cancellationToken) =>
-        _worker.SendAsync(
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
             new JsonObject
             {
                 ["cmd"] = "field",
@@ -3203,7 +3258,7 @@ internal sealed class WindowsVisibleControlAdapter
         nint window,
         string controlId,
         CancellationToken cancellationToken) =>
-        _worker.SendAsync(
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
             new JsonObject
             {
                 ["cmd"] = "focus",
@@ -3221,7 +3276,7 @@ internal sealed class WindowsVisibleControlAdapter
         string direction,
         int pages,
         CancellationToken cancellationToken) =>
-        _worker.SendAsync(
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
             new JsonObject
             {
                 ["cmd"] = "reveal",
@@ -3243,7 +3298,7 @@ internal sealed class WindowsVisibleControlAdapter
         string direction,
         int amount,
         CancellationToken cancellationToken) =>
-        _worker.SendAsync(
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
             new JsonObject
             {
                 ["cmd"] = "scroll",

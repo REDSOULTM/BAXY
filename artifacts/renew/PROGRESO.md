@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 34 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 20, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 35 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 21, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -628,6 +628,22 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     incompleta» en vez de «se cortó por tiempo», el bundle de ORIGIN.md, «todo lo hallado se arregló» precisado.
     B pendientes en metas (b_r20_*). Descripciones cambiadas desde ff863b47f, por diff de claves: 34 y 8 entradas de
     argumentos. Suites, con el arreglo del incidente del 2026-10-15 (sección propia, abajo): 564/69/477/2180. Sin medir.
+  - Ronda final 21 (sobre f496949ec, alcance fijo y A/B): A en el notebook 2 (más una B subida) y en el PC 3+1+3+4,
+    muchas la misma. Arregladas: el arreglo del incidente tenía un hueco (la barrera del proveedor juzgaba la ventana
+    del frente o la que el acto nombraba, y el clic sin ventana actúa en la app recién abierta o en la de la última
+    mirada): ahora el adaptador vuelve a juzgar la ventana que resolvió justo antes de cada envío (árbol, punto de las
+    etapas, búsqueda, reapertura, campo, foco, revelado y desplazamiento), y la barrera mira también el proceso que la
+    vista nombra (Seguridad de Windows es una app empaquetada en el marco de ApplicationFrameHost y no quedaba
+    protegida); una herramienta del sistema se rechaza aunque su ventana se hubiera nombrado antes; la descripción de
+    input.visible.click dice dónde actúa sin ventana y que nunca en una protegida. El OCR, el globo de ayuda y la visión
+    vigilan, como el árbol, una ventana de otro proceso que llega con la pulsación (visible_click_handoff_uncertain).
+    game.launch vuelve a mostrar, sin activarlas, las ventanas de Steam que minimizó para su diálogo, y el recibo lo
+    dice. memory.correct encuentra el recuerdo como memory.recall (tildes plegadas), no «no encontrado». El panel y el
+    contador de memoria dicen «desactivada» o «—», nunca 0 sin leer (interfaz reconstruida, ORIGIN.md al día). El
+    informe del incidente tenía dos hechos falsos («Aceptar» en p3, que no se encontró; msconfig «protegida», que nunca
+    lo fue), corregidos. B: optionalfeatures protegido, «puede haber» desactivados sin listar, cifras del banco de
+    desarrollo precisadas; B pendientes b_r21_*. Descripciones cambiadas desde ff863b47f, por diff de claves: 35 y 8
+    entradas de argumentos. Suites: 564/69/477/2181. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -726,7 +742,7 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
 
 - Decisión (decision2, 268 medidos): 230, 229 y 232 (media 230,3; p50 medio 0,847 s). Control en la misma GPU,
   d20-base de 7a4030054 (mente y catálogo iguales a ff863b47f salvo una línea de tool_descriptions): 231, 234 y 230
-  (media 231,7; p50 0,846 s). Diferencia -1,4, dentro del ruido (±3). Frente a la base medida en la GPU del PC
+  (media 231,67; p50 0,846 s). Diferencia -1,33 (230,33 frente a 231,67), dentro del ruido (±3). Frente a la base medida en la GPU del PC
   (232, 232, 232): -1,7.
 - E2E de práctica (30 casos, producto compilado de c7699f276): 19, 19 y 19 (media 19,0) frente a 19, 20 y 19 de la
   base (media 19,3): dentro de ±1 caso, así que no hubo bisect. Primera respuesta p50 3887, 2883 y 3925 ms (media
@@ -750,20 +766,21 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
 - Qué pasó: en el e2e de práctica del PC del 15/10 (F:/BAXYeval/renew_v1/runs/p6-e2e, turno 15 «abre la configuración
   de sonido»), BAXY abrió la Configuración del sistema (msconfig), pulsó «Servicios», «Deshabilitar todos» y «Aceptar»
   sin pedir confirmación. El registro System guarda 256 eventos 7040 «a deshabilitado» del 15/10 a las 14:38. El cambio
-  se hizo efectivo en el siguiente arranque: el 17/10 a las 00:38 el PC se reinició de golpe (un cierre inesperado,
-  evento 6008) y arrancó sin red, sin sonido y sin casi nada. El dueño lo restauró con msconfig a las 01:17 (evento
+  se hizo efectivo en el siguiente arranque: el 17/10 a las 00:38:47 el PC se cerró de golpe (evento 6008; según el
+  dueño, por un proceso que lanzó él, no por este cambio) y al arrancar, a las 01:12, lo hizo sin red, sin sonido y sin
+  casi nada, por los servicios deshabilitados. El dueño lo restauró con msconfig a las 01:17 (evento
   1074, msconfig.exe; los 7040 de vuelta a su inicio normal); la clave MSConfig\services quedó vacía.
 - El mismo caso llevó a BAXY a msconfig en otras cuatro corridas (p1, p3, p5 y p8): en p3 y p5 llegó a la pestaña
-  «Servicios» y en p3 pulsó «Cerrar» y «Aceptar»; sólo p6 pulsó «Deshabilitar todos». Ninguna sesión ni subagente de
+  «Servicios» y en p3 pulsó «Cerrar» (su «Aceptar» no se encontró); sólo p6 pulsó «Deshabilitar todos». Ninguna sesión ni subagente de
   este goal ejecutó comandos de msconfig, bcdedit o servicios: fue el producto, dentro de un banco.
 - Por qué pasó: el riesgo de un clic se juzgaba sólo por su etiqueta, y «Deshabilitar todos» no estaba entre los verbos
-  que piden el «sí»; y una ventana protegida se abría a los actos cuando una mirada la nombraba por su aplicación, que
-  es lo que hizo el modelo con «Configuración del sistema».
+  que piden el «sí»; y msconfig no estaba entre las ventanas protegidas (la lista sólo tenía editores, terminales,
+  consolas y BAXY). Lo único que podía frenarlo era la UIPI de Windows, que en el PC no lo hizo.
 - Arreglo (kernel: riesgo y confirmación; proveedor: su barrera de seguridad «Seguridad v2», nunca una ayuda a
   entender): las herramientas que configuran Windows (msconfig, la consola MMC con services.msc, devmgmt, compmgmt,
   gpedit, taskschd, eventvwr, diskmgmt y lusrmgr, el editor del registro, el Administrador de tareas, el Monitor de
   recursos, las propiedades del sistema, el control de cuentas, netplwiz, Restaurar sistema, el Liberador de espacio,
-  Optimizar unidades, iSCSI, ODBC y Seguridad de Windows) quedan protegidas siempre, como la ventana de BAXY: se pueden abrir y mirar, nunca
+  Optimizar unidades, iSCSI, ODBC, características de Windows y Seguridad de Windows) quedan protegidas siempre, como la ventana de BAXY: se pueden abrir y mirar, nunca
   pulsar ni escribir en ellas, y la vista lo dice («herramienta de configuración del sistema: lo hace la persona»).
   «Deshabilitar todos», «Desactivar todo» y «Disable all» piden el «sí» en cualquier aplicación.
 - El e2e de desarrollo del notebook de la noche del 16/10 corrió el mismo caso tres veces: se le pidió revisar su

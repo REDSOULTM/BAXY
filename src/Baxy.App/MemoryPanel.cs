@@ -34,8 +34,9 @@ internal sealed class MemoryPanel
         _protector = protector ?? throw new ArgumentNullException(nameof(protector));
     }
 
-    /// <summary>The number of entries the store held when it was last read (0 before the first read).</summary>
-    internal int Count { get; private set; }
+    /// <summary>The number of entries the store held when it was last read; null before the first read and while the
+    /// memory is off (ronda final 21, regla 3: an off memory keeps what it holds, so it is never told as «0»).</summary>
+    internal int? Count { get; private set; }
 
     internal async Task<FieldHttpResponse> HandleAsync(
         string method,
@@ -149,9 +150,10 @@ internal sealed class MemoryPanel
             }, cancellationToken);
             if (error == "memory_disabled")
             {
-                // Off by default for privacy: an empty memory, never an error, and viewing it never switches it on.
-                Count = 0;
-                return (new JsonObject { ["enabled"] = false, ["total"] = 0, ["items"] = items }, null);
+                // Off by default for privacy: never an error, and viewing it never switches it on. Ronda final 21
+                // (regla 3): an off memory is not an empty one (memory.disable deletes nothing): no count is told.
+                Count = null;
+                return (new JsonObject { ["enabled"] = false, ["total"] = null, ["items"] = items }, null);
             }
 
             if (error is not null)

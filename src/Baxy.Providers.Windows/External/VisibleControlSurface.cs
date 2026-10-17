@@ -528,7 +528,7 @@ internal static partial class VisibleControlSurface
         "msconfig", "mmc", "regedit", "regedt32", "Taskmgr", "resmon", "SystemPropertiesAdvanced",
         "SystemPropertiesComputerName", "SystemPropertiesDataExecutionPrevention", "SystemPropertiesHardware",
         "SystemPropertiesPerformance", "SystemPropertiesProtection", "SystemPropertiesRemote",
-        "UserAccountControlSettings", "netplwiz", "rstrui", "cleanmgr", "dfrgui", "iscsicpl", "odbcad32",
+        "UserAccountControlSettings", "netplwiz", "rstrui", "cleanmgr", "dfrgui", "iscsicpl", "odbcad32", "optionalfeatures",
         // Windows Security: its switches turn the machine's protection off (the notebook's p2 run of 2026-10-15 pressed
         // «Configuración» in it twice for the same request).
         "SecHealthUI",
@@ -582,7 +582,14 @@ internal static partial class VisibleControlSurface
     internal static bool ActRefused(nint window)
     {
         nint root = window == 0 ? 0 : GetAncestor(window, 2);
-        return root != 0 && ProtectedFrom(WindowProcess(root).ProcessName, null) && !NamedProtectedRoots.ContainsKey(root);
+        if (root == 0)
+            return false;
+        string process = WindowProcess(root).ProcessName;
+        // Ronda final 21: a system configuration tool is refused even on a handle a named look once opened to acts, and
+        // judged by the process a view names too (a packaged app's, as Windows Security's SecHealthUI, hosted in the
+        // ApplicationFrameHost frame whose own process is the frame's).
+        return SystemTool(process) || SystemTool(ViewProcess(root).ProcessName)
+            || (ProtectedFrom(process, null) && !NamedProtectedRoots.ContainsKey(root));
     }
 
     /// <summary>The window an act without a window of its own reaches: the one in front.</summary>

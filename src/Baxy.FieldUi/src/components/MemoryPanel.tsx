@@ -30,14 +30,17 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const [total, setTotal] = useState(0);
+  // an off memory keeps what it holds: it is said off, never empty.
+  const [off, setOff] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
       setLoading(true);
       const r = await fetch('/memory');
       if (!r.ok) { setErr(`error del servidor ${r.status}`); return; }
-      const data = (await r.json()) as { items?: MemoryItem[]; error?: string; total?: number };
+      const data = (await r.json()) as { items?: MemoryItem[]; error?: string; total?: number | null; enabled?: boolean };
       if (data.error) setErr(data.error); else setErr(null);
+      setOff(data.enabled === false);
       setItems(data.items ?? []);
       setTotal(data.total ?? (data.items ?? []).length);
     } catch (e) {
@@ -57,8 +60,9 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
         const r = await fetch('/memory');
         if (cancelled) return;
         if (!r.ok) { setErr(`error del servidor ${r.status}`); return; }
-        const data = (await r.json()) as { items?: MemoryItem[]; error?: string; total?: number };
+        const data = (await r.json()) as { items?: MemoryItem[]; error?: string; total?: number | null; enabled?: boolean };
         if (data.error) setErr(data.error);
+        setOff(data.enabled === false);
         setItems(data.items ?? []);
         setTotal(data.total ?? (data.items ?? []).length);
       } catch (e) {
@@ -129,7 +133,9 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
         {loading && <div className="muted" style={{ padding: 14 }}>cargando la memoria…</div>}
         {!loading && items.length === 0 && (
           <div className="muted" style={{ padding: 14 }}>
-            {err ? `error · ${err}` : 'memoria vacía · se guarda desde el chat'}
+            {err ? `error · ${err}`
+              : off ? 'memoria desactivada · lo guardado no se borra; actívala para verlo'
+              : 'memoria vacía · se guarda desde el chat'}
           </div>
         )}
         {items.map((it) => {

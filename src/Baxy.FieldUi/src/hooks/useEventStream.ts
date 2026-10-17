@@ -3,7 +3,7 @@ import type { ServerEvent, ActivityEntry, ConvState, ModelInfo } from '../types'
 
 export interface SurfacesCount {
   sessions: number;
-  memory: number;
+  memory: number | null; // null: not read yet, or the memory is off (it keeps what it holds)
   // Encargo I2: the number of the store's last change by chat; an open memory panel reads its list again on it.
   memory_revision?: number;
   tools: number;

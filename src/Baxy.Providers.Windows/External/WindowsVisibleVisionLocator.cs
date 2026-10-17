@@ -101,6 +101,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             bool animated = await VisibleControlSurface.ForegroundAnimatesAsync(baseline, cancellationToken).ConfigureAwait(false);
             // Auditoría final (regla 3): the person's touch counts from before the press is sent.
             long pressedAt = Environment.TickCount64;
+            object? roots = press?.WatchRoots(before.Hwnd);
             LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
                 press, operation, before.Hwnd, screenX, screenY, label, before, null, cancellationToken)
                 .ConfigureAwait(false);
@@ -168,6 +169,10 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 writer.WriteString("authority", "configured_vision_locate_click_postread");
                 writer.WriteEndObject();
             });
+            // Ronda final 21 (regla 3): a window of another process came with the press: its effect is uncertain, never
+            // «unchanged» (the model would press again).
+            if (!ok && !userActed && press?.AnotherWindowCame(roots) == true)
+                return ExternalJson.Failure(operation, "visible_click_handoff_uncertain", true);
             return ok
                 ? ExternalJson.Success(operation, result, true)
                 : ExternalJson.Failure(operation, userActed ? "input_user_interrupted"

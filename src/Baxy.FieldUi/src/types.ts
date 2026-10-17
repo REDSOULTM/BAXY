@@ -42,7 +42,8 @@ export type ServerEvent =
   | {
       type: 'surfaces';
       sessions: number;
-      memory: number;
+      /** null before the first read and while the memory is off (it keeps what it holds). */
+      memory: number | null;
       memory_revision?: number;
       tools: number;
     }

@@ -129,7 +129,7 @@ internal static class ScreenViewProjection
         // Ronda final 20 (regla 3): disabled controls the look did not list are not controls that do not exist.
         if ((bool?)view["disabledCut"] == true)
         {
-            text.Append("(hay controles desactivados sin listar)\n");
+            text.Append("(puede haber controles desactivados sin listar)\n");
         }
 
         // What the reader said about its own reading.

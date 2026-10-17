@@ -787,6 +787,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 operation, "steam_launch_dispatch_rejected", dispatch.EffectObserved);
         }
         string installRoot = Path.GetFullPath(game.InstallDirectory);
+        // Ronda final 21 (regla 3): the Steam windows the launch minimized (so its dialog opens apart from the library)
+        // are shown again, without taking the front, whatever the launch's end; the receipt says how many.
+        try
+        {
         for (int observation = 0; observation <= LaunchObservationIntervals; observation++)
         {
             int? processId = FindLaunchedProcess(before, installRoot);
@@ -797,6 +801,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                     writer.WriteStartObject(); writer.WriteNumber("version", 1);
                     writer.WriteString("appId", appId); writer.WriteString("name", game.Name);
                     writer.WriteNumber("processId", processId.Value);
+                    if (dispatch.VisibleSteamWindowsBefore is { Count: > 0 } minimized)
+                        writer.WriteNumber("steamWindowsMinimizedAndShownAgain", minimized.Count);
                     writer.WriteString("authority", "steam_manifest_process_postread"); writer.WriteEndObject();
                 });
                 return ExternalJson.Success(operation, result, effectObserved: true);
@@ -815,6 +821,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             }
         }
         return ExternalJson.Failure(operation, "steam_launch_process_not_verified", effectObserved: true);
+        }
+        finally
+        {
+            _automation.ShowAgain(dispatch);
+        }
     }
 
     private HashSet<int> ReadProcessIds()
@@ -1041,10 +1052,25 @@ internal interface ISteamClientAutomation
         SteamDispatchResult dispatch,
         IReadOnlyList<string> labels,
         CancellationToken cancellationToken);
+
+    /// <summary>Ronda final 21: shows again, without activating them, the Steam windows <paramref name="dispatch"/>
+    /// minimized that are still minimized.</summary>
+    void ShowAgain(SteamDispatchResult dispatch)
+    {
+    }
 }
 
 internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomation
 {
+    public void ShowAgain(SteamDispatchResult dispatch)
+    {
+        foreach (nint window in dispatch.VisibleSteamWindowsBefore ?? new HashSet<nint>())
+        {
+            if (IsIconic(window))
+                _ = ShowWindow(window, 4);
+        }
+    }
+
     // How long the dialog an act's address opens is waited for, and from which look a Steam window in front counts as
     // the one it is drawn on (measured 2026-10-11 on redpc: the dialog was up within a second; Steam on screen draws it
     // over its main window and takes the front, Steam minimized opens it as a window of its own).

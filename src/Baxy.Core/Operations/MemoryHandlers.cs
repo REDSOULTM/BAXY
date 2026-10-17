@@ -490,7 +490,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         RequireVersion(payload);
         string selector = RequiredString(payload, "selector");
         string newValue = CanonicalScalar(RequiredProperty(payload, "value"));
-        string normalizedSelector = NormalizeSelectorForComparison(selector);
+        _ = NormalizeSelectorForComparison(selector);
         ValidateMemoryValue(newValue);
         string? expectedValue = payload.TryGetProperty("expectedValue", out JsonElement expected)
             ? CanonicalScalar(expected)
@@ -505,17 +505,16 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             : null;
 
         _ = _store.BeginSession(new MemoryBeginSessionRequest(opened.SessionId));
-        MemoryRecord[] exact = _store.Recall(new MemoryRecallRequest(
+        // Ronda final 21 (regla 3): the record is found as memory.recall and memory.forget find it (the store's own
+        // comparison, accents folded), never «not found» for one recall shows; the retention said only narrows several.
+        MemoryRecord[] found = [.. _store.Recall(new MemoryRecallRequest(
                 selector,
                 opened.SessionId,
                 LocalMemoryStore.MaximumRecallResults))
-            .Records
-            .Where(record => string.Equals(
-                    record.Selector,
-                    normalizedSelector,
-                    StringComparison.Ordinal)
-                && record.Retention == retention)
-            .ToArray();
+            .Records];
+        MemoryRecord[] exact = found.Length > 1 && found.Any(record => record.Retention == retention)
+            ? [.. found.Where(record => record.Retention == retention)]
+            : found;
         if (exact.Length == 0)
         {
             throw new MemoryNotFoundException();
@@ -533,7 +532,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         DateTimeOffset now = _timeProvider.GetUtcNow().ToUniversalTime();
         MemoryCorrectResult result = _store.Correct(new MemoryCorrectRequest(
             invocation.InvocationId,
-            selector,
+            current.Selector,
             newValue,
             ExpectedRevision: current.Revision,
             ExpectedValue: expectedValue,

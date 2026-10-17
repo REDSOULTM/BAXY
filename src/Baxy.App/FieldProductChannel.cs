@@ -245,7 +245,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (route == "/memory" || route.StartsWith("/memory/", StringComparison.Ordinal))
         {
-            int before = _memory.Count;
+            int? before = _memory.Count;
             FieldHttpResponse memory = await _memory.HandleAsync(method, route, body, _lifetimeCancellation)
                 .ConfigureAwait(true);
             if (_memory.Count != before)
@@ -260,7 +260,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             return Json(new JsonObject
             {
-                // The tools the model is offered (the count the surface shows), as the mind receives them.
+                // The tools the model is offered (the count the surface shows), with the catalog's own short
+                // descriptions (ronda final 21: the mind reads its English ones, tool_descriptions.en.v1.json).
                 ["items"] = new JsonArray([.. ProductCatalog.ToolDescriptors.Select(static descriptor =>
                 {
                     Baxy.Contracts.OperationDescriptor tool = ProductCatalog.CreateToolDescriptor(new OperationDefinition(descriptor));

@@ -53,7 +53,8 @@ export function ActivityPanel({
   }, [entries.length]);
 
   // surface counts arrive pre-merged from App (WS event ?? /surfaces poll).
-  const surfaceCount = (id: SurfaceId): string => (surfaces ? String(surfaces[id]) : '—');
+  // a count not read (or a memory switched off) is '—', never 0.
+  const surfaceCount = (id: SurfaceId): string => (surfaces && surfaces[id] != null ? String(surfaces[id]) : '—');
   const entryCount = entries.length;
   const sessionId = session?.id ?? 'none';
 

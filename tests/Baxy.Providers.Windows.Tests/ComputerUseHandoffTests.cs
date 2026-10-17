@@ -140,6 +140,33 @@ public sealed class ComputerUseHandoffTests
         });
     }
 
+    // Ronda final 21 (seguridad, el cauce del incidente del 2026-10-15): the adapter judges the window it resolved, not
+    // only the one the provider's gate saw: a click on a protected window (a system configuration tool) sends nothing
+    // to the worker, and neither does the point a later stage would press there.
+    [Test]
+    public async Task AClickOnAProtectedWindowSendsNothing()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(PendingClick, UnchangedControl);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, timing: Fast, capture: SameImage)
+        {
+            PopupsOf = window => [],
+            ActRefused = window => window == PanelWindow,
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("{\"label\":\"Servicios\",\"window\":4660}"), CancellationToken.None);
+        PointPressed point = await adapter.PressAtAsync(PanelWindow, 10, 10, "Aceptar", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
+            Assert.That(receipt.EffectMayHaveOccurred || receipt.EffectObserved, Is.False);
+            Assert.That(worker.Commands.Where(command => command.Contains("\"cmd\":\"click\"")
+                || command.Contains("\"cmd\":\"at\"")), Is.Empty);
+            Assert.That(point.Outcome, Is.EqualTo(PointPressOutcome.Protected));
+        });
+    }
+
     private sealed class KeyPause : IUserInputPause
     {
         internal long Reaching { get; set; }
