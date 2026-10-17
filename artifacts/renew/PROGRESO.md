@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 25 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 27 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -571,7 +571,8 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     known_backup_nothing_readable si encontró archivos que no pudo copiar, y «vacío» sólo si no encontró nada; metas:
     el límite viejo de 3887 ms marcado (v1), limpieza de código muerto pendiente con la auditoría; el latido retiene
     browser.page.read y browser.tabs.list (pueden arrancar el navegador propio delante); message.draft dice cómo elige
-    chat Discord; filesystem.known.trash.named dice que también manda carpetas enteras. Suites: 564/69/477/2171. Sin medir.
+    chat Discord; filesystem.known.trash.named dice que también manda carpetas enteras (con ellas, 27 descripciones y 6
+    entradas de argumentos cambiadas desde ff863b47f, por diff de claves). Suites: 564/69/477/2171. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
