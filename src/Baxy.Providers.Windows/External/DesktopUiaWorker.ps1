@@ -1889,6 +1889,10 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       if($chosenUnmoved){ return @{ method=$ways[-1]; ways=$ways; selectable=$choosing; placeMoved=$false } }
       if($choosing -and $ways.Count -gt 0){ return @{ method=$ways[-1]; ways=$ways; selectable=$choosing; placeBefore=$unproved } }
     } elseif($method -eq 'pointer'){
+      # Ronda final 35 (regla 3): la superficie de render tenia otra cosa de la pagina en el punto (una capa encima): el
+      # puntero caeria en esa capa, asi que nada se envia (como la barra de herramientas tapada). Las vias sin puntero
+      # (el patron propio del control) ya se probaron antes.
+      if($renderStep -eq 'other'){ return @{ method='covered' } }
       $point=Get-PressPoint $el
       if($null -eq $point){ return $null }
       return @{ method='pointer'; point=$point; rect=(Get-CurrentRect $el); legacyStep=$legacyStep; renderStep=$renderStep }

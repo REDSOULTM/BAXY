@@ -116,10 +116,11 @@ public sealed class ComputerUseChromiumClickTests
             "pointer||post-failed|0|2@332:154/11216",
             // Counter-case: no render surface: as before.
             "pointer|||0|",
-            // Review finding 1: something else is at the point (a list drawn over the field): nothing is posted.
-            "pointer||other|0|",
+            // Review finding 1: something else is at the point (a list drawn over the field): nothing is posted. Ronda final
+            // 35 (regla 3): nor by the pointer, which would land on that layer: covered, before any effect.
+            "covered|||0|",
             // A control of the same box with another name is not the field either.
-            "pointer||other|0|",
+            "covered|||0|",
             // The page answers nothing at the point: nothing is posted blind.
             "pointer||nohit|0|",
             // A surface Windows scales: a posted point would land elsewhere.

@@ -212,7 +212,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 python,
                 Path.GetDirectoryName(python)!,
                 arguments: ["-X", "utf8", "-m", "baxy_mind"],
-                environment: environment));
+                environment: environment,
+                allowBreakaway: false));
             _sidecar = sidecar;
             _pumpCancellation = new CancellationTokenSource();
             var helloCompletion = new TaskCompletionSource<JsonObject>(

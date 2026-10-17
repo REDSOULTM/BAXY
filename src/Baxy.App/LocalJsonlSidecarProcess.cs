@@ -17,7 +17,8 @@ internal sealed class LocalJsonlSidecarDefinition
         string workingDirectory,
         IReadOnlyList<string>? arguments = null,
         IReadOnlyDictionary<string, string>? environment = null,
-        bool drainStandardError = true)
+        bool drainStandardError = true,
+        bool allowBreakaway = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(executablePath);
@@ -41,6 +42,7 @@ internal sealed class LocalJsonlSidecarDefinition
             environment ?? new Dictionary<string, string>(),
             StringComparer.Ordinal);
         DrainStandardError = drainStandardError;
+        AllowBreakaway = allowBreakaway;
     }
 
     internal string Name { get; }
@@ -54,6 +56,13 @@ internal sealed class LocalJsonlSidecarDefinition
     internal IReadOnlyDictionary<string, string> Environment { get; }
 
     internal bool DrainStandardError { get; }
+
+    /// <summary>
+    /// Whether processes of the sidecar may leave its kill-on-close job (the Core's application launches must). Ronda
+    /// final 35 (regla 5): the mind's must not: its interpreter starts llama-server, and with a breakaway job above it the
+    /// venv launcher's silent breakaway would let that server (3.9 GB of VRAM) outlive BAXY.
+    /// </summary>
+    internal bool AllowBreakaway { get; }
 }
 
 internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
@@ -158,7 +167,7 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
                     $"No se pudo iniciar el sidecar local '{definition.Name}'.");
             }
 
-            job = WindowsKillOnCloseJob.CreateAndAssign(process);
+            job = WindowsKillOnCloseJob.CreateAndAssign(process, definition.AllowBreakaway);
             var sidecar = new LocalJsonlSidecarProcess(definition, process, job);
             job = null;
             return sidecar;
@@ -390,7 +399,7 @@ internal static class WindowsKillOnCloseJob
     private const uint KillOnJobClose = 0x00002000;
     private const int ExtendedLimitInformation = 9;
 
-    internal static SafeFileHandle CreateAndAssign(Process process)
+    internal static SafeFileHandle CreateAndAssign(Process process, bool allowBreakaway = true)
     {
         ArgumentNullException.ThrowIfNull(process);
         SafeFileHandle job = NativeMethods.CreateJobObject(IntPtr.Zero, null);
@@ -405,7 +414,7 @@ internal static class WindowsKillOnCloseJob
             {
                 // Trusted application launches may explicitly break away. Every
                 // sidecar process itself remains owned by this kill-on-close job.
-                LimitFlags = KillOnJobClose | BreakawayOk,
+                LimitFlags = allowBreakaway ? KillOnJobClose | BreakawayOk : KillOnJobClose,
             },
         };
         int size = Marshal.SizeOf<JobObjectExtendedLimitInformation>();
