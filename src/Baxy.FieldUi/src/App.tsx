@@ -487,6 +487,7 @@ export default function App() {
           <div className="col right">
             <ActivityPanel
               entries={stream.entries}
+              entriesSeen={stream.entriesSeen}
               session={stream.session}
               surfaces={liveSurfaces}
               activeSurface={activeSurface}

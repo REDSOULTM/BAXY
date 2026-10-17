@@ -187,7 +187,8 @@ internal sealed class Heartbeat : IAsyncDisposable
         }
 
         JsonObject pc = HeartbeatMoment.Machine(gpuBusy: null, connectivity: null);
-        if ((int?)pc["battery_pct"] is { } battery && (bool?)pc["plugged"] != true)
+        // Ronda final 40 (regla 3): only a charger read as unplugged warns (an unread one, ACLineStatus 255, is no news).
+        if ((int?)pc["battery_pct"] is { } battery && (bool?)pc["plugged"] == false)
         {
             foreach (int threshold in new[] { 20, 10 })
             {

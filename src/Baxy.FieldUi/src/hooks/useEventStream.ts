@@ -28,6 +28,8 @@ export interface EventStreamState {
   connected: boolean;
   convState: ConvState;
   entries: ActivityEntry[];
+  /** ronda final 40: every activity line received this session; entries keeps only the newest MAX_ENTRIES. */
+  entriesSeen: number;
   model: ModelInfo | null;
   surfaces: SurfacesCount | null;
   session: SessionInfo | null;
@@ -41,6 +43,7 @@ const INITIAL: EventStreamState = {
   connected: false,
   convState: 'idle',
   entries: [],
+  entriesSeen: 0,
   model: null,
   surfaces: null,
   session: null,
@@ -172,7 +175,7 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
     case 'activity': {
       // newest first; cap at MAX_ENTRIES to keep memory bounded
       const entries = [ev.entry, ...prev.entries].slice(0, MAX_ENTRIES);
-      return { ...prev, entries };
+      return { ...prev, entries, entriesSeen: prev.entriesSeen + 1 };
     }
     case 'model':
       return { ...prev, model: ev.info };
@@ -196,7 +199,7 @@ function reduce(prev: EventStreamState, ev: ServerEvent): EventStreamState {
         },
       };
     case 'log_clear':
-      return { ...prev, entries: [] };
+      return { ...prev, entries: [], entriesSeen: 0 };
     default:
       return prev;
   }

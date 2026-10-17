@@ -128,3 +128,13 @@ que decía de más: el latido sigue esperando el sí y el panel de memoria sigue
 - `dist/index.html`: `B4505CD551AF50D301CE2F3B0C6E357F520B6959A6C7F2DF963FCCB7FD76EA3A` (ronda final 25 de BAXY Renew: apunta al bundle nuevo)
 - `dist/assets/index-COQjHLMx.css`: sin cambios
 - `dist/assets/index-CyCfzHRV.js`: `8B8C4C720A8237DDEDAA7FFBE21E50E1FFF0161F83EDABFFF2AAD3BD2F6A55F3` (reconstruido en las rondas finales 21 a 25 de BAXY Renew: el panel de memoria, su pie y el contador dicen «desactivada» o «—» sin leer, mientras carga o tras una lectura fallida; un cambio hecho con su lista sin releer se dice hecho; y, en la 25, los botones Sí/No van bajo la pregunta más nueva)
+
+## Ronda final 40 de BAXY Renew (PC) de 2026-10-17
+
+El panel de actividad guarda las 80 líneas más nuevas y su cabecera decía «80 entries» como si fuera el total: ahora
+cuenta las recibidas en la sesión y, pasado el tope, dice «80 of N entries». Build deliberado `pnpm build` con el grafo
+fijado.
+
+- `dist/index.html`: `949D417241189CFB53542206E1CB8DF2C8663E99685A546D13D772B2C1FCA3D6` (apunta al bundle nuevo)
+- `dist/assets/index-COQjHLMx.css`: sin cambios
+- `dist/assets/index-CaampMEG.js`: `E4ABA773D9C51DA4C94D1DDFC1FE283E671F0AB83D93F6290583AEA27D66D0DF` (sustituye a `index-CyCfzHRV.js`)

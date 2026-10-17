@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 47 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 39, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 52 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 40, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -734,7 +734,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     cerrada con la medición del notebook; nueva B pendiente b_r28_voz_apagado_en_curso. b_r27_spotify_doble_pulsacion
     sigue en B (ver su tarea). Desde ff863b47f cambiaron 40 descripciones y 8 entradas de argumentos (la de la
     calculadora ya contaba). Suites: 564/69/477/2183. Sin medir.
-  - Ronda final 29 (sobre 3e29ee0d0; la tanda del PC sobre el arreglo de la 28.ª es ésta; el notebook no respondió): A en el PC
+  - Ronda final 29 (sobre 3e29ee0d0; la tanda del PC sobre el arreglo de la 28.ª es ésta; el notebook sólo mandó mente, A: SIN, a las 08:40, y paró el resto): A en el PC
     1+0+3+2, cuatro distintas, todas de la 28.ª o anteriores en client.channel.locate y en los informes. (1) Tras un
     Ctrl+K cuyo buscador se abría tarde, la ronda siguiente lo tomaba por un diálogo de la persona y decía «falló antes
     del efecto»: ahora la tecla se cuenta antes de mandarla (sent) y todo fallo posterior dice efecto posible
@@ -873,6 +873,21 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     decía que guarda 8 viñetas por diapositiva y hasta 12 diapositivas. Arregladas sólo en las descripciones. Así la
     ronda 39 no es limpia en el PC. Además, la lectura del Quick Switcher queda anotada como verificada en vivo
     (ronda 28). Nuevas B pendientes b_r39_*. Desde ff863b47f cambiaron 47 descripciones y 8 entradas de
+    argumentos. Suites: 564/69/477/2189. Sin medir.
+  - Ronda final 40 (sobre fbccd7397), con la vara estricta para las descripciones (cuenta como A una que promete
+    «all/every», un formato o calla un tope que el código impone, aunque el recibo sea honesto): notebook A 6 (la
+    cabecera «80 entries» del panel, que guarda sólo las 80 más nuevas; calendar.event.list y su tope de 200; file.find
+    y sus límites; web.download y sus 50 MB; shell.command.run, 60 s y los primeros 8.192 caracteres; schedule.alarms,
+    «every» con 20), proveedores sin A; PC A 2+0+0+1 (file.find promete el orden pero una búsqueda por contenido se corta
+    en limit antes de ordenar; el texto en español de la presentación que ve la persona; el código de error de la
+    presentación, que el kernel rechaza antes con invalid_arguments). Arregladas: la cabecera cuenta las líneas
+    recibidas y, pasado el tope, dice «80 of N entries» (dist reconstruido, hashes en ORIGIN.md); las descripciones en
+    inglés y los textos en español de esas operaciones, y de window.close.all y window.minimize.all, dicen sus topes y
+    lo que dejan fuera; memory.list y web.fetch también. B arregladas: calendar.event.list ordena por [Start] antes de
+    IncludeRecurrences, el orden que pide la documentación de Outlook (Items.IncludeRecurrences); client.channel.locate
+    acepta el ComboBox del buscador de Discord 1.0.9261 (la lectura del notebook) como campo con el nombre; el latido
+    sólo avisa de batería con el cargador leído como desenchufado; la entrada de la ronda 29 dice que el notebook mandó
+    su mente. Nuevas B pendientes b_r40_*. Desde ff863b47f cambiaron 52 descripciones y 8 entradas de
     argumentos. Suites: 564/69/477/2189. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):

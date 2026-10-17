@@ -259,7 +259,7 @@ public static class ProductCatalog
                 ["endUtc", "startUtc"]),
             OperationRisks.ReadOnly,
             "calendar.event.list.account.snapshot.v1",
-            "Lista eventos acotados desde una cuenta autenticada sin modificarlos."),
+            "Lista los eventos del calendario predeterminado de Outlook entre dos fechas, como mucho 200 (pasado el tope el resultado lo dice), sin modificarlos."),
         // Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a capture the person asks to
         // keep is also saved as a PNG in the known folder named («folder»; pictures: its screenshots subfolder), with
         // a dated name that never overwrites, read back against its hash. Without «folder» it stays private only.
@@ -356,7 +356,7 @@ public static class ProductCatalog
                 ["slides", "title"]),
             OperationRisks.LowReversible,
             "document.presentation.create.openxml.slidecount.postread.v1",
-            "Crea una presentación .pptx con el título dado y una diapositiva por entrada (primera línea título, las demás viñetas) en una carpeta conocida y verifica cuántas diapositivas tiene el paquete escrito."),
+            "Crea una presentación .pptx con el título dado y de 1 a 12 diapositivas, una por entrada (primera línea título, hasta 8 viñetas; las demás líneas se omiten y el resultado las cuenta) en una carpeta conocida y verifica cuántas diapositivas tiene el paquete escrito."),
         Descriptor(
             "email.latest.read",
             EmptySchema(),
@@ -433,7 +433,7 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.ReadOnly,
             "file.find.windows.known.name.content.bounded.v1",
-            "Lista el primer nivel de una carpeta conocida de Windows, o busca bajo ella archivos por nombre (parte del nombre o patrón con * y ?) o por un texto dentro de sus archivos de texto, de forma acotada y sin seguir puntos de reanálisis; devuelve cada archivo con su ruta relativa a la carpeta, nunca la absoluta; sin efecto."),
+            "Lista el primer nivel de una carpeta conocida de Windows, o busca bajo ella archivos por nombre (parte del nombre o patrón con * y ?) o por un texto dentro de sus archivos de texto, de forma acotada (hasta 12 niveles; por contenido, hasta 2000 archivos de texto de 1 MB; una búsqueda por contenido para en el límite de aciertos y sólo ordena esos) y sin seguir puntos de reanálisis; devuelve cada archivo con su ruta relativa a la carpeta, nunca la absoluta; sin efecto."),
         Descriptor(
             "file.open",
             Schema(
@@ -1728,7 +1728,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.WorkLoss,
             "window.close.all.desktop.postread.v1",
-            "Pide el cierre de todas las ventanas visibles del escritorio salvo las de BAXY, verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso."),
+            "Pide el cierre de todas las ventanas visibles de este escritorio salvo las de BAXY (las de otro escritorio virtual no se tocan y se cuentan), verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso."),
         Descriptor(
             "window.focus",
             WindowIdSchema(),
@@ -1752,7 +1752,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.LowReversible,
             "window.minimize.all.desktop.postread.v1",
-            "Minimiza todas las ventanas visibles del escritorio (salvo la propia) y comprueba que quedaron minimizadas; no cierra nada."),
+            "Minimiza todas las ventanas visibles de este escritorio (salvo la propia; las de otro escritorio virtual no se tocan y se cuentan) y comprueba que quedaron minimizadas; no cierra nada."),
         Descriptor(
             "window.move",
             Schema(

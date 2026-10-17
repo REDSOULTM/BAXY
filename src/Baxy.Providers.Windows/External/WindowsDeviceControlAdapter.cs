@@ -1228,7 +1228,11 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         function Field-Shows([string]$text) {
           $dialog=Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)
           if($null -eq $dialog){return $false}
-          $edit=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit)
+          # Ronda final 40: Discord 1.0.9261 gives its switcher's field as a ComboBox (the notebook's live read), so an Edit
+          # or a ComboBox holding the typed name both count.
+          $edit=New-Object System.Windows.Automation.OrCondition(
+            (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit)),
+            (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ComboBox)))
           foreach($e in $dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants,$edit)){
             $vp=$null
             if($e.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp)){

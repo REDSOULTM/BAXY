@@ -20,6 +20,8 @@ const SURFACES: SurfaceCard[] = [
 
 interface Props {
   entries: ActivityEntry[];
+  /** every line received this session; above the kept ones, the header says how many it shows of them */
+  entriesSeen: number;
   session: SessionInfo | null;
   surfaces: SurfacesCount | null;
   activeSurface: SurfaceId;
@@ -35,7 +37,7 @@ interface Props {
 }
 
 export function ActivityPanel({
-  entries, session, surfaces, activeSurface, onSurface, clock,
+  entries, entriesSeen, session, surfaces, activeSurface, onSurface, clock,
   settingsOpen, onSettings, onNewSession, onHelp, pendingConfirmation,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -57,7 +59,8 @@ export function ActivityPanel({
   // surface counts arrive pre-merged from App (WS event ?? /surfaces poll).
   // a count not read (or a memory switched off) is '—', never 0.
   const surfaceCount = (id: SurfaceId): string => (surfaces && surfaces[id] != null ? String(surfaces[id]) : '—');
-  const entryCount = entries.length;
+  // ronda final 40: only the newest lines are kept; past that, the header says it shows the last N of all, not a total.
+  const entryCount = entries.length < entriesSeen ? `${entries.length} of ${entriesSeen}` : String(entries.length);
   const sessionId = session?.id ?? 'none';
 
   return (

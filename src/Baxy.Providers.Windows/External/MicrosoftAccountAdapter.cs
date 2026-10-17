@@ -22,8 +22,9 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           $end=[DateTimeOffset]::Parse($input.endUtc).UtcDateTime
           if($input.action -eq 'list') {
             # Auditoría final (regla 3): an appointment whose fields could not be read is counted, never dropped, and a
-            # list cut at 200 says so.
-            $events=@();$unread=0;$truncated=$false;$items=$calendar.Items;$items.IncludeRecurrences=$true;$items.Sort('[Start]')
+            # list cut at 200 says so. Ronda final 40: sorted by [Start] before IncludeRecurrences and then restricted, the
+            # order Outlook's Items.IncludeRecurrences documentation requires for recurring appointments to be expanded.
+            $events=@();$unread=0;$truncated=$false;$items=$calendar.Items;$items.Sort('[Start]');$items.IncludeRecurrences=$true
             $filter="[Start] < '"+$end.ToLocalTime().ToString('g')+"' AND [End] > '"+$start.ToLocalTime().ToString('g')+"'"
             $restricted=$items.Restrict($filter)
             foreach($item in $restricted) {
