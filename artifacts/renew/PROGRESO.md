@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 45 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 38, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 47 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 39, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -727,8 +727,9 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     UIA_WindowControlTypeId); con el foco ya dentro de un diálogo antes del atajo no se manda ninguna tecla
     (client_focus_in_a_dialog en client.channel.locate; en message.draft, recipient_not_opened sin efecto); tras Ctrl+K
     sólo un foco nuevo dentro de un diálogo es el buscador; las filas leídas son sólo las de ese diálogo. Que el Quick
-    Switcher de Discord se exponga así no está verificado en un Discord real (el del dueño no se toca): si no lo hace,
-    las dos operaciones se niegan sin escribir nada, y el e2e lo diría. B: calculator.expression.evaluate dice que en un
+    Switcher de Discord se exponga así quedó verificado en vivo el 2026-10-17 a las 08:38 en el Discord 1.0.9261 del
+    notebook, con permiso del dueño (buzón, [NB] 08:38): tras Ctrl+K el foco es el ComboBox «Cambio Rápido» dentro de un
+    Window «diálogo» por debajo del Document; las filas del árbol y el Edit «Buscar» de la página no tienen Window. B: calculator.expression.evaluate dice que en un
     conversor o en el cálculo de fechas sale calculator_button_not_found (sin pulsar nada); b_r26_restaurar_maximizada
     cerrada con la medición del notebook; nueva B pendiente b_r28_voz_apagado_en_curso. b_r27_spotify_doble_pulsacion
     sigue en B (ver su tarea). Desde ff863b47f cambiaron 40 descripciones y 8 entradas de argumentos (la de la
@@ -864,6 +865,15 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     entraba en el job de ayudantes: sólo el de mensajería; ahora también el de ocr.read y el extractor de PDF de
     file.read. Además, PROGRESO dice ya que mind.py cambió en la ronda 37 (_outcome). Nuevas B pendientes: ninguna.
     Desde ff863b47f cambiaron 45 descripciones y 8 entradas de argumentos. Suites: 564/69/477/2189. Sin medir.
+  - Ronda final 39 (sobre 069c180e2): el notebook volvió (esperaba la respuesta del dueño sobre su Discord) y
+    salió con A = 0 en sus cuatro focos (buzón, [NB] 08:41-08:42); el PC, A 2+0+0+0. Los auditores del PC dieron cero A,
+    pero el de la mente anotó como B dos descripciones que prometen más de lo que hace el código, la misma clase que las
+    rondas 31 y 33 contaron como A, y la sesión líder las sube a A: window.close.all (y window.minimize.all) decían
+    «todas las ventanas» y no tocan las de otro escritorio virtual (cloakedWindows), y document.presentation.create no
+    decía que guarda 8 viñetas por diapositiva y hasta 12 diapositivas. Arregladas sólo en las descripciones. Así la
+    ronda 39 no es limpia en el PC. Además, la lectura del Quick Switcher queda anotada como verificada en vivo
+    (ronda 28). Nuevas B pendientes b_r39_*. Desde ff863b47f cambiaron 47 descripciones y 8 entradas de
+    argumentos. Suites: 564/69/477/2189. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
