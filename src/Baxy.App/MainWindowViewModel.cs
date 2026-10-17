@@ -58,6 +58,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _turnExecutionActive;
     private long _turnTraceSequence;
     private bool _isPowered = true;
+    private string? _quietProposal;
     private string _beatActivity = string.Empty;
     private MindVoiceStatus? _voicePieces;
     private DateTimeOffset _mindStartedAt = DateTimeOffset.UtcNow;
@@ -81,7 +82,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     bool quiet = _beatActive && !_beatSpeaks;
                     AddMessageCore("BAXY", text, isUser: false, route, speak: !quiet,
                         silent: quiet ? SilentBecause(_beatActivity) : null);
-                    if (_beatActive && quiet)
+                    if (_beatActive && quiet && route == PublicResponseRoute.Confirmation)
+                    {
+                        // A proposal asked while the person should not be spoken to: its question becomes a Windows
+                        // notification with Sí / No once the call it asks about is known (ConfirmationAsked).
+                        _quietProposal = text;
+                    }
+                    else if (_beatActive && quiet)
                     {
                         NotificationRequested?.Invoke(text);
                     }
@@ -103,7 +110,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 },
                 StepCompleted = step => StepCompleted?.Invoke(step),
                 StepStarted = (id, operation, arguments) => StepStarted?.Invoke(id, operation, arguments),
-                ConfirmationAsked = asked => ConfirmationAsked?.Invoke(asked, _beatActive ? _beatActivity : null),
+                ConfirmationAsked = asked =>
+                {
+                    ConfirmationAsked?.Invoke(asked, _beatActive ? _beatActivity : null);
+                    if (asked.Proposal && _quietProposal is { } question)
+                    {
+                        _quietProposal = null;
+                        ProposalNotificationRequested?.Invoke(question, SilentBecause(_beatActivity));
+                    }
+                },
                 ConfirmationResolved = outcome => ConfirmationResolved?.Invoke(outcome),
                 Refuse = Settings.Refusal,
                 MemoryChanged = () => MemoryChanged?.Invoke(),
@@ -121,6 +136,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal event Action<NativeTurnConfirmation, string?>? ConfirmationAsked;
 
     internal event Action<string>? ConfirmationResolved;
+
+    /// <summary>A heartbeat's proposal for a person who should not be spoken to: the model's question and why it is
+    /// not said aloud (the Windows notification with Sí / No).</summary>
+    internal event Action<string, string>? ProposalNotificationRequested;
 
     /// <summary>What the ear has heard of the request so far (live captions); it starts nothing.</summary>
     internal event Action<string>? VoicePartial;

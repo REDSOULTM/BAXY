@@ -228,6 +228,7 @@ La vista `src/Baxy.FieldUi` es ahora el rediseño v4, conectado a datos reales (
   pantalla, «no me interrumpas», silencio), triggers = `schedule.alarms`, temperatura por D3DKMT y memoria de la
   mente y su llama-server (`WindowsModelResourceReader`), transcripción en vivo y soltar-para-hablar en `voice.py`.
 - **Aceptación:** `scripts/test_field_ui.ps1` (Playwright por CDP contra la app real): 17/17 el 2026-10-17.
-- **Pendiente:** notificación de Windows con botones Sí/No para propuestas (hoy sale la notificación de la bandeja,
-  sólo texto); adjuntar archivos (sin contrato tipado); mostrar datos sensibles (el almacén no los devuelve); el token
+- **Propuestas en silencio:** notificación de Windows con Sí/No (`ProposalToast`, AUMID en HKCU); no se probó con un
+  clic real (sin acceso a la pantalla); si Windows la rechaza sale la de la bandeja.
+- **Pendiente:** adjuntar archivos (sin contrato tipado); mostrar datos sensibles (el almacén no los devuelve); el token
   de confirmación del kernel vence a los 2 min, no a los 10 del diseño (la tarjeta muestra el plazo real).

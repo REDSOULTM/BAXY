@@ -8,6 +8,7 @@ internal sealed class PresenceHost : IDisposable
     private readonly WindowsAutostartRegistration _autostart;
     private PresenceTrayIcon? _tray;
     private Heartbeat? _heartbeat;
+    private ProposalToast? _toast;
     private MainWindow? _window;
     private MainWindowViewModel? _viewModel;
     private bool _exitRequested;
@@ -50,6 +51,17 @@ internal sealed class PresenceHost : IDisposable
         _viewModel = viewModel;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         _viewModel.NotificationRequested += text => _tray?.Notify(text);
+        MainWindowViewModel answering = viewModel;
+        _toast = new ProposalToast(approve => window.Dispatcher.InvokeAsync(() => answering.AnswerConfirmationAsync(
+            approve, System.Diagnostics.Stopwatch.GetTimestamp(), CancellationToken.None)));
+        _viewModel.ProposalNotificationRequested += (question, why) =>
+        {
+            if (_toast?.Show(question, why) != true)
+            {
+                _tray?.Notify(question);
+            }
+        };
+        _viewModel.ConfirmationResolved += _ => _toast?.Hide();
         if (Heartbeat.Enabled && _heartbeat is null)
         {
             MainWindowViewModel beating = viewModel;
