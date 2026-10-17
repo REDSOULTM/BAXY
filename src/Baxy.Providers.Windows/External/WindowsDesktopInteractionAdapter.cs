@@ -532,10 +532,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // nowhere: UI Automation puts the focus there (the window is in front now) and re-reads it.
             if (window != 0 && _delivery is not null && UnfocusedField(_delivery.Messages.Identity(window)) is string field)
             {
+                // Ronda final 17 (regla 3): the focus was asked of the window: it may have moved, an effect either way.
                 if (!await FocusedAsync(window, field, cancellationToken).ConfigureAwait(false))
-                    return ExternalJson.FailureBeforeEffect(operation, "input_field_not_focused");
+                    return ExternalJson.FailureAfterEffect(operation, "input_field_not_focused");
                 if (!_keyboard.Holds(window))
-                    return ExternalJson.FailureBeforeEffect(operation, "input_window_changed");
+                    return ExternalJson.FailureAfterEffect(operation, "input_window_changed");
                 focusAt = field;
             }
 

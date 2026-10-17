@@ -579,6 +579,14 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     es efecto posible; el backup sin nada copiado no dice «vacío» (known_backup_nothing_copied); descripciones de
     backup.known.create (qué se omite y cuándo hay contadores) y capture.* (pictures va a Screenshots); con ellas, 29
     descripciones y 6 entradas de argumentos cambiadas desde ff863b47f, por diff de claves. Suites: 564/69/477/2171. Sin medir.
+  - Ronda final 17: una copia de pantalla toda negra (ventana con afinidad de pantalla, sesión bloqueada, UAC) no es una
+    captura ni prueba un clic (capture_frame_black); la ventana de BAXY no dice «lista» sin la mente y la cabecera no da
+    el modelo por cargado antes de que la mente lo esté; código muerto de la bandeja quitado; Netflix: sin el texto
+    «matched» muerto, una ficha sin id se dice (netflix_card_without_video_id) en vez de pulsarse en bucle; Disney: la
+    pantalla de perfil o PIN se dice, «buscó» sólo con texto escrito o fichas leídas; los dos dicen *_player_not_started
+    y no «no encontrado» tras abrir el título; SelectAll y el foco pedido son efecto posible; el español de
+    streaming.play.named dice cómo se verifica en cada navegador; W18 y W19 de web.search, abiertos como estaban.
+    Suites: 564/69/477/2172. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

@@ -114,6 +114,9 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
     internal static bool IsBlack(ScreenshotFrame frame)
     {
         ReadOnlySpan<byte> pixels = frame.BgraBottomUp;
+        // A frame with no pixels is not a black one: it is invalid, and Validated says so.
+        if (pixels.Length < 4)
+            return false;
         for (int offset = 0; offset + 2 < pixels.Length; offset += 4)
         {
             if (pixels[offset] > 8 || pixels[offset + 1] > 8 || pixels[offset + 2] > 8)
@@ -239,7 +242,12 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
         Func<CaptureBounds>? readDesktopBounds = null)
     {
         _observeActiveWindow = observeActiveWindow;
-        _captureRegion = captureRegion;
+        // Ronda final 17 (regla 3): a screen copy all black is what BitBlt gives for content it may not read (a window
+        // with display affinity, a locked session, the secure desktop): never a picture of it, for a capture or for a
+        // click's read-back alike.
+        _captureRegion = bounds => captureRegion(bounds) is var frame && WindowsScreenshotProvider.IsBlack(frame)
+            ? throw new ScreenshotUnavailableException("capture_frame_black", "The screen copy came back black.")
+            : frame;
         _time = time;
         _setThreadDpiContext = setThreadDpiContext ?? SetThreadDpiAwarenessContext;
         _readDesktopBounds = readDesktopBounds ?? ReadDesktopBounds;

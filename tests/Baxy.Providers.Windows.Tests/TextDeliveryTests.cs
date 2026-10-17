@@ -454,7 +454,8 @@ public sealed class TextDeliveryTests
         });
     }
 
-    // Contracase: the focus did not reach the field (the worker said no, or did not answer): nothing is pressed.
+    // Contracase: the focus did not reach the field (the worker said no, or did not answer): nothing is pressed, and the
+    // focus asked is said as an effect that may have occurred.
     [TestCase("""{"ok":true,"error":"","focused":false}""")]
     [TestCase(null)]
     public async Task TheEnterWhoseFieldDidNotTakeTheFocusIsNotPressed(string? focusAnswer)
@@ -475,7 +476,8 @@ public sealed class TextDeliveryTests
         {
             Assert.That(enter.Verified, Is.False);
             Assert.That(enter.ErrorCode, Is.EqualTo("input_field_not_focused"));
-            Assert.That(enter.EffectMayHaveOccurred, Is.False);
+            // Ronda final 17: the focus was asked of the window: it may have moved (an effect), though no key went.
+            Assert.That(enter.EffectMayHaveOccurred, Is.True);
             Assert.That(keyboard.Chords, Is.Empty);
         });
     }

@@ -1348,7 +1348,7 @@ public static class ProductCatalog
                 ["service", "title"]),
             OperationRisks.ExternalCommunication,
             "streaming.play.named.netflix.cdp.video.progress.v1",
-            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica que el video avanza."),
+            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce."),
         Descriptor(
             "system.application.crash.diagnose",
             Schema(

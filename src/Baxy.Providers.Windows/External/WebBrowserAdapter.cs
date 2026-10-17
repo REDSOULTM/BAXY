@@ -2139,15 +2139,16 @@ internal class CdpBrowserSession : IDisposable
                 + "const hit=named.find(x=>fold(x.n)===wanted);"
                 + "if(hit){chosenName=hit.n;const id=(hit.a.getAttribute('href')||'').match(/jbv=(\\d+)/);"
                 + "if(id){chosenId=id[1];location.href='https://www.netflix.com/watch/'+id[1];action='watch_nav';}"
-                + "else{hit.a.click();action='result_clicked';}"
+                // Ronda final 17 (regla 3): a card named as asked without its video id cannot be followed to the
+                // player by it, so it is said, not pressed again and again.
+                + "else{action='card_without_id';}"
                 + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
                 + "if(cards.length&&still(cards)){"
                 + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,'no_exact','',named.map(x=>x.n).filter(n=>n).join('\\u001e')].join('\\u001f');}}"
                 // Ronda final 16 (regla 3): no generic «play» is pressed outside the card named as asked (it could be
                 // another title's preview); only the chosen card leads to the player.
                 + "const v=document.querySelector('video');if(v&&v.paused){v.play().catch(()=>{});}"
-                + "const matched=fold(document.title+' '+(document.body?.innerText||'')).includes(wanted);"
-                + "return [location.href,document.title,auth?'auth':'ok',matched?'matched':'unmatched',"
+                + "return [location.href,document.title,auth?'auth':'ok','unmatched',"
                 + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,chosenId,chosenName].join('\\u001f');})()",
                 cancellationToken,
                 userGesture: true).ConfigureAwait(false);
@@ -2161,6 +2162,9 @@ internal class CdpBrowserSession : IDisposable
             if (fields[7] == "profile")
                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
                     UserBrowserSurface.StreamingProfileChoice);
+            if (fields[7] == "card_without_id")
+                return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+                    "netflix_card_without_video_id");
             if (fields[7] == "no_exact")
                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
                     UserBrowserSurface.StreamingTitleNotFound, observed,
@@ -2177,8 +2181,6 @@ internal class CdpBrowserSession : IDisposable
                 CultureInfo.InvariantCulture, out double currentTime);
             // Lo que prueba que se abrió lo pedido es la ficha que se eligió —la que se
             // llama como el pedido—, no que la página del reproductor repita el nombre.
-            // Sin ficha elegida (navegación directa) se conserva la comprobación del
-            // texto.
             // Medido: la ficha de «Stranger Things» es la 80057281 y el reproductor
             // acaba en /watch/80077368, porque la primera es la serie y la segunda el
             // episodio al que Netflix redirige. Exigir que la URL lleve el id elegido
@@ -2200,7 +2202,10 @@ internal class CdpBrowserSession : IDisposable
                 failure = "netflix_video_progress_not_observed";
             }
         }
-        // Ronda final 16 (regla 3): a search page never reached is not a title not found.
+        // Ronda final 16-17 (regla 3): a search page never reached is not a title not found, and a title found and
+        // opened whose player never played is not one either.
+        if (failure == "netflix_title_or_play_control_not_found" && chosenId.Length > 0)
+            failure = "netflix_player_not_started";
         return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
             searched || failure != "netflix_title_or_play_control_not_found" ? failure : "netflix_search_not_reached",
             lastObserved + "|remembered=" + chosenId + "/" + chosenName);
@@ -2295,6 +2300,9 @@ internal class CdpBrowserSession : IDisposable
                 + "const hit=pick(named.filter(x=>isEntity(x.a)))||pick(named);"
                 + "if(hit)return hit;return still(cards)?named.map(x=>x.n).filter(n=>n):null;};"
                 + "const near=names=>[location.href,document.title,'ok',-1,'missing',0,'no_exact','',names.join('\\u001e'),'cards'].join('\\u001f');"
+                // Ronda final 17: la pantalla de perfil o de PIN la resuelve la persona; se para y se dice.
+                + "if(!auth&&(p.includes('/select-profile')||p.includes('/enter-pin')||p.includes('/profile-pin'))){"
+                + "return [location.href,document.title,'ok',-1,'missing',0,'profile','','','other'].join('\\u001f');}"
                 // La búsqueda: el cuadro se enfoca aquí y el texto lo escribe CDP
                 // (Input.insertText), porque el valor puesto por JS no dispara la
                 // búsqueda de la página.
@@ -2338,6 +2346,9 @@ internal class CdpBrowserSession : IDisposable
             if (fields[2] == "auth")
                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
                     "disney_authentication_required");
+            if (fields[6] == "profile")
+                return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+                    UserBrowserSurface.StreamingProfileChoice);
             if (fields[6] == "no_exact")
                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
                     UserBrowserSurface.StreamingTitleNotFound, observed,
@@ -2361,7 +2372,9 @@ internal class CdpBrowserSession : IDisposable
                 videoKey = fields[9];
                 baseline = null;
             }
-            if (fields[0].Contains("/browse/search", StringComparison.OrdinalIgnoreCase)) searched = true;
+            // Ronda final 17 (regla 3): «searched» only once the box held the text or result cards were read (the SPA
+            // shows /browse/search an instant before it reroutes to a profile screen).
+            if (fields[9] is "typed" or "cards" or "page") searched = true;
             bool ready = int.TryParse(fields[3], NumberStyles.Integer,
                 CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
             bool progressing = double.TryParse(fields[5], NumberStyles.Float,
@@ -2382,7 +2395,10 @@ internal class CdpBrowserSession : IDisposable
                 failure = "disney_video_progress_not_observed";
             }
         }
-        // Ronda final 16 (regla 3): a search page never reached (a profile screen, a PIN) is not a title not found.
+        // Ronda final 16-17 (regla 3): a search page never reached (a profile screen, a PIN) is not a title not found,
+        // and a title found and opened whose player never played is not one either.
+        if (failure == "disney_title_or_play_control_not_found" && chosenHref.Length > 0)
+            failure = "disney_player_not_started";
         return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
             searched || failure != "disney_title_or_play_control_not_found" ? failure : "disney_search_not_reached",
             lastObserved + "|remembered=" + chosenHref + "/" + chosenName);

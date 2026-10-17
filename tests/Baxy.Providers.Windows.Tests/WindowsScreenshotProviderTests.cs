@@ -128,7 +128,9 @@ public sealed class WindowsScreenshotProviderTests
         var platform = new GdiScreenshotPlatform(() => snapshot, bounds =>
         {
             capturedBounds = bounds;
-            return new ScreenshotFrame(bounds.Width, bounds.Height, new byte[bounds.Width * bounds.Height * 4]);
+            // A drawn window (ronda final 17: an all-black frame is refused as the picture of a protected window).
+            return new ScreenshotFrame(bounds.Width, bounds.Height,
+                Enumerable.Repeat((byte)128, bounds.Width * bounds.Height * 4).ToArray());
         }, time);
         var provider = new WindowsScreenshotProvider(temporary.Path, platform, time);
 
@@ -149,6 +151,28 @@ public sealed class WindowsScreenshotProviderTests
             Assert.That(result.CreatedAtUtc, Is.EqualTo(DateTimeOffset.UnixEpoch.AddSeconds(2)));
             Assert.That((result.Width, result.Height), Is.EqualTo((capturedBounds!.Width, capturedBounds.Height)));
             Assert.That(Directory.GetFiles(temporary.Path, "*.bmp"), Has.Length.EqualTo(1));
+        });
+    }
+
+    // Ronda final 17: the screen copy of a window with display affinity, a locked session or the secure desktop comes
+    // back all black; it is said, never stored as the capture.
+    [Test]
+    public void AnAllBlackFrameIsNeverStoredAsTheCapture()
+    {
+        using TemporaryDirectory temporary = new();
+        ActiveWindowSnapshot snapshot = Snapshot();
+        var time = new AdvancingTimeProvider();
+        var platform = new GdiScreenshotPlatform(() => snapshot,
+            bounds => new ScreenshotFrame(bounds.Width, bounds.Height, new byte[bounds.Width * bounds.Height * 4]), time);
+        var provider = new WindowsScreenshotProvider(temporary.Path, platform, time);
+
+        ScreenshotUnavailableException? refused = Assert.ThrowsAsync<ScreenshotUnavailableException>(
+            async () => await provider.CaptureActiveWindowAsync(CancellationToken.None));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused!.Code, Is.EqualTo("capture_frame_black"));
+            Assert.That(Directory.GetFiles(temporary.Path, "*.bmp"), Is.Empty);
         });
     }
 
@@ -178,7 +202,7 @@ public sealed class WindowsScreenshotProviderTests
         {
             Assert.That(observations, Is.EqualTo(1));
             copied = true;
-            return new ScreenshotFrame(bounds.Width, bounds.Height, new byte[bounds.Width * bounds.Height * 4]);
+            return new ScreenshotFrame(bounds.Width, bounds.Height, Lit(bounds.Width * bounds.Height * 4));
         }, new FixedTimeProvider());
         var provider = new WindowsScreenshotProvider(temporary.Path, platform, new FixedTimeProvider());
 
@@ -206,7 +230,7 @@ public sealed class WindowsScreenshotProviderTests
         var platform = new GdiScreenshotPlatform(() => parked, bounds =>
         {
             copies++;
-            return new ScreenshotFrame(bounds.Width, bounds.Height, new byte[bounds.Width * bounds.Height * 4]);
+            return new ScreenshotFrame(bounds.Width, bounds.Height, Lit(bounds.Width * bounds.Height * 4));
         }, new FixedTimeProvider());
         var provider = new WindowsScreenshotProvider(temporary.Path, platform, new FixedTimeProvider());
 
@@ -231,7 +255,7 @@ public sealed class WindowsScreenshotProviderTests
             ? throw new IOException("Process identity unavailable.") : Snapshot(), bounds =>
         {
             copies++;
-            return new ScreenshotFrame(bounds.Width, bounds.Height, new byte[bounds.Width * bounds.Height * 4]);
+            return new ScreenshotFrame(bounds.Width, bounds.Height, Lit(bounds.Width * bounds.Height * 4));
         }, new FixedTimeProvider());
         var provider = new WindowsScreenshotProvider(temporary.Path, platform, new FixedTimeProvider());
 
@@ -356,7 +380,7 @@ public sealed class WindowsScreenshotProviderTests
         using TemporaryDirectory temporary = new();
         var dpi = new FakeThreadDpiContext { RejectRestore = true };
         var platform = new GdiScreenshotPlatform(Snapshot,
-            bounds => new ScreenshotFrame(bounds.Width, bounds.Height, new byte[bounds.Width * bounds.Height * 4]),
+            bounds => new ScreenshotFrame(bounds.Width, bounds.Height, Lit(bounds.Width * bounds.Height * 4)),
             new FixedTimeProvider(), dpi.Set, () => Snapshot().DesktopBounds);
         var provider = new WindowsScreenshotProvider(temporary.Path, platform, new FixedTimeProvider());
 
@@ -417,4 +441,7 @@ public sealed class WindowsScreenshotProviderTests
         public string Path { get; }
         public void Dispose() { if (Directory.Exists(Path)) Directory.Delete(Path, recursive: true); }
     }
+
+    // A drawn frame (ronda final 17: an all-black one is refused as the screen copy of what could not be read).
+    private static byte[] Lit(int length) => Enumerable.Repeat((byte)128, length).ToArray();
 }

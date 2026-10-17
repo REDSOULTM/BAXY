@@ -200,14 +200,15 @@ internal sealed class WindowsTextDelivery
             if (!Same(identity))
                 return new FieldDelivery("em_replacesel", false, false, "input_window_changed", fieldClass);
             // A selection the control did not take whole would leave part of the old value beside the new one.
+            // Ronda final 17 (regla 3): the select-all was sent to the person's field: its selection changed.
             if (!_messages.SelectAll(field) || _messages.Selection(field) is not { } all || all.Start != 0 || all.End != before)
-                return new FieldDelivery("em_replacesel", false, false, "input_field_not_replaced", fieldClass);
+                return new FieldDelivery("em_replacesel", false, true, "input_field_not_replaced", fieldClass);
         }
 
         int expected = Expected(field, before, text.Length);
 
         if (!Same(identity))
-            return new FieldDelivery("em_replacesel", false, false, "input_window_changed", fieldClass);
+            return new FieldDelivery("em_replacesel", false, replace, "input_window_changed", fieldClass);
         bool answered = _messages.ReplaceSelection(field, text);
         int after = _messages.TextLength(field);
         if (after == expected && Holds(field, text, after, replace))

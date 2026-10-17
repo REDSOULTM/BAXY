@@ -83,7 +83,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (method == "GET" && route == "/model")
         {
-            return Json(ModelInfo());
+            // Ronda final 17 (regla 3): the model is said loaded only once the mind that serves it is ready.
+            return _viewModel.IsMindReady ? Json(ModelInfo()) : Error("model_not_loaded", 503);
         }
 
         if (method == "GET" && route == "/metrics")
@@ -328,7 +329,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 ["value"] = CurrentConversationState(),
             },
             AgentEvent(),
-            new() { ["type"] = "model", ["info"] = ModelInfo() },
+            ModelEvent(),
             SurfacesEvent(),
             SessionEvent(),
         };
@@ -349,11 +350,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     // The interface's gate and what it shows: whether a turn is accepted now, the failure's code (the engine's or the
     // last turn's), and whether a risky call waits for the person (Sí and No under BAXY's question).
+    // Ronda final 17 (regla 3): «ready» needs the mind ready too; a mind that failed or is not configured is said.
     private JsonObject AgentStatus() => new()
     {
         ["built"] = _viewModel.IsReady,
-        ["ready"] = _viewModel.IsReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
-        ["failure"] = _viewModel.Failure,
+        ["ready"] = _viewModel.IsReady && _viewModel.IsMindReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
+        ["failure"] = _viewModel.Failure ?? (MindUnavailable ? "mind_unavailable" : null),
         ["pendingConfirmation"] = _viewModel.HasPendingConfirmation,
     };
 
@@ -507,14 +509,15 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             or nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.Failure)
             or nameof(MainWindowViewModel.IsMindPreparing)
+            or nameof(MainWindowViewModel.IsMindReady)
             or nameof(MainWindowViewModel.HasPendingConfirmation))
         {
             Publish(AgentEvent());
         }
 
-        if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady))
+        if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsReady) or nameof(MainWindowViewModel.IsMindReady))
         {
-            Publish(new JsonObject { ["type"] = "model", ["info"] = ModelInfo() });
+            Publish(ModelEvent());
         }
 
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsBusy)
@@ -544,7 +547,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         return _viewModel.IsBusy ? "thinking"
-            : _viewModel.Failure is not null ? "error"
+            : _viewModel.Failure is not null || MindUnavailable ? "error"
             : "idle";
     }
 
@@ -695,6 +698,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["active"] = accessible ? PresentationModeStore.Accessible : PresentationModeStore.Normal,
         };
     }
+
+    private bool MindUnavailable => !_viewModel.IsMindReady && !_viewModel.IsMindPreparing;
+
+    // The model event: its identity once the mind serving it is ready, null (loading) before.
+    private JsonObject ModelEvent() =>
+        new() { ["type"] = "model", ["info"] = _viewModel.IsMindReady ? ModelInfo() : null };
 
     private static JsonObject ModelInfo()
     {

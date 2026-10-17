@@ -9,9 +9,6 @@ namespace Baxy.App;
 internal sealed class PresenceTrayIcon : IDisposable
 {
     internal const uint CallbackMessage = 0x8000 + 32;
-    internal const uint ShowMessage = 0x8000 + 33;
-    internal const uint ToggleListenMessage = 0x8000 + 34;
-    internal const uint ExitMessage = 0x8000 + 35;
     internal const uint CommandShow = 1;
     internal const uint CommandListen = 2;
     internal const uint CommandExit = 3;
@@ -145,24 +142,6 @@ internal sealed class PresenceTrayIcon : IDisposable
                 ShowContextMenu();
                 return nint.Zero;
             }
-        }
-
-        if (message == ShowMessage)
-        {
-            ShowWindow();
-            return nint.Zero;
-        }
-
-        if (message == ToggleListenMessage)
-        {
-            ToggleListen();
-            return nint.Zero;
-        }
-
-        if (message == ExitMessage)
-        {
-            Exit();
-            return nint.Zero;
         }
 
         if (message == 0x0111)
