@@ -163,11 +163,12 @@ internal sealed partial class WindowsDisplayModePlatform : IDisplayModePlatform
 }
 
 /// <summary>
-/// display.mode.set (auditoría de los pedidos reales, 2026-10-17: «pon la pantalla a 60 Hz», «cambia la resolución y si
-/// falla vuelve atrás»): the primary monitor goes to a mode its driver lists, never to one it does not. The mode is
-/// asked first with CDS_TEST, then applied and read back; when the read-back is not the mode asked for, the previous
-/// mode is put back and read again, and the receipt says so. A width without a height (or the reverse) is refused; with
-/// only a resolution the refresh rate is kept when that mode lists it, otherwise the highest it lists is taken.
+/// display.mode.set (auditoría de los pedidos reales, 2026-10-17: the missing skill that weighed most was changing the
+/// monitor's refresh rate or resolution, sometimes with going back when it fails): the primary monitor goes to a mode its
+/// driver lists, never to one it does not. The mode is asked first with CDS_TEST, then applied and read back; when the
+/// read-back is not the mode asked for, the previous mode is put back and read again, and the receipt says so. A width
+/// without a height (or the reverse) is refused; with only a resolution the refresh rate is kept when that mode lists it,
+/// otherwise the highest it lists is taken.
 /// </summary>
 internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
 {
