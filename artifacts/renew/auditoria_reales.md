@@ -46,9 +46,13 @@ ids y descripciones; el detalle caso por caso, con tus textos, vive fuera del re
 
   Las 3 sin verificar son «escribí» en Word (2) y «seleccioné» (1): las teclas entraron, pero no se releyó lo escrito
   (WindowsDesktopInteractionAdapter.cs:669).
-- En los peligrosos que eligió mal (apagar el PC, cerrar todas las ventanas, mandar a la papelera), **el kernel pide
-  el sí**: WorkLoss y RecoverableDelete se tratan como irreversibles (ProductCatalog.cs:1905, RiskPolicy.cs:87). Sin
-  tu «sí», el daño no pasa.
+- **Peligrosos que eligió mal.**
+  - Al cerrar todas las ventanas o mandar algo a la papelera, el kernel pide el sí: WorkLoss y RecoverableDelete
+    se tratan como irreversibles (ProductCatalog.cs:1905, RiskPolicy.cs:87).
+  - **Apagar o reiniciar el PC va directo, sin el sí**, por tu decisión de identidad (documentacion/00_IDENTIDAD.md:146, RiskPolicy.cs:60-65). Por eso
+    un «ciérralo» sin contexto o un «reinicia» dicho de una app que el modelo lea como apagar el PC **apagaría o
+    reiniciaría el equipo**. Es el grupo G01, el que más pesa, y se arregla por descripción, sin tocar tu
+    decisión.
 - **Ejecución** (EJECUTA_MAL): la corre el notebook con el producto real, sobre las 159 misiones que deciden bien y
   se pueden ejecutar sin riesgo. Sus cifras se anotan abajo cuando terminen.
 
@@ -59,7 +63,7 @@ Peso = mensajes de la misión × la fracción de sus ejemplos que falla. G01 lo 
 
 | # | Grupo (causa común) | Peso | Misiones | Causa (archivo:línea) | Arreglo propuesto (permitido) |
 |---|---|---|---|---|---|
-| G01 | Cerrar o reiniciar sin decir qué, o una app, lo toma por apagar el PC o cerrar todo | 827 | 2 | tool_descriptions.en.v1.json:134 (system.power no exige que se nombre el PC), :167 (window.close.all: «cierra todo»), :5 (app.close no nombra la ventana activa) | Descripciones de system.power, window.close.all y app.close |
+| G01 | Cerrar o reiniciar sin decir qué, o una app, lo toma por apagar el PC o cerrar todo | 827 | 2 | tool_descriptions.en.v1.json:134 (system.power no exige que se nombre el PC), :167 (window.close.all: «cierra todo»), :5 (app.close no nombra la ventana activa) | Descripciones de system.power, window.close.all y app.close (apagar va sin el sí: es seguridad) |
 | G12 | Texto de desarrollo pegado: actúa con efecto (escribe, guarda en memoria, corre comandos) | 187 | 109 | mind.py:33 (la regla 1 sólo habla de pedidos) | Prompt: un texto que no pide nada se contesta en una frase, sin herramientas |
 | G13 | Falsedad: dice que guardó, anotó o ejecutó algo sin herramienta | 158 | 26 | mind.py:36 (la regla 2 no nombra guardar ni lo recordado) | Prompt: la regla 2 nombra guardar y anotar, y que lo recordado sólo se sabe leyéndolo |
 | G14 | Fuera de diseño: actúa en vez de decir que no (comprar, borrar Documentos o system32) | 82 | 5 | El kernel ya pide el sí | Ninguno nuevo: el sí lo frena; queda como límite |
