@@ -329,6 +329,19 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "desktop.wallpaper.set.spi.registry.postread.v1",
             "Cambia el fondo de escritorio a un color liso (#RRGGBB) o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior; sólo una imagen directa de la carpeta."),
+        // Auditoría de los pedidos reales (2026-10-17): cambiar la frecuencia o la resolución del monitor principal.
+        Descriptor(
+            "display.mode.set",
+            Schema(
+                [
+                    Integer("height", 200, 16_384),
+                    Integer("refreshHz", 1, 1_000),
+                    Integer("width", 320, 16_384),
+                ],
+                []),
+            OperationRisks.LowReversible,
+            "display.mode.set.win32.test.apply.readback.v1",
+            "Cambia el modo del monitor principal (resolución, frecuencia de refresco o ambas) a uno que su controlador lista: lo prueba con CDS_TEST, lo aplica, relee el modo y, si no es el pedido, vuelve al anterior y lo relee; con sólo la resolución mantiene la frecuencia si ese modo la lista, si no toma la más alta listada."),
         Descriptor(
             "display.status",
             EmptySchema(),
