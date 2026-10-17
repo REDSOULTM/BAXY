@@ -24,8 +24,30 @@ internal sealed record OperationResponseProjection(string Message)
 
     // Ronda final 35 (regla 3): the journal's answer to this same invocation, run before, is said as such: it did not
     // run again now (a second «sube el volumen 10» answered by the first one's receipt).
-    private static string Replay(OperationResponse response, string message) =>
-        response.Replayed
-            ? message + "\nreplayed: this is the recorded result of the same call made earlier; it did not run again now."
-            : message;
+    // Ronda final 36: inside the JSON when the message is one (mind.py's summary parses it), else as a line.
+    private static string Replay(OperationResponse response, string message)
+    {
+        if (!response.Replayed)
+        {
+            return message;
+        }
+
+        const string note = "this is the recorded result of the same call made earlier; it did not run again now";
+        try
+        {
+            if (System.Text.Json.Nodes.JsonNode.Parse(message) is System.Text.Json.Nodes.JsonObject facts)
+            {
+                facts["replayed"] = note;
+                return facts.ToJsonString(new JsonSerializerOptions
+                {
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                });
+            }
+        }
+        catch (JsonException)
+        {
+        }
+
+        return message + "\nreplayed: " + note + ".";
+    }
 }

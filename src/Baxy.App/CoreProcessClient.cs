@@ -69,7 +69,8 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                 "core",
                 executable,
                 Path.GetDirectoryName(executable)!,
-                drainStandardError: false));
+                drainStandardError: false,
+                childrenOutside: true));
             Process process = sidecar.Process;
             _process = process;
             _sidecar = sidecar;

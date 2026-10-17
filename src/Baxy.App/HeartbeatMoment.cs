@@ -309,10 +309,44 @@ internal static class HeartbeatMoment
     // Windows records which program holds the microphone (Settings > Privacy > Microphone shows it as «in use»): an
     // entry whose last use has started and not stopped. BAXY's own listening (the mind's Python) is not a call.
     // True or false as read; null when Windows' record of the microphone could not be read.
+    // Ronda final 36 (regla 3): the mind's python is the venv's launcher, but the interpreter that opens the microphone is
+    // the base one its pyvenv.cfg names («executable»), and Windows records that one: both are BAXY's own listening.
+    private static string[] OwnInterpreters(string? launcher)
+    {
+        if (string.IsNullOrWhiteSpace(launcher))
+        {
+            return [];
+        }
+
+        var own = new List<string> { launcher };
+        try
+        {
+            string? scripts = Path.GetDirectoryName(launcher);
+            string? venv = scripts is null ? null : Path.GetDirectoryName(scripts);
+            string config = venv is null ? string.Empty : Path.Combine(venv, "pyvenv.cfg");
+            if (File.Exists(config))
+            {
+                foreach (string line in File.ReadAllLines(config))
+                {
+                    int equals = line.IndexOf('=');
+                    if (equals > 0 && line[..equals].Trim().Equals("executable", StringComparison.OrdinalIgnoreCase))
+                    {
+                        own.Add(line[(equals + 1)..].Trim());
+                    }
+                }
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+        }
+
+        return [.. own];
+    }
+
     private static bool? MicrophoneHeldByAnotherProgram()
     {
         const string store = @"Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";
-        string? ownPython = Environment.GetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable);
+        string[] ownPython = OwnInterpreters(Environment.GetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable));
         try
         {
             using RegistryKey? root = Registry.CurrentUser.OpenSubKey(store);
@@ -334,8 +368,7 @@ internal static class HeartbeatMoment
                     : [(name, entry)];
                 foreach ((string user, RegistryKey key) in users)
                 {
-                    bool own = ownPython is not null
-                        && user.Replace('#', '\\').Equals(ownPython, StringComparison.OrdinalIgnoreCase);
+                    bool own = ownPython.Contains(user.Replace('#', '\\'), StringComparer.OrdinalIgnoreCase);
                     if (!own && key.GetValue("LastUsedTimeStart") is long started && started > 0
                         && key.GetValue("LastUsedTimeStop") is long stopped && stopped == 0)
                     {

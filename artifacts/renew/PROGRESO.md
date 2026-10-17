@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 45 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 35, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 45 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 36, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -789,7 +789,8 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     esa carpeta que antes; la descripción de media.play.youtube nombra el navegador propio cuando el de la persona no
     se abre; un comentario viejo del Escape en message.draft. Nuevas B pendientes b_r32_*. Desde ff863b47f cambiaron
     42 descripciones y 8 entradas de argumentos. Suites: 564/69/477/2189. Sin medir.
-  - Ronda final 33 (sobre abede16a0): A en el PC 2+0+0+2, tres distintas; el notebook no respondió. (1)
+  - Ronda final 33 (sobre abede16a0): A en el PC 2+0+0+2, tres hallazgos (del tercero, la parte de la App del
+    notebook era falsa y la ronda 35 la deshizo; la de la ronda 29, «PC y notebook», era cierta y queda); el notebook no respondió. (1)
     system.settings.set con no molestar abre Configuración en Notificaciones, le da el frente y la deja abierta, también
     cuando el ajuste ya estaba, y nada lo decía: ahora el recibo lleva settingsWindowOpened, la descripción lo dice y
     el texto en español ya no dice «API oficial». (2) Las descripciones de game.install.cancel.active decían «todas las
@@ -821,13 +822,28 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     lo dicen, igual que input.scroll, y que el frente vuelve tras un texto y, tras un clic o una tecla, con la
     siguiente entrada de la persona. (2) La «corrección» de la ronda 33 era falsa: el informe de App del notebook sí
     llegó en las rondas 25 y 26, dentro de otros mensajes (buzón 03:24 y 03:41); restaurado, y la ronda 33 queda con
-    dos A distintas. B arregladas: el job de la mente ya no permite breakaway (sin él, el llama-server que lanza el
+    dos A distintas y media (la ronda 36 lo precisó: la parte de la ronda 29 de su tercera A era cierta). B arregladas: el job de la mente ya no permite breakaway (sin él, el llama-server que lanza el
     intérprete no puede salir del job que lo mata al cerrar BAXY; según la documentación de jobs anidados, un hijo no
     sale si el job inmediato no lo permite; no verificado en vivo); el puntero no pulsa donde la superficie de render
     tiene otra capa de la página (visible_control_covered; el patrón propio del control se sigue probando antes); una
     respuesta repetida por el journal lo dice al modelo («replayed: … it did not run again now»). Nuevas B pendientes
     b_r35_*. Desde ff863b47f cambiaron 45 descripciones y 8 entradas de argumentos. Suites: 564/69/477/2189.
     Sin medir.
+  - Ronda final 36 (sobre 476ec7745): A en el PC 1+2+0+1; el notebook no respondió. (1) Lo que el núcleo abre
+    para la persona por el shell (un documento en Word, el navegador predeterminado, steam://, spotify:, «Abrir con»)
+    quedaba dentro de su job de cierre y moría al cerrar BAXY o al reiniciarse el núcleo, trabajo sin guardar
+    incluido: ahora el job del núcleo lleva JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK (el núcleo sigue muriendo con BAXY; su
+    worker de UI Automation termina al cerrarse su tubería). Medido con un job de los mismos flags: con 0x2800 el hijo
+    de un ShellExecute quedaba dentro y moría; con 0x3800 queda fuera y sobrevive. (2) El latido decía «llamada»
+    mientras BAXY escuchaba: comparaba el micrófono con el lanzador del venv, y Windows registra el intérprete base
+    (pyvenv.cfg, executable); ahora cuentan los dos. (3) Las descripciones de los actos con window no decían que una
+    ventana que abre el propio acto se queda con el frente; ahora sí. (4) La cuenta de la ronda 33 decía «tres» y «dos»
+    a la vez: son tres hallazgos, y del tercero sólo era falsa la parte de la App del notebook (la de la ronda 29 era
+    cierta). B arregladas: «replayed» va dentro del JSON que resume la mente; el clic sólo se niega como «tapado» con
+    otra cosa leída en el punto (un documento o una cadena cortada dentro de la caja es nohit, y el puntero sigue). La
+    medición del auditor de la App dice que el llama-server ya moría con el job de la mente antes de la ronda 35: el
+    comentario lo dice. Nuevas B pendientes b_r36_*. Desde ff863b47f cambiaron 45 descripciones y 8 entradas de
+    argumentos. Suites: 564/69/477/2189. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

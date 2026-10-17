@@ -1181,7 +1181,7 @@ public sealed class ComputerUseClickMethodTests
             $tokens=$null;$errors=$null
             $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_CLICK_WORKER,[ref]$tokens,[ref]$errors)
             if($errors.Count -gt 0){ throw 'worker does not parse' }
-            foreach($name in @('Select-ClickMethods','Invoke-NamedControl','Select-Element','Test-PlaceMoved','Get-SteadyPlace','Test-PlaceTooDear','Wait-PlaceMoved','Get-PressPoint','Get-CurrentRect','Test-NameMatch','Get-LabelFolded','Get-Folded','Test-NameHolds','Test-NamesLabel','Select-PointHolders','Test-HoldsPressed','Get-RenderHosts','Send-RenderPress','Test-HitIsElement','Test-HitNamesLabel')){
+            foreach($name in @('Select-ClickMethods','Invoke-NamedControl','Select-Element','Test-PlaceMoved','Get-SteadyPlace','Test-PlaceTooDear','Wait-PlaceMoved','Get-PressPoint','Get-CurrentRect','Test-NameMatch','Get-LabelFolded','Get-Folded','Test-NameHolds','Test-NamesLabel','Select-PointHolders','Test-HoldsPressed','Get-RenderHosts','Send-RenderPress','Test-HitIsElement','Test-HitLeavesElement','Test-HitNamesLabel')){
               $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name },$true))
               if($found.Count -ne 1){ throw ('function missing: '+$name) }
               . ([scriptblock]::Create($found[0].Extent.Text))

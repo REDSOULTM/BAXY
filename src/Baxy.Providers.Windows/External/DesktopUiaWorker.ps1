@@ -1521,6 +1521,27 @@ function Test-HitIsElement($chain,$el){
   }
   return $false
 }
+# Ronda final 36: si la cadena leida muestra otra cosa en el punto: un nodo por debajo del documento o la ventana que se
+# sale de la caja del elemento (una capa, una ventana emergente, otro control). Un primer nodo que ya es el documento o
+# la ventana (roles 15, 9, 10) no muestra nada del punto.
+function Test-HitLeavesElement($chain,$el){
+  try { $box=$el.Current.BoundingRectangle } catch { return $false }
+  if($box.IsEmpty){ return $false }
+  $name=''
+  try { $name=([string]$el.Current.Name).Trim() } catch { $name='' }
+  foreach($node in @($chain)){
+    if(@(15,9,10) -contains [int]$node.Role){ return $false }
+    if($node.Width -le 0 -or $node.Height -le 0){ continue }
+    # Otro control con la misma caja y otro nombre tambien es otra cosa leida en el punto.
+    $same=([math]::Abs($node.Left-$box.X) -le 2 -and [math]::Abs($node.Top-$box.Y) -le 2 -and
+      [math]::Abs($node.Width-$box.Width) -le 2 -and [math]::Abs($node.Height-$box.Height) -le 2)
+    $nodeName=([string]$node.Name).Trim()
+    if($same -and $name.Length -gt 0 -and $nodeName.Length -gt 0 -and -not [string]::Equals($nodeName,$name,[StringComparison]::OrdinalIgnoreCase)){ return $true }
+    if($node.Left -lt $box.X-2 -or $node.Top -lt $box.Y-2 -or ($node.Left+$node.Width) -gt ($box.X+$box.Width+2) -or
+      ($node.Top+$node.Height) -gt ($box.Y+$box.Height+2)){ return $true }
+  }
+  return $false
+}
 # En «at» no hay elemento: lo que la pagina tiene en el punto debe nombrar la etiqueta leida en pantalla (el nodo
 # tocado o uno de sus tres antecesores, nunca el documento). Lo leido por OCR o vision se comprueba en el momento de
 # pulsar: una lista que se reordeno, el boton de titulo de un marco encima del contenido o una capa nueva no la nombran.
@@ -1544,6 +1565,9 @@ function Send-RenderPress([IntPtr[]]$hosts,[int]$x,[int]$y,[uint32]$process,$ele
   $chain=@([BaxyUiaWorkerNative]::HitChain($surface,$x,$y))
   if($chain.Count -eq 0){ return 'nohit' }
   $holds=$(if($null -ne $element){ Test-HitIsElement $chain $element } else { Test-HitNamesLabel $chain $aliases })
+  # Ronda final 36 (regla 3): «other» solo con otra cosa leida en el punto. Una prueba que responde con el documento o la
+  # ventana (una pagina ocupada) o que se corta sin salirse de la caja del elemento no llego a leerlo: nohit.
+  if(-not $holds -and $null -ne $element -and -not (Test-HitLeavesElement $chain $element)){ return 'nohit' }
   if(-not $holds){ return 'other' }
   if(-not [BaxyUiaWorkerNative]::PostAt($surface,$x,$y)){ return 'post-failed' }
   return 'posted'

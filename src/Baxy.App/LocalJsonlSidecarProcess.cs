@@ -18,7 +18,8 @@ internal sealed class LocalJsonlSidecarDefinition
         IReadOnlyList<string>? arguments = null,
         IReadOnlyDictionary<string, string>? environment = null,
         bool drainStandardError = true,
-        bool allowBreakaway = true)
+        bool allowBreakaway = true,
+        bool childrenOutside = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(executablePath);
@@ -43,6 +44,7 @@ internal sealed class LocalJsonlSidecarDefinition
             StringComparer.Ordinal);
         DrainStandardError = drainStandardError;
         AllowBreakaway = allowBreakaway;
+        ChildrenOutside = allowBreakaway && childrenOutside;
     }
 
     internal string Name { get; }
@@ -59,10 +61,19 @@ internal sealed class LocalJsonlSidecarDefinition
 
     /// <summary>
     /// Whether processes of the sidecar may leave its kill-on-close job (the Core's application launches must). Ronda
-    /// final 35 (regla 5): the mind's must not: its interpreter starts llama-server, and with a breakaway job above it the
-    /// venv launcher's silent breakaway would let that server (3.9 GB of VRAM) outlive BAXY.
+    /// final 35 (regla 5): the mind's need not, so its job keeps llama-server (3.9 GB of VRAM) with it. The ronda 36
+    /// measured that the server, started by the venv's interpreter, died with the job with or without this flag.
     /// </summary>
     internal bool AllowBreakaway { get; }
+
+    /// <summary>
+    /// Ronda final 36 (regla: efecto en la ventana de la persona sin pedido): whether every process the sidecar starts
+    /// leaves the job by itself (JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK). The Core's: what it opens for the person through
+    /// the shell (a document in Word, the default browser, steam://, spotify:) died with BAXY or with a restart of the
+    /// Core, unsaved work included. The Core itself stays in the kill-on-close job; its UI Automation worker ends when
+    /// the Core's pipe closes.
+    /// </summary>
+    internal bool ChildrenOutside { get; }
 }
 
 internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
@@ -167,7 +178,7 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
                     $"No se pudo iniciar el sidecar local '{definition.Name}'.");
             }
 
-            job = WindowsKillOnCloseJob.CreateAndAssign(process, definition.AllowBreakaway);
+            job = WindowsKillOnCloseJob.CreateAndAssign(process, definition.AllowBreakaway, definition.ChildrenOutside);
             var sidecar = new LocalJsonlSidecarProcess(definition, process, job);
             job = null;
             return sidecar;
@@ -396,10 +407,11 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
 internal static class WindowsKillOnCloseJob
 {
     private const uint BreakawayOk = 0x00000800;
+    private const uint SilentBreakawayOk = 0x00001000;
     private const uint KillOnJobClose = 0x00002000;
     private const int ExtendedLimitInformation = 9;
 
-    internal static SafeFileHandle CreateAndAssign(Process process, bool allowBreakaway = true)
+    internal static SafeFileHandle CreateAndAssign(Process process, bool allowBreakaway = true, bool childrenOutside = false)
     {
         ArgumentNullException.ThrowIfNull(process);
         SafeFileHandle job = NativeMethods.CreateJobObject(IntPtr.Zero, null);
@@ -414,7 +426,9 @@ internal static class WindowsKillOnCloseJob
             {
                 // Trusted application launches may explicitly break away. Every
                 // sidecar process itself remains owned by this kill-on-close job.
-                LimitFlags = allowBreakaway ? KillOnJobClose | BreakawayOk : KillOnJobClose,
+                LimitFlags = KillOnJobClose
+                    | (allowBreakaway ? BreakawayOk : 0)
+                    | (allowBreakaway && childrenOutside ? SilentBreakawayOk : 0),
             },
         };
         int size = Marshal.SizeOf<JobObjectExtendedLimitInformation>();
