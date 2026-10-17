@@ -246,6 +246,8 @@ public sealed class OperationOutcomeNarrationTests
             shownCount = 35,
             totalCount = 35,
             hasMore = false,
+            resultsMayBeTruncated = false,
+            searchScope = new { exhaustive = true, resultsMayBeTruncated = false },
         });
 
         using JsonDocument cut = JsonDocument.Parse(
@@ -258,7 +260,23 @@ public sealed class OperationOutcomeNarrationTests
             Assert.That(observed.GetProperty("shownCount").GetInt32(), Is.EqualTo(20));
             Assert.That(observed.GetProperty("hasMore").GetBoolean(), Is.True);
             Assert.That(observed.GetProperty("totalCount").GetInt32(), Is.EqualTo(35));
+            Assert.That(observed.GetProperty("resultsMayBeTruncated").GetBoolean(), Is.True);
+            Assert.That(observed.GetProperty("searchScope").GetProperty("resultsMayBeTruncated").GetBoolean(), Is.True);
         });
+    }
+
+    // Ronda final 43 (regla 3): a page read and a clipboard read keep their own bounds, not the 8 KiB budget (a page of
+    // the default 12,000 characters reached the model as 2,000).
+    [Test]
+    public void APageReadOfTwelveThousandCharactersReachesTheModelWhole()
+    {
+        string text = new('a', 12_000);
+        JsonElement read = JsonSerializer.SerializeToElement(new { title = "t", text, truncated = false });
+
+        using JsonDocument facts = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("browser.page.read", OperationOutcome.Success(read)));
+
+        Assert.That(facts.RootElement.GetProperty("observed").GetProperty("text").GetString(), Has.Length.EqualTo(12_000));
     }
 
     [Test]

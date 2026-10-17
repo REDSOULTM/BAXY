@@ -141,7 +141,7 @@ internal sealed partial class UserBrowserSurface
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         if (before.Tabs.Count <= 1)
             return ExternalJson.FailureBeforeEffect(step.Operation, LastTabKept);
-        UserBrowserFrame? after = await CloseActiveTabAsync(step, before, active, cancellationToken)
+        (UserBrowserFrame? after, _) = await CloseActiveTabAsync(step, before, active, cancellationToken)
             .ConfigureAwait(false);
         if (after is null)
             return step.Boundary.WasCrossed
@@ -177,9 +177,13 @@ internal sealed partial class UserBrowserSurface
                 return StoppedClosing(step, PageUnreadable, closed);
             if (closed >= CloseAllTabs || System.Diagnostics.Stopwatch.GetElapsedTime(started) > CloseAllTime)
                 return StoppedClosing(step, CloseAllIncomplete, closed);
-            UserBrowserFrame? after = resisting.Contains(active.Title)
-                ? null
+            (UserBrowserFrame? after, bool commandPosted) = resisting.Contains(active.Title)
+                ? (null, false)
                 : await CloseActiveTabAsync(step, frame, active, cancellationToken).ConfigureAwait(false);
+            // Rondas finales 42-43 (regla: doble pulsación): a close command posted and not seen run may still run: the
+            // closing stops unconfirmed, never goes on to click other tabs (a late close would take one too many).
+            if (after is null && commandPosted)
+                return StoppedClosing(step, TabStepUnconfirmed, closed);
             if (after is null)
             {
                 // Measured on Opera GX: its «GX Corner» tab did not close as the active tab. Another tab on screen
@@ -211,9 +215,9 @@ internal sealed partial class UserBrowserSurface
             UserBrowserFrame? after = await AwaitFrameAsync(
                 step.Window, frame => frame.TabsComplete && frame.Tabs.Count == count - 1, cancellationToken)
                 .ConfigureAwait(false);
-            if (after is not null)
-                return after;
-            resisting.Add(other.Title);
+            // Ronda final 43 (regla: doble pulsación): a click not seen may still close that tab late: no other tab is
+            // clicked after it (the closing stops unconfirmed).
+            return after;
         }
 
         return null;
@@ -221,9 +225,9 @@ internal sealed partial class UserBrowserSurface
 
     /// <summary>
     /// Closes the active tab of <paramref name="before"/>: the frame read with one tab less, or null when none was
-    /// seen (the step's boundary says whether anything was posted).
+    /// seen (the step's boundary says whether anything was posted), and whether the browser's close command was posted.
     /// </summary>
-    private async ValueTask<UserBrowserFrame?> CloseActiveTabAsync(
+    private async ValueTask<(UserBrowserFrame? After, bool CommandPosted)> CloseActiveTabAsync(
         TabStep step, UserBrowserFrame before, UserBrowserTab active, CancellationToken cancellationToken)
     {
         int count = before.Tabs.Count;
@@ -234,7 +238,7 @@ internal sealed partial class UserBrowserSurface
             step.Boundary.Cross(CancellationToken.None);
             // Ronda final 42 (regla: doble pulsación): a command posted and not seen run may still run (a busy browser
             // answers the reads first): it is said unconfirmed, never followed by a click that would close the next tab.
-            return await AwaitFrameAsync(step.Window, OneLess, cancellationToken).ConfigureAwait(false);
+            return (await AwaitFrameAsync(step.Window, OneLess, cancellationToken).ConfigureAwait(false), true);
         }
         {
             // The message was not run: the click goes only to the same tab, still active and still on screen.
@@ -242,14 +246,14 @@ internal sealed partial class UserBrowserSurface
             UserBrowserTab? same = now?.Tabs.FirstOrDefault(tab => tab.Selected);
             if (now is null || now.Tabs.Count != count || same is null || !same.Shown
                 || !string.Equals(same.Title, active.Title, StringComparison.Ordinal))
-                return null;
+                return (null, false);
             if (_platform.PostMiddleClick(step.Window, same.X, same.Y))
             {
                 step.Boundary.Cross(CancellationToken.None);
                 after = await AwaitFrameAsync(step.Window, OneLess, cancellationToken).ConfigureAwait(false);
             }
         }
-        return after;
+        return (after, false);
     }
 
     /// <summary>Closing stopped part way: the tabs seen closed are said; how many are left is not guessed.</summary>

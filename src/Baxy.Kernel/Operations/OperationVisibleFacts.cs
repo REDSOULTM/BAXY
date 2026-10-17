@@ -66,7 +66,13 @@ public static class OperationVisibleFacts
         // lines beside the text that bundle crosses 8 KiB, so the observation was
         // dropped whole and the final could say nothing of what came out.
         bool consoleOutput = operation == "shell.command.run";
-        int messageLimit = processInventory || ocrObservation || consoleOutput ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageChars;
+        // Ronda final 43 (regla 3): the clipboard's, the page's and the email's text are bounded by their own operations
+        // (40,000, 32,768 and 40,000 characters); under the 8 KiB budget a page read of the default 12,000 reached the
+        // model as 2,000.
+        bool textRead = operation is "clipboard.read.text" or "browser.page.read" or "email.latest.read";
+        int messageLimit = processInventory || ocrObservation || consoleOutput || textRead
+            ? ProtocolLimits.MaximumOperationResponseMessageChars
+            : MaximumMessageChars;
 
         // One header: the status says how the call ended (a completed call is a verified one: the engine turns an
         // unverified success into a failure); the operation is the one the model just called.
@@ -338,6 +344,46 @@ public static class OperationVisibleFacts
     // A page by offset (window.resolve, note.list) whose list was cut to «shown» goes on from the first item not shown,
     // never from the provider's next page: the model never skips items it did not see, and «no more» is never said of
     // a page it saw only part of.
+    /// <summary>
+    /// Rondas finales 42-43 (regla 3): a provider's own facts about its list spoke of it before this cut; they now say what
+    /// the model sees: its «shownCount» is the items shown, «hasMore» is true, and a truncation flag it set to false
+    /// («resultsMayBeTruncated», «truncated», any «…Truncated») is true.
+    /// </summary>
+    private static void CorrectCutListFacts(JsonObject facts, int shown)
+    {
+        if (facts.ContainsKey("shownCount"))
+        {
+            facts["shownCount"] = shown;
+        }
+
+        if (facts.ContainsKey("hasMore"))
+        {
+            facts["hasMore"] = true;
+        }
+
+        MarkTruncated(facts);
+        // A sibling object describing the same search («searchScope») carries its own flag.
+        foreach (JsonNode? child in facts.Select(static pair => pair.Value).ToArray())
+        {
+            if (child is JsonObject scope)
+            {
+                MarkTruncated(scope);
+            }
+        }
+    }
+
+    private static void MarkTruncated(JsonObject facts)
+    {
+        foreach (string key in facts.Select(static pair => pair.Key).ToArray())
+        {
+            if ((key is "resultsMayBeTruncated" or "truncated" || key.EndsWith("Truncated", StringComparison.Ordinal))
+                && facts[key] is JsonValue flag && flag.TryGetValue(out bool value) && !value)
+            {
+                facts[key] = true;
+            }
+        }
+    }
+
     private static void PageFrom(JsonNode? offset, bool paged, int shown, JsonObject target)
     {
         if (!paged)
@@ -383,6 +429,7 @@ public static class OperationVisibleFacts
                     }
 
                     PageFrom(obj["offset"], paged && obj.ContainsKey("nextOffset"), shownItems, projected);
+                    CorrectCutListFacts(projected, shownItems);
                 }
 
                 // A page of a text read by offset (file.read, web.fetch) whose text was cut here goes on from where
@@ -536,17 +583,7 @@ public static class OperationVisibleFacts
                 if (cleanShown is int keptItems)
                 {
                     PageFrom(clean["offset"], paged && element.TryGetProperty("nextOffset", out _), keptItems, clean);
-                    // Ronda final 42 (regla 3): the provider's own «shownCount» and «hasMore» spoke of the list before
-                    // this cut; they now say what the model sees (a shownCount of 35 over 20 entries read as a total).
-                    if (clean.ContainsKey("shownCount"))
-                    {
-                        clean["shownCount"] = keptItems;
-                    }
-
-                    if (clean.ContainsKey("hasMore"))
-                    {
-                        clean["hasMore"] = true;
-                    }
+                    CorrectCutListFacts(clean, keptItems);
                 }
 
                 return clean;

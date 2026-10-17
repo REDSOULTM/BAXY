@@ -122,7 +122,7 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.LowReversible,
             "backup.known.create.windows.zip.hash.postread.v1",
-            "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256; no incluye vínculos ni marcadores de OneDrive, archivos que no puede abrir ni lo que pase de 32 niveles; cuenta los vínculos y los archivos ilegibles, no lo demás."),
+            "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256; no incluye vínculos ni marcadores de OneDrive, archivos que no puede abrir, carpetas que no puede abrir ni lo que pase de 32 niveles; cuenta los vínculos y marcadores y los archivos ilegibles, no las carpetas ni lo que pasa de 32 niveles."),
         Descriptor(
             "backup.known.list",
             Schema([Integer("limit", 1, 50)], []),
@@ -173,7 +173,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.ReadOnly,
             "bluetooth.device.list.hardware.snapshot.v1",
-            "Enumera dispositivos Bluetooth mediante un adapter oficial y un gate físico de hardware."),
+            "Enumera dispositivos Bluetooth mediante un adapter oficial y un gate físico de hardware; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "bluetooth.device.pair",
             Schema([String("deviceId", maximumUtf8Bytes: 256, nonWhitespace: true)], ["deviceId"]),
@@ -259,7 +259,7 @@ public static class ProductCatalog
                 ["endUtc", "startUtc"]),
             OperationRisks.ReadOnly,
             "calendar.event.list.account.snapshot.v1",
-            "Lista los eventos del calendario predeterminado de Outlook entre dos fechas separadas por un año como mucho (un rango mayor se rechaza), como mucho 200 leídos (pasado el tope lo dice) y una vista muestra los 20 primeros, sin modificarlos."),
+            "Lista los eventos del calendario predeterminado de Outlook entre dos fechas separadas por 366 días como mucho (un rango mayor se rechaza), como mucho 200 leídos (pasado el tope lo dice) y una vista muestra los 20 primeros, sin modificarlos."),
         // Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a capture the person asks to
         // keep is also saved as a PNG in the known folder named («folder»; pictures: its screenshots subfolder), with
         // a dated name that never overwrites, read back against its hash. Without «folder» it stays private only.
@@ -303,10 +303,10 @@ public static class ProductCatalog
             "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V."),
         Descriptor(
             "clipboard.read.text",
-            Schema([Integer("maxCharacters", 1, 65_536)], []),
+            Schema([Integer("maxCharacters", 1, 40_000)], []),
             OperationRisks.PrivacySensitive,
             "clipboard.read.text.sequence.secondread.v1",
-            "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos; 8.192 caracteres por defecto; truncated dice si se cortó."),
+            "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos; 8.192 caracteres por defecto y 40.000 como mucho; truncated dice si se cortó."),
         Descriptor(
             "clipboard.write.text",
             Schema([String("text", maximumLength: 65_536)], ["text"]),
@@ -362,7 +362,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "email.latest.read.outlook.mapi.snapshot.v1",
-            "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 65.536 caracteres se corta (bodyTruncated)."),
+            "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 40.000 caracteres se corta (bodyTruncated)."),
         Descriptor(
             "email.latest.reply",
             Schema([String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true)], ["text"]),
@@ -481,7 +481,7 @@ public static class ProductCatalog
                 ["relativePath", "text"]),
             OperationRisks.LowReversible,
             "file.write.sandbox.known.cas.recycle.hash.v1",
-            "Escribe UTF-8 atómicamente en el sandbox o en una carpeta conocida; reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído; append rechaza un archivo de más de 10 MiB."),
+            "Escribe UTF-8 atómicamente en el sandbox o en una carpeta conocida; reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído; append rechaza un archivo de más de 10 MiB; el texto, 1 MiB como mucho."),
         Descriptor(
             "filesystem.copy",
             FilesystemTransferSchema(),
@@ -593,7 +593,7 @@ public static class ProductCatalog
                 ["leftFileName", "rightFileName"]),
             OperationRisks.ReadOnly,
             "filesystem.sandbox.diff.named.hash.snapshot.v1",
-            "Compara dos archivos de texto del sandbox nombrados por su nombre de archivo exacto (único en el sandbox) y devuelve hashes y líneas diferentes; archivos de hasta 2 MiB; lista 100 números de línea cambiados como mucho (changedLinesTruncated); compara las líneas por posición."),
+            "Compara dos archivos de texto del sandbox nombrados por su nombre de archivo exacto (único en el sandbox) y devuelve hashes y líneas diferentes; archivos de hasta 2 MiB; una vista muestra 20 números de línea cambiados (changedLineCount es el total); compara las líneas por posición."),
         Descriptor(
             "filesystem.sandbox.move.named",
             Schema(
@@ -641,7 +641,7 @@ public static class ProductCatalog
                 ["title"]),
             OperationRisks.ReadOnly,
             "game.entitlement.named.steam.librarycache.manifest.postread.v1",
-            "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos; sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes)."),
+            "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos; con Steam sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes); con Epic toma la primera entrada con ese título."),
         Descriptor(
             "game.install.cancel",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
@@ -665,7 +665,7 @@ public static class ProductCatalog
                 ["title"]),
             OperationRisks.Installation,
             "game.install.named.steam.manifest.postread.v1",
-            "Resuelve el título de un juego de Steam (sus manifiestos locales o la búsqueda pública de la tienda; o de Epic Games) a su identidad, abre la instalación por su dirección, confirma el diálogo propio de Steam y verifica la transición del manifiesto local; sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes)."),
+            "Resuelve el título de un juego de Steam (sus manifiestos locales o la búsqueda pública de la tienda; o de Epic Games) a su identidad, abre la instalación por su dirección, confirma el diálogo propio de Steam y verifica la transición del manifiesto local; con Steam sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes); con Epic toma la primera entrada con ese título."),
         Descriptor(
             "game.install.status",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
@@ -1255,7 +1255,7 @@ public static class ProductCatalog
                 ["all", "keyboard", "mouse", "printer", "scanner", "usb"])], []),
             OperationRisks.ReadOnly,
             "peripheral.list.hardware.snapshot.v1",
-            "Enumera periféricos conectados, incluidos mouse y teclado, mediante APIs de Windows; puede filtrar por tipo."),
+            "Enumera periféricos conectados, incluidos mouse y teclado, mediante APIs de Windows; puede filtrar por tipo; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "peripheral.print",
             Schema(
@@ -1598,7 +1598,7 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
-            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; la descarga se abandona a los 40 segundos."),
+            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; se abandona si el servidor tarda más de 40 segundos en responder (cada redirección incluida); la transferencia no tiene plazo."),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
         // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.
@@ -1686,7 +1686,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.ReadOnly,
             "wifi.profile.list.wlan.snapshot.v1",
-            "Enumera perfiles WLAN guardados mediante identidades opacas sin exponer credenciales."),
+            "Enumera perfiles WLAN guardados mediante identidades opacas sin exponer credenciales; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
         Descriptor(
             "wifi.radio.set",
             Schema([Boolean("state")], ["state"]),
@@ -1704,7 +1704,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.ReadOnly,
             "wifi.scan.netsh.wlan.networks.bssid.v1",
-            "Lista las redes Wi-Fi visibles ahora para el adaptador WLAN (nombre, autenticación y señal) mediante netsh; si la radio está apagada devuelve ese estado sin cambiar nada."),
+            "Lista las redes Wi-Fi visibles ahora para el adaptador WLAN (nombre, autenticación y señal) mediante netsh; si la radio está apagada devuelve ese estado sin cambiar nada; lee 50 redes como mucho y una vista muestra 20 (lo marca)."),
         Descriptor(
             "wifi.status",
             EmptySchema(),
@@ -1790,7 +1790,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "window.resolve.identity.inventory.v3",
-            "Lee ventanas de nivel superior con estilo visible. Requiere exactamente un selector: applicationName (nombre exacto instalado, identidad AUMID o ejecutable comprobada, sin byTitle ni offset; devuelve la selección completa o falla), o process. Nunca convierte un nombre de aplicación en título o proceso. process='*' y byTitle=false enumeran todas; otro process busca ese proceso, y byTitle=true busca el título explícito solicitado. limit limita la página (1–50, defecto20), offset empieza en0. count cuenta la página; observedCount cuenta las observadas; complete=false implica lectura parcial y totalCount desconocido. nextOffset continúa sólo las observadas. Cada página vuelve a enumerar y puede cambiar: no es una foto estable ni prueba de que las ventanas estén descubiertas en pantalla. Devuelve títulos e identificadores efímeros; para modificar una ventana hay que elegir su identificador."),
+            "Lee ventanas de nivel superior con estilo visible. Requiere exactamente un selector: applicationName (nombre exacto instalado, identidad AUMID o ejecutable comprobada, sin byTitle ni offset; devuelve la selección completa o falla), o process. Nunca convierte un nombre de aplicación en título o proceso. process='*' y byTitle=false enumeran todas; otro process busca ese proceso, y byTitle=true busca el título explícito solicitado. limit limita la página (1–50, 20 por defecto; una vista muestra 20), offset empieza en 0. count cuenta la página; observedCount cuenta las observadas; complete=false implica lectura parcial y totalCount desconocido. nextOffset continúa sólo las observadas. Cada página vuelve a enumerar y puede cambiar: no es una foto estable ni prueba de que las ventanas estén descubiertas en pantalla. Devuelve títulos e identificadores efímeros; para modificar una ventana hay que elegir su identificador."),
         Descriptor(
             "window.restore",
             WindowIdSchema(),

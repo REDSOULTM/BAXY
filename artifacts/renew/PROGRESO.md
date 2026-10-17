@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 89 descripciones del catálogo y 17 entradas de argumentos tras la ronda final 42, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 91 descripciones del catálogo y 17 entradas de argumentos tras la ronda final 43, y mind.py en _outcome en la ronda 37, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -898,7 +898,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     PC A 6+1+0+3 (topes callados de file.find, memory.recall, streaming.play.named, message.draft y weather.current; el
     doble Enter durante un latido, que ponía en cola dos turnos con el mismo pedido; PROGRESO de la 40 decía que los
     textos en español de esas operaciones ya decían sus topes, y sólo cambiaron cinco). Arreglos: un turno que espera a
-    un latido ya cuenta como ocupado; las descripciones y los textos en español de 61 operaciones (57 en inglés, 59 en español; la ronda 42 corrigió el 45) dicen sus topes,
+    un latido ya cuenta como ocupado; las descripciones y los textos en español de 61 operaciones (57 en inglés, 58 en español, y el de window.snap, que cayó en la excepción del catálogo y entró en la 42; la ronda 42 corrigió el 45 y la 43 el 59) dicen sus topes,
     valores por defecto, plazos, filtros y candidatos, tras un barrido de las 144 operaciones del alcance contra su
     código (77 seguidas hasta el proveedor, 67 por barrido mecánico); los argumentos de texto libre (input.text.type,
     correo, mensajes, file.write, clipboard.write.text, file.edit) dicen su tope de largo. Ese barrido halló además que
@@ -924,6 +924,22 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     pestaña vecina); IsBusy se apaga siempre al terminar un turno (y PostEnvelope captura COMException). Nuevas B
     pendientes b_r42_*. Desde ff863b47f cambiaron 89 descripciones y 17 entradas de argumentos. Suites:
     565/69/477/2189. Sin medir.
+  - Ronda final 43 (sobre 19c1e2f3e): notebook A 7; PC A 4+0+1+4. (1) El kernel: la corrección de la ronda 42
+    sólo tocaba shownCount y hasMore en uno de los dos caminos de corte; ahora CorrectCutListFacts, en los dos (por
+    elementos y por tamaño), reescribe shownCount, pone hasMore en true y pone en true todo campo de corte del proveedor
+    que decía false (resultsMayBeTruncated, truncated, …Truncated), también dentro de un objeto hermano como
+    searchScope. (2) browser.page.read, clipboard.read.text y email.latest.read quedan fuera del presupuesto de 8 KiB del
+    mensaje, con sus propios topes (32.768, 40.000 y 40.000 caracteres; el portapapeles bajó de 65.536 y el cuerpo del
+    correo de 65.536 para caber en los 48.000 del protocolo): antes, una página de los 12.000 por defecto llegaba al
+    modelo en 2.000. (3) close_all dejaba de pulsar otras pestañas sólo tras el comando de cerrar la activa; ahora para
+    sin confirmar si ese comando se mandó y no se vio, y el respaldo de Opera no pulsa otra pestaña tras un clic no visto.
+    (4) peripheral.list, wifi.scan (50 como mucho), wifi.profile.list, bluetooth.device.list y sandbox.diff dicen que una
+    vista muestra 20; peripheral.list pone ratones y teclados antes que los USB. (5) web.download: los 40 s son hasta la
+    respuesta, la transferencia no tiene plazo; game.* con Epic toma la primera entrada; el calendario, 366 días; el
+    texto en español de backup.known.create y file.write; erratas de window.resolve; la cifra de la ronda 41 era 58 en
+    español, no 59. Pruebas nuevas en Kernel (los campos corregidos tras el corte, una página de 12.000 caracteres
+    entera). Nuevas B pendientes b_r43_*. Desde ff863b47f cambiaron 91 descripciones y 17 entradas de argumentos.
+    Suites: 566/69/477/2189. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

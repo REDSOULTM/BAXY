@@ -1590,12 +1590,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 WritePeripherals(writer, source.RootElement, "printers", "printer", "Name", "Name", "PrinterStatus");
             if (requestedKind is "all" or "scanner")
                 WritePeripherals(writer, source.RootElement, "scanners", "scanner", "Name", "DeviceID", "Status");
-            if (requestedKind is "all" or "usb")
-                WritePeripherals(writer, source.RootElement, "usb", "usb", "FriendlyName", "InstanceId", "Status");
+            // Ronda final 43: mice and keyboards before the long USB list, so a view of 20 keeps them.
             if (requestedKind is "all" or "mouse")
                 WritePeripherals(writer, source.RootElement, "mice", "mouse", "FriendlyName", "InstanceId", "Status");
             if (requestedKind is "all" or "keyboard")
                 WritePeripherals(writer, source.RootElement, "keyboards", "keyboard", "FriendlyName", "InstanceId", "Status");
+            if (requestedKind is "all" or "usb")
+                WritePeripherals(writer, source.RootElement, "usb", "usb", "FriendlyName", "InstanceId", "Status");
             writer.WriteEndArray(); writer.WriteString("requestedKind", requestedKind);
             if (source.RootElement.TryGetProperty("unread", out JsonElement unread)
                 && unread.ValueKind == JsonValueKind.Array && unread.GetArrayLength() > 0)
