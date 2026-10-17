@@ -137,6 +137,8 @@ internal sealed class MemoryPanel
     {
         if (_client() is not { IsReady: true } client || _protector() is not { } protector)
         {
+            // Ronda final 24 (regla 3): a count that could not be read again is not told as the current one.
+            Count = null;
             return false;
         }
 

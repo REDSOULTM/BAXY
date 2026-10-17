@@ -254,6 +254,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         CancellationToken cancellationToken)
     {
         HashSet<nint> windowsBefore = TopLevelWindows();
+        Dictionary<nint, string> titlesBefore = windowsBefore.ToDictionary(window => window, WindowTitle);
         var effectBoundary = new ExternalEffectBoundary();
         effectBoundary.Cross(cancellationToken);
         ApplicationOpenResult opened;
@@ -288,8 +289,11 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             ?? (opened.WindowHandle is > 0 and long owned ? ProgramOf(ForegroundHandBack.ProcessOf(owned)) : null);
         for (int attempt = 0; attempt < 16; attempt++)
         {
+            // Ronda final 23-24 (regla 3): the opened application's window proves the file only when it is new or its
+            // title changed to name it (Excel refusing a second «Informe.xlsx» keeps the first one's window).
             (nint Handle, string Title)? shown = opened.WindowHandle is > 0 and long handle
                 && WindowTitle((nint)handle) is { Length: > 0 } title
+                && (!titlesBefore.TryGetValue((nint)handle, out string? titleBefore) || titleBefore != title)
                 && TitleNamesFile(title, stem, fileName, opened.DisplayName)
                     ? ((nint)handle, title)
                     : program is null

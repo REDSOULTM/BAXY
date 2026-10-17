@@ -226,7 +226,7 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
           onClick={clearAll}
           disabled={pending || items.length === 0 || editing !== null}
           style={{ color: 'var(--carmine)' }}
-        >{armed === 'all' ? `confirmar: olvidar los ${items.length}` : 'borrar todo'}</button>
+        >{armed === 'all' ? (err || total > items.length ? 'confirmar: olvidar todo' : `confirmar: olvidar los ${items.length}`) : 'borrar todo'}</button>
       </div>
     </Panel>
   );

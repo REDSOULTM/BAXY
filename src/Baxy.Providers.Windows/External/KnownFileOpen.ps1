@@ -50,7 +50,8 @@ try {
     for($look=0;$look -lt 16 -and $null -eq $title;$look++){
         Start-Sleep -Milliseconds 250
         $shown=Get-Process -ErrorAction SilentlyContinue | Where-Object {
-            $_.MainWindowTitle -and $_.MainWindowTitle.IndexOf($stem,[StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+            # Ronda final 24: the name as a whole word of the title («foto» is not in «Fotos»).
+            $_.MainWindowTitle -and $_.MainWindowTitle -match ('(?<![\p{L}\p{N}])'+[regex]::Escape($stem)+'(?![\p{L}\p{N}])') -and
             ((-not $windowsBefore.ContainsKey([long]$_.MainWindowHandle)) -or ($null -ne $process -and $_.Id -eq $process.Id)) } |
             Select-Object -First 1
         if($null -ne $shown){$title=$shown.MainWindowTitle}

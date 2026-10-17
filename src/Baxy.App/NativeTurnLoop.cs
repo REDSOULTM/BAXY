@@ -240,6 +240,14 @@ internal sealed class NativeTurnLoop
             switch (step)
             {
                 case null:
+                    // Ronda final 24 (regla 3): a beat nobody asked for leaves no failed turn on the person's screen;
+                    // its unreadable decision is only traced.
+                    if (_beat)
+                    {
+                        ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "beat.decision_unavailable", "");
+                        return;
+                    }
+
                     _host.Fail("decision_unavailable");
                     return;
                 case { Kind: "silence" }:

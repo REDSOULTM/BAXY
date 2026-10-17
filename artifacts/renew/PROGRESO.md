@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 37 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 23, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 37 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 24, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -670,6 +670,17 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     23/23: -1,25 frente a la familia de ff863b47f, dentro del ruido. E2E s0 sobre 01f209bee: 18/30 (en el límite; el
     notebook corre s0-2 sobre 14cfe53be para decidirlo). Descripciones cambiadas desde ff863b47f: 37 y 8 entradas de
     argumentos. Suites: 564/69/477/2183. Sin medir.
+  - Ronda final 24 (sobre 790aa0be7): A en el notebook 2 y en el PC 1+0+1+2 (varias la misma). Arregladas: la
+    comprobación de la ronda 23 (la familia de procesos de la apertura) abría un hueco con aperturas reutilizadas (el
+    Explorador o Steam son padres de casi todo): la familia cuenta sólo si la apertura lanzó la app; file.open con
+    aplicación sólo da por abierto con una ventana nueva o cuyo título cambió para nombrar el archivo (Excel que se
+    niega a abrir un segundo «Informe.xlsx» conserva la ventana del primero); tres cifras de los informes (10 textos
+    en español del catálogo, no 6; la lista de rondas con violaciones, que ahora remite al buzón; una herramienta
+    repetida). B: filesystem.file.open.latest compara el nombre como palabra; la descripción del clic dice que actúa
+    detrás cuando puede; un latido fallido no deja una alerta de turno; el contador y «borrar todo» del panel de
+    memoria; nuevas B pendientes b_r24_*. E2E de práctica sobre 14cfe53be: 20, 19 y 19 (media 19,3, igual a la base);
+    la primera respuesta p50 sube a 3828 ms de media (base 3229), en estudio en el notebook. Descripciones cambiadas
+    desde ff863b47f: 37 y 8 entradas de argumentos. Suites: 564/69/477/2183. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -786,6 +797,10 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
   (30) queda a -2,5 de la familia de ff863b47f (34, 32, 32, 32: media 32,5), en el límite de ese ruido. No se busca
   la clave dentro de 0f89ab012: P019 cambia con 3 de 6 commits de descripciones y no con el espacio, y perseguirla
   sería perseguir azar. Las escenas se miden en adelante con perturbaciones neutras en vez de semillas.
+- Producto actual tras los arreglos de seguridad (notebook): escenas sobre 01f209bee, sin tocar y con 3 perturbaciones
+  neutras, 31, 32, 30 y 32 de 39 (media 31,25), 0 molestas, silencio 23/23 (-1,25 frente a la familia de ff863b47f,
+  dentro del ruido); e2e de práctica sobre 01f209bee s0 18/30, y sobre 14cfe53be s0-2 20, 19 y 19 (media 19,3, igual a
+  la base 19,3; primera respuesta p50 3952, 3755 y 3778 ms): sin regresión, sin bisect.
 
 ## Incidente del 2026-10-15: BAXY deshabilitó 256 servicios del PC del dueño (descubierto el 2026-10-17)
 
@@ -810,7 +825,7 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
 - Arreglo (kernel: riesgo y confirmación; proveedor: su barrera de seguridad «Seguridad v2», nunca una ayuda a
   entender): las herramientas que configuran Windows (msconfig, la consola MMC con services.msc, devmgmt, compmgmt,
   gpedit, taskschd, eventvwr, diskmgmt y lusrmgr, el editor del registro, el Administrador de tareas, el Monitor de
-  recursos, las propiedades del sistema, el control de cuentas, netplwiz, el Monitor de recursos (su ventana es de perfmon), Restaurar sistema, el Liberador de espacio,
+  recursos (su ventana es de perfmon), las propiedades del sistema, el control de cuentas, netplwiz, Restaurar sistema, el Liberador de espacio,
   Optimizar unidades, iSCSI, ODBC, características de Windows y Seguridad de Windows) quedan protegidas siempre, como la ventana de BAXY: se pueden abrir y mirar, nunca
   pulsar ni escribir en ellas, y la vista lo dice («herramienta de configuración del sistema: lo hace la persona»).
   «Deshabilitar todos», «Desactivar todo» y «Disable all» piden el «sí» en cualquier aplicación.

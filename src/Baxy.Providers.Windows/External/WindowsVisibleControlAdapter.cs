@@ -840,9 +840,10 @@ internal sealed class WindowsVisibleControlAdapter
     internal Func<nint, bool>? ActRefused { get; init; }
 
     /// <summary>
-    /// Ronda final 22-23: whether a window is the opened application's (drawn or hosted by its process, or by the
-    /// family of processes its launch started, as a launcher's child): a click that names another process's window is
-    /// not bound to the application just opened. Null (the test seams that name none) binds as before.
+    /// Ronda final 22-24: whether a window is the opened application's (drawn or hosted by its process, or, when the
+    /// opening launched it, by the family of processes its launch started, as a launcher's child): a click that names
+    /// another process's window is not bound to the application just opened. Null (the test seams that name none)
+    /// binds as before.
     /// </summary>
     internal Func<nint, VisibleControlSurface.OpenedApplication, bool>? WindowOfProcess { get; init; }
 
@@ -882,7 +883,9 @@ internal sealed class WindowsVisibleControlAdapter
         ActRefused = VisibleControlSurface.ActRefused;
         WindowOfProcess = static (window, opened) =>
         {
-            HashSet<uint> family = VisibleControlSurface.ProcessFamily(opened);
+            // Ronda final 24: the family of processes counts only for an application this opening launched (as
+            // FrontOpenedAsync's); a reused one (the Explorer, Steam) is the parent of much the person started.
+            HashSet<uint> family = opened.Launched ? VisibleControlSurface.ProcessFamily(opened) : [];
             family.Add(unchecked((uint)opened.ProcessId));
             return family.Contains(unchecked((uint)VisibleControlSurface.ViewProcess(window).ProcessId))
                 || VisibleControlSurface.DrawingProcesses(window).Any(process => family.Contains(unchecked((uint)process)));
