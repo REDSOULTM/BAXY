@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 42 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 32, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 44 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 33, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -682,7 +682,8 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     la primera respuesta p50 sube a 3828 ms de media (base 3229), y medida intercalada con el control resultó del
     entorno de ese día, no de los commits (sección «Producto actual»). Descripciones cambiadas
     desde ff863b47f: 37 y 8 entradas de argumentos. Suites: 564/69/477/2183. Sin medir.
-  - Ronda final 25 (sobre 74e328302): el notebook, por primera vez, sin ninguna A en sus cuatro focos ni en su ayudante;
+  - Ronda final 25 (sobre 74e328302): el notebook, por primera vez, sin ninguna A en los focos que mandó (mente,
+    proveedores, bancos y su ayudante del clic visible; su informe de App no llegó, ronda final 33);
     el PC, 4+1+1+1. Arregladas: los botones Sí/No del panel de actividad iban bajo la pregunta más vieja de BAXY (las
     entradas van de la más nueva a la más vieja y el código las invertía), y un «sí» allí confirmaba la llamada
     pendiente más nueva; FrontOpenedAsync con una app reutilizada sigue sólo su propio proceso, no la familia; client.
@@ -698,8 +699,9 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     cancela una edición, rechaza una llamada o marca el canal como leído): ya no hay Escape sin el buscador visto abierto;
     client.channel.locate vuelve a minimizar Discord si lo estaba y el recibo dice si quedó a la vista
     (restoredFromMinimized, leftShown); los textos en español cambiados ya no llevan una cifra que se desfasa; el juicio 5
-    de falsedades corrió con un código que no era 0d2e5433b (la ronda 28 precisó: el de la ronda 7, sin commit a esa hora). La App en las dos máquinas, sin A, con la
-    confirmación revisada de punta a punta. B: texto de la ventana protegida para la de BAXY; ORIGIN.md; nuevas B
+    de falsedades corrió con un código que no era 0d2e5433b (la ronda 28 precisó: el de la ronda 7, sin commit a esa hora). La App del PC, sin A, con la
+    confirmación revisada de punta a punta (el informe de App del notebook no llegó; la ronda final 33 corrigió «en
+    las dos máquinas»). B: texto de la ventana protegida para la de BAXY; ORIGIN.md; nuevas B
     pendientes b_r26_* (una, por verificar en vivo: restaurar una ventana maximizada podría devolverla sin maximizar).
     Descripciones cambiadas desde ff863b47f: 39 y 8 entradas de argumentos. Suites: 564/69/477/2183. Sin medir.
   - Ronda final 27 (sobre bdc5e4b14): A en el notebook 2 y en el PC 1+0+2+2. Arregladas: sin el Escape previo, con
@@ -730,7 +732,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     cerrada con la medición del notebook; nueva B pendiente b_r28_voz_apagado_en_curso. b_r27_spotify_doble_pulsacion
     sigue en B (ver su tarea). Desde ff863b47f cambiaron 40 descripciones y 8 entradas de argumentos (la de la
     calculadora ya contaba). Suites: 564/69/477/2183. Sin medir.
-  - Ronda final 29 (sobre 3e29ee0d0, PC y notebook; la tanda del PC sobre el arreglo de la 28.ª es ésta): A en el PC
+  - Ronda final 29 (sobre 3e29ee0d0; la tanda del PC sobre el arreglo de la 28.ª es ésta; el notebook no respondió): A en el PC
     1+0+3+2, cuatro distintas, todas de la 28.ª o anteriores en client.channel.locate y en los informes. (1) Tras un
     Ctrl+K cuyo buscador se abría tarde, la ronda siguiente lo tomaba por un diálogo de la persona y decía «falló antes
     del efecto»: ahora la tecla se cuenta antes de mandarla (sent) y todo fallo posterior dice efecto posible
@@ -786,6 +788,19 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     esa carpeta que antes; la descripción de media.play.youtube nombra el navegador propio cuando el de la persona no
     se abre; un comentario viejo del Escape en message.draft. Nuevas B pendientes b_r32_*. Desde ff863b47f cambiaron
     42 descripciones y 8 entradas de argumentos. Suites: 564/69/477/2189. Sin medir.
+  - Ronda final 33 (sobre abede16a0): A en el PC 2+0+0+2, tres distintas; el notebook no respondió. (1)
+    system.settings.set con no molestar abre Configuración en Notificaciones, le da el frente y la deja abierta, también
+    cuando el ajuste ya estaba, y nada lo decía: ahora el recibo lleva settingsWindowOpened, la descripción lo dice y
+    el texto en español ya no dice «API oficial». (2) Las descripciones de game.install.cancel.active decían «todas las
+    descargas»: ahora dicen que sólo cancela las ya empezadas de juegos aún no instalados y que una actualización o una
+    instalación encolada sale steam_downloads_not_covered. (3) PROGRESO y metas decían que la App salió sin A «en las
+    dos máquinas» en las rondas 25 y 26: el informe de App del notebook no llegó en ninguna de las dos; corregido, y la
+    entrada de la ronda 29 ya no dice «PC y notebook». B arregladas: la sesión del panel lleva su propio id y su hora de
+    inicio, renovados con «+ new»; «+ new» se niega durante un latido; email.latest.reply sólo se verifica con un correo
+    enviado de la misma conversación; game.installed.named con StateFlags sin leer dice install_state_not_read, no
+    «a medias»; folder.open cuenta una ventana que no se pudo leer antes como una que ya podía mostrar la carpeta.
+    Nuevas B pendientes b_r33_*. Desde ff863b47f cambiaron 44 descripciones y 8 entradas de argumentos. Suites:
+    564/69/477/2189. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

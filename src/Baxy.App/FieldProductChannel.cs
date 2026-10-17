@@ -31,7 +31,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private readonly IFieldEventSink _sink;
     private readonly FieldTelemetrySampler _telemetry;
     private readonly CancellationToken _lifetimeCancellation;
-    private readonly string _sessionId = Guid.NewGuid().ToString("N")[..12];
+    // Ronda final 33 (regla 3): the session's own id and start, renewed with a new session (the panel showed the time
+    // it was opened and kept the old id after «+ new»).
+    private string _sessionId = Guid.NewGuid().ToString("N")[..12];
+    private DateTimeOffset _sessionStarted = DateTimeOffset.Now;
     private string _sessionLabel = "current";
     private long _activitySequence;
     private long _turnSequence;
@@ -215,6 +218,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             }
 
             _sessionLabel = "current";
+            _sessionId = Guid.NewGuid().ToString("N")[..12];
+            _sessionStarted = DateTimeOffset.Now;
             Publish(new JsonObject { ["type"] = "log_clear" });
             Publish(SessionEvent());
             return Json(new JsonObject { ["ok"] = true, ["id"] = _sessionId });
@@ -576,7 +581,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             ["id"] = _sessionId,
             ["label"] = _sessionLabel,
-            ["ts"] = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
+            ["ts"] = _sessionStarted.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
             ["turn_count"] = _viewModel.Messages.Count(static message => message.IsUser),
             ["current"] = true,
         }),

@@ -51,17 +51,20 @@ try {
     # Ronda final 32 (regla 3): only one more Explorer window or tab showing the folder than before the launch proves it
     # (a window the person already had open there proved nothing).
     $shell=New-Object -ComObject Shell.Application
+    # Ronda final 33: a window whose location could not be read before counts as one that may already show the folder.
+    $script:unread=0
     function Count-Showing {
-        $count=0
+        $count=0;$script:unread=0
         foreach($window in @($shell.Windows())){
             try {
                 $observed=[Uri]::UnescapeDataString(([Uri]$window.LocationURL).LocalPath).TrimEnd('\')
                 if([string]::Equals([IO.Path]::GetFullPath($observed),$path.TrimEnd('\'),[StringComparison]::OrdinalIgnoreCase)){$count++}
-            } catch {}
+            } catch {$script:unread++}
         }
         $count
     }
     $before=Count-Showing
+    $before+=$script:unread
     Start-Process explorer.exe -ArgumentList @($path)
     $effect=$true
     $deadline=(Get-Date).AddSeconds(8)

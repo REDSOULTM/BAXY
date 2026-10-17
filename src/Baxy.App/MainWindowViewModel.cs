@@ -463,7 +463,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>A new conversation: the transcript, the model's session and anything pending start over.</summary>
     internal bool StartNewUiSession()
     {
-        if (IsBusy)
+        // Ronda final 33 (regla 3): not while a heartbeat holds the turn either (its line would land in the new session).
+        if (IsBusy || _beatActive)
         {
             return false;
         }

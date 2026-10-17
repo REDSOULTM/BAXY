@@ -2158,6 +2158,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 writer.WriteString(
                     "authority",
                     "windows_uia_notifications_toggle_postread");
+                // Ronda final 33 (regla 3): Settings was opened on its Notifications page and left open, even when the
+                // setting already was so.
+                writer.WriteBoolean("settingsWindowOpened", true);
                 writer.WriteEndObject();
             });
             return ExternalJson.Switched(operation, quietResult, quietEffect);

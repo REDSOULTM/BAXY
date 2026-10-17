@@ -653,7 +653,7 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.WorkLoss,
             "game.install.cancel.active.steam.all.postread.v1",
-            "Cancela todas las descargas activas observadas en Steam y verifica que ninguna siga progresando."),
+            "Cancela las descargas ya empezadas de juegos aún no instalados en Steam y verifica que ninguna siga progresando; una actualización de un juego instalado o una instalación encolada sin bytes no se cancela (steam_downloads_not_covered)."),
         Descriptor(
             "game.install.named",
             // REOPEN1993 grupo S: la tienda nombrada tras el título (Steam o Epic).
@@ -1430,7 +1430,7 @@ public static class ProductCatalog
                 ["setting", "value"]),
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
-            "Cambia un ajuste permitido mediante API oficial (brillo, no molestar o modo avión sobre todas las radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura."),
+            "Cambia un ajuste permitido (brillo; no molestar, por la página Notificaciones de Configuración, que queda abierta; o modo avión sobre todas las radios, por la API de radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura."),
         Descriptor(
             "system.settings.status",
             Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),

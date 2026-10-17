@@ -69,8 +69,10 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 // Ronda final: what is read is the Steam and Epic manifests by the exact name; none named so is not «not
                 // installed» (another name, another store), so only a match says installed.
                 // Ronda final 32 (regla 3): only a finished install says installed; one still downloading says so.
-                if (distinct.Any(game => game.Complete))
+                if (distinct.Any(game => game.Complete == true))
                     writer.WriteBoolean("installed", true);
+                else if (distinct.Any(game => game.Complete is null))
+                    writer.WriteString("state", "install_state_not_read");
                 else if (distinct.Length > 0)
                     writer.WriteString("state", "install_not_finished");
                 else
@@ -85,7 +87,8 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                     writer.WriteString("gameId", OpaqueId(game.Provider, game.Identity));
                     writer.WriteString("manifestSha256", game.ManifestSha256);
                     writer.WriteBoolean("installDirectoryPresent", true);
-                    writer.WriteBoolean("installFinished", game.Complete);
+                    if (game.Complete is { } finished)
+                        writer.WriteBoolean("installFinished", finished);
                     writer.WriteEndObject();
                 }
                 writer.WriteEndArray();
@@ -125,10 +128,13 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 }
                 // Ronda final 32 (regla 3): a manifest without Steam's FullyInstalled flag (4) is an install still
                 // queued or downloading, whose folder already exists: never «installed».
-                _ = ulong.TryParse(AcfValue(content, "StateFlags"), out ulong flags);
+                // Ronda final 33: StateFlags missing or unreadable is the state not read, never «not finished».
+                bool? complete = ulong.TryParse(AcfValue(content, "StateFlags"), out ulong flags)
+                    ? (flags & 4UL) != 0
+                    : null;
                 yield return new InstalledGame(
                     "steam", name, appId.Length > 0 ? appId : manifest,
-                    Sha256File(manifest), (flags & 4UL) != 0);
+                    Sha256File(manifest), complete);
             }
         }
     }
@@ -259,5 +265,5 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         string Title,
         string Identity,
         string ManifestSha256,
-        bool Complete);
+        bool? Complete);
 }

@@ -88,6 +88,9 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           $baseline=[DateTime]::UtcNow
           $reply=$verified.Reply()
           $reply.Body=$text+"`r`n`r`n"+[string]$reply.Body
+          # Ronda final 33 (regla 3): only a sent mail of the same conversation is this reply (another «ok» sent a minute
+          # ago would pass on its text alone).
+          $conversation=[string]$verified.ConversationID
           $reply.Send();$effect=$true
           $sentFolder=$session.GetDefaultFolder(5)
           $sent=$null
@@ -98,7 +101,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
               if($seen++ -ge 50){break}
               try {
                 $sentOn=([DateTime]$candidate.SentOn).ToUniversalTime()
-                if($sentOn -ge $baseline.AddMinutes(-1) -and ([string]$candidate.Body).StartsWith($text,[StringComparison]::Ordinal)){$sent=$candidate;break}
+                if($sentOn -ge $baseline.AddMinutes(-1) -and $conversation.Length -gt 0 -and [string]$candidate.ConversationID -eq $conversation -and ([string]$candidate.Body).StartsWith($text,[StringComparison]::Ordinal)){$sent=$candidate;break}
               }catch{}
             }
           }
