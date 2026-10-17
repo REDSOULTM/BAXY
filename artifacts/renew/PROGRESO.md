@@ -1263,3 +1263,19 @@ F:/BAXYeval/reales_v1; aquí sólo van cifras, ids y descripciones genéricas. R
   dev (texto de desarrollo: se espera que BAXY no actúe). 1.839 casos (ejemplos deduplicados): dev 1.200, any 352,
   call 99, ask 58, text 34, noact 25, falta 23, out 21, solo 27. El notebook hizo un triage independiente que se
   cruza con éste como segunda opinión.
+
+### Fase 1 (decisión) y fase 2: clasificación y grupos
+
+- Decisión del conjunto de ajuste en las dos GPUs (s0, mente de 845d652ad): PC 1.278/1.839 por el juez del banco
+  (prefijo de su calentamiento 42.168 tokens con la lista de apps del producto del PC; p50 1,06 s), notebook 1.296/1.839
+  (prefijo 41.268; p50 1,03 s). Juez propio (F:/BAXYeval/reales_v1/juzgar.py; OK sólo si sale bien en las dos):
+  pedidos en español/inglés 345 misiones: OK 233, ELIGE_MAL 78, FALTA_SKILL 23, FUERA_DE_DISEÑO 11; otros idiomas
+  (pt/fr/de/it, fuera de foco por decisión del dueño) 31: OK 17, ELIGE_MAL 13, FUERA 1; texto de desarrollo 1.089:
+  OK 980, ELIGE_MAL 109. Falsedades confirmadas a mano: 28 (17 en la GPU del PC y 11 más en la del notebook), en 26
+  misiones; casi todas ante texto pegado («he guardado / he tomado nota / listo, se ejecutó» sin herramienta) y dos
+  pedidos de memoria contestados sin memory.recall (el valor salía del ejemplo de memory.save).
+- 33 enmiendas razonadas del oráculo tras leer los fallos (primer paso de lectura hacia el objetivo, la hora que ya
+  da el contexto en mind.py:355…), en F:/BAXYeval/reales_v1/enmiendas.txt.
+- Informe para el dueño: artifacts/renew/auditoria_reales.md (cifras por clase y los 17 grupos, con causa y arreglo).
+  La ejecución (EJECUTA_MAL) la corre el notebook sobre las 159 misiones que deciden bien en las dos GPUs y se
+  pueden ejecutar sin riesgo (nb-reales-e2e-845, producto de c1e692392).
