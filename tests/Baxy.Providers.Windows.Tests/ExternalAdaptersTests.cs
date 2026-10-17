@@ -1080,7 +1080,7 @@ public sealed class ExternalAdaptersTests
         await File.WriteAllTextAsync(
             Path.Combine(steamApps, "appmanifest_1097150.acf"),
             "\"AppState\" { \"appid\" \"1097150\" \"name\" \"Fall Guys\" " +
-            "\"installdir\" \"Fall Guys\" }");
+            "\"StateFlags\" \"4\" \"installdir\" \"Fall Guys\" }");
         await File.WriteAllTextAsync(
             Path.Combine(epicManifests, "fortnite.item"),
             JsonSerializer.Serialize(new
@@ -1111,6 +1111,48 @@ public sealed class ExternalAdaptersTests
             Assert.That(epic.Result?.GetProperty("installed").GetBoolean(), Is.True);
             Assert.That(epic.Result?.GetProperty("games")[0]
                 .GetProperty("provider").GetString(), Is.EqualTo("epic"));
+        });
+    }
+
+    // Ronda final 32 (regla 3): an install still queued or downloading (Steam without FullyInstalled, Epic with
+    // bIsIncompleteInstall) already has its folder, and is never said installed.
+    [Test]
+    public async Task AnInstallNotFinishedIsNeverSaidInstalled()
+    {
+        using TemporaryDirectory temporary = new();
+        string steamApps = Path.Combine(temporary.Path, "steamapps");
+        string epicManifests = Path.Combine(temporary.Path, "epic-manifests");
+        string epicInstall = Path.Combine(temporary.Path, "Fall Guys Epic");
+        Directory.CreateDirectory(Path.Combine(steamApps, "common", "Hollow Knight"));
+        Directory.CreateDirectory(epicManifests);
+        Directory.CreateDirectory(epicInstall);
+        await File.WriteAllTextAsync(
+            Path.Combine(steamApps, "appmanifest_367520.acf"),
+            "\"AppState\" { \"appid\" \"367520\" \"name\" \"Hollow Knight\" " +
+            "\"StateFlags\" \"1026\" \"installdir\" \"Hollow Knight\" }");
+        await File.WriteAllTextAsync(
+            Path.Combine(epicManifests, "fallguys.item"),
+            JsonSerializer.Serialize(new
+            {
+                DisplayName = "Fall Guys",
+                InstallLocation = epicInstall,
+                CatalogItemId = "fallguys-catalog-id",
+                bIsIncompleteInstall = true,
+            }));
+        var adapter = new WindowsGameInstallationAdapter([steamApps], [epicManifests]);
+
+        ExternalCapabilityReceipt steam = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"steam","title":"Hollow Knight"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt epic = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"epic","title":"Fall Guys"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(steam.Result?.TryGetProperty("installed", out _), Is.False);
+            Assert.That(steam.Result?.GetProperty("state").GetString(), Is.EqualTo("install_not_finished"));
+            Assert.That(steam.Result?.GetProperty("games")[0].GetProperty("installFinished").GetBoolean(), Is.False);
+            Assert.That(epic.Result?.TryGetProperty("installed", out _), Is.False);
+            Assert.That(epic.Result?.GetProperty("state").GetString(), Is.EqualTo("install_not_finished"));
         });
     }
 

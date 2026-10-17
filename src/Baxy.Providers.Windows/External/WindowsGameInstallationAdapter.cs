@@ -68,8 +68,11 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 writer.WriteString("provider", provider);
                 // Ronda final: what is read is the Steam and Epic manifests by the exact name; none named so is not «not
                 // installed» (another name, another store), so only a match says installed.
-                if (distinct.Length > 0)
+                // Ronda final 32 (regla 3): only a finished install says installed; one still downloading says so.
+                if (distinct.Any(game => game.Complete))
                     writer.WriteBoolean("installed", true);
+                else if (distinct.Length > 0)
+                    writer.WriteString("state", "install_not_finished");
                 else
                     writer.WriteString("state", "no_steam_or_epic_manifest_with_that_name");
                 writer.WriteNumber("matchCount", distinct.Length);
@@ -82,6 +85,7 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                     writer.WriteString("gameId", OpaqueId(game.Provider, game.Identity));
                     writer.WriteString("manifestSha256", game.ManifestSha256);
                     writer.WriteBoolean("installDirectoryPresent", true);
+                    writer.WriteBoolean("installFinished", game.Complete);
                     writer.WriteEndObject();
                 }
                 writer.WriteEndArray();
@@ -119,9 +123,12 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 {
                     continue;
                 }
+                // Ronda final 32 (regla 3): a manifest without Steam's FullyInstalled flag (4) is an install still
+                // queued or downloading, whose folder already exists: never «installed».
+                _ = ulong.TryParse(AcfValue(content, "StateFlags"), out ulong flags);
                 yield return new InstalledGame(
                     "steam", name, appId.Length > 0 ? appId : manifest,
-                    Sha256File(manifest));
+                    Sha256File(manifest), (flags & 4UL) != 0);
             }
         }
     }
@@ -146,9 +153,13 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 {
                     continue;
                 }
+                // Ronda final 32 (regla 3): Epic marks an install not finished yet (bIsIncompleteInstall), as
+                // SteamLocalAdapter already reads it for its own Epic checks.
+                bool incomplete = root.TryGetProperty("bIsIncompleteInstall", out JsonElement unfinished)
+                    && unfinished.ValueKind == JsonValueKind.True;
                 yield return new InstalledGame(
                     "epic", name, identity.Length > 0 ? identity : manifest,
-                    Sha256File(manifest));
+                    Sha256File(manifest), !incomplete);
             }
         }
     }
@@ -247,5 +258,6 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         string Provider,
         string Title,
         string Identity,
-        string ManifestSha256);
+        string ManifestSha256,
+        bool Complete);
 }

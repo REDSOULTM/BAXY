@@ -782,18 +782,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
         else
         {
-            // DISCORD1839 inherited, driven from here: Escape closes anything open
-            // (Ctrl+K toggles an already open switcher shut), Ctrl+K opens the
-            // switcher and the name is typed; its active result is opened only when
-            // it names the recipient (C3). The keys travel through the same
-            // SendInput path that already sends WhatsApp messages; a PowerShell
-            // helper stole the foreground, which closes the switcher.
-            // Ronda 24 (t1-c09, t2-c07, t3-c07, client opened cold): the switcher is used only once it is there. After
-            // the shortcut, a new editable field (or a result row of its list) must hold the focus (the composer keeps
-            // its own); the old fixed 1.4 s is now the most it waits. Nothing seen on a client started just now:
-            // Escape and the shortcut once more; still nothing, the name is never typed (it would go into whatever has
-            // the focus, maybe a composer) and nothing was written. Nothing seen on a client running for longer, or a
-            // window that cannot be read at all: the timed path of before is kept (revisión 2 de r24).
+            // DISCORD1839 inherited, driven from here: Ctrl+K opens the switcher and the name is typed; its active result
+            // is opened only when it names the recipient (C3). The keys travel through the same SendInput path that
+            // already sends WhatsApp messages; a PowerShell helper stole the foreground, which closes the switcher.
+            // Rondas finales 26-29 (regla 3): no Escape first; no key with the focus already inside a dialog or a window
+            // that did not answer; the switcher counts as open only with a new focus inside a dialog of the page (the
+            // shortcut once more, then refused, on any client); the closing Escape only with the focus still in it.
             ValueTask<ClientInteraction> Read(CancellationToken token) => probe.ReadAsync(handle, content: false, token);
             // Ronda final 26 (regla 3): no Escape before the switcher is seen open: in Discord it marks the open channel
             // read, declines a call or cancels an edit of the person's. The focus before the shortcut is read as it is.

@@ -27,7 +27,10 @@ try {
     catch [System.Management.Automation.ItemNotFoundException]{throw 'known_folder_missing'}
     catch{throw 'known_folder_not_read'}
     if(-not $item.PSIsContainer){throw 'known_folder_missing'}
+    # Ronda final 32 (regla 3): hidden and system files are never the latest (Word's lock file ~$informe.docx, written
+    # while the person edits, would open as an error dialog), as file.find skips them.
     $file=Get-ChildItem -LiteralPath $path -File -Force |
+        Where-Object { -not ($_.Attributes -band ([IO.FileAttributes]::Hidden -bor [IO.FileAttributes]::System)) } |
         Where-Object { $safeExtensions -contains $_.Extension.ToLowerInvariant() } |
         Sort-Object LastWriteTimeUtc,Name -Descending |
         Select-Object -First 1

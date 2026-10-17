@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 42 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 31, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 42 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 32, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   y de seguridad (el incidente de msconfig, el HttpClient de visión) de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -773,6 +773,19 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     que no quedó en ningún archivo; desde esta ronda la salida de las suites se copia en
     artifacts/renew/suites_rondas_finales.txt. Nuevas B pendientes b_r31_*. Desde ff863b47f cambiaron 42
     descripciones y 8 entradas de argumentos. Suites: 564/69/477/2187. Sin medir.
+  - Ronda final 32 (sobre cc8fe39f7): A en el PC 0+0+2+1; el notebook no respondió. (1)
+    game.install.cancel.active decía «no queda ninguna descarga» con una instalación recién encolada (StateFlags 1026,
+    sin bytes) o una actualización en curso, que esta operación no cancela: ahora, mientras un manifiesto lleve
+    UpdateStarted, UpdateRunning o Downloading, falla con steam_downloads_not_covered. (2) game.installed.named decía
+    installed:true de una instalación a medias (la carpeta ya existe): ahora Steam exige FullyInstalled (4) y Epic
+    mira bIsIncompleteInstall; si no, state install_not_finished e installFinished por juego. (3) La descripción de
+    client.channel.locate prometía switcherNotClosed también en los fallos: ahora dice que eso va en el éxito y que un
+    fallo tras el atajo sólo dice que pudo haber efecto (lo de la ronda 30, «que lo dice si queda abierto», sólo era
+    cierto en el éxito). B arregladas: filesystem.file.open.latest nunca elige un archivo oculto o de sistema (el
+    ~$informe.docx de Word); filesystem.folder.open sólo se verifica con una ventana o pestaña más del Explorador en
+    esa carpeta que antes; la descripción de media.play.youtube nombra el navegador propio cuando el de la persona no
+    se abre; un comentario viejo del Escape en message.draft. Nuevas B pendientes b_r32_*. Desde ff863b47f cambiaron
+    42 descripciones y 8 entradas de argumentos. Suites: 564/69/477/2189. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

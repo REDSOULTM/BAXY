@@ -48,22 +48,26 @@ try {
     catch [System.Management.Automation.ItemNotFoundException]{throw 'known_folder_missing'}
     catch{throw 'known_folder_not_read'}
     if(-not $item.PSIsContainer){throw 'known_folder_missing'}
-    Start-Process explorer.exe -ArgumentList @($path)
-    $effect=$true
+    # Ronda final 32 (regla 3): only one more Explorer window or tab showing the folder than before the launch proves it
+    # (a window the person already had open there proved nothing).
     $shell=New-Object -ComObject Shell.Application
-    $deadline=(Get-Date).AddSeconds(8)
-    $verified=$false
-    do {
+    function Count-Showing {
+        $count=0
         foreach($window in @($shell.Windows())){
             try {
                 $observed=[Uri]::UnescapeDataString(([Uri]$window.LocationURL).LocalPath).TrimEnd('\')
-                if([string]::Equals([IO.Path]::GetFullPath($observed),$path.TrimEnd('\'),[StringComparison]::OrdinalIgnoreCase)){
-                    $verified=$true
-                    break
-                }
+                if([string]::Equals([IO.Path]::GetFullPath($observed),$path.TrimEnd('\'),[StringComparison]::OrdinalIgnoreCase)){$count++}
             } catch {}
         }
-        if($verified){break}
+        $count
+    }
+    $before=Count-Showing
+    Start-Process explorer.exe -ArgumentList @($path)
+    $effect=$true
+    $deadline=(Get-Date).AddSeconds(8)
+    $verified=$false
+    do {
+        if((Count-Showing) -gt $before){$verified=$true;break}
     } while((Wait-BaxyPoll $deadline 250))
     [pscustomobject]@{version=1;ok=$verified;effectObserved=$effect;folder=$Folder;subdirectory=$Subdirectory;verifiedPathName=[IO.Path]::GetFileName($path);authority='windows_shell_location_postread';error=$(if($verified){$null}else{'known_folder_window_not_verified'})}|ConvertTo-Json -Compress
     if(-not $verified){exit 2}

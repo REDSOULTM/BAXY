@@ -402,6 +402,29 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Ronda final 32 (regla 3): a new install queued with no bytes yet (1026) is not cancelled by this operation, so it
+    // never says no download is left.
+    [Test]
+    public async Task CancelActiveNeverSaysNoneLeftWithAQueuedInstall()
+    {
+        var automation = new FakeSteamAutomation(onDispatch: null, onCancel: null);
+        var adapter = new SteamLocalAdapter(
+            () => [.. Catalog, new SteamLocalGame("367520", "Hollow Knight", "hk-sha", StateFlags: 1026)],
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.cancel.active", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_downloads_not_covered"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(automation.CancelCount, Is.Zero);
+        });
+    }
+
     [Test]
     public async Task SnapshotFailureAfterAcceptedDispatchPreservesAmbiguousEffect()
     {

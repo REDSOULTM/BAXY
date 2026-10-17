@@ -743,12 +743,19 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                     canceled.ErrorCode ?? "steam_cancel_active_failed",
                     canceled.EffectObserved);
         }
-        string[] remaining = _snapshot()
+        IReadOnlyList<SteamLocalGame> after = _snapshot();
+        string[] remaining = after
             .Where(game => !game.Installed && game.BytesDownloaded > 0
                 && InstallState(game) is "downloading" or "installing")
             .Select(game => game.AppId).Distinct(StringComparer.Ordinal).ToArray();
         if (remaining.Length != 0)
             return ExternalJson.Failure(operation, "steam_active_downloads_remain", active.Length > 0);
+        // Ronda final 32 (regla 3): a download that wrote no bytes yet (a new install queued: UpdateRequired with
+        // UpdateStarted, 1026) or an update of an installed game (UpdateStarted 1024, UpdateRunning 256, Downloading
+        // 1048576) is not cancelled here: while one is in the manifests, «no active download left» is not said.
+        const ulong DownloadFlags = 1024UL | 256UL | 1048576UL;
+        if (after.Any(game => (game.StateFlags & DownloadFlags) != 0))
+            return ExternalJson.Failure(operation, "steam_downloads_not_covered", active.Length > 0);
         return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
