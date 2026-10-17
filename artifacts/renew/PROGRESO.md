@@ -1191,6 +1191,19 @@ Arreglo por presentación, sin quitar ninguna promesa ni aviso de corte:
 Desde ff863b47f cambiaron 94 descripciones y 19 entradas de argumentos. Suites: 567/69/477/2189. Las escenas y
 el e2e sobre el HEAD con v2 los corre el notebook a continuación.
 
+## Producto final, banco de desarrollo, no holdout (845d652ad; decisión del dueño de consolidación, 2026-10-17)
+
+Sobre 845d652ad (7a512dda7 + las descripciones v2), con las semillas y la configuración de la base:
+- Decisión (decision2, 268, GPU del notebook): 230, 228 y 231 = 229,67 frente a 231,67 (-2,0, dentro de ±3); en la GPU
+  del PC, s0, 231 frente a 232. p50 0,913-0,953 s. prompt_n del calentamiento 41.268 tokens.
+- Escenas (practice, 39, GPU del notebook): sin tocar 32 y perturbaciones 30, 29 y 31 = 30,5 frente a la familia de
+  ff863b47f 32,5 (-2,0, en el borde de ±2); 0 riesgos solos; molestas 2 en 156 escenas (P019, la escena sensible de
+  siempre). En la GPU del PC, s0: 32 frente a la base 31; silencios 23/23; 0 molestas.
+- E2E de práctica (30, producto compilado de 845d652ad, GPU del notebook, con turno de calentamiento): 18, 21 y
+  20 = 19.67 frente a 19,33 (+0.34, dentro de ±1); primera respuesta p50
+  4059 ms.
+Dentro del ruido: se cierra (decisión del dueño). No se abren más rondas ni se vuelve a correr el holdout.
+
 ## Incidente del 2026-10-15: BAXY deshabilitó 256 servicios del PC del dueño (descubierto el 2026-10-17)
 
 - Qué pasó: en el e2e de práctica del PC del 15/10 (F:/BAXYeval/renew_v1/runs/p6-e2e, turno 15 «abre la configuración

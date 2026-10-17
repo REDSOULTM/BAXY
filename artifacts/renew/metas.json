@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-17 (consolidación del dueño: bancos de desarrollo y v2 de las descripciones)",
+  "actualizado": "2026-10-17 (cierre: producto final 845d652ad, banco de desarrollo, no holdout)",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -231,9 +231,9 @@
     },
     {
       "id": "limpieza_codigo_muerto",
-      "estado": "pendiente",
+      "estado": "hecha",
       "quien": "NB",
-      "evidencia": "ver metas.ronda_final_auditoria: cada ronda final revisa el código muerto en su foco y lo hallado se quita (p. ej. ronda 13: dos métodos COM sin uso); queda pendiente con la auditoría. Historia del bloque anterior: rondas A y B quitaron lo hallado; quedan los puntos (2) y (3) de la ronda B del bloque anterior (ya no se conservan) (código que sólo leen pruebas)"
+      "evidencia": "ver metas.ronda_final_auditoria: cada ronda final revisa el código muerto en su foco y lo hallado se quita (p. ej. ronda 13: dos métodos COM sin uso); queda pendiente con la auditoría. Historia del bloque anterior: rondas A y B quitaron lo hallado; quedan los puntos (2) y (3) de la ronda B del bloque anterior (ya no se conservan) (código que sólo leen pruebas) Cerrada el 2026-10-17 con la auditoría (decisión del dueño de consolidación): lo hallado en las rondas finales se quitó; no se abren más rondas."
     },
     {
       "id": "perfil_4gb",
@@ -1640,6 +1640,33 @@
         "descripciones_ff863b47f": 230,
         "v1": 230,
         "v2": 231
+      },
+      "845d652ad": {
+        "decision": [
+          230,
+          228,
+          231
+        ],
+        "decision_media": 229.67,
+        "decision_pc_s0": 231,
+        "escenas": [
+          32,
+          30,
+          29,
+          31
+        ],
+        "escenas_media": 30.5,
+        "escenas_pc_s0": 32,
+        "molestas": "2 de 156 (P019)",
+        "e2e": [
+          18,
+          21,
+          20
+        ],
+        "e2e_media": 19.67,
+        "e2e_primera_respuesta_p50_ms": 4059.0,
+        "prompt_n": 41268,
+        "veredicto": "dentro del ruido: producto final, banco de desarrollo, no holdout"
       }
     }
   },
@@ -1658,5 +1685,11 @@
   "decision_dueno_2026_10_17_consolidacion": {
     "fecha": "2026-10-17",
     "texto_tal_cual": "Decisión del dueño (2026-10-17), anótala tal cual en PROGRESO.md y metas.json: no se abren más\nrondas de auditoría; el objetivo ahora es el mejor producto posible con lo ya hecho.\n1. Termina la ronda 45: arregla sus A, 4 suites, diff verificado, commit y push a hub. Cierra\n   ronda_final_auditoria como límite honesto con su evidencia (A de las rondas 19-45 arregladas y\n   probadas; B pendientes con archivo:línea).\n2. Consolidación: el notebook corre una vez los bancos de desarrollo de la decisión 20 (decisión,\n   escenas y e2e) sobre el HEAD, con las semillas y la configuración de la base.\n3. Si caen más allá del ruido, o para devolver contexto al historial: condensa por presentación las\n   descripciones del catálogo (sin quitar ninguna promesa ni aviso de corte), mide el prefijo y\n   vuelve a correr los bancos; queda sólo lo que no baje. Si sigue cayendo, bisect por commits y\n   arreglo sólo por presentación o protocolo.\n4. Arregla las B pendientes que tocan rutas de uso normal y cuestan menos de 15 minutos.\n5. Cierre: metas y PROGRESO al día, commit, push a hub, borrar el recordatorio horario e informe\n   final corto para el dueño (qué hace BAXY, qué no, cifras medidas y lo pendiente).\nAvísale al notebook por el buzón."
+  },
+  "cierre": {
+    "fecha": "2026-10-17",
+    "producto_final": "845d652ad",
+    "informe": "artifacts/renew/INFORME_FINAL.md",
+    "nota": "criterios de término cerrados: cada meta cumplida o límite honesto con su evidencia (decisiones del dueño de 2026-10-17); bancos de desarrollo del producto final dentro del ruido"
   }
 }
