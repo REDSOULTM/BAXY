@@ -730,6 +730,20 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     cerrada con la medición del notebook; nueva B pendiente b_r28_voz_apagado_en_curso. b_r27_spotify_doble_pulsacion
     sigue en B (ver su tarea). Desde ff863b47f cambiaron 40 descripciones y 8 entradas de argumentos (la de la
     calculadora ya contaba). Suites: 564/69/477/2183. Sin medir.
+  - Ronda final 29 (sobre 3e29ee0d0, PC y notebook; la tanda del PC sobre el arreglo de la 28.ª es ésta): A en el PC
+    1+0+3+2, cuatro distintas, todas de la 28.ª o anteriores en client.channel.locate y en los informes. (1) Tras un
+    Ctrl+K cuyo buscador se abría tarde, la ronda siguiente lo tomaba por un diálogo de la persona y decía «falló antes
+    del efecto»: ahora la tecla se cuenta antes de mandarla (sent) y todo fallo posterior dice efecto posible
+    (client_dialog_after_shortcut). (2) Con el frente perdido antes del Escape el buscador quedaba abierto y el recibo
+    decía «sin efecto»: ahora switcherLeftOpen y efecto observado, también si tras el Escape el foco sigue en un
+    diálogo; el texto en español lo dice. (3) Las filas se aceptaban aunque fueran las de antes del filtro (Discord lo
+    dibuja 0,6-2,6 s tarde, X1): ahora cuentan sólo con el campo del buscador mostrando el nombre y filas distintas de
+    las de antes de escribir; si no, client_quick_switcher_not_read. (4) metas decía «27.ª, A 2+5»: es 5+2. B
+    arregladas: un turno que ejecutó una operación y se queda sin decisión falla con
+    decision_unavailable_after_operation; message.draft no manda ninguna tecla si la primera lectura no responde, y
+    su Escape final sólo sale con el foco releído dentro del buscador (lo que la ronda 27 dijo de «ningún Escape sobre
+    un foco no leído» no era exacto hasta ahora). Nuevas B pendientes b_r29_*. Desde ff863b47f siguen 40
+    descripciones y 8 entradas de argumentos. Suites: 564/69/477/2184. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).

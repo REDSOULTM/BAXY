@@ -307,6 +307,36 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         });
     }
 
+    // Ronda final 29 (regla 3): client.channel.locate counts its Ctrl+K before pressing it, and any failure after it
+    // (a switcher that opened late and is then taken for a dialog, a lost front) keeps the possible effect.
+    [Test]
+    public void TheChannelLookupSaysAKeyWentOutOnEveryFailureAfterIt()
+    {
+        DirectoryInfo? root = new(AppContext.BaseDirectory);
+        while (root is not null && !File.Exists(Path.Combine(root.FullName, "Baxy.slnx")))
+        {
+            root = root.Parent;
+        }
+
+        Assert.That(root, Is.Not.Null, "Baxy.slnx was not found.");
+        string source = File.ReadAllText(Path.Combine(
+            root!.FullName, "src", "Baxy.Providers.Windows", "External", "WindowsDeviceControlAdapter.cs"));
+        int sent = source.IndexOf("$state.sent=$true", StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(sent, Is.GreaterThan(0));
+            Assert.That(sent, Is.LessThan(source.IndexOf("[void][BaxyMarkedKeys]::Character([char]'k',$true)", StringComparison.Ordinal)));
+            Assert.That(source, Does.Contain("leftShown=$leftShown;sent=$state.sent}"));
+            Assert.That(source, Does.Contain("|| Bool(root, \"leftShown\") || Bool(root, \"sent\"));"));
+            Assert.That(source, Does.Contain("'client_dialog_after_shortcut'"));
+            // Rows count only once the switcher's field holds the name and they changed since before typing; a switcher
+            // not closed is said.
+            Assert.That(source, Does.Contain("($now -join \"`n\") -ne $rowsBefore -and (Field-Shows $label)"));
+            Assert.That(source, Does.Contain("leftOpen=$state.leftOpen}"));
+            Assert.That(source, Does.Contain("effectObserved: Bool(root, \"leftShown\") || Bool(root, \"leftOpen\")"));
+        });
+    }
+
     [Test]
     public void TheDiscordSearchTypesOnlyIntoASwitcherSeenOpen()
     {

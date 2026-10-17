@@ -248,7 +248,9 @@ internal sealed class NativeTurnLoop
                         return;
                     }
 
-                    _host.Fail("decision_unavailable");
+                    // Ronda final 29 (regla 3): after an operation ran in this turn the code says so (it may have had an
+                    // effect), never only that no decision came.
+                    _host.Fail(calls > 1 ? "decision_unavailable_after_operation" : "decision_unavailable");
                     return;
                 case { Kind: "silence" }:
                     return;

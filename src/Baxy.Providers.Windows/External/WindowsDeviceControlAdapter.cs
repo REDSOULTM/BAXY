@@ -1218,18 +1218,30 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         function Read-Items {
           $r=@();$dialog=Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)
           if($null -eq $dialog){return ,$r}
-          # Auditoría final (regla 3): the switcher counts as read only with its rows found: no rows is the switcher not
-          # read, never «no channel».
           $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
           $found=$dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants,$row)
-          if($found.Count -gt 0){$state.read=$true;foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}}
+          foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}
           ,$r
+        }
+        # Ronda final 29 (regla 3): whether a field of the switcher's dialog holds exactly the typed name (its value read
+        # through ValuePattern); a field that cannot be read says no.
+        function Field-Shows([string]$text) {
+          $dialog=Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)
+          if($null -eq $dialog){return $false}
+          $edit=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit)
+          foreach($e in $dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants,$edit)){
+            $vp=$null
+            if($e.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp)){
+              try{if(([string]([System.Windows.Automation.ValuePattern]$vp).Current.Value).Trim() -eq $text){return $true}}catch{}
+            }
+          }
+          $false
         }
         # The product and its console compete for the foreground while this runs; a lost focus can drop the
         # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
         # and confirming it held, until the switcher shows matches; nothing is joined or opened.
         # The script runs as a block (& { }): a function sets the flag through a table both share, never $script:.
-        $items=@();$foreground=$false;$state=@{read=$false;notOpened=$false;dialogFocus=$false}
+        $items=@();$foreground=$false;$state=@{read=$false;notOpened=$false;dialogFocus=$false;sent=$false;leftOpen=$false}
         for($round=0;$round -lt 5 -and $items.Count -eq 0;$round++){
           [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
@@ -1245,28 +1257,44 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           # Ronda final 28 (regla 3): a focus inside a dialog may be the switcher already open (Ctrl+K would close it
           # and the name would go to the message box): no key is sent. After Ctrl+K the switcher is open only with a
           # new focus inside a dialog (the message box and the channel and message lists are in none).
+          # Ronda final 29 (regla 3): once a key went out, a dialog may be the switcher this run opened late: the
+          # receipt says a key was sent (sent), never a failure before any effect.
           if($null -ne (Dialog-Of $focusBefore)){$state.dialogFocus=$true;break}
+          $state.sent=$true
           [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
           if([BaxyClientWin]::GetForegroundWindow() -ne $h){continue}
           $focusNow=[System.Windows.Automation.AutomationElement]::FocusedElement
           $newFocus=$null -ne $focusNow -and $focusNow.Current.ProcessId -eq $clientPid -and [string]::Join('.',$focusNow.GetRuntimeId()) -ne $idBefore
           $switcherOpen=$newFocus -and $null -ne (Dialog-Of $focusNow)
           if(-not $switcherOpen){$state.notOpened=$true;continue}
+          # Ronda final 29 (regla 3): Discord draws the filter 0.6-2.6 s after the name (X1, measured on the notebook), so
+          # the rows count as read only once the switcher's field holds the name and the rows differ from the ones shown
+          # before typing; else the switcher is not read, never «no channel».
+          $rowsBefore=(Read-Items) -join "`n"
           [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
-          for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
-          # The switcher is closed only with Discord still in front (an Escape never reaches another window).
-          if([BaxyClientWin]::GetForegroundWindow() -eq $h){[void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300}
+          for($poll=0;$poll -lt 10;$poll++){
+            $now=Read-Items
+            if($now.Count -gt 0 -and ($now -join "`n") -ne $rowsBefore -and (Field-Shows $label)){$items=$now;$state.read=$true;break}
+            Start-Sleep -Milliseconds 500
+          }
+          # The switcher is closed only with Discord still in front (an Escape never reaches another window). Ronda final
+          # 29 (regla 3): a switcher not closed, or still holding the focus after the Escape, is said (leftOpen).
+          $state.leftOpen=$true
+          if([BaxyClientWin]::GetForegroundWindow() -eq $h){
+            [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
+            $state.leftOpen=$null -ne (Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement))
+          }
         }
         # Ronda final 26 (regla 3): a window the look restored from minimized goes back to minimized (SW_SHOWMINNOACTIVE),
         # read back; the receipt says how it was left.
         $leftShown=$false
         if($wasMinimized){[void][BaxyClientWin]::ShowWindow($h,7);Start-Sleep -Milliseconds 150;$leftShown=-not [BaxyClientWin]::IsIconic($h)}
-        if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
-        if($state.dialogFocus -and -not $state.read){[pscustomobject]@{ok=$false;error='client_focus_in_a_dialog';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
-        if($state.notOpened -and -not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_opened';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
+        if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground';restoredFromMinimized=$wasMinimized;leftShown=$leftShown;sent=$state.sent}|ConvertTo-Json -Compress;exit 3}
+        if($state.dialogFocus -and -not $state.read){[pscustomobject]@{ok=$false;error=$(if($state.sent){'client_dialog_after_shortcut'}else{'client_focus_in_a_dialog'});restoredFromMinimized=$wasMinimized;leftShown=$leftShown;sent=$state.sent}|ConvertTo-Json -Compress;exit 3}
+        if($state.notOpened -and -not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_opened';restoredFromMinimized=$wasMinimized;leftShown=$leftShown;sent=$state.sent}|ConvertTo-Json -Compress;exit 3}
         # Ronda final: the switcher never kept the front long enough to be read: nothing is said of its rows.
-        if(-not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read';restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress;exit 3}
-        [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items);restoredFromMinimized=$wasMinimized;leftShown=$leftShown}|ConvertTo-Json -Compress
+        if(-not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_read';restoredFromMinimized=$wasMinimized;leftShown=$leftShown;sent=$state.sent}|ConvertTo-Json -Compress;exit 3}
+        [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items);restoredFromMinimized=$wasMinimized;leftShown=$leftShown;leftOpen=$state.leftOpen}|ConvertTo-Json -Compress
         """;
 
     private static readonly Regex ClientChannelName = new(
@@ -1304,7 +1332,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         }
         catch (Exception exception) when (exception is TimeoutException or IOException or InvalidDataException)
         {
-            // Ronda final: the script types Esc, Ctrl+K and the name into the client: a failure from here on may have
+            // Ronda final: the script may type Ctrl+K and the name into the client: a failure from here on may have
             // left them there.
             return ExternalJson.FailureAfterEffect(operation, "client_quick_switcher_not_read");
         }
@@ -1337,8 +1365,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 ? error.GetString() ?? "client_quick_switcher_not_read"
                 : "client_quick_switcher_not_read";
             // Ronda final 27: Ctrl+K reached the client even when its switcher was not seen open (an effect possible).
+            // Ronda final 29: any failure after a key was sent (sent) keeps the possible effect.
             return ExternalJson.Failure(operation, code,
-                code is "client_quick_switcher_not_read" or "client_quick_switcher_not_opened" || Bool(root, "leftShown"));
+                code is "client_quick_switcher_not_read" or "client_quick_switcher_not_opened"
+                || Bool(root, "leftShown") || Bool(root, "sent"));
         }
         var items = new List<string>();
         if (root.TryGetProperty("items", out JsonElement itemsElement) && itemsElement.ValueKind == JsonValueKind.Array)
@@ -1392,11 +1422,17 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 writer.WriteBoolean("restoredFromMinimized", true);
                 writer.WriteBoolean("leftShown", Bool(root, "leftShown"));
             }
+            // Ronda final 29 (regla 3): the switcher could not be closed (the front left Discord) or still held the focus.
+            if (Bool(root, "leftOpen"))
+            {
+                writer.WriteBoolean("switcherLeftOpen", true);
+            }
+
             writer.WriteString("authority", "client_quick_switcher_uia_read");
             writer.WriteEndObject();
         });
-        // A window left shown is an effect on the person's window, said as such.
-        return ExternalJson.Success(operation, result, effectObserved: Bool(root, "leftShown"));
+        // A window left shown, or the switcher left open, is an effect on the person's window, said as such.
+        return ExternalJson.Success(operation, result, effectObserved: Bool(root, "leftShown") || Bool(root, "leftOpen"));
     }
 
     private static ExternalCapabilityReceipt DisplayStatus(string operation)

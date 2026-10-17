@@ -803,8 +803,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // a cold client can focus its composer by itself while the shortcut does nothing yet).
             byte[]? composerBefore = TryCaptureComposer(handle, channel);
             // Ronda final 28 (regla 3): a focus inside a dialog may be the switcher already open: no key is sent
-            // (Ctrl+K would close it and the name would reach the person's message box).
-            if (SearchStateUnknown(before.Focused))
+            // (Ctrl+K would close it and the name would reach the person's message box). Ronda final 29: nor with a
+            // window that did not answer the read (since ronda 27 the name is never typed then, so a key would only
+            // toggle the switcher).
+            if (!before.Answered || SearchStateUnknown(before.Focused))
             {
                 return UnverifiedChat(handle, processId, composerUntouched: true);
             }
@@ -875,7 +877,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // open. The name should have gone only into the switcher's own input: the composer is pictured again; a
             // composer that changed (or cannot be read) may hold the name.
             // Ronda final 27 (regla 3): only a switcher seen open is closed (the name is typed only into one now).
-            if (input == InputWait.Opened)
+            // Ronda final 29 (regla 3): and only while it still holds the focus, read now (a click on a named row
+            // closes it and opens that chat, where an Escape would decline a call).
+            if (input == InputWait.Opened
+                && (await Read(cancellationToken).ConfigureAwait(false)).Focused is { InDialog: true })
             {
                 SendKey(VirtualKeyEscape);
                 await Task.Delay(300, cancellationToken).ConfigureAwait(false);
