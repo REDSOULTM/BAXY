@@ -125,6 +125,6 @@ La etiqueta de la barra de título en bypass dice «bypass · sin confirmar lo q
 que decía de más: el latido sigue esperando el sí y el panel de memoria sigue en dos pasos). Build deliberado
 `pnpm build` con el grafo fijado.
 
-- `dist/index.html`: `DB10534B3AD63EA849002722E207863C852BA860C84789AAA0B23D9CD12B1903` (ronda final 21 de BAXY Renew: apunta al bundle nuevo)
+- `dist/index.html`: `D69A5F1156626BD4473A8F3A8D9B1E3489CD8B4C33B4E2AE69B78D20B52C3262` (ronda final 22 de BAXY Renew: apunta al bundle nuevo)
 - `dist/assets/index-COQjHLMx.css`: sin cambios
-- `dist/assets/index-BIEQQ6Sz.js`: `BCE9A065C859CDC381EF376AC5E892140D5009A937D672770C11091C387B6C91` (reconstruido en la ronda final 21 de BAXY Renew: el panel y el contador de memoria dicen «desactivada» o «—», nunca 0 sin leer)
+- `dist/assets/index-a00YbLEt.js`: `9805F27C1A5BA7ACBD82DA478FDC073EF806841ED395424DD486384BE00EFD19` (reconstruido en las rondas finales 21 y 22 de BAXY Renew: el panel, su pie y el contador de memoria dicen «desactivada» o «—», nunca 0 sin leer)

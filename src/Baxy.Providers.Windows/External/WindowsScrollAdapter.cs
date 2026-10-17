@@ -30,6 +30,10 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
     private readonly Func<nint, string, string, int, CancellationToken, ValueTask<JsonDocument?>>? _reveal;
     private readonly Func<nint, int, int, bool> _shows;
 
+    /// <summary>Ronda final 22 (seguridad): an act refused on the window the wheel would reach
+    /// (<see cref="VisibleControlSurface.ActRefused"/> in the product; null in the test seams).</summary>
+    internal Func<nint, bool>? ActRefused { get; init; }
+
     internal WindowsScrollAdapter(
         WindowsVisibleControlAdapter? controls = null,
         IForegroundLease? lease = null,
@@ -116,6 +120,10 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
                         return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
                     }
 
+                    // Ronda final 22 (seguridad): judged on the window it scrolls, not only on the one in front.
+                    if (ActRefused?.Invoke(window) == true)
+                        return ExternalJson.FailureBeforeEffect(operation, "protected_window");
+
                     if (controlId.Length > 0)
                     {
                         ExternalCapabilityReceipt? patterned = await ScrollPatternAsync(
@@ -143,6 +151,10 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
                     window = missionWindow != 0
                         ? missionWindow
                         : await _foreground(cancellationToken).ConfigureAwait(false);
+                    // Ronda final 22 (seguridad): the window the wheel would reach (the one resolved when the desktop or
+                    // the taskbar is in front may be another) is judged as an act on it.
+                    if (window != 0 && ActRefused?.Invoke(window) == true)
+                        return ExternalJson.FailureBeforeEffect(operation, "protected_window");
                     if (window != 0)
                     {
                         burst = await Lease.AcquireAsync(window, cancellationToken).ConfigureAwait(false);
@@ -398,7 +410,8 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
             return error switch
             {
                 "scroll_pattern_unavailable" => null,
-                "visible_control_identity_stale" or "active_window_not_found" or "visible_lookup_timeout" =>
+                "visible_control_identity_stale" or "active_window_not_found" or "visible_lookup_timeout"
+                    or "protected_window" =>
                     ExternalJson.FailureBeforeEffect(operation, error),
                 _ => effectBoundary.Failure(operation, "scroll_receipt_invalid"),
             };

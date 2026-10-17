@@ -1037,7 +1037,7 @@ internal static partial class VisibleControlSurface
         cancellationToken.ThrowIfCancellationRequested();
         if (hwnd == 0)
             return ValueTask.FromResult<CapturedWindow?>(null);
-        ShowBehind(hwnd);
+        _ = ShowBehind(hwnd);
         if (!TryBounds(hwnd, out int left, out int top, out _, out _))
             return ValueTask.FromResult<CapturedWindow?>(null);
         bool drawsItself = selfDrawn ?? (covered || CoveredFromAbove(hwnd));
@@ -1054,18 +1054,20 @@ internal static partial class VisibleControlSurface
     /// <summary>
     /// A minimized window draws nothing (no capture gets it) and its accessible tree shrinks: it is shown at its
     /// place without being activated, right behind the window the person has in front, which keeps the front and
-    /// the keyboard (v3 point 0). Nothing happens to a window that is not minimized.
+    /// the keyboard (v3 point 0). Nothing happens to a window that is not minimized. Ronda final 22 (regla 3): true when
+    /// it was minimized and is shown now, so the look says it (it stays shown).
     /// </summary>
-    internal static void ShowBehind(nint hwnd)
+    internal static bool ShowBehind(nint hwnd)
     {
         if (hwnd == 0 || !IsIconic(hwnd))
-            return;
+            return false;
         nint foreground = GetForegroundWindow();
         nint root = foreground == 0 ? 0 : GetAncestor(foreground, 2);
         // SW_SHOWNOACTIVATE (4); then below the person's window: SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE.
         _ = ShowWindow(hwnd, 4);
         if (root != 0 && root != hwnd)
             _ = SetWindowPos(hwnd, root, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010);
+        return !IsIconic(hwnd);
     }
 
     /// <summary>The refusal of a point located on a surface that changed while the person's pause was waited for.</summary>

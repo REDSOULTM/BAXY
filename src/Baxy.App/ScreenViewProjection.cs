@@ -74,6 +74,12 @@ internal static class ScreenViewProjection
                 text.Append(", es el diálogo modal que bloquea la ventana");
             }
 
+            // Ronda final 22 (regla 3): the look itself showed a minimized window; said, as it stays shown.
+            if ((bool?)window["shownFromMinimized"] == true)
+            {
+                text.Append(", estaba minimizada: la mirada la mostró detrás de la de delante, sin activarla, y queda así");
+            }
+
             if ((bool?)window["systemTool"] == true)
             {
                 // Incidente del 2026-10-15: no name opens a system configuration tool to acts.

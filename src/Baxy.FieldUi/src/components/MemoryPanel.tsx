@@ -61,7 +61,7 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
         if (cancelled) return;
         if (!r.ok) { setErr(`error del servidor ${r.status}`); return; }
         const data = (await r.json()) as { items?: MemoryItem[]; error?: string; total?: number | null; enabled?: boolean };
-        if (data.error) setErr(data.error);
+        if (data.error) setErr(data.error); else setErr(null);
         setOff(data.enabled === false);
         setItems(data.items ?? []);
         setTotal(data.total ?? (data.items ?? []).length);
@@ -211,7 +211,8 @@ export function MemoryPanel({ onClose, revision = 0 }: Props) {
           </button>
         )}
         <span className="muted" style={{ marginLeft: 'auto' }}>
-          {total > items.length ? `${items.length} de ${total} recuerdos` : `${items.length} recuerdos`}
+          {/* ronda final 21-22: no count when the memory is off or the list could not be read */}
+          {off || err ? '—' : total > items.length ? `${items.length} de ${total} recuerdos` : `${items.length} recuerdos`}
         </span>
         <button
           type="button"

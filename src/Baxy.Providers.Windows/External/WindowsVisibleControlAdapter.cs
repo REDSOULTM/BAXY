@@ -839,6 +839,13 @@ internal sealed class WindowsVisibleControlAdapter
     /// </summary>
     internal Func<nint, bool>? ActRefused { get; init; }
 
+    /// <summary>
+    /// Ronda final 22: whether <paramref name="window"/> is drawn by the process <c>processId</c> (or hosts it): a
+    /// click that names another process's window is not bound to the application just opened. Null (the test seams that
+    /// name none) binds as before.
+    /// </summary>
+    internal Func<nint, int, bool>? WindowOfProcess { get; init; }
+
     private bool Refuses(nint window) => window != 0 && ActRefused?.Invoke(window) == true;
 
     // A worker answer for an act refused before it is sent: nothing reached the window.
@@ -873,6 +880,8 @@ internal sealed class WindowsVisibleControlAdapter
     {
         RootWindows = VisibleControlSurface.RootWindowsNow;
         ActRefused = VisibleControlSurface.ActRefused;
+        WindowOfProcess = static (window, processId) => VisibleControlSurface.ViewProcess(window).ProcessId == processId
+            || VisibleControlSurface.DrawingProcesses(window).Contains(processId);
         BurstLease = ForegroundLease.Shared;
     }
 
@@ -1121,6 +1130,12 @@ internal sealed class WindowsVisibleControlAdapter
         // meanwhile; then the label for a bounded stretch on each new main
         // window. Any other click looks two or three times and answers.
         VisibleControlSurface.OpenedApplication? opened = _focus.TakeOpened();
+        // Ronda final 22 (regla 3): a click that names a window of another process than the application just opened
+        // («abre Spotify», then «en Chrome pulsa Aceptar» with Chrome's window) acts in the window it names, never in
+        // the opened one.
+        if (opened is { } openedNow && namedWindow != 0 && WindowOfProcess is { } ofProcess
+            && !ofProcess(namedWindow, openedNow.ProcessId))
+            opened = null;
         if (opened is { } seenOpening && _openedLooked is { } looked
             && looked.Shows(seenOpening, namedWindow, label))
         {
@@ -1607,6 +1622,7 @@ internal sealed class WindowsVisibleControlAdapter
         nint cover = 0;
         // Encargo EX: the window was read through the modal dialog that disabled it (ModalSurface).
         bool modal = false;
+        bool shownBehind = false;
         // The top-level window the look is of, before its modal dialog is taken.
         nint windowRoot = 0;
         try
@@ -1642,7 +1658,7 @@ internal sealed class WindowsVisibleControlAdapter
                 modal = hwnd != disabled;
                 // A minimized window is shown behind the person's own before its tree is read (it shrinks while
                 // minimized) and before it is captured.
-                VisibleControlSurface.ShowBehind(hwnd);
+                shownBehind = VisibleControlSurface.ShowBehind(hwnd);
                 cover = VisibleControlSurface.CoveringWindow(hwnd);
             }
         }
@@ -1821,6 +1837,10 @@ internal sealed class WindowsVisibleControlAdapter
                 // the modal dialog that disabled the window, not of the window itself.
                 if (modal)
                     writer.WriteBoolean("modal", true);
+                // Ronda final 22 (regla 3): the window was minimized; the look showed it behind the person's own,
+                // without activating it, and it stays so.
+                if (shownBehind)
+                    writer.WriteBoolean("shownFromMinimized", true);
                 // Contract «Seguridad v2»: a developer's or BAXY's own window (an editor, an IDE, a terminal, a console,
                 // BAXY) that the request did not name, told by its process, never by its title. No act reaches such a
                 // window (protected_window, VisibleControlSurface.ActRefused); one this look named by its application

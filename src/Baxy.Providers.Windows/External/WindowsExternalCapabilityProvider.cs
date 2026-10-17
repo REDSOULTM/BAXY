@@ -90,7 +90,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new ExplorerFolderAdapter(),
             desktopInteraction,
             visibleControls,
-            new WindowsScrollAdapter(visibleControls),
+            new WindowsScrollAdapter(visibleControls) { ActRefused = VisibleControlSurface.ActRefused },
             new WindowsKnownFileAdapter(),
             new WindowsSandboxNamedFileAdapter(root),
             new WindowsKnownBackupAdapter(root),

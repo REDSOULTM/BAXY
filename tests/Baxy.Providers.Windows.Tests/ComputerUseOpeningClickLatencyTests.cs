@@ -328,6 +328,31 @@ public sealed class ComputerUseOpeningClickLatencyTests
         });
     }
 
+    // Ronda final 22: a click that names a window of another process than the application just opened acts in the
+    // window it names: no opening's wait, the label looked for there.
+    [Test]
+    public async Task AClickThatNamesAnotherProcesssWindowIsNotBoundToTheOpening()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
+        var focus = new FixedOpening(4242);
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, new Locator("ocr"), null, focus, OpeningTiming,
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"))
+        {
+            WindowOfProcess = (window, processId) => false,
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Aceptar","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.Not.EqualTo("visible_opened_window_not_shown"));
+            Assert.That(focus.FrontCalls, Is.Zero, "the opened application is not waited on");
+            Assert.That(worker.Commands[0], Does.Contain("\"hwnd\":4660"), "the label is looked for on the window named");
+        });
+    }
+
     // Counter-case: a click that names no window keeps the opening's wait too: it would otherwise be
     // bound to whatever holds the front.
     [Test]

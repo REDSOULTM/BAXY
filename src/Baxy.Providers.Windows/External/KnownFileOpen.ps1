@@ -37,20 +37,25 @@ try {
     $startInfo.UseShellExecute=$true
     $process=[Diagnostics.Process]::Start($startInfo)
     $effect=$true
-    $verified=$false
-    if($null -ne $process){
-        # A live process must still survive the original 350 ms stability
-        # horizon. WaitForExit preserves that success criterion while allowing
-        # a terminal process failure to return as soon as it is observable.
-        $exited=$process.WaitForExit(350)
-        $verified=-not $exited -and -not $process.HasExited
+    # Ronda final 22 (regla 3): a live process is no proof the file opened (Word alive under «el archivo está dañado»):
+    # the proof is a window whose title names the file, as file.open's; the process id goes as data.
+    $stem=[IO.Path]::GetFileNameWithoutExtension($file.Name)
+    $title=$null
+    for($look=0;$look -lt 16 -and $null -eq $title;$look++){
+        Start-Sleep -Milliseconds 250
+        $shown=Get-Process -ErrorAction SilentlyContinue | Where-Object {
+            $_.MainWindowTitle -and $_.MainWindowTitle.IndexOf($stem,[StringComparison]::OrdinalIgnoreCase) -ge 0 } |
+            Select-Object -First 1
+        if($null -ne $shown){$title=$shown.MainWindowTitle}
     }
+    $verified=$null -ne $title
     [pscustomobject]@{
         version=1;ok=$verified;effectObserved=$effect;folder=$Folder
         fileName=$file.Name;lastWriteUtc=$file.LastWriteTimeUtc.ToString('O')
         processId=$(if($null -eq $process){$null}else{$process.Id})
-        authority='known_folder_latest_safe_file_process_postread'
-        error=$(if($verified){$null}else{'latest_file_process_not_verified'})
+        windowTitle=$title
+        authority='known_folder_latest_safe_file_window_title_postread'
+        error=$(if($verified){$null}else{'latest_file_open_not_verified'})
     }|ConvertTo-Json -Compress
     if(-not $verified){exit 2}
 } catch {

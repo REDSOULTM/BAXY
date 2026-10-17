@@ -1822,8 +1822,8 @@ public sealed class ExternalAdaptersTests
         var adapter = new WindowsDesktopInteractionAdapter(
             new StubProcessRunner(
                 "{\"version\":1,\"ok\":true,\"effectObserved\":true," +
-                "\"folder\":\"downloads\",\"fileName\":\"report.pdf\"," +
-                "\"authority\":\"known_folder_latest_safe_file_process_postread\"}"),
+                "\"folder\":\"downloads\",\"fileName\":\"report.pdf\",\"windowTitle\":\"report.pdf - Adobe Acrobat\"," +
+                "\"authority\":\"known_folder_latest_safe_file_window_title_postread\"}"),
             folderScript,
             fileScript,
             selectScript,

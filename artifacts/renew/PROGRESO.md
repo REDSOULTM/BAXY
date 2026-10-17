@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 35 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 21, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 35 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 22, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -644,6 +644,18 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     lo fue), corregidos. B: optionalfeatures protegido, «puede haber» desactivados sin listar, cifras del banco de
     desarrollo precisadas; B pendientes b_r21_*. Descripciones cambiadas desde ff863b47f, por diff de claves: 35 y 8
     entradas de argumentos. Suites: 564/69/477/2181. Sin medir.
+  - Ronda final 22 (sobre 01f209bee): A en el notebook 2 y en el PC 2+3+2+1, varias la misma. Arregladas: el recibo de
+    game.launch se escribe después de mostrar otra vez las ventanas de Steam y releerlas (steamWindowsShownAgain y
+    steamWindowsLeftMinimized); el pie del panel de memoria dice «—» apagada o sin leer; input.visible.controls dice
+    que una ventana minimizada se muestra detrás de la de delante (la vista lo marca, shownFromMinimized), no «no toca
+    nada»; la descripción de input.visible.click dice dónde actúa sin ventana como lo hace el código (con índice, la
+    última mirada; si no, la app recién abierta o la de delante); un clic que nombra la ventana de otro proceso ya no se
+    ata a la app recién abierta; filesystem.file.open.latest da el archivo por abierto sólo con una ventana que lo
+    nombra, no por un proceso vivo; input.scroll juzga la ventana a la que llega la rueda (fuera del alcance b, por
+    seguridad). El informe del incidente dice lo que el registro muestra de la restauración (245 a las 01:17, 7 antes,
+    CryptSvc en Manual). B: el rechazo del scroll es antes del efecto, las líneas de las B pendientes al día; nueva B
+    pendiente b_r22_*. Descripciones cambiadas desde ff863b47f, por diff de claves: 35 y 8 entradas de argumentos.
+    Suites: 564/69/477/2182. Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -768,11 +780,16 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
   sin pedir confirmación. El registro System guarda 256 eventos 7040 «a deshabilitado» del 15/10 a las 14:38. El cambio
   se hizo efectivo en el siguiente arranque: el 17/10 a las 00:38:47 el PC se cerró de golpe (evento 6008; según el
   dueño, por un proceso que lanzó él, no por este cambio) y al arrancar, a las 01:12, lo hizo sin red, sin sonido y sin
-  casi nada, por los servicios deshabilitados. El dueño lo restauró con msconfig a las 01:17 (evento
-  1074, msconfig.exe; los 7040 de vuelta a su inicio normal); la clave MSConfig\services quedó vacía.
+  casi nada, por los servicios deshabilitados. El dueño restauró con msconfig a las 01:17 (evento 1074,
+  msconfig.exe): volvieron 245 servicios (eventos 7040); otros 7 habían vuelto antes por otros caminos (sshd a las
+  14:42:09 del 15/10, CryptSvc, Windows Update, WAP push, dos de edgeupdate y Copilot); Epic Games Updater, BattlEye
+  y GIGABYTE Update no tienen evento de vuelta pero hoy están en su tipo original. «Servicios de cifrado» (CryptSvc),
+  antes en Automático, pasó a Manual el 15/10 a las 14:39:01 y así sigue (corriendo): se le avisó al dueño, que
+  decide. La clave MSConfig\services quedó vacía.
 - El mismo caso llevó a BAXY a msconfig en otras cuatro corridas (p1, p3, p5 y p8): en p3 y p5 llegó a la pestaña
-  «Servicios» y en p3 pulsó «Cerrar» (su «Aceptar» no se encontró); sólo p6 pulsó «Deshabilitar todos». Ninguna sesión ni subagente de
-  este goal ejecutó comandos de msconfig, bcdedit o servicios: fue el producto, dentro de un banco.
+  «Servicios» y en p3 pulsó «Cerrar» (su «Aceptar» no se encontró); sólo p6 pulsó «Deshabilitar todos». En los transcripts de las
+  sesiones y subagentes de este goal no hay ningún comando de msconfig, bcdedit ni de servicios: fue el producto,
+  dentro de un banco. Que sshd volviera a Automático a las 14:42:09 del 15/10 no se pudo atribuir.
 - Por qué pasó: el riesgo de un clic se juzgaba sólo por su etiqueta, y «Deshabilitar todos» no estaba entre los verbos
   que piden el «sí»; y msconfig no estaba entre las ventanas protegidas (la lista sólo tenía editores, terminales,
   consolas y BAXY). Lo único que podía frenarlo era la UIPI de Windows, que en el PC no lo hizo.
@@ -787,5 +804,6 @@ commit con su semilla; catálogo volcado de su kernel). El holdout v3 no se vuel
   máquina sólo leyendo y no correr más e2e hasta que el arreglo esté en hub.
   Su revisión (01:26): ningún servicio deshabilitado por BAXY; en dos corridas suyas del 15/10 BAXY llegó a msconfig
   y lo frenó la UIPI (msconfig corre elevado y BAXY no: window_elevated), no la política; en la corrida p2 pulsó
-  «Configuración» en Seguridad de Windows. En el PC nada lo frenó: los bancos corrían con derechos que la UIPI no
-  separaba. El arreglo ya no depende de la elevación.
+  «Configuración» en Seguridad de Windows. En el PC nada lo frenó; la causa probable, no comprobada: el PC eleva sin
+  preguntar (ConsentPromptBehaviorAdmin=0), así que BAXY pudo correr elevado. Desde la ronda final 21 el arreglo ya no
+  depende de la elevación (la barrera juzga la ventana real de cada acto).

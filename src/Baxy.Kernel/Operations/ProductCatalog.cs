@@ -907,7 +907,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "input.visible.controls.windows.uia.snapshot.v2",
-            "Vista compacta de una ventana (la de la aplicación nombrada o la de delante): hasta sesenta controles visibles con número, tipo, etiqueta y estado, el texto leído por zonas cuando se pide (includeText) o la ventana no muestra controles, y si no se leyó o se cortó, el título y el proceso; no toca nada."),
+            "Vista compacta de una ventana (la de la aplicación nombrada o la de delante): hasta sesenta controles visibles con número, tipo, etiqueta y estado, el texto leído por zonas cuando se pide (includeText) o la ventana no muestra controles, y si no se leyó o se cortó, el título y el proceso; no pulsa ni escribe nada (una ventana minimizada se muestra detrás de la de delante, sin activarla, y la vista lo dice)."),
         Descriptor(
             "media.control",
             Schema(

@@ -796,13 +796,19 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             int? processId = FindLaunchedProcess(before, installRoot);
             if (processId is not null)
             {
+                // Ronda final 22 (regla 3): shown again before the receipt says so, and read back.
+                (int shownAgain, int leftMinimized) = _automation.ShowAgain(dispatch);
                 JsonElement result = ExternalJson.Create(writer =>
                 {
                     writer.WriteStartObject(); writer.WriteNumber("version", 1);
                     writer.WriteString("appId", appId); writer.WriteString("name", game.Name);
                     writer.WriteNumber("processId", processId.Value);
-                    if (dispatch.VisibleSteamWindowsBefore is { Count: > 0 } minimized)
-                        writer.WriteNumber("steamWindowsMinimizedAndShownAgain", minimized.Count);
+                    if (dispatch.VisibleSteamWindowsBefore is { Count: > 0 })
+                    {
+                        writer.WriteNumber("steamWindowsShownAgain", shownAgain);
+                        if (leftMinimized > 0)
+                            writer.WriteNumber("steamWindowsLeftMinimized", leftMinimized);
+                    }
                     writer.WriteString("authority", "steam_manifest_process_postread"); writer.WriteEndObject();
                 });
                 return ExternalJson.Success(operation, result, effectObserved: true);
@@ -824,7 +830,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         }
         finally
         {
-            _automation.ShowAgain(dispatch);
+            // Every other end shows them again too (a window already shown is left as it is).
+            _ = _automation.ShowAgain(dispatch);
         }
     }
 
@@ -1053,22 +1060,29 @@ internal interface ISteamClientAutomation
         IReadOnlyList<string> labels,
         CancellationToken cancellationToken);
 
-    /// <summary>Ronda final 21: shows again, without activating them, the Steam windows <paramref name="dispatch"/>
-    /// minimized that are still minimized.</summary>
-    void ShowAgain(SteamDispatchResult dispatch)
-    {
-    }
+    /// <summary>Ronda final 21-22: shows again, without activating them, the Steam windows <paramref name="dispatch"/>
+    /// minimized that are still minimized, and reads them back: how many were shown again, and how many stay minimized.</summary>
+    (int ShownAgain, int LeftMinimized) ShowAgain(SteamDispatchResult dispatch) => (0, 0);
 }
 
 internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomation
 {
-    public void ShowAgain(SteamDispatchResult dispatch)
+    public (int ShownAgain, int LeftMinimized) ShowAgain(SteamDispatchResult dispatch)
     {
+        int shown = 0;
+        int left = 0;
         foreach (nint window in dispatch.VisibleSteamWindowsBefore ?? new HashSet<nint>())
         {
+            if (!IsIconic(window))
+                continue;
+            _ = ShowWindow(window, 4);
             if (IsIconic(window))
-                _ = ShowWindow(window, 4);
+                left++;
+            else
+                shown++;
         }
+
+        return (shown, left);
     }
 
     // How long the dialog an act's address opens is waited for, and from which look a Steam window in front counts as
