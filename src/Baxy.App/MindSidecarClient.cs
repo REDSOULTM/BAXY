@@ -150,8 +150,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
     public event Action<string>? TranscriptReceived;
 
-    // Ronda final 18 (regla 3): the mind's process ended (its output pump returned), so whoever shows it ready is told.
-    public event Action? Ended;
+    // Ronda final 18-19 (regla 3): the mind stopped being ready, so whoever shows it ready (or listening) is told:
+    // true when its process ended (its output pump returned, and its voice with it), false when a failed request
+    // invalidated it with the process still alive.
+    public event Action<bool>? ReadyLost;
 
     /// <summary>Estado no sensible de la tubería de voz (hilo del pump).</summary>
     public event Action<JsonObject>? VoiceEventReceived;
@@ -216,7 +218,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             var helloCompletion = new TaskCompletionSource<JsonObject>(
                 TaskCreationOptions.RunContinuationsAsynchronously);
             _pump = PumpAsync(sidecar.Process, helloCompletion, _pumpCancellation.Token);
-            _ = _pump.ContinueWith(static (_, state) => ((MindSidecarClient)state!).Ended?.Invoke(), this,
+            _ = _pump.ContinueWith(static (_, state) => ((MindSidecarClient)state!).ReadyLost?.Invoke(true), this,
                 CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 
             JsonObject hello = await helloCompletion.Task
@@ -624,9 +626,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             || !cancellationToken.IsCancellationRequested)
         {
             string failure = ClassifyRequestFailure(exception, timeoutExpired);
-            if (InvalidatesMind(failure, requestType))
+            if (InvalidatesMind(failure, requestType) && _ready)
             {
                 _ready = false;
+                ReadyLost?.Invoke(false);
             }
 
             ShellTraceSink.Record(ShellTraceScopes.Turn, traceId,

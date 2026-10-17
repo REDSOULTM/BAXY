@@ -16,9 +16,11 @@ internal static partial class VisibleControlSurface
 
     /// <summary>The desktop's usable root windows (top of the Z order first), the root window in front, the processes
     /// that draw the clicked window and the person's last input that reaches a window (<see cref="PersonInputMark"/>),
-    /// at one moment.</summary>
+    /// at one moment; and every running process with the one that started it (<paramref name="Parents"/>, null or
+    /// empty when the snapshot of processes could not be read).</summary>
     internal sealed record RootSnapshot(
-        IReadOnlyList<RootWindow> Windows, nint Front, IReadOnlySet<int> Clicked, long PersonInput);
+        IReadOnlyList<RootWindow> Windows, nint Front, IReadOnlySet<int> Clicked, long PersonInput,
+        IReadOnlyDictionary<int, int>? Parents = null);
 
     /// <summary>
     /// Review 3 of palanca 8 (B1): the person's input a handoff is measured against is any that reaches a window (a key
@@ -40,19 +42,25 @@ internal static partial class VisibleControlSurface
     /// The window <paramref name="now"/> shows that the click handed its effect to: of a process that does not draw
     /// the clicked window, born since <paramref name="before"/> (the topmost one) or, already there, now in front when
     /// it was not; none when the person's input came in between (their own switch, click or key). 0 when none.
+    /// Ronda final 19 (regla 3): only a window the click can have caused counts: its process started after
+    /// <paramref name="before"/> was taken, or was started by a process that draws the clicked window. A window of a
+    /// process already running (a notification, an application finishing its own start) is no effect of the click,
+    /// and without the processes of both moments nothing counts.
     /// </summary>
-    internal static RootWindow HandedTo(RootSnapshot before, RootSnapshot now) => HandedTo(before, now, out _);
-
-    /// <inheritdoc cref="HandedTo(RootSnapshot, RootSnapshot)"/>
     internal static RootWindow HandedTo(RootSnapshot before, RootSnapshot now, out bool born)
     {
         born = false;
-        if (now.PersonInput != before.PersonInput)
+        if (now.PersonInput != before.PersonInput
+            || before.Parents is not { Count: > 0 } running || now.Parents is not { Count: > 0 } current)
             return default;
+        bool Caused(int process) =>
+            !running.ContainsKey(process)
+            || (current.TryGetValue(process, out int parent) && before.Clicked.Contains(parent));
         var earlier = new HashSet<nint>(before.Windows.Select(window => window.Window));
         foreach (RootWindow window in now.Windows)
         {
-            if (window.Window == 0 || window.ProcessId <= 0 || before.Clicked.Contains(window.ProcessId))
+            if (window.Window == 0 || window.ProcessId <= 0 || before.Clicked.Contains(window.ProcessId)
+                || !Caused(window.ProcessId))
                 continue;
             if (!earlier.Contains(window.Window))
             {
@@ -63,7 +71,7 @@ internal static partial class VisibleControlSurface
 
         if (now.Front != 0 && now.Front != before.Front && earlier.Contains(now.Front)
             && now.Windows.FirstOrDefault(window => window.Window == now.Front) is { Window: not 0 } forward
-            && forward.ProcessId > 0 && !before.Clicked.Contains(forward.ProcessId))
+            && forward.ProcessId > 0 && !before.Clicked.Contains(forward.ProcessId) && Caused(forward.ProcessId))
             return forward;
         return default;
     }
@@ -90,8 +98,12 @@ internal static partial class VisibleControlSurface
         var drawing = new HashSet<int>(DrawingProcesses(clicked));
         if (clicked != 0 && ViewProcess(clicked).ProcessId is > 0 and int viewed)
             drawing.Add(viewed);
+        var parents = new Dictionary<int, int>();
+        foreach ((uint process, uint parent) in ParentByProcess())
+            parents[unchecked((int)process)] = unchecked((int)parent);
         return new RootSnapshot(
-            windows, front == 0 ? 0 : GetAncestor(front, 2), drawing, PersonInputMark(WindowsUserInputPause.Shared));
+            windows, front == 0 ? 0 : GetAncestor(front, 2), drawing, PersonInputMark(WindowsUserInputPause.Shared),
+            parents);
     }
 
     /// <summary>

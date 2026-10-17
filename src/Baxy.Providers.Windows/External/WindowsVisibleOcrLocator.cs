@@ -76,14 +76,20 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             if (pressed.Failure is { } refused)
                 return refused;
             pressedOnce = true;
+            // Ronda final 19 (regla 3): a burst that waited for the person and gave no baseline leaves only the capture
+            // the OCR read before the wait: a change against it may be anyone's, so it proves nothing.
+            bool baselineFresh = true;
             if (pressed.Before is { } fresh)
                 before = fresh;
             else if (pressed.Burst is null && baseline is { } now && now.Hwnd == before.Hwnd)
                 before = now;
+            else
+                baselineFresh = false;
             string method = pressed.Method;
             IInputBurst? burst = pressed.Burst;
             VisibleControlSurface.CapturedWindow? after = null;
             bool changed = false;
+            bool read = false;
             bool userActed = false;
             bool restored = true;
             try
@@ -100,7 +106,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                         : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
                             .ConfigureAwait(false);
                     // Auditoría final (regla 3): only the same window's image counts; another window in front is no proof.
-                    changed = after is { } later && later.Hwnd == before.Hwnd && later.Sha256 != before.Sha256;
+                    read |= after is { } seen && seen.Hwnd == before.Hwnd;
+                    changed = baselineFresh && after is { } later && later.Hwnd == before.Hwnd && later.Sha256 != before.Sha256;
                 }
             }
             finally
@@ -143,7 +150,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 writer.WriteBoolean("effectObserved", true);
                 writer.WriteString(
                     "error",
-                    ok ? "" : userActed ? "input_user_interrupted" : "visible_button_postread_unchanged");
+                    ok ? "" : userActed ? "input_user_interrupted" : Unchanged(read, baselineFresh));
                 writer.WriteBoolean("labelStillOnScreen", surfaceObserved);
                 writer.WriteString("name", hit.Text);
                 writer.WriteString("controlIdentity", "ocr." + hit.CenterX + "." + hit.CenterY);
@@ -166,7 +173,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             return ok
                 ? ExternalJson.Success(operation, result, true)
                 : ExternalJson.Failure(
-                    operation, userActed ? "input_user_interrupted" : "visible_click_postread_invalid", true);
+                    operation, userActed ? "input_user_interrupted" : Unchanged(read, baselineFresh), true);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -178,6 +185,11 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             return pressedOnce ? ExternalJson.FailureAfterEffect(operation, "visible_click_postread_invalid") : null;
         }
     }
+
+    // Ronda final 19 (regla 3): «unchanged» only from a read-back of the same window against a baseline of right before
+    // the press; otherwise the press stands unread.
+    private static string Unchanged(bool read, bool baselineFresh) =>
+        read && baselineFresh ? "visible_button_postread_unchanged" : "visible_click_postread_unread";
 
     // The one word or run of words that reads the label on a capture, through both OCR passes.
     private static async ValueTask<WordHit?> LocateAsync(
@@ -270,11 +282,14 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
     // la lista de chats repite— y sólo se descarta la segunda lectura del mismo texto en el mismo sitio; una línea larga
     // de un mensaje se guarda entera. Medido en redpc (chat «Abuela» abierto, 1938×1098): por texto quedaban 45 de 66
     // líneas, 12 de las 13 burbujas fuera.
+    // Ronda final 19 (regla 3): the lines read and left out (longer than a label without «placed», or past the limit)
+    // are counted in «omitted», so a view that shows the text says it is cut instead of passing for all of it.
     internal static async ValueTask<IReadOnlyList<LayoutLine>?> ReadLayoutAsync(
         byte[] capture,
         int limit,
         CancellationToken cancellationToken,
-        bool placed = false)
+        bool placed = false,
+        System.Runtime.CompilerServices.StrongBox<int>? omitted = null)
     {
         try
         {
@@ -294,6 +309,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             cancellationToken.ThrowIfCancellationRequested();
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var lines = new List<LayoutLine>();
+            var leftOut = new List<LayoutLine>();
             // La segunda pasada nombra lo que la primera no alcanza a leer, como
             // el botón «Instalar» del lanzador de juegos: blanco sobre azul saturado.
             OcrResult[] readPasses = enhanced is null ? [recognized] : [recognized, enhanced];
@@ -302,8 +318,13 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 foreach (OcrLine line in pass.Lines)
                 {
                     string text = line.Text.Trim();
-                    if (text.Length == 0 || !placed && (text.Length > 80 || !seen.Add(text)))
+                    if (text.Length == 0 || !placed && !seen.Add(text))
                         continue;
+                    if (!placed && text.Length > 80)
+                    {
+                        leftOut.Add(new LayoutLine(text, 0, 0, 0, 0));
+                        continue;
+                    }
                     global::Windows.Foundation.Rect box = default;
                     bool started = false;
                     var words = new List<LayoutWord>();
@@ -323,16 +344,20 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                     }
 
                     var read = new LayoutLine(text, box.X, box.Y, box.Width, box.Height, words);
-                    if (placed && lines.Any(kept => ReadAgain(kept, read)))
+                    if (placed && (lines.Any(kept => ReadAgain(kept, read)) || leftOut.Any(other => ReadAgain(other, read))))
                         continue;
-                    lines.Add(read);
                     if (lines.Count >= limit)
-                        break;
-                }
+                    {
+                        leftOut.Add(read);
+                        continue;
+                    }
 
-                if (lines.Count >= limit)
-                    break;
+                    lines.Add(read);
+                }
             }
+
+            if (omitted is not null)
+                omitted.Value = leftOut.Count;
 
             // Orden de lectura: arriba→abajo, izquierda→derecha, con las dos
             // pasadas fundidas.

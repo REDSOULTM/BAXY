@@ -8,17 +8,17 @@ namespace Baxy.Providers.Windows.External;
 internal static partial class VisibleControlSurface
 {
     /// <summary>
-    /// One root window of the desktop as a candidate: its process, its title, and whether it is cloaked (on another
-    /// virtual desktop, a suspended packaged app: not seen by the person).
+    /// One root window of the desktop as a candidate: its process and its title.
     /// </summary>
-    internal readonly record struct DestinationWindow(string Process, string Title, bool Cloaked);
+    internal readonly record struct DestinationWindow(string Process, string Title);
 
     /// <summary>
     /// The desktop's usable root windows in Z order (top first): visible, not a tool window, not BAXY's process, not the
-    /// desktop or the taskbar. Cloaked ones come marked and the caller leaves them out.
+    /// desktop or the taskbar. Cloaked ones (another virtual desktop, a suspended packaged app) are never among them:
+    /// <see cref="RootWindowsNow"/> keeps only windows with a usable surface (ronda final 19: the mark it carried was
+    /// always false).
     /// </summary>
     internal static IReadOnlyList<DestinationWindow> DestinationDesktop() =>
         [.. RootWindowsNow(0).Windows.Select(window => new DestinationWindow(
-            ViewProcess(window.Window).ProcessName, WindowTitle(window.Window),
-            DwmGetWindowAttribute(window.Window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0))];
+            ViewProcess(window.Window).ProcessName, WindowTitle(window.Window)))];
 }

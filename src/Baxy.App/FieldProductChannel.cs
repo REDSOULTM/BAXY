@@ -525,7 +525,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             or nameof(MainWindowViewModel.IsListening)
             or nameof(MainWindowViewModel.IsVoiceSpeaking)
             or nameof(MainWindowViewModel.Failure)
-            or nameof(MainWindowViewModel.StatusDescription))
+            or nameof(MainWindowViewModel.StatusDescription)
+            // Ronda final 19 (regla 3): a mind no longer ready turns the state to «error» (MindUnavailable) at once.
+            or nameof(MainWindowViewModel.IsMindReady))
         {
             Publish(new JsonObject
             {

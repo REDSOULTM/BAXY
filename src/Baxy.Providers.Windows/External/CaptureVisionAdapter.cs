@@ -20,7 +20,11 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
     internal CaptureVisionAdapter(string captureDirectory, HttpClient? http = null)
     {
         _captureDirectory = Path.GetFullPath(captureDirectory);
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(90) };
+        // Ronda final 19: the capture goes only to the loopback endpoint named, never on through a redirect or a proxy.
+        _http = http ?? new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false })
+        {
+            Timeout = TimeSpan.FromSeconds(90),
+        };
         _ownsHttp = http is null;
     }
 

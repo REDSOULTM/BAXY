@@ -15,7 +15,11 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
 
     internal WindowsVisibleVisionLocator(HttpClient? http = null)
     {
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        // Ronda final 19: the capture goes only to the loopback endpoint named, never on through a redirect or a proxy.
+        _http = http ?? new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false })
+        {
+            Timeout = TimeSpan.FromSeconds(20),
+        };
     }
 
     public string Stage => "vision";
@@ -109,6 +113,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             bool changed = false;
             bool userActed = false;
             bool restored = true;
+            bool read = false;
             try
             {
                 await Task.Delay(200, cancellationToken).ConfigureAwait(false);
@@ -119,6 +124,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                     : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
                         .ConfigureAwait(false);
                 // Auditoría final (regla 3): only the same window's image counts; another window in front is no proof.
+                read = after is { } seen && seen.Hwnd == before.Hwnd;
                 changed = after is { } later && later.Hwnd == before.Hwnd && later.Sha256 != before.Sha256;
             }
             finally
@@ -141,7 +147,8 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 writer.WriteNumber("version", 1);
                 writer.WriteBoolean("ok", ok);
                 writer.WriteBoolean("effectObserved", true);
-                writer.WriteString("error", ok ? "" : "visible_button_postread_unchanged");
+                writer.WriteString("error", ok ? "" : userActed ? "input_user_interrupted"
+                    : read ? "visible_button_postread_unchanged" : "visible_click_postread_unread");
                 writer.WriteString("name", label);
                 writer.WriteString("controlIdentity", "vision." + x + "." + y);
                 writer.WriteBoolean("absentOrDisabled", false);
@@ -161,8 +168,8 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             });
             return ok
                 ? ExternalJson.Success(operation, result, true)
-                : ExternalJson.Failure(
-                    operation, userActed ? "input_user_interrupted" : "visible_click_postread_invalid", true);
+                : ExternalJson.Failure(operation, userActed ? "input_user_interrupted"
+                    : read ? "visible_button_postread_unchanged" : "visible_click_postread_unread", true);
         }
         catch (Exception exception) when (exception is IOException
             or HttpRequestException

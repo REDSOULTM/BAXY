@@ -219,22 +219,31 @@ public sealed class ComputerUsePerceptionTests
     {
         VisibleControlSurface.DestinationWindow[] desktop =
         [
-            new("chrome", "Nueva pestaña - Google Chrome", Cloaked: false),
-            new("ApplicationFrameHost", "Configuración", Cloaked: true),
-            new("notepad++", "notas.txt - Notepad++", Cloaked: false),
+            new("chrome", "Nueva pestaña - Google Chrome"),
+            new("notepad++", "notas.txt - Notepad++"),
         ];
+        // Ronda final 19 (regla 3): a desktop of more windows than are listed says how many there are.
+        VisibleControlSurface.DestinationWindow[] crowded =
+            [.. Enumerable.Range(0, WindowsVisibleControlAdapter.NamedWindowCandidateLimit + 2)
+                .Select(index => new VisibleControlSurface.DestinationWindow("notepad", "nota " + index))];
 
         ExternalCapabilityReceipt receipt = WindowsVisibleControlAdapter.NamedWindowNotFound("input.visible.controls", desktop);
+        JsonElement cut = WindowsVisibleControlAdapter.NamedWindowNotFound("input.visible.controls", crowded).Result!.Value;
 
         JsonElement candidates = receipt.Result!.Value.GetProperty("candidates");
         Assert.Multiple(() =>
         {
             Assert.That(receipt.ErrorCode, Is.EqualTo("application_window_not_found"));
             Assert.That(receipt.EffectObserved, Is.False);
-            Assert.That(candidates.GetArrayLength(), Is.EqualTo(2), "a cloaked window is not seen");
+            Assert.That(candidates.GetArrayLength(), Is.EqualTo(2));
+            Assert.That(receipt.Result!.Value.GetProperty("candidateCount").GetInt32(), Is.EqualTo(2));
+            Assert.That(receipt.Result!.Value.TryGetProperty("truncated", out _), Is.False);
             Assert.That(candidates[0].GetProperty("title").GetString(), Is.EqualTo("Nueva pestaña - Google Chrome"));
             Assert.That(candidates[0].GetProperty("process").GetString(), Is.EqualTo("chrome"));
             Assert.That(candidates[1].GetProperty("process").GetString(), Is.EqualTo("notepad++"));
+            Assert.That(cut.GetProperty("candidates").GetArrayLength(), Is.EqualTo(WindowsVisibleControlAdapter.NamedWindowCandidateLimit));
+            Assert.That(cut.GetProperty("candidateCount").GetInt32(), Is.EqualTo(WindowsVisibleControlAdapter.NamedWindowCandidateLimit + 2));
+            Assert.That(cut.GetProperty("truncated").GetBoolean(), Is.True);
         });
     }
 

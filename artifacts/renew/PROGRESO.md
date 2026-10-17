@@ -502,7 +502,7 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
   PC los borró sin abrirlos, y las fuentes quedan en `renew_v3\fuentes-*` (cuentan como sellado). Ningún caso se abrió
   desde la sesión de ajuste.
 - CONGELADO ff863b47f (tag `renew-d20-congelado`) tras la decisión 20: ninguna palanca ganó y la mente es la de `base9e` (9eadc3d79).
-  (Era la mente congelada; desde ff863b47f cambiaron 29 descripciones del catálogo y 6 entradas de argumentos, sin medir: ver abajo.) El holdout v3 se
+  (Era la mente congelada; desde ff863b47f cambiaron 33 descripciones del catálogo y 8 entradas de argumentos tras la ronda final 19, sin medir: ver abajo.) El holdout v3 se
   corrió una vez sobre ese commit. Después, sin medir en el holdout, entraron sólo arreglos de honestidad
   de las rondas finales:
   - 93a25d0c3: pestañas, contar sólo con la barra entera.
@@ -598,6 +598,23 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     con replace y nada encolado es efecto posible; la App avisa cuando la mente termina y /model dice mind_unavailable
     (la interfaz muestra «sin modelo», no «loading»); el globo de la bandeja cortado lleva «…»; el español de
     media.play.youtube. Suites: 564/69/477/2172. Sin medir.
+  - Ronda final 19 (sobre c7699f276; el notebook 9, el PC 2+2+4+1, clasificados en A y B según la decisión 21):
+    A arregladas: la vista de una ventana dice cuándo no leyó el texto (textAuthority not_read) y cuántas líneas
+    leídas no lista (textOmittedLines), y su descripción dice que el texto viene con includeText; tras una pulsación
+    del árbol vista sin cambios, una etapa posterior que no pulsó nada ya no tapa esa pulsación; una ventana que
+    aparece durante la relectura sólo cuenta como efecto del clic si su proceso nació después o lo arrancó el proceso
+    clicado (antes, un aviso de Outlook daba «hecho»); la relectura del OCR sin una línea base tomada tras la espera
+    no da «cambió»; las listas de candidatos dicen cuántos había (candidateCount, truncated); la App deja de mostrar
+    «escuchando» o «hablando» cuando muere la mente, avisa cuando una petición fallida la invalida y vuelve a publicar
+    el estado; bluetooth.device.list y window.application.status dicen lo que de verdad devuelven; W18 y W19 cerrados
+    (dialectCountry descrito al modelo; weather.current dice que sin location el lugar es la ciudad aproximada del PC
+    por su dirección de internet). B arregladas (menos de 15 min, sin cambiar rutas normales): el código muerto que
+    dejó V1 (NotedPress y una asignación que nunca leía nada), los códigos de fallo del globo de ayuda, el OCR y la
+    visión dicen «sin cambios» o «sin leer», el cursor que no se puede leer cuenta como que puede estar encima, el
+    HttpClient de visión no sigue redirecciones ni usa proxy, DestinationWindow.Cloaked (siempre false) y la
+    sobrecarga de HandedTo que sólo usaban las pruebas, quitados. B pendientes, en metas.json (tareas b_r19_*).
+    Descripciones cambiadas desde ff863b47f, por diff de claves: 33 y 8 entradas de argumentos. Suites: 564/69/477/2173.
+    Sin medir.
 - Holdout v3, cifras (una sola vez sobre ff863b47f; decisión, escenas y latido en la GPU del PC; e2e y conversaciones
   de falsedades en el notebook, porque el dueño usaba el PC; el juez de falsedades, en el PC):
   - Decisión 146/160 = 91,25 % (p50 0,734 s, p90 1,188 s; llama-server 3905 MiB de VRAM).
@@ -625,3 +642,65 @@ cadenas de diagnóstico y presencia sin lector, 9 operaciones internas sin emiso
     18:53 (0d2e5433b, la ronda 6 y la 7 aún sin commit). No lleva el cambio de d4bb323e7 (una respuesta del juez sin mensaje = voto
     ilegible): sin él, una respuesta así habría abortado la corrida, nunca la habría falseado. Los cambios del juez
     nunca tocan las conversaciones, que ya estaban escritas.
+
+## Decisión 21 del dueño (2026-10-16 ~23:35): cierre de la auditoría con alcance fijo y gravedad A/B
+
+Tal cual la dio el dueño:
+
+> Decisión del dueño (2026-10-16), anótala tal cual en PROGRESO.md y en metas.json antes de seguir:
+> cambia la forma de cerrar la auditoría. El resto del goal (PROMPT_GOAL_RENEW.md), las <reglas>,
+> las restricciones de seguridad, el buzón con el notebook siempre ocupado, no empujar a origin y no
+> abrir bancos sellados siguen igual.
+>
+> 1. Alcance fijo de la ronda final
+>    - La ronda final ya no es abierta. Su alcance es una lista cerrada que escribes ahora en
+>      artifacts/renew/alcance_auditoria.md y no amplías después:
+>      a) todo lo cambiado desde el congelado: `git diff ff863b47f..HEAD` (código, catálogo,
+>         descripciones, scripts de bancos e informes);
+>      b) las rutas que ejercitan los bancos (decisión, e2e, escenas y latido): las operaciones que
+>         aparecen en sus resultados y el código que las sirve, sin abrir los sealed.json;
+>      c) el núcleo: kernel (riesgo, confirmación, proyección), journal, NativeTurnLoop y latido,
+>         y el bucle de la mente;
+>      d) W18 (dialectCountry y Namesakes) y W19 (ipwho.is), que hay que resolver: arreglar o
+>         decidir con su razón.
+>    - «Ronda limpia» = 4 focos en el PC y 4 en el notebook sin ninguna violación de gravedad A
+>      dentro de ese alcance. Lo que un auditor encuentre fuera del alcance se anota, pero no
+>      cuenta para cerrar.
+>
+> 2. Gravedad
+>    - A (se arregla siempre, en la misma ronda): una ruta de uso normal que da por hecho algo no
+>      verificado; una doble pulsación o un efecto en la ventana de la persona sin pedido; una
+>      ayuda al modelo en código (regla 1); una descripción del catálogo que promete lo que el
+>      código no hace; recursos por encima de 4 GB; una cifra falsa en los informes.
+>    - B (marginal: sólo bajo condiciones raras, como un marco negro, un fallo de COM o una pantalla
+>      de PIN): se arregla si cuesta menos de 15 minutos y no cambia conducta en rutas normales. Si
+>      no, va a metas.json como tarea `pendiente` con fecha, archivo:línea y escenario.
+>    - Cada informe de ronda separa A y B. Los auditores clasifican y tú verificas la clase.
+>
+> 3. Comprobación del producto actual (no sellada)
+>    - En el notebook, porque el dueño usa el PC: corre los bancos de DESARROLLO de la decisión 20
+>      (decisión, e2e de 30 casos y escenas) sobre el HEAD actual, con las mismas semillas y la
+>      misma configuración con que se midió la base ff863b47f (e2e 19,3/30 de media).
+>    - Si cae más allá del ruido medido (más de ±1 caso en el e2e), busca qué cambio posterior al
+>      congelado lo causó con un bisect por commits. Arréglalo sólo por presentación o protocolo,
+>      nunca con código que ayude al modelo.
+>    - Anota el resultado en PROGRESO y en metas como «producto actual, banco de desarrollo, no
+>      holdout». El holdout v3 no se vuelve a correr.
+>
+> 4. Disciplina al parchear
+>    - Antes de cada commit: `git diff --stat`, y confirmar que cada parche se aplicó (que no
+>      haya archivos duplicados ni anclas fallidas) y que el mensaje del commit sólo dice lo que
+>      hace el diff.
+>    - Cuenta las suites desde la salida real de `dotnet test`, nunca de memoria.
+>    - Corre las 4 suites (y compila la App) antes de cada commit con código.
+>
+> 5. Cierre
+>    - Cuando una ronda salga limpia según el punto 1, `ronda_final_auditoria` pasa a `cumplida`
+>      con su alcance escrito en la evidencia. Las B pendientes quedan listadas aparte.
+>    - Con esa meta y las demás ya cerradas (cumplidas o como límite honesto con su evidencia),
+>      se cumplen los criterios de término.
+>    - Al terminar: PROGRESO y metas al día, commit, push a hub, borrar el recordatorio horario y
+>      un informe final corto para el dueño (qué hace BAXY, qué no, cifras y lo pendiente).
+>
+> Empieza ya: escribe alcance_auditoria.md, manda al notebook los bancos de desarrollo por el buzón
+> y clasifica en A/B los hallazgos de la ronda 19 en curso.

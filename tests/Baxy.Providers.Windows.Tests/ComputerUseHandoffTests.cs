@@ -27,8 +27,15 @@ public sealed class ComputerUseHandoffTests
 
     private static readonly HashSet<int> Clicked = [ControlPanel];
 
+    // The processes running are those of the windows shown, each started by the system (4); a process started by the
+    // clicked one is told by Started.
     private static VisibleControlSurface.RootSnapshot Snapshot(nint front, long personInput, params (nint Window, int Process)[] windows) =>
-        new([.. windows.Select(window => new VisibleControlSurface.RootWindow(window.Window, window.Process))], front, Clicked, personInput);
+        new([.. windows.Select(window => new VisibleControlSurface.RootWindow(window.Window, window.Process))], front, Clicked, personInput,
+            windows.Select(window => window.Process).Distinct().ToDictionary(process => process, process => Started.GetValueOrDefault(process, 4)));
+
+    private static readonly Dictionary<int, int> Started = new() { [ChildOfPanel] = ControlPanel };
+
+    private const int ChildOfPanel = 4200;
 
     [Test]
     public void AWindowOfAnotherProcessBornDuringTheClickIsWhereItHandedItsEffect()
@@ -36,21 +43,49 @@ public sealed class ComputerUseHandoffTests
         VisibleControlSurface.RootSnapshot before = Snapshot(PersonWindow, 10, (PersonWindow, Person), (PanelWindow, ControlPanel));
         VisibleControlSurface.RootSnapshot after = Snapshot(
             PersonWindow, 10, (SettingsFrame, FrameHost), (PersonWindow, Person), (PanelWindow, ControlPanel));
-        Assert.That(VisibleControlSurface.HandedTo(before, after).Window, Is.EqualTo(SettingsFrame));
+        Assert.That(VisibleControlSurface.HandedTo(before, after, out _).Window, Is.EqualTo(SettingsFrame));
     }
 
+    // Ronda final 19 (regla 3): a window of a process already running that took the front is no proof the click did it
+    // (an application finishing its start, a notification); one of a process the clicked one started is.
     [Test]
-    public void AnAlreadyOpenWindowThatTookTheFrontIsWhereItHandedItsEffect()
+    public void AnAlreadyOpenWindowThatTookTheFrontIsWhereItHandedItsEffectOnlyWhenTheClickedProcessStartedIt()
     {
-        // Settings was open behind: the click brought it forward instead of opening another.
         VisibleControlSurface.RootSnapshot before = Snapshot(
-            PersonWindow, 10, (PersonWindow, Person), (PanelWindow, ControlPanel), (SettingsFrame, FrameHost));
+            PersonWindow, 10, (PersonWindow, Person), (PanelWindow, ControlPanel), (SettingsFrame, FrameHost),
+            (8810, ChildOfPanel));
         VisibleControlSurface.RootSnapshot after = Snapshot(
-            SettingsFrame, 10, (SettingsFrame, FrameHost), (PersonWindow, Person), (PanelWindow, ControlPanel));
+            SettingsFrame, 10, (SettingsFrame, FrameHost), (PersonWindow, Person), (PanelWindow, ControlPanel),
+            (8810, ChildOfPanel));
+        VisibleControlSurface.RootSnapshot child = Snapshot(
+            8810, 10, (8810, ChildOfPanel), (SettingsFrame, FrameHost), (PersonWindow, Person), (PanelWindow, ControlPanel));
         Assert.Multiple(() =>
         {
-            Assert.That(VisibleControlSurface.HandedTo(before, after, out bool born).Window, Is.EqualTo(SettingsFrame));
+            Assert.That(VisibleControlSurface.HandedTo(before, after, out _).Window, Is.EqualTo((nint)0),
+                "a process already running before the click");
+            Assert.That(VisibleControlSurface.HandedTo(before, child, out bool born).Window, Is.EqualTo((nint)8810));
             Assert.That(born, Is.False, "it was open before the click: not born with it");
+        });
+    }
+
+    // Ronda final 19 (regla 3): a window born during the post-read of a process already running (Outlook's reminder)
+    // is not the click's; and without the processes of both moments nothing is handed.
+    [Test]
+    public void AWindowBornOfAProcessAlreadyRunningOrWithoutTheProcessesIsNotHanded()
+    {
+        VisibleControlSurface.RootSnapshot before = Snapshot(
+            PersonWindow, 10, (PersonWindow, Person), (PanelWindow, ControlPanel), (7100, 7700));
+        VisibleControlSurface.RootSnapshot after = Snapshot(
+            PersonWindow, 10, (7101, 7700), (PersonWindow, Person), (PanelWindow, ControlPanel), (7100, 7700));
+        VisibleControlSurface.RootSnapshot born = Snapshot(
+            PersonWindow, 10, (SettingsFrame, FrameHost), (PersonWindow, Person), (PanelWindow, ControlPanel));
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.HandedTo(before, after, out _).Window, Is.EqualTo((nint)0));
+            Assert.That(VisibleControlSurface.HandedTo(before with { Parents = null }, born, out _).Window, Is.EqualTo((nint)0));
+            Assert.That(VisibleControlSurface.HandedTo(before, born with { Parents = new Dictionary<int, int>() }, out _).Window,
+                Is.EqualTo((nint)0));
+            Assert.That(VisibleControlSurface.HandedTo(before, born, out _).Window, Is.EqualTo(SettingsFrame), "counter-case");
         });
     }
 
@@ -62,18 +97,18 @@ public sealed class ComputerUseHandoffTests
         Assert.Multiple(() =>
         {
             // Contracase: the same windows, the same front.
-            Assert.That(VisibleControlSurface.HandedTo(before, before).Window, Is.EqualTo((nint)0));
+            Assert.That(VisibleControlSurface.HandedTo(before, before, out _).Window, Is.EqualTo((nint)0));
             // Contracase: a window of the clicked process itself (its own dialog) is the click's own surface, not a handoff.
             Assert.That(VisibleControlSurface.HandedTo(before, Snapshot(
                 PersonWindow, 10, (8800, ControlPanel), (PersonWindow, Person), (PanelWindow, ControlPanel),
-                (SettingsFrame, FrameHost))).Window, Is.EqualTo((nint)0));
+                (SettingsFrame, FrameHost)), out _).Window, Is.EqualTo((nint)0));
             // Contracase: the person clicked or switched meanwhile: the window in front or born now may be theirs.
             Assert.That(VisibleControlSurface.HandedTo(before, Snapshot(
-                SettingsFrame, 11, (SettingsFrame, FrameHost), (PersonWindow, Person), (PanelWindow, ControlPanel))).Window,
+                SettingsFrame, 11, (SettingsFrame, FrameHost), (PersonWindow, Person), (PanelWindow, ControlPanel)), out _).Window,
                 Is.EqualTo((nint)0));
             Assert.That(VisibleControlSurface.HandedTo(before, Snapshot(
                 PersonWindow, 11, (8801, 9999), (PersonWindow, Person), (PanelWindow, ControlPanel),
-                (SettingsFrame, FrameHost))).Window, Is.EqualTo((nint)0));
+                (SettingsFrame, FrameHost)), out _).Window, Is.EqualTo((nint)0));
         });
     }
 
@@ -93,11 +128,15 @@ public sealed class ComputerUseHandoffTests
         Assert.Multiple(() =>
         {
             Assert.That(pause.LastFrontMovingInputMs, Is.EqualTo(10), "the key moved no front by its kind");
-            Assert.That(VisibleControlSurface.HandedTo(before, after).Window, Is.EqualTo((nint)0),
+            Assert.That(VisibleControlSurface.HandedTo(before, after, out _).Window, Is.EqualTo((nint)0),
                 "the window their key opened is never where the click handed its effect");
-            // Contracase: with no input of theirs the same new window is the click's.
-            Assert.That(VisibleControlSurface.HandedTo(before, after with { PersonInput = before.PersonInput }).Window,
-                Is.EqualTo((nint)8802));
+            // Contracase: with no input of theirs a new window of a process started since is the click's (ronda final
+            // 19: one of the person's own running process is not).
+            Assert.That(VisibleControlSurface.HandedTo(before, after with { PersonInput = before.PersonInput }, out _).Window,
+                Is.EqualTo((nint)0));
+            Assert.That(VisibleControlSurface.HandedTo(before, Snapshot(
+                PersonWindow, before.PersonInput, (8803, 9900), (PersonWindow, Person), (PanelWindow, ControlPanel)), out _).Window,
+                Is.EqualTo((nint)8803));
         });
     }
 

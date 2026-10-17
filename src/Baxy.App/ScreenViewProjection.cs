@@ -8,7 +8,7 @@ namespace Baxy.App;
 /// How the model reads a look at an application window (<c>input.visible.controls</c>): one line per control with the
 /// index it clicks by, its kind, name and state, then the text on screen grouped top, middle and bottom in reading
 /// order. The reader's own bookkeeping is left out: version, ok, elapsedMs, authority, the name of the text's reader
-/// (textAuthority; only its absence is said), and of the window its processId, its family of processes and the
+/// (textAuthority; only its absence or its cut is said), and of the window its processId, its family of processes and the
 /// process of the window covering it. The model acts by index or label, and a 4B reads a short text view far better
 /// than a long JSON one (AgentOccam, ICLR 2025: the same agent +161 % from the observation alone; OSWorld and UFO2
 /// filter the tree to visible, enabled, named controls).
@@ -140,6 +140,18 @@ internal static class ScreenViewProjection
         if ((string?)view["textAuthority"] == "unavailable")
         {
             text.Append("(no se pudo leer el texto en pantalla)\n");
+        }
+
+        // Ronda final 19 (regla 3): text not read, or read and cut, is said, never taken for what the window shows.
+        if ((string?)view["textAuthority"] == "not_read")
+        {
+            text.Append("(el texto en pantalla no se leyó en esta mirada: se lee con includeText)\n");
+        }
+
+        if ((int?)view["textOmittedLines"] is > 0 and int omittedLines)
+        {
+            text.Append("(texto cortado: ").Append(omittedLines)
+                .Append(" líneas leídas no se listan, por largas o pasado el tope)\n");
         }
 
         if (view["text"] is JsonObject zones)

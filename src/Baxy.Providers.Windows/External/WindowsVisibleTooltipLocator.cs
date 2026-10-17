@@ -1129,7 +1129,8 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
         });
         return ok
             ? ExternalJson.Success(operation, result, true)
-            : ExternalJson.Failure(operation, userActed ? "input_user_interrupted" : "visible_click_postread_invalid", true);
+            : ExternalJson.Failure(operation, userActed ? "input_user_interrupted"
+                : read ? "visible_button_postread_unchanged" : "visible_click_postread_unread", true);
     }
 }
 

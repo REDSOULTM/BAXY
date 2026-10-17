@@ -1170,9 +1170,8 @@ internal sealed class WindowsVisibleControlAdapter
                 // pressed a hidden duplicate of the visible control, or an Invoke the application accepted and
                 // ignored, rescued since 956a89ace), but none presses that same control again (a second press undoes
                 // a toggle, sends twice): the worker refuses a point on it before any effect, and the click answers
-                // with the tree's own press, without the stage's post-read. The post-read noted the control's identity.
-                if (uia.EffectObserved && uia.ErrorCode == "visible_button_postread_unchanged")
-                    _pressedUnchanged ??= ControlIdentity(uia);
+                // with the tree's own press, without the stage's post-read. The post-read noted the control's identity
+                // (_pressedUnchanged, in PostreadAsync).
 
                 if (_ocr is not null)
                 {
@@ -1282,8 +1281,14 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         // A later stage's point on the control the tree already pressed: the click is the tree's press, as it went.
+        // Ronda final 19 (regla 3): so is any other answer of a later stage that pressed nothing and ends the click (a
+        // refusal, a person not paused, a vision request failed): the tree's press stands, never «nothing pressed».
         ExternalCapabilityReceipt? PressedAgain(ExternalCapabilityReceipt? stage) =>
-            stage?.ErrorCode == PointAlreadyPressed && uia is not null ? uia : stage;
+            uia is { EffectObserved: true } pressed
+            && stage is { Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }
+            && (stage.ErrorCode == PointAlreadyPressed || !ShouldCascade(stage))
+                ? pressed
+                : stage;
     }
 
     // Watches the window in front for up to Interval: true when it stayed exactly the same for StillFor, false as soon
@@ -1509,9 +1514,13 @@ internal sealed class WindowsVisibleControlAdapter
         new(operation, false, false, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
+            // Ronda final 19 (regla 3): how many windows there are, the first ones listed.
+            int count = desktop.Count;
+            writer.WriteNumber("candidateCount", count);
+            if (count > NamedWindowCandidateLimit)
+                writer.WriteBoolean("truncated", true);
             writer.WriteStartArray("candidates");
-            foreach (VisibleControlSurface.DestinationWindow window in desktop.Where(static window => !window.Cloaked)
-                .Take(NamedWindowCandidateLimit))
+            foreach (VisibleControlSurface.DestinationWindow window in desktop.Take(NamedWindowCandidateLimit))
             {
                 writer.WriteStartObject();
                 writer.WriteString("title", window.Title);
@@ -1706,6 +1715,7 @@ internal sealed class WindowsVisibleControlAdapter
             long ocrMs = 0;
             Dictionary<string, List<string>> textZones = new(StringComparer.Ordinal);
             string? textAuthority = null;
+            int textOmitted = 0;
             var names = new List<string>();
             if (captured is { } capture)
             {
@@ -1714,7 +1724,7 @@ internal sealed class WindowsVisibleControlAdapter
                     textTask = ReadTextAsync(captureTask, limit, cancellationToken);
                 if (textTask is not null)
                 {
-                    (IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? read, ocrMs) =
+                    (IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? read, ocrMs, textOmitted) =
                         await textTask.ConfigureAwait(false);
                     if (read is not null)
                     {
@@ -1894,6 +1904,14 @@ internal sealed class WindowsVisibleControlAdapter
 
                     writer.WriteEndObject();
                     writer.WriteString("textAuthority", textAuthority);
+                    // Ronda final 19 (regla 3): lines read and not listed (too long, or past the limit).
+                    if (textOmitted > 0)
+                        writer.WriteNumber("textOmittedLines", textOmitted);
+                }
+                else
+                {
+                    // Ronda final 19 (regla 3): the text was not asked for and not read: said, never an empty window.
+                    writer.WriteString("textAuthority", "not_read");
                 }
 
                 writer.WriteStartObject("elapsedMs");
@@ -1912,7 +1930,8 @@ internal sealed class WindowsVisibleControlAdapter
 
     private readonly record struct WrittenText(
         IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? Lines,
-        long Milliseconds);
+        long Milliseconds,
+        int Omitted = 0);
 
     private static async Task<VisibleControlSurface.CapturedWindow?> CaptureQuietlyAsync(
         nint hwnd,
@@ -1938,9 +1957,10 @@ internal sealed class WindowsVisibleControlAdapter
         if (await captureTask.ConfigureAwait(false) is not { } capture)
             return default;
         var watch = Stopwatch.StartNew();
+        var omitted = new System.Runtime.CompilerServices.StrongBox<int>();
         IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines = await WindowsVisibleOcrLocator.ReadLayoutAsync(
-            capture.Bmp, Math.Max(limit, 40), cancellationToken, placed).ConfigureAwait(false);
-        return new WrittenText(lines, watch.ElapsedMilliseconds);
+            capture.Bmp, Math.Max(limit, 40), cancellationToken, placed, omitted).ConfigureAwait(false);
+        return new WrittenText(lines, watch.ElapsedMilliseconds, omitted.Value);
     }
 
     /// <summary>
@@ -2478,10 +2498,11 @@ internal sealed class WindowsVisibleControlAdapter
             return ExternalJson.FailureBeforeEffect(operation, "visible_button_not_invokable");
         }
 
-        HandoffWatch? roots = RootsBefore(hwnd);
         // Auditoría final (regla 3): the same probe as the tree's press, before the pointer's: a window that changes by
         // itself gives no proof of the press by its image.
         bool animated = await WindowAnimatesAsync(hwnd, cancellationToken).ConfigureAwait(false);
+        // Ronda final 19: the desktop's roots as close to the press as this path can take them (after the probe).
+        HandoffWatch? roots = RootsBefore(hwnd);
         PointerPressed pointed = await LocatedPointPress.PointerAsync(
             _pointer, hwnd, x, y, null, null, cancellationToken, PopupsOf).ConfigureAwait(false);
         if (!pointed.Pressed)
@@ -2720,14 +2741,14 @@ internal sealed class WindowsVisibleControlAdapter
                 JsonElement root = read.RootElement;
                 front = UiaFrontReport.Latest(front, UiaFrontReport.Read(root));
                 if (root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True)
-                    return NotedPress(ReceiptFromWorker(operation, root, effectBoundary), clicked);
+                    return ReceiptFromWorker(operation, root, effectBoundary);
                 // Ronda 20b, palanca 7 (v3-53): a toggle the control took without its sibling's mark appearing is no
                 // receipt, and the box's own redraw must not become one through the surface: the effect is uncertain.
                 // Review of ronda 20b (finding 3): so is a choice whose Select marked the row without moving the place
                 // (v3-52): the row's redrawn mark is no surface change of the posted press.
                 if (root.TryGetProperty("error", out JsonElement doubt) && doubt.ValueKind == JsonValueKind.String
                     && doubt.GetString() is ToggleUncorroborated or ChoiceUncorroborated)
-                    return NotedPress(ReceiptFromWorker(operation, root, effectBoundary), clicked);
+                    return ReceiptFromWorker(operation, root, effectBoundary);
                 controlSaidUnchanged |= root.TryGetProperty("error", out JsonElement said)
                     && said.ValueKind == JsonValueKind.String && said.GetString() == "visible_button_postread_unchanged";
                 // Anything but «not yet» ends the questions to the control; the surface may still answer.
@@ -2753,7 +2774,7 @@ internal sealed class WindowsVisibleControlAdapter
                         operation, askControl && watch.Elapsed < _timing.ControlPostread, front, effectBoundary,
                         cancellationToken).ConfigureAwait(false);
                     if (held is { } answered)
-                        return NotedPress(answered, clicked);
+                        return answered;
                     // An image the person may have changed (their input to that window, their pointer over it) proves
                     // nothing of the press.
                     return WindowsUserInputPause.PersonTouched(captured.Hwnd, _pressStartedMs)
@@ -2774,7 +2795,7 @@ internal sealed class WindowsVisibleControlAdapter
                     operation, askControl && watch.Elapsed < _timing.ControlPostread, front, effectBoundary,
                     cancellationToken).ConfigureAwait(false);
                 if (held is { } answered)
-                    return NotedPress(answered, clicked);
+                    return answered;
                 return WindowsUserInputPause.PersonTouched(watched.Window, _pressStartedMs)
                     ? effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true)
                     : SurfaceChanged(operation, clicked, front, popupBorn: true);
@@ -2903,16 +2924,6 @@ internal sealed class WindowsVisibleControlAdapter
             : (null, front);
     }
 
-    // Review of fable/cu-v3-recibo-del-clic-por-estado (finding 1): an answer the worker gave as done and the adapter
-    // could not take as proof («visible_click_postread_invalid») still pressed the control; like a press seen unchanged,
-    // no later stage of this click (OCR, vision) presses that same control again.
-    private ExternalCapabilityReceipt NotedPress(ExternalCapabilityReceipt receipt, JsonElement clicked)
-    {
-        if (!receipt.Verified && receipt.EffectMayHaveOccurred)
-            _pressedUnchanged ??= PressedIdentity(clicked);
-        return receipt;
-    }
-
     private static string? PressedIdentity(JsonElement clicked) =>
         clicked.ValueKind == JsonValueKind.Object
         && clicked.TryGetProperty("controlIdentity", out JsonElement pressedId)
@@ -2992,7 +3003,8 @@ internal sealed class WindowsVisibleControlAdapter
             if (!effect && BeforeAnyPress.Contains(error)
                 && root.TryGetProperty("candidates", out JsonElement candidates) && candidates.ValueKind == JsonValueKind.Array)
                 return NotNamed(operation, error, [.. candidates.EnumerateArray()
-                    .Where(candidate => candidate.ValueKind == JsonValueKind.String).Select(candidate => candidate.GetString()!)]);
+                    .Where(candidate => candidate.ValueKind == JsonValueKind.String).Select(candidate => candidate.GetString()!)],
+                    root.TryGetProperty("candidateCount", out JsonElement all) && all.TryGetInt32(out int count) ? count : null);
             return !effect && BeforeAnyPress.Contains(error)
                 ? ExternalJson.FailureBeforeEffect(operation, error)
                 : effectBoundary.Failure(operation, error, effect);
@@ -3016,12 +3028,19 @@ internal sealed class WindowsVisibleControlAdapter
     }
 
     // Nothing was pressed: the failure says the names seen instead (auditoría P3), for the model to name one exactly.
-    internal static ExternalCapabilityReceipt NotNamed(string operation, string error, IReadOnlyList<string> candidates) =>
+    // Ronda final 19 (regla 3): with the count of all of them when the list is a first part (<paramref name="total"/>).
+    internal static ExternalCapabilityReceipt NotNamed(
+        string operation, string error, IReadOnlyList<string> candidates, int? total = null) =>
         candidates.Count == 0
             ? ExternalJson.FailureBeforeEffect(operation, error)
             : new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
+                if (total is int all && all > candidates.Count)
+                {
+                    writer.WriteNumber("candidateCount", all);
+                    writer.WriteBoolean("truncated", true);
+                }
                 writer.WriteStartArray("candidates");
                 foreach (string candidate in candidates)
                     writer.WriteStringValue(candidate);
@@ -3053,14 +3072,6 @@ internal sealed class WindowsVisibleControlAdapter
 
     // The identity of the control the tree pressed in the running click and saw nothing change from (finding 4).
     private string? _pressedUnchanged;
-
-    private static string? ControlIdentity(ExternalCapabilityReceipt receipt) =>
-        receipt.Result is { ValueKind: JsonValueKind.Object } result
-        && result.TryGetProperty("controlIdentity", out JsonElement identity)
-        && identity.ValueKind == JsonValueKind.String
-        && identity.GetString() is { Length: > 0 } id
-            ? id
-            : null;
 
     private static bool ShouldCascade(ExternalCapabilityReceipt receipt) =>
         receipt.ErrorCode is not null && CascadeAfter.Contains(receipt.ErrorCode);

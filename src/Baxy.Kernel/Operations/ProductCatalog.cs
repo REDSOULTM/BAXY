@@ -907,7 +907,7 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "input.visible.controls.windows.uia.snapshot.v2",
-            "Vista compacta de una ventana (la de la aplicación nombrada o la de delante): hasta sesenta controles visibles con número, tipo, etiqueta y estado, el texto leído por zonas, el título y el proceso; no toca nada."),
+            "Vista compacta de una ventana (la de la aplicación nombrada o la de delante): hasta sesenta controles visibles con número, tipo, etiqueta y estado, el texto leído por zonas cuando se pide (includeText) o la ventana no muestra controles, y si no se leyó o se cortó, el título y el proceso; no toca nada."),
         Descriptor(
             "media.control",
             Schema(
@@ -1574,13 +1574,15 @@ public static class ProductCatalog
                     // Ronda 19 (r17 t2-c13 «… en Valencia? ¿cojo paraguas?» → Valencia, Venezuela): el país que
                     // marca el habla de la persona (código ISO de dos letras): entre lugares homónimos de tamaño
                     // comparable se queda con el de ese país; sin uno así, los homónimos vuelven como candidatos.
+                    // Ronda final 19 (W18): su significado llega al modelo en «arguments» de
+                    // tool_descriptions.en.v1.json, no sólo en este comentario.
                     String("dialectCountry", types: NullableString, values: ["AR", "CL", "CO", "ES", "MX", "VE"]),
                     String("location", types: NullableString, maximumUtf8Bytes: 128),
                 ],
                 []),
             OperationRisks.ReadOnly,
             "weather.current.openmeteo.read.v1",
-            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación de este PC si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad donde está este PC cuando no se nombra ninguno)."),
+            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad donde está este PC cuando no se nombra ninguno)."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0077 «descarga la imagen de
         // portada de wikipedia.org y guardala en el escritorio», H0069; D11): bajar un
         // archivo o imagen de una dirección a una carpeta conocida, verificado por el

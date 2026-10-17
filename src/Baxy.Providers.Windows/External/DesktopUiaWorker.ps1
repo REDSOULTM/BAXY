@@ -3449,7 +3449,7 @@ function Do-ClickJudged($request){
     $missing=Click-Result $false $false 'visible_button_not_found' (Get-Name $root) '' $false $false $false ''
     if($controlId.Length -eq 0){ $missing.treeSize=$script:TreeSize }
     # Auditoria C10: los items cuyo titulo lleva la etiqueta, sin pulsar ninguno (Find-Named).
-    if($script:NamedCandidates.Count -gt 0){ $missing.candidates=@($script:NamedCandidates | Select-Object -First 10) }
+    if($script:NamedCandidates.Count -gt 0){ $missing.candidates=@($script:NamedCandidates | Select-Object -First 10); $missing.candidateCount=$script:NamedCandidates.Count }
     return $missing
   }
   if($matches.Count -ne 1){ return (Click-Result $false $false 'visible_button_ambiguous' '' '' $false $false $false '') }
@@ -3765,7 +3765,7 @@ function Reveal-Result([bool]$ok,[string]$error,[string]$method,$el){
   $name=''
   if($null -ne $el){ $name=Get-ShownName $el }
   $result=@{ ok=$ok; error=$error; method=$method; name=$name; revealed=($ok -and $method -ne 'already'); visible=($null -ne $el -and (Test-Shown $el)) }
-  if(-not $ok -and $script:NamedCandidates.Count -gt 0){ $result.candidates=@($script:NamedCandidates | Select-Object -First 10) }
+  if(-not $ok -and $script:NamedCandidates.Count -gt 0){ $result.candidates=@($script:NamedCandidates | Select-Object -First 10); $result.candidateCount=$script:NamedCandidates.Count }
   return $result
 }
 # Los que el arbol ya tiene: el que se ve («already»), si no el que su ScrollItemPattern trae («scrollintoview»).

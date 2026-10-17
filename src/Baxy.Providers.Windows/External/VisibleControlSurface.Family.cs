@@ -434,8 +434,9 @@ internal static partial class VisibleControlSurface
         nint root = window == 0 ? 0 : GetAncestor(window, 2);
         if (root == 0 || !TryBounds(root, out int left, out int top, out int right, out int bottom))
             return false;
-        return InPhysicalPixels(CursorNow) is { } cursor
-            && cursor.X >= left && cursor.X < right && cursor.Y >= top && cursor.Y < bottom;
+        // Ronda final 19 (regla 3): a cursor that cannot be read may be resting there (a hover popup is then no effect).
+        return InPhysicalPixels(CursorNow) is not { } cursor
+            || cursor.X >= left && cursor.X < right && cursor.Y >= top && cursor.Y < bottom;
     }
 
     private static (int X, int Y)? CursorNow() => GetCursorPos(out Point point) ? (point.X, point.Y) : null;
