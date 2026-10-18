@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-17 (auditoría de los pedidos reales: fase 0)",
+  "actualizado": "2026-10-18 (auditoría de los pedidos reales: cerrada)",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -1832,6 +1832,64 @@
         "estado": "fuera de foco por decisión del dueño",
         "evidencia": "pt/fr/de/it: 31 misiones del ajuste, 15 del holdout; se cuentan aparte."
       }
-    ]
+    ],
+    "head_final": "58c57cddd (src = lote3 161eddce9)",
+    "fase3": {
+      "aceptados": {
+        "lote1": "e96064701: reglas 1 y 3 del prompt, cerrar la ventana de delante (G5), instalar juegos (G2), YouTube (G1b)",
+        "lote2": "b58abac75: skill app.restart",
+        "lote3": "161eddce9: skill display.mode.set, app.close por appId, scopes firewall/updates, input.text.type honesto (E2)"
+      },
+      "bancos_finales": {
+        "decision2_pc": "232/229/229 = 230,0 frente a 227,67",
+        "escenas_nb": "31,25 frente a 30,5",
+        "e2e_nb": "20,00 frente a 19,67"
+      },
+      "prefijo": {
+        "pc": "42.748 frente a 42.168 (+580)",
+        "nb": "41.848 frente a 41.268 (+580)",
+        "tope": "+1.000: cumple"
+      },
+      "rechazadas": "pcG1, nb-arr-G5b, nb-arr-G1, nb-arr-G4, pcG7, pcG9; sin efecto: pcG4, pcG4b, pcG7b, nb-arr-E1, nb-arr-E4, nb-arr-E5r, segestado2 (detalle en F:/BAXYeval/reales_v1/variantes/resultados.md)"
+    },
+    "fase4": {
+      "holdout_decision": "una vez en cada GPU sobre 58c57cddd",
+      "holdout_ejecucion": "61 misiones en el notebook: OK 48, EJECUTA_MAL 12, otra operación 1; 1 falsedad",
+      "clases_pedidos_es_en": {
+        "ajuste_845": {
+          "n": 345,
+          "OK": 214,
+          "ELIGE_MAL": 79,
+          "EJECUTA_MAL": 18,
+          "FALTA_SKILL": 23,
+          "FUERA_DE_DISEÑO": 11,
+          "con_falsedad": 13
+        },
+        "holdout_final": {
+          "n": 141,
+          "OK": 93,
+          "ELIGE_MAL": 21,
+          "EJECUTA_MAL": 9,
+          "FALTA_SKILL": 16,
+          "FUERA_DE_DISEÑO": 2,
+          "con_falsedad": 3
+        }
+      },
+      "desarrollo": {
+        "ajuste_845": "980/1089",
+        "holdout_final": "422/463"
+      },
+      "ajuste_sobre_head_final_pc": {
+        "pedidos_OK": "240 → 248",
+        "ELIGE_MAL": "71 → 64",
+        "desarrollo_OK": "994 → 1011",
+        "misiones_con_falsedad": "16 → 19"
+      },
+      "recursos": {
+        "vram_mib": 3901,
+        "ram_uss_mib": "1544 sin oído, 1614 con oído",
+        "cumple_4gb": true
+      }
+    }
   }
 }

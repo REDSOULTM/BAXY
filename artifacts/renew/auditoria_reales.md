@@ -79,7 +79,7 @@ Peso = mensajes de la misión × la fracción de sus ejemplos que falla. G01 lo 
 | G99 | Otros, sueltos | 14 | 8 | — | — |
 | G09 | Hábitos: no hay registro de hábitos y lo guarda como preferencia | 11 | 1 | No hay operación de hábitos | Skill nueva (no se hace por ahora: una sola misión) |
 | G10 | Rellenar o pulsar en una página web: lee la página en vez de mirar sus controles | 7 | 3 | :30 browser.page.read; mind.py:51 (regla 9) | Descripción de browser.page.read |
-| G11 | Abrir Word crea un documento nuevo | 5 | 2 | :118 office.document.create | Descripción de office.document.create |
+| G11 | Abrir Word acaba creando otro documento | 5 | 2 | :118 office.document.create | Descripción de office.document.create |
 
 Fallos de ejecución (EJECUTA_MAL, 25 ejemplos), por causa:
 
@@ -97,6 +97,47 @@ Las misiones FALTA_SKILL que dicen honestamente que no lo hacen se cuentan en su
 luces de casa, tarjetas de estudio, editar vídeo o audio, actualizaciones de Windows, firewall, MCP, bases de
 datos, firmas digitales y ordenar fotos por mes.
 
-## Arreglos y medidas
+## Resultado final (2026-10-18)
 
-Se anotan en `PROGRESO.md` («Auditoría de los pedidos reales»), uno por commit.
+Producto final: `58c57cddd`, rama `auditoria-reales` en hub, fusionada en `baxy-renew`.
+
+### Qué mejoró
+
+- **Seguridad.** Al pedir reiniciar una app (con su nombre o con «reinícialo» tras abrirla), BAXY elegía apagar o
+  reiniciar el PC. Como eso va sin tu sí, habría reiniciado el equipo; con la skill nueva `app.restart` ya no lo hace.
+  Pedir 60 o 144 Hz ya no cambia el brillo: la skill nueva `display.mode.set` sólo pasa a un modo que lista el
+  controlador, lo relee y lo deshace si no coincide. «Cerrar la ventana de delante» ya no lleva a cerrar todas las
+  ventanas.
+- **Honestidad en la ejecución.** Antes app.close inventaba el windowId y en 3 de 4 casos decía «ya se cerró» sin
+  haberse cerrado. Ahora cierra por el nombre de la app (`app.close` con appId): 0 falsedades en esos casos. Las
+  respuestas de «escribí» en Word sin relectura pasan de 2 a 0.
+- **Decisión sobre tus pedidos** (ajuste, misma GPU): pedidos bien de 240 a 248 de 345 y eligiendo mal de 71 a 64;
+  ante texto pegado, sin actuar mal de 994 a 1.011 de 1.089. Dos reglas del prompt: un texto que no pide nada se
+  contesta sin herramientas, y si falta sobre qué cosa actuar, se pregunta.
+- **Holdout nuevo** (619 misiones nunca vistas, medido una vez sobre el producto final): 66,0 % de los pedidos en
+  español o inglés bien de punta a punta (93 de 141), frente al 62,0 % del ajuste con el producto de partida;
+  eligiendo mal, 14,9 % frente a 22,9 %; con falsedad, 2,1 % frente a 3,8 %.
+- **Bancos de desarrollo**, sin bajar ninguno: decisión 230,0 frente a 227,67, escenas 31,25 frente a 30,5 y e2e
+  20,00 frente a 19,67.
+- **Recursos.** Prefijo +580 tokens, dentro del tope de +1.000. VRAM 3.901 MiB y RAM 1,5-1,6 GB, dentro de los 4 GB.
+
+### Qué no mejoró (límites honestos, con evidencia en `metas.json`)
+
+- Las falsedades ante texto pegado («he guardado», «listo, se ejecutó» sin herramienta): la regla 2 ya lo prohíbe y
+  ninguna variante lo movió de forma fiable (16 misiones en la base, 19 en el final, leídas a mano).
+- «Ahora ciérralo» **sin conversación previa** a veces elige apagar el PC (con conversación va bien). Es tu
+  decisión: mantener «apagar va directo» o pedir el sí cuando el pedido no nombra el PC.
+- Pegar el portapapeles, leer un archivo de la carpeta de trabajo por su ruta, los argumentos de memory.recall y
+  preguntar por el cortafuegos: probados por descripción, sin efecto.
+- Otros idiomas (portugués, francés, alemán, italiano): fuera de foco por tu decisión, y bajaron (17 → 13 de 31).
+
+### Pendiente (B, fuera de los arreglos permitidos de este goal)
+
+- `app.open` de apps de consola: la ventana nace en Windows Terminal y la verificación espera 30 s por intento, sin
+  tope de tiempo por turno (NativeTurnLoop.cs:46-48).
+- Opera GX: la página no se puede leer (browser.control y browser.page.read).
+- La relectura de lo escrito en Word.
+- El foco y las ventanas protegidas en el e2e.
+- La skill de hábitos.
+
+Detalle de cada arreglo y su medida: `PROGRESO.md`, «Auditoría de los pedidos reales».

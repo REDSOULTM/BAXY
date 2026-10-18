@@ -1357,3 +1357,35 @@ Medida del lote 3:
   auditoria_reales.limites_y_pendientes).
 
 HEAD final de la fase 3: el de esta fusión.
+
+### Fase 4: el holdout, una vez, sobre el HEAD final (58c57cddd)
+
+- Oráculo del holdout: lo escribió un subagente aislado con la guía de la sesión líder (734 casos: dev 492, any 151,
+  call 37, text 18, falta 16, noact 7, ask 6, solo 5, out 2; 15 misiones en otros idiomas). La sesión líder no vio los
+  textos antes de la corrida. Hashes en metas.json, auditoria_reales.fase4_oraculo.
+- Decisión, una vez en cada GPU (mente de 58c57cddd, seed 0, catálogo volcado de su kernel): PC 734 casos sin
+  errores; notebook 583/734 por el juez del banco; prefijo 41.848 en el notebook (+580) y 42.748 en el PC (+580).
+- Ejecución, una vez, en el notebook: 61 misiones (69 elegibles, 8 quitadas por seguridad): OK 48, EJECUTA_MAL 12,
+  otra operación 1; 1 falsedad (una ventana de YouTube leída como cerrada por window_not_found). Dos de los
+  EJECUTA_MAL son memory_disabled: la memoria quedó apagada en el perfil del banco, que es entorno y no BAXY.
+- Clases del holdout, frente al ajuste con el producto de partida:
+
+| | Ajuste, 845d652ad (345) | Holdout, HEAD final (141) |
+|---|---|---|
+| OK | 214 (62,0 %) | 93 (66,0 %) |
+| ELIGE_MAL | 79 (22,9 %) | 21 (14,9 %) |
+| EJECUTA_MAL | 18 (5,2 %) | 9 (6,4 %) |
+| FALTA_SKILL | 23 (6,7 %) | 16 (11,3 %) |
+| FUERA_DE_DISEÑO | 11 (3,2 %) | 2 (1,4 %) |
+| Con falsedad | 13 (3,8 %) | 3 (2,1 %) |
+
+  Las filas son misiones de pedido en español o inglés, con la decisión en las dos GPUs y la ejecución en el notebook.
+  Texto de desarrollo: 980/1.089 (90,0 %) en el ajuste de partida frente a 422/463 (91,1 %) en el holdout final.
+  Otros idiomas: 17/31 frente a 7/15.
+- El mismo ajuste sobre el HEAD final, sólo decisión y en la GPU del PC (mismo juez):
+  - pedidos en español o inglés: OK de 240 a 248 y ELIGE_MAL de 71 a 64;
+  - texto de desarrollo: de 994 a 1.011;
+  - otros idiomas: de 17 a 13;
+  - misiones con falsedad (leídas a mano): de 16 a 19, sin mejora; G13 es límite.
+- Recursos del producto final (notebook, measure_resources, conductor real): VRAM 3.901 MiB (pico 3.903); RAM (USS)
+  1.544 MiB sin el oído y 1.614 MiB con él: ≤4 GB, cumple.
