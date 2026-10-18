@@ -1707,3 +1707,14 @@ tarde a las 18:00). Cuenta como demostrado sólo si se cumplen las tres:
 Si no, no hay último ciclo: se cierra con el mejor checkpoint ya medido (o c2-e1.0) el lunes 19:00. El checkpoint de
 ese ciclo sólo se queda si no baja ningún banco y supera al mejor anterior. La decisión de las 13:00 se anota aquí con
 su evidencia y se avisa por el buzón.
+
+### Lote final con c2-e1.0 (b550e9602), medido entero en el notebook (frente a su base del día)
+
+- Providers 2282/2282 (notebook); Kernel 573, Contracts 69, Setup 477, pytest 28 y la App compila (PC).
+- decision2 230/230/230 = 230,00 (base 229,33); escenas 31/33/32/33 = 32,25 (base 31,25), 0 molestas, 0 riesgos
+  solos; **e2e 25/21/25 = 23,67 (base 19,67, +4,0)**, sin casos error ni setup_failed (E001 en s1-s2 es la voz,
+  arreglada en la rama del notebook).
+- **Recursos** (measure_resources, producto real): VRAM 3.901 MiB (pico 3.903); RAM del producto 1.794 MiB (1.789 con
+  el oído). ≤4 GB: cumple.
+- Falsedades s0: transcripciones en F:/BAXYeval/renew_v1/runs/nb-final-b550e9602-s0-fal-falsedades/ (juez pendiente
+  en el próximo hueco de GPU).
