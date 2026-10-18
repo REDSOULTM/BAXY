@@ -656,6 +656,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             {
                 writer.WriteStartObject();
                 WriteSentTo(writer, before, sentToProcess);
+                // FT/proveedores goal (review of receipts): how much of the text went in (each character is a key down
+                // and up), so a retry does not type its beginning twice.
+                if (typing)
+                {
+                    writer.WriteNumber("charactersTyped", Math.Min(text.Length, (int)(accepted / 2)));
+                    writer.WriteNumber("charactersAsked", text.Length);
+                }
                 writer.WriteEndObject();
             }),
         };

@@ -271,6 +271,9 @@ public sealed class ComputerUseSpeedTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("input_user_interrupted"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(keyboard.Texts, Is.EqualTo(new[] { "hola" }));
+            // FT/proveedores goal (review of receipts): how much went in, so a retry does not type it twice.
+            Assert.That(receipt.Result?.GetProperty("charactersTyped").GetInt32(), Is.EqualTo(4));
+            Assert.That(receipt.Result?.GetProperty("charactersAsked").GetInt32(), Is.EqualTo(10));
             Assert.That(keyboard.Fronted, Has.Count.EqualTo(1), "not brought up again over the person");
             Assert.That(keyboard.Burst!.Restores, Is.GreaterThanOrEqualTo(1));
         });
