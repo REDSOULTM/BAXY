@@ -103,6 +103,23 @@ public sealed class WindowsWindowControlProviderTests
 
     // Auditoría D7: a window gone before BAXY's close reached it is «alreadyGone», and one that went invisible instead
     // of closing (an application that hides in the notification area) is «hidden»: neither is «closed».
+    // FT/proveedores goal (review of receipts): a browser hides its window first and destroys it a moment later: closed.
+    [Test]
+    public async Task AWindowHiddenAndThenDestroyedIsClosed()
+    {
+        var platform = new FakePlatform { CloseHides = true, HiddenReads = 3 };
+        var provider = new WindowsWindowControlProvider(platform);
+        WindowResolveResult resolved = await provider.ResolveAsync("notepad", 10, CancellationToken.None);
+
+        WindowCloseResult result = await provider.CloseAsync(resolved.Windows.Single().WindowId, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Outcome, Is.EqualTo(WindowCloseOutcomes.Closed));
+        });
+    }
+
     [TestCase(false, WindowCloseOutcomes.Closed)]
     [TestCase(true, WindowCloseOutcomes.Hidden)]
     public async Task ACloseSaysWhetherTheWindowClosedOrOnlyHid(bool hides, string outcome)
@@ -406,10 +423,14 @@ public sealed class WindowsWindowControlProviderTests
         // the close would reach it.
         public bool CloseHides { get; set; }
         public bool GoneAtClose { get; set; }
+        // How many reads see the closed window hidden before it is gone (a browser hiding it first); -1: it stays hidden.
+        public int HiddenReads { get; set; } = -1;
+        private int _hiddenSeen;
 
         public WindowSnapshot Observe(WindowIdentity identity)
         {
-            if (Closed && CloseHides) throw new WindowIdentityChangedException(hidden: true);
+            if (Closed && CloseHides && (HiddenReads < 0 || _hiddenSeen++ < HiddenReads))
+                throw new WindowIdentityChangedException(hidden: true);
             if (IdentityChanged || Closed) throw new WindowIdentityChangedException();
             Assert.That(identity.Handle, Is.EqualTo(_identity.Handle));
             Assert.That(identity.ProcessCreationTimeUtcTicks,
