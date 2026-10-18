@@ -38,6 +38,33 @@ internal static class UserBrowserScripts
         """;
 
     /// <summary>
+    /// FT/proveedores goal (E3): the page of the active tab among the RootWebArea documents read, shared by the frame
+    /// read and the page read: the one whose name begins the window title (Opera GX also exposes its Speed Dial and
+    /// side panels as documents), else the first one on screen.
+    /// </summary>
+    private const string Pages = """
+        function TitledPage($documents, [string]$windowTitle) {
+          foreach ($candidate in $documents) {
+            $name = ''
+            try { $name = [string]$candidate.Current.Name } catch { }
+            if ($name -and $windowTitle.StartsWith($name)) { return $candidate }
+          }
+          return $null
+        }
+        # $anyHidden: with no document on screen (a minimized window) the first one is taken.
+        function ShownPage($documents, [bool]$anyHidden) {
+          foreach ($candidate in $documents) {
+            $offscreen = $true
+            try { $offscreen = [bool]$candidate.Current.IsOffscreen } catch { }
+            if (-not $offscreen) { return $candidate }
+          }
+          if ($anyHidden -and $documents.Count -gt 0) { return $documents[0] }
+          return $null
+        }
+
+        """;
+
+    /// <summary>
     /// $args[0] = window handle. Reads the browser frame's address field: walks
     /// the control view breadth-first, never enters the page content
     /// (Document), and returns the first editable field whose value looks like
@@ -340,11 +367,71 @@ internal static class UserBrowserScripts
     /// and vertical scroll). Chromium names: tabs are TabItem with SelectionItemPattern, the back button carries the
     /// view id «view_1001» (class BackForwardButton in Chrome, BackForwardButtonView in Opera GX), the page is the
     /// Document whose AutomationId is RootWebArea. Never enters a page; the address is only compared by the caller.
+    /// It says apart whether the whole frame was read (complete), whether the tab strip was (tabsComplete) and whether
+    /// the page document was the one named as the window title begins (page.matched).
     /// </summary>
-    internal const string Frame = Walk + """
+    internal const string Frame = Walk + Pages + """
         $ErrorActionPreference = 'Stop'
         function Fail([string]$reason) {
           [pscustomobject]@{ version = 1; ok = $false; tabs = @(); error = $reason } | ConvertTo-Json -Compress
+        }
+        function FrameKey($element) { return (($element.GetRuntimeId()) -join '.') }
+        # FT/proveedores goal (E3): the tab strip is the nearest node that holds every tab read (with Opera GX's islands,
+        # the node above them), found from the first tab's parents up to the window; null when a parent cannot be read
+        # or a tab is not under the window.
+        function StripOf($walker, $root, $tabNodes) {
+          try {
+            $chain = New-Object System.Collections.Generic.List[object]
+            $keys = New-Object System.Collections.Generic.List[string]
+            $rootKey = FrameKey $root
+            $node = $walker.GetParent($tabNodes[0])
+            while ($node -ne $null -and $chain.Count -lt 40) {
+              $chain.Add($node)
+              $key = FrameKey $node
+              $keys.Add($key)
+              if ($key -eq $rootKey) { break }
+              $node = $walker.GetParent($node)
+            }
+            if ($chain.Count -eq 0) { return $null }
+            $top = 0
+            for ($index = 1; $index -lt $tabNodes.Count; $index++) {
+              $node = $walker.GetParent($tabNodes[$index])
+              $at = -1
+              $steps = 0
+              while ($node -ne $null -and $at -lt 0 -and $steps -lt 40) {
+                $at = $keys.IndexOf((FrameKey $node))
+                if ($at -lt 0) { $node = $walker.GetParent($node) }
+                $steps++
+              }
+              if ($at -lt 0) { return $null }
+              if ($at -gt $top) { $top = $at }
+            }
+            return $chain[$top]
+          } catch { return $null }
+        }
+        # FT/proveedores goal (E3): the strip walked again on its own, with a fresh partial flag: whole when every node
+        # under it was read, none was cut and it holds as many tabs as the frame walk found. A dead node elsewhere in the
+        # frame (Opera GX's first LiveBackgroundView child after a Speed Dial) no longer leaves the tab count unread.
+        function StripWhole($walker, $strip, [int]$expected) {
+          $WalkState.partial = $false
+          $documentType = [System.Windows.Automation.ControlType]::Document
+          $tabType = [System.Windows.Automation.ControlType]::TabItem
+          $queue = New-Object System.Collections.Generic.Queue[object]
+          $queue.Enqueue(@($strip, 0))
+          $visited = 0; $unread = 0; $count = 0
+          while ($queue.Count -gt 0 -and $visited -lt 1500) {
+            $pair = $queue.Dequeue()
+            $node = $pair[0]; $depth = $pair[1]
+            $visited++
+            if ($depth -gt 0) {
+              try { $type = $node.Current.ControlType } catch { $unread++; continue }
+              if ($type -eq $documentType) { continue }
+              if ($type -eq $tabType) { $count++; continue }
+            }
+            if ($depth -ge 16) { $unread++; continue }
+            foreach ($child in (Children $walker $node)) { $queue.Enqueue(@($child, ($depth + 1))) }
+          }
+          return ($unread -eq 0 -and $queue.Count -eq 0 -and -not $WalkState.partial -and $count -eq $expected)
         }
         try {
           $Window = [long]$args[0]
@@ -366,6 +453,8 @@ internal static class UserBrowserScripts
           # Auditoría final (regla 3): a node or a tab that could not be read, or a walk cut by its limit, leaves the
           # tab list incomplete, never shorter.
           $unreadNodes = 0
+          $tabNodes = New-Object System.Collections.Generic.List[object]
+          $unreadTabs = 0
           while ($queue.Count -gt 0 -and $visited -lt 2500) {
             $pair = $queue.Dequeue()
             $node = $pair[0]; $depth = $pair[1]
@@ -376,6 +465,7 @@ internal static class UserBrowserScripts
               continue
             }
             if ($type -eq $CT::TabItem) {
+              $tabNodes.Add($node)
               try {
                 $selected = $false; $pattern = $null
                 if ($node.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern, [ref]$pattern)) {
@@ -389,7 +479,7 @@ internal static class UserBrowserScripts
                   $y = ($box.Top + $box.Height / 2 - $frame.Top) / $frame.Height
                 }
                 $tabs.Add([pscustomobject]@{ title = [string]$current.Name; selected = $selected; shown = $shown; x = $x; y = $y })
-              } catch { $unreadNodes++ }
+              } catch { $unreadNodes++; $unreadTabs++ }
               continue
             }
             if ($type -eq $CT::Button -and $back -eq '') {
@@ -411,12 +501,9 @@ internal static class UserBrowserScripts
           }
           # The page of the active tab: the document whose name begins the window title (Opera GX also exposes its
           # Speed Dial and side panels as documents), else the first one on screen.
-          $page = $null
-          foreach ($candidate in $documents) {
-            $name = [string]$candidate.Current.Name
-            if ($name -and $windowTitle.StartsWith($name)) { $page = $candidate; break }
-          }
-          if ($page -eq $null) { foreach ($candidate in $documents) { if (-not $candidate.Current.IsOffscreen) { $page = $candidate; break } } }
+          $page = TitledPage $documents $windowTitle
+          $pageMatched = $page -ne $null
+          if ($page -eq $null) { $page = ShownPage $documents $false }
           $pageId = ''; $pageTitle = ''; $scroll = -1.0
           if ($page -ne $null) {
             $pageId = ($page.GetRuntimeId()) -join '.'
@@ -427,10 +514,22 @@ internal static class UserBrowserScripts
             }
           }
           $reason = if ($tabs.Count -gt 0) { '' } else { 'tab_strip_not_found' }
-          $tabsComplete = $unreadNodes -eq 0 -and $queue.Count -eq 0 -and -not $WalkState.partial
+          # FT/proveedores goal (E3): the whole frame read (complete) and the tab strip read whole (tabsComplete) are
+          # said apart. The tabs are counted only on a strip read whole: no tab of it failed, the frame walk was not cut
+          # by its node limit (a strip it never reached), and the strip walked again alone was whole.
+          $complete = $unreadNodes -eq 0 -and $queue.Count -eq 0 -and -not $WalkState.partial
+          $tabsComplete = $complete
+          if (-not $complete) {
+            $tabsComplete = $false
+            if ($tabNodes.Count -gt 0 -and $unreadTabs -eq 0 -and $queue.Count -eq 0) {
+              $strip = StripOf $walker $root $tabNodes
+              if ($strip -ne $null) { $tabsComplete = [bool](StripWhole $walker $strip $tabNodes.Count) }
+            }
+          }
           [pscustomobject]@{
-            version = 1; ok = ($tabs.Count -gt 0); tabs = $tabs.ToArray(); tabsComplete = $tabsComplete; back = $back; address = $address
-            page = [pscustomobject]@{ id = $pageId; title = $pageTitle; scroll = $scroll }; error = $reason
+            version = 1; ok = ($tabs.Count -gt 0); tabs = $tabs.ToArray(); tabsComplete = $tabsComplete; complete = $complete
+            back = $back; address = $address
+            page = [pscustomobject]@{ id = $pageId; title = $pageTitle; scroll = $scroll; matched = $pageMatched }; error = $reason
           } | ConvertTo-Json -Compress -Depth 4
         } catch {
           Fail ('uia_failed: ' + $_.Exception.GetType().Name)
@@ -555,11 +654,11 @@ internal static class UserBrowserScripts
 
     /// <summary>
     /// $args[0] = window handle, $args[1] = maximum characters. The title and the visible text of the page the window
-    /// shows: the Document whose AutomationId is RootWebArea (Chromium's page; Opera GX's side panels are other
-    /// documents), read with TextPattern, or from its Text nodes when the pattern is missing. Nothing else of the
-    /// browser (history, cookies, forms) is read.
+    /// shows: the Document whose AutomationId is RootWebArea and whose name begins the window title (Chromium's page;
+    /// Opera GX's side panels are other documents), read with TextPattern, or from its Text nodes when the pattern is
+    /// missing. Nothing else of the browser (history, cookies, forms) is read.
     /// </summary>
-    internal const string PageText = Walk + """
+    internal const string PageText = Walk + Pages + """
         $ErrorActionPreference = 'Stop'
         function Emit([bool]$ok, [string]$title, [string]$text, [bool]$truncated, [string]$reason) {
           [pscustomobject]@{ version = 1; ok = $ok; title = $title; text = $text; truncated = $truncated; error = $reason } | ConvertTo-Json -Compress
@@ -575,26 +674,44 @@ internal static class UserBrowserScripts
           $document = [System.Windows.Automation.ControlType]::Document
           $textType = [System.Windows.Automation.ControlType]::Text
           $page = $null
-          # Chromium builds the page's accessibility tree on the first request: a second look finds it.
-          for ($look = 0; $look -lt 2 -and $page -eq $null; $look++) {
-            if ($look -gt 0) { Start-Sleep -Milliseconds 600 }
+          $pageMatched = $false
+          $searchPartial = $false
+          # Chromium builds the page's accessibility tree on the first request, and a heavy page takes longer: up to
+          # three looks over about two seconds. FT/proveedores goal (E3): the page is the RootWebArea whose name begins
+          # the window title, as the frame read takes it (Opera GX's side panels and Speed Dial are documents too); only
+          # when no look finds one is the first document on screen taken.
+          for ($look = 0; $look -lt 3 -and -not $pageMatched; $look++) {
+            if ($look -gt 0) { Start-Sleep -Milliseconds 800 }
+            $WalkState.partial = $false
+            $windowTitle = ''
+            try { $windowTitle = [string]$root.Current.Name } catch { }
+            $documents = New-Object System.Collections.Generic.List[object]
             $queue = New-Object System.Collections.Generic.Queue[object]
             $queue.Enqueue(@($root, 0))
             $visited = 0
-            while ($queue.Count -gt 0 -and $visited -lt 3000 -and $page -eq $null) {
+            while ($queue.Count -gt 0 -and $visited -lt 3000) {
               $pair = $queue.Dequeue()
               $node = $pair[0]; $depth = $pair[1]
               $visited++
               try { $type = $node.Current.ControlType } catch { continue }
               if ($type -eq $document) {
-                try { if ($node.Current.AutomationId -eq 'RootWebArea') { $page = $node } } catch { }
+                try { if ($node.Current.AutomationId -eq 'RootWebArea') { $documents.Add($node) } } catch { }
                 continue
               }
               if ($depth -ge 28) { continue }
               foreach ($child in (Children $walker $node)) { $queue.Enqueue(@($child, ($depth + 1))) }
             }
+            $page = TitledPage $documents $windowTitle
+            $pageMatched = $page -ne $null
+            if (-not $pageMatched) {
+              $page = ShownPage $documents $true
+              $searchPartial = $WalkState.partial -or $queue.Count -gt 0
+            }
           }
           if ($page -eq $null) { Emit $false '' '' $false 'page_document_not_found'; exit 0 }
+          # The text walk below says its own cuts; a document taken without the title match from a search that did not
+          # read the whole window may not be the page on show, and is said as a partial read too.
+          $WalkState.partial = $searchPartial
           $text = ''
           $walkCut = $false
           $failedNodes = 0
