@@ -1753,6 +1753,28 @@
           "user_mission": 15
         }
       }
+    },
+    "fase4_oraculo": {
+      "escrito_por": "subagente aislado (2026-10-17), con la guía F:/BAXYeval/reales_v1/holdout/GUIA_ORACULO.md y el mismo formato que el oráculo del ajuste; la sesión líder no vio los textos del holdout",
+      "casos": 734,
+      "por_tipo": {
+        "dev": 492,
+        "any": 151,
+        "call": 37,
+        "text": 18,
+        "falta": 16,
+        "noact": 7,
+        "ask": 6,
+        "solo": 5,
+        "out": 2
+      },
+      "misiones_otros_idiomas": 15,
+      "sha256": {
+        "etiquetas_holdout.txt": "f9264bff7f00e80ff4d58cef18bd395021e139df94263fd2558c2a5a50aefabf",
+        "casos_holdout.json": "46d980fc9d31cac68d7f7469ddd925ee8880b242c3cbc8de1d0e2287cf000208",
+        "idiomas_otros_holdout.txt": "9be4aa56f2e62b0249a3318b61b2244fb3fbfaa196f2b0603354ffb4508b4048"
+      },
+      "sha256_holdout_verificado": "fcd7d7d62b9a497eae8c82333cef94bb21d1cbbbe65d0d38b3de1b9fe6b54dfb"
     }
   }
 }
