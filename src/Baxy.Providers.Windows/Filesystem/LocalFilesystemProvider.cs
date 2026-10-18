@@ -152,6 +152,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             {
                 if (new FileInfo(path).Length > MaximumAppendTargetBytes) throw Error("file_too_large");
                 previous = File.ReadAllBytes(path);
+                // FT/proveedores goal (review of receipts): a file with no byte order mark that is not UTF-8 (ANSI) took
+                // the new line in UTF-8, its accents garbled next to the old ones, and was told verified; file.edit
+                // refuses such a file, and so does an append.
+                if (TextFileEncoding.DecodeExactly(previous) is null) throw Error("known_text_encoding_unsupported");
             }
             byte[] bytes = append
                 ? [.. previous, .. TextFileEncoding.EncodeAppended(previous, normalizedText)]

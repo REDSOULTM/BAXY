@@ -150,6 +150,28 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): an ANSI file (no mark, not UTF-8) is not appended to in UTF-8; it is
+    // refused before anything is written, as file.edit refuses it.
+    [Test]
+    public void AnAppendToAnAnsiFileIsRefusedBeforeWriting()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        string path = Path.Combine(sandbox, "notas.txt");
+        byte[] ansi = [0x63, 0x61, 0x66, 0xE9];
+        File.WriteAllBytes(path, ansi);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => provider.WriteText("notas.txt", "pan", null, append: true),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("known_text_encoding_unsupported"));
+            Assert.That(File.ReadAllBytes(path), Is.EqualTo(ansi));
+        });
+    }
+
     // file.write append (it absorbed filesystem.sandbox.append.named): what is there stays, the text goes at the end
     // in the file's own encoding, no hash is needed (a given one must match), and a missing file is created.
     [Test]
