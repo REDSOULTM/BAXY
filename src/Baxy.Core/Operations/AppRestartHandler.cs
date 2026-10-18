@@ -19,7 +19,6 @@ namespace Baxy.Core.Operations;
 internal sealed class AppRestartHandler : IOperationHandler
 {
     internal static readonly TimeSpan ExitWait = TimeSpan.FromSeconds(10);
-    private const int MaximumWindows = 20;
 
     private readonly IWindowControlProvider _windows;
     private readonly Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> _open;
@@ -52,47 +51,20 @@ internal sealed class AppRestartHandler : IOperationHandler
         }
 
         string appId = requested;
-        WindowResolveResult resolved = await _windows.ResolveApplicationAsync(appId, MaximumWindows, cancellationToken)
+        ApplicationWindowsClosed closing = await ApplicationWindowCloser.CloseAllAsync(_windows, appId, cancellationToken)
             .ConfigureAwait(false);
-        if (!resolved.Succeeded || !resolved.Verified)
+        var closedProcesses = new SortedSet<int>(closing.ProcessIds);
+        int closedWindows = closing.ClosedWindows;
+        if (closing.ErrorCode is { } stopped)
         {
-            return OperationOutcome.Failure(resolved.ErrorCode ?? WindowControlErrorCodes.WindowNotFound);
-        }
-
-        // A dialog an application window owns closes with its window; only the frames are closed.
-        WindowCandidate[] frames = resolved.Windows.Where(window => !window.Owned).ToArray();
-        if (frames.Length == 0)
-        {
-            return OperationOutcome.Failure("app_not_running");
-        }
-
-        var closedProcesses = new SortedSet<int>();
-        int closedWindows = 0;
-        foreach (WindowCandidate frame in frames)
-        {
-            WindowCloseResult closed = await _windows.CloseAsync(frame.WindowId, cancellationToken).ConfigureAwait(false);
-            if (closed.ClosePrompted)
-            {
-                // The application asked something of its own (to save): BAXY never answers it, nothing is reopened.
-                return OperationOutcome.Failure(
-                    WindowControlErrorCodes.ClosePrompted,
+            // Nothing of the application to close (not running, or its windows not read): nothing happened. Otherwise
+            // it stopped while closing (a dialog of its own, such as saving; a close that failed): said, never reopened.
+            return closing.Frames == 0
+                ? OperationOutcome.Failure(stopped)
+                : OperationOutcome.Failure(
+                    stopped,
                     Receipt(appId, closedWindows, closedProcesses, stillRunning: [], reopened: null),
-                    effectMayHaveOccurred: closedWindows > 0);
-            }
-
-            if (!closed.Succeeded || !closed.Verified || closed.ProcessId is null)
-            {
-                return OperationOutcome.Failure(
-                    closed.ErrorCode ?? "app_close_failed",
-                    Receipt(appId, closedWindows, closedProcesses, stillRunning: [], reopened: null),
-                    effectMayHaveOccurred: closedWindows > 0 || closed.EffectMayHaveOccurred);
-            }
-
-            closedProcesses.Add(closed.ProcessId.Value);
-            if (closed.Outcome == WindowCloseOutcomes.Closed)
-            {
-                closedWindows++;
-            }
+                    effectMayHaveOccurred: closing.EffectMayHaveOccurred);
         }
 
         var stillRunning = new List<int>();

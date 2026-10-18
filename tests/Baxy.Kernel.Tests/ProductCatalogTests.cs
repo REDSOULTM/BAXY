@@ -76,10 +76,12 @@ public sealed class ProductCatalogTests
     ];
 
     // Auditoría de los pedidos reales (2026-10-17): reiniciar una aplicación (la única operación que decía «restart»
-    // era system.power, que va sin el sí).
+    // era system.power, que va sin el sí) y cambiar la frecuencia o la resolución del monitor (sólo a un modo que su
+    // controlador lista, releído y revertido si no coincide).
     internal static readonly string[] RenewRealesAdditions =
     [
         "app.restart",
+        "display.mode.set",
     ];
 
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
@@ -137,7 +139,7 @@ public sealed class ProductCatalogTests
     ];
 
     // Every operation of the catalog is offered to the model as a tool.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 1;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]

@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Text.Json;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Applications;
 using Baxy.Providers.Windows.Windows;
 
 namespace Baxy.Core.Operations;
@@ -96,7 +97,25 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
 
     public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
     {
-        string windowId = invocation.Arguments.GetProperty("windowId").GetString()!;
+        // Auditoría de los pedidos reales (2026-10-17): exactly one of windowId (a window resolved before) and appId (the
+        // application by its name, whose windows are resolved here: the 4B model invented windowId «1» instead of
+        // resolving the window first).
+        JsonElement arguments = invocation.Arguments;
+        bool byWindow = arguments.TryGetProperty("windowId", out JsonElement windowValue)
+            && windowValue.ValueKind == JsonValueKind.String;
+        bool byApplication = arguments.TryGetProperty("appId", out JsonElement appValue)
+            && appValue.ValueKind == JsonValueKind.String;
+        if (byWindow == byApplication)
+        {
+            return OperationOutcome.Failure("invalid_arguments");
+        }
+
+        if (byApplication)
+        {
+            return await CloseApplicationAsync(appValue.GetString()!, cancellationToken).ConfigureAwait(false);
+        }
+
+        string windowId = windowValue.GetString()!;
         WindowCloseResult result = await provider.CloseAsync(windowId, cancellationToken).ConfigureAwait(false);
         if (result.ClosePrompted && result.Verified && result.ProcessId is not null)
         {
@@ -118,6 +137,60 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
         return OperationOutcome.Success(Receipt(
             result.ProcessId.Value, windowClosed: result.Outcome == WindowCloseOutcomes.Closed, closePrompted: false,
             result.Title, result.Outcome));
+    }
+
+    private async ValueTask<OperationOutcome> CloseApplicationAsync(string appId, CancellationToken cancellationToken)
+    {
+        if (!ApplicationIds.IsValidRequest(appId))
+        {
+            return OperationOutcome.Failure("invalid_application");
+        }
+
+        ApplicationWindowsClosed closing = await ApplicationWindowCloser.CloseAllAsync(provider, appId, cancellationToken)
+            .ConfigureAwait(false);
+        if (closing.ErrorCode is { } stopped)
+        {
+            return closing.Frames == 0
+                ? OperationOutcome.Failure(stopped)
+                : OperationOutcome.Failure(stopped, ApplicationReceipt(appId, closing),
+                    effectMayHaveOccurred: closing.EffectMayHaveOccurred);
+        }
+
+        return OperationOutcome.Success(ApplicationReceipt(appId, closing));
+    }
+
+    private static JsonElement ApplicationReceipt(string appId, ApplicationWindowsClosed closing)
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("appId", appId);
+            writer.WriteNumber("closedWindows", closing.ClosedWindows);
+            if (closing.HiddenWindows > 0)
+            {
+                // Windows that hid instead of closing (the application stays in the notification area).
+                writer.WriteNumber("hiddenWindows", closing.HiddenWindows);
+            }
+
+            writer.WriteStartArray("processIds");
+            foreach (int processId in closing.ProcessIds)
+                writer.WriteNumberValue(processId);
+            writer.WriteEndArray();
+            writer.WriteStartArray("titles");
+            foreach (string title in closing.Titles)
+                writer.WriteStringValue(title);
+            writer.WriteEndArray();
+            if (closing.ErrorCode == WindowControlErrorCodes.ClosePrompted)
+            {
+                writer.WriteBoolean("closePrompted", true);
+            }
+
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 
     private static JsonElement Receipt(
