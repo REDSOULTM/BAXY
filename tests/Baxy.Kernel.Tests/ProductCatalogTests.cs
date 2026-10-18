@@ -139,7 +139,7 @@ public sealed class ProductCatalogTests
     ];
 
     // Every operation of the catalog is offered to the model as a tool.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 1;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
