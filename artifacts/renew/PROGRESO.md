@@ -1601,3 +1601,35 @@ Una revisión aparte del diff encontró 3 A y 2 B, arreglados en 7d4d0f94c y e73
   `BAXY_MIND_LLM_GGUF`.
 - **Lote final** `lote-final` (b550e9602) = ft-qwen + nb-proveedores. Se mide entero: decision2 s0-2 y escenas ×4 en
   las dos GPUs, e2e s0-2, falsedades y recursos en el notebook, Providers en el notebook y el resto de suites en el PC.
+
+## Decisión del dueño (2026-10-18 ~15:10): sin tope de ciclos; todo con evidencia
+
+Cambia la regla 6: el tope es el tiempo (entrenar hasta el lunes 2026-10-19 13:00 como tarde; todo cerrado el lunes
+19:00). Cada palanca e hiperparámetro se decide con fuentes y se anota con su solidez (oficial, paper, informe de
+usuario o inferencia propia); lo que no tiene fuente se marca como inferencia y se mide antes de adoptarlo. Sólo se
+queda un checkpoint que no baje ningún banco (decision2, escenas, e2e y falsedades); si ninguno supera a c2-e1.0, se
+queda c2-e1.0.
+
+### Decisiones tomadas hasta ahora, con su fuente y su solidez
+
+| Decisión | Fuente | Solidez |
+|---|---|---|
+| LoRA bf16, no QLoRA | Unsloth, guía de Qwen3.5: «not recommended to do QLoRA (4-bit) training on the Qwen3.5 models» (https://unsloth.ai/docs/models/qwen3.5/fine-tune) | oficial |
+| r=32, α=32, LoRA en todas las lineales con MLP | LoRA Without Regret (https://thinkingmachines.ai/blog/lora/); Biderman et al. 2024 (https://arxiv.org/abs/2405.09673) | paper / informe técnico |
+| Incluir in_proj_qkv, in_proj_z, out_proj de DeltaNet | Axolotl, Qwen3.5 (http://docs.axolotl.ai/docs/models/qwen3.5.html); config.json del modelo | oficial |
+| LR 1e-4, coseno al 10 %, 5 % de calentamiento, lote 16 | LoRA Without Regret (LR ≈10× FT completo; LoRA sensible a lotes grandes); receta B §1 | informe técnico + inferencia para los números exactos |
+| Pérdida sólo en la respuesta, hasta `<|im_end|>` | TRL `assistant_only_loss` (https://huggingface.co/docs/trl/sft_trainer) | oficial |
+| Prefijo real cacheado sin gradiente | transformers 5.20 continúa Qwen3.5 desde caché (modeling_qwen3_5.py:547-640); pérdida igual a un pase completo (medido) | código + medida propia |
+| Mezcla: preguntas ~12 %, «no lo hago» ~10 %, réplica ~8 % | When2Call 2:1 (https://arxiv.org/abs/2504.18851); Hammer ~10 % de irrelevancia (https://arxiv.org/abs/2410.04587); réplica propia olvida menos (receta B §3) | paper |
+| Objetivos de la semilla = salidas buenas del propio modelo (rechazo) | receta B §3 (autodestilación, SDFT https://arxiv.org/abs/2402.13669) | paper |
+| Fuga: n-gramas cortos + similitud de caracteres + embeddings (0,90 / 0,85 con palabras) | receta B §5; umbrales calibrados con pares medidos (fuga_emb.py) | paper + inferencia medida |
+| Réplica del latido ×3 y sin actos con herramienta inútiles | ninguna fuente directa | **inferencia**, medida: escenas 26 → 32,75 (c1-e1.0 → c2-e1.0) |
+| 1 época en el ciclo 2 | ninguna fuente directa (c1 a media época ya subía) | **inferencia**, medida: c2-e1.0 el mejor |
+| 2 épocas en el ciclo 3 | ninguna fuente directa | **inferencia**, medida: peor (decision2 −0,33, escenas −2,0); descartada |
+| Elegir el checkpoint por los bancos, no por la pérdida | LIMA (https://arxiv.org/abs/2305.11206) | paper |
+| Fusión sobre safetensors en su dtype; Q4_K_M con la mezcla de producción e imatrix | receta C (llama.cpp b11609; https://github.com/ggml-org/llama.cpp/discussions/5263) y control medido | oficial + medida |
+| imatrix de Unsloth frente a la propia | KLD medido igual dentro del error | medida propia |
+
+Investigación en curso para los ciclos siguientes (informes en F:/BAXYeval/ft_v1/receta/): D1 proteger el latido
+(réplica, KL, mezcla, congelar módulos, escalar el delta al fusionar), D2 LR/rango/alfa/épocas en modelos pequeños, D3
+datos de tool-calling y preferencias; el notebook, E: elegir checkpoint sin sobreajustarse y DPO/ORPO/KTO.
