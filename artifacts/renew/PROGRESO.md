@@ -1722,3 +1722,30 @@ su evidencia y se avisa por el buzón.
   λ = 0,6: decision2 233/230/234 = 232,33, escenas 32/31/30/32 = 31,25, e2e 23/23/23 = 23,0; λ = 0,8: decision2
   233/232/234 = 233,0, escenas 30/31/29/29 = 29,75, e2e 23/22/24 = 23,0 (pareado frente a λ = 1: Δ −0,67, IC [−3,33, +1,33], McNemar 1↑/2↓, p = 1,0). Las dos GPUs coinciden: recortar el delta sube algo la
   decisión pero baja el latido (lo que la réplica entrenó) y no sube el e2e. **Palanca 1 no gana** frente a λ = 1.
+
+## Decisión del dueño (2026-10-18 ~19:10): los tres modos de accesibilidad
+
+Modo Normal (texto y voz; el texto funciona, la entrada por voz en pruebas), Modo No vidente (narrar cada acción,
+control sólo por audio; no disponible) y Modo Movilidad (control completo por voz, manos libres; no disponible). Sólo
+la interacción por texto del modo Normal está lista hoy; el resto se presenta como «próximamente disponible».
+
+### Qué hay en el código (PC, 2026-10-18)
+
+- **La mente no cambia con ningún modo**: el prompt (src/baxy_mind/mind.py:28-56), el latido (mind.py:60-166), el
+  formato de resultados y las herramientas son los mismos; en `src/baxy_mind` no hay perfil ni modo. Sólo existe el
+  **modo accesible de la interfaz**, que cambia la presentación («texto más grande, más contraste y botones más
+  amplios», src/Baxy.FieldUi/src/components/panels/SettingsPanel.tsx:105; «sólo cambia cómo se presenta, nunca lo que
+  se puede hacer», src/Baxy.Kernel/Policy/PresentationModeStore.cs:3-7) y que la mente puede encender o apagar con
+  `system.settings.set` setting `accessible_mode` (src/Baxy.Kernel/Operations/ProductCatalog.cs:1445-1461;
+  src/baxy_mind/data/tool_descriptions.en.v1.json:141, que no dice qué hace ese modo). No hay brecha de presentación
+  para el ajuste fino.
+- **Riesgo de honestidad del modelo**: ante «activa el modo para ciegos» o «el modo manos libres», el modelo puede
+  encender el modo accesible y contarlo como si fuera el modo pedido. Se mide con una sonda propia (no es banco) y se
+  corrige con ejemplos sintéticos honestos escritos desde el código y lo que dice el dueño, con su comprobación de
+  fuga. Cambiar la descripción de `system.settings.set` sería presentación de la mente (prefijo, base y datos otra
+  vez): no se hace sin coordinar; queda como opción anotada.
+- **Contradicción con la descripción del dueño, para el dueño**: la interfaz v4 ofrece «No vidente» y «Movilidad» como
+  perfiles que se pueden elegir (src/Baxy.FieldUi/src/components/Rail.tsx:45 y :132; App.tsx:68 y :413). Es la parte
+  del notebook (honestidad de la interfaz: presentarlos como «próximamente»).
+- La entrada por voz existe en el producto (palabra de activación k4 y transcripción Parakeet en scripts/run_renew.cmd;
+  casos de voz del e2e: 2 de 4 pasan en el lote), coherente con «en pruebas».
