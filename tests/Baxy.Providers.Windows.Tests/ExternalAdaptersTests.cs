@@ -19,6 +19,27 @@ public sealed class ExternalAdaptersTests
     private static string LocalAt(DateTimeOffset due) =>
         due.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 
+    // FT/proveedores goal (review of receipts): «reiniciá» accepted, then «no, mejor apagala»: Windows refuses because a
+    // transition is already scheduled; the receipt says so (nothing done by this request, the PC still goes down),
+    // never the plain «not accepted» that read as nothing happening.
+    [TestCase(true, "power_transition_already_pending")]
+    [TestCase(false, "power_transition_not_accepted")]
+    public async Task APowerTransitionRefusedBecauseOneIsPendingSaysSo(bool pending, string error)
+    {
+        var adapter = new WindowsPowerTransitionAdapter(
+            new StubPowerTransitionPlatform("win32_initiateshutdown_shutdown_acceptance", accepted: false, pending));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.power", JsonSerializer.SerializeToElement(new { action = "shutdown" }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     [TestCase("lock", "win32_lockworkstation_acceptance")]
     [TestCase("restart", "win32_initiatesystemshutdownex_restart_acceptance")]
     [TestCase("shutdown", "win32_initiatesystemshutdownex_shutdown_acceptance")]
@@ -4908,7 +4929,7 @@ public sealed class ExternalAdaptersTests
         }
     }
 
-    private sealed class StubPowerTransitionPlatform(string authority, bool accepted)
+    private sealed class StubPowerTransitionPlatform(string authority, bool accepted, bool alreadyPending = false)
         : IWindowsPowerTransitionPlatform
     {
         internal string? RequestedAction { get; private set; }
@@ -4916,7 +4937,7 @@ public sealed class ExternalAdaptersTests
         public WindowsPowerTransitionResult Request(string action)
         {
             RequestedAction = action;
-            return new WindowsPowerTransitionResult(accepted, authority);
+            return new WindowsPowerTransitionResult(accepted, authority, alreadyPending);
         }
     }
 
