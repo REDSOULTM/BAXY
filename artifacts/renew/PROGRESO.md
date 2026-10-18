@@ -1718,3 +1718,7 @@ su evidencia y se avisa por el buzón.
   el oído). ≤4 GB: cumple.
 - Falsedades s0: transcripciones en F:/BAXYeval/renew_v1/runs/nb-final-b550e9602-s0-fal-falsedades/ (juez pendiente
   en el próximo hueco de GPU).
+- Palanca 1 en el notebook (lote, mismo producto; frente a λ = 1: decision2 230,00, escenas 32,25, e2e 23,67):
+  λ = 0,6: decision2 233/230/234 = 232,33, escenas 32/31/30/32 = 31,25, e2e 23/23/23 = 23,0; λ = 0,8: decision2
+  233/232/234 = 233,0, escenas 30/31/29/29 = 29,75, e2e en curso. Las dos GPUs coinciden: recortar el delta sube algo la
+  decisión pero baja el latido (lo que la réplica entrenó) y no sube el e2e. **Palanca 1 no gana** frente a λ = 1.
