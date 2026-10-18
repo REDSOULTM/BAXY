@@ -282,15 +282,24 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             if (!string.Equals(sourceHash, expectedSha256, StringComparison.Ordinal))
                 throw Error("version_conflict");
             string destination = Resolve(destinationRelativePath, allowMissingLeaf: true);
-            if (File.Exists(destination) || Directory.Exists(destination)) throw Error("destination_exists");
+            // FT/proveedores goal (review of receipts): «notas.txt» renamed «Notas.txt» is the same file under another
+            // spelling (the file system ignores case), not a destination that exists.
+            bool caseOnly = move
+                && string.Equals(Path.GetFullPath(source), Path.GetFullPath(destination), StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(Path.GetFullPath(source), Path.GetFullPath(destination), StringComparison.Ordinal);
+            if (!caseOnly && (File.Exists(destination) || Directory.Exists(destination))) throw Error("destination_exists");
             EnsureHandleRoom();
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
             EnsureSafePath(Path.GetDirectoryName(destination)!, allowMissingLeaf: false);
             if (move) File.Move(source, destination);
             else File.Copy(source, destination);
+            string shownName = Path.GetFileName(destination);
+            bool renamed = !caseOnly || Directory.EnumerateFiles(Path.GetDirectoryName(destination)!, shownName)
+                .Any(file => string.Equals(Path.GetFileName(file), shownName, StringComparison.Ordinal));
             if (!File.Exists(destination)
                 || !string.Equals(HashFile(destination), sourceHash, StringComparison.Ordinal)
-                || (move && File.Exists(source)))
+                || (move && !caseOnly && File.Exists(source))
+                || !renamed)
                 throw AfterEffect("verification_failed");
             return Mutation(destination, _root, reachedState: false);
         }

@@ -47,6 +47,26 @@ public sealed class LocalFilesystemProviderTests
     }
 
     [Test]
+    public void ARenameThatOnlyChangesCaseIsMade()
+    {
+        // FT/proveedores goal (review of receipts): «notas.txt» to «Notas.txt» is the same file renamed, not a
+        // destination that exists.
+        using TemporaryDirectory temporary = new();
+        var provider = new LocalFilesystemProvider(temporary.Path);
+        provider.WriteText("notas.txt", "hola", null);
+        FilesystemEntry entry = provider.List(string.Empty, 10).Entries.Single();
+        FilesystemTextResult read = provider.ReadText(entry.ResourceId, 100);
+
+        FilesystemMutationResult renamed = provider.Transfer(entry.ResourceId, "Notas.txt", read.Sha256, move: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(renamed.Name, Is.EqualTo("Notas.txt"));
+            Assert.That(Directory.GetFiles(temporary.Path).Select(Path.GetFileName), Is.EqualTo(new[] { "Notas.txt" }));
+        });
+    }
+
+    [Test]
     public void ListReadWriteAndTransferUseOpaqueRevalidatedResources()
     {
         using TemporaryDirectory temporary = new();
