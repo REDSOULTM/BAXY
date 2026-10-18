@@ -14,10 +14,15 @@ public partial class App : Application
     // FT/proveedores goal (review of the App): BAXY started again while it runs (hidden in the tray) exited without a
     // word; it asks the running one to show its window, as a click on the tray icon does.
     private const string ShowRequestName = @"Local\BAXY.Product.App.Show";
+    // And the development launcher (main.py) asks it to exit as the tray's «Salir» does (the conversation kept,
+    // the icon removed) before it would end it by force.
+    private const string ExitRequestName = @"Local\BAXY.Product.App.Exit";
     private Mutex? _instanceMutex;
     private PresenceHost? _presence;
     private EventWaitHandle? _showRequest;
     private RegisteredWaitHandle? _showWait;
+    private EventWaitHandle? _exitRequest;
+    private RegisteredWaitHandle? _exitWait;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -94,6 +99,10 @@ public partial class App : Application
         _showRequest = new EventWaitHandle(false, EventResetMode.AutoReset, ShowRequestName);
         _showWait = ThreadPool.RegisterWaitForSingleObject(
             _showRequest, (_, _) => presence.ShowMainWindow(), null, Timeout.Infinite, executeOnlyOnce: false);
+        _exitRequest = new EventWaitHandle(false, EventResetMode.AutoReset, ExitRequestName);
+        _exitWait = ThreadPool.RegisterWaitForSingleObject(
+            _exitRequest, (_, _) => Dispatcher.BeginInvoke(presence.RequestExit), null, Timeout.Infinite,
+            executeOnlyOnce: true);
         var window = new MainWindow(_presence);
         MainWindow = window;
         ShellTraceSink.Record(
@@ -114,6 +123,10 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _exitWait?.Unregister(null);
+        _exitWait = null;
+        _exitRequest?.Dispose();
+        _exitRequest = null;
         _showWait?.Unregister(null);
         _showWait = null;
         _showRequest?.Dispose();
