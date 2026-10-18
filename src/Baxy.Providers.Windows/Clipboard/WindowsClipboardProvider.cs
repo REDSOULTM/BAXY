@@ -42,10 +42,14 @@ public sealed class WindowsClipboardProvider : IClipboardProvider
         cancellationToken.ThrowIfCancellationRequested();
         ValidateText(text);
         uint beforeSequence = _platform.GetSequenceNumber();
+        int beforeFormats = _platform.FormatCount();
         string? beforeText = null;
+        bool beforeTruncated = false;
         try
         {
-            beforeText = _platform.ReadText(MaximumCharacters).Text;
+            ClipboardTextSnapshot before = _platform.ReadText(MaximumCharacters);
+            beforeText = before.Text;
+            beforeTruncated = before.Truncated;
         }
         catch (ClipboardProviderException exception) when (exception.Code == "clipboard_has_no_text")
         {
@@ -72,8 +76,11 @@ public sealed class WindowsClipboardProvider : IClipboardProvider
             throw new ClipboardProviderException("verification_failed") { EffectMayHaveOccurred = true };
         }
 
+        // FT/proveedores goal (review of receipts): the same plain text written over a richer copy (a Word paragraph's
+        // HTML, RTF and picture) or over a longer text read only in part replaced what was there: changed.
         bool changed = beforeSequence != first.SequenceNumber
-            && !string.Equals(beforeText, text, StringComparison.Ordinal);
+            && (!string.Equals(beforeText, text, StringComparison.Ordinal) || beforeTruncated
+                || beforeFormats > _platform.FormatCount());
         return ValueTask.FromResult(new ClipboardWriteResult(
             first.SequenceNumber,
             text.Length,
@@ -98,6 +105,8 @@ internal sealed partial class Win32ClipboardPlatform : IClipboardPlatform
     private const uint MoveableMemory = 0x0002;
 
     public uint GetSequenceNumber() => GetClipboardSequenceNumber();
+
+    public int FormatCount() => CountClipboardFormats();
 
     public ClipboardTextSnapshot ReadText(int maximumCharacters)
     {
@@ -222,6 +231,9 @@ internal sealed partial class Win32ClipboardPlatform : IClipboardPlatform
 
     [LibraryImport("user32.dll")]
     private static partial uint GetClipboardSequenceNumber();
+
+    [LibraryImport("user32.dll")]
+    private static partial int CountClipboardFormats();
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial nint GlobalAlloc(uint flags, nuint bytes);
