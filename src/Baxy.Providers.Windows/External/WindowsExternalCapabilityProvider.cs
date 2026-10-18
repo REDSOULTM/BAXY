@@ -133,7 +133,10 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// </summary>
     internal static bool IsKeyboardAct(string operation, JsonElement arguments) => operation switch
     {
-        "input.text.type" or "input.select.all" or "clipboard.copy" or "clipboard.paste" => true,
+        // Review of E6: a select-all, a copy or a paste takes no window, and its helper acts on whatever is in front
+        // when it runs: sent «to» the opened application it could land on another window with that one's name in the
+        // receipt, so those three keep acting on the front, as before.
+        "input.text.type" => true,
         // A key of the system's rather than of a window's (switching windows, the Start menu, the Task Manager) is
         // what it is from whatever window is in front: bringing the opened application up first would change it.
         "input.key.press" => !(arguments.ValueKind == JsonValueKind.Object
@@ -169,8 +172,14 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         }
 
         writer.WriteNumber("window", (long)window);
+        // Review of E6: a text sent to the opened application is read back as one with no window (F004), never told
+        // verified on the keys Windows accepted alone.
+        writer.WriteBoolean(OpenedApplicationArgument, true);
         writer.WriteEndObject();
     });
+
+    /// <summary>The argument the provider adds to an act it sent to the opened application (never the model's).</summary>
+    internal const string OpenedApplicationArgument = "openedApplication";
 
     /// <summary>
     /// FT/proveedores goal (E6): the receipt of a keyboard act sent to the opened application's window says so: the

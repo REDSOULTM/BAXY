@@ -27,9 +27,6 @@ public sealed class DesktopInteractionOpenedApplicationTests
 
     [TestCase("input.text.type", """{"text":"hola"}""")]
     [TestCase("input.key.press", """{"key":"enter"}""")]
-    [TestCase("input.select.all", """{}""")]
-    [TestCase("clipboard.copy", """{}""")]
-    [TestCase("clipboard.paste", """{"window":null}""")]
     public async Task AKeyboardActWithNoWindowGoesToTheOpenedApplicationWhenAnotherIsInFront(
         string operation, string arguments)
     {
@@ -67,9 +64,12 @@ public sealed class DesktopInteractionOpenedApplicationTests
         ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
             "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
 
+        // Review of E6: a text sent to the opened application is read back like one with no window (F004); with nothing
+        // to read it back with here, it is honestly unverified, never verified on the keys Windows accepted.
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
             Assert.That(lease.Taken, Is.EqualTo(new nint[] { (nint)Opened }));
             Assert.That(keyboard.Fronted, Is.EqualTo(new nint[] { (nint)Opened }), "typed bound to the opened window");
             Assert.That(keyboard.Texts, Is.EqualTo(new[] { "hola" }));
@@ -248,6 +248,10 @@ public sealed class DesktopInteractionOpenedApplicationTests
     [TestCase("input.key.press", """{"key":"ctrl_shift_escape"}""")]
     [TestCase("input.visible.click", """{"label":"Biblioteca"}""")]
     [TestCase("input.keyboard.layout", """{"language":"es"}""")]
+    // Review of E6: their helpers act on whatever is in front when they run, so they take no window to be sent to.
+    [TestCase("input.select.all", """{}""")]
+    [TestCase("clipboard.copy", """{}""")]
+    [TestCase("clipboard.paste", """{"window":null}""")]
     public async Task ASystemKeyOrAnActOfNoKeyboardIsNotRedirected(string operation, string arguments)
     {
         var focus = new Opening();
