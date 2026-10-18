@@ -33,6 +33,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private Task? _mindInitializationTask;
     private volatile MindStartupState _mindStartupState;
     private int _mindStartupFailureCount;
+    private int _coreStartupFailureCount;
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
     private bool _coreRecoveryPending;
@@ -386,6 +387,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             IsReady = true;
+            _coreStartupFailureCount = 0;
             StatusDescription = _startupMindPending ? "Preparando BAXY" : IdleStatus();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -1303,6 +1305,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         IsReady = false;
         SetStartupFailure("retry_without_close");
+        // FT/proveedores goal (review of the App): a core that could not start (its hello late at a busy sign-in) was
+        // never tried again, and BAXY sat in the tray saying «Arrancando»; it is retried with the mind's growing wait.
+        _coreStartupFailureCount++;
+        _ = RetryCoreAfterAsync(MindRetryDelay(_coreStartupFailureCount));
+    }
+
+    private async Task RetryCoreAfterAsync(TimeSpan delay)
+    {
+        try
+        {
+            await Task.Delay(delay, _mindLifetimeCancellation.Token);
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
+        {
+            return;
+        }
+
+        if (!_isDisposed && !IsReady && _coreClient is null)
+            RecoverCoreWhenIdle();
     }
 
     private void OnCoreDisconnected(CoreProcessClient client)
