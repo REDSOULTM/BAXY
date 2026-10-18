@@ -1392,3 +1392,12 @@ HEAD final de la fase 3: el de esta fusión.
 - Cierre de los grupos sin arreglo: G05, G06, G08 (cortafuegos), G13, E3, E4, E5, E6, la relectura de E2 y E7 quedan
   como límite honesto, cada uno con su evidencia en metas.json (auditoria_reales.limites_y_pendientes). G09 (hábitos)
   queda pendiente: es una skill nueva para una sola misión. La rama final se fusiona en baxy-renew.
+- Fusión en baxy-renew (9b8492d01): auditoria-reales (1cbeaea5a) sobre los 8 commits que otra sesión había subido
+  a baxy-renew mientras tanto (interfaz v4, voz Supertonic, bandeja). La fusión es limpia y esos commits no tocan el
+  prompt, las descripciones ni la decisión de la mente: sólo guardar y cargar sesiones, la voz y la visibilidad de
+  ProductCatalog.ToPolicyRisk.
+  Suites de la fusión:
+  - en el PC: Kernel 567, Contracts 69, Setup 477 y App compila; Providers 2196/2221, con 25 fallos de VisibleClick y
+    del worker de clics, que dependen del escritorio real. De madrugada fallan igual en la rama de la auditoría, que
+    antes pasaba entera en el mismo PC: es entorno, no código;
+  - en el notebook, con el escritorio libre: Providers 2223/2223.
