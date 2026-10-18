@@ -1749,3 +1749,12 @@ la interacción por texto del modo Normal está lista hoy; el resto se presenta 
   del notebook (honestidad de la interfaz: presentarlos como «próximamente»).
 - La entrada por voz existe en el producto (palabra de activación k4 y transcripción Parakeet en scripts/run_renew.cmd;
   casos de voz del e2e: 2 de 4 pasan en el lote), coherente con «en pruebas».
+- Notebook (hub/nb-proveedores db4af44f7): las fichas «No vidente» y «Movilidad» de la barra se podían elegir y sólo
+  agrandaban subtítulos o botones (baxy.css:135-137); ahora dicen «próximamente disponible», atenuadas y sin activarse,
+  y un perfil guardado antes no vuelve. Inventario de los modos 2 y 3 con archivo:línea en
+  artifacts/renew/MODOS_ACCESIBILIDAD.md (rama del notebook): la entrada por voz existe entera (voice.py: palabra k4,
+  Parakeet, rutas /voice/*) pero sólo se verificó con grabaciones; falta la prueba en vivo con micrófono
+  (RENEW_TRASPASO.md:121-123; controls.spec.ts:92 en rojo): cuadra con «en pruebas». Los pasos nunca se narran en voz.
+- **Para el dueño**: la interfaz mostraba la entrada por voz como disponible. Por la regla («todo lo demás se presenta
+  como próximamente disponible, nunca como listo») se etiqueta «en pruebas · próximamente disponible» sin quitar la
+  función; si prefiere otra palabra o apagarla, es su decisión.
