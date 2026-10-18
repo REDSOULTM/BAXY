@@ -305,7 +305,7 @@ export default function App() {
   const micApplied = useRef(false);
   const mindUp = !!s.boot?.model;
   const setMic = useCallback(async (m: MicMode) => {
-    const said = { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY»', ptt: 'mantén el botón o espacio para hablar' }[m];
+    const said = { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY» · en pruebas', ptt: 'mantén el botón o espacio para hablar · en pruebas' }[m];
     // while BAXY starts or rests the host takes no voice command: the choice is kept and applied when it can be
     // (once built, below; on waking, togglePower), instead of being refused and lost
     if (!s.agent.built || !mindUp || !powered) {
