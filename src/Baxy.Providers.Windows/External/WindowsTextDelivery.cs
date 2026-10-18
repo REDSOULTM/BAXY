@@ -317,9 +317,10 @@ internal sealed class WindowsTextDelivery
     /// selection before (typing would have replaced it, and what it replaced is not known), the paragraph grew by at
     /// least the text's length and holds it once more than it did before. Word's AutoFormat as you type rewrites quotes
     /// and dashes (' into ’, " into “ ” or « », -- into –): only those typographic substitutions are compared
-    /// tolerantly (<see cref="Typographic"/>, on both sides); any other rewrite (an autocorrected word, a capital put
-    /// at a sentence's start) is not the text typed, and leaves it not read back. Nothing of the paragraph leaves this
-    /// check.
+    /// tolerantly (<see cref="Typographic"/>, on both sides), and so is the capital Word's AutoCorrect puts on the first
+    /// letter of a sentence (measured live, 2026-10-18: «hola desde baxy» typed into a blank document became «Hola desde
+    /// baxy», and the exact check left a text that was there unverified); any other rewrite (an autocorrected word) is
+    /// not the text typed, and leaves it not read back. Nothing of the paragraph leaves this check.
     /// </summary>
     internal static bool CaretHolds(CaretText before, CaretText after, string text)
     {
@@ -331,7 +332,11 @@ internal sealed class WindowsTextDelivery
             return false;
         string was = Typographic(before.Text);
         string now = Typographic(after.Text);
-        return now.Length >= was.Length + typed.Length && Occurrences(now, typed) > Occurrences(was, typed);
+        if (now.Length < was.Length + typed.Length)
+            return false;
+        string capital = char.ToUpperInvariant(typed[0]) + typed[1..];
+        return Occurrences(now, typed) > Occurrences(was, typed)
+            || (capital != typed && Occurrences(now, capital) > Occurrences(was, capital));
     }
 
     // The quotes and dashes Word's AutoFormat as you type puts for the typed ones, as the typed ones; a run of dashes

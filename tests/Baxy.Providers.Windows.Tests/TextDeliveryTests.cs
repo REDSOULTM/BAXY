@@ -818,7 +818,7 @@ public sealed class TextDeliveryTests
         (FakeDesktopKeyboard keyboard, FakeFieldMessages messages) = Word(index =>
         {
             if (index == 9 && how is not ("nothing" or "already"))
-                paragraph += how == "rewritten" ? "Hola mundo" : "hola mundo";
+                paragraph += how == "rewritten" ? "hola Mundo" : "hola mundo";
         });
 
         ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
@@ -889,7 +889,10 @@ public sealed class TextDeliveryTests
     [TestCase("a ", "it's", "a it’s", true)]
     [TestCase("", "x -- y", "x — y", true)]
     [TestCase("", "\"si\"", "«si»", true)]
-    [TestCase("", "hola mundo", "Hola mundo", false)]
+    // Word's AutoCorrect capital on a sentence's first letter is the text typed (measured live); any other change is not.
+    [TestCase("", "hola mundo", "Hola mundo", true)]
+    [TestCase("", "hola mundo", "hola Mundo", false)]
+    [TestCase("", "hola mundo", "Hola Mundo", false)]
     [TestCase("hola", "hola", "hola", false)]
     [TestCase("hola", "hola", "holaX", false)]
     [TestCase("hola", "hola", "holahola", true)]
