@@ -881,16 +881,20 @@ internal sealed class WindowsVisibleControlAdapter
     {
         RootWindows = VisibleControlSurface.RootWindowsNow;
         ActRefused = VisibleControlSurface.ActRefused;
-        WindowOfProcess = static (window, opened) =>
-        {
-            // Ronda final 24: the family of processes counts only for an application this opening launched (as
-            // FrontOpenedAsync's); a reused one (the Explorer, Steam) is the parent of much the person started.
-            HashSet<uint> family = opened.Launched ? VisibleControlSurface.ProcessFamily(opened) : [];
-            family.Add(unchecked((uint)opened.ProcessId));
-            return family.Contains(unchecked((uint)VisibleControlSurface.ViewProcess(window).ProcessId))
-                || VisibleControlSurface.DrawingProcesses(window).Any(process => family.Contains(unchecked((uint)process)));
-        };
+        WindowOfProcess = IsWindowOfOpened;
         BurstLease = ForegroundLease.Shared;
+    }
+
+    /// <summary>The product's <see cref="WindowOfProcess"/> (FT/proveedores goal (E6): the keyboard's too,
+    /// <see cref="OpenedApplicationKeyboard"/>).</summary>
+    internal static bool IsWindowOfOpened(nint window, VisibleControlSurface.OpenedApplication opened)
+    {
+        // Ronda final 24: the family of processes counts only for an application this opening launched (as
+        // FrontOpenedAsync's); a reused one (the Explorer, Steam) is the parent of much the person started.
+        HashSet<uint> family = opened.Launched ? VisibleControlSurface.ProcessFamily(opened) : [];
+        family.Add(unchecked((uint)opened.ProcessId));
+        return family.Contains(unchecked((uint)VisibleControlSurface.ViewProcess(window).ProcessId))
+            || VisibleControlSurface.DrawingProcesses(window).Any(process => family.Contains(unchecked((uint)process)));
     }
 
     internal WindowsVisibleControlAdapter(
