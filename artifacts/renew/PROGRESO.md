@@ -1548,3 +1548,29 @@ Tres son de la mente y se le pasaron al PC; no se tocan sin él:
 - OperationVisibleFacts corta a profundidad 4, así que `filesystem.known.duplicates` llega sin nombres de archivo.
 - Un fallo con efecto observado se resume «pudo o no ocurrir».
 - `reachedState` y `changed:false` se resumen como «completado y verificado».
+
+Modos de accesibilidad (decisión del dueño del 18/10, 19:15: hoy sólo está lista la interacción por texto del modo
+estándar):
+- **No vidente y Movilidad:** las fichas de la barra se podían elegir como modos, cuando sólo agrandaban subtítulos o
+  botones. Ahora dicen «próximamente disponible», se ven atenuadas y no se activan (db4af44f7).
+- **Entrada por voz:** el selector, Ajustes > Voz, sus avisos y la bandeja dicen «en pruebas · próximamente
+  disponible». La función sigue funcionando (a556ceb84).
+- **Inventario:** lo que existe y lo que falta para los modos 2 y 3 está en MODOS_ACCESIBILIDAD.md.
+
+### La rama a556ceb84 medida en el notebook (modelo ajustado c2-e1.0)
+
+- Suites: Kernel 573, Contracts 69, Setup 477, Providers 2315/2315 y pytest 30; la App compila.
+- En vivo por el producto, s0-2 (vivo_ft y practice):
+
+| Caso | Rama | Antes |
+|---|---|---|
+| E001, la voz desde el primer turno | 3/3, primer sonido a 3,4 s | el lote falló en s1 y s2: no sonó |
+| F2, la app recién abierta se minimiza | 3/3; el texto va a ella, restaurada | no redirigía; el modelo se recuperó solo |
+| F1, otra ventana roba el frente | 3/3 | 1/1 |
+| W1, escribir en Word | 2/3 | 0/1 en la base y en la rama anterior |
+
+- El fallo de W1 en s2 es del entorno más el modelo. El modelo escribió sin ventana y delante había una ventana de
+  Steam que dejaron los bancos; el recibo y la respuesta lo dijeron («escribí en Steam, no pude comprobarlo en Word»).
+- Word en vivo, con Steam cerrado: 2/2.
+  - La relectura en un documento en blanco funciona.
+  - Con dos documentos en un solo WINWORD, el cursor del de detrás da `caret_window_mismatch` y el de delante se lee.
