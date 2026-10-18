@@ -1582,3 +1582,22 @@ Una revisión aparte del diff encontró 3 A y 2 B, arreglados en 7d4d0f94c y e73
 - Prefijo 41.845 (−3; +577 sobre 41.268).
 - Suites: Providers 2280/2280, Kernel 573/573, Contracts 69, Setup 477, pytest 28; la App compila.
 - Incidente: MSConfig\services 0 y ningún 7040 de deshabilitado tras cada corrida.
+
+### Fase 3: el modelo final y el lote
+
+- **Falsedades** (banco de práctica, una pasada del juez Qwen3.6-35B en la GPU del PC sobre las transcripciones del
+  notebook, y lectura a mano de las líneas «a revisar»): base 3 (F015 dice que el Bloc sigue abierto y no lo estaba;
+  F019 ×2 dice que está en la biblioteca de Steam sin verlo); rama de proveedores sin ajuste 6 por el juez (F007 es la
+  misma frase que en la base quedó «a revisar»; F009/F010 dependen del contenido de la carpeta del banco); **c2-e1.0
+  2** (F019 t1 «abrí Steam en la biblioteca» con sólo `placeRequested` en el recibo; F015 «sí, … está cerrado» acepta
+  la presuposición aunque miró el estado). No empeora.
+- **imatrix propia** de c2-e1.0 (receta C: 40 % texto general v5 de bartowski + 60 % conversaciones de entrenamiento,
+  118 trozos de 8.192 tokens, `--parse-special`): KLD del Q4_K_M frente a su BF16 en 8k tokens fuera de la
+  calibración 0,01729 ± 0,00069, frente a 0,01746 ± 0,00063 con la imatrix de Unsloth: iguales dentro del error. Se
+  queda el GGUF ya medido en los tres bancos (imatrix de Unsloth).
+- **Modelo final**: c2-e1.0, `F:/BAXYeval/models/BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf`, sha256
+  8a4b6ce3edb2ba8b87c62111b4c3387fa481a4d01b58b29a112b799b0e8affc8 (2.740.937.472 bytes, la misma mezcla de tipos que
+  producción). `scripts/run_renew.cmd` apunta a él en las dos máquinas; un banco puede elegir otro con
+  `BAXY_MIND_LLM_GGUF`.
+- **Lote final** `lote-final` (b550e9602) = ft-qwen + nb-proveedores. Se mide entero: decision2 s0-2 y escenas ×4 en
+  las dos GPUs, e2e s0-2, falsedades y recursos en el notebook, Providers en el notebook y el resto de suites en el PC.
