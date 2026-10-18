@@ -1974,6 +1974,41 @@ public sealed class UserBrowserTests
         }
     }
 
+    // FT/proveedores goal (review of receipts): the last page BAXY opened went to a named browser (Chrome, a CDP session
+    // of its own, while the person's default is Opera): its tabs are listed there, as its page is read there (E016),
+    // and the person's Opera is not touched.
+    [Test]
+    public async Task TheNamedBrowserBaxyLastOpenedIsTheOneItsTabsAreListedIn()
+    {
+        var context = new CdpBrowserSessionContext();
+        using var chrome = new TabbedSession(Path.Combine(Path.GetTempPath(), "baxy-chrome-" + Guid.NewGuid().ToString("N")));
+        context.Activate(chrome);
+        var opera = new FakePlatform(OperaGx) { Tabs = [new("Inicio", true), new("Correo", false)] };
+        using Harness harness = new(opera, context: context);
+
+        ExternalCapabilityReceipt tabs = await harness.Adapter.InvokeAsync(
+            "browser.tabs.list", Json("""{"limit":20}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(tabs.Verified, Is.True, tabs.ErrorCode);
+            Assert.That(chrome.TabCalls, Is.EqualTo(1));
+            Assert.That(opera.FrameWindows, Is.Empty, "the person's Opera is not read");
+        });
+    }
+
+    private sealed class TabbedSession(string profile) : CdpBrowserSession(profile)
+    {
+        internal int TabCalls { get; private set; }
+
+        internal override ValueTask<CdpBrowserTabsResult> ListTabsAsync(int limit, CancellationToken cancellationToken)
+        {
+            TabCalls++;
+            return ValueTask.FromResult(new CdpBrowserTabsResult(
+                true, [new("chrome-page", "Example Domain", "https://example.com/")], 1, false, string.Empty));
+        }
+    }
+
     internal sealed class CountingEdge(string profile) : CdpBrowserSession(profile)
     {
         internal int NavigateCalls { get; private set; }

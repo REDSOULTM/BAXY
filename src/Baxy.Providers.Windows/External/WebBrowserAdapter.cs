@@ -168,8 +168,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         string action = ExternalJson.RequiredString(arguments, "action");
         // Owner 2026-10-06: the person's tabs are in their own browser; a browser BAXY keeps aside is never the
-        // answer to «cierra la pestaña» or «vuelve atrás».
-        if (_userBrowser?.Resolve() is { } userBrowser)
+        // answer to «cierra la pestaña» or «vuelve atrás». FT/proveedores goal (review of receipts): but the last page
+        // BAXY opened in a named browser (Chrome when Opera is the default) is acted on there, as its page read is
+        // (E016); before, «léela» read Chrome and «ciérrala» closed the person's Opera tab.
+        if (_sessionContext?.Active is null && _userBrowser?.Resolve() is { } userBrowser)
             return await _userBrowser.ControlAsync(operation, userBrowser, action, effectBoundary, cancellationToken)
                 .ConfigureAwait(false);
         if (UserBrowserHoldsThePage)
@@ -335,7 +337,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
-        if (_userBrowser?.Resolve() is { } userBrowser)
+        if (_sessionContext?.Active is null && _userBrowser?.Resolve() is { } userBrowser)
             return await _userBrowser.ListTabsAsync(operation, userBrowser, limit, cancellationToken)
                 .ConfigureAwait(false);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
