@@ -270,6 +270,11 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             return ExternalJson.Success(operation, Result(previous, shown, refreshChosen, changed: true));
         if (after is { } unchanged && Same(unchanged, previous))
         {
+            // FT/proveedores goal (review of receipts): Windows kept the new mode for later without showing it
+            // (DISP_CHANGE_RESTART, 1, or a success not shown yet): CDS_UPDATEREGISTRY had saved it, and it would come
+            // at the next sign-in, maybe a mode the screen cannot show. The shown mode is saved back first.
+            if (applied is 0 or 1 && _platform.Apply(device, previous) != 0)
+                return ExternalJson.FailureAfterEffect(operation, "display_mode_saved_for_restart");
             // Windows did not apply it (or applied nothing): the screen reads as before, nothing changed.
             return ExternalJson.FailureBeforeEffect(
                 operation, applied != 0 ? "display_mode_not_applied" : "display_mode_not_verified");
