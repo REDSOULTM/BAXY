@@ -434,14 +434,24 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     }
 
     // Keeps the current conversation (what the view showed and the mind's own) when it holds anything.
-    private async Task SaveCurrentAsync()
+    private async Task SaveCurrentAsync(CancellationToken? cancellationToken = null)
     {
         if (_transcript.Items.Count == 0)
         {
             return;
         }
 
-        JsonArray? mind = await _viewModel.ExportMindSessionAsync(_lifetimeCancellation).ConfigureAwait(true);
+        JsonArray? mind;
+        try
+        {
+            mind = await _viewModel.ExportMindSessionAsync(cancellationToken ?? _lifetimeCancellation)
+                .ConfigureAwait(true);
+        }
+        catch (OperationCanceledException) when (cancellationToken is not null)
+        {
+            // At close a mind that does not answer in time leaves what the view showed, still kept.
+            mind = null;
+        }
         _sessions.Save(new FieldSessionStore.Session(_sessionId, SessionTitle, _sessionCreated, DateTimeOffset.UtcNow,
             _transcript.Snapshot(), mind));
         Publish(SurfacesEvent());
@@ -1011,8 +1021,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.VoiceWake -= OnVoiceWake;
         try
         {
-            // The conversation as it stands is kept when BAXY closes.
-            await SaveCurrentAsync().ConfigureAwait(false);
+            // The conversation as it stands is kept when BAXY closes. FT/proveedores goal (review of the App): the window
+            // cancels the lifetime before this, so the save asked the mind with a cancelled token and was dropped on
+            // every close; it has its own short deadline (the mind is still up: the view model ends after the bridge).
+            using var closing = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await SaveCurrentAsync(closing.Token).ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is OperationCanceledException or IOException or InvalidOperationException)
         {
