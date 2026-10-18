@@ -476,11 +476,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "wifi_radio_not_found");
         }
         RadioState desired = requested ? RadioState.On : RadioState.Off;
+        // FT/proveedores goal (review of receipts): a radio disabled by its switch or driver (RadioState.Disabled) is
+        // off: turning it off changes nothing and is not told «may have happened»; turning on radios that are all
+        // disabled is said before anything is touched.
+        bool Reached(Radio radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
+        if (requested && radios.All(radio => radio.State == RadioState.Disabled))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "wifi_radio_disabled");
+        }
         bool effectObserved = false;
         foreach (Radio radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (radio.State == desired)
+            if (Reached(radio))
             {
                 continue;
             }
@@ -495,7 +503,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         Radio[] observed = (await Radio.GetRadiosAsync())
             .Where(radio => radio.Kind == RadioKind.WiFi)
             .ToArray();
-        if (observed.Length == 0 || observed.Any(radio => radio.State != desired))
+        if (observed.Length == 0 || !observed.All(Reached))
         {
             return effectBoundary.Failure(operation, "wifi_radio_postread_failed", effectObserved);
         }
@@ -541,7 +549,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // AIRPLANE2043 «sacá el modo avión» with every radio already on: nothing to
         // switch cannot be observed as an effect; the honest fact is the state,
         // said before any boundary is crossed (same contract as the microphone).
-        if (radios.All(radio => radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled)))
+        // A disabled radio is off for the airplane mode (bool allOff below), and stays out of the switching.
+        if (radios.All(radio => radio.State == desired || radio.State == RadioState.Disabled))
         {
             return ExternalJson.FailureBeforeEffect(
                 operation, value == 1 ? "airplane_radios_already_all_off" : "airplane_radios_already_on");
@@ -550,7 +559,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         foreach (Radio radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled))
+            if (radio.State == desired || radio.State == RadioState.Disabled)
                 continue;
             effectBoundary.Cross(cancellationToken);
             RadioAccessStatus changed = await radio.SetStateAsync(desired);
@@ -680,11 +689,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "bluetooth_radio_not_found");
         }
         RadioState desired = requested ? RadioState.On : RadioState.Off;
+        // FT/proveedores goal (review of receipts): a radio disabled by its switch or driver (RadioState.Disabled) is
+        // off: turning it off changes nothing and is not told «may have happened»; turning on radios that are all
+        // disabled is said before anything is touched.
+        bool Reached(Radio radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
+        if (requested && radios.All(radio => radio.State == RadioState.Disabled))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "bluetooth_radio_disabled");
+        }
         bool effectObserved = false;
         foreach (Radio radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (radio.State == desired)
+            if (Reached(radio))
             {
                 continue;
             }
@@ -702,7 +719,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         Radio[] observed = (await Radio.GetRadiosAsync())
             .Where(radio => radio.Kind == RadioKind.Bluetooth)
             .ToArray();
-        if (observed.Length == 0 || observed.Any(radio => radio.State != desired))
+        if (observed.Length == 0 || !observed.All(Reached))
         {
             return effectBoundary.Failure(
                 operation,
