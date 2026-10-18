@@ -93,8 +93,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         try {
           $p=Start-Process -FilePath ([string]$i.path) -Verb PrintTo -ArgumentList ('"'+[string]$i.printer+'"') -PassThru;$effect=$true
           $deadline=(Get-Date).AddSeconds(30)
-          do {Start-Sleep -Milliseconds 500;$job=Get-PrintJob -PrinterName ([string]$i.printer) -ErrorAction SilentlyContinue|Where-Object {$before -notcontains $_.ID}|Select-Object -First 1} while($null -eq $job -and (Get-Date) -lt $deadline)
-          [pscustomobject]@{ok=($null -ne $job);effectObserved=$effect;jobId=if($job){[string]$job.ID}else{''};status=if($job){[string]$job.JobStatus}else{''}}|ConvertTo-Json -Compress
+          # Goal FT/proveedores (revision de recibos): el trabajo nuevo que lleva el nombre del documento; otro trabajo
+          # nuevo de esa impresora (de otra app) solo vale al final, y el recibo dice que no lleva su nombre.
+          $name=[IO.Path]::GetFileNameWithoutExtension([string]$i.path);$job=$null;$other=$null
+          do {Start-Sleep -Milliseconds 500;$new=@(Get-PrintJob -PrinterName ([string]$i.printer) -ErrorAction SilentlyContinue|Where-Object {$before -notcontains $_.ID})
+            $job=$new|Where-Object {([string]$_.DocumentName).IndexOf($name,[StringComparison]::OrdinalIgnoreCase) -ge 0}|Select-Object -First 1
+            if($null -eq $other){$other=$new|Select-Object -First 1}} while($null -eq $job -and (Get-Date) -lt $deadline)
+          $named=($null -ne $job);if(-not $named){$job=$other}
+          [pscustomobject]@{ok=($null -ne $job);effectObserved=$effect;documentNamed=$named;jobId=if($job){[string]$job.ID}else{''};status=if($job){[string]$job.JobStatus}else{''}}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='print_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
     private const string ScanScript = """
@@ -1660,6 +1666,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteStartObject(); writer.WriteNumber("version", 1); writer.WriteString("deviceId", deviceId);
             writer.WriteString("documentId", documentId); writer.WriteString("jobId", "print_" + response.RootElement.GetProperty("jobId").GetString());
             writer.WriteString("status", response.RootElement.GetProperty("status").GetString());
+            writer.WriteBoolean("documentNamed", Bool(response.RootElement, "documentNamed"));
             writer.WriteString("authority", "windows_print_spooler_postread"); writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, true);
