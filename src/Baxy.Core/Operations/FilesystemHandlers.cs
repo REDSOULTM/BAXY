@@ -82,6 +82,20 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
             return ValueTask.FromResult(OperationOutcome.Failure(
                 exception.Code, exception.Result, effectMayHaveOccurred: exception.EffectMayHaveOccurred));
         }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // FT/proveedores goal (review of receipts): a file another program holds open (Excel with ventas.csv), or a
+            // folder Windows guards (Controlled Folder Access), threw past this handler and ended the core (exit 70),
+            // which the turn told as «pudo o no ocurrir». It is this operation's failure, named; a change may have
+            // begun only for an operation that changes something.
+            bool changes = operation is not ("backup.list" or "backup.verify" or "filesystem.list"
+                or "filesystem.search" or "filesystem.read.text" or "filesystem.hash");
+            bool inUse = exception is IOException && (exception.HResult & 0xFFFF) is 32 or 33;
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                inUse ? "file_in_use" : exception is UnauthorizedAccessException ? "filesystem_access_denied"
+                    : "filesystem_io_failed",
+                effectMayHaveOccurred: changes));
+        }
     }
 
     private FilesystemMutationResult TransferResult(JsonElement arguments, bool move) =>

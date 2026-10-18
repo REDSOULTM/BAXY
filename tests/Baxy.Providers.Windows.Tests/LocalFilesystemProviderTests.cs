@@ -122,6 +122,34 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): a file another program holds open with no sharing (Excel) threw past the
+    // handler and ended the core; it is file.write's failure, file_in_use, and the file is untouched.
+    [Test]
+    public async Task AFileHeldOpenByAnotherProgramIsInUseNotACrash()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        string path = Path.Combine(sandbox, "ventas.csv");
+        File.WriteAllText(path, "a;b");
+        using JsonDocument arguments = JsonDocument.Parse("""{"relativePath":"ventas.csv","text":"c;d","append":true}""");
+
+        OperationOutcome outcome;
+        using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            outcome = await new FilesystemHandler("file.write", provider).ExecuteAsync(
+                new OperationInvocation("r", "m", "i", arguments.RootElement.Clone()), CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("file_in_use"));
+            Assert.That(File.ReadAllText(path), Is.EqualTo("a;b"));
+        });
+    }
+
     // file.write append (it absorbed filesystem.sandbox.append.named): what is there stays, the text goes at the end
     // in the file's own encoding, no hash is needed (a given one must match), and a missing file is created.
     [Test]
