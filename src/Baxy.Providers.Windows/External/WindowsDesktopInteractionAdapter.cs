@@ -348,6 +348,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         int? index = null;
         bool replace = false;
         bool entry = false;
+        bool openedApplication = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty(WindowsExternalCapabilityProvider.OpenedApplicationArgument, out JsonElement opened)
+            && opened.ValueKind == JsonValueKind.True;
         try
         {
             if (typing)
@@ -446,7 +449,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         var bursts = new LeasedBursts(burst);
         try
         {
-            return await SendInBurstAsync(operation, typing, key, text, chord, window, bursts, cancellationToken)
+            return await SendInBurstAsync(operation, typing, key, text, chord, window, bursts, cancellationToken,
+                    openedApplication)
                 .ConfigureAwait(false);
         }
         finally
@@ -489,7 +493,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         ushort[] chord,
         nint window,
         LeasedBursts bursts,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool openedApplication = false)
     {
         DesktopForeground before = _keyboard.Foreground();
         if (before.Window == 0 || _keyboard.InputSize != (IntPtr.Size == 8 ? 40 : 28))
@@ -524,11 +529,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // BAXY Renew (notebook), F004 (a text typed with no window named went into the Calculator in front, and was told
         // verified because Windows accepted its events): what the focused edit control of the window in front holds is
         // marked before the first key, so the text can be read back there afterwards.
-        TypedMark? mark = typing && window == 0 ? _delivery?.Mark(before.Window, text.Length) : null;
+        // Review of E6: so is a text the provider sent to the application app.open just opened (now in front).
+        bool readsBack = typing && (window == 0 || openedApplication);
+        TypedMark? mark = readsBack ? _delivery?.Mark(before.Window, text.Length) : null;
         // FT/proveedores goal (E2): a document that is no edit control (Word's «_WwG») has no Win32 mark, and its text
         // was never read back. Its paragraph at the caret is read by UI Automation instead, before the first key, of the
         // front's own process only.
-        CaretText? caretBefore = typing && window == 0 && mark is null
+        CaretText? caretBefore = readsBack && mark is null
             ? await CaretTextAsync(before, cancellationToken).ConfigureAwait(false)
             : null;
         uint accepted = 0;
@@ -679,7 +686,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             ? await CaretReadsBackAsync(before, caret, text, cancellationToken).ConfigureAwait(false)
             : (false, false);
         bool readBack = editReadBack || caretReadBack;
-        string? unread = typing && window == 0 && !readBack ? "input_text_not_read_back" : null;
+        string? unread = readsBack && !readBack ? "input_text_not_read_back" : null;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -702,7 +709,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             writer.WriteNumber("foregroundProcessIdBefore", before.ProcessId);
             writer.WriteNumber("foregroundProcessIdAfter", after.ProcessId);
             WriteSentTo(writer, before, sentToProcess);
-            if (typing && window == 0)
+            if (readsBack)
                 writer.WriteBoolean("readBack", readBack);
             // FT/proveedores goal (E2): a paragraph read cut at its bound (CaretReadableText) proves nothing, and says so.
             if (caretBefore is not null)
