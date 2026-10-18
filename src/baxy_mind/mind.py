@@ -12,6 +12,7 @@ import datetime as _dt
 import json
 import os
 import time
+import urllib.error
 from pathlib import Path
 from typing import Any
 
@@ -181,6 +182,12 @@ TURN_ROOM_TOKENS = 3584
 # («nunca me lo dijiste» about a turn no longer shown).
 TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "
            "no lo sabes]")
+
+# FT/proveedores goal (e2e E022): the results of one turn's calls grow its prompt past the context (eight pages of 6,000
+# characters beside the prefix), and llama-server refuses it. Each earlier result of the turn then keeps its start, and
+# the cut is said where the model reads it.
+SHRUNK_CHARS = 1200
+SHRUNK = "\n[Resultado recortado para que quepa el turno: {n} caracteres más de este resultado ya no se muestran]"
 
 NOT_RUN = json.dumps({"status": "not_run", "reason": "the turn ended before this call ran"})
 # A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
@@ -561,7 +568,21 @@ class Mind:
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
                 "arguments": {"approve": approve}, "reply": "", "question": ""}
 
-    def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
+    def _shrink_turn(self, conv: list[dict[str, Any]]) -> bool:
+        """Cut each result of the open turn but the newest to its start (SHRUNK_CHARS), saying so: whether any was."""
+        starts = [i for i, m in enumerate(conv)
+                  if m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
+        results = [m for m in conv[(starts[-1] if starts else 0):] if m["role"] == "tool"]
+        cut = False
+        for message in results[:-1]:
+            content = str(message.get("content") or "")
+            if len(content) > SHRUNK_CHARS and SHRUNK.format(n="")[:20] not in content:
+                message["content"] = content[:SHRUNK_CHARS] + SHRUNK.format(n=len(content) - SHRUNK_CHARS)
+                cut = True
+        return cut
+
+    def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False,
+              shrunk: bool = False) -> dict[str, Any]:
         started = time.monotonic()
         conv = turn["conv"]
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
@@ -578,7 +599,15 @@ class Mind:
             # person (llama.cpp #20837; 2026-10-15 E017): the token that opens a call cannot be sampled.
             body["tool_choice"] = "none"
             body["logit_bias"] = [[token, False] for token in self.call_tokens]
-        reply = self.server.chat(body)
+        try:
+            reply = self.server.chat(body)
+        except urllib.error.HTTPError as error:
+            # llama-server refuses a prompt past its context with HTTP 400: within a turn that is its own results, so
+            # they are cut (said where the model reads) and the model answers in words from what is left, once.
+            if error.code != 400 or shrunk or not self._shrink_turn(conv):
+                raise
+            self._log(stage, started, None, kind="context_shrunk", operation=None, arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=True, shrunk=True)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
         calls = []
@@ -600,6 +629,10 @@ class Mind:
                 for c in calls]})
             turn["queue"] = calls[1:]
             return self._result(request_id, turn, calls[0], reply, stage, started, content)
+        if not content and not final and stage == "turn.continue" and not turn.get("beat"):
+            # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
+            # what ran (round 2, as an empty ask_user), so it answers in words from the results.
+            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
         if content:
             conv.append({"role": "assistant", "content": content})
         return self._result(request_id, turn, None, reply, stage, started, content)

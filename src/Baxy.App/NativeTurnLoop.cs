@@ -54,9 +54,6 @@ internal sealed record NativeTurnConfirmation(
 /// </summary>
 internal sealed class NativeTurnLoop
 {
-    /// <summary>Model moves per turn. Past it the model answers in words from the results it has (turn.continue final).</summary>
-    internal const int MaximumModelCalls = 15;
-
     private static readonly TimeSpan OperationTimeout = TimeSpan.FromSeconds(30);
 
     internal sealed class Host
@@ -124,6 +121,8 @@ internal sealed class NativeTurnLoop
     private string _stepId = string.Empty;
     private long _stepSequence;
     private bool _asking;
+    // The last call's step as it was recorded (its status and error code), for TurnClosing.
+    private NativeTurnStep? _recorded;
 
     internal NativeTurnLoop(Host host)
     {
@@ -264,6 +263,7 @@ internal sealed class NativeTurnLoop
 
     private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken)
     {
+        var closing = new TurnClosing();
         for (int calls = 1; ; calls++)
         {
             switch (step)
@@ -291,12 +291,15 @@ internal sealed class NativeTurnLoop
                     return;
             }
 
+            _recorded = null;
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
             // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same
             // terminal call eight times, then «no puedo ejecutar comandos»), so the model answers from what it has, as
-            // at the call budget.
-            bool final = calls >= MaximumModelCalls || _host.Core() is not { IsReady: true } || HasPendingConfirmation;
+            // at the call budget. So it does past the turn's time and after a call that came back the same (TurnClosing).
+            bool spent = closing.AfterCall(calls, Stopwatch.GetElapsedTime(_turnStarted), step.Operation!,
+                step.Arguments!.ToJsonString(), _recorded?.Status ?? StatusOf(observation), _recorded?.ErrorCode);
+            bool final = spent || _host.Core() is not { IsReady: true } || HasPendingConfirmation;
             if (WaitingPrepared() is { } waiting)
             {
                 observation = Waiting(observation, waiting.OperationName);
@@ -831,6 +834,7 @@ internal sealed class NativeTurnLoop
             sent ?? response?.Status is OperationStatuses.Completed or OperationStatuses.Failed);
         ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.step",
             $"{operation}.{step.Status}.{(step.Verified ? "verified" : "unverified")}.ms.{elapsed}");
+        _recorded = step;
         _host.StepCompleted?.Invoke(step);
         return observation;
     }

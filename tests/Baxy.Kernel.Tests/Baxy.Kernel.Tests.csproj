@@ -13,6 +13,8 @@
     <Compile Include="..\..\src\Baxy.App\AwayWatch.cs" Link="App\AwayWatch.cs" />
     <!-- When BAXY's line is the confirmation of the call that waits: one file with no App dependency. -->
     <Compile Include="..\..\src\Baxy.App\ConfirmationAsk.cs" Link="App\ConfirmationAsk.cs" />
+    <!-- When a turn of the tool loop takes no more calls: one file with no App dependency. -->
+    <Compile Include="..\..\src\Baxy.App\TurnClosing.cs" Link="App\TurnClosing.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
