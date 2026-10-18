@@ -1401,3 +1401,35 @@ HEAD final de la fase 3: el de esta fusión.
     del worker de clics, que dependen del escritorio real. De madrugada fallan igual en la rama de la auditoría, que
     antes pasaba entera en el mismo PC: es entorno, no código;
   - en el notebook, con el escritorio libre: Providers 2223/2223.
+
+## Ajuste fino de Qwen3.5-4B y proveedores pendientes (PROMPT_GOAL_FT_PROVEEDORES.md, 2026-10-18)
+
+Producto de partida 0be0f9de9 (cierre de la auditoría + interfaz v4, voz y bandeja). Reparto: el PC (líder) hace el
+ajuste fino en la rama `ft-qwen` (worktree BAXY-Renew-ft); el notebook arregla los proveedores en `nb-proveedores`
+(worktree BAXY-Renew-pv) y mide checkpoints en su GPU. Datos, receta, corridas y holdout en F:/BAXYeval/ft_v1;
+entorno, pesos HF y adaptadores en D:/BAXYft. Nada literal del dueño en git.
+
+### Fase 0
+
+- **Holdout nuevo**, escrito y sellado por un subagente aislado antes de mirar ningún dato de entrenamiento: 320 casos
+  de decisión (10 familias, 106 operaciones; call 191, call_any 23, ask 31, text 75) y 36 escenas (silencio 21, actuar
+  6, proponer 4, decir 5). sha256 y conteos en metas.json, `ajuste_fino.holdout_ft`. La sesión líder no vio los casos.
+- **Base del día en la GPU del PC** (0be0f9de9, catálogo lote3 con las apps del PC): decision2 s0-2 228/228/227 =
+  227,67, sin errores.
+- **bench_escenas.py** se caía sobre 0be0f9de9: la otra sesión dejó `ReachesTheNetwork` como `internal static` y la
+  regex sólo aceptaba `private`. Ahora acepta las dos; lo que mide no cambia.
+- **Entorno** (PC): venv en D:/BAXYft con torch 2.11+cu128, transformers 5.20.1, peft 0.21.2, flash-linear-attention
+  0.5.2 y triton-windows 3.5.1; pesos `Qwen/Qwen3.5-4B` (el post-entrenado del que sale el GGUF de producción de
+  Unsloth, que lleva su imatrix).
+- **Lo que ve la mente, en tokens**: la mente manda a llama-server el prompt de sistema y 176 herramientas por
+  `/v1/chat/completions`, renderizados con la plantilla Jinja del GGUF (la de Qwen con el arreglo de argumentos de
+  Unsloth y el razonamiento apagado por defecto). Los datos se construyen igual: la propia clase `Mind` con un servidor
+  falso captura el cuerpo exacto de cada petición (sistema, historia, reloj, pedido, herramientas) y llama-server lo
+  renderiza (`/apply-template`) y lo tokeniza. El prefijo común (herramientas + sistema) son 42.734 tokens, idéntico en
+  cada muestra.
+- **Método de entrenamiento con el prefijo real**: una vez por paso, el prefijo corre sin gradiente con los pesos
+  LoRA del momento y su caché (KV de las 8 capas de atención completa y estados de las 24 de Gated DeltaNet) se copia
+  para cada muestra, que sólo propaga gradiente por su sufijo y su respuesta. Comprobación: la pérdida con el prefijo
+  cacheado coincide con un pase completo (1,3526 frente a 1,3528; 0,456 frente a 0,460, redondeo bf16), y con el
+  prefijo entero el pico de memoria es 11,4 GiB. La brecha documentada: no hay gradiente a través de las posiciones
+  del prefijo (stop-gradient), pero el modelo sí entrena con el contexto completo de 42,7k que verá.

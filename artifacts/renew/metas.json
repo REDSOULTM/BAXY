@@ -1906,5 +1906,65 @@
         "cumple_4gb": true
       }
     }
+  },
+  "ajuste_fino": {
+    "prompt": "PROMPT_GOAL_FT_PROVEEDORES.md (2026-10-18), producto de partida 0be0f9de9 (cierre de la auditoría 813b8d5ab + interfaz v4, voz y bandeja)",
+    "ubicacion": "F:/BAXYeval/ft_v1 (datos de entrenamiento, receta, corridas, holdout; fuera del repo: llevan textos del dueño y salidas del modelo) y D:/BAXYft (entorno, pesos HF, adaptadores, GGUF)",
+    "holdout_ft": {
+      "escrito_por": "subagente aislado (2026-10-18), antes de mirar ningún dato de entrenamiento; la sesión líder no vio los casos",
+      "sellado": "2026-10-18",
+      "nota": "F:/BAXYeval/ft_v1/holdout/SEALED_FT.md; se abre una sola vez, en la fase 4",
+      "archivos": {
+        "decision_ft.sealed.json": {
+          "casos": 320,
+          "sha256": "665fadc2ed3893a0dd1c443dd1650bc84886a33ba5414efea84a99915d556907",
+          "familias": {
+            "A_accion_es": 55,
+            "B_en_spanglish": 40,
+            "C_voz_errores": 30,
+            "D_contexto": 40,
+            "E_preguntar": 30,
+            "F_texto": 25,
+            "G_texto_pegado": 25,
+            "H_no_lo_hace": 25,
+            "I_varios_pasos": 20,
+            "J_riesgo": 30
+          },
+          "tipos": {
+            "call": 191,
+            "call_any": 23,
+            "ask": 31,
+            "text": 75
+          },
+          "operaciones_distintas": 106,
+          "e2e_seguras": 237
+        },
+        "escenas_ft.sealed.json": {
+          "escenas": 36,
+          "sha256": "ecfd4395669e1825bda42c7c1e7592010459ae42ae4484f5fc3dbbe76227b41b",
+          "tipos": {
+            "silence": 21,
+            "act": 6,
+            "propose": 4,
+            "say": 5
+          }
+        },
+        "construir_decision.py": {
+          "sha256": "d5cd0b0ce528c4800b254d1a2cc4a2ca6a21c3a53738d871611d48c69b2402fd",
+          "nota": "generador: contiene los casos, sellado"
+        },
+        "construir_escenas.py": {
+          "sha256": "8a9d6885840339b335885e412e9c8ea817335b98002e1d4d6c697f33543134ba",
+          "nota": "generador: contiene las escenas, sellado"
+        }
+      }
+    },
+    "base_del_dia": {
+      "pc": {
+        "producto": "0be0f9de9",
+        "catalogo": "F:/BAXYeval/reales_v1/catalogos/lote3.json (174 ops, apps del PC)",
+        "decision2": "228/228/227 = 227,67 (s0-2, 0 errores)"
+      }
+    }
   }
 }
