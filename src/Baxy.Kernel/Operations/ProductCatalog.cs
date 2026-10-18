@@ -46,6 +46,14 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "app.open.process.window.focus.v1",
             "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso y su ventana visible, y dice si quedó al frente; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos. También acepta windows.calculator."),
+        // Auditoría de los pedidos reales (2026-10-17): reiniciar una aplicación no tenía operación propia y la única que
+        // decía «restart» era system.power, que va sin el sí de la persona.
+        Descriptor(
+            "app.restart",
+            Schema([String("appId", maximumUtf8Bytes: 512, nonWhitespace: true)], ["appId"]),
+            OperationRisks.WorkLoss,
+            "app.restart.window.close.process.exit.app.open.v1",
+            "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo."),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(
