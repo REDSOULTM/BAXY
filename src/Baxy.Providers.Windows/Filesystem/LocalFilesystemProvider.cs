@@ -250,7 +250,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     {
         "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
         "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "downloads" => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+        "downloads" => Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path(),
         _ => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
     };
 

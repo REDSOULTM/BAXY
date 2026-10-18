@@ -1107,8 +1107,7 @@ if __name__ == "__main__":
     {
         ["desktop"] = [Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)],
         ["documents"] = [Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)],
-        ["downloads"] = [Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads")],
+        ["downloads"] = [Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path()],
         ["home"] = [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)],
     };
 
