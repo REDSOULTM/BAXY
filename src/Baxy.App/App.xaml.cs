@@ -11,8 +11,13 @@ namespace Baxy.App;
 public partial class App : Application
 {
     private const string InstanceMutexName = @"Local\BAXY.Product.App";
+    // FT/proveedores goal (review of the App): BAXY started again while it runs (hidden in the tray) exited without a
+    // word; it asks the running one to show its window, as a click on the tray icon does.
+    private const string ShowRequestName = @"Local\BAXY.Product.App.Show";
     private Mutex? _instanceMutex;
     private PresenceHost? _presence;
+    private EventWaitHandle? _showRequest;
+    private RegisteredWaitHandle? _showWait;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -39,6 +44,19 @@ public partial class App : Application
                     "{\"type\":\"terminal\",\"kind\":\"blocked_environment\",\"diagnostic\":\"instance_already_running\"}");
                 Shutdown(2);
                 return;
+            }
+
+            try
+            {
+                if (EventWaitHandle.TryOpenExisting(ShowRequestName, out EventWaitHandle? show))
+                {
+                    using (show)
+                        _ = show.Set();
+                }
+            }
+            catch (Exception exception) when (exception is UnauthorizedAccessException or WaitHandleCannotBeOpenedException)
+            {
+                // The running BAXY cannot be asked: it stays as it is.
             }
 
             Shutdown(0);
@@ -72,6 +90,10 @@ public partial class App : Application
 
         _presence = PresenceHost.CreateDefault();
         _presence.Start(e.Args);
+        PresenceHost presence = _presence;
+        _showRequest = new EventWaitHandle(false, EventResetMode.AutoReset, ShowRequestName);
+        _showWait = ThreadPool.RegisterWaitForSingleObject(
+            _showRequest, (_, _) => presence.ShowMainWindow(), null, Timeout.Infinite, executeOnlyOnce: false);
         var window = new MainWindow(_presence);
         MainWindow = window;
         ShellTraceSink.Record(
@@ -92,6 +114,10 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _showWait?.Unregister(null);
+        _showWait = null;
+        _showRequest?.Dispose();
+        _showRequest = null;
         _presence?.Dispose();
         _presence = null;
         if (_instanceMutex is not null)
