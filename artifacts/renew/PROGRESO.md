@@ -1633,3 +1633,40 @@ queda c2-e1.0.
 Investigación en curso para los ciclos siguientes (informes en F:/BAXYeval/ft_v1/receta/): D1 proteger el latido
 (réplica, KL, mezcla, congelar módulos, escalar el delta al fusionar), D2 LR/rango/alfa/épocas en modelos pequeños, D3
 datos de tool-calling y preferencias; el notebook, E: elegir checkpoint sin sobreajustarse y DPO/ORPO/KTO.
+
+### Lote final con c2-e1.0, GPU del PC (mente y catálogo del lote)
+
+decision2 231/230/231 = 230,67 frente a la base del PC 227,67 (+3,0); escenas 32/33/31/33 = 32,25 frente a 29,25
+(+3,0), 0 molestas, 0 riesgos solos. Coincide con el notebook en el signo.
+
+### Investigación para los ciclos siguientes (informes D1-D3 en F:/BAXYeval/ft_v1/receta/)
+
+- **D1, proteger el latido.** Escalar el delta LoRA hacia el base (W + λ·ΔW) recorta el olvido mejor que parar antes
+  o la réplica: WiSE-FT (https://arxiv.org/abs/2109.01903, paper), Lin et al. 2023
+  (https://arxiv.org/html/2309.06256v4, paper), LiNeS (https://arxiv.org/html/2410.17146v1, paper). Una KL pequeña
+  hacia el base durante el SFT, con réplica, quita la mayor parte del olvido sin perder lo nuevo en Qwen2.5 con LoRA
+  r32 y LR 1e-4: Riemer et al. 2025 (https://arxiv.org/html/2512.22337, paper; β 0,1 mata lo nuevo, 0,001-0,01 no);
+  el olvido sigue a la KL hacia el base en las entradas de la tarea: RL's Razor (https://arxiv.org/html/2509.04259v1,
+  paper). La réplica de 136 escenas ×3 es el punto débil: más escenas únicas a ×1 (inferencia apoyada en SSR y
+  Riemer).
+- **D2, hiperparámetros.** El olvido crece con la LR y con los pasos (Biderman 2024 https://arxiv.org/html/2405.09673v2,
+  Kalajdzievski 2024 https://arxiv.org/abs/2401.05605, papers); Unsloth recomienda bajar a 2e-5 en entrenamientos
+  largos de tool-calling (https://unsloth.ai/docs/get-started/fine-tuning-llms-guide/lora-hyperparameters-guide,
+  oficial). Rango y programa de LR casi no cambian el olvido (Biderman; Raschka, informe de usuario). Una época es el
+  techo. Con 268 casos, el intervalo pareado del 95 % de decision2 es ±9 casos (inferencia del agente): la señal está
+  en escenas y e2e.
+- **D3, datos.** Conjuntos pareados de «casi aciertos» por familia de fallo y comprobación del significado de los
+  argumentos (ToolACE, xLAM/APIGen: verificación por valores; When2Call https://arxiv.org/abs/2504.18851: 2:1 de
+  llamadas frente a no llamadas y paso de preferencias que reduce llamadas alucinadas de 4,3 % a 1,9 %); DPO con
+  término supervisado sobre el elegido, β 0,05-0,1 y LR ~5e-6, con pares on-policy (paper + doc TRL).
+
+Plan (una palanca por ciclo, cada una con su fuente):
+1. Sin reentrenar: c2-e1.0 fusionado a λ = 0,8 y 0,6 (D1 palanca 1, D2 ciclo 0).
+2. c4: LR 5e-5, todo lo demás igual a c2 (D2 propuesta 1; D1 palanca 4).
+3. c5: datos v3 con los conjuntos pareados (G7 rutas, lugar en la app, app frente a juego, volumen, borrar; G8
+   preguntar frente a buscar, no inventar el dato, afirmaciones de cosas que cambian, pronombres), con su comprobación
+   de significado y la fuga (D3 palancas 1-2).
+4. c6: KL hacia el base (β 0,05 en la réplica del latido, 0,005 en el resto; Riemer).
+5. Si queda tiempo: DPO con término supervisado sobre el mejor (D3 palanca 4).
+Implementado: `MERGE_SCALE` en la fusión y `--kl-beat/--kl-dec` en el entrenador (top-64 del base precalculado: LoRA
+arranca en B = 0, así que el modelo del paso 0 es el base).
