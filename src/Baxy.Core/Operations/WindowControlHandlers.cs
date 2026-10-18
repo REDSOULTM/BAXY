@@ -167,7 +167,13 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("appId", appId);
+            // FT/proveedores goal (review of receipts): how many windows the application had, so a close that stopped
+            // at the first says how many were never tried; with none closed nor hidden (all gone meanwhile) nothing
+            // changed.
+            writer.WriteNumber("windows", closing.Frames);
             writer.WriteNumber("closedWindows", closing.ClosedWindows);
+            if (closing.ErrorCode is null && closing.ClosedWindows == 0 && closing.HiddenWindows == 0)
+                writer.WriteBoolean("changed", false);
             if (closing.HiddenWindows > 0)
             {
                 // Windows that hid instead of closing (the application stays in the notification area).
