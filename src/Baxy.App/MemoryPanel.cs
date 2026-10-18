@@ -10,7 +10,8 @@ namespace Baxy.App;
 /// <summary>
 /// Estabilización M (identity, «Memoria y privacidad»: it can be seen, edited and erased whole). The interface's memory
 /// panel lists, edits and forgets through the same catalog operations the chat runs (<c>memory.list</c>,
-/// <c>memory.recall</c>, <c>memory.correct</c>, <c>memory.forget</c>), sealed by the same
+/// <c>memory.recall</c>, <c>memory.correct</c>, <c>memory.forget</c>, <c>memory.enable</c>, <c>memory.disable</c>),
+/// sealed by the same
 /// <see cref="MemoryOperationProtector"/> and sent to the same Core: the kernel authorizes each one and the journal
 /// records it; there is no second way to the store. The person confirms a forget in the panel itself (its own two-step
 /// button, never a browser dialog) and the panel answers the kernel's challenge with that request's token. Forgetting
@@ -93,6 +94,20 @@ internal sealed class MemoryPanel
                 ["scope"] = "exact",
                 ["selector"] = key,
                 ["confirmationRequired"] = true,
+            }, cancellationToken)).Error;
+        }
+        else if (method == "POST" && route == "/memory/enabled")
+        {
+            // «Recordar cosas sobre ti»: the chat's own memory.enable / memory.disable (turning it off deletes nothing).
+            if (Parse(body)?["enabled"] is not JsonValue enabledValue || !enabledValue.TryGetValue(out bool enabled))
+            {
+                return Failure("invalid_enabled", 400);
+            }
+
+            failed = (await ExecuteAsync(client, protector, enabled ? "memory.enable" : "memory.disable", new JsonObject
+            {
+                ["version"] = 1,
+                ["enabled"] = enabled,
             }, cancellationToken)).Error;
         }
         else if (method != "GET" || route != "/memory")
@@ -291,9 +306,9 @@ internal sealed class MemoryPanel
         try
         {
             response = await client.SendOperationAsync(prepared, OperationTimeout, cancellationToken);
-            // The panel's two-step button is the person's «sí» to a forget only: any other challenge stays unanswered
-            // and comes back as its code.
-            if (operation == "memory.forget"
+            // The panel's two-step button is the person's «sí» to a forget, and its switch the «sí» to turning the memory
+            // on (privacy sensitive, so the kernel asks): any other challenge stays unanswered and comes back as its code.
+            if (operation is "memory.forget" or "memory.enable"
                 && PendingOperationConfirmation.TryCreate(response, prepared, TimeProvider.System, out PendingOperationConfirmation? asked)
                 && asked is not null)
             {

@@ -2,7 +2,7 @@
    three window glyphs are the shell's own (the window has no system frame). */
 
 export type IconName =
-  | 'attach' | 'send' | 'mic' | 'mic-off' | 'settings' | 'plus' | 'bolt' | 'search' | 'check' | 'person' | 'power'
+  | 'send' | 'mic' | 'mic-off' | 'settings' | 'plus' | 'bolt' | 'search' | 'check' | 'person' | 'power'
   | 'eye-off' | 'wheelchair' | 'x' | 'wave' | 'win-min' | 'win-max' | 'win-restore';
 
 interface Props {
@@ -24,8 +24,6 @@ export function Icon({ name, size = 14, strokeWidth = 1.25 }: Props) {
     'aria-hidden': true as const,
   };
   switch (name) {
-    case 'attach':
-      return <svg {...p}><path d="M 11.2 4.5 L 5.2 10.5 Q 4 11.7 5.2 12.9 Q 6.4 14.1 7.6 12.9 L 13 7.5 Q 14.5 6 13 4.5 Q 11.5 3 10 4.5 L 5 9.5" /></svg>;
     case 'send':
       return <svg {...p}><path d="M 3 8 L 13 8" /><path d="M 9.5 4.5 L 13 8 L 9.5 11.5" /></svg>;
     case 'mic':

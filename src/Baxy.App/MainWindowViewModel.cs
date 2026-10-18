@@ -37,7 +37,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private int _coreDisconnectObserved;
     private bool _coreRecoveryPending;
     private Task _coreRecovery = Task.CompletedTask;
-    private int _voiceCommandBusy;
+    // The person's voice commands run one after another: one sent while another waits (the first after a start waits for
+    // the voice to load) queues behind it; it used to be refused, and the view's microphone modes seemed to do nothing
+    // (owner, 2026-10-17).
+    private readonly SemaphoreSlim _voiceCommands = new(1, 1);
     // The voice the mind turns on by itself at startup yields to the person: once they give a voice command it never
     // applies, and a command that arrives while it is starting waits for it first.
     private int _personVoiceChoice;
@@ -821,11 +824,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal async Task<bool> SetWakeVoiceAsync(bool enabled, CancellationToken cancellationToken)
     {
-        if (Interlocked.CompareExchange(ref _voiceCommandBusy, 1, 0) != 0)
-        {
-            return IsWakeListening == enabled;
-        }
-
+        await _voiceCommands.WaitAsync(cancellationToken);
         try
         {
             await AwaitStartupVoiceAsync();
@@ -880,7 +879,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         finally
         {
-            Volatile.Write(ref _voiceCommandBusy, 0);
+            _voiceCommands.Release();
         }
     }
 

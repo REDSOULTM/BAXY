@@ -241,6 +241,9 @@ proceso de la mente; el runtime ya traía sherpa-onnx 1.13.4 y scipy, sin depend
     `final`. Desde que la respuesta está escrita hasta que suena: 0,6–1,4 s (con Piper, 0,05–0,3 s).
   - En esa corrida la GPU ya tenía 8,9 GB ocupados por otras sesiones, y llama-server marcó 3,8 GB USS y respuestas
     más lentas. Hay que repetir la medición del arnés con la GPU libre antes de compararla con la meta de 2,5 s.
+- **Salida de audio:** la voz abre el «Asignador de sonido Microsoft» (MME) y no el dispositivo que era el
+  predeterminado cuando arrancó PortAudio: el dueño cambió su salida predeterminada y no oía a BAXY. Verificado que el
+  asignador abre a 91 ms; falta oírlo en uso real.
 - **Licencia:** el modelo es OpenRAIL-M. Para distribuirlo hay que incluir la licencia y avisar que la voz es
   sintética. El repositorio de Supertonic está archivado.
 
@@ -259,7 +262,30 @@ La vista `src/Baxy.FieldUi` es ahora el rediseño v4, conectado a datos reales (
 - **Aceptación:** `scripts/test_field_ui.ps1` (Playwright por CDP contra la app real): 17/17 el 2026-10-17.
 - **Propuestas en silencio:** notificación de Windows con Sí/No (`ProposalToast`, AUMID en HKCU); no se probó con un
   clic real (sin acceso a la pantalla); si Windows la rechaza sale la de la bandeja.
-- **Pendiente:** adjuntar archivos (sin contrato tipado); mostrar datos sensibles (el almacén no los devuelve).
+- **Pendiente:** adjuntar archivos (sin contrato tipado; el botón se quitó, era un punto muerto); mostrar datos
+  sensibles (el almacén no los devuelve).
+- **Revisión de botones (encargo del dueño, 2026-10-17: «que todos funcionen y nada lleve a un punto muerto»):**
+  se pulsó cada control en la app real y se leyó el host por sus rutas. Arreglado:
+  - «Recordar cosas sobre ti» (Memoria) llamaba a `/memory/enabled`, que no existía: ahora usa `memory.enable` y
+    `memory.disable` del catálogo (el interruptor es el «sí» de encender, como el «Olvidar» de dos pasos).
+  - «Cancelar» en Triggers mandaba la fecha completa y `schedule.alarms` cancela por la hora: siempre fallaba.
+  - Elegir el modo del micrófono mientras BAXY arranca o está en reposo se rechazaba y se perdía; ahora se guarda y se
+    aplica al terminar de arrancar o al activar.
+  - «Arrancar con Windows» decía «No se pudo leer el inicio de Windows»; es una copia de desarrollo que no puede
+    registrarse (regla de `WindowsAutostartRegistration`), y ahora lo dice. Decidir si Renew debe arrancar con Windows
+    (registrando `run_renew.cmd`) es del dueño.
+  - Reposo/Activar avisa al instante (tras un arranque espera a que cargue la voz).
+  - Los comandos de voz del host (`SetWakeVoiceAsync`) van en fila (SemaphoreSlim) en vez de rechazar el que llega
+    mientras otro espera.
+  - Verificado a mano el mismo día: tarjetas Sí/No (botón y Enter), pasos del chat, enviar texto, cancelar un
+    recordatorio, olvidar un recuerdo, mantener para hablar (ratón y espacio), pulsar la cara, minimizar y cerrar a la
+    bandeja y volver con «Abrir BAXY».
+  - **Abierto (rojo):** `scripts/test_field_ui.ps1` da 23/24. Falla `controls.spec.ts › micrófono` en una app recién
+    arrancada: tras «Siempre activo», «Apagado» no deja la voz en `off` en 8 s y «Mantener para hablar» no se aplica
+    (el botón sigue en «Siempre activo»), y el espacio no escucha. Con la app ya asentada, los mismos pasos pasaron
+    (50/50 a mano). La fila de comandos de voz no lo arregló; sospecha: la primera orden tras el arranque espera a
+    `AwaitStartupVoiceAsync` y la vista no la ve terminar. Probablemente es lo que vio el dueño («no me funcionó
+    ninguno»). Se investiga abriendo la app cuando el dueño libere la GPU.
 - **Adaptado a lo que BAXY es (pedido del dueño):** donde el diseño prometía algo que BAXY no hace, la vista dice lo
   real. La tarjeta espera lo que dura el token del kernel (2 min, `ConfirmationLifetime.Challenge`) y la propuesta del
   latido 10 min (`NativeTurnLoop.ProposalLifetime`); los dos plazos los informa `GET /confirmation`. Hay dos niveles,

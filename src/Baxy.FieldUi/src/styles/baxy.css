@@ -122,9 +122,6 @@ a{color:var(--carmine)}a:hover{color:var(--t-bone)}
 .bx-micmenu button.on>svg{color:var(--carmine)}
 .bx-micmenu .l{flex:1;display:flex;flex-direction:column;gap:1px;font-size:12px;font-weight:500}
 .bx-micmenu .s{font-size:10px;font-weight:400;color:var(--t-muted)}
-.bx-att{width:28px;height:28px;border-radius:2px;border:0;background:transparent;color:var(--t-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
-.bx-att:hover{color:var(--t-bone)}
-.bx-att .n{position:absolute;top:1px;right:0;min-width:13px;height:13px;border-radius:7px;background:var(--carmine);color:var(--bg-base);font:500 8px var(--mono);display:flex;align-items:center;justify-content:center}
 .bx-send{width:30px;height:30px;flex-shrink:0;border-radius:2px;border:0;background:var(--carmine);color:var(--bg-base);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s,opacity .2s,background-color .7s}
 .bx-send.hide{transform:scale(.6);opacity:0;pointer-events:none;width:0;margin-left:-6px}
 /* chat column — quiet */
@@ -201,7 +198,7 @@ a{color:var(--carmine)}a:hover{color:var(--t-bone)}
 .bx-statel.live{color:var(--t-bone)}
 .bx-line{background:rgba(var(--glass-rgb),.92);backdrop-filter:blur(4px)}
 .bx-line input::placeholder{color:var(--t-muted)}
-.bx-att,.bx-caret{color:var(--t-second)}
+.bx-caret{color:var(--t-second)}
 .bx-mic{color:var(--t-second)}
 .bx-ib{color:var(--t-bone);background:rgba(var(--glass-rgb),.8);border-color:var(--hair)}
 .bx-ib.plain{color:var(--t-second)}

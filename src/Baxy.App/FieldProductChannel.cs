@@ -566,6 +566,14 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Error("invalid_trigger", 400);
         }
 
+        // The list says when it rings as «yyyy-MM-dd HH:mm» (next_local); schedule.alarms cancels by its local clock
+        // («HH:mm»): the panel's Cancelar sent the whole date and was always refused (2026-10-17).
+        Match clock = Regex.Match(at, @"(?<clock>\d{1,2}:\d{2})$", RegexOptions.CultureInvariant);
+        if (clock.Success)
+        {
+            at = clock.Groups["clock"].Value;
+        }
+
         OperationResponse? cancelled = await _viewModel.SendPanelOperationAsync("schedule.alarms",
             new JsonObject { ["action"] = "cancel", ["at"] = at, ["kind"] = kind }, _lifetimeCancellation).ConfigureAwait(true);
         if (cancelled is not { Status: OperationStatuses.Completed, Verified: true })
@@ -609,17 +617,19 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     // ---- settings ---------------------------------------------------------------------------------------------------
 
     // «Arrancar con Windows» is the Run key's entry for this executable, when this copy may own the sign-in start
-    // (WindowsAutostartRegistration); null when it may not (a worktree build) or the key could not be read.
-    private static bool? Autostart()
+    // (WindowsAutostartRegistration); null when it may not («not_this_copy»: a worktree or development build) or the key
+    // could not be read («unreadable»), so the view says which (it used to call both a failed read).
+    private static (bool? On, string? Blocked) Autostart()
     {
         try
         {
-            return WindowsAutostartRegistration.CreateDefault().IsRegisteredForCurrent();
+            bool? on = WindowsAutostartRegistration.CreateDefault().IsRegisteredForCurrent();
+            return (on, on is null ? "not_this_copy" : null);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidOperationException
             or System.Security.SecurityException)
         {
-            return null;
+            return (null, "unreadable");
         }
     }
 

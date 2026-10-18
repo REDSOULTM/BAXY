@@ -72,4 +72,6 @@ powershell -ExecutionPolicy Bypass -File ..\..\scripts\test_field_ui.ps1
 Lanza BAXY con el puerto de depuración de WebView2 y corre `e2e/`: escala, cielo, red y bocas; humo en 11 tamaños
 de 720p a 8K (marco lleno, nada fuera, ningún texto cortado, texto ≥ 7 px, lienzos dentro de su tope, cara
 centrada, chat plegado 12 veces sin línea de puntos, Ajustes cabe); arranque con la ventana a 0×0 y cambio de tamaño
-en vivo. Con BAXY ya abierto con el puerto: `-NoLaunch`.
+en vivo; y `controls.spec.ts`: cada control reversible (ajustes, micrófono en sus tres modos, rail, paneles, chat y
+ventana) se pulsa, se lee el host por sus rutas para ver que cambió de verdad y se deja como estaba. Con BAXY ya
+abierto con el puerto: `-NoLaunch`.

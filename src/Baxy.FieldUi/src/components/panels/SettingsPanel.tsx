@@ -78,7 +78,8 @@ export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, 
         <div className="panel-body settings-body">
           {tab === 'general' ? (<>
             <Row label="Tema"><Seg value={theme} onChange={onTheme} options={[['dark', 'Oscuro'], ['light', 'Claro']]} /></Row>
-            <Row label="Arrancar con Windows" hint={g?.autostart === null ? 'No se pudo leer el inicio de Windows' : 'Se queda en la bandeja del sistema'}>
+            <Row label="Arrancar con Windows" hint={g?.autostartBlocked === 'not_this_copy' ? 'Esta copia de desarrollo no arranca con Windows: se abre con run_renew.cmd'
+              : g?.autostart === null ? 'No se pudo leer el inicio de Windows' : 'Se queda en la bandeja del sistema'}>
               <Toggle on={!!g?.autostart} label="Arrancar con Windows" locked={lock || g?.autostart === null} onChange={(v) => onGeneral({ autostart: v })} />
             </Row>
             <Row label="Al cerrar la ventana" hint={g?.closeToTray ? 'Sigue escuchando desde la bandeja' : 'BAXY se cierra del todo'}>

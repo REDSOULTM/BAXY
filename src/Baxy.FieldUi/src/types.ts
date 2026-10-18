@@ -111,6 +111,8 @@ export interface ProposalSettings {
 
 export interface GeneralSettings {
   autostart: boolean | null;
+  /** why the switch is locked: this copy may not own the sign-in start, or the Run key could not be read */
+  autostartBlocked?: 'not_this_copy' | 'unreadable' | null;
   closeToTray: boolean;
   voiceMuted: boolean;
   wakeSound: boolean;

@@ -46,6 +46,15 @@ _MODEL_FILES = ("duration_predictor.int8.onnx", "text_encoder.int8.onnx", "vecto
                 "vocoder.int8.onnx", "tts.json", "unicode_indexer.bin", "voice.bin", "baxy-voice.json")
 
 
+def _default_follower(sd) -> int | None:
+    """The MME sound mapper (WAVE_MAPPER, which PortAudio lists first among MME outputs), or PortAudio's default."""
+    for api in sd.query_hostapis():
+        if api["name"] == "MME":
+            outputs = [index for index in api["devices"] if sd.query_devices(index)["max_output_channels"] > 0]
+            return outputs[0] if outputs else None
+    return None
+
+
 class Speech:
     """speak() and cancel() only post to the speech thread, which owns the voice and the audio output."""
 
@@ -127,8 +136,11 @@ class Speech:
         import sounddevice as sd
 
         if self._stream is None:
-            # "low" latency: 91 ms against 183 ms on the notebook.
-            self._stream = sd.OutputStream(samplerate=self.rate, channels=1, dtype="float32", latency="low")
+            # "low" latency: 91 ms against 183 ms on the notebook. PortAudio's default output is the device that was
+            # Windows' default when it started (2026-10-17: the owner changed the default and heard nothing); the MME
+            # sound mapper sends each stream to the default of the moment.
+            self._stream = sd.OutputStream(samplerate=self.rate, channels=1, dtype="float32", latency="low",
+                                           device=_default_follower(sd))
             self._stream.start()
         self._stream_until = time.monotonic() + HOLD_S
         return self._stream

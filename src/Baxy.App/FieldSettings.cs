@@ -153,9 +153,10 @@ internal sealed class FieldSettings
         }
     }
 
-    internal JsonObject GeneralJson(bool? autostart) => new()
+    internal JsonObject GeneralJson((bool? On, string? Blocked) autostart) => new()
     {
-        ["autostart"] = autostart,
+        ["autostart"] = autostart.On,
+        ["autostartBlocked"] = autostart.Blocked,
         ["closeToTray"] = CloseToTray,
         ["voiceMuted"] = VoiceMuted,
         ["wakeSound"] = WakeSound,

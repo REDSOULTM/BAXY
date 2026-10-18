@@ -3,8 +3,8 @@ import { Icon, type IconName } from './Icon';
 import type { BaxyState, MicMode } from '../types';
 
 /* The input bar (design parts.jsx BxInput): the voice button with its three modes, the text field and the send button.
-   Attaching files waits for a typed contract on the host (README: «adjuntos sin contrato tipado» are blocked), so the
-   button says so instead of pretending to attach. */
+   The design's attach button is not here: attaching files waits for a typed contract on the host (README: «adjuntos sin
+   contrato tipado» are blocked), and a button that does nothing is a dead end (owner, 2026-10-17). */
 
 const MIC: { id: MicMode; icon: IconName; label: string; sub: string }[] = [
   { id: 'off', icon: 'mic-off', label: 'Apagado', sub: 'Solo texto' },
@@ -74,7 +74,6 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
       <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={ph} spellCheck={false} autoFocus
         aria-label="Escribe a BAXY" data-ready={canSend ? 'true' : 'false'}
         onKeyDown={(e) => { if (e.key === 'Enter' && armed) { e.preventDefault(); e.stopPropagation(); send(); } }} />
-      <button className="bx-att" disabled title="Adjuntar archivos aún no está disponible"><Icon name="attach" size={15} /></button>
       <button className={'bx-send' + (armed ? '' : ' hide')} onClick={send} title="Enviar"><Icon name="send" size={14} /></button>
     </div>
   );

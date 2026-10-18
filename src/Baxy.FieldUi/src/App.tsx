@@ -289,14 +289,26 @@ export default function App() {
     const r = m === 'always' ? await send<{ running?: boolean }>('POST', '/voice/start') : await send('POST', '/voice/stop');
     return r !== null && (m !== 'always' || (r as { running?: boolean }).running !== false);
   }, []);
-  const setMic = useCallback(async (m: MicMode) => {
-    const ok = await applyMic(m);
-    if (!ok) { setNotice({ b: 'Voz', t: 'no se pudo cambiar el micrófono' }); return; }
-    setMicState(m); keep('baxy.mic', m);
-    setNotice({ b: 'Voz', t: { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY»', ptt: 'mantén el botón o espacio para hablar' }[m] });
-  }, [applyMic]);
   // the person's microphone choice is applied once BAXY can take voice commands
   const micApplied = useRef(false);
+  const setMic = useCallback(async (m: MicMode) => {
+    const said = { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY»', ptt: 'mantén el botón o espacio para hablar' }[m];
+    // while BAXY starts or rests the host takes no voice command: the choice is kept and applied when it can be
+    // (once built, below; on waking, togglePower), instead of being refused and lost
+    if (!s.agent.built || !powered) {
+      setMicState(m); keep('baxy.mic', m);
+      if (!s.agent.built) micApplied.current = false;
+      setNotice({ b: 'Voz', t: said + (s.agent.built ? ' · al activar a BAXY' : ' · cuando termine de arrancar') });
+      return;
+    }
+    // the first change after a start waits for the voice to load: the mode shows at once and is said when applied
+    setMicState(m);
+    setNotice({ b: 'Voz', t: 'cambiando el micrófono…' });
+    const ok = await applyMic(m);
+    if (!ok) { setMicState(mic); setNotice({ b: 'Voz', t: 'no se pudo cambiar el micrófono' }); return; }
+    setMicState(m); keep('baxy.mic', m);
+    setNotice({ b: 'Voz', t: said });
+  }, [applyMic, s.agent.built, powered, mic]);
   useEffect(() => {
     if (micApplied.current || !s.agent.built) return;
     micApplied.current = true;
@@ -314,8 +326,12 @@ export default function App() {
     void send('POST', '/voice/release');
   }, []);
   const togglePower = useCallback(async () => {
-    const r = await send<{ on?: boolean }>('POST', '/power', { on: !powered });
-    if (r?.on) void applyMic(mic); // back from rest, the microphone mode the person chose comes back
+    // resting first stops the ear, which waits for the voice to finish loading after a start: say so at once
+    setNotice({ b: 'BAXY', t: powered ? 'me pongo en reposo…' : 'me activo…' });
+    const r = await send<{ ok?: boolean; on?: boolean }>('POST', '/power', { on: !powered });
+    if (!r || r.on === powered) { setNotice({ b: 'BAXY', t: powered ? 'no pude ponerme en reposo' : 'no pude activarme' }); return; }
+    setNotice(null);
+    if (r.on) void applyMic(mic); // back from rest, the microphone mode the person chose comes back
   }, [powered, applyMic, mic]);
   const wake = useCallback(() => {
     if (state !== 'idle' || mic !== 'always') return;
@@ -386,8 +402,8 @@ export default function App() {
   const quiet = !!proposals?.quiet;
   const canSend = s.agent.built && !booting;
   // what the microphone is really doing (the tray menu can switch the ear on or off): the person's push-to-talk choice,
-  // else the host's own mode
-  const shownMic: MicMode = mic === 'ptt' ? 'ptt' : s.voice.mode === 'wake' ? 'always' : s.agent.built && s.voice.mode === 'off' ? 'off' : mic;
+  // else the host's own mode; at rest the ear is off by itself, so the choice it will wake with is shown
+  const shownMic: MicMode = mic === 'ptt' || !powered ? mic : s.voice.mode === 'wake' ? 'always' : s.agent.built && s.voice.mode === 'off' ? 'off' : mic;
 
   return (
     <div className="app-frame">
