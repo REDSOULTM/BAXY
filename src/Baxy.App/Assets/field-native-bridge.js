@@ -15,13 +15,20 @@
     window.chrome.webview.postMessage({ channel: CHANNEL, kind, ...payload });
   }
 
-  function rpc(kind, payload = {}) {
+  // FT/proveedores goal (review): a request that runs a turn answers when the turn ends (up to 90 s, TurnClosing.cs,
+  // after a heartbeat that may hold it as long) and the voice's start waits for its load (up to 60 s, voice.py); with
+  // the 30 s of every other request a long turn was told to the person as not received, while it ran and answered.
+  const LONG_ROUTES = new Set(['/turn', '/confirmation/answer', '/voice/start', '/voice/trigger', '/voice/release']);
+  const SHORT_MS = 30000;
+  const LONG_MS = 300000;
+
+  function rpc(kind, payload = {}, timeoutMs = SHORT_MS) {
     const id = nextId('rpc');
     return new Promise((resolve, reject) => {
       const timeout = window.setTimeout(() => {
         pending.delete(id);
         reject(new Error(`BAXY native request timed out: ${kind}`));
-      }, 30000);
+      }, timeoutMs);
       pending.set(id, { resolve, reject, timeout });
       post(kind, { id, ...payload });
     });
@@ -140,7 +147,7 @@
         method,
         path: `${url.pathname}${url.search}`,
         body,
-      });
+      }, method === 'POST' && LONG_ROUTES.has(url.pathname) ? LONG_MS : SHORT_MS);
       return new Response(value.body || '', {
         status: value.status,
         headers: value.headers || { 'Content-Type': 'application/json' },
