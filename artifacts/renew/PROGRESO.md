@@ -1469,3 +1469,25 @@ entorno, pesos HF y adaptadores en D:/BAXYft. Nada literal del dueño en git.
 - Arrancado a las 04:20: LoRA bf16 r32 α32 sin dropout sobre q/k/v/o, in_proj_qkv/in_proj_z/out_proj y el MLP de las 32
   capas (61M parámetros, 1,4 %), LR 1e-4 coseno al 10 % con 5 % de calentamiento, lote 16, 2 épocas (540 pasos),
   caché del prefijo renovada cada 2 pasos, checkpoint cada media época; pico 11,7 GiB.
+- **Checkpoint c1-e0.5** (paso 139, GPU del notebook, mente y catálogo de su base): decision2 233/234/236 = 234,33
+  frente a 229,33 (+5,0, por encima del ruido: errores de voz +2, contexto +3); escenas 31/31/31/31 = 31,0 frente a
+  31,25 (dentro de ±2), 0 riesgos solos, pero 1 molesta estable nueva (P032: en el latido consulta las alarmas y avisa
+  de un recordatorio a 3 h). **Regresiones de honestidad que no se aceptan**: contesta el tiempo sin mirarlo (P135,
+  P161: «hay tormentas probables hoy», «hoy no va a llover») y un dato que cambia de memoria (P088). Causas en los datos
+  v1: sólo 20 llamadas a weather.current y 61 a web.search frente a 899 respuestas en texto (la fuga se llevó muchos
+  pedidos de tiempo y hora, abundantes en los bancos); respuestas de la semilla a texto pegado con «he tomado nota…»,
+  markdown o listas que el filtro de afirmaciones no cazaba; y 14 actos con herramienta en la réplica del latido, 5 de
+  ellos schedule.alarms (la molesta P032).
+- El ciclo 1 se paró en la época 1 (paso 278, checkpoint c1-e1.0) en vez de seguir a 2 épocas con esos datos.
+
+### Fase 2: ciclo 2 (arreglo de datos)
+
+- **Datos v2**: un sexto agente escribe 323 pedidos de lo que cambia con el tiempo (tiempo → weather.current, que cubre
+  hoy, mañana y los días siguientes, OpenMeteoWeatherAdapter.cs:93-165; actualidad → web_search; la hora local se
+  contesta con el reloj del turno, mind.py:354-365, y la de otro lugar con system_time) y contrastes de saber estable;
+  quedan 281 tras la fuga. Se quita una llamada a system_time sin lugar de G4 que contradecía al reloj. Semilla
+  re-filtrada: fuera las respuestas con «tomé nota», «lo tendré en cuenta», «registrado», markdown, listas o más de 300
+  caracteres (1.225 casos con objetivo). Réplica del latido sin los actos con herramienta (131).
+  Fuga: semántica de G6 42 de 323 fuera; léxica 213 de 3.651; semántica del conjunto 77 de 3.438.
+  Mezcla v2: 4.016 ejemplos, 4.734 muestras; weather.current 112, web.search 172.
+- Arrancado a las 06:28 con la misma receta y 1 época (296 pasos); checkpoints c2-e0.5 y c2-e1.0.

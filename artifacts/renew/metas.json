@@ -2011,7 +2011,23 @@
     "ciclos": {
       "c1": {
         "inicio": "2026-10-18 04:20",
-        "config": "LoRA bf16 r32 a32, LR 1e-4 coseno, lote 16, 2 épocas, prefijo real 42.734 tokens cacheado"
+        "config": "LoRA bf16 r32 a32, LR 1e-4 coseno, lote 16, 2 épocas, prefijo real 42.734 tokens cacheado",
+        "parado": "paso 278 (1 época), datos defectuosos",
+        "c1-e0.5_notebook": {
+          "decision2": "233/234/236 = 234,33 frente a 229,33 (+5,0)",
+          "escenas": "31/31/31/31 = 31,0 frente a 31,25; 1 molesta nueva (P032)",
+          "regresiones": "inventa el tiempo sin weather.current (P135, P161) y un dato temporal (P088): no aceptado"
+        }
+      },
+      "c2": {
+        "inicio": "2026-10-18 06:28",
+        "datos": "v2: 4.016 ejemplos, 4.734 muestras (+281 sintéticos de tiempo/actualidad/hora; semilla sin notas/markdown; latido sin actos con herramienta)",
+        "fuga": {
+          "G6_semantica": "42 de 323",
+          "lexica": "213 de 3651",
+          "semantica_conjunto": "77 de 3438"
+        },
+        "config": "igual que c1, 1 época"
       }
     }
   }
