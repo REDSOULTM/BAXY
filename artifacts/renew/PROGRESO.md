@@ -1693,3 +1693,17 @@ quedan dentro del ruido: indicio de sobreactualización, como predecía D2. Deci
   una comprobación del significado de los argumentos (`verificar_args.py`, `verificar_args_b.py`: 0 violaciones; los
   dos detectan todos los errores sembrados a propósito). Fuga: G7 43 fuera, G8 121 fuera; léxica del conjunto 272 de
   4.593; semántica 77 de 4.321. Mezcla v3: 5.257 ejemplos, 6.196 muestras (preguntas 456, el doble que en v2).
+
+## Decisión del dueño (2026-10-18 ~16:00): prórroga condicionada
+
+El entrenamiento para como tarde el lunes 2026-10-19 13:00. A esa hora se decide, con evidencia, si un último ciclo
+sería con certeza una mejora; sólo entonces el plazo total pasa al lunes 24:00 (ese ciclo termina de entrenar como
+tarde a las 18:00). Cuenta como demostrado sólo si se cumplen las tres:
+1. el último ciclo combina sólo palancas que ya ganaron medidas por separado en los cuatro bancos (decision2, escenas,
+   e2e, falsedades), sin bajar ninguno, frente a c2-e1.0 y a la base del día;
+2. hay fuentes de que esas palancas se combinan sin anularse (lo que no tenga fuente se marca inferencia, con su
+   riesgo);
+3. antes de entrenar se escribe la predicción concreta (qué banco sube y cuánto) y el criterio de aceptación.
+Si no, no hay último ciclo: se cierra con el mejor checkpoint ya medido (o c2-e1.0) el lunes 19:00. El checkpoint de
+ese ciclo sólo se queda si no baja ningún banco y supera al mejor anterior. La decisión de las 13:00 se anota aquí con
+su evidencia y se avisa por el buzón.
