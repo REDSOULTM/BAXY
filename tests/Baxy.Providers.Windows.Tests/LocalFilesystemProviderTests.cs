@@ -550,6 +550,9 @@ public sealed class LocalFilesystemProviderTests
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_outside_sandbox"));
             Assert.That(() => provider.WriteText(Path.Combine(home, "..", "fuera2.txt"), "tres", null),
                 Throws.TypeOf<FilesystemProviderException>());
+            Assert.That(() => provider.WriteText(Path.Combine(home, "a\0b.txt"), "cuatro", null),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
             Assert.That(File.Exists(Path.Combine(temporary.Path, "fuera.txt")), Is.False);
             Assert.That(File.Exists(Path.Combine(temporary.Path, "fuera2.txt")), Is.False);
         });

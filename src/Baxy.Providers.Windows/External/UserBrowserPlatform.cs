@@ -4,7 +4,8 @@ using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
 
-internal sealed record UserBrowserWindow(nint Handle, string Title);
+// Topmost: an always-on-top window (WS_EX_TOPMOST), such as the pop-out of a video.
+internal sealed record UserBrowserWindow(nint Handle, string Title, bool Topmost = false);
 
 internal sealed record UserMediaSession(
     string SourceAppUserModelId,
@@ -175,7 +176,8 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
                 return true;
             string title = ReadWindowTitle(window);
             if (title.Length > 0)
-                windows.Add(new UserBrowserWindow(window, title));
+                windows.Add(new UserBrowserWindow(window, title,
+                    (GetWindowLongPtr(window, ExtendedStyleIndex).ToInt64() & TopmostStyle) != 0));
             return true;
         };
         // A failed enumeration is no observation: the caller sees no window
@@ -454,6 +456,7 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
     private const uint OwnerWindow = 4;
     private const int ExtendedStyleIndex = -20;
     private const long ToolWindowStyle = 0x80;
+    private const long TopmostStyle = 0x8;
     private const uint CloakedAttribute = 14;
 
     private const uint WmAppCommand = 0x0319;

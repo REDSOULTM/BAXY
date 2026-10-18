@@ -226,7 +226,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private string RootFor(string? folder, string relativePath)
     {
         if (folder is not null || !Path.IsPathFullyQualified(relativePath ?? string.Empty)) return RootFor(folder);
-        string full = Path.GetFullPath(relativePath!);
+        // ResolveIn refuses it the same way; here it must not reach GetFullPath, which throws on it.
+        if (relativePath!.Contains('\0')) throw Error("invalid_path");
+        string full = Path.GetFullPath(relativePath);
         if (Inside(full, _root)) return _root;
         foreach (string known in (string[])["desktop", "documents", "downloads", "home"])
         {

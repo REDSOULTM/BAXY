@@ -1303,7 +1303,7 @@ public sealed class UserBrowserTests
     public async Task AWindowWithNoTabStripOnTopIsPassedOverForTheBrowserFrame()
     {
         IReadOnlyList<UserBrowserWindow> windows =
-            [new(12, "Rick Astley - Never Gonna Give You Up"), new(11, "Rick Astley - Never Gonna Give You Up - YouTube - Opera")];
+            [new(12, "Rick Astley - Never Gonna Give You Up", Topmost: true), new(11, "Rick Astley - Never Gonna Give You Up - YouTube - Opera")];
         var reads = new FakePlatform(OperaGx)
         {
             WindowsBeforeOpen = windows,
@@ -1351,8 +1351,31 @@ public sealed class UserBrowserTests
         });
     }
 
+    // Review of E3: a window in front with no tabs that is not on top (a video full screen hides the strip) is the one
+    // the person sees: a step never moves on to a window behind it, it acts on the front one or fails.
+    [Test]
+    public async Task AFrontWindowWithoutTabsThatIsNotOnTopIsNeverPassedOver()
+    {
+        IReadOnlyList<UserBrowserWindow> windows =
+            [new(11, "Video - YouTube - Opera"), new(13, "Otra página - Opera")];
+        var steps = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = windows,
+            FrameOf = window => window == 11 ? Frame("doc-1") with { Tabs = [] } : Frame("doc-9"),
+        };
+        using Harness harness = new(steps);
+
+        ExternalCapabilityReceipt close = await Control(harness, "close");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(close.Verified, Is.False);
+            Assert.That(steps.MessageWindows, Has.No.Member(13), "a hidden window is never acted on");
+        });
+    }
+
     // FT/proveedores goal (E3): with no window of the browser showing tabs, the front one is read as before (a page read
-    // needs no tab strip), and only the first few windows are tried.
+    // needs no tab strip); a front window not on top is never passed over (review of E3), so no other window is tried.
     [Test]
     public async Task WithNoWindowShowingTabsThePageOfTheFrontOneIsRead()
     {
@@ -1371,7 +1394,7 @@ public sealed class UserBrowserTests
         {
             Assert.That(page.Verified, Is.True);
             Assert.That(platform.PageReads, Is.EqualTo(new[] { (14, 2000) }));
-            Assert.That(platform.FrameWindows.Distinct(), Is.EqualTo(new[] { 14, 13, 12 }));
+            Assert.That(platform.FrameWindows.Distinct(), Is.EqualTo(new[] { 14 }));
         });
     }
 

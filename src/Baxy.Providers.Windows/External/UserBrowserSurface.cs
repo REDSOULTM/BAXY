@@ -433,6 +433,11 @@ internal sealed partial class UserBrowserSurface
                 return (windows[index], frame, true);
             if (index == 0)
                 front = frame;
+            // Review of E3: only an always-on-top window with no tabs (the pop-out of a video) is passed over. A window
+            // without tabs that is not on top (a video full screen, or a frame that could not be read) is what the
+            // person sees: the step acts on it or fails, never on a window behind it they cannot see.
+            if (!windows[index].Topmost)
+                break;
         }
         return (windows[0], front, true);
     }
