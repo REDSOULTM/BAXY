@@ -8,9 +8,11 @@
 /// <item>Its moves: <see cref="MaximumModelCalls"/>.</item>
 /// <item>Its time (FT/proveedores goal, E5): <see cref="Budget"/> from the turn's start. An app.open of a console app
 /// waited 30 s per verification and the model retried it up to the move cap: 7.5 min with no answer.</item>
-/// <item>A call that came back the same: the same operation with the same arguments and the same outcome as the call
-/// before it, twice when it failed (nothing changed, so a third try fails too) and three times otherwise (e2e E022:
-/// the same page fetched eight times, until the results overflowed the context and the turn ended with no answer).</item>
+/// <item>A call that came back the same three times in a row: the same operation with the same arguments and the same
+/// outcome (e2e E022: the same page fetched eight times, until the results overflowed the context and the turn ended
+/// with no answer). Not twice: after two identical failures the model still changes course (e2e E011, base 0be0f9de9,
+/// all three seeds: two calculator_window_not_found, then app.open and the sum); the branch that closed the turn at the
+/// second one lost that case.</item>
 /// </list>
 /// </summary>
 internal sealed class TurnClosing
@@ -20,6 +22,9 @@ internal sealed class TurnClosing
 
     /// <summary>The turn's time: longer than any turn of the practice e2e that passes (57 s at most, lote 3).</summary>
     internal static readonly TimeSpan Budget = TimeSpan.FromSeconds(90);
+
+    /// <summary>The same call with the same outcome this many times in a row closes the turn.</summary>
+    internal const int RepeatsThatClose = 3;
 
     private string? _last;
     private int _same;
@@ -33,7 +38,6 @@ internal sealed class TurnClosing
         string call = string.Join('\n', operation, arguments, status, error ?? string.Empty);
         _same = call == _last ? _same + 1 : 1;
         _last = call;
-        bool failed = status is not (Contracts.OperationStatuses.Completed or Contracts.OperationStatuses.Pending);
-        return calls >= MaximumModelCalls || elapsed >= Budget || _same >= (failed ? 2 : 3);
+        return calls >= MaximumModelCalls || elapsed >= Budget || _same >= RepeatsThatClose;
     }
 }

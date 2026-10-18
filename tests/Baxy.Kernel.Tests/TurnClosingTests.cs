@@ -26,14 +26,17 @@ public sealed class TurnClosingTests
             "completed", null), Is.True);
     }
 
-    // E5: four app.open of a console app, each verification_failed after 30 s, and no answer in time.
+    // E5: four app.open of a console app, each verification_failed after 30 s, and no answer in time. After two the
+    // model may still change course (e2e E011: two calculator_window_not_found, then app.open): the third closes it.
     [Test]
-    public void TheSameFailedCallTwiceClosesTheTurn()
+    public void TheSameFailedCallThreeTimesClosesTheTurnTwiceDoesNot()
     {
         var closing = new TurnClosing();
         Assert.That(closing.AfterCall(1, Soon, "app.open", "{\"appId\":\"cmd\"}", "failed", "verification_failed"),
             Is.False);
         Assert.That(closing.AfterCall(2, Soon, "app.open", "{\"appId\":\"cmd\"}", "failed", "verification_failed"),
+            Is.False);
+        Assert.That(closing.AfterCall(3, Soon, "app.open", "{\"appId\":\"cmd\"}", "failed", "verification_failed"),
             Is.True);
     }
 
