@@ -1433,3 +1433,39 @@ entorno, pesos HF y adaptadores en D:/BAXYft. Nada literal del dueño en git.
   cacheado coincide con un pase completo (1,3526 frente a 1,3528; 0,456 frente a 0,460, redondeo bf16), y con el
   prefijo entero el pico de memoria es 11,4 GiB. La brecha documentada: no hay gradiente a través de las posiciones
   del prefijo (stop-gradient), pero el modelo sí entrena con el contexto completo de 42,7k que verá.
+- **Base del día del PC completa** (0be0f9de9): decision2 227,67; escenas sin tocar 28 y perturbaciones 30, 30 y 29 =
+  29,25, 0 riesgos solos. Una primera corrida de pB y pC se cayó por falta de memoria CUDA (dos llama-server más el de
+  renderizado, que con `-ngl 0` también reserva GPU: ahora corre con `--device none`) y se repitió entera.
+- **decision2 s0 de nb-proveedores (182ecbeda) en la GPU del PC**, con el catálogo volcado de su kernel: 230 (base s0
+  228). Revisión del PC de sus diffs de mente, bucle, rutas y relectura de Word: deciden por lo que corrió, nunca por el
+  texto de la persona.
+
+### Fase 1: datos v1 (con su comprobación de fuga, antes de entrenar)
+
+- **Semilla**: el conjunto de ajuste de la auditoría (1.839 casos). Objetivo = la salida del propio modelo (mente de
+  0be0f9de9) que el juez de la auditoría da por buena y que, si contesta en palabras, no afirma nada hecho; los 118
+  pedidos sin objetivo se remuestrearon a temperatura 0,8 con 4 semillas (27, 18, 16 y 26 aciertos). 1.407 casos con
+  objetivo; el texto de desarrollo pegado se reduce a 400 de 845. Las constantes que la mente añade a los argumentos
+  se quitan (el modelo no las escribe).
+- **Sintéticos desde el catálogo**: cinco agentes (G1-G4 por familias de operaciones, G5 conductas sin herramienta:
+  charla, saber, texto pegado, «no lo hago», preguntar, parar, confirmar, honestidad tras resultados), 2.929 ejemplos,
+  0 problemas en el validador (esquema JSON real de cada herramienta).
+- **Réplica del latido**: 162 escenas sintéticas nuevas; la decisión del modelo base en 145 (17 sin leer: memoria).
+- **Fuga** (`F:/BAXYeval/ft_v1/tools/fuga.py`, `fuga_emb.py`, `fuga_escenas.py`), contra los 16 archivos de bancos
+  (práctica y sellados de decision, escenas, e2e, falsedades, los holdouts de Renew, de la auditoría y el nuevo):
+  - semántica por grupo sintético: 508 de 2.929 fuera (157, 50, 95, 107, 99);
+  - léxica sobre semilla + sintéticos: 217 de 3.383 fuera (exactas, 6-gramas, 50 % de 4-gramas, Jaccard de caracteres
+    ≥0,55); la semilla choca sobre todo con el holdout gastado de la auditoría (mismas frases del dueño);
+  - semántica sobre el conjunto: 75 de 3.166 fuera (coseno ≥0,90, o ≥0,85 con palabras de contenido en común);
+  - réplica del latido, escena contra escena: 0 de 145 (campo a campo marcaba títulos genéricos como «Visual Studio
+    Code»).
+  Informes con ids y bancos (nunca textos) en F:/BAXYeval/ft_v1/datos/.
+- **Mezcla v1**: 3.091 ejemplos limpios + 145 latidos, con las preguntas y los pedidos reales de la semilla ×2 = 3.769
+  ejemplos, 4.425 muestras (llamadas 2.435, textos 899, preguntas 290, latidos 145, 638 pasos tras un resultado), las 176
+  herramientas presentes.
+
+### Fase 2: ciclo 1
+
+- Arrancado a las 04:20: LoRA bf16 r32 α32 sin dropout sobre q/k/v/o, in_proj_qkv/in_proj_z/out_proj y el MLP de las 32
+  capas (61M parámetros, 1,4 %), LR 1e-4 coseno al 10 % con 5 % de calentamiento, lote 16, 2 épocas (540 pasos),
+  caché del prefijo renovada cada 2 pasos, checkpoint cada media época; pico 11,7 GiB.

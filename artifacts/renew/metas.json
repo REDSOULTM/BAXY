@@ -1963,7 +1963,55 @@
       "pc": {
         "producto": "0be0f9de9",
         "catalogo": "F:/BAXYeval/reales_v1/catalogos/lote3.json (174 ops, apps del PC)",
-        "decision2": "228/228/227 = 227,67 (s0-2, 0 errores)"
+        "decision2": "228/228/227 = 227,67 (s0-2, 0 errores)",
+        "escenas": "28/30/30/29 = 29,25 (sin tocar + 3 perturbaciones), 0 riesgos solos",
+        "nb_proveedores_182ecbeda_decision2_s0": 230
+      }
+    },
+    "datos_v1": {
+      "semilla": {
+        "casos_con_objetivo": 1407,
+        "dev_reducido": "400 de 845",
+        "remuestreo": "118 pedidos, t=0,8, 4 semillas"
+      },
+      "sinteticos": {
+        "agentes": 5,
+        "ejemplos": 2929
+      },
+      "replica_latido": 145,
+      "fuga": {
+        "semantica_por_grupo": "508 de 2929 fuera",
+        "lexica": "217 de 3383 fuera",
+        "semantica_conjunto": "75 de 3166 fuera",
+        "latido_escena_a_escena": "0 de 145",
+        "umbrales": {
+          "exacta": true,
+          "ngram6": 1,
+          "ngram4_frac": 0.5,
+          "char4_jaccard": 0.55,
+          "coseno": 0.9,
+          "coseno_franja": 0.85,
+          "jaccard_palabras_franja": 0.25,
+          "escena_char4": 0.35,
+          "escena_coseno": 0.9
+        },
+        "bancos": 16,
+        "informes": "F:/BAXYeval/ft_v1/datos/{fuga_*.json,*.emb.json,beats.escenas.json,v1/fuga*.json}"
+      },
+      "mezcla": {
+        "ejemplos": 3769,
+        "muestras": 4425,
+        "llamadas": 2435,
+        "textos": 899,
+        "preguntas": 290,
+        "latidos": 145,
+        "pasos": 638
+      }
+    },
+    "ciclos": {
+      "c1": {
+        "inicio": "2026-10-18 04:20",
+        "config": "LoRA bf16 r32 a32, LR 1e-4 coseno, lote 16, 2 épocas, prefijo real 42.734 tokens cacheado"
       }
     }
   }
