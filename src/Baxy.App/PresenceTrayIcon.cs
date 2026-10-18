@@ -13,6 +13,9 @@ internal sealed class PresenceTrayIcon : IDisposable
     internal const uint CallbackMessage = 0x8000 + 32;
 
     private readonly WndProc _wndProc;
+    // FT/proveedores goal (review of the App): Explorer, started again, broadcasts this; every notification icon is gone
+    // and is added again on it (Microsoft, «Taskbar Creation Notification»).
+    private static readonly uint TaskbarCreated = NativeMethods.RegisterWindowMessage("TaskbarCreated");
     private nint _classAtom;
     private nint _hwnd;
     private nint _icon;
@@ -61,8 +64,11 @@ internal sealed class PresenceTrayIcon : IDisposable
             }
         }
 
+        // A hidden top-level tool window, not a message-only one: a message-only window receives no broadcast, so
+        // TaskbarCreated never came and after Explorer restarted BAXY had no icon for good. Never shown, it is in no
+        // task bar nor Alt+Tab (WS_EX_TOOLWINDOW).
         _hwnd = NativeMethods.CreateWindowEx(
-            0,
+            0x00000080,
             PresenceLimits.WindowClassName,
             PresenceLimits.WindowTitle,
             0,
@@ -70,7 +76,7 @@ internal sealed class PresenceTrayIcon : IDisposable
             0,
             0,
             0,
-            NativeMethods.HwndMessage,
+            nint.Zero,
             nint.Zero,
             instance,
             nint.Zero);
@@ -119,6 +125,12 @@ internal sealed class PresenceTrayIcon : IDisposable
 
     private nint OnWindowMessage(nint hwnd, uint message, nint wParam, nint lParam)
     {
+        if (TaskbarCreated != 0 && message == TaskbarCreated && !_disposed && _hwnd != 0)
+        {
+            _added = ShellNotifyIcon.Add(_hwnd, CallbackMessage, _icon, "BAXY");
+            return nint.Zero;
+        }
+
         if (message == CallbackMessage)
         {
             // NOTIFYICON_VERSION_4: the event is lParam's low word. A click or NIN_SELECT/NIN_KEYSELECT opens BAXY;
@@ -300,6 +312,9 @@ internal sealed class PresenceTrayIcon : IDisposable
             nint hMenu,
             nint hInstance,
             nint lpParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        internal static extern uint RegisterWindowMessage(string lpString);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         internal static extern nint DefWindowProc(nint hWnd, uint msg, nint wParam, nint lParam);
