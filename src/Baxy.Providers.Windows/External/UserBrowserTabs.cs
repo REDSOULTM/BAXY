@@ -43,7 +43,7 @@ internal sealed partial class UserBrowserSurface
         if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "new_tab" or "reload"
             or "scroll_down" or "scroll_up"))
             return ExternalJson.Failure(operation, "browser_control_action_invalid");
-        UserBrowserWindow? window = FrontWindow(browser);
+        (UserBrowserWindow? window, _, _) = await TabbedWindowAsync(browser, cancellationToken).ConfigureAwait(false);
         if (window is null)
             return ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning);
         var step = new TabStep(operation, browser, action, window.Handle, effectBoundary);
@@ -75,8 +75,11 @@ internal sealed partial class UserBrowserSurface
     {
         // Auditoría final (regla 3): back and reload compare page and address only between frames read whole, so an
         // address or a page document a partial read missed is never taken for the change.
+        // FT/proveedores goal (E3): a frame with its strip whole but a node unread elsewhere (Opera GX's dead
+        // LiveBackgroundView child) is compared by its page document only when that document is the one named as the
+        // window title begins (the active tab's page, not one a partial read put in its place); its address, never.
         UserBrowserFrame? before = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
-        if (before is null || before.PageId.Length == 0)
+        if (before is null || before.PageId.Length == 0 || !PageKnown(before))
             return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
         bool back = command == AppCommandBack;
         if (back && before.BackEnabled == false)
@@ -86,8 +89,8 @@ internal sealed partial class UserBrowserSurface
         step.Boundary.Cross(CancellationToken.None);
         UserBrowserFrame? after = await AwaitFrameAsync(
             step.Window,
-            frame => frame.TabsComplete && (frame.PageId.Length > 0 && frame.PageId != before.PageId
-                || back && frame.Address.Length > 0 && frame.Address != before.Address),
+            frame => frame.TabsComplete && (frame.PageId.Length > 0 && frame.PageId != before.PageId && PageKnown(frame)
+                || back && before.Complete && frame.Complete && frame.Address.Length > 0 && frame.Address != before.Address),
             cancellationToken).ConfigureAwait(false);
         return after is null
             ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
@@ -352,6 +355,8 @@ internal sealed partial class UserBrowserSurface
         return frame is { TabsComplete: true } ? frame : null;
     }
 
+    private static bool PageKnown(UserBrowserFrame frame) => frame.Complete || frame.PageMatched;
+
     private async ValueTask<UserBrowserFrame?> AwaitFrameAsync(
         nint window, Func<UserBrowserFrame, bool> changed, CancellationToken cancellationToken)
     {
@@ -400,6 +405,8 @@ internal sealed partial class UserBrowserSurface
                 // Auditoría final (regla 3): the count only from a strip read whole (back and reload read it as it was).
                 if (frame.TabsComplete) writer.WriteNumber("tabCount", frame.Tabs.Count);
                 else writer.WriteBoolean("tabsComplete", false);
+                // FT/proveedores goal (E3): the strip was read whole, the rest of the frame was not: said.
+                if (!frame.Complete) writer.WriteBoolean("frameComplete", false);
                 if (frame.Tabs.FirstOrDefault(tab => tab.Selected) is { } active)
                     writer.WriteString("activeTab", active.Title);
             }

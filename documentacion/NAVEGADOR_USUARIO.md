@@ -266,6 +266,17 @@ persona, sólo con pestañas abiertas por la prueba):
   final cuando el recorrido hacia delante falla, y la lectura vuelve sin tocar
   el navegador. `PagePlay` (streaming) busca con `FindAll` desde la raíz y no
   tiene ese arreglo.
+- Ese hijo muerto deja el marco leído a medias para siempre (E3, objetivo
+  proveedores): `Frame` dice aparte el marco entero (`complete`) y la tira
+  (`tabsComplete`, el nodo común más cercano de las pestañas recorrido de
+  nuevo solo), y las pestañas se cuentan con la tira entera. Atrás/recargar
+  en un marco a medias sólo se ven por el documento cuyo nombre empieza el
+  título de la ventana (`page.matched`), nunca por la dirección, y el recibo
+  lleva `frameComplete: false`. La ventana leída es la primera (de tres) cuyo
+  marco tiene pestañas, no la ventanita del vídeo emergente de YouTube;
+  `ListWindows` deja fuera ventanas con dueño, de herramienta o encubiertas.
+  `PageText` toma el documento nombrado como el título (hasta tres miradas en
+  unos dos segundos) y la lectura se repite una vez.
 - Las pestañas en «islas» (`TabGroupViewGx`) también son `TabItem` y cuentan.
 
 ### Privacidad

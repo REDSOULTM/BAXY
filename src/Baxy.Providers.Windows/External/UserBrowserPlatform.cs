@@ -30,6 +30,9 @@ internal sealed record UserBrowserTab(string Title, bool Selected, bool Shown = 
 /// the address field, and the page document of the active tab. <paramref name="PageId"/> is the document's UI
 /// Automation runtime id, which changes when the tab reloads or leaves the page; <paramref name="Scroll"/> is its
 /// vertical position in percent, or -1 when the document itself does not scroll.
+/// FT/proveedores goal (E3): <paramref name="TabsComplete"/> is the tab strip read whole; <paramref name="Complete"/>
+/// the whole frame (a dead node outside the strip, as Opera GX keeps after a Speed Dial, leaves only this one false);
+/// <paramref name="PageMatched"/> says the page document was the one named as the window title begins.
 /// </summary>
 internal sealed record UserBrowserFrame(
     IReadOnlyList<UserBrowserTab> Tabs,
@@ -38,7 +41,9 @@ internal sealed record UserBrowserFrame(
     string PageId,
     string PageTitle,
     double Scroll,
-    bool TabsComplete = true);
+    bool TabsComplete = true,
+    bool Complete = true,
+    bool PageMatched = true);
 
 /// <summary>What a UI Automation step inside the frame or the page did (see UserBrowserScripts.Act).</summary>
 internal sealed record UserBrowserAct(string Step, double Before, double After);
@@ -159,7 +164,11 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
             return windows;
         EnumWindowsProc callback = (window, unused) =>
         {
-            if (!IsWindowVisible(window))
+            // FT/proveedores goal (E3): only the browser's own frames. A window another one owns, a tool window (a
+            // pop-out or bubble) or one the shell cloaks (another virtual desktop) is not the window the person sees.
+            if (!IsWindowVisible(window) || GetWindow(window, OwnerWindow) != nint.Zero
+                || (GetWindowLongPtr(window, ExtendedStyleIndex).ToInt64() & ToolWindowStyle) != 0
+                || (DwmGetWindowAttribute(window, CloakedAttribute, out int cloaked, sizeof(int)) == 0 && cloaked != 0))
                 return true;
             _ = GetWindowThreadProcessId(window, out uint owner);
             if (!owners.Contains(owner))
@@ -283,7 +292,9 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
             hasPage ? Text(page, "id") : string.Empty,
             hasPage ? Text(page, "title") : string.Empty,
             hasPage ? Number(page, "scroll", -1) : -1,
-            !(value.TryGetProperty("tabsComplete", out JsonElement complete) && complete.ValueKind == JsonValueKind.False));
+            !(value.TryGetProperty("tabsComplete", out JsonElement tabsComplete) && tabsComplete.ValueKind == JsonValueKind.False),
+            !(value.TryGetProperty("complete", out JsonElement complete) && complete.ValueKind == JsonValueKind.False),
+            hasPage && page.TryGetProperty("matched", out JsonElement matched) && matched.ValueKind == JsonValueKind.True);
     }
 
     public bool PostAppCommand(nint window, int command) =>
@@ -430,6 +441,20 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
 
     [LibraryImport("user32.dll")]
     private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetWindow(nint window, uint command);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static partial nint GetWindowLongPtr(nint window, int index);
+
+    [LibraryImport("dwmapi.dll")]
+    private static partial int DwmGetWindowAttribute(nint window, uint attribute, out int value, int size);
+
+    private const uint OwnerWindow = 4;
+    private const int ExtendedStyleIndex = -20;
+    private const long ToolWindowStyle = 0x80;
+    private const uint CloakedAttribute = 14;
 
     private const uint WmAppCommand = 0x0319;
     private const uint WmCommand = 0x0111;

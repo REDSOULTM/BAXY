@@ -339,11 +339,18 @@ internal sealed partial class UserBrowserSurface
         int maximumCharacters,
         CancellationToken cancellationToken)
     {
-        UserBrowserWindow? window = FrontWindow(browser);
+        (UserBrowserWindow? window, _, _) = await TabbedWindowAsync(browser, cancellationToken).ConfigureAwait(false);
         if (window is null)
             return ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning);
         UserBrowserPageText? page = await _platform.ReadPageTextAsync(
             window.Handle, maximumCharacters, cancellationToken).ConfigureAwait(false);
+        // FT/proveedores goal (E3): a heavy page may build its accessibility tree after the script's looks: read once more.
+        if (page is null)
+        {
+            await _platform.DelayAsync(PageRetry, cancellationToken).ConfigureAwait(false);
+            page = await _platform.ReadPageTextAsync(window.Handle, maximumCharacters, cancellationToken)
+                .ConfigureAwait(false);
+        }
         if (page is null)
             return ExternalJson.FailureBeforeEffect(operation, PageUnreadable);
         string? address = await _platform.ReadAddressAsync(window.Handle, cancellationToken).ConfigureAwait(false);
@@ -368,10 +375,12 @@ internal sealed partial class UserBrowserSurface
         int limit,
         CancellationToken cancellationToken)
     {
-        UserBrowserWindow? window = FrontWindow(browser);
+        (UserBrowserWindow? window, UserBrowserFrame? frame, bool read) =
+            await TabbedWindowAsync(browser, cancellationToken).ConfigureAwait(false);
         if (window is null)
             return ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning);
-        UserBrowserFrame? frame = await ReadFrameAsync(window.Handle, cancellationToken).ConfigureAwait(false);
+        if (!read)
+            frame = await ReadFrameAsync(window.Handle, cancellationToken).ConfigureAwait(false);
         IReadOnlyList<UserBrowserTab> tabs = frame?.Tabs ?? [];
         if (tabs.Count == 0)
             return ExternalJson.FailureBeforeEffect(operation, PageUnreadable);
@@ -396,6 +405,36 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("authority", TabsAuthority);
             writer.WriteEndObject();
         }), effectObserved: false);
+    }
+
+    private static readonly TimeSpan PageRetry = TimeSpan.FromMilliseconds(800);
+    private const int TabbedWindowReads = 3;
+
+    /// <summary>
+    /// FT/proveedores goal (E3): the browser window the page and tab steps act on: the first one in z-order whose frame
+    /// read has tabs, among the first <see cref="TabbedWindowReads"/>, so a window of the browser that is no frame (the
+    /// always-on-top pop-out of a video, with no page document and no tab strip) is passed over. A browser with one
+    /// window has it read by the step itself (<c>FrameRead</c> false); with no window that has tabs, the front one, as
+    /// before. The window is chosen by what its frame shows, never by the person's words.
+    /// </summary>
+    private async ValueTask<(UserBrowserWindow? Window, UserBrowserFrame? Frame, bool FrameRead)> TabbedWindowAsync(
+        UserBrowserIdentity browser, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<UserBrowserWindow> windows = _platform.ListWindows(browser.ProcessName);
+        if (windows.Count == 0)
+            return (null, null, false);
+        if (windows.Count == 1)
+            return (windows[0], null, false);
+        UserBrowserFrame? front = null;
+        for (int index = 0; index < windows.Count && index < TabbedWindowReads; index++)
+        {
+            UserBrowserFrame? frame = await ReadFrameAsync(windows[index].Handle, cancellationToken).ConfigureAwait(false);
+            if (frame is { Tabs.Count: > 0 })
+                return (windows[index], frame, true);
+            if (index == 0)
+                front = frame;
+        }
+        return (windows[0], front, true);
     }
 
     /// <summary>The browser window the person sees on top (windows come in z-order), if the browser runs at all.</summary>
