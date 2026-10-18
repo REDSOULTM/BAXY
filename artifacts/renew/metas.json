@@ -1814,8 +1814,8 @@
       },
       {
         "id": "E3",
-        "estado": "B (proveedor)",
-        "evidencia": "Opera GX: browser.control y browser.page.read devuelven user_browser_page_unreadable; fuera de los arreglos permitidos (no es skill nueva)."
+        "estado": "límite honesto (proveedor)",
+        "evidencia": "Opera GX: browser.control y browser.page.read devuelven user_browser_page_unreadable; fuera de los arreglos permitidos (no es skill nueva). Ninguna skill, descripción ni prompt lo cubre: la página de Opera GX no es legible para el proveedor; BAXY lo dice bien en 3 de 6 casos. Se arregla en el goal siguiente (PROMPT_GOAL_FT_PROVEEDORES.md)."
       },
       {
         "id": "E4",
@@ -1824,13 +1824,28 @@
       },
       {
         "id": "E5",
-        "estado": "B (proveedor y bucle)",
-        "evidencia": "app.open de una app de consola: la ventana nace en Windows Terminal y la verificación por proceso falla tras 30 s (NativeTurnLoop.cs:48 OperationTimeout); 15 llamadas como tope (NativeTurnLoop.cs:46) sin tope de tiempo: hasta 7,5 min sin respuesta. nb-arr-E5r (presentación de la llamada repetida) no mejora lo observable."
+        "estado": "límite honesto (proveedor y bucle)",
+        "evidencia": "app.open de una app de consola: la ventana nace en Windows Terminal y la verificación por proceso falla tras 30 s (NativeTurnLoop.cs:48 OperationTimeout); 15 llamadas como tope (NativeTurnLoop.cs:46) sin tope de tiempo: hasta 7,5 min sin respuesta. nb-arr-E5r (presentación de la llamada repetida) no mejora lo observable. La única palanca permitida (nb-arr-E5r) se midió sin mejora. Se arregla en el goal siguiente."
       },
       {
         "id": "otros-idiomas",
         "estado": "fuera de foco por decisión del dueño",
         "evidencia": "pt/fr/de/it: 31 misiones del ajuste, 15 del holdout; se cuentan aparte."
+      },
+      {
+        "id": "E2-relectura",
+        "estado": "límite honesto (proveedor), con la falsedad arreglada",
+        "evidencia": "input.text.type no relee lo escrito en un documento de Word (WindowsDesktopInteractionAdapter.cs:669, input_text_not_read_back). La descripción nueva (lote 3) hace que la respuesta lo diga: 0 de 2 afirman lo no verificado (antes 2 de 2). La relectura misma es del proveedor: goal siguiente."
+      },
+      {
+        "id": "E6-foco",
+        "estado": "límite honesto (entorno y proveedor)",
+        "evidencia": "En la ejecución del ajuste, Steam se quedó delante todo el banco; el texto y la selección en el Bloc fallaron (R0015.1 lo dijo; R0011.4 afirmó sin verificar); un clic cayó en una ventana protegida (R0984.0). No hay descripción ni prompt que cambie el foco real: goal siguiente."
+      },
+      {
+        "id": "E7-E8",
+        "estado": "límite honesto / arreglado en parte",
+        "evidencia": "E7: window.resolve no halla la pestaña de YouTube de Opera (es una pestaña, no una app): app.close por appId (lote 3) lo dice honestamente en el holdout salvo un caso (H0003.3, falsedad). E8: YouTube puesto en Spotify: G1b (lote 1) lo reduce (G03 2→4/13)."
       }
     ],
     "head_final": "58c57cddd (src = lote3 161eddce9)",

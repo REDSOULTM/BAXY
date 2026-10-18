@@ -1389,3 +1389,6 @@ HEAD final de la fase 3: el de esta fusión.
   - misiones con falsedad (leídas a mano): de 16 a 19, sin mejora; G13 es límite.
 - Recursos del producto final (notebook, measure_resources, conductor real): VRAM 3.901 MiB (pico 3.903); RAM (USS)
   1.544 MiB sin el oído y 1.614 MiB con él: ≤4 GB, cumple.
+- Cierre de los grupos sin arreglo: G05, G06, G08 (cortafuegos), G13, E3, E4, E5, E6, la relectura de E2 y E7 quedan
+  como límite honesto, cada uno con su evidencia en metas.json (auditoria_reales.limites_y_pendientes). G09 (hábitos)
+  queda pendiente: es una skill nueva para una sola misión. La rama final se fusiona en baxy-renew.

@@ -131,7 +131,7 @@ Producto final: `58c57cddd`, rama `auditoria-reales` en hub, fusionada en `baxy-
   preguntar por el cortafuegos: probados por descripción, sin efecto.
 - Otros idiomas (portugués, francés, alemán, italiano): fuera de foco por tu decisión, y bajaron (17 → 13 de 31).
 
-### Pendiente (B, fuera de los arreglos permitidos de este goal)
+### Límites honestos de proveedor (sin arreglo permitido en este goal; se cierran aquí con su evidencia en `metas.json` y van al goal siguiente)
 
 - `app.open` de apps de consola: la ventana nace en Windows Terminal y la verificación espera 30 s por intento, sin
   tope de tiempo por turno (NativeTurnLoop.cs:46-48).
