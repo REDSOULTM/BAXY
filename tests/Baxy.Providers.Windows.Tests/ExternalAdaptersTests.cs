@@ -134,6 +134,29 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): the one instance runs elevated (Windows refuses BAXY): the receipt names
+    // that, with the counts, and nothing was done, so its effect is not «possible».
+    [Test]
+    public async Task AnInstanceWindowsWillNotLetBaxyEndIsNamedAsDenied()
+    {
+        var identity = new WindowsProcessIdentity(5151, 638900000000000001);
+        var platform = new StubProcessTerminationPlatform(
+            [[identity], [identity]], terminateResult: WindowsProcessTermination.Denied);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_access_denied"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("deniedCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
     [Test]
     public async Task ExactNamedProcessTerminationFailsBeforeEffectWhenNothingRuns()
     {

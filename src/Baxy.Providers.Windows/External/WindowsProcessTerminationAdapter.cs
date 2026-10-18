@@ -14,6 +14,8 @@ internal enum WindowsProcessTermination
     NotTerminated,
     // Ronda final: the kill was sent and the wait ran out; if the post-read finds it gone, this call ended it.
     KillSent,
+    // FT/proveedores goal (review of receipts): Windows refused this one (it runs elevated or as another user).
+    Denied,
 }
 
 internal interface IWindowsProcessTerminationPlatform
@@ -64,6 +66,16 @@ internal sealed class WindowsProcessTerminationPlatform : IWindowsProcessTermina
         {
             return WindowsProcessTermination.AlreadyExited;
         }
+        catch (InvalidOperationException)
+        {
+            // FT/proveedores goal (review of receipts): it exited between being found and being read (a browser's
+            // child): gone, as asked, not a failure of the whole call.
+            return WindowsProcessTermination.AlreadyExited;
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            return WindowsProcessTermination.Denied;
+        }
     }
 }
 
@@ -98,7 +110,7 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
                 return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(operation, "process_not_running"));
             }
 
-            int terminated = 0, alreadyExited = 0;
+            int terminated = 0, alreadyExited = 0, denied = 0;
             foreach (WindowsProcessIdentity identity in before)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -112,6 +124,9 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
                     case WindowsProcessTermination.AlreadyExited:
                         alreadyExited++;
                         break;
+                    case WindowsProcessTermination.Denied:
+                        denied++;
+                        break;
                 }
             }
 
@@ -120,8 +135,32 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
             WindowsProcessIdentity[] lingering = after.Where(original.Contains).ToArray();
             if (lingering.Length != 0)
             {
-                return ValueTask.FromResult(ExternalJson.Failure(
-                    operation, "process_termination_postread_failed", effectMayHaveOccurred));
+                if (denied == 0)
+                {
+                    return ValueTask.FromResult(ExternalJson.Failure(
+                        operation, "process_termination_postread_failed", effectMayHaveOccurred));
+                }
+
+                // FT/proveedores goal (review of receipts): the instances Windows would not let BAXY end (elevated, or
+                // another user's) are named as that, with what was ended; before, one of them ended the call as a
+                // bare failure, the others untried and unreported, and «may have happened» when nothing had.
+                JsonElement partial = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteString("processName", processName);
+                    writer.WriteNumber("beforeCount", before.Count);
+                    writer.WriteNumber("terminatedCount", terminated);
+                    writer.WriteNumber("alreadyExitedCount", alreadyExited);
+                    writer.WriteNumber("deniedCount", denied);
+                    writer.WriteNumber("stillRunningCount", lingering.Length);
+                    writer.WriteEndObject();
+                });
+                return ValueTask.FromResult(new ExternalCapabilityReceipt(
+                    operation, terminated > 0, false, partial, "process_termination_access_denied")
+                {
+                    EffectMayHaveOccurred = terminated > 0,
+                });
             }
 
             WindowsProcessIdentity[] replacements = after
