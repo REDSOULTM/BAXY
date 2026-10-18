@@ -20,6 +20,7 @@
 #   {"cmd":"scroll","hwnd":123,"controlId":"42.1837.4","direction":"down","amount":3}
 #   {"cmd":"reveal","hwnd":123,"aliases":["Omega"],"direction":"down","amount":10}   (trae a la vista un elemento fuera de ella)
 #   {"cmd":"field","hwnd":123,"controlId":"42.1837.4","text":"hola","replace":false}   (texto dirigido; sin «text», solo lo lee)
+#   {"cmd":"textcaret","hwnd":123,"processId":4242,"max":8192}   (el parrafo del cursor del foco, por TextPattern; solo lee)
 #   {"cmd":"script","script":"...","args":["123"]}   (un guion de UserBrowserScripts, $args como en -Command)
 #   {"cmd":"unnamed","hwnd":123,"limit":24}   (accionables sin nombre ni respaldo: candidatos a leer su tooltip)
 #   {"cmd":"tooltips","hwnd":123,"pids":[4242]}   (los tooltips visibles de esos procesos y de la ventana, con su texto)
@@ -4190,6 +4191,57 @@ function Do-Focus($request){
   return @{ ok=$true; error=''; focused=$focused; controlId=[string]$request.controlId }
 }
 
+# FT/proveedores goal (E2): un texto escrito por teclado sin ventana nombrada en un documento que no es un control Edit
+# de Win32 (Word: _WwG) no se releia nunca (input_text_not_read_back). Esto lee, por TextPattern, el parrafo del cursor
+# del foco del teclado de la ventana pedida: el elemento enfocado o su ancestro mas cercano con TextPattern, ambos del
+# MISMO proceso que la ventana y que «processId» (el documento de otro proceso nunca se lee: la busqueda se para en el
+# primer elemento ajeno). Nunca DocumentRange.GetText(-1): solo el parrafo (o la linea) que contiene GetSelection()[0],
+# como mucho «max» caracteres, y la respuesta dice si se corto (bounded). Nunca el texto de una contrasena.
+function Do-TextCaret($request){
+  $target=Get-Root ([long]$request.hwnd)
+  if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
+  $process=0; try { $process=[int]$request.processId } catch {}
+  $owner=0; try { $owner=[int]$target.root.Current.ProcessId } catch {}
+  if($process -le 0 -or $owner -ne $process){ return @{ ok=$false; error='caret_process_mismatch' } }
+  $max=0; try { $max=[int]$request.max } catch {}
+  if($max -le 0 -or $max -gt 8192){ $max=8192 }
+  $node=$null; try { $node=$AE::FocusedElement } catch {}
+  if($null -eq $node){ return @{ ok=$false; error='caret_focus_not_found' } }
+  $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+  $holder=$null; $tp=$null
+  for($depth=0; $depth -lt 16 -and $null -ne $node; $depth++){
+    $nodeProcess=0; try { $nodeProcess=[int]$node.Current.ProcessId } catch {}
+    if($nodeProcess -ne $process){ break }
+    $found=$null
+    if($node.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found)){ $holder=$node; $tp=[System.Windows.Automation.TextPattern]$found; break }
+    if([System.Windows.Automation.Automation]::Compare($node,$target.root)){ break }
+    try { $node=$walker.GetParent($node) } catch { $node=$null }
+  }
+  if($null -eq $holder){ return @{ ok=$false; error='caret_text_not_found' } }
+  $kind=''; $password=$false
+  try { $kind=([string]$holder.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
+  try { $password=[bool]$holder.Current.IsPassword } catch { $password=$true }
+  if($password){ return @{ ok=$false; error='caret_field_password' } }
+  $ranges=@()
+  try { $ranges=@($tp.GetSelection()) } catch { $ranges=@() }
+  if($ranges.Count -lt 1 -or $null -eq $ranges[0]){ return @{ ok=$false; error='caret_selection_unreadable' } }
+  $caret=$ranges[0]
+  # Lo seleccionado (acotado igual): una seleccion no vacia la reemplaza lo escrito, y el adaptador no la compara.
+  $selected=-1; try { $selected=([string]$caret.GetText($max+1)).Length } catch {}
+  $unit='paragraph'; $range=$null
+  try { $range=$caret.Clone(); $range.ExpandToEnclosingUnit([System.Windows.Automation.Text.TextUnit]::Paragraph) }
+  catch {
+    $unit='line'
+    try { $range=$caret.Clone(); $range.ExpandToEnclosingUnit([System.Windows.Automation.Text.TextUnit]::Line) } catch { $range=$null }
+  }
+  if($null -eq $range){ return @{ ok=$false; error='caret_text_unreadable' } }
+  $text=$null; try { $text=[string]$range.GetText($max+1) } catch { $text=$null }
+  if($null -eq $text){ return @{ ok=$false; error='caret_text_unreadable' } }
+  $bounded=$text.Length -gt $max
+  if($bounded){ $text=$text.Substring(0,$max) }
+  return @{ ok=$true; error=''; processId=$process; kind=$kind; unit=$unit; text=$text; length=$text.Length; bounded=$bounded; selectionLength=$selected }
+}
+
 # CONTRATO_VISTA_ACCION.md §8.2: un accionable que sigue sin nombre tras el respaldo (§8.1) es candidato a leer su
 # tooltip: no un campo (se identifica por su valor), no uno sin rectangulo, ni uno del tamano de una zona (un boton que
 # es solo un icono cabe en 200 px).
@@ -4328,6 +4380,7 @@ while($true){
     elseif($cmd -eq 'interaction'){ Send-Line (Do-Interaction $request) }
     elseif($cmd -eq 'field'){ Send-Line (Invoke-Kept $request { param($r) Do-Field $r }) }
     elseif($cmd -eq 'focus'){ Send-Line (Invoke-Kept $request { param($r) Do-Focus $r }) }
+    elseif($cmd -eq 'textcaret'){ Send-Line (Do-TextCaret $request) }
     elseif($cmd -eq 'unnamed'){ Send-Line (Do-Unnamed $request) }
     elseif($cmd -eq 'tooltips'){ Send-Line (Do-Tooltips $request) }
     elseif($cmd -eq 'reveal'){ Send-Line (Invoke-Kept $request { param($r) Do-Reveal $r }) }

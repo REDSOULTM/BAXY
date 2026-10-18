@@ -316,7 +316,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// A key or a text sent to the window in front by SendInput from this process: verified when Windows accepted
     /// every event, with the foreground read before and after for the receipt, which names the window the keys were
     /// sent to (<c>sentTo</c>). BAXY Renew (notebook), F004: a text with no window named is verified only when it is
-    /// read back (<c>readBack</c>) in the edit control that had the keyboard's focus of the window in front; otherwise
+    /// read back (<c>readBack</c>) in the edit control that had the keyboard's focus of the window in front (FT/proveedores
+    /// goal (E2): or, in a document that is no edit control, in the paragraph at its caret read by UI Automation); otherwise
     /// its keys went in and what they wrote is not known (<c>input_text_not_read_back</c>, its effect possible).
     /// Nothing is sent while nobody holds the foreground or when the native INPUT record does not have its native size.
     /// Safety review 2026-10-07: a computer-use step names its mission's window (<c>window</c>, the hwnd of its last
@@ -524,6 +525,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // verified because Windows accepted its events): what the focused edit control of the window in front holds is
         // marked before the first key, so the text can be read back there afterwards.
         TypedMark? mark = typing && window == 0 ? _delivery?.Mark(before.Window, text.Length) : null;
+        // FT/proveedores goal (E2): a document that is no edit control (Word's «_WwG») has no Win32 mark, and its text
+        // was never read back. Its paragraph at the caret is read by UI Automation instead, before the first key, of the
+        // front's own process only.
+        CaretText? caretBefore = typing && window == 0 && mark is null
+            ? await CaretTextAsync(before, cancellationToken).ConfigureAwait(false)
+            : null;
         uint accepted = 0;
         string? focusAt = null;
         if (!typing)
@@ -665,7 +672,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return SentFailure("input_effect_not_verified");
         // Rule 3: Windows accepting every event proves the keys went in, not that the text reached the field meant. A text
         // with no window named is verified by its read-back alone.
-        bool readBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text);
+        bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text);
+        // FT/proveedores goal (E2): the paragraph at the caret read again by UI Automation; a read that fails leaves
+        // the text not read back, as before.
+        (bool caretReadBack, bool caretBounded) = caretBefore is { } caret
+            ? await CaretReadsBackAsync(before, caret, text, cancellationToken).ConfigureAwait(false)
+            : (false, false);
+        bool readBack = editReadBack || caretReadBack;
         string? unread = typing && window == 0 && !readBack ? "input_text_not_read_back" : null;
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -691,6 +704,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             WriteSentTo(writer, before, sentToProcess);
             if (typing && window == 0)
                 writer.WriteBoolean("readBack", readBack);
+            // FT/proveedores goal (E2): a paragraph read cut at its bound (CaretReadableText) proves nothing, and says so.
+            if (caretBefore is not null)
+                writer.WriteBoolean("readBackBounded", caretBounded);
             if (bursts.Current is not null)
             {
                 writer.WriteNumber("waitedMs", bursts.WaitedMs);
@@ -704,7 +720,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             if (focusAt is not null)
                 writer.WriteString("focusAt", focusAt);
             writer.WriteString("authority", focusAt is not null ? "uia_focus_reread_and_win32_sendinput"
-                : readBack ? "win32_sendinput_and_edit_text_reread"
+                : editReadBack ? "win32_sendinput_and_edit_text_reread"
+                : caretReadBack ? "win32_sendinput_and_uia_text_reread"
                 : "win32_sendinput_return_count");
             if (unread is null)
                 writer.WriteNull("error");
@@ -763,6 +780,84 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True
                 && root.TryGetProperty("focused", out JsonElement focused) && focused.ValueKind == JsonValueKind.True;
         }
+    }
+
+    // FT/proveedores goal (E2): how many times the paragraph at the caret is read after the text, a settle apart (the
+    // document may take the last keys a moment after Windows accepted them).
+    private const int CaretRereads = 3;
+
+    // FT/proveedores goal (E2): the paragraph at the caret of the window in front, read by UI Automation (the worker's
+    // «textcaret»); null when nothing answers, the read failed, or it answered for any process but the front's.
+    private async ValueTask<CaretText?> CaretTextAsync(DesktopForeground front, CancellationToken cancellationToken)
+    {
+        if (_fields is null || front.Window == 0 || front.ProcessId <= 0)
+            return null;
+        JsonDocument? answer;
+        try
+        {
+            answer = await _fields.CaretTextAsync(
+                front.Window, front.ProcessId, WindowsTextDelivery.CaretReadableText, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
+        if (answer is null)
+            return null;
+        using (answer)
+        {
+            JsonElement root = answer.RootElement;
+            if (root.ValueKind != JsonValueKind.Object
+                || !root.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+                || !root.TryGetProperty("processId", out JsonElement process) || process.ValueKind != JsonValueKind.Number
+                || !process.TryGetInt32(out int processId)
+                || processId != front.ProcessId
+                || !root.TryGetProperty("text", out JsonElement read) || read.ValueKind != JsonValueKind.String
+                || !root.TryGetProperty("unit", out JsonElement unit) || unit.ValueKind != JsonValueKind.String
+                || !root.TryGetProperty("bounded", out JsonElement bounded)
+                || bounded.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+                return null;
+            string text = read.GetString()!;
+            // A read longer than its bound is not one this side asked for: it is taken as cut, never as whole.
+            bool cut = bounded.ValueKind == JsonValueKind.True || text.Length > WindowsTextDelivery.CaretReadableText;
+            int selection = root.TryGetProperty("selectionLength", out JsonElement selected)
+                && selected.ValueKind == JsonValueKind.Number && selected.TryGetInt32(out int length) ? length : -1;
+            return new CaretText(text, unit.GetString()!, cut, selection);
+        }
+    }
+
+    // FT/proveedores goal (E2): whether the paragraph at the caret, read again, holds the typed text
+    // (WindowsTextDelivery.CaretHolds), and whether a read was cut at its bound (the receipt says so).
+    private async ValueTask<(bool ReadBack, bool Bounded)> CaretReadsBackAsync(
+        DesktopForeground front, CaretText before, string text, CancellationToken cancellationToken)
+    {
+        // A read cut before, or a selection the text replaced: no read after can prove it.
+        if (before.Bounded || before.SelectionLength != 0)
+            return (false, before.Bounded);
+        bool bounded = false;
+        for (int read = 0; read < CaretRereads && !bounded; read++)
+        {
+            if (read > 0)
+            {
+                try
+                {
+                    await _keyboard.SettleAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+            }
+
+            if (await CaretTextAsync(front, cancellationToken).ConfigureAwait(false) is not { } after)
+                break;
+            bounded |= after.Bounded;
+            if (WindowsTextDelivery.CaretHolds(before, after, text))
+                return (true, bounded);
+        }
+
+        return (false, bounded);
     }
 
     /// <summary>
