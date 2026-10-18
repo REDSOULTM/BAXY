@@ -3653,6 +3653,33 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // FT/proveedores goal (review): an application already at 100 raised (or at 0 lowered), no session changed, says it
+    // is already at that end, as the system volume does; it was a success with no observed effect.
+    [TestCase("up", 100, false, "volume_already_at_maximum")]
+    [TestCase("up", 100, true, "volume_already_at_maximum_muted")]
+    [TestCase("down", 0, false, "volume_already_at_minimum")]
+    public async Task AnAppVolumeAlreadyAtTheEndSaysSo(string direction, int level, bool muted, string error)
+    {
+        var adjust = new WindowsAppVolumeAdapter((_, _, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 1, level, level, muted, "endpoint-1", Changed: false);
+        });
+
+        ExternalCapabilityReceipt receipt = await adjust.InvokeAsync(
+            "audio.app.volume.adjust",
+            Json($$"""{"app":"Spotify","direction":"{{direction}}","amount":10}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     [Test]
     public async Task AppVolumeSetFixesTheSessionsAtAnAbsoluteLevelAndReportsThePostread()
     {

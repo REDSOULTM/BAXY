@@ -169,6 +169,17 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
                 return ValueTask.FromResult(ExternalJson.Failure(
                     operation, "app_audio_session_not_found_on_default_output"));
             }
+            // FT/proveedores goal (review): an application already at the end it is moved towards, with no session
+            // changed, says that state, as the system volume does (M54); it was a success with no observed effect,
+            // which the handler turns into an opaque external_effect_unobserved.
+            if (!adjusted.Changed && (direction == "up" ? adjusted.BaselineLevel >= 100 : adjusted.BaselineLevel <= 0))
+            {
+                return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(
+                    operation,
+                    direction == "down"
+                        ? "volume_already_at_minimum"
+                        : adjusted.Muted ? "volume_already_at_maximum_muted" : "volume_already_at_maximum"));
+            }
             int requested = Math.Clamp(
                 adjusted.BaselineLevel + (direction == "up" ? amount : -amount), 0, 100);
             if (Math.Abs(adjusted.Level - requested) > 2)
