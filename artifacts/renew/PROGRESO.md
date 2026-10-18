@@ -1334,3 +1334,26 @@ Medida del lote 2:
 - E2E en el notebook 19/20/19 = 19,33 frente a 19,67 (−0,33).
 - Prefijo 42.332 (+164 sobre la base, +82 sobre el lote 1).
 - Suites: Kernel 567, Contracts 69, Setup 477, Providers 2198; la App compila.
+
+**Lote 3 (161eddce9) = lote 2 + nb-arr-closeapp + nb-arr-E2r + nb-arr-display-a + nb-arr-segestado, ACEPTADO.**
+- Skill display.mode.set: el monitor principal pasa sólo a un modo que su controlador lista; CDS_TEST, aplicar,
+  releer y volver al anterior si no coincide.
+- app.close acepta también appId: cierra todas las ventanas de la app por su nombre, resueltas por BAXY; sin forzar;
+  sigue pidiendo el sí.
+- input.text.type dice qué significa input_text_not_read_back.
+- system.status gana los scopes firewall y updates.
+
+Medida del lote 3:
+- decision2 en el PC 232/229/229 = 230,0 (+2,33).
+- Escenas en el notebook 32/31/33/29 = 31,25 (+0,75), 0 riesgos solos y 0 molestas.
+- E2E en el notebook 20/20/20 = 20,00 (+0,33).
+- Prefijo 42.748 (+580 sobre la base 42.168; el límite es +1.000).
+- Subconjunto: pedidos 503/639 (base 487), dev 49/119 (base 33; el lote 2 daba 58), G01 4/6, G08 2/14.
+- E1 re-ejecutado sobre su producto: los 4 cierres por appId, ningún windowId inventado, 0 falsedades (antes 3 de 4).
+- E2 re-ejecutado (sobre lote 2): 0 respuestas que den por escrito lo no verificado (antes 2).
+- Suites: Kernel 567, Contracts 69, Setup 477, Providers 2223; la App compila. Se corrigió ExpectedDescriptors tras la
+  fusión (174).
+- Rechazadas o límites de esta tanda: nb-arr-E1 (sola), nb-arr-E4, nb-arr-E5r y segestado2 (ver metas.json,
+  auditoria_reales.limites_y_pendientes).
+
+HEAD final de la fase 3: el de esta fusión.
