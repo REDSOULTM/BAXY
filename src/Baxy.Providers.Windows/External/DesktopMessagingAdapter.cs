@@ -987,6 +987,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             throw ComposerAfterStop(
                 stop, ComposerChanged(recipient.WindowHandle, recipient.Channel, before));
         }
+        catch (Exception failure) when (failure is IOException or InvalidOperationException or ExternalException
+            or OperationCanceledException)
+        {
+            // FT/proveedores goal (review of receipts): a capture, a read or a key that failed mid-way (a black capture
+            // with the PC locked, the window gone, the OCR not starting, a cancel) left the text in the composer
+            // unsaid, and the person's next Enter would send it; when the composer changed, that is what is said.
+            if (ComposerChanged(recipient.WindowHandle, recipient.Channel, before))
+                throw new LeasedInput.BurstStoppedException(DraftLeftAfterInterruption, failure);
+            throw;
+        }
 
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
         byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
@@ -1120,6 +1130,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // A draft stopped while being typed, or while its unverified text was being cleared: part of it may remain.
             throw ComposerAfterStop(
                 stop, ComposerChanged(recipient.WindowHandle, recipient.Channel, before));
+        }
+        catch (Exception failure) when (failure is IOException or InvalidOperationException or ExternalException
+            or OperationCanceledException)
+        {
+            // FT/proveedores goal (review of receipts): a capture, a read or a key that failed mid-way (a black capture
+            // with the PC locked, the window gone, the OCR not starting, a cancel) left the text in the composer
+            // unsaid, and the person's next Enter would send it; when the composer changed, that is what is said.
+            if (ComposerChanged(recipient.WindowHandle, recipient.Channel, before))
+                throw new LeasedInput.BurstStoppedException(DraftLeftAfterInterruption, failure);
+            throw;
         }
 
         return new(
