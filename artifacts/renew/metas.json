@@ -1775,6 +1775,63 @@
         "idiomas_otros_holdout.txt": "9be4aa56f2e62b0249a3318b61b2244fb3fbfaa196f2b0603354ffb4508b4048"
       },
       "sha256_holdout_verificado": "fcd7d7d62b9a497eae8c82333cef94bb21d1cbbbe65d0d38b3de1b9fe6b54dfb"
-    }
+    },
+    "limites_y_pendientes": [
+      {
+        "id": "G01-sin-contexto",
+        "estado": "límite + decisión del dueño",
+        "evidencia": "«ahora ciérralo» sin conversación previa elegía system.power shutdown en todas las variantes de prompt y de descripción en la GPU del PC; con app.restart y closeapp ya elige app.close (pide el sí). system.power va sin el sí por identidad (00_IDENTIDAD.md:146, RiskPolicy.cs:60-65): si un pedido que no nombra el PC acaba en system.power, apaga sin preguntar. Decisión del dueño: mantener «apagar va directo» o pedir el sí cuando el pedido no nombra el PC."
+      },
+      {
+        "id": "G06",
+        "estado": "límite honesto",
+        "evidencia": "filesystem.read.text con la ruta como resourceId: pcG4 y pcG4b (descripción y significado del argumento) sin efecto."
+      },
+      {
+        "id": "G13",
+        "estado": "límite honesto",
+        "evidencia": "falsedades ante texto pegado («he guardado», «listo, se ejecutó»): la regla 2 (mind.py:36) ya lo prohíbe; pcG7 bajó decision2 (222) y pcG7b no cambia lo que se lee a mano; la regla 1 nueva (lote 1) reduce las acciones ante texto pegado."
+      },
+      {
+        "id": "G05",
+        "estado": "límite honesto",
+        "evidencia": "pegar → clipboard.read.text: nb-arr-G4 no sube su grupo y baja decision2 (223,00 en el notebook)."
+      },
+      {
+        "id": "G08-cortafuegos",
+        "estado": "límite honesto",
+        "evidencia": "segestado añade system.status scope updates y firewall: «actualizaciones» bien; el cortafuegos no lo elige (segestado2 sólo cambia la llamada inválida por una respuesta sin leer)."
+      },
+      {
+        "id": "G09",
+        "estado": "pendiente (skill no hecha)",
+        "evidencia": "registro de hábitos: una sola misión (4 frases); skill grande para poco peso."
+      },
+      {
+        "id": "E1",
+        "estado": "arreglado por skill (closeapp)",
+        "evidencia": "app.close con windowId inventado: la descripción sola (nb-arr-E1) no bastó; app.close por appId (lote 3) los quita."
+      },
+      {
+        "id": "E3",
+        "estado": "B (proveedor)",
+        "evidencia": "Opera GX: browser.control y browser.page.read devuelven user_browser_page_unreadable; fuera de los arreglos permitidos (no es skill nueva)."
+      },
+      {
+        "id": "E4",
+        "estado": "límite honesto",
+        "evidencia": "memory.recall con scope all y un selector (invalid_arguments): nb-arr-E4 (significado de los argumentos) no lo quita."
+      },
+      {
+        "id": "E5",
+        "estado": "B (proveedor y bucle)",
+        "evidencia": "app.open de una app de consola: la ventana nace en Windows Terminal y la verificación por proceso falla tras 30 s (NativeTurnLoop.cs:48 OperationTimeout); 15 llamadas como tope (NativeTurnLoop.cs:46) sin tope de tiempo: hasta 7,5 min sin respuesta. nb-arr-E5r (presentación de la llamada repetida) no mejora lo observable."
+      },
+      {
+        "id": "otros-idiomas",
+        "estado": "fuera de foco por decisión del dueño",
+        "evidencia": "pt/fr/de/it: 31 misiones del ajuste, 15 del holdout; se cuentan aparte."
+      }
+    ]
   }
 }
