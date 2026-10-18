@@ -1670,3 +1670,26 @@ Plan (una palanca por ciclo, cada una con su fuente):
 5. Si queda tiempo: DPO con término supervisado sobre el mejor (D3 palanca 4).
 Implementado: `MERGE_SCALE` en la fusión y `--kl-beat/--kl-dec` en el entrenador (top-64 del base precalculado: LoRA
 arranca en B = 0, así que el modelo del paso 0 es el base).
+
+### Palanca 1 (sin reentrenar): el adaptador de c2-e1.0 fusionado hacia el base
+
+Fuente: WiSE-FT (https://arxiv.org/abs/2109.01903), Lin et al. 2023 (https://arxiv.org/html/2309.06256v4), LiNeS
+(https://arxiv.org/html/2410.17146v1): paper. Fusión W + λ·ΔW con `MERGE_SCALE`, misma cuantización. GPU del PC, mente
+y catálogo del lote (decision2 s0-2 / escenas sin tocar y 3 perturbaciones):
+
+| λ | decision2 | escenas | molestas |
+|---|---|---|---|
+| base | 227,67 | 29,25 | — |
+| 1,0 (c2-e1.0) | 230,67 | 32,25 | 0 |
+| 0,8 | 235/234/235 = 234,67 | 31/29/30/30 = 30,0 | 0 |
+| 0,6 | 233/233/231 = 232,33 | 33/31/30/32 = 31,5 | 0 |
+
+Recortar el delta no baja la decisión (sube 1,7-4,0 frente a λ = 1, dentro del intervalo de ±9 de D2) y las escenas
+quedan dentro del ruido: indicio de sobreactualización, como predecía D2. Decide el e2e (cola del notebook: λ = 0,6 y
+0,8). Ciclo 4 (LR 5e-5, D2 propuesta 1) arrancado a las 16:5x; ciclo 5 (datos v3) encadenado detrás.
+- **Datos v3** (D3 palancas 1-2): G7 602 ejemplos pareados (rutas dictadas, lugar dentro de la app, app frente a juego,
+  volumen del sistema frente al de una app, borrar frente a preguntar qué puede borrar) y G8 504 (preguntar frente a
+  buscar, no inventar el dato que falta, afirmaciones de cosas que cambian, pronombres), cada uno con su gemelo y con
+  una comprobación del significado de los argumentos (`verificar_args.py`, `verificar_args_b.py`: 0 violaciones; los
+  dos detectan todos los errores sembrados a propósito). Fuga: G7 43 fuera, G8 121 fuera; léxica del conjunto 272 de
+  4.593; semántica 77 de 4.321. Mezcla v3: 5.257 ejemplos, 6.196 muestras (preguntas 456, el doble que en v2).
