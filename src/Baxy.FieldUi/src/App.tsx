@@ -347,8 +347,15 @@ export default function App() {
     const r = await send<{ ok?: boolean; on?: boolean }>('POST', '/power', { on: !powered });
     if (!r || r.on === powered) { setNotice({ b: 'BAXY', t: powered ? 'no pude ponerme en reposo' : 'no pude activarme' }); return; }
     setNotice(null);
-    if (r.on) void applyMic(mic); // back from rest, the microphone mode the person chose comes back
-  }, [powered, applyMic, mic]);
+  }, [powered]);
+  // back from rest, by this button, the tray's «Activar» or a text written to BAXY at rest, the microphone mode the
+  // person chose comes back (FT/proveedores goal, review of the App: only this button brought it back)
+  const wasPowered = useRef(powered);
+  useEffect(() => {
+    const woke = powered && !wasPowered.current;
+    wasPowered.current = powered;
+    if (woke && s.agent.built && mindUp) void applyMic(mic);
+  }, [powered, s.agent.built, mindUp, applyMic, mic]);
   const wake = useCallback(() => {
     if (state !== 'idle' || mic !== 'always') return;
     void send('POST', '/voice/trigger');
