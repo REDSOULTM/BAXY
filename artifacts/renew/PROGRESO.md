@@ -1758,3 +1758,11 @@ la interacción por texto del modo Normal está lista hoy; el resto se presenta 
 - **Para el dueño**: la interfaz mostraba la entrada por voz como disponible. Por la regla («todo lo demás se presenta
   como próximamente disponible, nunca como listo») se etiqueta «en pruebas · próximamente disponible» sin quitar la
   función; si prefiere otra palabra o apagarla, es su decisión.
+
+### Ciclo 4 (LR 5e-5, único cambio frente a c2; D2 propuesta 1): no gana
+
+Notebook, sobre el lote (frente a c2-e1.0: decision2 230,00, escenas 32,25, e2e 23,67): c4-e0.5 cribado decision2 s0
+226 y escenas 29 con una molesta; **c4-e1.0** decision2 228/229/229 = 228,67, escenas 31/29/31/31 = 30,5 (1 molesta en
+pA, P039), e2e 23/22/24 = 23,0 (pareado Δ −0,67, IC [−3,33, +1,67], McNemar 1↑/2↓, p = 1,0). Baja los tres bancos dentro
+del ruido: con la misma época, una LR menor aprende menos sin proteger mejor el latido. Descartada (la evidencia de D2
+sobre olvido y LR no se confirmó aquí).
