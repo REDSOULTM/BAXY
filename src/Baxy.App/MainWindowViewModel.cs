@@ -953,6 +953,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 IsWakeListening = false;
                 IsVoiceSpeaking = false;
             }
+            // FT/proveedores goal (review of the App): a mind lost while running (its process ended, as when the model
+            // server dies and it exits 70, or a request whose reply never came) was never brought back, and the screen
+            // and the tray said «Arrancando» for good. It is a failed mind now: shown as such and relaunched with the
+            // start-up's growing wait (InitializeMindAsync ends the old process, and its VRAM, first).
+            if (_mindStartupState == MindStartupState.Ready && !_mindLifetimeCancellation.IsCancellationRequested)
+            {
+                ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed,
+                    processEnded ? "mente_salio" : "mente_sin_respuesta");
+                _mindStartupFailureCount++;
+                _mindStartupState = MindStartupState.Failed;
+                _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
+            }
             OnPropertyChanged(nameof(IsMindReady));
         },
         null);
