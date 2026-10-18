@@ -1491,3 +1491,25 @@ entorno, pesos HF y adaptadores en D:/BAXYft. Nada literal del dueño en git.
   Fuga: semántica de G6 42 de 323 fuera; léxica 213 de 3.651; semántica del conjunto 77 de 3.438.
   Mezcla v2: 4.016 ejemplos, 4.734 muestras; weather.current 112, web.search 172.
 - Arrancado a las 06:28 con la misma receta y 1 época (296 pasos); checkpoints c2-e0.5 y c2-e1.0.
+
+### Proveedores (notebook, rama `nb-proveedores`, cabeza af960da2a sobre 0be0f9de9)
+
+Base del día del notebook: decision2 228/227/233 = 229,33; escenas 32/31/… = 31,25; e2e 19,67. Rama: decision2
+227,33 (−2,0), escenas 30,5 (−0,75; 0 molestas, 0 riesgos solos), e2e 19,67 (±0); prefijo 41.845 (−3); suites
+Providers 2280/2280, Kernel 573, Contracts 69, Setup 477, pytest 28, la App compila. decision2 s0 de 182ecbeda en la
+GPU del PC: 230 (base 228). Revisión del PC de los diffs (mente, bucle, rutas, relectura de Word, consola): ningún
+arreglo lee el texto de la persona; deciden por lo que corrió y verifican por Windows (relación de propietario de la
+PseudoConsoleWindow, UI Automation del proceso de delante, carpetas conocidas).
+
+| Punto | Arreglo | Medida | Estado |
+|---|---|---|---|
+| E5 app.open de consola | verifica por la ventana de Windows Terminal dueña de la PseudoConsoleWindow; una copia en otra pestaña no se reutiliza | en vivo verificado en 1.995 ms (antes 30 s y verification_failed); R0724.0 real 0/2 → 2/2 | arreglado y medido |
+| E5 tope por turno | TurnClosing: 90 s, o la misma llamada con el mismo resultado 3 veces → respuesta en palabras; la mente recorta resultados si llama-server rechaza por contexto | E022 deja de acabar en turno vacío; E011 3/3; e2e ±0 | arreglado y medido |
+| E3 Opera GX | tira de pestañas juzgada sola, página por el título, ventanas ocultas fuera | en vivo page.read y close bien en base y rama; re-ejecuciones iguales | arreglado sin regresión; el estado que fallaba no se dio hoy (ganancia probada por pruebas) |
+| E2 relectura de Word | relectura por UI Automation del párrafo del cursor del mismo proceso | en vivo verified=True con relectura (antes siempre input_text_not_read_back) | arreglado y medido |
+| E6 foco | texto sin window tras un app.open cuya app perdió el frente → a esa app por el lease, verificado por relectura | en vivo: otra ventana roba el frente y el texto llega al Bloc, respuesta cierta | arreglado y medido (minimizada: no redirige, límite) |
+| E4 memory.recall | selector opcional; all con selector tiene su propio código | pruebas con almacén real; prefijo −3 | arreglado |
+| Rutas | una ruta completa sin folder va a su carpeta conocida; el resumen del turno dice dónde quedó | E017/E019 ya dicen el sitio real | proveedor arreglado |
+| E003 | falso negativo del banco (bench.ps1 desfasado en el notebook) | bancos igualados por sha256 | arreglado (banco) |
+| E006, E015, E017, E019, E020, E021, E022 (contenido), E024, E027, E029 | — | estables en base y rama | del modelo: al ajuste fino |
+| E001 | carrera de carga de la voz Supertonic al arrancar | — | B anotado (MainWindowViewModel.cs:1397, voice_output.py:80) |

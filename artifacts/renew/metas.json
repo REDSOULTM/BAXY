@@ -2029,6 +2029,40 @@
         },
         "config": "igual que c1, 1 época"
       }
+    },
+    "proveedores": {
+      "rama": "hub/nb-proveedores af960da2a",
+      "bancos_rama": {
+        "decision2_nb": "227,33 frente a 229,33",
+        "escenas_nb": "30,5 frente a 31,25",
+        "e2e_nb": "19,67 frente a 19,67",
+        "prefijo": "41.845 (−3)"
+      },
+      "suites": "Providers 2280/2280, Kernel 573, Contracts 69, Setup 477, pytest 28, App compila",
+      "estado": {
+        "E5_consola": "arreglado y medido (R0724.0 0/2 → 2/2)",
+        "E5_tope_turno": "arreglado y medido (TurnClosing 90 s / 3 repeticiones)",
+        "E3_opera_gx": "arreglado sin regresión; el estado de fallo no se reprodujo hoy",
+        "E2_word": "arreglado y medido en vivo",
+        "E6_foco": "arreglado y medido en vivo; minimizada: límite",
+        "E4_memory_recall": "arreglado (contrato y pruebas)",
+        "rutas": "proveedor arreglado",
+        "E003": "banco arreglado",
+        "modelo_al_ajuste_fino": [
+          "E006",
+          "E015",
+          "E017",
+          "E019",
+          "E020",
+          "E021",
+          "E022",
+          "E024",
+          "E027",
+          "E029"
+        ],
+        "E001": "B: carrera de carga de Supertonic"
+      },
+      "detalle": "F:/BAXYeval/ft_v1/proveedores_estado.md"
     }
   }
 }
