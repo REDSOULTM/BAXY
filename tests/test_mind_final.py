@@ -77,3 +77,14 @@ def test_nothing_written_after_a_call_is_answered_in_words(tmp_path: Path) -> No
     result = mind.continue_turn(2, json.dumps({"status": "completed", "verified": True}))
     assert result["reply"] == "Puse el volumen al 30."
     assert server.bodies[-1]["tool_choice"] == "none"
+
+
+def test_the_turns_facts_say_where_a_file_was_made(tmp_path: Path) -> None:
+    mind, server = _mind(tmp_path, [_call("file_write", {"relativePath": "compras.txt", "folder": "home"}),
+                                    _say("Lo creé.")])
+    mind.decide(1, "crea un archivo")
+    observed = {"status": "completed", "verified": True,
+                "observed": {"name": "compras.txt", "fullPath": r"C:\Users\ana\compras.txt"}}
+    mind.continue_turn(2, json.dumps(observed))
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert r"file_write → completado y verificado en C:\Users\ana\compras.txt" in tool

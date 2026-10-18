@@ -123,11 +123,15 @@ def _outcome(observation: str) -> str:
         # (keys and text Windows accepted, with no read-back of what the window did with them).
         observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
         # Ronda final: an observation left out for its size («observedLimit») cannot show it was more than delivered.
+        # FT/proveedores goal (e2e E006, E017): where a file or folder was made, from its own result, beside the facts
+        # the model tells («lo creé en BAXY-bench» after a write that went to the home folder).
+        where = observed.get("fullPath")
+        where = f" en {where}" if isinstance(where, str) and where else ""
         if (facts.get("verified") is False or observed.get("effectReadBack") is False
                 or ("delivered" in observed and observed.get("readBack") is not True)
                 or facts.get("observedLimit") == "omitted"):
-            return "completado sin verificar"
-        return "completado y verificado"
+            return "completado sin verificar" + where
+        return "completado y verificado" + where
     error = facts.get("error") or facts.get("cause")
     return f"falló ({error})" if error else "falló"
 
