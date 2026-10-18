@@ -667,6 +667,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         _viewModel.Settings.ApplyGeneral(body);
+        if (_viewModel.Settings.VoiceMuted)
+            _viewModel.SilenceVoice();
         return Json(_viewModel.Settings.GeneralJson(Autostart()));
     }
 

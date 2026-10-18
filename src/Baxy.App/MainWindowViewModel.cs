@@ -652,6 +652,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         _loop.Reset();
         Messages.Clear();
+        SilenceVoice();
         if (_mindClient is { IsReady: true } mind)
         {
             _ = mind.NewSessionAsync(CancellationToken.None);
@@ -893,6 +894,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return false;
         }
 
+        // FT/proveedores goal (review of the App): the ear drops what it hears while BAXY speaks (its own voice), so a
+        // person who presses to talk over it lost their words; pressing to talk silences BAXY first, as typing does.
+        if (IsVoiceSpeaking && mind.IsVoiceAvailable)
+            _ = await mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), cancellationToken);
         bool started = await mind.VoiceStartAsync("direct", TimeSpan.FromSeconds(60), cancellationToken);
         IsMicAvailable = started;
         if (started)
@@ -1413,6 +1418,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 ? mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None)
                 : mind.VoiceSpeakAsync(body, TimeSpan.FromSeconds(5), CancellationToken.None);
         }
+    }
+
+    /// <summary>FT/proveedores goal (review of the App): what BAXY is saying stops (a new conversation, the voice muted
+    /// in the settings); before, only the person's own message stopped it.</summary>
+    internal void SilenceVoice()
+    {
+        if (_mindClient is { IsVoiceAvailable: true } mind)
+            _ = mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None);
     }
 
     private async Task SpeakNoticeAsync(MindSidecarClient mind, string notice)
