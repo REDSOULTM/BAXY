@@ -18,10 +18,17 @@ public static class ProductCatalog
     [
         Descriptor(
             "app.close",
-            WindowIdSchema(),
+            // Auditoría de los pedidos reales (2026-10-17): o una ventana resuelta (windowId) o la aplicación por su
+            // nombre (appId), exactamente uno de los dos (AppCloseHandler).
+            Schema(
+                [
+                    String("appId", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("windowId", maximumLength: 36, nonWhitespace: true),
+                ],
+                []),
             OperationRisks.WorkLoss,
             "app.close.identity.window.absence.v1",
-            "Solicita el cierre de una ventana resuelta y verifica su ausencia sin forzar la terminacion del proceso; el windowId caduca a los 5 minutos."),
+            "Solicita el cierre de una ventana resuelta (windowId) o de todas las ventanas de una aplicación por su nombre (appId) y verifica su ausencia sin forzar la terminacion del proceso; si una ventana responde con un diálogo propio (guardar) se detiene y lo dice; el windowId caduca a los 5 minutos."),
         Descriptor(
             "app.installed",
             Schema([String("name", maximumUtf8Bytes: 256, nonWhitespace: true)], ["name"]),
@@ -46,6 +53,14 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "app.open.process.window.focus.v1",
             "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso y su ventana visible, y dice si quedó al frente; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos. También acepta windows.calculator."),
+        // Auditoría de los pedidos reales (2026-10-17): reiniciar una aplicación no tenía operación propia y la única que
+        // decía «restart» era system.power, que va sin el sí de la persona.
+        Descriptor(
+            "app.restart",
+            Schema([String("appId", maximumUtf8Bytes: 512, nonWhitespace: true)], ["appId"]),
+            OperationRisks.WorkLoss,
+            "app.restart.window.close.process.exit.app.open.v1",
+            "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo."),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(
@@ -329,6 +344,19 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "desktop.wallpaper.set.spi.registry.postread.v1",
             "Cambia el fondo de escritorio a un color liso (#RRGGBB) o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior; sólo una imagen directa de la carpeta."),
+        // Auditoría de los pedidos reales (2026-10-17): cambiar la frecuencia o la resolución del monitor principal.
+        Descriptor(
+            "display.mode.set",
+            Schema(
+                [
+                    Integer("height", 200, 16_384),
+                    Integer("refreshHz", 1, 1_000),
+                    Integer("width", 320, 16_384),
+                ],
+                []),
+            OperationRisks.LowReversible,
+            "display.mode.set.win32.test.apply.readback.v1",
+            "Cambia el modo del monitor principal (resolución, frecuencia de refresco o ambas) a uno que su controlador lista: lo prueba con CDS_TEST, lo aplica, relee el modo y, si no es el pedido, vuelve al anterior y lo relee; con sólo la resolución mantiene la frecuencia si ese modo la lista, si no toma la más alta listada."),
         Descriptor(
             "display.status",
             EmptySchema(),
@@ -1448,17 +1476,19 @@ public static class ProductCatalog
                         "cpu",
                         "cpu_memory",
                         "disk",
+                        "firewall",
                         "gpu_identity",
                         "gpu_usage",
                         "memory",
                         "os",
                         "os_memory",
                         "summary",
+                        "updates",
                     ])],
                 []),
             OperationRisks.ReadOnly,
             "system.status.windows.measurement.v1",
-            "Mide CPU, memoria, disco, batería, GPU y Windows sin modificar el equipo."),
+            "Mide CPU, memoria, disco, batería, GPU y Windows; lee también el cortafuegos (sus perfiles, si están activos y los conectados ahora) y Windows Update (reinicio pendiente y actualizaciones por instalar según la última búsqueda de Windows, leída de su caché local: los títulos de las 10 primeras), sin modificar el equipo."),
         Descriptor(
             "system.time",
             // Uso real tanda 4 «convertir nueve de la mañana huso horario a madrid»:

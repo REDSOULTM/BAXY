@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-17 (cierre: producto final 845d652ad, banco de desarrollo, no holdout)",
+  "actualizado": "2026-10-18 (auditoría de los pedidos reales: cerrada)",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -1691,5 +1691,220 @@
     "producto_final": "845d652ad",
     "informe": "artifacts/renew/INFORME_FINAL.md",
     "nota": "criterios de término cerrados: cada meta cumplida o límite honesto con su evidencia (decisiones del dueño de 2026-10-17); bancos de desarrollo del producto final dentro del ruido"
+  },
+  "auditoria_reales": {
+    "prompt": "PROMPT_AUDITORIA_REALES.md (2026-10-17), producto de partida 845d652ad",
+    "ubicacion": "F:/BAXYeval/reales_v1 (fuera del repo: textos literales del dueño; el repo sólo lleva cifras e ids)",
+    "fuente": {
+      "archivo": "BAXY Definitivo/tests/data/historical_missions.jsonl (copia en F:/BAXYeval/reales_v1)",
+      "misiones": 2084,
+      "sha256": "96e4f50566b657ec2f0dea89ddf6655dce2dc2ac63f17d0593ae05e9cc0c86d1"
+    },
+    "fase0": {
+      "division": "subagente aislado, semilla 20261017, estratificada por class, 70/30; script F:/BAXYeval/reales_v1/dividir.py (sha256 47cd69f360a4f21dd3bbfa1a643754b047dfdc3cf85c7e8199a5d29d4639e78d)",
+      "vistas_antes_de_dividir": "49 misiones que la sesión líder imprimió al inspeccionar el archivo (muestra de 12 por clase de cuatro clases y la primera línea): forzadas a ajuste (48) o a solo_decision (1), nunca al holdout",
+      "exclusion": "historical_operations con message.send, game.purchase o filesystem.trash (efectos sobre terceros, compras o borrado fuera del sandbox): 20 misiones a solo_decision.jsonl, clasificadas sólo por la decisión",
+      "ajuste": {
+        "archivo": "F:/BAXYeval/reales_v1/ajuste.jsonl",
+        "misiones": 1445,
+        "sha256": "9eeb769d9cab656a3bab32b8ce7d2cda898b4d70d9019ce530c9612e19a69b28"
+      },
+      "holdout": {
+        "archivo": "F:/BAXYeval/reales_v1/holdout/holdout_reales.sealed.jsonl",
+        "misiones": 619,
+        "sha256": "fcd7d7d62b9a497eae8c82333cef94bb21d1cbbbe65d0d38b3de1b9fe6b54dfb",
+        "sellado": "2026-10-17",
+        "nota": "sellado por el subagente (SEALED_REALES.md); no se abre hasta la fase 4"
+      },
+      "solo_decision": {
+        "archivo": "F:/BAXYeval/reales_v1/solo_decision.jsonl",
+        "misiones": 20,
+        "sha256": "b667d7f9903ca9a58b344dcaaba4bfbe9a221656c2912c6d15fcd5d0a539ac27"
+      },
+      "por_clase": {
+        "ajuste": {
+          "conversation_question": 3,
+          "engineering_instruction": 203,
+          "feedback_failure": 55,
+          "no_action_constraint": 9,
+          "preference": 8,
+          "product_requirement": 993,
+          "safety_instruction": 0,
+          "user_mission": 174
+        },
+        "holdout": {
+          "conversation_question": 1,
+          "engineering_instruction": 87,
+          "feedback_failure": 24,
+          "no_action_constraint": 4,
+          "preference": 4,
+          "product_requirement": 425,
+          "safety_instruction": 0,
+          "user_mission": 74
+        },
+        "solo_decision": {
+          "conversation_question": 0,
+          "engineering_instruction": 0,
+          "feedback_failure": 1,
+          "no_action_constraint": 0,
+          "preference": 0,
+          "product_requirement": 3,
+          "safety_instruction": 1,
+          "user_mission": 15
+        }
+      }
+    },
+    "fase4_oraculo": {
+      "escrito_por": "subagente aislado (2026-10-17), con la guía F:/BAXYeval/reales_v1/holdout/GUIA_ORACULO.md y el mismo formato que el oráculo del ajuste; la sesión líder no vio los textos del holdout",
+      "casos": 734,
+      "por_tipo": {
+        "dev": 492,
+        "any": 151,
+        "call": 37,
+        "text": 18,
+        "falta": 16,
+        "noact": 7,
+        "ask": 6,
+        "solo": 5,
+        "out": 2
+      },
+      "misiones_otros_idiomas": 15,
+      "sha256": {
+        "etiquetas_holdout.txt": "f9264bff7f00e80ff4d58cef18bd395021e139df94263fd2558c2a5a50aefabf",
+        "casos_holdout.json": "46d980fc9d31cac68d7f7469ddd925ee8880b242c3cbc8de1d0e2287cf000208",
+        "idiomas_otros_holdout.txt": "9be4aa56f2e62b0249a3318b61b2244fb3fbfaa196f2b0603354ffb4508b4048"
+      },
+      "sha256_holdout_verificado": "fcd7d7d62b9a497eae8c82333cef94bb21d1cbbbe65d0d38b3de1b9fe6b54dfb"
+    },
+    "limites_y_pendientes": [
+      {
+        "id": "G01-sin-contexto",
+        "estado": "límite + decisión del dueño",
+        "evidencia": "«ahora ciérralo» sin conversación previa elegía system.power shutdown en todas las variantes de prompt y de descripción en la GPU del PC; con app.restart y closeapp ya elige app.close (pide el sí). system.power va sin el sí por identidad (00_IDENTIDAD.md:146, RiskPolicy.cs:60-65): si un pedido que no nombra el PC acaba en system.power, apaga sin preguntar. Decisión del dueño: mantener «apagar va directo» o pedir el sí cuando el pedido no nombra el PC."
+      },
+      {
+        "id": "G06",
+        "estado": "límite honesto",
+        "evidencia": "filesystem.read.text con la ruta como resourceId: pcG4 y pcG4b (descripción y significado del argumento) sin efecto."
+      },
+      {
+        "id": "G13",
+        "estado": "límite honesto",
+        "evidencia": "falsedades ante texto pegado («he guardado», «listo, se ejecutó»): la regla 2 (mind.py:36) ya lo prohíbe; pcG7 bajó decision2 (222) y pcG7b no cambia lo que se lee a mano; la regla 1 nueva (lote 1) reduce las acciones ante texto pegado."
+      },
+      {
+        "id": "G05",
+        "estado": "límite honesto",
+        "evidencia": "pegar → clipboard.read.text: nb-arr-G4 no sube su grupo y baja decision2 (223,00 en el notebook)."
+      },
+      {
+        "id": "G08-cortafuegos",
+        "estado": "límite honesto",
+        "evidencia": "segestado añade system.status scope updates y firewall: «actualizaciones» bien; el cortafuegos no lo elige (segestado2 sólo cambia la llamada inválida por una respuesta sin leer)."
+      },
+      {
+        "id": "G09",
+        "estado": "pendiente (skill no hecha)",
+        "evidencia": "registro de hábitos: una sola misión (4 frases); skill grande para poco peso."
+      },
+      {
+        "id": "E1",
+        "estado": "arreglado por skill (closeapp)",
+        "evidencia": "app.close con windowId inventado: la descripción sola (nb-arr-E1) no bastó; app.close por appId (lote 3) los quita."
+      },
+      {
+        "id": "E3",
+        "estado": "límite honesto (proveedor)",
+        "evidencia": "Opera GX: browser.control y browser.page.read devuelven user_browser_page_unreadable; fuera de los arreglos permitidos (no es skill nueva). Ninguna skill, descripción ni prompt lo cubre: la página de Opera GX no es legible para el proveedor; BAXY lo dice bien en 3 de 6 casos. Se arregla en el goal siguiente (PROMPT_GOAL_FT_PROVEEDORES.md)."
+      },
+      {
+        "id": "E4",
+        "estado": "límite honesto",
+        "evidencia": "memory.recall con scope all y un selector (invalid_arguments): nb-arr-E4 (significado de los argumentos) no lo quita."
+      },
+      {
+        "id": "E5",
+        "estado": "límite honesto (proveedor y bucle)",
+        "evidencia": "app.open de una app de consola: la ventana nace en Windows Terminal y la verificación por proceso falla tras 30 s (NativeTurnLoop.cs:48 OperationTimeout); 15 llamadas como tope (NativeTurnLoop.cs:46) sin tope de tiempo: hasta 7,5 min sin respuesta. nb-arr-E5r (presentación de la llamada repetida) no mejora lo observable. La única palanca permitida (nb-arr-E5r) se midió sin mejora. Se arregla en el goal siguiente."
+      },
+      {
+        "id": "otros-idiomas",
+        "estado": "fuera de foco por decisión del dueño",
+        "evidencia": "pt/fr/de/it: 31 misiones del ajuste, 15 del holdout; se cuentan aparte."
+      },
+      {
+        "id": "E2-relectura",
+        "estado": "límite honesto (proveedor), con la falsedad arreglada",
+        "evidencia": "input.text.type no relee lo escrito en un documento de Word (WindowsDesktopInteractionAdapter.cs:669, input_text_not_read_back). La descripción nueva (lote 3) hace que la respuesta lo diga: 0 de 2 afirman lo no verificado (antes 2 de 2). La relectura misma es del proveedor: goal siguiente."
+      },
+      {
+        "id": "E6-foco",
+        "estado": "límite honesto (entorno y proveedor)",
+        "evidencia": "En la ejecución del ajuste, Steam se quedó delante todo el banco; el texto y la selección en el Bloc fallaron (R0015.1 lo dijo; R0011.4 afirmó sin verificar); un clic cayó en una ventana protegida (R0984.0). No hay descripción ni prompt que cambie el foco real: goal siguiente."
+      },
+      {
+        "id": "E7-E8",
+        "estado": "límite honesto / arreglado en parte",
+        "evidencia": "E7: window.resolve no halla la pestaña de YouTube de Opera (es una pestaña, no una app): app.close por appId (lote 3) lo dice honestamente en el holdout salvo un caso (H0003.3, falsedad). E8: YouTube puesto en Spotify: G1b (lote 1) lo reduce (G03 2→4/13)."
+      }
+    ],
+    "head_final": "58c57cddd (src = lote3 161eddce9)",
+    "fase3": {
+      "aceptados": {
+        "lote1": "e96064701: reglas 1 y 3 del prompt, cerrar la ventana de delante (G5), instalar juegos (G2), YouTube (G1b)",
+        "lote2": "b58abac75: skill app.restart",
+        "lote3": "161eddce9: skill display.mode.set, app.close por appId, scopes firewall/updates, input.text.type honesto (E2)"
+      },
+      "bancos_finales": {
+        "decision2_pc": "232/229/229 = 230,0 frente a 227,67",
+        "escenas_nb": "31,25 frente a 30,5",
+        "e2e_nb": "20,00 frente a 19,67"
+      },
+      "prefijo": {
+        "pc": "42.748 frente a 42.168 (+580)",
+        "nb": "41.848 frente a 41.268 (+580)",
+        "tope": "+1.000: cumple"
+      },
+      "rechazadas": "pcG1, nb-arr-G5b, nb-arr-G1, nb-arr-G4, pcG7, pcG9; sin efecto: pcG4, pcG4b, pcG7b, nb-arr-E1, nb-arr-E4, nb-arr-E5r, segestado2 (detalle en F:/BAXYeval/reales_v1/variantes/resultados.md)"
+    },
+    "fase4": {
+      "holdout_decision": "una vez en cada GPU sobre 58c57cddd",
+      "holdout_ejecucion": "61 misiones en el notebook: OK 48, EJECUTA_MAL 12, otra operación 1; 1 falsedad",
+      "clases_pedidos_es_en": {
+        "ajuste_845": {
+          "n": 345,
+          "OK": 214,
+          "ELIGE_MAL": 79,
+          "EJECUTA_MAL": 18,
+          "FALTA_SKILL": 23,
+          "FUERA_DE_DISEÑO": 11,
+          "con_falsedad": 13
+        },
+        "holdout_final": {
+          "n": 141,
+          "OK": 93,
+          "ELIGE_MAL": 21,
+          "EJECUTA_MAL": 9,
+          "FALTA_SKILL": 16,
+          "FUERA_DE_DISEÑO": 2,
+          "con_falsedad": 3
+        }
+      },
+      "desarrollo": {
+        "ajuste_845": "980/1089",
+        "holdout_final": "422/463"
+      },
+      "ajuste_sobre_head_final_pc": {
+        "pedidos_OK": "240 → 248",
+        "ELIGE_MAL": "71 → 64",
+        "desarrollo_OK": "994 → 1011",
+        "misiones_con_falsedad": "16 → 19"
+      },
+      "recursos": {
+        "vram_mib": 3901,
+        "ram_uss_mib": "1544 sin oído, 1614 con oído",
+        "cumple_4gb": true
+      }
+    }
   }
 }

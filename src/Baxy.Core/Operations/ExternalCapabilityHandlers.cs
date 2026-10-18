@@ -29,6 +29,7 @@ internal static class ExternalCapabilityHandlers
         "client.channel.locate",
         "clipboard.copy",
         "clipboard.paste",
+        "display.mode.set",
         "display.status",
         "desktop.wallpaper.set",
         "file.compress",

@@ -1238,3 +1238,157 @@ Dentro del ruido: se cierra (decisión del dueño). No se abren más rondas ni s
   «Configuración» en Seguridad de Windows. En el PC nada lo frenó; la causa probable, no comprobada: el PC eleva sin
   preguntar (ConsentPromptBehaviorAdmin=0), así que BAXY pudo correr elevado. Desde la ronda final 21 el arreglo ya no
   depende de la elevación (la barrera juzga la ventana real de cada acto).
+
+## Auditoría de los pedidos reales del dueño (PROMPT_AUDITORIA_REALES.md, 2026-10-17)
+
+Producto de partida 845d652ad. El detalle caso por caso (textos del dueño) vive fuera del repo, en
+F:/BAXYeval/reales_v1; aquí sólo van cifras, ids y descripciones genéricas. Rama de trabajo `auditoria-reales`
+(worktree BAXY-Renew-aud), porque el dueño tiene abierto el BAXY compilado desde el árbol de baxy-renew.
+
+### Fase 0: separar antes de mirar
+
+- Fuente: historical_missions.jsonl de BAXY Definitivo (2.084 misiones, sha256 96e4f505…), copiada a
+  F:/BAXYeval/reales_v1 (el worktree de BAXY Definitivo no se tocó).
+- La sesión líder imprimió 49 misiones al inspeccionar el formato antes de dividir; se forzaron fuera del holdout.
+- Un subagente aislado escribió la división (dividir.py, semilla 20261017, estratificada por class, 70/30):
+  ajuste 1.445, holdout 619 (sellado: holdout/holdout_reales.sealed.jsonl, sha256 fcd7d7d6…, SEALED_REALES.md) y
+  20 sólo-decisión (historical_operations con message.send, game.purchase o filesystem.trash). Hashes en
+  metas.json, auditoria_reales.fase0.
+- Hallazgo de formato: de las 1.445 misiones de ajuste, 993 son product_requirement y 203 engineering_instruction,
+  casi todas mensajes del dueño a agentes de código (contexto de IDE, logs, notas de diseño), no pedidos a BAXY; los
+  historical_operations son familias viejas (media.play, task.manage…) que catalog_equivalence.json no mapea, y en
+  una misma misión se mezclan pedidos y texto de desarrollo. Por eso el oráculo es por ejemplo, con juicio propio
+  anotado (F:/BAXYeval/reales_v1/etiquetas_1.txt y _2.txt): call/any (operación del catálogo actual), ask, text,
+  noact, out (fuera de diseño), falta (ninguna operación lo hace), solo (sólo decisión: efectos sobre terceros) y
+  dev (texto de desarrollo: se espera que BAXY no actúe). 1.839 casos (ejemplos deduplicados): dev 1.200, any 352,
+  call 99, ask 58, text 34, noact 25, falta 23, out 21, solo 27. El notebook hizo un triage independiente que se
+  cruza con éste como segunda opinión.
+
+### Fase 1 (decisión) y fase 2: clasificación y grupos
+
+- Decisión del conjunto de ajuste en las dos GPUs (s0, mente de 845d652ad): PC 1.278/1.839 por el juez del banco
+  (prefijo de su calentamiento 42.168 tokens con la lista de apps del producto del PC; p50 1,06 s), notebook 1.296/1.839
+  (prefijo 41.268; p50 1,03 s). Juez propio (F:/BAXYeval/reales_v1/juzgar.py; OK sólo si sale bien en las dos):
+  pedidos en español/inglés 345 misiones: OK 233, ELIGE_MAL 78, FALTA_SKILL 23, FUERA_DE_DISEÑO 11; otros idiomas
+  (pt/fr/de/it, fuera de foco por decisión del dueño) 31: OK 17, ELIGE_MAL 13, FUERA 1; texto de desarrollo 1.089:
+  OK 980, ELIGE_MAL 109. Falsedades confirmadas a mano: 28 (17 en la GPU del PC y 11 más en la del notebook), en 26
+  misiones; casi todas ante texto pegado («he guardado / he tomado nota / listo, se ejecutó» sin herramienta) y dos
+  pedidos de memoria contestados sin memory.recall (el valor salía del ejemplo de memory.save).
+- 33 enmiendas razonadas del oráculo tras leer los fallos (primer paso de lectura hacia el objetivo, la hora que ya
+  da el contexto en mind.py:355…), en F:/BAXYeval/reales_v1/enmiendas.txt.
+- Informe para el dueño: artifacts/renew/auditoria_reales.md (cifras por clase y los 17 grupos, con causa y arreglo).
+  La ejecución (EJECUTA_MAL) la corre el notebook sobre las 159 misiones que deciden bien en las dos GPUs y se
+  pueden ejecutar sin riesgo (nb-reales-e2e-845, producto de c1e692392).
+
+### Fase 1 (ejecución)
+
+- Notebook, nb-reales-e2e-845 (producto de c1e692392, mente 845d652ad-s0, una pasada, 159 misiones que deciden bien
+  en las dos GPUs y se ejecutan sin riesgo; oráculos de efecto por operación, recibos y revisión a mano): OK 132,
+  EJECUTA_MAL 25, otra operación 1, sin medir 1; 8 falsedades confirmadas contra el mundo. Incidente: MSConfig\services
+  0 y ningún evento 7040 de deshabilitado. Deshecho a mano: un «no molestar» que quedó activado y una imagen descargada
+  (a cuarentena; nada borrado). Clases finales de los pedidos en español/inglés (345): OK 214, ELIGE_MAL 79,
+  EJECUTA_MAL 18, FALTA_SKILL 23, FUERA_DE_DISEÑO 11; 13 con falsedad. Causas E1-E8 en auditoria_reales.md.
+
+### Fase 3: arreglos medidos
+
+Método: cada variante se mide primero sola en la GPU del PC (su familia de casos del ajuste o, si toca el prompt, el
+subconjunto de 758 casos: los 639 pedidos más los textos de desarrollo que fallaban o mentían; y decision2 s0), y
+las que suben su grupo sin bajar decision2 van a un lote que pasa los tres bancos completos (decision2 s0-2 en el
+PC, escenas sin tocar + 3 perturbaciones y e2e s0-2 en el notebook), con bisect si baja algo. Base del día en el PC:
+decision2 230/224/229 = 227,67; subconjunto (juez propio) pedidos 487/639, texto de desarrollo 33/119.
+Rechazadas o sin efecto (detalle en F:/BAXYeval/reales_v1/variantes/resultados.md):
+- pcG1 y nb-arr-G5b (system.power sólo con el PC nombrado): decision2 225 y 226 en el PC (226,00 en el notebook).
+- nb-arr-G1 (YouTube con el ejemplo de buscar en browser.navigate): decision2 223 en el PC (−7).
+- nb-arr-G4 (pegar): no sube su grupo; 223,00 en el notebook.
+- pcG7 (regla 2 con lo recordado): 222 (−8).
+- pcG9 (Hz y resolución en system.settings.set): no sube su grupo; 227.
+- pcG4 y pcG4b (el resourceId de filesystem.read.text): sin efecto, G06 límite.
+- pcG7b («guardaste»): sin señal fiable sobre las falsedades; G13 queda como límite.
+
+**Lote 1 (e96064701), ACEPTADO:**
+- pc-arr-G12: regla 1, un texto que no pide nada se contesta en una frase sin herramientas.
+- pc-arr-G2: regla 3, también «sobre qué cosa actuar» cuando nada lo dice.
+- nb-arr-G5: una ventana o la activa es app.close, no window.close.all.
+- nb-arr-G2: instalar es game.install.named, aunque se pregunte.
+- pc-arr-G1b: media.play.youtube sólo para reproducir; YouTube nombrado no es Spotify.
+
+Medida del lote 1:
+- decision2 en el PC 231/229/232 = 230,67 frente a 227,67 (+3,0).
+- Escenas en el notebook 29/29/32/29 = 29,75 frente a 30,5 (−0,75, dentro de ±2), 0 riesgos solos.
+- E2E de práctica en el notebook 19/19/19 = 19,00 frente a 19,67 (−0,67, dentro de ±1).
+- Prefijo 42.250 frente a 42.168 (+82 tokens).
+- Grupos en el subconjunto: pedidos 487→492, texto de desarrollo 33→50, G02 0→8/35, G03 2→4/13, G01 1→2/6.
+- Suites del lote 1: Kernel 567, Contracts 69, Setup 477, Providers 2189, todo verde; App compila (0 avisos, 0 errores).
+
+**Lote 2 (b58abac75) = lote 1 + nb-arr-restart2, ACEPTADO.** Skill nueva app.restart (AppRestartHandler.cs en Core;
+work_loss, así que el kernel pide el sí como app.close): cierra con gracia las ventanas de la app (nunca fuerza; un
+diálogo propio la detiene), espera ≤10 s a que sus procesos terminen (si sigue oculta lo dice, sin matarla), la abre
+con el mismo AppOpenHandler y sólo cuenta un proceso nuevo; system.power dice que reiniciar una app es app_restart;
+ejemplo del pronombre tras abrir una app. Antes, «reinicia <app>» y «reinícialo» tras abrir una app elegían
+system.power restart, que va sin el sí (00_IDENTIDAD.md:146): BAXY habría reiniciado el PC.
+
+Medida del lote 2:
+- Micro-banco ctx-cerrar: los cinco casos fuera de system.power.
+- decision2 en el PC 229/225/231 = 228,33 frente a 227,67 (+0,67).
+- Escenas en el notebook 31/27/32/33 = 30,75 frente a 30,5 (+0,25), 0 riesgos solos.
+- E2E en el notebook 19/20/19 = 19,33 frente a 19,67 (−0,33).
+- Prefijo 42.332 (+164 sobre la base, +82 sobre el lote 1).
+- Suites: Kernel 567, Contracts 69, Setup 477, Providers 2198; la App compila.
+
+**Lote 3 (161eddce9) = lote 2 + nb-arr-closeapp + nb-arr-E2r + nb-arr-display-a + nb-arr-segestado, ACEPTADO.**
+- Skill display.mode.set: el monitor principal pasa sólo a un modo que su controlador lista; CDS_TEST, aplicar,
+  releer y volver al anterior si no coincide.
+- app.close acepta también appId: cierra todas las ventanas de la app por su nombre, resueltas por BAXY; sin forzar;
+  sigue pidiendo el sí.
+- input.text.type dice qué significa input_text_not_read_back.
+- system.status gana los scopes firewall y updates.
+
+Medida del lote 3:
+- decision2 en el PC 232/229/229 = 230,0 (+2,33).
+- Escenas en el notebook 32/31/33/29 = 31,25 (+0,75), 0 riesgos solos y 0 molestas.
+- E2E en el notebook 20/20/20 = 20,00 (+0,33).
+- Prefijo 42.748 (+580 sobre la base 42.168; el límite es +1.000).
+- Subconjunto: pedidos 503/639 (base 487), dev 49/119 (base 33; el lote 2 daba 58), G01 4/6, G08 2/14.
+- E1 re-ejecutado sobre su producto: los 4 cierres por appId, ningún windowId inventado, 0 falsedades (antes 3 de 4).
+- E2 re-ejecutado (sobre lote 2): 0 respuestas que den por escrito lo no verificado (antes 2).
+- Suites: Kernel 567, Contracts 69, Setup 477, Providers 2223; la App compila. Se corrigió ExpectedDescriptors tras la
+  fusión (174).
+- Rechazadas o límites de esta tanda: nb-arr-E1 (sola), nb-arr-E4, nb-arr-E5r y segestado2 (ver metas.json,
+  auditoria_reales.limites_y_pendientes).
+
+HEAD final de la fase 3: el de esta fusión.
+
+### Fase 4: el holdout, una vez, sobre el HEAD final (58c57cddd)
+
+- Oráculo del holdout: lo escribió un subagente aislado con la guía de la sesión líder (734 casos: dev 492, any 151,
+  call 37, text 18, falta 16, noact 7, ask 6, solo 5, out 2; 15 misiones en otros idiomas). La sesión líder no vio los
+  textos antes de la corrida. Hashes en metas.json, auditoria_reales.fase4_oraculo.
+- Decisión, una vez en cada GPU (mente de 58c57cddd, seed 0, catálogo volcado de su kernel): PC 734 casos sin
+  errores; notebook 583/734 por el juez del banco; prefijo 41.848 en el notebook (+580) y 42.748 en el PC (+580).
+- Ejecución, una vez, en el notebook: 61 misiones (69 elegibles, 8 quitadas por seguridad): OK 48, EJECUTA_MAL 12,
+  otra operación 1; 1 falsedad (una ventana de YouTube leída como cerrada por window_not_found). Dos de los
+  EJECUTA_MAL son memory_disabled: la memoria quedó apagada en el perfil del banco, que es entorno y no BAXY.
+- Clases del holdout, frente al ajuste con el producto de partida:
+
+| | Ajuste, 845d652ad (345) | Holdout, HEAD final (141) |
+|---|---|---|
+| OK | 214 (62,0 %) | 93 (66,0 %) |
+| ELIGE_MAL | 79 (22,9 %) | 21 (14,9 %) |
+| EJECUTA_MAL | 18 (5,2 %) | 9 (6,4 %) |
+| FALTA_SKILL | 23 (6,7 %) | 16 (11,3 %) |
+| FUERA_DE_DISEÑO | 11 (3,2 %) | 2 (1,4 %) |
+| Con falsedad | 13 (3,8 %) | 3 (2,1 %) |
+
+  Las filas son misiones de pedido en español o inglés, con la decisión en las dos GPUs y la ejecución en el notebook.
+  Texto de desarrollo: 980/1.089 (90,0 %) en el ajuste de partida frente a 422/463 (91,1 %) en el holdout final.
+  Otros idiomas: 17/31 frente a 7/15.
+- El mismo ajuste sobre el HEAD final, sólo decisión y en la GPU del PC (mismo juez):
+  - pedidos en español o inglés: OK de 240 a 248 y ELIGE_MAL de 71 a 64;
+  - texto de desarrollo: de 994 a 1.011;
+  - otros idiomas: de 17 a 13;
+  - misiones con falsedad (leídas a mano): de 16 a 19, sin mejora; G13 es límite.
+- Recursos del producto final (notebook, measure_resources, conductor real): VRAM 3.901 MiB (pico 3.903); RAM (USS)
+  1.544 MiB sin el oído y 1.614 MiB con él: ≤4 GB, cumple.
+- Cierre de los grupos sin arreglo: G05, G06, G08 (cortafuegos), G13, E3, E4, E5, E6, la relectura de E2 y E7 quedan
+  como límite honesto, cada uno con su evidencia en metas.json (auditoria_reales.limites_y_pendientes). G09 (hábitos)
+  queda pendiente: es una skill nueva para una sola misión. La rama final se fusiona en baxy-renew.

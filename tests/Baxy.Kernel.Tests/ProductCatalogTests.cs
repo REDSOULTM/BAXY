@@ -75,6 +75,15 @@ public sealed class ProductCatalogTests
         "package.install",
     ];
 
+    // Auditoría de los pedidos reales (2026-10-17): reiniciar una aplicación (la única operación que decía «restart»
+    // era system.power, que va sin el sí) y cambiar la frecuencia o la resolución del monitor (sólo a un modo que su
+    // controlador lista, releído y revertido si no coincide).
+    internal static readonly string[] RenewRealesAdditions =
+    [
+        "app.restart",
+        "display.mode.set",
+    ];
+
     // Lo que esas operaciones sustituyen, retirado en el mismo cambio: las seis de archivos y las doce de avisos
     // (reminder.* sólo guardaba un registro que nadie hacía sonar), y las siete de rutinas, que nada ejecutaba. Y la
     // misión de pantalla, que el bucle nativo ya no aloja (auditoría K3), y app.status, que nadie invocaba (D-K9). Y la
@@ -130,7 +139,7 @@ public sealed class ProductCatalogTests
     ];
 
     // Every operation of the catalog is offered to the model as a tool.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
@@ -332,7 +341,7 @@ public sealed class ProductCatalogTests
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
-                    .And.SupersetOf(RenewAgentAdditions));
+                    .And.SupersetOf(RenewAgentAdditions).And.SupersetOf(RenewRealesAdditions));
             Assert.That(descriptors.Select(static descriptor => descriptor.Name),
                 Has.None.AnyOf(RenewRetired));
             Assert.That(
