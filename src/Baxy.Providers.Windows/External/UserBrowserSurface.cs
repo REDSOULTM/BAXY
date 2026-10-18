@@ -362,6 +362,10 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("title", page.Title);
             writer.WriteString("text", page.Text);
             writer.WriteBoolean("truncated", page.Truncated);
+            // FT/proveedores goal (review of receipts): no document was named as the window title (an untitled page, a
+            // title changing, a tree not built yet) and the first one on screen was read, which may be a side panel.
+            if (!page.PageMatched)
+                writer.WriteBoolean("pageMatched", false);
             writer.WriteString("browser", browser.DisplayName);
             writer.WriteString("authority", PageAuthority);
             writer.WriteEndObject();

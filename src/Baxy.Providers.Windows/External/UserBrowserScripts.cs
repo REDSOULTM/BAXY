@@ -660,8 +660,8 @@ internal static class UserBrowserScripts
     /// </summary>
     internal const string PageText = Walk + Pages + """
         $ErrorActionPreference = 'Stop'
-        function Emit([bool]$ok, [string]$title, [string]$text, [bool]$truncated, [string]$reason) {
-          [pscustomobject]@{ version = 1; ok = $ok; title = $title; text = $text; truncated = $truncated; error = $reason } | ConvertTo-Json -Compress
+        function Emit([bool]$ok, [string]$title, [string]$text, [bool]$truncated, [string]$reason, [bool]$matched = $true) {
+          [pscustomobject]@{ version = 1; ok = $ok; title = $title; text = $text; truncated = $truncated; matched = $matched; error = $reason } | ConvertTo-Json -Compress
         }
         try {
           $Window = [long]$args[0]
@@ -742,7 +742,7 @@ internal static class UserBrowserScripts
           # A node that failed lost its subtree: the text read is not the whole page either.
           $truncated = $text.Length -gt $Maximum -or $walkCut -or $failedNodes -gt 0
           if ($text.Length -gt $Maximum) { $text = $text.Substring(0, $Maximum) }
-          Emit $true ([string]$page.Current.Name) $text $truncated ''
+          Emit $true ([string]$page.Current.Name) $text $truncated '' $pageMatched
         } catch {
           Emit $false '' '' $false ('uia_failed: ' + $_.Exception.GetType().Name)
         }

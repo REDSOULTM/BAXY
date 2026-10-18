@@ -1997,6 +1997,26 @@ public sealed class UserBrowserTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): a page read that found no document named as the window title read the
+    // first one on screen (maybe a side panel): the receipt says the page was not matched.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task APageReadSaysWhenItWasNotTheTitledPage(bool matched)
+    {
+        var platform = new FakePlatform(OperaGx) { PageText = new UserBrowserPageText("Panel", "texto", false, matched) };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.True, page.ErrorCode);
+            Assert.That(page.Result?.TryGetProperty("pageMatched", out JsonElement value) == true && !value.GetBoolean(),
+                Is.EqualTo(!matched));
+        });
+    }
+
     private sealed class TabbedSession(string profile) : CdpBrowserSession(profile)
     {
         internal int TabCalls { get; private set; }
