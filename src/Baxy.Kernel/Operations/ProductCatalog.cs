@@ -18,10 +18,17 @@ public static class ProductCatalog
     [
         Descriptor(
             "app.close",
-            WindowIdSchema(),
+            // Auditoría de los pedidos reales (2026-10-17): o una ventana resuelta (windowId) o la aplicación por su
+            // nombre (appId), exactamente uno de los dos (AppCloseHandler).
+            Schema(
+                [
+                    String("appId", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("windowId", maximumLength: 36, nonWhitespace: true),
+                ],
+                []),
             OperationRisks.WorkLoss,
             "app.close.identity.window.absence.v1",
-            "Solicita el cierre de una ventana resuelta y verifica su ausencia sin forzar la terminacion del proceso; el windowId caduca a los 5 minutos."),
+            "Solicita el cierre de una ventana resuelta (windowId) o de todas las ventanas de una aplicación por su nombre (appId) y verifica su ausencia sin forzar la terminacion del proceso; si una ventana responde con un diálogo propio (guardar) se detiene y lo dice; el windowId caduca a los 5 minutos."),
         Descriptor(
             "app.installed",
             Schema([String("name", maximumUtf8Bytes: 256, nonWhitespace: true)], ["name"]),
