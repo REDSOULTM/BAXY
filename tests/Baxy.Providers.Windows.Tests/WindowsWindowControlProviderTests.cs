@@ -136,6 +136,27 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): a frame already gone when its close comes (it ended with the first frame
+    // of the same application) is already gone, never a failure and never closed by BAXY; no close is sent to it.
+    [Test]
+    public async Task AWindowGoneBeforeItsCloseIsReadIsAlreadyGone()
+    {
+        var platform = new FakePlatform();
+        var provider = new WindowsWindowControlProvider(platform);
+        WindowResolveResult resolved = await provider.ResolveAsync("notepad", 10, CancellationToken.None);
+        platform.IdentityChanged = true;
+
+        WindowCloseResult result = await provider.CloseAsync(resolved.Windows.Single().WindowId, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.True, result.ErrorCode);
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Outcome, Is.EqualTo(WindowCloseOutcomes.AlreadyGone));
+            Assert.That(platform.CloseCalls, Is.Zero);
+        });
+    }
+
     [TestCase(true)]
     [TestCase(false)]
     public async Task CloseFallsBackToVerifiedSystemCommandForHostedOrUiAccessWindows(

@@ -883,10 +883,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         {
             title = _platform.Observe(identity!).Title;
         }
-        catch (WindowIdentityChangedException)
+        catch (WindowIdentityChangedException changed)
         {
-            return new WindowCloseResult(
-                false, false, null, WindowControlErrorCodes.WindowIdentityChanged);
+            // FT/proveedores goal (review of receipts): gone (or hidden) before BAXY touched it, as at RequestClose
+            // (Auditoría D7): an application's second frame ends with the first one's close, and that was a failure
+            // (window_identity_changed) of an app.close that closed the whole application; app.restart never reopened.
+            return Ended(identity!, null, changed.Hidden ? WindowCloseOutcomes.Hidden : WindowCloseOutcomes.AlreadyGone);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
