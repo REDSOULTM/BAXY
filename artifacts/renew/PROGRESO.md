@@ -1551,7 +1551,7 @@ Tres son de la mente y se le pasaron al PC; no se tocan sin él:
 
 Modos de accesibilidad (decisión del dueño del 18/10, 19:15: hoy sólo está lista la interacción por texto del modo
 estándar):
-- **No vidente y Movilidad:** las fichas de la barra se podían elegir como modos, cuando sólo agrandaban subtítulos o
+- **Modos 2 y 3 en la barra:** las fichas de la barra se podían elegir como modos, cuando sólo agrandaban subtítulos o
   botones. Ahora dicen «próximamente disponible», se ven atenuadas y no se activan (db4af44f7).
 - **Entrada por voz:** el selector, Ajustes > Voz, sus avisos y la bandeja dicen «en pruebas · próximamente
   disponible». La función sigue funcionando (a556ceb84).
