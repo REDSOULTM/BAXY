@@ -790,6 +790,37 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): a text for a named window whose keys went by the keyboard is read back
+    // where a read-back can be taken (here Word's paragraph at the caret): found, verified; not there, not verified and
+    // its effect possible (before, the named window was told verified by the count of keys Windows accepted).
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ATextTypedForANamedWindowIsHeldToItsReadBack(bool lands)
+    {
+        string paragraph = "Querido Juan: ";
+        var fields = new FakeViewedFields("{}") { CaretAnswer = () => Caret(paragraph) };
+        (FakeDesktopKeyboard keyboard, FakeFieldMessages messages) = Word(index =>
+        {
+            if (lands && index == "hola mundo".Length - 1)
+                paragraph += "hola mundo";
+        });
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola mundo","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(keyboard.Texts, Is.EqualTo(new[] { "hola mundo" }), "the keyboard path took it");
+            Assert.That(receipt.Verified, Is.EqualTo(lands), receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.EqualTo(lands));
+            if (!lands)
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+                Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            }
+        });
+    }
+
     // The keys went in but the paragraph at the caret does not hold the text (they went elsewhere, or Word rewrote it
     // beyond quotes and dashes), the paragraph only held it already, the worker answered nothing or failed, a read was
     // cut at its bound, or a selection was there to be replaced: the honest input_text_not_read_back, its effect

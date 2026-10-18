@@ -530,7 +530,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // verified because Windows accepted its events): what the focused edit control of the window in front holds is
         // marked before the first key, so the text can be read back there afterwards.
         // Review of E6: so is a text the provider sent to the application app.open just opened (now in front).
-        bool readsBack = typing && (window == 0 || openedApplication);
+        // FT/proveedores goal (review of receipts): and a text for a named window (it holds the front: checked above):
+        // the right window was sure, the right field was not (a browser's address bar), and it was told verified with
+        // no read-back. Where neither mark nor caret can be read, the receipt still says only what Windows accepted
+        // (heldToReadBack, below).
+        bool readsBack = typing;
         TypedMark? mark = readsBack ? _delivery?.Mark(before.Window, text.Length) : null;
         // FT/proveedores goal (E2): a document that is no edit control (Word's «_WwG») has no Win32 mark, and its text
         // was never read back. Its paragraph at the caret is read by UI Automation instead, before the first key, of the
@@ -686,7 +690,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             ? await CaretReadsBackAsync(before, caret, text, cancellationToken).ConfigureAwait(false)
             : (false, false);
         bool readBack = editReadBack || caretReadBack;
-        string? unread = readsBack && !readBack ? "input_text_not_read_back" : null;
+        // A named window's text is held to its read-back only where one could be taken (a mark or a caret read before
+        // the first key); with no window named (F004) or for the opened application, the read-back is the proof.
+        bool heldToReadBack = window == 0 || openedApplication || mark is not null || caretBefore is not null;
+        string? unread = readsBack && heldToReadBack && !readBack ? "input_text_not_read_back" : null;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
