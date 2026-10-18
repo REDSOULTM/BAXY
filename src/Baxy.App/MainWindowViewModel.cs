@@ -1148,7 +1148,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             mind = new MindSidecarClient();
-            if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(120), linked.Token))
+            // FT/proveedores goal (review of the App): the mind waits up to 600 s for its model to load (wait_ready in
+            // __main__.py) before it says catalog.ready; at 120 s the App ended a slow but healthy load (no GPU, a cold
+            // disk) and relaunched it for ever. A model server that dies is told at once (startup_failure).
+            if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(600), linked.Token))
             {
                 RecordMindStartupFailure(mind.LastStartupFailure);
                 await mind.DisposeAsync();
