@@ -974,6 +974,57 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): a cancel at a clock time with no kind (most the model writes) looks
+    // among alarms and reminders: the one alarm at that time is canceled (before, only reminders were looked at).
+    [Test]
+    public async Task AClockCancelWithNoKindFindsTheAlarmAtThatTime()
+    {
+        using TemporaryDirectory temporary = new();
+        const string taskName = "BAXY-Alarm-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        string due = DateTimeOffset.UtcNow.AddHours(2).ToString("O");
+        var backend = ScriptedNotificationBackend.Lines([
+            $$"""{"ok":true,"effectObserved":false,"matchCount":1,"taskName":"{{taskName}}","nextRunUtc":"{{due}}"}""",
+            "{\"ok\":false,\"effectObserved\":false,\"effectBoundaryCrossed\":false,\"matchCount\":0}",
+            $$"""{"ok":true,"effectObserved":true,"effectBoundaryCrossed":true,"canceled":true,"taskName":"{{taskName}}","nextRunUtc":"{{due}}","authority":"windows_task_scheduler_exact_identity_absence_postread"}""",
+        ]);
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms", Json("""{"action":"cancel","at":"17:00"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("kind").GetString(), Is.EqualTo("alarm"));
+            Assert.That(receipt.Result?.GetProperty("taskName").GetString(), Is.EqualTo(taskName));
+            Assert.That(backend.Requests.Select(static request => $"{request.Mode}:{request.Kind}"),
+                Is.EqualTo(new[] { "resolve-at:alarm", "resolve-at:reminder", "cancel-exact:alarm" }));
+        });
+    }
+
+    // One alarm and one reminder at that time, and no kind: ambiguous, nothing canceled.
+    [Test]
+    public async Task AClockCancelWithNoKindAndOneOfEachIsAmbiguous()
+    {
+        using TemporaryDirectory temporary = new();
+        string due = DateTimeOffset.UtcNow.AddHours(2).ToString("O");
+        var backend = new ScriptedNotificationBackend(request => new ExternalProcessResult(0,
+            $$"""{"ok":true,"effectObserved":false,"matchCount":1,"taskName":"BAXY-{{(request.Kind == "alarm" ? "Alarm" : "Reminder")}}-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","nextRunUtc":"{{due}}"}""",
+            string.Empty));
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms", Json("""{"action":"cancel","at":"17:00"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("notification_clock_ambiguous"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(backend.Requests.Select(static request => request.Mode), Is.All.EqualTo("resolve-at"));
+        });
+    }
+
     [Test]
     public async Task ExactClockNotificationCancellationRefusesAmbiguousMatchesBeforeEffect()
     {
