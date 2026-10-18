@@ -1529,3 +1529,22 @@ Quedan como límite, con su razón:
 - La lista de procesos de `app.close` de una app empaquetada sigue nombrando a ApplicationFrameHost (C).
 - El brillo en su extremo dice `changed:false` pero `effectObserved` (C).
 - Los errores de ventanas elevadas no dicen «administrador» (C).
+
+Revisión de archivos, navegador y Kernel (11 hallazgos, más uno fuera de su alcance):
+
+| Hallazgo | Arreglo | Pruebas |
+|---|---|---|
+| A: tras abrir una página en un navegador nombrado (Chrome con Opera predeterminado), la lectura iba a Chrome, pero cerrar o atrás actuaban en la pestaña del Opera de la persona | Control y pestañas van a la sesión donde BAXY abrió la última página, como la lectura (E016) | UserBrowserTests +1 (falla sin el arreglo) |
+| A (dato): un append a un archivo que no existía lo creaba sin decirlo | `created:true` en el recibo | LocalFilesystemProviderTests (+3 asertos) |
+| B: un archivo abierto por otro programa, o una carpeta protegida, tumbaba el núcleo (exit 70) y el turno decía «pudo o no ocurrir» | `file_in_use`, `filesystem_access_denied` o `filesystem_io_failed`, de la operación | LocalFilesystemProviderTests +1 (archivo bloqueado de verdad) |
+| B: en archivos conocidos, un archivo en uso salía como «carpeta no disponible» | `file_in_use` | KnownFileToolsTests +1 |
+| B: Descargas se suponía en el perfil | FOLDERID_Downloads (DownloadsFolder) | DownloadsFolderTests 1 (igual a shell:Downloads) |
+| B: una copia de seguridad de carpeta cortada a medias quedaba junto a la de la persona | Se borra la copia parcial; la original sigue intacta | WindowsRecycleBinPutBackTests +1 |
+| B: la lectura de página tomaba el primer documento en pantalla (quizá el panel lateral) sin decirlo | `pageMatched:false` | UserBrowserTests +2 |
+| C: un append a un archivo ANSI mezclaba UTF-8 | Se rechaza antes de escribir, como en file.edit | LocalFilesystemProviderTests +1 |
+| C: renombrar sólo las mayúsculas daba `destination_exists` | Se hace | LocalFilesystemProviderTests +1 |
+
+Tres son de la mente y se le pasaron al PC; no se tocan sin él:
+- OperationVisibleFacts corta a profundidad 4, así que `filesystem.known.duplicates` llega sin nombres de archivo.
+- Un fallo con efecto observado se resume «pudo o no ocurrir».
+- `reachedState` y `changed:false` se resumen como «completado y verificado».
