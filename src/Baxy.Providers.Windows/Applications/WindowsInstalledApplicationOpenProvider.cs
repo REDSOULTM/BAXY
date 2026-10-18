@@ -1685,6 +1685,15 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         usable = hostedFrames.TryGetValue(unchecked((uint)process.Id), out frame);
                     }
 
+                    if (!usable && !packaged && !strongIdentityOnly)
+                    {
+                        // FT/proveedores goal (E5): a console program Windows Terminal shows has no window of its own
+                        // (cmd opened, and every check spent its 30 s): the Terminal window that owns its pseudo-console
+                        // window is what the person sees.
+                        frame = TerminalHosting(process.Id);
+                        usable = frame != 0;
+                    }
+
                     if (!usable)
                     {
                         continue;
@@ -2249,6 +2258,33 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return windows.OrderByDescending(item => item.Area)
             .Select(item => item.Handle).ToArray();
     }
+
+    // The window that shows a console program hosted by a terminal (Windows Terminal, the default terminal of Windows 11):
+    // Windows gives the program's own process a pseudo-console window (class PseudoConsoleWindow) owned (GW_OWNER) by the
+    // terminal's window, when that window is on screen. 0 for a program with no hosted console. Nothing is guessed from
+    // names or times: the link is Windows' own owner relation (measured 2026-10-18: cmd.exe's PseudoConsoleWindow owned by
+    // the CASCADIA_HOSTING_WINDOW_CLASS window of WindowsTerminal.exe).
+    private static nint TerminalHosting(int processId)
+    {
+        nint hosting = 0;
+        EnumWindowsProc callback = (window, _) =>
+        {
+            GetWindowThreadProcessId(window, out uint owner);
+            if (owner != unchecked((uint)processId)
+                || !string.Equals(ReadClassName(window), PseudoConsoleWindowClass, StringComparison.Ordinal))
+                return true;
+            nint shown = GetWindow(window, 4);
+            if (shown == 0 || !IsWindowVisible(shown) || IsCloaked(shown))
+                return true;
+            hosting = shown;
+            return false;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return hosting;
+    }
+
+    private const string PseudoConsoleWindowClass = "PseudoConsoleWindow";
 
     private static unsafe string ReadClassName(nint window)
     {
