@@ -187,6 +187,17 @@ export default function App() {
     return () => window.clearTimeout(id);
   }, [s.voiceErrorAt, finish]);
 
+  // FT/proveedores goal (review of the App): heard while a turn ran, a request starts nothing; the host said so as a
+  // state the view never showed, and the person saw the wake and the captions and then nothing. A notice says it.
+  useEffect(() => {
+    if (s.voiceDroppedAt === null) return;
+    const id = finish('voiceDropped', s.voiceDroppedAt, 2800);
+    return () => window.clearTimeout(id);
+  }, [s.voiceDroppedAt, finish]);
+  const dropped = s.voiceDroppedAt !== null && done.voiceDropped !== s.voiceDroppedAt
+    ? { b: 'Voz', t: 'te oí, pero estaba ocupado · repítelo cuando termine' } : null;
+  const shownNotice = notice ?? dropped;
+
   // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
   useEffect(() => {
     if (!s.sub) return;
@@ -447,7 +458,7 @@ export default function App() {
             </div>
             <div className="bx-cbot">
               {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>Salió a internet</b><span>· {banner}</span></div>
-                : notice ? <div className="bx-notice" key={notice.t}><b>{notice.b}</b> · {notice.t}</div> : null}
+                : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
               {booting && s.boot ? <Boot boot={s.boot} />
                 : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} error={errorText} />}
               <VoiceInput mic={shownMic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}

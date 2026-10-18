@@ -35,6 +35,8 @@ export interface BaxyStore {
   mood: Mood;
   /** when the ear last failed on what it heard (voice_error), for the face's «No te entendí». */
   voiceErrorAt: number | null;
+  /** when something heard was dropped because a turn ran (voice_dropped_busy), for a notice instead of silence. */
+  voiceDroppedAt: number | null;
 }
 
 const INITIAL: BaxyStore = {
@@ -55,6 +57,7 @@ const INITIAL: BaxyStore = {
   sub: null,
   mood: null,
   voiceErrorAt: null,
+  voiceDroppedAt: null,
 };
 
 const MAX_ITEMS = 150;
@@ -119,6 +122,8 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
         ...s,
         voice: { available: ev.available, mode: ev.mode, speaking: ev.speaking, last_error: ev.last_error ?? null },
         voiceErrorAt: failed ? Date.now() : s.voiceErrorAt,
+        voiceDroppedAt: ev.last_error === 'voice_dropped_busy' && s.voice.last_error !== 'voice_dropped_busy'
+          ? Date.now() : s.voiceDroppedAt,
       };
     }
     case 'voice_partial':
