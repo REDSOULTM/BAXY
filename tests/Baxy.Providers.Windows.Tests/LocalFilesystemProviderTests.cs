@@ -170,6 +170,10 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(File.ReadAllText(Path.Combine(sandbox, "lista.txt"), Encoding.Unicode), Is.EqualTo("pan\nleche\n"));
             Assert.That(File.ReadAllBytes(Path.Combine(sandbox, "lista.txt"))[..2], Is.EqualTo(new byte[] { 0xFF, 0xFE }));
             Assert.That(appended.PreviousVersionRecycled, Is.False);
+            // FT/proveedores goal (review of receipts): the append to a missing file made it, and says so.
+            Assert.That(appended.Created, Is.False);
+            Assert.That(created.Created, Is.True);
+            Assert.That(again.Created, Is.False);
             Assert.That(File.ReadAllText(Path.Combine(sandbox, "logs", "nuevo.txt")), Is.EqualTo("uno\ndos\n"));
             Assert.That(again.ReachedState, Is.False);
             Assert.That(

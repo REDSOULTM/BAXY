@@ -34,7 +34,10 @@ public sealed record FilesystemMutationResult(
     bool? PreviousVersionRecycled = null,
     // Where it is now, as the provider resolved it: what the result can say of the place (falsedades p4 F013: without
     // it the model told the folder it had been asked for, not the one written).
-    string? FullPath = null);
+    string? FullPath = null,
+    // FT/proveedores goal (review of receipts): the file was not there and this write made it (an append included):
+    // «añadí a tu lista» cannot be said of a list that did not exist here.
+    bool Created = false);
 
 public sealed record BackupReceipt(
     string BackupId,

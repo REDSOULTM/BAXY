@@ -211,7 +211,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             }
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
-            return Mutation(path, root, reachedState: false, previousVersionRecycled: recycled);
+            return Mutation(path, root, reachedState: false, previousVersionRecycled: recycled) with { Created = !exists };
         }
     }
 

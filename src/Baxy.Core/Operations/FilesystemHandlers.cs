@@ -203,6 +203,7 @@ internal static class FilesystemResultJson
         if (result.PreviousVersionRecycled is bool recycled) writer.WriteBoolean("previousVersionRecycled", recycled);
         if (!string.IsNullOrEmpty(folder)) writer.WriteString("folder", folder);
         if (result.FullPath is not null) writer.WriteString("fullPath", result.FullPath);
+        if (result.Created) writer.WriteBoolean("created", true);
     });
 
     public static JsonElement Backup(BackupReceipt result) => Write(writer =>
