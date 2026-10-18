@@ -1059,7 +1059,7 @@ public static class ProductCatalog
                     String("selector", types: NullableString, maximumUtf8Bytes: 256),
                     Version(),
                 ],
-                ["scope", "selector", "version"]),
+                ["scope", "version"]),
             OperationRisks.ReadOnly,
             "memory.recall.protected.records.v1",
             "Recupera memorias locales visibles para la sesión actual; 5 como mucho (dice cuántos hay)."),

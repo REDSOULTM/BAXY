@@ -1467,6 +1467,31 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Visible: true,
             Foreground: foreground);
 
+    // FT/proveedores goal (review of E5): a console copy a terminal shows in some tab is never reused (the terminal window
+    // owns every tab's pseudo-console window, so it may show another tab); the opening starts its own copy and only that
+    // one is verified by its terminal window.
+    [Test]
+    public async Task AConsoleCopyInATerminalTabIsNeverReusedTheOpeningStartsItsOwn()
+    {
+        InstalledApplicationObservation behind = Observation(foreground: false) with { HostedByTerminal = true };
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [behind],
+            ObservationAfterActivation = behind with { ProcessId = behind.ProcessId + 1, WindowHandle = 75 },
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.ActivateCalls, Is.EqualTo(1));
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.AlreadyRunning, Is.False);
+            Assert.That(result.ProcessId, Is.EqualTo(behind.ProcessId + 1));
+        });
+    }
+
     private sealed class FakePlatform(IReadOnlyList<InstalledApplicationEntry> catalog)
         : IInstalledApplicationPlatform
     {

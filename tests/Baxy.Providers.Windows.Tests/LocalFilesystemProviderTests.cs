@@ -477,7 +477,7 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox, bin);
+        var provider = new LocalFilesystemProvider(sandbox, bin) { KnownFolderPath = Absent(temporary) };
 
         provider.WriteText(Path.Combine(sandbox, "viaje", "plan.txt"), "uno", null);
 
@@ -500,7 +500,7 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
         Directory.CreateDirectory(sandbox);
-        var provider = new LocalFilesystemProvider(sandbox);
+        var provider = new LocalFilesystemProvider(sandbox) { KnownFolderPath = Absent(temporary) };
         string outside = Path.Combine(temporary.Path, "fuera");
 
         FilesystemProviderException written = Assert.Throws<FilesystemProviderException>(
@@ -520,6 +520,47 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(listed.Result, Is.Null);
         });
     }
+
+    // FT/proveedores goal (e2e E019): a full path with no folder that lies in a known folder of the person's is made
+    // there, the subfolders included; one in no known folder is still refused, and «..» never leaves the folder.
+    [Test]
+    public void AFullPathWithNoFolderIsMadeInTheKnownFolderItLiesIn()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "BAXY-bench"));
+        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"), bin)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+        };
+
+        FilesystemMutationResult made = provider.CreateDirectory(Path.Combine(home, "BAXY-bench", "proyecto"), null);
+        FilesystemMutationResult written = provider.WriteText(
+            Path.Combine(home, "BAXY-bench", "compras.txt"), "pan, leche y huevos", null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Directory.Exists(Path.Combine(home, "BAXY-bench", "proyecto")), Is.True);
+            Assert.That(made.FullPath, Is.EqualTo(Path.Combine(home, "BAXY-bench", "proyecto")));
+            Assert.That(File.ReadAllText(Path.Combine(home, "BAXY-bench", "compras.txt")), Is.EqualTo("pan, leche y huevos"));
+            Assert.That(written.FullPath, Is.EqualTo(Path.Combine(home, "BAXY-bench", "compras.txt")));
+            Assert.That(() => provider.WriteText(Path.Combine(temporary.Path, "fuera.txt"), "dos", null),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_outside_sandbox"));
+            Assert.That(() => provider.WriteText(Path.Combine(home, "..", "fuera2.txt"), "tres", null),
+                Throws.TypeOf<FilesystemProviderException>());
+            Assert.That(() => provider.WriteText(Path.Combine(home, "a\0b.txt"), "cuatro", null),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(File.Exists(Path.Combine(temporary.Path, "fuera.txt")), Is.False);
+            Assert.That(File.Exists(Path.Combine(temporary.Path, "fuera2.txt")), Is.False);
+        });
+    }
+
+    // Known folders that do not exist: a path under the test's temporary folder is in none of them.
+    private static Func<string, string> Absent(TemporaryDirectory temporary) =>
+        folder => Path.Combine(temporary.Path, "absent", folder);
 
     private sealed class TemporaryDirectory : IDisposable
     {

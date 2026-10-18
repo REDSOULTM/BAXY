@@ -565,11 +565,19 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         OpenedBoundProtectedJson opened)
     {
         JsonElement payload = opened.Payload;
-        RequireExactProperties(payload, ["version", "scope", "selector"]);
+        // FT/proveedores goal (E4): the selector may be left out (scope all takes none). The model sees it as a plain
+        // string, so a recall of everything always carried one and read a bare invalid_arguments; that one now says
+        // what scope all takes.
+        RequireAllowedProperties(payload, ["version", "scope"], ["selector"]);
         RequireVersion(payload);
         string scope = RequiredString(payload, "scope");
-        string? selector = OptionalNullableString(payload, "selector");
+        string? selector = payload.TryGetProperty("selector", out _) ? OptionalNullableString(payload, "selector") : null;
         MemoryKind? selectedKind = null;
+        if (scope == "all" && selector is not null)
+        {
+            return Failure("memory_recall_all_takes_no_selector");
+        }
+
         switch (scope)
         {
             case "exact" when selector is not null:

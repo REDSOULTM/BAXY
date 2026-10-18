@@ -113,7 +113,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
 
     public FilesystemMutationResult CreateDirectory(string relativePath, string? folder)
     {
-        string root = RootFor(folder);
+        string root = RootFor(folder, relativePath);
         lock (_gate)
         {
             string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
@@ -140,7 +140,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         string? folder = null,
         bool append = false)
     {
-        string root = RootFor(folder);
+        string root = RootFor(folder, relativePath);
         string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
         lock (_gate)
         {
@@ -220,18 +220,45 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     /// catalog argument names it. Known folders never use the sandbox's
     /// backups; the same reparse-point and traversal checks apply.
     /// </summary>
+    // FT/proveedores goal (e2e E019): a full path with no folder is the place the person said, so it is read inside the
+    // known folder it lies in, the working folder first. Refused as outside the working folder, the model retried
+    // with folder home and the path cut to its last part («proyecto»), and the folder was made in the wrong place.
+    private string RootFor(string? folder, string relativePath)
+    {
+        if (folder is not null || !Path.IsPathFullyQualified(relativePath ?? string.Empty)) return RootFor(folder);
+        // ResolveIn refuses it the same way; here it must not reach GetFullPath, which throws on it.
+        if (relativePath!.Contains('\0')) throw Error("invalid_path");
+        string full = Path.GetFullPath(relativePath);
+        if (Inside(full, _root)) return _root;
+        foreach (string known in (string[])["desktop", "documents", "downloads", "home"])
+        {
+            string root;
+            try { root = RootFor(known); }
+            catch (FilesystemProviderException) { continue; }
+            if (Inside(full, root)) return root;
+        }
+
+        return _root;
+    }
+
+    private static bool Inside(string full, string root) =>
+        full.StartsWith(root.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar,
+            StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Where each known folder of the person's is (tests point them away from the real profile).</summary>
+    internal Func<string, string> KnownFolderPath { get; init; } = static folder => folder switch
+    {
+        "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+        "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        "downloads" => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+        _ => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+    };
+
     private string RootFor(string? folder)
     {
         if (folder is null) return _root;
-        string path = folder switch
-        {
-            "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
-            "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "downloads" => Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
-            "home" => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            _ => throw Error("invalid_folder"),
-        };
+        if (folder is not ("desktop" or "documents" or "downloads" or "home")) throw Error("invalid_folder");
+        string path = KnownFolderPath(folder);
         if (string.IsNullOrWhiteSpace(path) || !Path.IsPathFullyQualified(path) || !Directory.Exists(path))
             throw Error("known_folder_unavailable");
         return Path.GetFullPath(path);

@@ -1107,12 +1107,14 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
     // cu-v3-elevacion: an opening for BAXY's control never reuses a raised window whose program opens again with the
     // person's rights.
+    // FT/proveedores goal (review of E5): a console program a terminal shows is never reused: every tab's pseudo-console
+    // window is owned by the terminal window, so a copy in a tab behind would be said open while another tab is shown.
+    // Only the copy this opening started is verified by its terminal window (Choose against the baseline).
     private IReadOnlyList<InstalledApplicationObservation> Reusable(
         ApplicationOpenRequest request,
         IReadOnlyList<InstalledApplicationObservation> observations) =>
-        request.ForControl
-            ? [.. observations.Where(item => !_platform.RaisedButReopensUnraised(item.ProcessId))]
-            : observations;
+        [.. observations.Where(item => !item.HostedByTerminal
+            && (!request.ForControl || !_platform.RaisedButReopensUnraised(item.ProcessId)))];
 
     private static ApplicationOpenResult Success(
         ApplicationOpenRequest request,
@@ -1199,7 +1201,8 @@ internal sealed record InstalledApplicationObservation(
     long WindowHandle,
     bool Visible,
     bool Foreground,
-    string? ProcessName = null);
+    string? ProcessName = null,
+    bool HostedByTerminal = false);
 
 internal interface IInstalledApplicationPlatform : IOpeningFront
 {
@@ -1685,6 +1688,16 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         usable = hostedFrames.TryGetValue(unchecked((uint)process.Id), out frame);
                     }
 
+                    bool hostedByTerminal = false;
+                    if (!usable && !packaged && !strongIdentityOnly)
+                    {
+                        // FT/proveedores goal (E5): a console program Windows Terminal shows has no window of its own
+                        // (cmd opened, and every check spent its 30 s): the Terminal window that owns its pseudo-console
+                        // window is what the person sees.
+                        frame = TerminalHosting(process.Id);
+                        usable = hostedByTerminal = frame != 0;
+                    }
+
                     if (!usable)
                     {
                         continue;
@@ -1729,7 +1742,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                             operated.ToInt64(),
                             Visible: true,
                             Foreground: GetForegroundWindow() == operated,
-                            ProcessName: strongIdentityOnly ? process.ProcessName : null));
+                            ProcessName: strongIdentityOnly ? process.ProcessName : null,
+                            HostedByTerminal: hostedByTerminal));
                     }
                     if (strongIdentityOnly && packaged
                         && !string.Equals(entry.AppUserModelId,
@@ -2249,6 +2263,33 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return windows.OrderByDescending(item => item.Area)
             .Select(item => item.Handle).ToArray();
     }
+
+    // The window that shows a console program hosted by a terminal (Windows Terminal, the default terminal of Windows 11):
+    // Windows gives the program's own process a pseudo-console window (class PseudoConsoleWindow) owned (GW_OWNER) by the
+    // terminal's window, when that window is on screen. 0 for a program with no hosted console. Nothing is guessed from
+    // names or times: the link is Windows' own owner relation (measured 2026-10-18: cmd.exe's PseudoConsoleWindow owned by
+    // the CASCADIA_HOSTING_WINDOW_CLASS window of WindowsTerminal.exe).
+    private static nint TerminalHosting(int processId)
+    {
+        nint hosting = 0;
+        EnumWindowsProc callback = (window, _) =>
+        {
+            GetWindowThreadProcessId(window, out uint owner);
+            if (owner != unchecked((uint)processId)
+                || !string.Equals(ReadClassName(window), PseudoConsoleWindowClass, StringComparison.Ordinal))
+                return true;
+            nint shown = GetWindow(window, 4);
+            if (shown == 0 || !IsWindowVisible(shown) || IsCloaked(shown))
+                return true;
+            hosting = shown;
+            return false;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return hosting;
+    }
+
+    private const string PseudoConsoleWindowClass = "PseudoConsoleWindow";
 
     private static unsafe string ReadClassName(nint window)
     {

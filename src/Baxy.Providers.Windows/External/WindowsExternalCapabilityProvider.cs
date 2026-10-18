@@ -13,6 +13,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     private readonly IExternalOperationAdapter[] _adapters;
     private readonly IForegroundLease? _missionFront;
     private readonly Func<string, JsonElement, bool>? _actRefused;
+    private readonly IOpenedApplicationKeyboard? _openedKeyboard;
     private int _disposed;
 
     /// <summary>
@@ -31,7 +32,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     }
 
     public WindowsExternalCapabilityProvider(string dataRoot)
-        : this(CreateDefaultAdapters(dataRoot), ForegroundLease.Shared, ActOnProtectedWindow)
+        : this(CreateDefaultAdapters(dataRoot), ForegroundLease.Shared, ActOnProtectedWindow,
+            OpenedApplicationKeyboard.Product)
     {
     }
 
@@ -111,15 +113,89 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// (<see cref="IForegroundLease.TakeForMissionAsync"/>); null (the test seams that name none) brings nothing.</param>
     /// <param name="actRefused">Whether an act would reach a window it never may (<see cref="ActOnProtectedWindow"/>);
     /// null (the test seams, whose adapters reach no window) refuses nothing.</param>
+    /// <param name="openedKeyboard">The window of the application app.open just opened that a keyboard act with no
+    /// window goes to (<see cref="OpenedApplicationKeyboard"/>); null (the test seams) sends it to the front, as before.</param>
     internal WindowsExternalCapabilityProvider(
         IExternalOperationAdapter[] adapters,
         IForegroundLease? missionFront = null,
-        Func<string, JsonElement, bool>? actRefused = null)
+        Func<string, JsonElement, bool>? actRefused = null,
+        IOpenedApplicationKeyboard? openedKeyboard = null)
     {
         _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
         _missionFront = missionFront;
         _actRefused = actRefused;
+        _openedKeyboard = openedKeyboard;
     }
+
+    /// <summary>
+    /// FT/proveedores goal (E6): the keyboard acts that, with no window named, go to the window in front (a key, a text,
+    /// a select-all, a copy, a paste).
+    /// </summary>
+    internal static bool IsKeyboardAct(string operation, JsonElement arguments) => operation switch
+    {
+        // Review of E6: a select-all, a copy or a paste takes no window, and its helper acts on whatever is in front
+        // when it runs: sent «to» the opened application it could land on another window with that one's name in the
+        // receipt, so those three keep acting on the front, as before.
+        "input.text.type" => true,
+        // A key of the system's rather than of a window's (switching windows, the Start menu, the Task Manager) is
+        // what it is from whatever window is in front: bringing the opened application up first would change it.
+        "input.key.press" => !(arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("key", out JsonElement key) && key.ValueKind == JsonValueKind.String
+            && key.GetString() is "alt_tab" or "win" or "ctrl_shift_escape"),
+        _ => false,
+    };
+
+    /// <summary>
+    /// FT/proveedores goal (E6): the act names no window (none, or null). A window named but invalid is left to the
+    /// adapter, which refuses it; it is never replaced.
+    /// </summary>
+    internal static bool NamesNoWindow(JsonElement arguments) =>
+        arguments.ValueKind != JsonValueKind.Object
+        || !arguments.TryGetProperty("window", out JsonElement window)
+        || window.ValueKind == JsonValueKind.Null;
+
+    /// <summary>
+    /// FT/proveedores goal (E6): the arguments with <c>window</c> set to <paramref name="window"/> (every other
+    /// property kept as it came).
+    /// </summary>
+    internal static JsonElement WithWindow(JsonElement arguments, nint window) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        if (arguments.ValueKind == JsonValueKind.Object)
+        {
+            foreach (JsonProperty property in arguments.EnumerateObject())
+            {
+                if (property.NameEquals("window"))
+                    continue;
+                property.WriteTo(writer);
+            }
+        }
+
+        writer.WriteNumber("window", (long)window);
+        // Review of E6: a text sent to the opened application is read back as one with no window (F004), never told
+        // verified on the keys Windows accepted alone.
+        writer.WriteBoolean(OpenedApplicationArgument, true);
+        writer.WriteEndObject();
+    });
+
+    /// <summary>The argument the provider adds to an act it sent to the opened application (never the model's).</summary>
+    internal const string OpenedApplicationArgument = "openedApplication";
+
+    /// <summary>
+    /// FT/proveedores goal (E6): the receipt of a keyboard act sent to the opened application's window says so: the
+    /// window it was sent to (<c>openedWindow</c>, its title) and why (<c>windowFrom</c>: <c>opened_application</c>),
+    /// whatever came of it (a refusal before any key included).
+    /// </summary>
+    private static ExternalCapabilityReceipt FromOpened(ExternalCapabilityReceipt receipt, OpenedKeyboardWindow opened) =>
+        receipt with
+        {
+            Result = ExternalJson.Extended(receipt.Result, writer =>
+            {
+                writer.WriteString("windowFrom", "opened_application");
+                writer.WriteNumber("openedWindow", (long)opened.Window);
+                writer.WriteString("openedWindowTitle", opened.Title);
+            }),
+        };
 
     /// <summary>
     /// The mission's window an act names (its «window» argument: the catalog gives it only to the acts of a computer-use
@@ -239,6 +315,28 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        // FT/proveedores goal (E6): a keyboard act with no window, while the application app.open just opened is not in
+        // front, goes to that application's window as if it named it: the protected-window refusal judges that window,
+        // the mission lease below brings it up after the person's pause or refuses (input_user_not_paused,
+        // input_window_not_in_front) with nothing sent, and the adapter's named-window path sends it there or nowhere.
+        // A window the act names always wins; with no fresh opening, or one of its windows in front, nothing changes.
+        if (_openedKeyboard is not null && IsKeyboardAct(operation, arguments) && NamesNoWindow(arguments)
+            && await _openedKeyboard.WindowAsync(cancellationToken).ConfigureAwait(false) is { } opened)
+        {
+            return FromOpened(
+                await InvokeBoundAsync(operation, WithWindow(arguments, opened.Window), cancellationToken)
+                    .ConfigureAwait(false),
+                opened);
+        }
+
+        return await InvokeBoundAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> InvokeBoundAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
         if (_actRefused?.Invoke(operation, arguments) == true)
             return ExternalJson.FailureBeforeEffect(operation, "protected_window");
         // The owner's decision of 2026-10-10 («no molestar», simple form): an act of a mission is done with the mission's

@@ -733,6 +733,207 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // FT/proveedores goal (E2): Word's document window is «_WwG», no Win32 edit control, so a text typed into it with no
+    // window named was never read back. The paragraph at its caret is read by UI Automation before and after the keys
+    // (of the front's own process): the text in it, the paragraph grown by its length, is read back. Word's AutoFormat
+    // turned the typed ' into ’ and -- into –: those typographic substitutions are the text typed.
+    private static readonly nint WordDocument = 4671;
+
+    private static string Caret(string paragraph, int processId = 4242, bool bounded = false, int selection = 0) =>
+        JsonSerializer.Serialize(new
+        {
+            ok = true,
+            error = "",
+            processId,
+            kind = "Document",
+            unit = "paragraph",
+            text = paragraph + "\r",
+            length = paragraph.Length + 1,
+            bounded,
+            selectionLength = selection,
+        });
+
+    private static (FakeDesktopKeyboard Keyboard, FakeFieldMessages Messages) Word(Action<int>? eachCharacter) =>
+        (new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "Documento1 - Word"),
+            FrontProcess = "WINWORD",
+            EachCharacter = eachCharacter,
+        }, new FakeFieldMessages().WithField(WordDocument, "_WwG", string.Empty));
+
+    [TestCase("hola mundo", "hola mundo")]
+    [TestCase("it's a test -- ok", "it’s a test – ok")]
+    [TestCase("dijo \"si\"", "dijo “si”")]
+    public async Task ATextTypedWithNoWindowIntoAWordDocumentIsReadBackInItsCaretParagraph(string typed, string written)
+    {
+        string paragraph = "Querido Juan: ";
+        var fields = new FakeViewedFields("{}") { CaretAnswer = () => Caret(paragraph) };
+        (FakeDesktopKeyboard keyboard, FakeFieldMessages messages) = Word(index =>
+        {
+            if (index == typed.Length - 1)
+                paragraph += written;
+        });
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json(JsonSerializer.Serialize(new { text = typed })), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("readBackBounded").GetBoolean(), Is.False);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("win32_sendinput_and_uia_text_reread"));
+            Assert.That(fields.CaretRequests, Has.Count.EqualTo(2), "one read before the keys, one after");
+            Assert.That(fields.CaretRequests, Is.All.EqualTo(((nint)4660, 4242)), "only the front's own process is asked for");
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("Querido"), "nothing of the paragraph is in the receipt");
+            Assert.That(keyboard.Texts, Is.EqualTo(new[] { typed }));
+        });
+    }
+
+    // The keys went in but the paragraph at the caret does not hold the text (they went elsewhere, or Word rewrote it
+    // beyond quotes and dashes), the paragraph only held it already, the worker answered nothing or failed, a read was
+    // cut at its bound, or a selection was there to be replaced: the honest input_text_not_read_back, its effect
+    // possible.
+    [TestCase("nothing")]
+    [TestCase("already")]
+    [TestCase("rewritten")]
+    [TestCase("silent")]
+    [TestCase("failed")]
+    [TestCase("bounded")]
+    [TestCase("selection")]
+    public async Task ATextTypedWithNoWindowIntoAWordDocumentThatIsNotReadBackIsNotVerified(string how)
+    {
+        string paragraph = how == "already" ? "hola mundo hola mundo" : "Querido Juan: ";
+        var fields = new FakeViewedFields("{}")
+        {
+            CaretAnswer = how switch
+            {
+                "silent" => null,
+                "failed" => () => """{"ok":false,"error":"caret_text_not_found"}""",
+                "bounded" => () => Caret(paragraph, bounded: true),
+                "selection" => () => Caret(paragraph, selection: 4),
+                _ => () => Caret(paragraph),
+            },
+        };
+        (FakeDesktopKeyboard keyboard, FakeFieldMessages messages) = Word(index =>
+        {
+            if (index == 9 && how is not ("nothing" or "already"))
+                paragraph += how == "rewritten" ? "hola Mundo" : "hola mundo";
+        });
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola mundo"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.False);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("win32_sendinput_return_count"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("Querido"));
+            if (how == "bounded")
+                Assert.That(receipt.Result?.GetProperty("readBackBounded").GetBoolean(), Is.True, "a cut read says it was cut");
+        });
+    }
+
+    // A worker that answers for a document of another process (the focus moved to another application's window) is not
+    // taken: its paragraph, even holding the text, proves nothing about the window the keys were sent to.
+    [Test]
+    public async Task ACaretParagraphOfAnotherProcessIsNeverTakenForTheFrontsDocument()
+    {
+        string paragraph = string.Empty;
+        var fields = new FakeViewedFields("{}") { CaretAnswer = () => Caret(paragraph, processId: 9999) };
+        (FakeDesktopKeyboard keyboard, FakeFieldMessages messages) = Word(index =>
+        {
+            if (index == 3)
+                paragraph = "hola";
+        });
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(fields.CaretRequests, Is.All.EqualTo(((nint)4660, 4242)));
+            Assert.That(receipt.Result?.TryGetProperty("readBackBounded", out _), Is.False, "no caret mark was taken");
+        });
+    }
+
+    // A focused edit control keeps its Win32 read-back: UI Automation is asked only when that mark is missing.
+    [Test]
+    public async Task AnEditControlInFrontIsReadBackByItsMessagesWithoutAskingUiAutomation()
+    {
+        FakeFieldMessages notepad = Notepad();
+        var fields = new FakeViewedFields("{}") { CaretAnswer = () => Caret(string.Empty) };
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "Sin título: Bloc de notas"),
+            EachCharacter = typed => notepad.Content[Edit] += "hola"[typed],
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, notepad, fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("win32_sendinput_and_edit_text_reread"));
+            Assert.That(fields.CaretRequests, Is.Empty);
+        });
+    }
+
+    [TestCase("", "hola", "hola", true)]
+    [TestCase("a ", "it's", "a it’s", true)]
+    [TestCase("", "x -- y", "x — y", true)]
+    [TestCase("", "\"si\"", "«si»", true)]
+    // Word's AutoCorrect capital on a sentence's first letter is the text typed (measured live); any other change is not.
+    [TestCase("", "hola mundo", "Hola mundo", true)]
+    [TestCase("", "hola mundo", "hola Mundo", false)]
+    [TestCase("", "hola mundo", "Hola Mundo", false)]
+    [TestCase("hola", "hola", "hola", false)]
+    [TestCase("hola", "hola", "holaX", false)]
+    [TestCase("hola", "hola", "holahola", true)]
+    [TestCase("", "", "", false)]
+    public void TheCaretParagraphHoldsTheTextOnlyThroughQuoteAndDashSubstitutions(
+        string before, string typed, string after, bool holds) =>
+        Assert.That(WindowsTextDelivery.CaretHolds(
+            new CaretText(before + "\r", "paragraph", false, 0), new CaretText(after + "\r", "paragraph", false, 0), typed),
+            Is.EqualTo(holds));
+
+    [Test]
+    public void TheCaretParagraphIsNotComparedAcrossUnits() =>
+        Assert.That(WindowsTextDelivery.CaretHolds(
+            new CaretText("", "paragraph", false, 0), new CaretText("hola", "line", false, 0), "hola"), Is.False);
+
+    // The worker's «textcaret» only reads: it is not run under the front keeper, never falls back to the window in
+    // front, stops its walk at the first element of another process, refuses a password and never reads a whole
+    // document (only the caret's paragraph or line, bounded and said so).
+    [Test]
+    public void TheWorkersCaretReadStaysInTheWindowsProcessAndReadsOnlyTheCaretParagraph()
+    {
+        string path = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
+        Assume.That(File.Exists(path), "the worker script is copied next to the tests");
+        string script = File.ReadAllText(path, System.Text.Encoding.UTF8);
+        int at = script.IndexOf("function Do-TextCaret(", StringComparison.Ordinal);
+        Assert.That(at, Is.GreaterThanOrEqualTo(0));
+        string body = script[at..script.IndexOf("\nfunction ", at + 1, StringComparison.Ordinal)];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(script, Does.Contain("elseif($cmd -eq 'textcaret'){ Send-Line (Do-TextCaret $request) }"));
+            Assert.That(body, Does.Contain("Get-Root ([long]$request.hwnd)").And.Not.Contain("-Front"));
+            Assert.That(body, Does.Contain("if($nodeProcess -ne $process){ break }"));
+            Assert.That(body, Does.Contain("$owner -ne $process"));
+            Assert.That(body, Does.Contain("IsPassword"));
+            Assert.That(body, Does.Contain("TextUnit]::Paragraph").And.Contain("TextUnit]::Line"));
+            Assert.That(body, Does.Not.Contain("DocumentRange").And.Not.Contain("GetText(-1)"));
+            Assert.That(body, Does.Contain("bounded=$bounded"));
+        });
+    }
+
     [TestCase("Edit", true)]
     [TestCase("RichEditD2DPT", true)]
     [TestCase("RICHEDIT50W", true)]
@@ -802,6 +1003,18 @@ internal sealed class FakeViewedFields(string answer) : IViewedFields
     {
         Focuses.Add(controlId);
         return ValueTask.FromResult(FocusAnswer is null ? null : JsonDocument.Parse(FocusAnswer));
+    }
+
+    // FT/proveedores goal (E2): the worker's «textcaret» answer, read anew each time (null: it does not answer), and the
+    // windows and processes it was asked to read.
+    internal Func<string>? CaretAnswer { get; init; }
+
+    internal List<(nint Window, int ProcessId)> CaretRequests { get; } = [];
+
+    public ValueTask<JsonDocument?> CaretTextAsync(nint window, int processId, int maximum, CancellationToken cancellationToken)
+    {
+        CaretRequests.Add((window, processId));
+        return ValueTask.FromResult(CaretAnswer is null ? null : JsonDocument.Parse(CaretAnswer()));
     }
 }
 

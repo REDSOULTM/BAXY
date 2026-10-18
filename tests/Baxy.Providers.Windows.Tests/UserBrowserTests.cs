@@ -1297,6 +1297,216 @@ public sealed class UserBrowserTests
         });
     }
 
+    // FT/proveedores goal (E3): Opera GX's always-on-top pop-out of a YouTube video is a window of the browser listed
+    // before the frame; it has no tab strip (its frame reads null), so the page, the tabs and the step are the frame's.
+    [Test]
+    public async Task AWindowWithNoTabStripOnTopIsPassedOverForTheBrowserFrame()
+    {
+        IReadOnlyList<UserBrowserWindow> windows =
+            [new(12, "Rick Astley - Never Gonna Give You Up", Topmost: true), new(11, "Rick Astley - Never Gonna Give You Up - YouTube - Opera")];
+        var reads = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = windows,
+            AddressOf = window => window == 11 ? "https://www.youtube.com/watch?v=dQw4w9WgXcQ" : null,
+            FrameOf = window => window == 11 ? Frame("doc-1") : null,
+            PageTextOf = window => window == 11
+                ? new UserBrowserPageText("Rick Astley - Never Gonna Give You Up - YouTube", "Rick Astley…", false)
+                : null,
+        };
+        var history = new List<UserBrowserFrame> { Frame("doc-1"), Frame("doc-1"), Frame("doc-1"), Frame("doc-2") };
+        var steps = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = windows,
+            FrameOf = window =>
+            {
+                if (window != 11)
+                    return null;
+                UserBrowserFrame current = history[0];
+                if (history.Count > 1)
+                    history.RemoveAt(0);
+                return current;
+            },
+        };
+        using Harness first = new(reads);
+        using Harness second = new(steps);
+
+        ExternalCapabilityReceipt page = await first.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+        ExternalCapabilityReceipt tabs = await first.Adapter.InvokeAsync(
+            "browser.tabs.list", Json("""{"limit":20}"""), CancellationToken.None);
+        ExternalCapabilityReceipt back = await Control(second, "back");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.True);
+            Assert.That(page.Result?.GetProperty("title").GetString(),
+                Is.EqualTo("Rick Astley - Never Gonna Give You Up - YouTube"));
+            Assert.That(page.Result?.GetProperty("url").GetString(), Is.EqualTo("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+            Assert.That(reads.PageReads, Is.EqualTo(new[] { (11, 2000) }), "the pop-out's page is never read");
+            Assert.That(tabs.Verified, Is.True);
+            Assert.That(tabs.Result?.GetProperty("count").GetInt32(), Is.EqualTo(3));
+            Assert.That(back.Verified, Is.True);
+            Assert.That(back.Result?.GetProperty("observedState").GetString(), Is.EqualTo("went_back"));
+            Assert.That(steps.MessageWindows, Is.EqualTo(new[] { 11 }), "the command goes to the frame, not the pop-out");
+        });
+    }
+
+    // Review of E3: a window in front with no tabs that is not on top (a video full screen hides the strip) is the one
+    // the person sees: a step never moves on to a window behind it, it acts on the front one or fails.
+    [Test]
+    public async Task AFrontWindowWithoutTabsThatIsNotOnTopIsNeverPassedOver()
+    {
+        IReadOnlyList<UserBrowserWindow> windows =
+            [new(11, "Video - YouTube - Opera"), new(13, "Otra página - Opera")];
+        var steps = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = windows,
+            FrameOf = window => window == 11 ? Frame("doc-1") with { Tabs = [] } : Frame("doc-9"),
+        };
+        using Harness harness = new(steps);
+
+        ExternalCapabilityReceipt close = await Control(harness, "close");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(close.Verified, Is.False);
+            Assert.That(steps.MessageWindows, Has.No.Member(13), "a hidden window is never acted on");
+        });
+    }
+
+    // FT/proveedores goal (E3): with no window of the browser showing tabs, the front one is read as before (a page read
+    // needs no tab strip); a front window not on top is never passed over (review of E3), so no other window is tried.
+    [Test]
+    public async Task WithNoWindowShowingTabsThePageOfTheFrontOneIsRead()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(14, "Uno - Opera"), new(13, "Dos - Opera"), new(12, "Tres - Opera"), new(11, "Cuatro - Opera")],
+            FrameOf = _ => null,
+            PageTextOf = window => new UserBrowserPageText("Uno", "texto " + window, false),
+        };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.True);
+            Assert.That(platform.PageReads, Is.EqualTo(new[] { (14, 2000) }));
+            Assert.That(platform.FrameWindows.Distinct(), Is.EqualTo(new[] { 14 }));
+        });
+    }
+
+    // FT/proveedores goal (E3): a heavy page whose accessibility tree is built after the script's looks is read once more.
+    [Test]
+    public async Task APageNotReadAtFirstIsReadOnceMore()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            PageText = new UserBrowserPageText("Pesada - Opera", "Mucho texto", false),
+        };
+        platform.PageTextSteps.Add(null);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.True);
+            Assert.That(page.Result?.GetProperty("text").GetString(), Is.EqualTo("Mucho texto"));
+            Assert.That(platform.PageReads, Has.Count.EqualTo(2));
+        });
+    }
+
+    private static UserBrowserFrame StripOnly(UserBrowserFrame frame, bool pageMatched = true) =>
+        frame with { Complete = false, PageMatched = pageMatched };
+
+    // FT/proveedores goal (E3): after a Speed Dial, Opera GX keeps a dead first child under LiveBackgroundView until it
+    // restarts: the frame is never read whole, while its tab strip is. Tabs are counted on the strip read whole, and a
+    // back or reload is seen by the page document named as the window title begins; the receipt says the frame was not
+    // read whole.
+    [Test]
+    public async Task AStripReadWholeIsActedOnThoughTheRestOfTheFrameWasNot()
+    {
+        var back = new FakePlatform(OperaGx);
+        back.Frames.AddRange([StripOnly(Frame("doc-1")), StripOnly(Frame("doc-1")), StripOnly(Frame("doc-2"))]);
+        var close = new FakePlatform(OperaGx);
+        close.Frames.AddRange([StripOnly(Frame("doc-1", tabs: 3)), StripOnly(Frame("doc-1", tabs: 3)),
+            StripOnly(Frame("doc-7", tabs: 2))]);
+        using Harness first = new(back);
+        using Harness second = new(close);
+
+        ExternalCapabilityReceipt wentBack = await Control(first, "back");
+        ExternalCapabilityReceipt closed = await Control(second, "close");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(wentBack.Verified, Is.True);
+            Assert.That(wentBack.Result?.GetProperty("observedState").GetString(), Is.EqualTo("went_back"));
+            Assert.That(wentBack.Result?.GetProperty("tabCount").GetInt32(), Is.EqualTo(3));
+            Assert.That(wentBack.Result?.GetProperty("frameComplete").GetBoolean(), Is.False);
+            Assert.That(closed.Verified, Is.True);
+            Assert.That(closed.Result?.GetProperty("observedState").GetString(), Is.EqualTo("tab_closed"));
+            Assert.That(closed.Result?.GetProperty("tabCount").GetInt32(), Is.EqualTo(2));
+            Assert.That(close.MiddleClicks, Has.Count.EqualTo(1));
+        });
+    }
+
+    // FT/proveedores goal (E3): in a frame not read whole, a page document not named as the window title begins may be
+    // one a partial read put in place of the page (a side panel), and its address may be stale: neither is taken for the
+    // change. A strip not read whole still counts no tab.
+    [Test]
+    public async Task APartialFrameIsNeverTakenForAChangeItCouldNotSee()
+    {
+        var unmatched = new FakePlatform(OperaGx);
+        unmatched.Frames.Add(StripOnly(Frame("doc-1"), pageMatched: false));
+        var addressOnly = new FakePlatform(OperaGx);
+        addressOnly.Frames.AddRange([StripOnly(Frame("doc-1")), StripOnly(Frame("doc-1")),
+            StripOnly(Frame("doc-1", address: "https://example.org/"))]);
+        var stripPartial = new FakePlatform(OperaGx);
+        stripPartial.Frames.Add(Frame("doc-1", tabs: 3) with { TabsComplete = false });
+        using Harness first = new(unmatched);
+        using Harness second = new(addressOnly);
+        using Harness third = new(stripPartial);
+
+        ExternalCapabilityReceipt notKnown = await Control(first, "back");
+        ExternalCapabilityReceipt notSeen = await Control(second, "back");
+        ExternalCapabilityReceipt notCounted = await Control(third, "close");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(notKnown.ErrorCode, Is.EqualTo(UserBrowserSurface.PageUnreadable));
+            Assert.That(unmatched.AppCommands, Is.Empty);
+            Assert.That(notSeen.ErrorCode, Is.EqualTo(UserBrowserSurface.TabStepUnconfirmed));
+            Assert.That(notSeen.EffectMayHaveOccurred, Is.True);
+            Assert.That(notCounted.ErrorCode, Is.EqualTo(UserBrowserSurface.PageUnreadable));
+            Assert.That(stripPartial.MiddleClicks, Is.Empty);
+        });
+    }
+
+    [Test]
+    public void TheFrameReadSaysApartTheStripTheWholeFrameAndTheMatchedPage()
+    {
+        using JsonDocument stripOnly = JsonDocument.Parse(
+            """{"version":1,"ok":true,"tabs":[{"title":"A","selected":true}],"tabsComplete":true,"complete":false,"page":{"id":"1.2","title":"A","scroll":-1,"matched":true}}""");
+        using JsonDocument whole = JsonDocument.Parse(
+            """{"version":1,"ok":true,"tabs":[{"title":"A","selected":true}],"tabsComplete":true,"complete":true,"page":{"id":"1.2","title":"Panel","scroll":-1,"matched":false}}""");
+
+        UserBrowserFrame? partial = WindowsUserBrowserPlatform.ParseFrame(stripOnly.RootElement);
+        UserBrowserFrame? complete = WindowsUserBrowserPlatform.ParseFrame(whole.RootElement);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(partial?.TabsComplete, Is.True);
+            Assert.That(partial?.Complete, Is.False);
+            Assert.That(partial?.PageMatched, Is.True);
+            Assert.That(complete?.Complete, Is.True);
+            Assert.That(complete?.PageMatched, Is.False);
+        });
+    }
+
     [Test]
     public async Task NothingIsReadWhenThePersonsBrowserIsClosed()
     {
@@ -1825,6 +2035,13 @@ public sealed class UserBrowserTests
         internal UserBrowserPageText? PageText { get; init; }
         internal IReadOnlyList<UserBrowserTab>? Tabs { get; init; }
         internal List<(int, int)> PageReads { get; } = [];
+        /// <summary>FT/proveedores goal (E3): a frame and a page text per window, when set (a pop-out reads null).</summary>
+        internal Func<nint, UserBrowserFrame?>? FrameOf { get; init; }
+        internal Func<nint, UserBrowserPageText?>? PageTextOf { get; init; }
+        /// <summary>Page texts read in turn before <see cref="PageText"/> answers (a heavy page read late).</summary>
+        internal List<UserBrowserPageText?> PageTextSteps { get; } = [];
+        internal List<int> FrameWindows { get; } = [];
+        internal List<int> MessageWindows { get; } = [];
 
         public UserBrowserIdentity? ResolveDefault() => identity;
 
@@ -1909,6 +2126,9 @@ public sealed class UserBrowserTests
         public ValueTask<UserBrowserFrame?> ReadFrameAsync(nint window, CancellationToken cancellationToken)
         {
             FrameReads++;
+            FrameWindows.Add((int)window);
+            if (FrameOf is not null)
+                return ValueTask.FromResult(FrameOf(window));
             if (Frames.Count == 0)
                 return ValueTask.FromResult(Tabs is null ? null : new UserBrowserFrame(Tabs, true, "", "doc-1", "", -1));
             UserBrowserFrame? current = Frames[0];
@@ -1920,6 +2140,7 @@ public sealed class UserBrowserTests
         public bool PostAppCommand(nint window, int command)
         {
             AppCommands.Add(command);
+            MessageWindows.Add((int)window);
             OnMessage?.Invoke();
             return true;
         }
@@ -1934,6 +2155,7 @@ public sealed class UserBrowserTests
         public bool PostMiddleClick(nint window, double x, double y)
         {
             MiddleClicks.Add((x, y));
+            MessageWindows.Add((int)window);
             OnMessage?.Invoke();
             return true;
         }
@@ -1957,7 +2179,13 @@ public sealed class UserBrowserTests
             nint window, int maximumCharacters, CancellationToken cancellationToken)
         {
             PageReads.Add(((int)window, maximumCharacters));
-            return ValueTask.FromResult(PageText);
+            if (PageTextSteps.Count > 0)
+            {
+                UserBrowserPageText? step = PageTextSteps[0];
+                PageTextSteps.RemoveAt(0);
+                return ValueTask.FromResult(step);
+            }
+            return ValueTask.FromResult(PageTextOf is not null ? PageTextOf(window) : PageText);
         }
 
         internal int Delays { get; private set; }

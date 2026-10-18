@@ -1531,3 +1531,54 @@ PseudoConsoleWindow, UI Automation del proceso de delante, carpetas conocidas).
 
 - Un solo cambio frente al ciclo 2: 2 épocas en vez de 1 (en el ciclo 1, de media época a una, decision2 s0 pasó de
   233 a 236; el latido ahora está anclado). Mismos datos v2. Arrancado a las 09:28; checkpoints cada media época.
+
+## Goal FT + proveedores (PROMPT_GOAL_FT_PROVEEDORES.md, 2026-10-18): frente de los proveedores, notebook
+
+Rama `nb-proveedores` (hub), sobre `baxy-renew` 0be0f9de9. El PC lleva el ajuste fino en su rama; esto es el frente
+del notebook: los proveedores que la auditoría dejó como B o límite, cada uno con sus pruebas, y su medida en el
+notebook (decisión y escenas en su GPU, e2e en su escritorio).
+
+### Base del día (0be0f9de9, notebook)
+
+- decision2 s0-2: 228/227/233 = 229,33; prefijo del calentamiento 41.848 tokens.
+- Escenas sin tocar + 3 perturbaciones: 32/31/33/29 = 31,25; 0 molestas, 0 riesgos solos.
+- e2e de práctica s0-2: 21/19/19 = 19,67. E010 y E011 se re-ejecutaron por semilla: una Calculadora que dejó abierta
+  una tanda cortada los dejó en setup fallido.
+- Falsedades s0: transcripciones al PC, que las juzga con su 35B.
+- Antes de medir hubo que igualar el notebook con el PC:
+  - `e2e/lib/bench.ps1` llevaba desfasado desde el 15/10 (sin el `Update-TypeData` del `.Count`), así que E003 era
+    un falso negativo en todos los e2e del notebook. Ahora los seis bancos de práctica son iguales por sha256.
+  - La voz Supertonic (c0a42218e) no estaba en el notebook, y sin ella el e2e da 0/30.
+  - `bench_escenas.py` leía sólo métodos `private static` y paraba en 0be0f9de9 (c5a1d3621).
+  - Había restos de bancos en `C:\Users\usuario` (BAXY escribía en home lo pedido en BAXY-bench); pasaron a
+    cuarentena, sin borrar nada.
+
+### Arreglos (todos de proveedor o de bucle; ninguno lee el texto de la persona)
+
+| Pendiente | Arreglo | Pruebas | Medida en el notebook |
+|---|---|---|---|
+| Bucle (E5, E022) | `TurnClosing` (src/Baxy.App/TurnClosing.cs): el turno se cierra a los 90 s o con la misma llamada y el mismo resultado tres veces seguidas. La mente recorta los resultados viejos del turno cuando llama-server rechaza por contexto (HTTP 400) y responde en palabras tras un turno vacío (mind.py `_next`) | TurnClosingTests 6, test_mind_final.py 4 | E022 ya responde (antes, 6-8 lecturas y turno vacío). Con dos repeticiones se cortaba una corrección de E011 que la base hace; por eso son tres (b258a95e6) |
+| Rutas (E006, E017, E019) | Una ruta completa sin folder va a la carpeta conocida en la que está (LocalFilesystemProvider `RootFor`); el resumen «En este turno» dice el `fullPath` del recibo | LocalFilesystemProviderTests +1 | E017 y E019 dicen dónde quedó (antes decían BAXY-bench, falso). El modelo sigue partiendo mal la ruta: es su límite y es dato para el ajuste |
+| E4 memory.recall | `selector` deja de ser obligatorio; `all` con selector da `memory_recall_all_takes_no_selector` | MemoryRecallScopeTests 4 | Prefijo −3 |
+| E5 app.open de consola | Sin ventana propia, verifica por la ventana de Windows Terminal dueña de su PseudoConsoleWindow (WindowsInstalledApplicationOpenProvider `TerminalHosting`); una copia que muestra un terminal nunca se reutiliza | WindowsInstalledApplicationOpenProviderTests +1, ConsoleAppOpenLiveDesktopCheck | En vivo, «Símbolo del sistema» verificado en 1.995 ms (antes, verification_failed tras 30 s por intento). R0724.0 real: EJECUTA_MAL → OK |
+| E2 relectura de Word | Sin marca Win32 (`_WwG`), se relee por UI Automation el párrafo del cursor, del mismo proceso (DesktopUiaWorker `Do-TextCaret`, WindowsTextDelivery `CaretHolds`) | TextDeliveryTests (81), WordReadBackLiveDesktopCheck | En vivo: «hola desde baxy» en un documento en blanco → verified, readBack, autoridad win32_sendinput_and_uia_text_reread (antes, siempre input_text_not_read_back). Se acepta la mayúscula de AutoCorrect en la primera letra y nada más (af960da2a). En el e2e el modelo prefiere office.document.create |
+| E3 Opera GX | La tira de pestañas se juzga sola (el hijo muerto de LiveBackgroundView ya no bloquea), la página es el documento nombrado como el título, hay 3 lecturas, y sólo se pasa por alto una ventana WS_EX_TOPMOST sin pestañas (el pop-out) | UserBrowserTests + UserBrowserScriptRulesTests (134 en su grupo) | En vivo (vivo_ft O1/O2), base y rama: page.read y close bien; el estado que fallaba (hijo muerto tras un Speed Dial) no se dio hoy |
+| E6 foco | Un texto o una tecla sin window, justo tras un app.open cuya app ya no está delante, va a esa app por el lease; el recibo dice `windowFrom: opened_application` y el texto se relee | DesktopInteractionOpenedApplicationTests 19 | En vivo por el producto (vivo_ft F1): tras el app.open otra ventana roba el frente, y el texto sin window va al Bloc (windowFrom opened_application, efecto observado). Con la app minimizada no redirige (no es una ventana usable) |
+
+Una revisión aparte del diff encontró 3 A y 2 B, arreglados en 7d4d0f94c y e7364af32:
+- E6: select-all, copy y paste actuaban delante con el nombre de otra ventana en el recibo.
+- E3: con un vídeo a pantalla completa saltaba a una ventana oculta.
+- E5: reutilizaba un cmd de otra pestaña.
+- E6: el texto se daba por verificado sólo por las teclas aceptadas.
+- Rutas: un NUL lanzaba una excepción.
+
+### La rama entera (6280fbe34) frente a la base del día, notebook
+
+- decision2: 225/230/227 = 227,33 (−2,0, dentro de ±3). En la GPU del PC, 182ecbeda s0 dio 230 frente a 228. Las
+  pérdidas repetidas son de perturbación. P171 inventa el tiempo sin weather.current: es una falsedad del modelo, que
+  el ajuste ataca.
+- Escenas: 31/30/30/31 = 30,5 (−0,75); 0 molestas, 0 riesgos solos.
+- e2e: 18/21/19 = 19,33 (−0,33, dentro de ±1), con la regla de dos repeticiones. b258a95e6 (tres) está en medida.
+- Prefijo 41.845 (−3; +577 sobre 41.268).
+- Suites: Providers 2280/2280, Kernel 573/573, Contracts 69, Setup 477, pytest 28; la App compila.
+- Incidente: MSConfig\services 0 y ningún 7040 de deshabilitado tras cada corrida.
