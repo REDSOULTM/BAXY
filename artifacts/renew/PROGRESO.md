@@ -1319,3 +1319,18 @@ Medida del lote 1:
 - Prefijo 42.250 frente a 42.168 (+82 tokens).
 - Grupos en el subconjunto: pedidos 487→492, texto de desarrollo 33→50, G02 0→8/35, G03 2→4/13, G01 1→2/6.
 - Suites del lote 1: Kernel 567, Contracts 69, Setup 477, Providers 2189, todo verde; App compila (0 avisos, 0 errores).
+
+**Lote 2 (b58abac75) = lote 1 + nb-arr-restart2, ACEPTADO.** Skill nueva app.restart (AppRestartHandler.cs en Core;
+work_loss, así que el kernel pide el sí como app.close): cierra con gracia las ventanas de la app (nunca fuerza; un
+diálogo propio la detiene), espera ≤10 s a que sus procesos terminen (si sigue oculta lo dice, sin matarla), la abre
+con el mismo AppOpenHandler y sólo cuenta un proceso nuevo; system.power dice que reiniciar una app es app_restart;
+ejemplo del pronombre tras abrir una app. Antes, «reinicia <app>» y «reinícialo» tras abrir una app elegían
+system.power restart, que va sin el sí (00_IDENTIDAD.md:146): BAXY habría reiniciado el PC.
+
+Medida del lote 2:
+- Micro-banco ctx-cerrar: los cinco casos fuera de system.power.
+- decision2 en el PC 229/225/231 = 228,33 frente a 227,67 (+0,67).
+- Escenas en el notebook 31/27/32/33 = 30,75 frente a 30,5 (+0,25), 0 riesgos solos.
+- E2E en el notebook 19/20/19 = 19,33 frente a 19,67 (−0,33).
+- Prefijo 42.332 (+164 sobre la base, +82 sobre el lote 1).
+- Suites: Kernel 567, Contracts 69, Setup 477, Providers 2198; la App compila.
