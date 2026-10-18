@@ -40,7 +40,7 @@ def heartbeat_holds() -> tuple[set[str], set[str], dict[str, set[str]], dict[str
     provider = (ROOT / "src" / "Baxy.Providers.Windows" / "External" /
                 "WindowsExternalCapabilityProvider.cs").read_text(encoding="utf-8")
     risks = re.search(r"HashSet<string> ProposedRisks = new\(StringComparer\.Ordinal\)\s*\{(.*?)\};", source, re.S)
-    bodies = [re.search(rf"private static bool {name}\(.*?\) =>(.*?);\r?\n", source, re.S)
+    bodies = [re.search(rf"(?:private|internal) static bool {name}\(.*?\) =>(.*?);\r?\n", source, re.S)
               for name in ("SendsInputToAWindow", "ReachesTheNetwork", "ReplacesThePersonsClipboard")]
     if risks is None or None in bodies:
         raise SystemExit("NativeTurnLoop.cs no longer has ProposedRisks, SendsInputToAWindow, ReachesTheNetwork and "
