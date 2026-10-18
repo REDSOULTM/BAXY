@@ -3299,6 +3299,25 @@ internal sealed class WindowsVisibleControlAdapter
             WorkerClickBudget,
             cancellationToken);
 
+    /// <summary>FT/proveedores goal (E2): the paragraph at the caret of the keyboard's focus of <paramref name="window"/>,
+    /// of <paramref name="processId"/> only, read by TextPattern (the worker's «textcaret», a read: no front kept, no
+    /// pattern invoked); null when the worker did not answer.</summary>
+    public ValueTask<JsonDocument?> CaretTextAsync(
+        nint window,
+        int processId,
+        int maximum,
+        CancellationToken cancellationToken) =>
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
+            new JsonObject
+            {
+                ["cmd"] = "textcaret",
+                ["hwnd"] = window,
+                ["processId"] = processId,
+                ["max"] = maximum,
+            }.ToJsonString(),
+            WorkerClickBudget,
+            cancellationToken);
+
     /// <summary>Brings the element named <paramref name="label"/> into view in <paramref name="window"/> through UI
     /// Automation (the worker's «reveal»); null when the worker did not answer.</summary>
     internal ValueTask<JsonDocument?> RevealAsync(

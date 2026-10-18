@@ -78,6 +78,15 @@ internal interface IViewedFields
     /// <summary>Revision 3 of r24b (finding 3): how many clicks the visible controls' adapter has made; a click after a
     /// value was set without the keyboard's focus voids the focus owed to that field.</summary>
     long Clicks => 0;
+
+    /// <summary>FT/proveedores goal (E2): the paragraph (else the line) at the caret of the keyboard's focus of
+    /// <paramref name="window"/>, read by UI Automation's TextPattern (the worker's «textcaret»): the focused element or
+    /// its nearest ancestor with a TextPattern, both of <paramref name="processId"/> (the window's own process; another
+    /// process's document is never read), at most <paramref name="maximum"/> characters and said when it was cut; null
+    /// when nothing answers.</summary>
+    ValueTask<System.Text.Json.JsonDocument?> CaretTextAsync(
+        nint window, int processId, int maximum, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
 }
 
 internal readonly record struct WindowIdentity(nint Window, int ProcessId, long Created)
@@ -88,6 +97,11 @@ internal readonly record struct WindowIdentity(nint Window, int ProcessId, long 
 /// <summary>BAXY Renew (notebook), F004: the edit control that had the keyboard's focus of the window in front right
 /// before a text was typed into it by the keyboard, and the length its text must reach once the text is in.</summary>
 internal readonly record struct TypedMark(nint Field, int Expected);
+
+/// <summary>FT/proveedores goal (E2): the paragraph at the caret of a document that is no Win32 edit control (Word's
+/// «_WwG»), as UI Automation read it: its text (at most the read's bound), the unit it was expanded to («paragraph» or
+/// «line»), whether the read was cut at the bound, and how long the selection was (-1: unknown).</summary>
+internal readonly record struct CaretText(string Text, string Unit, bool Bounded, int SelectionLength);
 
 /// <summary>What a delivery aimed at a field did: the method that took it, whether its re-read proves it was
 /// delivered, whether anything may have reached the field, the failure when it did not, and the entry of a list a «select»
@@ -290,6 +304,67 @@ internal sealed class WindowsTextDelivery
     {
         int after = _messages.TextLength(mark.Field);
         return after == mark.Expected && Holds(mark.Field, text, after);
+    }
+
+    /// <summary>The characters of the paragraph at the caret a UI Automation re-read takes (twice the longest typed
+    /// text, so the longest one still fits beside a paragraph of its own length); a longer paragraph is read cut,
+    /// and a cut read proves nothing (<see cref="CaretHolds"/>).</summary>
+    internal const int CaretReadableText = 8192;
+
+    /// <summary>
+    /// FT/proveedores goal (E2): whether the typed text is in the paragraph at the caret, by UI Automation's re-read of
+    /// that paragraph before and after it was typed: the same unit both times, neither read cut at its bound, no
+    /// selection before (typing would have replaced it, and what it replaced is not known), the paragraph grew by at
+    /// least the text's length and holds it once more than it did before. Word's AutoFormat as you type rewrites quotes
+    /// and dashes (' into ’, " into “ ” or « », -- into –): only those typographic substitutions are compared
+    /// tolerantly (<see cref="Typographic"/>, on both sides); any other rewrite (an autocorrected word, a capital put
+    /// at a sentence's start) is not the text typed, and leaves it not read back. Nothing of the paragraph leaves this
+    /// check.
+    /// </summary>
+    internal static bool CaretHolds(CaretText before, CaretText after, string text)
+    {
+        if (before.Bounded || after.Bounded || before.SelectionLength != 0
+            || !string.Equals(before.Unit, after.Unit, StringComparison.Ordinal))
+            return false;
+        string typed = Typographic(text);
+        if (typed.Length == 0)
+            return false;
+        string was = Typographic(before.Text);
+        string now = Typographic(after.Text);
+        return now.Length >= was.Length + typed.Length && Occurrences(now, typed) > Occurrences(was, typed);
+    }
+
+    // The quotes and dashes Word's AutoFormat as you type puts for the typed ones, as the typed ones; a run of dashes
+    // as one («--» becomes «–»); the paragraph's own marks (\r, \v, a table cell's \a) dropped: a typed text carries
+    // no control character.
+    private static string Typographic(string value)
+    {
+        var folded = new System.Text.StringBuilder(value.Length);
+        foreach (char character in value)
+        {
+            char plain = character switch
+            {
+                '‘' or '’' or '‚' or '‛' or '′' => '\'',
+                '“' or '”' or '„' or '‟' or '″' or '«' or '»' => '"',
+                '‐' or '‑' or '‒' or '–' or '—' or '―' or '−' => '-',
+                _ => character,
+            };
+            if (char.IsControl(plain) || (plain == '-' && folded.Length > 0 && folded[^1] == '-'))
+                continue;
+            folded.Append(plain);
+        }
+
+        return folded.ToString();
+    }
+
+    // How many times «part» is in «value», overlapping ones included.
+    private static int Occurrences(string value, string part)
+    {
+        int count = 0;
+        for (int at = value.IndexOf(part, StringComparison.Ordinal); at >= 0;
+             at = value.IndexOf(part, at + 1, StringComparison.Ordinal))
+            count++;
+        return count;
     }
 
     // The length a control's text has once a text of «length» characters is inserted at its caret, replacing its
