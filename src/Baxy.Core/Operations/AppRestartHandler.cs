@@ -23,15 +23,18 @@ internal sealed class AppRestartHandler : IOperationHandler
     private readonly IWindowControlProvider _windows;
     private readonly Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> _open;
     private readonly Func<int, TimeSpan, CancellationToken, ValueTask<bool>> _exited;
+    private readonly Func<int, bool> _sharedHost;
 
     internal AppRestartHandler(
         IWindowControlProvider windows,
         Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> open,
-        Func<int, TimeSpan, CancellationToken, ValueTask<bool>>? exited = null)
+        Func<int, TimeSpan, CancellationToken, ValueTask<bool>>? exited = null,
+        Func<int, bool>? sharedHost = null)
     {
         _windows = windows ?? throw new ArgumentNullException(nameof(windows));
         _open = open ?? throw new ArgumentNullException(nameof(open));
         _exited = exited ?? ProcessExitedAsync;
+        _sharedHost = sharedHost ?? IsApplicationFrameHost;
     }
 
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("app.restart");
@@ -53,7 +56,11 @@ internal sealed class AppRestartHandler : IOperationHandler
         string appId = requested;
         ApplicationWindowsClosed closing = await ApplicationWindowCloser.CloseAllAsync(_windows, appId, cancellationToken)
             .ConfigureAwait(false);
-        var closedProcesses = new SortedSet<int>(closing.ProcessIds);
+        // FT/proveedores goal (review of receipts): a packaged application's frame (Calculadora, Configuración) belongs to
+        // ApplicationFrameHost, the host every such application shares, which does not end when one of them closes:
+        // waited for, every restart of one was «app_kept_running» and never reopened. The host is neither waited for
+        // nor a «closed process» the reopening is judged against; app.open still verifies the reopening.
+        var closedProcesses = new SortedSet<int>(closing.ProcessIds.Where(processId => !_sharedHost(processId)));
         int closedWindows = closing.ClosedWindows;
         if (closing.ErrorCode is { } stopped)
         {
@@ -118,6 +125,19 @@ internal sealed class AppRestartHandler : IOperationHandler
         }
 
         return OperationOutcome.Success(Receipt(appId, closedWindows, closedProcesses, stillRunning, facts));
+    }
+
+    private static bool IsApplicationFrameHost(int processId)
+    {
+        try
+        {
+            using Process process = Process.GetProcessById(processId);
+            return string.Equals(process.ProcessName, "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase);
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return false;
+        }
     }
 
     private static async ValueTask<bool> ProcessExitedAsync(int processId, TimeSpan wait, CancellationToken token)

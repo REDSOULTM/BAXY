@@ -57,6 +57,31 @@ public sealed class AppRestartHandlerTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): a packaged application's frame belongs to the shared ApplicationFrameHost
+    // (here 300), which never ends with it: it is not waited for, and the reopening app.open verifies is the restart.
+    [Test]
+    public async Task APackagedApplicationsSharedHostIsNotWaitedFor()
+    {
+        var windows = new FakeWindows([Frame("win_calc", 300)]);
+        var opens = new List<OperationInvocation>();
+        var waited = new List<int>();
+        var handler = new AppRestartHandler(windows, Opens(opens, 300), (pid, _, _) =>
+        {
+            waited.Add(pid);
+            return ValueTask.FromResult(false);
+        }, sharedHost: pid => pid == 300);
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation(), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded && outcome.Verified, Is.True, outcome.ErrorCode);
+            Assert.That(waited, Is.Empty, "the shared host is not waited for");
+            Assert.That(opens, Has.Count.EqualTo(1));
+            Assert.That(outcome.Result!.Value.GetProperty("reopened").GetBoolean(), Is.True);
+        });
+    }
+
     [Test]
     public async Task AWindowThatAsksToSaveStopsEverythingAndNothingIsReopened()
     {
