@@ -41,8 +41,12 @@ const MODS: [Exclude<PanelId, 'settings'>, string, ReactNode][] = [
   ['proposals', 'Propuestas', <><path d="M4 11V7a4 4 0 0 1 8 0v4l1.2 1.5H2.8Z"></path><path d="M6.6 14h2.8"></path></>],
 ];
 
-const PROFILES: [Profile, 'person' | 'eye-off' | 'wheelchair', string][] = [
-  ['normal', 'person', 'Estándar'], ['novidente', 'eye-off', 'No vidente'], ['movilidad', 'wheelchair', 'Movilidad'],
+// FT/proveedores goal, the owner's decision on the modes (2026-10-18): only the standard mode (text) is ready; the
+// blind and the mobility modes are «próximamente disponible», shown so and never chosen as if they were ready.
+const PROFILES: [Profile, 'person' | 'eye-off' | 'wheelchair', string, boolean][] = [
+  ['normal', 'person', 'Estándar', true],
+  ['novidente', 'eye-off', 'No vidente · próximamente disponible', false],
+  ['movilidad', 'wheelchair', 'Movilidad · próximamente disponible', false],
 ];
 
 interface RailProps {
@@ -128,8 +132,9 @@ function RailView({ state, powered, onPower, bypass, onMode, metrics, net, profi
       <div className="bx-foot">
         <div className="sec-head"><span>accesibilidad</span></div>
         <div className="bx-profiles">
-          {PROFILES.map(([id, ic, tip]) => (
-            <button key={id} className={'bx-pchip' + (profile === id ? ' on' : '')} data-tip={tip} title={tip} onClick={() => onProfile(id)}><Icon name={ic} size={14} /></button>
+          {PROFILES.map(([id, ic, tip, ready]) => (
+            <button key={id} className={'bx-pchip' + (profile === id ? ' on' : '') + (ready ? '' : ' soon')} data-tip={tip} title={tip}
+              aria-disabled={!ready} onClick={() => { if (ready) onProfile(id); }}><Icon name={ic} size={14} /></button>
           ))}
         </div>
       </div>

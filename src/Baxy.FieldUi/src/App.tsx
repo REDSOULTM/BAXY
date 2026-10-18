@@ -65,7 +65,8 @@ export default function App() {
 
   // ---- presentation (this view's own, kept in localStorage) ----
   const [theme, setTheme] = useState<'dark' | 'light'>(() => stored('baxy.theme', ['dark', 'light'] as const, 'dark'));
-  const [profile, setProfile] = useState<Profile>(() => stored('baxy.profile', ['normal', 'novidente', 'movilidad'] as const, 'normal'));
+  // Only the standard mode is ready (owner, 2026-10-18): a mode kept from before is not brought back as if it were.
+  const [profile, setProfile] = useState<Profile>(() => stored('baxy.profile', ['normal'] as const, 'normal'));
   const [a11y, setA11yState] = useState<A11y>(() => ({
     on: false, size: stored('baxy.a11y.size', ['m', 'l', 'xl'] as const, 'm'), contrast: stored('baxy.a11y.contrast', ['0', '1'] as const, '0') === '1',
   }));
