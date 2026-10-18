@@ -1452,3 +1452,80 @@ Una revisión aparte del diff encontró 3 A y 2 B, arreglados en 7d4d0f94c y e73
 - Prefijo 41.845 (−3; +577 sobre 41.268).
 - Suites: Providers 2280/2280, Kernel 573/573, Contracts 69, Setup 477, pytest 28; la App compila.
 - Incidente: MSConfig\services 0 y ningún 7040 de deshabilitado tras cada corrida.
+
+### El lote final b550e9602 medido en el notebook (ajustado c2-e1.0, sha256 8a4b6ce3)
+
+El lanzador del lote carga el ajustado; se comprobó en la línea de comandos de llama-server durante el e2e.
+
+- Providers 2282/2282.
+- decision2 s0-2: 230/230/230 = 690, con la mente y el catálogo del lote; 0 filas con error.
+- Escenas: 31/33/32/33; 0 molestas, 0 riesgos solos.
+- e2e de práctica s0-2: 25/21/25 = 71/90, sin casos error ni setup_failed.
+  - E001 falla en s1 y s2 sólo porque no sonó: la acción y la respuesta están bien. Es la carrera de la voz al
+    arrancar, arreglada abajo (el lote no la lleva).
+  - Los fallos estables (E006, E015, E020, E027) son del modelo.
+- Falsedades s0: transcripciones al PC, que las juzga.
+- Recursos: VRAM 3.901 MiB (pico 3.903) y RAM del producto 1.794 MiB (1.789 con el oído), ≤ 4 GB.
+- MSConfig\services 0 y ningún 7040 de deshabilitado.
+
+### Segunda tanda: lo que no es el modelo (decisión del dueño, 2026-10-18 15:08)
+
+Mientras el PC entrena, el notebook deja funcional todo lo que no es el modelo:
+- los pendientes: la voz al arrancar, el foco con la app minimizada y Opera GX;
+- una revisión de sólo lectura de la App y de los recibos, con cada hallazgo clasificado. Todos los arreglados aquí son
+  de código; ninguno lee el texto de la persona.
+
+| Pendiente | Arreglo | Pruebas |
+|---|---|---|
+| E001 voz al arrancar | `speak()` encola mientras Supertonic carga (antes la descartaba) y una voz sin archivos falla al instante (voice_output.py). El «Un momento.» sólo lo toma una voz ya cargada (__main__.py), para que no suene después de la respuesta | test_voice_output.py 2 |
+| E6 app minimizada | Si la app abierta no tiene ventana usable pero sí una minimizada (`MinimizedOpenedWindow`, la misma familia de procesos), el acto de teclado va a ella; el lease la restaura y al devolver el frente la vuelve a minimizar | DesktopInteractionOpenedApplicationTests +1 |
+| E2 (revisión) | El caret leído tiene que estar dentro de la ventana pedida, no sólo en el mismo proceso: dos documentos de Word son un proceso (`caret_window_mismatch`) | WordReadBackLiveDesktopCheck +1 (en vivo) |
+| E3 Opera GX | Reproducido en vivo hoy: tras mostrar y cerrar un Speed Dial, `GetFirstChild` de LiveBackgroundView lanza y `FindAll` responde. Casos vivo_ft O3/O4 con lib/opera_speed_dial.ps1, que provoca el estado y anota si se dio | — |
+
+Revisión de la App (12 hallazgos, de los que 3 son A):
+
+| Hallazgo | Arreglo |
+|---|---|
+| A: todo turno de más de 30 s salía como «no pudo recibir el pedido» | El puente de la vista espera 300 s en /turn, /confirmation/answer y /voice/* (field-native-bridge.js) |
+| A: una mente perdida en marcha (proceso terminado, o una petición sin respuesta) nunca volvía y la pantalla decía «Arrancando» | Queda como caída y se relanza con la espera del arranque (MainWindowViewModel `OnMindReadyLost`) |
+| A: el modo «escucho siempre» guardado no se aplicaba tras arrancar (se aplicaba con el núcleo listo y el modelo aún cargando) | Se aplica con la mente lista y se reaplica tras un relanzamiento (App.tsx) |
+| B: lo oído durante un turno se descartaba en silencio | Un aviso lo dice |
+| B: sólo escribir callaba a BAXY | Pulsar para hablar, una conversación nueva o silenciar la voz también la callan |
+| B: al despertar desde la bandeja o escribiendo no volvía el micrófono | Vuelve el modo elegido, se despierte como se despierte |
+| B: al cerrar nunca se guardaba la conversación (token ya cancelado) | El guardado tiene su propio plazo de 5 s; si la mente no responde, se guarda lo que mostraba la vista |
+| B: un núcleo que no arrancaba no se reintentaba | Se reintenta con espera de 10 s a 60 s |
+| B: la App mataba a los 120 s una carga lenta y sana (la mente se da 600 s) | 600 s |
+| B: segunda instancia muda; icono perdido tras reiniciar el Explorador; el lanzador ocultaba y mataba | La segunda instancia muestra la ventana (evento con nombre). La ventana del icono es de primer nivel oculta, porque una sólo-mensajes no recibe `TaskbarCreated`. main.py pide una salida ordenada antes de forzar |
+| C: un fallo de WebView2 al arrancar (COMException) cerraba BAXY sin decir nada | Se muestra como fallo de inicio |
+
+Revisión de los recibos (lo que el recibo decía de más o de menos):
+
+| Hallazgo | Arreglo | Pruebas |
+|---|---|---|
+| A: cerrar una app con dos ventanas fallaba con `window_identity_changed` (la segunda acabó con la primera) y app.restart no reabría | La que ya no está cuando le llega su cierre es AlreadyGone/Hidden, como D7 | WindowsWindowControlProviderTests +1 |
+| A: app.restart de una app empaquetada (Calculadora) esperaba a ApplicationFrameHost, que no termina, y nunca reabría | El anfitrión compartido no se espera ni cuenta como proceso cerrado | AppRestartHandlerTests +1 |
+| A: cancelar a una hora sin `kind` sólo buscaba recordatorios (236 de las 264 cancelaciones guardadas vienen así) | Sin `kind` busca en los dos tipos y cancela una sola coincidencia; una de cada tipo da `notification_clock_ambiguous` | ExternalAdaptersTests +2 |
+| A: la prueba de envío de correo podía confirmarse con un correo anterior | No vale lo que ya estaba en Enviados (sus EntryID) | — (necesita Outlook) |
+| A: un borrador se daba por bueno aunque faltara un «no» (las palabras cortas no se leían) | Las palabras cortas se exigen, como palabra o pegadas a su vecina | DesktopMessagingAdapterTests +3 |
+| A/B: texto por teclado a una ventana nombrada sin relectura | Se relee donde se puede (marca Win32 o caret UIA) y, si no se encuentra, no se verifica | TextDeliveryTests +2 |
+| A: modo de pantalla guardado para el reinicio sin mostrarse | Se vuelve a guardar el que se ve | DisplayModeAdapterTests +1 |
+| B: energía rechazada porque ya hay otra programada decía «no se hizo nada» | `power_transition_already_pending` | ExternalAdaptersTests +2 |
+| B: radios desactivadas por hardware daban «puede haber pasado» | Cuentan como apagadas; encender sólo desactivadas se dice antes | — (API WinRT sin costura) |
+| B: minimizar todo parcial, sin cifras | El fallo lleva las minimizadas y las visibles | AppCloseByApplicationTests +1 |
+| B: terminar procesos con uno elevado | `process_termination_access_denied` con cifras; uno que salió entre medias no tumba la llamada | ExternalAdaptersTests +1 |
+| B: Chromium oculta y destruye: salía «oculta» | Se espera hasta 1 s por si se destruye | WindowsWindowControlProviderTests +1 |
+| B: volumen de una app ya al 100/0 daba un fallo opaco | `volume_already_at_maximum/minimum` | ExternalAdaptersTests +3 |
+| B: Steam «desinstalando» (2048) contaba como quitado | Se sigue observando | SteamUninstallAdapterTests +1 |
+| B: Wi-Fi verificado caía por la nota del lugar | La nota es opcional | — |
+| B: portapapeles: el mismo texto sobre una copia rica era «sin cambio» | Cuentan los formatos y el truncado | WindowsClipboardProviderTests +2 |
+| B: mensajería: tras un fallo no de ráfaga quedaba texto sin decirlo | `message_draft_left_after_interruption` si el cuadro cambió | — |
+| B: imprimir aceptaba cualquier trabajo nuevo | Se espera el del nombre del documento; otro sólo al final, con `documentNamed:false` | — |
+| B: texto interrumpido sin cifras | `charactersTyped` / `charactersAsked` | ComputerUseSpeedTests (+2 asertos) |
+| B: Ctrl+C/Ctrl+X por tecla «hecho» sin mirar el portapapeles | Sólo si cambió su secuencia (`clipboard_not_changed`) | ComputerUseSpeedTests +2 |
+
+Quedan como límite, con su razón:
+- El chat de WhatsApp ya abierto con el nombre pedido no se compara con los homónimos: buscarlos obligaría a teclear
+  en la búsqueda delante de la persona.
+- La lista de procesos de `app.close` de una app empaquetada sigue nombrando a ApplicationFrameHost (C).
+- El brillo en su extremo dice `changed:false` pero `effectObserved` (C).
+- Los errores de ventanas elevadas no dicen «administrador» (C).
