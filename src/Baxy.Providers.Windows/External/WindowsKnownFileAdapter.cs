@@ -71,8 +71,11 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException or System.Security.SecurityException)
         {
+            // FT/proveedores goal (review of receipts): a file another program holds open (a sharing or lock
+            // violation, 32 or 33) is that file in use, not its folder unavailable («no puedo acceder a Documentos»).
+            bool inUse = exception is IOException && (exception.HResult & 0xFFFF) is 32 or 33;
             return ValueTask.FromResult(effectBoundary.Failure(
-                operation, "known_folder_filesystem_unavailable"));
+                operation, inUse ? "file_in_use" : "known_folder_filesystem_unavailable"));
         }
     }
 
