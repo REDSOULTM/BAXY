@@ -507,6 +507,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return ExternalJson.FailureBeforeEffect(operation, "input_window_changed");
 
         var effectBoundary = new ExternalEffectBoundary();
+        // FT/proveedores goal (review of receipts): Ctrl+C or Ctrl+X as a key press was told done by the count of keys
+        // Windows accepted, while clipboard.copy checks the clipboard; with nothing selected nothing was copied.
+        bool copies = !typing && key is "ctrl_c" or "ctrl_x";
+        uint clipboardBefore = copies ? _keyboard.ClipboardSequence() : 0;
         effectBoundary.Cross(cancellationToken);
         uint expected = typing ? (uint)text.Length * 2 : (uint)chord.Length * 2;
         // The person touched the keyboard or the mouse between the pause and the first key: nothing goes.
@@ -688,6 +692,19 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return SentFailure("input_window_changed");
         if (!verified)
             return SentFailure("input_effect_not_verified");
+        if (copies && clipboardBefore != 0)
+        {
+            bool copied = false;
+            for (int attempt = 0; attempt < 10 && !copied; attempt++)
+            {
+                copied = _keyboard.ClipboardSequence() != clipboardBefore;
+                if (!copied)
+                    await Task.Delay(50, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (!copied)
+                return SentFailure("clipboard_not_changed");
+        }
         // Rule 3: Windows accepting every event proves the keys went in, not that the text reached the field meant. A text
         // with no window named is verified by its read-back alone.
         bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text);

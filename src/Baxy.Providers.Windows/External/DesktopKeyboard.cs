@@ -51,12 +51,21 @@ internal interface IDesktopKeyboard
 
     /// <summary>Lets the window in front take the keys before its post-read.</summary>
     ValueTask SettleAsync(CancellationToken cancellationToken);
+
+    /// <summary>The clipboard's sequence number (GetClipboardSequenceNumber), which every write moves on; 0: not
+    /// known.</summary>
+    uint ClipboardSequence() => 0;
 }
 
 internal readonly record struct DesktopForeground(nint Window, int ProcessId, string Title);
 
 internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
 {
+    public uint ClipboardSequence() => GetClipboardSequenceNumber();
+
+    [LibraryImport("user32.dll")]
+    private static partial uint GetClipboardSequenceNumber();
+
     private const uint InputKeyboard = 1;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
