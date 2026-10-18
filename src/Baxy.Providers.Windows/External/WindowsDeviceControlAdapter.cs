@@ -1818,7 +1818,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         ExternalCapabilityReceipt receipt = await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token, place);
         if (receipt.Verified && place is not null && !byPlace)
         {
-            WriteWifiPlace(place, profile);
+            // FT/proveedores goal (review of receipts): the place remembered for next time is BAXY's own note; a write
+            // that fails (the file held, access denied) turned a verified connection into a failure.
+            try
+            {
+                WriteWifiPlace(place, profile);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+            }
         }
 
         return receipt;
