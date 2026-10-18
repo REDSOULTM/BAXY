@@ -1513,3 +1513,21 @@ PseudoConsoleWindow, UI Automation del proceso de delante, carpetas conocidas).
 | E003 | falso negativo del banco (bench.ps1 desfasado en el notebook) | bancos igualados por sha256 | arreglado (banco) |
 | E006, E015, E017, E019, E020, E021, E022 (contenido), E024, E027, E029 | — | estables en base y rama | del modelo: al ajuste fino |
 | E001 | carrera de carga de la voz Supertonic al arrancar | — | B anotado (MainWindowViewModel.cs:1397, voice_output.py:80) |
+
+### Ciclo 2: medidas
+
+- **c1-e1.0** (fin de la época 1 del ciclo 1, notebook): decision2 s0 236 (+8 sobre su s0 228); el tiempo ya se mira
+  con weather.current (P135, P161) y P143 pregunta la hora; pero escenas sin tocar 26 frente a 32 (−6, fuera de ±2):
+  el latido actúa menos (P007, P028 a silencio) y propone message.draft (P024, P034). Rechazado.
+- La réplica del latido del ciclo 2 se corrigió al arrancar (06:52): se conservan los actos que la situación pide
+  (audio.app.volume.set, media.control, proponer system.process.terminate.named), se quitan schedule.alarms, web.search,
+  file.find y message.draft, y pesa ×3 (408 muestras, ~8 %). 5.034 muestras.
+- **c2-e0.5** (notebook): decision2 232/229/235 = 232,00 frente a 229,33 (+2,67, dentro de ±3; errores de voz +2,
+  contexto +2/+2/+1); escenas 29/32/30/30 = 30,25 frente a 31,25 (−1,0, dentro de ±2), 0 molestas y 0 riesgos solos;
+  P007/P028 actúan, P032/P019 callan. Tiempo y datos que cambian: P161, P171 y P088 miran con su herramienta; P135
+  («hay tormentas probables hoy», dicho como afirmación) aún responde sin mirar en 2 de 3 semillas.
+
+### Fase 2: ciclo 3 (ajuste)
+
+- Un solo cambio frente al ciclo 2: 2 épocas en vez de 1 (en el ciclo 1, de media época a una, decision2 s0 pasó de
+  233 a 236; el latido ahora está anclado). Mismos datos v2. Arrancado a las 09:28; checkpoints cada media época.
