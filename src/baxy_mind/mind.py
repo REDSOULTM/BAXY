@@ -186,9 +186,7 @@ def _aids_seen(observation: str) -> dict[str, Any]:
     if observed.get("setting") == "accessible_mode" and picked("scope", "notAvailableYet"):
         seen["accessible_scope"] = picked("scope", "notAvailableYet")
     if observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
-        seen["work_folder"] = picked("folder", "sameNameInHome")
-    if picked("listedPath", "listedPaths", "subfoldersEntered"):
-        seen["listed_path"] = picked("listedPath", "listedPaths", "subfoldersEntered")
+        seen["work_folder"] = picked("folder", "sameNameInHome", "next")
     return seen
 
 
