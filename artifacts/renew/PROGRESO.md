@@ -2263,4 +2263,10 @@ Medida: e2e de práctica s0-2 de c2-e1.0 sobre el producto final e0a7d9923 (75/9
   títulos: el 0/3 es del ORÁCULO, no de Steam ni del proveedor. Por semilla: s0 usó place library y llegó; s1 y s2 no
   usaron place y se perdieron en clics (eso sí es del modelo). Arreglo del oráculo propuesto, sin hacer: reconocer la
   vista por sus marcas (pestaña BIBLIOTECA, «Añadir estantería», «Instalado localmente») o pedir 1 título.
-
+- Evidencia en código de cada arreglo de proveedor, comprobada en el producto final (c33dd859a):
+  - E5_consola: src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs:2273-2276 (la ventana de una app de consola por la relación de dueño de Windows, PseudoConsoleWindow → CASCADIA_HOSTING_WINDOW_CLASS);
+  - E5_tope_turno: src/Baxy.App/TurnClosing.cs:18-22 (MaximumModelCalls 15 y el cierre por tiempo y repetición) usado en src/Baxy.App/NativeTurnLoop.cs:266, :299;
+  - E3_opera_gx: src/Baxy.Providers.Windows/External/UserBrowserScripts.cs:13, :181, :414 (el hijo muerto de LiveBackgroundView tras un Speed Dial);
+  - E2_word: src/Baxy.Providers.Windows/External/WindowsDesktopInteractionAdapter.cs:321, :720 (input_text_not_read_back con su efecto posible);
+  - E6_foco: 0d2ae11aa (OpenedApplicationKeyboard.cs, VisibleControlSurface.cs: la app minimizada se restaura por el lease) y 6f89ec6d1 (ForegroundRight.Give: ForegroundHandBack.cs:69, WindowsInstalledApplicationOpenProvider.cs:2229, ForegroundLease.cs:858);
+  - E4_memory_recall: src/Baxy.Core/Operations/MemoryHandlers.cs:576-591 (scope all sin selector; con selector, memory_recall_all_takes_no_selector);
