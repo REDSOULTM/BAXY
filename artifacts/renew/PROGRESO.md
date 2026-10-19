@@ -2372,7 +2372,7 @@ A = e0a7d9923 (producto de partida), B = pc-ayudas a3af5c20f; c2-e1.0 en los dos
   - 2 `accessible_scope`: ningún caso del e2e lo pide.
 - **Resto del banco:** E024 deja un notas.txt en la raíz del home cuando el modelo pierde BAXY-bench, y la corrida
   siguiente lo encuentra (en el PC además compras.txt y lista.txt, de E006 y E017). Afecta a los dos brazos por igual,
-  porque van intercalados. Desde ahora `e2e_pc2.sh` quita antes de cada corrida los archivos de la raíz del home que
+  porque van intercalados. Desde ahora `e2e_pc2.sh` quita, al empezar cada semilla y brazo, los archivos de la raíz del home que
   no estaban al empezar, y guarda una copia.
 - **Lectura:** 1-4 no baja nada y sube un poco. Separarlas en el e2e mediría ruido, porque 2 y 3 no se disparan y 4 no
   cambia la respuesta. Sus causas se aíslan con una sonda de continuación en el PC: el mismo turno, con la llamada del
