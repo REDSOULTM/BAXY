@@ -1574,3 +1574,27 @@ estándar):
 - Word en vivo, con Steam cerrado: 2/2.
   - La relectura en un documento en blanco funciona.
   - Con dos documentos en un solo WINWORD, el cursor del de detrás da `caret_window_mismatch` y el de delante se lee.
+
+- **e2e de práctica completo de la rama (dc2f04608, con el mismo ajustado):** 26/24/25 = 75/90 (lote: 71/90).
+  - No hubo casos error ni setup_failed, ni turnos sin respuesta.
+  - Pareado contra el lote: +1,33 ítems, IC 95 % [−0,67, +3,33], 5↑/2↓. Sube, sin llegar a ser significativo, y no
+    baja nada.
+  - Fallos estables, todos del modelo: E006, E015, E020 y E027.
+  - Los dos 7040 de esas 3 h son BITS, que Windows Update pasa de automático a manual y vuelve; ningún servicio
+    deshabilitado. MSConfig\services 0.
+- **E3 (Opera GX) en vivo, en el estado que fallaba:** tras un Speed Dial queda el hijo muerto de LiveBackgroundView.
+  - El estado se comprobó antes y después de cada lado.
+  - La preparación oculta del banco no puede traer Opera delante; el estado se provoca desde fuera y Opera, que el
+    banco nunca cierra, lo guarda (vivo_opera4.sh).
+  - Base 0be0f9de9: la lectura de la página va bien y cerrar la pestaña falla. Rama: las dos van bien.
+  - Límite B: en un Opera recién reiniciado, cerrar a los 8 s da `user_browser_page_unreadable`, porque el árbol de
+    accesibilidad de Chromium aún no está construido.
+- **La App entera se cerraba al arrancar** en 0be0f9de9, en el lote final y en la rama hasta 86c1f4cee:
+  - Error: `operation-labels.v1.json does not match the catalog (missing: app.restart, display.mode.set)`, una
+    excepción no controlada en FieldStepProjection.
+  - Los bancos usan el conductor, que no monta la vista, y por eso no lo vio ninguno.
+  - Arreglo: las dos etiquetas, más OperationLabelsCoverageTests en Kernel, que falla sin ellas.
+- **La App en vivo con el arreglo (vivo_app.sh):**
+  - Arranca con su ventana visible y al cerrarla va a la bandeja.
+  - Una segunda apertura muestra la ventana, con un solo proceso.
+  - El lanzador la cierra en orden en 1 s, sin dejar procesos (antes la ocultaba y la mataba a los 8 s).
