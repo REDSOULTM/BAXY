@@ -2319,3 +2319,32 @@ BAXY-Renew-ayudas), del notebook `nb-ayudas`. Tope duro: 2026-10-21 15:00 (Chile
   BAXY_AYUDAS en el mismo binario; después la palanca 7 (modos, con prefijo).
 - PC: palanca 5a (`turn_facts`, sin prefijo), 6 (home en `folder`, con prefijo), 8 (carpetas de la persona en
   trash.named, con prefijo) y 9 (ejemplos dinámicos, la última y sólo si quedan fallos).
+
+### Base del día en la GPU del PC (2026-10-19, mente base `lote-*` = la del producto de partida, catálogo lote3, c2-e1.0)
+
+- decision2 s0-2: 228/228/229 = 228,33, 0 errores (ayer, misma mente: 230,67; hoy corrió con otros dos llama-server a la
+  vez).
+- Escenas sin tocar + 3 perturbaciones: 33/31/31/32 = 31,75; 0 molestas, 0 riesgos solos.
+- Sonda de los modos: 4/40 honestos; en los 34 casos de modos que no existen, 0 dicen que aún no están (actúa con una
+  herramienta en 23 de 40).
+- Prefijo en el calentamiento: 42.748 tokens.
+
+### Palancas 6 y 8: cribado (GPU del PC, decision2 s0 y escenas sin tocar, frente a la base del día)
+
+| Palanca | Prefijo | decision2 s0 | Escenas s0 | Casos que cambian |
+|---|---|---|---|---|
+| base | 42.748 | 228 | 33 | — |
+| 6a: home sólo en `folder` de file.write | +13 | 229 | 32 | P028 baja; P106, P215 suben |
+| 6b: home en el `folder` de las 6 herramientas de archivos que lo explican | +78 | 225 | 33 | 5 bajan (alarmas, búsquedas, juegos), 2 suben |
+
+Ninguno de los casos que cambian es de archivos: es el ruido de tocar el prefijo (una sola espacio en pA-pC mueve las
+escenas de 33 a 31). Su blanco (E006, E020, E027) sólo lo ve el e2e. Sigue 6b, que cubre las tres: banco completo en GPU
+y e2e. `filesystem.search` no tiene `folder`: un E020 por esa vía no lo toca ninguna palanca de carpetas (el notebook vio
+en s0 que el modelo buscó con filesystem.search).
+
+- **Código de producto de 6, 7 y 8** (hub/pc-ayudas-6 d2571e455): `home_path`, `modes_sentence` y
+  `person_folder_sentence` tras BAXY_AYUDAS, con su fila `configure.aid`. Comprobado sobre lote3: con cada ayuda, las
+  herramientas son exactamente las de las mentes de cribado; con `none`, idénticas a la mente base. pytest 49/49.
+- **Suites de pc-ayudas cbf9a44f1:** Kernel 574/574, Contracts 69/69, Setup 477/477, pytest 44/44, App 0 avisos.
+  Providers entero queda para cuando el escritorio del PC esté libre del e2e (sus pruebas de clic usan el frente real);
+  las 4 clases tocadas pasan 65/65.
