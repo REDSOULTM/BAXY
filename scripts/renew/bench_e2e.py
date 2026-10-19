@@ -165,6 +165,42 @@ def norm(text: str) -> str:
     return " ".join((text or "").split())
 
 
+def utterances(every: list, turn_from: list, replies: list) -> list:
+    """Each speech.start of a turn (until the next turn began) with its end; cancelled when the person spoke over it.
+    Each kind (progress notice, confirmation question, final answer) carries its own first sound: the final answer that
+    follows a confirmation is timed too (it had none, and Test-Spoken read an answer heard for 4 s as not spoken)."""
+    speech = []
+    bounds = turn_from + [len(every)]
+    for number in range(1, len(turn_from) + 1):
+        window = range(bounds[number - 1], bounds[number])
+        start_at = next((i for i in window if every[i]["type"] == "turn.start"), None)
+        turn_start = every[start_at]["t_ms"] if start_at is not None else None
+        for i in window:
+            event = every[i]
+            # Ronda final: the late voice of a turn that timed out arrives before this turn's turn.start: it is not
+            # this turn's first sound (it gave negative latencies).
+            if event["type"] != "speech.start" or start_at is None or i < start_at:
+                continue
+            stop = next((e for e in every[i + 1:] if e["type"] == "speech.end"), None)
+            stop_ms = stop["t_ms"] if stop else 10**12
+            # The person's words that arrived while it sounded cut it; the cut took from them to the audio's end.
+            cut_by = next((e for e in every[i + 1:] if e["type"] == "message" and e["speaker"] == "person"
+                           and event["t_ms"] <= e["t_ms"] <= stop_ms), None)
+            interrupted = cut_by is not None
+            asked = replies[number - 1]["confirmation_text"]
+            kind = ("progress" if event.get("notice")
+                    else "confirmation" if asked and norm(event.get("text")) == norm(asked) else "final")
+            # The goal's speed is per order: from its text to the first sound of that turn, whatever was said first.
+            # Each kind's first utterance carries its own; the turn's response speed still reads the first non-notice
+            # sound (the confirmation question when there was one).
+            first = not any(s["turn"] == number and s["kind"] == kind for s in speech)
+            speech.append({"turn": number, "kind": kind, "spoken": True, "spoken_text": event.get("text", ""),
+                           "first_audio_ms": event["t_ms"] - turn_start if first and turn_start is not None else None,
+                           "completed": stop is not None and not interrupted, "cancelled": interrupted,
+                           "stop_latency_ms": (stop_ms - cut_by["t_ms"]) if cut_by and stop else None})
+    return speech
+
+
 def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict) -> dict:
     lib_env = dict(env_base)
     started = time.monotonic()
@@ -217,36 +253,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
     wait_silence(conductor, 30)
     conductor.events.poll()
 
-    # Utterances: each speech.start of a turn (until the next turn began) with its end; cancelled when the person
-    # spoke over it.
-    every = conductor.events.all
-    bounds = turn_from + [len(every)]
-    for number in range(1, len(turn_from) + 1):
-        window = range(bounds[number - 1], bounds[number])
-        start_at = next((i for i in window if every[i]["type"] == "turn.start"), None)
-        turn_start = every[start_at]["t_ms"] if start_at is not None else None
-        for i in window:
-            event = every[i]
-            # Ronda final: the late voice of a turn that timed out arrives before this turn's turn.start: it is not
-            # this turn's first sound (it gave negative latencies).
-            if event["type"] != "speech.start" or start_at is None or i < start_at:
-                continue
-            stop = next((e for e in every[i + 1:] if e["type"] == "speech.end"), None)
-            stop_ms = stop["t_ms"] if stop else 10**12
-            # The person's words that arrived while it sounded cut it; the cut took from them to the audio's end.
-            cut_by = next((e for e in every[i + 1:] if e["type"] == "message" and e["speaker"] == "person"
-                           and event["t_ms"] <= e["t_ms"] <= stop_ms), None)
-            interrupted = cut_by is not None
-            asked = replies[number - 1]["confirmation_text"]
-            kind = ("progress" if event.get("notice")
-                    else "confirmation" if asked and norm(event.get("text")) == norm(asked) else "final")
-            # The goal's speed is per order: from its text to the first sound of that turn, whatever was said first. The
-            # notice's utterance and the response's first one each carry their own (the oracles read the response's).
-            first = not any(s["turn"] == number and (s["kind"] == "progress") == (kind == "progress") for s in speech)
-            speech.append({"turn": number, "kind": kind, "spoken": True, "spoken_text": event.get("text", ""),
-                           "first_audio_ms": event["t_ms"] - turn_start if first and turn_start is not None else None,
-                           "completed": stop is not None and not interrupted, "cancelled": interrupted,
-                           "stop_latency_ms": (stop_ms - cut_by["t_ms"]) if cut_by and stop else None})
+    speech = utterances(conductor.events.all, turn_from, replies)
 
     (case_dir / "replies.json").write_text(json.dumps(replies, ensure_ascii=False), encoding="utf-8")
     (case_dir / "speech.json").write_text(json.dumps(speech, ensure_ascii=False), encoding="utf-8")
