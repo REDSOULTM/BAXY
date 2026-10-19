@@ -13,6 +13,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     private readonly IExternalOperationAdapter[] _adapters;
     private readonly IForegroundLease? _missionFront;
     private readonly Func<string, JsonElement, bool>? _actRefused;
+    // FT/proveedores goal (live W1, 2026-10-19): the program of the window an act was refused for; the refusal named
+    // none, and the model told «la ventana de Word está protegida» when a terminal was in front. Null in the test seams.
+    private Func<string, JsonElement, string?>? _refusedProcess;
     private readonly IOpenedApplicationKeyboard? _openedKeyboard;
     private int _disposed;
 
@@ -35,6 +38,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         : this(CreateDefaultAdapters(dataRoot), ForegroundLease.Shared, ActOnProtectedWindow,
             OpenedApplicationKeyboard.Product)
     {
+        _refusedProcess = RefusedProcess;
     }
 
     private static IExternalOperationAdapter[] CreateDefaultAdapters(string dataRoot)
@@ -213,6 +217,29 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// CU4 (auditoría final 2): a click, a key, a text, a wheel turn or a clipboard keystroke would reach a developer's
     /// or BAXY's own window that no look named (<see cref="VisibleControlSurface.ActRefused"/>).
     /// </summary>
+    private static string? RefusedProcess(string operation, JsonElement arguments)
+    {
+        nint target = ActTarget(operation, arguments);
+        uint processId = target == 0 ? 0 : VisibleControlSurface.ProcessOf(target);
+        if (processId == 0)
+            return null;
+        try
+        {
+            using var process = System.Diagnostics.Process.GetProcessById(unchecked((int)processId));
+            return process.ProcessName;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    // A test seam's way to name the refused window's program (the product's reads the window's process).
+    internal Func<string, JsonElement, string?>? RefusedProcessOf
+    {
+        set => _refusedProcess = value;
+    }
+
     private static bool ActOnProtectedWindow(string operation, JsonElement arguments) =>
         ActTarget(operation, arguments) is var target and not 0 && VisibleControlSurface.ActRefused(target);
 
@@ -338,7 +365,18 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         CancellationToken cancellationToken)
     {
         if (_actRefused?.Invoke(operation, arguments) == true)
-            return ExternalJson.FailureBeforeEffect(operation, "protected_window");
+        {
+            string? program = _refusedProcess?.Invoke(operation, arguments);
+            return program is null
+                ? ExternalJson.FailureBeforeEffect(operation, "protected_window")
+                : new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteString("refusedProcess", program);
+                    writer.WriteEndObject();
+                }), "protected_window");
+        }
         // The owner's decision of 2026-10-10 («no molestar», simple form): an act of a mission is done with the mission's
         // window in front, brought after the person's pause; the lease gives the front back at the person's first input
         // and after a text. Nothing is sent when the person does not pause or Windows does not give the front: never

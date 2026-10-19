@@ -845,13 +845,18 @@ internal static partial class VisibleControlSurface
                 _ = ShowWindow(window, 9);
             _ = BringWindowToTop(window);
             _ = SetForegroundWindow(window);
-            return GetForegroundWindow() == window;
+            if (GetForegroundWindow() == window)
+                return true;
         }
         finally
         {
             if (attached)
                 _ = AttachThreadInput(currentThread, foregroundThread, false);
         }
+
+        // e2e 2026-10-19: refused with an invisible window of a service in front (GameInputSvc's), so the typed text
+        // never reached the window asked for (input_window_not_in_front); the front is then won as a hand-back is.
+        return ForegroundRight.Give(window).Held && GetForegroundWindow() == window;
     }
 
     private static readonly AsyncLocal<nint> RequiredWindow = new();

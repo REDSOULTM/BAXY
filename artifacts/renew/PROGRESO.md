@@ -2062,3 +2062,54 @@ Como ninguna palanca ganó por separado, no hay combinación demostrable; tampoc
 cierra con **c2-e1.0** (sha256 8a4b6ce3…), el mejor medido, sobre el lote final **lote-final3 e0a7d9923**. Siguiente:
 fase 4 (holdout nuevo, una vez), lote final medido entero, informe, commit y push antes de las 19:00.
 
+### El lote fusionado (hub/lote-final 7d59e80bb = el lote más esta rama) medido en el notebook, 2026-10-19
+
+- **El lanzador no recompilaba un worktree con su compilación vieja.**
+  - Por qué: el estado de compilación de main.py es uno por usuario y la huella usaba rutas relativas; dos worktrees
+    con las mismas fuentes compartían huella.
+  - Efecto: el lote recibió «Código .NET sin cambios» y corrió los binarios de b550e9602. Su App se cerraba al
+    arrancar y su primer e2e (71/90) no medía su código.
+  - Arreglo: la huella incluye el worktree (19d49554f, test_build_fingerprint.py). Toda medida final se calienta con
+    `--recompilar`.
+- **Recompilado:** Kernel 574, Contracts 69, Setup 477, Providers 2315 y pytest 30, todo verde.
+  - e2e 26/23/26 = 75/90, igual que la rama. Sin errores, sin setup_failed y sin turnos sin respuesta.
+  - Pareado contra b550e9602: +1,33 ítems, IC [−0,67, +3,33].
+- **En vivo:** E001 3/3, F1 3/3, F2 3/3, W1 2/3. El fallo de W1 fue un `protected_window` con una terminal delante.
+  El modelo lo atribuyó a Word porque el rechazo no nombraba la ventana; ahora lleva `refusedProcess` (7cb72bfdd).
+- **La App en vivo:** arranca, va a la bandeja, se muestra al abrirla otra vez y se cierra en orden en 2 s.
+- **Recursos:** VRAM 3.901 MiB (pico 3.903) y RAM del producto 1.791 MiB.
+
+### Checkpoints medidos en el notebook sobre el lote (mente y catálogo del lote; e2e pareado contra c2-e1.0)
+
+| Checkpoint | decision2 s0-2 | Escenas ×4 | e2e s0-2 | Veredicto |
+|---|---|---|---|---|
+| c2-e1.0 (el lote) | 690 | 32,25 | 71 (b550) / 75 (7d59) | referencia |
+| λ=0,6 | 697 | 31,25 | 69 (Δ −0,67) | descartado |
+| λ=0,8 | 699 | 29,75 | 69 (Δ −0,67) | descartado |
+| c4-e0.5 (cribado) | 226 (s0) | 29 (1 molesta) | — | descartado |
+| c4-e1.0 | 686 | 30,5 (1 molesta) | 69 (Δ −0,67) | descartado |
+| c5-e0.5 (cribado) | 237 (s0) | 30 | — | pasa a entero |
+| c5-e1.0 | 705 | 30,0 (P019 molesta) | 67 (Δ −1,33) | descartado: baja escenas y e2e |
+| c6-e0.5 | 700 | 30,5 | 67 (Δ −2,67, contra 7d59) | descartado |
+| c6-e1.0 | — | — | 69 (Δ −2,00, contra 7d59) | descartado tras el e2e: E017 y E024 fallan 3/3 |
+| c8-e0.5 | 230 (s0) | 32 | 61 (Δ −4,00, IC [−7,00, −1,33]; McNemar 0↑/6↓, p=0,031) | descartado por la puerta: E011 3/3, E017 3/3, E024 2/3 |
+
+- **Referencia nueva del e2e: c2-e1.0 sobre el corte hub/lote-final2 bd0877892, recompilado.**
+  - 26/21/26 = 73/90, sin errores, sin setup_failed y sin turnos sin respuesta.
+  - Pareado contra 7d59e80bb (75/90): Δ −0,67 ítems, IC [−1,67, +0,00]. Por mayoría de semillas no cambia ningún
+    caso: es ruido por semilla.
+  - c8 y c7 se parean contra esta referencia (nb-l2-c2e1-bd0877892); si ningún ciclo gana, es el e2e del lote final.
+- **La puerta (desde c6-e1.0):** el e2e va primero; si fallan por mayoría al menos dos de E011, E017 y E024, el
+  checkpoint queda descartado y no se gastan decision2, escenas ni falsedades.
+- **c8-e0.5 en E017 falla de otro modo que v3:** no pierde la subcarpeta. Guarda con clics en «Guardar como» en vez de
+  `file.write`. En E011 pide el cálculo a la Calculadora sin abrirla.
+
+### La fase 4, preparada sin datos del holdout
+
+- **Ejecutor:** nb/fase4/correr_fase4.sh, que construye los casos con hacer_fase4.py y los juzga con juzgar_fase4.py.
+  - Lee el formato del holdout nuevo y dice antes, en orden, los turnos de persona de la historia.
+  - Excluye lo que manda, compra, instala, apaga, termina procesos o borra fuera del sandbox, y las herramientas del
+    sistema.
+  - Calienta con `--recompilar`, juzga OK / EJECUTA_MAL / OTRA_OP / SIN_RESPUESTA más revisar_falsedad, comprueba
+    el incidente y pone en cuarentena lo que quede.
+- **Ensayo con 7 casos de práctica en ese formato:** 7/7 OK y 26 s por caso, así que los 237 seguros llevan ≈1 h 45 min.

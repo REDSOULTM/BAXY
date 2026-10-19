@@ -2222,6 +2222,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 _ = AttachThreadInput(currentThread, foregroundThread, attach: false);
             }
         }
+
+        // e2e 2026-10-19: with an invisible window of a service in front (GameInputSvc's, after Steam) the attached
+        // request is refused and every app.open in front ended behind it; the front is then won as a hand-back is.
+        if (GetForegroundWindow() != handle)
+            _ = External.ForegroundRight.Give(handle);
     }
 
     public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>
