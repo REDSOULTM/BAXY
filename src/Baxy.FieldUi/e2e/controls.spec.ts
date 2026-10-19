@@ -123,10 +123,17 @@ test('micrófono: los tres modos, en el menú y en ajustes, y en reposo se aplic
 
 test('rail: perfiles, Normal/Bypass y reposo', async () => {
   await esc();
-  for (const [i, cls] of [[1, 'p-novidente'], [2, 'p-movilidad'], [0, 'p-normal']] as const) {
-    await page.locator('.bx-pchip').nth(i).click();
-    await expect(page.locator('.bx2.' + cls)).toHaveCount(1);
+  // The owner's decision (2026-10-18): only the standard mode is ready; «No vidente» and «Movilidad» say «próximamente
+  // disponible» and a click on them changes nothing.
+  for (const i of [1, 2]) {
+    const chip = page.locator('.bx-pchip').nth(i);
+    await expect(chip).toHaveAttribute('aria-disabled', 'true');
+    expect.soft(await chip.getAttribute('title')).toMatch(/próximamente disponible/);
+    await chip.click({ force: true });
+    await expect(page.locator('.bx2.p-normal')).toHaveCount(1);
   }
+  await page.locator('.bx-pchip').nth(0).click();
+  await expect(page.locator('.bx2.p-normal')).toHaveCount(1);
   const policy = (await get('/confirmation')).confirmationPolicy;
   await page.click('.bx-modebtn');
   expect.soft(await until(async () => (await get('/confirmation')).confirmationPolicy !== policy)).toBe(true);
