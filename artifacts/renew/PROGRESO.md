@@ -1938,3 +1938,12 @@ dueño) entran como palanca propia en un ciclo, medida con esta sonda.
   de las muestras; D1 palanca 3); ciclo 8 = G9 (honestidad de los modos). Fallo de conversión del checkpoint final de c5
   (dos guardados seguidos a 1 s; la fusión leyó el primero a medio escribir): reconvertido desde el paso 389 y la cadena
   ahora espera a que termine el entrenamiento.
+- c5-e1.0 entero: e2e 22/22/23 = 22,33 frente a 23,67 (pareado Δ −1,33, IC [−4,33, +1,33], McNemar 1↑/3↓, p = 0,625;
+  fallan nuevos E011, E017, E024). Con decision2 +5,0 pero escenas −2,25 (P019 molesta) y e2e −1,33: **no se queda**.
+- Falsedades del lote con c2-e1.0 (juez una pasada + lectura): 1 falsa por el juez (F019) y F015 por la lectura
+  estricta: 2, frente a 3 de la base.
+- Ciclo 6 (datos v3 + KL): la primera corrida se quedó sin memoria de GPU en el backward (la KL hacía un log-softmax
+  completo de 248k tokens además del de la entropía cruzada); ahora las dos comparten un único logsumexp (la misma
+  cuenta) y la referencia del base se guarda en disco. Relanzado a las 00:12.
+- Datos listos: v4 (ciclo 7: v2 + 558 escenas de réplica ×1, 5.190 muestras) y v5 (ciclo 8: v2 + 86 ejemplos honestos
+  de los modos G9 tras la fuga, de 120: 34 fuera por parecerse a la sonda; 5.140 muestras).
