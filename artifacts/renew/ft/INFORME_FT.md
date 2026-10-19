@@ -58,11 +58,25 @@ decisión: el modelo ajustado acierta 304 de 320 y el base 269 (+35); en pedidos
   latido (tabla con fuentes en PROGRESO.md, «Decisión sobre la prórroga»). La prórroga no procedió.
 - Cada reentrenamiento perdió algo que c2-e1.0 hace bien en tareas de varios pasos: dar la ruta completa al guardar
   en una subcarpeta y abrir la Calculadora cuando no está. Esas conductas son frágiles entre corridas.
-- Siguen fallando 0 de 3: E006 y E020 (el modelo pierde la subcarpeta o busca sin ella), E027 (dice que esa carpeta
-  es «su carpeta privada»; en una semilla, la respuesta tras tu «no» no sonó) y E015 (el oráculo de la biblioteca de
-  Steam, no el modelo). Quedan cerrados como límite con su evidencia en PROGRESO.md. Los demás pendientes del goal
-  (consola, tope del turno, Opera GX, Word, foco, memoria, voz al arrancar, E003, E011, E017, E019, E021, E022,
-  E024, E029) quedaron arreglados y medidos.
+
+## Cada pendiente del goal, medido en el producto final (e0a7d9923 con c2-e1.0)
+
+Medido con el e2e de práctica s0-2 (75/90, escritorio comprobado por semilla) y casos en vivo. El código de cada
+arreglo, con archivo:línea, está en PROGRESO.md y en metas.json (`cierre_2026-10-19`).
+
+| Pendiente | Al empezar | Producto final | Estado |
+|---|---|---|---|
+| Apps de consola, tope del turno | fallaban | arreglados (consola 2/2, cierre del turno a los 90 s) | arreglado |
+| Opera GX | cerrar la pestaña fallaba | leer 3/3 y cerrar 3/3, en vivo y en el estado que fallaba | arreglado |
+| Relectura de Word | sin leer lo escrito | W1 3/3 en vivo | arreglado |
+| Foco (minimizada, otra ventana delante) | fallaba | F1 3/3, F2 3/3; app.open sin quedar detrás en todas las semillas | arreglado |
+| memory.recall (todo) | fallaba | contrato y pruebas | arreglado |
+| Voz desde el primer turno (E001) | fallaba al arrancar | 3/3 en vivo | arreglado |
+| E003, E011, E017, E021, E022, E023, E029 | fallaban | 3/3 | arreglados |
+| E019, E024 | fallaban | 2/3 (la semilla que falla es del modelo) | arreglados por mayoría |
+| E006, E020 | fallaban | 0/3: el modelo pierde la subcarpeta o busca sin ella | límite del modelo |
+| E027 | fallaba | 0/3 en el banco: en dos semillas el modelo se niega («su carpeta privada»); en la otra lo hizo bien y fue el banco el que no vio su respuesta | límite del modelo y fallo del banco |
+| E015 | fallaba | 0/3 en el banco: BAXY llega a la biblioteca de Steam, pero el oráculo pide ver 4 títulos y la vista muestra 1-2 | fallo del banco |
 
 ## Los tres modos de accesibilidad
 
@@ -76,7 +90,8 @@ decisión: el modelo ajustado acierta 304 de 320 y el base 269 (+35); en pedidos
 
 ## Pendiente
 
-- Que el modelo diga la verdad sobre los modos sin perder el e2e. El camino medido son datos G9 más rutas; necesita
-  un ciclo que no cabía hoy.
-- E006, E015, E020 y E027, y los grupos que la auditoría dejó como límite.
+- Que el modelo diga la verdad sobre los modos, y E006, E020 y E027, sin reentrenar (decidiste descartar el
+  reentrenamiento por ahora): son las palancas de la meta siguiente, `PROMPT_GOAL_AYUDAS_MODELO.md`. Los arreglos del
+  banco para E015 y E027 también van ahí.
+- Los grupos que la auditoría dejó como límite.
 - La voz para dejar de estar «en pruebas», y el modo No vidente o el de Movilidad: requieren tu decisión.

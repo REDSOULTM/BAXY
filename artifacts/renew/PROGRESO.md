@@ -2240,4 +2240,33 @@ Medida: e2e de práctica s0-2 de c2-e1.0 sobre el producto final e0a7d9923 (75/9
     oráculo pide ver 4 o más juegos; queda revisar el oráculo y la vista de Steam ya abierto.
 - Para todos ellos hay palancas sin reentrenar, ya investigadas, en `PROMPT_GOAL_AYUDAS_MODELO.md` (meta siguiente,
   a decisión del dueño).
-
+- Nota de proceso: tras el primer cierre (12:45) el PC dio al notebook por libre y éste paró su vigilancia del
+  buzón; la corrección de las 12:55 (Opera GX sobre el producto final, E027 s1, E015) no la vio hasta las 14:17. El
+  notebook estuvo sin tarea de 12:29 a 14:17: fallo de coordinación del PC, contra la regla de no dejarlo nunca sin
+  tarea. Opera GX figuraba en metas.json con la medida de la rama («el estado de fallo no se reprodujo hoy»), no con
+  una medida del producto final; se mide ahora.
+- **E3 Opera GX sobre el producto final** (notebook, 14:24-14:34, e0a7d9923 recompilado con c2-e1.0): el estado que
+  fallaba (Speed Dial mostrado, primer hijo de LiveBackgroundView muerto, Opera al frente) se provocó y se comprobó
+  antes y después de cada semilla. Leer la página 3/3 y cerrar la pestaña 3/3, sin error ni setup_failed (base
+  0be0f9de9: cerrar fallaba). Límite B barrido con Opera matado y relanzado, turno a los 4, 8, 15 y 30 s: 4/4 OK; por
+  la vía del modelo el cierre llega unos 10 s después del arranque y el árbol de accesibilidad ya está. El fallo de
+  los 8 s del 18 de octubre era un cierre directo, sin el modelo delante. **Arreglado y medido.** El banco del
+  notebook se ajustó (opera_speed_dial.ps1 gana el frente y reintenta el Speed Dial hasta 3 veces).
+- **E027 s1, diagnóstico** (notebook, en vivo sobre e0a7d9923): el producto SÍ dice la respuesta tras el «no» (4,3 s
+  de audio, el archivo no se borra). El fallo es del banco: scripts/renew/bench_e2e.py:245 agrupa la confirmación y
+  la respuesta final, la final queda con first=False y :247 le pone first_audio_ms = None; Test-Spoken (lib/bench.ps1:596)
+  exige ese valor y la da por no dicha. Lo mismo en el e2e final s1. E027 queda así: s1 bien (fallo del banco), s0 y
+  s2 del modelo (se niega diciendo que esa carpeta es suya). Arreglo del banco propuesto, sin hacer.
+- **E015, diagnóstico** (notebook, en vivo, sin BAXY y con el mismo oráculo): Test-SteamLibraryVisible
+  (lib/bench.ps1:419-430) exige ver por OCR al menos 4 de 27 títulos fijos. steam://open/games SÍ lleva a la
+  biblioteca, con Steam abierto (a los 8 s) y en frío, pero la lista recuerda su scroll y sólo deja ver 1-2 de esos
+  títulos: el 0/3 es del ORÁCULO, no de Steam ni del proveedor. Por semilla: s0 usó place library y llegó; s1 y s2 no
+  usaron place y se perdieron en clics (eso sí es del modelo). Arreglo del oráculo propuesto, sin hacer: reconocer la
+  vista por sus marcas (pestaña BIBLIOTECA, «Añadir estantería», «Instalado localmente») o pedir 1 título.
+- Evidencia en código de cada arreglo de proveedor, comprobada en el producto final (c33dd859a):
+  - E5_consola: src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs:2273-2276 (la ventana de una app de consola por la relación de dueño de Windows, PseudoConsoleWindow → CASCADIA_HOSTING_WINDOW_CLASS);
+  - E5_tope_turno: src/Baxy.App/TurnClosing.cs:18-22 (MaximumModelCalls 15 y el cierre por tiempo y repetición) usado en src/Baxy.App/NativeTurnLoop.cs:266, :299;
+  - E3_opera_gx: src/Baxy.Providers.Windows/External/UserBrowserScripts.cs:13, :181, :414 (el hijo muerto de LiveBackgroundView tras un Speed Dial);
+  - E2_word: src/Baxy.Providers.Windows/External/WindowsDesktopInteractionAdapter.cs:321, :720 (input_text_not_read_back con su efecto posible);
+  - E6_foco: 0d2ae11aa (OpenedApplicationKeyboard.cs, VisibleControlSurface.cs: la app minimizada se restaura por el lease) y 6f89ec6d1 (ForegroundRight.Give: ForegroundHandBack.cs:69, WindowsInstalledApplicationOpenProvider.cs:2229, ForegroundLease.cs:858);
+  - E4_memory_recall: src/Baxy.Core/Operations/MemoryHandlers.cs:576-591 (scope all sin selector; con selector, memory_recall_all_takes_no_selector);

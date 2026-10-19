@@ -2131,7 +2131,7 @@
       "estado": {
         "E5_consola": "arreglado y medido (R0724.0 0/2 → 2/2)",
         "E5_tope_turno": "arreglado y medido (TurnClosing 90 s / 3 repeticiones)",
-        "E3_opera_gx": "arreglado sin regresión; el estado de fallo no se reprodujo hoy",
+        "E3_opera_gx": "arreglado y medido en vivo sobre el producto final e0a7d9923 (2026-10-19, ver cierre)",
         "E2_word": "arreglado y medido en vivo",
         "E6_foco": "arreglado y medido en vivo; minimizada: límite",
         "E4_memory_recall": "arreglado (contrato y pruebas)",
@@ -2156,26 +2156,35 @@
         "medida": "e2e de práctica s0-2 de c2-e1.0 sobre el producto final e0a7d9923 (75/90), escritorio comprobado por semilla; aciertos por caso sobre 3",
         "arreglados_y_medidos": {
           "E5_consola_y_tope_de_turno": "arreglados (ver estado)",
-          "E3_opera_gx": "arreglado",
+          "E3_opera_gx": "en vivo sobre e0a7d9923 con c2-e1.0, estado del Speed Dial provocado y comprobado antes y después: leer la página 3/3 y cerrar la pestaña 3/3, sin error ni setup_failed (base 0be0f9de9, 2026-10-18: cerrar FALLO). Límite B barrido (Opera recién reiniciado, turno a los 4, 8, 15 y 30 s): 4/4 OK por la vía del modelo; el cierre real llega ~10 s después del arranque. El fallo de los 8 s era un cierre directo sin el modelo delante",
           "E2_word": "arreglado y en vivo W1 3/3",
           "E6_foco": "arreglado, también con la app minimizada (7d59e80bb) y con otra ventana robando el frente (ForegroundRight, 6f89ec6d1)",
           "E4_memory_recall": "arreglado (contrato y pruebas)",
           "E001": "voz desde el primer turno: vivo 3/3",
-          "E003": "3/3",
-          "E011": "3/3",
-          "E017": "3/3",
-          "E019": "2/3",
-          "E021": "3/3",
-          "E022": "3/3",
-          "E023": "3/3",
-          "E024": "2/3",
-          "E029": "3/3"
+          "E003": "CERRADO: arreglado y medido en el producto final, 3/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)",
+          "E011": "CERRADO: arreglado y medido en el producto final, 3/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)",
+          "E017": "CERRADO: arreglado y medido en el producto final, 3/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)",
+          "E019": "CERRADO: arreglado y medido en el producto final, 2/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)",
+          "E021": "CERRADO: arreglado y medido en el producto final, 3/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)",
+          "E022": "CERRADO: arreglado y medido en el producto final, 3/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)",
+          "E023": "CERRADO: arreglado y medido en el producto final, 3/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)",
+          "E024": "CERRADO: arreglado y medido en el producto final, 2/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)",
+          "E029": "CERRADO: arreglado y medido en el producto final, 3/3 en el e2e de práctica s0-2 sobre el producto final e0a7d9923 con c2-e1.0 (F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923); fallo estable al empezar el goal (base 0be0f9de9)"
         },
         "limites_con_evidencia": {
           "E006": "0/3, del modelo: con la carpeta y el nombre dichos por separado, file.write lleva sólo el nombre con folder home y pierde la subcarpeta; ninguno de los 7 ciclos de reentrenamiento lo arregló (PROGRESO, ciclos 3-8). Palancas sin reentrenar en PROMPT_GOAL_AYUDAS_MODELO.md (3 y 6)",
           "E020": "0/3, del modelo: file.find en home sin subdirectory y responde sin decir dónde buscó; palancas 4 y 6 de la meta siguiente",
-          "E027": "0/3: en s0 y s2 el modelo dice que esa carpeta es su carpeta privada y no actúa (falso; la frase que lo corrige ya está en td:63); en s1 actúa bien y la respuesta tras el «no» no suena (App o voz, no el modelo). Palancas 7-8 y la revisión de la App en la meta siguiente",
-          "E015": "0/3, no del modelo: app.open con place library sólo informa placeRequested (AppOpenHandler.cs:113-121) y el oráculo pide ver 4 o más juegos con la biblioteca en otra vista; queda revisar el oráculo y si steam://open/games cambia de vista con Steam abierto"
+          "E027": "0/3 en el banco; s0 y s2 del modelo (se niega diciendo que esa carpeta es su carpeta privada; td:63 ya dice lo contrario); s1 es fallo del BANCO: el producto dice la respuesta tras el «no» (4,3 s de audio), pero bench_e2e.py:245-247 deja first_audio_ms nulo para la respuesta que sigue a una confirmación y Test-Spoken (bench.ps1:596) la da por no dicha",
+          "E015": "0/3 en el banco por el ORÁCULO: Test-SteamLibraryVisible (bench.ps1:419-430) pide 4 de 27 títulos por OCR y la biblioteca sólo muestra 1-2 según su scroll; steam://open/games sí llega a la biblioteca con Steam abierto y en frío (en vivo). s0 usó place library y llegó; s1 y s2 no usaron place (del modelo). Arreglo del oráculo propuesto para la meta siguiente"
+        },
+        "evidencia_por_caso": "F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923/results-s{0,1,2}.jsonl (copia de las corridas del notebook nb-l2-c2e1-e0a7d9923-s{0,1,2}-e2e-e2e). Al empezar el goal (base 0be0f9de9) los once casos E003, E006, E015, E017, E019, E020, E021, E022, E024, E027 y E029 eran fallos estables; en el producto final E003, E021, E022 y E029 aciertan 3/3 y E019 y E024 2/3 (mayoría; la semilla que falla es del modelo)",
+        "evidencia_en_codigo_c33dd859a": {
+          "E5_consola": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs:2273-2276 (la ventana de una app de consola por la relación de dueño de Windows, PseudoConsoleWindow → CASCADIA_HOSTING_WINDOW_CLASS)",
+          "E5_tope_turno": "src/Baxy.App/TurnClosing.cs:18-22 (MaximumModelCalls 15 y el cierre por tiempo y repetición) usado en src/Baxy.App/NativeTurnLoop.cs:266, :299",
+          "E3_opera_gx": "src/Baxy.Providers.Windows/External/UserBrowserScripts.cs:13, :181, :414 (el hijo muerto de LiveBackgroundView tras un Speed Dial)",
+          "E2_word": "src/Baxy.Providers.Windows/External/WindowsDesktopInteractionAdapter.cs:321, :720 (input_text_not_read_back con su efecto posible)",
+          "E6_foco": "0d2ae11aa (OpenedApplicationKeyboard.cs, VisibleControlSurface.cs: la app minimizada se restaura por el lease) y 6f89ec6d1 (ForegroundRight.Give: ForegroundHandBack.cs:69, WindowsInstalledApplicationOpenProvider.cs:2229, ForegroundLease.cs:858)",
+          "E4_memory_recall": "src/Baxy.Core/Operations/MemoryHandlers.cs:576-591 (scope all sin selector; con selector, memory_recall_all_takes_no_selector)"
         }
       }
     },
