@@ -102,3 +102,25 @@ def test_with_the_home_aid_off_the_folder_means_what_it_meant(tmp_path: Path, mo
     mind.configure(FILE_WRITE)
     assert "home folder is" not in _folder_meaning(mind)
     assert not mind.trace.exists() or not [r for r in _trace(mind) if r["stage"] == "configure.aid"]
+
+
+SETTINGS_AND_TRASH = {"capabilities": [
+    {"name": "system.settings.set", "description": "Set a setting.", "argumentsSchema": {"type": "object", "properties": {}}},
+    {"name": "filesystem.known.trash.named", "description": "Delete by name.",
+     "argumentsSchema": {"type": "object", "properties": {}}}]}
+
+
+def _description(mind: Mind, wire: str) -> str:
+    return next(t for t in mind.tools if t["function"]["name"] == wire)["function"]["description"]
+
+
+@pytest.mark.parametrize("setting,modes,folder", [("modes_sentence", True, False),
+                                                  ("person_folder_sentence", False, True), ("none", False, False)])
+def test_a_sentence_aid_ends_its_tools_description_only_when_on(tmp_path: Path, monkeypatch, setting: str,
+                                                                modes: bool, folder: bool) -> None:
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, _ = _mind(tmp_path, [])
+    mind.configure(SETTINGS_AND_TRASH)
+    settings, trash = _description(mind, "system_settings_set"), _description(mind, "filesystem_known_trash_named")
+    assert settings.endswith("do not turn on the accessible mode in its place.") is modes
+    assert trash.endswith("the one filesystem_list shows).") is folder
