@@ -1982,3 +1982,40 @@ dueño) entran como palanca propia en un ciclo, medida con esta sonda.
   (Riemer 2025, paper) no se descarta por sí sola, porque viajó con los datos v3, que son lo que rompe; no queda tiempo
   para medirla sobre v2.
 
+### Ciclo 8 (datos v2 + G9, honestidad de los modos)
+
+- Referencia nueva del lote: c2-e1.0 sobre hub/lote-final2 bd0877892 (lote-final 81795803d + nb-proveedores 942ff5518;
+  Kernel 574, Contracts 69, Setup 477, Providers 2316, pytest 32, App 0 errores), recompilado: e2e 26/21/26 = 73/90,
+  sin error ni setup_failed; frente a 9123a139f (75/90) Δ −0,67, McNemar por mayoría 0↑/0↓: igual dentro del ruido.
+- c8-e0.5, cribado (notebook): decision2 s0 230 (= c2-e1.0), escenas sin tocar 32, 0 molestas.
+- Sonda de los modos (notebook; c2-e1.0 en la misma GPU da lo mismo que en el PC, 0/34): c8-e0.5 da 0/34 con el juez
+  automático (nunca usa las palabras de «próximamente»), responde con texto en vez de actuar en 23 de 40 casos (c2-e1.0:
+  16). Lectura estricta de sus respuestas (no de los textos de la sonda): dice que no tiene el modo en unas 11 de las 34
+  (c2-e1.0: unas 7), pero afirma o promete algo falso en unas 7 (c2-e1.0: 4); por ejemplo, dice tener «el modo No
+  vidente» o promete narrar. El juez automático sólo ve 1 de esas falsedades: para c8-e1.0 se cuenta también a mano.
+- **c8-e0.5, e2e** (notebook, bd0877892 recompilado): 21/20/20 = 61/90 frente a 73 de c2-e1.0 (pareado −4,0, IC 95 %
+  [−7,0, −1,33], McNemar por mayoría 0↑/6↓, p = 0,031), sin error ni setup_failed. Bajan E010, E011, E012, E017, E019,
+  E024, E029; no sube ninguno. En E017 ya no suelta la subcarpeta (eso era de v3), pero guarda con clics en «Guardar
+  como» en vez de file.write; en E011 llama a la calculadora sin abrirla. **Rechazado**; no se gastan decision2 s1-2,
+  escenas pA-pC ni falsedades. Que con sólo 86 ejemplos más que c2 la media época pierda la recuperación de E011 y E017
+  indica que esas conductas de c2-e1.0 son frágiles entre corridas; queda como inferencia, sin una corrida repetida de
+  c2 que la mida.
+- c8-e1.0, e2e s0 en bd0877892: 21/30 (c2-e1.0: 26). E011 vuelve a abrir la Calculadora; E024 conserva la subcarpeta
+  pero quita folder home. **Hallazgo de proveedor (notebook)**: en esa corrida window.focus falló 17 de 17
+  (action_failed), y también falla en corridas de c2-e1.0 (funcionaba en 0be0f9de9, 6280fbe34). Causa:
+  Win32WindowControlPlatform.Execute usaba SetForegroundWindow a secas desde Baxy.Core, que corre en segundo plano, y
+  Windows lo rechaza en cuanto el proceso gasta su derecho al primer plano; app.open y las teclas ya pasaban por
+  ForegroundRight. Un modelo que usa más window.focus (c8) pagaba un fallo del producto. Arreglo en nb-proveedores, con
+  prueba en vivo; los candidatos vivos y la referencia c2-e1.0 se comparan sobre el lote con el arreglo (lote-final3).
+- **Entorno contaminado en el notebook** (descubierto a las 07:21): desde el e2e s1 de c8-e0.5 (~06:12) el primer plano
+  lo tenía una ventana invisible de GameInputSvc (servicio que arranca por disparo, probablemente por el caso de Steam);
+  desde ahí todo app.open con foreground:true acababa sin el frente y window.focus fallaba. Por eso **c8-e0.5 s1-s2 y
+  c8-e1.0 s0-s2 no valen**; lo limpio de c8-e0.5 es s0 = 21/30, que ya falla E011 (calculadora sin abrir) y E017 (guardar
+  con clics) por el modelo. El e2e comprobará por semilla quién tiene el frente antes de empezar y marcará inválida la
+  semilla contaminada; c8-e1.0 se repite sobre el lote con los arreglos.
+- **Sonda de los modos con c8-e1.0** (notebook; no usa el escritorio, vale): juez automático honesto 17 de 40 (c2-e1.0:
+  5; base: 4); en los 34 casos de modos no disponibles dice que aún no están («todavía no», «próximamente») en 11
+  (c2-e1.0: 0) y responde con texto en vez de actuar en 29 de 40 (c2-e1.0: 16). Lectura estricta de sus respuestas:
+  afirma o promete algo falso en 4 (promete narrar, dice tener el modo No vidente, promete manos libres), igual que
+  c2-e1.0 (4). La palanca G9 funciona en lo que se diseñó; se queda sólo si el e2e limpio y los otros bancos no bajan.
+
