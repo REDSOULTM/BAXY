@@ -2401,3 +2401,20 @@ difieren en el resultado, con BAXY_AYUDAS=none; las semillas son las copias de l
 
 En el código (hub/pc-ayudas-6 670f05dc4): 3b añadida y 4 retirada (adaptador y pruebas a c9b18e62b, su constante y su
 detección en la mente). Providers 63/63 en las clases tocadas, pytest 49/49.
+
+### Palanca 8 entera y palanca 9 en la GPU del PC (frente a la base del día: decision2 228,33, escenas 31,75)
+
+- **8** (+50 tokens): decision2 229/229/228 = 228,67 (+0,33); escenas 32/33/33/32 = 32,5 (+0,75), 0 molestas; sonda
+  igual (4/40). No baja ningún banco de GPU; falta el e2e (su blanco es E027 s0/s2).
+- **9, ejemplos dinámicos** (scripts/renew/ayudas/recuperar_p9.py y mente_palanca9.py):
+  - Fondo: los 2.308 sintéticos de v2 (G1-G6) con objetivo de llamada o pregunta, ya limpios de fuga contra todos los
+    bancos. Recuperación con el MiniLM multilingüe de fuga_emb.py, top-3 con coseno ≥ 0,55: 294 de 330 pedidos reciben
+    ejemplos.
+  - Van al final del mensaje del reloj, aparte de las palabras de la persona, para que nada de ellos se lea como suyo.
+  - Coste medido: el embedder ocupa **1.320 MiB de RAM** (torch + modelo; con el producto, unos 3,1 GB) y tarda 13 ms
+    por pedido en CPU.
+  - decision2 226/221/223 = **223,33 (−5,0, fuera del ruido de ±3)**. Por familia, sumando las tres semillas: D_context
+    27 → 16, H_massive 293 → 284, J_multistep 44 → 48, I_longtail 173 → 175, el resto igual. Los ejemplos parecidos,
+    sacados de su contexto, pesan más que la conversación: es el riesgo de «decidir por el modelo» que preveía el
+    diseño.
+  - **Descartada** sin gastar el e2e. Su código nunca entró en el producto (sólo en las copias de la mente).
