@@ -2470,3 +2470,22 @@ No baja ningún banco de GPU.
   AppOpenHandlerTests 12/12.
 - **Falta:** el e2e (E015) y las falsedades (F019). El riesgo es que mirar lleve a más clics en E015, donde s1 y s2 ya
   se perdían en clics.
+
+### Palancas 6b y 8: e2e s0-2 en el PC (brazos B frente a la referencia `none` de hoy, pc-l5a-A)
+
+Binario c2f13e6fb (pc-ayudas + pc-ayudas-6), un solo brazo por palanca, con la limpieza del home ya corregida en cada
+corrida. La referencia es el brazo A de la 5a: la misma máquina, el mismo día y BAXY_AYUDAS=none (A 23/22/26).
+
+- **8 `person_folder_sentence`:** B 26/26/25. Δ +2,0 ítems por semilla. Por mayoría suben **E027 (0/3 → 3/3, su
+  blanco)** y E008, y no baja ninguno. En s2, E010 y E011 dieron setup_failed (una Calculadora colgada): se repiten, y
+  la cifra de s2 no cuenta hasta entonces. Frente: en s0, 2 app.open detrás (WhatsApp y VS Code); en s1-s2, 0.
+  - En la GPU del notebook, sin escritorio: decision2 231,67 frente a 230,00 y escenas 31,25 frente a 32,50 (dentro de
+    ±2).
+  - Ganó en una máquina; se confirma en el e2e del notebook antes del lote.
+- **6b `home_path`:** B 25/24/24. Δ +0,67. Por mayoría sube E008 y bajan E017 y E029, y **su blanco no se mueve**:
+  E006 0/3 → 0/3 y E020 0/3 → 0/3.
+  - En E006, con la ruta del home delante, el modelo sigue escribiendo `compras.txt` con `folder: home`, sin
+    BAXY-bench, igual que sin la ayuda.
+  - En E020 cambia de herramienta (filesystem.search de «BAXY-bench») y sigue fallando.
+  - Frente: en s0 1 y en s1 3 app.open quedaron detrás de VS Code.
+  - **Descartada.** Su código sale del producto en el lote final.
