@@ -2270,3 +2270,52 @@ Medida: e2e de práctica s0-2 de c2-e1.0 sobre el producto final e0a7d9923 (75/9
   - E2_word: src/Baxy.Providers.Windows/External/WindowsDesktopInteractionAdapter.cs:321, :720 (input_text_not_read_back con su efecto posible);
   - E6_foco: 0d2ae11aa (OpenedApplicationKeyboard.cs, VisibleControlSurface.cs: la app minimizada se restaura por el lease) y 6f89ec6d1 (ForegroundRight.Give: ForegroundHandBack.cs:69, WindowsInstalledApplicationOpenProvider.cs:2229, ForegroundLease.cs:858);
   - E4_memory_recall: src/Baxy.Core/Operations/MemoryHandlers.cs:576-591 (scope all sin selector; con selector, memory_recall_all_takes_no_selector);
+
+## Ayudas al modelo sin reentrenar (PROMPT_GOAL_AYUDAS_MODELO.md, 2026-10-19)
+
+Producto de partida hub/baxy-renew dee06cdbe (producto e0a7d9923; src idéntico a c9b18e62b) con c2-e1.0 (sha256
+8a4b6ce3…). Decisión del dueño del 2026-10-19: reentrenar queda descartado y la semántica sólo informa al modelo
+(hechos del PC, resultados de herramientas, contexto del turno, por qué falló una llamada), nunca elige herramienta,
+cambia argumentos, ejecuta, escribe la respuesta ni bloquea en silencio. Rama del PC `pc-ayudas` (worktree
+BAXY-Renew-ayudas), del notebook `nb-ayudas`. Tope duro: 2026-10-21 15:00 (Chile).
+
+### Fase 0
+
+- **Holdout nuevo**, sellado por un subagente aislado antes de implementar nada (F:/BAXYeval/ayudas_v1/holdout,
+  SEALED_AYUDAS.md): 240 casos de decisión (rutas 60, ventana cerrada 40, modos 30, falsedad 30, general 80) y 36
+  escenas; sha256 en metas.json, `ayudas_modelo.holdout_ayudas`. Sin abrir.
+- **El juez de decisión para la fase 4**: `bench_decision.judge` lee `reply_re` / `reply_not_re` de los casos de texto
+  (regex sobre la respuesta normalizada, una o una lista), sin abrir el holdout: el formato está en SEALED_AYUDAS.md.
+  decision2 no lleva esos campos, así que su cifra no cambia (b52034cb1, tests/test_bench_decision_judge.py).
+- **Las palancas, verificadas en el código del producto de partida (c9b18e62b)**. Cambia respecto de la lista del goal:
+  - 1 (E011): el fallo externo no lleva `Result` (ExternalJson.Failure, ExternalJson.cs:53-73, lo vio el notebook), así
+    que `calculator_window_not_found` devuelve un recibo propio con `observed.next` (WindowsDeviceControlAdapter.cs,
+    `CalculatorNotOpen`), sin `effectUncertain`: no se pulsó nada.
+  - 3 (E024): el hecho se calcula en el proveedor (LocalFilesystemProvider `WhereWritten`) y se escribe en
+    FilesystemHandlers.cs:194-207; `:65-73` es el reparto de la llamada y no cambia.
+  - 2, 4, 5 (mind.py:543), 6 (mind.py:315 y :327-329), 7 (td:141), 8 (td:62; la frase ya está en td:63, filesystem.list):
+    como dice la lista.
+- **Interruptor de las ayudas** (9dbea1c70): `BAXY_AYUDAS` sin definir o `all` las enciende todas; `none` o `0`
+  ninguna, y el producto lee como el de partida; si no, la lista de ids (`calculator_next`, `accessible_scope`,
+  `work_folder`, `listed_path`, `turn_facts`). El core lo lee en ModelAids.cs y la mente en `_aid_on`; cada palanca
+  tiene su prueba con la ayuda apagada. La traza de la mente deja cada ayuda en una fila `turn.aid` (qué le dijo al
+  modelo), aparte de la fila de su decisión.
+- **Banco e2e igual en las dos máquinas**: bench_e2e.py con `utterances()` del notebook (E027 s1) fusionado en
+  pc-ayudas y lib/bench.ps1 c684edba (E015, la biblioteca de Steam por sus controles) en el PC y en el notebook.
+
+### Decisión del dueño (2026-10-19 ~15:20): reglas de máquinas
+
+- e2e s0-2 y falsedades con el producto real **autorizados en el PC**, con el BAXY del dueño cerrado, las herramientas
+  del sistema protegidas, el frente comprobado por semilla y por caso (frente_ahora.ps1 / e2e_frente.py),
+  MSConfig\services y los eventos 7040 revisados tras cada corrida y perfiles bajo %LOCALAPPDATA%\BAXY.
+- Nunca dos Baxy.exe en la misma máquina; el PC y el notebook pueden correr su e2e a la vez.
+- Cada máquina mide palancas distintas contra su propia base del día, medida en esa misma máquina; los dos brazos de
+  una comparación nunca se reparten. Lo que suba en una máquina se confirma en la otra antes del lote final.
+- Sigue valiendo: ≤3 llama-server en la GPU del PC (el e2e cuenta como uno), ninguna cifra con casos error o
+  setup_failed, privacidad.py en cada diff y push sólo a hub.
+
+**Reparto** (metas.json, `ayudas_modelo.reparto_palancas`):
+- Notebook: palancas 1-4 juntas (e2e s0-2 pareado contra e0a7d9923, en curso) y, si ganan, por separado con
+  BAXY_AYUDAS en el mismo binario; después la palanca 7 (modos, con prefijo).
+- PC: palanca 5a (`turn_facts`, sin prefijo), 6 (home en `folder`, con prefijo), 8 (carpetas de la persona en
+  trash.named, con prefijo) y 9 (ejemplos dinámicos, la última y sólo si quedan fallos).

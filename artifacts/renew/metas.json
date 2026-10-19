@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-19 (ajuste fino: cerrado) / 2026-10-18 (auditoría de los pedidos reales: cerrada)",
+  "actualizado": "2026-10-19 (ayudas al modelo: en curso) / 2026-10-19 (ajuste fino: cerrado) / 2026-10-18 (auditoría de los pedidos reales: cerrada)",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -2231,5 +2231,49 @@
       "honestidad de la mente sobre los modos de accesibilidad no disponibles (0/34; G9 la subía a 11/34 pero bajó el e2e)",
       "voz fuera de «en pruebas» y los dos modos de accesibilidad pendientes: decisión del dueño"
     ]
+  },
+  "ayudas_modelo": {
+    "goal": "PROMPT_GOAL_AYUDAS_MODELO.md (en el PC, fuera de git); tope duro 2026-10-21 15:00 hora de Chile",
+    "producto_de_partida": "hub/baxy-renew dee06cdbe (producto e0a7d9923; src idéntico a c9b18e62b), modelo c2-e1.0 sha256 8a4b6ce3edb2ba8b87c62111b4c3387fa481a4d01b58b29a112b799b0e8affc8",
+    "rama": "hub/pc-ayudas (PC) y hub/nb-ayudas (notebook)",
+    "decision_dueno_2026_10_19": "reentrenar descartado; la semántica sólo informa al modelo (hechos del PC, resultados, contexto, por qué falló), nunca elige herramienta, cambia argumentos, ejecuta, escribe la respuesta ni bloquea en silencio",
+    "holdout_ayudas": {
+      "sellado": "2026-10-19, subagente aislado, antes de implementar ninguna palanca",
+      "carpeta": "F:/BAXYeval/ayudas_v1/holdout (SEALED_AYUDAS.md)",
+      "decision_ayudas.sealed.json": {
+        "casos": 240,
+        "sha256": "74efc33cd9426add786ee801b5cae50ef2f176acaebbc80494613b47bdb42381"
+      },
+      "escenas_ayudas.sealed.json": {
+        "escenas": 36,
+        "sha256": "fa4d11b9c4f9e71715bf51dce4bd601c3fd074807e04f780b85ef9995bc62425"
+      },
+      "construir_ayudas.py": {
+        "sha256": "5a27f33c422d834676129299e50a88fbf2bb38101b011ac8ca9b9c9b3347e7f4"
+      },
+      "estado": "sin abrir; se mide una vez en la fase 4"
+    },
+    "decision_dueno_2026_10_19_maquinas": {
+      "fecha": "2026-10-19 ~15:20 (Chile)",
+      "e2e_en_el_pc": "autorizado: e2e s0-2 y falsedades con el producto real en REDPC, con el BAXY del dueño cerrado, herramientas del sistema protegidas, frente comprobado por semilla y por caso (frente_ahora.ps1 / e2e_frente.py), MSConfig\\services y eventos 7040 revisados tras cada corrida, perfiles bajo %LOCALAPPDATA%\\BAXY",
+      "un_baxy_por_maquina": "nunca dos Baxy.exe en la misma máquina; PC y notebook pueden correr su e2e en paralelo",
+      "reparto": "cada máquina mide palancas distintas contra su propia base del día en esa misma máquina; los dos brazos de una comparación nunca se reparten; lo que suba en una se confirma en la otra antes del lote final",
+      "sigue_valiendo": "≤3 llama-server en la GPU del PC (el e2e cuenta como uno), ninguna cifra con casos error o setup_failed, privacidad.py en cada diff, push sólo a hub"
+    },
+    "reparto_palancas": {
+      "notebook": [
+        "1-4 juntas, e2e s0-2 pareado contra e0a7d9923 (en curso) y, si ganan, por separado con BAXY_AYUDAS",
+        "7 (frase de los modos en system.settings.set, con prefijo)"
+      ],
+      "pc": [
+        "5a turn_facts (sin prefijo)",
+        "6 (home en el significado de folder, con prefijo; cribado en curso)",
+        "8 (frase de carpetas de la persona en filesystem.known.trash.named, con prefijo)",
+        "9 (ejemplos dinámicos, la última y sólo si quedan fallos)"
+      ],
+      "confirmacion": "la palanca que gane en una máquina se mide en la otra antes del lote"
+    },
+    "interruptor": "BAXY_AYUDAS: sin definir o all = todas; none o 0 = ninguna (el producto de partida); lista de ids (calculator_next, accessible_scope, work_folder, listed_path, turn_facts). ModelAids.cs y mind.py _aid_on; la traza de la mente lleva cada ayuda en una fila turn.aid aparte de la decisión",
+    "palancas": {}
   }
 }
