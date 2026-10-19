@@ -148,6 +148,10 @@ def _aid_on(aid: str) -> bool:
     return aid in {part.strip() for part in setting.split(",")}
 
 
+# The file tools whose «folder» takes one of the person's folders (aid «home_path»).
+HOME_FOLDER_TOOLS = {"file.write", "file.read", "file.find", "file.edit", "file.open", "filesystem.known.trash.named"}
+
+
 def _aids_seen(observation: str) -> dict[str, Any]:
     """The core's aids in a result, by the fields each one writes (ModelAids.cs): for the trace, apart from what the
     model decided after reading them."""
@@ -369,6 +373,7 @@ class Mind:
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
         tools, wire_to_op = [ASK_USER, CONFIRM], {}
+        aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
             description = self.english.get(name) or str(cap.get("description") or "")
@@ -387,12 +392,20 @@ class Mind:
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():
                 if isinstance(schema["properties"].get(argument), dict):
+                    # Aid «home_path» (lever 6): this PC's home folder, a fact of the machine, where the model fills
+                    # the folder (E006, E020, E027 lost a folder of the home or took it for BAXY's own).
+                    if argument == "folder" and name in HOME_FOLDER_TOOLS and _aid_on("home_path"):
+                        meaning += f" This PC's home folder is {Path.home()}."
+                        aids["home_path"] = str(Path.home())
                     schema["properties"][argument]["description"] = meaning
             wire = name.replace(".", "_")
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
             tools.append(tool)
             wire_to_op[wire] = name
         self.tools, self.wire_to_op = tools, wire_to_op
+        if aids:
+            # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
+            self._log("configure.aid", time.monotonic(), None, aids=aids)
         return len(capabilities)
 
     def warm(self) -> None:
