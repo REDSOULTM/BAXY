@@ -37,7 +37,11 @@ public sealed record FilesystemMutationResult(
     string? FullPath = null,
     // FT/proveedores goal (review of receipts): the file was not there and this write made it (an append included):
     // «añadí a tu lista» cannot be said of a list that did not exist here.
-    bool Created = false);
+    bool Created = false,
+    // E024 (pc-ayudas): a file.write that went to BAXY's own working folder (no folder, a relative path) says so, and
+    // a folder of the person's home with the same first part of the path is a fact beside it, never a redirection.
+    bool InWorkFolder = false,
+    string? SameNameInHome = null);
 
 public sealed record BackupReceipt(
     string BackupId,

@@ -163,7 +163,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string desiredHash = Hex(SHA256.HashData(bytes));
             string? current = !exists ? null : append ? Hex(SHA256.HashData(previous)) : HashFile(path);
             if (current is not null && string.Equals(current, desiredHash, StringComparison.Ordinal))
-                return Mutation(path, root, reachedState: true, previousVersionRecycled: false);
+                return WhereWritten(Mutation(path, root, reachedState: true, previousVersionRecycled: false), root, path);
             bool conflict = current is null
                 ? expectedSha256 is not null
                 : append
@@ -215,8 +215,34 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             }
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
-            return Mutation(path, root, reachedState: false, previousVersionRecycled: recycled) with { Created = !exists };
+            return WhereWritten(
+                Mutation(path, root, reachedState: false, previousVersionRecycled: recycled) with { Created = !exists },
+                root, path);
         }
+    }
+
+    // E024 (pc-ayudas): a write into the working folder says so, and a folder in the person's home named as the path's
+    // first part is told beside it (only read: nothing is moved, nothing refused, the model chooses what to do).
+    private FilesystemMutationResult WhereWritten(FilesystemMutationResult result, string root, string path)
+    {
+        if (!string.Equals(root, _root, StringComparison.OrdinalIgnoreCase)) return result;
+        string[] parts = Path.GetRelativePath(_root, path)
+            .Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+        string? sameName = null;
+        if (parts.Length > 1)
+        {
+            try
+            {
+                string home = RootFor("home");
+                string candidate = Path.Combine(home, parts[0]);
+                if (Directory.Exists(candidate) && !Inside(_root, candidate)
+                    && !string.Equals(candidate, _root, StringComparison.OrdinalIgnoreCase))
+                    sameName = candidate;
+            }
+            catch (FilesystemProviderException) { }
+        }
+
+        return result with { InWorkFolder = true, SameNameInHome = sameName };
     }
 
     /// <summary>

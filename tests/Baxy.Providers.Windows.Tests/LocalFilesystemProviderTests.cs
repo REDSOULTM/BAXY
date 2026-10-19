@@ -632,6 +632,54 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // E024 (pc-ayudas): file.write with no folder wrote «proyecto/notas.txt» in BAXY's working folder while the person
+    // has a «proyecto» in their home, and the receipt only gave a full path. It now says the working folder
+    // (folder baxy_work) and, as a fact beside it, the home folder of the same name; the file is where it was written.
+    [Test]
+    public async Task AWriteWithNoFolderSaysItIsInTheWorkingFolderAndNamesAHomeFolderOfTheSameName()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "proyecto"));
+        var provider = new LocalFilesystemProvider(sandbox, bin)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+        };
+
+        JsonElement same = await WriteMessage(provider, """{"relativePath":"proyecto/notas.txt","text":"uno"}""");
+        JsonElement single = await WriteMessage(provider, """{"relativePath":"notas.txt","text":"dos"}""");
+        JsonElement other = await WriteMessage(provider, """{"relativePath":"otro/notas.txt","text":"tres"}""");
+        JsonElement named = await WriteMessage(provider, """{"relativePath":"proyecto/notas.txt","text":"cuatro","folder":"home"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(same.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
+            Assert.That(same.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(sandbox, "proyecto", "notas.txt")));
+            Assert.That(same.GetProperty("sameNameInHome").GetString(), Is.EqualTo(Path.Combine(home, "proyecto")));
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "proyecto", "notas.txt")), Is.EqualTo("uno"));
+            // Contracasos: a bare file name, or a first part the home does not hold, names no home folder.
+            Assert.That(single.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
+            Assert.That(single.TryGetProperty("sameNameInHome", out _), Is.False);
+            Assert.That(other.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
+            Assert.That(other.TryGetProperty("sameNameInHome", out _), Is.False);
+            // A folder of the person's named in the call is that folder, as before.
+            Assert.That(named.GetProperty("folder").GetString(), Is.EqualTo("home"));
+            Assert.That(named.TryGetProperty("sameNameInHome", out _), Is.False);
+            Assert.That(File.ReadAllText(Path.Combine(home, "proyecto", "notas.txt")), Is.EqualTo("cuatro"));
+        });
+    }
+
+    // What the model reads of a file.write: the observed part of its message.
+    private static async Task<JsonElement> WriteMessage(IFilesystemProvider provider, string arguments)
+    {
+        OperationOutcome outcome = await Handle(provider, "file.write", arguments);
+        Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+        using JsonDocument message = JsonDocument.Parse(OperationVisibleFacts.FromOutcome("file.write", outcome));
+        return message.RootElement.GetProperty("observed").Clone();
+    }
+
     // Known folders that do not exist: a path under the test's temporary folder is in none of them.
     private static Func<string, string> Absent(TemporaryDirectory temporary) =>
         folder => Path.Combine(temporary.Path, "absent", folder);

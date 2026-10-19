@@ -202,7 +202,10 @@ internal static class FilesystemResultJson
         // BAXY Renew (file.write): whether the version it replaced went to the Recycle Bin, as observed.
         if (result.PreviousVersionRecycled is bool recycled) writer.WriteBoolean("previousVersionRecycled", recycled);
         if (!string.IsNullOrEmpty(folder)) writer.WriteString("folder", folder);
+        // E024 (pc-ayudas): a write with no folder went to BAXY's own working folder, not to one of the person's.
+        else if (result.InWorkFolder) writer.WriteString("folder", "baxy_work");
         if (result.FullPath is not null) writer.WriteString("fullPath", result.FullPath);
+        if (result.SameNameInHome is not null) writer.WriteString("sameNameInHome", result.SameNameInHome);
         if (result.Created) writer.WriteBoolean("created", true);
     });
 
