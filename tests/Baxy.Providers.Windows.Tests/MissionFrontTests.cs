@@ -59,6 +59,30 @@ public sealed class MissionFrontTests
         });
     }
 
+    // FT/proveedores goal (live W1): the refusal names the program whose window it was, so the reply does not blame
+    // another application.
+    [Test]
+    public async Task AProtectedWindowRefusalNamesItsProgram()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
+        {
+            RefusedProcessOf = (_, _) => "WindowsTerminal",
+        };
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
+            Assert.That(receipt.Result?.GetProperty("refusedProcess").GetString(), Is.EqualTo("WindowsTerminal"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(adapter.Calls, Is.Zero);
+        });
+    }
+
     // CU4 (auditoría final 2): an act that would reach a developer's or BAXY's own window no look named is never sent,
     // and no front is taken for it.
     [Test]
