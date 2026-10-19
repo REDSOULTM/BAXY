@@ -2358,7 +2358,7 @@ A = e0a7d9923 (producto de partida), B = pc-ayudas a3af5c20f; c2-e1.0 en los dos
 - **A 24/23/25 = 24,00; B 26/25/25 = 25,33.** Pareado: Δ +1,33 ítems, IC 95 % [0,00, +3,00]; por semilla +2, +2, 0;
   ninguna baja. Por mayoría sube E024 y no baja ninguno (McNemar 1/0, p = 1,0).
 - **Puerta:** E011 A 2/3 → B 3/3; E017 3/3 → 3/3; E024 1/3 → 3/3. E020 0/3 y E006 0/3 en los dos.
-- **Limpieza:** 0 error y 0 setup_failed en las 6; frente limpio antes de cada corrida y 0 app.open al frente detrás;
+- **Limpieza:** 0 error y 0 setup_failed en las 6; frente limpio al empezar cada brazo y 0 app.open al frente detrás;
   MSConfig 0; ningún 7040.
 - **Qué hizo cada ayuda** (campos nuevos vistos en B, por la traza y los eventos):
   - 1 `calculator_next`: salió en E011 en las tres semillas. En s1 **cambia la conducta**: A se rinde («la calculadora
