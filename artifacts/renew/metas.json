@@ -2075,15 +2075,23 @@
       },
       "c6": {
         "cambio": "datos v3 + KL hacia el base (β 0,05 réplica del latido, 0,005 resto; Riemer 2025)",
-        "estado": "entrenando (2026-10-19 00:40)"
+        "estado": "rechazado",
+        "c6-e0.5_notebook": "decision2 233,33 (+3,33), escenas 30,5 (-1,75), e2e 22,33 (pareado -2,67, McNemar 0/3)",
+        "c6-e1.0_notebook": "e2e 23,0 (pareado -2,0, 0/3); E017 y E024 caen 3/3 por la ruta",
+        "causa": "los datos v3 enseñan a soltar la subcarpeta dictada y a no abrir la app tras window_not_found (eventos del e2e); igual con KL y sin ella"
       },
       "c7": {
         "cambio": "datos v4 = v2 + 558 escenas de réplica ×1 (D1 palanca 3), 5.190 muestras",
-        "estado": "encadenado tras c8"
+        "estado": "rechazado",
+        "c7-e0.5_notebook": "decision2 s0 235, escenas 29 (-3,25)",
+        "c7-e1.0_notebook": "escenas 30,5 (-1,75), e2e 71/90 frente a 75 (pareado -1,33, McNemar 0/2); E024 3/3 por la ruta"
       },
       "c8": {
         "cambio": "datos v5 = v2 + 86 ejemplos honestos de los modos G9 (34 fuera por la sonda), 5.140 muestras",
-        "estado": "encadenado tras c6"
+        "estado": "rechazado (baja el e2e)",
+        "c8-e0.5_notebook": "decision2 s0 230, escenas 32; e2e s0 limpio 21/30 (s1-s2 con el escritorio contaminado, no valen)",
+        "c8-e1.0_notebook": "e2e limpio sobre lote-final3 s0 22/30, s1 23/30 (c2-e1.0 25, 24); E017/E024 por la ruta",
+        "sonda_modos_c8-e1.0": "juez 17/40 honesto (c2-e1.0 5); dice «todavía no/próximamente» en 11/34 (c2-e1.0 0); falsedades a mano 4 (= c2-e1.0)"
       }
     },
     "proveedores": {
@@ -2132,13 +2140,28 @@
       "mente": "ningún modo cambia lo que ve; inventario en artifacts/renew/MODOS_ACCESIBILIDAD.md"
     },
     "lote": {
-      "rama": "hub/lote-final",
-      "cabeza_medida": "9123a139f (= 7d59e80bb + 19d49554f)",
+      "rama": "hub/lote-final (fusiona hub/lote-final3)",
+      "producto": "e0a7d9923 (lote-final a62832c34 + nb-proveedores 6f89ec6d1)",
       "modelo": "c2-e1.0",
-      "e2e_recompilado": "26/23/26 = 25,0 (pareado +1,33 frente a b550e9602, McNemar 1/0)",
-      "suites": "Kernel 574, Contracts 69, Setup 477, Providers 2315, pytest 30",
-      "recursos": "VRAM 3.901 MiB, RAM producto 1.791 MiB",
-      "vivo": "E001 3/3, F1 3/3, F2 3/3, W1 2/3 (arreglado en 7cb72bfdd)"
+      "suites": "Kernel 574, Contracts 69, Setup 477, Providers 2316, pytest 32, App 0 avisos",
+      "decision2": "230,00 (base del día 229,33)",
+      "escenas": "32,25, 0 molestas (base del día 31,25)",
+      "e2e": "25/24/26 = 75/90, escritorio comprobado por semilla (base del día 59/90)",
+      "falsedades_s0": "2 por lectura (F013, F015; el juez marcó también F001, que no es falsa); base del día 3",
+      "recursos": "VRAM 3.901 MiB (pico 3.903), RAM del producto 1.787 MiB",
+      "vivo": "F1 3/3, F2 3/3, E001 3/3, W1 3/3 con la preparación del banco arreglada (2/3 antes, fallo del banco)",
+      "arreglos_de_hoy": "window.focus/app.open/traer al frente por ForegroundRight (6f89ec6d1), recibo con refusedProcess (7cb72bfdd)",
+      "entorno": "semillas con GameInputSvc al frente marcadas inválidas y repetidas"
+    },
+    "prorroga": {
+      "decision": "NO",
+      "fecha": "2026-10-19 10:30",
+      "evidencia": "ninguna palanca ganó medida por separado en los cuatro bancos frente a c2-e1.0 (tabla en PROGRESO.md, «Decisión sobre la prórroga»)"
+    },
+    "modelo_final": {
+      "checkpoint": "c2-e1.0",
+      "gguf": "BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf",
+      "sha256": "8a4b6ce3edb2ba8b87c62111b4c3387fa481a4d01b58b29a112b799b0e8affc8"
     }
   }
 }

@@ -2113,3 +2113,19 @@ fase 4 (holdout nuevo, una vez), lote final medido entero, informe, commit y pus
   - Calienta con `--recompilar`, juzga OK / EJECUTA_MAL / OTRA_OP / SIN_RESPUESTA más revisar_falsedad, comprueba
     el incidente y pone en cuarentena lo que quede.
 - **Ensayo con 7 casos de práctica en ese formato:** 7/7 OK y 26 s por caso, así que los 237 seguros llevan ≈1 h 45 min.
+
+## Lote final (lote-final3 e0a7d9923, modelo c2-e1.0), medido entero
+
+- Suites (notebook): Kernel 574, Contracts 69, Setup 477, Providers 2316, pytest 32; App 0 avisos.
+- decision2 230,00 y escenas 32,25 (mente y catálogo de b550e9602; entre b550e9602 y el lote final la mente sólo cambia
+  en __main__.py y voice_output.py, ni prompt ni herramientas).
+- e2e s0-2 recompilado, escritorio comprobado por semilla: **25/24/26 = 75/90** (base del día 0be0f9de9: 19,67 por
+  semilla = 59/90; +16 aciertos).
+- En vivo: F1 3/3, F2 3/3, E001 3/3 (primera respuesta oída), W1 2/3; el fallo era de la preparación del banco (Word no
+  quedaba delante): arreglada en el banco del notebook, W1 3/3.
+- Falsedades s0 (juez del PC + lectura): el juez marca F001, F013 y F015; F001 no es falsa al leerla («no pude
+  comprobar que el juego esté instalado» es lo que dice steam_installed_game_not_verified). Quedan **2** (F013: dice
+  que el Bloc de notas ya no estaba en pantalla y sí estaba; F015: «Sí» a «¿ya lo cerraste?»). Base del día: 3.
+- Recursos (producto real, notebook): **VRAM 3.901 MiB (pico 3.903), RAM del producto 1.787 MiB**: ≤ 4 GB.
+- MSConfig\services 0 y ningún 7040 de deshabilitado en todas las corridas del notebook.
+
