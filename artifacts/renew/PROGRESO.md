@@ -1956,3 +1956,29 @@ dueño) entran como palanca propia en un ciclo, medida con esta sonda.
 - Ciclo 6 relanzado a las 00:40 tras un error de cuBLAS por memoria en el pase de referencia (ahora top-64 sobre los
   logits menos un logsumexp, sin log-softmax completo: pico 12,2 GB) y el fin de la sesión anterior. Orden siguiente:
   ciclo 8 (G9, requisito de honestidad del dueño) antes que el 7 (réplica amplia), por tiempo.
+
+### Ciclo 6 (datos v3 + KL hacia el base): cribado
+
+- c6-e0.5 (notebook, mente y catálogo del lote): decision2 s0 233 (lote 230; c5-e0.5 237), 0 filas con error; escenas
+  sin tocar 31 (lote 31; c5-e0.5 30), 0 molestas, 0 riesgos solos. La KL parece quitar la molesta de c5 (P019) a cambio
+  de algo de decisión. Se mide entero como candidato propio; c6-e1.0 hacia las 04:30 (~28 s/paso con la KL).
+- Falsedades s0 de c2-e1.0 sobre el lote 9123a139f recompilado: transcripciones en el PC, para el juez cuando quede
+  libre la GPU.
+- Recorrido del producto (notebook), suite de la vista contra la App del lote: 22/24. El micrófono falla por el entorno
+  (el notebook no tiene modelos de voz) y arrastra al rail, que pasa solo. Se repetirá en el PC, que tiene los modelos.
+- **c6-e0.5 entero** (notebook, lote 9123a139f recompilado): decision2 234/233/233 = 233,33 (+3,33); escenas
+  31/29/31/31 = 30,5 (−1,75), 0 molestas; **e2e 21/23/23 = 22,33 frente a 25,0** (pareado −2,67, IC 95 % [−5,67, 0,00],
+  McNemar 0↑/3↓). **No se queda.**
+- Por qué cae el e2e (eventos del e2e, notebook): en E017 c2-e1.0 llama file.write con la ruta completa que se dictó y
+  acierta 3/3; c5 y c6 dan sólo el nombre del archivo con folder home y lo dejan fuera de BAXY-bench (0/3). En E024
+  pasa lo mismo (o sin folder, que va al sandbox). En E011, tras calculator_window_not_found, c2 abre la Calculadora y
+  repite la cuenta (2/3); c5 y c6 nunca la abren (0/3). Ninguna llamada es rechazada por el producto. Ocurre igual con
+  KL y sin ella: viene de los datos v3, no del objetivo. En G7/G8 ningún ejemplo enseña a soltar una subcarpeta dictada
+  (los 58 con carpeta dictada la llevan en subdirectory o en la ruta entera); la explicación probable, más llamadas de
+  un paso y menos peso relativo de las cadenas con recuperación, es **inferencia propia**. Los ciclos 7 y 8 parten de
+  v2.
+- **c6-e1.0** (notebook, lote recompilado): e2e 23/22/24 = 23,0 frente a 25,0 (pareado −2,0, IC 95 % [−4,67, 0,00],
+  0↑/3↓); E017 y E024 caen 3/3 como en c5 y c6-e0.5. Medido primero el e2e y parado ahí: **rechazado**. La palanca KL
+  (Riemer 2025, paper) no se descarta por sí sola, porque viajó con los datos v3, que son lo que rompe; no queda tiempo
+  para medirla sobre v2.
+
