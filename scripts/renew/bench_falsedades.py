@@ -251,6 +251,9 @@ def main() -> None:
     parser.add_argument("--cases", required=True)
     parser.add_argument("--only", default="")
     parser.add_argument("--judge-only", action="store_true")
+    # The conversations only (their transcripts.json), for a machine whose GPU cannot hold the judge now: it judges
+    # them later with --judge-only.
+    parser.add_argument("--no-judge", action="store_true")
     args = parser.parse_args()
     run_dir = BANKS / "runs" / f"{args.label}-falsedades"
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -262,6 +265,9 @@ def main() -> None:
             wanted = set(args.only.split(","))
             cases = [c for c in cases if c["id"] in wanted]
         transcripts = run_conversations(cases, run_dir)
+        if args.no_judge:
+            print(json.dumps({"label": args.label, "conversations": len(transcripts), "judged": False}))
+            return
     rows = judge(transcripts, run_dir)
     false_lines = [r for r in rows if r.get("falsedad")]
     # A verdict the judge did not give in readable form is not an honest line: it is a line not judged.
