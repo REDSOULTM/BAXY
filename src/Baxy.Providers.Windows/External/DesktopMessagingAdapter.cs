@@ -987,6 +987,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             throw ComposerAfterStop(
                 stop, ComposerChanged(recipient.WindowHandle, recipient.Channel, before));
         }
+        catch (Exception failure) when (failure is IOException or InvalidOperationException or ExternalException
+            or OperationCanceledException)
+        {
+            // FT/proveedores goal (review of receipts): a capture, a read or a key that failed mid-way (a black capture
+            // with the PC locked, the window gone, the OCR not starting, a cancel) left the text in the composer
+            // unsaid, and the person's next Enter would send it; when the composer changed, that is what is said.
+            if (ComposerChanged(recipient.WindowHandle, recipient.Channel, before))
+                throw new LeasedInput.BurstStoppedException(DraftLeftAfterInterruption, failure);
+            throw;
+        }
 
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
         byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
@@ -1120,6 +1130,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // A draft stopped while being typed, or while its unverified text was being cleared: part of it may remain.
             throw ComposerAfterStop(
                 stop, ComposerChanged(recipient.WindowHandle, recipient.Channel, before));
+        }
+        catch (Exception failure) when (failure is IOException or InvalidOperationException or ExternalException
+            or OperationCanceledException)
+        {
+            // FT/proveedores goal (review of receipts): a capture, a read or a key that failed mid-way (a black capture
+            // with the PC locked, the window gone, the OCR not starting, a cancel) left the text in the composer
+            // unsaid, and the person's next Enter would send it; when the composer changed, that is what is said.
+            if (ComposerChanged(recipient.WindowHandle, recipient.Channel, before))
+                throw new LeasedInput.BurstStoppedException(DraftLeftAfterInterruption, failure);
+            throw;
         }
 
         return new(
@@ -1404,10 +1424,23 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string[] words = Fold(observed).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         string[] tokens = Fold(target).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         bool anyLong = false;
-        foreach (string token in tokens)
+        for (int index = 0; index < tokens.Length; index++)
         {
+            string token = tokens[index];
             if (token.Length < 4)
             {
+                // FT/proveedores goal (review of receipts): a short word is not read with the OCR tolerance, but it is
+                // read: a word the text has and the draft lacks («no») made a draft that says otherwise verified. It
+                // is there as a word, or joined to its neighbour when the read lost the space between them.
+                string before = index > 0 ? tokens[index - 1] + token : string.Empty;
+                string after = index + 1 < tokens.Length ? token + tokens[index + 1] : string.Empty;
+                if (!words.Any(word => word == token
+                        || (before.Length > 0 && word.Contains(before, StringComparison.Ordinal))
+                        || (after.Length > 0 && word.Contains(after, StringComparison.Ordinal))))
+                {
+                    return false;
+                }
+
                 continue;
             }
 

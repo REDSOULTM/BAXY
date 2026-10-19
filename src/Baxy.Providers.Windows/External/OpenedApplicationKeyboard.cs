@@ -68,6 +68,11 @@ internal sealed class OpenedApplicationKeyboard : IOpenedApplicationKeyboard
         VisibleControlSurface.OpenedSurface surface = await _focus
             .FrontAsync(opened, judgeDrawn: false, cancellationToken, bringToFront: false)
             .ConfigureAwait(false);
-        return surface.Window == 0 ? null : new OpenedKeyboardWindow(surface.Window, _title(surface.Window));
+        if (surface.Window != 0)
+            return new OpenedKeyboardWindow(surface.Window, _title(surface.Window));
+        // FT/proveedores goal (E6): a minimized application has no usable window; its minimized one is restored by the
+        // lease's bringing it up (VisibleControlSurface.BringToFront restores an iconic window), or the act is refused.
+        nint minimized = _focus.MinimizedWindow(opened);
+        return minimized == 0 ? null : new OpenedKeyboardWindow(minimized, _title(minimized));
     }
 }

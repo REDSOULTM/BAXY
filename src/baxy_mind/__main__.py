@@ -64,8 +64,13 @@ def main() -> int:
                     continue
                 kind = str(message.get("type"))
                 if kind == "voice.speak":
+                    # FT/proveedores goal (review of E001's fix): an answer asked while the voice loads waits and
+                    # sounds once it is loaded, but the turn's «Un momento.» says the turn is under way: heard after
+                    # the answer is on screen it would say something false, so it is only taken from a loaded voice.
+                    text = str(message.get("text") or "")
+                    accepted = (voice.speech.ready or text != NOTICE) and voice.speech.speak(text)
                     protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
-                                            "accepted": voice.speech.speak(str(message.get("text") or ""))})
+                                            "accepted": accepted})
                 elif kind == "voice.cancel":
                     voice.speech.cancel()
                     protocol.write_message({"type": "voice.cancelled", "id": message.get("id")})

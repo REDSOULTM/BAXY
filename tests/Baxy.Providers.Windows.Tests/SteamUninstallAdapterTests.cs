@@ -41,6 +41,36 @@ public sealed class SteamUninstallAdapterTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): Steam marks the manifest «uninstalling» (2048) while it deletes the files:
+    // that is not removed; the manifest's absence afterwards is.
+    [Test]
+    public async Task AManifestStillUninstallingIsNotRemovedYet()
+    {
+        var games = new List<SteamLocalGame> { new("620", "Portal 2", new string('a', 64)) };
+        int reads = 0;
+        var automation = new StubAutomation(_ => games[0] = games[0] with { StateFlags = 2048 });
+        var adapter = new SteamLocalAdapter(
+            () =>
+            {
+                if (games.Count > 0 && games[0].StateFlags == 2048 && ++reads > 2)
+                    games.Clear();
+                return games.ToArray();
+            },
+            () => new HashSet<string> { "620" }, automation, (_, _) => ValueTask.CompletedTask);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.uninstall.named",
+            JsonSerializer.SerializeToElement(new { title = "portal 2", store = "steam" }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result!.Value.GetProperty("state").GetString(), Is.EqualTo("manifest_removed"));
+            Assert.That(reads, Is.GreaterThan(2), "it was watched while Steam uninstalled");
+        });
+    }
+
     [Test]
     public async Task ATitleThatIsNotInstalledIsAnHonestAbsenceBeforeAnyEffect()
     {

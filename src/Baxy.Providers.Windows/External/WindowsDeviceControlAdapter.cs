@@ -93,8 +93,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         try {
           $p=Start-Process -FilePath ([string]$i.path) -Verb PrintTo -ArgumentList ('"'+[string]$i.printer+'"') -PassThru;$effect=$true
           $deadline=(Get-Date).AddSeconds(30)
-          do {Start-Sleep -Milliseconds 500;$job=Get-PrintJob -PrinterName ([string]$i.printer) -ErrorAction SilentlyContinue|Where-Object {$before -notcontains $_.ID}|Select-Object -First 1} while($null -eq $job -and (Get-Date) -lt $deadline)
-          [pscustomobject]@{ok=($null -ne $job);effectObserved=$effect;jobId=if($job){[string]$job.ID}else{''};status=if($job){[string]$job.JobStatus}else{''}}|ConvertTo-Json -Compress
+          # Goal FT/proveedores (revision de recibos): el trabajo nuevo que lleva el nombre del documento; otro trabajo
+          # nuevo de esa impresora (de otra app) solo vale al final, y el recibo dice que no lleva su nombre.
+          $name=[IO.Path]::GetFileNameWithoutExtension([string]$i.path);$job=$null;$other=$null
+          do {Start-Sleep -Milliseconds 500;$new=@(Get-PrintJob -PrinterName ([string]$i.printer) -ErrorAction SilentlyContinue|Where-Object {$before -notcontains $_.ID})
+            $job=$new|Where-Object {([string]$_.DocumentName).IndexOf($name,[StringComparison]::OrdinalIgnoreCase) -ge 0}|Select-Object -First 1
+            if($null -eq $other){$other=$new|Select-Object -First 1}} while($null -eq $job -and (Get-Date) -lt $deadline)
+          $named=($null -ne $job);if(-not $named){$job=$other}
+          [pscustomobject]@{ok=($null -ne $job);effectObserved=$effect;documentNamed=$named;jobId=if($job){[string]$job.ID}else{''};status=if($job){[string]$job.JobStatus}else{''}}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='print_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
     private const string ScanScript = """
@@ -476,11 +482,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "wifi_radio_not_found");
         }
         RadioState desired = requested ? RadioState.On : RadioState.Off;
+        // FT/proveedores goal (review of receipts): a radio disabled by its switch or driver (RadioState.Disabled) is
+        // off: turning it off changes nothing and is not told «may have happened»; turning on radios that are all
+        // disabled is said before anything is touched.
+        bool Reached(Radio radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
+        if (requested && radios.All(radio => radio.State == RadioState.Disabled))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "wifi_radio_disabled");
+        }
         bool effectObserved = false;
         foreach (Radio radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (radio.State == desired)
+            if (Reached(radio))
             {
                 continue;
             }
@@ -495,7 +509,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         Radio[] observed = (await Radio.GetRadiosAsync())
             .Where(radio => radio.Kind == RadioKind.WiFi)
             .ToArray();
-        if (observed.Length == 0 || observed.Any(radio => radio.State != desired))
+        if (observed.Length == 0 || !observed.All(Reached))
         {
             return effectBoundary.Failure(operation, "wifi_radio_postread_failed", effectObserved);
         }
@@ -541,7 +555,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // AIRPLANE2043 «sacá el modo avión» with every radio already on: nothing to
         // switch cannot be observed as an effect; the honest fact is the state,
         // said before any boundary is crossed (same contract as the microphone).
-        if (radios.All(radio => radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled)))
+        // A disabled radio is off for the airplane mode (bool allOff below), and stays out of the switching.
+        if (radios.All(radio => radio.State == desired || radio.State == RadioState.Disabled))
         {
             return ExternalJson.FailureBeforeEffect(
                 operation, value == 1 ? "airplane_radios_already_all_off" : "airplane_radios_already_on");
@@ -550,7 +565,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         foreach (Radio radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (radio.State == desired || (desired == RadioState.On && radio.State == RadioState.Disabled))
+            if (radio.State == desired || radio.State == RadioState.Disabled)
                 continue;
             effectBoundary.Cross(cancellationToken);
             RadioAccessStatus changed = await radio.SetStateAsync(desired);
@@ -680,11 +695,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "bluetooth_radio_not_found");
         }
         RadioState desired = requested ? RadioState.On : RadioState.Off;
+        // FT/proveedores goal (review of receipts): a radio disabled by its switch or driver (RadioState.Disabled) is
+        // off: turning it off changes nothing and is not told «may have happened»; turning on radios that are all
+        // disabled is said before anything is touched.
+        bool Reached(Radio radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
+        if (requested && radios.All(radio => radio.State == RadioState.Disabled))
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "bluetooth_radio_disabled");
+        }
         bool effectObserved = false;
         foreach (Radio radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (radio.State == desired)
+            if (Reached(radio))
             {
                 continue;
             }
@@ -702,7 +725,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         Radio[] observed = (await Radio.GetRadiosAsync())
             .Where(radio => radio.Kind == RadioKind.Bluetooth)
             .ToArray();
-        if (observed.Length == 0 || observed.Any(radio => radio.State != desired))
+        if (observed.Length == 0 || !observed.All(Reached))
         {
             return effectBoundary.Failure(
                 operation,
@@ -1643,6 +1666,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteStartObject(); writer.WriteNumber("version", 1); writer.WriteString("deviceId", deviceId);
             writer.WriteString("documentId", documentId); writer.WriteString("jobId", "print_" + response.RootElement.GetProperty("jobId").GetString());
             writer.WriteString("status", response.RootElement.GetProperty("status").GetString());
+            writer.WriteBoolean("documentNamed", Bool(response.RootElement, "documentNamed"));
             writer.WriteString("authority", "windows_print_spooler_postread"); writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, true);
@@ -1801,7 +1825,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         ExternalCapabilityReceipt receipt = await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token, place);
         if (receipt.Verified && place is not null && !byPlace)
         {
-            WriteWifiPlace(place, profile);
+            // FT/proveedores goal (review of receipts): the place remembered for next time is BAXY's own note; a write
+            // that fails (the file held, access denied) turned a verified connection into a failure.
+            try
+            {
+                WriteWifiPlace(place, profile);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+            }
         }
 
         return receipt;

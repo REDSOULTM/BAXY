@@ -40,7 +40,8 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         CancellationToken cancellationToken)
     {
         string action = OptionalString(arguments, "action") ?? string.Empty;
-        string kind = OptionalString(arguments, "kind") ?? "reminder";
+        string? namedKind = OptionalString(arguments, "kind");
+        string kind = namedKind ?? "reminder";
         if (action is not ("create" or "list" or "cancel" or "diagnose"))
             return ExternalJson.FailureBeforeEffect(operation, "schedule_action_invalid");
         if (kind is not ("alarm" or "reminder"))
@@ -65,7 +66,8 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         if (action == "cancel" && at is not null)
         {
             return TryLocalClock(at, out int hour, out int minute)
-                ? await CancelAtAsync(operation, kind, hour, minute, cancellationToken).ConfigureAwait(false)
+                ? await CancelAtAsync(operation, namedKind is null ? ["alarm", "reminder"] : [kind], hour, minute,
+                    cancellationToken).ConfigureAwait(false)
                 : ExternalJson.FailureBeforeEffect(operation, "notification_clock_selector_invalid");
         }
 
@@ -151,38 +153,63 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         return parsed;
     }
 
+    // FT/proveedores goal (review of receipts): a cancel at a clock time with no kind looked only among reminders (the
+    // default kind), so the alarm at that time was «not found» (or a reminder at that time went instead); most cancels
+    // the model writes name the time and no kind. With no kind both are resolved (reads, no effect) and only one
+    // notification at that time in all is canceled; one of each kind is ambiguous.
     private async ValueTask<ExternalCapabilityReceipt> CancelAtAsync(
         string operation,
-        string kind,
+        string[] kinds,
         int hour,
         int minute,
         CancellationToken cancellationToken)
     {
-        ExternalProcessResult resolved;
-        try
+        string kind = kinds[0];
+        string? taskName = null, nextRunUtc = null;
+        string resolutionError = "notification_clock_not_found";
+        int found = 0;
+        foreach (string candidate in kinds)
         {
-            resolved = await _backend.RunAsync(
-                new ScheduledNotificationRequest("resolve-at", kind)
-                {
-                    Hour = hour,
-                    Minute = minute,
-                    // M80: only the notifications this data root set are candidates.
-                    AlarmRoot = _alarmRoot,
-                },
-                cancellationToken).ConfigureAwait(false);
-        }
-        catch (Exception exception) when (exception is IOException or JsonException
-            or UnauthorizedAccessException or TimeoutException or InvalidDataException)
-        {
-            return ExternalJson.FailureBeforeEffect(
-                operation, "notification_clock_resolution_failed");
+            ExternalProcessResult resolved;
+            try
+            {
+                resolved = await _backend.RunAsync(
+                    new ScheduledNotificationRequest("resolve-at", candidate)
+                    {
+                        Hour = hour,
+                        Minute = minute,
+                        // M80: only the notifications this data root set are candidates.
+                        AlarmRoot = _alarmRoot,
+                    },
+                    cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or JsonException
+                or UnauthorizedAccessException or TimeoutException or InvalidDataException)
+            {
+                return ExternalJson.FailureBeforeEffect(
+                    operation, "notification_clock_resolution_failed");
+            }
+
+            if (TryParseExactClockSelection(
+                    resolved, candidate, out string? candidateTask, out string? candidateNextRun,
+                    out string candidateError))
+            {
+                found++;
+                (kind, taskName, nextRunUtc) = (candidate, candidateTask, candidateNextRun);
+            }
+            else if (candidateError != "notification_clock_not_found")
+            {
+                resolutionError = candidateError;
+                if (kinds.Length == 1 || candidateError != "notification_clock_ambiguous")
+                    return ExternalJson.FailureBeforeEffect(operation, candidateError);
+                found += 2;
+            }
         }
 
-        if (!TryParseExactClockSelection(
-                resolved, kind, out string? taskName, out string? nextRunUtc,
-                out string resolutionError))
+        if (found != 1)
         {
-            return ExternalJson.FailureBeforeEffect(operation, resolutionError);
+            return ExternalJson.FailureBeforeEffect(
+                operation, found == 0 ? resolutionError : "notification_clock_ambiguous");
         }
 
         var effectBoundary = new ExternalEffectBoundary();

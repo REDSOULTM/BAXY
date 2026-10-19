@@ -96,6 +96,25 @@ public sealed class DisplayModeAdapterTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): Windows answers DISP_CHANGE_RESTART and keeps showing the old mode: the
+    // new one was saved for the next sign-in, so the shown mode is saved back, and the receipt says nothing changed.
+    [Test]
+    public async Task AModeKeptForARestartIsSavedBackToTheShownOne()
+    {
+        var display = new FakeDisplay(Now, Modes) { AppliesNow = false, ApplyResults = new Queue<int>([1, 0]) };
+
+        ExternalCapabilityReceipt receipt = await Invoke(display, new { refreshHz = 60 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("display_mode_not_applied"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(display.Applied, Is.EqualTo(new[] { new DisplayModeValue(1920, 1080, 60, 32), Now }),
+                "the shown mode saved back");
+        });
+    }
+
     [Test]
     public async Task RevertThatDoesNotReadBackIsReportedAsAnObservedChange()
     {
@@ -188,11 +207,18 @@ public sealed class DisplayModeAdapterTests
             return TestResult;
         }
 
+        /// <summary>What Apply returns, in order (by default 0, DISP_CHANGE_SUCCESSFUL, every time).</summary>
+        internal Queue<int> ApplyResults { get; init; } = new();
+
+        /// <summary>Whether an applied mode shows now (false: Windows keeps it for a restart and the screen stays).</summary>
+        internal bool AppliesNow { get; init; } = true;
+
         public int Apply(string device, DisplayModeValue mode)
         {
             _applied.Add(mode);
-            _current = Shows(mode);
-            return 0;
+            if (AppliesNow)
+                _current = Shows(mode);
+            return ApplyResults.Count > 0 ? ApplyResults.Dequeue() : 0;
         }
     }
 }

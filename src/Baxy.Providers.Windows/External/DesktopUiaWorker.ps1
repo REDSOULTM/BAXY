@@ -4218,6 +4218,14 @@ function Do-TextCaret($request){
     try { $node=$walker.GetParent($node) } catch { $node=$null }
   }
   if($null -eq $holder){ return @{ ok=$false; error='caret_text_not_found' } }
+  # Goal FT/proveedores (E2, revision): el mismo proceso no basta (dos documentos de Word son un proceso); el campo con
+  # el caret tiene que estar dentro de la ventana pedida, o no se lee el de otra.
+  $inside=$false; $up=$holder
+  for($depth=0; $depth -lt 64 -and $null -ne $up; $depth++){
+    if([System.Windows.Automation.Automation]::Compare($up,$target.root)){ $inside=$true; break }
+    try { $up=$walker.GetParent($up) } catch { $up=$null }
+  }
+  if(-not $inside){ return @{ ok=$false; error='caret_window_mismatch' } }
   $kind=''; $password=$false
   try { $kind=([string]$holder.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
   try { $password=[bool]$holder.Current.IsPassword } catch { $password=$true }

@@ -140,6 +140,27 @@ public sealed class DesktopInteractionOpenedApplicationTests
         });
     }
 
+    // FT/proveedores goal (E6): the opened application minimized (no usable window, only its minimized one): the act goes
+    // to that window, which the lease brings up (restoring it), not to the front.
+    [Test]
+    public async Task AMinimizedOpenedApplicationGetsTheActThroughTheLease()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening { Window = 0, Minimized = Opened }, Steam));
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(lease.Taken, Is.EqualTo(new nint[] { (nint)Opened }), "the lease restores the minimized window");
+            Assert.That(adapter.Window, Is.EqualTo(Opened));
+        });
+    }
+
     // The opened window cannot be brought up (the person does not pause, or Windows does not give it the front): no key
     // goes, and the receipt says which window it was for.
     [TestCase("input_user_not_paused")]
@@ -285,6 +306,8 @@ public sealed class DesktopInteractionOpenedApplicationTests
 
         internal long Window { get; init; } = Opened;
 
+        internal long Minimized { get; init; }
+
         internal int Peeks { get; private set; }
 
         internal int Takes { get; private set; }
@@ -317,6 +340,8 @@ public sealed class DesktopInteractionOpenedApplicationTests
             Assert.That(bringToFront, Is.False, "the lease brings it up, never the lookup");
             return ValueTask.FromResult(new VisibleControlSurface.OpenedSurface((nint)Window, Drawn: true));
         }
+
+        public nint MinimizedWindow(VisibleControlSurface.OpenedApplication opened) => (nint)Minimized;
     }
 
     private sealed class TakingLease : IForegroundLease

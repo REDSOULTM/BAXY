@@ -62,6 +62,33 @@ public sealed class WindowsRecycleBinPutBackTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): a folder whose copy is cut short by a locked file inside: the bin is never
+    // asked, the folder stays as it was, and no partial copy is left beside it.
+    [Test]
+    public void AFolderCopyCutShortLeavesNoPartialCopy()
+    {
+        using TemporaryDirectory temporary = new();
+        string folder = Path.Combine(temporary.Path, "proyecto");
+        Directory.CreateDirectory(folder);
+        File.WriteAllText(Path.Combine(folder, "a.txt"), "uno");
+        string locked = Path.Combine(folder, "b.txt");
+        File.WriteAllText(locked, "dos");
+        bool asked = false;
+        var bin = new WindowsRecycleBin(_ => { asked = true; return 0; }, _ => 3);
+
+        using (new FileStream(locked, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            Assert.That(() => bin.Recycle(folder), Throws.InstanceOf<IOException>());
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked, Is.False);
+            Assert.That(Directory.GetFileSystemEntries(temporary.Path), Is.EqualTo(new[] { folder }));
+            Assert.That(Directory.GetFiles(folder), Has.Length.EqualTo(2));
+        });
+    }
+
     [Test]
     public void AReadOnlyFileTheBinTookLeavesNoCopyBehind()
     {

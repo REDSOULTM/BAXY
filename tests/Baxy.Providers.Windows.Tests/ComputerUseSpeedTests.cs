@@ -271,6 +271,9 @@ public sealed class ComputerUseSpeedTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("input_user_interrupted"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(keyboard.Texts, Is.EqualTo(new[] { "hola" }));
+            // FT/proveedores goal (review of receipts): how much went in, so a retry does not type it twice.
+            Assert.That(receipt.Result?.GetProperty("charactersTyped").GetInt32(), Is.EqualTo(4));
+            Assert.That(receipt.Result?.GetProperty("charactersAsked").GetInt32(), Is.EqualTo(10));
             Assert.That(keyboard.Fronted, Has.Count.EqualTo(1), "not brought up again over the person");
             Assert.That(keyboard.Burst!.Restores, Is.GreaterThanOrEqualTo(1));
         });
@@ -295,6 +298,24 @@ public sealed class ComputerUseSpeedTests
                 "the first burst is given back before the second is asked for");
             Assert.That(keyboard.Bursts.All(burst => burst.Restores >= 1), Is.True);
             Assert.That(receipt.Result?.GetProperty("pausesWaited").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
+    // FT/proveedores goal (review of receipts): Ctrl+C as a key press is done when the clipboard moved on (something
+    // was copied), not by the count of keys Windows accepted; with nothing selected it says nothing was copied.
+    [TestCase(true, true, null)]
+    [TestCase(false, false, "clipboard_not_changed")]
+    public async Task ACopyByKeyIsCheckedOnTheClipboard(bool copies, bool verified, string? error)
+    {
+        var keyboard = new FakeDesktopKeyboard { Clipboard = 7, CopyChanges = copies };
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(
+            "input.key.press", Json("""{"key":"ctrl_c","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.EqualTo(verified), receipt.ErrorCode);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
         });
     }
 
@@ -965,8 +986,17 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
     public uint PressChord(IReadOnlyList<ushort> virtualKeys)
     {
         Chords.Add(virtualKeys.ToArray());
+        if (CopyChanges && virtualKeys.Contains((ushort)0x43))
+            Clipboard++;
         return Accept(virtualKeys.Count * 2);
     }
+
+    // The clipboard's sequence (0: not known, as before); whether a Ctrl+C moves it (something was selected).
+    internal uint Clipboard { get; set; }
+
+    internal bool CopyChanges { get; init; }
+
+    public uint ClipboardSequence() => Clipboard;
 
     // The windows that hold the front, by handle; a window brought to the front holds it when Frontable says so.
     internal HashSet<nint> Holding { get; } = [];

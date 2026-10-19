@@ -41,6 +41,26 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
         _items = items;
     }
 
+    private static void RemovePartialCopy(string keep)
+    {
+        try
+        {
+            if (Directory.Exists(keep))
+            {
+                foreach (string file in Directory.EnumerateFiles(keep, "*", SearchOption.AllDirectories))
+                    File.SetAttributes(file, FileAttributes.Normal);
+                Directory.Delete(keep, recursive: true);
+            }
+            else if (File.Exists(keep))
+            {
+                File.Delete(keep);
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+        }
+    }
+
     public bool Recycle(string path)
     {
         string full = Path.GetFullPath(path);
@@ -51,7 +71,19 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
         string keep = Path.Combine(directory, ".baxy-previous-" + Guid.NewGuid().ToString("N") + ".tmp");
         // The copy waits hidden; what goes back carries the attributes the person's file (and each folder inside) had.
         var attributes = new List<(string Relative, FileAttributes Value)> { ("", File.GetAttributes(full)) };
-        if (folder) CopyFolder(full, keep, attributes); else File.Copy(full, keep);
+        try
+        {
+            if (folder) CopyFolder(full, keep, attributes); else File.Copy(full, keep);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // FT/proveedores goal (review of receipts): a copy cut short (one file inside locked) left a visible partial
+            // «.baxy-previous-…» beside the person's folder, said by nobody; the original is untouched, so the part
+            // copied goes.
+            RemovePartialCopy(keep);
+            throw;
+        }
+
         bool taken = false;
         try
         {

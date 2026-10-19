@@ -19,6 +19,27 @@ public sealed class ExternalAdaptersTests
     private static string LocalAt(DateTimeOffset due) =>
         due.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 
+    // FT/proveedores goal (review of receipts): «reiniciá» accepted, then «no, mejor apagala»: Windows refuses because a
+    // transition is already scheduled; the receipt says so (nothing done by this request, the PC still goes down),
+    // never the plain «not accepted» that read as nothing happening.
+    [TestCase(true, "power_transition_already_pending")]
+    [TestCase(false, "power_transition_not_accepted")]
+    public async Task APowerTransitionRefusedBecauseOneIsPendingSaysSo(bool pending, string error)
+    {
+        var adapter = new WindowsPowerTransitionAdapter(
+            new StubPowerTransitionPlatform("win32_initiateshutdown_shutdown_acceptance", accepted: false, pending));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.power", JsonSerializer.SerializeToElement(new { action = "shutdown" }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     [TestCase("lock", "win32_lockworkstation_acceptance")]
     [TestCase("restart", "win32_initiatesystemshutdownex_restart_acceptance")]
     [TestCase("shutdown", "win32_initiatesystemshutdownex_shutdown_acceptance")]
@@ -110,6 +131,29 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_postread_failed"));
+        });
+    }
+
+    // FT/proveedores goal (review of receipts): the one instance runs elevated (Windows refuses BAXY): the receipt names
+    // that, with the counts, and nothing was done, so its effect is not «possible».
+    [Test]
+    public async Task AnInstanceWindowsWillNotLetBaxyEndIsNamedAsDenied()
+    {
+        var identity = new WindowsProcessIdentity(5151, 638900000000000001);
+        var platform = new StubProcessTerminationPlatform(
+            [[identity], [identity]], terminateResult: WindowsProcessTermination.Denied);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_access_denied"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("deniedCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
         });
     }
 
@@ -971,6 +1015,57 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("taskName").GetString(), Is.EqualTo(taskName));
             Assert.That(receipt.Result?.GetProperty("expectedNextRunUtc").GetString(), Is.EqualTo(due));
             Assert.That(backend.Requests, Has.Count.EqualTo(2));
+        });
+    }
+
+    // FT/proveedores goal (review of receipts): a cancel at a clock time with no kind (most the model writes) looks
+    // among alarms and reminders: the one alarm at that time is canceled (before, only reminders were looked at).
+    [Test]
+    public async Task AClockCancelWithNoKindFindsTheAlarmAtThatTime()
+    {
+        using TemporaryDirectory temporary = new();
+        const string taskName = "BAXY-Alarm-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        string due = DateTimeOffset.UtcNow.AddHours(2).ToString("O");
+        var backend = ScriptedNotificationBackend.Lines([
+            $$"""{"ok":true,"effectObserved":false,"matchCount":1,"taskName":"{{taskName}}","nextRunUtc":"{{due}}"}""",
+            "{\"ok\":false,\"effectObserved\":false,\"effectBoundaryCrossed\":false,\"matchCount\":0}",
+            $$"""{"ok":true,"effectObserved":true,"effectBoundaryCrossed":true,"canceled":true,"taskName":"{{taskName}}","nextRunUtc":"{{due}}","authority":"windows_task_scheduler_exact_identity_absence_postread"}""",
+        ]);
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms", Json("""{"action":"cancel","at":"17:00"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("kind").GetString(), Is.EqualTo("alarm"));
+            Assert.That(receipt.Result?.GetProperty("taskName").GetString(), Is.EqualTo(taskName));
+            Assert.That(backend.Requests.Select(static request => $"{request.Mode}:{request.Kind}"),
+                Is.EqualTo(new[] { "resolve-at:alarm", "resolve-at:reminder", "cancel-exact:alarm" }));
+        });
+    }
+
+    // One alarm and one reminder at that time, and no kind: ambiguous, nothing canceled.
+    [Test]
+    public async Task AClockCancelWithNoKindAndOneOfEachIsAmbiguous()
+    {
+        using TemporaryDirectory temporary = new();
+        string due = DateTimeOffset.UtcNow.AddHours(2).ToString("O");
+        var backend = new ScriptedNotificationBackend(request => new ExternalProcessResult(0,
+            $$"""{"ok":true,"effectObserved":false,"matchCount":1,"taskName":"BAXY-{{(request.Kind == "alarm" ? "Alarm" : "Reminder")}}-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","nextRunUtc":"{{due}}"}""",
+            string.Empty));
+        var adapter = new WindowsScheduledNotificationAdapter(temporary.Path, backend);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms", Json("""{"action":"cancel","at":"17:00"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("notification_clock_ambiguous"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(backend.Requests.Select(static request => request.Mode), Is.All.EqualTo("resolve-at"));
         });
     }
 
@@ -3653,6 +3748,33 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // FT/proveedores goal (review): an application already at 100 raised (or at 0 lowered), no session changed, says it
+    // is already at that end, as the system volume does; it was a success with no observed effect.
+    [TestCase("up", 100, false, "volume_already_at_maximum")]
+    [TestCase("up", 100, true, "volume_already_at_maximum_muted")]
+    [TestCase("down", 0, false, "volume_already_at_minimum")]
+    public async Task AnAppVolumeAlreadyAtTheEndSaysSo(string direction, int level, bool muted, string error)
+    {
+        var adjust = new WindowsAppVolumeAdapter((_, _, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 1, level, level, muted, "endpoint-1", Changed: false);
+        });
+
+        ExternalCapabilityReceipt receipt = await adjust.InvokeAsync(
+            "audio.app.volume.adjust",
+            Json($$"""{"app":"Spotify","direction":"{{direction}}","amount":10}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     [Test]
     public async Task AppVolumeSetFixesTheSessionsAtAnAbsoluteLevelAndReportsThePostread()
     {
@@ -4830,7 +4952,7 @@ public sealed class ExternalAdaptersTests
         }
     }
 
-    private sealed class StubPowerTransitionPlatform(string authority, bool accepted)
+    private sealed class StubPowerTransitionPlatform(string authority, bool accepted, bool alreadyPending = false)
         : IWindowsPowerTransitionPlatform
     {
         internal string? RequestedAction { get; private set; }
@@ -4838,7 +4960,7 @@ public sealed class ExternalAdaptersTests
         public WindowsPowerTransitionResult Request(string action)
         {
             RequestedAction = action;
-            return new WindowsPowerTransitionResult(accepted, authority);
+            return new WindowsPowerTransitionResult(accepted, authority, alreadyPending);
         }
     }
 

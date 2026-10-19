@@ -73,6 +73,15 @@ class Speech:
         self._synthesis = ThreadPoolExecutor(1, thread_name_prefix="speech-synthesis")
         self._stream = None                  # the output, open from a turn's start until HOLD_S without sound
         self._stream_until = 0.0
+        # A voice whose files are not there fails now, not after the load: speak() never takes what will not sound.
+        folder = Path(os.environ.get("BAXY_RENEW_TTS_DIR", ""))
+        missing = [name for name in _MODEL_FILES if not (folder / name).is_file()]
+        if missing:
+            self.failure = repr(FileNotFoundError(f"BAXY_RENEW_TTS_DIR has no {', '.join(missing)}"))
+            sys.stderr.write(f"baxy_mind_renew_speech: {self.failure}\n")
+            sys.stderr.flush()
+            self._ready.set()
+            return
         threading.Thread(target=self._run, name="speech", daemon=True).start()
 
     @property
@@ -80,8 +89,11 @@ class Speech:
         return self._ready.is_set() and not self.failure
 
     def speak(self, text: str) -> bool:
+        # FT/proveedores goal (E001): while the voice still loads (about 26 s after the catalog on the notebook) the
+        # answer waits in the queue and sounds once it is loaded; it was dropped, and the first answer after BAXY
+        # started was never heard. Only a voice that failed refuses it.
         text = " ".join(str(text or "").split())[:MAX_CHARS]
-        if not text or not self.ready:
+        if not text or self.failure:
             return False
         try:
             self._queue.put_nowait((self._generation, text, time.monotonic()))
@@ -158,9 +170,6 @@ class Speech:
         import sherpa_onnx
 
         folder = Path(os.environ.get("BAXY_RENEW_TTS_DIR", ""))
-        missing = [name for name in _MODEL_FILES if not (folder / name).is_file()]
-        if missing:
-            raise FileNotFoundError(f"BAXY_RENEW_TTS_DIR has no {', '.join(missing)}")
         self._voice = json.loads((folder / "baxy-voice.json").read_text(encoding="utf-8"))
         self._tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(
             supertonic=sherpa_onnx.OfflineTtsSupertonicModelConfig(

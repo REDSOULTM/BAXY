@@ -6,10 +6,12 @@ import type { BaxyState, MicMode } from '../types';
    The design's attach button is not here: attaching files waits for a typed contract on the host (README: «adjuntos sin
    contrato tipado» are blocked), and a button that does nothing is a dead end (owner, 2026-10-17). */
 
+// The owner's rule (2026-10-18): only text is ready today; voice input is shown «en pruebas · próximamente disponible»,
+// never as ready, and it stays usable (taking it away is the owner's decision).
 const MIC: { id: MicMode; icon: IconName; label: string; sub: string }[] = [
   { id: 'off', icon: 'mic-off', label: 'Apagado', sub: 'Solo texto' },
-  { id: 'always', icon: 'mic', label: 'Siempre activo', sub: 'Responde a «BAXY»' },
-  { id: 'ptt', icon: 'wave', label: 'Mantener para hablar', sub: 'O mantén la barra espaciadora' },
+  { id: 'always', icon: 'mic', label: 'Siempre activo', sub: 'Responde a «BAXY» · en pruebas, próximamente disponible' },
+  { id: 'ptt', icon: 'wave', label: 'Mantener para hablar', sub: 'O la barra espaciadora · en pruebas, próximamente disponible' },
 ];
 
 interface Props {

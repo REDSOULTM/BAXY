@@ -15,6 +15,9 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     private const int StateVerificationAttempts = 20;
     private const int PrimaryCloseVerificationAttempts = 5;
     private const int FallbackCloseVerificationAttempts = 20;
+    // FT/proveedores goal (review of receipts): Chromium and Electron hide a closing window first and destroy it once
+    // its tabs end; a hidden window is watched this many more times for its end before it is told «hidden».
+    private const int HiddenSettleAttempts = 10;
 
     private readonly IWindowControlPlatform _platform;
     private readonly WindowsInstalledApplicationOpenProvider _applications;
@@ -883,10 +886,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         {
             title = _platform.Observe(identity!).Title;
         }
-        catch (WindowIdentityChangedException)
+        catch (WindowIdentityChangedException changed)
         {
-            return new WindowCloseResult(
-                false, false, null, WindowControlErrorCodes.WindowIdentityChanged);
+            // FT/proveedores goal (review of receipts): gone (or hidden) before BAXY touched it, as at RequestClose
+            // (Auditoría D7): an application's second frame ends with the first one's close, and that was a failure
+            // (window_identity_changed) of an app.close that closed the whole application; app.restart never reopened.
+            return Ended(identity!, null, changed.Hidden ? WindowCloseOutcomes.Hidden : WindowCloseOutcomes.AlreadyGone);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
@@ -1020,6 +1025,15 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         {
             cancellationToken.ThrowIfCancellationRequested();
             WindowFate fate = _verifier.Fate(identity);
+            for (int settle = 0; fate == WindowFate.Hidden && settle < HiddenSettleAttempts; settle++)
+            {
+                await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
+                WindowFate later = _verifier.Fate(identity);
+                if (later == WindowFate.Present)
+                    break;
+                fate = later;
+            }
+
             if (fate != WindowFate.Present)
             {
                 return fate;

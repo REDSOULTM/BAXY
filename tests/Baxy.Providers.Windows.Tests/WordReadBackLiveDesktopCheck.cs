@@ -78,6 +78,64 @@ public sealed class WordReadBackLiveDesktopCheck
         }
     }
 
+    // FT/proveedores goal (E2, review): two documents are one WINWORD process; the caret of the one in front is not read
+    // for the other's window.
+    [Test]
+    public async Task TheCaretOfAnotherDocumentOfTheSameWordIsNotRead()
+    {
+        if (Environment.GetEnvironmentVariable("BAXY_WORD_READBACK_LIVE") != "1")
+            Assert.Ignore("BAXY_WORD_READBACK_LIVE=1 is needed to touch the desktop.");
+        Type? progId = Type.GetTypeFromProgID("Word.Application");
+        Assert.That(progId, Is.Not.Null, "Word is not installed");
+        dynamic word = Activator.CreateInstance(progId!)!;
+        try
+        {
+            word.Visible = true;
+            dynamic first = word.Documents.Add();
+            nint behind = (nint)(int)first.ActiveWindow.Hwnd;
+            dynamic second = word.Documents.Add();
+            second.Content.Text = "segundo documento";
+            second.Activate();
+            await Task.Delay(3000);
+            nint front = (nint)(int)second.ActiveWindow.Hwnd;
+            dynamic shell = Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell")!)!;
+            shell.AppActivate((string)second.ActiveWindow.Caption);
+            await Task.Delay(1500);
+            _ = GetWindowThreadProcessId(front, out uint process);
+
+            using var uia = new UiaWorkerHost();
+            var visible = new WindowsVisibleControlAdapter(uia);
+            using JsonDocument? other = await visible.CaretTextAsync(behind, (int)process, 8192, CancellationToken.None);
+            using JsonDocument? own = await visible.CaretTextAsync(front, (int)process, 8192, CancellationToken.None);
+            TestContext.Out.WriteLine($"behind={other?.RootElement.GetRawText()} front={own?.RootElement.GetRawText()}");
+            Assert.Multiple(() =>
+            {
+                Assert.That(GetForegroundWindow(), Is.EqualTo(front), "the second document must be in front");
+                Assert.That(other?.RootElement.GetProperty("ok").GetBoolean(), Is.False);
+                Assert.That(other?.RootElement.GetProperty("error").GetString(), Is.EqualTo("caret_window_mismatch"));
+                Assert.That(own?.RootElement.GetProperty("ok").GetBoolean(), Is.True);
+                Assert.That(own?.RootElement.GetProperty("text").GetString(), Does.Contain("segundo documento"));
+            });
+        }
+        finally
+        {
+            int[] before = [.. Process.GetProcessesByName("WINWORD").Select(static process => process.Id)];
+            try
+            {
+                word.Quit(0);
+            }
+            catch (Exception exception) when (exception is COMException
+                or Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+            {
+            }
+
+            await Task.Delay(2000);
+            foreach (Process left in Process.GetProcessesByName("WINWORD").Where(process => before.Contains(process.Id)))
+                using (left)
+                    left.Kill();
+        }
+    }
+
     [DllImport("user32.dll")]
     private static extern nint GetForegroundWindow();
 

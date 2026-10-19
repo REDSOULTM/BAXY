@@ -863,7 +863,7 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
         "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "pictures" => Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-        "downloads" => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+        "downloads" => Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path(),
         "home" => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         _ => null,
     };

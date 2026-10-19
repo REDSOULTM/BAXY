@@ -3,7 +3,9 @@ using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
 
-internal sealed record WindowsPowerTransitionResult(bool Accepted, string Authority);
+// AlreadyPending: Windows refused because a shutdown or restart is already under way or scheduled (ERROR_SHUTDOWN_IN_PROGRESS
+// 1115, ERROR_SHUTDOWN_IS_SCHEDULED 1190): this request did nothing, but the PC will still go down.
+internal sealed record WindowsPowerTransitionResult(bool Accepted, string Authority, bool AlreadyPending = false);
 
 internal interface IWindowsPowerTransitionPlatform
 {
@@ -94,17 +96,21 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
                 : "win32_initiatesystemshutdownex_shutdown_acceptance");
         }
 
+        int firstError = Marshal.GetLastPInvokeError();
         uint flags = ShutdownGraceOverride | (reboot ? ShutdownRestart : ShutdownPowerOff);
-        bool accepted = InitiateShutdown(
+        uint error = InitiateShutdown(
             null,
             message,
             TransitionDelaySeconds,
             flags,
-            ShutdownReasonMajorApplication | ShutdownReasonPlanned) == 0;
-        return new(accepted, reboot
-            ? "win32_initiateshutdown_restart_acceptance"
-            : "win32_initiateshutdown_shutdown_acceptance");
+            ShutdownReasonMajorApplication | ShutdownReasonPlanned);
+        return new(error == 0, reboot
+                ? "win32_initiateshutdown_restart_acceptance"
+                : "win32_initiateshutdown_shutdown_acceptance",
+            AlreadyPending: error != 0 && (PendingShutdown(firstError) || PendingShutdown(unchecked((int)error))));
     }
+
+    private static bool PendingShutdown(int error) => error is 1115 or 1190;
 
     private static bool EnableShutdownPrivilege()
     {
@@ -214,8 +220,10 @@ internal sealed class WindowsPowerTransitionAdapter : IExternalOperationAdapter
                 // frontera se cruza antes de preguntar— hacía que el turno
                 // publicara «no pude confirmar si la acción se realizó» en vez
                 // de lo único que sí se sabe.
+                // FT/proveedores goal (review of receipts): refused because one is already pending (a restart asked
+                // seconds ago, then «no, apagala»): nothing was done by this request, and the PC still goes down.
                 return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(
-                    operation, "power_transition_not_accepted"));
+                    operation, transition.AlreadyPending ? "power_transition_already_pending" : "power_transition_not_accepted"));
             }
 
             JsonElement result = ExternalJson.Create(writer =>

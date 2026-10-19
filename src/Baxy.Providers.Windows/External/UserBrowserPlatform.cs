@@ -49,7 +49,9 @@ internal sealed record UserBrowserFrame(
 /// <summary>What a UI Automation step inside the frame or the page did (see UserBrowserScripts.Act).</summary>
 internal sealed record UserBrowserAct(string Step, double Before, double After);
 
-internal sealed record UserBrowserPageText(string Title, string Text, bool Truncated);
+// PageMatched: the document read is the one the window title names; false, it is the first one on screen (a side panel
+// or the Speed Dial may be it).
+internal sealed record UserBrowserPageText(string Title, string Text, bool Truncated, bool PageMatched = true);
 
 /// <summary>
 /// Everything the user-browser surface touches on the PC. The production
@@ -375,7 +377,8 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         string Read(string property) => value.TryGetProperty(property, out JsonElement field)
             && field.ValueKind == JsonValueKind.String ? field.GetString() ?? string.Empty : string.Empty;
         bool truncated = value.TryGetProperty("truncated", out JsonElement cut) && cut.ValueKind == JsonValueKind.True;
-        return new UserBrowserPageText(Read("title"), Read("text"), truncated);
+        bool matched = !value.TryGetProperty("matched", out JsonElement match) || match.ValueKind != JsonValueKind.False;
+        return new UserBrowserPageText(Read("title"), Read("text"), truncated, matched);
     }
 
     public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>

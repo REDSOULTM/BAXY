@@ -65,7 +65,8 @@ export default function App() {
 
   // ---- presentation (this view's own, kept in localStorage) ----
   const [theme, setTheme] = useState<'dark' | 'light'>(() => stored('baxy.theme', ['dark', 'light'] as const, 'dark'));
-  const [profile, setProfile] = useState<Profile>(() => stored('baxy.profile', ['normal', 'novidente', 'movilidad'] as const, 'normal'));
+  // Only the standard mode is ready (owner, 2026-10-18): a mode kept from before is not brought back as if it were.
+  const [profile, setProfile] = useState<Profile>(() => stored('baxy.profile', ['normal'] as const, 'normal'));
   const [a11y, setA11yState] = useState<A11y>(() => ({
     on: false, size: stored('baxy.a11y.size', ['m', 'l', 'xl'] as const, 'm'), contrast: stored('baxy.a11y.contrast', ['0', '1'] as const, '0') === '1',
   }));
@@ -187,6 +188,17 @@ export default function App() {
     return () => window.clearTimeout(id);
   }, [s.voiceErrorAt, finish]);
 
+  // FT/proveedores goal (review of the App): heard while a turn ran, a request starts nothing; the host said so as a
+  // state the view never showed, and the person saw the wake and the captions and then nothing. A notice says it.
+  useEffect(() => {
+    if (s.voiceDroppedAt === null) return;
+    const id = finish('voiceDropped', s.voiceDroppedAt, 2800);
+    return () => window.clearTimeout(id);
+  }, [s.voiceDroppedAt, finish]);
+  const dropped = s.voiceDroppedAt !== null && done.voiceDropped !== s.voiceDroppedAt
+    ? { b: 'Voz', t: 'te oí, pero estaba ocupado · repítelo cuando termine' } : null;
+  const shownNotice = notice ?? dropped;
+
   // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
   useEffect(() => {
     if (!s.sub) return;
@@ -291,14 +303,15 @@ export default function App() {
   }, []);
   // the person's microphone choice is applied once BAXY can take voice commands
   const micApplied = useRef(false);
+  const mindUp = !!s.boot?.model;
   const setMic = useCallback(async (m: MicMode) => {
-    const said = { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY»', ptt: 'mantén el botón o espacio para hablar' }[m];
+    const said = { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY» · en pruebas', ptt: 'mantén el botón o espacio para hablar · en pruebas' }[m];
     // while BAXY starts or rests the host takes no voice command: the choice is kept and applied when it can be
     // (once built, below; on waking, togglePower), instead of being refused and lost
-    if (!s.agent.built || !powered) {
+    if (!s.agent.built || !mindUp || !powered) {
       setMicState(m); keep('baxy.mic', m);
-      if (!s.agent.built) micApplied.current = false;
-      setNotice({ b: 'Voz', t: said + (s.agent.built ? ' · al activar a BAXY' : ' · cuando termine de arrancar') });
+      if (!s.agent.built || !mindUp) micApplied.current = false;
+      setNotice({ b: 'Voz', t: said + (s.agent.built && mindUp ? ' · al activar a BAXY' : ' · cuando termine de arrancar') });
       return;
     }
     // the first change after a start waits for the voice to load: the mode shows at once and is said when applied
@@ -308,12 +321,16 @@ export default function App() {
     if (!ok) { setMicState(mic); setNotice({ b: 'Voz', t: 'no se pudo cambiar el micrófono' }); return; }
     setMicState(m); keep('baxy.mic', m);
     setNotice({ b: 'Voz', t: said });
-  }, [applyMic, s.agent.built, powered, mic]);
+  }, [applyMic, s.agent.built, mindUp, powered, mic]);
+  // FT/proveedores goal (review of the App): the core is built while the model still loads, and the voice belongs to
+  // the mind: applied then, the saved mode found no mind and was never applied again. It waits for the mind, and a
+  // mode that could not be applied is tried again when the mind comes back (a relaunch).
+  useEffect(() => { if (!mindUp) micApplied.current = false; }, [mindUp]);
   useEffect(() => {
-    if (micApplied.current || !s.agent.built) return;
+    if (micApplied.current || !s.agent.built || !mindUp) return;
     micApplied.current = true;
-    void applyMic(mic);
-  }, [s.agent.built, mic, applyMic]);
+    void applyMic(mic).then((ok) => { if (!ok) micApplied.current = false; });
+  }, [s.agent.built, mindUp, mic, applyMic]);
   const ptt = useRef(false);
   const pttStart = useCallback(() => {
     if (ptt.current || !['idle', 'speaking', 'standby'].includes(state)) return;
@@ -331,8 +348,15 @@ export default function App() {
     const r = await send<{ ok?: boolean; on?: boolean }>('POST', '/power', { on: !powered });
     if (!r || r.on === powered) { setNotice({ b: 'BAXY', t: powered ? 'no pude ponerme en reposo' : 'no pude activarme' }); return; }
     setNotice(null);
-    if (r.on) void applyMic(mic); // back from rest, the microphone mode the person chose comes back
-  }, [powered, applyMic, mic]);
+  }, [powered]);
+  // back from rest, by this button, the tray's «Activar» or a text written to BAXY at rest, the microphone mode the
+  // person chose comes back (FT/proveedores goal, review of the App: only this button brought it back)
+  const wasPowered = useRef(powered);
+  useEffect(() => {
+    const woke = powered && !wasPowered.current;
+    wasPowered.current = powered;
+    if (woke && s.agent.built && mindUp) void applyMic(mic);
+  }, [powered, s.agent.built, mindUp, applyMic, mic]);
   const wake = useCallback(() => {
     if (state !== 'idle' || mic !== 'always') return;
     void send('POST', '/voice/trigger');
@@ -442,7 +466,7 @@ export default function App() {
             </div>
             <div className="bx-cbot">
               {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>Salió a internet</b><span>· {banner}</span></div>
-                : notice ? <div className="bx-notice" key={notice.t}><b>{notice.b}</b> · {notice.t}</div> : null}
+                : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
               {booting && s.boot ? <Boot boot={s.boot} />
                 : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} error={errorText} />}
               <VoiceInput mic={shownMic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}

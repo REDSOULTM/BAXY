@@ -578,6 +578,9 @@ internal interface IOpenedApplicationFocus
         bool judgeDrawn,
         CancellationToken cancellationToken,
         bool bringToFront = false);
+
+    // FT/proveedores goal (E6): the opened application's minimized window (0: none), for a keyboard act to restore it.
+    nint MinimizedWindow(VisibleControlSurface.OpenedApplication opened) => 0;
 }
 
 internal sealed class OpenedApplicationFocus : IOpenedApplicationFocus
@@ -590,6 +593,9 @@ internal sealed class OpenedApplicationFocus : IOpenedApplicationFocus
 
     public VisibleControlSurface.OpenedApplication? PeekOpened() =>
         VisibleControlSurface.PeekOpened(Freshness);
+
+    public nint MinimizedWindow(VisibleControlSurface.OpenedApplication opened) =>
+        VisibleControlSurface.MinimizedOpenedWindow(opened);
 
     public ValueTask<VisibleControlSurface.OpenedSurface> FrontAsync(
         VisibleControlSurface.OpenedApplication opened,

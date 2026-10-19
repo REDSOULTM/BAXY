@@ -36,4 +36,7 @@ internal interface IClipboardPlatform
     ClipboardTextSnapshot ReadText(int maximumCharacters);
 
     void ReplaceText(string text);
+
+    // How many formats the clipboard holds (CountClipboardFormats): a write of text replaces them all.
+    int FormatCount() => 0;
 }

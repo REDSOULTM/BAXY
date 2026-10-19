@@ -85,8 +85,37 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): nine of ten windows minimized and one refused: the failure carries what
+    // was done (the counts), its effect is possible, and it is never a success.
+    [Test]
+    public async Task APartialMinimizeAllCarriesItsCountsWithTheFailure()
+    {
+        var windows = new FakeWindows([])
+        {
+            MinimizeAll = new WindowMinimizeAllResult(false, false, 10, 9, 1, "window_minimize_all_incomplete",
+                EffectMayHaveOccurred: true),
+        };
+
+        OperationOutcome outcome = await new WindowMinimizeAllHandler(windows).ExecuteAsync(
+            Invocation("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("window_minimize_all_incomplete"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(outcome.Result!.Value.GetProperty("minimized").GetInt32(), Is.EqualTo(9));
+            Assert.That(outcome.Result!.Value.GetProperty("remainingVisible").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
     private sealed class FakeWindows(WindowCandidate[] windows) : IWindowControlProvider
     {
+        internal WindowMinimizeAllResult? MinimizeAll { get; init; }
+
+        public ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken) =>
+            ValueTask.FromResult(MinimizeAll ?? throw new AssertionException("not used"));
+
         internal List<string> Closed { get; } = [];
 
         internal string? Prompts { get; init; }

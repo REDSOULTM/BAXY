@@ -152,6 +152,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             {
                 if (new FileInfo(path).Length > MaximumAppendTargetBytes) throw Error("file_too_large");
                 previous = File.ReadAllBytes(path);
+                // FT/proveedores goal (review of receipts): a file with no byte order mark that is not UTF-8 (ANSI) took
+                // the new line in UTF-8, its accents garbled next to the old ones, and was told verified; file.edit
+                // refuses such a file, and so does an append.
+                if (TextFileEncoding.DecodeExactly(previous) is null) throw Error("known_text_encoding_unsupported");
             }
             byte[] bytes = append
                 ? [.. previous, .. TextFileEncoding.EncodeAppended(previous, normalizedText)]
@@ -211,7 +215,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             }
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
-            return Mutation(path, root, reachedState: false, previousVersionRecycled: recycled);
+            return Mutation(path, root, reachedState: false, previousVersionRecycled: recycled) with { Created = !exists };
         }
     }
 
@@ -250,7 +254,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     {
         "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
         "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "downloads" => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+        "downloads" => Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path(),
         _ => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
     };
 
@@ -278,15 +282,24 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             if (!string.Equals(sourceHash, expectedSha256, StringComparison.Ordinal))
                 throw Error("version_conflict");
             string destination = Resolve(destinationRelativePath, allowMissingLeaf: true);
-            if (File.Exists(destination) || Directory.Exists(destination)) throw Error("destination_exists");
+            // FT/proveedores goal (review of receipts): «notas.txt» renamed «Notas.txt» is the same file under another
+            // spelling (the file system ignores case), not a destination that exists.
+            bool caseOnly = move
+                && string.Equals(Path.GetFullPath(source), Path.GetFullPath(destination), StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(Path.GetFullPath(source), Path.GetFullPath(destination), StringComparison.Ordinal);
+            if (!caseOnly && (File.Exists(destination) || Directory.Exists(destination))) throw Error("destination_exists");
             EnsureHandleRoom();
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
             EnsureSafePath(Path.GetDirectoryName(destination)!, allowMissingLeaf: false);
             if (move) File.Move(source, destination);
             else File.Copy(source, destination);
+            string shownName = Path.GetFileName(destination);
+            bool renamed = !caseOnly || Directory.EnumerateFiles(Path.GetDirectoryName(destination)!, shownName)
+                .Any(file => string.Equals(Path.GetFileName(file), shownName, StringComparison.Ordinal));
             if (!File.Exists(destination)
                 || !string.Equals(HashFile(destination), sourceHash, StringComparison.Ordinal)
-                || (move && File.Exists(source)))
+                || (move && !caseOnly && File.Exists(source))
+                || !renamed)
                 throw AfterEffect("verification_failed");
             return Mutation(destination, _root, reachedState: false);
         }

@@ -507,6 +507,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return ExternalJson.FailureBeforeEffect(operation, "input_window_changed");
 
         var effectBoundary = new ExternalEffectBoundary();
+        // FT/proveedores goal (review of receipts): Ctrl+C or Ctrl+X as a key press was told done by the count of keys
+        // Windows accepted, while clipboard.copy checks the clipboard; with nothing selected nothing was copied.
+        bool copies = !typing && key is "ctrl_c" or "ctrl_x";
+        uint clipboardBefore = copies ? _keyboard.ClipboardSequence() : 0;
         effectBoundary.Cross(cancellationToken);
         uint expected = typing ? (uint)text.Length * 2 : (uint)chord.Length * 2;
         // The person touched the keyboard or the mouse between the pause and the first key: nothing goes.
@@ -530,7 +534,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // verified because Windows accepted its events): what the focused edit control of the window in front holds is
         // marked before the first key, so the text can be read back there afterwards.
         // Review of E6: so is a text the provider sent to the application app.open just opened (now in front).
-        bool readsBack = typing && (window == 0 || openedApplication);
+        // FT/proveedores goal (review of receipts): and a text for a named window (it holds the front: checked above):
+        // the right window was sure, the right field was not (a browser's address bar), and it was told verified with
+        // no read-back. Where neither mark nor caret can be read, the receipt still says only what Windows accepted
+        // (heldToReadBack, below).
+        bool readsBack = typing;
         TypedMark? mark = readsBack ? _delivery?.Mark(before.Window, text.Length) : null;
         // FT/proveedores goal (E2): a document that is no edit control (Word's «_WwG») has no Win32 mark, and its text
         // was never read back. Its paragraph at the caret is read by UI Automation instead, before the first key, of the
@@ -652,6 +660,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             {
                 writer.WriteStartObject();
                 WriteSentTo(writer, before, sentToProcess);
+                // FT/proveedores goal (review of receipts): how much of the text went in (each character is a key down
+                // and up), so a retry does not type its beginning twice.
+                if (typing)
+                {
+                    writer.WriteNumber("charactersTyped", Math.Min(text.Length, (int)(accepted / 2)));
+                    writer.WriteNumber("charactersAsked", text.Length);
+                }
                 writer.WriteEndObject();
             }),
         };
@@ -677,6 +692,19 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return SentFailure("input_window_changed");
         if (!verified)
             return SentFailure("input_effect_not_verified");
+        if (copies && clipboardBefore != 0)
+        {
+            bool copied = false;
+            for (int attempt = 0; attempt < 10 && !copied; attempt++)
+            {
+                copied = _keyboard.ClipboardSequence() != clipboardBefore;
+                if (!copied)
+                    await Task.Delay(50, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (!copied)
+                return SentFailure("clipboard_not_changed");
+        }
         // Rule 3: Windows accepting every event proves the keys went in, not that the text reached the field meant. A text
         // with no window named is verified by its read-back alone.
         bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text);
@@ -686,7 +714,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             ? await CaretReadsBackAsync(before, caret, text, cancellationToken).ConfigureAwait(false)
             : (false, false);
         bool readBack = editReadBack || caretReadBack;
-        string? unread = readsBack && !readBack ? "input_text_not_read_back" : null;
+        // A named window's text is held to its read-back only where one could be taken (a mark or a caret read before
+        // the first key); with no window named (F004) or for the opened application, the read-back is the proof.
+        bool heldToReadBack = window == 0 || openedApplication || mark is not null || caretBefore is not null;
+        string? unread = readsBack && heldToReadBack && !readBack ? "input_text_not_read_back" : null;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();

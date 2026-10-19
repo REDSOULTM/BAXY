@@ -33,6 +33,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private Task? _mindInitializationTask;
     private volatile MindStartupState _mindStartupState;
     private int _mindStartupFailureCount;
+    private int _coreStartupFailureCount;
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
     private bool _coreRecoveryPending;
@@ -386,6 +387,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             IsReady = true;
+            _coreStartupFailureCount = 0;
             StatusDescription = _startupMindPending ? "Preparando BAXY" : IdleStatus();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -652,6 +654,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         _loop.Reset();
         Messages.Clear();
+        SilenceVoice();
         if (_mindClient is { IsReady: true } mind)
         {
             _ = mind.NewSessionAsync(CancellationToken.None);
@@ -893,6 +896,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return false;
         }
 
+        // FT/proveedores goal (review of the App): the ear drops what it hears while BAXY speaks (its own voice), so a
+        // person who presses to talk over it lost their words; pressing to talk silences BAXY first, as typing does.
+        if (IsVoiceSpeaking && mind.IsVoiceAvailable)
+            _ = await mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), cancellationToken);
         bool started = await mind.VoiceStartAsync("direct", TimeSpan.FromSeconds(60), cancellationToken);
         IsMicAvailable = started;
         if (started)
@@ -952,6 +959,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 IsListening = false;
                 IsWakeListening = false;
                 IsVoiceSpeaking = false;
+            }
+            // FT/proveedores goal (review of the App): a mind lost while running (its process ended, as when the model
+            // server dies and it exits 70, or a request whose reply never came) was never brought back, and the screen
+            // and the tray said «Arrancando» for good. It is a failed mind now: shown as such and relaunched with the
+            // start-up's growing wait (InitializeMindAsync ends the old process, and its VRAM, first).
+            if (_mindStartupState == MindStartupState.Ready && !_mindLifetimeCancellation.IsCancellationRequested)
+            {
+                ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed,
+                    processEnded ? "mente_salio" : "mente_sin_respuesta");
+                _mindStartupFailureCount++;
+                _mindStartupState = MindStartupState.Failed;
+                _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
             }
             OnPropertyChanged(nameof(IsMindReady));
         },
@@ -1129,7 +1148,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             mind = new MindSidecarClient();
-            if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(120), linked.Token))
+            // FT/proveedores goal (review of the App): the mind waits up to 600 s for its model to load (wait_ready in
+            // __main__.py) before it says catalog.ready; at 120 s the App ended a slow but healthy load (no GPU, a cold
+            // disk) and relaunched it for ever. A model server that dies is told at once (startup_failure).
+            if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(600), linked.Token))
             {
                 RecordMindStartupFailure(mind.LastStartupFailure);
                 await mind.DisposeAsync();
@@ -1286,6 +1308,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         IsReady = false;
         SetStartupFailure("retry_without_close");
+        // FT/proveedores goal (review of the App): a core that could not start (its hello late at a busy sign-in) was
+        // never tried again, and BAXY sat in the tray saying «Arrancando»; it is retried with the mind's growing wait.
+        _coreStartupFailureCount++;
+        _ = RetryCoreAfterAsync(MindRetryDelay(_coreStartupFailureCount));
+    }
+
+    private async Task RetryCoreAfterAsync(TimeSpan delay)
+    {
+        try
+        {
+            await Task.Delay(delay, _mindLifetimeCancellation.Token);
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
+        {
+            return;
+        }
+
+        if (!_isDisposed && !IsReady && _coreClient is null)
+            RecoverCoreWhenIdle();
     }
 
     private void OnCoreDisconnected(CoreProcessClient client)
@@ -1401,6 +1442,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 ? mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None)
                 : mind.VoiceSpeakAsync(body, TimeSpan.FromSeconds(5), CancellationToken.None);
         }
+    }
+
+    /// <summary>FT/proveedores goal (review of the App): what BAXY is saying stops (a new conversation, the voice muted
+    /// in the settings); before, only the person's own message stopped it.</summary>
+    internal void SilenceVoice()
+    {
+        if (_mindClient is { IsVoiceAvailable: true } mind)
+            _ = mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None);
     }
 
     private async Task SpeakNoticeAsync(MindSidecarClient mind, string notice)

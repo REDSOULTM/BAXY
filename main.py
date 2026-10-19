@@ -181,6 +181,8 @@ def _powershell_single_quoted(value: str) -> str:
 
 
 def close_previous_development_window() -> None:
+    # FT/proveedores goal (review of the App): CloseMainWindow only hid BAXY (it closes to the tray) and the kill 8 s
+    # later lost the conversation and left a ghost tray icon; the running BAXY is first asked to exit as «Salir» does.
     root_prefix_literal = _powershell_single_quoted(directory_prefix(ROOT))
     command = (
         f"$rootPrefix={root_prefix_literal};"
@@ -188,8 +190,12 @@ def close_previous_development_window() -> None:
         "foreach($app in $apps){try{"
         "$path=[IO.Path]::GetFullPath($app.Path);"
         "if($path.StartsWith($rootPrefix,[StringComparison]::OrdinalIgnoreCase)){"
-        "$null=$app.CloseMainWindow();"
-        "Wait-Process -Id $app.Id -Timeout 8 -ErrorAction SilentlyContinue;"
+        "$exit=$null;"
+        "if([Threading.EventWaitHandle]::TryOpenExisting('Local\\BAXY.Product.App.Exit',[ref]$exit)){"
+        "$null=$exit.Set();$exit.Dispose();"
+        "Wait-Process -Id $app.Id -Timeout 20 -ErrorAction SilentlyContinue};"
+        "if(-not $app.HasExited){$null=$app.CloseMainWindow();"
+        "Wait-Process -Id $app.Id -Timeout 8 -ErrorAction SilentlyContinue};"
         "if(-not $app.HasExited){$app.Kill()}"
         "}}catch{}}"
     )

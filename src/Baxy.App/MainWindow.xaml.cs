@@ -421,13 +421,17 @@ public partial class MainWindow : Window
         }
     }
 
+    // FT/proveedores goal (review of the App): WebView2 reports most of its start failures as a COMException (its data
+    // folder still held by a killed instance, a broken runtime: EnsureCoreWebView2Async); uncaught, BAXY ended with no
+    // word. It is a start failure shown like the others.
     private static bool IsExpectedStartupFailure(Exception exception) => exception is
         FileNotFoundException
         or DirectoryNotFoundException
         or UnauthorizedAccessException
         or IOException
         or InvalidOperationException
-        or WebView2RuntimeNotFoundException;
+        or WebView2RuntimeNotFoundException
+        or System.Runtime.InteropServices.COMException;
 
     private async Task<AppSurfaceSession> ShowFieldLoadingAsync(
         string message,

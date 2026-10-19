@@ -57,6 +57,8 @@ a{color:var(--carmine)}a:hover{color:var(--t-bone)}
 .bx-pchip{height:30px;border:1px solid var(--hair);border-radius:2px;background:transparent;color:var(--t-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:.15s}
 .bx-pchip:hover{color:var(--t-bone);border-color:var(--t-dim)}
 .bx-pchip.on{color:var(--carmine);border-color:var(--carmine);background:var(--bg-elev)}
+.bx-pchip.soon{opacity:.45;cursor:default}
+.bx-pchip.soon:hover{color:var(--t-muted);border-color:var(--hair)}
 .bx-pchip[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--bg-elev);border:1px solid var(--hair);color:var(--t-bone);font-size:10px;padding:3px 6px;border-radius:2px;white-space:nowrap;z-index:20;pointer-events:none}
 .bx-left .bx-foot{margin-top:auto;display:flex;flex-direction:column;gap:4px}
 /* center */

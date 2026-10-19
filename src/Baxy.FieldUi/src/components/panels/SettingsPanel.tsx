@@ -93,9 +93,9 @@ export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, 
             <div className="st-tip">Con <b className="bone">lo arriesgado</b>, BAXY pregunta antes de: borrar o perder trabajo sin guardar, enviar un mensaje o un correo, crear un evento en tu calendario, instalar, y un comando o un clic que cambia algo que no se puede deshacer. Con <b className="bone">nada</b> (bypass), lo hace sin preguntar y la conversación lo dice. La tarjeta aparece en la conversación, nunca encima de tu ventana, y espera tu respuesta {spoken(confirmSeconds)}; si no contestas, no se hace nada.</div>
           </>) : null}
           {tab === 'voz' ? (<>
-            <Row label="Palabra de activación" ro hint={voice?.wake?.downloaded === false ? 'El modelo de activación no está en disco' : undefined}><span className="bxs-fixed">BAXY</span></Row>
+            <Row label="Palabra de activación" ro hint={voice?.wake?.downloaded === false ? 'El modelo de activación no está en disco' : 'En pruebas · próximamente disponible'}><span className="bxs-fixed">BAXY</span></Row>
             <Row label="Voz de BAXY" ro><span className="bxs-fixed">{tts}</span></Row>
-            <Row label="Micrófono" hint={micAvailable ? undefined : 'No hay micrófono disponible'}>
+            <Row label="Micrófono" hint={micAvailable ? 'Entrada por voz: en pruebas · próximamente disponible' : 'No hay micrófono disponible'}>
               <Seg value={mic} onChange={(m) => (m === 'off' || micAvailable) && onMic(m)} options={[['always', 'Siempre'], ['ptt', 'Al pulsar'], ['off', 'Apagado']]} />
             </Row>
             <Row label="Sonido al despertar"><Toggle on={!!g?.wakeSound} label="Sonido al despertar" locked={lock} onChange={(v) => onGeneral({ wakeSound: v })} /></Row>

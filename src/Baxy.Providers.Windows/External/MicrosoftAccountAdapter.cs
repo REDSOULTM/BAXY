@@ -234,10 +234,14 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           $session=$outlook.GetNamespace('MAPI')
           $to=[string]$input.to;$text=[string]$input.text;$subject=[string]$input.subject
           $baseline=[DateTime]::UtcNow
+          $sentFolder=$session.GetDefaultFolder(5)
+          # Goal FT/proveedores (revision de recibos): lo que ya estaba en Enviados no es este envio (el margen de 2 min
+          # del reloj dejaba que un correo anterior al mismo destinatario, con el mismo comienzo, lo confirmara).
+          $before=@{};$older=$sentFolder.Items;$older.Sort('[SentOn]',$true);$seen=0
+          foreach($candidate in $older){ if($seen++ -ge 50){break}; try { $before[[string]$candidate.EntryID]=$true } catch {} }
           $mail=$outlook.CreateItem(0)
           $mail.To=$to;$mail.Subject=$subject;$mail.Body=$text
           $mail.Send();$effect=$true
-          $sentFolder=$session.GetDefaultFolder(5)
           $sent=$null
           for($attempt=0;$attempt -lt 40 -and $null -eq $sent;$attempt++){
             Start-Sleep -Milliseconds 500
@@ -247,6 +251,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
               try {
                 $sentOn=([DateTime]$candidate.SentOn).ToUniversalTime()
                 $addresses=@(foreach($recipient in $candidate.Recipients){[string]$recipient.Address})
+                if($before.ContainsKey([string]$candidate.EntryID)){continue}
                 if($sentOn -ge $baseline.AddMinutes(-2) -and ($addresses | Where-Object {$_ -ieq $to}) -and ([string]$candidate.Body).StartsWith($text,[StringComparison]::Ordinal)){$sent=$candidate;$sentTo=$addresses;break}
               }catch{}
             }

@@ -135,6 +135,12 @@ public sealed class DesktopMessagingAdapterTests
     [TestCase("Holatest 15:32", "hola test", "tolerant")]
     [TestCase("probanda", "probando", "tolerant")]
     [TestCase("otra cosa", "probando", null)]
+    // FT/proveedores goal (review of receipts): a short word the draft lacks is not a match; joined to its neighbour
+    // by a lost space it still is.
+    [TestCase("quiero ir mañana", "no quiero ir mañana", null)]
+    [TestCase("noquiero ir manana", "no quiero ir mañana", "tolerant")]
+    // One letter misread in the whole text stays the OCR tolerance (SpacelessMatches).
+    [TestCase("no quiero lr mañana", "no quiero ir mañana", "tolerant")]
     public void ADeliveryReadSaysHowItMatched(string observed, string expected, string? match) =>
         Assert.That(WindowsDesktopMessagingAutomation.TextMatch(observed, expected), Is.EqualTo(match));
 

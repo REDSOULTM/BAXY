@@ -26,7 +26,9 @@ internal sealed partial class TrayMenu : Window
         _power = power;
         _exit = exit;
         InitializeComponent();
-        ListenRow.Content = state.Listening ? "Dejar de escuchar" : "Escuchar «BAXY»";
+        // The owner's rule (2026-10-18): voice input is in testing, shown so, never as ready; it stays usable.
+        ListenRow.Content = state.Listening ? "Dejar de escuchar" : "Escuchar «BAXY» (en pruebas)";
+        ListenRow.ToolTip = "Entrada por voz: en pruebas · próximamente disponible";
         ListenRow.Tag = state.Listening ? "" : "";
         ListenRow.IsEnabled = state.MicAvailable && state.Powered;
         PowerRow.Content = state.Powered ? "Poner en reposo" : "Activar";

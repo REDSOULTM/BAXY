@@ -1674,6 +1674,33 @@ internal static partial class VisibleControlSurface
         return windows;
     }
 
+    /// <summary>
+    /// FT/proveedores goal (E6, the application minimized): the opened application's minimized window a person would
+    /// restore (<see cref="MinimizedDocumentWindow"/>), of the same processes <see cref="FrontOpenedAsync"/> follows; 0
+    /// for none. Minimized, it has no usable surface, so the keyboard act did not reach it and the text went to the
+    /// front (measured live, 2026-10-18).
+    /// </summary>
+    internal static nint MinimizedOpenedWindow(OpenedApplication opened)
+    {
+        HashSet<uint> family = opened.Launched ? ProcessFamily(opened) : [unchecked((uint)opened.ProcessId)];
+        if (family.Count == 0)
+            return 0;
+        nint found = 0;
+        EnumWindowsProc callback = (window, unused) =>
+        {
+            if (GetAncestor(window, 3) != window)
+                return true;
+            GetWindowThreadProcessId(window, out uint owner);
+            if (!family.Contains(owner) || !MinimizedDocumentWindow(window))
+                return true;
+            found = window;
+            return false;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return found;
+    }
+
     // A minimized top-level window a person would restore: titled, uncloaked, no shell surface.
     private static bool MinimizedDocumentWindow(nint window) =>
         IsIconic(window) && GetWindowTextLengthW(window) > 0 && !IsShellSurface(window)

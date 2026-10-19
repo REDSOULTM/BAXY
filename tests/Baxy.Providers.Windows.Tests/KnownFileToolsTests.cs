@@ -19,6 +19,29 @@ public sealed class KnownFileToolsTests
     private static JsonElement Json(string text) => JsonDocument.Parse(text).RootElement.Clone();
 
     /// <summary>A bin that takes every file (or none) into a folder of its own, as the Recycle Bin would.</summary>
+    // FT/proveedores goal (review of receipts): a file another program holds open with no sharing is that file in use,
+    // not its folder unavailable.
+    [Test]
+    public async Task AFileHeldOpenByAnotherProgramIsInUse()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(home);
+        string path = Path.Combine(home, "ventas.csv");
+        await File.WriteAllTextAsync(path, "a;b");
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] },
+            new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
+
+        ExternalCapabilityReceipt read;
+        using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            read = await adapter.InvokeAsync(
+                "file.read", Json("""{"folder":"home","fileName":"ventas.csv"}"""), CancellationToken.None);
+        }
+
+        Assert.That(read.ErrorCode, Is.EqualTo("file_in_use"));
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];

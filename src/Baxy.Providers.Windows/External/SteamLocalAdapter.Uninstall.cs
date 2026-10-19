@@ -45,7 +45,10 @@ internal sealed partial class SteamLocalAdapter
         for (int observation = 0; observation <= UninstallObservationIntervals; observation++)
         {
             SteamLocalGame? after = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
-            if (after is null || !after.Installed)
+            // FT/proveedores goal (review of receipts): while Steam still deletes the files its manifest says so
+            // (StateUninstalling, 2048, without FullyInstalled): not removed yet, it is watched on.
+            bool uninstalling = after is not null && (after.StateFlags & 2048UL) != 0;
+            if (after is null || (!after.Installed && !uninstalling))
             {
                 JsonElement result = ExternalJson.Create(writer =>
                 {

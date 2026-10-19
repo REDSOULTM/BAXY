@@ -167,7 +167,13 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("appId", appId);
+            // FT/proveedores goal (review of receipts): how many windows the application had, so a close that stopped
+            // at the first says how many were never tried; with none closed nor hidden (all gone meanwhile) nothing
+            // changed.
+            writer.WriteNumber("windows", closing.Frames);
             writer.WriteNumber("closedWindows", closing.ClosedWindows);
+            if (closing.ErrorCode is null && closing.ClosedWindows == 0 && closing.HiddenWindows == 0)
+                writer.WriteBoolean("changed", false);
             if (closing.HiddenWindows > 0)
             {
                 // Windows that hid instead of closing (the application stays in the notification area).
@@ -241,8 +247,12 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
         WindowMinimizeAllResult result = await provider.MinimizeAllAsync(cancellationToken).ConfigureAwait(false);
         if (!result.Succeeded || !result.Verified)
         {
+            // FT/proveedores goal (review of receipts): nine of ten minimized and one that refused was a bare failure,
+            // read as «could not minimize»; what was done travels with the failure, never as success.
             return OperationOutcome.Failure(
-                result.ErrorCode ?? "window_minimize_all_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
+                result.ErrorCode ?? "window_minimize_all_failed",
+                result: result.Minimized > 0 ? PartialCounts(result) : null,
+                effectMayHaveOccurred: result.EffectMayHaveOccurred || result.Minimized > 0);
         }
 
         var buffer = new ArrayBufferWriter<byte>();
@@ -269,6 +279,21 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
         return OperationOutcome.Success(document.RootElement.Clone());
+    }
+    private static JsonElement PartialCounts(WindowMinimizeAllResult result)
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("desktopWindows", result.Found);
+            writer.WriteNumber("minimized", result.Minimized);
+            writer.WriteNumber("remainingVisible", result.Remaining);
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 }
 

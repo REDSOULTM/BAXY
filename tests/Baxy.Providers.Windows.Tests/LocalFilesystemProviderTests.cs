@@ -47,6 +47,26 @@ public sealed class LocalFilesystemProviderTests
     }
 
     [Test]
+    public void ARenameThatOnlyChangesCaseIsMade()
+    {
+        // FT/proveedores goal (review of receipts): «notas.txt» to «Notas.txt» is the same file renamed, not a
+        // destination that exists.
+        using TemporaryDirectory temporary = new();
+        var provider = new LocalFilesystemProvider(temporary.Path);
+        provider.WriteText("notas.txt", "hola", null);
+        FilesystemEntry entry = provider.List(string.Empty, 10).Entries.Single();
+        FilesystemTextResult read = provider.ReadText(entry.ResourceId, 100);
+
+        FilesystemMutationResult renamed = provider.Transfer(entry.ResourceId, "Notas.txt", read.Sha256, move: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(renamed.Name, Is.EqualTo("Notas.txt"));
+            Assert.That(Directory.GetFiles(temporary.Path).Select(Path.GetFileName), Is.EqualTo(new[] { "Notas.txt" }));
+        });
+    }
+
+    [Test]
     public void ListReadWriteAndTransferUseOpaqueRevalidatedResources()
     {
         using TemporaryDirectory temporary = new();
@@ -122,6 +142,56 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): a file another program holds open with no sharing (Excel) threw past the
+    // handler and ended the core; it is file.write's failure, file_in_use, and the file is untouched.
+    [Test]
+    public async Task AFileHeldOpenByAnotherProgramIsInUseNotACrash()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        string path = Path.Combine(sandbox, "ventas.csv");
+        File.WriteAllText(path, "a;b");
+        using JsonDocument arguments = JsonDocument.Parse("""{"relativePath":"ventas.csv","text":"c;d","append":true}""");
+
+        OperationOutcome outcome;
+        using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            outcome = await new FilesystemHandler("file.write", provider).ExecuteAsync(
+                new OperationInvocation("r", "m", "i", arguments.RootElement.Clone()), CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("file_in_use"));
+            Assert.That(File.ReadAllText(path), Is.EqualTo("a;b"));
+        });
+    }
+
+    // FT/proveedores goal (review of receipts): an ANSI file (no mark, not UTF-8) is not appended to in UTF-8; it is
+    // refused before anything is written, as file.edit refuses it.
+    [Test]
+    public void AnAppendToAnAnsiFileIsRefusedBeforeWriting()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        string path = Path.Combine(sandbox, "notas.txt");
+        byte[] ansi = [0x63, 0x61, 0x66, 0xE9];
+        File.WriteAllBytes(path, ansi);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => provider.WriteText("notas.txt", "pan", null, append: true),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("known_text_encoding_unsupported"));
+            Assert.That(File.ReadAllBytes(path), Is.EqualTo(ansi));
+        });
+    }
+
     // file.write append (it absorbed filesystem.sandbox.append.named): what is there stays, the text goes at the end
     // in the file's own encoding, no hash is needed (a given one must match), and a missing file is created.
     [Test]
@@ -142,6 +212,10 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(File.ReadAllText(Path.Combine(sandbox, "lista.txt"), Encoding.Unicode), Is.EqualTo("pan\nleche\n"));
             Assert.That(File.ReadAllBytes(Path.Combine(sandbox, "lista.txt"))[..2], Is.EqualTo(new byte[] { 0xFF, 0xFE }));
             Assert.That(appended.PreviousVersionRecycled, Is.False);
+            // FT/proveedores goal (review of receipts): the append to a missing file made it, and says so.
+            Assert.That(appended.Created, Is.False);
+            Assert.That(created.Created, Is.True);
+            Assert.That(again.Created, Is.False);
             Assert.That(File.ReadAllText(Path.Combine(sandbox, "logs", "nuevo.txt")), Is.EqualTo("uno\ndos\n"));
             Assert.That(again.ReachedState, Is.False);
             Assert.That(

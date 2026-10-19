@@ -135,8 +135,26 @@ public sealed class WindowsClipboardProviderTests
         });
     }
 
+    // FT/proveedores goal (review of receipts): the same plain text written over a Word copy (its HTML, RTF and picture
+    // replaced by text alone) changed the clipboard; the same text over the same text alone did not.
+    [TestCase(9, true)]
+    [TestCase(4, false)]
+    public async Task TheSameTextOverARicherCopyIsAChange(int formatsBefore, bool changed)
+    {
+        var platform = new FakeClipboardPlatform("hola", 1) { Formats = formatsBefore };
+
+        ClipboardWriteResult result = await new WindowsClipboardProvider(platform).WriteTextAsync("hola", CancellationToken.None);
+
+        Assert.That(result.Changed, Is.EqualTo(changed));
+    }
+
     private sealed class FakeClipboardPlatform(string text, uint sequence) : IClipboardPlatform
     {
+        // Text alone is 4 formats (Unicode, ANSI, OEM text and the locale); a rich copy holds more.
+        public int Formats { get; set; } = 4;
+
+        public int FormatCount() => Formats;
+
         public string Text { get; private set; } = text;
 
         public uint Sequence { get; private set; } = sequence;
@@ -177,6 +195,7 @@ public sealed class WindowsClipboardProviderTests
                 throw ReplaceFailure;
             ReplaceCount++;
             Text = WrittenInstead ?? text;
+            Formats = 4;
             Sequence++;
         }
     }
