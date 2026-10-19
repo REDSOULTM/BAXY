@@ -59,7 +59,7 @@ decisión: el modelo ajustado acierta 304 de 320 y el base 269 (+35); en pedidos
 - Cada reentrenamiento perdió algo que c2-e1.0 hace bien en tareas de varios pasos: dar la ruta completa al guardar
   en una subcarpeta y abrir la Calculadora cuando no está. Esas conductas son frágiles entre corridas.
 - Siguen fallando 0 de 3: E006 y E020 (el modelo pierde la subcarpeta o busca sin ella), E027 (dice que esa carpeta
-  es «su carpeta privada»; en una semilla, la respuesta tras tu «no» no sonó) y E015 (el oráculo de la biblioteca de
+  es «su carpeta privada»; en la tercera semilla BAXY lo hizo bien y fue el banco el que no vio su respuesta) y E015 (el oráculo de la biblioteca de
   Steam, no el modelo). Quedan cerrados como límite con su evidencia en PROGRESO.md. Los demás pendientes del goal
   (consola, tope del turno, Opera GX, Word, foco, memoria, voz al arrancar, E003, E011, E017, E019, E021, E022,
   E024, E029) quedaron arreglados y medidos.
