@@ -33,3 +33,20 @@ el commit del notebook y `bench_falsedades` murió con Errno 22. La corrida se r
 
 Desde entonces, `guardia_juegos.ps1` cierra cualquier proceso bajo `steamapps\common` 20 s después de que arranca, y
 lo anota. El recibo que ve el modelo no cambia. Además, el guion ya no espera indefinidamente si el banco muere.
+
+## Confirmación de las palancas 6 y 8 del PC (misma base `none` de hoy)
+
+Mismo commit `d2571e455`, la misma copia sembrada de la mente y el mismo catálogo. Solo se corrió el brazo de cada
+palanca (`scripts/renew/notebook/ayudas/p_aid.sh`). 0 errores.
+
+| Palanca | Prefijo | decision2 s0/s1/s2 | Escenas sin tocar/pA/pB/pC |
+|---|---|---|---|
+| none (base) | 40.099 | 230/231/229 = 230,00 | 32/33/32/33 = 32,50 |
+| 7 `modes_sentence` | +74 | 230/229/228 = 229,00 | 31/29/30/31 = 30,25 |
+| 6 `home_path` | +78 | 229/228/229 = 228,67 (Δ −1,33, IC95 [−4,33, +1,33]) | 32/32/32/30 = 31,50 |
+| 8 `person_folder_sentence` | +50 | 230/234/231 = 231,67 (Δ +1,67, IC95 [−0,67, +4,33]) | 31/32/32/30 = 31,25 |
+
+- **Palanca 6:** la caída firme en decision2 es P203, leer un PDF de Descargas. Con la ruta del home el modelo busca
+  primero con `file.find`, en las 3 semillas.
+- **Ruido en pC:** la base sacó 33 y las tres palancas sacaron entre 30 y 31. En las otras tres variantes, la 6 y la 8
+  bajan entre 0 y 1; la 7 baja en las cuatro.

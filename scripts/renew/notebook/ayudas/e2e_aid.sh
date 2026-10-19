@@ -49,7 +49,7 @@ for arm in ${FAL_ARMS:-B}; do
   echo "$lab BAXY_AYUDAS=$BAXY_AYUDAS start $(date +%H:%M) front: $(powershell -NoProfile -ExecutionPolicy Bypass -File "$F/frente_ahora.ps1")"
   rm -f "$S/$lab.stop"; powershell -NoProfile -ExecutionPolicy Bypass -File "C:/Users/usuario/AppData/Local/Temp/claude/nb/ay/guardia_juegos.ps1" -Stop "$S/$lab.stop" -Log "$S/$lab.juegos.txt" &
   GUARD=$!
-  py -3.12 -X utf8 scripts/renew/bench_falsedades.py "$lab" --cases 'D:\BAXYeval\renew_v1\falsedades\practice.json' > "$S/$lab.log" 2>&1 &
+  py -3.12 -X utf8 scripts/renew/bench_falsedades.py "$lab" --cases 'D:\BAXYeval\renew_v1\falsedades\practice.json' --no-judge > "$S/$lab.log" 2>&1 &
   BENCH=$!
   until [ -s "$dir/transcripts.json" ] || ! kill -0 $BENCH 2>/dev/null; do sleep 15; done
   [ -s "$dir/transcripts.json" ] || echo "$lab BENCH-DIED without transcripts: $(tail -1 "$S/$lab.log")"
