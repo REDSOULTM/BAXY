@@ -1,0 +1,46 @@
+namespace Baxy.Providers.Windows.Infrastructure;
+
+/// <summary>
+/// The aids of the «ayudas al modelo» goal (2026-10-19): facts added to what a tool's result tells the model, never a
+/// choice of tool, an argument, a run or a reply. <c>BAXY_AYUDAS</c> says which are on: unset, empty or «all», every
+/// one; «none» (or «0»), none, and the product reads as it did before them; otherwise the comma-separated ids that are
+/// on. The mind reads the same variable for its own aids (src/baxy_mind/mind.py, <c>_aid_on</c>).
+/// </summary>
+public static class ModelAids
+{
+    /// <summary>E011: a calculator.expression.evaluate with no Calculator window says app_open can start it.</summary>
+    public const string CalculatorNext = "calculator_next";
+
+    /// <summary>Accessible mode: system.settings.set says what the mode changes and which modes do not exist yet.</summary>
+    public const string AccessibleScope = "accessible_scope";
+
+    /// <summary>E024: a file.write with no folder says it went to BAXY's working folder (and a home folder of that name).</summary>
+    public const string WorkFolder = "work_folder";
+
+    /// <summary>E020: a file.find list says the folder it read and that no subfolder was entered.</summary>
+    public const string ListedPath = "listed_path";
+
+    private static readonly AsyncLocal<string?> Setting = new();
+
+    public static bool On(string aid)
+    {
+        string setting = (Setting.Value ?? Environment.GetEnvironmentVariable("BAXY_AYUDAS") ?? string.Empty).Trim();
+        if (setting.Length == 0 || setting.Equals("all", StringComparison.OrdinalIgnoreCase)) return true;
+        if (setting.Equals("none", StringComparison.OrdinalIgnoreCase) || setting == "0") return false;
+        return setting.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .Contains(aid, StringComparer.OrdinalIgnoreCase);
+    }
+
+    /// <summary>For a test: the setting of this async flow only (tests run in parallel and share the environment).</summary>
+    internal static IDisposable Use(string setting)
+    {
+        string? before = Setting.Value;
+        Setting.Value = setting;
+        return new Restore(() => Setting.Value = before);
+    }
+
+    private sealed class Restore(Action restore) : IDisposable
+    {
+        public void Dispose() => restore();
+    }
+}

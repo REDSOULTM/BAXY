@@ -4,6 +4,7 @@ using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Filesystem;
+using Baxy.Providers.Windows.Infrastructure;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -668,6 +669,31 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(named.GetProperty("folder").GetString(), Is.EqualTo("home"));
             Assert.That(named.TryGetProperty("sameNameInHome", out _), Is.False);
             Assert.That(File.ReadAllText(Path.Combine(home, "proyecto", "notas.txt")), Is.EqualTo("cuatro"));
+        });
+    }
+
+    // With the aid off (BAXY_AYUDAS=none) the receipt is the one of the starting product: the full path, no folder.
+    [Test]
+    public async Task AWriteWithNoFolderWithTheAidOffGivesOnlyTheFullPath()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "proyecto"));
+        var provider = new LocalFilesystemProvider(sandbox, bin)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+        };
+        using IDisposable off = ModelAids.Use("none");
+
+        JsonElement same = await WriteMessage(provider, """{"relativePath":"proyecto/notas.txt","text":"uno"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(same.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(sandbox, "proyecto", "notas.txt")));
+            Assert.That(same.TryGetProperty("folder", out _), Is.False);
+            Assert.That(same.TryGetProperty("sameNameInHome", out _), Is.False);
         });
     }
 

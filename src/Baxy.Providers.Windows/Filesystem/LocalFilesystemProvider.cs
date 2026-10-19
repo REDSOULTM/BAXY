@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Baxy.Providers.Windows.External;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.Filesystem;
 
@@ -225,7 +226,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     // first part is told beside it (only read: nothing is moved, nothing refused, the model chooses what to do).
     private FilesystemMutationResult WhereWritten(FilesystemMutationResult result, string root, string path)
     {
-        if (!string.Equals(root, _root, StringComparison.OrdinalIgnoreCase)) return result;
+        if (!ModelAids.On(ModelAids.WorkFolder) || !string.Equals(root, _root, StringComparison.OrdinalIgnoreCase))
+            return result;
         string[] parts = Path.GetRelativePath(_root, path)
             .Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
         string? sameName = null;

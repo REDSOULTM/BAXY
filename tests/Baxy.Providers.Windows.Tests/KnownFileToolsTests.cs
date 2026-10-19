@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using Baxy.Providers.Windows.External;
 using Baxy.Providers.Windows.Filesystem;
+using Baxy.Providers.Windows.Infrastructure;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -159,6 +160,26 @@ public sealed class KnownFileToolsTests
             // Contracaso: a search by name walks the subfolders and keeps its own scope.
             Assert.That(named.GetProperty("mode").GetString(), Is.EqualTo("name"));
             Assert.That(named.TryGetProperty("subfoldersEntered", out _), Is.False);
+        });
+    }
+
+    // With the aid off (BAXY_AYUDAS=none) the list is the one of the starting product, with no word of where it read.
+    [Test]
+    public async Task AListWithTheAidOffSaysNothingOfWhereItRead()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, _, _, _) = Folders(temporary);
+        using IDisposable off = ModelAids.Use("none");
+
+        JsonElement listed = await FindMessage(adapter, """{"folder":"desktop"}""");
+        JsonElement both = await FindMessage(adapter, """{"folder":"all_known"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.GetProperty("mode").GetString(), Is.EqualTo("list"));
+            Assert.That(listed.TryGetProperty("listedPath", out _), Is.False);
+            Assert.That(listed.TryGetProperty("subfoldersEntered", out _), Is.False);
+            Assert.That(both.TryGetProperty("listedPaths", out _), Is.False);
         });
     }
 

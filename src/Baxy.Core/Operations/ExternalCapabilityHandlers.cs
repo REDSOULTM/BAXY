@@ -2,6 +2,7 @@ using System.Text.Json;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
 using Baxy.Providers.Windows.External;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Windows;
 
 namespace Baxy.Core.Operations;
@@ -208,7 +209,7 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
             writer.WriteString("setting", setting);
             writer.WriteNumber("value", value);
             writer.WriteBoolean("changed", before != on);
-            if (setting == AccessibleMode)
+            if (setting == AccessibleMode && ModelAids.On(ModelAids.AccessibleScope))
             {
                 // pc-ayudas: what the mode changes (SettingsPanel's «Modo accesible») and the modes the interface shows
                 // as not ready yet (Rail's PROFILES), so a reply never promises more than the switch did.

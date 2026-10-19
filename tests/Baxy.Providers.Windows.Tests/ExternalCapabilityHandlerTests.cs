@@ -2,6 +2,7 @@ using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.External;
+using Baxy.Providers.Windows.Infrastructure;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -71,6 +72,22 @@ public sealed class ExternalCapabilityHandlerTests
             Assert.That(root.GetProperty("observed").GetProperty("next").GetString(), Is.EqualTo(
                 "no Calculator window is open and nothing was pressed; app_open can start the Calculator, then this "
                 + "expression can be evaluated again"));
+        });
+    }
+
+    // With the aid off (BAXY_AYUDAS=none) the failure is the one of the starting product: its code and no hint.
+    [Test]
+    public async Task ACalculatorWithoutItsWindowWithTheAidOffCarriesNoHint()
+    {
+        using IDisposable off = ModelAids.Use("none");
+        string message = await CalculatorMessage("""{"ok":false,"error":"calculator_window_not_found"}""");
+        using JsonDocument facts = JsonDocument.Parse(message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("calculator_window_not_found"));
+            Assert.That(facts.RootElement.TryGetProperty("observed", out JsonElement observed)
+                && observed.TryGetProperty("next", out _), Is.False);
         });
     }
 

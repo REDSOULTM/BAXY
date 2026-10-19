@@ -136,6 +136,67 @@ def _outcome(observation: str) -> str:
     return f"falló ({error})" if error else "falló"
 
 
+def _aid_on(aid: str) -> bool:
+    """Whether a model aid (goal «ayudas al modelo», 2026-10-19) is on: BAXY_AYUDAS as the core reads it
+    (src/Baxy.Providers.Windows/Infrastructure/ModelAids.cs). Unset, empty or «all», every aid; «none» or «0», none, and
+    the mind reads as it did before them; otherwise the comma-separated ids that are on."""
+    setting = os.environ.get("BAXY_AYUDAS", "").strip().lower()
+    if setting in {"", "all"}:
+        return True
+    if setting in {"none", "0"}:
+        return False
+    return aid in {part.strip() for part in setting.split(",")}
+
+
+def _aids_seen(observation: str) -> dict[str, Any]:
+    """The core's aids in a result, by the fields each one writes (ModelAids.cs): for the trace, apart from what the
+    model decided after reading them."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(facts, dict) or not isinstance(facts.get("observed"), dict):
+        return {}
+    observed = facts["observed"]
+
+    def picked(*names: str) -> dict[str, Any]:
+        return {name: observed[name] for name in names if name in observed}
+
+    seen: dict[str, Any] = {}
+    if facts.get("error") == "calculator_window_not_found" and "next" in observed:
+        seen["calculator_next"] = picked("next")
+    if observed.get("setting") == "accessible_mode" and picked("scope", "notAvailableYet"):
+        seen["accessible_scope"] = picked("scope", "notAvailableYet")
+    if observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
+        seen["work_folder"] = picked("folder", "sameNameInHome")
+    if picked("listedPath", "listedPaths", "subfoldersEntered"):
+        seen["listed_path"] = picked("listedPath", "listedPaths", "subfoldersEntered")
+    return seen
+
+
+def _turn_facts(done: list[str]) -> str:
+    """Aid «turn_facts» (lever 5a): the turn's calls parted into what was done and verified and what was not, when at
+    least one was not. The same entries and outcomes as «[En este turno: …]» (from _outcome), only grouped: FH141 said
+    «Cerré Paint» with app_close → falló (window_not_found) in that very line, between calls that had worked."""
+    verified, unverified, failed = [], [], []
+    for entry in done:
+        outcome = entry.rsplit(" → ", 1)[-1]
+        if outcome.startswith("completado y verificado"):
+            verified.append(entry)
+        elif outcome.startswith(("falló", "no se ejecutó", "cancelado")):
+            failed.append(entry)
+        else:
+            unverified.append(entry)
+    if not unverified and not failed:
+        return ""
+    parts = [f"Hecho y verificado en este turno: {'; '.join(verified) or 'nada'}."]
+    if unverified:
+        parts.append(f"Sin verificar: {'; '.join(unverified)}.")
+    if failed:
+        parts.append(f"No hecho: {'; '.join(failed)}.")
+    return "[" + " ".join(parts) + "]"
+
+
 def beat_message(context: dict[str, Any]) -> str:
     """What the heartbeat sees, as lines the model reads: the moment, the screen, the PC, what changed, what BAXY
     remembers, the recent conversation and the reminders. Presentation only: every field the App observed is shown."""
@@ -539,9 +600,17 @@ class Mind:
         else:
             turn["repeats"] = 1
             done.append(entry)
+        aids = _aids_seen(observation)
+        facts = _turn_facts(done) if _aid_on("turn_facts") else ""
+        if facts:
+            aids["turn_facts"] = facts
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
-                     "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
+                     "content": observation + "\n" + (facts or "[En este turno: " + "; ".join(done) + "]")})
         turn["awaiting"] = None
+        if aids:
+            # What the aids told the model, a row of its own: the model's decision after it is the next row.
+            self._log("turn.aid", time.monotonic(), None, operation=turn.get("calling"),
+                      aids=sorted(aids) if turn.get("private") else aids)
         if final:
             # The App closes the turn (its step budget spent, the engine down, or a confirmation waiting for the
             # person): said where the model reads it, at the end of the last result, without a cause the mind does not

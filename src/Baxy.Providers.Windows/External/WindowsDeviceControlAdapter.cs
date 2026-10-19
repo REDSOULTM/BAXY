@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Baxy.Providers.Windows.Infrastructure;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Radios;
@@ -942,7 +943,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 : "calculator_display_not_read";
             // E011 (pc-ayudas): with no Calculator window nothing was pressed; the failure says what was seen and what
             // the model may do about it (start it with app_open), and the model still chooses.
-            if (code == "calculator_window_not_found")
+            if (code == "calculator_window_not_found" && ModelAids.On(ModelAids.CalculatorNext))
             {
                 return new ExternalCapabilityReceipt(operation, false, false, CalculatorNotOpen, code);
             }
