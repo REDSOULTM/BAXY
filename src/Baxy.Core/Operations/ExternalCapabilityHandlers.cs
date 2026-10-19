@@ -208,6 +208,13 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
             writer.WriteString("setting", setting);
             writer.WriteNumber("value", value);
             writer.WriteBoolean("changed", before != on);
+            if (setting == AccessibleMode)
+            {
+                // pc-ayudas: what the mode changes (SettingsPanel's «Modo accesible») and the modes the interface shows
+                // as not ready yet (Rail's PROFILES), so a reply never promises more than the switch did.
+                writer.WriteString("scope", "BAXY's own window only: larger text, more contrast, wider buttons");
+                writer.WriteString("notAvailableYet", "a blind (screen reader) mode and a hands-free mobility mode");
+            }
             writer.WriteString("authority", "baxy_profile_setting_postread");
             writer.WriteEndObject();
         }
