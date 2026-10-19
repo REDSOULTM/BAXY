@@ -1947,3 +1947,12 @@ dueño) entran como palanca propia en un ciclo, medida con esta sonda.
   cuenta) y la referencia del base se guarda en disco. Relanzado a las 00:12.
 - Datos listos: v4 (ciclo 7: v2 + 558 escenas de réplica ×1, 5.190 muestras) y v5 (ciclo 8: v2 + 86 ejemplos honestos
   de los modos G9 tras la fuga, de 120: 34 fuera por parecerse a la sonda; 5.140 muestras).
+- **Lote recompilado** (7d59e80bb = b550e9602 + nb-proveedores: App que no arrancaba, lanzador, voz desde el primer
+  turno, foco minimizado, Word, recibos), con c2-e1.0, notebook: suites Kernel 574, Contracts 69, Setup 477, Providers
+  2315, pytest 30; **e2e 26/23/26 = 25,0** (b550e9602: 23,67; pareado +1,33, IC [−0,67, +3,33], McNemar 1↑/0↓);
+  fallos estables, sólo del modelo: E006, E015, E020, E027. Un e2e anterior de 7d59e80bb no valía: corrió con
+  binarios viejos (la huella de compilación era una por usuario; arreglado en 19d49554f, fusionado en 9123a139f).
+- Fase 4 preparada en el notebook sin ver el holdout: ejecutor que lee su formato y excluye lo inseguro.
+- Ciclo 6 relanzado a las 00:40 tras un error de cuBLAS por memoria en el pase de referencia (ahora top-64 sobre los
+  logits menos un logsumexp, sin log-softmax completo: pico 12,2 GB) y el fin de la sesión anterior. Orden siguiente:
+  ciclo 8 (G9, requisito de honestidad del dueño) antes que el 7 (réplica amplia), por tiempo.
