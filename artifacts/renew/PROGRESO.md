@@ -1666,7 +1666,10 @@ estándar):
     mente 295). Con el oído cargado, las mismas cifras.
   - En vivo, con el escritorio limpio: F1 3/3, F2 3/3, E001 3/3 y W1 2/3. El fallo de W1 es de la preparación: Word no
     quedó delante y el producto se negó a escribir en VS Code (`protected_window`, `refusedProcess: Code`).
-  - Las falsedades s0 se enviaron al PC para juzgarlas.
+  - **La preparación de W1 (sólo el banco del notebook, vivo_ft.json):** el `AppActivate` del banco, que va en segundo
+    plano, a veces no da el frente a Word; con sólo la comprobación, Word quedó delante en 1 de 3. Ahora gana el
+    derecho como ForegroundRight (una tecla sin uso registrada como atajo, después `SetForegroundWindow`), comprueba que
+    WINWORD está delante y, si no, da setup_failed y nombra quién lo tiene. Con ella, W1 sobre e0a7d9923 sale 3/3.  - Las falsedades s0 se enviaron al PC para juzgarlas.
 
 | Checkpoint (sobre lote-final3) | decision2 | Escenas ×4 | e2e s0-2 | Veredicto |
 |---|---|---|---|---|
