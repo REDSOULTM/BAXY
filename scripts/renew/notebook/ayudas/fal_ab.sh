@@ -11,12 +11,18 @@ for arm in A B; do
   idle; cd "${WT[$arm]}" || exit 1
   lab="nb-ay-$arm-${H[$arm]}-fals-s0"; dir="D:/BAXYeval/renew_v1/runs/$lab-falsedades"; rm -rf "$dir"
   echo "$lab start $(date +%H:%M) front: $(powershell -NoProfile -ExecutionPolicy Bypass -File "$F/frente_ahora.ps1")"
+  rm -f "$S/$lab.stop"; powershell -NoProfile -ExecutionPolicy Bypass -File "C:/Users/usuario/AppData/Local/Temp/claude/nb/ay/guardia_juegos.ps1" -Stop "$S/$lab.stop" -Log "$S/$lab.juegos.txt" &
+  GUARD=$!
   py -3.12 -X utf8 scripts/renew/bench_falsedades.py "$lab" --cases 'D:\BAXYeval\renew_v1\falsedades\practice.json' > "$S/$lab.log" 2>&1 &
-  until [ -s "$dir/transcripts.json" ]; do sleep 15; done
+  BENCH=$!
+  until [ -s "$dir/transcripts.json" ] || ! kill -0 $BENCH 2>/dev/null; do sleep 15; done
+  [ -s "$dir/transcripts.json" ] || echo "$lab BENCH-DIED without transcripts: $(tail -1 "$S/$lab.log")"
   sleep 10
   powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { \$_.Name -match '^py' -and \$_.CommandLine -match 'bench_falsedades' } | ForEach-Object { Stop-Process -Id \$_.ProcessId -Force }"
-  wait 2>/dev/null
+  wait $BENCH 2>/dev/null
   powershell -NoProfile -Command "Get-Process Baxy,Baxy.Core,llama-server -ErrorAction SilentlyContinue | Stop-Process -Force"
+  touch "$S/$lab.stop"; wait $GUARD 2>/dev/null; echo "$lab games closed: $(cat "$S/$lab.juegos.txt" 2>/dev/null | tr '
+' ' ')"
   echo "$lab $(date +%H:%M): transcripts $(ls -l "$dir/transcripts.json" | awk '{print $5}') bytes"
   ssh redpc "powershell -NoProfile -Command \"New-Item -ItemType Directory -Force -Path F:/BAXYeval/renew_v1/runs/$lab-falsedades | Out-Null\"" && scp -q "$dir/transcripts.json" "redpc:F:/BAXYeval/renew_v1/runs/$lab-falsedades/transcripts.json" && echo "$lab transcripts sent"
 done
