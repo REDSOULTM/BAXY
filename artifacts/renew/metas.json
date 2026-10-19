@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-18 (auditoría de los pedidos reales: cerrada)",
+  "actualizado": "2026-10-19 (ajuste fino en curso) / 2026-10-18 (auditoría de los pedidos reales: cerrada)",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -2017,6 +2017,11 @@
           "decision2": "233/234/236 = 234,33 frente a 229,33 (+5,0)",
           "escenas": "31/31/31/31 = 31,0 frente a 31,25; 1 molesta nueva (P032)",
           "regresiones": "inventa el tiempo sin weather.current (P135, P161) y un dato temporal (P088): no aceptado"
+        },
+        "c1-e1.0_notebook": {
+          "decision2_s0": "236",
+          "escenas_sin_tocar": "26 frente a 32 (-6)",
+          "estado": "rechazado"
         }
       },
       "c2": {
@@ -2027,7 +2032,58 @@
           "lexica": "213 de 3651",
           "semantica_conjunto": "77 de 3438"
         },
-        "config": "igual que c1, 1 época"
+        "config": "igual que c1, 1 época",
+        "c2-e0.5_notebook": {
+          "decision2": "232/229/235 = 232,00 (base 229,33)",
+          "escenas": "29/32/30/30 = 30,25 (base 31,25), 0 molestas"
+        },
+        "c2-e1.0_lote_b550e9602_notebook": {
+          "decision2": "230/230/230 = 230,00 (base 229,33)",
+          "escenas": "31/33/32/33 = 32,25 (base 31,25), 0 molestas",
+          "e2e": "25/21/25 = 23,67 (base 19,67, +4,0)",
+          "falsedades_s0": "2 (juez F019 + lectura estricta F015) frente a 3 de la base",
+          "recursos": "VRAM 3.901 MiB (pico 3.903), RAM producto 1.794 MiB",
+          "gguf_sha256": "8a4b6ce3edb2ba8b87c62111b4c3387fa481a4d01b58b29a112b799b0e8affc8"
+        },
+        "c2-e1.0_lote_PC": {
+          "decision2": "231/230/231 = 230,67 (base PC 227,67)",
+          "escenas": "32/33/31/33 = 32,25 (base PC 29,25)"
+        },
+        "estado": "aceptado (mejor medido)"
+      },
+      "c3": {
+        "cambio": "2 épocas (datos v2)",
+        "fuente": "inferencia propia",
+        "resultado": "decision2 -0,33, escenas -2,0 frente a c2-e1.0",
+        "estado": "descartado"
+      },
+      "lambda": {
+        "fuente": "WiSE-FT arXiv 2109.01903; arXiv 2309.06256; LiNeS arXiv 2410.17146 (paper)",
+        "0.6_notebook": "decision2 232,33, escenas 31,25, e2e 23,0",
+        "0.8_notebook": "decision2 233,0, escenas 29,75, e2e 23,0 (pareado -0,67, McNemar 1/2)",
+        "estado": "descartado: baja el latido, no sube el e2e"
+      },
+      "c4": {
+        "cambio": "LR 5e-5 (D2 propuesta 1)",
+        "c4-e1.0_notebook": "decision2 228,67, escenas 30,5 (1 molesta), e2e 23,0 (pareado -0,67)",
+        "estado": "descartado"
+      },
+      "c5": {
+        "cambio": "datos v3 pareados G7/G8 (D3 palancas 1-2), 6.196 muestras",
+        "c5-e1.0_notebook": "decision2 237/233/235 = 235,00 (+5,0), escenas -2,25 (P019 molesta), e2e 22,33 (pareado -1,33, McNemar 1/3)",
+        "estado": "descartado (gana decisión, pierde latido y e2e)"
+      },
+      "c6": {
+        "cambio": "datos v3 + KL hacia el base (β 0,05 réplica del latido, 0,005 resto; Riemer 2025)",
+        "estado": "entrenando (2026-10-19 00:40)"
+      },
+      "c7": {
+        "cambio": "datos v4 = v2 + 558 escenas de réplica ×1 (D1 palanca 3), 5.190 muestras",
+        "estado": "encadenado tras c8"
+      },
+      "c8": {
+        "cambio": "datos v5 = v2 + 86 ejemplos honestos de los modos G9 (34 fuera por la sonda), 5.140 muestras",
+        "estado": "encadenado tras c6"
       }
     },
     "proveedores": {
@@ -2063,6 +2119,26 @@
         "E001": "B: carrera de carga de Supertonic"
       },
       "detalle": "F:/BAXYeval/ft_v1/proveedores_estado.md"
+    },
+    "sonda_modos": {
+      "archivo": "F:/BAXYeval/ft_v1/sonda_modos/sonda_modos.json (40 casos, sha256 e8aa1e79…, en la lista de la fuga)",
+      "base": "honesto 0/34, actúa con herramienta en 17/22",
+      "c2-e1.0": "honesto 0/34"
+    },
+    "modos_accesibilidad": {
+      "normal": "texto listo; voz «en pruebas · próximamente disponible» (a556ceb84)",
+      "no_vidente": "no disponible; la interfaz dice «próximamente disponible» (db4af44f7)",
+      "movilidad": "no disponible; ídem",
+      "mente": "ningún modo cambia lo que ve; inventario en artifacts/renew/MODOS_ACCESIBILIDAD.md"
+    },
+    "lote": {
+      "rama": "hub/lote-final",
+      "cabeza_medida": "9123a139f (= 7d59e80bb + 19d49554f)",
+      "modelo": "c2-e1.0",
+      "e2e_recompilado": "26/23/26 = 25,0 (pareado +1,33 frente a b550e9602, McNemar 1/0)",
+      "suites": "Kernel 574, Contracts 69, Setup 477, Providers 2315, pytest 30",
+      "recursos": "VRAM 3.901 MiB, RAM producto 1.791 MiB",
+      "vivo": "E001 3/3, F1 3/3, F2 3/3, W1 2/3 (arreglado en 7cb72bfdd)"
     }
   }
 }
