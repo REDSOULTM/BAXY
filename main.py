@@ -120,6 +120,12 @@ def source_files(root: Path = ROOT) -> list[Path]:
 def source_fingerprint(root: Path = ROOT) -> str:
     root = root.resolve()
     digest = hashlib.sha256()
+    # FT/proveedores goal (2026-10-19): the build state is one per user (LOCALAPPDATA), and two worktrees with the same
+    # sources had the same fingerprint, so a worktree whose own build was stale (the final lot) was told «sin cambios»
+    # after another one built, and its old App closed at start. The worktree is part of what was built.
+    root_name = os.path.normcase(str(root)).encode("utf-8")
+    digest.update(len(root_name).to_bytes(4, "little"))
+    digest.update(root_name)
     for path in source_files(root):
         relative = path.relative_to(root).as_posix().encode("utf-8")
         digest.update(len(relative).to_bytes(4, "little"))
