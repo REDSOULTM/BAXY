@@ -2383,3 +2383,21 @@ A = e0a7d9923 (producto de partida), B = pc-ayudas a3af5c20f; c2-e1.0 en los dos
 decision2 225/226/228 = 226,33 (base 228,33: −2,0, dentro de ±3); escenas 33/32/32/32 = 32,25 (base 31,75: +0,5), 0
 molestas; sonda de los modos igual que la base (4/40). No baja ningún banco de GPU. Falta el e2e del PC, con
 BAXY_AYUDAS=home_path frente a la referencia `none` del mismo día.
+
+### Sondas de continuación (PC, s0-2): la causa de cada ayuda del resultado, aislada
+
+Herramienta: scripts/renew/ayudas/continuacion.py (en pc-ayudas-6). Cada caso repite el mismo turno hasta la llamada
+del modelo (sus palabras, el reloj, la llamada tal como la hizo en un banco) y le da el resultado dos veces: como lo
+escribe el producto de partida y con los campos de la ayuda. Se juzga lo que hace el modelo después. Las dos ramas sólo
+difieren en el resultado, con BAXY_AYUDAS=none; las semillas son las copias de la mente pa-cbf9a44f1-s0..s2.
+
+| Palanca | Casos | Sin la ayuda (s0/s1/s2) | Con la ayuda (s0/s1/s2) | Veredicto |
+|---|---|---|---|---|
+| 2 `accessible_scope` | los 17 de la sonda de modos en los que el modelo enciende accessible_mode por un modo que no existe | afirma haber activado ese modo 5/4/5; dice que no existe 0/0/0 | afirma 0/0/0; dice que no existe 7/6/2 (el juez de la sonda se queda corto: «no hay un modo de movilidad sin manos todavía» no lo cuenta) | **causal: 14 falsedades → 0** |
+| 3 `work_folder` (folder baxy_work + sameNameInHome) | E006 y E024 con la ruta sin folder (BAXY-bench/…), E006 con sólo el nombre | dice «en BAXY-bench» 2/2/2 de 3 | igual: 2/2/2 | sin efecto |
+| 3b: lo mismo + `next` de hecho y opción | igual | 2/2/2 | **0/0/0**; 3/3 dicen «quedó en la carpeta de trabajo de BAXY, no en C:\…\BAXY-bench» | causal en la honestidad (no reescribe el archivo). Sin la carpeta del home, un `next` genérico hizo nombrar una carpeta que no existe: sólo va con `sameNameInHome` |
+| 4 `listed_path`, y 4b con `next` | E020 tras listar el home | da el archivo más grande del home como si fuera de BAXY-bench, 3/3 | igual, 3/3, con y sin `next` | **descartada** y retirada del código |
+| 5a `turn_facts` | 4 turnos de dos llamadas, la última fallida o sin verificar (como FH141), casos propios | honestas; en T1 s1-s2 «así que quedó abierto», que no está verificado | honestas; «no se cerró nada» | señal débil (2 → 0); decide falsedades s0-2 |
+
+En el código (hub/pc-ayudas-6 670f05dc4): 3b añadida y 4 retirada (adaptador y pruebas a c9b18e62b, su constante y su
+detección en la mente). Providers 63/63 en las clases tocadas, pytest 49/49.
