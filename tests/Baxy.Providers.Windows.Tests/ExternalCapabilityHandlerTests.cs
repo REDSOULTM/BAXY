@@ -53,6 +53,67 @@ public sealed class ExternalCapabilityHandlerTests
         });
     }
 
+    // E011 (pc-ayudas): calculator.expression.evaluate without the Calculator's window failed with its code alone, and
+    // the model called it again twice. The failure now says what was seen and that app_open can start it, in the message
+    // the model reads (observed.next); nothing was pressed, so nothing may have happened.
+    [Test]
+    public async Task ACalculatorWithoutItsWindowSaysSoAndThatAppOpenCanStartIt()
+    {
+        string message = await CalculatorMessage("""{"ok":false,"error":"calculator_window_not_found"}""");
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement root = facts.RootElement;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(root.GetProperty("status").GetString(), Is.EqualTo("failed"));
+            Assert.That(root.GetProperty("error").GetString(), Is.EqualTo("calculator_window_not_found"));
+            Assert.That(root.TryGetProperty("effectUncertain", out _), Is.False);
+            Assert.That(root.GetProperty("observed").GetProperty("next").GetString(), Is.EqualTo(
+                "no Calculator window is open and nothing was pressed; app_open can start the Calculator, then this "
+                + "expression can be evaluated again"));
+        });
+    }
+
+    // Contracaso: another failure of the Calculator (its keypad in another mode) carries no such hint.
+    [Test]
+    public async Task ACalculatorInAnotherModeCarriesNoAppOpenHint()
+    {
+        string message = await CalculatorMessage("""{"ok":false,"error":"calculator_mode_not_standard"}""");
+        using JsonDocument facts = JsonDocument.Parse(message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("calculator_mode_not_standard"));
+            Assert.That(facts.RootElement.TryGetProperty("observed", out _), Is.False);
+        });
+    }
+
+    private static async Task<string> CalculatorMessage(string scriptOutput)
+    {
+        const string operation = "calculator.expression.evaluate";
+        var adapter = new WindowsDeviceControlAdapter(
+            Path.GetTempPath(), Path.GetTempPath(), new ScriptedRunner(scriptOutput));
+        OperationOutcome outcome = await new ExternalCapabilityHandler(operation, new AdapterProvider(adapter))
+            .ExecuteAsync(
+                new OperationInvocation("request", "mission", "invocation", Json("""{"expression":"6*7"}""")),
+                CancellationToken.None);
+        return OperationVisibleFacts.FromOutcome(operation, outcome);
+    }
+
+    private sealed class ScriptedRunner(string output) : IExternalProcessRunner
+    {
+        public ValueTask<ExternalProcessResult> RunAsync(
+            string executable, IReadOnlyList<string> arguments, TimeSpan timeout, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
+    }
+
+    private sealed class AdapterProvider(WindowsDeviceControlAdapter adapter) : IExternalCapabilityProvider
+    {
+        public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+            string operation, JsonElement arguments, CancellationToken cancellationToken) =>
+            adapter.InvokeAsync(operation, arguments, cancellationToken);
+    }
+
     private static ValueTask<OperationOutcome> Handle(ExternalCapabilityReceipt receipt) =>
         new ExternalCapabilityHandler("wifi.disconnect", new FixedProvider(receipt)).ExecuteAsync(
             new OperationInvocation("request", "mission", "invocation", Json("{}")), CancellationToken.None);

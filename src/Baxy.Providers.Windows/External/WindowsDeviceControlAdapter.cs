@@ -893,6 +893,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return reader.ReadToEnd();
     });
 
+    // What a calculator.expression.evaluate without the Calculator's window saw: a fact and an option, not an order.
+    private static readonly JsonElement CalculatorNotOpen = ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteString("next", "no Calculator window is open and nothing was pressed; app_open can start the "
+            + "Calculator, then this expression can be evaluated again");
+        writer.WriteEndObject();
+    });
+
     private static readonly Regex CalculatorExpression = new(
         @"^\s*\d{1,12}(?:[.,]\d{1,6})?(?:\s*[-+*/]\s*\d{1,12}(?:[.,]\d{1,6})?){1,8}\s*$",
         RegexOptions.CultureInvariant);
@@ -931,6 +940,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             string code = root.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
                 ? error.GetString() ?? "calculator_display_not_read"
                 : "calculator_display_not_read";
+            // E011 (pc-ayudas): with no Calculator window nothing was pressed; the failure says what was seen and what
+            // the model may do about it (start it with app_open), and the model still chooses.
+            if (code == "calculator_window_not_found")
+            {
+                return new ExternalCapabilityReceipt(operation, false, false, CalculatorNotOpen, code);
+            }
             // A button pressed before the failure (or a display that did not show the expression) may have changed the
             // Calculator; a keypad without the buttons pressed nothing.
             return ExternalJson.Failure(operation, code,
