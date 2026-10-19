@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Applications;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Windows;
 
 namespace Baxy.Core.Operations;
@@ -136,6 +137,10 @@ internal sealed class AppOpenHandler(
             providerResult.NewDocument,
             providerResult.ShownWithoutFocus,
             PlaceRequested: place is not null,
+            Next: place is not null && ModelAids.On(ModelAids.PlaceUnverified)
+                ? $"{providerResult.DisplayName} was asked to show its {arguments.Place ?? "place"}; whether it shows now "
+                    + "was not checked: input_visible_controls can look before saying so"
+                : null,
             FrontChanged: place?.FrontChanged == true,
             WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()),
             ProcessName: front.Process,

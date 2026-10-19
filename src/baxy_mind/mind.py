@@ -185,6 +185,8 @@ def _aids_seen(observation: str) -> dict[str, Any]:
         seen["calculator_next"] = picked("next")
     if observed.get("setting") == "accessible_mode" and picked("scope", "notAvailableYet"):
         seen["accessible_scope"] = picked("scope", "notAvailableYet")
+    if observed.get("placeRequested") and "next" in observed:
+        seen["place_unverified"] = picked("next")
     if observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
         seen["work_folder"] = picked("folder", "sameNameInHome", "next")
     return seen

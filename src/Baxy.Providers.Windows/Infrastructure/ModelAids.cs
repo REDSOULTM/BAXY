@@ -17,6 +17,9 @@ public static class ModelAids
     /// <summary>E024: a file.write with no folder says it went to BAXY's working folder (and a home folder of that name).</summary>
     public const string WorkFolder = "work_folder";
 
+    /// <summary>F019, E015: an app.open with a place says the place was only asked for and how to look.</summary>
+    public const string PlaceUnverified = "place_unverified";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

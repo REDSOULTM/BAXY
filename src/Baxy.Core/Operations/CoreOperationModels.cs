@@ -50,6 +50,10 @@ internal sealed record OpenApplicationResult(
     // PlaceRequested (estabilización, encargo C; auditoría K10): the place's address was handed to Windows. Nothing here
     // reads whether it arrived; a look at the window does.
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool PlaceRequested = false,
+    // Next (pc-ayudas, aid place_unverified): with a place, that it was only asked for and how to look; F019 said
+    // «abrí Steam en la biblioteca» from placeRequested alone (continuation probe: 3/3 without it, 0/3 with it, the
+    // model looked with input_visible_controls).
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Next = null,
     // FrontChanged (review H2): the place's handler raised the application above the person's window; FrontRestored
     // then says whether the front went back to them.
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FrontChanged = false,

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Applications;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
 
@@ -152,6 +153,50 @@ public sealed class AppOpenHandlerTests
             Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_opened"));
             Assert.That(outcome.EffectMayHaveOccurred, Is.True);
         });
+    }
+
+    // pc-ayudas (aid place_unverified): a place handed over is only asked for; the result says so and how to look (F019
+    // said «abrí Steam en la biblioteca» from placeRequested alone). With BAXY_AYUDAS=none it is the result it was.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task APlaceHandedOverSaysItWasOnlyAskedForAndHowToLook(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        var handler = new AppOpenHandler(
+            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe"),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+            new HandedPlace(),
+            frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Steam","place":"library"}"""), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(result.GetProperty("placeRequested").GetBoolean(), Is.True);
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("Steam was asked to show its library; whether it shows now was "
+                    + "not checked: input_visible_controls can look before saying so"));
+            }
+        });
+    }
+
+    // Contracaso: an opening with no place says nothing of one.
+    [Test]
+    public async Task AnOpeningWithNoPlaceCarriesNoPlaceHint()
+    {
+        OperationOutcome outcome = await Handler(new VerifiedOpening(@"C:\Windows\System32\notepad.exe"))
+            .ExecuteAsync(Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
+        Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+    }
+
+    private sealed class HandedPlace : IApplicationPlaceOpener
+    {
+        public PlaceOpening Open(string address, bool keepFront, long applicationWindow) => new(true);
     }
 
     private sealed class RefusedPlace : IApplicationPlaceOpener
