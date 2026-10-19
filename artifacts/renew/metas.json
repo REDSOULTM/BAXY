@@ -2176,7 +2176,8 @@
           "E020": "0/3, del modelo: file.find en home sin subdirectory y responde sin decir dónde buscó; palancas 4 y 6 de la meta siguiente",
           "E027": "0/3 en el banco; s0 y s2 del modelo (se niega diciendo que esa carpeta es su carpeta privada; td:63 ya dice lo contrario); s1 es fallo del BANCO: el producto dice la respuesta tras el «no» (4,3 s de audio), pero bench_e2e.py:245-247 deja first_audio_ms nulo para la respuesta que sigue a una confirmación y Test-Spoken (bench.ps1:596) la da por no dicha",
           "E015": "0/3 en el banco por el ORÁCULO: Test-SteamLibraryVisible (bench.ps1:419-430) pide 4 de 27 títulos por OCR y la biblioteca sólo muestra 1-2 según su scroll; steam://open/games sí llega a la biblioteca con Steam abierto y en frío (en vivo). s0 usó place library y llegó; s1 y s2 no usaron place (del modelo). Arreglo del oráculo propuesto para la meta siguiente"
-        }
+        },
+        "evidencia_por_caso": "F:/BAXYeval/ft_v1/runs/e2e-final-e0a7d9923/results-s{0,1,2}.jsonl (copia de las corridas del notebook nb-l2-c2e1-e0a7d9923-s{0,1,2}-e2e-e2e). Al empezar el goal (base 0be0f9de9) los once casos E003, E006, E015, E017, E019, E020, E021, E022, E024, E027 y E029 eran fallos estables; en el producto final E003, E021, E022 y E029 aciertan 3/3 y E019 y E024 2/3 (mayoría; la semilla que falla es del modelo)"
       }
     },
     "sonda_modos": {
