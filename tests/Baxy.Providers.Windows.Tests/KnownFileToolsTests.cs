@@ -132,6 +132,46 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // E020 (pc-ayudas): a list of a folder read only its top level, and the receipt did not say where nor that, so «no
+    // está» was told of a file in a subfolder. The list now says the real folder it read (a subdirectory included, each
+    // folder when there are several) and that no subfolder was entered, in the message the model reads.
+    [Test]
+    public async Task AListSaysTheFolderItReadAndThatNoSubfolderWasEntered()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, _) = Folders(temporary);
+        Directory.CreateDirectory(Path.Combine(desktop, "proyectos", "tesis"));
+
+        JsonElement listed = await FindMessage(adapter, """{"folder":"desktop"}""");
+        JsonElement inside = await FindMessage(adapter, """{"folder":"desktop","subdirectory":"proyectos"}""");
+        JsonElement both = await FindMessage(adapter, """{"folder":"all_known"}""");
+        JsonElement named = await FindMessage(adapter, """{"folder":"desktop","query":"tesis"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.GetProperty("listedPath").GetString(), Is.EqualTo(desktop));
+            Assert.That(listed.GetProperty("subfoldersEntered").GetBoolean(), Is.False);
+            Assert.That(inside.GetProperty("listedPath").GetString(), Is.EqualTo(Path.Combine(desktop, "proyectos")));
+            Assert.That(inside.GetProperty("subfoldersEntered").GetBoolean(), Is.False);
+            Assert.That(both.GetProperty("listedPaths").EnumerateArray().Select(path => path.GetString()),
+                Is.EquivalentTo(new[] { desktop, documents }));
+            Assert.That(both.TryGetProperty("listedPath", out _), Is.False);
+            // Contracaso: a search by name walks the subfolders and keeps its own scope.
+            Assert.That(named.GetProperty("mode").GetString(), Is.EqualTo("name"));
+            Assert.That(named.TryGetProperty("subfoldersEntered", out _), Is.False);
+        });
+    }
+
+    // What the model reads of a file.find: the observed part of its message.
+    private static async Task<JsonElement> FindMessage(WindowsKnownFileAdapter adapter, string arguments)
+    {
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("file.find", Json(arguments), CancellationToken.None);
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        using JsonDocument message = JsonDocument.Parse(Baxy.Kernel.Operations.OperationVisibleFacts.FromOutcome(
+            "file.find", Baxy.Kernel.Operations.OperationOutcome.Success(receipt.Result!.Value)));
+        return message.RootElement.GetProperty("observed").Clone();
+    }
+
     // The profile root (home) is read when it is named; «all_known» stays the known folders, so a file of the profile
     // is not found twice and AppData is never walked by a search of everything.
     [Test]
