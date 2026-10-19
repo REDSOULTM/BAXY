@@ -2129,3 +2129,51 @@ fase 4 (holdout nuevo, una vez), lote final medido entero, informe, commit y pus
 - Recursos (producto real, notebook): **VRAM 3.901 MiB (pico 3.903), RAM del producto 1.787 MiB**: ≤ 4 GB.
 - MSConfig\services 0 y ningún 7040 de deshabilitado en todas las corridas del notebook.
 
+## Fase 4: el holdout nuevo, una vez, sobre el producto final (e0a7d9923, c2-e1.0)
+
+- Sellos comprobados (decision_ft 665fadc2…, escenas_ft ecfd4395…). La sesión del PC no vio sus textos: sólo ids,
+  ok, familias y tipos.
+- **Decisión** (320 casos, una vez en cada GPU, mente de e0a7d9923 sin perturbar, catálogo lote3 del oráculo, 0
+  errores): final **304/320 (95,0 %)** en el PC y 304/320 en el notebook; el modelo base, en la misma sesión del PC,
+  269/320 (84,1 %): **+35**. Por familia (final/base): contexto 36/25, preguntar 29/24, no lo hace 23/18, riesgo
+  29/25, voz con errores 28/25, acción 53/51, spanglish 40/38, texto pegado 25/23, varios pasos 19/18, texto 22/22.
+- **Latido** (36 escenas, una pasada): final **26/36**, 2 molestas, 0 riesgos solos; base 29/36, 1 molesta. Pierde
+  FE08 (habla de la salud del sistema cuando debía callar: la molesta nueva), FE12 (propone en vez de avisar) y FE17
+  (calla un recordatorio que debía decir); comparten FE05, FE14, FE19, FE26, FE33 y FE35. En práctica el ajustado
+  subía el latido (+1,0); en el holdout baja 3 de 36 en una sola pasada. Se informa tal cual.
+- **Ejecución, una vez, en el notebook** (10:50-12:24, e0a7d9923 recompilado, c2-e1.0; escritorio comprobado por
+  caso: 0 de 16 app.open al frente quedaron detrás; 0 error, 0 setup_failed, MSConfig 0, ningún 7040, cuarentena 0):
+  221 casos (de los 223 elegibles se excluyeron dos por seguridad: una app de mensajería y un cambio de teclado del
+  sistema). Juez del banco: OK 190, EJECUTA_MAL 28, otra operación 3.
+- Lectura a mano de los 38 casos que el juez marcó para revisar falsedad, contra los pasos ejecutados: **1 falsedad
+  clara** (FH141: dice «Cerré Paint» y el cierre falló con window_not_found) y 1 dudosa (FH254: «Abrí YouTube, pero no
+  pude comprobarlo»; el recibo falló la verificación, aunque la ventana sí apareció). En FH164, FH189 y FH291 el juzgado
+  no trae el contenido del resultado y no se puede confirmar; el resto dice lo que muestran sus recibos.
+- De los 31 no OK en la ejecución, unos 25 son de entorno del notebook y no de BAXY: memoria apagada en el perfil del
+  banco (4), micrófono ya silenciado (2), sin radio Wi-Fi (2), sin música sonando (3), la ventana, nota o archivo que el
+  caso presupone no existía (10), portapapeles vacío, navegador sin historial, búsqueda web sin resultados, no molestar
+  ya activo y una ventana de VS Code delante (protected_window). En casi todos BAXY lo dice tal cual. Del modelo o del
+  producto quedan unos 6: FH141 (la falsedad), FH254, FH295 (pregunta por una ciudad ambigua, razonable), y tres de
+  otra operación (FH013 pregunta la carpeta en vez de buscar; FH125 y FH197 hacen algo distinto de lo esperado).
+- **Clases del holdout nuevo** (cada caso cuenta una vez; OK = bien decidido en las dos GPUs y, si se ejecutó,
+  ejecutado bien; ELIGE_MAL = mal decidido en alguna GPU; EJECUTA_MAL = bien decidido y mal ejecutado):
+
+| | Holdout de la auditoría (58c57cddd, modelo base; 141 pedidos) | Holdout nuevo (e0a7d9923, c2-e1.0; 214 pedidos) |
+|---|---|---|
+| OK | 93 (66,0 %) | **174 (81,3 %)** |
+| ELIGE_MAL | 21 (14,9 %) | **10 (4,7 %)** |
+| EJECUTA_MAL | 9 (6,4 %) | 30 (14,0 %), ~25 de entorno |
+| Con falsedad (a mano) | 3 (2,1 %) | **1 (0,5 %)**, más 1 dudosa |
+
+  Texto o pregunta (106): OK 98, ELIGE_MAL 7, EJECUTA_MAL 1. **Los dos holdouts no son el mismo banco**: el de la
+  auditoría salió de tus pedidos reales y el nuevo lo escribió un subagente aislado desde el catálogo (con familias de
+  contexto, voz con errores, spanglish, riesgo…), así que la comparación orienta pero no es una diferencia medida. La
+  diferencia medida es la de la decisión en la misma sesión y el mismo banco: ajustado 304/320 frente a base 269/320
+  (+35); en pedidos, 205/214 (95,8 %) frente a 182/214 (85,0 %) del base: ELIGE_MAL en el PC baja de 32 a 9.
+- Suite de la vista (scripts/test_field_ui.ps1) contra la App del lote final, en el PC (que tiene los modelos de voz;
+  el dueño autorizó usarlo): **24/24**, micrófono y rail incluidos. En el notebook daba 22/24 porque allí no hay
+  modelos de voz.
+- Nota de honestidad del notebook: al contar los veredictos, después de la corrida única, imprimió sin querer el campo
+  «efecto» del juzgado (la descripción del efecto esperado de cada caso, no textos de la persona). La corrida no cambia.
+- Clasificador: F:/BAXYeval/ft_v1/fase4_clases.py (sólo conteos). Ids elegibles: F:/BAXYeval/ft_v1/fase4/ids_elegibles.json.
+

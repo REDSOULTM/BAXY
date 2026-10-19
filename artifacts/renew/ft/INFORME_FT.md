@@ -34,10 +34,24 @@ Por partes: la primera tanda de proveedores, con el modelo base, dejó el e2e ig
 ajustado el mismo lote subió a 23,67, y el resto, hasta 25,0, viene de los arreglos posteriores de proveedores y de
 la App. En vivo, F1, F2, E001 y W1 salen 3/3.
 
-**Holdout nuevo, medido una vez** (PENDIENTE: cifras de la fase 4), frente al holdout de la auditoría (66,0 % de
-pedidos bien, 14,9 % eligiendo mal, 2,1 % con falsedad).
+**Holdout nuevo, medido una vez** (320 casos que nadie de esta sesión vio; la decisión se midió en las dos GPUs y lo
+seguro se ejecutó en el notebook con el producto real):
+
+| Pedidos | Holdout de la auditoría (modelo base, 141) | Holdout nuevo (final, 214) |
+|---|---|---|
+| Bien de punta a punta | 66,0 % | **81,3 %** |
+| Eligiendo mal | 14,9 % | **4,7 %** |
+| Ejecutando mal | 6,4 % | 14,0 % (unos 25 de 30 por el entorno del notebook: memoria apagada, sin Wi-Fi, sin música, la ventana o el archivo del caso no estaban) |
+| Con falsedad, leída a mano | 2,1 % | **0,5 %** (1 clara: dijo «Cerré Paint» y no lo cerró) |
+
+Los dos holdouts no son el mismo banco: el de la auditoría salió de tus pedidos reales y el nuevo lo escribió un
+subagente aislado desde el catálogo. Lo que sí es una diferencia medida, en el mismo banco y la misma sesión, es la
+decisión: el modelo ajustado acierta 304 de 320 y el base 269 (+35); en pedidos, 205 frente a 182.
 
 ## Qué no mejoró
+
+- El latido en el holdout nuevo: 26 de 36 escenas frente a 29 del base, con una molesta más (habla de la salud del
+  sistema cuando debía callar). En práctica había subido; en el holdout baja, en una sola pasada.
 
 - Ninguna palanca superó a c2-e1.0 sin bajar un banco. Escalar el adaptador (λ 0,6 y 0,8), LR 5e-5, 2 épocas, datos
   pareados, KL hacia el base, réplica amplia del latido y datos de honestidad sobre los modos: todas bajan el e2e o el

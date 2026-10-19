@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-19 (ajuste fino en curso) / 2026-10-18 (auditoría de los pedidos reales: cerrada)",
+  "actualizado": "2026-10-19 (ajuste fino: cerrado) / 2026-10-18 (auditoría de los pedidos reales: cerrada)",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -1957,7 +1957,32 @@
           "sha256": "8a9d6885840339b335885e412e9c8ea817335b98002e1d4d6c697f33543134ba",
           "nota": "generador: contiene las escenas, sellado"
         }
-      }
+      },
+      "medido": "2026-10-19, una vez, producto e0a7d9923 con c2-e1.0",
+      "decision": {
+        "final_pc": "304/320 (95,0 %)",
+        "final_notebook": "304/320",
+        "base_pc_misma_sesion": "269/320 (84,1 %)",
+        "pedidos_final_pc": "205/214",
+        "pedidos_base_pc": "182/214"
+      },
+      "escenas": {
+        "final": "26/36, 2 molestas, 0 riesgos solos",
+        "base": "29/36, 1 molesta"
+      },
+      "ejecucion_notebook": "221 casos (223 elegibles, 2 excluidos por seguridad): OK 190, EJECUTA_MAL 28, otra operación 3; 0 error, 0 setup_failed, MSConfig 0",
+      "clases_pedidos_214": {
+        "OK": "174 (81,3 %)",
+        "ELIGE_MAL": "10 (4,7 %)",
+        "EJECUTA_MAL": "30 (14,0 %), ~25 de entorno del notebook",
+        "falsedad_a_mano": "1 (0,5 %) + 1 dudosa"
+      },
+      "texto_o_pregunta_106": {
+        "OK": 98,
+        "ELIGE_MAL": 7,
+        "EJECUTA_MAL": 1
+      },
+      "frente_a_auditoria": "auditoría (58c57cddd, 141 pedidos): OK 66,0 %, ELIGE_MAL 14,9 %, EJECUTA_MAL 6,4 %, falsedad 2,1 %; bancos distintos, comparación orientativa"
     },
     "base_del_dia": {
       "pc": {
@@ -2162,6 +2187,14 @@
       "checkpoint": "c2-e1.0",
       "gguf": "BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf",
       "sha256": "8a4b6ce3edb2ba8b87c62111b4c3387fa481a4d01b58b29a112b799b0e8affc8"
-    }
+    },
+    "estado": "cerrado 2026-10-19: c2-e1.0 sobre e0a7d9923; prórroga no",
+    "pendiente": [
+      "ayudas al modelo sin reentrenar en resultados y errores de herramientas (investigación del 2026-10-19 y artifacts/renew/INVENTARIO_SEMANTICA.md en hub/nb-inventario-semantica)",
+      "E006, E015, E020, E027; rutas frágiles (E017/E024) y recuperación de la Calculadora (E011) entre corridas",
+      "latido en el holdout nuevo: 26/36 frente a 29/36 del base",
+      "honestidad de la mente sobre los modos de accesibilidad no disponibles (0/34; G9 la subía a 11/34 pero bajó el e2e)",
+      "voz fuera de «en pruebas» y los dos modos de accesibilidad pendientes: decisión del dueño"
+    ]
   }
 }
