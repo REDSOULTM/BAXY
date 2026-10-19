@@ -1641,6 +1641,48 @@ estándar):
 - **c8-e0.5 en E017 falla de otro modo que v3:** no pierde la subcarpeta. Guarda con clics en «Guardar como» en vez de
   `file.write`. En E011 pide el cálculo a la Calculadora sin abrirla.
 
+### El frente tomado por una ventana invisible (2026-10-19) y el lote final lote-final3 e0a7d9923
+
+- **El entorno:** desde las 06:11, una ventana invisible de GameInputSvc (GameInputServiceWindow, 136×39) tenía el
+  frente del notebook.
+  - Todos los `app.open` al frente acabaron detrás de ella, `window.focus` dio `action_failed` (17 de 17 en un run) y
+    escribir en la ventana abierta dio `input_window_not_in_front`.
+  - Por eso no valen c8-e0.5 s1-s2 ni c8-e1.0 sobre bd0877892. En c2-e1.0 y en c8-e0.5 s0 no pasa nunca.
+  - Comprobación por semilla desde entonces: quién tiene el frente antes (frente_ahora.ps1) y los `app.open` al frente
+    que quedaron detrás después (e2e_frente.py). Una semilla con GameInputSvc delante no cuenta.
+- **El arreglo (6f89ec6d1):** las tres vías que traen una ventana al frente usaban un `SetForegroundWindow` que Windows
+  rechaza al proceso de fondo una vez gastado su derecho: `window.focus`, `app.open` al frente y el traer al frente
+  antes de escribir. Si no lo consiguen, ahora ganan el derecho como la devolución del frente (ForegroundRight).
+  - WindowFocusLiveDesktopCheck (Explicit), antes: con GameInputSvc al frente, `window.focus` al Bloc de notas da
+    `action_failed` y traer al frente se rechaza. Desde un frente limpio, traer al frente dice que no con la ventana
+    ya delante (la lee una vez, demasiado pronto).
+  - Después: 6/6, dos veces. Kernel 574, Contracts 69, Setup 477, Providers 2316, pytest 32 y App, todo verde.
+- **lote-final3 = hub/lote-final a62832c34 + esta rama (e0a7d9923).** Su código es el de la rama más el lanzador con
+  c2-e1.0.
+- **Referencia nueva, c2-e1.0 sobre e0a7d9923 recompilado:** 25/24/26 = 75/90, con el escritorio limpio en cada
+  semilla. Pareado contra bd0877892: Δ +0,67 ítems, IC [−0,67, +2,00]; por mayoría no cambia ningún caso.
+- **El lote final con c2-e1.0 (e0a7d9923):**
+  - Recursos con el conductor real: VRAM 3.901 MiB (pico 3.903) y RAM del producto 1.787 MiB (llama-server 1.365,
+    mente 295). Con el oído cargado, las mismas cifras.
+  - En vivo, con el escritorio limpio: F1 3/3, F2 3/3, E001 3/3 y W1 2/3. El fallo de W1 es de la preparación: Word no
+    quedó delante y el producto se negó a escribir en VS Code (`protected_window`, `refusedProcess: Code`).
+  - Las falsedades s0 se enviaron al PC para juzgarlas.
+
+| Checkpoint (sobre lote-final3) | decision2 | Escenas ×4 | e2e s0-2 | Veredicto |
+|---|---|---|---|---|
+| c2-e1.0 | 230,00 (b550) | 32,25 (b550) | 75 | referencia |
+| c8-e1.0 (limpio) | — | — | 68 (Δ −2,33, IC [−5,00, +0,00]; 0↑/3↓) | descartado: E017 y E024 3/3, por ruta |
+| c7-e0.5 (cribado) | 235 (s0) | 29 | — | descartado: escenas −3,25 |
+| c7-e1.0 | — | 30,50 (30/30/32/30; 1 molesta) | 71 (Δ −1,33, IC [−3,67, +0,67]; 0↑/2↓) | descartado: E024 3/3 y E017 2/3, por ruta |
+
+- **Conclusión de los checkpoints medidos en el notebook:** ninguno supera a c2-e1.0 sin bajar algún banco, así que
+  el modelo del producto sigue siendo c2-e1.0. Los ciclos nuevos fallan sobre todo en las rutas de E017 y E024, y
+  en E011 piden el cálculo sin abrir la Calculadora.
+
+- **La sonda de los modos de c8-e1.0 (juzgada en el PC):** honesto 17/40 (c2-e1.0: 5) y dice «todavía no» o
+  «próximamente» en 11/34 (c2-e1.0: 0), con las mismas falsedades contadas a mano (4). El modelo queda descartado
+  por las rutas del e2e, pero la sonda va al informe.
+
 ### La fase 4, preparada sin datos del holdout
 
 - **Ejecutor:** nb/fase4/correr_fase4.sh, que construye los casos con hacer_fase4.py y los juzga con juzgar_fase4.py.
