@@ -86,7 +86,16 @@ def judge(expect, result, arguments):
         # abrir? Necesito el nombre.»).
         return kind == "clarify" or (kind == "conversation" and "?" in str(result.get("reply", "")))
     if expect["kind"] == "text":
-        return kind == "conversation" and bool(str(result.get("reply", "")).strip())
+        reply = str(result.get("reply", ""))
+        if kind != "conversation" or not reply.strip():
+            return False
+        # Goal «ayudas» (SEALED_AYUDAS.md): a text case may say, as regexes over the normalized reply, what the answer
+        # must say (a mode that is not there yet) and what it must not claim (closing or saving what failed).
+        said = norm(reply)
+        must = expect.get("reply_re") or []
+        must_not = expect.get("reply_not_re") or []
+        return (all(re.search(spec, said) for spec in ([must] if isinstance(must, str) else must))
+                and not any(re.search(spec, said) for spec in ([must_not] if isinstance(must_not, str) else must_not)))
     raise ValueError(expect)
 
 
