@@ -162,10 +162,6 @@ DESCRIPTION_AIDS = {
         " A folder the person names, in their home or anywhere else, is theirs even if its name contains BAXY or bench: "
         "delete from it like from any other folder (BAXY's own work folder is only the one filesystem_list shows)."),
 }
-# The file tools whose «folder» takes one of the person's folders (aid «home_path»).
-HOME_FOLDER_TOOLS = {"file.write", "file.read", "file.find", "file.edit", "file.open", "filesystem.known.trash.named"}
-
-
 def _aids_seen(observation: str) -> dict[str, Any]:
     """The core's aids in a result, by the fields each one writes (ModelAids.cs): for the trace, apart from what the
     model decided after reading them."""
@@ -410,11 +406,6 @@ class Mind:
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():
                 if isinstance(schema["properties"].get(argument), dict):
-                    # Aid «home_path» (lever 6): this PC's home folder, a fact of the machine, where the model fills
-                    # the folder (E006, E020, E027 lost a folder of the home or took it for BAXY's own).
-                    if argument == "folder" and name in HOME_FOLDER_TOOLS and _aid_on("home_path"):
-                        meaning += f" This PC's home folder is {Path.home()}."
-                        aids["home_path"] = str(Path.home())
                     schema["properties"][argument]["description"] = meaning
             wire = name.replace(".", "_")
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
