@@ -2441,3 +2441,17 @@ semilla; escritorio del PC con el BAXY del dueño cerrado.
 Medida adelantada mientras la GPU estaba libre, por si las dos ganan su e2e: decision2 229/227/232 = 229,33 (+1,0
 frente a 228,33); escenas 34/32/32/32 = 32,5 (+0,75), 0 molestas; sonda 5/40 (base 4/40). Prefijo 42.876 (+128).
 No baja ningún banco de GPU.
+
+### Incidente (2026-10-19 17:58): la limpieza del home borró un archivo del dueño, restaurado
+
+- La primera versión de `clean_home` (e2e_pc2.sh) comparaba cada archivo de la raíz del home con la foto inicial
+  mediante `grep -qxF "$nombre"`. Con un nombre que empieza por «-» (`-1.14-windows.xml`, del dueño y presente en la
+  foto), grep lo leyó como opción y falló; el script lo tomó por nuevo, lo copió a
+  F:/BAXYeval/ayudas_v1/runs/restos-home y lo borró.
+- Se vio a los dos minutos y **se restauró desde la copia, con el contenido idéntico (cmp)**. Sólo cambió su fecha de
+  modificación (17:58), porque la copia no la conservó. Ningún otro archivo se tocó: la limpieza no había borrado nada
+  más.
+- La corrida de 6b se paró y se repite entera.
+- **Arreglo:** `grep -qxF --`; sólo se borra cuando grep responde «no está» (código 1), nunca ante un error; y sólo un
+  archivo modificado después de la foto. Probado en seco contra el home (0 borrados) y en una carpeta temporal (quita el
+  archivo nuevo y respeta el «-…» aunque lo toquen).

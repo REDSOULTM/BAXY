@@ -33,9 +33,12 @@ echo "warm-up exit $? $(grep -a -c 'Compilaci' "$LOG/pc-$TAG-$KIND-warmup.log") 
 HOME_SNAPSHOT="$LOG/pc-$TAG-$KIND-home-antes.txt"; ls -1A /c/Users/usuario > "$HOME_SNAPSHOT"
 clean_home() {
   mkdir -p "$LOG/restos-home"
-  for f in /c/Users/usuario/*; do
+  for f in /c/Users/usuario/* /c/Users/usuario/.[!.]*; do
     [ -f "$f" ] || continue
-    grep -qxF "$(basename "$f")" "$HOME_SNAPSHOT" && continue
+    # Only a file written after the snapshot, and only when grep answers «not in it» (1): a name that grep cannot read
+    # (one starting with «-» deleted a file of the owner's on 2026-10-19, restored from its copy) is never touched.
+    [ "$f" -nt "$HOME_SNAPSHOT" ] || continue
+    grep -qxF -- "$(basename "$f")" "$HOME_SNAPSHOT"; [ $? -eq 1 ] || continue
     cp "$f" "$LOG/restos-home/$(date +%H%M%S)-$(basename "$f")" && rm -f "$f" && echo "  resto del banco quitado del home: $(basename "$f")"
   done
 }
