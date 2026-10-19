@@ -2435,3 +2435,9 @@ semilla; escritorio del PC con el BAXY del dueño cerrado.
 - Los restos de E006/E017/E024 en la raíz del home del PC (compras.txt, lista.txt, notas.txt) estuvieron en los dos
   brazos.
 - El e2e de la 5a es neutro; su banco son las falsedades s0-2, en marcha.
+
+### 6b + 8 juntas en la GPU del PC, con el código de producto (pc-ayudas-6 670f05dc4, BAXY_AYUDAS=home_path,person_folder_sentence)
+
+Medida adelantada mientras la GPU estaba libre, por si las dos ganan su e2e: decision2 229/227/232 = 229,33 (+1,0
+frente a 228,33); escenas 34/32/32/32 = 32,5 (+0,75), 0 molestas; sonda 5/40 (base 4/40). Prefijo 42.876 (+128).
+No baja ningún banco de GPU.
