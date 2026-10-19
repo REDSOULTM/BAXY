@@ -148,6 +148,24 @@ def _aid_on(aid: str) -> bool:
     return aid in {part.strip() for part in setting.split(",")}
 
 
+# Aids «modes_sentence» (lever 7) and «person_folder_sentence» (lever 8): one sentence of fact at the end of a tool's
+# description (artifacts/renew/ayudas/DISENO_PALANCAS.md). The modes come from the owner's decision of 2026-10-18 and
+# the code (PresentationModeStore.cs:3-7, Rail.tsx:45-49); the folder from what filesystem_list already says (td:63).
+DESCRIPTION_AIDS = {
+    "system.settings.set": (
+        "modes_sentence",
+        " BAXY's accessible mode only changes BAXY's own window (larger text, more contrast, wider buttons). BAXY has no "
+        "blind or screen-reader mode and no hands-free or full voice-control mode yet: if the person asks for one, say "
+        "it is not available yet and will come later; do not turn on the accessible mode in its place."),
+    "filesystem.known.trash.named": (
+        "person_folder_sentence",
+        " A folder the person names, in their home or anywhere else, is theirs even if its name contains BAXY or bench: "
+        "delete from it like from any other folder (BAXY's own work folder is only the one filesystem_list shows)."),
+}
+# The file tools whose «folder» takes one of the person's folders (aid «home_path»).
+HOME_FOLDER_TOOLS = {"file.write", "file.read", "file.find", "file.edit", "file.open", "filesystem.known.trash.named"}
+
+
 def _aids_seen(observation: str) -> dict[str, Any]:
     """The core's aids in a result, by the fields each one writes (ModelAids.cs): for the trace, apart from what the
     model decided after reading them."""
@@ -168,9 +186,7 @@ def _aids_seen(observation: str) -> dict[str, Any]:
     if observed.get("setting") == "accessible_mode" and picked("scope", "notAvailableYet"):
         seen["accessible_scope"] = picked("scope", "notAvailableYet")
     if observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
-        seen["work_folder"] = picked("folder", "sameNameInHome")
-    if picked("listedPath", "listedPaths", "subfoldersEntered"):
-        seen["listed_path"] = picked("listedPath", "listedPaths", "subfoldersEntered")
+        seen["work_folder"] = picked("folder", "sameNameInHome", "next")
     return seen
 
 
@@ -369,6 +385,7 @@ class Mind:
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
         tools, wire_to_op = [ASK_USER, CONFIRM], {}
+        aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
             description = self.english.get(name) or str(cap.get("description") or "")
@@ -376,6 +393,10 @@ class Mind:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
                 description += " The person's installed games: " + "; ".join(games) + "."
+            if name in DESCRIPTION_AIDS and _aid_on(DESCRIPTION_AIDS[name][0]):
+                aid, sentence = DESCRIPTION_AIDS[name]
+                description = description.rstrip() + sentence
+                aids[aid] = sentence.strip()
             raw = cap.get("argumentsSchema")
             constants: dict[str, Any] = {}
             schema = _model_schema(raw if isinstance(raw, dict) else {}, constants)
@@ -387,12 +408,20 @@ class Mind:
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():
                 if isinstance(schema["properties"].get(argument), dict):
+                    # Aid «home_path» (lever 6): this PC's home folder, a fact of the machine, where the model fills
+                    # the folder (E006, E020, E027 lost a folder of the home or took it for BAXY's own).
+                    if argument == "folder" and name in HOME_FOLDER_TOOLS and _aid_on("home_path"):
+                        meaning += f" This PC's home folder is {Path.home()}."
+                        aids["home_path"] = str(Path.home())
                     schema["properties"][argument]["description"] = meaning
             wire = name.replace(".", "_")
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
             tools.append(tool)
             wire_to_op[wire] = name
         self.tools, self.wire_to_op = tools, wire_to_op
+        if aids:
+            # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
+            self._log("configure.aid", time.monotonic(), None, aids=aids)
         return len(capabilities)
 
     def warm(self) -> None:

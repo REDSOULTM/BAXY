@@ -78,14 +78,14 @@ public sealed class BaxySettingHandlerTests
     [TestCase("none", false, false)]
     [TestCase("0", false, false)]
     [TestCase("accessible_scope", true, false)]
-    [TestCase(" listed_path , ACCESSIBLE_SCOPE", true, true)]
-    public void TheAidsSettingTurnsOnTheAidsItNames(string setting, bool accessible, bool listed)
+    [TestCase(" calculator_next , ACCESSIBLE_SCOPE", true, true)]
+    public void TheAidsSettingTurnsOnTheAidsItNames(string setting, bool accessible, bool calculator)
     {
         using IDisposable use = ModelAids.Use(setting);
         Assert.Multiple(() =>
         {
             Assert.That(ModelAids.On(ModelAids.AccessibleScope), Is.EqualTo(accessible));
-            Assert.That(ModelAids.On(ModelAids.ListedPath), Is.EqualTo(listed));
+            Assert.That(ModelAids.On(ModelAids.CalculatorNext), Is.EqualTo(calculator));
         });
     }
 

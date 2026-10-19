@@ -659,6 +659,10 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(same.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
             Assert.That(same.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(sandbox, "proyecto", "notas.txt")));
             Assert.That(same.GetProperty("sameNameInHome").GetString(), Is.EqualTo(Path.Combine(home, "proyecto")));
+            Assert.That(same.GetProperty("next").GetString(), Is.EqualTo(
+                $"this file is in BAXY's own working folder, not in {Path.Combine(home, "proyecto")}, which also exists; "
+                + "file_write with folder home and the same relativePath writes it there"));
+            Assert.That(single.TryGetProperty("next", out _), Is.False);
             Assert.That(File.ReadAllText(Path.Combine(sandbox, "proyecto", "notas.txt")), Is.EqualTo("uno"));
             // Contracasos: a bare file name, or a first part the home does not hold, names no home folder.
             Assert.That(single.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
@@ -694,6 +698,7 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(same.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(sandbox, "proyecto", "notas.txt")));
             Assert.That(same.TryGetProperty("folder", out _), Is.False);
             Assert.That(same.TryGetProperty("sameNameInHome", out _), Is.False);
+            Assert.That(same.TryGetProperty("next", out _), Is.False);
         });
     }
 

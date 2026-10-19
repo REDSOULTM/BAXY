@@ -17,9 +17,6 @@ public static class ModelAids
     /// <summary>E024: a file.write with no folder says it went to BAXY's working folder (and a home folder of that name).</summary>
     public const string WorkFolder = "work_folder";
 
-    /// <summary>E020: a file.find list says the folder it read and that no subfolder was entered.</summary>
-    public const string ListedPath = "listed_path";
-
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

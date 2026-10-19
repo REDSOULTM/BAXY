@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text;
 using Baxy.Providers.Windows.Filesystem;
-using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -325,27 +324,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             .Take(limit)
             .ToArray();
         int folderCount = entries.Count(item => item.IsFolder);
-        string[] listed = [.. roots.Select(root => root.Root).Where(Directory.Exists)];
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("mode", "list");
-            // E020 (pc-ayudas): where the list was read (the real folder, a subdirectory included) and that only its top
-            // level was: a name not in it may still be in a subfolder.
-            if (ModelAids.On(ModelAids.ListedPath))
-            {
-                if (listed.Length == 1)
-                {
-                    writer.WriteString("listedPath", listed[0]);
-                }
-                else
-                {
-                    writer.WriteStartArray("listedPaths");
-                    foreach (string path in listed) writer.WriteStringValue(path);
-                    writer.WriteEndArray();
-                }
-                writer.WriteBoolean("subfoldersEntered", false);
-            }
             writer.WriteNumber("count", entries.Count);
             writer.WriteNumber("fileCount", entries.Count - folderCount);
             writer.WriteNumber("folderCount", folderCount);
