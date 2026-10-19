@@ -1627,6 +1627,19 @@ estándar):
 | c4-e1.0 | 686 | 30,5 (1 molesta) | 69 (Δ −0,67) | descartado |
 | c5-e0.5 (cribado) | 237 (s0) | 30 | — | pasa a entero |
 | c5-e1.0 | 705 | 30,0 (P019 molesta) | 67 (Δ −1,33) | descartado: baja escenas y e2e |
+| c6-e0.5 | 700 | 30,5 | 67 (Δ −2,67, contra 7d59) | descartado |
+| c6-e1.0 | — | — | 69 (Δ −2,00, contra 7d59) | descartado tras el e2e: E017 y E024 fallan 3/3 |
+| c8-e0.5 | 230 (s0) | 32 | 61 (Δ −4,00, IC [−7,00, −1,33]; McNemar 0↑/6↓, p=0,031) | descartado por la puerta: E011 3/3, E017 3/3, E024 2/3 |
+
+- **Referencia nueva del e2e: c2-e1.0 sobre el corte hub/lote-final2 bd0877892, recompilado.**
+  - 26/21/26 = 73/90, sin errores, sin setup_failed y sin turnos sin respuesta.
+  - Pareado contra 7d59e80bb (75/90): Δ −0,67 ítems, IC [−1,67, +0,00]. Por mayoría de semillas no cambia ningún
+    caso: es ruido por semilla.
+  - c8 y c7 se parean contra esta referencia (nb-l2-c2e1-bd0877892); si ningún ciclo gana, es el e2e del lote final.
+- **La puerta (desde c6-e1.0):** el e2e va primero; si fallan por mayoría al menos dos de E011, E017 y E024, el
+  checkpoint queda descartado y no se gastan decision2, escenas ni falsedades.
+- **c8-e0.5 en E017 falla de otro modo que v3:** no pierde la subcarpeta. Guarda con clics en «Guardar como» en vez de
+  `file.write`. En E011 pide el cálculo a la Calculadora sin abrirla.
 
 ### La fase 4, preparada sin datos del holdout
 
