@@ -2131,7 +2131,7 @@
       "estado": {
         "E5_consola": "arreglado y medido (R0724.0 0/2 → 2/2)",
         "E5_tope_turno": "arreglado y medido (TurnClosing 90 s / 3 repeticiones)",
-        "E3_opera_gx": "arreglado sin regresión; el estado de fallo no se reprodujo hoy",
+        "E3_opera_gx": "arreglado y medido en vivo sobre el producto final e0a7d9923 (2026-10-19, ver cierre)",
         "E2_word": "arreglado y medido en vivo",
         "E6_foco": "arreglado y medido en vivo; minimizada: límite",
         "E4_memory_recall": "arreglado (contrato y pruebas)",
@@ -2156,7 +2156,7 @@
         "medida": "e2e de práctica s0-2 de c2-e1.0 sobre el producto final e0a7d9923 (75/90), escritorio comprobado por semilla; aciertos por caso sobre 3",
         "arreglados_y_medidos": {
           "E5_consola_y_tope_de_turno": "arreglados (ver estado)",
-          "E3_opera_gx": "arreglado",
+          "E3_opera_gx": "en vivo sobre e0a7d9923 con c2-e1.0, estado del Speed Dial provocado y comprobado antes y después: leer la página 3/3 y cerrar la pestaña 3/3, sin error ni setup_failed (base 0be0f9de9, 2026-10-18: cerrar FALLO). Límite B barrido (Opera recién reiniciado, turno a los 4, 8, 15 y 30 s): 4/4 OK por la vía del modelo; el cierre real llega ~10 s después del arranque. El fallo de los 8 s era un cierre directo sin el modelo delante",
           "E2_word": "arreglado y en vivo W1 3/3",
           "E6_foco": "arreglado, también con la app minimizada (7d59e80bb) y con otra ventana robando el frente (ForegroundRight, 6f89ec6d1)",
           "E4_memory_recall": "arreglado (contrato y pruebas)",

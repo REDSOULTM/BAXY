@@ -2240,4 +2240,16 @@ Medida: e2e de práctica s0-2 de c2-e1.0 sobre el producto final e0a7d9923 (75/9
     oráculo pide ver 4 o más juegos; queda revisar el oráculo y la vista de Steam ya abierto.
 - Para todos ellos hay palancas sin reentrenar, ya investigadas, en `PROMPT_GOAL_AYUDAS_MODELO.md` (meta siguiente,
   a decisión del dueño).
+- Nota de proceso: tras el primer cierre (12:45) el PC dio al notebook por libre y éste paró su vigilancia del
+  buzón; la corrección de las 12:55 (Opera GX sobre el producto final, E027 s1, E015) no la vio hasta las 14:17. El
+  notebook estuvo sin tarea de 12:29 a 14:17: fallo de coordinación del PC, contra la regla de no dejarlo nunca sin
+  tarea. Opera GX figuraba en metas.json con la medida de la rama («el estado de fallo no se reprodujo hoy»), no con
+  una medida del producto final; se mide ahora.
+- **E3 Opera GX sobre el producto final** (notebook, 14:24-14:34, e0a7d9923 recompilado con c2-e1.0): el estado que
+  fallaba (Speed Dial mostrado, primer hijo de LiveBackgroundView muerto, Opera al frente) se provocó y se comprobó
+  antes y después de cada semilla. Leer la página 3/3 y cerrar la pestaña 3/3, sin error ni setup_failed (base
+  0be0f9de9: cerrar fallaba). Límite B barrido con Opera matado y relanzado, turno a los 4, 8, 15 y 30 s: 4/4 OK; por
+  la vía del modelo el cierre llega unos 10 s después del arranque y el árbol de accesibilidad ya está. El fallo de
+  los 8 s del 18 de octubre era un cierre directo, sin el modelo delante. **Arreglado y medido.** El banco del
+  notebook se ajustó (opera_speed_dial.ps1 gana el frente y reintenta el Speed Dial hasta 3 veces).
 
