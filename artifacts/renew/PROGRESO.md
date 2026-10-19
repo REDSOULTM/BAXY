@@ -2455,3 +2455,18 @@ No baja ningún banco de GPU.
 - **Arreglo:** `grep -qxF --`; sólo se borra cuando grep responde «no está» (código 1), nunca ante un error; y sólo un
   archivo modificado después de la foto. Probado en seco contra el home (0 borrados) y en una carpeta temporal (quita el
   archivo nuevo y respeta el «-…» aunque lo toquen).
+
+### Palanca nueva 1c (`place_unverified`), del mismo tipo que la 1: el lugar de app.open sólo se pidió
+
+- **Por qué:** en las falsedades de hoy, F019 t1 dice «Abrí Steam en la biblioteca» en las seis corridas del PC (A y
+  B). El recibo sólo lleva `placeRequested: true`, porque AppOpenHandler.cs:113-121 entrega la dirección y no mira si
+  llegó; el modelo lo cuenta como hecho.
+- **La ayuda:** con un lugar entregado, el resultado añade el hecho y la opción: «Steam was asked to show its library;
+  whether it shows now was not checked: input_visible_controls can look before saying so». No elige ni ejecuta nada.
+- **Sonda de continuación s0-2 (F019 t1):**
+  - sin la ayuda, «Abrí Steam en la biblioteca y está al frente» 3/3;
+  - con la ayuda, el modelo mira con `input_visible_controls` 3/3 antes de decirlo.
+- **Código:** hub/pc-ayudas-6 ea1987fb4, con el interruptor `place_unverified` y la fila turn.aid.
+  AppOpenHandlerTests 12/12.
+- **Falta:** el e2e (E015) y las falsedades (F019). El riesgo es que mirar lleve a más clics en E015, donde s1 y s2 ya
+  se perdían en clics.
