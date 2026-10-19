@@ -1504,8 +1504,11 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             Owned: GetWindow(identity.Handle, OwnerWindow) != 0);
     }
 
+    // window.focus hands the front over the way app.open hands it back (ForegroundRight): a plain SetForegroundWindow
+    // from this background process is refused once the process used its right, and every window.focus of a turn after
+    // the first failed with action_failed (e2e 2026-10-19: 17 of 17 in one run).
     public bool Execute(WindowIdentity identity, WindowControlAction action) =>
-        Act(Observe(identity), action, ShowWindowAsync, SetForegroundWindow);
+        Act(Observe(identity), action, ShowWindowAsync, static handle => External.ForegroundRight.Give(handle).Held);
 
     // Each of these acts moves the front because it was asked for (focus, maximize and restore activate the window,
     // a snap restores it first; minimize hands the front to the next window): the front is noted as taken on purpose
@@ -1767,10 +1770,6 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool ShowWindowAsync(nint windowHandle, int command);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool SetForegroundWindow(nint windowHandle);
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
