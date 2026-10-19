@@ -2222,3 +2222,22 @@ fase 4 (holdout nuevo, una vez), lote final medido entero, informe, commit y pus
   «efecto» del juzgado (la descripción del efecto esperado de cada caso, no textos de la persona). La corrida no cambia.
 - Clasificador: F:/BAXYeval/ft_v1/fase4_clases.py (sólo conteos). Ids elegibles: F:/BAXYeval/ft_v1/fase4/ids_elegibles.json.
 
+## Cierre de los proveedores y fallos pendientes de este goal
+
+Medida: e2e de práctica s0-2 de c2-e1.0 sobre el producto final e0a7d9923 (75/90; aciertos por caso sobre 3).
+
+- **Arreglados y medidos:** apps de consola y tope de tiempo del turno; Opera GX; relectura de Word (W1 en vivo 3/3);
+  el foco, también con la app minimizada (7d59e80bb) y con otra ventana robando el frente (6f89ec6d1); memory.recall
+  (E4); la voz desde el primer turno (E001 en vivo 3/3). Del e2e: E003 3/3, E011 3/3, E017 3/3, E019 2/3, E021 3/3,
+  E022 3/3, E023 3/3, E024 2/3, E029 3/3.
+- **Cerrados como límite, con su evidencia:**
+  - E006 0/3, del modelo: con la carpeta y el nombre dichos por separado, file.write lleva sólo el nombre con folder
+    home y pierde la subcarpeta. Ninguno de los ciclos 3-8 lo arregló.
+  - E020 0/3, del modelo: file.find en home sin subdirectory, y responde sin decir dónde buscó.
+  - E027 0/3: en s0 y s2 el modelo dice que esa carpeta es su carpeta privada y no actúa (falso; td:63 ya dice lo
+    contrario); en s1 actúa bien, pero la respuesta tras el «no» no suena (App o voz).
+  - E015 0/3, no del modelo: app.open con place library sólo informa placeRequested (AppOpenHandler.cs:113-121) y el
+    oráculo pide ver 4 o más juegos; queda revisar el oráculo y la vista de Steam ya abierto.
+- Para todos ellos hay palancas sin reentrenar, ya investigadas, en `PROMPT_GOAL_AYUDAS_MODELO.md` (meta siguiente,
+  a decisión del dueño).
+
