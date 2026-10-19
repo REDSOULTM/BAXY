@@ -2252,4 +2252,15 @@ Medida: e2e de práctica s0-2 de c2-e1.0 sobre el producto final e0a7d9923 (75/9
   la vía del modelo el cierre llega unos 10 s después del arranque y el árbol de accesibilidad ya está. El fallo de
   los 8 s del 18 de octubre era un cierre directo, sin el modelo delante. **Arreglado y medido.** El banco del
   notebook se ajustó (opera_speed_dial.ps1 gana el frente y reintenta el Speed Dial hasta 3 veces).
+- **E027 s1, diagnóstico** (notebook, en vivo sobre e0a7d9923): el producto SÍ dice la respuesta tras el «no» (4,3 s
+  de audio, el archivo no se borra). El fallo es del banco: scripts/renew/bench_e2e.py:245 agrupa la confirmación y
+  la respuesta final, la final queda con first=False y :247 le pone first_audio_ms = None; Test-Spoken (lib/bench.ps1:596)
+  exige ese valor y la da por no dicha. Lo mismo en el e2e final s1. E027 queda así: s1 bien (fallo del banco), s0 y
+  s2 del modelo (se niega diciendo que esa carpeta es suya). Arreglo del banco propuesto, sin hacer.
+- **E015, diagnóstico** (notebook, en vivo, sin BAXY y con el mismo oráculo): Test-SteamLibraryVisible
+  (lib/bench.ps1:419-430) exige ver por OCR al menos 4 de 27 títulos fijos. steam://open/games SÍ lleva a la
+  biblioteca, con Steam abierto (a los 8 s) y en frío, pero la lista recuerda su scroll y sólo deja ver 1-2 de esos
+  títulos: el 0/3 es del ORÁCULO, no de Steam ni del proveedor. Por semilla: s0 usó place library y llegó; s1 y s2 no
+  usaron place y se perdieron en clics (eso sí es del modelo). Arreglo del oráculo propuesto, sin hacer: reconocer la
+  vista por sus marcas (pestaña BIBLIOTECA, «Añadir estantería», «Instalado localmente») o pedir 1 título.
 

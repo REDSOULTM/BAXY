@@ -2174,8 +2174,8 @@
         "limites_con_evidencia": {
           "E006": "0/3, del modelo: con la carpeta y el nombre dichos por separado, file.write lleva sólo el nombre con folder home y pierde la subcarpeta; ninguno de los 7 ciclos de reentrenamiento lo arregló (PROGRESO, ciclos 3-8). Palancas sin reentrenar en PROMPT_GOAL_AYUDAS_MODELO.md (3 y 6)",
           "E020": "0/3, del modelo: file.find en home sin subdirectory y responde sin decir dónde buscó; palancas 4 y 6 de la meta siguiente",
-          "E027": "0/3: en s0 y s2 el modelo dice que esa carpeta es su carpeta privada y no actúa (falso; la frase que lo corrige ya está en td:63); en s1 actúa bien y la respuesta tras el «no» no suena (App o voz, no el modelo). Palancas 7-8 y la revisión de la App en la meta siguiente",
-          "E015": "0/3, no del modelo: app.open con place library sólo informa placeRequested (AppOpenHandler.cs:113-121) y el oráculo pide ver 4 o más juegos con la biblioteca en otra vista; queda revisar el oráculo y si steam://open/games cambia de vista con Steam abierto"
+          "E027": "0/3 en el banco; s0 y s2 del modelo (se niega diciendo que esa carpeta es su carpeta privada; td:63 ya dice lo contrario); s1 es fallo del BANCO: el producto dice la respuesta tras el «no» (4,3 s de audio), pero bench_e2e.py:245-247 deja first_audio_ms nulo para la respuesta que sigue a una confirmación y Test-Spoken (bench.ps1:596) la da por no dicha",
+          "E015": "0/3 en el banco por el ORÁCULO: Test-SteamLibraryVisible (bench.ps1:419-430) pide 4 de 27 títulos por OCR y la biblioteca sólo muestra 1-2 según su scroll; steam://open/games sí llega a la biblioteca con Steam abierto y en frío (en vivo). s0 usó place library y llegó; s1 y s2 no usaron place (del modelo). Arreglo del oráculo propuesto para la meta siguiente"
         }
       }
     },
