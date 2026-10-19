@@ -2418,3 +2418,20 @@ detección en la mente). Providers 63/63 en las clases tocadas, pytest 49/49.
     sacados de su contexto, pesan más que la conversación: es el riesgo de «decidir por el modelo» que preveía el
     diseño.
   - **Descartada** sin gastar el e2e. Su código nunca entró en el producto (sólo en las copias de la mente).
+
+### Palanca 5a (`turn_facts`): e2e s0-2 pareado en el PC (15:45-17:11)
+
+Mismo binario (pc-ayudas cbf9a44f1), A = BAXY_AYUDAS=none (el producto de partida) y B = turn_facts, intercalados por
+semilla; escritorio del PC con el BAXY del dueño cerrado.
+
+- **A 23/22/26 = 23,67; B 24/22/25 = 23,67.** Pareado: Δ 0,00 ítems, IC 95 % [−1,67, +1,33]. Por mayoría baja E017
+  (A 2/3 → B 0/3) y no sube ninguno; E011 2 → 3.
+- **E017 no lo causa la ayuda:** en las tres semillas de B, todos los pasos antes del `file.write` decisivo fueron
+  «completado y verificado», así que la línea partida no llegó a mostrarse y el modelo vio lo mismo que en A. La
+  diferencia empieza en el segundo paso (B escribe con `window`; A s1-s2 sin él) y A s0 falló igual que B. Es variación
+  entre corridas.
+- **Limpieza:** 0 error y 0 setup_failed en las 6; frente limpio al empezar cada brazo (VS Code visible) y 0 app.open al
+  frente detrás; MSConfig 0 y ningún 7040 tras cada corrida.
+- Los restos de E006/E017/E024 en la raíz del home del PC (compras.txt, lista.txt, notas.txt) estuvieron en los dos
+  brazos.
+- El e2e de la 5a es neutro; su banco son las falsedades s0-2, en marcha.
