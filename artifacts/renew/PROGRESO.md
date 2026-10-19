@@ -2336,6 +2336,7 @@ BAXY-Renew-ayudas), del notebook `nb-ayudas`. Tope duro: 2026-10-21 15:00 (Chile
 | base | 42.748 | 228 | 33 | — |
 | 6a: home sólo en `folder` de file.write | +13 | 229 | 32 | P028 baja; P106, P215 suben |
 | 6b: home en el `folder` de las 6 herramientas de archivos que lo explican | +78 | 225 | 33 | 5 bajan (alarmas, búsquedas, juegos), 2 suben |
+| 8: frase de las carpetas de la persona en trash.named | +50 | 229 | 32 | 3 bajan, 4 suben; ninguno de archivos |
 
 Ninguno de los casos que cambian es de archivos: es el ruido de tocar el prefijo (una sola espacio en pA-pC mueve las
 escenas de 33 a 31). Su blanco (E006, E020, E027) sólo lo ve el e2e. Sigue 6b, que cubre las tres: banco completo en GPU
@@ -2348,3 +2349,37 @@ en s0 que el modelo buscó con filesystem.search).
 - **Suites de pc-ayudas cbf9a44f1:** Kernel 574/574, Contracts 69/69, Setup 477/477, pytest 44/44, App 0 avisos.
   Providers entero queda para cuando el escritorio del PC esté libre del e2e (sus pruebas de clic usan el frente real);
   las 4 clases tocadas pasan 65/65.
+
+### Palancas 1-4 juntas: e2e s0-2 pareado en el notebook (15:14-16:22)
+
+A = e0a7d9923 (producto de partida), B = pc-ayudas a3af5c20f; c2-e1.0 en los dos, el mismo banco (bench_e2e.py con
+`utterances()` y bench.ps1 c684edba), intercalado A s0, B s0, A s1, B s1, A s2, B s2.
+
+- **A 24/23/25 = 24,00; B 26/25/25 = 25,33.** Pareado: Δ +1,33 ítems, IC 95 % [0,00, +3,00]; por semilla +2, +2, 0;
+  ninguna baja. Por mayoría sube E024 y no baja ninguno (McNemar 1/0, p = 1,0).
+- **Puerta:** E011 A 2/3 → B 3/3; E017 3/3 → 3/3; E024 1/3 → 3/3. E020 0/3 y E006 0/3 en los dos.
+- **Limpieza:** 0 error y 0 setup_failed en las 6; frente limpio antes de cada corrida y 0 app.open al frente detrás;
+  MSConfig 0; ningún 7040.
+- **Qué hizo cada ayuda** (campos nuevos vistos en B, por la traza y los eventos):
+  - 1 `calculator_next`: salió en E011 en las tres semillas. En s1 **cambia la conducta**: A se rinde («la calculadora
+    no estaba abierta», sin app_open); B lee el `next`, abre la Calculadora y vuelve a evaluar: 850, OK. En s0 y s2, A
+    ya hacía esa cadena sin la pista. Es el único efecto causal visible.
+  - 4 `listed_path`: salió en E020 en s1 y s2 (file.find en home, listedPath = el home). El modelo lo vio y respondió
+    igual que A (el archivo más grande del home, sin entrar en BAXY-bench). En s0 usó filesystem.search, que no tiene
+    `folder`.
+  - 3 `work_folder`: **nunca se disparó**. En B, E024 escribió las tres veces con folder home y acertó; la subida de
+    E024 en la cifra es variación del modelo, no de la palanca.
+  - 2 `accessible_scope`: ningún caso del e2e lo pide.
+- **Resto del banco:** E024 deja un notas.txt en la raíz del home cuando el modelo pierde BAXY-bench, y la corrida
+  siguiente lo encuentra (en el PC además compras.txt y lista.txt, de E006 y E017). Afecta a los dos brazos por igual,
+  porque van intercalados. Desde ahora `e2e_pc2.sh` quita antes de cada corrida los archivos de la raíz del home que
+  no estaban al empezar, y guarda una copia.
+- **Lectura:** 1-4 no baja nada y sube un poco. Separarlas en el e2e mediría ruido, porque 2 y 3 no se disparan y 4 no
+  cambia la respuesta. Sus causas se aíslan con una sonda de continuación en el PC: el mismo turno, con la llamada del
+  modelo y el resultado con y sin el campo nuevo, s0-2.
+
+### Palanca 6b entera en la GPU del PC (frente a la base del día)
+
+decision2 225/226/228 = 226,33 (base 228,33: −2,0, dentro de ±3); escenas 33/32/32/32 = 32,25 (base 31,75: +0,5), 0
+molestas; sonda de los modos igual que la base (4/40). No baja ningún banco de GPU. Falta el e2e del PC, con
+BAXY_AYUDAS=home_path frente a la referencia `none` del mismo día.
