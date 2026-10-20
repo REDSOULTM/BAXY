@@ -30,10 +30,16 @@ echo "warm-up exit $? $(date +%H:%M): $(grep -a -c 'Compilaci' "$S/$LAB-warmup.l
     sleep 5
   done ) &
 echo "front before: $(powershell -NoProfile -ExecutionPolicy Bypass -File "C:/Users/usuario/AppData/Local/Temp/claude/nb/ft/frente_ahora.ps1"; [ $? = 0 ] && echo clean || echo DIRTY-DESKTOP)"
+# Any game a case opens (a process under steamapps\common) is closed AT ONCE and logged (PC 03:37: the cases run as
+# sealed, none excluded by hand; the model's receipt does not change). Detached, so the wait below does not wait for it.
+G="C:/Users/usuario/AppData/Local/Temp/claude/nb/ay/guardia_juegos.ps1"; rm -f "$S/$LAB.stop" "$S/$LAB.juegos.txt"
+( powershell -NoProfile -ExecutionPolicy Bypass -File "$G" -Stop "$S/$LAB.stop" -Log "$S/$LAB.juegos.txt" > /dev/null 2>&1 & )
 t0=$(date +%s)
 py -3.12 -X utf8 scripts/renew/bench_e2e.py "$LAB" --cases "$(cygpath -w "$OUT/$LAB-cases.json")" > "$S/$LAB.log" 2>&1
 wait
 t1=$(date +%s)
+touch "$S/$LAB.stop"
+echo "games closed by the guard: $(grep -c closed "$S/$LAB.juegos.txt" 2>/dev/null || echo 0) $(cat "$S/$LAB.juegos.txt" 2>/dev/null | tr '\n' ' ')"
 n=$(py -3.12 -c "import json;print(len(json.load(open(r'$(cygpath -w "$OUT/$LAB-cases.json")',encoding='utf-8'))))")
 echo "run exit $? $(date +%H:%M): $n cases in $(( (t1 - t0) / 60 )) min ($(( (t1 - t0) / (n > 0 ? n : 1) )) s per case)"
 R="D:/BAXYeval/renew_v1/runs/$LAB-e2e/results.jsonl"

@@ -1,6 +1,6 @@
 import json, sys
 R = 'D:/BAXYeval/renew_v1/runs/'
-pairs = {'s0': ('nb-comb1-A-fals-s0', 'nb-comb1-B-fals-s0'), 's1': ('nb-lote-A-fals-s1', 'nb-lote-B-fals-s1'),
+pairs = {'s3': ('nb-lote-A-fals-s3', 'nb-lote-B-fals-s3'), 's4': ('nb-lote-A-fals-s4', 'nb-lote-B-fals-s4'), 's5': ('nb-lote-A-fals-s5', 'nb-lote-B-fals-s5'), 's0': ('nb-comb1-A-fals-s0', 'nb-comb1-B-fals-s0'), 's1': ('nb-lote-A-fals-s1', 'nb-lote-B-fals-s1'),
          's2': ('nb-lote-A-fals-s2', 'nb-lote-B-fals-s2')}
 def brief_obs(o):
     try: d = json.loads(o or '{}')
