@@ -70,3 +70,11 @@ falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del
 10. Lo que queda es elección del modelo: no pide `wanted` en hojas grandes (C11), no abre la app antes de pegar (C18),
     no pulsa el botón propio de una app (C14). Ninguna frase de descripción lo movió; el prefijo final no empeora la
     decisión (decision2 230/268 frente a 228-229).
+
+## Suites sobre la fusión final (2f8acb371)
+
+- PC: Kernel 580/580, Contracts 69/69, Setup 477/477, App compila (0 avisos), pytest 44/44.
+- NB (sus pruebas de clic usan el escritorio): Providers 2363 pass, 0 fallos; 36 inconclusas ambientales (las que la
+  propia suite marca con Assume según el escritorio), que no cuentan como pass.
+- Cruzados: los arreglos del PC (C02v, C04, C05v, C06v, C07) funcionan en el NB; los del NB, en el PC: C10 funciona,
+  C18 cierto, C13 a medias (ver su fila).
