@@ -28,7 +28,7 @@ falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del
 | C15 | Reproducir algo por su nombre en una app de música | PC | inestable | **funciona** (17 / 23 s, «ahora suena» verificado) | — | — | — | — |
 | C16 | Reproducir en un sitio de vídeo | PC | funciona | **funciona** (6 / 12 s; no afirma que sea «el último») | — | — | — | — |
 | C17 | Captura de pantalla a una carpeta | NB | mixto | **funciona** (1,9 s, nombra el archivo; variante al escritorio) | — | — | — | — |
-| C18 | Pegar lo copiado en una app nueva | NB | no funciona: pega en la ventana del frente sin abrir la app y lo atribuye a la app pedida | **pendiente** (conducta); veracidad arreglada en el NB | PC: **la falsedad vuelve** (recibo `sentTo: Steam`, respuesta «pegué … en el bloc de notas») | el modelo nunca abre la app antes de pegar (frase en `clipboard.paste` probada y retirada); el recibo de pegar no decía adónde fue | `protected_front_next` (el rechazo protected_window dice que nada se envió y cómo llegar a otra app) y `sentTo` en el recibo de `clipboard.paste` | 4a6a864fe, f2576277e |
+| C18 | Pegar lo copiado en una app nueva | NB | no funciona: pega en la ventana del frente sin abrir la app y lo atribuye a la app pedida | **pendiente** (conducta); veracidad **arreglada** (NB: «pegué … en Word», cierto) | PC: con sólo `sentTo` la falsedad volvía («pegué … en el bloc de notas» con `sentTo: Steam`); con `paste_target_next`, **cierta** («pegué en Steam; no pude comprobar que quedó en el Bloc de notas») | el modelo nunca abre la app antes de pegar (frase en `clipboard.paste` probada y retirada); el recibo de pegar no decía adónde fue | `protected_front_next` (el rechazo protected_window dice que nada se envió y cómo llegar a otra app), `sentTo` y ayuda `paste_target_next` (una frase con la única ventana que lo recibió) en el recibo de `clipboard.paste` | 4a6a864fe, f2576277e, 32e378b06 |
 
 ## Notas
 
@@ -66,7 +66,7 @@ falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del
 8. Seguridad: un clic en la Configuración llegó a apagar la radio Wi-Fi; desde ahora un interruptor de la Configuración
    de Windows no se pulsa por clic (se rechaza con su estado), además de las herramientas del sistema ya protegidas.
 9. Veracidad: cuatro recibos dicen ahora la fuente o el alcance real (buscador que respondió, micrófono de Windows,
-   ventana que recibió lo pegado, juego hallado); quedan falsedades del modelo sobre lo pegado (C18).
+   ventana que recibió lo pegado, juego hallado); el dato a secas no bastaba (C18 lo ignoraba): hizo falta una frase.
 10. Lo que queda es elección del modelo: no pide `wanted` en hojas grandes (C11), no abre la app antes de pegar (C18),
     no pulsa el botón propio de una app (C14). Ninguna frase de descripción lo movió; el prefijo final no empeora la
     decisión (decision2 230/268 frente a 228-229).
