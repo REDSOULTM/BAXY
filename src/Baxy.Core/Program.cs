@@ -137,6 +137,8 @@ internal static class Program
             new ApplicationWindowStatusHandler(installedApplicationProvider),
             appOpenHandler,
             new AppRestartHandler(windowControlProvider, appOpenHandler.ExecuteAsync),
+            new GameStoreHandler("game.store.page", "game", "title", appOpenHandler.ExecuteAsync),
+            new GameStoreHandler("game.store.search", "results", "query", appOpenHandler.ExecuteAsync),
             new ExternalCapabilityHandler("audio.app.volume.adjust", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.app.volume.set", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.microphone.mute", externalCapabilityProvider),

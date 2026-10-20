@@ -105,6 +105,41 @@ public sealed class ExternalCapabilityHandlerTests
         });
     }
 
+    // BAXY Renew cu (C14): an empty code from a provider is no code: it becomes the generic one, never «» in the journal
+    // (journaled as «», the engine did not start again on that profile).
+    [Test]
+    public async Task AnEmptyProviderCodeIsNeverTheOutcomesCode()
+    {
+        OperationOutcome outcome = await Handle(new ExternalCapabilityReceipt("wifi.disconnect", true, false, null, ""));
+        Assert.That(outcome.ErrorCode, Is.EqualTo("external_verification_failed"));
+    }
+
+    // BAXY Renew cu (C14): Discord's own mute, switched and read back; a switch that did not take says its own code.
+    [TestCase("""{"ok":true,"effectObserved":true,"before":0,"value":1}""", true, null)]
+    [TestCase("""{"ok":false,"effectObserved":true,"before":0,"value":0}""", false, "client_microphone_postread_failed")]
+    [TestCase("""{"ok":false,"effectObserved":false,"error":"client_mute_button_not_found"}""", false, "client_mute_button_not_found")]
+    public async Task TheClientsOwnMuteIsSwitchedAndReadBack(string scriptOutput, bool succeeded, string? code)
+    {
+        const string operation = "client.microphone.set";
+        var adapter = new WindowsDeviceControlAdapter(
+            Path.GetTempPath(), Path.GetTempPath(), new ScriptedRunner(scriptOutput));
+        OperationOutcome outcome = await new ExternalCapabilityHandler(operation, new AdapterProvider(adapter))
+            .ExecuteAsync(
+                new OperationInvocation("request", "mission", "invocation", Json("""{"client":"discord","muted":true}""")),
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.EqualTo(succeeded));
+            Assert.That(outcome.ErrorCode, Is.EqualTo(code));
+            if (succeeded)
+            {
+                Assert.That(outcome.Result!.Value.GetProperty("muted").GetBoolean(), Is.True);
+                Assert.That(outcome.Result!.Value.GetProperty("mutedBefore").GetBoolean(), Is.False);
+            }
+        });
+    }
+
     private static async Task<string> CalculatorMessage(string scriptOutput)
     {
         const string operation = "calculator.expression.evaluate";

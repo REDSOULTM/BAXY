@@ -168,6 +168,34 @@ public sealed class WindowSnapMinimumSizeTests
         });
     }
 
+    // BAXY Renew cu (C13 en el PC): a maximized window, restored to its whole screen, that does not take the first move
+    // is moved once more and ends on the exact half; never accepted at the whole width as «larger than half».
+    [Test]
+    public async Task ARestoredWindowThatIgnoresTheFirstMoveIsMovedOnceMore()
+    {
+        var platform = new SnapPlatform(new WindowBounds(0, 0, 1536, 816))
+        {
+            StartsMaximized = true,
+            IgnoresFirstMoveAfterRestore = true,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowActionResult result = await SnapAsync(provider, "left");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded && result.Verified, Is.True, result.ErrorCode);
+            Assert.That(Bounds(result.Window!), Is.EqualTo(new WindowBounds(0, 0, 768, 816)));
+            Assert.That(result.LargerThanRequested, Is.Null);
+            Assert.That(platform.Moves, Has.Count.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public void AsWideAsTheWholeWorkAreaIsNoMinimum() =>
+        Assert.That(WindowsWindowControlProvider.KeepsLargerMinimum(
+            new WindowBounds(0, 0, 1536, 816), new WindowBounds(0, 0, 768, 816), WorkArea), Is.False);
+
     private static async Task<WindowActionResult> SnapAsync(WindowsWindowControlProvider provider, string side)
     {
         WindowResolveResult resolved = await provider.ResolveForegroundAsync(CancellationToken.None);
@@ -193,6 +221,10 @@ public sealed class WindowSnapMinimumSizeTests
         public bool PullsBackOnScreen { get; init; }
         public bool IgnoresMovesAfterFirst { get; init; }
         public int StaleReadsAfterMove { get; init; }
+        public bool StartsMaximized { get; init; }
+        public bool IgnoresFirstMoveAfterRestore { get; init; }
+        private bool? _maximized;
+        private bool _ignoredAfterRestore;
         public List<WindowBounds> Moves { get; } = [];
         public DateTimeOffset UtcNow { get; } = new(2026, 10, 4, 0, 0, 0, TimeSpan.Zero);
 
@@ -219,6 +251,11 @@ public sealed class WindowSnapMinimumSizeTests
         public bool SetBounds(WindowIdentity identity, WindowBounds requested)
         {
             Moves.Add(requested);
+            if (IgnoresFirstMoveAfterRestore && _maximized == false && !_ignoredAfterRestore)
+            {
+                _ignoredAfterRestore = true;
+                return true;
+            }
             if (IgnoresMovesAfterFirst && Moves.Count > 1)
             {
                 return true;
@@ -236,7 +273,16 @@ public sealed class WindowSnapMinimumSizeTests
             return true;
         }
 
-        public bool Execute(WindowIdentity identity, WindowControlAction action) => true;
+        public bool Execute(WindowIdentity identity, WindowControlAction action)
+        {
+            if (action == WindowControlAction.Restore)
+            {
+                _maximized = false;
+                _bounds = WindowSnapMinimumSizeTests.WorkArea;
+            }
+
+            return true;
+        }
         public bool RequestClose(WindowIdentity identity) => false;
         public bool RequestSystemClose(WindowIdentity identity) => false;
 
@@ -244,6 +290,7 @@ public sealed class WindowSnapMinimumSizeTests
             ValueTask.CompletedTask;
 
         private WindowSnapshot Snapshot(WindowBounds current) =>
-            new(_identity, "normal", true, current, "Mon Laferte - Mi Buen Amor");
+            new(_identity, StartsMaximized && _maximized is null ? "maximized" : "normal", true, current,
+                "Mon Laferte - Mi Buen Amor");
     }
 }

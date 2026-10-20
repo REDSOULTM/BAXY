@@ -113,6 +113,16 @@ public static class ApplicationPlaces
             : null;
 
     /// <summary>
+    /// BAXY Renew cu (C04 variant, C05): the application whose data name the game catalog <paramref name="catalog"/>, by
+    /// the name the data give it (its name in the Start catalog); null when none does.
+    /// </summary>
+    public static string? ApplicationOfCatalog(string? catalog) =>
+        catalog is null ? null : Named.Value
+            .Select(entry => entry.Name)
+            .FirstOrDefault(name => Loaded.Value.TryGetValue(Fold(name), out Application? declared)
+                && string.Equals(declared.GameCatalog, catalog, StringComparison.Ordinal));
+
+    /// <summary>
     /// The act <paramref name="act"/> of the application whose data name the game catalog <paramref name="catalog"/>
     /// («gameCatalog»), for the game <paramref name="game"/> (its catalog number): its address and the names of the
     /// control of the application's own dialog that confirms it. Null when the data declare no such act or the game is no

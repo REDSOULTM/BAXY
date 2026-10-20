@@ -304,6 +304,19 @@ public static class ProductCatalog
             // The locate is a post-read: it joins and opens nothing, so it verifies by its result
             // (the matches read from the switcher), not by an observed external mutation.
             requiresObservedEffect: false),
+        // BAXY Renew cu (C14): the person's own microphone inside the chat client, by its own mute button (Discord's
+        // «Silenciar»), read back by UI Automation; Windows' microphone is audio.microphone.mute.
+        Descriptor(
+            "client.microphone.set",
+            Schema(
+                [
+                    String("client", values: ["discord"]),
+                    Boolean("muted"),
+                ],
+                ["client", "muted"]),
+            OperationRisks.LowReversible,
+            "client.microphone.set.discord.uia.toggle.postread.v1",
+            "Silencia o activa el micrófono propio de la persona dentro del cliente de escritorio (Discord: su botón «Silenciar») por UI Automation y relee su estado; no toca el micrófono de Windows ni une a ninguna llamada."),
         Descriptor(
             "clipboard.copy",
             EmptySchema(),
@@ -717,6 +730,20 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "game.launch.steam.process.postread.v1",
             "Inicia un AppID instalado en este PC y verifica la identidad del proceso lanzado."),
+        // BAXY Renew cu (C04 variante, C05): los lugares propios de la tienda de juegos como operaciones con nombre: su
+        // búsqueda con lo que se busca y la página de un juego por su título. Son app.open con ese lugar, al frente.
+        Descriptor(
+            "game.store.page",
+            Schema([String("title", maximumUtf8Bytes: 128, nonWhitespace: true)], ["title"]),
+            OperationRisks.LowReversible,
+            "game.store.page.app.open.place.v1",
+            "Abre en Steam, al frente, la página de la tienda del juego que lleva ese título (lo resuelve su búsqueda pública) y dice qué juego es; mirar la ventana dice si llegó."),
+        Descriptor(
+            "game.store.search",
+            Schema([String("query", maximumUtf8Bytes: 128, nonWhitespace: true)], ["query"]),
+            OperationRisks.LowReversible,
+            "game.store.search.app.open.place.v1",
+            "Abre en Steam, al frente, la búsqueda de su tienda con lo que se busca (un título, un tema o un tipo de juego); mirar la ventana dice qué resultados muestra."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
         // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
         // dirección del dato y el diálogo propio de Steam, ya no por su consola),
