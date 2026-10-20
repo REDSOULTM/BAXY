@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -755,7 +756,32 @@ internal sealed class WindowsVisibleControlAdapter
         // Ronda B (falta 3): a toolbar button seen through its MSAA proxy whose bar answers another window or another
         // button at its point: nothing was sent, neither as a message nor by the pointer.
         "visible_control_covered",
+        // BAXY Renew cu (C02): a switch of Windows' own Settings, refused before anything was pressed.
+        SettingsSwitchRefused,
     };
+
+    /// <summary>
+    /// BAXY Renew cu (C02): the worker found the control a switch (On/Off) of Windows' own Settings, which changes the
+    /// machine (its Wi-Fi radio, its Bluetooth, airplane mode) and no click presses: «mira si el wifi está conectado»
+    /// pressed the «Wi-Fi» switch (on → off) and the radio stayed off. Refused before anything was pressed, with its state.
+    /// </summary>
+    internal const string SettingsSwitchRefused = "visible_settings_switch_refused";
+
+    internal static JsonElement SettingsSwitchFacts(JsonElement root) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        if (root.TryGetProperty("name", out JsonElement name) && name.ValueKind == JsonValueKind.String)
+            writer.WriteString("name", name.GetString());
+        string? state = root.TryGetProperty("switchState", out JsonElement value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString()
+            : null;
+        if (state is "On" or "Off")
+            writer.WriteString("switch", state == "On" ? "on" : "off");
+        writer.WriteString("next", "nothing was pressed: a switch of Windows' Settings changes the machine, so a click "
+            + "never flips it; its state is the one shown (on or off). wifi_radio_set and bluetooth_radio_set change "
+            + "those radios when the person asks it");
+        writer.WriteEndObject();
+    });
 
     // Encargo IMP4: the lines a look that asks for «lines» reads, each by its place (a chat's whole pane: 79 lines
     // measured on redpc); encargo WA-LEER: up to OperationVisibleFacts.ChatLines.
@@ -2826,6 +2852,7 @@ internal sealed class WindowsVisibleControlAdapter
         TimeSpan budget = before is null ? _timing.ControlPostread : _timing.SurfacePostread;
         bool surfaceRead = false;
         bool controlSaidUnchanged = false;
+        bool controlWasSelected = false;
         bool arrivedUncaused = false;
         while (true)
         {
@@ -2850,6 +2877,8 @@ internal sealed class WindowsVisibleControlAdapter
                     return ReceiptFromWorker(operation, root, effectBoundary);
                 controlSaidUnchanged |= root.TryGetProperty("error", out JsonElement said)
                     && said.ValueKind == JsonValueKind.String && said.GetString() == "visible_button_postread_unchanged";
+                controlWasSelected |= root.TryGetProperty("alreadySelected", out JsonElement chosen)
+                    && chosen.ValueKind == JsonValueKind.True;
                 // Anything but «not yet» ends the questions to the control; the surface may still answer.
                 askControl = root.TryGetProperty("error", out JsonElement error)
                     && error.ValueKind == JsonValueKind.String
@@ -2923,8 +2952,24 @@ internal sealed class WindowsVisibleControlAdapter
             return effectBoundary.Failure(operation, "visible_click_handoff_uncertain", effectObserved: true);
         // Pressed and seen unchanged: no later stage of this click presses that control again (finding 4).
         _pressedUnchanged = PressedIdentity(clicked);
-        return effectBoundary.Failure(operation, "visible_button_postread_unchanged", effectObserved: true);
+        ExternalCapabilityReceipt unchanged =
+            effectBoundary.Failure(operation, "visible_button_postread_unchanged", effectObserved: true);
+        return controlWasSelected && ModelAids.On(ModelAids.AlreadySelected)
+            ? unchanged with { Result = AlreadySelected() }
+            : unchanged;
     }
+
+    // BAXY Renew cu (C02): the control was already the chosen one before the click (a section the window already
+    // showed): said, so the window's view is read for what was asked instead of pressing it again (five presses of the
+    // section Settings had opened at, its device list unread in the look the model already had).
+    internal static JsonElement AlreadySelected() => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteBoolean("alreadySelected", true);
+        writer.WriteString("next", "it was already selected before this click: the window already shows it, and the "
+            + "last look's controls are what it shows");
+        writer.WriteEndObject();
+    });
 
     /// <summary>The clicked window and the desktop's root windows before the click (ronda 20b, palanca 8,
     /// objetivo 3).</summary>
@@ -3125,6 +3170,8 @@ internal sealed class WindowsVisibleControlAdapter
             // The control left unpressed is named («name»), for the step that names it.
             if (!effect && error == NeedsConfirmation)
                 return new ExternalCapabilityReceipt(operation, false, false, root.Clone(), error);
+            if (!effect && error == SettingsSwitchRefused)
+                return new ExternalCapabilityReceipt(operation, false, false, SettingsSwitchFacts(root), error);
             // Auditoría P3 y C10: the controls whose name holds the label, none of them pressed, go with the «not found»
             // so the model can name one exactly.
             if (!effect && BeforeAnyPress.Contains(error)
