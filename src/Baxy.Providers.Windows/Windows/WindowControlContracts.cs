@@ -12,6 +12,9 @@ public static class WindowControlErrorCodes
     // v3 r22 uso real: the close was asked politely and the application answered with a dialog of its own (it asks
     // whether to save); the window stays, and BAXY never answers that dialog.
     public const string ClosePrompted = "close_prompted";
+    // BAXY Renew cu (C13 en el PC): the window takes no size nor place it is given (a browser in full screen kept the
+    // whole screen); it was put back as it was, maximized.
+    public const string WindowSizeNotTaken = "window_size_not_taken";
 }
 
 public enum WindowControlAction

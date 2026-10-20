@@ -761,6 +761,14 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             (placed, larger) = await ObserveSnapAsync(
                     before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
                 .ConfigureAwait(false);
+            if (placed is null)
+            {
+                // It took neither move (a browser in full screen keeps the whole screen): put back as it was, and said.
+                bool back = string.Equals(before.State, "maximized", StringComparison.Ordinal)
+                    && _platform.Execute(before.Identity, WindowControlAction.Maximize);
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.WindowSizeNotTaken, EffectMayHaveOccurred: !back);
+            }
         }
 
         if (placed is null)

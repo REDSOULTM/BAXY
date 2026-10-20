@@ -191,6 +191,29 @@ public sealed class WindowSnapMinimumSizeTests
         });
     }
 
+    // BAXY Renew cu (C13 en el PC): a maximized window that takes no move at all (a browser in full screen) is put back
+    // maximized and the result says the window took no size, never «verification failed» with it left restored.
+    [Test]
+    public async Task AMaximizedWindowThatTakesNoMoveIsPutBackAndSaysSo()
+    {
+        var platform = new SnapPlatform(new WindowBounds(0, 0, 1536, 816))
+        {
+            StartsMaximized = true,
+            IgnoresMovesAfterRestore = true,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowActionResult result = await SnapAsync(provider, "left");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowSizeNotTaken));
+            Assert.That(result.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.Actions, Is.EqualTo(new[] { WindowControlAction.Restore, WindowControlAction.Maximize }));
+        });
+    }
+
     [Test]
     public void AsWideAsTheWholeWorkAreaIsNoMinimum() =>
         Assert.That(WindowsWindowControlProvider.KeepsLargerMinimum(
@@ -223,6 +246,8 @@ public sealed class WindowSnapMinimumSizeTests
         public int StaleReadsAfterMove { get; init; }
         public bool StartsMaximized { get; init; }
         public bool IgnoresFirstMoveAfterRestore { get; init; }
+        public bool IgnoresMovesAfterRestore { get; init; }
+        public List<WindowControlAction> Actions { get; } = [];
         private bool? _maximized;
         private bool _ignoredAfterRestore;
         public List<WindowBounds> Moves { get; } = [];
@@ -251,6 +276,10 @@ public sealed class WindowSnapMinimumSizeTests
         public bool SetBounds(WindowIdentity identity, WindowBounds requested)
         {
             Moves.Add(requested);
+            if (IgnoresMovesAfterRestore && _maximized == false)
+            {
+                return true;
+            }
             if (IgnoresFirstMoveAfterRestore && _maximized == false && !_ignoredAfterRestore)
             {
                 _ignoredAfterRestore = true;
@@ -275,6 +304,7 @@ public sealed class WindowSnapMinimumSizeTests
 
         public bool Execute(WindowIdentity identity, WindowControlAction action)
         {
+            Actions.Add(action);
             if (action == WindowControlAction.Restore)
             {
                 _maximized = false;
