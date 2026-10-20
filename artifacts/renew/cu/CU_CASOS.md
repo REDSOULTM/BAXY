@@ -34,20 +34,21 @@ pedido real y de su variante en la máquina que lo arregló, y otra en la otra m
 | C15 | Reproducir en una app de música | **funciona** | — | — | — |
 | C16 | Reproducir en un sitio de vídeo | **funciona** | — | — | — |
 | C17 | Captura a una carpeta | **funciona** | — | — | — |
-| C18 | Pegar lo copiado en una app (nueva) | **arreglado** (real en las dos; variante en el PC con Word cerrado) | op `clipboard.paste.into` {appId}: abre un documento nuevo y pega; documento nuevo verificable en el Bloc de notas de Windows 11 (ventana vacía nacida con el lanzamiento) y en Word en español (Esc en la pantalla de inicio); «Notepad» resuelve la app empaquetada; la App concede el primer plano a las ops compuestas. **Límite**: con Word ya abierto, el documento nuevo no se reconoce y no se pega nada (lo dice) | NB ✓ real; NB variante con Word abierto ✗ (límite) | 4042dca16 |
+| C18 | Pegar lo copiado en una app (nueva) | **arreglado** (real y variante, con la app cerrada o abierta) | op `clipboard.paste.into` {appId}: abre un documento nuevo y pega; documento nuevo verificable en el Bloc de notas de Windows 11 (ventana vacía nacida con el lanzamiento) y en Word en español (Esc en la pantalla de inicio); «Notepad» resuelve la app empaquetada; la App concede el primer plano a las ops compuestas; con Word o Excel ya abiertos, el documento nuevo y el pegado van por su modelo de objetos, sólo en ese documento (NB) | NB ✓ real y variante; PC ✓ variante con Word abierto (el documento propio, intacto) | 4042dca16, 81ffac1bc |
 
 **Prefijo y catálogo finales** (las cinco operaciones nuevas y sus descripciones; catálogo de medida `lote3` más esas
 cinco, `F:\BAXYeval\reales_v1\catalogos\lote3-cu.json`): **una** decision2 s0 en la GPU del PC, **229/268**, 0
 errores (referencia 228-229; prefijo anterior 230). Ningún caso del banco elige una operación nueva; los 9 que cambian
 (alarmas, volumen, archivos) son ruido de muestreo.
 
-**Suites sobre la fusión 1d473b9c8** (pc-cu + nb-cu de esta vuelta): PC Kernel 581/581, Contracts 69/69, Setup 477/477,
-App compila (0 avisos), pytest 44/44 y Providers 2411/2411 (el escritorio del PC no dio fallos ambientales esta vez); NB
-Providers 2403/2403 sobre 45463725d. Cruzados en el NB: C04 variante, C05 real, C18 real, C10 variante y C11 real
-funcionan; C18 con Word ya abierto, límite (ver su fila).
+**Suites sobre la fusión e2e031342** (pc-cu + nb-cu de esta vuelta, con la variante de C18 por COM): PC Kernel 581/581,
+Contracts 69/69, Setup 477/477, Providers 2417/2417, App compila (0 avisos), pytest 44/44; NB Providers 2403/2403 sobre
+45463725d. Cruzados en el NB: C04 variante, C05 real, C18 real, C10 variante y C11 real funcionan; en el PC: C10 variante,
+C11 real y variante, C18 variante con Word abierto.
 
 **Pedido real: 9 de 18 al empezar → 18 de 18 funcionan en al menos una máquina, 17 de 18 en las dos** (C13 en el PC
-depende de una ventana en pantalla completa del dueño). Además del computer use, la vuelta dejó dos arreglos de
+depende de una ventana en pantalla completa del dueño; el NB trabaja en que una ventana a pantalla completa salga de ella
+antes de colocarla). Además del computer use, la vuelta dejó dos arreglos de
 robustez: un código de error vacío de un proveedor envenenaba el diario y el motor no volvía a arrancar con ese perfil, y
 el snap de una ventana recién restaurada se pide otra vez si no se asentó.
 
@@ -112,8 +113,7 @@ el snap de una ventana recién restaurada se pide otra vez si no se asentó.
    de Windows no se pulsa por clic. Un código vacío de un proveedor ya no impide que el motor vuelva a arrancar.
 9. Veracidad: los recibos dicen la fuente o el alcance real (buscador que respondió, micrófono de Windows o de la app,
    ventana que recibió lo pegado, juego hallado, celdas formateadas).
-10. Límites que quedan: pegar en un Word ya abierto (el documento nuevo no se reconoce: no pega y lo dice) y colocar una
-    ventana en pantalla completa (vuelve a como estaba y lo dice). El prefijo final, con las cinco operaciones nuevas, no
+10. Límite que queda: colocar una ventana a pantalla completa (vuelve a como estaba y lo dice). El prefijo final, con las cinco operaciones nuevas, no
     empeora la decisión: decision2 s0 229/268, 0 errores (referencia 228-229); ningún caso del banco las elige.
 
 ## Suites sobre la fusión final (2f8acb371)
