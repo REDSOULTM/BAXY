@@ -2545,3 +2545,11 @@ enciende 1, 2, 3b, 1c y 8; con `none`, el producto de partida. pytest 44/44.
     las operaciones peligrosas;
   - el juez marca RESPUESTA_MAL cuando un OK no cumple reply_re o reply_not_re;
   - probado con 3 casos inventados.
+
+### El lote d7a76adf1 en el notebook (BAXY_AYUDAS sin definir)
+
+- Recursos con el conductor real (measure_resources): **VRAM 3.902 MiB y RAM del producto 1.790 MiB** (llama-server
+  1.366, mente 298). ≤4 GB las dos; igual que el cierre del ajuste fino (3.901 / 1.787).
+- Suites: Kernel 574/574, Contracts 69/69, Setup 477/477, Providers 2332/2332 (ninguna por tiempo), pytest 44/44.
+- GPU del notebook (la combinación): decision2 230,67 → 233,67 (Δ +3,00, IC [+0,33, +6,33]); escenas 32,50 → 31,25
+  (−1,25, dentro de ±2).
