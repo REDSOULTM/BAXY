@@ -300,6 +300,36 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // BAXY Renew cu (C03 en frío): Steam started by this opening shows its sign-in first and the place handed then was
+    // lost. The data says it starts behind its sign-in: once its window settles the place goes again, and the receipt
+    // names that window. Contracases: already running, or an application the data does not mark, waits for nothing.
+    [TestCase("Steam", "library", false, 2, 999)]
+    [TestCase("Steam", "library", true, 1, 777)]
+    [TestCase("Configuración", "display", false, 1, 777)]
+    public async Task AnApplicationStartedBehindItsSignInGetsItsPlaceAgainOnceItsWindowSettles(
+        string app, string place, bool running, int handed, long window)
+    {
+        var opened = new List<string>();
+        int waited = 0;
+        var handler = new AppOpenHandler(
+            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", running),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+            new RecordedPlace(opened),
+            frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
+            settle: (_, _, _) => { waited++; return 999; });
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation($$"""{"appId":"{{app}}","place":"{{place}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(opened, Has.Count.EqualTo(handed));
+            Assert.That(waited, Is.EqualTo(handed - 1));
+            Assert.That(outcome.Result!.Value.GetProperty("windowHandle").GetInt64(), Is.EqualTo(window));
+        });
+    }
+
     private static AppOpenHandler SteamHandler(List<string> opened, IGameTitles titles) => new(
         new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe"),
         new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
@@ -349,7 +379,7 @@ public sealed class AppOpenHandlerTests
     }
 
     /// <summary>A window of a program already running, verified for the opening asked.</summary>
-    private sealed class VerifiedOpening(string executablePath) : IApplicationOpenProvider
+    private sealed class VerifiedOpening(string executablePath, bool running = true) : IApplicationOpenProvider
     {
         internal int Calls { get; private set; }
 
@@ -359,11 +389,11 @@ public sealed class AppOpenHandlerTests
         {
             Calls++;
             var receipt = new ApplicationLaunchReceipt(
-                request.InvocationId, request.ApplicationId, LaunchIssued: false, ReusedExisting: true,
+                request.InvocationId, request.ApplicationId, LaunchIssued: !running, ReusedExisting: running,
                 ProcessId: 4242, ProcessCreationTimeUtcTicks: 638900000000000000, executablePath,
                 PackageFamilyName: null, PackageFullName: null, WindowHandle: 777, ErrorCode: null);
             return ValueTask.FromResult(new ApplicationOpenResult(
-                Succeeded: true, Verified: true, request.ApplicationId, AlreadyRunning: true,
+                Succeeded: true, Verified: true, request.ApplicationId, AlreadyRunning: running,
                 ProcessId: 4242, WindowHandle: 777, ErrorCode: null, receipt));
         }
     }
