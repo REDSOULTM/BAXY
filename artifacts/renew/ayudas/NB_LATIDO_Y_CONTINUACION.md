@@ -48,3 +48,22 @@ Configuración: `continuacion.py` (`e6c18ce9a`), copias sembradas de `d7a76adf1`
 
 Los resultados confirman lo del PC: la 2 lleva las falsedades a 0, la 3b funciona solo con `next` y la 1c hace mirar
 siempre.
+
+## `beat_no_pending` (`d16e13bf2`): descartada
+
+Escenas ×4 con la misma copia y el mismo catálogo, intercaladas por celda:
+
+| Brazo | sin tocar/pA/pB/pC | `confirmation.answer` espurias |
+|---|---|---|
+| `none` | 32/33/32/33 = 32,50 | 4 |
+| `beat_no_pending` | 32/31/31/32 = 31,50 | 0 |
+| lote | 31/32/32/30 = 31,25 | 4 |
+| lote + `beat_no_pending` | 31/31/31/32 = 31,25 | 0 |
+
+- **Lo que logra:** quita las llamadas espurias.
+- **Lo que no logra:** no convierte esos latidos en «decir».
+  - P026: el modelo pasa a `system.settings.set` 4 de 4 veces y el caso queda en 0/4.
+  - P035: queda en silencio.
+- **Bajas:** P024 y P034.
+- **Molestas:** ninguna en los cuatro brazos.
+- **Conclusión:** el PC la revirtió (`d8855558e`) porque no sube las escenas.
