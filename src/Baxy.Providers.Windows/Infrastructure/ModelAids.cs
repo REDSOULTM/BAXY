@@ -41,6 +41,9 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C03): a click whose index names another control says so and how a read text is clicked.</summary>
     public const string IndexLabelNext = "index_label_next";
 
+    /// <summary>BAXY Renew cu (C11): a click whose label no control has lists the collapsed entries of the last look.</summary>
+    public const string CollapsedNext = "collapsed_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

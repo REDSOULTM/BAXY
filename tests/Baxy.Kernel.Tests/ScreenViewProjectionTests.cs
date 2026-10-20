@@ -53,9 +53,20 @@ public sealed class ScreenViewProjectionTests
         Assert.That((string?)projected["cause"], Is.EqualTo("seen"));
     }
 
-    private static JsonObject Project(string facts)
+    // BAXY Renew cu (C11): a grid item says what the application calls it (Excel's «1» is the header of row 1).
+    [Test]
+    public void AGridItemSaysWhatTheApplicationCallsIt()
     {
-        using JsonDocument look = JsonDocument.Parse(Look);
+        JsonObject projected = Project("{\"status\":\"completed\"}", Look.Replace(
+            "{\"i\":1,\"kind\":\"Button\",\"name\":\"Enviar\",\"state\":\"\",\"value\":null}",
+            "{\"i\":1,\"kind\":\"DataItem\",\"name\":\"1\",\"state\":\"\",\"value\":null,\"itemType\":\"Encabezado de fila\"}"));
+
+        Assert.That((string?)projected["view"], Does.Contain("[1] DataItem «1» (tipo: Encabezado de fila)\n"));
+    }
+
+    private static JsonObject Project(string facts, string lookJson = Look)
+    {
+        using JsonDocument look = JsonDocument.Parse(lookJson);
         Assert.That(ScreenViewProjection.TryCreate(facts, look.RootElement, out string projected), Is.True);
         return JsonNode.Parse(projected) as JsonObject ?? throw new AssertionException("the view is not an object");
     }
