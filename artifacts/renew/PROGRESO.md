@@ -2752,3 +2752,48 @@ semilla.
 - **Lectura:** el juez de una pasada no es fiable línea a línea (deja pasar una falsedad clara y marca una de dos
   respuestas idénticas). La cifra del lote son las seis semillas leídas a mano del notebook: 15 → 10.
 - **Guardián del PC:** a las 04:20 cerró en 1 s un juego real (Project Zomboid) que el banco lanzó por error en F001.
+
+**Ejecución, una vez, en el notebook** (04:32-06:22, d7a76adf1 recompilado, BAXY_AYUDAS sin definir, c2-e1.0,
+guardián instantáneo, el modo accesible a «normal» tras cada caso):
+
+- 222 casos. El ejecutor excluyó 18 de los 240: 4 no marcados como seguros y 14 por una operación o app peligrosa
+  (papelera fuera del sandbox, Spotify, Discord…).
+- Juicio de la ejecución: OK 130, otra operación 46, EJECUTA_MAL 43, RESPUESTA_MAL 3 (la respuesta no cumple
+  reply_re o reply_not_re).
+
+**Clases** (F:/BAXYeval/ayudas_v1/tools/fase4_clases.py, el método del FT; cada caso cuenta una vez):
+
+| Clase | Casos | % |
+|---|---|---|
+| OK (bien decidido en las dos GPUs y, si se ejecutó, bien ejecutado) | 121 | 50,4 |
+| ELIGE_MAL (mal decidido en alguna GPU) | 76 | 31,7 |
+| EJECUTA_MAL (bien decidido, mal ejecutado) | 43 | 17,9 |
+
+| Familia | OK | ELIGE_MAL | EJECUTA_MAL |
+|---|---|---|---|
+| G_general (80) | 57 | 8 | 15 |
+| R_rutas (60) | 23 | 17 | 20 |
+| V_ventana_cerrada (40) | 23 | 11 | 6 |
+| M_modos (30) | 16 | 14 | 0 |
+| F_falsedad (30) | 2 | 26 | 2 |
+
+- **EJECUTA_MAL es casi todo entorno del notebook**, como en el FT:
+  - en R_rutas, 19 de 20 son un archivo o una subcarpeta que el caso presupone y no existen
+    (known_file_not_found 14, known_subdirectory_not_found 5);
+  - en G_general, sin música sonando, sin sesión de Netflix, la memoria apagada en el perfil del banco, el micrófono
+    ya silenciado, ningún recordatorio que cancelar, un lugar del tiempo no encontrado;
+  - del producto o del modelo quedan unos 6: dos operaciones distintas de la esperada, un adaptador de dispositivo,
+    un destino de navegador no verificado, una acción de YouTube no soportada.
+- **ELIGE_MAL** está concentrado en dos familias:
+  - F_falsedad (26/30): en 22 el modelo comprueba el estado con una herramienta en vez de contestar en texto, en la
+    decisión y también en la ejecución;
+  - M_modos (14): en 12, ante un modo que no existe, enciende el modo accesible. La palanca 2 hace que después lo diga
+    con verdad, pero la llamada sigue siendo la que el oráculo no quiere.
+  - De los 76, 24 salieron bien en la ejecución (15 de rutas, 4 de falsedad).
+- **El mismo banco sin las ayudas** (la diferencia medida): decisión +3 en las dos GPUs (PC 166 frente a 163,
+  notebook 168 frente a 165); escenas +2 en el notebook (26 frente a 24) y 0 en el PC. La ejecución se corrió una vez,
+  sólo con el lote.
+- **Frente al holdout del ajuste fino** (OK 81,3 %, ELIGE_MAL 4,7 %, EJECUTA_MAL 14,0 %, falsedad 0,5 %): **son
+  bancos distintos.** El nuevo se escribió a propósito sobre las familias difíciles (rutas con subcarpetas, ventanas
+  cerradas, modos, falsedades), así que la comparación orienta pero no es una diferencia medida.
+- **Falsedades:** 77 casos marcados para revisar; la lectura a mano está pendiente.
