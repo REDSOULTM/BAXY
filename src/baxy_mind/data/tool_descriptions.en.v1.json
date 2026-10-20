@@ -178,7 +178,8 @@
   "window.resize": "Resize an already identified window to a given width and height. Use when: cambia el tamaño a N por M. Do not use when: maximizing (use window_maximize), half the screen (use window_snap). Examples: «haz la ventana de 800 por 600», «cambia el tamaño del bloc de notas a 1024x768», «resize chrome to 1280x720». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one.",
   "window.resolve": "List the open windows of an application or process, each with its windowId, title, state and whether it is in front. Use when: you need the windowId of an open app's window to focus, maximize, minimize, restore, snap, move or resize it. Do not use when: only whether the app is open (use window_application_status), the window in front (use window_active). Examples: «maximiza el chrome» (resolve chrome, then window_maximize), «pon el bloc de notas a la izquierda», «minimiza spotify».",
   "window.restore": "Return an already identified minimized or maximized window to its normal size. Use when: restaura or devuelve la ventana a su tamaño. Do not use when: only bringing it to front (use window_focus), maximizing (use window_maximize). Examples: «restaura la ventana del chrome», «vuelve el spotify a tamaño normal», «restore word». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one.",
-  "window.snap": "Place an already identified window on the left or right half of the screen. A windowId expires after 5 minutes (invalid_or_expired_window_id). Use when: pon X a la izquierda or a la derecha. Do not use when: exact coordinates (use window_move), maximizing (use window_maximize). Examples: «pon el chrome a la izquierda», «manda el word a la mitad derecha», «snap spotify right». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one."
+  "window.snap": "Place an already identified window on the left or right half of the screen. A windowId expires after 5 minutes (invalid_or_expired_window_id). Use when: pon X a la izquierda or a la derecha. Do not use when: exact coordinates (use window_move), maximizing (use window_maximize). Examples: «pon el chrome a la izquierda», «manda el word a la mitad derecha», «snap spotify right». Its windowId comes from window_resolve, window_active or app_open (never windowHandle); each window action returns a fresh windowId for the next one.",
+  "office.format.apply": "Give a format (bold, italic, underline, or align left, center or right) to what the person has open in Word or Excel, through the open application itself, and read it back; it opens nothing. In Word it formats the selected text, the document's title (target title) or a paragraph by its number (target paragraph with paragraph); in Excel the selection, a whole row (target row with row), a whole column (target column with column) or cells (target cells with an address like A1:C3), which it leaves selected. Use when: the person asks for a format in Word or Excel (negrita, cursiva, subrayado, centrar, alinear). Do not use when: writing text (use input_text_type), another application (look at its window and click its button). Examples: «pon en negrita lo seleccionado en word», «en excel pon la fila 1 en negrita», «subraya la columna B en excel», «centra el título en word»."
  },
  "arguments": {
   "file.write": {
@@ -287,6 +288,16 @@
   },
   "memory.sensitive.save": {
    "retention": "persistent (without expiryPolicy), session (with expiryPolicy session_end: forgotten when the session ends) or temporary (with expiryPolicy after_relevance_window: forgotten after 24 hours); any other pairing is refused and nothing is saved."
+  },
+  "office.format.apply": {
+   "app": "word or excel: the application the person has open.",
+   "cells": "With target cells: the cells' address (A1:C3).",
+   "column": "With target column: the column's letter (columna A is A).",
+   "on": "false to remove that format (quitar la negrita); leave it out to apply it.",
+   "paragraph": "With target paragraph: the paragraph's number, counted from the top (1 is the first).",
+   "row": "With target row: the row's number (fila 1 is 1).",
+   "style": "bold, italic, underline, center, left or right.",
+   "target": "Leave it out for what is selected. Word: title or paragraph. Excel: row, column or cells."
   }
  }
 }
