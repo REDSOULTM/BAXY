@@ -17,6 +17,9 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C14): audio.microphone.mute says it is Windows' switch, not an application's own mute.</summary>
     public const string MicrophoneScope = "microphone_scope";
 
+    /// <summary>BAXY Renew cu (C02): a click that changed nothing on a control already chosen says it was already so.</summary>
+    public const string AlreadySelected = "already_selected";
+
     /// <summary>E024: a file.write with no folder says it went to BAXY's working folder (and a home folder of that name).</summary>
     public const string WorkFolder = "work_folder";
 

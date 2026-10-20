@@ -2064,6 +2064,19 @@ function Test-Selected($el){
   } catch [System.Windows.Automation.ElementNotAvailableException] {}
   return $false
 }
+# BAXY Renew cu (C02): un interruptor (con marca On/Off) de la propia Configuracion de Windows cambia la maquina (su
+# radio Wi-Fi, su Bluetooth, el modo avion): un clic nunca lo pulsa. Se rechaza antes de pulsar nada, con su estado, como
+# las herramientas del sistema (por la identidad de su proceso, nunca por su nombre). Medido: «mira si el wifi esta
+# conectado» pulso el interruptor «Wi-Fi» (on -> off) y la radio quedo apagada.
+function Get-SettingsSwitchRefusal($el,[string]$toggleBefore,[string]$name,[string]$identity,[string]$kind){
+  if(@('On','Off') -notcontains $toggleBefore){ return $null }
+  $process=''
+  try { $process=[System.Diagnostics.Process]::GetProcessById([int]$el.Current.ProcessId).ProcessName } catch { $process='' }
+  if($process -ne 'SystemSettings'){ return $null }
+  $refused=Click-Result $false $false 'visible_settings_switch_refused' $name $identity $false $false $false $kind
+  $refused.switchState=$toggleBefore
+  return $refused
+}
 function Get-Toggle($el){
   try {
     $pattern=$null
@@ -3260,6 +3273,8 @@ function Do-Postread($request){
   if(-not $absent -and -not $selected -and -not $toggled){
     $unchanged=Click-Result $false $true 'visible_button_postread_unchanged' $pending.name $pending.identity $false $false $false $pending.kind
     $unchanged.method=[string]$pending.method
+    # BAXY Renew cu (C02): elegido ya antes del clic (la seccion que la ventana ya muestra), para la mente.
+    if($null -ne $pending.stateBefore -and $pending.stateBefore.selected -eq $true){ $unchanged.alreadySelected=$true }
     return $unchanged
   }
   $script:Pending=$null
@@ -3497,6 +3512,8 @@ function Do-ClickJudged($request){
   $asking=Get-AskingName $button $name $aliases $request.asks
   if($asking.Length -gt 0){ return (Click-Result $false $false 'visible_control_needs_confirmation' $asking $identity $false $false $false $kind) }
   $toggleBefore=Get-Toggle $button
+  $switchRefused=Get-SettingsSwitchRefusal $button $toggleBefore $name $identity $kind
+  if($null -ne $switchRefused){ return $switchRefused }
   # El mismo objetivo en su linea de descendencia (el ListItem del Button
   # invocado): su seleccion tras el clic tambien lo prueba, si antes no lo estaba.
   $lineage=@($script:NamedLineage | Where-Object { -not (Test-Selected $_) })
@@ -3698,6 +3715,8 @@ function Do-At($request){
       $asking=Get-AskingName $button $name $aliases $request.asks
       if($asking.Length -gt 0){ return (Click-Result $false $false 'visible_control_needs_confirmation' $asking $identity $false $false $false $kind) }
       $toggleBefore=Get-Toggle $button
+      $switchRefused=Get-SettingsSwitchRefusal $button $toggleBefore $name $identity $kind
+      if($null -ne $switchRefused){ return $switchRefused }
       $done=Invoke-NamedControl $button $target.hwnd -PatternsOnly
     } catch { return (Click-Result $false $false 'visible_button_not_invokable' '' '' $false $false $false '') }
     # Revision 1 de r24b (B4): un contenedor sin Invoke ni SelectionItem no se pulsa, pero en un punto (OCR, tooltip) no
