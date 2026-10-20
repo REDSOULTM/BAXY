@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text.Json;
 using Baxy.Providers.Windows.Audio;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -44,9 +45,12 @@ internal sealed class WindowsMicrophoneAdapter : IExternalOperationAdapter
                 // Owner's test 2026-09-21 (turn 205): setting the state the
                 // endpoint already has cannot be observed as an effect; the
                 // honest fact is the state, said before any boundary is crossed.
-                return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(
+                ExternalCapabilityReceipt already = ExternalJson.FailureBeforeEffect(
                     operation,
-                    requested ? "microphone_already_muted" : "microphone_already_unmuted"));
+                    requested ? "microphone_already_muted" : "microphone_already_unmuted");
+                return ValueTask.FromResult(ModelAids.On(ModelAids.MicrophoneScope)
+                    ? already with { Result = Scope(writer => writer.WriteBoolean("muted", baseline)) }
+                    : already);
             }
             effectBoundary.Cross(cancellationToken);
             endpoint.SetMuted(requested, Guid.NewGuid());
@@ -64,6 +68,7 @@ internal sealed class WindowsMicrophoneAdapter : IExternalOperationAdapter
                 writer.WriteBoolean("muted", observed);
                 writer.WriteString("endpointIdHash", AudioEndpointIdentity.Hash(endpoint.EndpointId));
                 writer.WriteString("authority", "windows_core_audio_capture_endpoint_postread");
+                if (ModelAids.On(ModelAids.MicrophoneScope)) writer.WriteString("next", ScopeNext);
                 writer.WriteEndObject();
             });
             return ValueTask.FromResult(ExternalJson.Success(
@@ -87,4 +92,19 @@ internal sealed class WindowsMicrophoneAdapter : IExternalOperationAdapter
                 operation, "microphone_endpoint_unavailable"));
         }
     }
+
+    // BAXY Renew cu (C14): this is Windows' own switch of the default microphone; an application's own mute (the
+    // microphone button of a call or chat app) is another switch, in that application's window. Said, never acted on
+    // («desmutea mi micrófono en <app>» was answered «it was not muted» by Windows' state alone).
+    private const string ScopeNext = "this is Windows' switch of the default microphone; an application's own mute (its "
+        + "microphone button in a call or chat app) is a separate switch in its window, which input_visible_controls can look at";
+
+    private static JsonElement Scope(Action<Utf8JsonWriter> state) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteNumber("version", 1);
+        state(writer);
+        writer.WriteString("next", ScopeNext);
+        writer.WriteEndObject();
+    });
 }
