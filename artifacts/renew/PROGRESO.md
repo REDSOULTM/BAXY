@@ -2574,3 +2574,17 @@ cada 60 s los cuatro restos del banco que lleven su texto (con copia).
   | E006, E020 | 0 | 0 | sin resolver |
 
 - 0 error, 0 setup_failed, 0 app.open al frente detrás, MSConfig 0 en todas.
+
+### E006 y E020: límite del modelo, con su evidencia (27 corridas e2e del notebook el 2026-10-19, todos los brazos)
+
+- **E006** («crea compras.txt en C:\…\BAXY-bench que diga…»): 27 de 27 veces `file.write` con folder home y
+  relativePath «compras.txt», sin BAXY-bench, aunque la ruta completa estaba dictada. El recibo verifica la ruta del
+  home y el modelo la dice («creé compras.txt en C:\…\compras.txt»): es honesto, pero el archivo queda en otro sitio.
+  En E017 el modelo a veces pone la ruta entera en relativePath y acierta.
+- **E020** («el archivo más grande dentro de BAXY-bench, en mi carpeta de usuario»): 26 de 27 veces `file.find` con
+  folder home y order size, sin `subdirectory`, aunque su significado pide la subcarpeta que la persona nombró; la otra
+  vez, filesystem.search.
+- **Ninguna ayuda que sólo informe lo movió:** ni `listed_path` (4), ni la ruta del home (6), ni la sonda de
+  continuación. En los dos el modelo pierde el nivel de subcarpeta al rellenar un argumento aparte. Es el caso del
+  schema con un único `path` (DISENO_PALANCAS.md), que obliga a reentrenar. Arreglarlo sin reentrenar exigiría leer la
+  frase de la persona, cosa que la decisión del dueño prohíbe.
