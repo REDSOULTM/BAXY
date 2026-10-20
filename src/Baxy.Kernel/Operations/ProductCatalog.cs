@@ -1282,6 +1282,25 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "office.document.read.adapter.snapshot.v1",
             "Lee una proyección estructurada de un documento identificado mediante el adapter oficial."),
+        // BAXY Renew cu (C10 variante, C11): a format given to what the person has open in Word (its selection) or Excel
+        // (its selection, a row, a column or a range), through the running application's object model, read back.
+        Descriptor(
+            "office.format.apply",
+            Schema(
+                [
+                    String("app", values: ["excel", "word"]),
+                    String("cells", types: NullableString, maximumLength: 32, nonWhitespace: true),
+                    String("column", types: NullableString, maximumLength: 3, nonWhitespace: true),
+                    Boolean("on", types: NullableBoolean),
+                    Integer("paragraph", 1, 100_000, types: NullableInteger),
+                    Integer("row", 1, 1_048_576, types: NullableInteger),
+                    String("style", values: ["bold", "center", "italic", "left", "right", "underline"]),
+                    String("target", types: NullableString, values: ["cells", "column", "paragraph", "row", "selection", "title"]),
+                ],
+                ["app", "style"]),
+            OperationRisks.LowReversible,
+            "office.format.apply.com.postread.v1",
+            "Da un formato (negrita, cursiva, subrayado o una alineación) a lo que la persona tiene abierto en Word (su selección, su título o un párrafo por número) o en Excel (su selección, una fila, una columna o un rango, que deja elegido) por el modelo de objetos de la aplicación en marcha, y lo relee; no abre ninguna aplicación."),
         // BAXY Renew 2026-10-15: one call that resolves, installs and verifies, after the person's yes (installation
         // risk); it replaces the prepare/commit pair, which the 4B took for uninstalling.
         Descriptor(
