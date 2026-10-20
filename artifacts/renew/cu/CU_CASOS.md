@@ -78,3 +78,15 @@ falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del
   propia suite marca con Assume según el escritorio), que no cuentan como pass.
 - Cruzados: los arreglos del PC (C02v, C04, C05v, C06v, C07) funcionan en el NB; los del NB, en el PC: C10 funciona,
   C18 cierto, C13 a medias (ver su fila).
+
+## Desviaciones del método (dichas tal cual)
+
+- **Control de daños del prefijo**: el goal pedía una única decision2 s0 en la GPU del PC; se corrieron **cuatro**
+  (cu1 tras C04, cu2 tras C05, cu3 con la frase de clipboard.paste, cu4 con el prefijo final), 268 casos cada una. La
+  cifra que vale como control es la del prefijo final (cu4: 230/268, 0 errores); las otras tres sobraban: bastaba
+  medir una vez al final, con todas las frases puestas.
+- **Corridas repetidas de un caso**: casi todas fueron la comprobación tras un arreglo (antes → arreglo → otra vez →
+  variante). Hubo además pasadas de más: C05 real se volvió a correr tras arreglar sólo su variante, C14 tuvo un tercer
+  intento con otra frase, y los cruzados de C10, C13 y C18 en el PC se corrieron varias veces. Ninguna fue una tanda
+  (sin semillas, sin bancos e2e, sin juez), pero el «una corrida, una mirada» se estiró.
+- No cambia ningún veredicto de la tabla: cada uno sale de la corrida en vivo del caso, no del banco de decisión.
