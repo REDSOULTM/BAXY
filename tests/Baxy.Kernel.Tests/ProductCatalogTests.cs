@@ -139,7 +139,8 @@ public sealed class ProductCatalogTests
     ];
 
     // Every operation of the catalog is offered to the model as a tool.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2;
+    // BAXY Renew cu (C04 variante, C05): + 2, game.store.page y game.store.search; (C14) + 1, client.microphone.set.
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 2 + 1;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]

@@ -58,6 +58,32 @@ public sealed class WindowResolveCandidatesTests
             new OperationInvocation("r", "m", "i", JsonDocument.Parse("{\"applicationName\":\"Microsoft Word\"}").RootElement),
             CancellationToken.None);
 
+    // BAXY Renew cu (C13 en el PC): a browser resolved by name that is not the person's own says which theirs is; the
+    // person's own, or a window that is no browser, goes back as it was.
+    [Test]
+    public void ABrowserThatIsNotThePersonsOwnSaysWhichTheirsIs()
+    {
+        using JsonDocument found = JsonDocument.Parse("""{"version":1,"windows":[]}""");
+        WindowCandidate chrome = new("win_1", 1, "chrome", "maximized", false, 0, 0, 1366, 768, "YouTube");
+        WindowCandidate opera = new("win_2", 2, "opera", "maximized", false, 0, 0, 1366, 768, "Correo");
+        WindowCandidate word = new("win_3", 3, "WINWORD", "normal", false, 0, 0, 800, 600, "Documento1");
+        (string, string) own = ("Opera GX", "opera");
+
+        JsonElement other = WindowResolveHandler.WithPersonBrowser(found.RootElement, [chrome], own);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(other.GetProperty("personBrowser").GetProperty("name").GetString(), Is.EqualTo("Opera GX"));
+            Assert.That(other.GetProperty("next").GetString(), Does.Contain("windows of chrome"));
+            Assert.That(WindowResolveHandler.WithPersonBrowser(found.RootElement, [opera], own)
+                .TryGetProperty("personBrowser", out _), Is.False);
+            Assert.That(WindowResolveHandler.WithPersonBrowser(found.RootElement, [word], own)
+                .TryGetProperty("personBrowser", out _), Is.False);
+            Assert.That(WindowResolveHandler.WithPersonBrowser(found.RootElement, [chrome], null)
+                .TryGetProperty("personBrowser", out _), Is.False);
+        });
+    }
+
     private sealed class FailingWindows(string code) : IWindowControlProvider
     {
         public ValueTask<WindowResolveResult> ResolveApplicationAsync(

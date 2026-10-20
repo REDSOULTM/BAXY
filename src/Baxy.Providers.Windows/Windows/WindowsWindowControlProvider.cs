@@ -747,6 +747,30 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         (WindowSnapshot? placed, bool larger) = await ObserveSnapAsync(
                 before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
             .ConfigureAwait(false);
+        // BAXY Renew cu (C13 en el PC): a window just restored from maximized may take its restored bounds after the
+        // move (a browser on a second screen stayed as wide as the whole screen): the move is asked once more.
+        if (placed is null && restored)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!_platform.SetBounds(before.Identity, expected))
+            {
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.ActionFailed, EffectMayHaveOccurred: true);
+            }
+
+            (placed, larger) = await ObserveSnapAsync(
+                    before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
+                .ConfigureAwait(false);
+            if (placed is null)
+            {
+                // It took neither move (a browser in full screen keeps the whole screen): put back as it was, and said.
+                bool back = string.Equals(before.State, "maximized", StringComparison.Ordinal)
+                    && _platform.Execute(before.Identity, WindowControlAction.Maximize);
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.WindowSizeNotTaken, EffectMayHaveOccurred: !back);
+            }
+        }
+
         if (placed is null)
         {
             return new WindowActionResult(
@@ -864,7 +888,9 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         observed.Width >= requested.Width
         && observed.Height >= requested.Height
         && (observed.Width > requested.Width || observed.Height > requested.Height)
-        && observed.Width <= workArea.Width
+        // BAXY Renew cu (C13 en el PC): as wide as the whole work area is no minimum of the window's own: it was not
+        // resized at all (restored to its whole screen), never «it does not fit in half».
+        && observed.Width < workArea.Width
         && observed.Height <= workArea.Height
         && observed.Y == requested.Y
         && (observed.X == requested.X

@@ -41,7 +41,15 @@ internal sealed class WindowResolveHandler(
             : await provider.ResolveAsync(process.GetString()!, limit, cancellationToken, byTitle, offset)
                 .ConfigureAwait(false);
         if (result.Succeeded && result.Verified)
-            return OperationOutcome.Success(WindowControlResultJson.Serialize(result.Windows, result.Page));
+        {
+            JsonElement found = WindowControlResultJson.Serialize(result.Windows, result.Page);
+            // BAXY Renew cu (C13 en el PC): a browser asked by its name may be another than the person's own (a Chrome
+            // in full screen chosen for «el navegador», the person's being Opera GX): which one theirs is goes with it.
+            return OperationOutcome.Success(hasApplication
+                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WindowCandidates)
+                ? WithPersonBrowser(found, result.Windows, _browser())
+                : found);
+        }
         string code = result.ErrorCode ?? "window_resolve_failed";
         // BAXY Renew cu (C13): «Microsoft Word» is no installed name (it is «Word») and the browser open was another
         // than the one guessed; the reply said neither was open. The windows on the desktop go back, as a look's.
@@ -49,6 +57,30 @@ internal sealed class WindowResolveHandler(
             && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WindowCandidates)
             ? OperationOutcome.Failure(code, Candidates(_desktop(), _browser()))
             : OperationOutcome.Failure(code);
+    }
+
+    // The processes of web browsers, by their executables (identity of the program, never what the person said).
+    private static readonly HashSet<string> BrowserProcesses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "chrome", "msedge", "brave", "opera", "firefox", "vivaldi",
+    };
+
+    internal static JsonElement WithPersonBrowser(
+        JsonElement found, IReadOnlyList<WindowCandidate> windows, (string Name, string Process)? browser)
+    {
+        if (browser is not { } own || windows.Count == 0
+            || !windows.All(window => BrowserProcesses.Contains(window.ProcessName))
+            || windows.Any(window => string.Equals(window.ProcessName, own.Process, StringComparison.OrdinalIgnoreCase)))
+        {
+            return found;
+        }
+
+        var facts = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(found.GetRawText())!;
+        facts["personBrowser"] = new System.Text.Json.Nodes.JsonObject { ["name"] = own.Name, ["process"] = own.Process };
+        facts["next"] = $"these are windows of {windows[0].ProcessName}; the person's own browser (Windows' default) is "
+            + $"{own.Name} (process {own.Process})";
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
     }
 
     internal static JsonElement Candidates(
@@ -534,6 +566,8 @@ internal static class WindowControlResultJson
             return result;
         var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(result.GetRawText())!;
         unchanged["changed"] = false;
+        // BAXY Renew cu (C13 en el PC): «changed false» was read as a failure («Word no se pudo poner a la derecha»).
+        unchanged["next"] = "it already was so: done, nothing needed to change";
         using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
         return document.RootElement.Clone();
     }

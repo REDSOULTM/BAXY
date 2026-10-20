@@ -70,3 +70,53 @@ falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del
 10. Lo que queda es elección del modelo: no pide `wanted` en hojas grandes (C11), no abre la app antes de pegar (C18),
     no pulsa el botón propio de una app (C14). Ninguna frase de descripción lo movió; el prefijo final no empeora la
     decisión (decision2 230/268 frente a 228-229).
+
+## Suites sobre la fusión final (2f8acb371)
+
+- PC: Kernel 580/580, Contracts 69/69, Setup 477/477, App compila (0 avisos), pytest 44/44.
+- NB (sus pruebas de clic usan el escritorio): Providers 2363/2363, 0 fallos; 36 comprobaciones en vivo opcionales
+  (`[Category("LiveDesktop")]`, sólo con su variable de entorno) no activadas.
+- Cruzados: los arreglos del PC (C02v, C04, C05v, C06v, C07) funcionan en el NB; los del NB, en el PC: C10 funciona,
+  C18 cierto, C13 a medias (ver su fila).
+
+## Desviaciones del método (dichas tal cual)
+
+- **Control de daños del prefijo**: el goal pedía una única decision2 s0 en la GPU del PC; se corrieron **cuatro**
+  (cu1 tras C04, cu2 tras C05, cu3 con la frase de clipboard.paste, cu4 con el prefijo final), 268 casos cada una. La
+  cifra que vale como control es la del prefijo final (cu4: 230/268, 0 errores); las otras tres sobraban: bastaba
+  medir una vez al final, con todas las frases puestas.
+- **Corridas repetidas de un caso**: casi todas fueron la comprobación tras un arreglo (antes → arreglo → otra vez →
+  variante). Hubo además pasadas de más: C05 real se volvió a correr tras arreglar sólo su variante, C14 tuvo un tercer
+  intento con otra frase, y los cruzados de C10, C13 y C18 en el PC se corrieron varias veces. Ninguna fue una tanda
+  (sin semillas, sin bancos e2e, sin juez), pero el «una corrida, una mirada» se estiró.
+- No cambia ningún veredicto de la tabla: cada uno sale de la corrida en vivo del caso, no del banco de decisión.
+
+## Segundo intento de los pendientes (una corrida en vivo por intento, sin tandas)
+
+| Caso | Máq. | Intento | Corrida | Resultado | Queda |
+|---|---|---|---|---|---|
+| C04 variante | PC | hecho visible: un clic `visible_button_not_found` tras mirar una app con places dice sus places (`WindowsVisibleControlAdapter.WithPlaces`) | 1 | no se disparó: el modelo usó place `results` con el título y pulsó por OCR el término de la propia caja de búsqueda; nunca salió de la búsqueda y dijo «abrí la página … no pude comprobar que se cargara» | **pendiente**; arreglo revertido (sin efecto medido). Causa nueva: un clic por OCR sobre el texto de la caja de búsqueda se toma por un resultado (vista CEF de Steam sin árbol) |
+| C05 real | PC | frase en `input.visible.click` («Steam … its store search» como place de app_open) | 1 | pregunta «¿qué juego de Batman te interesa?» sin buscar | **a medias**; frase retirada |
+| C14 | PC | frase en `audio.microphone.mute` («el botón de micrófono de una app nombrada: mira su ventana y púlsalo») | 1 | ya no usa el micrófono de Windows, pero pregunta «¿qué canal tienes abierto?» en vez de mirar: peor que antes | **a medias**; frase retirada |
+| C10 variante | PC (el NB no respondió) | hecho en el rechazo `invalid_arguments` de `input.key.press` por una tecla que no envía: «un formato es un botón de la ventana» (`KeyNotSent`, App `NativeTurnLoop`) | 1 | no se disparó: el modelo eligió `key: control` (tecla válida) con `consequence: overwrite` y pidió confirmación «¿Presiono Ctrl+Shift+S…?»; nada subrayado (COM) | **pendiente**; arreglo revertido |
+| C11 | PC (el NB no respondió) | la vista cortada dice, por tipo, cuántos controles quedaron fuera y sus primeros nombres (`Get-CutKinds` en el worker, `cutKinds` en el adaptador, línea «Sin listar, por tipo» en la proyección); medido antes en Excel: encabezados «A», «1» y celdas «A1» son DataItem, el «1» es único | 1 | la línea salió («DataItem ×377: «A» … «1», «A1» …») y el modelo pulsó la celda «C1» y Negrita: dijo «seleccioné la fila 1 y la puse en negrita» (falso: sólo C1) | **pendiente**; arreglo revertido (no cambió el resultado y hubo una falsedad) |
+| C18 | PC | sin corrida | 0 | la única palanca que queda es un argumento con la app de destino en `clipboard.paste` (esquema del catálogo, composición con `app.open` en Core, catálogo del banco de decisión): fuera del tope de 25 min y con riesgo para otras conductas | **pendiente** (conducta); veracidad ya arreglada |
+
+El prefijo vuelve exactamente al medido (decision2 s0 230/268): las tres frases probadas en este intento se retiraron, así
+que no hizo falta otra decision2. Ninguno de los seis arreglos de este intento movió el resultado y todos se revirtieron:
+`src`, `tests` y `scripts` son idénticos a 2f8acb371. Suites sobre ese código: PC Kernel 580/580, Contracts 69/69, Setup
+477/477, pytest 44/44 (repetidas tras el intento); Providers 2363/2363 en el NB sobre 2f8acb371 (mismo código). Lo que
+queda en estos seis casos es elección del modelo de 4B, no del producto: ningún hecho ni frase la movió en una corrida.
+Escenarios del intento (Word, Excel) cerrados sin guardar.
+
+## Tercera vuelta (pedida por el dueño): palancas de producto, no de frase
+
+| Caso | Palanca | Corridas | Resultado | Queda |
+|---|---|---|---|---|
+| C18 | argumento nuevo en `clipboard.paste` con la app de destino (Core `PasteIntoApplicationHandler`: la abre con `app.open` al frente, con documento nuevo si se pide, y pega en ella; sin app pega donde siempre) | 3, una por ajuste | 1.ª: el modelo usó el argumento nuevo, pero sólo `newDocument: true`, sin la app → pegó al frente (VS Code, protegido). 2.ª: un documento nuevo sin app ya no pega nada y lo dice → respuesta cierta, sin reintento. 3.ª: el argumento renombrado a `appId` (como en `app.open`) → igual: nunca nombra la app | **pendiente**; todo revertido (esquema, handler, descripciones), así que el prefijo y el catálogo siguen siendo los medidos |
+| C14 | (ninguna intentada) | 0 | el silencio propio de Discord no se puede leer (su árbol UIA está vacío): una operación que lo pulse afirmaría sin verificar | **a medias** |
+| C10 variante | (ninguna intentada) | 0 | los atajos de formato dependen del idioma de la app (Ctrl+S subraya en Word en español y guarda en inglés): añadirlos al catálogo de teclas es peligroso | **pendiente** |
+| C04 variante, C05 real, C11 | (ninguna nueva) | 0 | el producto ya les da lo que necesitan (place con el título, búsqueda de la tienda, el «1» de la fila en la vista); el modelo elige otra cosa | como estaban |
+
+Código final idéntico a 2f8acb371 (suites en verde ya dichas). Lo que queda en estos seis casos es la elección del modelo
+de 4B: con el modelo fijo (sin reentrenar, ≤4 GB), ni hechos, ni frases, ni un argumento nuevo la movieron.
