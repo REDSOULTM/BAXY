@@ -2608,3 +2608,20 @@ de controles traía las marcas de la biblioteca.
 - **Lectura de más en B s0** (F019 t1): «quedó en la tienda», cuando su última lectura mostraba la biblioteca. Fue tras
   un bucle de foco y clic.
 - En ningún brazo hay un «abrí/cerré/lancé» inventado sin pasos.
+
+### Decisión del dueño (2026-10-20 ~02:00): el PC espera mientras él juega
+
+- **Qué pasó:**
+  - A la 01:54 el dueño abrió un juego en el PC (Roblox).
+  - A las 01:58 la repetición de E010/E011 (8 B s2, encolada tras el juez) corrió con el juego delante durante uno o dos
+    minutos. Esos casos abren la Calculadora al frente, así que pudieron quitarle el foco.
+  - Se vio a las 02:00. La cadena se paró antes de que empezara el e2e del lote y se le preguntó.
+- **Decisión:** esperar. Nada en el escritorio ni en la GPU del PC mientras juegue (Roblox, o un juego bajo
+  steamapps\common que ningún banco abrió). La confirmación del lote arranca sola 3 min después de que cierre, y cada
+  semilla y cada conjunto del juez vuelve a comprobarlo (e2e_pc3.sh, manana_pc3.sh).
+- **El guardián de juegos del PC se retiró:** con el dueño delante no puede distinguir un juego suyo de uno que lance
+  el banco. En el PC sobran RAM y VRAM para un juego lanzado por error, que es lo que tumbó al notebook.
+- **Resultado de la repetición:** E010 y E011 OK. La 8 en el PC queda **26/26/27** (s2 25 → 27): Δ +2,67 frente a la
+  referencia `none`.
+- **Mientras tanto,** el notebook confirma en su máquina, con la misma sonda de continuación, las palancas 2, 3b y 1c,
+  que en el PC sólo midió esa sonda.
