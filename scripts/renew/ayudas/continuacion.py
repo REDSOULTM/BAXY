@@ -14,10 +14,12 @@ import unicodedata
 from collections import Counter
 from pathlib import Path
 
-RUNS = Path(r"F:/BAXYeval/ayudas_v1/runs")
-SONDA = Path(r"F:/BAXYeval/ft_v1/sonda_modos/sonda_modos.json")
-SONDA_RUN = RUNS / "pc-sonda-base19-s0.jsonl"
-E2E = Path(r"F:/BAXYeval/renew_v1/e2e/practice.json")
+# BAXYEVAL: where the banks live on this machine (F:/BAXYeval on the PC, D:/BAXYeval on the notebook).
+EVAL = Path(os.environ.get("BAXYEVAL", r"F:/BAXYeval"))
+RUNS = EVAL / "ayudas_v1" / "runs"
+SONDA = EVAL / "ft_v1" / "sonda_modos" / "sonda_modos.json"
+SONDA_RUN = RUNS / "pc-sonda-base19-s0.jsonl"  # the PC's base probe: which cases turn the accessible mode on
+E2E = EVAL / "renew_v1" / "e2e" / "practice.json"
 HOME = r"C:\Users\usuario"
 SANDBOX = r"C:\Users\usuario\AppData\Local\BAXY\filesystem-sandbox"
 
@@ -215,9 +217,9 @@ def main() -> None:
     ap.add_argument("label")
     ap.add_argument("--src", required=True)
     ap.add_argument("--levers", default="2,3,4")
-    ap.add_argument("--gguf", default=r"F:\BAXYeval\models\BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf")
-    ap.add_argument("--server", default=r"F:\BAXYeval\llama\llama-server.exe")
-    ap.add_argument("--catalog", default=r"F:/BAXYeval/reales_v1/catalogos/lote3.json")
+    ap.add_argument("--gguf", default=str(EVAL / "models" / "BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf"))
+    ap.add_argument("--server", default=str(EVAL / "llama" / "llama-server.exe"))
+    ap.add_argument("--catalog", default=str(EVAL / "reales_v1" / "catalogos" / "lote3.json"))
     args = ap.parse_args()
     os.environ["BAXY_AYUDAS"] = "none"
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = "0.2"
