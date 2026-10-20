@@ -108,3 +108,15 @@ que no hizo falta otra decision2. Ninguno de los seis arreglos de este intento m
 477/477, pytest 44/44 (repetidas tras el intento); Providers 2363/2363 en el NB sobre 2f8acb371 (mismo código). Lo que
 queda en estos seis casos es elección del modelo de 4B, no del producto: ningún hecho ni frase la movió en una corrida.
 Escenarios del intento (Word, Excel) cerrados sin guardar.
+
+## Tercera vuelta (pedida por el dueño): palancas de producto, no de frase
+
+| Caso | Palanca | Corridas | Resultado | Queda |
+|---|---|---|---|---|
+| C18 | argumento nuevo en `clipboard.paste` con la app de destino (Core `PasteIntoApplicationHandler`: la abre con `app.open` al frente, con documento nuevo si se pide, y pega en ella; sin app pega donde siempre) | 3, una por ajuste | 1.ª: el modelo usó el argumento nuevo, pero sólo `newDocument: true`, sin la app → pegó al frente (VS Code, protegido). 2.ª: un documento nuevo sin app ya no pega nada y lo dice → respuesta cierta, sin reintento. 3.ª: el argumento renombrado a `appId` (como en `app.open`) → igual: nunca nombra la app | **pendiente**; todo revertido (esquema, handler, descripciones), así que el prefijo y el catálogo siguen siendo los medidos |
+| C14 | (ninguna intentada) | 0 | el silencio propio de Discord no se puede leer (su árbol UIA está vacío): una operación que lo pulse afirmaría sin verificar | **a medias** |
+| C10 variante | (ninguna intentada) | 0 | los atajos de formato dependen del idioma de la app (Ctrl+S subraya en Word en español y guarda en inglés): añadirlos al catálogo de teclas es peligroso | **pendiente** |
+| C04 variante, C05 real, C11 | (ninguna nueva) | 0 | el producto ya les da lo que necesitan (place con el título, búsqueda de la tienda, el «1» de la fila en la vista); el modelo elige otra cosa | como estaban |
+
+Código final idéntico a 2f8acb371 (suites en verde ya dichas). Lo que queda en estos seis casos es la elección del modelo
+de 4B: con el modelo fijo (sin reentrenar, ≤4 GB), ni hechos, ni frases, ni un argumento nuevo la movieron.
