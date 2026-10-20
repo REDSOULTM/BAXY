@@ -165,3 +165,18 @@ Escenarios del intento (Word, Excel) cerrados sin guardar.
 
 Código final idéntico a 2f8acb371 (suites en verde ya dichas). Lo que queda en estos seis casos es la elección del modelo
 de 4B: con el modelo fijo (sin reentrenar, ≤4 GB), ni hechos, ni frases, ni un argumento nuevo la movieron.
+
+## Desviaciones de la cuarta vuelta (dichas tal cual)
+
+- **Una corrida en vivo por intento**: se respetó en C04 variante, C05 (real y variante), C10 variante, C11 y C13, pero no
+  en dos casos:
+  - **C18**: diez corridas. Cada una siguió a un cambio de código distinto: operación nueva, verificación del documento
+    nuevo, resolución de «Notepad», Esc en la pantalla de inicio, plazo, permiso de primer plano y vía COM. Hubo además una
+    corrida de diagnóstico con registro temporal, que hizo caer el motor y se retiró.
+  - **C14**: seis corridas. Dos acabaron en `blocked_environment` porque el motor no arrancaba; se repitieron sin cambio de
+    código hasta encontrar la causa, el diario envenenado por un código de error vacío. Las demás siguieron a un arreglo.
+- **Decision2 s0**: una sola en esta vuelta (cu5, 229/268), sobre 1d473b9c8. Desde entonces ni
+  `tool_descriptions.en.v1.json` ni `ProductCatalog.cs` cambiaron (`git diff 1d473b9c8 HEAD` vacío en esos archivos), así
+  que mide el prefijo y el catálogo finales.
+- **Punto de partida**: hub/pc-cu 30e3c5761, ancestro directo del resultado final. Buzón vigilado sondeando con `wc` y
+  `grep`, nunca con `tail -F`.
