@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using Baxy.Providers.Windows.Audio;
 using Baxy.Providers.Windows.External;
+using Baxy.Providers.Windows.Infrastructure;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -2228,6 +2229,35 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo(expectedError));
             Assert.That(endpoint.ReadMuted(), Is.EqualTo(state));
+        });
+    }
+
+    // BAXY Renew cu (C14, aid microphone_scope): the state already there, and a change, say they are Windows' switch of
+    // the default microphone, not an application's own mute; with BAXY_AYUDAS=none the receipts are what they were.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task MicrophoneReceiptsSayTheyAreWindowsSwitchNotAnApplicationsMute(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        var already = new WindowsMicrophoneAdapter(() => new FakeAudioEndpoint("capture-private", muted: false));
+        var changed = new WindowsMicrophoneAdapter(() => new FakeAudioEndpoint("capture-private", muted: false));
+
+        ExternalCapabilityReceipt same = await already.InvokeAsync(
+            "audio.microphone.mute", Json("""{"state":false}"""), CancellationToken.None);
+        ExternalCapabilityReceipt muted = await changed.InvokeAsync(
+            "audio.microphone.mute", Json("""{"state":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(same.ErrorCode, Is.EqualTo("microphone_already_unmuted"));
+            Assert.That(same.EffectMayHaveOccurred, Is.False);
+            Assert.That(same.Result is { } result && result.TryGetProperty("next", out _), Is.EqualTo(hint));
+            Assert.That(muted.Result?.TryGetProperty("next", out _), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(same.Result?.GetProperty("muted").GetBoolean(), Is.False);
+                Assert.That(same.Result?.GetProperty("next").GetString(), Does.Contain("an application's own mute"));
+            }
         });
     }
 
