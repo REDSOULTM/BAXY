@@ -20,6 +20,9 @@ public static class ModelAids
     /// <summary>F019, E015: an app.open with a place says the place was only asked for and how to look.</summary>
     public const string PlaceUnverified = "place_unverified";
 
+    /// <summary>BAXY Renew cu (C04): an app.open with no place names the places its application opens at directly.</summary>
+    public const string AppPlaces = "app_places";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

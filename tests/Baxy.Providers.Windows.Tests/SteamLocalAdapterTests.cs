@@ -695,4 +695,35 @@ public sealed class SteamLocalAdapterTests
             return ValueTask.CompletedTask;
         }
     }
+
+    // BAXY Renew cu (C04): a game's page by its title. The installed game bearing it first; else the store's one game
+    // bearing it; else the first, in the store's order, whose name holds every word of it; else none.
+    [Test]
+    public async Task AGamePageTitleIsTheInstalledOneThenTheStoreOneBearingItThenTheFirstHoldingItsWords()
+    {
+        SteamLocalGame[] installed = [new SteamLocalGame("367520", "Hollow Knight", "hk-sha", StateFlags: 4)];
+        SteamStoreTitle[] store =
+        [
+            new("1030300", "Hollow Knight: Silksong"),
+            new("289070", "Sid Meier's Civilization VI"),
+            new("8930", "Sid Meier's Civilization V"),
+            new("40800", "Super Meat Boy"),
+            new("581300", "Super Meat Boy Forever"),
+        ];
+        ValueTask<IReadOnlyList<SteamStoreTitle>> Search(string title, CancellationToken token) =>
+            ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(store);
+
+        SteamStoreTitle? hollow = await SteamLocalAdapter.PageTitleAsync("hollow knight", default, () => installed, Search);
+        SteamStoreTitle? civ = await SteamLocalAdapter.PageTitleAsync("Sid Meier Civilization VI", default, () => [], Search);
+        SteamStoreTitle? meat = await SteamLocalAdapter.PageTitleAsync("Super Meat Boy", default, () => [], Search);
+        SteamStoreTitle? none = await SteamLocalAdapter.PageTitleAsync("Batman Arkham", default, () => [], Search);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(hollow, Is.EqualTo(new SteamStoreTitle("367520", "Hollow Knight")));
+            Assert.That(civ, Is.EqualTo(new SteamStoreTitle("289070", "Sid Meier's Civilization VI")));
+            Assert.That(meat, Is.EqualTo(new SteamStoreTitle("40800", "Super Meat Boy")));
+            Assert.That(none, Is.Null);
+        });
+    }
 }

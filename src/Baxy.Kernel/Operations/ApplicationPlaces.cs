@@ -90,6 +90,29 @@ public static class ApplicationPlaces
     }
 
     /// <summary>
+    /// BAXY Renew cu (C04): the places <paramref name="application"/> opens at directly, ordinally sorted, each with what
+    /// its slot takes («query»: what is searched; «game»: a game), null for none; empty for an application with none.
+    /// </summary>
+    public static IReadOnlyList<(string Place, string? Takes)> PlacesOf(string? application) =>
+        application is not null && Loaded.Value.TryGetValue(Fold(application), out Application? declared)
+            ? [.. declared.Places.OrderBy(place => place.Key, StringComparer.Ordinal)
+                .Select(place => (place.Key, SlotOf(place.Value)?.Trim('{', '}')))]
+            : [];
+
+    /// <summary>
+    /// BAXY Renew cu (C04): the game catalog of <paramref name="application"/> when its <paramref name="place"/> takes a
+    /// game (its slot is the catalog number), so a game's title said for it is that catalog's to turn into the number.
+    /// Null for any other application or place.
+    /// </summary>
+    public static string? GameCatalogOf(string? application, string? place) =>
+        application is not null && place is not null
+        && Loaded.Value.TryGetValue(Fold(application), out Application? declared)
+        && declared.GameCatalog is not null
+        && declared.Places.TryGetValue(place, out string? template) && SlotOf(template) == "{game}"
+            ? declared.GameCatalog
+            : null;
+
+    /// <summary>
     /// The act <paramref name="act"/> of the application whose data name the game catalog <paramref name="catalog"/>
     /// («gameCatalog»), for the game <paramref name="game"/> (its catalog number): its address and the names of the
     /// control of the application's own dialog that confirms it. Null when the data declare no such act or the game is no

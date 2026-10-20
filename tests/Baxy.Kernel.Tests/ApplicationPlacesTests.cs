@@ -159,4 +159,14 @@ public sealed class ApplicationPlacesTests
         ];
         Assert.That(ApplicationPlaces.PlaceNames, Is.EqualTo(declared));
     }
+
+    // BAXY Renew cu (C04): only a place whose slot is a game's number belongs to a game catalog.
+    [TestCase("Steam", "game", "steam")]
+    [TestCase("steam", "game", "steam")]
+    [TestCase("Steam", "results", null)]
+    [TestCase("Steam", "library", null)]
+    [TestCase("Spotify", "results", null)]
+    [TestCase("Paint", "game", null)]
+    public void OnlyAPlaceThatTakesAGameNamesItsCatalog(string application, string place, string? catalog) =>
+        Assert.That(ApplicationPlaces.GameCatalogOf(application, place), Is.EqualTo(catalog));
 }

@@ -57,6 +57,8 @@ internal sealed record OpenApplicationResult(
     // FrontChanged (review H2): the place's handler raised the application above the person's window; FrontRestored
     // then says whether the front went back to them.
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool FrontChanged = false,
+    // PlaceGame (BAXY Renew cu, C04): the game whose page was asked for by its title, as its catalog found it.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] PlacedGame? PlaceGame = null,
     // WindowId: the id the window operations take for the window this opening verified (e2e p3 E007: the model passed
     // windowHandle as windowId and read the refusal as «it is no longer open»).
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? WindowId = null,
@@ -67,6 +69,9 @@ internal sealed record OpenApplicationResult(
     // answers, asked in front or not; ForegroundHeldBy: the window in front instead (none when Windows reports none).
     bool Foreground = false,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] WindowName? ForegroundHeldBy = null);
+
+// A game of a catalog: its number there and its name.
+internal sealed record PlacedGame(string Number, string Name);
 
 // A window as the receipts name it: its title and the program a view names it by.
 internal sealed record WindowName(string Title, string Process);

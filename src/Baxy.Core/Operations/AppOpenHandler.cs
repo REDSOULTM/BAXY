@@ -11,7 +11,8 @@ internal sealed class AppOpenHandler(
     LaunchProvenance? provenance = null,
     IApplicationPlaceOpener? places = null,
     Func<nint, string?>? windowIdFor = null,
-    Func<long, OpenedWindowFront>? frontOf = null)
+    Func<long, OpenedWindowFront>? frontOf = null,
+    IGameTitles? games = null)
     : IOperationHandler
 {
     private readonly IApplicationOpenProvider _provider =
@@ -19,6 +20,7 @@ internal sealed class AppOpenHandler(
     private readonly LaunchProvenance _provenance = provenance ?? LaunchProvenance.Shared;
     private readonly IApplicationPlaceOpener _places = places ?? new ShellApplicationPlaceOpener();
     private readonly Func<long, OpenedWindowFront> _frontOf = frontOf ?? OpenedWindowFront.Read;
+    private readonly IGameTitles _games = games ?? new CatalogGameTitles();
 
     public OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("app.open");
@@ -48,20 +50,50 @@ internal sealed class AppOpenHandler(
         // Estabilización, encargo C: a place is opened only by the address its application's data declare
         // (ApplicationPlaces); a place, a value or an application the data do not declare opens nothing.
         string? placeAddress = null;
-        if (arguments.Place is not null || arguments.PlaceValue is not null)
+        string? placeValue = arguments.PlaceValue;
+        GameTitle? game = null;
+        // BAXY Renew cu (C04): a game's page asked for by the game's title, as the person says it; its catalog turns it
+        // into the number the address takes, and the game found is named back with the opening.
+        if (ApplicationPlaces.GameCatalogOf(arguments.AppId, arguments.Place) is { } catalog
+            && !string.IsNullOrWhiteSpace(placeValue) && !placeValue.All(char.IsAsciiDigit))
         {
-            placeAddress = ApplicationPlaces.Address(arguments.AppId, arguments.Place, arguments.PlaceValue);
+            game = await _games.FindAsync(catalog, placeValue, cancellationToken).ConfigureAwait(false);
+            if (game is null)
+            {
+                return OperationOutcome.Failure(
+                    "game_title_not_found",
+                    result: Facts(writer =>
+                    {
+                        writer.WriteString("appId", arguments.AppId);
+                        writer.WriteString("place", arguments.Place);
+                        writer.WriteString("title", placeValue);
+                    }));
+            }
+
+            placeValue = game.Number;
+        }
+
+        if (arguments.Place is not null || placeValue is not null)
+        {
+            placeAddress = ApplicationPlaces.Address(arguments.AppId, arguments.Place, placeValue);
             if (placeAddress is null)
             {
                 // Said with what was asked (BAXY Renew, notebook) and the applications that do have that place, so
-                // the next opening can name the right one.
+                // the next opening can name the right one. BAXY Renew cu (C04 variant): a place the application has,
+                // refused for its value (a game's name given to its library), is told apart, with what each place takes.
+                bool placeOfApplication = ApplicationPlaces.PlacesOf(arguments.AppId)
+                    .Any(declared => declared.Place == arguments.Place);
+                string? places = ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(arguments.AppId, arguments.AppId) : null;
                 return OperationOutcome.Failure(
-                    "place_not_of_application",
+                    placeOfApplication ? "place_value_not_taken" : "place_not_of_application",
                     result: Facts(writer =>
                     {
                         writer.WriteString("appId", arguments.AppId);
                         if (arguments.Place is not null) writer.WriteString("place", arguments.Place);
+                        if (placeOfApplication && arguments.PlaceValue is not null)
+                            writer.WriteString("placeValue", arguments.PlaceValue);
                         WriteNames(writer, "placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place));
+                        if (places is not null) writer.WriteString("next", places);
                     }));
             }
         }
@@ -138,10 +170,13 @@ internal sealed class AppOpenHandler(
             providerResult.ShownWithoutFocus,
             PlaceRequested: place is not null,
             Next: place is not null && ModelAids.On(ModelAids.PlaceUnverified)
-                ? $"{providerResult.DisplayName} was asked to show its {arguments.Place ?? "place"}; whether it shows now "
+                ? $"{providerResult.DisplayName} was asked to show its {arguments.Place ?? "place"}"
+                    + (game is null ? string.Empty : $" of {game.Name}") + "; whether it shows now "
                     + "was not checked: input_visible_controls can look before saying so"
+                : place is null && ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(providerResult.DisplayName, arguments.AppId)
                 : null,
             FrontChanged: place?.FrontChanged == true,
+            PlaceGame: game is null ? null : new PlacedGame(game.Number, game.Name),
             WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()),
             ProcessName: front.Process,
             Foreground: front.Held,
@@ -150,6 +185,21 @@ internal sealed class AppOpenHandler(
             result,
             CoreJsonContext.Default.OpenApplicationResult);
         return OperationOutcome.Success(serialized);
+    }
+
+    // BAXY Renew cu (C04): opened with no place, an application that has places of its own says which, and what each
+    // takes (the model clicked through Steam's store for a game's page that app_open opens by the game's name).
+    private static string? PlacesNext(string displayName, string appId)
+    {
+        IReadOnlyList<(string Place, string? Takes)> places = ApplicationPlaces.PlacesOf(appId);
+        return places.Count == 0 ? null
+            : $"{displayName} also opens straight at a place of its own, by app_open with place: "
+                + string.Join(", ", places.Select(place => place.Takes switch
+                {
+                    "game" => $"{place.Place} (placeValue: the game's name)",
+                    "query" => $"{place.Place} (placeValue: what to search)",
+                    _ => place.Place,
+                }));
     }
 
     // Auditoría D1: the installed names closest to one that matched none (or the applications that have a place),
