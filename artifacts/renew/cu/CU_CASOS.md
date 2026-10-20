@@ -43,7 +43,7 @@ errores (referencia 228-229; prefijo anterior 230). Ningún caso del banco elige
 
 **Suites sobre la fusión final a0900861b** (pc-cu + nb-cu, con C18 por COM y C13 a pantalla completa): PC Kernel
 581/581, Contracts 69/69, Setup 477/477, Providers 2420/2420, App compila (0 avisos), pytest 44/44; NB Providers
-2403/2403 sobre 45463725d y sus clases de ventanas 43/43 sobre 1c3de2f1c. Cruzados en el NB: C04 variante, C05 real, C18 real, C10 variante y C11 real funcionan; en el PC: C10 variante,
+2420/2420 sobre la misma a0900861b (las mismas dos máquinas en verde sobre el mismo código). Cruzados en el NB: C04 variante, C05 real, C18 real, C10 variante y C11 real funcionan; en el PC: C10 variante,
 C11 real y variante, C18 variante con Word abierto.
 
 **Pedido real: 9 de 18 al empezar → 18 de 18**, cada uno corrido en las dos máquinas salvo C14 (Discord sólo está en
