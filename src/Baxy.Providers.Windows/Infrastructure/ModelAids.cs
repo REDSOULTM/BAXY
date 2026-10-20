@@ -26,6 +26,9 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C04): an app.open with no place names the places its application opens at directly.</summary>
     public const string AppPlaces = "app_places";
 
+    /// <summary>BAXY Renew cu (C18): a protected_window refusal says nothing was sent and how another app's window is reached.</summary>
+    public const string ProtectedFrontNext = "protected_front_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

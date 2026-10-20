@@ -83,6 +83,34 @@ public sealed class MissionFrontTests
         });
     }
 
+    // BAXY Renew cu (C18): with the aid on, the refusal says nothing was sent and how another application's window is
+    // reached; with the aids off it reads as before.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AProtectedWindowRefusalSaysHowAnotherWindowIsReached(string aids, bool next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("clipboard.paste", lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
+        {
+            RefusedProcessOf = (_, _) => "Code",
+        };
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync("clipboard.paste", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
+            Assert.That(adapter.Calls, Is.Zero);
+            Assert.That(receipt.Result?.TryGetProperty("next", out _), Is.EqualTo(next));
+            if (next)
+            {
+                Assert.That(receipt.Result?.GetProperty("next").GetString(), Does.Contain("belongs to Code").And.Contain("app_open"));
+            }
+        });
+    }
+
     // CU4 (auditoría final 2): an act that would reach a developer's or BAXY's own window no look named is never sent,
     // and no front is taken for it.
     [Test]
