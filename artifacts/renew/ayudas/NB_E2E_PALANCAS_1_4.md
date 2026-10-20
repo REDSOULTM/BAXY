@@ -6,7 +6,7 @@
 - **Modelo:** c2-e1.0 (`BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf`), leído de la línea de llama-server en cada corrida.
 - **Banco:** `bench_e2e.py` de nb-ayudas (con `utterances()`), copiado como `bench_e2e_ay.py` a los dos worktrees;
   `bench.ps1` c684edba; `practice.json` (30 casos).
-- **Orden:** A s0, B s0, A s1, B s1, A s2, B s2 (15:14-16:22), frente comprobado antes de cada corrida y por caso.
+- **Orden:** A s0, B s0, A s1, B s1, A s2, B s2 (15:14-16:22), frente comprobado al empezar cada brazo y por caso.
 - **Guiones:** `scripts/renew/notebook/ayudas/` (`ab_e2e.sh`, `pareado_ab.py`, `campos.py`).
 
 ## Cifras

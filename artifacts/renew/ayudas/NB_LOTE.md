@@ -26,7 +26,7 @@ ayudas: `calculator_next`, `accessible_scope`, `work_folder` (3b), `place_unveri
 | A `none` | 26 | 25 | 24 | 25 | 25 | 25 | 25,00 |
 | B lote | 27 | 26 | 27 | 28 | 27 | 28 | 27,17 |
 
-- **Resultado conjunto:** Δ +2,17 ítems (IC95 bootstrap [0,00, +4,83]). Ninguna semilla de B queda por debajo de la
+- **Resultado conjunto:** Δ +2,17 ítems (IC95 bootstrap [0,00, +4,83]). Ninguna semilla de B baja de la
   de A.
 - **Por caso** (veces OK de 6, B frente a A):
 
