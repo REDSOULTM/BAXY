@@ -747,6 +747,41 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         (WindowSnapshot? placed, bool larger) = await ObserveSnapAsync(
                 before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
             .ConfigureAwait(false);
+        // BAXY Renew cu (C13 en el PC): a window in full screen (a video, a browser's F11) keeps its whole monitor and takes
+        // no size. It is asked to leave by its own keys (Esc, then F11), and placed again once it did; one that stays in
+        // full screen is left as it was, and said (window_size_not_taken).
+        if (placed is null && _platform.FullScreen(before.Identity))
+        {
+            ushort? leftBy = await LeaveFullScreenAsync(before.Identity, cancellationToken).ConfigureAwait(false);
+            if (leftBy is null)
+            {
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.WindowSizeNotTaken, EffectMayHaveOccurred: false);
+            }
+
+            WindowSnapshot now = _platform.Observe(before.Identity);
+            if (!string.Equals(now.State, "normal", StringComparison.Ordinal))
+            {
+                _ = _platform.Execute(before.Identity, WindowControlAction.Restore);
+                await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (_platform.SetBounds(before.Identity, expected))
+            {
+                (placed, larger) = await ObserveSnapAsync(
+                        before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            if (placed is null)
+            {
+                // Back to full screen when its own key toggles it (F11); out of it otherwise, and said.
+                bool back = leftBy == FullScreenKey && _platform.PostKey(before.Identity, FullScreenKey, FullScreenScan);
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.WindowSizeNotTaken, EffectMayHaveOccurred: !back);
+            }
+        }
+
         // BAXY Renew cu (C13 en el PC): a window just restored from maximized may take its restored bounds after the
         // move (a browser on a second screen stayed as wide as the whole screen): the move is asked once more.
         if (placed is null && restored)
@@ -822,6 +857,34 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         Revoke(refreshedId);
         return new WindowActionResult(
             false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
+    }
+
+    // BAXY Renew cu (C13 en el PC): the keys a full screen leaves by, each posted once and read back: Esc (a video in full
+    // screen), then F11 (a browser's full screen). The key that worked, or null when the window stayed in full screen.
+    private const ushort LeaveVideoKey = 0x1B;
+    private const ushort LeaveVideoScan = 0x01;
+    private const ushort FullScreenKey = 0x7A;
+    private const ushort FullScreenScan = 0x57;
+    private static readonly TimeSpan FullScreenLeaveDelay = TimeSpan.FromMilliseconds(900);
+
+    private async ValueTask<ushort?> LeaveFullScreenAsync(WindowIdentity identity, CancellationToken cancellationToken)
+    {
+        foreach ((ushort key, ushort scan) in new[] { (LeaveVideoKey, LeaveVideoScan), (FullScreenKey, FullScreenScan) })
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!_platform.PostKey(identity, key, scan))
+            {
+                continue;
+            }
+
+            await _platform.DelayAsync(FullScreenLeaveDelay, cancellationToken).ConfigureAwait(false);
+            if (!_platform.FullScreen(identity))
+            {
+                return key;
+            }
+        }
+
+        return null;
     }
 
     // The placement read back: the exact target, or (acceptLarger) the window held at a
@@ -1384,6 +1447,10 @@ internal interface IWindowControlPlatform
     IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity) => [];
     // v3 r22 revisión: whether the window's application is capturing the microphone now (MicrophoneInUse).
     bool CapturesMicrophone(WindowIdentity identity) => false;
+    // BAXY Renew cu (C13 en el PC): a window in full screen covers its whole monitor (taskbar included) with no title bar.
+    bool FullScreen(WindowIdentity identity) => false;
+    // BAXY Renew cu (C13 en el PC): one key posted to the window itself (never the real keyboard): Esc or F11.
+    bool PostKey(WindowIdentity identity, ushort virtualKey, ushort scanCode) => false;
 }
 
 // Hidden (auditoría D7): the window still exists and is invisible; otherwise it is gone (or its handle is another's).
@@ -1734,6 +1801,36 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             info.Work.Right - info.Work.Left,
             info.Work.Bottom - info.Work.Top);
     }
+
+    public bool FullScreen(WindowIdentity identity)
+    {
+        _ = Observe(identity);
+        nint monitor = MonitorFromWindow(identity.Handle, MonitorDefaultToNearest);
+        var info = new NativeMonitorInfo { Size = (uint)Marshal.SizeOf<NativeMonitorInfo>() };
+        if (monitor == nint.Zero || !GetMonitorInfo(monitor, ref info) || !GetWindowRect(identity.Handle, out NativeRect box))
+        {
+            return false;
+        }
+
+        const long TitleBar = 0x00C00000;
+        long style = GetWindowLongPtr(identity.Handle, StyleIndex).ToInt64();
+        return (style & TitleBar) != TitleBar
+            && box.Left <= info.Monitor.Left && box.Top <= info.Monitor.Top
+            && box.Right >= info.Monitor.Right && box.Bottom >= info.Monitor.Bottom;
+    }
+
+    public bool PostKey(WindowIdentity identity, ushort virtualKey, ushort scanCode)
+    {
+        _ = Observe(identity);
+        nint down = 1 | ((nint)scanCode << 16);
+        nint up = down | (nint)0x40000000 | unchecked((nint)0x80000000L);
+        return PostMessage(identity.Handle, KeyDownMessage, virtualKey, down)
+            && PostMessage(identity.Handle, KeyUpMessage, virtualKey, up);
+    }
+
+    private const uint KeyDownMessage = 0x0100;
+    private const uint KeyUpMessage = 0x0101;
+    private const int StyleIndex = -16;
 
     public bool SetBounds(WindowIdentity identity, WindowBounds bounds)
     {
