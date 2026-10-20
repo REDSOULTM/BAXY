@@ -27,34 +27,11 @@ def _trace(mind: Mind) -> list[dict]:
     return [json.loads(line) for line in mind.trace.read_text(encoding="utf-8").splitlines()]
 
 
-def test_a_turn_with_a_failed_call_parts_what_was_done_from_what_was_not(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    mind, tools = _two_calls(tmp_path)
-    # The first result had nothing that failed: the line of the starting product.
-    assert tools[0].endswith("\n[En este turno: app_open → completado y verificado]")
-    assert tools[1].endswith("\n[Hecho y verificado en este turno: app_open → completado y verificado. "
-                             "No hecho: app_close → falló (window_not_found).]")
-    rows = _trace(mind)
-    aid = [r for r in rows if r["stage"] == "turn.aid"]
-    assert len(aid) == 1 and aid[0]["operation"] == "app_close"  # no catalog configured: the wire name
-    assert aid[0]["aids"]["turn_facts"].startswith("[Hecho y verificado en este turno:")
-    # The model's own decision after the aid is its own row.
-    assert rows[-1]["stage"] == "turn.continue" and rows[-1]["content"] == "No pude cerrar Paint."
-
-
-def test_nothing_verified_is_said_as_nothing_and_an_unverified_call_apart(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    mind, server = _mind(tmp_path, [_call("input_text_type", {"text": "hola"}), _say("Escribí hola.")])
-    mind.decide(1, "escribe hola")
-    mind.continue_turn(2, json.dumps({"status": "completed", "verified": False}))
-    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
-    assert tool.endswith("\n[Hecho y verificado en este turno: nada. "
-                         "Sin verificar: input_text_type → completado sin verificar.]")
-
-
-@pytest.mark.parametrize("setting", ["none", "0", "calculator_next"])
-def test_with_the_aid_off_the_turn_line_is_the_one_of_the_starting_product(tmp_path: Path, monkeypatch,
-                                                                         setting: str) -> None:
+@pytest.mark.parametrize("setting", ["all", "none"])
+def test_the_turn_line_is_the_one_of_the_starting_product_with_or_without_aids(tmp_path: Path, monkeypatch,
+                                                                             setting: str) -> None:
+    # Lever 5a (turn_facts, the line parted into done and not done) was measured and left out: falsedades s0-1 2+4
+    # with it against 2+2 without it, and «de mi carpeta de trabajo» in 3 confirmation questions only with it.
     monkeypatch.setenv("BAXY_AYUDAS", setting)
     mind, tools = _two_calls(tmp_path)
     assert tools[1].endswith("\n[En este turno: app_open → completado y verificado; "
@@ -73,35 +50,9 @@ def test_the_cores_aids_are_traced_by_their_fields_and_never_change_the_result(t
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert tool.startswith(calculator + "\n")
     aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
-    assert aid["aids"]["calculator_next"] == {"next": "app_open can start the Calculator"}
-    assert "turn_facts" in aid["aids"]
-
-
-FILE_WRITE = {"capabilities": [{"name": "file.write", "description": "Write a text file.", "argumentsSchema": {
-    "type": "object", "properties": {"relativePath": {"type": "string"}, "text": {"type": "string"},
-                                     "folder": {"type": "string", "enum": ["desktop", "documents", "home"]}}}}]}
-
-
-def _folder_meaning(mind: Mind) -> str:
-    tool = next(t for t in mind.tools if t["function"]["name"] == "file_write")
-    return tool["function"]["parameters"]["properties"]["folder"]["description"]
-
-
-def test_the_home_of_this_pc_is_told_where_the_model_fills_the_folder(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("BAXY_AYUDAS", "home_path")
-    mind, _ = _mind(tmp_path, [])
-    mind.configure(FILE_WRITE)
-    assert _folder_meaning(mind).endswith(f" This PC's home folder is {Path.home()}.")
-    aid = [r for r in _trace(mind) if r["stage"] == "configure.aid"]
-    assert aid and aid[0]["aids"] == {"home_path": str(Path.home())}
-
-
-def test_with_the_home_aid_off_the_folder_means_what_it_meant(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("BAXY_AYUDAS", "turn_facts")
-    mind, _ = _mind(tmp_path, [])
-    mind.configure(FILE_WRITE)
-    assert "home folder is" not in _folder_meaning(mind)
-    assert not mind.trace.exists() or not [r for r in _trace(mind) if r["stage"] == "configure.aid"]
+    assert aid["aids"] == {"calculator_next": {"next": "app_open can start the Calculator"}}
+    # The model's own decision after the aid is its own row.
+    assert _trace(mind)[-1]["stage"] == "turn.continue"
 
 
 SETTINGS_AND_TRASH = {"capabilities": [
@@ -114,7 +65,7 @@ def _description(mind: Mind, wire: str) -> str:
     return next(t for t in mind.tools if t["function"]["name"] == wire)["function"]["description"]
 
 
-@pytest.mark.parametrize("setting,modes,folder", [("modes_sentence", True, False),
+@pytest.mark.parametrize("setting,modes,folder", [("modes_sentence", False, False),
                                                   ("person_folder_sentence", False, True), ("none", False, False)])
 def test_a_sentence_aid_ends_its_tools_description_only_when_on(tmp_path: Path, monkeypatch, setting: str,
                                                                 modes: bool, folder: bool) -> None:

@@ -148,24 +148,15 @@ def _aid_on(aid: str) -> bool:
     return aid in {part.strip() for part in setting.split(",")}
 
 
-# Aids «modes_sentence» (lever 7) and «person_folder_sentence» (lever 8): one sentence of fact at the end of a tool's
-# description (artifacts/renew/ayudas/DISENO_PALANCAS.md). The modes come from the owner's decision of 2026-10-18 and
-# the code (PresentationModeStore.cs:3-7, Rail.tsx:45-49); the folder from what filesystem_list already says (td:63).
+# Aid «person_folder_sentence» (lever 8): one sentence of fact at the end of a tool's description
+# (artifacts/renew/ayudas/DISENO_PALANCAS.md), from what filesystem_list already says (td:63). E027 0/3 → 3/3 in the
+# e2e of both machines. Lever 7 (the modes, in system.settings.set) was measured and left out: scenes −2,25.
 DESCRIPTION_AIDS = {
-    "system.settings.set": (
-        "modes_sentence",
-        " BAXY's accessible mode only changes BAXY's own window (larger text, more contrast, wider buttons). BAXY has no "
-        "blind or screen-reader mode and no hands-free or full voice-control mode yet: if the person asks for one, say "
-        "it is not available yet and will come later; do not turn on the accessible mode in its place."),
     "filesystem.known.trash.named": (
         "person_folder_sentence",
         " A folder the person names, in their home or anywhere else, is theirs even if its name contains BAXY or bench: "
         "delete from it like from any other folder (BAXY's own work folder is only the one filesystem_list shows)."),
 }
-# The file tools whose «folder» takes one of the person's folders (aid «home_path»).
-HOME_FOLDER_TOOLS = {"file.write", "file.read", "file.find", "file.edit", "file.open", "filesystem.known.trash.named"}
-
-
 def _aids_seen(observation: str) -> dict[str, Any]:
     """The core's aids in a result, by the fields each one writes (ModelAids.cs): for the trace, apart from what the
     model decided after reading them."""
@@ -185,32 +176,11 @@ def _aids_seen(observation: str) -> dict[str, Any]:
         seen["calculator_next"] = picked("next")
     if observed.get("setting") == "accessible_mode" and picked("scope", "notAvailableYet"):
         seen["accessible_scope"] = picked("scope", "notAvailableYet")
+    if observed.get("placeRequested") and "next" in observed:
+        seen["place_unverified"] = picked("next")
     if observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
         seen["work_folder"] = picked("folder", "sameNameInHome", "next")
     return seen
-
-
-def _turn_facts(done: list[str]) -> str:
-    """Aid «turn_facts» (lever 5a): the turn's calls parted into what was done and verified and what was not, when at
-    least one was not. The same entries and outcomes as «[En este turno: …]» (from _outcome), only grouped: FH141 said
-    «Cerré Paint» with app_close → falló (window_not_found) in that very line, between calls that had worked."""
-    verified, unverified, failed = [], [], []
-    for entry in done:
-        outcome = entry.rsplit(" → ", 1)[-1]
-        if outcome.startswith("completado y verificado"):
-            verified.append(entry)
-        elif outcome.startswith(("falló", "no se ejecutó", "cancelado")):
-            failed.append(entry)
-        else:
-            unverified.append(entry)
-    if not unverified and not failed:
-        return ""
-    parts = [f"Hecho y verificado en este turno: {'; '.join(verified) or 'nada'}."]
-    if unverified:
-        parts.append(f"Sin verificar: {'; '.join(unverified)}.")
-    if failed:
-        parts.append(f"No hecho: {'; '.join(failed)}.")
-    return "[" + " ".join(parts) + "]"
 
 
 def beat_message(context: dict[str, Any]) -> str:
@@ -408,11 +378,6 @@ class Mind:
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():
                 if isinstance(schema["properties"].get(argument), dict):
-                    # Aid «home_path» (lever 6): this PC's home folder, a fact of the machine, where the model fills
-                    # the folder (E006, E020, E027 lost a folder of the home or took it for BAXY's own).
-                    if argument == "folder" and name in HOME_FOLDER_TOOLS and _aid_on("home_path"):
-                        meaning += f" This PC's home folder is {Path.home()}."
-                        aids["home_path"] = str(Path.home())
                     schema["properties"][argument]["description"] = meaning
             wire = name.replace(".", "_")
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
@@ -630,11 +595,8 @@ class Mind:
             turn["repeats"] = 1
             done.append(entry)
         aids = _aids_seen(observation)
-        facts = _turn_facts(done) if _aid_on("turn_facts") else ""
-        if facts:
-            aids["turn_facts"] = facts
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
-                     "content": observation + "\n" + (facts or "[En este turno: " + "; ".join(done) + "]")})
+                     "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
