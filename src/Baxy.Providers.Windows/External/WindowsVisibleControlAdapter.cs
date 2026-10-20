@@ -1065,8 +1065,15 @@ internal sealed class WindowsVisibleControlAdapter
             if (chosen is null)
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
             // Auditoría P3: the label is the index's name as the view gave it (folded), and the receipt says that name.
+            // BAXY Renew cu (C03): Steam's page gave one control («Chrome Legacy Window») and its words only as text; the
+            // model sent a word of that text with index 0, six times. The refusal says what the index is and how a text
+            // the look read is pressed.
             if (!SameLabel(label, chosen.Name))
-                return NotNamed(operation, "visible_control_label_mismatch", [chosen.Name]);
+                return NotNamed(operation, "visible_control_label_mismatch", [chosen.Name],
+                    next: Infrastructure.ModelAids.On(Infrastructure.ModelAids.IndexLabelNext)
+                        ? $"nothing was pressed: index {position} is «{chosen.Name}», not «{label}»; a text your look read "
+                            + "that is not in its list of controls is clicked by its label alone, without index"
+                        : null);
             controlId = chosen.Id.Length > 0 ? chosen.Id : null;
         }
 
@@ -3204,7 +3211,7 @@ internal sealed class WindowsVisibleControlAdapter
     // Nothing was pressed: the failure says the names seen instead (auditoría P3), for the model to name one exactly.
     // Ronda final 19 (regla 3): with the count of all of them when the list is a first part (<paramref name="total"/>).
     internal static ExternalCapabilityReceipt NotNamed(
-        string operation, string error, IReadOnlyList<string> candidates, int? total = null) =>
+        string operation, string error, IReadOnlyList<string> candidates, int? total = null, string? next = null) =>
         candidates.Count == 0
             ? ExternalJson.FailureBeforeEffect(operation, error)
             : new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
@@ -3219,6 +3226,8 @@ internal sealed class WindowsVisibleControlAdapter
                 foreach (string candidate in candidates)
                     writer.WriteStringValue(candidate);
                 writer.WriteEndArray();
+                if (next is not null)
+                    writer.WriteString("next", next);
                 writer.WriteEndObject();
             }), error);
 
