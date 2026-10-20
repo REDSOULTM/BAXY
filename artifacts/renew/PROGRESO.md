@@ -2815,3 +2815,17 @@ guardián instantáneo, el modo accesible a «normal» tras cada caso):
   - otro cerró 6 ventanas, y otro llamó a package.install de una app que ya estaba instalada.
 
   Se pidió al notebook que su ejecutor excluya esas operaciones, como el del FT, en cualquier corrida futura.
+
+## Cierre del goal «ayudas al modelo» (2026-10-20)
+
+- **Producto final:** d7a76adf1 (hub/pc-ayudas). Lleva las ayudas 1 `calculator_next`, 2 `accessible_scope`, 3b
+  `work_folder`, 1c `place_unverified` y 8 `person_folder_sentence`, todas tras BAXY_AYUDAS (sin definir = todas;
+  `none` = el producto de partida) y registradas aparte en la traza.
+- **Descartadas y retiradas del código:** 4, 5a, 6, 7, 9 y la del latido.
+- **Criterios:**
+  - cada palanca medida o descartada con su evidencia;
+  - cada ayuda que se queda informa, se ve en el registro y se puede apagar;
+  - los pendientes, documentados;
+  - ≤4 GB medidos con el producto final (3.902 / 1.790 MiB);
+  - holdout nuevo corrido una vez y comparado con el del FT;
+  - informe en artifacts/renew/ayudas/INFORME_AYUDAS.md.

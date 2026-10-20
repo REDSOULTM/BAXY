@@ -1,5 +1,5 @@
 {
-  "actualizado": "2026-10-19 (ayudas al modelo: en curso) / 2026-10-19 (ajuste fino: cerrado) / 2026-10-18 (auditoría de los pedidos reales: cerrada)",
+  "actualizado": "2026-10-20 (ayudas al modelo: cerrado) / 2026-10-19 (ajuste fino: cerrado) / 2026-10-18 (auditoría de los pedidos reales: cerrada)",
   "bancos": {
     "ubicacion": "F:/BAXYeval/renew_v1 (fuera del repo: llevan pedidos reales del dueño y el repo es público)",
     "practica_abierta": [
@@ -2251,7 +2251,7 @@
       "construir_ayudas.py": {
         "sha256": "5a27f33c422d834676129299e50a88fbf2bb38101b011ac8ca9b9c9b3347e7f4"
       },
-      "estado": "sin abrir; se mide una vez en la fase 4"
+      "estado": "medido una vez el 2026-10-20 sobre el lote final d7a76adf1 (gastado)"
     },
     "decision_dueno_2026_10_19_maquinas": {
       "fecha": "2026-10-19 ~15:20 (Chile)",
@@ -2351,6 +2351,62 @@
       "pc": "confirmado: e2e s0-2 none 23,33 → lote 25,00 (Δ +1,67, IC [−0,67, +4,33]); suben E017, E027, E030; no baja ninguno"
     },
     "decision_dueno_2026_10_20_juego": "El dueño usa el PC (Roblox, 01:54): nada en el escritorio ni en la GPU del PC mientras juegue; la confirmación del lote arranca sola 3 min después. La repetición de E010/E011 corrió 1-2 min con el juego delante (01:58) antes de verlo.",
-    "estudio_latido": "c2-e1.0 propone donde debía actuar o decir y calla avisos pedidos (decisión, no falta de un dato); la única ayuda de hecho posible (beat_no_pending) no sube escenas"
+    "estudio_latido": "c2-e1.0 propone donde debía actuar o decir y calla avisos pedidos (decisión, no falta de un dato); la única ayuda de hecho posible (beat_no_pending) no sube escenas",
+    "fase4": {
+      "decision_240": {
+        "pc": {
+          "lote": 166,
+          "none": 163
+        },
+        "notebook": {
+          "lote": 168,
+          "none": 165
+        },
+        "por_familia_pc_lote": {
+          "G_general": "72/80",
+          "R_rutas": "44/60",
+          "V_ventana_cerrada": "29/40",
+          "M_modos": "16/30",
+          "F_falsedad": "5/30"
+        }
+      },
+      "escenas_36": {
+        "notebook": {
+          "lote": "26/36, 0 molestas",
+          "none": "24/36, 0 molestas"
+        },
+        "pc": {
+          "lote": "24/36, 1 molesta",
+          "none": "24/36, 0 molestas"
+        }
+      },
+      "ejecucion_notebook": {
+        "casos": 222,
+        "excluidos": "18 (4 no seguros, 14 por operación o app peligrosa)",
+        "juicio": {
+          "OK": 130,
+          "OTRA_OP": 46,
+          "EJECUTA_MAL": 43,
+          "RESPUESTA_MAL": 3
+        }
+      },
+      "clases_240": {
+        "OK": "121 (50,4 %)",
+        "ELIGE_MAL": "76 (31,7 %)",
+        "EJECUTA_MAL": "43 (17,9 %)",
+        "falsedad_a_mano": "2 claras (0,9 % de 222), ~5 dudosas"
+      },
+      "lectura": "EJECUTA_MAL casi todo entorno (R_rutas 19 de 20: archivos y subcarpetas que el caso presupone; G: sin música, sin sesión, memoria apagada); ELIGE_MAL concentrado en F_falsedad (comprueba con una herramienta en vez de contestar en texto) y M_modos (enciende el modo accesible ante un modo inexistente; la 2 hace que lo diga con verdad)",
+      "comparacion_holdout_ft": "holdout FT (otro banco): OK 81,3 %, ELIGE_MAL 4,7 %, EJECUTA_MAL 14,0 %, falsedad 0,5 %. El nuevo se escribió sobre las familias difíciles: orienta, no es una diferencia medida. La diferencia medida en el mismo banco es lote frente a none: decisión +3 en las dos GPUs, escenas +2 (notebook) y 0 (PC)",
+      "incidente_seguridad": "el ejecutor del notebook no excluyó system.power, system.recyclebin.empty, system.process.terminate, package.install ni window.close.all: un caso intentó reiniciar (no ocurrió), cerró Opera con confirmación, otro intentó vaciar la Papelera (recibo fallido; 0 elementos después, se desconoce cuántos había); exclusión pedida para corridas futuras"
+    },
+    "recursos_lote": "VRAM 3.902 MiB, RAM del producto 1.790 MiB (notebook, measure_resources, d7a76adf1)",
+    "limites": [
+      "E006 y E020: el modelo pierde la subcarpeta dictada al repartir la ruta entre dos argumentos (27 de 27 corridas); ninguna ayuda que sólo informe lo mueve; pide el schema de un único path (reentrenar)",
+      "F015: «Sí» a «¿ya lo cerraste?» sin haberlo cerrado (presuposición, sin llamada fallida que la contradiga)",
+      "Modos cuando el modelo responde sin llamar o enciende el modo accesible en lugar del pedido: la 2 hace honesta la respuesta tras la llamada, la 7 (descripción) bajó escenas",
+      "Latido: proponer donde debía actuar o decir, y callar avisos pedidos (decisión, no falta de un dato)"
+    ],
+    "cierre": "2026-10-20: lote final d7a76adf1 (hub/pc-ayudas, hub/baxy-renew) con las ayudas 1, 2, 3b, 1c y 8; informe en artifacts/renew/ayudas/INFORME_AYUDAS.md"
   }
 }
