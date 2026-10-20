@@ -1006,10 +1006,24 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteEndArray();
             writer.WriteNumber("resultCount", results.Count);
             writer.WriteString("authority", authority);
+            writer.WriteString("answeredBy", AnsweredBy(authority));
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
+
+    // BAXY Renew cu (C06): the source that answered, by the name a person knows it by. «authority» is held back from
+    // the model (OperationVisibleFacts), and a search asked «en google» was told as Google's when DuckDuckGo answered.
+    internal static string AnsweredBy(string authority) => authority switch
+    {
+        _ when authority.StartsWith("duckduckgo", StringComparison.Ordinal) => "DuckDuckGo",
+        _ when authority.StartsWith("google_news", StringComparison.Ordinal) => "Google News",
+        _ when authority.StartsWith("wikipedia", StringComparison.Ordinal) => "Wikipedia",
+        _ when authority.StartsWith("frankfurter", StringComparison.Ordinal) => "Frankfurter",
+        _ when authority.StartsWith("espn", StringComparison.Ordinal) => "ESPN",
+        _ when authority.StartsWith("openstreetmap", StringComparison.Ordinal) => "OpenStreetMap",
+        _ => authority,
+    };
 
     // The search feed of Google News, in the edition of «language»: each item with its outlet and time. Null when the
     // feed did not answer with its RSS.

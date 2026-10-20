@@ -2912,6 +2912,8 @@ public sealed class ExternalAdaptersTests
             Assert.That(result.GetProperty("source").GetString(), Is.EqualTo("web"));
             Assert.That(result.GetProperty("query").GetString(), Is.EqualTo("Windows 11 calculator"));
             Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_lite_https"));
+            // BAXY Renew cu (C06): the source by its known name, which the model sees («authority» it does not).
+            Assert.That(result.GetProperty("answeredBy").GetString(), Is.EqualTo("DuckDuckGo"));
             Assert.That(result.GetProperty("resultCount").GetInt32(), Is.EqualTo(2));
             Assert.That(result.TryGetProperty("sent", out _), Is.False);
             JsonElement results = result.GetProperty("results");
