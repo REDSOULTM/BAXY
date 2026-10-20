@@ -26,6 +26,9 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C18): a protected_window refusal says nothing was sent and how another app's window is reached.</summary>
     public const string ProtectedFrontNext = "protected_front_next";
 
+    /// <summary>BAXY Renew cu (C13): a window.resolve by an application name that matched nothing lists the visible windows.</summary>
+    public const string WindowCandidates = "window_candidates";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
