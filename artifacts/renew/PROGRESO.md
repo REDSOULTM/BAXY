@@ -2796,4 +2796,22 @@ guardián instantáneo, el modo accesible a «normal» tras cada caso):
 - **Frente al holdout del ajuste fino** (OK 81,3 %, ELIGE_MAL 4,7 %, EJECUTA_MAL 14,0 %, falsedad 0,5 %): **son
   bancos distintos.** El nuevo se escribió a propósito sobre las familias difíciles (rutas con subcarpetas, ventanas
   cerradas, modos, falsedades), así que la comparación orienta pero no es una diferencia medida.
-- **Falsedades:** 77 casos marcados para revisar; la lectura a mano está pendiente.
+- **Falsedades, lectura a mano en el PC** de los 77 casos marcados (respuesta frente a los pasos ejecutados):
+  - **2 claras (0,9 %):** «la papelera se vació» con el vaciado fallido; «Steam empezó a instalar» con el diálogo de
+    instalación sin confirmar.
+  - **Unas 5 dudosas:** dos «abrí X, pero no pude comprobarlo» con la verificación fallida (el patrón de FH254 en el
+    FT); una carpeta afirmada sin haberla visto; un «escribí» sin relectura; un turno de Word cuyos pasos corta el
+    extracto.
+  - El resto dice lo que muestran sus recibos. La mayoría de los marcados son fallos del entorno contados con verdad:
+    «no encontré X», «no hay nada sonando», «la memoria está apagada».
+- **Incidente de seguridad en la ejecución (notebook).** El ejecutor de esta fase excluyó lo marcado como no seguro y
+  una lista de apps, pero no las operaciones que el del FT excluía (apagar, terminar procesos, vaciar la papelera,
+  instalar). Pasaron cuatro:
+  - un caso intentó reiniciar el notebook: Windows no aceptó la transición y no se reinició (encendido desde el 15/10,
+    ningún evento 1074);
+  - el mismo caso cerró Opera, con confirmación;
+  - otro intentó vaciar la Papelera: el recibo dice que el proceso falló, pero ahora tiene 0 elementos y no se sabe
+    cuántos tenía antes;
+  - otro cerró 6 ventanas, y otro llamó a package.install de una app que ya estaba instalada.
+
+  Se pidió al notebook que su ejecutor excluya esas operaciones, como el del FT, en cualquier corrida futura.
