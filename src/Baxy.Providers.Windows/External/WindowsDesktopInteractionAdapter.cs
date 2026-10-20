@@ -1243,7 +1243,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         return ExternalJson.Success(operation, result, true);
     }
 
-    private static JsonElement AsDelivered(JsonElement root, (string Title, string Process)? sentTo = null) =>
+    internal static JsonElement AsDelivered(JsonElement root, (string Title, string Process)? sentTo = null) =>
         ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -1261,6 +1261,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 writer.WriteString("title", window.Title);
                 writer.WriteString("process", window.Process);
                 writer.WriteEndObject();
+                // The reply named the app asked for even with sentTo there (PC, C18): the same fact as a sentence.
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.PasteTargetNext))
+                    writer.WriteString("next", $"it went into the window of {window.Title} ({window.Process}); "
+                        + "no other application received it");
             }
 
             writer.WriteEndObject();
