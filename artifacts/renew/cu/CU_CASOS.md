@@ -74,8 +74,8 @@ falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del
 ## Suites sobre la fusión final (2f8acb371)
 
 - PC: Kernel 580/580, Contracts 69/69, Setup 477/477, App compila (0 avisos), pytest 44/44.
-- NB (sus pruebas de clic usan el escritorio): Providers 2363 pass, 0 fallos; 36 inconclusas ambientales (las que la
-  propia suite marca con Assume según el escritorio), que no cuentan como pass.
+- NB (sus pruebas de clic usan el escritorio): Providers 2363/2363, 0 fallos; 36 comprobaciones en vivo opcionales
+  (`[Category("LiveDesktop")]`, sólo con su variable de entorno) no activadas.
 - Cruzados: los arreglos del PC (C02v, C04, C05v, C06v, C07) funcionan en el NB; los del NB, en el PC: C10 funciona,
   C18 cierto, C13 a medias (ver su fila).
 
@@ -90,3 +90,15 @@ falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del
   intento con otra frase, y los cruzados de C10, C13 y C18 en el PC se corrieron varias veces. Ninguna fue una tanda
   (sin semillas, sin bancos e2e, sin juez), pero el «una corrida, una mirada» se estiró.
 - No cambia ningún veredicto de la tabla: cada uno sale de la corrida en vivo del caso, no del banco de decisión.
+
+## Segundo intento de los pendientes (una corrida en vivo por intento, sin tandas)
+
+| Caso | Máq. | Intento | Corrida | Resultado | Queda |
+|---|---|---|---|---|---|
+| C04 variante | PC | hecho visible: un clic `visible_button_not_found` tras mirar una app con places dice sus places (`WindowsVisibleControlAdapter.WithPlaces`) | 1 | no se disparó: el modelo usó place `results` con el título y pulsó por OCR el término de la propia caja de búsqueda; nunca salió de la búsqueda y dijo «abrí la página … no pude comprobar que se cargara» | **pendiente**; arreglo revertido (sin efecto medido). Causa nueva: un clic por OCR sobre el texto de la caja de búsqueda se toma por un resultado (vista CEF de Steam sin árbol) |
+| C05 real | PC | frase en `input.visible.click` («Steam … its store search» como place de app_open) | 1 | pregunta «¿qué juego de Batman te interesa?» sin buscar | **a medias**; frase retirada |
+| C14 | PC | frase en `audio.microphone.mute` («el botón de micrófono de una app nombrada: mira su ventana y púlsalo») | 1 | ya no usa el micrófono de Windows, pero pregunta «¿qué canal tienes abierto?» en vez de mirar: peor que antes | **a medias**; frase retirada |
+| C18 | PC | sin corrida | 0 | la única palanca que queda es un argumento con la app de destino en `clipboard.paste` (esquema del catálogo, composición con `app.open` en Core, catálogo del banco de decisión): fuera del tope de 25 min y con riesgo para otras conductas | **pendiente** (conducta); veracidad ya arreglada |
+
+El prefijo vuelve exactamente al medido (decision2 s0 230/268): las tres frases probadas en este intento se retiraron, así
+que no hizo falta otra decision2.
