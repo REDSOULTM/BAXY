@@ -23,6 +23,9 @@ internal sealed record ListNotesArguments(
 // NewDocument (cu-v3-documento-nuevo): the person asked for a new document of the application, never one of theirs.
 // Place, PlaceValue (estabilización, encargo C): a place of the application whose address its data declare
 // (ApplicationPlaces), opened once the application is.
+// BAXY Renew cu (C18 variante): a paste into a new document of Word or Excel already running, read back in that document.
+internal sealed record PastedIntoOffice(int Version, string AppId, string Document, int Characters, bool NewDocument);
+
 internal sealed record OpenApplicationArguments(
     [property: JsonRequired] string AppId,
     bool? Foreground = null,

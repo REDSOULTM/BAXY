@@ -53,6 +53,62 @@ public sealed class PasteIntoNewDocumentHandlerTests
         });
     }
 
+    // BAXY Renew cu (C18 variante): Word already running takes the new document and the paste through its object model;
+    // nothing is opened nor pasted by the window. Its failure is the answer, said as it is.
+    [TestCase(true, null)]
+    [TestCase(false, "paste_not_read_back")]
+    public async Task AnOfficeApplicationAlreadyRunningTakesTheNewDocumentAndThePasteItself(bool verified, string? code)
+    {
+        var paste = new RecordingPaste();
+        int opened = 0;
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => { opened++; return ValueTask.FromResult(OperationOutcome.Success(Element("{}"))); },
+            (_, _) => ValueTask.FromResult<Baxy.Providers.Windows.External.OfficePasteResult?>(
+                new(verified, true, code, "Documento2", verified ? 63 : 0)));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("""{"appId":"Word"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.EqualTo(verified));
+            Assert.That(outcome.ErrorCode, Is.EqualTo(code));
+            Assert.That(opened, Is.Zero);
+            Assert.That(paste.Arguments, Is.Empty);
+            if (verified)
+                Assert.That(outcome.Result!.Value.GetProperty("document").GetString(), Is.EqualTo("Documento2"));
+            else
+                Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    // Contracase: an application not running (or not Office) goes the ordinary way.
+    [Test]
+    public async Task AnApplicationNotRunningGoesTheOrdinaryWay()
+    {
+        var paste = new RecordingPaste();
+        int opened = 0;
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => { opened++; return ValueTask.FromResult(OperationOutcome.Success(Element("{}"))); },
+            (_, _) => ValueTask.FromResult<Baxy.Providers.Windows.External.OfficePasteResult?>(null));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("""{"appId":"Word"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(opened, Is.EqualTo(1));
+            Assert.That(paste.Arguments, Is.EqualTo(new[] { "{}" }));
+        });
+    }
+
+    [TestCase("Word", "word")]
+    [TestCase("Microsoft Excel", "excel")]
+    [TestCase("Bloc de notas", null)]
+    public void TheOfficeApplicationIsToldByItsName(string name, string? office)
+    {
+        Assert.That(Baxy.Providers.Windows.External.OfficeNewDocumentPaste.OfficeOf(name), Is.EqualTo(office));
+    }
+
     private static JsonElement Element(string json)
     {
         using JsonDocument document = JsonDocument.Parse(json);
