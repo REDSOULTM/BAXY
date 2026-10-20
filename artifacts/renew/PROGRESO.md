@@ -2553,3 +2553,24 @@ enciende 1, 2, 3b, 1c y 8; con `none`, el producto de partida. pytest 44/44.
 - Suites: Kernel 574/574, Contracts 69/69, Setup 477/477, Providers 2332/2332 (ninguna por tiempo), pytest 44/44.
 - GPU del notebook (la combinación): decision2 230,67 → 233,67 (Δ +3,00, IC [+0,33, +6,33]); escenas 32,50 → 31,25
   (−1,25, dentro de ±2).
+
+### El lote en el e2e del notebook: seis semillas
+
+s0-2: la combinación en 2a5a0aad5 con la lista explícita. s3-5: d7a76adf1 sin definir. Es el mismo producto efectivo,
+A = none en cada binario, intercalado. Desde s3, el home del notebook se limpia solo: un bucle del PC, por SSH, quita
+cada 60 s los cuatro restos del banco que lleven su texto (con copia).
+
+- **A 26/25/24/25/25/25 = 25,00; B 27/26/27/28/27/28 = 27,17.** Δ +2,17 ítems (IC 95 % bootstrap [0,00, +4,83]);
+  ninguna semilla de B por debajo de su A. En s3-5 solas: Δ +2,67 (IC [+0,33, +5,33]).
+- **Por caso (B frente a A, de 6):**
+
+  | Caso | A | B | Lectura |
+  |---|---|---|---|
+  | E011 | 6 | 6 | igual |
+  | E017 | 3 | 6 | sube |
+  | E027 | 2 | 6 | sube |
+  | E015 | 0 | 6 | sube, por el oráculo de marcas y la 1c (B mira y dice la verdad) |
+  | E024 | 4 | 3 | ruido, ya medido limpio |
+  | E006, E020 | 0 | 0 | sin resolver |
+
+- 0 error, 0 setup_failed, 0 app.open al frente detrás, MSConfig 0 en todas.
