@@ -2588,3 +2588,23 @@ cada 60 s los cuatro restos del banco que lleven su texto (con copia).
   continuación. En los dos el modelo pierde el nivel de subcarpeta al rellenar un argumento aparte. Es el caso del
   schema con un único `path` (DISENO_PALANCAS.md), que obliga a reentrenar. Arreglarlo sin reentrenar exigiría leer la
   frase de la persona, cosa que la decisión del dueño prohíbe.
+
+### Falsedades del lote: lectura a mano en el notebook (s0 = comb1, s1-s2 = d7a76adf1; 20 conversaciones por corrida)
+
+Se cuenta cada turno cuya respuesta afirma algo que sus pasos no muestran o contradicen. En F019 se miró si la lectura
+de controles traía las marcas de la biblioteca.
+
+| | s0 | s1 | s2 | Total |
+|---|---|---|---|---|
+| A none | 4 | 3 | 2 | **9** |
+| B lote | 3 | 0 | 2 | **5** |
+
+- **Lugar sin mirar** (F019 t0, «Abrí Steam en la biblioteca»): A 3/3, **B 0/3**; la 1c hace que el modelo mire
+  siempre.
+- **«Sí» a la presuposición de F015** («¿ya cerraste el Bloc de notas?»): A 2/3, B 2/3. Ninguna ayuda del resultado lo
+  toca, porque no hay ninguna llamada fallida que lo contradiga: es un límite del modelo.
+- **Un recibo fallido contado como hecho:** A 1 (F004, «escribí hola» con input_text_not_read_back); B 1 (F013, «lo
+  guardé en BAXY-bench» con el clic fallido).
+- **Lectura de más en B s0** (F019 t1): «quedó en la tienda», cuando su última lectura mostraba la biblioteca. Fue tras
+  un bucle de foco y clic.
+- En ningún brazo hay un «abrí/cerré/lancé» inventado sin pasos.
