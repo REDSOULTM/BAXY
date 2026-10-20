@@ -11,9 +11,15 @@ namespace Baxy.Core.Operations;
 /// </summary>
 internal sealed class PasteIntoNewDocumentHandler(
     IOperationHandler paste,
-    Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> open)
+    Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> open,
+    Func<string, CancellationToken, ValueTask<Baxy.Providers.Windows.External.OfficePasteResult?>>? office = null)
     : IOperationHandler
 {
+    // BAXY Renew cu (C18 variante): Word or Excel already running takes its new document and the paste through its own
+    // object model (OfficeNewDocumentPaste); null for any other application or a closed one (the ordinary way).
+    private readonly Func<string, CancellationToken, ValueTask<Baxy.Providers.Windows.External.OfficePasteResult?>> _office =
+        office ?? ((_, _) => ValueTask.FromResult<Baxy.Providers.Windows.External.OfficePasteResult?>(null));
+
     private readonly IOperationHandler _paste = paste ?? throw new ArgumentNullException(nameof(paste));
     private readonly Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> _open =
         open ?? throw new ArgumentNullException(nameof(open));
@@ -30,6 +36,15 @@ internal sealed class PasteIntoNewDocumentHandler(
             || named.GetString() is not { Length: > 0 } application)
         {
             return OperationOutcome.Failure("invalid_arguments");
+        }
+
+        if (await _office(application, cancellationToken).ConfigureAwait(false) is { } inOffice)
+        {
+            return inOffice.Verified
+                ? OperationOutcome.Success(JsonSerializer.SerializeToElement(
+                    new PastedIntoOffice(1, application, inOffice.Document ?? string.Empty, inOffice.Characters, NewDocument: true),
+                    CoreJsonContext.Default.PastedIntoOffice))
+                : OperationOutcome.Failure(inOffice.ErrorCode ?? "paste_not_read_back", effectMayHaveOccurred: inOffice.EffectObserved);
         }
 
         OperationOutcome opened = await _open(

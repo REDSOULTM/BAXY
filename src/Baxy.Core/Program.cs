@@ -139,7 +139,8 @@ internal static class Program
             new AppRestartHandler(windowControlProvider, appOpenHandler.ExecuteAsync),
             new GameStoreHandler("game.store.page", "game", "title", appOpenHandler.ExecuteAsync),
             new PasteIntoNewDocumentHandler(
-                new ExternalCapabilityHandler("clipboard.paste", externalCapabilityProvider), appOpenHandler.ExecuteAsync),
+                new ExternalCapabilityHandler("clipboard.paste", externalCapabilityProvider), appOpenHandler.ExecuteAsync,
+                OfficeNewDocumentPaste.TryAsync),
             new GameStoreHandler("game.store.search", "results", "query", appOpenHandler.ExecuteAsync),
             new ExternalCapabilityHandler("audio.app.volume.adjust", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.app.volume.set", externalCapabilityProvider),
