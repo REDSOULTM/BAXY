@@ -2489,3 +2489,42 @@ corrida. La referencia es el brazo A de la 5a: la misma máquina, el mismo día 
   - En E020 cambia de herramienta (filesystem.search de «BAXY-bench») y sigue fallando.
   - Frente: en s0 1 y en s1 3 app.open quedaron detrás de VS Code.
   - **Descartada.** Su código sale del producto en el lote final.
+
+### Notebook, tarde del 2026-10-19: 7, 1c, confirmación de la 8 y la combinación (todas con un binario y su `none`)
+
+- **7 `modes_sentence`** (+74 tokens): decision2 229,00 frente a 230,00; escenas 30,25 frente a 32,50 (−2,25). La 7
+  baja en las 4 celdas y la repetición dio celda a celda lo mismo: las escenas son deterministas. Sonda: honesto 5 →
+  7 de 40; «todavía no» 0 → 1 de 34. **Descartada.** La palanca 2 cubre la honestidad cuando el modelo llama a la
+  herramienta.
+- **1c `place_unverified`** (ea1987fb4): A 26/21/25 = 24,00; B 26/24/26 = 25,33. Δ +1,33 (IC [−0,33, +3,67]); por
+  mayoría suben E015 y E029, no baja nada.
+  - El `next` salió en E014 y E015 en las tres semillas, y en las 6 veces el modelo miró una sola vez sin clics de más.
+    En E015, A dijo 2/3 «Abrí Steam en la biblioteca» sin mirar; B dijo la verdad las 3 veces.
+  - Falsedades s0 enviadas al PC (juez en curso).
+  - **Se queda.**
+- **8, confirmación en el e2e del notebook:** B 27/26/26 = 26,33 frente a A 24,00. Δ +2,33 (IC [+0,33, +4,67]).
+  **E027 1/3 → 3/3**: en las tres pide confirmación para borrar de BAXY-bench y respeta el «no»; A se negó 2/3
+  diciendo que es «mi carpeta de trabajo». Confirma el PC (0/3 → 3/3). **Se queda.**
+- **Combinación 1 + 2 + 3b + 1c + 8** (2a5a0aad5, BAXY_AYUDAS con esos ids): A 26/25/24 = 25,00; **B 27/26/27 =
+  26,67**. Δ +1,67 (IC [−1,00, +4,67]); por semilla +1, +1, +3 y ninguna baja. Por mayoría suben E015 y E027, baja
+  E024.
+  - La latencia de la primera respuesta es igual.
+  - El riesgo de la 1c se dio una vez (comb s0, E015): un bucle de 11 pasos tras mirar, que acabó en una respuesta
+    honesta.
+- **E024 a vigilar:** con la 8 falla 5 de 6 frente a 5 de 15 sin ella (Fisher a una cola p = 0,055, en brazos de días
+  y binarios distintos). El fallo es siempre el mismo: `file.write` con folder home y notas.txt sin BAXY-bench, que va
+  al notas.txt que el propio banco dejó en el home del notebook. A las 23:19 el PC quitó por SSH esos restos (notas.txt,
+  lista.txt, compras.txt, con copia), y E024 se repite limpio.
+
+### Palanca 5a: falsedades (juez 35B, una pasada de tres votos por línea, PC)
+
+| | s0 | s1 |
+|---|---|---|
+| A (none) | 2 (F015, F019) | 2 (F019) |
+| B (turn_facts) | 2 (F009, F019) | 4 (F001, F004, F009, F019) |
+
+No baja su banco, y en B aparece tres veces «¿Borro … de mi carpeta de trabajo?» de un archivo de BAXY-bench, que no
+sale nunca en A. **Descartada** (s2 se juzga después, para el registro).
+
+**Candidato a lote: hub/pc-ayudas-6 d7a76adf1.** Sin el código de 4, 5a, 6, 7 ni 9. Con BAXY_AYUDAS sin definir
+enciende 1, 2, 3b, 1c y 8; con `none`, el producto de partida. pytest 44/44.
