@@ -9,6 +9,50 @@ Veredictos: **funciona**; **arreglado** (no funcionaba y ahora sí, también su 
 falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del tope de 20-25 min por caso).
 «Cruzado»: el caso arreglado, corrido una vez más en la máquina que no lo arregló.
 
+## Estado final (cuarta vuelta: operaciones con nombre propio, 2026-10-20)
+
+El dueño reabrió los pendientes («hasta 18/18»). Lo que movió al modelo no fueron frases ni hechos en el resultado sino
+**operaciones con nombre propio y argumentos obligatorios** y arreglos del motor. Cada fila: una corrida en vivo de su
+pedido real y de su variante en la máquina que lo arregló, y otra en la otra máquina («cruzado»).
+
+| Caso | Patrón (genérico) | Estado | Cómo | Cruzado | Commit |
+|---|---|---|---|---|---|
+| C01 | Entrar a una sección de un ajuste del sistema | **funciona** | place de app.open | — | — |
+| C02 | Sección de un ajuste del sistema y leer un estado | **arreglado** | interruptor de la Configuración no se pulsa por clic; `already_selected` | NB ✓ | 847b0cb92 |
+| C03 | Lugar fijo de un lanzador (también en frío) | **arreglado** (NB, en frío) | el lugar se entrega otra vez cuando la ventana principal se asienta tras el inicio de sesión (`startsBehindSignIn`) | PC ✓ en caliente; en frío no (habría que cerrar el Steam del dueño) | 970b3710d, 45463725d |
+| C04 | Página de un juego por su nombre | **arreglado** (real y variante) | place `game` con título; op `game.store.page` | NB ✓ | 87ac5d971, f1785af93 |
+| C05 | Buscar dentro de la tienda (no en lo instalado) | **arreglado** (real y variante) | op `game.store.search` | NB ✓ | f1785af93 |
+| C06 | Buscar en un buscador del navegador | **funciona**; variante **arreglada** | `answeredBy` en `web.search` | NB ✓ | a72b2988d |
+| C07 | Clic en una parte de una página abierta | **arreglado** | el navegador de la persona por su nombre de Windows | NB ✓ | 1530f98d8 |
+| C08 | Pestañas del navegador | **funciona** | — | — | — |
+| C09 | Escribir en una app de texto | **funciona** | — | — | — |
+| C10 | Formato en Word sobre lo seleccionado | **arreglado** (real y variante) | lector de ventanas grandes (PS 5.1); op `office.format.apply` por el modelo de objetos de Word, releída | PC ✓ (real y variante, COM) | 6d7bb0516, 30042658c |
+| C11 | Fila o columna de Excel con formato | **arreglado** (real y variante) | op `office.format.apply` (fila, columna, celdas), releída | PC ✓ (real y variante, COM) | 30042658c |
+| C12 | Pulsar un botón visible | **funciona** | — | — | — |
+| C13 | Colocar ventanas lado a lado | **arreglado** en el NB; **a medias** en el PC | `window_candidates`; en el PC el modelo elige un Chrome del dueño en pantalla completa, que no admite tamaño: ahora vuelve a maximizarse solo (`window_size_not_taken`) y la respuesta es cierta | — | 3f74b1afb, 48b1bdcf5 |
+| C14 | Control de una app de comunicación (su micrófono) | **arreglado** (real y variante) | op `client.microphone.set`: el botón «Silenciar» de Discord leído y conmutado por UIA, releído | (Discord sólo en el PC) | f1785af93 |
+| C15 | Reproducir en una app de música | **funciona** | — | — | — |
+| C16 | Reproducir en un sitio de vídeo | **funciona** | — | — | — |
+| C17 | Captura a una carpeta | **funciona** | — | — | — |
+| C18 | Pegar lo copiado en una app (nueva) | **arreglado** (real en las dos; variante en el PC con Word cerrado) | op `clipboard.paste.into` {appId}: abre un documento nuevo y pega; documento nuevo verificable en el Bloc de notas de Windows 11 (ventana vacía nacida con el lanzamiento) y en Word en español (Esc en la pantalla de inicio); «Notepad» resuelve la app empaquetada; la App concede el primer plano a las ops compuestas. **Límite**: con Word ya abierto, el documento nuevo no se reconoce y no se pega nada (lo dice) | NB ✓ real; NB variante con Word abierto ✗ (límite) | 4042dca16 |
+
+**Prefijo y catálogo finales** (las cinco operaciones nuevas y sus descripciones; catálogo de medida `lote3` más esas
+cinco, `F:\BAXYeval\reales_v1\catalogos\lote3-cu.json`): **una** decision2 s0 en la GPU del PC, **229/268**, 0
+errores (referencia 228-229; prefijo anterior 230). Ningún caso del banco elige una operación nueva; los 9 que cambian
+(alarmas, volumen, archivos) son ruido de muestreo.
+
+**Suites sobre la fusión 1d473b9c8** (pc-cu + nb-cu de esta vuelta): PC Kernel 581/581, Contracts 69/69, Setup 477/477,
+App compila (0 avisos), pytest 44/44 y Providers 2411/2411 (el escritorio del PC no dio fallos ambientales esta vez); NB
+Providers 2403/2403 sobre 45463725d. Cruzados en el NB: C04 variante, C05 real, C18 real, C10 variante y C11 real
+funcionan; C18 con Word ya abierto, límite (ver su fila).
+
+**Pedido real: 9 de 18 al empezar → 18 de 18 funcionan en al menos una máquina, 17 de 18 en las dos** (C13 en el PC
+depende de una ventana en pantalla completa del dueño). Además del computer use, la vuelta dejó dos arreglos de
+robustez: un código de error vacío de un proveedor envenenaba el diario y el motor no volvía a arrancar con ese perfil, y
+el snap de una ventana recién restaurada se pide otra vez si no se asentó.
+
+## Primera vuelta (la tabla original, tal como se cerró)
+
 | Caso | Patrón (genérico) | Máq. | Antes | Después | Cruzado | Causa (archivo:línea) | Arreglo | Commit |
 |---|---|---|---|---|---|---|---|---|
 | C01 | Entrar a una sección de un ajuste del sistema | NB | funciona | **funciona** (place, mirada; 18 s con 2 clics de más; variante 5 s) | — | — | — | — |
@@ -50,26 +94,27 @@ falta la conducta o la variante); **pendiente** (causa sabida, arreglo fuera del
 
 ## Resumen para la tesis
 
-1. 18 casos de computer use sacados de los pedidos reales del dueño, cada uno con una variante; una corrida en vivo por
-   caso en el producto real (modelo de 4B, ≤4 GB), en dos máquinas, en unas tres horas.
-2. Antes: el pedido real funcionaba en **9 de 18**. Después: en **14 de 18** (C02, C04, C07, C10 y C13 pasan a
-   funcionar); C05 y C14 mejoran a medias y C11 y C18 quedan pendientes con su causa.
-3. Las causas fueron más del producto que del modelo: un fallo del lector de ventanas en PowerShell 5.1 dejaba sin árbol
-   toda ventana grande (Word, Excel), un nombre de navegador o de ventana que no casaba, un lugar de la app que sólo
-   aceptaba un número, recibos que no decían lo que el modelo necesitaba.
-4. Patrón general «abrir el elemento de una app»: un lugar con dirección propia que acepta el nombre (la página de un
-   juego), y el resultado de abrir una app lista los lugares a los que va directo (ayuda `app_places`).
-5. «Buscar dentro de una app»: la búsqueda del lugar con lo que dijo la persona; se separa lo instalado de la tienda.
-6. «Entrar a una sección y leer un estado»: se llega por lugar y se lee la vista; un clic sobre lo ya elegido lo dice.
-7. «Ventanas» y «controles de una app»: el nombre que da Windows a la app (el navegador de la persona, sus ventanas
-   abiertas) se resuelve a su proceso; dar formato funciona en Word una vez arreglado el lector.
+1. 18 casos de computer use sacados de los pedidos reales del dueño, cada uno con una variante, corridos uno a uno en vivo
+   en el producto real (Qwen3.5-4B ajustado, ≤4 GB), en dos máquinas.
+2. Antes: el pedido real funcionaba en **9 de 18**. Después: **18 de 18** en al menos una máquina y 17 de 18 en las dos.
+3. Las primeras causas eran del producto: el lector de ventanas en PowerShell 5.1 dejaba sin árbol toda ventana grande
+   (Word, Excel), nombres de navegador o de aplicación que no casaban, un lugar que sólo aceptaba un número, recibos que
+   no decían lo que el modelo necesitaba.
+4. Lo que quedaba era elección del modelo de 4B. Frases en las descripciones y hechos en los resultados casi nunca la
+   movieron en una corrida; **operaciones con nombre propio y argumentos obligatorios** sí: búsqueda y página de la
+   tienda, micrófono propio de Discord, formato en Word y Excel, pegar en una app nombrada.
+5. «Abrir el elemento de una app»: un lugar con dirección propia que acepta el nombre (la página de un juego).
+6. «Buscar dentro de una app» y «controles de una app»: una operación por acto, releída (la búsqueda de la tienda, el
+   botón «Silenciar» leído y conmutado por UIA, el formato releído por el modelo de objetos de Office).
+7. «Ventanas» y «secciones»: el nombre que da Windows a la app (el navegador de la persona, el paquete de una app del
+   sistema) se resuelve a su proceso; un clic sobre lo ya elegido lo dice.
 8. Seguridad: un clic en la Configuración llegó a apagar la radio Wi-Fi; desde ahora un interruptor de la Configuración
-   de Windows no se pulsa por clic (se rechaza con su estado), además de las herramientas del sistema ya protegidas.
-9. Veracidad: cuatro recibos dicen ahora la fuente o el alcance real (buscador que respondió, micrófono de Windows,
-   ventana que recibió lo pegado, juego hallado); el dato a secas no bastaba (C18 lo ignoraba): hizo falta una frase.
-10. Lo que queda es elección del modelo: no pide `wanted` en hojas grandes (C11), no abre la app antes de pegar (C18),
-    no pulsa el botón propio de una app (C14). Ninguna frase de descripción lo movió; el prefijo final no empeora la
-    decisión (decision2 230/268 frente a 228-229).
+   de Windows no se pulsa por clic. Un código vacío de un proveedor ya no impide que el motor vuelva a arrancar.
+9. Veracidad: los recibos dicen la fuente o el alcance real (buscador que respondió, micrófono de Windows o de la app,
+   ventana que recibió lo pegado, juego hallado, celdas formateadas).
+10. Límites que quedan: pegar en un Word ya abierto (el documento nuevo no se reconoce: no pega y lo dice) y colocar una
+    ventana en pantalla completa (vuelve a como estaba y lo dice). El prefijo final, con las cinco operaciones nuevas, no
+    empeora la decisión: decision2 s0 229/268, 0 errores (referencia 228-229); ningún caso del banco las elige.
 
 ## Suites sobre la fusión final (2f8acb371)
 
