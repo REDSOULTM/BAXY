@@ -2625,3 +2625,13 @@ de controles traía las marcas de la biblioteca.
   referencia `none`.
 - **Mientras tanto,** el notebook confirma en su máquina, con la misma sonda de continuación, las palancas 2, 3b y 1c,
   que en el PC sólo midió esa sonda.
+
+### Sondas de continuación repetidas en el notebook (confirmación en la otra máquina)
+
+Copias sembradas de d7a76adf1 s0-2, catálogo lote3, c2-e1.0, 0 errores:
+
+- **2:** afirma el modo inexistente 6/4/6 → **0/0/0**; honestas 0 → 3/5/2. El resto calla sobre los modos, sin mentir.
+- **3:** con los campos solos, sin efecto (2/2/2); con el `next` (3b), honestas **3/3/3**.
+- **1c:** el modelo mira con input_visible_controls en las tres semillas.
+
+Las tres quedan confirmadas en las dos máquinas.
