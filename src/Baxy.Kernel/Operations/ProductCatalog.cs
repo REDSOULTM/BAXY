@@ -329,6 +329,13 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "clipboard.paste.win32.clipboard.foreground.sendinput.accepted.v1",
             "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V."),
+        // BAXY Renew cu (C18): the clipboard pasted into a new document of the application named, opened first.
+        Descriptor(
+            "clipboard.paste.into",
+            Schema([String("appId", maximumUtf8Bytes: 512, nonWhitespace: true)], ["appId"]),
+            OperationRisks.PrivacySensitive,
+            "clipboard.paste.into.app.open.document.paste.v1",
+            "Abre un documento nuevo de la aplicación nombrada (app.open al frente, con documento nuevo) y pega en él el contenido del portapapeles (clipboard.paste); si la aplicación no se abre no pega nada."),
         Descriptor(
             "clipboard.read.text",
             Schema([Integer("maxCharacters", 1, 6_000)], []),

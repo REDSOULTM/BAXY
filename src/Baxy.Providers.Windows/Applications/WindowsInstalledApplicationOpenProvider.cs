@@ -36,6 +36,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // cu-v3-documento-nuevo: how long the document of the New command is looked for (a new Office window takes about a
     // second to show).
     internal static readonly TimeSpan NewDocumentBudget = TimeSpan.FromSeconds(6);
+    // BAXY Renew cu (C18): the time a dismissed start screen is given to show the document it leaves.
+    internal static readonly TimeSpan DismissSettle = TimeSpan.FromSeconds(4);
     // Ronda 20 P4 (v3-01): how far apart the windows of a cold start are looked at while they settle, and for how long.
     internal static readonly TimeSpan StartSettleDelay = TimeSpan.FromMilliseconds(400);
     internal static readonly TimeSpan StartSettleBudget = TimeSpan.FromSeconds(10);
@@ -845,7 +847,10 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             || opened.WindowHandle is not long window || opened.ProcessId is not int process || entry is null)
         {
             // An application that only shows the instance that runs opened no new window: no new document was made.
-            return opened.ErrorCode == ApplicationOpenErrorCodes.VerificationFailed ? NotCreated() : opened;
+            // BAXY Renew cu (C18): unless the launch's new window was handed to that instance (Windows 11's Notepad).
+            return opened.ErrorCode == ApplicationOpenErrorCodes.VerificationFailed
+                ? (entry is null ? null : BornEmpty(request, entry, theirs, opened.DisplayName)) ?? NotCreated()
+                : opened;
         }
 
         IReadOnlyList<InstalledApplicationObservation> before;
@@ -893,23 +898,67 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         // The window in front before the command (its burst hands the front back to it).
         long frontBeforeCommand = request.Foreground ? _platform.ForegroundWindow() : 0;
 
+        async ValueTask<ApplicationOpenResult> MadeAsync(InstalledApplicationObservation made)
+        {
+            // Review of r20b palanca 4: the new document follows the rule of every opening (OpeningFront), read
+            // now: a person working in their window keeps their keyboard (a front the new window took goes back)
+            // and the document is shown above theirs; otherwise the front is taken as asked.
+            long person = OpeningFront.PersonWindow(
+                _platform, request.Foreground, other => IsOpened(made, other), frontBeforeCommand);
+            if (person == 0)
+            {
+                if (request.Foreground)
+                    _platform.RequestForeground(made.WindowHandle);
+                return Success(request, entry, made, reused: false, newDocument: true);
+            }
+
+            (bool activated, bool restored) = await HandBackFrontAsync(person, made, cancellationToken).ConfigureAwait(false);
+            bool shown = await OpeningFront.ShowWithoutActivationAsync(
+                _platform, made.WindowHandle, person, other => IsOpened(made, other), cancellationToken)
+                .ConfigureAwait(false);
+            return Success(request, entry, made, reused: false, activated, restored, newDocument: true,
+                shownWithoutFocus: shown);
+        }
+
         // The command goes only to the application's own window, in a burst of the foreground lease (finding 4).
         if (!await _platform.IssueNewDocumentAsync(window, cancellationToken).ConfigureAwait(false))
         {
-            return NotCreated();
+            return BornEmpty(request, entry, theirs, opened.DisplayName) ?? NotCreated();
         }
 
         Stopwatch verification = Stopwatch.StartNew();
+        bool dismissed = false;
+        IReadOnlyList<InstalledApplicationObservation> seen = [];
+        // A start screen dismissed late (a cold start that showed it near the end) is given its own time to show the
+        // document it leaves.
+        TimeSpan budget = NewDocumentBudget;
         for (int look = 0;
-            look * ObservationDelay < NewDocumentBudget && verification.Elapsed < NewDocumentBudget;
+            look * ObservationDelay < budget && verification.Elapsed < budget;
             look++)
         {
             await _platform.DelayAsync(ObservationDelay, cancellationToken).ConfigureAwait(false);
+            // BAXY Renew cu (C18): halfway, a window of this launch still showing only the application's name is a start
+            // screen the New command did not reach (sent while a splash showed, or a localized shortcut: Office in Spanish
+            // takes Ctrl+N as bold): Esc, once, dismisses it (Office's leaves a blank document, told by its title then).
+            // Never a window the application already had (the person's).
+            if (!dismissed && (look * ObservationDelay >= NewDocumentBudget / 2 || verification.Elapsed >= NewDocumentBudget / 2)
+                && seen.FirstOrDefault(item => item.Visible && !theirs.Contains(item.WindowHandle)
+                    && !_platform.IsOwnedWindow(item.WindowHandle)
+                    && bareTitles.Contains(Bare(_platform.WindowTitle(item.WindowHandle)))) is { } start)
+            {
+                dismissed = true;
+                _ = await _platform.IssueDismissStartAsync(start.WindowHandle, cancellationToken).ConfigureAwait(false);
+                budget = TimeSpan.FromTicks(Math.Max(
+                    budget.Ticks, Math.Max(verification.Elapsed.Ticks, (look * ObservationDelay).Ticks) + DismissSettle.Ticks));
+                await _platform.DelayAsync(ObservationDelay, cancellationToken).ConfigureAwait(false);
+            }
+
             InstalledApplicationObservation? made;
             List<long> dialogs;
             try
             {
                 IReadOnlyList<InstalledApplicationObservation> current = _platform.Inventory(entry);
+                seen = current;
                 List<InstalledApplicationObservation> appeared = current
                     .Where(item => item.Visible
                         && Path.IsPathFullyQualified(item.ExecutablePath)
@@ -938,24 +987,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
             if (made is not null)
             {
-                // Review of r20b palanca 4: the new document follows the rule of every opening (OpeningFront), read
-                // now: a person working in their window keeps their keyboard (a front the new window took goes back)
-                // and the document is shown above theirs; otherwise the front is taken as asked.
-                long person = OpeningFront.PersonWindow(
-                    _platform, request.Foreground, other => IsOpened(made, other), frontBeforeCommand);
-                if (person == 0)
-                {
-                    if (request.Foreground)
-                        _platform.RequestForeground(made.WindowHandle);
-                    return Success(request, entry, made, reused: false, newDocument: true);
-                }
-
-                (bool activated, bool restored) = await HandBackFrontAsync(person, made, cancellationToken).ConfigureAwait(false);
-                bool shown = await OpeningFront.ShowWithoutActivationAsync(
-                    _platform, made.WindowHandle, person, other => IsOpened(made, other), cancellationToken)
-                    .ConfigureAwait(false);
-                return Success(request, entry, made, reused: false, activated, restored, newDocument: true,
-                    shownWithoutFocus: shown);
+                return await MadeAsync(made).ConfigureAwait(false);
             }
 
             if (dialogs.Count > 0)
@@ -965,7 +997,51 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             }
         }
 
-        return NotCreated();
+        return BornEmpty(request, entry, theirs, opened.DisplayName) ?? NotCreated();
+    }
+
+    /// <summary>
+    /// BAXY Renew cu (C18): a window of the application born with this launch (never one it already had, «theirs»), shown,
+    /// no dialog, titled as a document (not the application's bare name) and holding no text, already is a new document:
+    /// Windows 11's Notepad hands the new window to the instance that runs, and its New then makes no second empty tab,
+    /// so neither a launched process nor a title change tells it. Nothing of the person's is in an empty window born now.
+    /// </summary>
+    private ApplicationOpenResult? BornEmpty(
+        ApplicationOpenRequest request,
+        InstalledApplicationEntry entry,
+        HashSet<long> theirs,
+        string? displayName)
+    {
+        var bare = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Bare(entry.Name), Bare(displayName) };
+        bare.Remove(string.Empty);
+        InstalledApplicationObservation? made;
+        try
+        {
+            made = _platform.Inventory(entry).FirstOrDefault(item => item.Visible
+                && !theirs.Contains(item.WindowHandle)
+                && !_platform.IsOwnedWindow(item.WindowHandle)
+                && _platform.WindowTitle(item.WindowHandle) is { Length: > 0 } title
+                && !bare.Contains(Bare(title))
+                && _platform.HoldsNoText(item.WindowHandle));
+        }
+        catch (Exception exception) when (exception is ApplicationInventoryException
+            or InvalidOperationException
+            or System.ComponentModel.Win32Exception)
+        {
+            return null;
+        }
+
+        if (made is null)
+        {
+            return null;
+        }
+
+        if (request.Foreground)
+        {
+            _platform.RequestForeground(made.WindowHandle);
+        }
+
+        return Success(request, entry, made, reused: false, newDocument: true);
     }
 
     // A window title with a part besides the application's name («Nueva pestaña - …», «Sin título - …»): a dash
@@ -1243,8 +1319,17 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     ValueTask<bool> IssueNewDocumentAsync(long windowHandle, CancellationToken cancellationToken) =>
         ValueTask.FromResult(false);
 
+    // BAXY Renew cu (C18): Esc given to this window in the same burst of the foreground lease: a start screen dismissed
+    // (Office's leaves a blank document); whether Windows took both events.
+    ValueTask<bool> IssueDismissStartAsync(long windowHandle, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(false);
+
     // The window's title as Windows has it (empty when it has none or is gone).
     string WindowTitle(long windowHandle) => string.Empty;
+
+    // BAXY Renew cu (C18): whether the window holds text fields (its Edit or RichEdit children) and every one of them is
+    // empty; false when it has none or one holds text or does not answer.
+    bool HoldsNoText(long windowHandle) => false;
 
     // Whether another window owns this one (a dialog of the application).
     bool IsOwnedWindow(long windowHandle) => false;
@@ -1318,6 +1403,18 @@ internal static class InstalledApplicationResolver
                 : new InstalledApplicationResolution(null, true);
         }
 
+        // BAXY Renew cu (C18): a name that is no catalog name may be a packaged application's own identity, which no
+        // language translates («Microsoft.WindowsNotepad» is Notepad, the catalog naming it «Bloc de notas»). Only one
+        // entry bearing it resolves; a classic program's executable is no name (auditoría D1: «chrome» stays unresolved),
+        // and «Notepad» is still never Notepad++.
+        InstalledApplicationEntry[] byIdentity = entries
+            .Where(item => PackageName(item) is { } package && Normalize(package) == normalizedQuery)
+            .ToArray();
+        if (byIdentity.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1)
+        {
+            return new InstalledApplicationResolution(byIdentity[0], false);
+        }
+
         // Closest first: the names that hold every word asked, then by edit distance.
         string[] words = normalizedQuery.Split(' ');
         string[] closest = [.. entries
@@ -1331,6 +1428,23 @@ internal static class InstalledApplicationResolver
     }
 
     internal static string Normalize(string value) => CatalogNames.Normalize(value);
+
+    // A packaged application's own name: its package's, without the publisher and without the «Windows» every inbox
+    // application's package carries («Microsoft.WindowsCalculator_8wekyb3d8bbwe!App»: Calculator); null for a classic
+    // program (no «family_publisher!app» identity).
+    internal static string? PackageName(InstalledApplicationEntry entry)
+    {
+        string id = entry.AppUserModelId;
+        int bang = id.IndexOf('!', StringComparison.Ordinal);
+        int underscore = id.IndexOf('_', StringComparison.Ordinal);
+        if (!string.IsNullOrWhiteSpace(entry.TargetPath) || bang <= 0 || underscore <= 0 || underscore > bang)
+            return null;
+        string family = id[..underscore];
+        string name = family[(family.LastIndexOf('.') + 1)..];
+        return name.StartsWith("Windows", StringComparison.Ordinal) && name.Length > "Windows".Length
+            ? name["Windows".Length..]
+            : name;
+    }
 
     internal static bool IsUsable(InstalledApplicationEntry entry) =>
         ApplicationIds.IsValidRequest(entry.Name)
@@ -2187,7 +2301,47 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
     }
 
+    public async ValueTask<bool> IssueDismissStartAsync(long windowHandle, CancellationToken cancellationToken)
+    {
+        var keyboard = new External.WindowsDesktopKeyboard();
+        nint handle = checked((nint)windowHandle);
+        External.IInputBurst burst = await keyboard.FrontAsync(handle, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            // Escape, pressed and released: two events.
+            return burst.MayAct && burst.HoldsWindow && keyboard.Holds(handle) && keyboard.PressChord([0x1B]) == 2;
+        }
+        finally
+        {
+            _ = burst.Restore();
+        }
+    }
+
     public bool IsOwnedWindow(long windowHandle) => GetWindow(checked((nint)windowHandle), 4) != 0;
+
+    // BAXY Renew cu (C18): the window's text fields (children whose class is an Edit or a RichEdit), each asked its
+    // length (WM_GETTEXTLENGTH, 500 ms at most, never a hung window's wait): true only with one at least and all empty.
+    public bool HoldsNoText(long windowHandle)
+    {
+        int fields = 0;
+        bool holdsText = false;
+        EnumWindowsProc callback = (child, _) =>
+        {
+            if (!ReadClassName(child).Contains("Edit", StringComparison.OrdinalIgnoreCase))
+                return true;
+            fields++;
+            if (SendMessageTimeout(child, 0x000E, 0, 0, 0x0002, 500, out nint length) == 0 || length != 0)
+            {
+                holdsText = true;
+                return false;
+            }
+
+            return true;
+        };
+        _ = EnumChildWindows(checked((nint)windowHandle), callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return fields > 0 && !holdsText;
+    }
 
     public unsafe string WindowTitle(long windowHandle)
     {
@@ -2307,6 +2461,10 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     // GW_OWNER (4): the window that owns this one, 0 for none.
     [LibraryImport("user32.dll")]
     private static partial nint GetWindow(nint window, uint command);
+
+    [LibraryImport("user32.dll", EntryPoint = "SendMessageTimeoutW")]
+    private static partial nint SendMessageTimeout(
+        nint window, uint message, nint wParam, nint lParam, uint flags, uint timeout, out nint result);
 
     [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW")]
     private static unsafe partial int GetWindowText(nint window, char* text, int capacity);

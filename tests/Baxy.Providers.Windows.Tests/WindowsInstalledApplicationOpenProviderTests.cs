@@ -195,6 +195,20 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // BAXY Renew cu (C18): an inbox application by its package's own name, which no language translates; a classic
+    // program by its executable never (auditoría D1).
+    [TestCase("Notepad", "Bloc de notas", "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App")]
+    [TestCase("calculator", "Calculadora", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App")]
+    public void AnInboxApplicationResolvesByItsPackagesOwnName(string query, string name, string id)
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new(name, id),
+            new("Notepad++", "Notepad++.Classic", @"C:\Program Files\Notepad++\notepad++.exe"),
+        ];
+        Assert.That(InstalledApplicationResolver.Resolve(query, catalog).Entry?.Name, Is.EqualTo(name));
+    }
+
     [TestCase("google chrome", "Google Chrome")]
     [TestCase("BLOC DE NOTAS", "Bloc de notas")]
     [TestCase("  google   CHROME ", "Google Chrome")]
@@ -1191,6 +1205,81 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // BAXY Renew cu (C18): Windows 11's Notepad opens the new instance as an empty untitled document, and its New then
+    // makes no second empty tab (no title changes): the launched window, empty, is the new document. The person's own
+    // window, even empty, never is.
+    [TestCase(true, true)]
+    [TestCase(false, false)]
+    public async Task TheLaunchedWindowAlreadyEmptyIsTheNewDocument(bool empty, bool made)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        platform.Titles[78] = "Sin título - Bloc de notas";
+        if (empty)
+            platform.Empty.Add(78);
+        platform.Empty.Add(73);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.EqualTo(made));
+            if (made)
+                Assert.That(result.WindowHandle, Is.EqualTo(78));
+            else
+                Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+        });
+    }
+
+    // BAXY Renew cu (C18): the launched window still on its start screen (titled only by the application's name) once the
+    // New command made nothing (Office in Spanish takes Ctrl+N as bold) gets Esc once, which leaves a blank document.
+    [Test]
+    public async Task AStartScreenTheNewCommandDidNotReachIsDismissedOnce()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            TitleAfterDismiss = "Documento1 - Bloc de notas",
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        platform.Titles[78] = "Bloc de notas";
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(78));
+            Assert.That(platform.DismissIssued, Is.EqualTo(new[] { 78L }), "once, and only to the launched window");
+        });
+    }
+
+    [Test]
+    public async Task ThePersonsOwnEmptyWindowIsNeverTheNewDocument()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            FrontFollowsRequest = true,
+        };
+        platform.Titles[73] = "Sin título - Bloc de notas";
+        platform.Empty.Add(73);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+    }
+
     // Finding 4, the front asked for: the new document is the window left in front.
     [Test]
     public async Task NewDocumentAskedInFrontIsLeftInFront()
@@ -1565,6 +1654,27 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         public bool FrontFollowsRequest { get; init; }
 
         public Dictionary<long, string> Titles { get; } = [];
+
+        // BAXY Renew cu (C18): the windows whose text fields are all empty.
+        public HashSet<long> Empty { get; } = [];
+
+        // BAXY Renew cu (C18): what Esc shows on a start screen (the window's new title), and to which windows it went.
+        public string? TitleAfterDismiss { get; init; }
+
+        public List<long> DismissIssued { get; } = [];
+
+        public ValueTask<bool> IssueDismissStartAsync(long windowHandle, CancellationToken cancellationToken)
+        {
+            DismissIssued.Add(windowHandle);
+            if (TitleAfterDismiss is { } title)
+            {
+                Titles[windowHandle] = title;
+            }
+
+            return ValueTask.FromResult(true);
+        }
+
+        public bool HoldsNoText(long windowHandle) => Empty.Contains(windowHandle);
 
         // What the New command shows: the window's new title (a new tab), a new window, or nothing.
         public string? TitleAfterNewDocument { get; init; }

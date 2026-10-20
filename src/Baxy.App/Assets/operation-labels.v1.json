@@ -53,6 +53,7 @@
     "client.microphone.set": { "t": "Silenciar o activar tu micrófono en Discord", "g": "messages", "f": "apps" },
     "clipboard.copy": { "t": "Copiar la selección", "g": "look", "f": "ventanas" },
     "clipboard.paste": { "t": "Pegar", "g": "look", "f": "ventanas" },
+    "clipboard.paste.into": { "t": "Pegar en un documento nuevo", "g": "look", "f": "ventanas" },
     "clipboard.read.text": { "t": "Leer el portapapeles", "g": "look", "f": "ventanas" },
     "clipboard.write.text": { "t": "Poner texto en el portapapeles", "g": "look", "f": "ventanas" },
     "desktop.wallpaper.set": { "t": "Cambiar el fondo", "g": "system", "f": "ventanas" },
