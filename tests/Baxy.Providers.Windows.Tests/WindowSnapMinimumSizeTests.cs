@@ -214,6 +214,33 @@ public sealed class WindowSnapMinimumSizeTests
         });
     }
 
+    // BAXY Renew cu (C13 en el PC): a window in full screen keeps its whole monitor and takes no size. It is asked to leave
+    // by its own keys posted to it (Esc, then F11), read back after each, and placed once it left; one that stays in
+    // full screen is left as it was and says so.
+    [TestCase((ushort)0x7A, new ushort[] { 0x1B, 0x7A }, true)]
+    [TestCase((ushort)0x1B, new ushort[] { 0x1B }, true)]
+    [TestCase((ushort)0, new ushort[] { 0x1B, 0x7A }, false)]
+    public async Task AWindowInFullScreenLeavesItByItsOwnKeysAndIsPlaced(ushort leavesBy, ushort[] keys, bool placed)
+    {
+        var platform = new SnapPlatform(new WindowBounds(0, 0, 1536, 864)) { StartsFullScreen = true, LeavesFullScreenBy = leavesBy };
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowActionResult result = await SnapAsync(provider, "left");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.EqualTo(placed), result.ErrorCode);
+            Assert.That(platform.Keys, Is.EqualTo(keys));
+            if (placed)
+                Assert.That(Bounds(result.Window!), Is.EqualTo(new WindowBounds(0, 0, 768, 816)));
+            else
+            {
+                Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowSizeNotTaken));
+                Assert.That(result.EffectMayHaveOccurred, Is.False);
+            }
+        });
+    }
+
     [Test]
     public void AsWideAsTheWholeWorkAreaIsNoMinimum() =>
         Assert.That(WindowsWindowControlProvider.KeepsLargerMinimum(
@@ -248,6 +275,25 @@ public sealed class WindowSnapMinimumSizeTests
         public bool IgnoresFirstMoveAfterRestore { get; init; }
         public bool IgnoresMovesAfterRestore { get; init; }
         public List<WindowControlAction> Actions { get; } = [];
+        public bool StartsFullScreen { get; init; }
+        public ushort LeavesFullScreenBy { get; init; }
+        public List<ushort> Keys { get; } = [];
+        private bool? _fullScreen;
+        private bool Full => _fullScreen ?? StartsFullScreen;
+
+        public bool FullScreen(WindowIdentity identity) => Full;
+
+        public bool PostKey(WindowIdentity identity, ushort virtualKey, ushort scanCode)
+        {
+            Keys.Add(virtualKey);
+            if (Full && virtualKey == LeavesFullScreenBy)
+            {
+                _fullScreen = false;
+                _bounds = new WindowBounds(200, 100, 900, 600);
+            }
+
+            return true;
+        }
         private bool? _maximized;
         private bool _ignoredAfterRestore;
         public List<WindowBounds> Moves { get; } = [];
@@ -276,6 +322,10 @@ public sealed class WindowSnapMinimumSizeTests
         public bool SetBounds(WindowIdentity identity, WindowBounds requested)
         {
             Moves.Add(requested);
+            if (Full)
+            {
+                return true;
+            }
             if (IgnoresMovesAfterRestore && _maximized == false)
             {
                 return true;
