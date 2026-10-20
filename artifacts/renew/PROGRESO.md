@@ -2635,3 +2635,28 @@ Copias sembradas de d7a76adf1 s0-2, catálogo lote3, c2-e1.0, 0 errores:
 - **1c:** el modelo mira con input_visible_controls en las tres semillas.
 
 Las tres quedan confirmadas en las dos máquinas.
+
+### El latido: estudio y la ayuda `beat_no_pending` (notebook)
+
+- **Estudio** (escenas de práctica ×4, con la misma copia de la mente y el mismo catálogo):
+
+  | Categoría | Modelo base | c2-e1.0 |
+  |---|---|---|
+  | Total | 30,75, 2 molestas | 32,50, 0 molestas |
+  | Silencio | 90/92 | 92/92 |
+  | Proponer | 4/12 | 8/12 |
+  | Decir | 14/24 | 14/24 |
+  | Actuar | 15/28 | 16/28 |
+
+  - c2-e1.0 pierde P020 (propone en vez de pausar la música en una llamada) y P035.
+  - Fallan los dos en P002, P012 (calla un aviso pedido) y P023 (propone message.draft en vez de decir el
+    recordatorio).
+  - Es el mismo patrón que en el holdout del FT (proponer donde debía actuar o decir, callar avisos): es decisión, no
+    falta de un dato.
+  - Además, el ajustado llama a confirm_pending en latidos sin nada pendiente (P026 y P035, 4 de 4; el base, 0).
+- **`beat_no_pending`:** «Confirmaciones pendientes: ninguna» en el mensaje del latido. Es un hecho por construcción,
+  porque CanBeat (MainWindowViewModel.cs:451) exige que no haya confirmación pendiente.
+  - Escenas ×4: none 32,50 → 31,50 (−1,00); lote 31,25 → 31,25 (±0); 0 molestas.
+  - Las llamadas espurias pasan de 4 a 0, pero P026 no pasa a «decir» y caen P024 y P034.
+  - **Descartada;** su código se revirtió (d8855558e).
+- **Lote final: d7a76adf1.** pc-ayudas-6 d8855558e tiene el mismo src, más las herramientas de medida.

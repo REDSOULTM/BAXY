@@ -2281,7 +2281,7 @@
       },
       "2_accessible_scope": {
         "veredicto": "se queda",
-        "evidencia": "sonda de continuación s0-2, 17 casos: afirmaciones falsas de un modo inexistente 14 → 0; respuestas honestas 0 → 15. En el e2e ningún caso la dispara"
+        "evidencia": "sonda de continuación s0-2, 17 casos: afirmaciones falsas de un modo inexistente 14 → 0; respuestas honestas 0 → 15. En el e2e ningún caso la dispara; confirmada en el notebook: falsas 6/4/6 → 0/0/0"
       },
       "3_work_folder": {
         "veredicto": "sustituida por 3b",
@@ -2289,11 +2289,11 @@
       },
       "3b_work_folder_next": {
         "veredicto": "se queda",
-        "evidencia": "sonda: «lo guardé en BAXY-bench» de la carpeta de trabajo 2/3 → 0/3 por semilla; sólo con la carpeta del home de ese nombre (un next genérico hizo nombrar una carpeta inexistente)"
+        "evidencia": "sonda: «lo guardé en BAXY-bench» de la carpeta de trabajo 2/3 → 0/3 por semilla; sólo con la carpeta del home de ese nombre (un next genérico hizo nombrar una carpeta inexistente); confirmada en el notebook: honestas 3/3/3 con el next"
       },
       "1c_place_unverified": {
         "veredicto": "se queda",
-        "evidencia": "sonda F019 3/3 → 0/3 afirmaciones sin mirar; e2e notebook Δ +1,33 sin bajas, E015 honesto 3/3"
+        "evidencia": "sonda F019 3/3 → 0/3 afirmaciones sin mirar; e2e notebook Δ +1,33 sin bajas, E015 honesto 3/3; sonda confirmada en el notebook"
       },
       "4_listed_path": {
         "veredicto": "descartada y retirada",
@@ -2322,10 +2322,14 @@
       "9_ejemplos_dinamicos": {
         "veredicto": "descartada (nunca en el producto)",
         "evidencia": "decision2 223,33 frente a 228,33 (−5,0), D_context 27 → 16; embedder +1.320 MiB de RAM"
+      },
+      "latido_beat_no_pending": {
+        "veredicto": "descartada y revertida",
+        "evidencia": "escenas ×4 none 32,50 → 31,50, lote ±0; quita las llamadas espurias a confirm_pending 4 → 0 sin subir escenas"
       }
     },
     "lote_candidato": {
-      "commit": "hub/pc-ayudas-6 d7a76adf1",
+      "commit": "d7a76adf1 (lote final; hub/pc-ayudas-6 d8855558e, mismo src más las herramientas)",
       "ayudas": [
         "calculator_next",
         "accessible_scope",
@@ -2344,6 +2348,7 @@
       },
       "pc": "confirmación pendiente (e2e s0-2 y falsedades s0, el 2026-10-20)"
     },
-    "decision_dueno_2026_10_20_juego": "El dueño usa el PC (Roblox, 01:54): nada en el escritorio ni en la GPU del PC mientras juegue; la confirmación del lote arranca sola 3 min después. La repetición de E010/E011 corrió 1-2 min con el juego delante (01:58) antes de verlo."
+    "decision_dueno_2026_10_20_juego": "El dueño usa el PC (Roblox, 01:54): nada en el escritorio ni en la GPU del PC mientras juegue; la confirmación del lote arranca sola 3 min después. La repetición de E010/E011 corrió 1-2 min con el juego delante (01:58) antes de verlo.",
+    "estudio_latido": "c2-e1.0 propone donde debía actuar o decir y calla avisos pedidos (decisión, no falta de un dato); la única ayuda de hecho posible (beat_no_pending) no sube escenas"
   }
 }
