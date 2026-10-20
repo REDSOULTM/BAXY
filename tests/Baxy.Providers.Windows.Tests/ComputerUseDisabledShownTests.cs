@@ -69,6 +69,29 @@ public sealed class ComputerUseDisabledShownTests
         Assert.That(enabled, Is.EqualTo(new[] { "Aceptar" }));
     }
 
+    // Caso C10 (Word): a window with more than DisabledShownTree enabled controls and some disabled one (a ribbon) made
+    // the whole look throw («Los tipos de argumentos no coinciden», @() over the walk's List[object] in PowerShell 5.1),
+    // so the view went out without its tree. The look answers: no disabled listed, marked cut.
+    [Test]
+    public void ABigTreeWithDisabledControlsAnswersCutInsteadOfThrowing()
+    {
+        string line = Run(Prelude + """
+            $all=New-Walk @(,@('Button','Copiar'))
+            for($i=0;$i -lt 160;$i++){ $all.Add((New-Control 'Button' ('B'+$i) $true)) }
+            $seen=@{}
+            $withDimmed=$true
+            $dimmed=New-Object System.Collections.Generic.List[object]
+            . ([scriptblock]::Create($env:BAXY_SPLIT_STATEMENT))
+            $disabled=@()
+            . ([scriptblock]::Create($env:BAXY_DISABLED_STATEMENT))
+            Send-Line @{ ok=$true; error=''; controls=@(); disabled=$disabled; disabledCut=[bool]$script:DisabledCut; shown=$all.Count }
+            """);
+        using JsonDocument answer = JsonDocument.Parse(line);
+        Assert.That(answer.RootElement.GetProperty("shown").GetInt32(), Is.EqualTo(161));
+        Assert.That(WindowsVisibleControlAdapter.ParseControls(answer.RootElement, "disabled"), Is.Empty);
+        Assert.That(answer.RootElement.GetProperty("disabledCut").GetBoolean(), Is.True);
+    }
+
     private static List<string> Disabled(string described, bool requested, out List<string> enabled)
     {
         string line = Run(Prelude + $$"""

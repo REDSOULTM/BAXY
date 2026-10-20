@@ -2675,7 +2675,9 @@ $script:DisabledShownMax=12
 function Get-DisabledShown($found,[int]$shownCount,$seen){
   $out=New-Object System.Collections.ArrayList
   $script:DisabledCut=$false
-  if($shownCount -gt $script:DisabledShownTree){ $script:DisabledCut=(@($found).Count -gt 0); return ,$out.ToArray() }
+  # Caso C10 (Word): @() sobre la List[object] de elementos UIA lanza «Los tipos de argumentos no coinciden» en
+  # PowerShell 5.1 y la mirada entera caia a «sin arbol»; la lista ya trae su Count.
+  if($shownCount -gt $script:DisabledShownTree){ $script:DisabledCut=($null -ne $found -and $found.Count -gt 0); return ,$out.ToArray() }
   $named=@{}
   foreach($item in $found){
     if($out.Count -ge $script:DisabledShownMax){ $script:DisabledCut=$true; break }
