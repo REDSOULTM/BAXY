@@ -2724,4 +2724,16 @@ semilla.
   - En M_modos, 10 fallos son system.settings.set accessible_mode ante un modo que no existe. Ahí actúa la palanca 2,
     que cambia lo que el modelo dice después de la llamada, y la decisión no lo ve.
   - En R_rutas, 12 son file.write que pierden la subcarpeta: el límite de E006.
-- **Escenas (36), PC:** lote 24/36 con 1 molesta; none 24/36 con 0 molestas.
+**Escenas (36):**
+
+| Tipo | Notebook lote | Notebook none |
+|---|---|---|
+| Silencio (20) | 20 | 20 |
+| Actuar (6) | 4 | 3 |
+| Proponer (4) | 2 | 1 |
+| Decir (6) | 0 | 0 |
+| **Total** | **26** | 24 |
+
+- Molestas: en el notebook, 0 en los dos brazos; en el PC, lote 24/36 con 1 molesta y none 24/36 con 0.
+- «Decir» es el agujero del latido, igual que en práctica: decisión del modelo, no falta de un dato (ver el estudio).
+- En el holdout del ajuste fino (otro banco), c2-e1.0 dio 26/36 y el base 29/36.
