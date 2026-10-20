@@ -2697,3 +2697,31 @@ semilla.
   MSConfig 0 y ningún 7040.
 - El signo coincide con las seis semillas del notebook (Δ +2,17). **El lote queda confirmado en las dos máquinas, y
   el holdout se corre sobre d7a76adf1.**
+
+## Fase 4: el holdout nuevo, una vez, sobre el lote final d7a76adf1 (2026-10-20)
+
+- Sellos comprobados en las dos máquinas antes de correr (decision_ayudas 74efc33c…2381, escenas_ayudas fa4d11b9…2425).
+  La sesión del PC no vio los casos: sólo ok, familias y la operación o el tipo de cada respuesta del modelo.
+- En cada GPU, una vez, con la mente sin perturbar, el catálogo lote3 y c2-e1.0: el lote y el producto de partida
+  (BAXY_AYUDAS=none) en la misma sesión, como en el FT.
+
+**Decisión (240):**
+
+| Familia | PC lote | PC none | Notebook lote | Notebook none |
+|---|---|---|---|---|
+| G_general (80) | 72 | 71 | 74 | 72 |
+| R_rutas (60) | 44 | 43 | 44 | 44 |
+| V_ventana_cerrada (40) | 29 | 29 | 29 | 28 |
+| M_modos (30) | 16 | 16 | 17 | 16 |
+| F_falsedad (30) | 5 | 4 | 4 | 5 |
+| **Total** | **166** | 163 | **168** | 165 |
+
+- El lote gana **+3 en las dos GPUs**. La decisión no ve resultados, así que sólo puede reflejar la 8 (prefijo).
+- **Lo que la decisión sola no ve.** Esto sale de las filas del PC, que sólo dan la operación o el tipo de cada
+  respuesta:
+  - En F_falsedad, 17 de 25 fallos son una herramienta de estado (radio, ventana, medios, archivo) donde el caso
+    esperaba texto. Es comprobar antes de contestar, y la ejecución lo juzga por la respuesta final.
+  - En M_modos, 10 fallos son system.settings.set accessible_mode ante un modo que no existe. Ahí actúa la palanca 2,
+    que cambia lo que el modelo dice después de la llamada, y la decisión no lo ve.
+  - En R_rutas, 12 son file.write que pierden la subcarpeta: el límite de E006.
+- **Escenas (36), PC:** lote 24/36 con 1 molesta; none 24/36 con 0 molestas.
