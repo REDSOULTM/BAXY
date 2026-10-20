@@ -2528,3 +2528,20 @@ sale nunca en A. **Descartada** (s2 se juzga después, para el registro).
 
 **Candidato a lote: hub/pc-ayudas-6 d7a76adf1.** Sin el código de 4, 5a, 6, 7 ni 9. Con BAXY_AYUDAS sin definir
 enciende 1, 2, 3b, 1c y 8; con `none`, el producto de partida. pytest 44/44.
+
+### Notebook, noche del 2026-10-19: E024 limpio y vivo del lote
+
+- **E024 sin los restos del home** (2a5a0aad5 con la lista explícita, igual a d7a76adf1 sin definir; --only E024,E027;
+  A none frente a B la combinación; intercalado; semillas 0-5; 0 error, 0 setup_failed):
+  - E024 A 4/6, B 3/6. **No hay diferencia**: la señal de la tarde era ruido. Los fallos son los de siempre (folder
+    home y notas.txt sin BAXY-bench); en B s2 escribió sin folder y salió la 3b.
+  - E027, de control: A 2/6, **B 6/6**.
+  - Esta corrida volvió a dejar un notas.txt en el home del notebook; el PC lo quitó por SSH con su copia (junto a un
+    prueba.txt de F013 del día 18).
+- **Vivo sobre el lote d7a76adf1** (recompilado, BAXY_AYUDAS sin definir, c2-e1.0): W1 3/3, F1 3/3, F2 3/3 y E001
+  3/3, con el primer sonido a 3,1-3,5 s. 0 setup_failed, 0 app.open al frente detrás, MSConfig 0.
+- **Fase 4 preparada sin abrir el holdout** (nb/fase4ay):
+  - el ejecutor lee el formato de SEALED_AYUDAS.md, pasa reply_re y reply_not_re al juez y excluye e2e.segura=false y
+    las operaciones peligrosas;
+  - el juez marca RESPUESTA_MAL cuando un OK no cumple reply_re o reply_not_re;
+  - probado con 3 casos inventados.
