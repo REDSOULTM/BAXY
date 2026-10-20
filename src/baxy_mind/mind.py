@@ -215,6 +215,11 @@ def beat_message(context: dict[str, Any]) -> str:
     if reminders:
         lines.append("Recordatorios: " + "; ".join(f"{r.get('text') or 'sin título'} ({r.get('due', '')})"
                                                    for r in reminders))
+    # Aid «beat_no_pending» (goal «ayudas», heartbeat study): a beat only runs with nothing waiting for the person's yes
+    # (MainWindowViewModel.CanBeat, !HasPendingConfirmation), a fact the model did not see: the tuned model called
+    # confirm_pending in beats with nothing pending (practice P026, P035: 4 of 4 runs; the base model 0).
+    if _aid_on("beat_no_pending"):
+        lines.append("Confirmaciones pendientes: ninguna")
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
 
