@@ -12,9 +12,14 @@ internal sealed class AppOpenHandler(
     IApplicationPlaceOpener? places = null,
     Func<nint, string?>? windowIdFor = null,
     Func<long, OpenedWindowFront>? frontOf = null,
-    IGameTitles? games = null)
+    IGameTitles? games = null,
+    Func<long, string, CancellationToken, long>? settle = null)
     : IOperationHandler
 {
+    // BAXY Renew cu (C03 en frío): how long an application started behind its sign-in may take to show its window.
+    internal static readonly TimeSpan SignInBudget = TimeSpan.FromSeconds(30);
+    private readonly Func<long, string, CancellationToken, long> _settle =
+        settle ?? ((window, name, token) => ApplicationWindowSettle.WaitSettled(window, name, SignInBudget, token));
     private readonly IApplicationOpenProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
     private readonly LaunchProvenance _provenance = provenance ?? LaunchProvenance.Shared;
@@ -154,16 +159,29 @@ internal sealed class AppOpenHandler(
             return OperationOutcome.Failure("place_not_opened", effectMayHaveOccurred: true);
         }
 
+        // BAXY Renew cu (C03 en frío): started by this opening behind its own sign-in, the place handed during it was
+        // lost (the look showed «Iniciando sesión» and then the store); once its window settles the place goes again,
+        // and the receipt names that window.
+        long openedWindow = providerResult.WindowHandle.GetValueOrDefault();
+        if (place is not null && !providerResult.AlreadyRunning && ApplicationPlaces.StartsBehindSignIn(arguments.AppId)
+            && _settle(openedWindow, providerResult.DisplayName, cancellationToken) is long settled and not 0)
+        {
+            openedWindow = settled;
+            place = _places.Open(placeAddress!, arguments.Foreground == true, settled) is { Opened: true } again
+                ? again with { FrontRestored = place.FrontRestored || again.FrontRestored }
+                : place;
+        }
+
         // BAXY Renew (notebook), F004: whether the window this opening verified holds the front as it answers (after
         // its place too), and the window that holds it when it does not; with the program that window is named by.
         // Read once; nothing is done about it.
-        OpenedWindowFront front = _frontOf(providerResult.WindowHandle.GetValueOrDefault());
+        OpenedWindowFront front = _frontOf(openedWindow);
         var result = new OpenApplicationResult(
             arguments.AppId,
             providerResult.DisplayName,
             providerResult.AlreadyRunning,
             providerResult.ProcessId.GetValueOrDefault(),
-            providerResult.WindowHandle.GetValueOrDefault(),
+            openedWindow,
             providerResult.WindowsActivation,
             (providerResult.WindowsActivation && providerResult.FrontRestored) || place?.FrontRestored == true,
             providerResult.NewDocument,
@@ -177,7 +195,7 @@ internal sealed class AppOpenHandler(
                 : null,
             FrontChanged: place?.FrontChanged == true,
             PlaceGame: game is null ? null : new PlacedGame(game.Number, game.Name),
-            WindowId: windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()),
+            WindowId: windowIdFor?.Invoke((nint)openedWindow),
             ProcessName: front.Process,
             Foreground: front.Held,
             ForegroundHeldBy: front.HolderTitle is { } title ? new WindowName(title, front.HolderProcess ?? string.Empty) : null);

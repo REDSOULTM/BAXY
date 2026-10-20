@@ -110,6 +110,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new NamedBrowserAdapter(root, browserSessionContext),
             new OpenMeteoWeatherAdapter(),
             new MicrosoftAccountAdapter(),
+            new OfficeFormatAdapter(),
         ];
     }
 

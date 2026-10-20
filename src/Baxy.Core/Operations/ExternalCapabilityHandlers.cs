@@ -75,6 +75,7 @@ internal static class ExternalCapabilityHandlers
         "message.send.test",
         "office.document.create",
         "office.document.read",
+        "office.format.apply",
         "ocr.read",
         "package.install",
         "package.uninstall",

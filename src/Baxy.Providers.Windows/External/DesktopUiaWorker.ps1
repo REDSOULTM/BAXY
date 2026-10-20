@@ -1459,6 +1459,11 @@ function Select-ClickMethods($facts){
     if($facts.classic -or $facts.native){ $ways+='message' }
     return $ways
   }
+  # BAXY Renew cu (C11, Excel): el encabezado de una fila que la rejilla da por elegido (Excel no lo desmarca al cambiar la
+  # seleccion) no se vuelve a elegir con Select, que no hace nada: se pulsa por su accion por defecto y, si no, el puntero.
+  if([string]$facts.kind -eq 'DataItem' -and [bool]$facts.selected -and -not [bool]$facts.invoke -and -not $render){
+    return @('legacy','pointer')
+  }
   foreach($name in @('invoke','select','toggle','expand')){
     if($facts.$name){ if($render -and $name -eq 'select' -and -not $field){ return @('render',$name) }; return @($name) }
   }
@@ -2093,7 +2098,7 @@ $script:Cache=New-Object System.Windows.Automation.CacheRequest
 foreach($prop in @($AE::NameProperty,$AE::ControlTypeProperty,$AE::IsOffscreenProperty,$AE::BoundingRectangleProperty,
                    $AE::HasKeyboardFocusProperty,$AE::IsPasswordProperty,$AE::IsEnabledProperty,$AE::RuntimeIdProperty,
                    $AE::HelpTextProperty,$AE::AutomationIdProperty,$AE::LabeledByProperty,
-                   $AE::ClassNameProperty,$AE::AcceleratorKeyProperty,$AE::AccessKeyProperty)){ $script:Cache.Add($prop) }
+                   $AE::ClassNameProperty,$AE::AcceleratorKeyProperty,$AE::AccessKeyProperty,$AE::ItemTypeProperty)){ $script:Cache.Add($prop) }
 foreach($pat in @([System.Windows.Automation.TogglePattern]::Pattern,[System.Windows.Automation.SelectionItemPattern]::Pattern,
                   [System.Windows.Automation.ExpandCollapsePattern]::Pattern,[System.Windows.Automation.ValuePattern]::Pattern,
                   [System.Windows.Automation.RangeValuePattern]::Pattern)){ $script:Cache.Add($pat) }
@@ -2487,6 +2492,32 @@ function Join-ViewControls($primary,$secondary,$menu,[int]$limit,[string[]]$want
           $entry=$list[$k].entry
           if(-not [bool]$entry.systemMenu -and (Test-WantedName ([string]$entry.name) $wanted)){ [void]$extra.Add($entry) }
         }
+      } else {
+        # BAXY Renew cu (C11, Excel): la cinta llenaba el tope y ninguna fila entraba (ni encabezados ni celdas): el
+        # contenido de la ventana no se veia. Sin palabras, el cupo reservado lleva las primeras filas en orden del arbol
+        # cuando ninguna quedo en la base (en una hoja: los encabezados de columna y el de la fila 1).
+        $rowsChosen=$false
+        foreach($k in $chosen){ if($script:ViewRowKinds -contains [string]$list[$k].entry.kind){ $rowsChosen=$true; break } }
+        if(-not $rowsChosen){
+          # Por turnos entre los tipos que la propia ventana da a sus filas (itemType: en una hoja maximizada los
+          # encabezados de columna A..J llenaban el cupo y la fila «1» no entraba): el primero de cada tipo, luego el
+          # segundo... Sin tipos, las primeras filas en orden del arbol, como antes.
+          $groups=[ordered]@{}
+          for($k=0;$k -lt $list.Count;$k++){
+            if($chosen.Contains($k) -or $script:ViewRowKinds -notcontains [string]$list[$k].entry.kind){ continue }
+            $type=[string]$list[$k].entry.itemType
+            if(-not $groups.Contains($type)){ $groups[$type]=New-Object System.Collections.ArrayList }
+            [void]$groups[$type].Add($list[$k].entry)
+          }
+          for($turn=0;$extra.Count -lt $script:WantedRoom;$turn++){
+            $added=$false
+            foreach($type in @($groups.Keys)){
+              if($extra.Count -ge $script:WantedRoom){ break }
+              if($turn -lt $groups[$type].Count){ [void]$extra.Add($groups[$type][$turn]); $added=$true }
+            }
+            if(-not $added){ break }
+          }
+        }
       }
     } else { for($k=0;$k -lt $list.Count;$k++){ [void]$chosen.Add($k) } }
     for($k=0;$k -lt $list.Count;$k++){ if($chosen.Contains($k)){ [void]$controls.Add($list[$k].entry) } }
@@ -2631,7 +2662,11 @@ function Do-View($request){
         foreach($bar in $titleBars){ if($inBar){ break }; if(Test-CenterWithin $bar $rect){ $inBar=$true } }
         if($inBar){ $systemMenu=(Test-SystemMenu $item) }
       }
-      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total }
+      # BAXY Renew cu (C11): lo que la propia rejilla dice que es un DataItem («Encabezado de fila», «Celda»): «1» solo no
+      # decia al modelo que era el encabezado de la fila 1.
+      $itemType=''
+      if($kind -eq 'DataItem'){ try { $itemType=([string]$item.Cached.ItemType).Trim() } catch { $itemType='' }; if($itemType.Length -gt 40){ $itemType='' } }
+      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total; itemType=$itemType }
       $seen[$key]=$entry
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
@@ -2658,7 +2693,7 @@ function Do-View($request){
   $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen }
   $ordered=@()
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated })
+    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType })
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
   # controles que pulsar, y su recorrido ni los trae.
@@ -3233,6 +3268,7 @@ function Do-Postread($request){
       }
       elseif((Test-Selected $button) -and -not ($null -ne $was -and $was.selected -eq $true)){$selected=$true}
       elseif(@($pending.lineage | Where-Object { Test-Selected $_ }).Count -gt 0){$selected=$true}
+      elseif(([string]$pending.gridFocusBefore).Length -gt 0 -and (Get-FocusKey) -notin @('',[string]$pending.gridFocusBefore)){$selected=$true}
       elseif($null -ne $pending.toggleBefore){ $after=Get-Toggle $button; if($null -ne $after -and $after -ne $pending.toggleBefore){$toggled=$true} }
       # Ronda 21 (t-drag-4): la marca de otro de su linea del mismo nombre (el Button de una galeria cuyo ListItem se
       # pulso, o al reves) tambien prueba el clic. Integracion de la ronda 21 (t-menu-2): no la de un doble clic, un menu
@@ -3292,6 +3328,10 @@ function Do-Postread($request){
 }
 # Recibo del clic por estado (r15b v3-42): en un campo (Edit, Document, ComboBox) el efecto de un clic es que tome el
 # foco del teclado o que cambie su valor; su lectura antes del clic y la comparacion despues.
+# BAXY Renew cu (C11, Excel): la identidad del elemento con el foco del teclado, para ver si una pulsacion lo movio.
+function Get-FocusKey(){
+  try { return (@([System.Windows.Automation.AutomationElement]::FocusedElement.GetRuntimeId()) -join '.') } catch { return '' }
+}
 function Get-PressState($el){
   $state=@{ enabled=$null; offscreen=$null; selected=$null }
   try { $state.enabled=[bool]$el.Current.IsEnabled } catch {}
@@ -3558,6 +3598,9 @@ function Do-ClickJudged($request){
   }
   # Auditoría final (regla 3): a press that raised once sent (a node rebuilt by its own press) may have acted: it is
   # said as that (visible_press_raised), and the click ends with it; only a disabled control was not pressed.
+  # BAXY Renew cu (C11): una celda o encabezado de rejilla que ya figuraba elegido no prueba nada con su marca; el foco
+  # del teclado que la pulsacion mueve a otro elemento (Excel lleva la celda activa a la fila elegida) si.
+  $gridFocusBefore=$(if($kind -eq 'DataItem' -and $stateBefore.selected -eq $true){ Get-FocusKey } else { $null })
   try { $done=Invoke-NamedControl $button $target.hwnd }
   catch [System.Windows.Automation.ElementNotEnabledException] { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
   catch { return (Click-Result $false $false 'visible_press_raised' $name $identity $false $false $false $kind) }
@@ -3565,7 +3608,7 @@ function Do-ClickJudged($request){
   if([string]$done.method -eq 'container'){ return (Click-Result $false $false 'visible_control_is_container' $name $identity $false $false $false $kind) }
   if([string]$done.method -eq 'covered'){ return (Click-Result $false $false 'visible_control_covered' $name $identity $false $false $false $kind) }
   $pressed=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
-  if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled; $script:Pending.stateBefore=$stateBefore }
+  if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled; $script:Pending.stateBefore=$stateBefore; $script:Pending.gridFocusBefore=$gridFocusBefore }
   if($null -ne $script:Pending -and $null -ne $witness -and [string]$done.method -eq 'toggle'){
     $facts=Get-ClickFacts $button
     $script:Pending.witness=$witness; $script:Pending.root=$root; $script:Pending.retried=$false

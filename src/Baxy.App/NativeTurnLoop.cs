@@ -495,7 +495,7 @@ internal sealed class NativeTurnLoop
             or "message.draft" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
             or "game.launch" or "window.focus" or "window.maximize" or "window.minimize.all" or "window.move"
             or "window.resize" or "window.snap" or "file.open" or "filesystem.file.open.latest" or "filesystem.folder.open"
-            or "browser.page.read" or "browser.tabs.list" or "game.store.page" or "game.store.search" or "client.microphone.set" or "clipboard.paste.into"
+            or "browser.page.read" or "browser.tabs.list" or "game.store.page" or "game.store.search" or "client.microphone.set" or "clipboard.paste.into" or "office.format.apply"
         || (operation == "app.open" && arguments["foreground"] is JsonValue front && IsTrue(front))
         || (operation == "app.open" && arguments["newDocument"] is JsonValue fresh && IsTrue(fresh))
         || (operation == "app.open" && arguments["place"] is JsonValue place && Named(place))

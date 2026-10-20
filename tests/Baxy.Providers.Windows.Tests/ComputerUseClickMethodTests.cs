@@ -82,7 +82,8 @@ public sealed class ComputerUseClickMethodTests
               {"invoke":true,"select":true,"toggle":true,"kind":"ListItem"},
               {"invoke":true,"select":true,"kind":"ListItem","selected":true},
               {"invoke":true,"select":true,"kind":"ListItem","render":true},
-              {"invoke":true,"select":true,"kind":"Button"}
+              {"invoke":true,"select":true,"kind":"Button"},
+              {"select":true,"kind":"DataItem","selected":true}
             ]
             """;
         string answer = RunPlanner(worker, cases);
@@ -96,6 +97,7 @@ public sealed class ComputerUseClickMethodTests
             "invoke",                 // contracase: an item already chosen keeps its single way
             "invoke",                 // the render surface keeps its measured order
             "invoke",                 // a button that also selects is no item of a list
+            "legacy pointer",         // C11: a grid header Excel still marks chosen is pressed, never selected again
         }));
     }
 

@@ -137,6 +137,7 @@
     "ocr.read": { "t": "Leer texto de una captura", "g": "look", "f": "ventanas" },
     "office.document.create": { "t": "Crear documento de Office", "g": "files", "f": "archivos" },
     "office.document.read": { "t": "Leer documento de Office", "g": "files", "f": "archivos" },
+    "office.format.apply": { "t": "Dar formato en Word o Excel", "g": "files", "f": "archivos" },
     "package.install": { "t": "Instalar un programa", "g": "system", "f": "apps" },
     "package.uninstall": { "t": "Desinstalar un programa", "g": "system", "f": "apps" },
     "peripheral.list": { "t": "Ver periféricos", "g": "network", "f": "ventanas" },

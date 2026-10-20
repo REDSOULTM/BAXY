@@ -428,10 +428,14 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                         continue;
                     OcrWord word = lineWords[start];
                     global::Windows.Foundation.Rect box = SpanBox(lineWords, start, span);
+                    // BAXY Renew cu (C03): an icon read as a «word» beside a label (Steam's store tab read «"D TIENDA») is
+                    // no word of a sentence: it does not keep the label from being set apart.
                     if (!SetApart(
                             box,
-                            start > 0 ? lineWords[start - 1].BoundingRect : null,
-                            start + span < lineWords.Count ? lineWords[start + span].BoundingRect : null))
+                            start > 0 && !IsGlyph(lineWords[start - 1].Text) ? lineWords[start - 1].BoundingRect : null,
+                            start + span < lineWords.Count && !IsGlyph(lineWords[start + span].Text)
+                                ? lineWords[start + span].BoundingRect
+                                : null))
                         continue;
                     var hit = new WordHit(
                         word.Text,
@@ -546,6 +550,14 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             return null;
         }
     }
+
+    // A «word» OCR made of an icon: at most three characters, one of them neither a letter nor a digit, and at most one
+    // letter or digit («"D», «»», «@»). A short word of a sentence («y», «de», «a») has no such mark.
+    internal static bool IsGlyph(string? text) =>
+        text is { Length: > 0 and <= 3 } && text.Any(character => !char.IsLetterOrDigit(character))
+            && text.Count(char.IsLetterOrDigit) <= 1
+            // A word with its sentence's punctuation after it («a,», «y.») is a word.
+            && !(text.TrimEnd('.', ',', ';', ':', '!', '?') is { Length: > 0 } word && word.All(char.IsLetterOrDigit));
 
     // A run of words is set apart in its OCR line when the word before it and the word after it, if any, stand more
     // than a body and a half away (the measure ContinuesToTheRight uses for «pegada»).

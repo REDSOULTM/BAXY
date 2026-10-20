@@ -59,6 +59,14 @@ public static class ApplicationPlaces
     public static string? Address(string? application, string? place, string? value) =>
         Address(Loaded.Value, application, place, value);
 
+    /// <summary>
+    /// BAXY Renew cu (C03 en frío): whether the data says <paramref name="application"/> starts behind its own sign-in
+    /// (Steam: an updater and «Iniciar sesión», then its window), so a place handed while it starts is lost and goes
+    /// again to the window it settles on.
+    /// </summary>
+    public static bool StartsBehindSignIn(string? application) =>
+        application is not null && Loaded.Value.TryGetValue(Fold(application), out Application? found) && found.StartsBehindSignIn;
+
     internal static string? Address(
         IReadOnlyDictionary<string, Application> applications, string? application, string? place, string? value)
     {
@@ -187,7 +195,8 @@ public static class ApplicationPlaces
         IReadOnlyDictionary<string, string> Places,
         string? GameCatalog,
         IReadOnlyDictionary<string, GameAct> Acts,
-        TitleSearch? Titles);
+        TitleSearch? Titles,
+        bool StartsBehindSignIn = false);
 
     /// <summary>
     /// The data's applications by folded name. Every address must open with one of its application's schemes and carry at
@@ -221,8 +230,10 @@ public static class ApplicationPlaces
             }
 
             string? catalog = entry.Value.TryGetProperty("gameCatalog", out JsonElement named) ? named.GetString() : null;
+            bool signIn = entry.Value.TryGetProperty("startsBehindSignIn", out JsonElement behind)
+                && behind.ValueKind == JsonValueKind.True;
             applications[Fold(entry.Name)] = new Application(
-                schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog));
+                schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog), signIn);
         }
 
         return applications;
