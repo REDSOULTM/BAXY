@@ -32,6 +32,9 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C13): a window.resolve by an application name that matched nothing lists the visible windows.</summary>
     public const string WindowCandidates = "window_candidates";
 
+    /// <summary>BAXY Renew cu (C03): a click whose index names another control says so and how a read text is clicked.</summary>
+    public const string IndexLabelNext = "index_label_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
