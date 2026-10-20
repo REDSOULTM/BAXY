@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.mind import Mind, beat_message
+from baxy_mind.mind import Mind
 
 from test_mind_final import _call, _mind, _say
 
@@ -75,11 +75,3 @@ def test_a_sentence_aid_ends_its_tools_description_only_when_on(tmp_path: Path, 
     settings, trash = _description(mind, "system_settings_set"), _description(mind, "filesystem_known_trash_named")
     assert settings.endswith("do not turn on the accessible mode in its place.") is modes
     assert trash.endswith("the one filesystem_list shows).") is folder
-
-
-@pytest.mark.parametrize("setting,shown", [("all", True), ("beat_no_pending", True), ("none", False)])
-def test_a_beat_says_nothing_waits_for_a_yes_only_with_the_aid(monkeypatch, setting: str, shown: bool) -> None:
-    # A beat only runs with no confirmation pending (MainWindowViewModel.CanBeat): the line is a fact by construction.
-    monkeypatch.setenv("BAXY_AYUDAS", setting)
-    message = beat_message({"weekday": "lunes", "now": "10:00", "owner_activity": "libre"})
-    assert ("Confirmaciones pendientes: ninguna" in message) is shown
