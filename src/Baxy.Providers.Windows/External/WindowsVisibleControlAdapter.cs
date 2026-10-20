@@ -1099,8 +1099,20 @@ internal sealed class WindowsVisibleControlAdapter
             }
 
             ViewControl? chosen = view?.Controls.FirstOrDefault(control => control.Index == position);
+            // BAXY Renew cu (C03): an index the last look never gave (Steam's page listed only [0]) was answered stale,
+            // and the reply said the control kept vanishing; the refusal says the look had no such index.
             if (chosen is null)
-                return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
+                return view is not null && view.Controls.Count > 0
+                    && Infrastructure.ModelAids.On(Infrastructure.ModelAids.IndexLabelNext)
+                    ? new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+                    {
+                        writer.WriteStartObject();
+                        writer.WriteString("next", $"nothing was pressed: your last look listed no control [{position}] "
+                            + $"(its controls go from [0] to [{view.Controls.Max(control => control.Index)}]); a text it read "
+                            + "that is not in its list of controls is clicked by its label alone, without index");
+                        writer.WriteEndObject();
+                    }), "visible_control_identity_stale")
+                    : ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
             // Auditoría P3: the label is the index's name as the view gave it (folded), and the receipt says that name.
             // BAXY Renew cu (C03): Steam's page gave one control («Chrome Legacy Window») and its words only as text; the
             // model sent a word of that text with index 0, six times. The refusal says what the index is and how a text

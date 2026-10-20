@@ -7,11 +7,16 @@ namespace Baxy.Providers.Windows.Applications;
 /// BAXY Renew cu (C03 en frío): an application that starts behind its own sign-in (Steam: an updater, then «Iniciar
 /// sesión en Steam», then its window) shows first a window that goes away; a place handed to it then is lost. This waits
 /// until the window the opening verified is gone and a visible window with the application's own name (its window
-/// title, as the Start catalog names it) has stayed for a moment, and gives that window; 0 when the budget ran out.
+/// title, as the Start catalog names it) and the size of a main window (Steam's updater, titled «Steam» too, is a small
+/// box) has stayed for a moment, and gives that window; 0 when the budget ran out.
 /// </summary>
 public static partial class ApplicationWindowSettle
 {
     private static readonly TimeSpan Poll = TimeSpan.FromMilliseconds(250);
+
+    // A main window, not a splash, an updater or a sign-in box (Steam's updater measured about 400 x 180).
+    internal const int MainWidth = 600;
+    internal const int MainHeight = 400;
 
     public static long WaitSettled(long openedWindow, string applicationName, TimeSpan budget, CancellationToken cancellationToken)
     {
@@ -47,7 +52,8 @@ public static partial class ApplicationWindowSettle
                 return true;
             var buffer = new char[length + 1];
             string title = new(buffer, 0, Math.Max(0, GetWindowTextW(window, buffer, buffer.Length)));
-            if (!string.Equals(title, name, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(title, name, StringComparison.OrdinalIgnoreCase)
+                || !GetWindowRect(window, out Rect box) || box.Right - box.Left < MainWidth || box.Bottom - box.Top < MainHeight)
                 return true;
             found = window;
             return false;
@@ -58,6 +64,19 @@ public static partial class ApplicationWindowSettle
     }
 
     private delegate bool EnumWindowsProc(nint window, nint parameter);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Rect
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetWindowRect(nint window, out Rect rect);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
