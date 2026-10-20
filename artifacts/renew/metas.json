@@ -2344,9 +2344,11 @@
         "escenas": "32,50 → 31,25 (−1,25, dentro de ±2)",
         "vivo": "W1 3/3, F1 3/3, F2 3/3, E001 3/3",
         "recursos": "VRAM 3.902 MiB, RAM del producto 1.790 MiB",
-        "suites": "Kernel 574, Contracts 69, Setup 477, Providers 2332, pytest 44"
+        "suites": "Kernel 574, Contracts 69, Setup 477, Providers 2332, pytest 44",
+        "e2e_s0_5": "none 25,00 → lote 27,17 (Δ +2,17, IC [0,00, +4,83]); ninguna semilla baja",
+        "falsedades_6_semillas_a_mano": "none 15 → lote 10"
       },
-      "pc": "confirmación pendiente (e2e s0-2 y falsedades s0, el 2026-10-20)"
+      "pc": "confirmado: e2e s0-2 none 23,33 → lote 25,00 (Δ +1,67, IC [−0,67, +4,33]); suben E017, E027, E030; no baja ninguno"
     },
     "decision_dueno_2026_10_20_juego": "El dueño usa el PC (Roblox, 01:54): nada en el escritorio ni en la GPU del PC mientras juegue; la confirmación del lote arranca sola 3 min después. La repetición de E010/E011 corrió 1-2 min con el juego delante (01:58) antes de verlo.",
     "estudio_latido": "c2-e1.0 propone donde debía actuar o decir y calla avisos pedidos (decisión, no falta de un dato); la única ayuda de hecho posible (beat_no_pending) no sube escenas"

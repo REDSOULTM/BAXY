@@ -2683,3 +2683,17 @@ Por tipo (A / B, de 6):
 - **Incidente, 03:35:** en A s5 (none), F001 lanzó por error un juego real del notebook (game.launch 252950) y el
   modelo no lo mencionó. El dueño lo vio y se cerró en segundos. Los guardianes de las dos máquinas cierran ahora al
   instante cualquier juego que nazca con un BAXY de banco abierto, también en la fase 4.
+
+### El lote confirmado en el PC (2026-10-20 02:33-04:13, tras el juego del dueño)
+
+Binario 754599113 (pc-ayudas con pc-ayudas-6 fusionado, src = d7a76adf1), App Release 0 avisos, A = BAXY_AYUDAS=none
+frente a B = all (el lote), intercalado, home limpio en cada corrida y el juego del dueño comprobado antes de cada
+semilla.
+
+- **A 23/24/23 = 23,33; B 25/24/26 = 25,00.** Δ +1,67 ítems por semilla (IC 95 % [−0,67, +4,33]). Por mayoría
+  suben E017 (0 → 2), E027 (1 → 3) y E030 (1 → 3), y no baja ninguno; E011 2 → 3. E006, E014, E020 y E024 fallan en
+  los dos brazos.
+- 0 error y 0 setup_failed. Frente: en s1, 2 app.open quedaron detrás de WhatsApp en los dos brazos; en s0 y s2, 0.
+  MSConfig 0 y ningún 7040.
+- El signo coincide con las seis semillas del notebook (Δ +2,17). **El lote queda confirmado en las dos máquinas, y
+  el holdout se corre sobre d7a76adf1.**
