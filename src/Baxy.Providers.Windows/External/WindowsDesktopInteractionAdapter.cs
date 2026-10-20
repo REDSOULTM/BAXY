@@ -244,7 +244,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 || (operation == "input.pointer.control"
                     && !(root.TryGetProperty("pointerAction", out JsonElement pointer)
                         && pointer.ValueKind == JsonValueKind.String && pointer.GetString() == "move_center"));
-            return ExternalJson.Success(operation, deliveredOnly ? AsDelivered(root) : root.Clone(), effect);
+            return ExternalJson.Success(operation, deliveredOnly
+                ? AsDelivered(root, operation == "clipboard.paste" ? PastedInto(root) : null)
+                : root.Clone(), effect);
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
@@ -1241,17 +1243,46 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         return ExternalJson.Success(operation, result, true);
     }
 
-    private static JsonElement AsDelivered(JsonElement root) => ExternalJson.Create(writer =>
-    {
-        writer.WriteStartObject();
-        foreach (JsonProperty property in root.EnumerateObject())
+    private static JsonElement AsDelivered(JsonElement root, (string Title, string Process)? sentTo = null) =>
+        ExternalJson.Create(writer =>
         {
-            if (property.NameEquals("effectObserved"))
-                writer.WriteBoolean("delivered", property.Value.ValueKind == JsonValueKind.True);
-            else
-                property.WriteTo(writer);
-        }
+            writer.WriteStartObject();
+            foreach (JsonProperty property in root.EnumerateObject())
+            {
+                if (property.NameEquals("effectObserved"))
+                    writer.WriteBoolean("delivered", property.Value.ValueKind == JsonValueKind.True);
+                else
+                    property.WriteTo(writer);
+            }
 
-        writer.WriteEndObject();
-    });
+            if (sentTo is { } window)
+            {
+                writer.WriteStartObject("sentTo");
+                writer.WriteString("title", window.Title);
+                writer.WriteString("process", window.Process);
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndObject();
+        });
+
+    // BAXY Renew cu (C18): a paste goes to the window in front; with no app opened first it went into another program's
+    // window (a mail draft) and the reply named the app asked for. The window that took it, as the keys' sentTo says it:
+    // its title and its program, read before the keys.
+    internal static (string Title, string Process)? PastedInto(JsonElement root)
+    {
+        if (!root.TryGetProperty("foregroundTitleBefore", out JsonElement title) || title.ValueKind != JsonValueKind.String
+            || !root.TryGetProperty("foregroundProcessIdBefore", out JsonElement id) || !id.TryGetInt32(out int processId)
+            || processId <= 0)
+            return null;
+        try
+        {
+            using var process = System.Diagnostics.Process.GetProcessById(processId);
+            return (title.GetString() ?? string.Empty, process.ProcessName);
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
 }
