@@ -29,7 +29,7 @@ pedido real y de su variante en la máquina que lo arregló, y otra en la otra m
 | C10 | Formato en Word sobre lo seleccionado | **arreglado** (real y variante) | lector de ventanas grandes (PS 5.1); op `office.format.apply` por el modelo de objetos de Word, releída | PC ✓ (real y variante, COM) | 6d7bb0516, 30042658c |
 | C11 | Fila o columna de Excel con formato | **arreglado** (real y variante) | op `office.format.apply` (fila, columna, celdas), releída | PC ✓ (real y variante, COM) | 30042658c |
 | C12 | Pulsar un botón visible | **funciona** | — | — | — |
-| C13 | Colocar ventanas lado a lado | **arreglado** en el NB; **a medias** en el PC | `window_candidates`; en el PC el modelo elige un Chrome del dueño en pantalla completa, que no admite tamaño: ahora vuelve a maximizarse solo (`window_size_not_taken`) y la respuesta es cierta | — | 3f74b1afb, 48b1bdcf5 |
+| C13 | Colocar ventanas lado a lado | **arreglado** (en las dos máquinas) | `window_candidates`; una ventana que no admite tamaño vuelve a como estaba y lo dice (`window_size_not_taken`); una ventana a pantalla completa (todo el monitor, sin marco) sale de ella por su propia tecla (Esc, luego F11, posteadas a esa ventana, nunca al teclado) antes de colocarla (NB) | PC ✓: el Chrome del dueño con YouTube a pantalla completa queda en la mitad izquierda y Word en la derecha, respuesta cierta, 10 s | 3f74b1afb, 48b1bdcf5, 1c3de2f1c |
 | C14 | Control de una app de comunicación (su micrófono) | **arreglado** (real y variante) | op `client.microphone.set`: el botón «Silenciar» de Discord leído y conmutado por UIA, releído | (Discord sólo en el PC) | f1785af93 |
 | C15 | Reproducir en una app de música | **funciona** | — | — | — |
 | C16 | Reproducir en un sitio de vídeo | **funciona** | — | — | — |
@@ -41,14 +41,13 @@ cinco, `F:\BAXYeval\reales_v1\catalogos\lote3-cu.json`): **una** decision2 s0 en
 errores (referencia 228-229; prefijo anterior 230). Ningún caso del banco elige una operación nueva; los 9 que cambian
 (alarmas, volumen, archivos) son ruido de muestreo.
 
-**Suites sobre la fusión e2e031342** (pc-cu + nb-cu de esta vuelta, con la variante de C18 por COM): PC Kernel 581/581,
-Contracts 69/69, Setup 477/477, Providers 2417/2417, App compila (0 avisos), pytest 44/44; NB Providers 2403/2403 sobre
-45463725d. Cruzados en el NB: C04 variante, C05 real, C18 real, C10 variante y C11 real funcionan; en el PC: C10 variante,
+**Suites sobre la fusión final a0900861b** (pc-cu + nb-cu, con C18 por COM y C13 a pantalla completa): PC Kernel
+581/581, Contracts 69/69, Setup 477/477, Providers 2420/2420, App compila (0 avisos), pytest 44/44; NB Providers
+2403/2403 sobre 45463725d y sus clases de ventanas 43/43 sobre 1c3de2f1c. Cruzados en el NB: C04 variante, C05 real, C18 real, C10 variante y C11 real funcionan; en el PC: C10 variante,
 C11 real y variante, C18 variante con Word abierto.
 
-**Pedido real: 9 de 18 al empezar → 18 de 18 funcionan en al menos una máquina, 17 de 18 en las dos** (C13 en el PC
-depende de una ventana en pantalla completa del dueño; el NB trabaja en que una ventana a pantalla completa salga de ella
-antes de colocarla). Además del computer use, la vuelta dejó dos arreglos de
+**Pedido real: 9 de 18 al empezar → 18 de 18**, cada uno corrido en las dos máquinas salvo C14 (Discord sólo está en
+el PC) y C03 en frío (en el PC habría que cerrar el Steam del dueño). Las variantes, también. Además del computer use, la vuelta dejó dos arreglos de
 robustez: un código de error vacío de un proveedor envenenaba el diario y el motor no volvía a arrancar con ese perfil, y
 el snap de una ventana recién restaurada se pide otra vez si no se asentó.
 
@@ -97,7 +96,7 @@ el snap de una ventana recién restaurada se pide otra vez si no se asentó.
 
 1. 18 casos de computer use sacados de los pedidos reales del dueño, cada uno con una variante, corridos uno a uno en vivo
    en el producto real (Qwen3.5-4B ajustado, ≤4 GB), en dos máquinas.
-2. Antes: el pedido real funcionaba en **9 de 18**. Después: **18 de 18** en al menos una máquina y 17 de 18 en las dos.
+2. Antes: el pedido real funcionaba en **9 de 18**. Después: **18 de 18**, y también sus variantes.
 3. Las primeras causas eran del producto: el lector de ventanas en PowerShell 5.1 dejaba sin árbol toda ventana grande
    (Word, Excel), nombres de navegador o de aplicación que no casaban, un lugar que sólo aceptaba un número, recibos que
    no decían lo que el modelo necesitaba.
@@ -113,7 +112,8 @@ el snap de una ventana recién restaurada se pide otra vez si no se asentó.
    de Windows no se pulsa por clic. Un código vacío de un proveedor ya no impide que el motor vuelva a arrancar.
 9. Veracidad: los recibos dicen la fuente o el alcance real (buscador que respondió, micrófono de Windows o de la app,
    ventana que recibió lo pegado, juego hallado, celdas formateadas).
-10. Límite que queda: colocar una ventana a pantalla completa (vuelve a como estaba y lo dice). El prefijo final, con las cinco operaciones nuevas, no
+10. Sin límites abiertos en los 18 casos. Fuera de ellos: Word o Excel ya abiertos van por su modelo de objetos (sólo en
+    el documento recién creado) y el resto de las apps por la apertura de siempre. El prefijo final, con las cinco operaciones nuevas, no
     empeora la decisión: decision2 s0 229/268, 0 errores (referencia 228-229); ningún caso del banco las elige.
 
 ## Suites sobre la fusión final (2f8acb371)
