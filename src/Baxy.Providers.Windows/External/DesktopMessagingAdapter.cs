@@ -134,6 +134,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             cancellationToken).ConfigureAwait(false);
         if (!draft.Verified)
         {
+            if (draft.ErrorCode == ComposerHasPersonDraft)
+                return StoppedAtPersonDraft("message.draft", draft);
             return Failure(
                 "message.draft",
                 draft.ErrorCode ?? "message_draft_not_verified",
@@ -201,6 +203,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             cancellationToken).ConfigureAwait(false);
         if (!sent.Verified)
         {
+            if (sent.ErrorCode == ComposerHasPersonDraft)
+                return StoppedAtPersonDraft("message.send", sent);
             return Failure(
                 "message.send",
                 sent.ErrorCode ?? "message_delivery_not_verified",
@@ -280,6 +284,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             cancellationToken).ConfigureAwait(false);
         if (!sent.Verified)
         {
+            if (sent.ErrorCode == ComposerHasPersonDraft)
+                return StoppedAtPersonDraft("message.send.test", sent);
             return Failure(
                 "message.send.test",
                 sent.ErrorCode ?? "message_delivery_not_verified",
@@ -402,6 +408,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     // C2, C3: a recipient is resolved only with what the client showed naming it; a lookup that did not end on the
     // recipient fails with its cause and, when a search row was read, that row as «observed», or the rows of the chat
     // list as «candidates».
+    // Uso real 2026-10-21 (e2e del notebook): a lookup that touched the client is an effect that may have occurred, and
+    // the model told «le mandé el mensaje»; the message itself was neither written nor sent, and the result says so.
     private static ExternalCapabilityReceipt? Unresolved(string operation, DesktopRecipientObservation observation) =>
         observation.Verified && observation.Shown is not null
             ? null
@@ -409,11 +417,14 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 operation,
                 observation.EffectObserved,
                 false,
-                observation.Candidates is { } candidates
-                    ? ExternalJson.Create(writer =>
+                ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteBoolean("messageWritten", false);
+                    writer.WriteBoolean("sent", false);
+                    if (observation.Candidates is { } candidates)
                     {
-                        writer.WriteStartObject();
-                        writer.WriteNumber("version", 1);
                         // Ronda final 10 (regla 3): the eight listed are never read as all the chat list held.
                         writer.WriteNumber("candidateCount", Math.Max(observation.CandidateCount, candidates.Count));
                         if (observation.CandidateCount > candidates.Count) writer.WriteBoolean("truncated", true);
@@ -423,10 +434,21 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                             writer.WriteStringValue(candidate);
                         }
                         writer.WriteEndArray();
-                        writer.WriteEndObject();
-                    })
-                    : observation.Shown is null ? null : JsonObject(("version", 1), ("observed", observation.Shown)),
+                    }
+                    else if (observation.Shown is not null)
+                    {
+                        writer.WriteString("observed", observation.Shown);
+                    }
+
+                    writer.WriteEndObject();
+                }),
                 observation.ErrorCode ?? "recipient_identity_not_verified");
+
+    // A flow stopped at the person's own draft in the composer, before the message was typed: nothing written or sent.
+    private static ExternalCapabilityReceipt StoppedAtPersonDraft(string operation, DesktopMessageObservation observation) =>
+        new(operation, observation.EffectObserved, false, JsonObject(("version", 1), ("messageWritten", false), ("sent", false)),
+            ComposerHasPersonDraft)
+        { EffectMayHaveOccurred = observation.EffectMayHaveOccurred };
 
     private static JsonElement JsonObject(params (string Name, object? Value)[] values)
     {

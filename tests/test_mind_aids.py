@@ -192,3 +192,13 @@ def test_a_sentence_aid_ends_its_tools_description_only_when_on(tmp_path: Path, 
     settings, trash = _description(mind, "system_settings_set"), _description(mind, "filesystem_known_trash_named")
     assert settings.endswith("do not turn on the accessible mode in its place.") is modes
     assert trash.endswith("the one filesystem_list shows).") is folder
+
+
+def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None:
+    # Uso real 2026-10-21 (e2e del notebook): «le mandé el mensaje» after a send stopped at the person's draft.
+    from baxy_mind.mind import _outcome
+    stopped = json.dumps({"status": "failed", "error": "composer_has_person_draft", "effectUncertain": True,
+                          "observed": {"version": 1, "messageWritten": False, "sent": False}})
+    unsure = json.dumps({"status": "failed", "error": "message_delivery_not_verified", "effectUncertain": True})
+    assert _outcome(stopped) == "falló (composer_has_person_draft): el mensaje no se escribió ni se envió"
+    assert _outcome(unsure) == "sin confirmar: pudo o no ocurrir"

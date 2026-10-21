@@ -117,6 +117,12 @@ def _outcome(observation: str) -> str:
         return "no se ejecutó: espera el sí de la persona"
     if status == "cancelled":
         return "cancelado por la persona"
+    # Uso real 2026-10-21 (e2e del notebook): a message stopped before it was written touched the client (an uncertain
+    # effect) and the model told «le mandé el mensaje»; what the result knows of the message comes first.
+    shown = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
+    if status != "completed" and shown.get("sent") is False and shown.get("messageWritten") is False:
+        error = facts.get("error") or facts.get("cause")
+        return "falló" + (f" ({error})" if error else "") + ": el mensaje no se escribió ni se envió"
     if status == "pending" or facts.get("effectUncertain"):
         return "sin confirmar: pudo o no ocurrir"
     if status == "completed":
