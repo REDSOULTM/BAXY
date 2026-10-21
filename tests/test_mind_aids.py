@@ -140,6 +140,26 @@ def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: 
     assert "input_visible_click ya se hizo 3 veces en este turno" in tools[4]
 
 
+@pytest.mark.parametrize("setting,still,told", [("all", False, 1), ("all", True, 0), ("all", None, 0), ("none", False, 0)])
+def test_a_click_whose_label_left_the_screen_tells_the_field_may_have_the_cursor_once(
+        tmp_path: Path, monkeypatch, setting: str, still: bool | None, told: int) -> None:
+    # Uso real 2026-10-21 (e2e del notebook): Steam's «Buscar en la tienda» pressed four times, no typing.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    observed = {"ok": True, "name": "Buscar"} | ({} if still is None else {"labelStillOnScreen": still})
+    pressed = json.dumps({"status": "completed", "observed": observed})
+    click = _call("input_visible_click", {"label": "Buscar en la tienda"})
+    mind, server = _mind(tmp_path, [click, click, _say("Listo.")])
+    mind.decide(1, "busca un juego en la tienda")
+    mind.continue_turn(2, pressed)
+    mind.continue_turn(3, pressed)
+    tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    notes = [t for t in tools if "tras el clic ya no se ve «Buscar en la tienda»" in t]
+    assert len(notes) == told
+    if told:
+        assert "input_text_type" in notes[0]
+        assert [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]["aids"]["field_focused_next"].startswith("[Ayuda")
+
+
 def test_the_applications_with_places_are_named_from_the_data(tmp_path: Path) -> None:
     # PLAN_GENERAL A6 (uso real 2026-10-21: Epic had places in the data, but the hand-written sentences did not name it).
     mind, _ = _mind(tmp_path, [])

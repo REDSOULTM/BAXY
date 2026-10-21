@@ -211,6 +211,26 @@ def places_note(application: str) -> str:
             f"«{application}» y place {listed}.]")
 
 
+FIELD_NOTE = ("\n[Ayuda: tras el clic ya no se ve «{label}»: si era la indicación de un campo (buscar, escribir), el "
+              "campo tiene ahora el cursor y lo siguiente es escribir en él con input_text_type, no pulsarlo otra vez.]")
+
+
+def field_note(observation: str, args: str | None) -> str:
+    """Aid «field_focused_next» (uso real 2026-10-21, e2e del notebook: Steam's «Buscar en la tienda» pressed four times
+    and «no pude escribir» told without typing): a completed click whose label is no longer on screen, as its own
+    result says, is told as the fact it may be: a field's hint that left because the field has the cursor."""
+    try:
+        facts, called = json.loads(observation), json.loads(args or "{}")
+    except json.JSONDecodeError:
+        return ""
+    observed = facts.get("observed") if isinstance(facts, dict) else None
+    label = called.get("label") if isinstance(called, dict) else None
+    if (not isinstance(observed, dict) or facts.get("status") != "completed"
+            or observed.get("labelStillOnScreen") is not False or not isinstance(label, str) or not label.strip()):
+        return ""
+    return FIELD_NOTE.format(label=label.strip())
+
+
 SAME_CALL_TOLD = 3
 SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se hizo {times} veces en este turno con los mismos argumentos y el mismo "
                   "resultado ({outcome}); otra vez igual dará lo mismo. Opciones: otra herramienta, otros argumentos, "
@@ -716,6 +736,12 @@ class Mind:
             if note:
                 turn["places_told"] = True
                 aids["app_places_next"] = note.strip()
+        if calling == "input_visible_click" and not turn.get("field_told") and _aid_on("field_focused_next"):
+            field = field_note(observation, turn.get("calling_args"))
+            if field:
+                turn["field_told"] = True
+                note += field
+                aids["field_focused_next"] = field.strip()
         # Aid «same_call_next» (PLAN_GENERAL C2; uso real: the same click 5-7 times, a reload and a typing in turn): a
         # call made a third time in this turn with the same arguments and the same result, whatever came between, is
         # told as a fact with its options, once per turn (a loop of a look and a click repeats both).
