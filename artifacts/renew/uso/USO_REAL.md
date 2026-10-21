@@ -28,6 +28,7 @@ El plan general (investigación y piezas A1-A7, B1-B3, C1-C4) está en `PLAN_GEN
 | 7 | Calculadora: un «2» repetido salía 22 | Pantalla igual tras la pulsación | (El modelo usa `calculator.expression.evaluate`) | e2e U08 y U09 en todas las corridas |
 | 8 | El tiempo de mañana: URLs de Google News de ~500 tokens copiadas mal | El modelo copiaba URLs enormes | Referencias cortas `ref:rN` (C1) | e2e U10 en todas las corridas |
 | 9 | «Ábrela en mi navegador» tras leer una guía buscaba archivos | El modelo eligió mal | (Pasa ahora) | e2e U11 en todas las corridas |
+| 23 | Buscar un juego en la tienda de Steam: pulsaba el buscador cuatro veces y decía «no pude escribir» sin escribir | El clic sí había puesto el cursor (la indicación desapareció, `labelStillOnScreen: false`), y el modelo no lo sabía | Ayuda `field_focused_next` (bd8dbd3b7): tras un clic completado cuyo texto ya no se ve, se dice que el campo puede tener el cursor y que lo siguiente es `input_text_type`; una vez por turno, en `turn.aid` | e2e U06 en nb-9: escribió, pulsó el resultado y quedó en la página del juego |
 
 ## Pendientes
 
@@ -38,9 +39,9 @@ El plan general (investigación y piezas A1-A7, B1-B3, C1-C4) está en `PLAN_GEN
 | 10 | Historia (Arturo Prat): mezcla hechos de los fragmentos o no busca e inventa | Límite del modelo | Pasó en nb-5, falló en nb-1 y nb-4 |
 | 17 | «Busca X en Epic» va al catálogo o a «¿lo tengo?» en vez de la búsqueda | El modelo eligió mal | Propuesta: frases «cuándo no usar» en esas dos herramientas, con banco de control en el notebook |
 | 18 | «La configuración del sistema… pantalla» abre msconfig, protegido, en vez de Configuración | El modelo confunde dos nombres casi iguales; el recibo ya le dice qué app tiene el lugar | Límite del modelo |
-| 19 | Tras pulsar el carrito por visión (verificado), el modelo no reconoce la página y vuelve a pulsar | El modelo no confía en el recibo | Pendiente |
+| 19 | Pulsar un icono sin texto (el carrito del lanzador): la visión señaló el botón «Tienda» (icono de bolsa) y el clic se dio por bueno porque la página cambió | Proveedor: la visión no comprobaba qué había escrito bajo su punto (`WindowsVisibleVisionLocator.cs`) | Arreglado en bd8a3f1fe y 0aafc68c1: el OCR lee lo escrito junto al punto (margen lateral de una altura de letra); si es otra etiqueta, se pregunta otra vez diciendo cuál no es, y un segundo punto así no pulsa. En nb-9 y nb-10 rechazó los puntos malos. U05 sigue fallando porque el modelo a veces no pide «Carrito» (pulsa «Tienda» u ofertas): límite del modelo |
 | 20 | Opera GX en el notebook: página «Actualización finalizada» y bucles de pestaña nueva | Entorno (actualización) y el modelo | Pasó en nb-2 y nb-4; repetir con el entorno quieto |
-| 21 | Steam en el notebook: la ventana no aparece en la mirada | Entorno: el agente local del notebook trabajaba en el escritorio durante nb-5 | Repetir con el entorno quieto |
+| 21 | Steam en el notebook: la ventana no aparece en la mirada | Entorno: el agente local del notebook trabajaba en el escritorio durante nb-5 | Con el entorno quieto (nb-8) Steam sí se vio; luego resuelto como el caso 23 |
 | 22 | Abrir la página de un juego en el lanzador: el modelo pulsó por la tienda hasta la caja de pago de otro juego («Cómpralo ya» ×2) e intentó «Pagar» | Seguro de compras: sólo reconocía el verbo en infinitivo (`RiskPolicy.cs:363`), así que «Cómpralo ya» pasó sin preguntar. «Pagar» sí se detuvo y se respondió «no»: no se pagó nada (journal sin la entrada de ese clic) | Arreglado en 587477ff9: también el imperativo, con pronombre pegado, «Purchase», «Pre-order» y «Adquirir»; el sustantivo («Compras») no. Kernel 588/588, y el patrón probado con el motor de PowerShell del worker de UIA. **Falta la prueba en BAXY**, que espera al dueño |
 
 ## Medidas del e2e en el notebook (15 casos)
@@ -50,3 +51,10 @@ El plan general (investigación y piezas A1-A7, B1-B3, C1-C4) está en `PLAN_GEN
 | nb-1 | 8/15 | Consola del lanzador visible delante (contaminó) |
 | nb-4 | 8/15 | Consola oculta; índices inválidos ya en cascada |
 | nb-5 | 10/15 | Mapa de movimiento y lugar `game` de Epic; el agente local trabajaba a la vez (Steam) |
+| nb-6 | U01 1/1 | Entorno quieto: el foco con Opera pasa |
+| nb-7 | — | Detenida por el dueño: el caso 22 (caja de pago sin preguntar) |
+| nb-8 | 0/4 (U03, U05, U06, U13) | Con el seguro de compras arreglado y un vigilante que corta todo ante una caja de pago: no cortó nada |
+| nb-9 | U06 1/1, U05 0/1 | Ayuda del campo con el cursor; la visión ya no pulsa sobre otra etiqueta |
+| nb-10 | U05 0/1 | El modelo no pidió «Carrito»; la visión rechazó dos puntos malos |
+
+Toda corrida desde nb-8 lleva el vigilante de compras (`guard_compras.ps1`, fuera del repositorio): ninguna caja de pago, ningún clic de compra.
