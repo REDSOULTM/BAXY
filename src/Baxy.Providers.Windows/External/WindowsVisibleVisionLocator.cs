@@ -124,6 +124,13 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 return null;
             int x = (int)Math.Round(centre.X / 1000 * before.Width);
             int y = (int)Math.Round(centre.Y / 1000 * before.Height);
+            // Uso real 2026-10-21 (e2e del notebook): asked for the launcher's cart icon, the model answered a point of
+            // the left column; the press changed the page and passed for the cart. A point on another written label is
+            // not the control asked for: nothing is pressed. An icon has no words under it and goes on.
+            IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? layout =
+                await WindowsVisibleOcrLocator.ReadLayoutAsync(before.Bmp, 400, cancellationToken).ConfigureAwait(false);
+            if (OtherTextAt(layout, label, x, y) is not null)
+                return ExternalJson.FailureBeforeEffect(operation, "vision_point_on_other_label");
             int screenX = before.Left + x;
             int screenY = before.Top + y;
             // The control at the located point, pressed through the accessible tree when it has a way (no cursor);
@@ -239,6 +246,43 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 ? ExternalJson.FailureAfterEffect(operation, "visible_click_postread_invalid")
                 : ExternalJson.Failure(operation, "vision_provider_request_failed");
         }
+    }
+
+    // Room around a word's box, in capture pixels: a point on the edge of a word is on it.
+    private const int WordMargin = 4;
+
+    /// <summary>
+    /// The written word under a located point when it is not the label asked for (none of the label's words in it, nor it
+    /// in the label); null on an icon, on blank room, or on the label itself. Single characters and numbers (a badge on
+    /// an icon, «x») do not count as another label.
+    /// </summary>
+    internal static string? OtherTextAt(IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? layout, string label, int x, int y)
+    {
+        if (layout is null)
+            return null;
+        string wanted = WindowsVisibleOcrLocator.Fold(label);
+        string[] wantedWords = wanted.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        foreach (WindowsVisibleOcrLocator.LayoutLine line in layout)
+        {
+            IEnumerable<WindowsVisibleOcrLocator.LayoutWord> words = line.Words
+                ?? [new WindowsVisibleOcrLocator.LayoutWord(line.Text, line.X, line.Y, line.Width, line.Height)];
+            foreach (WindowsVisibleOcrLocator.LayoutWord word in words)
+            {
+                if (x < word.X - WordMargin || x > word.X + word.Width + WordMargin
+                    || y < word.Y - WordMargin || y > word.Y + word.Height + WordMargin)
+                    continue;
+                string read = WindowsVisibleOcrLocator.Fold(word.Text).Trim('.', ',', ':', ';', '!', '?', '«', '»', '"', '\'');
+                if (read.Length < 2 || read.All(char.IsDigit))
+                    continue;
+                string lineRead = WindowsVisibleOcrLocator.Fold(line.Text);
+                if (wanted.Contains(read, StringComparison.Ordinal) || read.Contains(wanted, StringComparison.Ordinal)
+                    || wantedWords.Any(part => part.Length >= 3 && lineRead.Contains(part, StringComparison.Ordinal)))
+                    continue;
+                return word.Text;
+            }
+        }
+
+        return null;
     }
 
     private const string HeldFile = "baxy_vision_hold.bin";
