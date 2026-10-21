@@ -55,6 +55,33 @@ def test_the_cores_aids_are_traced_by_their_fields_and_never_change_the_result(t
     assert _trace(mind)[-1]["stage"] == "turn.continue"
 
 
+CLICK_UNSURE = json.dumps({"status": "failed", "error": "visible_surface_changed_while_waiting"})
+CLICKED = json.dumps({"status": "completed", "observed": {"ok": True, "name": "TIENDA"}})
+
+
+@pytest.mark.parametrize("setting,clicks,told", [("all", [CLICK_UNSURE, CLICK_UNSURE], 1), ("none", [CLICK_UNSURE], 0),
+                                                 ("all", [CLICKED], 0)])
+def test_a_click_that_fails_in_an_application_with_places_tells_them_once(tmp_path: Path, monkeypatch, setting: str,
+                                                                          clicks: list[str], told: int) -> None:
+    # Uso real 2026-10-20: seven clicks in Steam's web-drawn store while app_open opens its store and its search.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    script = [_call("app_open", {"appId": "Steam"})] + [_call("input_visible_click", {"label": "TIENDA"})] * len(clicks)
+    mind, server = _mind(tmp_path, [*script, _say("Listo.")])
+    mind.decide(1, "abre steam y entra en la tienda")
+    mind.continue_turn(2, OPENED)
+    for index, click in enumerate(clicks):
+        mind.continue_turn(3 + index, click)
+    tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    notes = [t for t in tools if "[Ayuda: Steam también se abre directo en sus lugares" in t]
+    assert len(notes) == told
+    if told:
+        assert notes[0].endswith("place community, game (placeValue: el número del juego), library, "
+                                 "results (placeValue: lo que se busca), store.]")
+        assert [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]["aids"]["app_places_next"].startswith("[Ayuda")
+    else:
+        assert not [r for r in _trace(mind) if r["stage"] == "turn.aid"]
+
+
 SETTINGS_AND_TRASH = {"capabilities": [
     {"name": "system.settings.set", "description": "Set a setting.", "argumentsSchema": {"type": "object", "properties": {}}},
     {"name": "filesystem.known.trash.named", "description": "Delete by name.",

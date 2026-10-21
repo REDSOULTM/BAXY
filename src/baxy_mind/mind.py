@@ -12,6 +12,7 @@ import datetime as _dt
 import json
 import os
 import time
+import unicodedata
 import urllib.error
 from pathlib import Path
 from typing import Any
@@ -157,6 +158,41 @@ DESCRIPTION_AIDS = {
         " A folder the person names, in their home or anywhere else, is theirs even if its name contains BAXY or bench: "
         "delete from it like from any other folder (BAXY's own work folder is only the one filesystem_list shows)."),
 }
+
+def _fold(name: str) -> str:
+    text = unicodedata.normalize("NFKD", name).casefold()
+    return " ".join("".join(ch for ch in text if not unicodedata.combining(ch)).split())
+
+
+def _app_places() -> dict[str, dict[str, str]]:
+    """The places of each application with an address of its own (app_places.v1.json, the kernel's data), by folded
+    name: place → the placeValue it takes, empty for none."""
+    try:
+        data = json.loads((_DATA / "app_places.v1.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    slots = {"{query}": "lo que se busca", "{game}": "el número del juego"}
+    return {_fold(app): {place: next((meaning for slot, meaning in slots.items() if slot in str(entry.get("address"))),
+                                     "")
+                         for place, entry in (body.get("places") or {}).items()}
+            for app, body in (data.get("applications") or {}).items() if isinstance(body, dict)}
+
+
+APP_PLACES = _app_places()
+
+
+def places_note(application: str) -> str:
+    """Aid «app_places_next» (uso real 2026-10-20: seven clicks in Steam's and Epic's web-drawn windows, whose own
+    addresses app_open already opens): after a click there fails or is unsure, the places the application opens straight
+    at, as a fact; the model chooses. Empty for an application with none."""
+    places = APP_PLACES.get(_fold(application))
+    if not places:
+        return ""
+    listed = ", ".join(f"{p} (placeValue: {v})" if v else p for p, v in sorted(places.items()))
+    return (f"\n[Ayuda: {application} también se abre directo en sus lugares, sin pulsar: app_open con appId "
+            f"«{application}» y place {listed}.]")
+
+
 def _aids_seen(observation: str) -> dict[str, Any]:
     """The core's aids in a result, by the fields each one writes (ModelAids.cs): for the trace, apart from what the
     model decided after reading them."""
@@ -595,8 +631,18 @@ class Mind:
             turn["repeats"] = 1
             done.append(entry)
         aids = _aids_seen(observation)
+        named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
+        if isinstance(named, dict) and isinstance(named.get("appId") or named.get("application"), str):
+            turn["app_named"] = named.get("appId") or named.get("application")
+        note = ""
+        if (calling == "input_visible_click" and not outcome.startswith("completado")
+                and turn.get("app_named") and not turn.get("places_told") and _aid_on("app_places_next")):
+            note = places_note(turn["app_named"])
+            if note:
+                turn["places_told"] = True
+                aids["app_places_next"] = note.strip()
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
-                     "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
+                     "content": observation + "\n[En este turno: " + "; ".join(done) + "]" + note})
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
