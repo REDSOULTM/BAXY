@@ -560,6 +560,9 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             MemoryHandlersJsonContext.Default.MemoryMutationWireResult);
     }
 
+    // What an exact recall that matched nothing shows of the memory, as a list's view does.
+    private const int RecallMissShown = 20;
+
     private OperationOutcome Recall(
         OperationInvocation invocation,
         OpenedBoundProtectedJson opened)
@@ -604,6 +607,26 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                         opened.SessionId,
                         LocalMemoryStore.MaximumRecallResults)).Records.ToArray();
                     totalCount = records.Length;
+                    if (records.Length == 0)
+                    {
+                        // Uso real 2026-10-21 (e2e del notebook y el «¿cómo me llamo?» del dueño): the model saves under
+                        // a name it makes up and asks under another («comida favorita» for favorite_food), and an exact
+                        // miss read «nothing remembered» with the fact there. With no exact match, what is remembered
+                        // comes back (the first ones, with the total), and the model tells which one answers.
+                        MemoryRecord[] all = _store.List(new MemoryListRequest(
+                            opened.SessionId,
+                            MaximumResults: LocalMemoryStore.MaximumListResults)).Records.ToArray();
+                        totalCount = all.Length;
+                        records = all.Take(RecallMissShown).ToArray();
+                        return SealedRecordsSuccess(
+                            invocation,
+                            opened.SessionId,
+                            records,
+                            totalCount,
+                            offset: 0,
+                            limit: RecallMissShown);
+                    }
+
                     break;
                 }
             case "all" when selector is null:
