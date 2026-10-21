@@ -203,6 +203,11 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                         }
                     }
                     if (alreadyPlaying) writer.WriteBoolean("alreadyPlaying", true);
+                    // e2e nb-29 («otra canción de los Bunkers»): the leftmost play control was a playlist's and Romeo
+                    // Santos played, told as done. What plays is said when it holds none of the words searched.
+                    if (!exactSelection && !QueryHeard(title, StringField(response.RootElement, "observedNowPlaying"),
+                            StringField(response.RootElement, "title")))
+                        writer.WriteBoolean("queryMatched", false);
                     writer.WriteString("playbackStatus", "playing");
                     writer.WriteNumber("processId", response.RootElement.GetProperty("processId").GetInt32());
                     writer.WriteString("authority", "spotify_windows_uia_postread"); writer.WriteEndObject();
@@ -270,6 +275,36 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
     // title, the control pressed, the now-playing line (folded, as the script compares it) and, in query mode, the
     // observation that told the press started playback (BAXY Renew audit 2026-10-15, S2, S5, S7).
     private static readonly string[] ObservedFields = ["title", "selectedControl", "observedNowPlaying", "playbackEvidence"];
+
+    private static string StringField(JsonElement response, string name) =>
+        response.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString() ?? string.Empty
+            : string.Empty;
+
+    /// <summary>
+    /// Whether what plays (the now-playing line and the window's title) holds a word of the search of four letters or
+    /// more («los», «de» left out); true when the search has none or nothing was read.
+    /// </summary>
+    internal static bool QueryHeard(string query, string nowPlaying, string windowTitle)
+    {
+        string heard = Fold(nowPlaying + " " + windowTitle);
+        string[] words = Fold(query).Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(word => word.Length >= 4).ToArray();
+        return words.Length == 0 || heard.Trim().Length == 0 || words.Any(word => heard.Contains(word, StringComparison.Ordinal));
+    }
+
+    private static string Fold(string value)
+    {
+        string form = value.Normalize(System.Text.NormalizationForm.FormD).ToLowerInvariant();
+        var builder = new System.Text.StringBuilder(form.Length);
+        foreach (char character in form)
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
+                != System.Globalization.UnicodeCategory.NonSpacingMark)
+                builder.Append(char.IsLetterOrDigit(character) ? character : ' ');
+        }
+
+        return builder.ToString();
+    }
 
     // The script's stage before it searches (and so before it presses anything): it only brought the client up and
     // looked for its search box.
