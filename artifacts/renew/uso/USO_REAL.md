@@ -41,6 +41,7 @@ El plan general (investigación y piezas A1-A7, B1-B3, C1-C4) está en `PLAN_GEN
 | 19 | Tras pulsar el carrito por visión (verificado), el modelo no reconoce la página y vuelve a pulsar | El modelo no confía en el recibo | Pendiente |
 | 20 | Opera GX en el notebook: página «Actualización finalizada» y bucles de pestaña nueva | Entorno (actualización) y el modelo | Pasó en nb-2 y nb-4; repetir con el entorno quieto |
 | 21 | Steam en el notebook: la ventana no aparece en la mirada | Entorno: el agente local del notebook trabajaba en el escritorio durante nb-5 | Repetir con el entorno quieto |
+| 22 | Abrir la página de un juego en el lanzador: el modelo pulsó por la tienda hasta la caja de pago de otro juego («Cómpralo ya» ×2) e intentó «Pagar» | Seguro de compras: sólo reconocía el verbo en infinitivo (`RiskPolicy.cs:363`), así que «Cómpralo ya» pasó sin preguntar. «Pagar» sí se detuvo y se respondió «no»: no se pagó nada (journal sin la entrada de ese clic) | Arreglado en 587477ff9: también el imperativo, con pronombre pegado, «Purchase», «Pre-order» y «Adquirir»; el sustantivo («Compras») no. Kernel 588/588, y el patrón probado con el motor de PowerShell del worker de UIA. **Falta la prueba en BAXY**, que espera al dueño |
 
 ## Medidas del e2e en el notebook (15 casos)
 
