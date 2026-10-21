@@ -337,6 +337,17 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Uso real 2026-10-21 (e2e del notebook): a contact without a photo shows its initial left of the name.
+    [TestCase("A Abuela", "Abuela", "Abuela")]
+    [TestCase("+ A Abuela", "Abuela", "Abuela")]
+    [TestCase("Abuela", "Abuela", "Abuela")]
+    [TestCase("B Abuela", "Abuela", null)]
+    [TestCase("A Abuelo", "Abuela", null)]
+    [TestCase("A Maria Jose", "Maria", null)]
+    [TestCase("M Mario", "Maria", null)]
+    public void TheHeaderSetsAsideOnlyALetteredAvatar(string read, string recipient, string? expected) =>
+        Assert.That(WindowsDesktopMessagingAutomation.HeaderLine(read, recipient), Is.EqualTo(expected));
+
     // Uso real 2026-10-21 (e2e del notebook): in the normalized 1280 px window this WhatsApp's chat list ends at about
     // 452 logical px and the conversation's avatar starts at about 468: the composer band starts between them.
     [Test]

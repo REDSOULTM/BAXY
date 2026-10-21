@@ -1453,9 +1453,46 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             {
                 return line.Trim();
             }
+
+            if (WithoutAvatar(line, target) is { } named)
+            {
+                return named;
+            }
         }
 
         return null;
+    }
+
+    // Uso real 2026-10-21 (e2e del notebook): a contact without a photo has a lettered avatar left of the name, read on
+    // the name's line («A Abuela»), and the exact header read failed every send. Before the name only icons (no letter
+    // or digit) and that one initial letter are set aside; the rest must still be the recipient exactly.
+    internal static string? WithoutAvatar(string line, string target)
+    {
+        string folded = Fold(target);
+        if (folded.Length == 0)
+        {
+            return null;
+        }
+
+        string[] words = line.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        int start = 0;
+        while (start < words.Length && !words[start].Any(char.IsLetterOrDigit))
+        {
+            start++;
+        }
+
+        if (start < words.Length && words[start].Length == 1 && Fold(words[start]) == folded[..1])
+        {
+            start++;
+        }
+
+        if (start == 0 || start >= words.Length)
+        {
+            return null;
+        }
+
+        string rest = string.Join(' ', words[start..]);
+        return NamesRecipient(rest, target) ? rest : null;
     }
 
     // A sent bubble may wrap («prueba 1 de WhatsApp, ya funciona de nuevo») and
