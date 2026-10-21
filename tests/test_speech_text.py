@@ -26,6 +26,7 @@ def test_cardinal(n: int, words: str) -> None:
     ("Tu 1.ª reunión con el Sr. Pérez.", "Tu primera reunión con el señor Pérez."),
     ("Abrí Steam y Spotify en Disney+.", "Abrí Estím y Espótifai en Dísni plus."),
     ("Hola, soy BAXY.", "Hola, soy Báksi."),
+    ("Déjame ver… listo — ya está.", "Déjame ver... listo, ya está."),
 ])
 def test_spoken(text: str, said: str) -> None:
     assert spoken(text) == said

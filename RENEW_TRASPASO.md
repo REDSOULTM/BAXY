@@ -246,6 +246,20 @@ proceso de la mente; el runtime ya traía sherpa-onnx 1.13.4 y scipy, sin depend
   asignador abre a 91 ms; falta oírlo en uso real.
 - **Licencia:** el modelo es OpenRAIL-M. Para distribuirlo hay que incluir la licencia y avisar que la voz es
   sintética. El repositorio de Supertonic está archivado.
+- **Arreglos del 2026-10-20 (quejas del dueño en uso real):**
+  - **Idioma y semilla nunca se aplicaban:** `config.extra[...] = ...` se pierde (pybind11 devuelve una copia), así
+    que BAXY hablaba con la etiqueta «en» y una semilla al azar. Ahora `config.extra = {...}`.
+  - **Silencios:** cada toma traía 0,35–0,67 s de silencio por lado; se recorta a la voz (-40 dB) y la pausa es
+    0,35 s (0,45 s tras una pregunta). Volumen medido sólo sobre la voz; velocidad según el largo de la frase;
+    respuestas cortas en una llamada; «…» y rayas pasados a lo que se dice.
+  - **«Un momento»:** se sintetiza una vez al cargar (suena en 0,05–0,14 s); si llega la respuesta antes de que
+    suene, no se dice; lo cancelado (la persona habla encima) ya no se sintetiza y no retiene la respuesta siguiente
+    (esperaba 2,8–5,7 s). El dueño puede apagarlo: Ajustes → Voz → «Decir «Un momento»» (`waitNotice`); con la voz
+    silenciada tampoco se dice.
+  - **Palabra de activación:** 4 copias desfasadas del detector k4 (`StaggeredWake` en `voice.py`): «BAXY» se oye a
+    0,28 s p50 (0,46 s máx.) tras la palabra, antes 1,18 s (1,36 s); falsos en 99 palabras parecidas 35 frente a 32.
+  - **Subtítulos:** el anterior ya no reaparece ni se re-anima cuando BAXY vuelve a hablar.
+  - Pasos de cálculo: el dueño eligió quedarse en 10 por ahora (empieza a hablar en 1,68 s p50; 6 pasos: 1,08 s).
 
 ## Interfaz v4 (2026-10-17, encargo del dueño con `design_handoff_baxy`)
 

@@ -39,6 +39,38 @@ DIRECT_WAIT_S = 6.0     # direct mode (microphone button): time for the request 
 MAX_S = 12.0
 KEEP_S = 30.0
 PARTIAL_S = 0.8         # while a request is heard, what was said so far is decoded again this often (live captions)
+WAKE_COPIES = 4         # staggered copies (StaggeredWake): 0.28 s p50 after the word, 0.46 s at most (1 copy: 1.18, 1.36)
+
+
+class StaggeredWake:
+    """The k4 detector heard «Baxy» only when its encoder finished a 1.28 s chunk: 1.18 s p50 (1.36 s at most) after the
+    word ended (owner, 2026-10-20: «suena después y ya perdí lo que le iba a decir»). Several copies, each a fraction of
+    a chunk behind the one before, finish a chunk that much more often; each is the same detector on the same audio, and
+    a firing of any of them counts once (the package's own re-arm, 2 s). Times are the audio's own, as the package's."""
+
+    def __init__(self, make: Callable[[], Any], copies: int, rearm_s: float) -> None:
+        self._copies = [make() for _ in range(copies)]
+        chunk_s = self._copies[0].shift * 0.01   # fbank frames of 10 ms
+        self._lead = [k * chunk_s / copies for k in range(copies)]
+        self._rearm_s = rearm_s
+        self.reset()
+
+    def reset(self) -> None:
+        self._last = -1e9
+        for detector, lead in zip(self._copies, self._lead):
+            detector.reset()
+            if lead:
+                detector.accept(np.zeros(int(lead * RATE), np.float32))
+
+    def accept(self, block: np.ndarray) -> list[Any]:
+        heard = []
+        for detector, lead in zip(self._copies, self._lead):
+            for detection in detector.accept(block):
+                detection.time_s -= lead
+                if detection.time_s - self._last >= self._rearm_s:
+                    self._last = detection.time_s
+                    heard.append(detection)
+        return heard
 
 
 class Voice:
@@ -136,9 +168,9 @@ class Voice:
                 sys.modules["baxy_wake_k4"] = module
                 spec.loader.exec_module(module)
                 config = json.loads((wake / "config.json").read_text(encoding="utf-8"))
-                self._detector = module.BaxyWakeDetector(
+                self._detector = StaggeredWake(lambda: module.BaxyWakeDetector(
                     wake / config["encoder"]["file"], wake / config["head"]["file"], threshold=config["threshold"],
-                    debounce_s=config["debounce_s"], threads=1)
+                    debounce_s=config["debounce_s"], threads=1), WAKE_COPIES, float(config["debounce_s"]))
             else:
                 self.failure = self.failure or "BAXY_RENEW_WAKE_DIR has no wake word"
         except Exception as error:  # noqa: BLE001 - voice is optional: the mind serves turns without it

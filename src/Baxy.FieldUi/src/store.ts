@@ -87,7 +87,10 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
     case '_connected':
       return { ...s, connected: ev.value };
     case 'state':
-      return { ...s, hostState: ev.value, live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null };
+      // listening starts a new request: the last reply's captions leave (owner, 2026-10-20: they came back and
+      // re-animated over what BAXY said next)
+      return { ...s, hostState: ev.value, live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null,
+        sub: ev.value === 'listening' ? null : s.sub };
     case 'agent':
       return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, powered: ev.powered !== false } };
     case 'transcript':
@@ -102,6 +105,8 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
         const journey = s.journey ? { ...s.journey, path: [...s.journey.path.filter((p) => p !== 'verificar'), 'verificar'] } : s.journey;
         return { ...s, items, sub: { text: it.text, key: it.id + ':' + it.text.length }, mood: moodOf(it.steps), journey, running: null };
       }
+      // a new request (typed or heard): the last reply's captions leave with it
+      if (it.who === 'you' && !before) return { ...s, items, sub: null, mood: null };
       return { ...s, items };
     }
     case 'step': {

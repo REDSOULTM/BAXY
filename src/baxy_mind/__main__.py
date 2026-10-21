@@ -68,7 +68,8 @@ def main() -> int:
                     # sounds once it is loaded, but the turn's «Un momento.» says the turn is under way: heard after
                     # the answer is on screen it would say something false, so it is only taken from a loaded voice.
                     text = str(message.get("text") or "")
-                    accepted = (voice.speech.ready or text != NOTICE) and voice.speech.speak(text)
+                    accepted = (voice.speech.ready or text != NOTICE) and voice.speech.speak(text,
+                                                                                            notice=text == NOTICE)
                     protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
                                             "accepted": accepted})
                 elif kind == "voice.cancel":

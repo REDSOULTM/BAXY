@@ -107,7 +107,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 // interface, so it never reads as the turn's answer.
                 Notice = notice =>
                 {
-                    if (_mindClient is { IsVoiceAvailable: true } mind)
+                    // Not said when the owner switched it off or silenced BAXY's voice (it was said even then).
+                    if (Settings.WaitNotice && !Settings.VoiceMuted && _mindClient is { IsVoiceAvailable: true } mind)
                     {
                         _ = SpeakNoticeAsync(mind, notice);
                     }

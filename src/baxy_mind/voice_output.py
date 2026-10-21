@@ -9,7 +9,10 @@ what is said (speech_text.py: numbers, dates, English names); every sentence is 
 engine's level varies with the sentence.
 
 An answer sounds sentence by sentence: the first plays as soon as it is synthesized and the next is synthesized while
-it sounds. Opening the output takes 0.38 s on the PC (its USB interface, under MME, DirectSound and WASAPI alike), so it
+it sounds; a loaded voice starts synthesizing an answer the moment it is given, while what is ahead of it still sounds.
+The turn's notice («Un momento.», said when a turn has been silent for 2.5 s) is dropped if an answer was given before
+it began to sound: said then, it came right before the answer and held it back (owner, 2026-10-20: the notice cut in
+on what BAXY was about to say; answers waited up to 4.8 s behind it). Opening the output takes 0.38 s on the PC (its USB interface, under MME, DirectSound and WASAPI alike), so it
 opens when a turn starts, while the model thinks (prepare), and closes after HOLD_S without sound, so the voice still
 follows the default output.
 """
@@ -31,6 +34,7 @@ from typing import Callable
 
 import numpy as np
 
+from .mind import NOTICE
 from .speech_text import spoken
 
 MAX_CHARS = 8192
@@ -38,12 +42,44 @@ BLOCK_S = 0.03      # playback block: a cancel stops the sound within one block
 TAIL_S = 0.55       # BAXY counts as speaking this long after the last block (Definitivo's measured tail grace)
 HOLD_S = 20.0       # an open output with nothing to say closes after this long
 THREADS = 2         # sherpa-onnx CPU threads: first sentence 1.08 s with 2, 1.11 s with 4, 1.59 s with 8 (PC, 2026-10-17)
-LOUDNESS = 0.11     # every sentence's RMS (about -19 dBFS), its peaks kept under PEAK
+LOUDNESS = 0.11     # every sentence's RMS (about -19 dBFS) over its voice only, its peaks kept under PEAK
 PEAK = 0.95
-FADE_S = 0.005      # no click at a sentence's edges
+FADE_S = 0.015      # no click at a sentence's trimmed edges
+# Supertonic leaves 0.35-0.67 s of near silence before and after each take: the pause BAXY played between sentences was
+# 1.0-1.2 s, not its 0.2 s (measured 2026-10-20). Each take is cut to its voice (frames above -40 dB of its loudest,
+# 30 ms before, 100 ms of decay after) and the pause is then BAXY's own: read Spanish pauses 391-482 ms on average
+# (Schwab 2015); a question gets a little more.
+SILENCE_DB = -40.0
+LEAD_S, TAIL_S_KEPT = 0.03, 0.10
+GAP_S, GAP_QUESTION_S = 0.35, 0.45
+JOIN_CHARS = 120    # a reply this short is synthesized in one call (the model places its own pauses, ~0.24 s)
 _SENTENCE_END = re.compile(r"(?<=[.!?…])\s+")
+_VOWELS = re.compile(r"[aeiouáéíóúü]+", re.IGNORECASE)
 _MODEL_FILES = ("duration_predictor.int8.onnx", "text_encoder.int8.onnx", "vector_estimator.int8.onnx",
                 "vocoder.int8.onnx", "tts.json", "unicode_indexer.bin", "voice.bin", "baxy-voice.json")
+
+
+def _speed(text: str) -> float:
+    """Supertonic predicts one length per call, so a short sentence came out rushed (7.9 syllables/s) and a long one
+    slow (5.3); natural Spanish speeds up with the phrase's length (Schwab 2015): the recipe's speed is scaled by it."""
+    syllables = len(_VOWELS.findall(text))
+    return 0.94 if syllables <= 8 else 1.0 if syllables <= 20 else 1.06
+
+
+def _trim(audio: np.ndarray, rate: int) -> np.ndarray:
+    """The take cut to its voice: from 30 ms before the first 10 ms frame above -40 dB of its loudest to 100 ms after
+    the last one."""
+    hop = max(1, rate // 100)
+    frames = audio[: audio.size // hop * hop].reshape(-1, hop)
+    if not frames.size:
+        return audio
+    level = np.sqrt((frames ** 2).mean(axis=1))
+    loud = np.flatnonzero(level >= level.max() * 10 ** (SILENCE_DB / 20))
+    if not loud.size:
+        return audio
+    start = max(0, loud[0] * hop - int(rate * LEAD_S))
+    end = min(audio.size, (loud[-1] + 1) * hop + int(rate * TAIL_S_KEPT))
+    return audio[start:end]
 
 
 def _default_follower(sd) -> int | None:
@@ -61,8 +97,13 @@ class Speech:
     def __init__(self, on_state: Callable[[bool], None], on_spoken: Callable[[float, float], None]) -> None:
         self._on_state = on_state            # speaking started (True) or ended (False)
         self._on_spoken = on_spoken          # (queued at, first sound at), monotonic seconds
-        self._queue: queue.Queue[tuple[int, str | None, float]] = queue.Queue(maxsize=16)
+        # (generation, text or None to open the output, queued at, for a notice the answers given before it, its audio
+        # when its synthesis already started)
+        self._queue: queue.Queue[tuple[int, str | None, float, int | None, Iterator[np.ndarray] | None]] = \
+            queue.Queue(maxsize=16)
         self._generation = 0                 # cancel() moves it on; older utterances are dropped
+        self._answers = 0                    # answers given so far: a notice with an answer after it is not said
+        self._notice_audio: np.ndarray | None = None  # the notice, synthesized once at load, with no pause after it
         self._ready = threading.Event()
         self.failure = ""
         self.speaking = False
@@ -88,15 +129,28 @@ class Speech:
     def ready(self) -> bool:
         return self._ready.is_set() and not self.failure
 
-    def speak(self, text: str) -> bool:
+    def speak(self, text: str, notice: bool = False) -> bool:
         # FT/proveedores goal (E001): while the voice still loads (about 26 s after the catalog on the notebook) the
         # answer waits in the queue and sounds once it is loaded; it was dropped, and the first answer after BAXY
         # started was never heard. Only a voice that failed refuses it.
         text = " ".join(str(text or "").split())[:MAX_CHARS]
         if not text or self.failure:
             return False
+        if not notice:
+            self._answers += 1
+        audio = None
+        if notice and text == NOTICE and self._notice_audio is not None:
+            # Ready at once and nothing to synthesize: it never holds the synthesis an answer given now needs (owner,
+            # 2026-10-20: an answer waited 3.6 s behind «Un momento», then being synthesized like any sentence).
+            audio = iter([self._notice_audio])
+        elif self.ready:
+            try:
+                audio = self._sentences(text)
+            except Exception:  # noqa: BLE001 - the speech thread synthesizes it then, and says what failed
+                audio = None
         try:
-            self._queue.put_nowait((self._generation, text, time.monotonic()))
+            self._queue.put_nowait((self._generation, text, time.monotonic(), self._answers if notice else None,
+                                    audio))
         except queue.Full:
             return False
         return True
@@ -105,7 +159,7 @@ class Speech:
         """A turn started: open the output now, so its answer does not wait for the device."""
         if self.ready:
             try:
-                self._queue.put_nowait((self._generation, None, time.monotonic()))
+                self._queue.put_nowait((self._generation, None, time.monotonic(), None, None))
             except queue.Full:
                 pass
 
@@ -129,7 +183,7 @@ class Speech:
             self._ready.set()
         while not self.failure:
             try:
-                generation, text, queued = self._queue.get(timeout=1.0)
+                generation, text, queued, notice, audio = self._queue.get(timeout=1.0)
             except queue.Empty:
                 if self._stream is not None and time.monotonic() > self._stream_until:
                     self._close_stream()
@@ -137,8 +191,14 @@ class Speech:
             try:
                 if text is None:
                     self._open_stream()
-                elif generation == self._generation:
-                    self._play(self._sentences(text), generation, queued)
+                elif generation == self._generation and notice in (None, self._answers):
+                    sentences = audio if audio is not None else self._sentences(text)
+                    if notice is not None:
+                        first = next(sentences, None)  # an answer given while the notice was synthesized drops it too
+                        if first is None or notice != self._answers or generation != self._generation:
+                            continue
+                        sentences = itertools.chain([first], sentences)
+                    self._play(sentences, generation, queued)
             except Exception as error:  # noqa: BLE001 - one failed phrase never ends the voice
                 self._close_stream()
                 sys.stderr.write(f"baxy_mind_renew_speech: {error!r}\n")
@@ -181,25 +241,41 @@ class Speech:
             num_threads=THREADS, provider="cpu")))
         self.rate = int(self._tts.sample_rate)
         self._shift = Fraction(2 ** (float(self._voice.get("shift", 0)) / 12)).limit_denominator(100)
-        self._synthesize("Hola.")  # loads the voice now, so the first answer does not wait for it
+        # Loads the voice now, so the first answer does not wait for it, and keeps the notice ready to sound.
+        self._notice_audio = self._synthesize(NOTICE, pause=False)
 
     def _sentences(self, text: str) -> Iterator[np.ndarray]:
         """Each sentence's audio in order: the first is already being synthesized (while the output opens), and each
         next one is synthesized while the previous one sounds."""
-        sentences = [sentence for sentence in _SENTENCE_END.split(spoken(text)) if sentence.strip()]
-        first = self._synthesis.submit(self._synthesize, sentences[0])
+        said = spoken(text)
+        sentences = [sentence for sentence in _SENTENCE_END.split(said) if sentence.strip()]
+        # A short reply, or one that starts with a word or two («Listo.», «Hecho.»), is one call: the model's own
+        # chunker joins up to 300 characters, and its weak spot is the very short utterance (Supertonic issue #30).
+        if len(sentences) > 1 and (len(said) <= JOIN_CHARS or len(sentences[0].split()) <= 3):
+            sentences = [said]
+        generation = self._generation
+
+        def synthesize(sentence: str) -> np.ndarray:
+            # What was cancelled before its turn to be synthesized is not: it held the one synthesis thread, and the
+            # next turn's answer waited 2.8-5.7 s behind sentences nobody would hear (owner talking over BAXY,
+            # 2026-10-20).
+            return self._synthesize(sentence) if generation == self._generation else np.zeros(0, np.float32)
+
+        first = self._synthesis.submit(synthesize, sentences[0])
 
         def audio() -> Iterator[np.ndarray]:
             pending = first
             for following in sentences[1:]:
                 ready = pending.result()
-                pending = self._synthesis.submit(self._synthesize, following)
+                if generation != self._generation:
+                    return
+                pending = self._synthesis.submit(synthesize, following)
                 yield ready
             yield pending.result()
 
         return audio()
 
-    def _synthesize(self, text: str) -> np.ndarray:
+    def _synthesize(self, text: str, pause: bool = True) -> np.ndarray:
         import sherpa_onnx
         from scipy.signal import resample_poly
 
@@ -207,12 +283,14 @@ class Speech:
         config = sherpa_onnx.GenerationConfig()
         config.sid = 0
         config.num_steps = int(self._voice.get("steps", 8))
-        config.speed = float(self._voice.get("speed", 1.0)) / float(self._shift)
-        config.extra["lang"] = str(self._voice.get("lang", "es"))
-        config.extra["seed"] = str(self._voice.get("seed", 7))
+        config.speed = float(self._voice.get("speed", 1.0)) * _speed(text) / float(self._shift)
+        # The whole map, never config.extra[key] = ...: pybind11 hands Python a copy of it and the keys were lost, so
+        # BAXY spoke with Supertonic's default «en» tag and a new random seed every time (found 2026-10-20).
+        config.extra = {"lang": str(self._voice.get("lang", "es")), "seed": str(self._voice.get("seed", 7))}
         audio = np.asarray(self._tts.generate(text, config).samples, dtype=np.float32)
         if self._shift != 1:
             audio = resample_poly(audio, self._shift.denominator, self._shift.numerator).astype(np.float32)
+        audio = _trim(audio, self.rate).copy()
         rms = float(np.sqrt(np.mean(audio ** 2))) if audio.size else 0.0
         if rms > 0:
             audio *= min(LOUDNESS / rms, PEAK / float(np.max(np.abs(audio))))
@@ -220,13 +298,15 @@ class Speech:
         if fade:
             audio[:fade] *= np.linspace(0, 1, fade, dtype=np.float32)
             audio[-fade:] *= np.linspace(1, 0, fade, dtype=np.float32)
-        gap = np.zeros(int(self.rate * float(self._voice.get("gap_s", 0.2))), dtype=np.float32)
+        if not pause:
+            return audio
+        gap = np.zeros(int(self.rate * (GAP_QUESTION_S if text.rstrip().endswith("?") else GAP_S)), dtype=np.float32)
         return np.concatenate([audio, gap])
 
     def _play(self, sentences: Iterator[np.ndarray], generation: int, queued: float) -> None:
         stream = self._open_stream()
-        audio = next(sentences)
-        if generation != self._generation:
+        audio = next(sentences, None)  # none when it was cancelled before its first sentence was synthesized
+        if audio is None or generation != self._generation:
             return
         block = int(self.rate * BLOCK_S)
         self.speaking = True

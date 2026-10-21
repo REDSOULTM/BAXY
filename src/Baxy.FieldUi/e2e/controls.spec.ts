@@ -37,7 +37,7 @@ const state = () => page.locator('.bx-statel').innerText();
 test('ajustes: cada interruptor guarda en el host y vuelve', async () => {
   for (const [tab, label, key] of [
     ['General', 'Al cerrar la ventana, seguir en la bandeja', 'closeToTray'], ['Voz', 'Sonido al despertar', 'wakeSound'],
-    ['Voz', 'Silenciar su voz', 'voiceMuted'], ['Privacidad', 'Búsqueda web', 'web'], ['Privacidad', 'Clima', 'weather'],
+    ['Voz', 'Decir «Un momento»', 'waitNotice'], ['Voz', 'Silenciar su voz', 'voiceMuted'], ['Privacidad', 'Búsqueda web', 'web'], ['Privacidad', 'Clima', 'weather'],
     ['Privacidad', 'Mirar la pantalla', 'screen'],
   ] as const) {
     await settings(tab);

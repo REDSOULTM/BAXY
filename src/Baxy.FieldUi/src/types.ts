@@ -116,6 +116,7 @@ export interface GeneralSettings {
   closeToTray: boolean;
   voiceMuted: boolean;
   wakeSound: boolean;
+  waitNotice: boolean;
   web: boolean;
   weather: boolean;
   screen: boolean;

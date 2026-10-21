@@ -41,6 +41,10 @@ internal sealed class FieldSettings
 
     internal bool WakeSound => Flag("wakeSound", false);
 
+    /// <summary>«Un momento» when a turn is silent 2.5 s (SilenceNotice); the owner can switch it off (2026-10-20: «está
+    /// poniendo muchas trabas»).</summary>
+    internal bool WaitNotice => Flag("waitNotice", true);
+
     internal bool WebAllowed => Flag("web", true);
 
     internal bool WeatherAllowed => Flag("weather", true);
@@ -107,7 +111,7 @@ internal sealed class FieldSettings
     {
         lock (_gate)
         {
-            foreach (string key in (string[])["autostart", "closeToTray", "voiceMuted", "wakeSound", "web", "weather", "screen"])
+            foreach (string key in (string[])["autostart", "closeToTray", "voiceMuted", "wakeSound", "waitNotice", "web", "weather", "screen"])
             {
                 if (body[key] is JsonValue value && value.TryGetValue(out bool on))
                 {
@@ -160,6 +164,7 @@ internal sealed class FieldSettings
         ["closeToTray"] = CloseToTray,
         ["voiceMuted"] = VoiceMuted,
         ["wakeSound"] = WakeSound,
+        ["waitNotice"] = WaitNotice,
         ["web"] = WebAllowed,
         ["weather"] = WeatherAllowed,
         ["screen"] = ScreenAllowed,
