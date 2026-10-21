@@ -337,6 +337,15 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Uso real 2026-10-21 (e2e del notebook, 1920 px at 125 % = 1536 logical): WhatsApp's chat list reached 444 px, past
+    // the 400 px the conversation pane was taken from; the pane follows the window's width.
+    [TestCase("whatsapp", 1536, 461)]
+    [TestCase("whatsapp", 1000, 400)]
+    [TestCase("whatsapp", 0, 400)]
+    [TestCase("discord", 1536, 320)]
+    public void TheConversationPaneStartsPastTheChatList(string channel, int windowWidth, int expected) =>
+        Assert.That(WindowsDesktopMessagingAutomation.ConversationPaneOffsetAt96Dpi(channel, windowWidth), Is.EqualTo(expected));
+
     [Test]
     public async Task AmbiguousPostSendEvidencePreservesPossibleEffect()
     {

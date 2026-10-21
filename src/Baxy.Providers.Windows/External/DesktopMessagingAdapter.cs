@@ -2019,9 +2019,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const int WhatsAppConversationPaneOffsetAt96Dpi = 400;
     private const int DiscordConversationPaneOffsetAt96Dpi = 320;
 
-    private static int ConversationPaneOffsetAt96Dpi(string channel) =>
+    // Uso real 2026-10-21 (e2e del notebook, 1920 px at 125 %): WhatsApp's chat list is about 30 % of a wide window (444
+    // logical px there), so a pane taken from 400 px held the list's right edge; a name typed into the search changed
+    // those results and passed for typing into the composer (search_focus_not_verified, composer_has_person_draft).
+    private const double WhatsAppChatListShare = 0.30;
+
+    internal static int ConversationPaneOffsetAt96Dpi(string channel, int windowWidthAt96Dpi = 0) =>
         string.Equals(channel, "whatsapp", StringComparison.Ordinal)
-            ? WhatsAppConversationPaneOffsetAt96Dpi
+            ? Math.Max(WhatsAppConversationPaneOffsetAt96Dpi, (int)Math.Ceiling(windowWidthAt96Dpi * WhatsAppChatListShare))
             : DiscordConversationPaneOffsetAt96Dpi;
 
     // Outgoing bubbles are right-aligned, so the delivery is read from the right
@@ -2163,7 +2168,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // Discord: the server column (72 px) and the DM list (240 px) sit left of
             // the conversation at 100 % zoom; a 42 % crop of a wide window started
             // past the composer's text and the newest message's start.
-            int sourceX = Math.Min(Math.Max(0, windowWidth - 1), (int)(ConversationPaneOffsetAt96Dpi(channel) * scale));
+            int sourceX = Math.Min(Math.Max(0, windowWidth - 1),
+                (int)(ConversationPaneOffsetAt96Dpi(channel, (int)(windowWidth / scale)) * scale));
             // WhatsApp's chat list is what lies left of the conversation pane.
             int listWidth = sourceX;
             if (area == CaptureArea.ChatList)
@@ -2392,7 +2398,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // 76 % of a 1296 px Discord window fell on the profile panel at the
             // right and the typed text went nowhere (G1, notebook, 2026-10-11).
             if (!SetCursorPos(
-                    rectangle.Left + (int)((ConversationPaneOffsetAt96Dpi(channel) + ComposerInputOffsetAt96Dpi) * scale),
+                    rectangle.Left + (int)((ConversationPaneOffsetAt96Dpi(channel, (int)((rectangle.Right - rectangle.Left) / scale))
+                        + ComposerInputOffsetAt96Dpi) * scale),
                     rectangle.Bottom - (int)(ComposerBottomOffsetAt96Dpi * scale)))
             {
                 return false;
