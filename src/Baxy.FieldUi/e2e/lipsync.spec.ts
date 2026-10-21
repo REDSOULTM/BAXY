@@ -24,7 +24,7 @@ test.beforeAll(async () => {
 });
 test.afterAll(async () => { await app.browser.close(); });
 
-interface Ui { t: number; lab: string; g: string; lip: boolean; mouth: number }
+interface Ui { t: number; lab: string; g: string; lip: boolean; mouth: number; drawn: number }
 
 async function record(secs: number, drive: () => Promise<number | void>): Promise<{ audio: [number, number][]; ui: Ui[]; mark: number }> {
   const out = join(tmpdir(), `baxy-lipsync-${Date.now()}.csv`);
@@ -34,21 +34,29 @@ async function record(secs: number, drive: () => Promise<number | void>): Promis
   await page.evaluate(() => {
     const w = window as unknown as { __lip: unknown[]; __lipR: number };
     w.__lip = [];
+    let n = 0;
     const tick = () => {
       const av = document.querySelector<HTMLElement>('.bx-avid'), v = document.querySelector<HTMLVideoElement>('.bx-avid video.on');
-      w.__lip.push([Date.now(), (document.querySelector('.bx-statel')?.textContent ?? '').replace('bypass', '').trim(), v?.dataset.g ?? '', !!av?.classList.contains('lip'), av?.dataset.mouth ? +av.dataset.mouth : -1]);
+      const lip = !!av?.classList.contains('lip');
+      // every 6th frame while the hole is open: how opaque the drawn mouth is (0 = an empty box where the mouth was)
+      let drawn = -1;
+      if (lip && n++ % 6 === 0) {
+        const c = document.querySelector<HTMLCanvasElement>('.bx-lip'), d = c?.getContext('2d')?.getImageData(0, 0, c.width, c.height).data;
+        if (d) { let a = 0; for (let i = 3; i < d.length; i += 4) a += d[i]; drawn = a / (d.length / 4); }
+      }
+      w.__lip.push([Date.now(), (document.querySelector('.bx-statel')?.textContent ?? '').replace('bypass', '').trim(), v?.dataset.g ?? '', lip, av?.dataset.mouth ? +av.dataset.mouth : -1, drawn]);
       w.__lipR = requestAnimationFrame(tick);
     };
     tick();
   });
   const mark = (await drive()) ?? 0;
-  const rows = await page.evaluate(() => { const w = window as unknown as { __lip: [number, string, string, boolean, number][]; __lipR: number }; cancelAnimationFrame(w.__lipR); return w.__lip; });
+  const rows = await page.evaluate(() => { const w = window as unknown as { __lip: [number, string, string, boolean, number, number][]; __lipR: number }; cancelAnimationFrame(w.__lipR); return w.__lip; });
   await done;
   const audio = existsSync(out)
     ? readFileSync(out, 'utf8').split('\n').filter((l) => l && !l.startsWith('#') && l.split(',').length === 2).map((l) => l.split(',').map(Number) as [number, number])
     : [];
   rmSync(out, { force: true });
-  return { audio, ui: rows.map(([t, lab, g, lip, mouth]) => ({ t, lab, g, lip, mouth })), mark };
+  return { audio, ui: rows.map(([t, lab, g, lip, mouth, drawn]) => ({ t, lab, g, lip, mouth, drawn })), mark };
 }
 
 async function say(text: string) {
@@ -87,11 +95,16 @@ test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra
     await page.waitForTimeout(1200);
   });
   expect(audio.length, 'se grabó lo que suena').toBeGreaterThan(100);
+  const checked = ui.filter((u) => u.lip && u.drawn >= 0), empty = checked.filter((u) => u.drawn < 100);
+  expect(checked.length, 'se revisó la boca dibujada').toBeGreaterThan(10);
+  expect(empty.length, 'con el hueco abierto siempre hay una boca dibujada (nunca un recuadro vacío)').toBe(0);
   const g = grid(audio, ui);
   const voice = g.filter((s) => s.db > -35);
   expect(voice.length * 10, 'BAXY habló (se oyó su voz)').toBeGreaterThan(2000);
   const vs = voice[0].t, ve = voice[voice.length - 1].t;
   const speaking = g.filter((s) => s.u.lab.startsWith('Hablando')), open = g.filter((s) => s.u.mouth >= 1);
+  expect(open.length, 'la boca se abrió con la voz').toBeGreaterThan(0);
+  expect(speaking.length, 'la vista dijo «Hablando»').toBeGreaterThan(0);
   const ms = (n: number) => n * 10;
   const noMouth = ms(voice.filter((s) => !s.u.lip).length);
   const loud = g.filter((s) => s.db > -12), closedLoud = ms(loud.filter((s) => s.u.mouth === 0).length);
@@ -141,7 +154,11 @@ test('lip-sync: si la voz se corta, la boca se cierra con ella', async () => {
     else if (t - heard > 300) { quiet = heard; break; }
   }
   expect(quiet, 'la voz se cortó al escribir').toBeGreaterThan(0);
-  const lastOpen = Math.max(...ui.filter((u) => u.t > mark && u.t < quiet + 1500 && u.mouth >= 1).map((u) => u.t), mark);
+  // up to the reply to «ok, para», whose own voice opens the mouth again (it starts 1.2 s after the cut on one
+  // build, under 1.5 s on another: the window ends 100 ms before the next sound, and 1.5 s after the cut at most)
+  const next = audio.find(([t, r]) => t > quiet + 300 && 20 * Math.log10(r + 1e-9) - pk > -40)?.[0] ?? Infinity;
+  const until = Math.min(quiet + 1500, next - 100);
+  const lastOpen = Math.max(...ui.filter((u) => u.t > mark && u.t < until && u.mouth >= 1).map((u) => u.t), mark);
   console.log(`lip-sync corte: la voz calla ${quiet - mark} ms tras escribir, la última boca abierta ${lastOpen - mark} ms`);
   expect(lastOpen - quiet, 'la boca se cierra cuando la voz se corta').toBeLessThanOrEqual(200);
 });
