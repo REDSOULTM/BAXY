@@ -11,6 +11,7 @@ from __future__ import annotations
 import datetime as _dt
 import json
 import os
+import re
 import time
 import unicodedata
 import urllib.error
@@ -191,6 +192,17 @@ def places_note(application: str) -> str:
     listed = ", ".join(f"{p} (placeValue: {v})" if v else p for p, v in sorted(places.items()))
     return (f"\n[Ayuda: {application} también se abre directo en sus lugares, sin pulsar: app_open con appId "
             f"«{application}» y place {listed}.]")
+
+
+SAME_CALL_TOLD = 3
+SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se hizo {times} veces en este turno con los mismos argumentos y el mismo "
+                  "resultado ({outcome}); otra vez igual dará lo mismo. Opciones: otra herramienta, otros argumentos, "
+                  "o decir a la persona lo que pasó.]")
+
+# PLAN_GENERAL C1: an address longer than this reaches the model as a short reference.
+LONG_REF_CHARS = 120
+REF_PREFIX = "ref:r"
+_REF = re.compile(r"ref:r\d+")
 
 
 def _aids_seen(observation: str) -> dict[str, Any]:
@@ -377,6 +389,48 @@ class Mind:
         self.english: dict[str, str] = english.get("tools") or {}
         self.arguments: dict[str, dict[str, str]] = english.get("arguments") or {}
         self.decide_temperature = _env_float("BAXY_RENEW_DECIDE_TEMPERATURE", 0.2)
+        # PLAN_GENERAL C1: the long addresses results carried, by the short reference the model saw, and back.
+        self._refs: dict[str, str] = {}
+        self._ref_of: dict[str, str] = {}
+
+    # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
+    def _shorten(self, observation: str) -> tuple[str, dict[str, str]]:
+        """The result with every address longer than LONG_REF_CHARS replaced by its short reference, and the
+        references made for it (a known address keeps its reference). Text that is not JSON goes as it came."""
+        try:
+            facts = json.loads(observation)
+        except json.JSONDecodeError:
+            return observation, {}
+        made: dict[str, str] = {}
+
+        def walk(value: Any) -> Any:
+            if isinstance(value, dict):
+                return {k: walk(v) for k, v in value.items()}
+            if isinstance(value, list):
+                return [walk(v) for v in value]
+            if isinstance(value, str) and len(value) > LONG_REF_CHARS and value.startswith(("http://", "https://")):
+                ref = self._ref_of.get(value)
+                if ref is None:
+                    ref = f"{REF_PREFIX}{len(self._refs) + 1}"
+                    self._refs[ref], self._ref_of[value] = value, ref
+                made[ref] = value
+                return ref
+            return value
+
+        shortened = walk(facts)
+        if not made:
+            return observation, {}
+        return json.dumps(shortened, ensure_ascii=False), made
+
+    def _expand(self, value: Any) -> Any:
+        """A call's arguments with every short reference the model wrote put back as the address it stands for."""
+        if isinstance(value, dict):
+            return {k: self._expand(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [self._expand(v) for v in value]
+        if isinstance(value, str) and REF_PREFIX in value:
+            return _REF.sub(lambda m: self._refs.get(m.group(0), m.group(0)), value)
+        return value
 
     # ---- catalog -------------------------------------------------------------------------------------------
     def configure(self, message: dict[str, Any]) -> int:
@@ -644,8 +698,24 @@ class Mind:
             if note:
                 turn["places_told"] = True
                 aids["app_places_next"] = note.strip()
+        # Aid «same_call_next» (PLAN_GENERAL C2; uso real: the same click 5-7 times, a reload and a typing in turn): a
+        # call made a third time in this turn with the same arguments and the same result, whatever came between, is
+        # told as a fact with its options, once per turn (a loop of a look and a click repeats both).
+        seen = turn.setdefault("calls_seen", {})
+        key = json.dumps([calling, turn.get("calling_args"), outcome], ensure_ascii=False)
+        seen[key] = seen.get(key, 0) + 1
+        if seen[key] == SAME_CALL_TOLD and not turn.get("same_told") and _aid_on("same_call_next"):
+            turn["same_told"] = True
+            repeated = SAME_CALL_NOTE.format(call=calling, times=SAME_CALL_TOLD, outcome=outcome)
+            note += repeated
+            aids["same_call_next"] = repeated.strip()
+        # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long
+        # address in a result reaches the model as a short reference, and the mind puts the address back in its calls.
+        shown, made = self._shorten(observation) if _aid_on("short_refs") else (observation, {})
+        if made:
+            aids["short_refs"] = sorted(made) if turn.get("private") else made
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
-                     "content": observation + "\n[En este turno: " + "; ".join(done) + "]" + note})
+                     "content": shown + "\n[En este turno: " + "; ".join(done) + "]" + note})
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
@@ -779,7 +849,7 @@ class Mind:
             turn["awaiting"] = call["id"]
             turn["calling"] = name
             turn["calling_args"] = json.dumps(call["arguments"], sort_keys=True, ensure_ascii=False)
-            arguments = {**call["arguments"], **self.constants.get(name, {})}
+            arguments = self._expand({**call["arguments"], **self.constants.get(name, {})})
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)

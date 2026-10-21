@@ -101,6 +101,44 @@ def test_a_look_that_fails_after_another_windows_look_still_names_the_opened_app
                          "appId «Epic Games Launcher» y place results (placeValue: lo que se busca), store.]")
 
 
+LONG = "https://news.google.com/rss/articles/" + "CBMi" + "x" * 300 + "?oc=5"
+
+
+@pytest.mark.parametrize("setting", ["all", "none"])
+def test_a_long_address_reaches_the_model_as_a_short_reference_and_goes_back_whole(tmp_path: Path, monkeypatch,
+                                                                                setting: str) -> None:
+    # PLAN_GENERAL C1 (uso real 2026-10-20: ~500-token news addresses copied wrong, a 400 and a cut JSON).
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    found = json.dumps({"status": "completed", "observed": {"results": [
+        {"title": "Lluvia en Santiago", "url": LONG}, {"title": "Corto", "url": "https://example.org/a"}]}})
+    shown = "ref:r1" if setting == "all" else LONG
+    mind, server = _mind(tmp_path, [_call("web_search", {"query": "clima"}), _call("web_fetch", {"url": shown}),
+                                    _say("Listo.")])
+    mind.decide(1, "el clima de mañana")
+    fetched = mind.continue_turn(2, found)
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert (LONG in tool) is (setting == "none")
+    assert ("ref:r1" in tool) is (setting == "all")
+    assert "https://example.org/a" in tool
+    assert fetched["arguments"]["url"] == LONG
+
+
+def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: Path, monkeypatch) -> None:
+    # PLAN_GENERAL C2 (uso real: the same click 5-7 times with a look between each).
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    missed = json.dumps({"status": "failed", "error": "visible_button_not_found"})
+    looked = json.dumps({"status": "completed", "observed": {"ok": True}})
+    click, look = _call("input_visible_click", {"label": "FORTNITE"}), _call("input_visible_controls", {})
+    mind, server = _mind(tmp_path, [click, look, click, look, click, look, click, _say("No pude.")])
+    mind.decide(1, "busca fortnite ahí")
+    for index, result in enumerate([missed, looked, missed, looked, missed, looked, missed]):
+        mind.continue_turn(2 + index, result)
+    tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    told = [i for i, t in enumerate(tools) if "ya se hizo 3 veces" in t]
+    assert told == [4]
+    assert "input_visible_click ya se hizo 3 veces en este turno" in tools[4]
+
+
 SETTINGS_AND_TRASH = {"capabilities": [
     {"name": "system.settings.set", "description": "Set a setting.", "argumentsSchema": {"type": "object", "properties": {}}},
     {"name": "filesystem.known.trash.named", "description": "Delete by name.",
