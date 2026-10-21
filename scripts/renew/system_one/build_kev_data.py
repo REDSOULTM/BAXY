@@ -55,13 +55,18 @@ def main():
     rng = random.Random(20261021)
     files = {name: open(Path(args.outdir) / f"{name}.jsonl", "w", encoding="utf-8", newline="\n")
              for name in ("train", "calib", "dev")}
+    # The same records for laya-train, which reads the labels from an `expected` object instead of each question.
+    laya_files = {name: open(Path(args.outdir) / f"laya_{name}.jsonl", "w", encoding="utf-8", newline="\n")
+                  for name in ("train", "calib", "dev")}
     stats = collections.Counter()
+    seen = set()  # shards that met in the middle repeat cases: the first one read counts
     for label in args.signals:
         for line in open(bench.BANKS / "runs" / f"{label}.jsonl", encoding="utf-8"):
             row = json.loads(line)
-            if row["excluded"] or not row.get("signals"):
+            if row["excluded"] or not row.get("signals") or row["id"] in seen:
                 stats["skipped"] += 1
                 continue
+            seen.add(row["id"])
             expect = row["expect"]
             if expect["kind"] == "call":
                 gold = [bench.current(expect["op"])[0]]
@@ -95,10 +100,15 @@ def main():
                                    "criteria": dict(kinds), "label": kind}}}
             split = split_of(group_of(row))
             files[split].write(json.dumps(record, ensure_ascii=False) + "\n")
+            laya = {"state": record["state"],
+                    "questions": {q: {k: v for k, v in body.items() if k != "label"}
+                                  for q, body in record["questions"].items()},
+                    "expected": {q: body["label"] for q, body in record["questions"].items()}}
+            laya_files[split].write(json.dumps(laya, ensure_ascii=False) + "\n")
             stats[split] += 1
             stats[f"{split}:{kind}"] += 1
             stats[f"qwen_{'ok' if row['ok'] else 'wrong'}"] += 1
-    for f in files.values():
+    for f in [*files.values(), *laya_files.values()]:
         f.close()
     (Path(args.outdir) / "stats.json").write_text(json.dumps(dict(stats), ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps(dict(stats), ensure_ascii=False))
