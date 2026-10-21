@@ -199,3 +199,15 @@ boca sigue al sonido real:
 - Medido contra lo que suena por los parlantes (`scripts/tools/loopcap`, WASAPI loopback; `e2e/lipsync.spec.ts`):
   voz sin boca 0 ms de 13,6 s, la boca cierra con la voz (±30 ms), desfase −10 a +10 ms, r 0,86–0,88; al cortar la voz
   la boca cierra 26 ms después. Antes: boca cerrada con voz sonando en tramos de hasta 2 s, r 0,64.
+
+#### Boca sin recuadro y medida con cualquier sonido (2026-10-21)
+
+- El dueño vio un recuadro alrededor de la boca: el recorte traía la luz de otro fotograma (el aro del visor brilla,
+  el visor se aclara). Ahora `mouthBlend.ts` compone la boca en el fotograma vivo cada cuadro: el área reemplazada es
+  la forma de todas las bocas de los clips de hablar con su brillo; fuera de la boca el píxel es el vivo exacto; bajo
+  las bocas la luz viva corrige la boca cortada. Sólo con un clip de hablar en pantalla (en el fundido de 0,35 s se ve
+  la boca propia del clip). 6 ms por cuadro, p95 12 ms.
+- `scripts/tools/loopcap <s> <csv> Baxy` graba sólo el sonido de BAXY (loopback de proceso de Windows, desde el
+  python que lanza `Baxy.exe`: el bucle de proceso incluye hijos, no nietos). `lipsync.spec.ts` mide con un tono y
+  ruido sonando desde otro proceso y con el oído apagado: voz sin boca 0 ms, la boca entra a los 370 ms (el fundido),
+  cierra 10 ms tras la voz, desfase 40 ms, r 0,83; al cortar la voz, 105 ms.
