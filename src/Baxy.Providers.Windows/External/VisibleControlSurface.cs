@@ -27,6 +27,151 @@ internal static partial class VisibleControlSurface
         return false;
     }
 
+    // PLAN_GENERAL A3/A4 (uso real 2026-10-21, e2e del notebook: Epic's store plays a video and a carousel; every click
+    // there was refused as «surface changed» or read as «unread», since the whole window never holds still): the window is
+    // read in cells, and what moves by itself is told apart from what a press changed.
+    internal const int MotionCell = 32;
+
+    /// <summary>The cells of a window that changed by themselves between captures taken without any press.</summary>
+    internal sealed class MotionMask(int columns, int rows, bool[] moving)
+    {
+        internal int Columns { get; } = columns;
+        internal int Rows { get; } = rows;
+        internal bool Any { get; } = moving.Any(cell => cell);
+
+        internal bool MovingAt(int x, int y) =>
+            x >= 0 && y >= 0 && x / MotionCell < Columns && y / MotionCell < Rows && moving[(y / MotionCell * Columns) + (x / MotionCell)];
+
+        internal bool Moving(int cell) => moving[cell];
+    }
+
+    /// <summary>
+    /// The cells (<see cref="MotionCell"/> pixels square) whose pixels differ between two captures of the same window and
+    /// size, as a flat array by rows; null when the two cannot be compared (another size, a capture that is no 24- or
+    /// 32-bit bitmap).
+    /// </summary>
+    internal static bool[]? DifferingCells(CapturedWindow first, CapturedWindow second, out int columns, out int rows)
+    {
+        columns = rows = 0;
+        if (!TryLayout(first.Bmp, out BitmapLayout a) || !TryLayout(second.Bmp, out BitmapLayout b)
+            || a.Width != b.Width || a.Height != b.Height || a.BytesPerPixel != b.BytesPerPixel)
+            return null;
+        columns = (a.Width + MotionCell - 1) / MotionCell;
+        rows = (a.Height + MotionCell - 1) / MotionCell;
+        var differing = new bool[columns * rows];
+        for (int y = 0; y < a.Height; y++)
+        {
+            ReadOnlySpan<byte> left = first.Bmp.AsSpan(a.Row(y), a.Width * a.BytesPerPixel);
+            ReadOnlySpan<byte> right = second.Bmp.AsSpan(b.Row(y), b.Width * b.BytesPerPixel);
+            int rowCells = y / MotionCell * columns;
+            for (int column = 0; column < columns; column++)
+            {
+                if (differing[rowCells + column])
+                    continue;
+                int start = column * MotionCell * a.BytesPerPixel;
+                int length = Math.Min(MotionCell, a.Width - (column * MotionCell)) * a.BytesPerPixel;
+                if (!left.Slice(start, length).SequenceEqual(right.Slice(start, length)))
+                    differing[rowCells + column] = true;
+            }
+        }
+
+        return differing;
+    }
+
+    /// <summary>
+    /// Whether the cells around a point of the capture (its label's or icon's room: ±48 by ±24 pixels) are the same in
+    /// both captures: the point still means the same thing even if other parts of the window moved.
+    /// </summary>
+    internal static bool SameAround(CapturedWindow first, CapturedWindow second, int x, int y)
+    {
+        if (DifferingCells(first, second, out int columns, out int rows) is not { } differing)
+            return false;
+        for (int row = Math.Max(0, (y - 24) / MotionCell); row <= Math.Min(rows - 1, (y + 24) / MotionCell); row++)
+        {
+            for (int column = Math.Max(0, (x - 48) / MotionCell); column <= Math.Min(columns - 1, (x + 48) / MotionCell); column++)
+            {
+                if (differing[(row * columns) + column])
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The window's own motion: the cells that changed across the animation probes after <paramref name="first"/>, with
+    /// no press; null when a probe could not be taken or compared (the whole window counts as moving then).
+    /// </summary>
+    internal static async ValueTask<MotionMask?> ForegroundMotionAsync(CapturedWindow first, CancellationToken cancellationToken)
+    {
+        bool[]? moving = null;
+        int columns = 0, rows = 0;
+        foreach (TimeSpan wait in AnimationProbes)
+        {
+            await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
+            CapturedWindow? again = await CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+            if (again is not { } next || next.Hwnd != first.Hwnd
+                || DifferingCells(first, next, out columns, out rows) is not { } differing)
+                return null;
+            moving ??= new bool[differing.Length];
+            for (int cell = 0; cell < differing.Length; cell++)
+                moving[cell] |= differing[cell];
+        }
+
+        return moving is null ? null : new MotionMask(columns, rows, moving);
+    }
+
+    /// <summary>
+    /// Whether <paramref name="after"/> changed from <paramref name="before"/> in a cell that does not move by itself
+    /// (<paramref name="motion"/>): the press's effect, told apart from a video or a carousel. A window with no motion
+    /// counts any change; an unknown motion counts none; a change of size counts as a change.
+    /// </summary>
+    internal static bool ChangedOutsideMotion(CapturedWindow before, CapturedWindow after, MotionMask? motion)
+    {
+        if (motion is null || after.Hwnd != before.Hwnd)
+            return false;
+        if (string.Equals(after.Sha256, before.Sha256, StringComparison.Ordinal))
+            return false;
+        if (DifferingCells(before, after, out int columns, out int rows) is not { } differing)
+            return true;
+        if (!motion.Any)
+            return true;
+        if (columns != motion.Columns || rows != motion.Rows)
+            return true;
+        for (int cell = 0; cell < differing.Length; cell++)
+        {
+            if (differing[cell] && !motion.Moving(cell))
+                return true;
+        }
+
+        return false;
+    }
+
+    private readonly record struct BitmapLayout(int Offset, int Width, int Height, int Stride, bool TopDown, int BytesPerPixel)
+    {
+        internal int Row(int y) => Offset + ((TopDown ? y : Height - 1 - y) * Stride);
+    }
+
+    // A capture's BMP: its pixel offset, size, row length and order; false for anything but a 24- or 32-bit bitmap.
+    private static bool TryLayout(byte[] bmp, out BitmapLayout layout)
+    {
+        layout = default;
+        if (bmp.Length < 54 || bmp[0] != (byte)'B' || bmp[1] != (byte)'M')
+            return false;
+        int offset = BitConverter.ToInt32(bmp, 10);
+        int width = BitConverter.ToInt32(bmp, 18);
+        int height = BitConverter.ToInt32(bmp, 22);
+        int bitsPerPixel = BitConverter.ToInt16(bmp, 28);
+        if (width <= 0 || height == 0 || bitsPerPixel is not (24 or 32))
+            return false;
+        int stride = ((width * bitsPerPixel) + 31) / 32 * 4;
+        int rows = Math.Abs(height);
+        if (offset < 0 || (long)offset + ((long)stride * rows) > bmp.Length)
+            return false;
+        layout = new BitmapLayout(offset, width, rows, stride, height < 0, bitsPerPixel / 8);
+        return true;
+    }
+
     internal static async ValueTask<CapturedWindow?> CaptureForegroundAsync(
         CancellationToken cancellationToken)
     {

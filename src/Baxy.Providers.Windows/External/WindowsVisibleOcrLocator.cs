@@ -66,9 +66,12 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // in, a spinner) is not the press's. What is at the point when it is pressed is the worker's check.
             VisibleControlSurface.CapturedWindow? baseline =
                 await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
-            // Auditoría final (regla 3): a window that changes by itself proves nothing by a changed image.
-            bool animated = baseline is not { } still
-                || await VisibleControlSurface.ForegroundAnimatesAsync(still, cancellationToken).ConfigureAwait(false);
+            // Auditoría final (regla 3): what a window changes by itself proves nothing. PLAN_GENERAL A4: its own motion is
+            // mapped by cells, so a change outside them still proves the press (a store with a video); an unknown motion
+            // proves nothing, as before.
+            VisibleControlSurface.MotionMask? motion = baseline is { } still
+                ? await VisibleControlSurface.ForegroundMotionAsync(still, cancellationToken).ConfigureAwait(false)
+                : null;
             // Auditoría final (regla 3): the person's touch counts from before the press is sent.
             long pressedAt = Environment.TickCount64;
             object? roots = press?.WatchRoots(before.Hwnd);
@@ -109,7 +112,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                             .ConfigureAwait(false);
                     // Auditoría final (regla 3): only the same window's image counts; another window in front is no proof.
                     read |= after is { } seen && seen.Hwnd == before.Hwnd;
-                    changed = baselineFresh && after is { } later && later.Hwnd == before.Hwnd && later.Sha256 != before.Sha256;
+                    changed = baselineFresh && after is { } later
+                        && VisibleControlSurface.ChangedOutsideMotion(before, later, motion);
                 }
             }
             finally
@@ -143,9 +147,11 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             bool targeted = method == "target" && pressed.Focused;
             // Without a burst nothing else watches the person: their input to that window since the press ends the proof.
             userActed |= burst is null && WindowsUserInputPause.PersonTouched(before.Hwnd, pressedAt);
-            bool ok = (changed && !userActed && !animated) || targeted;
-            // Ronda final 20 (regla 3): «unchanged» only when the window did not change and does not change by itself.
-            bool seenUnchanged = read && baselineFresh && !animated && !changed;
+            bool ok = (changed && !userActed) || targeted;
+            // Ronda final 20 (regla 3): «unchanged» only when the window did not change where it does not change by itself,
+            // and the point pressed is not where it moves (a press there may have changed only what moves).
+            bool seenUnchanged = read && baselineFresh && !changed && motion is { } known
+                && !known.MovingAt(hit.CenterX, hit.CenterY);
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();

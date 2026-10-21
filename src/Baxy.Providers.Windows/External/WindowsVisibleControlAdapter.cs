@@ -421,6 +421,10 @@ internal static class LocatedPointPress
             return new PointerChecked(screenX, screenY, null, false, VisibleControlSurface.SurfaceUnread);
         if (!recheck.Moved && !recheck.Redrawn)
             return new PointerChecked(screenX, screenY, again, false, null);
+        // PLAN_GENERAL A3 (e2e del notebook: Epic's store video never stops): only parts away from the point redrew; the
+        // point still means the same control, and the new capture is the post-read's baseline.
+        if (!recheck.Moved && VisibleControlSurface.SameAround(seen, again, screenX - again.Left, screenY - again.Top))
+            return new PointerChecked(screenX, screenY, again, true, null);
         (int X, int Y)? found = relocate is null || recheck.Moved
             ? null
             : await relocate(again, cancellationToken).ConfigureAwait(false);

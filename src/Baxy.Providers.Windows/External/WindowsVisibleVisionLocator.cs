@@ -139,8 +139,10 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
             if (current is not { } baseline || baseline.Hwnd != before.Hwnd)
                 return ExternalJson.FailureBeforeEffect(operation, "input_window_not_in_front");
-            // Auditoría final (regla 3): a window that changes by itself proves nothing by a changed image.
-            bool animated = await VisibleControlSurface.ForegroundAnimatesAsync(baseline, cancellationToken).ConfigureAwait(false);
+            // Auditoría final (regla 3): what a window changes by itself proves nothing. PLAN_GENERAL A4: its own motion is
+            // mapped by cells, so a change outside them still proves the press; an unknown motion proves nothing.
+            VisibleControlSurface.MotionMask? motion =
+                await VisibleControlSurface.ForegroundMotionAsync(baseline, cancellationToken).ConfigureAwait(false);
             // Auditoría final (regla 3): the person's touch counts from before the press is sent.
             long pressedAt = Environment.TickCount64;
             object? roots = press?.WatchRoots(before.Hwnd);
@@ -159,16 +161,20 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             bool read = false;
             try
             {
-                await Task.Delay(200, cancellationToken).ConfigureAwait(false);
-                // r4a M3: a pointer's burst was given back right after the press; its look reads the window's own
-                // drawing behind the person's, the way its baseline was taken.
-                VisibleControlSurface.CapturedWindow? after = burst is null
-                    ? await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false)
-                    : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
-                        .ConfigureAwait(false);
-                // Auditoría final (regla 3): only the same window's image counts; another window in front is no proof.
-                read = after is { } seen && seen.Hwnd == before.Hwnd;
-                changed = after is { } later && later.Hwnd == before.Hwnd && later.Sha256 != before.Sha256;
+                // Looked at until it changes, up to 1.5 s, as the OCR stage does: a web view redraws later than 400 ms.
+                for (int look = 0; look < 6 && !changed && burst is not { UserActed: true }; look++)
+                {
+                    await Task.Delay(look == 0 ? 400 : 220, cancellationToken).ConfigureAwait(false);
+                    // r4a M3: a pointer's burst was given back right after the press; its look reads the window's own
+                    // drawing behind the person's, the way its baseline was taken.
+                    VisibleControlSurface.CapturedWindow? after = burst is null
+                        ? await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false)
+                        : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
+                            .ConfigureAwait(false);
+                    // Auditoría final (regla 3): only the same window's image counts; another window in front is no proof.
+                    read |= after is { } seen && seen.Hwnd == before.Hwnd;
+                    changed = after is { } later && VisibleControlSurface.ChangedOutsideMotion(before, later, motion);
+                }
             }
             finally
             {
@@ -181,9 +187,10 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
 
             // A surface that changed after the person acted proves nothing of the click.
             userActed |= burst is null && WindowsUserInputPause.PersonTouched(before.Hwnd, pressedAt);
-            // Ronda final 20 (regla 3): «unchanged» only when the window did not change and does not change by itself.
-            bool seenUnchanged = read && !animated && !changed;
-            changed &= !userActed && !animated;
+            // Ronda final 20 (regla 3): «unchanged» only when the window did not change where it does not change by itself,
+            // and the point pressed is not where it moves.
+            bool seenUnchanged = read && !changed && motion is { } known && !known.MovingAt(x, y);
+            changed &= !userActed;
             bool targeted = method == "target" && pressed.Focused;
             bool ok = changed || targeted;
             JsonElement result = ExternalJson.Create(writer =>
