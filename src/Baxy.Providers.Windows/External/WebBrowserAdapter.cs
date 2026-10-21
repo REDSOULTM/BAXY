@@ -1707,11 +1707,11 @@ internal class CdpBrowserSession : IDisposable
         if (action == "exit_fullscreen")
         {
             // Uso real 2026-10-21: leaving full screen; a page not in full screen is the state reached (changed:false).
-            string before = await EvaluateStringAsync(
+            string inFullscreen = await EvaluateStringAsync(
                 socket,
                 "document.fullscreenElement ? document.fullscreenElement.tagName : ''",
                 cancellationToken).ConfigureAwait(false);
-            if (before.Length == 0)
+            if (inFullscreen.Length == 0)
                 return new(true, false, action, targetId, "windowed", string.Empty);
             await EvaluateStringAsync(
                 socket,

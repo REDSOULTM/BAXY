@@ -210,7 +210,7 @@ public static class ProductCatalog
         Descriptor(
             "browser.control",
             Schema([String("action", values:
-                ["back", "close", "close_all", "fullscreen_video", "exit_fullscreen", "new_tab", "reload", "scroll_down",
+                ["back", "close", "close_all", "exit_fullscreen", "fullscreen_video", "new_tab", "reload", "scroll_down",
                     "scroll_up"])], ["action"]),
             OperationRisks.LowReversible,
             "browser.control.cdp.postread.v1",
