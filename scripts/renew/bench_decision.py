@@ -144,7 +144,13 @@ def main():
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), extra_args=args.server_args.split(),
                        log_name=f"bench-{args.label}.log")
     server.start()
-    mind = Mind(server, runs / f"{args.label}.trace.jsonl")
+    system_one = None
+    if os.environ.get("BAXY_S1_GGUF", "").strip():  # System One, layer 2, as the product starts it (__main__.py)
+        from baxy_mind.system_one import SystemOne  # noqa: E402
+        system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
+                               int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
+        system_one.start()
+    mind = Mind(server, runs / f"{args.label}.trace.jsonl", system_one)
     mind.configure(json.loads(Path(args.catalog).read_text(encoding="utf-8")))
     server.wait_ready(600)
     t0 = time.monotonic()
@@ -177,6 +183,8 @@ def main():
               flush=True)
     measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
     server.close()
+    if system_one is not None:
+        system_one.close()
     latencies = [r["latency_s"] for r in rows]
     counted = [r for r in rows if not r["excluded"]]
     summary = {"label": args.label, "cases": str(args.cases), "temp": args.temp,
