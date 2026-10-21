@@ -189,6 +189,9 @@ internal sealed partial class UserBrowserSurface
             writer.WriteNumber("version", 1);
             writer.WriteString("provider", "youtube");
             writer.WriteString("query", query);
+            // Uso real 2026-10-21: no video of the first ones held every word searched; YouTube's first one played.
+            if (!video.TitleMatchesQuery)
+                writer.WriteBoolean("titleMatchesQuery", false);
             // Ronda final: what played as the session read it; the page BAXY opened is the opened one, not a read
             // address.
             if (playing.Title.Length > 0)

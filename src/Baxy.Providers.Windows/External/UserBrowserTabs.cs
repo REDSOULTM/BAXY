@@ -40,8 +40,8 @@ internal sealed partial class UserBrowserSurface
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "new_tab" or "reload"
-            or "scroll_down" or "scroll_up"))
+        if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "exit_fullscreen" or "new_tab"
+            or "reload" or "scroll_down" or "scroll_up"))
             return ExternalJson.Failure(operation, "browser_control_action_invalid");
         (UserBrowserWindow? window, _, _) = await TabbedWindowAsync(browser, cancellationToken).ConfigureAwait(false);
         if (window is null)
@@ -55,7 +55,8 @@ internal sealed partial class UserBrowserSurface
             "close" => await CloseTabAsync(step, cancellationToken).ConfigureAwait(false),
             "close_all" => await CloseAllTabsAsync(step, cancellationToken).ConfigureAwait(false),
             "fullscreen_video" => await FullscreenAsync(step, cancellationToken).ConfigureAwait(false),
-            _ => await ScrollAsync(step, cancellationToken).ConfigureAwait(false),
+            "exit_fullscreen" => await ExitFullscreenAsync(step, cancellationToken).ConfigureAwait(false),
+            _ =>await ScrollAsync(step, cancellationToken).ConfigureAwait(false),
         };
     }
 
@@ -316,6 +317,34 @@ internal sealed partial class UserBrowserSurface
             await _platform.DelayAsync(Poll, cancellationToken).ConfigureAwait(false);
             if (_platform.CoversMonitor(step.Window))
                 return Done(step, "fullscreen", null);
+        }
+        return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
+    }
+
+    /// <summary>
+    /// Uso real 2026-10-21: «sal de pantalla completa» had no action (the model chose close, which reads the tab strip a
+    /// full-screen window does not show). The page's own exit button pressed through UI Automation, as the full-screen one
+    /// is; the window no longer covering its monitor is the proof. A window that does not cover it is left as it is.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> ExitFullscreenAsync(
+        TabStep step, CancellationToken cancellationToken)
+    {
+        if (!_platform.CoversMonitor(step.Window))
+            return Done(step, "windowed", null);
+        step.Boundary.Cross(CancellationToken.None);
+        UserBrowserAct pressed = await _platform.ActAsync(step.Window, step.Action, cancellationToken)
+            .ConfigureAwait(false);
+        if (pressed.Step == "fullscreen_control_not_found")
+            return ExternalJson.FailureBeforeEffect(step.Operation, FullscreenControlMissing);
+        if (pressed.Step == "page_not_found")
+            return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+        if (pressed.Step != "invoked")
+            return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
+        for (int attempt = 0; attempt < FullscreenPolls; attempt++)
+        {
+            await _platform.DelayAsync(Poll, cancellationToken).ConfigureAwait(false);
+            if (!_platform.CoversMonitor(step.Window))
+                return Done(step, "windowed", null);
         }
         return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
     }

@@ -646,6 +646,23 @@ internal static class UserBrowserScripts
             Emit 'fullscreen_control_not_found' -1 -1
             exit 0
           }
+          if ($Action -eq 'exit_fullscreen') {
+            $words = @('salir de pantalla completa', 'salir del modo de pantalla completa', 'exit full screen', 'exit fullscreen', 'quitter le mode plein ecran', 'sair da tela cheia', 'vollbild beenden')
+            $condition = New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty, $CT::Button)
+            foreach ($button in $page.FindAll([System.Windows.Automation.TreeScope]::Descendants, $condition)) {
+              $name = Fold $button.Current.Name
+              foreach ($word in $words) {
+                $pattern = $null
+                if ($name.StartsWith($word) -and $button.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$pattern)) {
+                  $pattern.Invoke()
+                  Emit 'invoked' -1 -1
+                  exit 0
+                }
+              }
+            }
+            Emit 'fullscreen_control_not_found' -1 -1
+            exit 0
+          }
           Emit 'action_invalid' -1 -1
         } catch {
           Emit ('uia_failed: ' + $_.Exception.GetType().Name) -1 -1

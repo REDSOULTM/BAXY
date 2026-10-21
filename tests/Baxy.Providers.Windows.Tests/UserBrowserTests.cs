@@ -1279,6 +1279,56 @@ public sealed class UserBrowserTests
         });
     }
 
+    // Uso real 2026-10-21: «sal de pantalla completa» had no action; the model chose close, which fails in full screen.
+    [Test]
+    public async Task LeavingFullScreenIsTheWindowNoLongerCoveringItsMonitor()
+    {
+        var leaves = new FakePlatform(OperaGx);
+        leaves.Covers.AddRange([true, true, false]);
+        var windowed = new FakePlatform(OperaGx) { ActResult = _ => throw new AssertionException("nothing to press") };
+        var missing = new FakePlatform(OperaGx) { ActResult = _ => new UserBrowserAct("fullscreen_control_not_found", -1, -1) };
+        missing.Covers.Add(true);
+        using Harness first = new(leaves);
+        using Harness second = new(windowed);
+        using Harness third = new(missing);
+
+        ExternalCapabilityReceipt left = await Control(first, "exit_fullscreen");
+        ExternalCapabilityReceipt already = await Control(second, "exit_fullscreen");
+        ExternalCapabilityReceipt none = await Control(third, "exit_fullscreen");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(left.Verified, Is.True);
+            Assert.That(left.Result?.GetProperty("observedState").GetString(), Is.EqualTo("windowed"));
+            Assert.That(already.Verified, Is.True);
+            Assert.That(already.Result?.GetProperty("observedState").GetString(), Is.EqualTo("windowed"));
+            Assert.That(none.ErrorCode, Is.EqualTo(UserBrowserSurface.FullscreenControlMissing));
+            Assert.That(none.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
+    // Uso real 2026-10-21: «Red Ready» played «Rare Earth - Get Ready», YouTube's first result.
+    [Test]
+    public void TheVideoChosenIsTheFirstWhoseTitleHoldsEveryWordSearched()
+    {
+        string html = "var ytInitialData = {"
+            + "\"videoRenderer\":{\"videoId\":\"rareearth01\",\"title\":{\"runs\":[{\"text\":\"Rare Earth - Get Ready - complete track\"}]}},"
+            + "\"videoRenderer\":{\"videoId\":\"redready001\",\"title\":{\"runs\":[{\"text\":\"RED READY - Live\"}]}}};";
+
+        YouTubeSearchResult asked = YouTubeSearch.Parse(html, "Red Ready");
+        YouTubeSearchResult none = YouTubeSearch.Parse(html, "canción relajante");
+        YouTubeSearchResult unasked = YouTubeSearch.Parse(html);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.VideoId, Is.EqualTo("redready001"));
+            Assert.That(asked.TitleMatchesQuery, Is.True);
+            Assert.That(none.VideoId, Is.EqualTo("rareearth01"), "with none matching, YouTube's first");
+            Assert.That(none.TitleMatchesQuery, Is.False);
+            Assert.That(unasked.VideoId, Is.EqualTo("rareearth01"));
+        });
+    }
+
     [Test]
     public void TheFrameReadKeepsATabStripOfOneAndTheBackButtonState()
     {

@@ -210,7 +210,8 @@ public static class ProductCatalog
         Descriptor(
             "browser.control",
             Schema([String("action", values:
-                ["back", "close", "close_all", "fullscreen_video", "new_tab", "reload", "scroll_down", "scroll_up"])], ["action"]),
+                ["back", "close", "close_all", "fullscreen_video", "exit_fullscreen", "new_tab", "reload", "scroll_down",
+                    "scroll_up"])], ["action"]),
             OperationRisks.LowReversible,
             "browser.control.cdp.postread.v1",
             "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas salvo la última, que se deja porque cerrarla cerraría la ventana) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP; cerrar todas para a las 50 pestañas o a los 40 segundos y dice cuántas cerró (closedTabs)."),

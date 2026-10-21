@@ -553,6 +553,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteNumber("version", 1);
             writer.WriteString("provider", "youtube");
             writer.WriteString("query", query);
+            if (!video.TitleMatchesQuery)
+                writer.WriteBoolean("titleMatchesQuery", false);
             writer.WriteString("title", playback.Title);
             writer.WriteString("finalUrl", playback.FinalUrl);
             writer.WriteString("targetId", playback.TargetId);
@@ -1455,8 +1457,8 @@ internal class CdpBrowserSession : IDisposable
         string action,
         CancellationToken cancellationToken)
     {
-        if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "new_tab" or "reload"
-            or "scroll_down" or "scroll_up"))
+        if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "exit_fullscreen" or "new_tab"
+            or "reload" or "scroll_down" or "scroll_up"))
             return new(false, false, action, string.Empty, string.Empty, "browser_control_action_invalid");
         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
         if (action == "close_all")
@@ -1698,6 +1700,37 @@ internal class CdpBrowserSession : IDisposable
                     cancellationToken).ConfigureAwait(false);
                 if (observed == "VIDEO")
                     return new(true, true, action, targetId, "fullscreen:VIDEO", string.Empty);
+            }
+            return new(false, true, action, targetId, string.Empty, "cdp_fullscreen_not_verified");
+        }
+
+        if (action == "exit_fullscreen")
+        {
+            // Uso real 2026-10-21: leaving full screen; a page not in full screen is the state reached (changed:false).
+            string before = await EvaluateStringAsync(
+                socket,
+                "document.fullscreenElement ? document.fullscreenElement.tagName : ''",
+                cancellationToken).ConfigureAwait(false);
+            if (before.Length == 0)
+                return new(true, false, action, targetId, "windowed", string.Empty);
+            await EvaluateStringAsync(
+                socket,
+                "(()=>{document.exitFullscreen();return 'requested';})()",
+                cancellationToken,
+                userGesture: true).ConfigureAwait(false);
+            for (int attempt = 0; attempt <= 20; attempt++)
+            {
+                if (attempt > 0)
+                {
+                    await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+                }
+
+                string observed = await EvaluateStringAsync(
+                    socket,
+                    "document.fullscreenElement ? document.fullscreenElement.tagName : ''",
+                    cancellationToken).ConfigureAwait(false);
+                if (observed.Length == 0)
+                    return new(true, true, action, targetId, "windowed", string.Empty);
             }
             return new(false, true, action, targetId, string.Empty, "cdp_fullscreen_not_verified");
         }
