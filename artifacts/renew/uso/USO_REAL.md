@@ -1,32 +1,51 @@
 # BAXY en uso real: errores del dueño, uno a uno
 
-Sesión en vivo del 2026-10-20 en el PC (REDPC), rama `uso-real` desde `hub/baxy-renew` 51cd74225 (modelo c2-e1.0,
-ayudas encendidas). El dueño usa BAXY, pasa cada error y lo vuelve a probar. Casos en genérico: las frases literales del
-dueño no van a git.
+Sesión en vivo del 2026-10-20/21. Empezó en el PC (REDPC) y siguió en el notebook (REDNOTE) por SSH, a pedido del dueño.
+Rama `uso-real`, desde `hub/baxy-renew` 51cd74225 (modelo c2-e1.0, ayudas encendidas). Casos en genérico: las frases
+literales del dueño no van a git.
 
-## Arreglados
+Cómo se verificó cada caso:
+- Por el dueño, en su BAXY.
+- Por el banco e2e en BAXY real: `scripts/renew/bench_e2e.py`, con 15 casos de la sesión juzgados por el estado del mundo,
+  corrido en el escritorio del notebook a pedido del dueño (`uso-nb-1`…`uso-nb-5`).
 
-| # | Caso (genérico) | Causa | Arreglo | Commit | Segunda frase |
-|---|---|---|---|---|---|
+El plan general (investigación y piezas A1-A7, B1-B3, C1-C4) está en `PLAN_GENERAL.md`.
 
-## En prueba (arreglados y compilados, falta la prueba del dueño)
+## Arreglados y verificados
 
-| # | Caso (genérico) | Causa | Arreglo |
-|---|---|---|---|
-| 1 | Buscar algo en Google en un navegador con nombre (Opera GX) mientras otra app (Spotify) está delante: la página se abre detrás y el texto tecleado va a la otra app; el modelo repite «recargar + escribir» 7 veces | Proveedor: la navegación por el navegador de la persona abre el enlace con el shell y lo verifica, pero un proceso en segundo plano no puede pasarle el frente, así que el navegador queda detrás (`UserBrowserSurface.cs` NavigateAsync; recibo `input.text.type` → `sentTo: Spotify`) | Tras una navegación verificada, la ventana del navegador se pone delante con el mismo mecanismo que la concesión de frente (`IUserBrowserPlatform.BringToFrontAsync`: `FrontGate`, `LeaseFrontSignal`, `VisibleControlSurface.BringToFront`) |
-| 2 | Pedir dos veces seguidas una canción de un artista en Spotify: la segunda vez suena «Tus Me Gusta» (otra canción) y el recibo dice verificado | Proveedor: si el buscador ya tiene la misma consulta (sin tildes ni mayúsculas), no se aparta la página de antes y el control «Reproducir …» de más a la izquierda de la ventana es el de la biblioteca lateral (`SpotifyDesktopAutomation.ps1` Select-BaxySpotifySearchResult) | Los candidatos se acotan a la vista de resultados («Spotify – Buscar»), que no contiene la barra lateral; sin esa vista, la ventana como antes |
-| 4 | Abrir Epic Games e ir a su tienda o a la página de un juego: `app.open` queda incierto y «mirar la ventana» no la encuentra 7 veces | Proveedor + datos: el acceso directo apunta a `Binaries\Win32\EpicGamesLauncher.exe`, que arranca `Binaries\Win64\…` y sale, y la verificación sólo aceptaba la misma ruta o una carpeta versionada (`ExecutableIsLaunchedImage`); la ventana se titula «Iniciador de Epic Games» y su árbol de accesibilidad está vacío (0 elementos), así que pulsar no puede funcionar y no había lugares propios | Se acepta la copia `Win64` hermana de una carpeta `Win32`; Epic Games Launcher en `app_places.v1.json` con `store` y `results` (`…/store/browse?q=`), comprobados en vivo con captura de ventana (`…://library` no cambia de página y no se añadió) |
-
-| 11 | Pedir que busque un juego en la tienda de Epic: el modelo llama a instalarlo (`game.install.named`), que no se verifica y no instala nada (Epic sin juegos instalados, sin descarga) | El modelo eligió mal: las dos frases de `app.open` que enumeran las apps con lugares (`tool_descriptions.en.v1.json`, descripción y argumento `place`) no nombraban a Epic, así que su búsqueda no existía para él | Epic Games Launcher en esas dos frases (palanca 4, prefijo ~+20 tokens), con decision2 s0 de control |
+| # | Caso (genérico) | Causa | Arreglo | Verificado |
+|---|---|---|---|---|
+| 1 | Buscar en Google con un navegador con nombre mientras otra app está delante: la página quedaba detrás y el texto iba a la otra app | Proveedor: un proceso en segundo plano no puede pasar el frente al navegador | El navegador va delante tras una navegación verificada (`BringToFrontAsync`); la página abierta recibe el teclado sin ventana (B2, `NoteOpened`); el permiso de primer plano se cede por PID (B3) | e2e U01 en nb-2 y nb-4; U15 (variante YouTube) en nb-1, nb-4 y nb-5 |
+| 2 | Pedir dos veces una canción de un artista en Spotify: la segunda sonaba «Tus Me Gusta» y se daba por buena | Proveedor: con la misma consulta ya en el buscador no se aparta la página de antes; el «Reproducir» de más a la izquierda era el de la barra lateral | Candidatos sólo dentro de la vista de resultados («Spotify – Buscar») | Dueño («rock», 22:54); e2e U02 en nb-1 y nb-5 |
+| 4 | Abrir Epic y mirar su ventana: `app.open` incierto y «ventana no encontrada» ×7 | Proveedor: el acceso directo `Win32` arranca la copia `Win64`; el título está localizado | Identidad aprendida al abrir (B1) y carpetas de arquitectura hermanas | Dueño («abre Epic Games», 02:44: verificado); e2e |
+| 11 | «Busca X en Epic» acabó en instalar el juego | Las frases de `app.open` enumeraban a mano las apps con lugares, y Epic no estaba | Frase de lugares generada desde `app_places.v1.json` (A6); «no para buscar en una tienda» en instalar (C4); decision2 s0 230/268 (ref. 229) | Ya no instala en ninguna corrida |
+| 12 | La página de un juego «en la aplicación» de Epic abría la tienda web | Faltaba un lugar «página de juego» en el lanzador | Lugar `game` con el hueco `{slug}` (`…/store/p/rocket-league`) | e2e U04 en nb-5 |
+| 13 | Clic por índice que la vista no tenía (Epic, 0 controles) o que nombraba otro control (Steam, «Chrome Legacy Window»): el clic terminaba sin buscar la etiqueta | Proveedor: el índice inválido cortaba la cascada | El control del índice nunca se pulsa; la etiqueta va a su cascada atada a la ventana nombrada o a la de la última vista | e2e nb-3 y siguientes: desaparecen `identity_stale` y `label_mismatch` |
+| 14 | Ventanas animadas (vídeo y carrusel de la tienda de Epic): cada clic se rechazaba o quedaba «sin leer» | Proveedor: se comparaba la ventana entera, que nunca está quieta | Mapa de movimiento por celdas: el punto vale si su entorno no cambió; un cambio fuera de lo que se mueve solo prueba el clic (A3/A4) | e2e nb-5: el clic de visión en el carrito se verificó |
+| 15 | Botones sin texto (iconos) en apps sin árbol | No había visión conectada | Visión de respaldo: el mismo Qwen3.5-4B con su proyector en CPU, pregunta en `bbox_2d`, slot guardado y restaurado alrededor (A5); 10/10 en Epic medido aparte | e2e U05 en nb-5: carrito pulsado por visión y verificado |
+| 16 | Tras una consulta de visión, la decisión siguiente tardaba 20-25 s | La consulta desalojaba la caché de la conversación (2 GB, no cabe en `-cram`); con 2 slots este modelo híbrido la pierde igual | Guardar y restaurar el slot a disco (1,35 s y 0,74 s); el archivo se borra | Log del servidor en el PC: «restored … checkpoints», 139-211 tokens releídos |
+| 3 | Steam: «Tienda» y la búsqueda | App hecha con web; el modelo no usaba los lugares | Ayuda `app_places_next` (C3/b), A3/A4 | e2e U07 en nb-1, nb-4 y nb-5 |
+| 7 | Calculadora: un «2» repetido salía 22 | Pantalla igual tras la pulsación | (El modelo usa `calculator.expression.evaluate`) | e2e U08 y U09 en todas las corridas |
+| 8 | El tiempo de mañana: URLs de Google News de ~500 tokens copiadas mal | El modelo copiaba URLs enormes | Referencias cortas `ref:rN` (C1) | e2e U10 en todas las corridas |
+| 9 | «Ábrela en mi navegador» tras leer una guía buscaba archivos | El modelo eligió mal | (Pasa ahora) | e2e U11 en todas las corridas |
 
 ## Pendientes
 
 | # | Caso (genérico) | Causa | Estado |
 |---|---|---|---|
-| 3 | Buscar un juego en la tienda de Steam: clics en «Buscar en la tienda» / «TIENDA» fallan (`visible_surface_changed_while_waiting`, `protected_window`, inciertos) hasta 7 veces | Límite conocido (app hecha con web) + el modelo no usa la vía directa que existe (`app.open` place `results`/`store`) | Ayuda de resultado propuesta; decidir cuándo se da (en `app.open` o sólo tras un clic fallido) por el riesgo de desviar `media.play.query` en Spotify |
-| 5 | Pedir una suma sin decir cuál y responder «lo que quieras»: suma 1+1 (bien, recibo con el valor) y vuelve a preguntar qué sumar | Límite del modelo: con la conversación entera y el resultado delante, repite la pregunta | Sin arreglo |
-| 6 | Una frase larga y confusa sobre que algo «tarda» y «apagar y encender» terminó cerrando Spotify (modo Bypass, sin confirmación) | El modelo eligió mal (`system.process.terminate.named`) | Anotado |
-| 7 | Sumar con clics en la Calculadora: tras «2 +», pulsar «2» queda incierto y el modelo lo pulsa otra vez (sale 22) | Proveedor: la pantalla queda igual que antes de la pulsación (sigue mostrando 2) y la post-lectura da `visible_button_postread_unchanged` aunque el `invoke` llegó | Pendiente; la segunda vez el modelo usó `calculator.expression.evaluate` y salió bien |
-| 8 | El tiempo de mañana: busca en noticias, lee artículos de Google News con URLs de ~500 tokens que copia mal (400, JSON cortado) y responde con el de hoy | El modelo copia URLs enormes (11 s cada una) y eligió la fuente `news` | Pendiente |
-| 10 | Una pregunta de historia respondida con una búsqueda: la respuesta mezcla dos hechos de los fragmentos (un barco «hundido por la flota española» por la mención de otra guerra en el mismo fragmento) y atribuye a «historiadores modernos» lo que el resultado atribuye a una de las partes | Límite del modelo: falsedad al resumir fragmentos correctos (los resultados eran exactos; corrió en el checkout viejo, sin arreglos de esta sesión) | Sin arreglo con lo permitido |
-| 9 | Tras leer una guía web, «ábrela en mi navegador»: pregunta qué archivo abrir y busca archivos | El modelo eligió mal (no usó `browser.navigate` con la URL que acababa de leer); antes había dicho «Abrí la guía» tras sólo leerla | Pendiente |
+| 5 | Pedir una suma y responder «lo que quieras»: vuelve a preguntar | Límite del modelo | Pasó en el e2e (U09); se mantiene como límite intermitente |
+| 6 | Una frase confusa sobre «apagar y encender» cerró Spotify (Bypass, sin confirmación) | El modelo eligió mal | Anotado |
+| 10 | Historia (Arturo Prat): mezcla hechos de los fragmentos o no busca e inventa | Límite del modelo | Pasó en nb-5, falló en nb-1 y nb-4 |
+| 17 | «Busca X en Epic» va al catálogo o a «¿lo tengo?» en vez de la búsqueda | El modelo eligió mal | Propuesta: frases «cuándo no usar» en esas dos herramientas, con banco de control en el notebook |
+| 18 | «La configuración del sistema… pantalla» abre msconfig, protegido, en vez de Configuración | El modelo confunde dos nombres casi iguales; el recibo ya le dice qué app tiene el lugar | Límite del modelo |
+| 19 | Tras pulsar el carrito por visión (verificado), el modelo no reconoce la página y vuelve a pulsar | El modelo no confía en el recibo | Pendiente |
+| 20 | Opera GX en el notebook: página «Actualización finalizada» y bucles de pestaña nueva | Entorno (actualización) y el modelo | Pasó en nb-2 y nb-4; repetir con el entorno quieto |
+| 21 | Steam en el notebook: la ventana no aparece en la mirada | Entorno: el agente local del notebook trabajaba en el escritorio durante nb-5 | Repetir con el entorno quieto |
+
+## Medidas del e2e en el notebook (15 casos)
+
+| Corrida | Aciertos | Notas |
+|---|---|---|
+| nb-1 | 8/15 | Consola del lanzador visible delante (contaminó) |
+| nb-4 | 8/15 | Consola oculta; índices inválidos ya en cascada |
+| nb-5 | 10/15 | Mapa de movimiento y lugar `game` de Epic; el agente local trabajaba a la vez (Steam) |
