@@ -2069,6 +2069,15 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // keeps its crop (from 470 it would hold the avatar's letter before the name).
     internal const int WhatsAppComposerBandLeftAt96Dpi = 470;
 
+    // Uso real 2026-10-21 (e2e del notebook, a 1296 px Discord window): the server column and the direct-messages list
+    // reached about 374 logical px, past the 320 the pane is read from, and the composer band held the list's foot (the
+    // person's own panel): an empty composer passed for the person's draft. Discord lets that column be widened, so the
+    // band starts past a share of the window as well.
+    // A third: past the list (about 29 % there) and short of the composer's text (about 36 %), which the send reads.
+    private const double DiscordComposerBandShare = 0.33;
+
+    internal static int DiscordComposerBandLeft(int windowWidth) => (int)(windowWidth * DiscordComposerBandShare);
+
     // Outgoing bubbles are right-aligned, so the delivery is read from the right
     // end of the last-messages band alone: over the full band the doodle
     // wallpaper drowned the bubble («hola 15:32» read as «era»).
@@ -2212,6 +2221,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             if (area == CaptureArea.Composer && string.Equals(channel, "whatsapp", StringComparison.Ordinal))
             {
                 sourceX = Math.Min(Math.Max(0, windowWidth - 1), (int)(WhatsAppComposerBandLeftAt96Dpi * scale));
+            }
+            else if (area == CaptureArea.Composer)
+            {
+                sourceX = Math.Min(Math.Max(0, windowWidth - 1), Math.Max(sourceX, DiscordComposerBandLeft(windowWidth)));
             }
             // WhatsApp's chat list is what lies left of the conversation pane.
             int listWidth = sourceX;

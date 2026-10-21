@@ -337,6 +337,11 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Uso real 2026-10-21 (e2e del notebook): a 1620 px Discord window at 125 % had its list up to about 470 physical px.
+    [Test]
+    public void TheDiscordComposerBandStartsPastAWidenedList() =>
+        Assert.That(WindowsDesktopMessagingAutomation.DiscordComposerBandLeft(1620), Is.GreaterThan(470).And.LessThan(600));
+
     // Uso real 2026-10-21 (e2e del notebook): a contact without a photo shows its initial left of the name.
     [TestCase("A Abuela", "Abuela", "Abuela")]
     [TestCase("+ A Abuela", "Abuela", "Abuela")]
