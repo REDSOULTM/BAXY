@@ -1,4 +1,5 @@
 import { useEffect, useReducer } from 'react';
+import { lipPush } from './lip';
 import type {
   AgentStatus, BootPieces, ChatItem, Fam, HostState, NetEntry, ServerEvent, Step, Surfaces, VoiceStatus,
 } from './types';
@@ -15,6 +16,8 @@ export type Mood = 'happy' | 'sad' | 'curious' | null;
 export interface BaxyStore {
   connected: boolean;
   hostState: HostState;
+  /** the host's state without the voice (what follows when the voice stops sounding) */
+  hostQuiet: HostState;
   agent: AgentStatus;
   items: ChatItem[];
   session: { id: string; label: string } | null;
@@ -42,6 +45,7 @@ export interface BaxyStore {
 const INITIAL: BaxyStore = {
   connected: false,
   hostState: 'idle',
+  hostQuiet: 'idle',
   agent: { built: false, ready: false },
   items: [],
   session: null,
@@ -87,7 +91,10 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
     case '_connected':
       return { ...s, connected: ev.value };
     case 'state':
-      return { ...s, hostState: ev.value, live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null };
+      // listening starts a new request: the last reply's captions leave (owner, 2026-10-20: they came back and
+      // re-animated over what BAXY said next)
+      return { ...s, hostState: ev.value, hostQuiet: ev.quiet ?? (ev.value === 'speaking' ? 'idle' : ev.value), live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null,
+        sub: ev.value === 'listening' ? null : s.sub };
     case 'agent':
       return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, powered: ev.powered !== false } };
     case 'transcript':
@@ -102,6 +109,8 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
         const journey = s.journey ? { ...s.journey, path: [...s.journey.path.filter((p) => p !== 'verificar'), 'verificar'] } : s.journey;
         return { ...s, items, sub: { text: it.text, key: it.id + ':' + it.text.length }, mood: moodOf(it.steps), journey, running: null };
       }
+      // a new request (typed or heard): the last reply's captions leave with it
+      if (it.who === 'you' && !before) return { ...s, items, sub: null, mood: null };
       return { ...s, items };
     }
     case 'step': {
@@ -128,6 +137,8 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
     }
     case 'voice_partial':
       return { ...s, live: ev.text };
+    case 'lip':
+      return s; // taken by the socket into lip.ts (the reducer stays pure: StrictMode runs it twice)
     case 'voice_wake':
       return { ...s, live: '' };
     case 'boot':
@@ -176,7 +187,9 @@ export function useBaxy(): BaxyStore {
       ws.onmessage = (e) => {
         if (cancelled) return;
         try {
-          dispatch(JSON.parse(e.data as string) as ServerEvent);
+          const ev = JSON.parse(e.data as string) as ServerEvent;
+          // the voice's timeline for the mouth is read every frame by the avatar: it never re-renders the view
+          if (ev.type === 'lip') lipPush(ev); else dispatch(ev);
         } catch { /* a malformed event changes nothing */ }
       };
       ws.onclose = () => {

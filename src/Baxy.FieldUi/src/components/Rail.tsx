@@ -1,6 +1,5 @@
 import { memo, type ReactNode } from 'react';
 import { Globe, Icon } from './Icon';
-import { LogoMark } from './LogoMark';
 import type { BaxyState, Metrics } from '../types';
 
 /* The left rail (design chat.jsx, BxRail): privacy, power, confirmation mode, the PC's readings, the panels and the
@@ -84,9 +83,8 @@ function RailView({ state, powered, onPower, bypass, onMode, metrics, net, profi
     <div className="bx-left">
       <div className="left-header">
         <div className="row">
-          <span className="mark"><LogoMark size={14} state={state === 'booting' || state === 'standby' ? 'standby' : 'idle'} /></span>
           <span className="name">baxy</span>
-          <button className="bx-ib plain bx-gear" onClick={() => onPanel('settings')} title="Ajustes"><Icon name="settings" size={15} /></button>
+          <button className="bx-ib plain bx-gear" onClick={() => onPanel('settings')} title="Ajustes" aria-label="Ajustes"><Icon name="settings" size={15} /></button>
         </div>
         <div className={'bx-priv' + (net ? ' out' : '')} title={net ? 'Salió a internet: ' + net : 'El modelo y tus datos se quedan en este PC'}>
           {net ? <><Globe s={10} /><span>Salió a internet</span></> : <><i></i><span>Todo local</span></>}

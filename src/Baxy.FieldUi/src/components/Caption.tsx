@@ -7,14 +7,17 @@ import type { BaxyState, BootPieces } from '../types';
 
 function Sub({ text, animate, gone }: { text: string; animate: boolean; gone: boolean }) {
   const words = text.split(' ');
-  const [shown, setShown] = useState(animate ? 0 : words.length);
+  // the words appear once, when the reply first shows while BAXY speaks; BAXY speaking again later (its notice, the next
+  // answer) never runs them again over what it says then (owner, 2026-10-20)
+  const [typed] = useState(animate);
+  const [shown, setShown] = useState(typed ? 0 : words.length);
   useEffect(() => {
+    if (!typed) return;
     const n = text.split(' ').length;
-    if (!animate) return;
     let i = 0;
     const id = window.setInterval(() => { i++; setShown(i); if (i >= n) window.clearInterval(id); }, 80);
     return () => window.clearInterval(id);
-  }, [text, animate]);
+  }, [text, typed]);
   return (
     <div className={'bx-sub' + (gone ? ' gone' : '')}>
       {words.map((w, k) => <span key={k} style={{ opacity: k < shown ? 1 : 0 }}>{w + ' '}</span>)}

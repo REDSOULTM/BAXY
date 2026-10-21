@@ -65,6 +65,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.ConfirmationAsked += OnConfirmationAsked;
         _viewModel.ConfirmationResolved += OnConfirmationResolved;
         _viewModel.VoicePartial += OnVoicePartial;
+        _viewModel.VoiceLip += OnVoiceLip;
         _viewModel.VoiceWake += OnVoiceWake;
         _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
     }
@@ -345,6 +346,16 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     }
 
     private void OnVoicePartial(string text) => Publish(new JsonObject { ["type"] = "voice_partial", ["text"] = text });
+
+    // The mouth moves with what is heard: the take's levels and when it sounds, or when the voice was cut.
+    private void OnVoiceLip(JsonObject lip) => Publish(new JsonObject
+    {
+        ["type"] = "lip",
+        ["t0"] = lip["t0"]?.DeepClone(),
+        ["step"] = lip["step"]?.DeepClone(),
+        ["env"] = lip["env"]?.DeepClone(),
+        ["stop"] = lip["stop"]?.DeepClone(),
+    });
 
     private void OnVoiceWake() => Publish(new JsonObject { ["type"] = "voice_wake" });
 
@@ -757,11 +768,20 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
     }
 
-    private JsonObject StateEvent() => new() { ["type"] = "state", ["value"] = CurrentConversationState() };
+    // «quiet» is the state without the voice: the view shows «speaking» while the voice really sounds (its lip
+    // timeline) and this one in the voice's grace after it, so a notice said while the turn runs goes back to thinking.
+    private JsonObject StateEvent() => new()
+    {
+        ["type"] = "state",
+        ["value"] = CurrentConversationState(),
+        ["quiet"] = QuietConversationState(),
+    };
 
     private string CurrentConversationState() =>
-        _viewModel.IsVoiceSpeaking ? "speaking"
-        : _viewModel.IsListening ? "listening"
+        _viewModel.IsVoiceSpeaking ? "speaking" : QuietConversationState();
+
+    private string QuietConversationState() =>
+        _viewModel.IsListening ? "listening"
         : _viewModel.IsBusy ? "thinking"
         : _viewModel.Failure is not null || MindUnavailable ? "error"
         : "idle";
@@ -1020,6 +1040,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.ConfirmationAsked -= OnConfirmationAsked;
         _viewModel.ConfirmationResolved -= OnConfirmationResolved;
         _viewModel.VoicePartial -= OnVoicePartial;
+        _viewModel.VoiceLip -= OnVoiceLip;
         _viewModel.VoiceWake -= OnVoiceWake;
         try
         {

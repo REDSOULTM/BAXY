@@ -139,6 +139,9 @@ def spoken(text: str) -> str:
     for short, said in _ABBREVIATIONS.items():
         text = re.sub(rf"(?<![{_WORD}]){re.escape(short)}", said, text)
     text = text.replace("@", " arroba ")
+    # characters Supertonic's index lacks (id -1 in sherpa-onnx 1.13.4), said as what they mark: «…» a trailing pause,
+    # a dash an aside
+    text = re.sub(r"\s*[—–]\s*", ", ", text.replace("…", "..."))
     # dates and times before numbers: 17/10/2026, 17/10, 10:30
     text = re.sub(r"\b(\d{1,2})/(\d{1,2})(?:/(\d{4}|\d{2}))?\b", _date, text)
     text = re.sub(r"\b([01]?\d|2[0-3]):([0-5]\d)\b", _time, text)

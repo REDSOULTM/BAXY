@@ -246,6 +246,20 @@ proceso de la mente; el runtime ya traía sherpa-onnx 1.13.4 y scipy, sin depend
   asignador abre a 91 ms; falta oírlo en uso real.
 - **Licencia:** el modelo es OpenRAIL-M. Para distribuirlo hay que incluir la licencia y avisar que la voz es
   sintética. El repositorio de Supertonic está archivado.
+- **Arreglos del 2026-10-20 (quejas del dueño en uso real):**
+  - **Idioma y semilla nunca se aplicaban:** `config.extra[...] = ...` se pierde (pybind11 devuelve una copia), así
+    que BAXY hablaba con la etiqueta «en» y una semilla al azar. Ahora `config.extra = {...}`.
+  - **Silencios:** cada toma traía 0,35–0,67 s de silencio por lado; se recorta a la voz (-40 dB) y la pausa es
+    0,35 s (0,45 s tras una pregunta). Volumen medido sólo sobre la voz; velocidad según el largo de la frase;
+    respuestas cortas en una llamada; «…» y rayas pasados a lo que se dice.
+  - **«Un momento»:** se sintetiza una vez al cargar (suena en 0,05–0,14 s); si llega la respuesta antes de que
+    suene, no se dice; lo cancelado (la persona habla encima) ya no se sintetiza y no retiene la respuesta siguiente
+    (esperaba 2,8–5,7 s). El dueño puede apagarlo: Ajustes → Voz → «Decir «Un momento»» (`waitNotice`); con la voz
+    silenciada tampoco se dice.
+  - **Palabra de activación:** 4 copias desfasadas del detector k4 (`StaggeredWake` en `voice.py`): «BAXY» se oye a
+    0,28 s p50 (0,46 s máx.) tras la palabra, antes 1,18 s (1,36 s); falsos en 99 palabras parecidas 35 frente a 32.
+  - **Subtítulos:** el anterior ya no reaparece ni se re-anima cuando BAXY vuelve a hablar.
+  - Pasos de cálculo: el dueño eligió quedarse en 10 por ahora (empieza a hablar en 1,68 s p50; 6 pasos: 1,08 s).
 
 ## Interfaz v4 (2026-10-17, encargo del dueño con `design_handoff_baxy`)
 
@@ -291,3 +305,27 @@ La vista `src/Baxy.FieldUi` es ahora el rediseño v4, conectado a datos reales (
   latido 10 min (`NativeTurnLoop.ProposalLifetime`); los dos plazos los informa `GET /confirmation`. Hay dos niveles,
   Normal («lo arriesgado») y Bypass («nada»), y ningún texto menciona un tercero. El arranque ya no promete «12 a 18 s»:
   muestra cuánto tardó la carga anterior en este PC.
+
+## Interfaz v5 (2026-10-21, `Baxy Design (2).zip`)
+
+Sólo lo que cambió de la v4; el detalle está en `src/Baxy.FieldUi/ORIGIN.md`. BAXY es ahora el avatar en vídeo de
+Higgsfield (37 clips en `src/Baxy.FieldUi/public/clips`, en Git por decisión del dueño) con la red viva dibujada
+encima; en tema claro, con `?avatar=live` o sin fotograma, se dibuja la cara en código. Icono nuevo, fondo de
+nebulosa, chat que baja solo salvo que la persona suba a mano, arreglos de la ronda 2.
+
+- **Trampa que ya mordió:** la App sirve una copia de `dist/` en su `bin` (`FieldUi\`), no `dist/` directo. Recargar la
+  vista no basta: tras `pnpm build` hay que relanzar con `scripts\run_renew.cmd` (el fingerprint incluye `dist/` y
+  recompila). Se vio al dueño con la vista vieja mientras `dist/` ya tenía la nueva.
+- **Fallo corregido:** el avatar a veces no se veía. React volvía a poner la clase `nf` (sin fotograma) en cada cambio
+  de estado y el vídeo quedaba en opacidad 0 mientras la cara dibujaba sólo la red. Ahora `AvatarVid` es dueño de sus
+  clases y `avatar.spec.ts` comprueba en cada muestra que BAXY se ve (vídeo con fotograma o cara entera).
+- **Aceptación:** `scripts\test_field_ui.ps1` 34/35 en una corrida y las 3 restantes del avatar en la siguiente
+  (sin cambios de la vista entre ellas): 35/35. `controls.spec.ts › micrófono` pasó también en la app recién lanzada.
+- **Hallazgos fuera de la vista (no tocados):** con «Sí», mover a la papelera tardó 101 s y 74 s; la primera vez el
+  sistema no respondió y BAXY lo dijo («No pude confirmar que se borró…»), la segunda quedó en la papelera
+  (comprobado). La frase dice «el papelera» (concordancia, la compone la mente).
+- **Lip-sync (2026-10-21):** la boca del avatar sigue al sonido real (detalle y medidas en
+  `src/Baxy.FieldUi/ORIGIN.md`). Cadena: `voice_output.py` (evento `lip`: volumen cada 40 ms + hora en que suena) →
+  `MainWindowViewModel.VoiceLip` → `FieldProductChannel` → `lip.ts` → bocas recortadas de los clips en `AvatarVid`.
+  `e2e/lipsync.spec.ts` lo mide con `scripts/tools/loopcap` (loopback WASAPI): necesita audio sonando y la voz sin
+  silenciar; si no, se salta y lo dice.

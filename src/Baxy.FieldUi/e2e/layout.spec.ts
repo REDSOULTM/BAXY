@@ -43,10 +43,24 @@ function audit(page: Page): Promise<Audit> {
       }
       return false;
     };
+    // design v5 clipRect: the rect left visible after clipping by overflow / clip-path ancestors
+    const clipRect = (el: Element) => {
+      const b = el.getBoundingClientRect();
+      let L = b.left, T = b.top, R = b.right, B = b.bottom, p = el.parentElement;
+      while (p && !p.classList.contains('app-frame')) {
+        const cs = getComputedStyle(p);
+        if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible' || cs.clipPath !== 'none') {
+          const pr = p.getBoundingClientRect();
+          L = Math.max(L, pr.left); T = Math.max(T, pr.top); R = Math.min(R, pr.right); B = Math.min(B, pr.bottom);
+        }
+        p = p.parentElement;
+      }
+      return { left: L, top: T, right: R, bottom: B };
+    };
     for (const el of document.querySelectorAll('.bx2 *')) {
       if (el.closest('.bx-c4-list') || el.tagName.toLowerCase() === 'svg' || el.closest('svg') || el.tagName === 'CANVAS') continue;
       if (!visible(el) || clipped(el)) continue;
-      const r = el.getBoundingClientRect(), tol = 0.75 * ui + 0.5;
+      const r = clipRect(el), tol = 0.75 * ui + 0.5;
       if (r.right > fr.right + tol || r.left < fr.left - tol || r.bottom > fr.bottom + tol || r.top < fr.top - tol) {
         issues.push((typeof el.className === 'string' ? el.className : el.tagName) + ' sale del marco');
       }
@@ -127,6 +141,7 @@ for (const [label, w, h] of SIZES) {
     expect((await edgeLine(page, '.bx-face')).bad, 'sin línea de puntos en el borde de la cara').toBe(false);
     expect((await edgeLine(page, '.bx-cosmos')).bad, 'sin línea de puntos en el borde del cielo').toBe(false);
     A = await audit(page);
+    for (const t1 = Date.now(); A.issues.length && Date.now() - t1 < 4000;) { await page.waitForTimeout(250); A = await audit(page); }
     expect(A.issues, 'tras plegar el chat nada se sale del marco').toEqual([]);
     // Settings fits the window
     await page.click('.bx-gear');

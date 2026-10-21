@@ -201,3 +201,42 @@ html.bx-scaled .app-frame{width:100%!important;height:100%!important;min-width:0
 .bx2.narrow .bx-chat4{width:100%}
 html.lt .bx2.narrow .bx-right{box-shadow:-24px 0 48px rgba(20,30,50,.16)}
 .bx-chat4{width:calc(var(--chatfull,330px) - 1px)}
+
+/* ---- design v5 ---- */
+/* nebula backdrop (Higgsfield), behind the cosmos; dimmed at rest, gone in high contrast */
+.bx2::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:url("/bg/baxy-bgdark.jpg") center/cover no-repeat;opacity:.95;transition:opacity .8s ease}
+html.lt .bx2::before{background-image:url("/bg/baxy-bglight.jpg");opacity:.9}
+.bx-standby .bx2::before{opacity:.45}
+html.hc .bx2::before{opacity:0}
+.bx-cosmos{z-index:0}
+/* avatar = Higgsfield state clips under the live network, locked to the geometry the network publishes (--av-*) */
+.bx-avid{position:absolute;left:calc(var(--av-x,50%) - var(--av-s,180px) * 1.422);top:calc(var(--av-y,50%) - var(--av-s,180px) * 1.347);width:calc(var(--av-s,180px) * 2.844);height:calc(var(--av-s,180px) * 2.844);pointer-events:none;z-index:1;-webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent 100%);mask-image:radial-gradient(closest-side,#000 70%,transparent 100%);transition:opacity .4s ease}
+.bx-avid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;mix-blend-mode:screen;pointer-events:none;transition:filter 1.4s ease}
+.bx-avid video::-webkit-media-controls{display:none!important}
+.bx-avid.fade video{transition:opacity .35s ease,filter 1.4s ease}
+.bx-avid video.on{opacity:1}
+.bx-avid.nf{opacity:0}
+.bx-avid.s-standby{opacity:.8}
+.bx-avid.s-error video.on{animation:bxAvShake .5s ease 1}
+@keyframes bxAvShake{20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+/* booting: the same master clip, dimmed, powering up (no separate boot film, so the identity never changes) */
+.bx-avid.s-booting video{filter:brightness(.42) saturate(.55);animation:bxPowerUp 2.4s ease-in-out infinite}
+@keyframes bxPowerUp{50%{filter:brightness(.62) saturate(.75)}}
+html.hc .bx-avid video{mix-blend-mode:normal;filter:contrast(1.15)}
+.bx-avid ~ canvas{position:relative;z-index:2}
+/* light theme: the hologram clips only read on dark, so it uses the drawn face */
+html.lt .bx-avid{display:none!important}
+@media (prefers-reduced-motion:reduce){.bx-avid video{transition:none}.bx-avid.s-booting video{animation:none}}
+/* round-2 fixes: the folded chat is fully hidden, the centre never spills, panel names ellipsize in accessible mode */
+.bx2.chat-off:not(.narrow) .bx-right{border-left-width:0;visibility:hidden;transition:visibility 0s .45s}
+.bx2 .bx-center{overflow:hidden}
+html.a11y .bx-mod{gap:6px}
+html.a11y .bx-mod .l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html.a11y .bx-mod .n{flex-shrink:0}
+/* lip-sync: while BAXY's voice sounds the clip's mouth is covered by a soft hole (its complement is the soft edge of
+   the mouths, mouths.ts / avatarClips.ts MOUTH_BOX: x 380–576, y 522–658 of the 960 px frame, 12 and 10 px of feather)
+   and the mouth the voice asks for is drawn there; plus-lighter adds the two edges back to the frame */
+.bx-avid video{z-index:0}
+.bx-avid.lip video{-webkit-mask-image:linear-gradient(to right,#000 39.583%,transparent 40.833%,transparent 58.75%,#000 60%),linear-gradient(to bottom,#000 54.375%,transparent 55.417%,transparent 67.5%,#000 68.542%);mask-image:linear-gradient(to right,#000 39.583%,transparent 40.833%,transparent 58.75%,#000 60%),linear-gradient(to bottom,#000 54.375%,transparent 55.417%,transparent 67.5%,#000 68.542%)}
+.bx-lip{position:absolute;left:39.583%;top:54.375%;width:20.417%;height:14.167%;z-index:1;pointer-events:none;mix-blend-mode:plus-lighter}
+.bx-avid:not(.lip) .bx-lip{visibility:hidden}

@@ -99,6 +99,7 @@ export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, 
               <Seg value={mic} onChange={(m) => (m === 'off' || micAvailable) && onMic(m)} options={[['always', 'Siempre'], ['ptt', 'Al pulsar'], ['off', 'Apagado']]} />
             </Row>
             <Row label="Sonido al despertar"><Toggle on={!!g?.wakeSound} label="Sonido al despertar" locked={lock} onChange={(v) => onGeneral({ wakeSound: v })} /></Row>
+            <Row label="Decir «Un momento»" hint="Si una respuesta tarda más de 2,5 s, lo avisa en voz alta"><Toggle on={g?.waitNotice !== false} label="Decir «Un momento»" locked={lock} onChange={(v) => onGeneral({ waitNotice: v })} /></Row>
             <Row label="Silenciar su voz" hint="Seguirá respondiendo por escrito"><Toggle on={!!g?.voiceMuted} label="Silenciar su voz" locked={lock} onChange={(v) => onGeneral({ voiceMuted: v })} /></Row>
           </>) : null}
           {tab === 'accesibilidad' ? (<>

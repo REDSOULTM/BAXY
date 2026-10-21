@@ -112,16 +112,24 @@ function ChatView({ items, title, meta, busy, onAnswer, onCollapse, onNew }: Cha
     const el = ref.current;
     if (!el) return;
     const toEnd = () => { if (stick.current) el.scrollTop = el.scrollHeight; };
-    const onScroll = () => { stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48; };
+    // design v5: only a scroll the person makes by hand (wheel, touch, pointer, keys) unsticks the chat from the end;
+    // a scroll the layout causes (a card growing, the panel resizing) never does
+    let user = 0;
+    const intent = () => { user = performance.now(); };
+    const INTENT = ['wheel', 'touchstart', 'pointerdown', 'keydown'] as const;
+    const onScroll = () => { if (performance.now() - user < 1200) stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48; };
     const mo = new MutationObserver(() => requestAnimationFrame(toEnd));
     mo.observe(el, { childList: true, subtree: true, characterData: true });
     el.addEventListener('scroll', onScroll, { passive: true });
+    INTENT.forEach((e) => el.addEventListener(e, intent, { passive: true }));
     toEnd();
-    return () => { mo.disconnect(); el.removeEventListener('scroll', onScroll); };
+    return () => { mo.disconnect(); el.removeEventListener('scroll', onScroll); INTENT.forEach((e) => el.removeEventListener(e, intent)); };
   }, []);
   useEffect(() => {
     const l = items[items.length - 1];
     if (l && (l.who === 'you' || l.who === 'card')) stick.current = true;
+    const el = ref.current;
+    if (el && stick.current) requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
   }, [items]);
   return (
     <div className="bx-chat4">

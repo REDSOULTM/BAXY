@@ -1,7 +1,7 @@
 # BAXY FieldUi
 
-FieldUi es la presentación React/TypeScript que `Baxy.App` muestra dentro de WebView2: el rediseño v4
-(`design_handoff_baxy`, ver [ORIGIN.md](ORIGIN.md)). No es una SPA desplegada, un servidor ni el backend de BAXY.
+FieldUi es la presentación React/TypeScript que `Baxy.App` muestra dentro de WebView2: el rediseño v4 con
+lo que cambió en la v5 (`design_handoff_baxy`, ver [ORIGIN.md](ORIGIN.md)). No es una SPA desplegada, un servidor ni el backend de BAXY.
 
 ## Runtime
 
@@ -41,8 +41,10 @@ propia de la vista (`localStorage`); el resto de ajustes los guarda el host (`Fi
 | `index.html` | documento de entrada y script de escala (720p → 8K, nada a 0×0) |
 | `src/App.tsx` | composición, estado derivado, anillo del borde, atajos y acciones |
 | `src/store.ts` | socket `/events` y reducer de eventos |
+| `src/lip.ts` | línea de tiempo de la voz (evento `lip`) para la boca del avatar |
 | `src/api.ts`, `src/types.ts` | rutas del host y contrato visible |
-| `src/components/` | riel, chat, subtítulos y arranque, entrada y micrófono, cara (`face/`), cosmos |
+| `src/components/` | riel, chat, subtítulos y arranque, entrada y micrófono, avatar en vídeo (`AvatarVid`), cara y red (`face/`), cosmos |
+| `public/` | clips del avatar (`clips/`), fondos de nebulosa (`bg/`) y favicon; `vite build` los copia a `dist/` |
 | `src/components/panels/` | memoria, qué puedo hacer, sesiones, triggers, propuestas, ajustes |
 | `src/styles/` | fuentes y la cascada del diseño (`base` → `baxy` → `v4`) más `shell.css` |
 | `e2e/` | aceptación con Playwright contra la app real |
@@ -72,6 +74,8 @@ powershell -ExecutionPolicy Bypass -File ..\..\scripts\test_field_ui.ps1
 Lanza BAXY con el puerto de depuración de WebView2 y corre `e2e/`: escala, cielo, red y bocas; humo en 11 tamaños
 de 720p a 8K (marco lleno, nada fuera, ningún texto cortado, texto ≥ 7 px, lienzos dentro de su tope, cara
 centrada, chat plegado 12 veces sin línea de puntos, Ajustes cabe); arranque con la ventana a 0×0 y cambio de tamaño
-en vivo; y `controls.spec.ts`: cada control reversible (ajustes, micrófono en sus tres modos, rail, paneles, chat y
+en vivo; `avatar.spec.ts`: el vídeo calza con la red viva, rota sin repetir, sigue al estado en turnos reales y
+en la tarjeta Sí/No, se duerme y despierta con transición, y `?avatar=live` dibuja la cara; `lipsync.spec.ts`:
+la boca contra lo que suenan los parlantes (`scripts/tools/loopcap`, loopback WASAPI); y `controls.spec.ts`: cada control reversible (ajustes, micrófono en sus tres modos, rail, paneles, chat y
 ventana) se pulsa, se lee el host por sus rutas para ver que cambió de verdad y se deja como estaba. Con BAXY ya
 abierto con el puerto: `-NoLaunch`.
