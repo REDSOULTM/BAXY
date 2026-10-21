@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 import bench_decision as bench  # noqa: E402
-from kev_adjudicate import ANSWER, KINDS, qwen_choice, short  # noqa: E402
+from kev_adjudicate import ANSWER, KINDS, qwen_choice, short, state_text  # noqa: E402
 
 CANT = {"sint_no_lo_hago", "sint_modo_no_disponible"}
 
@@ -85,11 +85,9 @@ def main():
                 answer, kind = ANSWER, ("no_se_puede" if row["family"] in CANT else "responder")
             else:
                 answer, kind = next(g for g in gold if g in options), "actuar"
-            history = " | ".join(f'{m["role"]}: {m["content"]}' for m in row["history"][-4:])
             kinds = list(KINDS.items())
             rng.shuffle(kinds)
-            record = {"state": {"pedido": row["text"], "conversacion_previa": history or "ninguna",
-                                "lugar": "asistente de escritorio BAXY en el PC Windows de la persona"},
+            record = {"state": state_text(row["text"], row["history"]),
                       "questions": {
                           "operacion": {"type": "choice", "instructions": "¿Qué debe hacer el asistente con este pedido?",
                                         "criteria": {o: described[o] for o in options}, "label": answer},

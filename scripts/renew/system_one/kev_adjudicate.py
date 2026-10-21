@@ -31,6 +31,14 @@ KINDS = {"actuar": "hacer algo en el PC con una herramienta",
          "no_se_puede": "decir que eso no lo hace: no hay una herramienta para ese pedido"}
 
 
+def state_text(text, history):
+    """The state as plain text: kev.train serializes a dict as JSON while llama-server renders it with its own template,
+    so training and serving read the same words only when it is already text."""
+    previous = " | ".join(f'{m["role"]}: {m["content"]}' for m in (history or [])[-4:]) or "ninguna"
+    return (f"Pedido de la persona: {text}\nConversación previa: {previous}\n"
+            "Lugar: asistente de escritorio BAXY en el PC Windows de la persona")
+
+
 def post(port, body):
     request = urllib.request.Request(f"http://127.0.0.1:{port}/v1/systemone", data=json.dumps(body).encode("utf-8"),
                                      headers={"Content-Type": "application/json"})
@@ -104,10 +112,7 @@ def main():
             chosen = qwen_choice(row)
             options = [chosen] + [r["wire"] for r in row["rivals"] if r["known"]] + ["ask_user", ANSWER]
             options = list(dict.fromkeys(o for o in options if o in described))
-            history = " | ".join(f'{m["role"]}: {m["content"]}' for m in row["history"][-4:])
-            state = {"pedido": row["text"], "conversacion_previa": history or "ninguna",
-                     "lugar": "asistente de escritorio BAXY en el PC Windows de la persona"}
-            body = {"state": state, "questions": {
+            body = {"state": state_text(row["text"], row["history"]), "questions": {
                 "operacion": {"type": "choice", "instructions": "¿Qué debe hacer el asistente con este pedido?",
                               "criteria": {o: described[o] for o in options}},
                 "tipo": {"type": "choice", "instructions": "¿Qué tipo de respuesta pide este mensaje?",
