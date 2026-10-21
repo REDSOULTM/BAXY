@@ -480,3 +480,7 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 # Fonts packaged with the Field view are binary: the text=auto rule above would rewrite their bytes.
 *.woff2 binary
 *.ico binary
+# The avatar clips, the icon art and the nebula backdrops of the Field view (design v5) are binary too.
+*.mp4 binary
+*.png binary
+*.jpg binary

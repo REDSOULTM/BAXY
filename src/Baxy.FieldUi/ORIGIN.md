@@ -155,3 +155,28 @@ Git, no como base visual.
 - Nada de datos de demostración: `flows.js`, las métricas simuladas, el catálogo de muestra y `tweaks-panel.jsx` no
   entraron. Todo lo que se ve viene de `Baxy.App` por `baxy.field.v1`.
 - Aceptación: `e2e/` porta `Baxy pruebas.html` a Playwright contra la app real (`scripts/test_field_ui.ps1`).
+
+## Diseño v5 de 2026-10-21 (rama `baxy-renew`)
+
+El dueño entregó la v5 del mismo paquete (`Baxy Design (2).zip`) y pidió aplicar sólo lo que cambia de la v4.
+
+- Avatar en vídeo: 37 clips de Higgsfield en `public/clips` (reposo, contento, escuchando, pensando, hablando, error y
+  dormido con 5 variantes cada uno, más dormirse y despertar). Van en Git (decisión del dueño) y `vite build` los
+  copia a `dist/clips`. `AvatarVid.tsx` porta `BxAvatarVid`: cada estado elige su grupo, nunca una de las dos últimas
+  variantes, el corte urgente funde en 0,35 s, el clip nuevo entra sólo con un fotograma (máximo 2,5 s, el anterior
+  sigue mientras tanto), sólo se precargan el actual, «reposo» y el siguiente probable, y un clip sin fotograma en 4 s
+  se vuelve a cargar. Arrancando es el mismo clip de reposo atenuado que «se enciende». Sin la v4 `BxBootVid` ni
+  pósters: no entraron porque la v5 ya no los usa.
+- `Face` gana `overlay`: encima del vídeo dibuja sólo la red viva (recorrido, nodos, chispas, etiquetas), queda quieta
+  y publica `--av-x`, `--av-y` y `--av-s` en `.bx-graph` para que el vídeo calce. Sin fotograma, con
+  `?avatar=live` (o `localStorage bx-avatar=live`) y en tema claro se dibuja la cara entera. La cara dibujada trae
+  las mejoras de la v5: ojos LED con brillo, boca abierta con lengua, onda de voz al hablar, visera y orejas punteadas,
+  rubor, borde carmín al hablar o escuchar, anillos en las orejas al escuchar y chispas al pensar.
+- Fondo de nebulosa (`public/bg`), atenuado en reposo (la App marca `.bx-standby` en el marco) y apagado en alto
+  contraste. Icono `.ico` de 16 a 256 px desde el arte de Higgsfield (`scripts/brand/make_icon.py`) y favicon de 64 px.
+  La cabecera ya no lleva imagen junto a «BAXY» (`LogoMark.tsx` se quitó).
+- El chat baja solo y sólo deja de hacerlo cuando la persona sube a mano (rueda, toque, puntero o teclado).
+- Ronda 2: el chat plegado queda oculto del todo, `.bx-center` no desborda y los nombres del panel llevan puntos
+  suspensivos en modo accesible.
+- Pruebas: `e2e/avatar.spec.ts` porta «Avatar · clips de Higgsfield + red viva», `layout.spec.ts` mide con `clipRect`
+  y espera a que el chat termine de plegarse, y `logic.spec.ts` comprueba las bocas nuevas y la biblioteca de clips.

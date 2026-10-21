@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { seededRng } from '../src/utils/seededRng';
 import { BXM, HUBS, bxMouth, bxRoute } from '../src/components/face/geometry';
+import { LIB, NEXT, groupFor } from '../src/components/avatarClips';
 
 /* «Unitarias · lógica del diseño» of Baxy pruebas.html, against the view's own modules. */
 
@@ -33,4 +34,36 @@ test('cada expresión produce una boca válida', () => {
     expect(pts.length, e).toBeGreaterThan(0);
     expect(pts.every(([x, y]) => Number.isFinite(x) && Number.isFinite(y)), e).toBe(true);
   }
+});
+
+test('design v5: al hablar la boca es una onda de voz salvo contenta; seria en zigzag; en reposo sonrisa abierta', () => {
+  const [wave, wc] = bxMouth('neutral', 0.6);
+  expect(wc, 'la onda es abierta').toBe(0);
+  expect(wave.length).toBe(15);
+  const [open, oc] = bxMouth('happy', 0.6);
+  expect(oc, 'contenta habla con la boca abierta').toBe(1);
+  expect(open.length).toBeGreaterThan(15);
+  const [zig, zc] = bxMouth('serious', -1);
+  expect(zc).toBe(0);
+  expect(zig.every(([, y], i) => Math.abs(y - (0.46 + (i % 2 ? -0.035 : 0.035))) < 1e-9), 'zigzag').toBe(true);
+  const [smile, sc] = bxMouth('neutral', -1);
+  expect(sc, 'sonrisa abierta').toBe(1);
+  expect(smile[0]).toEqual([-0.23, 0.33]);
+});
+
+test('design v5: cada estado tiene su grupo de clips y cada grupo existe en la biblioteca', () => {
+  const states = ['booting', 'standby', 'idle', 'listening', 'thinking', 'speaking', 'error', 'confirm'] as const;
+  const want: Record<string, string> = { booting: 'reposo', standby: 'dormido', idle: 'reposo', listening: 'escuchando', thinking: 'pensando', speaking: 'hablando', error: 'error', confirm: 'reposo' };
+  for (const st of states) expect(groupFor(st, 'neutral'), st).toBe(want[st]);
+  expect(groupFor('idle', 'happy')).toBe('contento');
+  for (const [g, next] of Object.entries(NEXT)) {
+    expect(LIB[g as keyof typeof LIB], g).toBeGreaterThan(0);
+    for (const n of next) expect(LIB[n], g + '→' + n).toBeGreaterThan(0);
+  }
+});
+
+test('design v5: cada variante de la biblioteca tiene su clip en public/clips', async () => {
+  const { existsSync } = await import('node:fs');
+  const missing = Object.entries(LIB).flatMap(([g, n]) => Array.from({ length: n }, (_, i) => `public/clips/${g}-${i + 1}.mp4`)).filter((f) => !existsSync(f));
+  expect(missing).toEqual([]);
 });

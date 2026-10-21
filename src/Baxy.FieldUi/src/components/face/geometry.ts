@@ -63,21 +63,30 @@ export const GLYPH_EX: Pt[] = [[0, -0.12], [0, -0.08], [0, -0.04], [0, 0], [0, 0
 
 export function bxMouth(expr: string, talk: number): [Pt[], number] {
   if (talk >= 0 && (expr === 'sad' || expr === 'serious')) { const w = 0.13 + talk * 0.04, d = 0.035 + talk * 0.13; return [bxEll(0, 0.45, w, d, 22), 1]; }
-  if (talk >= 0) { const d = 0.05 + talk * 0.22, w = 0.2 + talk * 0.06; return [[[-w, 0.36], [w, 0.36], ...bxArc(0, 0.36, w, d, 0, Math.PI, 20)], 1]; }
+  // design v5: the open mouth is for speaking happy; otherwise speech is a voice wave (the concepts' mouth)
+  if (talk >= 0 && expr === 'happy') { const d = 0.05 + talk * 0.22, w = 0.2 + talk * 0.06; return [[[-w, 0.36], [w, 0.36], ...bxArc(0, 0.36, w, d, 0, Math.PI, 20)], 1]; }
+  if (talk >= 0) {
+    const t = performance.now() / 1000, n = 15, o: Pt[] = [];
+    for (let i = 0; i < n; i++) {
+      const u = i / (n - 1), x = -0.26 + u * 0.52, env = Math.sin(u * Math.PI), amp = (0.015 + talk * 0.13) * env * (0.55 + 0.45 * Math.sin(t * 13 + i * 1.7));
+      o.push([x, 0.42 + (i % 2 ? -amp : amp)]);
+    }
+    return [o, 0];
+  }
   switch (expr) {
     case 'happy': return [[[-0.32, 0.3], [0.32, 0.3], ...bxArc(0, 0.3, 0.32, 0.27, 0, Math.PI, 24)], 1];
     case 'listen': return [bxEll(0, 0.44, 0.08, 0.09, 24), 1];
     case 'sad': return [bxArc(0, 0.62, 0.22, 0.17, Math.PI + 0.45, 2 * Math.PI - 0.45, 24), 0];
     case 'sleep': return [bxEll(0, 0.46, 0.05, 0.035, 16), 1];
     case 'think': return [[[-0.15, 0.46], [-0.05, 0.42], [0.05, 0.46], [0.15, 0.42]], 0];
-    case 'serious': return [[[-0.24, 0.5], [0.24, 0.4], [0.26, 0.5]], 1];
+    case 'serious': return [Array.from({ length: 9 }, (_, i): Pt => [-0.24 + i * 0.06, 0.46 + (i % 2 ? -0.035 : 0.035)]), 0];
     case 'curious': return [bxArc(0.08, 0.3, 0.17, 0.13, 0.35, Math.PI - 0.6, 24), 0];
     case 'wink': return [[[-0.26, 0.32], [0.26, 0.32], ...bxArc(0, 0.32, 0.26, 0.18, 0, Math.PI, 20)], 1];
     case 'yawn': return [bxEll(0, 0.44, 0.13, 0.17, 24), 1];
     case 'hum': return [bxEll(0, 0.42, 0.055, 0.065, 16), 1];
     case 'squint': return [[[-0.15, 0.46], [-0.05, 0.42], [0.05, 0.46], [0.15, 0.42]], 0];
     case 'wide': return [bxEll(0, 0.42, 0.09, 0.11, 20), 1];
-    default: return [bxArc(0, 0.22, 0.27, 0.22, 0.45, Math.PI - 0.45, 24), 0];
+    default: return [[[-0.23, 0.33], [0.23, 0.33], ...bxArc(0, 0.33, 0.23, 0.16, 0, Math.PI, 22)], 1]; // open smile
   }
 }
 
@@ -92,7 +101,8 @@ const SUP = (cx: number, cy: number, a: number, b: number, e: number) => (t: num
   const c = Math.cos(t), s = Math.sin(t);
   return [cx + a * Math.sign(c) * Math.pow(Math.abs(c), 2 / e), cy + b * Math.sign(s) * Math.pow(Math.abs(s), 2 / e)];
 };
-const SH = SUP(0, 0, 1.0, 0.84, 3.1), VI = SUP(0, 0.05, 0.8, 0.6, 3.6);
+export const SH = SUP(0, 0, 1.0, 0.84, 3.1);
+const VI = SUP(0, 0.05, 0.8, 0.6, 3.6);
 export const HUBS: Record<string, Pt> = {
   web: [0, -1.2], mente: [0, -0.715], apps: [-0.66, -0.6], ventanas: [0.66, -0.6], memoria: [-1.13, 0.03], musica: [1.13, 0.03],
   archivos: [-0.64, 0.63], alarmas: [0.64, 0.63], verificar: [0, 0.75], voz: [0, 1.25],

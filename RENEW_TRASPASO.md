@@ -305,3 +305,22 @@ La vista `src/Baxy.FieldUi` es ahora el rediseño v4, conectado a datos reales (
   latido 10 min (`NativeTurnLoop.ProposalLifetime`); los dos plazos los informa `GET /confirmation`. Hay dos niveles,
   Normal («lo arriesgado») y Bypass («nada»), y ningún texto menciona un tercero. El arranque ya no promete «12 a 18 s»:
   muestra cuánto tardó la carga anterior en este PC.
+
+## Interfaz v5 (2026-10-21, `Baxy Design (2).zip`)
+
+Sólo lo que cambió de la v4; el detalle está en `src/Baxy.FieldUi/ORIGIN.md`. BAXY es ahora el avatar en vídeo de
+Higgsfield (37 clips en `src/Baxy.FieldUi/public/clips`, en Git por decisión del dueño) con la red viva dibujada
+encima; en tema claro, con `?avatar=live` o sin fotograma, se dibuja la cara en código. Icono nuevo, fondo de
+nebulosa, chat que baja solo salvo que la persona suba a mano, arreglos de la ronda 2.
+
+- **Trampa que ya mordió:** la App sirve una copia de `dist/` en su `bin` (`FieldUi\`), no `dist/` directo. Recargar la
+  vista no basta: tras `pnpm build` hay que relanzar con `scripts\run_renew.cmd` (el fingerprint incluye `dist/` y
+  recompila). Se vio al dueño con la vista vieja mientras `dist/` ya tenía la nueva.
+- **Fallo corregido:** el avatar a veces no se veía. React volvía a poner la clase `nf` (sin fotograma) en cada cambio
+  de estado y el vídeo quedaba en opacidad 0 mientras la cara dibujaba sólo la red. Ahora `AvatarVid` es dueño de sus
+  clases y `avatar.spec.ts` comprueba en cada muestra que BAXY se ve (vídeo con fotograma o cara entera).
+- **Aceptación:** `scripts\test_field_ui.ps1` 34/35 en una corrida y las 3 restantes del avatar en la siguiente
+  (sin cambios de la vista entre ellas): 35/35. `controls.spec.ts › micrófono` pasó también en la app recién lanzada.
+- **Hallazgos fuera de la vista (no tocados):** con «Sí», mover a la papelera tardó 101 s y 74 s; la primera vez el
+  sistema no respondió y BAXY lo dijo («No pude confirmar que se borró…»), la segunda quedó en la papelera
+  (comprobado). La frase dice «el papelera» (concordancia, la compone la mente).

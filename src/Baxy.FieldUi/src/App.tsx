@@ -7,6 +7,7 @@ import { Boot, Caption } from './components/Caption';
 import { VoiceInput } from './components/VoiceInput';
 import { Cosmos } from './components/Cosmos';
 import { Face } from './components/face/Face';
+import { AvatarVid } from './components/AvatarVid';
 import { Globe, Icon } from './components/Icon';
 import { MemoryPanel } from './components/panels/MemoryPanel';
 import { CatalogPanel } from './components/panels/CatalogPanel';
@@ -16,8 +17,13 @@ import { ProposalsPanel } from './components/panels/ProposalsPanel';
 import { SettingsPanel, type A11y } from './components/panels/SettingsPanel';
 import type { BaxyState, GeneralSettings, Metrics, MicMode, ProposalSettings } from './types';
 
-/* BAXY v4 (design_handoff_baxy): rail · face and neural network · conversation, over the cosmos, inside the frame's
+/* BAXY v4/v5 (design_handoff_baxy): rail · face and neural network · conversation, over the cosmos, inside the frame's
    travelling ring. Everything shown comes from Baxy.App; this file only composes it and sends what the person does. */
+
+/* design v5: BAXY is the Higgsfield video avatar with the live network drawn over it; ?avatar=live (or localStorage
+   bx-avatar=live) shows the face drawn in code instead. The light theme always uses the drawn face (the hologram clips
+   only read on dark), and so does any moment without a decoded frame. */
+const AVATAR = (() => { try { return new URLSearchParams(location.search).get('avatar') || localStorage.getItem('bx-avatar') || 'video'; } catch { return 'video'; } })();
 
 const NARROW = 1100; /* below this layout width the chat floats over the face */
 const RAIL = 192, CHATW = 330;
@@ -81,6 +87,7 @@ export default function App() {
   // at rest or active is the host's: the rail and the tray menu change it
   const powered = s.agent.powered !== false;
   const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [vidOk, setVidOk] = useState(false);
 
   // ---- layout ----
   const [panel, setPanel] = useState<PanelId | null>(null);
@@ -272,6 +279,7 @@ export default function App() {
     frame.style.setProperty('--bar-color', c[5]);
     frame.style.setProperty('--carmine', ['listening', 'thinking', 'speaking'].includes(gState) ? c[5] : '#B83A4A');
     frame.classList.toggle('bx-bypass', bypass);
+    frame.classList.toggle('bx-standby', gState === 'standby');
   }, [gState, bypass]);
 
   // ---- actions ----
@@ -442,7 +450,8 @@ export default function App() {
             counts={counts} quiet={quiet} onPanel={setPanel} />
           <div className="bx-center">
             <div className={'bx-graph' + (state === 'idle' && shownMic === 'always' ? ' wakeable' : '')} onClick={wake}>
-              <Face state={gState} expr={expr} talking={state === 'speaking'} journey={s.journey} hold={state === 'confirm'} light={theme === 'light'} net={!!netShown} />
+              {AVATAR !== 'live' && theme !== 'light' ? <AvatarVid state={state} expr={expr} onReady={setVidOk} /> : null}
+              <Face overlay={AVATAR !== 'live' && vidOk && theme !== 'light'} state={gState} expr={expr} talking={state === 'speaking'} journey={s.journey} hold={state === 'confirm'} light={theme === 'light'} net={!!netShown} />
             </div>
             <div className="bx-ctop pywebview-drag-region" onDoubleClick={(e) => { if (e.target === e.currentTarget) void win('toggle_maximize'); }}>
               <span className={'bx-statel ' + state + (['listening', 'thinking', 'speaking', 'confirm', 'error'].includes(state) ? ' live' : '')}>

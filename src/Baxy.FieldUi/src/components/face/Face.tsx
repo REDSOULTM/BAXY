@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef } from 'react';
 import {
-  BODYH, BXM, FK, FY, GLYPH_EX, GLYPH_Q, HUB_LABEL, HUB_NAME, IDLE, PLATE, THINK, TALK, TILT,
+  BODYH, BXM, FK, FY, GLYPH_EX, GLYPH_Q, HUB_LABEL, HUB_NAME, IDLE, PLATE, SH, THINK, TALK, TILT,
   bxArc, bxBrow, bxEll, bxEye, bxMouth, bxRoute, bxSample, bxSuper, type Pt,
 } from './geometry';
 import type { Journey } from '../../store';
@@ -8,7 +8,10 @@ import type { Journey } from '../../store';
 /* The cartoon robot face made of firework particles, on top of the neural mesh (design face.jsx, ported almost as
    is): static parts painted into three offscreen bitmaps while still, 30 fps at rest and 60 while it thinks or speaks,
    DPR ≤ 1.25, the buffer capped at 4.5 MP. The one change: the walk through the mesh grows with the turn's real calls
-   (the journey's path gets a family per call), so each new family adds a segment instead of replaying a whole flow. */
+   (the journey's path gets a family per call), so each new family adds a segment instead of replaying a whole flow.
+   Design v5: with `overlay` the canvas sits over the video avatar (AvatarVid) and draws only the live network — mesh
+   trail, hubs, sparks, tracer, labels — skipping helmet, body and features (NOC/NOR clip them away), stays still (no
+   tilt or bounce) and publishes the face's geometry as --av-x / --av-y / --av-s on its parent so the video lines up. */
 
 type FaceState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking' | 'error' | 'confirm';
 const PAL: Record<string, { f: string; l: string; p: string }> = {
@@ -48,6 +51,7 @@ export interface FaceProps {
   hold: boolean;
   light: boolean;
   net: boolean;
+  overlay?: boolean;
 }
 
 function FaceView(props: FaceProps) {
@@ -146,7 +150,7 @@ function FaceView(props: FaceProps) {
       sparks.push({ a: from, b: nb[Math.floor(Math.random() * nb.length)], u: 0, hops, sp, tail: [] });
     };
 
-    let X = (x: number) => x, Y = (y: number) => y;
+    let X = (x: number) => x, Y = (y: number) => y, rimG = 0;
     const fillDots = (arr: Particle[], r: number, style: string, g: CanvasRenderingContext2D = ctx) => {
       g.fillStyle = style; g.beginPath();
       for (const p of arr) { const x = X(p.x), y = Y(p.y), rr = p.big ? r * 1.5 : r; g.moveTo(x + rr, y); g.arc(x, y, rr, 0, 6.283); }
@@ -314,11 +318,19 @@ function FaceView(props: FaceProps) {
 
       // ---- draw ----
       ctx.clearRect(0, 0, w, h);
-      const S = Math.max(1, Math.min((refW > 40 ? Math.min(w, refW) : w) / 3.0, (h - 10) / 2.7)), cx = w / 2, cy = 14 + 1.3 * S + Math.sin(T * 0.9) * S * 0.016 * (state === 'standby' ? 0.4 : 1);
+      const OV = !!P.current.overlay;
+      const NOC = () => { if (OV) { ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 0, 0); ctx.clip(); } }, NOR = () => { if (OV) ctx.restore(); };
+      const S =Math.max(1, Math.min((refW > 40 ? Math.min(w, refW) : w) / 3.0, (h - 10) / 2.7)), cx = w / 2, cy = 14 + 1.3 * S + Math.sin(T * 0.9) * S * 0.016 * (state === 'standby' ? 0.4 : 1);
       let stx = 0, sty = 0;
       if (act && act.name === 'stretch') { sty = 0.06 * aenv; stx = -0.03 * aenv; }
       if (act && act.name === 'yawn') sty = 0.03 * aenv;
-      ctx.save(); ctx.translate(cx, cy + (hop * 0.12 + ycy + droopY) * S); ctx.rotate(tilt); ctx.scale(1 + bounce * 0.05 - sq * 0.04 + stx, 1 - bounce * 0.05 + sq * 0.05 + sty);
+      if (OV) {
+        const cy0 = 14 + 1.3 * S, hostEl = cv.parentElement, gk = Math.round(cx) + ',' + Math.round(cy0) + ',' + Math.round(S);
+        if (hostEl && hostEl.dataset.avg !== gk) { hostEl.dataset.avg = gk; hostEl.style.setProperty('--av-x', cx + 'px'); hostEl.style.setProperty('--av-y', cy0 + 'px'); hostEl.style.setProperty('--av-s', S + 'px'); }
+        ctx.save(); ctx.translate(cx, cy0);
+      } else {
+        ctx.save(); ctx.translate(cx, cy + (hop * 0.12 + ycy + droopY) * S); ctx.rotate(tilt); ctx.scale(1 + bounce * 0.05 - sq * 0.04 + stx, 1 - bounce * 0.05 + sq * 0.05 + sty);
+      }
       X = (x) => x * S; Y = (y) => y * S;
       const sh = 0.5 + 0.5 * Math.sin(T * 2);
       for (const d of dust) d.a += d.sp * dt * (state === 'thinking' ? 3 : 1);
@@ -338,7 +350,19 @@ function FaceView(props: FaceProps) {
         const hg = g.createRadialGradient(0, -S * 0.25, S * 0.1, 0, 0, S * 1.15);
         hg.addColorStop(0, rgba(col.l, 0.12 * vis)); hg.addColorStop(1, rgba(col.l, 0));
         g.fillStyle = hg; pathOf(G.shell.pts, true, g); g.fill();
-        g.fillStyle = 'rgba(6,9,14,' + ((light ? 0.92 : 0.55) * vis).toFixed(3) + ')'; pathOf(G.visor.pts, true, g); g.fill();
+        g.fillStyle = 'rgba(6,9,14,' + ((light ? 0.92 : 0.62) * vis).toFixed(3) + ')'; pathOf(G.visor.pts, true, g); g.fill();
+        { // dotted visor texture and dotted ears
+          const st = Math.max(3, S * 0.026), d = Math.max(0.9, S * 0.0055);
+          g.save(); pathOf(G.visor.pts, true, g); g.clip(); g.fillStyle = rgba(col.l, 0.2 * vis); g.beginPath();
+          for (let y = Y(-0.6); y < Y(0.7); y += st) for (let x = X(-0.85); x < X(0.85); x += st) g.rect(x - d / 2, y - d / 2, d, d);
+          g.fill(); g.restore();
+          g.fillStyle = rgba(col.l, 0.55 * vis); g.beginPath();
+          for (const s of [-1, 1]) for (let yy = -0.28; yy <= 0.34; yy += 0.045) for (let xx = 0.02; xx <= 0.17; xx += 0.04) {
+            if ((xx * xx) / 0.0289 + ((yy - 0.03) * (yy - 0.03)) / 0.0961 > 1) continue;
+            const x = X(s * (1.0 + xx)), y = Y(yy); g.rect(x - d * 0.7, y - d * 0.7, d * 1.4, d * 1.4);
+          }
+          g.fill();
+        }
         g.lineWidth = 0.8; g.strokeStyle = rgba(col.l, 0.26 * mA); g.beginPath();
         for (const [i, j] of BXM.E) { const a = NP(i), b = NP(j); g.moveTo(X(a[0]), Y(a[1])); g.lineTo(X(b[0]), Y(b[1])); }
         g.stroke();
@@ -356,6 +380,7 @@ function FaceView(props: FaceProps) {
         g.globalCompositeOperation = 'source-over';
       };
       const OX = 1.45 * S, OY = 1.0 * S, CW = 2.9 * S, CH = 2.7 * S;
+      NOC();
       if (still) {
         const ck = [Math.round(S), Math.round(dpr * 100), light ? 1 : 0, col.l.map((v) => v | 0).join(','), Math.round(vis * 40), Math.round(mA * 40), Math.round(G.shell.pts[0].y * 1000), Math.round(G.visor.pts[0].y * 1000)].join('|');
         if (cache.key !== ck) {
@@ -377,6 +402,7 @@ function FaceView(props: FaceProps) {
         cache.key = '';
         paintBase(ctx); paintDots(ctx, 0, 0.95 - 0.3 * sh, 0.8 - 0.35 * sh); paintDots(ctx, 1, 0.65 + 0.3 * sh, 0.45 + 0.35 * sh);
       }
+      NOR();
       // journey trail — the exact path BAXY walked this turn
       if (trail > 0.01 && trs.length) {
         const jp = () => {
@@ -394,6 +420,7 @@ function FaceView(props: FaceProps) {
         ctx.setLineDash([5, 6]); ctx.lineDashOffset = -T * 34; ctx.strokeStyle = rgba(col.p, 0.95 * trail * vis); ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
       }
       ctx.globalCompositeOperation = ADD;
+      NOC();
       // antenna stem (moves, always live)
       { const s = settle('stem'); if (s > 0.02) { ctx.lineWidth = 1; ctx.strokeStyle = rgba(col.l, 0.28 * vis * s); pathOf(G.stem.pts, false); ctx.stroke(); } fillDots(G.stem.pts, 1.4, rgba(col.l, 0.85 * vis)); }
       if (streaks.length) { ctx.strokeStyle = rgba(col.p, 0.35 * vis); ctx.lineWidth = 1.1; ctx.beginPath(); for (const p of streaks) { ctx.moveTo(X(p.x - p.vx * 0.045), Y(p.y - p.vy * 0.045)); ctx.lineTo(X(p.x), Y(p.y)); } ctx.stroke(); }
@@ -421,6 +448,7 @@ function FaceView(props: FaceProps) {
       }
       fillDots(G.bulb.pts, 1.7, rgba(col.p, 0.95 * vis));
       if (net) { ctx.strokeStyle = rgba(col.f, vis); ctx.lineWidth = 1.4; for (let q = 0; q < 3; q++) { const u = (T * 0.8 + q / 3) % 1; ctx.globalAlpha = (1 - u) * 0.8; ctx.beginPath(); ctx.arc(X(bp[0]), Y(bp[1]), S * (0.1 + u * 0.32), Math.PI * 1.05, Math.PI * 1.95); ctx.stroke(); } ctx.globalAlpha = 1; }
+      NOR();
       // hubs: hidden until the signal goes through them
       ['mente', 'apps', 'ventanas', 'memoria', 'musica', 'archivos', 'alarmas', 'verificar'].forEach((k) => {
         const i = BXM.hub[k], n = BXM.N[i], v = heat[i];
@@ -439,6 +467,7 @@ function FaceView(props: FaceProps) {
         ctx.globalCompositeOperation = ADD;
       }
       // chest core (the «voz» node) beats with the state
+      NOC();
       {
         const bpm = state === 'speaking' ? 2.4 : state === 'thinking' ? 1.8 : state === 'listening' ? 1.4 : state === 'standby' ? 0.5 : 1.0;
         const ph = (T * bpm) % 1, beat = Math.exp(-ph * 9) + 0.55 * Math.exp(-Math.max(0, ph - 0.18) * 11) * (ph > 0.18 ? 1 : 0);
@@ -463,7 +492,27 @@ function FaceView(props: FaceProps) {
       }
       // features
       ctx.globalCompositeOperation = 'source-over';
-      ['eyeL', 'eyeR', 'mouth'].forEach((g) => { if (G[g].closed < 0.05) return; ctx.fillStyle = rgba(col.f, 0.38 * G[g].closed * vis); pathOf(G[g].pts, true); ctx.fill(); });
+      { // LED fill: a radial gradient with a dot grid; the open mouth shows a tongue
+        const pr = Math.max(1.4, S * 0.0105), stp = pr * 2.25;
+        ['eyeL', 'eyeR', 'mouth'].forEach((g) => {
+          if (G[g].closed < 0.05) return;
+          const k = G[g].closed * vis, pts = G[g].pts, isM = g === 'mouth';
+          let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+          for (const p of pts) { const x = X(p.x), y = Y(p.y); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+          const mx = (x0 + x1) / 2, my = (y0 + y1) / 2, rw = (x1 - x0) / 2, rh = (y1 - y0) / 2;
+          if (rw < 2 || rh < 2) return;
+          ctx.save(); pathOf(pts, true); ctx.clip();
+          const gr = ctx.createRadialGradient(mx - rw * 0.2, my - rh * 0.25, 0, mx, my, Math.max(rw, rh) * 1.15);
+          if (isM) { gr.addColorStop(0, 'rgba(46,8,16,' + (0.92 * k).toFixed(3) + ')'); gr.addColorStop(1, rgba(col.f, 0.42 * k)); }
+          else { gr.addColorStop(0, rgba(col.p, 0.62 * k)); gr.addColorStop(0.5, rgba(col.f, 0.5 * k)); gr.addColorStop(1, 'rgba(34,6,14,' + (0.85 * k).toFixed(3) + ')'); }
+          ctx.fillStyle = gr; ctx.fillRect(x0 - 2, y0 - 2, rw * 2 + 4, rh * 2 + 4);
+          ctx.globalCompositeOperation = ADD; ctx.fillStyle = rgba(col.p, (isM ? 0.16 : 0.3) * k); ctx.beginPath();
+          for (let y = y0 + stp / 2; y < y1; y += stp) for (let x = x0 + stp / 2; x < x1; x += stp) ctx.rect(x - pr / 2, y - pr / 2, pr, pr);
+          ctx.fill();
+          if (isM && rh > S * 0.028) { ctx.fillStyle = rgba(col.f, 0.6 * k); ctx.beginPath(); ctx.ellipse(mx, y1 + rh * 0.08, rw * 0.5, rh * 0.62, 0, Math.PI, 2 * Math.PI); ctx.fill(); }
+          ctx.restore(); ctx.globalCompositeOperation = 'source-over';
+        });
+      }
       ctx.globalCompositeOperation = ADD; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
       const lw = Math.max(2, S * 0.02);
       ['eyeL', 'eyeR', 'mouth'].forEach((g) => {
@@ -472,10 +521,53 @@ function FaceView(props: FaceProps) {
         ctx.strokeStyle = rgba(col.f, 0.9 * vis); ctx.lineWidth = lw; ctx.stroke();
       });
       if (settle('browL') > 0.15) {
-        ctx.strokeStyle = rgba(col.f, 0.14 * vis); ctx.lineWidth = lw * 2.8; pathOf(G.browL.pts, false); ctx.stroke(); pathOf(G.browR.pts, false); ctx.stroke();
+        ctx.strokeStyle = 'rgba(110,145,245,' + (0.22 * vis).toFixed(3) + ')'; ctx.lineWidth = lw * 2.8; pathOf(G.browL.pts, false); ctx.stroke(); pathOf(G.browR.pts, false); ctx.stroke();
         ctx.strokeStyle = rgba(col.f, 0.85 * vis); ctx.lineWidth = lw * 0.85; pathOf(G.browL.pts, false); ctx.stroke(); pathOf(G.browR.pts, false); ctx.stroke();
       }
       fillDots([...G.eyeL.pts, ...G.eyeR.pts, ...G.mouth.pts, ...G.browL.pts, ...G.browR.pts].filter((_, i) => !(i % 2)), Math.max(1.2, S * 0.011), rgba(col.p, vis));
+      // carmine rim glow: strongest while speaking, then listening, then happy
+      rimG += ((state === 'speaking' ? 1 : state === 'listening' ? 0.75 : ex === 'happy' ? 0.5 : 0.14) - rimG) * Math.min(1, dt * 3);
+      if (rimG > 0.03) {
+        ctx.globalCompositeOperation = ADD; ctx.lineJoin = 'round'; ctx.beginPath();
+        for (let q = 0; q <= 64; q++) { const [x, y] = SH((q / 64) * 6.2832); if (q) ctx.lineTo(X(x * 1.01), Y(y * 1.01)); else ctx.moveTo(X(x * 1.01), Y(y * 1.01)); }
+        ctx.closePath();
+        const pu = 0.85 + 0.15 * Math.sin(T * 3.2);
+        ctx.strokeStyle = 'rgba(229,83,102,' + (0.12 * rimG * pu * vis).toFixed(3) + ')'; ctx.lineWidth = Math.max(6, S * 0.05); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,122,136,' + (0.55 * rimG * pu * vis).toFixed(3) + ')'; ctx.lineWidth = Math.max(1.2, S * 0.008); ctx.stroke();
+      }
+      { // glass sheen on the helmet, upper-left, with a slow glint travelling along it
+        ctx.globalCompositeOperation = ADD; ctx.lineCap = 'round';
+        const arcP = (k: number, a0: number, a1: number, n: number): Pt[] => { const o: Pt[] = []; for (let q = 0; q <= n; q++) { const [x, y] = SH(a0 + ((a1 - a0) * q) / n); o.push([X(x * k), Y(y * k)]); } return o; };
+        const line = (pts: Pt[]) => { ctx.beginPath(); pts.forEach(([x, y], q) => (q ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); };
+        const sheen = arcP(0.9, Math.PI + 0.42, Math.PI + 1.02, 14);
+        ctx.strokeStyle = 'rgba(255,255,255,' + ((light ? 0.22 : 0.13) * vis).toFixed(3) + ')'; ctx.lineWidth = Math.max(2, S * 0.022); line(sheen);
+        ctx.lineWidth = Math.max(1.5, S * 0.012); line(arcP(0.84, Math.PI + 0.5, Math.PI + 0.66, 5));
+        const gp = (T * 0.16) % 1;
+        if (gp < 0.35) {
+          const u = gp / 0.35, [x, y] = sheen[Math.min(sheen.length - 1, Math.floor(u * sheen.length))], a = Math.sin(u * Math.PI) * 0.7 * vis;
+          const gg = ctx.createRadialGradient(x, y, 0, x, y, S * 0.05); gg.addColorStop(0, 'rgba(255,255,255,' + a.toFixed(3) + ')'); gg.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(x, y, S * 0.05, 0, 6.283); ctx.fill();
+        }
+      }
+      if (earL2 > 0.03) { // rings out of the ears while listening
+        ctx.globalCompositeOperation = ADD; ctx.lineCap = 'round';
+        for (const s of [-1, 1]) for (let k = 0; k < 4; k++) {
+          const ph = (T * 0.7 + k / 4) % 1, r = 0.22 + ph * 0.42, al = Math.sin(ph * Math.PI) * earL2 * (0.55 + lvl * 0.45);
+          ctx.strokeStyle = k % 2 ? 'rgba(255,170,90,' + (0.5 * al * vis).toFixed(3) + ')' : 'rgba(110,160,255,' + (0.8 * al * vis).toFixed(3) + ')'; ctx.lineWidth = Math.max(1.2, S * 0.012 * (1 - ph * 0.5));
+          ctx.beginPath(); ctx.ellipse(X(s * 1.04), Y(0.03), r * S * 0.6, r * S * 1.15, 0, s > 0 ? -1.15 : Math.PI - 1.15, s > 0 ? 1.15 : Math.PI + 1.15); ctx.stroke();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      if (state === 'thinking') { // sparks running along the rim
+        ctx.globalCompositeOperation = ADD;
+        for (let k = 0; k < 6; k++) {
+          const u = ((T * 0.22 + k / 6) % 1) * 6.2832, [x, y] = SH(u), sx = X(x * 1.01), sy = Y(y * 1.01), [x2, y2] = SH(u - 0.18);
+          ctx.strokeStyle = k % 2 ? 'rgba(255,90,110,' + (0.85 * vis).toFixed(3) + ')' : 'rgba(130,175,255,' + (0.85 * vis).toFixed(3) + ')'; ctx.lineWidth = Math.max(1.5, S * 0.013);
+          ctx.beginPath(); ctx.moveTo(X(x2 * 1.01), Y(y2 * 1.01)); ctx.lineTo(sx, sy); ctx.stroke();
+          ctx.fillStyle = 'rgba(255,240,240,' + (0.9 * vis).toFixed(3) + ')'; ctx.beginPath(); ctx.arc(sx, sy, Math.max(1.4, S * 0.009), 0, 6.283); ctx.fill();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+      }
       // scanline sweeping the visor
       scanA += (((act && act.name === 'scan') || thinkV === 'scan' ? 1 : 0) - scanA) * Math.min(1, dt * 6);
       if (scanA > 0.02) {
@@ -487,6 +579,7 @@ function FaceView(props: FaceProps) {
       }
       flashes = flashes.filter((f) => f.t < 1);
       for (const f of flashes) { f.t += dt * 2.2; const r = S * 0.35 * (0.4 + f.t), g = ctx.createRadialGradient(X(f.x), Y(f.y), 0, X(f.x), Y(f.y), r); g.addColorStop(0, rgba(col.p, 0.3 * (1 - f.t))); g.addColorStop(1, rgba(col.f, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X(f.x), Y(f.y), r, 0, 6.283); ctx.fill(); }
+      NOR();
       // ambient sparks
       sparks = sparks.filter((s) => s.hops > 0);
       ctx.fillStyle = rgba(col.p, 0.9 * vis);
@@ -518,8 +611,24 @@ function FaceView(props: FaceProps) {
       ctx.globalCompositeOperation = 'source-over';
       if (round && blink > 0.6) {
         ctx.fillStyle = 'rgba(255,255,255,' + (0.8 * vis).toFixed(3) + ')'; ctx.beginPath();
-        ['eyeL', 'eyeR'].forEach((g) => { const c = center(g), x1 = X(c[0]) - S * 0.045, y1 = Y(c[1]) - S * 0.065, x2 = X(c[0]) + S * 0.03, y2 = Y(c[1]) + S * 0.04; ctx.moveTo(x1 + S * 0.024, y1); ctx.arc(x1, y1, S * 0.024, 0, 6.283); ctx.moveTo(x2 + S * 0.011, y2); ctx.arc(x2, y2, S * 0.011, 0, 6.283); });
+        ['eyeL', 'eyeR'].forEach((g) => { const c = center(g), x1 = X(c[0]) - S * 0.05, y1 = Y(c[1]) - S * 0.07, x2 = X(c[0]) + S * 0.035, y2 = Y(c[1]) + S * 0.05; ctx.moveTo(x1 + S * 0.034, y1); ctx.ellipse(x1, y1, S * 0.034, S * 0.026, -0.55, 0, 6.283); ctx.moveTo(x2 + S * 0.013, y2); ctx.arc(x2, y2, S * 0.013, 0, 6.283); });
         ctx.fill();
+      }
+      NOC();
+      { // blush by expression, a soft glow with a dot grid
+        const bl = (({ happy: 1, wink: 0.9, hum: 0.85, curious: 0.55, neutral: 0.42, think: 0.3, sad: 0.25, serious: 0.08 } as Record<string, number>)[ex] ?? 0.4) * (state === 'standby' ? 0.35 : 1) * vis;
+        if (bl > 0.02) {
+          ctx.globalCompositeOperation = ADD;
+          [-1, 1].forEach((s) => {
+            const x = X(s * 0.55), y = Y(0.21), r = S * 0.1;
+            const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, 'rgba(255,110,140,' + (0.2 * bl).toFixed(3) + ')'); g.addColorStop(1, 'rgba(255,110,140,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.55, 0, 0, 6.283); ctx.fill();
+            const d = Math.max(1.3, S * 0.008), st = d * 2.3; ctx.fillStyle = 'rgba(255,120,145,' + (0.75 * bl).toFixed(3) + ')'; ctx.beginPath();
+            for (let yy = -r * 0.42; yy <= r * 0.42; yy += st) for (let xx = -r * 0.8; xx <= r * 0.8; xx += st) if ((xx * xx) / (r * r * 0.64) + (yy * yy) / (r * r * 0.18) <= 1) ctx.rect(x + xx - d / 2, y + yy - d / 2, d, d);
+            ctx.fill();
+          });
+          ctx.globalCompositeOperation = 'source-over';
+        }
       }
       if (ex === 'happy' || ex === 'wink' || ex === 'hum') {
         ctx.fillStyle = 'rgba(255,122,154,0.4)'; ctx.beginPath();
@@ -557,6 +666,7 @@ function FaceView(props: FaceProps) {
         if (p.k === 'star') { const s2 = Math.sin(Math.min(1, p.t / p.life) * Math.PI) * 7, x = X(p.x), y = Y(p.y); ctx.globalAlpha = a; ctx.strokeStyle = '#FFF6E0'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x - s2, y); ctx.lineTo(x + s2, y); ctx.moveTo(x, y - s2); ctx.lineTo(x, y + s2); ctx.moveTo(x - s2 * 0.4, y - s2 * 0.4); ctx.lineTo(x + s2 * 0.4, y + s2 * 0.4); ctx.moveTo(x + s2 * 0.4, y - s2 * 0.4); ctx.lineTo(x - s2 * 0.4, y + s2 * 0.4); ctx.stroke(); }
       }
       ctx.globalAlpha = 1;
+      NOR();
       // labels appear with their hubs
       ctx.font = '500 ' + Math.max(9, Math.round(S * 0.058)) + 'px Inter, sans-serif'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
       for (const k in HUB_LABEL) {
@@ -569,12 +679,14 @@ function FaceView(props: FaceProps) {
         ctx.fillText(HUB_NAME[k] || k, X(hx + ox), Y(hy + oy));
       }
       ctx.globalAlpha = 1;
+      NOC();
       ctx.strokeStyle = 'rgba(216,220,230,' + (0.07 * vis).toFixed(3) + ')'; ctx.lineWidth = S * 0.04; ctx.lineCap = 'round';
       ctx.beginPath(); ctx.arc(-S * 0.24, -S * 0.12, S * 0.48, Math.PI * 1.1, Math.PI * 1.38); ctx.stroke();
       if (state === 'standby') {
         ctx.textAlign = 'left';
         for (let k = 0; k < 3; k++) { const u = (T * 0.35 + k / 3) % 1; ctx.fillStyle = rgba(col.f, Math.sin(u * Math.PI) * 0.85); ctx.font = '600 ' + Math.round(S * (0.11 + u * 0.09)) + 'px Inter, sans-serif'; ctx.fillText('z', X(0.7 + u * 0.4), Y(-0.6 - u * 0.5)); }
       }
+      NOR();
       ctx.restore();
     };
     raf = requestAnimationFrame(tick);
@@ -583,7 +695,7 @@ function FaceView(props: FaceProps) {
       window.removeEventListener('pointermove', onMove); window.removeEventListener('resize', sizeSoon); window.removeEventListener('bx-scale', size); document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
-  return <canvas className="bx-face" ref={ref}></canvas>;
+  return <canvas className="bx-face" ref={ref} data-overlay={props.overlay ? '1' : '0'}></canvas>;
 }
 
 export const Face = memo(FaceView);
