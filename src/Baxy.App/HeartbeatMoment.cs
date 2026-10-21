@@ -354,6 +354,8 @@ internal static class HeartbeatMoment
     {
         const string store = @"Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";
         string[] ownPython = OwnInterpreters(Environment.GetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable));
+        long bootFileTime = DateTime.UtcNow.AddMilliseconds(-Environment.TickCount64).ToFileTimeUtc();
+        HashSet<string>? running = null;
         try
         {
             using RegistryKey? root = Registry.CurrentUser.OpenSubKey(store);
@@ -375,9 +377,12 @@ internal static class HeartbeatMoment
                     : [(name, entry)];
                 foreach ((string user, RegistryKey key) in users)
                 {
-                    bool own = ownPython.Contains(user.Replace('#', '\\'), StringComparer.OrdinalIgnoreCase);
+                    string executable = user.Replace('#', '\\');
+                    bool own = ownPython.Contains(executable, StringComparer.OrdinalIgnoreCase);
                     if (!own && key.GetValue("LastUsedTimeStart") is long started && started > 0
-                        && key.GetValue("LastUsedTimeStop") is long stopped && stopped == 0)
+                        && key.GetValue("LastUsedTimeStop") is long stopped && stopped == 0
+                        && MicrophoneUse.StillHeld(started, bootFileTime, name == "NonPackaged" ? executable : null,
+                            path => (running ??= RunningExecutables()).Contains(path)))
                     {
                         return true;
                     }
@@ -391,6 +396,29 @@ internal static class HeartbeatMoment
         }
 
         return false;
+    }
+
+    // The executables running now, by full path (a process whose image cannot be read is left out).
+    private static HashSet<string> RunningExecutables()
+    {
+        var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (Process process in Process.GetProcesses())
+        {
+            using (process)
+            {
+                try
+                {
+                    if (process.MainModule?.FileName is { } path)
+                        paths.Add(path);
+                }
+                catch (Exception exception) when (exception is System.ComponentModel.Win32Exception
+                    or InvalidOperationException or NotSupportedException)
+                {
+                }
+            }
+        }
+
+        return paths;
     }
 
     // The GPU is busy with something else (a game) when its load is high while BAXY is not deciding.
