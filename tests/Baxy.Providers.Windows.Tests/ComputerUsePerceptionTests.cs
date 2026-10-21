@@ -158,6 +158,31 @@ public sealed class ComputerUsePerceptionTests
     }
 
     [Test]
+    public async Task AnIndexThatNamesNothingOfTheViewLeavesTheLabelToItsCascadeOnTheNamedWindow()
+    {
+        // Uso real 2026-10-21 (notebook e2e): «Buscar en la tienda» with index 0, which Steam's view held as «Chrome
+        // Legacy Window»: refused five times while the label was on screen. The index's control is never pressed; the
+        // label goes to its cascade on the window the click names.
+        var worker = new ScriptedUiaWorker(
+            "{\"version\":2,\"ok\":false,\"effectObserved\":false,\"error\":\"visible_button_not_found\"," +
+            "\"name\":\"\",\"controlIdentity\":\"\",\"absentOrDisabled\":false}");
+        var ocr = new CountingLocator("ocr", hit: true);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, null);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Buscar en la tienda","index":0,"window":722700}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.Not.EqualTo("visible_control_identity_stale"));
+            Assert.That(receipt.ErrorCode, Is.Not.EqualTo("visible_control_label_mismatch"));
+            Assert.That(receipt.Result?.GetProperty("cascadeStage").GetString(), Is.EqualTo("ocr"));
+            Assert.That(ocr.Calls, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
     public async Task VisibleClickByIndexWithoutAViewIsRefusedBeforeAnyEffect()
     {
         var worker = new ScriptedUiaWorker("{\"ok\":true}");

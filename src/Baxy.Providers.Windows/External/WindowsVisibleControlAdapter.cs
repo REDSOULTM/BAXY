@@ -1042,12 +1042,30 @@ internal sealed class WindowsVisibleControlAdapter
             }
 
             ViewControl? chosen = view?.Controls.FirstOrDefault(control => control.Index == position);
-            if (chosen is null)
-                return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
-            // Auditoría P3: the label is the index's name as the view gave it (folded), and the receipt says that name.
-            if (!SameLabel(label, chosen.Name))
-                return NotNamed(operation, "visible_control_label_mismatch", [chosen.Name]);
-            controlId = chosen.Id.Length > 0 ? chosen.Id : null;
+            if (chosen is not null && SameLabel(label, chosen.Name))
+            {
+                controlId = chosen.Id.Length > 0 ? chosen.Id : null;
+            }
+            else
+            {
+                // Uso real 2026-10-21 (notebook e2e): the model gave an index the view did not have (Epic's view held no
+                // control, only written lines) or one that named another control (Steam's «Chrome Legacy Window» at 0
+                // for «Buscar en la tienda»), and the click ended there five and seven times while the label was on
+                // screen. The index's control is never pressed (auditoría P3); the label is looked for by its ordinary
+                // cascade, bound to the window the click names or the last view's, never to whatever is in front. With
+                // no such window the click is refused as before.
+                nint known = namedWindow != 0 ? namedWindow
+                    : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd : 0;
+                if (known == 0)
+                {
+                    return chosen is null
+                        ? ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale")
+                        : NotNamed(operation, "visible_control_label_mismatch", [chosen.Name]);
+                }
+
+                namedWindow = known;
+                index = null;
+            }
         }
 
         // Ronda 20 (P7): the opener the previous click noted is taken before any branch, so every click right after it
