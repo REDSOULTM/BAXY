@@ -25,7 +25,8 @@ class LlmServer:
         self.server = server
         self.gpu_layers = gpu_layers
         self.context = context
-        self.port = _free_port()
+        # PLAN_GENERAL A5: a pinned port lets the click's vision stage (BAXY_VISION_ENDPOINT) reach this same server.
+        self.port = _pinned_port() or _free_port()
         self._process: subprocess.Popen | None = None
         self._ready = threading.Event()
         self._failure: str | None = None
@@ -47,7 +48,7 @@ class LlmServer:
             # Checkpoints stay at llama.cpp's spacing: every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM
             # (decision2 d6 vs d6b, 2026-10-15) once the last answer of a turn keeps the tools and the prefix.
             "-cram", "1536",
-        ] + self.extra_args
+        ] + _vision_args() + self.extra_args
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         log = open(log_dir / self.log_name, "w", encoding="utf-8")
@@ -115,6 +116,27 @@ class LlmServer:
                 self._process.wait(5)
             except subprocess.TimeoutExpired:
                 self._process.kill()
+
+
+def _vision_args() -> list[str]:
+    """PLAN_GENERAL A5 (measured 2026-10-21): the model's own projector, on the CPU (no VRAM; ~0.7 GB of RAM), so the
+    click's last stage can ask this server where a control is on a window without an accessible tree."""
+    projector = os.environ.get("BAXY_MIND_MMPROJ", "").strip()
+    return ["--mmproj", projector, "--no-mmproj-offload"] if projector and Path(projector).is_file() else []
+
+
+def _pinned_port() -> int | None:
+    """BAXY_MIND_LLAMA_PORT when set and free on the loopback; None otherwise (a free port is taken)."""
+    try:
+        port = int(os.environ.get("BAXY_MIND_LLAMA_PORT", ""))
+    except ValueError:
+        return None
+    with socket.socket() as probe:
+        try:
+            probe.bind(("127.0.0.1", port))
+        except OSError:
+            return None
+    return port
 
 
 def _free_port() -> int:

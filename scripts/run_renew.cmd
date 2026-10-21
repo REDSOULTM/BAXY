@@ -19,5 +19,13 @@ if /I "%COMPUTERNAME%"=="REDNOTE" (
   if not defined BAXY_RENEW_WAKE_DIR set "BAXY_RENEW_WAKE_DIR=C:\Users\usuario\Desktop\ETC\Programacion\WakewordBaxy\models\final\baxy-wake-k4"
   if not defined BAXY_RENEW_STT_DIR set "BAXY_RENEW_STT_DIR=D:\TranscripcionBaxy-modelos\parakeet-ultra-sherpa-int8-oli"
   set "BAXY_RENEW_TTS_DIR=%LOCALAPPDATA%\BAXYRuntime\assets\voice\baxy-supertonic"
+  rem PLAN_GENERAL A5: el proyector de Qwen3.5-4B en CPU en el mismo llama-server, y el escalon de vision del clic apuntado
+  rem a el, sin VRAM y con ~0,7 GB de RAM. Sin el archivo, nada cambia.
+  if exist "F:\BAXYeval\models\Qwen3.5-4B-mmproj-F16.gguf" (
+    set "BAXY_MIND_MMPROJ=F:\BAXYeval\models\Qwen3.5-4B-mmproj-F16.gguf"
+    set "BAXY_MIND_LLAMA_PORT=8077"
+    set "BAXY_VISION_ENDPOINT=http://127.0.0.1:8077/v1/chat/completions"
+    set "BAXY_VISION_MODEL=baxy"
+  )
 )
 py -3.12 "%ROOT%\main.py" %*
