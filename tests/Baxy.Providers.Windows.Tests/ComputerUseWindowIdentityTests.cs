@@ -51,6 +51,22 @@ public sealed class ComputerUseWindowIdentityTests
         Assert.That(VisibleControlSurface.ProcessIsApplication(process, application), Is.EqualTo(matches));
     }
 
+    // PLAN_GENERAL A1, measured on redpc 2026-10-21: the toolkit by the window's own class and its children's classes.
+    [TestCase("UnrealWindow", "", "unreal")]
+    [TestCase("SDL_app", "CefBrowserWindow,Chrome_RenderWidgetHostHWND,Chrome_WidgetWin_1", "cef")]
+    [TestCase("Chrome_WidgetWin_1", "Chrome_RenderWidgetHostHWND,Intermediate D3D Window", "chromium")]
+    [TestCase("Chrome_WidgetWin_1", "Intermediate D3D Window", "chromium")]
+    [TestCase("Qt5152QWindowIcon", "", "qt")]
+    [TestCase("FLUTTER_RUNNER_WIN32_WINDOW", "FLUTTERVIEW", "flutter")]
+    [TestCase("SunAwtFrame", "", "java")]
+    [TestCase("Notepad", "NotepadTextBox,RichEditD2DPT", "")]
+    [TestCase("ApplicationFrameWindow", "Windows.UI.Core.CoreWindow", "")]
+    public void TheToolkitIsReadFromTheWindowClasses(string own, string children, string toolkit)
+    {
+        string[] classes = children.Length == 0 ? [] : children.Split(',');
+        Assert.That(VisibleControlSurface.Toolkit(own, classes), Is.EqualTo(toolkit));
+    }
+
     // Goal v3, analysis r3a M5 (v3-49): a file manager whose title is the folder it shows is found by its executable's
     // own description, when it is the name asked; one that only starts with it or shares a word never is.
     [TestCase("7-Zip File Manager", "7-Zip File Manager", true)]

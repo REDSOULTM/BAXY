@@ -816,6 +816,37 @@ internal static partial class VisibleControlSurface
         return className is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd";
     }
 
+    /// <summary>
+    /// Uso real 2026-10-21 (artifacts/renew/uso/PLAN_GENERAL.md, A1): the toolkit a window is built with, read from its
+    /// own class and its child windows' classes as each toolkit names them, which says what its accessibility can give.
+    /// «chromium» (Chromium, Electron, WebView2: a tree built on demand), «cef» (Chromium embedded in another program,
+    /// whose tree that program decides: Steam's three nodes), «unreal» (Slate, with any web view painted onto a texture:
+    /// no tree at all, Epic's 0 names), «qt», «flutter» (providers built on demand), «java» (Java Access Bridge, not UIA);
+    /// empty for a native window or one not told apart. Measured on redpc: Epic UnrealWindow with no children, Steam
+    /// SDL_app with CefBrowserWindow, Spotify, Opera, Discord and VS Code Chrome_WidgetWin_1.
+    /// </summary>
+    internal static string Toolkit(nint window)
+    {
+        var children = new HashSet<string>(StringComparer.Ordinal);
+        EnumWindowsProc collect = (child, unused) =>
+        {
+            children.Add(ClassName(child));
+            return children.Count < 64;
+        };
+        _ = EnumChildWindows(window, collect, nint.Zero);
+        return Toolkit(ClassName(window), children);
+    }
+
+    internal static string Toolkit(string own, IReadOnlyCollection<string> children) =>
+        children.Contains("CefBrowserWindow") ? "cef"
+        : own.StartsWith("Chrome_WidgetWin_", StringComparison.Ordinal) || children.Contains("Chrome_RenderWidgetHostHWND")
+            ? "chromium"
+        : own == "UnrealWindow" ? "unreal"
+        : own.StartsWith("Qt", StringComparison.Ordinal) && own.Contains("QWindow", StringComparison.Ordinal) ? "qt"
+        : own == "FLUTTER_RUNNER_WIN32_WINDOW" ? "flutter"
+        : own is "SunAwtFrame" or "SunAwtDialog" ? "java"
+        : string.Empty;
+
     internal static string ClassName(nint window)
     {
         var buffer = new char[128];

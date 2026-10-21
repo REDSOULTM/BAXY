@@ -1577,6 +1577,62 @@ internal sealed class WindowsVisibleControlAdapter
             ? 0
             : await VisibleControlSurface.ResolveTitledWindowAsync(application, cancellationToken).ConfigureAwait(false);
 
+    /// <summary>A tree read with at most this many controls may still be being built (PLAN_GENERAL A2).</summary>
+    internal const int SleepingTreeControls = 3;
+
+    internal const int TreeSettleIntervalMs = 400;
+
+    internal const int TreeSettleReads = 5;
+
+    /// <summary>
+    /// PLAN_GENERAL A2: a tree that read almost empty is read again after a pause; while each read counts more controls
+    /// than the last, the newest is kept and read again; the first read that does not grow ends it (a tree that never
+    /// comes costs one pause). Whether the tree grew, and the answer kept.
+    /// </summary>
+    internal static async Task<(JsonDocument Answer, bool Woken)> SettleTreeAsync(
+        JsonDocument first, Func<Task<JsonDocument?>> read, Func<int, Task> delay)
+    {
+        int count = ControlCount(first);
+        if (count < 0 || count > SleepingTreeControls)
+            return (first, false);
+        JsonDocument current = first;
+        bool grew = false;
+        for (int attempt = 0; attempt < TreeSettleReads; attempt++)
+        {
+            await delay(TreeSettleIntervalMs).ConfigureAwait(false);
+            JsonDocument? again = await read().ConfigureAwait(false);
+            if (again is null)
+                break;
+            int next = ControlCount(again);
+            if (next <= count)
+            {
+                again.Dispose();
+                break;
+            }
+
+            current.Dispose();
+            current = again;
+            count = next;
+            grew = true;
+        }
+
+        return (current, grew);
+    }
+
+    // The controls a worker's view counted; -1 when the view did not succeed.
+    private static int ControlCount(JsonDocument view)
+    {
+        JsonElement root = view.RootElement;
+        if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("ok", out JsonElement ok)
+            || ok.ValueKind != JsonValueKind.True)
+            return -1;
+        if (root.TryGetProperty("controlCount", out JsonElement total) && total.TryGetInt32(out int counted))
+            return counted;
+        return root.TryGetProperty("controls", out JsonElement list) && list.ValueKind == JsonValueKind.Array
+            ? list.GetArrayLength()
+            : 0;
+    }
+
     /// <summary>How many of the desktop's windows go back with a name no window is.</summary>
     internal const int NamedWindowCandidateLimit = 20;
 
@@ -1746,6 +1802,21 @@ internal sealed class WindowsVisibleControlAdapter
             }
         }
 
+        // PLAN_GENERAL A2: a toolkit that builds its tree on demand (Chromium, CEF, Qt, Flutter) starts building it at
+        // the first WM_GETOBJECT, which this very read sent, and fills it asynchronously: a read with almost nothing is
+        // taken again until the count of controls stops growing, within a bound.
+        string toolkit = VisibleControlSurface.Toolkit(hwnd);
+        bool treeWoken = false;
+        if (toolkit is "chromium" or "cef" or "qt" or "flutter")
+        {
+            nint settling = hwnd;
+            (answer, treeWoken) = await SettleTreeAsync(
+                answer,
+                () => _worker.SendAsync(ViewCommand(settling, limit, wanted, tail), WorkerViewBudget, cancellationToken)
+                    .AsTask(),
+                ms => Task.Delay(ms, cancellationToken)).ConfigureAwait(false);
+        }
+
         // Encargo WA5 (wab3, 4 de 4): the worker's walk of a window that is still there threw. The look is not lost: the
         // window is read as one without a tree, from what it draws (its text, below), and the look says why. A window
         // that is gone fails as before.
@@ -1887,6 +1958,12 @@ internal sealed class WindowsVisibleControlAdapter
                     writer.WriteEndArray();
                 }
 
+                // PLAN_GENERAL A1: what the window is built with, which says whether a tree can come at all.
+                if (toolkit.Length > 0)
+                    writer.WriteString("toolkit", toolkit);
+                // PLAN_GENERAL A2: the tree was still being built at the first read and was read again until it settled.
+                if (treeWoken)
+                    writer.WriteBoolean("treeWoken", true);
                 // Read in front or behind the person's window (v3 point 0): behind, «focused» cannot say where the
                 // keyboard will be once the window comes up.
                 writer.WriteBoolean("foreground", inFront);
