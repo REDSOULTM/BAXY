@@ -56,9 +56,16 @@ public sealed class OperationRegistryTests
     public void MessageSendAsksEvenInBypass(string operation, PolicyDecision expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
-        Assert.That(
-            RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation),
-            Is.EqualTo(expected));
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation),
+                Is.EqualTo(expected));
+            if (operation == "message.send")
+                Assert.That(
+                    RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, operation),
+                    Is.EqualTo(PolicyDecision.RequireConfirmation));
+        });
     }
 
     // D3: what reaches another person keeps asking; playing, navigating, clicking,
@@ -66,9 +73,7 @@ public sealed class OperationRegistryTests
     // the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo Normal BAXY
     // confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct».
     [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
-    // Uso real 2026-10-21: a message sent to the person named asks in normal mode, and in Bypass too
-    // (MessageSendAsksEvenInBypass).
-    [TestCase("message.send", PolicyDecision.RequireConfirmation)]
+    // Uso real 2026-10-21: message.send asks in normal mode and in Bypass (MessageSendAsksEvenInBypass).
     [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
     [TestCase("media.play.query", PolicyDecision.Allow)]
     [TestCase("streaming.play.named", PolicyDecision.Allow)]
