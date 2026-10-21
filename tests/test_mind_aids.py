@@ -139,6 +139,18 @@ def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: 
     assert "input_visible_click ya se hizo 3 veces en este turno" in tools[4]
 
 
+def test_the_applications_with_places_are_named_from_the_data(tmp_path: Path) -> None:
+    # PLAN_GENERAL A6 (uso real 2026-10-21: Epic had places in the data, but the hand-written sentences did not name it).
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": "app.open", "description": "Open an app.", "argumentsSchema": {
+        "type": "object", "properties": {"appId": {"type": "string"}, "place": {"type": "string"}}}}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "app_open")["function"]
+    texts = tool["description"] + tool["parameters"]["properties"]["place"]["description"]
+    assert "{app_places}" not in texts
+    for app in ("«Epic Games Launcher» (results, store)", "«Steam» (", "«Discord» (directs)", "«Configuración» ("):
+        assert app in texts
+
+
 SETTINGS_AND_TRASH = {"capabilities": [
     {"name": "system.settings.set", "description": "Set a setting.", "argumentsSchema": {"type": "object", "properties": {}}},
     {"name": "filesystem.known.trash.named", "description": "Delete by name.",

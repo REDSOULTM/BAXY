@@ -4,6 +4,7 @@
  "applications": {
   "Configuración": {
    "_about": "Estabilización G2 (tandas f2 del notebook, t2-c03 «abre configuracion que quiero ver lo de la pantalla»: la Configuración del notebook abre en «Inicio», que recomienda «Pantalla de bloqueo»; la misión vagó por Personalización y escribió en el buscador una fecha leída por OCR). Las secciones de Configuración tienen dirección propia (ms-settings:), así que se va a ellas sin clics. Cada dirección se comprobó en vivo en redpc el 2026-10-11 con el lanzamiento del shell (sonda estab/G2_sonda: título, elemento seleccionado de la navegación y miga de pan). No tienen dirección propia y no se declaran: «Aplicaciones» (ms-settings:apps abre «Aplicaciones instaladas»), «Hora e idioma» (ms-settings:time-language abre «Sistema») y «Juegos» (ms-settings:gaming abre «Game Bar»). Estabilización L4 (en vivo t-scroll-3: el clic por nombre en «Fonts», fuera de la vista de Personalización, tardó 33 s y agotó el plazo del sub-objetivo): «fonts» se comprobó igual en redpc el 2026-10-11 (sonda estab/L4_sonda: abre Personalización › Fuentes, «Fuentes disponibles»).",
+   "summary": "Windows Settings pages: sound, display, wifi, bluetooth, network, update and the others",
    "schemes": ["ms-settings"],
    "places": {
     "about": {"address": "ms-settings:about"},

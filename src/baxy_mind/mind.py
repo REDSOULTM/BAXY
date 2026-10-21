@@ -182,6 +182,23 @@ def _app_places() -> dict[str, dict[str, str]]:
 APP_PLACES = _app_places()
 
 
+def _app_places_text() -> str:
+    """PLAN_GENERAL A6 (uso real 2026-10-21: Epic had places in the data but the hand-written sentences of app_open did
+    not name it, and «busca X en Epic» went to installing): every application with places, from the data, as the
+    tools' text names them: «Name» (its summary, or its places)."""
+    try:
+        data = json.loads((_DATA / "app_places.v1.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return ""
+    named = [f"«{app}» ({body.get('summary') or ', '.join(body.get('places') or {})})"
+             for app, body in (data.get("applications") or {}).items()
+             if isinstance(body, dict) and body.get("places")]
+    return named[0] if len(named) == 1 else ", ".join(named[:-1]) + " or " + named[-1] if named else ""
+
+
+APP_PLACES_TEXT = _app_places_text()
+
+
 def places_note(application: str) -> str:
     """Aid «app_places_next» (uso real 2026-10-20: seven clicks in Steam's and Epic's web-drawn windows, whose own
     addresses app_open already opens): after a click or a look there fails or is unsure, the places the application
@@ -448,7 +465,8 @@ class Mind:
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
-            description = self.english.get(name) or str(cap.get("description") or "")
+            description = (self.english.get(name) or str(cap.get("description") or "")).replace(
+                "{app_places}", APP_PLACES_TEXT)
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
@@ -468,7 +486,7 @@ class Mind:
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():
                 if isinstance(schema["properties"].get(argument), dict):
-                    schema["properties"][argument]["description"] = meaning
+                    schema["properties"][argument]["description"] = meaning.replace("{app_places}", APP_PLACES_TEXT)
             wire = name.replace(".", "_")
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
             tools.append(tool)
