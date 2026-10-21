@@ -1,4 +1,4 @@
-using System.Buffers;
+﻿using System.Buffers;
 using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Globalization;
@@ -134,7 +134,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             cancellationToken).ConfigureAwait(false);
         if (!draft.Verified)
         {
-            if (draft.ErrorCode == ComposerHasPersonDraft)
+            if (draft.ErrorCode == WindowsDesktopMessagingAutomation.ComposerHasPersonDraft)
                 return StoppedAtPersonDraft("message.draft", draft);
             return Failure(
                 "message.draft",
@@ -203,7 +203,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             cancellationToken).ConfigureAwait(false);
         if (!sent.Verified)
         {
-            if (sent.ErrorCode == ComposerHasPersonDraft)
+            if (sent.ErrorCode == WindowsDesktopMessagingAutomation.ComposerHasPersonDraft)
                 return StoppedAtPersonDraft("message.send", sent);
             return Failure(
                 "message.send",
@@ -284,7 +284,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             cancellationToken).ConfigureAwait(false);
         if (!sent.Verified)
         {
-            if (sent.ErrorCode == ComposerHasPersonDraft)
+            if (sent.ErrorCode == WindowsDesktopMessagingAutomation.ComposerHasPersonDraft)
                 return StoppedAtPersonDraft("message.send.test", sent);
             return Failure(
                 "message.send.test",
@@ -447,7 +447,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     // A flow stopped at the person's own draft in the composer, before the message was typed: nothing written or sent.
     private static ExternalCapabilityReceipt StoppedAtPersonDraft(string operation, DesktopMessageObservation observation) =>
         new(operation, observation.EffectObserved, false, JsonObject(("version", 1), ("messageWritten", false), ("sent", false)),
-            ComposerHasPersonDraft)
+            WindowsDesktopMessagingAutomation.ComposerHasPersonDraft)
         { EffectMayHaveOccurred = observation.EffectMayHaveOccurred };
 
     private static JsonElement JsonObject(params (string Name, object? Value)[] values)
