@@ -77,7 +77,11 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     [TestCase(@"C:\Other\Binaries\Win64\EpicGamesLauncher.exe",
         @"C:\Epic\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe", false)]
     [TestCase(@"C:\Epic\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe",
-        @"C:\Epic\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe", false)]
+        @"C:\Epic\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe", true)]
+    // PLAN_GENERAL B1: any pair of sibling architecture folders; never another sibling folder.
+    [TestCase(@"C:\Tool\bin\x64\tool.exe", @"C:\Tool\bin\x86\tool.exe", true)]
+    [TestCase(@"C:\Tool\bin\plugins\tool.exe", @"C:\Tool\bin\x86\tool.exe", false)]
+    [TestCase(@"C:\Program Files\Other\Chat.exe", @"C:\Program Files\Chat\Chat.exe", false)]
     public void LauncherShortcutAcceptsOnlyItsDirectVersionedImage(string actual, string expected, bool accepted)
     {
         Assert.That(WindowsInstalledApplicationPlatform.ExecutableIsLaunchedImage(actual, expected),

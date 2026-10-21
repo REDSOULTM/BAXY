@@ -1128,6 +1128,10 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     {
         // M132: a click that follows this opening acts on the application opened (VisibleControlSurface).
         External.VisibleControlSurface.NoteOpened(observation.ProcessId, launched: !reused, observation.WindowHandle);
+        // PLAN_GENERAL B1: the executable this verified opening found is the application's, by both names it was asked
+        // by, so a later look by name finds its window whatever its title says (a localized «Iniciador de Epic Games»).
+        External.VisibleControlSurface.NoteApplicationExecutable(entry.Name, observation.ExecutablePath);
+        External.VisibleControlSurface.NoteApplicationExecutable(request.ApplicationId, observation.ExecutablePath);
         var receipt = new ApplicationLaunchReceipt(
             request.InvocationId,
             request.ApplicationId,
@@ -1989,10 +1993,17 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     /// installers put a launcher next to <c>app-1.0.9260\</c> and the window
     /// belongs to the copy inside (t4-r6: «cierra discord» → window_not_found).
     /// A same-named executable anywhere else is a different program.
-    /// Uso real 2026-10-20 (Epic Games Launcher): the shortcut's <c>Binaries\Win32\</c> launcher starts the same file
-    /// in its sibling <c>Binaries\Win64\</c> and exits, and that copy owns the window; the 64-bit sibling of a
-    /// <c>Win32</c> folder is the launched image too.
+    /// Uso real 2026-10-20, generalized by PLAN_GENERAL B1: a launcher in an architecture folder starts the same file
+    /// in a sibling architecture folder and exits, and that copy owns the window (Epic: <c>Binaries\Win32\</c> starts
+    /// <c>Binaries\Win64\</c>); the same file in a sibling architecture folder is the launched image too. Any other
+    /// sibling folder is another program.
     /// </summary>
+    // The folder names that hold one build of a program per processor architecture.
+    private static readonly HashSet<string> ArchitectureFolders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Win32", "Win64", "x86", "x64", "x86_64", "amd64", "arm64", "bin32", "bin64",
+    };
+
     internal static bool ExecutableIsLaunchedImage(string actualPath, string expectedPath)
     {
         if (string.Equals(actualPath, expectedPath, StringComparison.OrdinalIgnoreCase))
@@ -2004,8 +2015,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         string? launcherFolder = Path.GetDirectoryName(expectedPath);
         if (versioned is null || launcherFolder is null)
             return false;
-        if (string.Equals(Path.GetFileName(launcherFolder), "Win32", StringComparison.OrdinalIgnoreCase)
-            && string.Equals(Path.GetFileName(versioned), "Win64", StringComparison.OrdinalIgnoreCase)
+        if (ArchitectureFolders.Contains(Path.GetFileName(launcherFolder))
+            && ArchitectureFolders.Contains(Path.GetFileName(versioned))
             && string.Equals(Path.GetDirectoryName(versioned), Path.GetDirectoryName(launcherFolder),
                 StringComparison.OrdinalIgnoreCase))
             return true;

@@ -51,6 +51,22 @@ public sealed class ComputerUseWindowIdentityTests
         Assert.That(VisibleControlSurface.ProcessIsApplication(process, application), Is.EqualTo(matches));
     }
 
+    // PLAN_GENERAL B1 (uso real 2026-10-21): what a verified opening found running the application is its identity for a
+    // later look by that name, folded as every name is; another executable, or another name, is not.
+    [Test]
+    public void AVerifiedOpeningTeachesTheExecutableALookByThatNameFinds()
+    {
+        const string image = @"C:\Prueba B1\Binaries\Win64\LanzadorB1.exe";
+        VisibleControlSurface.NoteApplicationExecutable("Lanzador de Prueba B1", image);
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.LearnedExecutableOf("lanzador  de PRUEBA b1", image.ToLowerInvariant()), Is.True);
+            Assert.That(VisibleControlSurface.LearnedExecutableOf("Lanzador de Prueba B1", @"C:\Otro\LanzadorB1.exe"), Is.False);
+            Assert.That(VisibleControlSurface.LearnedExecutableOf("Otro programa B1", image), Is.False);
+            Assert.That(VisibleControlSurface.HasLearnedExecutable("Nunca abierto B1"), Is.False);
+        });
+    }
+
     // PLAN_GENERAL A1, measured on redpc 2026-10-21: the toolkit by the window's own class and its children's classes.
     [TestCase("UnrealWindow", "", "unreal")]
     [TestCase("SDL_app", "CefBrowserWindow,Chrome_RenderWidgetHostHWND,Chrome_WidgetWin_1", "cef")]

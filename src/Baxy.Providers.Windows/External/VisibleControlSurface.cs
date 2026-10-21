@@ -228,6 +228,19 @@ internal static partial class VisibleControlSurface
         Dictionary<uint, uint>? parents = null;
         HashSet<uint>? windowed = null;
         uint? shell = null;
+        bool learned = HasLearnedExecutable(application);
+        var images = new Dictionary<uint, string?>();
+        string? ImageOf(uint owner)
+        {
+            if (!images.TryGetValue(owner, out string? image))
+            {
+                image = Applications.WindowsInstalledApplicationPlatform.ExecutableImagePath(unchecked((int)owner));
+                images[owner] = image;
+            }
+
+            return image;
+        }
+
         EnumWindowsProc callback = (window, _) =>
         {
             if (!IsWindowVisible(window) || GetAncestor(window, 3) != window)
@@ -258,7 +271,8 @@ internal static partial class VisibleControlSurface
 
             if (ProtectedFrom(processName, application, DescriptionOfOwner))
                 return true;
-            if (ProcessIsApplication(processName, application))
+            // PLAN_GENERAL B1: the executable a verified opening of this application found counts as its own name.
+            if (ProcessIsApplication(processName, application) || (learned && LearnedExecutableOf(application, ImageOf(owner))))
             {
                 // Ronda 24 (pasada r23 v3-05, v3-06): the first window of the application's process in Z order may be a
                 // secondary one («86 aviso(s)») above the window the person works in. Revision 1 (B2): an owned modal
@@ -1189,6 +1203,34 @@ internal static partial class VisibleControlSurface
     // was opened: its process or one it started, the largest usable window of them, brought to the front.
     private static readonly object OpenedGate = new();
     private static OpenedApplication? _opened;
+
+    // PLAN_GENERAL B1: the executables verified openings found, by the folded name the application was asked by.
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> LearnedExecutables =
+        new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// PLAN_GENERAL B1 (uso real 2026-10-21: «Epic Games Launcher» opened and verified, then its look found no window:
+    /// titled «Iniciador de Epic Games», run by EpicGamesLauncher.exe described «EpicGamesLauncher»): what a verified
+    /// opening of <paramref name="application"/> found running it is the identity a look by that name keeps, for the
+    /// life of this process. Only BAXY's own verified record, never a word of the name.
+    /// </summary>
+    internal static void NoteApplicationExecutable(string? application, string? executablePath)
+    {
+        string name = FoldTitle(application);
+        if (name.Length == 0 || string.IsNullOrWhiteSpace(executablePath) || !Path.IsPathFullyQualified(executablePath))
+            return;
+        LearnedExecutables[name] = Path.GetFullPath(executablePath);
+    }
+
+    /// <summary>Whether <paramref name="executablePath"/> is the executable a verified opening of
+    /// <paramref name="application"/> found (<see cref="NoteApplicationExecutable"/>).</summary>
+    internal static bool LearnedExecutableOf(string? application, string? executablePath) =>
+        !string.IsNullOrWhiteSpace(executablePath)
+        && LearnedExecutables.TryGetValue(FoldTitle(application), out string? learned)
+        && string.Equals(learned, executablePath, StringComparison.OrdinalIgnoreCase);
+
+    internal static bool HasLearnedExecutable(string? application) =>
+        LearnedExecutables.ContainsKey(FoldTitle(application));
 
     internal static void NoteOpened(int processId, bool launched, long window = 0)
     {
