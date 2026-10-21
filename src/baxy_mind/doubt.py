@@ -46,4 +46,4 @@ def read(reply: dict[str, Any] | None) -> dict[str, Any] | None:
     rivals = ([(a["token"], round(_p(a.get("logprob")), 3)) for a in content[weakest].get("top_logprobs") or []][:4]
               if weakest is not None else [])
     return {"confidence": round(p_call * p_name, 4), "p_call": round(p_call, 4), "p_name": round(p_name, 4),
-            "rivals": rivals}
+            "rivals": rivals, "written": text[:starts[weakest]] if weakest is not None else ""}

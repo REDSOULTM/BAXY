@@ -12,6 +12,7 @@ from pathlib import Path
 from . import protocol
 from .llm_server import LlmServer
 from .mind import NOTICE, Mind
+from .system_one import SystemOne
 from .voice import Voice
 
 
@@ -24,9 +25,15 @@ def main() -> int:
     server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
                        context=int(os.environ.get("BAXY_RENEW_CTX", "49152")))
     server.start()
+    # System One, layer 2: the decision model on the CPU, beside Qwen, when its GGUF is given (off otherwise).
+    system_one = None
+    if os.environ.get("BAXY_S1_GGUF", "").strip():
+        system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), server_path,
+                               int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
+        system_one.start()
     trace = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl"
     trace.parent.mkdir(parents=True, exist_ok=True)
-    mind = Mind(server, trace)
+    mind = Mind(server, trace, system_one)
     def spoken(queued: float, sounded: float) -> None:
         # From the App's voice.speak to the first sound, and when it sounded (the turn's own rows say when its text
         # reached the mind), so text-to-first-sound is read from this trace.
@@ -160,6 +167,8 @@ def main() -> int:
         voice.stop()
         voice.speech.close()
         server.close()
+        if system_one is not None:
+            system_one.close()
     return 0
 
 

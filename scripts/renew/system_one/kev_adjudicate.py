@@ -24,24 +24,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 import bench_decision as bench  # noqa: E402
 
-ANSWER = "responder_con_palabras"
-KINDS = {"actuar": "hacer algo en el PC con una herramienta",
-         "preguntar": "preguntar a la persona porque falta un dato o el pedido es ambiguo",
-         "responder": "contestar con palabras, sin herramientas (charla, conocimiento, texto que no pide nada)",
-         "no_se_puede": "decir que eso no lo hace: no hay una herramienta para ese pedido"}
-
-
-STATE_CHARS = 1200
-
-
-def state_text(text, history):
-    """The state as plain text: kev.train serializes a dict as JSON while llama-server renders it with its own template,
-    so training and serving read the same words only when it is already text."""
-    previous = " | ".join(f'{m["role"]}: {m["content"]}' for m in (history or [])[-4:]) or "ninguna"
-    # An encoder reads at most ~1k tokens (laya-multilingual's default): a pasted text keeps its start, as does history.
-    text, previous = str(text)[:STATE_CHARS], previous[-STATE_CHARS // 2:]
-    return (f"Pedido de la persona: {text}\nConversación previa: {previous}\n"
-            "Lugar: asistente de escritorio BAXY en el PC Windows de la persona")
+# The question as the product writes it (src/baxy_mind/system_one.py): training and serving read the same words.
+sys.path.insert(0, str(bench.ROOT / "src"))
+from baxy_mind.system_one import ANSWER, KINDS, OPTION_TEXT, short, state_text  # noqa: E402
 
 
 def post(port, body):
@@ -49,13 +34,6 @@ def post(port, body):
                                      headers={"Content-Type": "application/json"})
     with urllib.request.urlopen(request, timeout=120) as reply:
         return json.loads(reply.read())
-
-
-def short(text, limit=220):
-    text = " ".join(str(text).split())
-    cut = text.find(". ")
-    text = text[:cut + 1] if 0 < cut < limit else text
-    return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + "…"
 
 
 def wanted(expect):
@@ -96,8 +74,7 @@ def main():
     mind = Mind(None, runs / f"s1kev-{args.label}.trace.jsonl")
     mind.configure(json.loads(Path(args.catalog).read_text(encoding="utf-8")))
     described = {t["function"]["name"]: short(t["function"]["description"]) for t in mind.tools}
-    described[ANSWER] = "contestar con palabras, sin usar herramientas"
-    described["ask_user"] = "preguntar a la persona lo que falta o lo que no está claro"
+    described.update(OPTION_TEXT)
 
     port = args.port
     log = open(runs / f"s1kev-{args.label}.server.log", "w", encoding="utf-8")

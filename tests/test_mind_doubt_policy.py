@@ -71,6 +71,62 @@ def test_a_sure_action_or_layer_0_off_runs_as_before(tmp_path, monkeypatch, thre
     assert result["kind"] == "action" and result["operation"] == "app.open"
 
 
+class FakeSystemOne:
+    def __init__(self, choice) -> None:
+        self.choice = choice
+        self.asked: list[dict] = []
+
+    def choose(self, text, history, options):
+        self.asked.append({"text": text, "options": dict(options)})
+        if self.choice is None:
+            return None  # not up yet, or failed: the turn goes on as the model decided
+        return {"choice": self.choice, "p": 0.9, "probabilities": {self.choice: 0.9}, "ms": 140}
+
+
+def _layer2(tmp_path, monkeypatch, choice, replies):
+    monkeypatch.setenv("BAXY_S1_DOUBT", "")
+    monkeypatch.setenv("BAXY_S1_VETO", "0.6")
+    mind, server = _mind(tmp_path, replies)
+    server.complete_name = lambda body, written: "_close"  # the rest of the rival «app»: app_close
+    mind.tools = [{"type": "function", "function": {"name": n, "description": d + ". More.", "parameters": {}}}
+                  for n, d in (("system_power", "Shut down the PC"), ("app_close", "Close an application"))]
+    one = FakeSystemOne(choice)
+    mind.system_one = one  # type: ignore[assignment]
+    return mind, server, one
+
+
+def _rival_call(p_name: float) -> dict:
+    reply = _call("system_power", {"action": "shutdown"}, p_name)
+    name = reply["choices"][0]["logprobs"]["content"][5]
+    name["top_logprobs"].append({"token": "app", "logprob": math.log(1 - p_name)})
+    return reply
+
+
+def test_layer2_holds_an_unsure_action_the_decision_model_reads_otherwise(tmp_path, monkeypatch) -> None:
+    mind, server, one = _layer2(tmp_path, monkeypatch, "app_close",
+                                [_rival_call(0.5), _say("¿Cierro la ventana de delante o apago el PC?")])
+    result = mind.decide(1, "ahora ciérralo")
+    assert result["kind"] == "conversation" and result["operation"] is None
+    assert set(one.asked[0]["options"]) == {"system_power", "app_close", "ask_user", "responder_con_palabras"}
+    assert one.asked[0]["options"]["app_close"] == "Close an application."
+    note = server.bodies[1]["messages"][-1]["content"]
+    assert "system_power" in note and "app_close" in note
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert rows[0]["system_one"]["choice"] == "app_close"
+
+
+@pytest.mark.parametrize("choice", ["system_power", None])
+def test_layer2_lets_the_action_run_when_the_decision_model_agrees_or_is_not_up(tmp_path, monkeypatch, choice) -> None:
+    mind, _, _ = _layer2(tmp_path, monkeypatch, choice, [_rival_call(0.5)])
+    assert mind.decide(1, "apaga el pc")["operation"] == "system.power"
+
+
+def test_layer2_is_not_asked_when_the_model_is_sure(tmp_path, monkeypatch) -> None:
+    mind, _, one = _layer2(tmp_path, monkeypatch, "app_close", [_rival_call(0.95)])
+    assert mind.decide(1, "apaga el pc")["operation"] == "system.power"
+    assert one.asked == []
+
+
 def test_asking_is_never_held(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.9")
     mind, _ = _mind(tmp_path, [_call("ask_user", {"question": "¿Qué cierro?"}, 0.2)])

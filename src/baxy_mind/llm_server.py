@@ -103,6 +103,22 @@ class LlmServer:
         with urllib.request.urlopen(request, timeout=timeout) as reply:
             return json.loads(reply.read())
 
+    def complete_name(self, body: dict[str, Any], written: str, timeout: float = 10.0) -> str:
+        """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:
+        the chat's own prompt (/apply-template) plus that text, stopped at the name's end."""
+        self.wait_ready(timeout)
+        prompt = self._post("/apply-template", {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")},
+                            timeout)["prompt"]
+        reply = self._post("/completion", {"prompt": prompt + written, "n_predict": 24, "temperature": 0.0,
+                                           "stop": [">", "\n"], "cache_prompt": True, "id_slot": 0}, timeout)
+        return str(reply.get("content", ""))
+
+    def _post(self, path: str, body: dict[str, Any], timeout: float) -> dict[str, Any]:
+        request = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", data=json.dumps(body).encode("utf-8"),
+                                         headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(request, timeout=timeout) as reply:
+            return json.loads(reply.read())
+
     def tokenize(self, text: str) -> list[int]:
         """The model's tokens for a text, special tokens included (<tool_call> is one)."""
         self.wait_ready(600)

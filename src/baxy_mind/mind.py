@@ -20,6 +20,7 @@ from typing import Any
 
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
+from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
@@ -337,11 +338,16 @@ SHRUNK = "\n[Resultado recortado para que quepa el turno: {n} caracteres más de
 # instead of 10 of 1,530 right ones (phase 0, 2026-10-21).
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
               "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
+# Layer 2 (system_one.py): the model doubted and the decision model read the request otherwise.
+DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
+                    "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
+                    "qué quiere exactamente.]")
 
 
-def _doubt_threshold() -> float:
+def _threshold(name: str) -> float:
+    """A System One threshold from the environment (BAXY_S1_DOUBT, BAXY_S1_VETO); 0 when unset: that layer is off."""
     try:
-        return max(0.0, min(1.0, float(os.environ.get("BAXY_S1_DOUBT", "") or 0)))
+        return max(0.0, min(1.0, float(os.environ.get(name, "") or 0)))
     except ValueError:
         return 0.0
 
@@ -431,9 +437,11 @@ def _env_float(name: str, default: float) -> float:
 
 
 class Mind:
-    def __init__(self, server: LlmServer, trace: Path) -> None:
+    def __init__(self, server: LlmServer, trace: Path, system_one: SystemOne | None = None) -> None:
         self.server = server
         self.trace = trace
+        self.system_one = system_one  # layer 2: the decision model beside Qwen (None: off)
+        self._judged: dict[str, Any] | None = None
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
         self._turn: dict[str, Any] | None = None
@@ -872,10 +880,12 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or f"call_{len(conv)}_{index}", "wire": wire, "arguments": arguments})
-        if calls and self._doubts(stage, turn, final, calls[0], reply):
-            # System One, layer 0: the model was not sure of this action. Nothing runs; it is told so where it reads and
-            # asks the person, in its own words, what they want (the call it nearly made never enters the conversation).
-            conv.append({"role": "user", "content": DOUBT_NOTE.format(call=calls[0]["wire"])})
+        note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
+        if note:
+            # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
+            # otherwise (layer 2). Nothing runs; it is told so where it reads and asks the person, in its own words, what
+            # they want (the call it nearly made never enters the conversation).
+            conv.append({"role": "user", "content": note})
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
                       operation=self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"]), arguments=None, content=None)
             return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
@@ -894,16 +904,51 @@ class Mind:
             conv.append({"role": "assistant", "content": content})
         return self._result(request_id, turn, None, reply, stage, started, content)
 
-    def _doubts(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None) -> bool:
-        """Layer 0 on (BAXY_S1_DOUBT, a confidence threshold) and the turn's first decision is an action the model was
-        not sure of. Asking and confirming are never held: they already put the person in the loop."""
-        threshold = _doubt_threshold()
-        if not threshold or final or stage != "turn.decide" or turn.get("beat"):
-            return False
+    def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
+              body: dict[str, Any]) -> str | None:
+        """The note that holds the turn's first action, or None. Layer 0 (BAXY_S1_DOUBT): the model's confidence is under
+        the threshold. Layer 2 (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of
+        the model's own candidates the person meant, and a different answer holds it. Asking and confirming are never
+        held: they already put the person in the loop."""
+        if final or stage != "turn.decide" or turn.get("beat"):
+            return None
         if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
-            return False
+            return None
         doubt = read_doubt(reply)
-        return doubt is not None and doubt["confidence"] < threshold
+        if doubt is None:
+            return None
+        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT"):
+            return DOUBT_NOTE.format(call=call["wire"])
+        if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
+            return None
+        options = self._candidates(call["wire"], doubt, body)
+        history = [m for m in self.conversation[:-2] if m.get("role") in ("user", "assistant")
+                   and isinstance(m.get("content"), str) and m["content"].strip() and not m["content"].startswith("[")]
+        judged = self.system_one.choose(turn["text"], history, options)
+        self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
+        if not judged or judged["choice"] == call["wire"]:
+            return None
+        other = OPTION_TEXT.get(judged["choice"], judged["choice"])
+        return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
+
+    def _candidates(self, chosen: str, doubt: dict[str, Any], body: dict[str, Any]) -> dict[str, str]:
+        """The model's own candidates as the decision model's options (as in its training, build_kev_data.py): the tool it
+        chose, the tools it nearly wrote at its weakest name token (the rest of each name written greedily on the same
+        slot), asking, and answering in words."""
+        described = {t["function"]["name"]: short(t["function"]["description"]) for t in self.tools}
+        names = [chosen]
+        for token, p in doubt.get("rivals") or []:
+            if p < 0.02 or len(names) >= 4:
+                continue
+            written = doubt.get("written", "") + token
+            try:
+                written += self.server.complete_name(body, written) if ">" not in written[written.find("<function="):] else ""
+            except Exception:  # noqa: BLE001 - a rival that cannot be read is left out
+                continue
+            at = written.find("<function=")
+            names.append(written[at + len("<function="):].split(">")[0].strip() if at >= 0 else "")
+        options = {n: described[n] for n in dict.fromkeys(names) if n in described and n != ASK}
+        return {**options, ASK: OPTION_TEXT[ASK], ANSWER: OPTION_TEXT[ANSWER]}
 
     def _result(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any] | None, reply: dict | None,
                 stage: str, started: float, content: str) -> dict[str, Any]:
@@ -957,7 +1002,10 @@ class Mind:
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
         doubt = read_doubt(reply)
         if doubt is not None:
+            doubt.pop("written", None)  # the call's own text up to its weakest token: only for reading the rivals
             row["doubt"] = doubt
+        if self._judged is not None:
+            row["system_one"], self._judged = self._judged, None
         try:
             with self.trace.open("a", encoding="utf-8") as out:
                 out.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")

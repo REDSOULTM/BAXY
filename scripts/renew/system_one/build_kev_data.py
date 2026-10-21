@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 import bench_decision as bench  # noqa: E402
-from kev_adjudicate import ANSWER, KINDS, qwen_choice, short, state_text  # noqa: E402
+from kev_adjudicate import ANSWER, KINDS, OPTION_TEXT, qwen_choice, short, state_text  # noqa: E402
 
 CANT = {"sint_no_lo_hago", "sint_modo_no_disponible"}
 
@@ -50,8 +50,7 @@ def main():
     Path(args.outdir).mkdir(parents=True, exist_ok=True)
     mind.configure(json.loads(Path(args.catalog).read_text(encoding="utf-8")))
     described = {t["function"]["name"]: short(t["function"]["description"]) for t in mind.tools}
-    described[ANSWER] = "contestar con palabras, sin usar herramientas"
-    described["ask_user"] = "preguntar a la persona lo que falta o lo que no está claro"
+    described.update(OPTION_TEXT)
     rng = random.Random(20261021)
     files = {name: open(Path(args.outdir) / f"{name}.jsonl", "w", encoding="utf-8", newline="\n")
              for name in ("train", "calib", "dev")}
