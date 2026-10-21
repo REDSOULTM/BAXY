@@ -1,16 +1,18 @@
 import { expect, test, type Page } from '@playwright/test';
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { attach, ready, type App } from './app';
 
 /* The avatar's mouth against the sound the speakers really play (owner, 2026-10-21: «que el avatar hable y que se
    sincronice con lo que realmente está hablando; si se corta antes la animación de habla, no está funcionando bien»).
-   scripts/tools/loopcap records the default output by WASAPI loopback (the path comes in BAXY_LOOPCAP, set by
+   scripts/tools/loopcap records BAXY's own sound by WASAPI process loopback (the path comes in BAXY_LOOPCAP, set by
    scripts/test_field_ui.ps1) while the page samples, every frame, the status, the clip and the mouth it draws. Both use
-   the wall clock. The thresholds hold the measurements of 2026-10-21 with room: the voice never sounds without the
-   synced mouth, the mouth closes with the voice and not before, and it moves with the loudness. */
+   the wall clock. It must work with or without other sound on the PC (owner, 2026-10-21): while it measures, a tone
+   with noise plays from another process, and the measure is still BAXY's alone. The thresholds hold the measurements
+   of 2026-10-21 with room: the voice never sounds without the synced mouth, the mouth closes with the voice and not
+   before, and it moves with the loudness. */
 
 const LOOPCAP = process.env.BAXY_LOOPCAP ?? '';
 let app: App;
@@ -26,12 +28,23 @@ test.afterAll(async () => { await app.browser.close(); });
 
 interface Ui { t: number; lab: string; g: string; lip: boolean; mouth: number; drawn: number }
 
-// The loopback records every sound of the PC: 1.5 s before the request tell whether something else is playing (music,
-// a call, a video), and then only BAXY's turn is analysed.
-const QUIET_RMS = 0.002; // about -54 dBFS
-async function record(secs: number, drive: () => Promise<number | void>): Promise<{ audio: [number, number][]; ui: Ui[]; mark: number; start: number; other: boolean }> {
+// Other sound on the PC while measuring: 45 s of a 440 Hz tone with noise, played by another process.
+function noise(): () => void {
+  const rate = 22050, n = rate * 45, data = Buffer.alloc(44 + n * 2);
+  data.write('RIFF', 0); data.writeUInt32LE(36 + n * 2, 4); data.write('WAVEfmt ', 8); data.writeUInt32LE(16, 16);
+  data.writeUInt16LE(1, 20); data.writeUInt16LE(1, 22); data.writeUInt32LE(rate, 24); data.writeUInt32LE(rate * 2, 28);
+  data.writeUInt16LE(2, 32); data.writeUInt16LE(16, 34); data.write('data', 36); data.writeUInt32LE(n * 2, 40);
+  for (let i = 0; i < n; i++) data.writeInt16LE(Math.round(32767 * Math.max(-1, Math.min(1, 0.12 * Math.sin((2 * Math.PI * 440 * i) / rate) + 0.04 * (Math.random() * 2 - 1)))), 44 + i * 2);
+  const wav = join(tmpdir(), `baxy-lipsync-noise-${Date.now()}.wav`);
+  writeFileSync(wav, data);
+  const player = spawn('powershell', ['-NoProfile', '-Command', `(New-Object Media.SoundPlayer '${wav}').PlaySync()`], { stdio: 'ignore' });
+  return () => { player.kill(); rmSync(wav, { force: true }); };
+}
+
+async function record(secs: number, drive: () => Promise<number | void>): Promise<{ audio: [number, number][]; ui: Ui[]; mark: number; start: number }> {
   const out = join(tmpdir(), `baxy-lipsync-${Date.now()}.csv`);
-  const cap = spawn(LOOPCAP, [String(secs), out], { stdio: 'ignore' });
+  const stopNoise = noise();
+  const cap = spawn(LOOPCAP, [String(secs), out, 'Baxy'], { stdio: 'ignore' });
   const done = new Promise<void>((resolve) => cap.on('exit', () => resolve()));
   await page.waitForTimeout(1500);
   const start = Date.now();
@@ -57,13 +70,12 @@ async function record(secs: number, drive: () => Promise<number | void>): Promis
   const mark = (await drive()) ?? 0;
   const rows = await page.evaluate(() => { const w = window as unknown as { __lip: [number, string, string, boolean, number, number][]; __lipR: number }; cancelAnimationFrame(w.__lipR); return w.__lip; });
   await done;
+  stopNoise();
   const audio = existsSync(out)
     ? readFileSync(out, 'utf8').split('\n').filter((l) => l && !l.startsWith('#') && l.split(',').length === 2).map((l) => l.split(',').map(Number) as [number, number])
     : [];
   rmSync(out, { force: true });
-  const before = audio.filter(([t]) => t > start - 1200 && t < start).map(([, r]) => r).sort((a, b) => a - b);
-  const other = before.length > 20 && before[Math.floor(before.length * 0.9)] > QUIET_RMS;
-  return { audio: audio.filter(([t]) => t >= start), ui: rows.map(([t, lab, g, lip, mouth, drawn]) => ({ t, lab, g, lip, mouth, drawn })), mark, start, other };
+  return { audio: audio.filter(([t]) => t >= start), ui: rows.map(([t, lab, g, lip, mouth, drawn]) => ({ t, lab, g, lip, mouth, drawn })), mark, start };
 }
 
 async function say(text: string) {
@@ -105,7 +117,7 @@ test.beforeEach(async () => {
 });
 
 test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra con ella', async () => {
-  const { audio, ui, other } = await record(40, async () => {
+  const { audio, ui } = await record(40, async () => {
     await say('dime en tres frases qué es un volcán');
     await page.waitForFunction(() => /^Hablando/.test((document.querySelector('.bx-statel')?.textContent ?? '').trim()), undefined, { timeout: 60_000 });
     await idle(30_000);
@@ -115,7 +127,6 @@ test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra
   const checked = ui.filter((u) => u.lip && u.drawn >= 0), empty = checked.filter((u) => u.drawn < 100);
   expect(checked.length, 'se revisó la boca dibujada').toBeGreaterThan(10);
   expect(empty.length, 'con el hueco abierto siempre hay una boca dibujada (nunca un recuadro vacío)').toBe(0);
-  test.skip(other, 'suena otra cosa en el PC (música, una llamada, un vídeo): la medida contra los parlantes no sería de BAXY');
   const g = grid(audio, ui);
   const voice = g.filter((s) => s.db > -35);
   expect(voice.length * 10, 'BAXY habló (se oyó su voz)').toBeGreaterThan(2000);
@@ -155,7 +166,7 @@ test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra
 });
 
 test('lip-sync: si la voz se corta, la boca se cierra con ella', async () => {
-  const { audio, ui, mark, other } = await record(30, async () => {
+  const { audio, ui, mark } = await record(30, async () => {
     await say('cuéntame en seis frases la historia de la imprenta');
     await page.waitForFunction(() => document.querySelector('.bx-avid')?.classList.contains('lip'), undefined, { timeout: 60_000 });
     await page.waitForTimeout(3500);
@@ -165,7 +176,6 @@ test('lip-sync: si la voz se corta, la boca se cierra con ella', async () => {
     await idle(60_000);
     return at;
   });
-  test.skip(other, 'suena otra cosa en el PC (música, una llamada, un vídeo): la medida contra los parlantes no sería de BAXY');
   const pk = 20 * Math.log10(Math.max(...audio.map(([, r]) => r)) + 1e-9);
   let heard = mark, quiet = 0;
   for (const [t, r] of audio) {

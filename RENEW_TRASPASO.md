@@ -327,5 +327,5 @@ nebulosa, chat que baja solo salvo que la persona suba a mano, arreglos de la ro
 - **Lip-sync (2026-10-21):** la boca del avatar sigue al sonido real (detalle y medidas en
   `src/Baxy.FieldUi/ORIGIN.md`). Cadena: `voice_output.py` (evento `lip`: volumen cada 40 ms + hora en que suena) →
   `MainWindowViewModel.VoiceLip` → `FieldProductChannel` → `lip.ts` → bocas recortadas de los clips en `AvatarVid`.
-  `e2e/lipsync.spec.ts` lo mide con `scripts/tools/loopcap` (loopback WASAPI): necesita audio sonando y la voz sin
-  silenciar; si no, se salta y lo dice.
+  `e2e/lipsync.spec.ts` lo mide con `scripts/tools/loopcap` (loopback de proceso: sólo el sonido de BAXY, con o sin
+  otros sonidos en el PC); necesita la voz sin silenciar.

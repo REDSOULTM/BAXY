@@ -76,6 +76,6 @@ de 720p a 8K (marco lleno, nada fuera, ningún texto cortado, texto ≥ 7 px, li
 centrada, chat plegado 12 veces sin línea de puntos, Ajustes cabe); arranque con la ventana a 0×0 y cambio de tamaño
 en vivo; `avatar.spec.ts`: el vídeo calza con la red viva, rota sin repetir, sigue al estado en turnos reales y
 en la tarjeta Sí/No, se duerme y despierta con transición, y `?avatar=live` dibuja la cara; `lipsync.spec.ts`:
-la boca contra lo que suenan los parlantes (`scripts/tools/loopcap`, loopback WASAPI); y `controls.spec.ts`: cada control reversible (ajustes, micrófono en sus tres modos, rail, paneles, chat y
+la boca contra el sonido de BAXY (`scripts/tools/loopcap`, loopback de proceso, con ruido de fondo sonando); y `controls.spec.ts`: cada control reversible (ajustes, micrófono en sus tres modos, rail, paneles, chat y
 ventana) se pulsa, se lee el host por sus rutas para ver que cambió de verdad y se deja como estaba. Con BAXY ya
 abierto con el puerto: `-NoLaunch`.
