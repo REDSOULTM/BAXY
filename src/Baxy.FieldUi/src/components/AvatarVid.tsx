@@ -125,8 +125,19 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     el.appendChild(lip);
     const lctx = lip.getContext('2d')!;
     let sheet: HTMLCanvasElement | null = null, sheetOk = false;
-    // cut once the first clip plays, so the start never waits for it
-    const cutting = window.setTimeout(() => { void cutMouths(() => dead).then((c) => { sheet = c; sheetOk = !!c; }); }, 1500);
+    // cut once the first clip plays, so the start never waits for it; a cut that could not decode every mouth is tried
+    // again later (meanwhile the clip keeps its own mouth)
+    let cutting = 0, cuts = 0;
+    const cutLater = (ms: number) => {
+      cutting = window.setTimeout(() => {
+        void cutMouths(() => dead).then((c) => {
+          if (dead) return;
+          sheet = c; sheetOk = !!c;
+          if (!c && ++cuts < 5) cutLater(15_000);
+        });
+      }, ms);
+    };
+    cutLater(1500);
     const first = MOUTH_LEVELS.map((_, i) => MOUTH_LEVELS.slice(0, i).reduce((a, b) => a + b, 0));
     let lipOn = false, level = -1, drawn = -1, since = 0, turn = 0, raf = 0;
     const mouth = () => {
