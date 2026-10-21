@@ -36,6 +36,13 @@ internal static class LocalVisionEndpoint
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
     }
 
+    /// <summary>
+    /// PLAN_GENERAL A5: the server slot a vision question goes to (BAXY_VISION_SLOT), so it never takes the slot that
+    /// holds the mind's conversation; null lets the server choose (a server of its own).
+    /// </summary>
+    internal static int? Slot() =>
+        int.TryParse(Environment.GetEnvironmentVariable("BAXY_VISION_SLOT"), out int slot) && slot >= 0 ? slot : null;
+
     internal static bool IsLoopback(Uri uri) =>
         uri.IsLoopback || (IPAddress.TryParse(uri.DnsSafeHost, out IPAddress? address) && IPAddress.IsLoopback(address));
 }

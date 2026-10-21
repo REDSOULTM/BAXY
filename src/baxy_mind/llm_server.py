@@ -36,9 +36,16 @@ class LlmServer:
         return Path(self.gguf).name
 
     def start(self) -> None:
+        vision = _vision_args()
+        # PLAN_GENERAL A5 (uso real 2026-10-21: a vision question on the one slot evicted a 46k-token conversation whose
+        # state, 2 GB, did not fit the RAM prompt cache, and the next decision re-read it for 25 s): with vision, a second
+        # slot on a unified KV cache answers it (BAXY_VISION_SLOT=1) and slot 0 keeps the conversation. Measured on the
+        # PC: 3929 MiB of VRAM against 3835 with one slot.
+        slots = ["-np", "2", "--kv-unified"] if vision else ["-np", "1"]
+        context = self.context + VISION_CONTEXT if vision else self.context
         command = [
             self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
-            "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
+            "-ngl", self.gpu_layers, "-c", str(context), *slots, "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
             # they reach the GPU (measured on the PC 2026-10-15: RAM 3237 → 1132 MiB, same VRAM 3905 MiB and speed).
@@ -48,7 +55,7 @@ class LlmServer:
             # Checkpoints stay at llama.cpp's spacing: every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM
             # (decision2 d6 vs d6b, 2026-10-15) once the last answer of a turn keeps the tools and the prefix.
             "-cram", "1536",
-        ] + _vision_args() + self.extra_args
+        ] + vision + self.extra_args
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         log = open(log_dir / self.log_name, "w", encoding="utf-8")
@@ -116,6 +123,10 @@ class LlmServer:
                 self._process.wait(5)
             except subprocess.TimeoutExpired:
                 self._process.kill()
+
+
+# The tokens a vision question takes on its own slot (a 1280-wide image is ~980), added to the shared context.
+VISION_CONTEXT = 2048
 
 
 def _vision_args() -> list[str]:

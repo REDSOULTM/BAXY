@@ -279,6 +279,8 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             writer.WriteEndArray();
             writer.WriteNumber("max_tokens", 80);
             writer.WriteNumber("temperature", 0);
+            if (LocalVisionEndpoint.Slot() is int slot)
+                writer.WriteNumber("id_slot", slot);
             writer.WriteStartObject("chat_template_kwargs");
             writer.WriteBoolean("enable_thinking", false);
             writer.WriteEndObject();

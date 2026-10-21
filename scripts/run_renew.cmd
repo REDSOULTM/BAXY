@@ -26,6 +26,7 @@ if /I "%COMPUTERNAME%"=="REDNOTE" (
     set "BAXY_MIND_LLAMA_PORT=8077"
     set "BAXY_VISION_ENDPOINT=http://127.0.0.1:8077/v1/chat/completions"
     set "BAXY_VISION_MODEL=baxy"
+    set "BAXY_VISION_SLOT=1"
   )
 )
 py -3.12 "%ROOT%\main.py" %*
