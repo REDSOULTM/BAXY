@@ -44,12 +44,15 @@ public sealed class MemoryRecallScopeTests
         });
     }
 
+    // Uso real 2026-10-21: «¿cuál es mi comida favorita?» makes the model send scope exact with no selector, every time
+    // (reproduced with the real catalog); a bare invalid_arguments made it say nothing was remembered. An exact recall
+    // that names nothing reads what is remembered.
     [Test]
-    public async Task ScopeExactStillNeedsItsSelector()
+    public async Task ScopeExactWithoutASelectorReadsWhatIsRemembered()
     {
         using var temporary = new Temporary();
         OperationOutcome outcome = await temporary.RecallAsync(new JsonObject { ["version"] = 1, ["scope"] = "exact" });
-        Assert.That(outcome.ErrorCode, Is.EqualTo("invalid_arguments"));
+        Assert.That(outcome.ErrorCode, Is.Not.EqualTo("invalid_arguments"));
     }
 
     private sealed class Temporary : IDisposable

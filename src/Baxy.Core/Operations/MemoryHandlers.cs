@@ -581,6 +581,15 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             return Failure("memory_recall_all_takes_no_selector");
         }
 
+        // Uso real 2026-10-21 (e2e del notebook; «¿cómo me llamo?» del dueño): asked «¿cuál es mi comida favorita?», the
+        // model sends scope exact with no selector, every time (reproduced with the real catalog), and read a bare
+        // invalid_arguments, so it said nothing was remembered. An exact recall that names nothing is a recall of what
+        // is remembered.
+        if (scope == "exact" && selector is null)
+        {
+            scope = "all";
+        }
+
         switch (scope)
         {
             case "exact" when selector is not null:
