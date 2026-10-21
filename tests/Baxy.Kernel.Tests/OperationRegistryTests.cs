@@ -169,6 +169,16 @@ public sealed class OperationRegistryTests
     // reaches a person, but it is not one: it never marks a mission as having joined anybody.
     [TestCase("Comprar ahora", true)]
     [TestCase("Buy now", true)]
+    // Uso real 2026-10-21: the imperative with its pronoun opened a checkout unasked.
+    [TestCase("Cómpralo ya", true)]
+    [TestCase("Compra ahora", true)]
+    [TestCase("Comprarlo", true)]
+    [TestCase("Purchase", true)]
+    [TestCase("Pre-order", true)]
+    [TestCase("Adquirir", true)]
+    [TestCase("Págalo", true)]
+    [TestCase("Compras", false)]
+    [TestCase("Historial de compras", false)]
     [TestCase("Pagar", true)]
     [TestCase("Pay $4.99", true)]
     [TestCase("Proceed to checkout", true)]
