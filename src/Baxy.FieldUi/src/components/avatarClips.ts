@@ -27,11 +27,11 @@ export function groupFor(state: BaxyState, expr: string): Group {
 
 /* Lip-sync (owner, 2026-10-21): the speaking clips move their mouth on their own and close it while the voice goes on
    (hablando-5 keeps it closed its last 2 s). The view opens a soft hole in the video where the mouth is (v4.css
-   `.bx-avid.lip video`) and draws there one of these mouths, chosen by the voice's loudness (lip.ts). They are cut from
-   the clips themselves when the view starts (mouths.ts), with the view's own decoder, so they match the clip exactly:
-   the head does not move, the mouth is always in this box of the 960 px master frame (the blushes start at x <= 370
-   and x >= 590; the visor's rim glow below y 660). */
-export const MOUTH_BOX = { x: 380, y: 522, w: 196, h: 136, frame: 960, fps: 24, featherX: 12, featherY: 10 };
+   `.bx-avid.lip video`) and composes there one of these mouths, chosen by the voice's loudness (lip.ts), into the live
+   frame (mouthBlend.ts). They are cut from the clips themselves when the view starts (mouths.ts), with the view's own
+   decoder: the head does not move, the mouth is always in this box of the 960 px master frame (the blushes start at
+   x <= 370 and x >= 590; the visor's rim glows below y 650). */
+export const MOUTH_BOX = { x: 376, y: 522, w: 204, h: 136, frame: 960, fps: 24 };
 /** [clip, frame] per level of openness: closed smile, small, half open, open, wide, widest */
 export const MOUTHS: [string, number][][] = [
   [['hablando-3', 0], ['hablando-1', 11]],
