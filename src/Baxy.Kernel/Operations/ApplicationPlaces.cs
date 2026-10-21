@@ -84,6 +84,8 @@ public static class ApplicationPlaces
         {
             "{query}" when Encoding.UTF8.GetByteCount(value) <= QueryMaximumUtf8Bytes => Uri.EscapeDataString(value.Trim()),
             "{game}" when value.Length <= GameMaximumDigits && value.All(char.IsAsciiDigit) => value,
+            "{slug}" when Encoding.UTF8.GetByteCount(value) <= QueryMaximumUtf8Bytes && Slug(value) is { Length: > 0 } slug
+                => slug,
             _ => null,
         };
         return filled is null ? null : template.Replace(slot, filled, StringComparison.Ordinal);
@@ -262,7 +264,38 @@ public static class ApplicationPlaces
     private static string? SlotOf(string address) =>
         address.Contains("{query}", StringComparison.Ordinal) ? "{query}"
         : address.Contains("{game}", StringComparison.Ordinal) ? "{game}"
+        : address.Contains("{slug}", StringComparison.Ordinal) ? "{slug}"
         : null;
+
+    /// <summary>
+    /// Uso real 2026-10-21 (e2e del notebook: «la página de Fortnite en la aplicación de Epic» opened the web store): a
+    /// store that names a game's page by its title written as an address (Epic: …/store/p/rocket-league) gets the title
+    /// in lower case, without accents, every run of anything but letters and digits made one hyphen. Empty when nothing
+    /// of the title is left.
+    /// </summary>
+    internal static string Slug(string title)
+    {
+        var builder = new StringBuilder(title.Length);
+        bool pendingHyphen = false;
+        foreach (char character in title.Normalize(NormalizationForm.FormD).ToLowerInvariant())
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.NonSpacingMark)
+                continue;
+            if (character is (>= 'a' and <= 'z') or (>= '0' and <= '9'))
+            {
+                if (pendingHyphen && builder.Length > 0)
+                    builder.Append('-');
+                builder.Append(character);
+                pendingHyphen = false;
+            }
+            else
+            {
+                pendingHyphen = true;
+            }
+        }
+
+        return builder.ToString();
+    }
 
     // An application's name as the Start catalog writes it and as the data does: lower case, no accents, single spaces.
     private static string Fold(string name)

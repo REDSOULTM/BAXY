@@ -18,6 +18,17 @@ public sealed class ApplicationPlacesTests
         return JsonDocument.Parse(stream);
     }
 
+    // Uso real 2026-10-21: a game's page named by its title written as an address (Epic's …/store/p/rocket-league).
+    [TestCase("Fortnite", "fortnite")]
+    [TestCase("Rocket League", "rocket-league")]
+    [TestCase("Grand Theft Auto V", "grand-theft-auto-v")]
+    [TestCase("  Pokémon: Edición   Ñandú!! ", "pokemon-edicion-nandu")]
+    [TestCase("?!", "")]
+    public void AGamesTitleBecomesItsAddressSlug(string title, string slug)
+    {
+        Assert.That(ApplicationPlaces.Slug(title), Is.EqualTo(slug));
+    }
+
     [Test]
     public void EveryExampleOfTheDataComposesItsAddress()
     {

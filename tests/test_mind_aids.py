@@ -98,7 +98,8 @@ def test_a_look_that_fails_after_another_windows_look_still_names_the_opened_app
     mind.continue_turn(4, not_found)
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert tool.endswith("[Ayuda: Epic Games Launcher también se abre directo en sus lugares, sin pulsar: app_open con "
-                         "appId «Epic Games Launcher» y place results (placeValue: lo que se busca), store.]")
+                         "appId «Epic Games Launcher» y place game (placeValue: el nombre del juego), results "
+                         "(placeValue: lo que se busca), store.]")
 
 
 LONG = "https://news.google.com/rss/articles/" + "CBMi" + "x" * 300 + "?oc=5"
@@ -147,7 +148,7 @@ def test_the_applications_with_places_are_named_from_the_data(tmp_path: Path) ->
     tool = next(t for t in mind.tools if t["function"]["name"] == "app_open")["function"]
     texts = tool["description"] + tool["parameters"]["properties"]["place"]["description"]
     assert "{app_places}" not in texts
-    for app in ("«Epic Games Launcher» (results, store)", "«Steam» (", "«Discord» (directs)", "«Configuración» ("):
+    for app in ("«Epic Games Launcher» (game, results, store)", "«Steam» (", "«Discord» (directs)", "«Configuración» ("):
         assert app in texts
 
 

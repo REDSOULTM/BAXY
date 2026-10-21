@@ -172,7 +172,7 @@ def _app_places() -> dict[str, dict[str, str]]:
         data = json.loads((_DATA / "app_places.v1.json").read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
-    slots = {"{query}": "lo que se busca", "{game}": "el número del juego"}
+    slots = {"{query}": "lo que se busca", "{game}": "el número del juego", "{slug}": "el nombre del juego"}
     return {_fold(app): {place: next((meaning for slot, meaning in slots.items() if slot in str(entry.get("address"))),
                                      "")
                          for place, entry in (body.get("places") or {}).items()}
