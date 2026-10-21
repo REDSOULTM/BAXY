@@ -3,6 +3,7 @@ import type { BaxyState } from '../types';
 import { LIB, MOUTH_BOX, MOUTH_LEVELS, NEXT, SLEEP_END, clip, groupFor, mouthLevel, type Group } from './avatarClips';
 import { lipAt } from '../lip';
 import { cutMouths } from './mouths';
+import type { MouthBlend } from './mouthBlend';
 
 /* BAXY's avatar in video (design v5, app.jsx BxAvatarVid): a library of Higgsfield clips in public/clips. Every clip
    starts and ends on the same master frame (the «dormido» ones on the sleep frame), so any clip can follow any other
@@ -119,43 +120,51 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     // a window that comes back from the tray or from minimized may find its clip paused: play it again
     const onVis = () => { if (!document.hidden && front && front.paused && !front.ended) void front.play().catch(() => {}); };
     document.addEventListener('visibilitychange', onVis);
-    // lip-sync: a small canvas over the mouth, in the same pixels as the clip (the mouths are cut from the clips)
+    // lip-sync: a canvas over the mouth area where the mouth the voice asks for is composed into the live frame
+    const { x: MX, y: MY, w: MW, h: MH } = MOUTH_BOX;
     const lip = document.createElement('canvas');
-    lip.className = 'bx-lip'; lip.width = MOUTH_BOX.w; lip.height = MOUTH_BOX.h;
+    lip.className = 'bx-lip'; lip.width = MW; lip.height = MH;
     el.appendChild(lip);
     const lctx = lip.getContext('2d')!;
-    let sheet: HTMLCanvasElement | null = null, sheetOk = false;
+    const grab = document.createElement('canvas'); grab.width = MW; grab.height = MH;
+    const gctx = grab.getContext('2d', { willReadFrequently: true })!;
+    let blend: MouthBlend | null = null;
     // cut once the first clip plays, so the start never waits for it; a cut that could not decode every mouth is tried
     // again later (meanwhile the clip keeps its own mouth)
     let cutting = 0, cuts = 0;
     const cutLater = (ms: number) => {
       cutting = window.setTimeout(() => {
-        void cutMouths(() => dead).then((c) => {
+        void cutMouths(() => dead).then((b) => {
           if (dead) return;
-          sheet = c; sheetOk = !!c;
-          if (!c && ++cuts < 5) cutLater(15_000);
+          blend = b;
+          if (b) el.style.setProperty('--lip-hole', 'url(' + b.holeImage() + ')');
+          else if (++cuts < 5) cutLater(15_000);
         });
       }, ms);
     };
     cutLater(1500);
     const first = MOUTH_LEVELS.map((_, i) => MOUTH_LEVELS.slice(0, i).reduce((a, b) => a + b, 0));
-    let lipOn = false, level = -1, drawn = -1, since = 0, turn = 0, raf = 0;
+    let lipOn = false, level = -1, since = 0, turn = 0, raf = 0, composed = 0;
     const mouth = () => {
       raf = requestAnimationFrame(mouth);
       const L = lipAt(), t = performance.now();
-      const on = L.known && L.active && sheetOk && pose === 'M' && !!front && front.readyState >= 2;
-      if (on !== lipOn) { lipOn = on; el.classList.toggle('lip', on); if (!on) { lctx.clearRect(0, 0, lip.width, lip.height); drawn = -1; level = -1; delete el.dataset.mouth; } }
-      if (!on) return;
+      // only with one clip on screen: during a 0.35 s cut two heads mix (a thinking clip moves its head) and no mouth
+      // fits both; meanwhile the speaking clip's own mouth shows
+      let shown = 0;
+      el.querySelectorAll('video').forEach((v) => { if (+getComputedStyle(v).opacity > 0.01) shown++; });
+      // and on a speaking clip: the area replaced is built from its mouths (a resting clip's smile is wider)
+      const on = L.known && L.active && !!blend && cur === 'hablando' && !!front && front.readyState >= 2 && shown === 1
+        && +getComputedStyle(front).opacity > 0.99;
+      if (on !== lipOn) { lipOn = on; el.classList.toggle('lip', on); if (!on) { lctx.clearRect(0, 0, MW, MH); level = -1; delete el.dataset.mouth; } }
+      if (!on || t - composed < 30) return; // composed about 30 times a second, from the frame on screen
+      composed = t;
       // a new level shows a different mouth of that level each time; a mouth stays at least 50 ms (a 20 fps mouth)
       const k = mouthLevel(L.level);
       if (k !== level && t - since >= 50) { level = k; since = t; turn++; }
       const m = first[level] + (turn % MOUTH_LEVELS[level]);
-      if (m !== drawn) {
-        drawn = m;
-        lctx.clearRect(0, 0, lip.width, lip.height);
-        lctx.drawImage(sheet!, m * MOUTH_BOX.w, 0, MOUTH_BOX.w, MOUTH_BOX.h, 0, 0, MOUTH_BOX.w, MOUTH_BOX.h);
-        el.dataset.mouth = String(level);
-      }
+      gctx.drawImage(front!, MX, MY, MW, MH, 0, 0, MW, MH);
+      lctx.putImageData(blend!.compose(gctx.getImageData(0, 0, MW, MH).data, m), 0, 0);
+      el.dataset.mouth = String(level);
     };
     raf = requestAnimationFrame(mouth);
     advance(false);

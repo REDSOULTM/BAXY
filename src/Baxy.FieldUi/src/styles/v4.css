@@ -233,10 +233,10 @@ html.lt .bx-avid{display:none!important}
 html.a11y .bx-mod{gap:6px}
 html.a11y .bx-mod .l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 html.a11y .bx-mod .n{flex-shrink:0}
-/* lip-sync: while BAXY's voice sounds the clip's mouth is covered by a soft hole (its complement is the soft edge of
-   the mouths, mouths.ts / avatarClips.ts MOUTH_BOX: x 380–576, y 522–658 of the 960 px frame, 12 and 10 px of feather)
-   and the mouth the voice asks for is drawn there; plus-lighter adds the two edges back to the frame */
+/* lip-sync: while BAXY's voice sounds the clip's mouth area (every mouth the clips draw, with its glow; mouthBlend.ts)
+   is opened in the video by --lip-hole, the zone's complement over the 960 px frame, and the canvas above composes the
+   mouth the voice asks for into the live frame there; plus-lighter adds the two soft edges back to the frame */
 .bx-avid video{z-index:0}
-.bx-avid.lip video{-webkit-mask-image:linear-gradient(to right,#000 39.583%,transparent 40.833%,transparent 58.75%,#000 60%),linear-gradient(to bottom,#000 54.375%,transparent 55.417%,transparent 67.5%,#000 68.542%);mask-image:linear-gradient(to right,#000 39.583%,transparent 40.833%,transparent 58.75%,#000 60%),linear-gradient(to bottom,#000 54.375%,transparent 55.417%,transparent 67.5%,#000 68.542%)}
-.bx-lip{position:absolute;left:39.583%;top:54.375%;width:20.417%;height:14.167%;z-index:1;pointer-events:none;mix-blend-mode:plus-lighter}
+.bx-avid.lip video{-webkit-mask-image:var(--lip-hole);mask-image:var(--lip-hole);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.bx-lip{position:absolute;left:39.1667%;top:54.375%;width:21.25%;height:14.1667%;z-index:1;pointer-events:none;mix-blend-mode:plus-lighter}
 .bx-avid:not(.lip) .bx-lip{visibility:hidden}

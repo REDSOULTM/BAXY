@@ -26,11 +26,15 @@ test.afterAll(async () => { await app.browser.close(); });
 
 interface Ui { t: number; lab: string; g: string; lip: boolean; mouth: number; drawn: number }
 
-async function record(secs: number, drive: () => Promise<number | void>): Promise<{ audio: [number, number][]; ui: Ui[]; mark: number }> {
+// The loopback records every sound of the PC: 1.5 s before the request tell whether something else is playing (music,
+// a call, a video), and then only BAXY's turn is analysed.
+const QUIET_RMS = 0.002; // about -54 dBFS
+async function record(secs: number, drive: () => Promise<number | void>): Promise<{ audio: [number, number][]; ui: Ui[]; mark: number; start: number; other: boolean }> {
   const out = join(tmpdir(), `baxy-lipsync-${Date.now()}.csv`);
   const cap = spawn(LOOPCAP, [String(secs), out], { stdio: 'ignore' });
   const done = new Promise<void>((resolve) => cap.on('exit', () => resolve()));
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(1500);
+  const start = Date.now();
   await page.evaluate(() => {
     const w = window as unknown as { __lip: unknown[]; __lipR: number };
     w.__lip = [];
@@ -38,11 +42,12 @@ async function record(secs: number, drive: () => Promise<number | void>): Promis
     const tick = () => {
       const av = document.querySelector<HTMLElement>('.bx-avid'), v = document.querySelector<HTMLVideoElement>('.bx-avid video.on');
       const lip = !!av?.classList.contains('lip');
-      // every 6th frame while the hole is open: how opaque the drawn mouth is (0 = an empty box where the mouth was)
+      // every 6th frame while the hole is open: how opaque the composed mouth is at the mouth's centre (0 = an empty
+      // box where the mouth was)
       let drawn = -1;
       if (lip && n++ % 6 === 0) {
-        const c = document.querySelector<HTMLCanvasElement>('.bx-lip'), d = c?.getContext('2d')?.getImageData(0, 0, c.width, c.height).data;
-        if (d) { let a = 0; for (let i = 3; i < d.length; i += 4) a += d[i]; drawn = a / (d.length / 4); }
+        const c = document.querySelector<HTMLCanvasElement>('.bx-lip'), d = c?.getContext('2d')?.getImageData(Math.round(c.width / 2), Math.round(c.height / 2), 1, 1).data;
+        if (d) drawn = d[3];
       }
       w.__lip.push([Date.now(), (document.querySelector('.bx-statel')?.textContent ?? '').replace('bypass', '').trim(), v?.dataset.g ?? '', lip, av?.dataset.mouth ? +av.dataset.mouth : -1, drawn]);
       w.__lipR = requestAnimationFrame(tick);
@@ -56,7 +61,9 @@ async function record(secs: number, drive: () => Promise<number | void>): Promis
     ? readFileSync(out, 'utf8').split('\n').filter((l) => l && !l.startsWith('#') && l.split(',').length === 2).map((l) => l.split(',').map(Number) as [number, number])
     : [];
   rmSync(out, { force: true });
-  return { audio, ui: rows.map(([t, lab, g, lip, mouth, drawn]) => ({ t, lab, g, lip, mouth, drawn })), mark };
+  const before = audio.filter(([t]) => t > start - 1200 && t < start).map(([, r]) => r).sort((a, b) => a - b);
+  const other = before.length > 20 && before[Math.floor(before.length * 0.9)] > QUIET_RMS;
+  return { audio: audio.filter(([t]) => t >= start), ui: rows.map(([t, lab, g, lip, mouth, drawn]) => ({ t, lab, g, lip, mouth, drawn })), mark, start, other };
 }
 
 async function say(text: string) {
@@ -80,15 +87,25 @@ function grid(audio: [number, number][], ui: Ui[]) {
   return g;
 }
 
+// The ear is off while measuring: with the microphone always on, BAXY answered the room's music in the middle of a
+// measurement (2026-10-21) and its second voice was taken for the first. It is put back as it was.
+let earWas = '';
+test.afterEach(async () => {
+  if (earWas === 'wake') await page.evaluate(async () => { await fetch('/voice/start', { method: 'POST' }); });
+  earWas = '';
+});
+
 test.beforeEach(async () => {
   test.skip(!LOOPCAP || !existsSync(LOOPCAP), 'sin scripts/tools/loopcap (BAXY_LOOPCAP): test_field_ui.ps1 lo compila');
   const general = await page.evaluate(async () => { const r = await fetch('/settings/general'); return r.ok ? r.json() : {}; });
   test.skip(!!(general as { voiceMuted?: boolean }).voiceMuted, 'la voz de BAXY está silenciada en Ajustes');
   await idle();
+  earWas = await page.evaluate(async () => (await (await fetch('/voice/status')).json()).mode as string);
+  if (earWas !== 'off') await page.evaluate(async () => { await fetch('/voice/stop', { method: 'POST' }); });
 });
 
 test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra con ella', async () => {
-  const { audio, ui } = await record(40, async () => {
+  const { audio, ui, other } = await record(40, async () => {
     await say('dime en tres frases qué es un volcán');
     await page.waitForFunction(() => /^Hablando/.test((document.querySelector('.bx-statel')?.textContent ?? '').trim()), undefined, { timeout: 60_000 });
     await idle(30_000);
@@ -98,6 +115,7 @@ test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra
   const checked = ui.filter((u) => u.lip && u.drawn >= 0), empty = checked.filter((u) => u.drawn < 100);
   expect(checked.length, 'se revisó la boca dibujada').toBeGreaterThan(10);
   expect(empty.length, 'con el hueco abierto siempre hay una boca dibujada (nunca un recuadro vacío)').toBe(0);
+  test.skip(other, 'suena otra cosa en el PC (música, una llamada, un vídeo): la medida contra los parlantes no sería de BAXY');
   const g = grid(audio, ui);
   const voice = g.filter((s) => s.db > -35);
   expect(voice.length * 10, 'BAXY habló (se oyó su voz)').toBeGreaterThan(2000);
@@ -106,7 +124,9 @@ test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra
   expect(open.length, 'la boca se abrió con la voz').toBeGreaterThan(0);
   expect(speaking.length, 'la vista dijo «Hablando»').toBeGreaterThan(0);
   const ms = (n: number) => n * 10;
-  const noMouth = ms(voice.filter((s) => !s.u.lip).length);
+  // the first 450 ms: the cut into the speaking clip (0.35 s), when its own mouth shows; from then on, the synced one
+  const noMouth = ms(voice.filter((s) => s.t > vs + 450 && !s.u.lip).length);
+  const lipOn = g.find((s) => s.t >= vs - 200 && s.u.lip)?.t ?? Infinity;
   const loud = g.filter((s) => s.db > -12), closedLoud = ms(loud.filter((s) => s.u.mouth === 0).length);
   const openSilent = ms(g.filter((s) => s.t > vs && s.t < ve && s.db < -45 && s.u.mouth >= 2).length);
   // lag between loudness and mouth by cross-correlation (positive: the mouth is late)
@@ -120,11 +140,10 @@ test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra
   };
   let lag = 0;
   for (let k = -30; k <= 30; k++) if (corr(k) > corr(lag)) lag = k;
-  const report = `voz ${((ve - vs) / 1000).toFixed(1)} s · sin boca ${noMouth} ms · boca ${open[0].t - vs} / ${open[open.length - 1].t - ve} ms · «Hablando» ${speaking[0].t - vs} / ${speaking[speaking.length - 1].t - ve} ms · cerrada con voz fuerte ${closedLoud}/${ms(loud.length)} ms · abierta en silencio ${openSilent} ms · desfase ${lag * 10} ms · r ${corr(lag).toFixed(2)}`;
+  const report = `voz ${((ve - vs) / 1000).toFixed(1)} s · boca sincronizada a los ${lipOn - vs} ms · sin boca ${noMouth} ms · boca ${open[0].t - vs} / ${open[open.length - 1].t - ve} ms · «Hablando» ${speaking[0].t - vs} / ${speaking[speaking.length - 1].t - ve} ms · cerrada con voz fuerte ${closedLoud}/${ms(loud.length)} ms · abierta en silencio ${openSilent} ms · desfase ${lag * 10} ms · r ${corr(lag).toFixed(2)}`;
   console.log('lip-sync:', report);
   expect.soft(noMouth, 'la voz nunca suena sin la boca sincronizada · ' + report).toBeLessThanOrEqual(Math.max(100, ms(voice.length) * 0.02));
-  expect.soft(open[0].t - vs, 'la boca se abre con la primera palabra · ' + report).toBeGreaterThanOrEqual(-150);
-  expect.soft(open[0].t - vs, 'la boca se abre con la primera palabra · ' + report).toBeLessThanOrEqual(150);
+  expect.soft(lipOn - vs, 'la boca sincronizada entra en cuanto termina el corte al clip de hablar · ' + report).toBeLessThanOrEqual(450);
   expect.soft(open[open.length - 1].t - ve, 'la boca no se cierra antes que la voz · ' + report).toBeGreaterThanOrEqual(-150);
   expect.soft(open[open.length - 1].t - ve, 'la boca se cierra cuando la voz termina · ' + report).toBeLessThanOrEqual(200);
   expect.soft(speaking[speaking.length - 1].t - ve, '«Hablando» no termina antes que la voz · ' + report).toBeGreaterThanOrEqual(-100);
@@ -136,7 +155,7 @@ test('lip-sync: la boca habla mientras suena la voz, con su volumen, y se cierra
 });
 
 test('lip-sync: si la voz se corta, la boca se cierra con ella', async () => {
-  const { audio, ui, mark } = await record(30, async () => {
+  const { audio, ui, mark, other } = await record(30, async () => {
     await say('cuéntame en seis frases la historia de la imprenta');
     await page.waitForFunction(() => document.querySelector('.bx-avid')?.classList.contains('lip'), undefined, { timeout: 60_000 });
     await page.waitForTimeout(3500);
@@ -146,6 +165,7 @@ test('lip-sync: si la voz se corta, la boca se cierra con ella', async () => {
     await idle(60_000);
     return at;
   });
+  test.skip(other, 'suena otra cosa en el PC (música, una llamada, un vídeo): la medida contra los parlantes no sería de BAXY');
   const pk = 20 * Math.log10(Math.max(...audio.map(([, r]) => r)) + 1e-9);
   let heard = mark, quiet = 0;
   for (const [t, r] of audio) {
