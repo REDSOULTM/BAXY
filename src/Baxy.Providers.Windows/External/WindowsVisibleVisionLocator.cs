@@ -273,6 +273,9 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             return null;
         string wanted = WindowsVisibleOcrLocator.Fold(label);
         string[] wantedWords = wanted.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        // e2e nb-28 (Steam's «TIENDA BIBLIOTECA» side by side): a point between two labels is near both; when one of the
+        // words near it is the label asked for, the point is on it.
+        string? other = null;
         foreach (WindowsVisibleOcrLocator.LayoutLine line in layout)
         {
             IEnumerable<WindowsVisibleOcrLocator.LayoutWord> words = line.Words
@@ -289,12 +292,12 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 string lineRead = WindowsVisibleOcrLocator.Fold(line.Text);
                 if (wanted.Contains(read, StringComparison.Ordinal) || read.Contains(wanted, StringComparison.Ordinal)
                     || wantedWords.Any(part => part.Length >= 3 && lineRead.Contains(part, StringComparison.Ordinal)))
-                    continue;
-                return word.Text;
+                    return null;
+                other ??= word.Text;
             }
         }
 
-        return null;
+        return other;
     }
 
     private const string HeldFile = "baxy_vision_hold.bin";

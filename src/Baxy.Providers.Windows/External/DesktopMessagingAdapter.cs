@@ -638,6 +638,17 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             return false;
         }
 
+        // e2e nb-28 (Discord, intermittent): a selection stays drawn, a blinking caret comes and goes. The change is
+        // looked at twice more across a blink; a composer seen as it was before is empty.
+        for (int look = 0; look < 2; look++)
+        {
+            await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+            if (!ContentChanged(composer, CaptureRegion(handle, CaptureArea.Composer, channel)))
+            {
+                return false;
+            }
+        }
+
         SendKey(VirtualKeyRight);
         return true;
     }

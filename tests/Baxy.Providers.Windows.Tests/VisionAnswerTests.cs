@@ -80,6 +80,24 @@ public sealed class VisionAnswerTests
         });
     }
 
+    // e2e nb-28: Steam's «TIENDA» and «BIBLIOTECA» side by side; a point between them is on the label asked for.
+    [Test]
+    public void APointBetweenTheLabelAndItsNeighbourIsOnTheLabel()
+    {
+        var layout = new[]
+        {
+            new WindowsVisibleOcrLocator.LayoutLine("TIENDA", 100, 50, 90, 20,
+                [new WindowsVisibleOcrLocator.LayoutWord("TIENDA", 100, 50, 90, 20)]),
+            new WindowsVisibleOcrLocator.LayoutLine("BIBLIOTECA", 205, 50, 155, 20,
+                [new WindowsVisibleOcrLocator.LayoutWord("BIBLIOTECA", 205, 50, 155, 20)]),
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsVisibleVisionLocator.OtherTextAt(layout, "TIENDA", 196, 60), Is.Null);
+            Assert.That(WindowsVisibleVisionLocator.OtherTextAt(layout, "TIENDA", 300, 60), Is.EqualTo("BIBLIOTECA"));
+        });
+    }
+
     [Test]
     public void TheSecondQuestionSaysWhichControlItIsNot()
     {
