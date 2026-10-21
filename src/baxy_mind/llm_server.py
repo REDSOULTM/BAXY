@@ -37,15 +37,9 @@ class LlmServer:
 
     def start(self) -> None:
         vision = _vision_args()
-        # PLAN_GENERAL A5 (uso real 2026-10-21: a vision question on the one slot evicted a 46k-token conversation whose
-        # state, 2 GB, did not fit the RAM prompt cache, and the next decision re-read it for 25 s): with vision, a second
-        # slot on a unified KV cache answers it (BAXY_VISION_SLOT=1) and slot 0 keeps the conversation. Measured on the
-        # PC: 3929 MiB of VRAM against 3835 with one slot.
-        slots = ["-np", "2", "--kv-unified"] if vision else ["-np", "1"]
-        context = self.context + VISION_CONTEXT if vision else self.context
         command = [
             self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
-            "-ngl", self.gpu_layers, "-c", str(context), *slots, "-fa", "on",
+            "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
             # they reach the GPU (measured on the PC 2026-10-15: RAM 3237 → 1132 MiB, same VRAM 3905 MiB and speed).
@@ -56,6 +50,10 @@ class LlmServer:
             # (decision2 d6 vs d6b, 2026-10-15) once the last answer of a turn keeps the tools and the prefix.
             "-cram", "1536",
         ] + vision + self.extra_args
+        # A state a vision question set aside and never put back holds the person's conversation: none is kept.
+        if held := os.environ.get("BAXY_VISION_SLOT_DIR", "").strip():
+            for stale in Path(held).glob("*.bin"):
+                stale.unlink(missing_ok=True)
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         log = open(log_dir / self.log_name, "w", encoding="utf-8")
@@ -125,15 +123,20 @@ class LlmServer:
                 self._process.kill()
 
 
-# The tokens a vision question takes on its own slot (a 1280-wide image is ~980), added to the shared context.
-VISION_CONTEXT = 2048
-
-
 def _vision_args() -> list[str]:
     """PLAN_GENERAL A5 (measured 2026-10-21): the model's own projector, on the CPU (no VRAM; ~0.7 GB of RAM), so the
-    click's last stage can ask this server where a control is on a window without an accessible tree."""
+    click's last stage can ask this server where a control is on a window without an accessible tree; and where the
+    one slot's state is set aside meanwhile (BAXY_VISION_SLOT_DIR). A question on the slot evicted the conversation,
+    whose state (2 GB) the RAM prompt cache refused, and the next decision re-read it for 25 s; a second slot on a
+    unified KV cache lost it too with this hybrid model (21 s). Saved and restored around the question: 1.35 s and
+    0.74 s for 42,910 tokens, then 17 tokens re-read."""
     projector = os.environ.get("BAXY_MIND_MMPROJ", "").strip()
-    return ["--mmproj", projector, "--no-mmproj-offload"] if projector and Path(projector).is_file() else []
+    if not projector or not Path(projector).is_file():
+        return []
+    held = os.environ.get("BAXY_VISION_SLOT_DIR", "").strip()
+    if held:
+        Path(held).mkdir(parents=True, exist_ok=True)
+    return ["--mmproj", projector, "--no-mmproj-offload"] + (["--slot-save-path", held] if held else [])
 
 
 def _pinned_port() -> int | None:

@@ -82,20 +82,37 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
         try
         {
             byte[] image = await ShrunkPngAsync(before.Bmp, ImageWidth).ConfigureAwait(false);
-            using var request = new HttpRequestMessage(HttpMethod.Post, uri)
-            {
-                Content = new StringContent(
-                    VisionBody(model, Prompt(label), image),
-                    Encoding.UTF8,
-                    "application/json"),
-            };
-            LocalVisionEndpoint.Authorize(request);
-            using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
+            // PLAN_GENERAL A5: the server's one slot holds the mind's conversation; its state is set aside before the
+            // question and put back before anything is pressed. Not set aside, nothing is asked (the next decision would
+            // re-read the whole conversation, 25 s measured).
+            string? held = LocalVisionEndpoint.SlotDirectory() is null ? null : await HoldSlotAsync(uri, cancellationToken)
                 .ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode)
-                return ExternalJson.Failure(operation, "vision_provider_request_failed");
-            using JsonDocument document = JsonDocument.Parse(
-                await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+            if (LocalVisionEndpoint.SlotDirectory() is not null && held is null)
+                return null;
+            string answered;
+            try
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Post, uri)
+                {
+                    Content = new StringContent(
+                        VisionBody(model, Prompt(label), image),
+                        Encoding.UTF8,
+                        "application/json"),
+                };
+                LocalVisionEndpoint.Authorize(request);
+                using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
+                    .ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
+                    return ExternalJson.Failure(operation, "vision_provider_request_failed");
+                answered = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (held is not null)
+                    await PutSlotBackAsync(uri, held).ConfigureAwait(false);
+            }
+
+            using JsonDocument document = JsonDocument.Parse(answered);
             string? content = document.RootElement
                 .GetProperty("choices")[0]
                 .GetProperty("message")
@@ -214,6 +231,60 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             return pressedOnce
                 ? ExternalJson.FailureAfterEffect(operation, "visible_click_postread_invalid")
                 : ExternalJson.Failure(operation, "vision_provider_request_failed");
+        }
+    }
+
+    private const string HeldFile = "baxy_vision_hold.bin";
+
+    // The server's slot endpoint for the vision slot (its own address, never another host).
+    private static Uri SlotUri(Uri endpoint, string action) =>
+        new(endpoint, $"/slots/{LocalVisionEndpoint.Slot() ?? 0}?action={action}");
+
+    // The slot's state written to the server's slot directory; the file's name, or null when the server did not save it.
+    private async Task<string?> HoldSlotAsync(Uri endpoint, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, SlotUri(endpoint, "save"))
+            {
+                Content = new StringContent("{\"filename\":\"" + HeldFile + "\"}", Encoding.UTF8, "application/json"),
+            };
+            LocalVisionEndpoint.Authorize(request);
+            using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            return response.IsSuccessStatusCode ? HeldFile : null;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or IOException)
+        {
+            return null;
+        }
+    }
+
+    // The slot's state read back, and its file removed: it holds the person's conversation and stays on disk no longer.
+    private async Task PutSlotBackAsync(Uri endpoint, string file)
+    {
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, SlotUri(endpoint, "restore"))
+            {
+                Content = new StringContent("{\"filename\":\"" + file + "\"}", Encoding.UTF8, "application/json"),
+            };
+            LocalVisionEndpoint.Authorize(request);
+            using HttpResponseMessage response = await _http.SendAsync(request, CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or IOException)
+        {
+            // Not restored: the next decision re-reads the conversation, slower but whole.
+        }
+        finally
+        {
+            try
+            {
+                if (LocalVisionEndpoint.SlotDirectory() is { } directory)
+                    File.Delete(Path.Combine(directory, file));
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+            }
         }
     }
 

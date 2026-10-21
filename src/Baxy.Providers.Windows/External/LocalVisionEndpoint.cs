@@ -43,6 +43,14 @@ internal static class LocalVisionEndpoint
     internal static int? Slot() =>
         int.TryParse(Environment.GetEnvironmentVariable("BAXY_VISION_SLOT"), out int slot) && slot >= 0 ? slot : null;
 
+    /// <summary>
+    /// PLAN_GENERAL A5: where the server sets the slot's state aside around a vision question (its --slot-save-path,
+    /// BAXY_VISION_SLOT_DIR); null when the state is not held (a server of its own).
+    /// </summary>
+    internal static string? SlotDirectory() =>
+        Environment.GetEnvironmentVariable("BAXY_VISION_SLOT_DIR") is { Length: > 0 } directory
+            && Path.IsPathFullyQualified(directory) ? directory : null;
+
     internal static bool IsLoopback(Uri uri) =>
         uri.IsLoopback || (IPAddress.TryParse(uri.DnsSafeHost, out IPAddress? address) && IPAddress.IsLoopback(address));
 }
