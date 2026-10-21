@@ -27,10 +27,21 @@ public sealed class ShellApplicationPlaceOpener : IApplicationPlaceOpener
     // The handler raises the window a moment after the hand-over; a front still unmoved past this is left alone.
     internal static readonly TimeSpan FrontWatch = TimeSpan.FromMilliseconds(1200);
 
+    // PLAN_GENERAL (uso real 2026-10-21: Epic's search came 1-2 s after its address and the look right after the opening
+    // read the page before, so the model pressed «Tienda» over the results): how long a place may take to be drawn, and
+    // how often the window is read meanwhile.
+    internal static readonly TimeSpan PlaceArrival = TimeSpan.FromSeconds(5);
+    private const int ArrivalPollMs = 200;
+
     public PlaceOpening Open(string address, bool keepFront, long applicationWindow)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(address);
         long before = ForegroundHandBack.Foreground();
+        nint window = (nint)applicationWindow;
+        External.VisibleControlSurface.CapturedWindow? drawnBefore = window == 0
+            ? null
+            : External.VisibleControlSurface.CaptureAsync(window, CancellationToken.None, selfDrawn: true)
+                .AsTask().GetAwaiter().GetResult();
         try
         {
             // A protocol's handler usually hands the address to the running application and leaves: there may be no
@@ -42,6 +53,38 @@ public sealed class ShellApplicationPlaceOpener : IApplicationPlaceOpener
             return new PlaceOpening(false);
         }
 
+        PlaceOpening opening = HandFront(keepFront, before, applicationWindow);
+        AwaitPlaceDrawn(drawnBefore);
+        return opening;
+    }
+
+    // The application's window, drawn by itself, until its drawing changes from the one before the address and then
+    // stays still (VisibleControlSurface.StableSurfaceAsync), within PlaceArrival: what a look reads next is the place,
+    // not the page before it. Nothing is said from it: a place that did not change the window is for the look to tell.
+    private static void AwaitPlaceDrawn(External.VisibleControlSurface.CapturedWindow? drawnBefore)
+    {
+        if (drawnBefore is not { } earlier)
+            return;
+        ValueTask<External.VisibleControlSurface.CapturedWindow?> Capture(nint hwnd, CancellationToken token) =>
+            External.VisibleControlSurface.CaptureAsync(hwnd, token, selfDrawn: true);
+        var watch = Stopwatch.StartNew();
+        while (watch.Elapsed < PlaceArrival)
+        {
+            Thread.Sleep(ArrivalPollMs);
+            if (Capture(earlier.Hwnd, CancellationToken.None).AsTask().GetAwaiter().GetResult() is not { } now)
+                return;
+            if (!External.VisibleControlSurface.SameSurface(earlier, now))
+            {
+                _ = External.VisibleControlSurface.StableSurfaceAsync(
+                        now, Capture, (ms, token) => Task.Delay(ms, token), CancellationToken.None)
+                    .AsTask().GetAwaiter().GetResult();
+                return;
+            }
+        }
+    }
+
+    private static PlaceOpening HandFront(bool keepFront, long before, long applicationWindow)
+    {
         // The application's own window already in front (or the front asked for) is nobody else's to hand back.
         if (keepFront || before == 0 || before == applicationWindow)
         {
