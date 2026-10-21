@@ -31,10 +31,15 @@ KINDS = {"actuar": "hacer algo en el PC con una herramienta",
          "no_se_puede": "decir que eso no lo hace: no hay una herramienta para ese pedido"}
 
 
+STATE_CHARS = 1200
+
+
 def state_text(text, history):
     """The state as plain text: kev.train serializes a dict as JSON while llama-server renders it with its own template,
     so training and serving read the same words only when it is already text."""
     previous = " | ".join(f'{m["role"]}: {m["content"]}' for m in (history or [])[-4:]) or "ninguna"
+    # An encoder reads at most ~1k tokens (laya-multilingual's default): a pasted text keeps its start, as does history.
+    text, previous = str(text)[:STATE_CHARS], previous[-STATE_CHARS // 2:]
     return (f"Pedido de la persona: {text}\nConversación previa: {previous}\n"
             "Lugar: asistente de escritorio BAXY en el PC Windows de la persona")
 
@@ -97,7 +102,8 @@ def main():
     port = args.port
     log = open(runs / f"s1kev-{args.label}.server.log", "w", encoding="utf-8")
     server = subprocess.Popen([args.server, "-m", args.gguf, "--port", str(port), "-ngl", "0", "-t", args.threads,
-                               "-c", "4096", "-np", "1"], stdout=log, stderr=subprocess.STDOUT)
+                               "-c", "4096", "-np", "1", "-b", "2048", "-ub", "2048"],
+                              stdout=log, stderr=subprocess.STDOUT)  # an encoder's input goes in one batch
     rows = [json.loads(line) for line in open(runs / f"s1-{args.signals}.jsonl", encoding="utf-8")]
     out_rows = []
     try:
@@ -119,7 +125,11 @@ def main():
                 "tipo": {"type": "choice", "instructions": "¿Qué tipo de respuesta pide este mensaje?",
                          "criteria": KINDS}}}
             started = time.monotonic()
-            reply = post(port, body)
+            try:
+                reply = post(port, body)
+            except urllib.error.HTTPError as error:
+                print(f'{row["id"]} server error {error.code}', flush=True)
+                continue
             latency = time.monotonic() - started
             answers = reply.get("answers") or {}
             want_ops, want_kind = wanted(row["expect"])
