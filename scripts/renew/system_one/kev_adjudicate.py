@@ -42,7 +42,7 @@ def short(text, limit=220):
     text = " ".join(str(text).split())
     cut = text.find(". ")
     text = text[:cut + 1] if 0 < cut < limit else text
-    return text[:limit]
+    return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + "…"
 
 
 def wanted(expect):
