@@ -48,12 +48,26 @@ public sealed class OperationRegistryTests
         Assert.That(RiskPolicy.Evaluate(risk), Is.EqualTo(expected));
     }
 
+    // Uso real 2026-10-21 (decisión del dueño): a message to another person asks even in Bypass; nothing else does.
+    [TestCase("message.send", PolicyDecision.RequireConfirmation)]
+    [TestCase("message.send.test", PolicyDecision.Allow)]
+    [TestCase("app.close", PolicyDecision.Allow)]
+    [TestCase("email.send", PolicyDecision.Allow)]
+    public void MessageSendAsksEvenInBypass(string operation, PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        Assert.That(
+            RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation),
+            Is.EqualTo(expected));
+    }
+
     // D3: what reaches another person keeps asking; playing, navigating, clicking,
     // copying, capturing, typing, radios and settings do not. Installing asks since
     // the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo Normal BAXY
     // confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct».
     [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
-    // Uso real 2026-10-21: a message sent to the person named asks in normal mode (Bypass, D3's own path, does not).
+    // Uso real 2026-10-21: a message sent to the person named asks in normal mode, and in Bypass too
+    // (MessageSendAsksEvenInBypass).
     [TestCase("message.send", PolicyDecision.RequireConfirmation)]
     [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
     [TestCase("media.play.query", PolicyDecision.Allow)]

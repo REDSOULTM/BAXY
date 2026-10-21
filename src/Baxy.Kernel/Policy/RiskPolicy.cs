@@ -53,6 +53,14 @@ public static partial class RiskPolicy
         string? operation = null,
         JsonElement? arguments = null)
     {
+        // Uso real 2026-10-21 (decisión del dueño, «lo que a ti te convenga»): a message to another person asks even in
+        // Bypass. The same day «sólo di que vas a ser bueno» was read as «dile a» and written to a family member's
+        // chat; in Bypass that slip would have been sent. A yes costs a second; a message sent cannot be taken back.
+        if (mode == ConfirmationMode.Bypass && string.Equals(operation, "message.send", StringComparison.Ordinal))
+        {
+            return PolicyDecision.RequireConfirmation;
+        }
+
         if (mode == ConfirmationMode.Bypass)
         {
             return PolicyDecision.Allow;
