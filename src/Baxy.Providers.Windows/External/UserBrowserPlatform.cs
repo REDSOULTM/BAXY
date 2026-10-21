@@ -144,9 +144,22 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         ArgumentNullException.ThrowIfNull(address);
         if (address.Scheme is not ("http" or "https"))
             throw new ArgumentException("Only web addresses are opened.", nameof(address));
+        // PLAN_GENERAL B3: the right to take the front is handed to the browser already running, by its exact process
+        // (Raymond Chen, «Sure, you can steal the foreground…» 2009-02-20; Chromium does the same for its running copy),
+        // so the browser may raise the page it opens itself. Refused when this process holds no right to give: the
+        // bringing up after the navigation (BringToFrontAsync) still does it then.
+        if (ResolveDefault() is { } browser)
+        {
+            foreach (Process running in Process.GetProcessesByName(browser.ProcessName))
+            {
+                using (running)
+                    _ = AllowSetForegroundWindow(unchecked((uint)running.Id));
+            }
+        }
+
         // The shell resolves the link exactly as a click would: the person's
         // browser, their profile and session, a new tab in the window they use.
-        using Process? _ = Process.Start(new ProcessStartInfo(address.AbsoluteUri)
+        using Process? launched = Process.Start(new ProcessStartInfo(address.AbsoluteUri)
         {
             UseShellExecute = true,
         });
@@ -459,6 +472,10 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool AllowSetForegroundWindow(uint processId);
 
     [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW")]
     private static unsafe partial int GetWindowText(nint window, char* text, int capacity);
