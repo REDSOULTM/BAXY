@@ -625,6 +625,27 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // text, the composer's picture (composer, taken just before) changes under the selection; a placeholder is not
     // selectable and a blinking caret is not a change. Text found is left as it was, the selection collapsed to its
     // end, and true is returned. Nothing is deleted here.
+    // e2e nb-28/nb-29 (Discord, intermittent): the composer band also holds the foot of the conversation, which settles
+    // for a moment after the chat opens; a «before» taken while it moved made the select-all check see a change that
+    // stayed (composer_has_person_draft with the composer empty). The band is read until two reads agree (a blinking
+    // caret aside), for at most two seconds; the last read is the one used.
+    private static async ValueTask<byte[]> SettledComposerAsync(nint handle, string channel, CancellationToken cancellationToken)
+    {
+        byte[] read = CaptureRegion(handle, CaptureArea.Composer, channel);
+        for (int look = 0; look < 8; look++)
+        {
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            byte[] next = CaptureRegion(handle, CaptureArea.Composer, channel);
+            bool settled = !ContentChanged(read, next);
+            read = next;
+            if (settled)
+            {
+                break;
+            }
+        }
+
+        return read;
+    }
     private static async ValueTask<bool> ComposerHoldsTextAsync(
         nint handle,
         string channel,
@@ -1049,7 +1070,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
         await Task.Delay(200, cancellationToken).ConfigureAwait(false);
         // C5: the composer is read before anything is typed; the person's draft there is never cleared.
-        byte[] before = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
+        byte[] before = await SettledComposerAsync(recipient.WindowHandle, recipient.Channel, cancellationToken).ConfigureAwait(false);
         if (await ComposerHoldsTextAsync(recipient.WindowHandle, recipient.Channel, before, cancellationToken)
                 .ConfigureAwait(false))
         {
@@ -1203,7 +1224,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
         await Task.Delay(200, cancellationToken).ConfigureAwait(false);
         // C5: the composer is read before anything is typed; the person's draft there is never cleared.
-        byte[] before = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
+        byte[] before = await SettledComposerAsync(recipient.WindowHandle, recipient.Channel, cancellationToken).ConfigureAwait(false);
         if (await ComposerHoldsTextAsync(recipient.WindowHandle, recipient.Channel, before, cancellationToken)
                 .ConfigureAwait(false))
         {
