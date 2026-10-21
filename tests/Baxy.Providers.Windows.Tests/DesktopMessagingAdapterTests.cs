@@ -215,6 +215,15 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Uso real 2026-10-21 (e2e del notebook, 125 %): Discord's caret blinking off changed 5 columns of an empty composer.
+    [Test]
+    public void AScaledCaretBlinkingIsNoContentChange()
+    {
+        byte[] shown = Band(static (x, y) => x is >= 40 and < 45 && y is > 5 and < 25);
+        byte[] hidden = Band(static (x, y) => false);
+        Assert.That(WindowsDesktopMessagingAutomation.ContentChanged(shown, hidden), Is.False);
+    }
+
     [Test]
     public void TypedGlyphsAreAContentChange()
     {

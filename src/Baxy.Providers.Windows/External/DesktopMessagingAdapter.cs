@@ -1291,7 +1291,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const int TypedDraftPollMs = 50;
     // A text caret is one or two pixels wide; a typed glyph, or the placeholder
     // that goes away with the first one, spans more columns than this.
-    private const int CaretMaxWidthPixels = 4;
+    // Uso real 2026-10-21 (e2e del notebook, 125 %): Discord's caret blinking off changed 5 columns (measured on two
+    // screenshots of an empty composer, nothing else changed), and an empty composer passed for the person's draft
+    // (composer_has_person_draft); 6 also holds a caret at 150 %. A selection or the placeholder spans far more.
+    internal const int CaretMaxWidthPixels = 6;
 
     // Whether two captures of the same band differ by more than a blinking caret:
     // the differing pixels must span more columns than a caret.
