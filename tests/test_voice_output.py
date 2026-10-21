@@ -162,3 +162,75 @@ def test_what_was_cancelled_is_not_synthesized_and_does_not_hold_the_next_answer
     _wait_for(played, 1)
     assert played == ["Listo, abrí Steam."]
     assert not any(text.startswith(("Dos", "Tres")) for text in synthesized)
+
+
+# --- the mouth follows the voice (owner, 2026-10-21) ------------------------------------------------------------------
+
+class _FakeStream:
+    latency = 0.09
+
+    def __init__(self, on_write=None) -> None:
+        self.on_write = on_write
+
+    def write(self, block) -> None:
+        if self.on_write:
+            self.on_write()
+
+    def abort(self) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+
+def _player(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, lips: list[dict], stream: _FakeStream) -> Speech:
+    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
+    monkeypatch.setattr(Speech, "_start", lambda self: None)
+    monkeypatch.setattr(Speech, "_open_stream", lambda self: stream)
+    monkeypatch.setattr(voice_output, "TAIL_S", 0.0)
+    speech = Speech(lambda speaking: None, lambda queued, sounded: None, lips.append)
+    speech.rate = 1000
+    return speech
+
+
+def test_the_mouth_is_closed_in_silence_and_open_at_the_voices_loudness() -> None:
+    import numpy as np
+
+    rate = 24000
+    t = np.arange(rate // 2) / rate
+    voice = (voice_output.LOUDNESS * np.sqrt(2) * np.sin(2 * np.pi * 220 * t)).astype(np.float32)
+    level = voice_output.lip_envelope(np.concatenate([np.zeros(rate // 2, np.float32), voice]), rate)
+    step = int(rate * voice_output.LIP_STEP_S)
+    assert len(level) == -(-rate // step)
+    half = len(level) // 2
+    assert max(level[:half - 1]) == 0.0
+    assert all(0.7 < v < 0.9 for v in level[half + 1:])
+
+
+def test_each_take_says_when_it_sounds_and_the_next_one_follows_it(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import numpy as np
+
+    lips: list[dict] = []
+    speech = _player(tmp_path, monkeypatch, lips, _FakeStream())
+    first, second = np.full(500, 0.1, np.float32), np.full(300, 0.1, np.float32)
+    before = time.time() * 1000
+    speech._play(iter([first, second]), speech._generation, time.monotonic())
+    takes = [lip for lip in lips if "t0" in lip]
+    assert len(takes) == 2
+    # the first take sounds once the output's latency has passed; the second right where the first one ends (0.5 s)
+    assert before + 90 - 5 <= takes[0]["t0"] <= time.time() * 1000 + 90
+    assert abs(takes[1]["t0"] - (takes[0]["t0"] + 500)) <= 1
+    assert takes[0]["step"] == 40 and len(takes[0]["env"]) == 13 and len(takes[1]["env"]) == 8
+
+
+def test_a_voice_cut_short_tells_the_mouth_to_close(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import numpy as np
+
+    lips: list[dict] = []
+    stream = _FakeStream()
+    speech = _player(tmp_path, monkeypatch, lips, stream)
+    writes = []
+    stream.on_write = lambda: (writes.append(1), len(writes) == 3 and speech.cancel())
+    speech._play(iter([np.full(2000, 0.1, np.float32)]), speech._generation, time.monotonic())
+    assert [k for lip in lips for k in lip if k in ("t0", "stop")] == ["t0", "stop"]
+    assert abs(lips[-1]["stop"] - time.time() * 1000) < 500

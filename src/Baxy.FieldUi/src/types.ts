@@ -125,13 +125,14 @@ export interface GeneralSettings {
 /** the host keeps the conversation (FieldTranscript): it sends an item whenever one is added or changes, and the whole
  *  list when the view connects or a session is opened. */
 export type ServerEvent =
-  | { type: 'state'; value: HostState }
+  | { type: 'state'; value: HostState; quiet?: HostState }
   | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean }
   | { type: 'item'; item: ChatItem }
   | { type: 'transcript'; items: ChatItem[] }
   | ({ type: 'step'; phase: 'start' | 'end'; turn: string } & Step)
   | ({ type: 'voice' } & VoiceStatus)
   | { type: 'voice_partial'; text: string }
+  | { type: 'lip'; t0?: number | null; step?: number | null; env?: number[] | null; stop?: number | null }
   | { type: 'voice_wake' }
   | ({ type: 'boot' } & BootPieces)
   | ({ type: 'net' } & NetEntry)

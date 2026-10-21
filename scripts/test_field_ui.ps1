@@ -32,6 +32,11 @@ do {
 if ((Get-Date) -ge $deadline) { throw "La vista de BAXY no apareció en $endpoint." }
 
 $env:BAXY_CDP_URL = $endpoint
+# What the speakers really play, for e2e/lipsync.spec.ts (WASAPI loopback; built here, nothing is downloaded).
+$loopcap = Join-Path $repo "scripts\tools\loopcap"
+& dotnet build (Join-Path $loopcap "loopcap.csproj") -c Release -v q --nologo | Out-Null
+$loopcapExe = Join-Path $loopcap "bin\Release\net10.0-windows\loopcap.exe"
+if (Test-Path $loopcapExe) { $env:BAXY_LOOPCAP = $loopcapExe } else { Write-Warning "loopcap no compiló: lipsync.spec.ts se salta." }
 Push-Location $field
 try {
     & (Join-Path $field "node_modules\.bin\playwright.cmd") test

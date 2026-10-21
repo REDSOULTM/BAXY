@@ -90,7 +90,7 @@ class Voice:
         self._stream: Any = None
         self._blocks: queue.Queue[np.ndarray] = queue.Queue()
         self._reset()
-        self.speech = Speech(self._speaking, on_spoken)
+        self.speech = Speech(self._speaking, on_spoken, self._lip)
         threading.Thread(target=self._load, name="voice-load", daemon=True).start()
         threading.Thread(target=self._listen, name="voice", daemon=True).start()
 
@@ -329,6 +329,9 @@ class Voice:
 
     def _event(self, name: str) -> None:
         self._write({"type": "voice.event", "event": name, "mode": self._mode})
+
+    def _lip(self, lip: dict[str, Any]) -> None:
+        self._write({"type": "voice.event", "event": "lip", "mode": self._mode, **lip})
 
     def _state(self) -> None:
         self._write({"type": "voice.event", "event": "state", "mode": self._mode,

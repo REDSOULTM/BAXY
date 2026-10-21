@@ -53,6 +53,11 @@ SILENCE_DB = -40.0
 LEAD_S, TAIL_S_KEPT = 0.03, 0.10
 GAP_S, GAP_QUESTION_S = 0.35, 0.45
 JOIN_CHARS = 120    # a reply this short is synthesized in one call (the model places its own pauses, ~0.24 s)
+# The mouth follows the voice (owner, 2026-10-21: the avatar's speaking animation ended while BAXY still spoke): each
+# take's loudness every LIP_STEP_S, from LIP_FLOOR_DB (closed) to LIP_TOP_DB (open), goes to the view with the wall
+# clock time its first sample sounds, so the view moves the mouth with what is heard and not with the state.
+LIP_STEP_S = 0.04
+LIP_FLOOR_DB, LIP_TOP_DB = -45.0, -12.0
 _SENTENCE_END = re.compile(r"(?<=[.!?…])\s+")
 _VOWELS = re.compile(r"[aeiouáéíóúü]+", re.IGNORECASE)
 _MODEL_FILES = ("duration_predictor.int8.onnx", "text_encoder.int8.onnx", "vector_estimator.int8.onnx",
@@ -94,9 +99,11 @@ def _default_follower(sd) -> int | None:
 class Speech:
     """speak() and cancel() only post to the speech thread, which owns the voice and the audio output."""
 
-    def __init__(self, on_state: Callable[[bool], None], on_spoken: Callable[[float, float], None]) -> None:
+    def __init__(self, on_state: Callable[[bool], None], on_spoken: Callable[[float, float], None],
+                 on_lip: Callable[[dict], None] = lambda _lip: None) -> None:
         self._on_state = on_state            # speaking started (True) or ended (False)
         self._on_spoken = on_spoken          # (queued at, first sound at), monotonic seconds
+        self._on_lip = on_lip                # a take's loudness and when it sounds, or when the sound was cut
         # (generation, text or None to open the output, queued at, for a notice the answers given before it, its audio
         # when its synthesis already started)
         self._queue: queue.Queue[tuple[int, str | None, float, int | None, Iterator[np.ndarray] | None]] = \
@@ -311,13 +318,21 @@ class Speech:
         block = int(self.rate * BLOCK_S)
         self.speaking = True
         self._on_state(True)
+        heard_until = 0.0  # wall clock (s) when what was written so far ends sounding
         try:
             # The first block sounds once the device's output latency has passed.
             self._on_spoken(queued, time.monotonic() + stream.latency)
             for audio in itertools.chain([audio], sentences):
+                # A take written right after the last one sounds right after it; one that waited for its synthesis
+                # (the output ran dry) sounds once the device's latency has passed.
+                starts = max(time.time() + stream.latency, heard_until)
+                heard_until = starts + len(audio) / self.rate
+                self._on_lip({"t0": round(starts * 1000), "step": round(LIP_STEP_S * 1000),
+                              "env": lip_envelope(audio, self.rate)})
                 for at in range(0, len(audio), block):
                     if generation != self._generation:
                         self._close_stream()  # what was written is dropped at once
+                        self._on_lip({"stop": round(time.time() * 1000)})
                         break
                     stream.write(audio[at:at + block].reshape(-1, 1))
                 else:
@@ -332,3 +347,17 @@ class Speech:
         finally:
             self.speaking = False
             self._on_state(False)
+
+
+def lip_envelope(audio: np.ndarray, rate: int) -> list[float]:
+    """How open the mouth is every LIP_STEP_S of a take, 0 (closed) to 1, from its loudness in dB."""
+    step = max(1, int(rate * LIP_STEP_S))
+    count = len(audio) // step + (1 if len(audio) % step else 0)
+    if not count:
+        return []
+    padded = np.zeros(count * step, np.float32)
+    padded[:len(audio)] = audio
+    rms = np.sqrt(np.mean(padded.reshape(count, step) ** 2, axis=1))
+    db = 20 * np.log10(rms + 1e-9)
+    level = np.clip((db - LIP_FLOOR_DB) / (LIP_TOP_DB - LIP_FLOOR_DB), 0.0, 1.0)
+    return [round(float(v), 2) for v in level]

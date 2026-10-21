@@ -8,6 +8,7 @@ import { VoiceInput } from './components/VoiceInput';
 import { Cosmos } from './components/Cosmos';
 import { Face } from './components/face/Face';
 import { AvatarVid } from './components/AvatarVid';
+import { useLipActive } from './lip';
 import { Globe, Icon } from './components/Icon';
 import { MemoryPanel } from './components/panels/MemoryPanel';
 import { CatalogPanel } from './components/panels/CatalogPanel';
@@ -174,11 +175,17 @@ export default function App() {
   }, [s.items]);
   const voiceError = s.voiceErrorAt !== null && done.voiceError !== s.voiceErrorAt ? FAILURE.voice_error : null;
   const booting = !!s.boot && !s.boot.model && !s.boot.failed;
+  // «Hablando» is while BAXY's voice sounds (lip.ts, from the mind's own timeline): the host's speaking state starts
+  // when the first sentence is ready and lasts 0.55 s of grace plus the output's latency after the last one (it guards
+  // the ear against BAXY's own voice). Without the timeline the host's state is shown as it is.
+  const voiceSounds = useLipActive();
+  const host: BaxyState = voiceSounds === null ? s.hostState
+    : voiceSounds ? 'speaking' : s.hostState === 'speaking' ? s.hostQuiet : s.hostState;
   const state: BaxyState = booting ? 'booting'
     : !powered ? 'standby'
       : voiceError ? 'error'
-        : s.hostState === 'idle' && pendingCard ? 'confirm'
-          : s.hostState;
+        : host === 'idle' && pendingCard ? 'confirm'
+          : host;
   const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
   const errorText = voiceError ?? (s.agent.failure ? FAILURE[s.agent.failure] ?? 'Algo falló' : 'Algo falló');
   const label = state === 'error' ? (voiceError ? LABEL.error : FAILURE[s.agent.failure ?? ''] ?? 'Algo falló') : LABEL[state];

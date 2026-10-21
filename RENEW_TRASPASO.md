@@ -324,3 +324,8 @@ nebulosa, chat que baja solo salvo que la persona suba a mano, arreglos de la ro
 - **Hallazgos fuera de la vista (no tocados):** con «Sí», mover a la papelera tardó 101 s y 74 s; la primera vez el
   sistema no respondió y BAXY lo dijo («No pude confirmar que se borró…»), la segunda quedó en la papelera
   (comprobado). La frase dice «el papelera» (concordancia, la compone la mente).
+- **Lip-sync (2026-10-21):** la boca del avatar sigue al sonido real (detalle y medidas en
+  `src/Baxy.FieldUi/ORIGIN.md`). Cadena: `voice_output.py` (evento `lip`: volumen cada 40 ms + hora en que suena) →
+  `MainWindowViewModel.VoiceLip` → `FieldProductChannel` → `lip.ts` → bocas recortadas de los clips en `AvatarVid`.
+  `e2e/lipsync.spec.ts` lo mide con `scripts/tools/loopcap` (loopback WASAPI): necesita audio sonando y la voz sin
+  silenciar; si no, se salta y lo dice.

@@ -203,6 +203,8 @@ data/exemplar_candidates.json
 # Excepción: los clips del avatar de la vista (diseño v5) van en Git por decisión del dueño (2026-10-21).
 !src/Baxy.FieldUi/public/clips/*.mp4
 !src/Baxy.FieldUi/dist/clips/*.mp4
+/scripts/tools/loopcap/bin/
+/scripts/tools/loopcap/obj/
 **/build/
 **/TestResults/
 **/packages/

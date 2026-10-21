@@ -180,3 +180,22 @@ El dueño entregó la v5 del mismo paquete (`Baxy Design (2).zip`) y pidió apli
   suspensivos en modo accesible.
 - Pruebas: `e2e/avatar.spec.ts` porta «Avatar · clips de Higgsfield + red viva», `layout.spec.ts` mide con `clipRect`
   y espera a que el chat termine de plegarse, y `logic.spec.ts` comprueba las bocas nuevas y la biblioteca de clips.
+
+### Lip-sync (2026-10-21, pedido del dueño)
+
+Los clips «hablando» mueven la boca por su cuenta y la cierran mientras BAXY sigue hablando (`hablando-1` de 0,5 a
+1,75 s, `hablando-5` sus últimos 2 s): «si se corta antes la animación de habla, no está funcionando bien». Ahora la
+boca sigue al sonido real:
+
+- La mente (`voice_output.py`) manda por cada toma de voz su volumen cada 40 ms y la hora de reloj en que suena su
+  primera muestra (latencia de salida y tomas encadenadas), y `stop` si la voz se corta; la App lo reenvía como evento
+  `lip` (`MainWindowViewModel.VoiceLip`, `FieldProductChannel.OnVoiceLip`).
+- `src/lip.ts` guarda esa línea de tiempo fuera de React. `AvatarVid` abre un hueco difuminado en la boca del vídeo
+  (`.bx-avid.lip video`) y dibuja ahí una de 21 bocas en 6 niveles de apertura, recortadas de los mismos clips por el
+  decodificador de la vista al arrancar (`mouths.ts`; un PNG hecho con ffmpeg quedaba más oscuro, los clips no declaran
+  espacio de color). La cara dibujada (tema claro, `?avatar=live`) abre la boca con el mismo volumen.
+- «Hablando» es mientras suena la voz; el estado del host sin la voz llega como `quiet` (un «Un momento» dicho
+  mientras piensa vuelve a «Pensando»).
+- Medido contra lo que suena por los parlantes (`scripts/tools/loopcap`, WASAPI loopback; `e2e/lipsync.spec.ts`):
+  voz sin boca 0 ms de 13,6 s, la boca cierra con la voz (±30 ms), desfase −10 a +10 ms, r 0,86–0,88; al cortar la voz
+  la boca cierra 26 ms después. Antes: boca cerrada con voz sonando en tramos de hasta 2 s, r 0,64.

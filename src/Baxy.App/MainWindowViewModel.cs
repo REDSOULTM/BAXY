@@ -149,6 +149,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>What the ear has heard of the request so far (live captions); it starts nothing.</summary>
     internal event Action<string>? VoicePartial;
 
+    /// <summary>The voice's loudness for the mouth (owner, 2026-10-21: the avatar's speaking animation ended while
+    /// BAXY still spoke): a take's levels every <c>step</c> ms from the wall-clock <c>t0</c> it sounds at, or
+    /// <c>stop</c>, when the sound was cut. Presentation only.</summary>
+    internal event Action<System.Text.Json.Nodes.JsonObject>? VoiceLip;
+
     /// <summary>«Baxy» was heard.</summary>
     internal event Action? VoiceWake;
 
@@ -1015,6 +1020,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                             VoicePartial?.Invoke(partial);
                         }
 
+                        break;
+                    case "lip":
+                        VoiceLip?.Invoke(voiceEvent);
                         break;
                     case "transcribing":
                         VoiceFailure = null;

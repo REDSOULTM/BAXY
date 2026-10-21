@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import type { BaxyState } from '../types';
-import { LIB, NEXT, SLEEP_END, clip, groupFor, type Group } from './avatarClips';
+import { LIB, MOUTH_BOX, MOUTH_LEVELS, NEXT, SLEEP_END, clip, groupFor, mouthLevel, type Group } from './avatarClips';
+import { lipAt } from '../lip';
+import { cutMouths } from './mouths';
 
 /* BAXY's avatar in video (design v5, app.jsx BxAvatarVid): a library of Higgsfield clips in public/clips. Every clip
    starts and ends on the same master frame (the «dormido» ones on the sleep frame), so any clip can follow any other
@@ -8,7 +10,9 @@ import { LIB, NEXT, SLEEP_END, clip, groupFor, type Group } from './avatarClips'
    variant of the group, never one of the last two. An urgent state cuts the clip with a 0.35 s fade; idle variants wait
    for the clip to end. A clip is swapped in only once it has a frame (at most 2.5 s; the old one stays meanwhile); only
    the current clip, «reposo» and the likely next one are preloaded; a clip with no frame for 4 s is loaded again. While
-   there is no frame the parent draws the whole face in code (onReady false): BAXY is never blank. */
+   there is no frame the parent draws the whole face in code (onReady false): BAXY is never blank.
+   While BAXY's voice sounds, the clip's own mouth is covered and a mouth chosen by the voice's loudness at that instant
+   is drawn in its place (lip.ts, avatarClips.ts MOUTH_*): the mouth moves with what is heard, never with the clip. */
 
 interface Clip extends HTMLVideoElement { _t?: number }
 
@@ -115,9 +119,38 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     // a window that comes back from the tray or from minimized may find its clip paused: play it again
     const onVis = () => { if (!document.hidden && front && front.paused && !front.ended) void front.play().catch(() => {}); };
     document.addEventListener('visibilitychange', onVis);
+    // lip-sync: a small canvas over the mouth, in the same pixels as the clip (the mouths are cut from the clips)
+    const lip = document.createElement('canvas');
+    lip.className = 'bx-lip'; lip.width = MOUTH_BOX.w; lip.height = MOUTH_BOX.h;
+    el.appendChild(lip);
+    const lctx = lip.getContext('2d')!;
+    let sheet: HTMLCanvasElement | null = null, sheetOk = false;
+    // cut once the first clip plays, so the start never waits for it
+    const cutting = window.setTimeout(() => { void cutMouths(() => dead).then((c) => { sheet = c; sheetOk = !!c; }); }, 1500);
+    const first = MOUTH_LEVELS.map((_, i) => MOUTH_LEVELS.slice(0, i).reduce((a, b) => a + b, 0));
+    let lipOn = false, level = -1, drawn = -1, since = 0, turn = 0, raf = 0;
+    const mouth = () => {
+      raf = requestAnimationFrame(mouth);
+      const L = lipAt(), t = performance.now();
+      const on = L.known && L.active && sheetOk && pose === 'M' && !!front && front.readyState >= 2;
+      if (on !== lipOn) { lipOn = on; el.classList.toggle('lip', on); if (!on) { lctx.clearRect(0, 0, lip.width, lip.height); drawn = -1; level = -1; delete el.dataset.mouth; } }
+      if (!on) return;
+      // a new level shows a different mouth of that level each time; a mouth stays at least 50 ms (a 20 fps mouth)
+      const k = mouthLevel(L.level);
+      if (k !== level && t - since >= 50) { level = k; since = t; turn++; }
+      const m = first[level] + (turn % MOUTH_LEVELS[level]);
+      if (m !== drawn) {
+        drawn = m;
+        lctx.clearRect(0, 0, lip.width, lip.height);
+        lctx.drawImage(sheet!, m * MOUTH_BOX.w, 0, MOUTH_BOX.w, MOUTH_BOX.h, 0, 0, MOUTH_BOX.w, MOUTH_BOX.h);
+        el.dataset.mouth = String(level);
+      }
+    };
+    raf = requestAnimationFrame(mouth);
     advance(false);
     return () => {
       dead = true;
+      cancelAnimationFrame(raf); window.clearTimeout(cutting);
       document.removeEventListener('visibilitychange', onVis);
       window.clearInterval(watchReady); window.clearInterval(watchdog);
       el.querySelectorAll('video').forEach((v) => { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); });

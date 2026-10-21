@@ -4,6 +4,7 @@ import {
   bxArc, bxBrow, bxEll, bxEye, bxMouth, bxRoute, bxSample, bxSuper, type Pt,
 } from './geometry';
 import type { Journey } from '../../store';
+import { lipAt } from '../../lip';
 
 /* The cartoon robot face made of firework particles, on top of the neural mesh (design face.jsx, ported almost as
    is): static parts painted into three offscreen bitmaps while still, 30 fps at rest and 60 while it thinks or speaks,
@@ -188,7 +189,13 @@ function FaceView(props: FaceProps) {
       }
       if (state === 'speaking' && prevState !== 'speaking') { trs.forEach((tr) => { tr.t0 = T - tr.dur; }); trs.push(mkTracer([BXM.hub.verificar, BXM.hub.voz], 0.7, T + 0.05)); trail = 1; }
       prevState = state;
-      if (talking) { talkTimer -= dt; if (talkTimer <= 0) { talkT = Math.random() < 0.18 ? 0.05 : 0.25 + Math.random() * 0.75; talkTimer = 0.07 + Math.random() * 0.1; } talk += (talkT - talk) * Math.min(1, dt * 22); }
+      if (talking) {
+        // the mouth opens with the voice's loudness at this instant (lip.ts); a host without that timeline babbles
+        const lip = lipAt();
+        if (lip.known) talkT = lip.level;
+        else { talkTimer -= dt; if (talkTimer <= 0) { talkT = Math.random() < 0.18 ? 0.05 : 0.25 + Math.random() * 0.75; talkTimer = 0.07 + Math.random() * 0.1; } }
+        talk += (talkT - talk) * Math.min(1, dt * 22);
+      }
       const key = expr + (talking ? '|t' : '');
       if (key !== lastKey) { if (lastKey && !talking) { ['eyeL', 'eyeR', 'mouth'].forEach((g) => burstFeature(g, 1.5)); bounceV += 3; antV += (Math.random() < 0.5 ? -1 : 1) * 6; } lastKey = key; }
       // mood entry reactions
