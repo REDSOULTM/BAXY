@@ -18,6 +18,7 @@ import urllib.error
 from pathlib import Path
 from typing import Any
 
+from .doubt import read as read_doubt
 from .llm_server import LlmServer
 
 _DATA = Path(__file__).with_name("data")
@@ -824,7 +825,9 @@ class Mind:
                 "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
                 # A fixed seed: the same conversation gets the same decision, so two runs of a bench differ by the
                 # change measured, not by sampling noise (±3 of 90 without it).
-                "seed": 0}
+                "seed": 0,
+                # The decision's own token probabilities, for its doubt in the trace (doubt.py): same call, no other pass.
+                "logprobs": True, "top_logprobs": 10}
         if final:
             # The last answer of an exhausted turn is words only. The tools stay, so the cached prefix (37k tokens)
             # is not evicted by a shorter prompt (llama.cpp PR #24176: a restore re-reads ~4k tokens; measured 2.3-3.6 s
@@ -920,6 +923,9 @@ class Mind:
                "ms": round((time.monotonic() - started) * 1000),
                "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
+        doubt = read_doubt(reply)
+        if doubt is not None:
+            row["doubt"] = doubt
         try:
             with self.trace.open("a", encoding="utf-8") as out:
                 out.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
