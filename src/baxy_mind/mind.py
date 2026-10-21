@@ -332,6 +332,20 @@ TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesi�
 SHRUNK_CHARS = 1200
 SHRUNK = "\n[Resultado recortado para que quepa el turno: {n} caracteres más de este resultado ya no se muestran]"
 
+# System One, layer 0 (doubt.py): what the model reads when it was not sure of the action it chose. Off unless
+# BAXY_S1_DOUBT holds a threshold; on the 1,839 labelled real requests, below 0.4 held 95 of 210 wrong actions and asked
+# instead of 10 of 1,530 right ones (phase 0, 2026-10-21).
+DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
+              "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
+
+
+def _doubt_threshold() -> float:
+    try:
+        return max(0.0, min(1.0, float(os.environ.get("BAXY_S1_DOUBT", "") or 0)))
+    except ValueError:
+        return 0.0
+
+
 NOT_RUN = json.dumps({"status": "not_run", "reason": "the turn ended before this call ran"})
 # A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
 # 2026-10-15: the model read «not run» for a call the core had executed).
@@ -858,6 +872,13 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or f"call_{len(conv)}_{index}", "wire": wire, "arguments": arguments})
+        if calls and self._doubts(stage, turn, final, calls[0], reply):
+            # System One, layer 0: the model was not sure of this action. Nothing runs; it is told so where it reads and
+            # asks the person, in its own words, what they want (the call it nearly made never enters the conversation).
+            conv.append({"role": "user", "content": DOUBT_NOTE.format(call=calls[0]["wire"])})
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
+                      operation=self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"]), arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
                 {"id": c["id"], "type": "function",
@@ -872,6 +893,17 @@ class Mind:
         if content:
             conv.append({"role": "assistant", "content": content})
         return self._result(request_id, turn, None, reply, stage, started, content)
+
+    def _doubts(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None) -> bool:
+        """Layer 0 on (BAXY_S1_DOUBT, a confidence threshold) and the turn's first decision is an action the model was
+        not sure of. Asking and confirming are never held: they already put the person in the loop."""
+        threshold = _doubt_threshold()
+        if not threshold or final or stage != "turn.decide" or turn.get("beat"):
+            return False
+        if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
+            return False
+        doubt = read_doubt(reply)
+        return doubt is not None and doubt["confidence"] < threshold
 
     def _result(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any] | None, reply: dict | None,
                 stage: str, started: float, content: str) -> dict[str, Any]:
