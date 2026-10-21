@@ -28,7 +28,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     }
 
     public bool CanHandle(string operation) =>
-        operation is "message.draft" or "message.send.test";
+        operation is "message.draft" or "message.send" or "message.send.test";
 
     // MSG §6 (owner decisions 2026-09-17 and 2026-09-18 §3): real sends are allowed ONLY to the owner's own test
     // destinations. message.send.test forces the destination to these by construction; the requested recipient is
@@ -79,6 +79,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 "message.send.test" => await SendTestAsync(arguments, cancellationToken)
                     .ConfigureAwait(false),
                 "message.draft" => await DraftAsync(arguments, cancellationToken)
+                    .ConfigureAwait(false),
+                "message.send" => await SendAsync(arguments, cancellationToken)
                     .ConfigureAwait(false),
                 _ => Failure(operation, "external_operation_not_supported"),
             };
@@ -154,6 +156,73 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("draftRead", draft.Read),
                 ("draftMatch", draft.Match),
                 ("authority", "desktop_client_composer_ocr_postread")));
+    }
+
+    // Uso real 2026-10-21 (decisión del dueño: «si le pido que mande un mensaje, lo tiene que mandar»): the message is
+    // sent to the person named, by the same verified send as the test channel's (written, send pressed, read back in
+    // the chat). Its yes is RiskPolicy's (asked in normal mode, not in Bypass); the chat is opened only when its name
+    // is exact, as the draft's is.
+    private async ValueTask<ExternalCapabilityReceipt> SendAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        string channel = RequiredString(arguments, "channel");
+        string recipient = RequiredString(arguments, "recipient");
+        string text = RequiredString(arguments, "text");
+        DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
+            channel,
+            cancellationToken).ConfigureAwait(false);
+        if (!client.Ready)
+        {
+            return Failure(
+                "message.send",
+                client.ErrorCode ?? $"{channel}_client_not_running",
+                client.Opened);
+        }
+
+        DesktopRecipientObservation observation = await _automation.ResolveAsync(
+            channel,
+            recipient,
+            cancellationToken).ConfigureAwait(false);
+        if (Unresolved("message.send", observation) is { } unresolved)
+        {
+            return unresolved;
+        }
+
+        var resolved = new ResolvedRecipient(
+            channel,
+            recipient,
+            observation.Shown!,
+            observation.WindowHandle,
+            observation.ProcessId);
+        DesktopMessageObservation sent = await _automation.SendAsync(
+            resolved,
+            text,
+            cancellationToken).ConfigureAwait(false);
+        if (!sent.Verified)
+        {
+            return Failure(
+                "message.send",
+                sent.ErrorCode ?? "message_delivery_not_verified",
+                sent.EffectObserved,
+                sent.EffectMayHaveOccurred);
+        }
+
+        return Success(
+            "message.send",
+            JsonObject(
+                ("version", 1),
+                ("channel", channel),
+                ("recipient", recipient),
+                ("displayName", resolved.Shown),
+                ("text", text),
+                ("sent", true),
+                ("clientOpened", client.Opened),
+                ("evidenceHash", sent.EvidenceHash),
+                ("deliveryRead", sent.Read),
+                ("deliveryMatch", sent.Match),
+                ("networkDeliveryRead", false),
+                ("authority", "desktop_client_send_ocr_postread")));
     }
 
     private async ValueTask<ExternalCapabilityReceipt> SendTestAsync(

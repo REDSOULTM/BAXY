@@ -1114,6 +1114,20 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "message.draft.client.composer.visible.postread.v1",
             "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), deja el mensaje escrito en el cuadro de redacción, lo corrobora en pantalla y se detiene sin enviarlo: la persona lo envía; en WhatsApp, hasta 8 candidatos (candidateCount)."),
+        // Uso real 2026-10-21 (decisión del dueño): «mándale un mensaje» se envía. El mismo envío verificado de
+        // message.send.test, al destinatario nombrado; pide el sí en modo normal (RiskPolicy), no en Bypass.
+        Descriptor(
+            "message.send",
+            Schema(
+                [
+                    String("channel", values: ["discord", "whatsapp"]),
+                    String("recipient", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true),
+                ],
+                ["channel", "recipient", "text"]),
+            OperationRisks.ExternalCommunication,
+            "message.send.client.composer.send.ocr.postread.v1",
+            "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), escribe el mensaje, pulsa enviar y lee en el chat que salió; en modo normal pide antes el sí de la persona; en WhatsApp, hasta 8 candidatos (candidateCount) cuando el nombre no es exacto."),
         Descriptor(
             "message.send.test",
             Schema(

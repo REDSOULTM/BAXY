@@ -134,12 +134,19 @@ public sealed class ProductCatalogTests
         "game.purchase.commit",
         "game.purchase.prepare",
         "message.recipient.resolve",
-        "message.send",
         "task.resolve.exact",
     ];
 
+    // Uso real 2026-10-21 (decisión del dueño: «si le pido que mande un mensaje, lo tiene que mandar»): message.send
+    // vuelve, ya no como el paso interno retirado sino como el envío verificado al destinatario nombrado, con el sí en
+    // modo normal.
+    internal static readonly string[] UsoRealAdditions =
+    [
+        "message.send",
+    ];
+
     // Every operation of the catalog is offered to the model as a tool.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2;
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
@@ -341,7 +348,8 @@ public sealed class ProductCatalogTests
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
-                    .And.SupersetOf(RenewAgentAdditions).And.SupersetOf(RenewRealesAdditions));
+                    .And.SupersetOf(RenewAgentAdditions).And.SupersetOf(RenewRealesAdditions)
+                    .And.SupersetOf(UsoRealAdditions));
             Assert.That(descriptors.Select(static descriptor => descriptor.Name),
                 Has.None.AnyOf(RenewRetired));
             Assert.That(

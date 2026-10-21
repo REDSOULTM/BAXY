@@ -53,6 +53,8 @@ public sealed class OperationRegistryTests
     // the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo Normal BAXY
     // confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct».
     [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
+    // Uso real 2026-10-21: a message sent to the person named asks in normal mode (Bypass, D3's own path, does not).
+    [TestCase("message.send", PolicyDecision.RequireConfirmation)]
     [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
     [TestCase("media.play.query", PolicyDecision.Allow)]
     [TestCase("streaming.play.named", PolicyDecision.Allow)]

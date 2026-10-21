@@ -41,6 +41,7 @@ public static partial class RiskPolicy
     private static readonly HashSet<string> ExternalRequiringConfirmation = new(StringComparer.Ordinal)
     {
         "calendar.event.create",
+        "message.send",
         "message.send.test",
         "email.latest.reply",
         "email.send",

@@ -71,6 +71,7 @@ internal static class ExternalCapabilityHandlers
         "media.play.youtube",
         "media.status",
         "message.draft",
+        "message.send",
         "message.send.test",
         "office.document.create",
         "office.document.read",

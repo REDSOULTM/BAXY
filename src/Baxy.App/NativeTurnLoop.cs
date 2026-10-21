@@ -492,7 +492,7 @@ internal sealed class NativeTurnLoop
     private static bool SendsInputToAWindow(string operation, JsonObject arguments) =>
         operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
             or "input.select.all" or "input.scroll" or "input.keyboard.layout" or "clipboard.copy" or "clipboard.paste"
-            or "message.draft" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
+            or "message.draft" or "message.send" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
             or "game.launch" or "window.focus" or "window.maximize" or "window.minimize.all" or "window.move"
             or "window.resize" or "window.snap" or "file.open" or "filesystem.file.open.latest" or "filesystem.folder.open"
             or "browser.page.read" or "browser.tabs.list"

@@ -312,6 +312,31 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // Uso real 2026-10-21 (decisión del dueño): «mándale» sends, to the person named (not a test destination).
+    [Test]
+    public async Task ASendGoesToThePersonNamedAndSaysItWasReadBack()
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Vicho"),
+            new DesktopMessageObservation(true, true, "evidence_hash", null, "Voy en camino 15:32", "exact"));
+        using var adapter = new DesktopMessagingAdapter(automation, Path.Combine(Path.GetTempPath(), "no-such-destinations.json"));
+
+        ExternalCapabilityReceipt sent = await adapter.InvokeAsync(
+            "message.send",
+            Json("""{"channel":"whatsapp","recipient":"Vicho","text":"Voy en camino"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sent.Verified, Is.True);
+            Assert.That(sent.Result?.GetProperty("sent").GetBoolean(), Is.True);
+            Assert.That(sent.Result?.GetProperty("recipient").GetString(), Is.EqualTo("Vicho"));
+            Assert.That(sent.Result?.GetProperty("deliveryMatch").GetString(), Is.EqualTo("exact"));
+            Assert.That(automation.SentRecipient?.Name, Is.EqualTo("Vicho"));
+            Assert.That(automation.SentText, Is.EqualTo("Voy en camino"));
+        });
+    }
+
     [Test]
     public async Task AmbiguousPostSendEvidencePreservesPossibleEffect()
     {
@@ -348,6 +373,7 @@ public sealed class DesktopMessagingAdapterTests
     // Ronda B: a draft typed and not seen in the composer is cleared; the keys reached it, so the send and the draft
     // both say an effect may have occurred (never a clean failure, never an observed effect).
     [TestCase("message.send.test", """{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}""")]
+    [TestCase("message.send", """{"channel":"whatsapp","recipient":"Letras","text":"Hola"}""")]
     [TestCase("message.draft", """{"channel":"whatsapp","recipient":"Letras","text":"Hola"}""")]
     public async Task ADraftTypedAndNotSeenSaysAnEffectMayHaveOccurred(string operation, string arguments)
     {
