@@ -1152,6 +1152,36 @@ internal static partial class VisibleControlSurface
         return new SurfaceAfterWait(seen, moved, !moved && !SameSurface(located, seen));
     }
 
+    internal const int StableSurfacePauseMs = 150;
+    internal const int StableSurfaceReads = 10;
+
+    /// <summary>
+    /// PLAN_GENERAL A3 (uso real 2026-10-20: Steam's store refused four clicks, «visible_surface_changed_while_waiting»,
+    /// its page still animating): a surface that changed is captured again after short pauses until two captures in a
+    /// row are the same surface (Playwright's «stable»: the same box on two frames), within a bound; that still capture,
+    /// or null when it never settled or could not be read.
+    /// </summary>
+    internal static async ValueTask<CapturedWindow?> StableSurfaceAsync(
+        CapturedWindow latest,
+        Func<nint, CancellationToken, ValueTask<CapturedWindow?>> capture,
+        Func<int, CancellationToken, Task> delay,
+        CancellationToken cancellationToken)
+    {
+        CapturedWindow previous = latest;
+        for (int read = 0; read < StableSurfaceReads; read++)
+        {
+            await delay(StableSurfacePauseMs, cancellationToken).ConfigureAwait(false);
+            CapturedWindow? next = await capture(previous.Hwnd, cancellationToken).ConfigureAwait(false);
+            if (next is not { } seen)
+                return null;
+            if (SameSurface(previous, seen))
+                return seen;
+            previous = seen;
+        }
+
+        return null;
+    }
+
     // M132 (owner script t36 «abre … y ve a la biblioteca», launched cold): the opening was verified on the
     // client's updater window (400×129, its own process) and the click looked at the front window for its whole
     // budget, but the main window came seconds later from a helper process the client started, and the front had

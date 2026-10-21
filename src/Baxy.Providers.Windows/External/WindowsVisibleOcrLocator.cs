@@ -47,9 +47,10 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // The control under the word, pressed through the accessible tree when it has a way (no cursor); the
             // pointer only when the worker says nothing there has one, behind the pointer's guard and inside a burst
             // of the foreground lease (GOAL_COMPUTER_USE_V3 point 0, fix 3): after a pause of the person, with the
-            // window read again inside the burst. Moved or resized, nothing is clicked; redrawn, the word is located
-            // again on the new capture (a blinking caret redraws too), which is the baseline of the post-read, so a
-            // change the person made while waited for is never the click's.
+            // window read again inside the burst. Redrawn, the word is located again on the new capture (a blinking
+            // caret redraws too), which is the baseline of the post-read, so a change the person made while waited for
+            // is never the click's; still changing, or moved or resized, it is located on the first still capture
+            // (PLAN_GENERAL A3), and nothing is clicked when none comes.
             async ValueTask<(int X, int Y)?> Relocate(VisibleControlSurface.CapturedWindow again, CancellationToken token)
             {
                 WordHit? relocated = await LocateAsync(engine, again.Bmp, label, token).ConfigureAwait(false);

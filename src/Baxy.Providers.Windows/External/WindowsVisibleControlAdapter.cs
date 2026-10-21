@@ -419,16 +419,22 @@ internal static class LocatedPointPress
         // Ronda final 18 (regla 3): a window not read again is said unread, never «changed».
         if (recheck.Again is not { } again)
             return new PointerChecked(screenX, screenY, null, false, VisibleControlSurface.SurfaceUnread);
-        if (recheck.Moved)
-            return new PointerChecked(screenX, screenY, null, false, VisibleControlSurface.SurfaceChangedWhileWaiting);
-        if (!recheck.Redrawn)
+        if (!recheck.Moved && !recheck.Redrawn)
             return new PointerChecked(screenX, screenY, again, false, null);
-        (int X, int Y)? found = relocate is null
+        (int X, int Y)? found = relocate is null || recheck.Moved
             ? null
             : await relocate(again, cancellationToken).ConfigureAwait(false);
-        return found is { } point
-            ? new PointerChecked(point.X, point.Y, again, true, null)
-            : new PointerChecked(screenX, screenY, null, true, VisibleControlSurface.SurfaceChangedWhileWaiting);
+        if (found is { } point)
+            return new PointerChecked(point.X, point.Y, again, true, null);
+        // PLAN_GENERAL A3: the surface was still changing (an animation, a page loading, the window moved): it is waited
+        // on until two captures in a row are the same, and the label is located again on that still capture.
+        if (relocate is not null
+            && await VisibleControlSurface.StableSurfaceAsync(
+                    again, (hwnd, token) => ReadAsync(capture, hwnd, token),
+                    (ms, token) => Task.Delay(ms, token), cancellationToken).ConfigureAwait(false) is { } still
+            && await relocate(still, cancellationToken).ConfigureAwait(false) is { } settled)
+            return new PointerChecked(settled.X, settled.Y, still, true, null);
+        return new PointerChecked(screenX, screenY, null, true, VisibleControlSurface.SurfaceChangedWhileWaiting);
     }
 
     // The post-read's baseline: the check's own capture when it is the window's own drawing, otherwise that drawing
