@@ -68,7 +68,8 @@ internal interface IUserBrowserPlatform
 
     IReadOnlyList<UserBrowserWindow> ListWindows(string processName);
 
-    /// <summary>Puts the window in front, where the keys typed next go; whether it holds the front.</summary>
+    /// <summary>Puts the window in front, where the keys typed next go, and records it as the surface BAXY just put on
+    /// show (a keyboard act with no window goes to it); whether it holds the front.</summary>
     ValueTask<bool> BringToFrontAsync(nint window, CancellationToken cancellationToken);
 
     /// <summary>The media sessions, or null when they could not all be read.</summary>
@@ -154,6 +155,10 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
     // Under the gate of the opening guards, and said before it happens, as a lease takes the front (ForegroundLease).
     public async ValueTask<bool> BringToFrontAsync(nint window, CancellationToken cancellationToken)
     {
+        // PLAN_GENERAL B2 (uso real 2026-10-20: the text typed after a page was opened went to Spotify): the page just
+        // opened is what BAXY put on show, as an opened application is, so a key or a text with no window of its own
+        // goes to it through the lease, or nowhere (OpenedApplicationKeyboard), and a click acts on it (M132).
+        VisibleControlSurface.NoteOpened(VisibleControlSurface.WindowProcess(window).ProcessId, launched: false, window);
         await Applications.ForegroundHandBack.FrontGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
