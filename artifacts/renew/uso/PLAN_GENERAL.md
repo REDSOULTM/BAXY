@@ -58,6 +58,25 @@ Descartado con evidencia:
 - CDP y puertos de depuración: agujero de seguridad.
 - Renombrar herramientas: el modelo aprendió los nombres actuales.
 
+## Estado (2026-10-21, todo en `uso-real`)
+
+| Pieza | Estado | Medido o probado |
+|---|---|---|
+| A1 familia de la ventana | Hecho, 4118a7e45 | Epic `unreal`, Steam `cef`, Spotify/Opera/Discord/VS Code `chromium` (clases medidas en redpc); en el recibo de la mirada |
+| A2 árbol despertado y asentado | Hecho, 4118a7e45 | Pruebas; falta verlo en uso real |
+| A3 superficie quieta antes de pulsar | Hecho, 2d07b43cb | Pruebas; falta verlo en Steam |
+| A4 verificación por diferencia | Ya existía en lo esencial (línea base justo antes del clic, ventanas que se animan solas descartadas); queda el refinamiento de capturar con el puntero encima | — |
+| A5 visión de respaldo | Hecho, 293357a9a: el escalón `vision` heredado, apuntado al servidor de la mente con el proyector en CPU, pregunta en `bbox_2d` | Medido en Epic: c2-e1.0 10/10 (5 textos, 5 iconos) a ~8 s; en el servidor de BAXY 2/2 a ~10 s; VRAM sin cambio, +0,6 GB de RAM; el latido siguiente reevaluó 689 de 43.579 tokens (el prefijo vuelve de `-cram`) |
+| A6 frase de lugares desde los datos | Hecho, 26d66733e | decision2 s0 230/268 (ref. 229) |
+| A7 Steam con `-cef-force-accessibility` | Descartado | Medido: la opción llega a steamwebhelper y sus 4 ventanas internas siguen con 0 elementos con nombre; Steam devuelto a como estaba |
+| B1 identidad aprendida y carpetas de arquitectura | Hecho, 3756acf93 | `app.open` de Epic ya verifica (antes «?») |
+| B2 la página abierta recibe el teclado | Hecho, eb5274fc7 | Pruebas; falta el caso Opera con Spotify delante |
+| B3 primer plano cedido por PID | Hecho, 2f19c8b8a | Pruebas |
+| C1 referencias cortas | Hecho, cf29f2510 | Pruebas; falta el clima con Google News |
+| C2 ayuda de la misma llamada | Hecho, cf29f2510 | Saltó en uso real (Epic, 01:48) |
+| C4 instalar no es buscar | Hecho, 26d66733e | decision2 s0 230/268 |
+| Espera del lugar dibujado (nueva, del uso real) | Hecho, c5be279bb | Causa medida: la búsqueda de Epic llegó 1-2 s después y la mirada leyó la página anterior |
+
 ## Arreglos de la sesión: cuáles son generales
 
 | Arreglo | General | Generalización |
