@@ -60,4 +60,34 @@ public sealed class VisionAnswerTests
             Assert.That(WindowsVisibleVisionLocator.OtherTextAt(null, "Carrito", 175, 201), Is.Null, "nothing read");
         });
     }
+
+    // The launcher as captured on the notebook (1938×1038): the point answered missed the word «Tienda» by 8 px, inside its
+    // entry; the cart icon (1688,108) has no word near it.
+    [Test]
+    public void APointBesideAnotherLabelsWordIsStillOnThatLabel()
+    {
+        var layout = new[]
+        {
+            new WindowsVisibleOcrLocator.LayoutLine("Tienda", 109, 205, 58, 20,
+                [new WindowsVisibleOcrLocator.LayoutWord("Tienda", 109, 205, 58, 20)]),
+            new WindowsVisibleOcrLocator.LayoutLine("Noticias", 1001, 99, 70, 20,
+                [new WindowsVisibleOcrLocator.LayoutWord("Noticias", 1001, 99, 70, 20)]),
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsVisibleVisionLocator.OtherTextAt(layout, "Carrito", 175, 202), Is.EqualTo("Tienda"));
+            Assert.That(WindowsVisibleVisionLocator.OtherTextAt(layout, "Carrito", 1688, 108), Is.Null);
+        });
+    }
+
+    [Test]
+    public void TheSecondQuestionSaysWhichControlItIsNot()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsVisibleVisionLocator.Prompt("Carrito", "Tienda"),
+                Does.Contain("It is not the control labelled «Tienda»"));
+            Assert.That(WindowsVisibleVisionLocator.Prompt("Carrito"), Does.Not.Contain("It is not"));
+        });
+    }
 }
