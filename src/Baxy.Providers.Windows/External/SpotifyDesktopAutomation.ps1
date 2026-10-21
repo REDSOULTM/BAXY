@@ -464,7 +464,12 @@ try {
             foreach($element in $all){try{if($element.Type -eq [Windows.Automation.ControlType]::Button -and $element.Fold -in @('pausar','pause')){$alreadyPausedControl=$true;break}}catch{}}
             $beforeNowPlaying=''
             foreach($element in $all){try{$name=$element.Fold;if($name.StartsWith($prefix+' ')){$beforeNowPlaying=$name.Substring($prefix.Length+1);break}}catch{}}
-            $choice=Select-BaxySpotifySearchResult $all $pageBefore $Mode $foldTitle $expectedPlay $searchRect $windowRect
+            $resultsGroup=@($all|Where-Object {$_.Type -eq [Windows.Automation.ControlType]::Group -and $_.Fold -in @('spotify buscar','spotify search')})[0]
+            # Uso real («los Bunkers» after «búnkers»): with the box already holding the query no page before is set
+            # aside, and the leftmost play control in the window was the library sidebar's «Reproducir Tus Me Gusta».
+            # Results are bound to the results page's own view when it shows (the sidebar is outside it).
+            $resultsRect=if($null -ne $resultsGroup -and $resultsGroup.Rect.Width -gt 0){$resultsGroup.Rect}else{$windowRect}
+            $choice=Select-BaxySpotifySearchResult $all $pageBefore $Mode $foldTitle $expectedPlay $searchRect $resultsRect
             $playCandidate=$choice.Play
             $candidate=$choice.Card
             $candidateIdentity=$choice.Identity
@@ -480,7 +485,7 @@ try {
             # Reproductor web: …»). Until it shows, play controls are not results: a cold client draws Home and library
             # rows after the page before was read (fin2: «reproducir descubrimiento semanal»). At the horizon the last
             # observation is taken as it is.
-            $resultsShown=$Mode -ne 'query' -or @($all|Where-Object {$_.Type -eq [Windows.Automation.ControlType]::Group -and $_.Fold -in @('spotify buscar','spotify search')}).Count -gt 0
+            $resultsShown=$Mode -ne 'query' -or $null -ne $resultsGroup
             $searchPageReady=$resultsShown -and ($null -ne $playCandidate -or $null -ne $candidate)
             $searchObservationError=$null
         } catch {

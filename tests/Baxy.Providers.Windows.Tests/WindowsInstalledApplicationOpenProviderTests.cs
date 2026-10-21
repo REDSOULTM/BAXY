@@ -71,6 +71,13 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     [TestCase(@"C:\Users\p\AppData\Local\Chat\app-1.0.9260\bin\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", false)]
     [TestCase(@"C:\Users\p\AppData\Local\Chat\app-1.0.9260\Update.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", false)]
     [TestCase(@"D:\Tools\Chat.exe", @"C:\Users\p\AppData\Local\Chat\Chat.exe", false)]
+    // Uso real (Epic Games Launcher): the 32-bit launcher starts its 64-bit sibling, which owns the window.
+    [TestCase(@"C:\Epic\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe",
+        @"C:\Epic\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe", true)]
+    [TestCase(@"C:\Other\Binaries\Win64\EpicGamesLauncher.exe",
+        @"C:\Epic\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe", false)]
+    [TestCase(@"C:\Epic\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe",
+        @"C:\Epic\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe", false)]
     public void LauncherShortcutAcceptsOnlyItsDirectVersionedImage(string actual, string expected, bool accepted)
     {
         Assert.That(WindowsInstalledApplicationPlatform.ExecutableIsLaunchedImage(actual, expected),

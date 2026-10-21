@@ -68,6 +68,9 @@ internal interface IUserBrowserPlatform
 
     IReadOnlyList<UserBrowserWindow> ListWindows(string processName);
 
+    /// <summary>Puts the window in front, where the keys typed next go; whether it holds the front.</summary>
+    ValueTask<bool> BringToFrontAsync(nint window, CancellationToken cancellationToken);
+
     /// <summary>The media sessions, or null when they could not all be read.</summary>
     ValueTask<IReadOnlyList<UserMediaSession>?> ReadMediaSessionsAsync(CancellationToken cancellationToken);
 
@@ -146,6 +149,21 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         {
             UseShellExecute = true,
         });
+    }
+
+    // Under the gate of the opening guards, and said before it happens, as a lease takes the front (ForegroundLease).
+    public async ValueTask<bool> BringToFrontAsync(nint window, CancellationToken cancellationToken)
+    {
+        await Applications.ForegroundHandBack.FrontGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            LeaseFrontSignal.Mark(window);
+            return VisibleControlSurface.BringToFront(window);
+        }
+        finally
+        {
+            _ = Applications.ForegroundHandBack.FrontGate.Release();
+        }
     }
 
     public IReadOnlyList<UserBrowserWindow> ListWindows(string processName)

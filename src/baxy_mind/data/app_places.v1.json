@@ -43,6 +43,14 @@
     "directs": {"address": "discord://-/channels/@me"}
    }
   },
+  "Epic Games Launcher": {
+   "_about": "Uso real 2026-10-20 («en Epic Games ve a la tienda de Fortnite»: siete clics sin ventana). El lanzador no expone nada al árbol de accesibilidad (0 elementos con nombre), así que dentro de él sólo llegan sus direcciones propias. Medido en redpc el 2026-10-20 con el lanzamiento del shell y una captura de su ventana: com.epicgames.launcher://store abre la portada de la Tienda y …/store/browse?q=rocket%20league la búsqueda de la tienda con ese filtro (Fortnite: …/store/p/fortnite llega a su página). …://library no cambia de página: no es un lugar.",
+   "schemes": ["com.epicgames.launcher"],
+   "places": {
+    "results": {"address": "com.epicgames.launcher://store/browse?q={query}"},
+    "store": {"address": "com.epicgames.launcher://store"}
+   }
+  },
   "Spotify": {
    "schemes": ["spotify"],
    "places": {
@@ -82,6 +90,8 @@
   {"application": "Steam", "goal": "ir a comunidad", "place": "community", "address": "steam://url/CommunityHome"},
   {"application": "Steam", "goal": "buscar Cuphead", "place": "results", "value": "Cuphead", "address": "steam://openurl/https://store.steampowered.com/search/?term=Cuphead"},
   {"application": "Steam", "goal": "ir a pagina de rocket league", "place": "game", "value": "252950", "address": "steam://store/252950"},
+  {"application": "Epic Games Launcher", "goal": "ir a la tienda", "place": "store", "address": "com.epicgames.launcher://store"},
+  {"application": "Epic Games Launcher", "goal": "buscar rocket league", "place": "results", "value": "rocket league", "address": "com.epicgames.launcher://store/browse?q=rocket%20league"},
   {"application": "Spotify", "goal": "ir a inicio", "place": "home", "address": "spotify:home"},
   {"application": "Spotify", "goal": "ir a search", "place": "search", "address": "spotify:search"},
   {"application": "Spotify", "goal": "buscar Los Bunkers", "place": "results", "value": "Los Bunkers", "address": "spotify:search:Los%20Bunkers"}

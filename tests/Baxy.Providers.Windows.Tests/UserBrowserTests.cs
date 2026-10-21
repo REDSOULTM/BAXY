@@ -94,6 +94,7 @@ public sealed class UserBrowserTests
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("user_browser_uia_address_postread"));
             Assert.That(harness.Edge.NavigateCalls, Is.Zero, "the product browser is not launched");
+            Assert.That(platform.Fronted, Is.EqualTo(new[] { 11 }), "the page asked to be seen is put in front");
         });
     }
 
@@ -117,6 +118,7 @@ public sealed class UserBrowserTests
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
             Assert.That(receipt.Result, Is.Null);
             Assert.That(harness.Edge.NavigateCalls, Is.Zero, "an opened link is never repeated elsewhere");
+            Assert.That(platform.Fronted, Is.Empty, "another site's window is never put in front");
         });
     }
 
@@ -2106,6 +2108,14 @@ public sealed class UserBrowserTests
                 throw new System.ComponentModel.Win32Exception(1155, "No application is associated.");
             Opened.Add(address.AbsoluteUri);
             _opened = true;
+        }
+
+        internal List<int> Fronted { get; } = [];
+
+        public ValueTask<bool> BringToFrontAsync(nint window, CancellationToken cancellationToken)
+        {
+            Fronted.Add((int)window);
+            return ValueTask.FromResult(true);
         }
 
         public IReadOnlyList<UserBrowserWindow> ListWindows(string processName)

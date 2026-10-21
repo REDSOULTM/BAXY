@@ -101,6 +101,11 @@ internal sealed partial class UserBrowserSurface
             browser, target, address => SameSite(target, address), before, cancellationToken).ConfigureAwait(false);
         if (seen.Address is null)
             return ExternalJson.FailureAfterEffect(operation, NavigationUnconfirmed);
+        // Uso real (Opera GX behind Spotify): the shell opened the tab, but this background process had no right to hand
+        // the front over, so the page stayed behind and the text typed next went to the window in front. The page the
+        // person asked to see is put in front, as a click on a link does.
+        if (seen.Window != 0)
+            _ = await _platform.BringToFrontAsync(seen.Window, cancellationToken).ConfigureAwait(false);
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();

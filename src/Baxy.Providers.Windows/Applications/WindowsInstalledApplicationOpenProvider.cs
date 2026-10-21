@@ -1989,6 +1989,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     /// installers put a launcher next to <c>app-1.0.9260\</c> and the window
     /// belongs to the copy inside (t4-r6: «cierra discord» → window_not_found).
     /// A same-named executable anywhere else is a different program.
+    /// Uso real 2026-10-20 (Epic Games Launcher): the shortcut's <c>Binaries\Win32\</c> launcher starts the same file
+    /// in its sibling <c>Binaries\Win64\</c> and exits, and that copy owns the window; the 64-bit sibling of a
+    /// <c>Win32</c> folder is the launched image too.
     /// </summary>
     internal static bool ExecutableIsLaunchedImage(string actualPath, string expectedPath)
     {
@@ -2001,6 +2004,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         string? launcherFolder = Path.GetDirectoryName(expectedPath);
         if (versioned is null || launcherFolder is null)
             return false;
+        if (string.Equals(Path.GetFileName(launcherFolder), "Win32", StringComparison.OrdinalIgnoreCase)
+            && string.Equals(Path.GetFileName(versioned), "Win64", StringComparison.OrdinalIgnoreCase)
+            && string.Equals(Path.GetDirectoryName(versioned), Path.GetDirectoryName(launcherFolder),
+                StringComparison.OrdinalIgnoreCase))
+            return true;
         return string.Equals(Path.GetDirectoryName(versioned), launcherFolder, StringComparison.OrdinalIgnoreCase)
             && VersionedFolder.IsMatch(Path.GetFileName(versioned));
     }
