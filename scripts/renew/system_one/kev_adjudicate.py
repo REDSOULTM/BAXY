@@ -81,6 +81,7 @@ def main():
     parser.add_argument("--gguf", required=True)
     parser.add_argument("--server", default=r"F:\BAXYeval\llama\llama-server.exe")
     parser.add_argument("--threads", default="8")
+    parser.add_argument("--port", type=int, default=18951, help="one per run that shares the machine")
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
     args = parser.parse_args()
     sys.path.insert(0, str(bench.ROOT / "src"))
@@ -93,7 +94,7 @@ def main():
     described[ANSWER] = "contestar con palabras, sin usar herramientas"
     described["ask_user"] = "preguntar a la persona lo que falta o lo que no está claro"
 
-    port = 18951
+    port = args.port
     log = open(runs / f"s1kev-{args.label}.server.log", "w", encoding="utf-8")
     server = subprocess.Popen([args.server, "-m", args.gguf, "--port", str(port), "-ngl", "0", "-t", args.threads,
                                "-c", "4096", "-np", "1"], stdout=log, stderr=subprocess.STDOUT)
