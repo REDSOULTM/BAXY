@@ -30,6 +30,12 @@ El plan general (investigación y piezas A1-A7, B1-B3, C1-C4) está en `PLAN_GEN
 | 9 | «Ábrela en mi navegador» tras leer una guía buscaba archivos | El modelo eligió mal | (Pasa ahora) | e2e U11 en todas las corridas |
 | 23 | Buscar un juego en la tienda de Steam: pulsaba el buscador cuatro veces y decía «no pude escribir» sin escribir | El clic sí había puesto el cursor (la indicación desapareció, `labelStillOnScreen: false`), y el modelo no lo sabía | Ayuda `field_focused_next` (bd8dbd3b7): tras un clic completado cuyo texto ya no se ve, se dice que el campo puede tener el cursor y que lo siguiente es `input_text_type`; una vez por turno, en `turn.aid` | e2e U06 en nb-9: escribió, pulsó el resultado y quedó en la página del juego |
 
+| 24 | Preguntar por un dato guardado («¿cómo me llamo?»): «no lo tengo guardado» sin consultar la memoria; el guardado siguiente chocó con el recuerdo que sí existía | El modelo no llamó a `memory_recall` | Ejemplo «¿cómo me llamo?» en `memory_recall` (cb1fd41aa); decision2 s0 231/268 (base 232) | Pendiente de la prueba del dueño |
+| 25 | «Estás en una llamada» sin llamada: BAXY ofreció pausar la música | Windows dejaba como en uso registros viejos del micrófono (carpetas antiguas de Discord, un juego de meses atrás) y el latido los creía (`HeartbeatMoment.cs`) | Un uso cuenta sólo si empezó tras el arranque y, en un programa de escritorio, si su ejecutable corre (f8adb4951, `MicrophoneUse`) | Kernel 592/592; leído en el registro del PC |
+| 26 | «Sal de pantalla completa»: tres «close» fallidos (`user_browser_page_unreadable`) | `browser_control` no tenía acción para salir; el modelo eligió cerrar, que lee la barra de pestañas que la pantalla completa oculta | Acción `exit_fullscreen` (e77ade350, 8e9433d92): el botón de salir de la página por UI Automation (CDP en el navegador propio), probada por la ventana que deja de cubrir el monitor; decision2 s0 231/268 | e2e U17 en nb-13 |
+| 27 | YouTube puso otro tema que el pedido (el primer resultado) | El proveedor tomaba siempre el primer vídeo | De los cinco primeros, el primero cuyo título lleva todas las palabras buscadas; si ninguno, el primero con `titleMatchesQuery: false` | Pruebas de `YouTubeSearch` |
+| 28 | Steam: la página de un juego; el modelo pulsó «Chrome Legacy Window» | La vista listaba la superficie de dibujo de Chromium sin accesibilidad como el control 0 | El worker de UIA no la lista (clase de `render_surface_classes` y el nombre fijo de Chromium) (90e9e23a5) | e2e U16 en nb-13 |
+
 ## Pendientes
 
 | # | Caso (genérico) | Causa | Estado |
@@ -41,6 +47,8 @@ El plan general (investigación y piezas A1-A7, B1-B3, C1-C4) está en `PLAN_GEN
 | 18 | «La configuración del sistema… pantalla» abre msconfig, protegido, en vez de Configuración | El modelo confunde dos nombres casi iguales; el recibo ya le dice qué app tiene el lugar | Límite del modelo |
 | 19 | Pulsar un icono sin texto (el carrito del lanzador): la visión señaló el botón «Tienda» (icono de bolsa) y el clic se dio por bueno porque la página cambió | Proveedor: la visión no comprobaba qué había escrito bajo su punto (`WindowsVisibleVisionLocator.cs`) | Arreglado en bd8a3f1fe y 0aafc68c1: el OCR lee lo escrito junto al punto (margen lateral de una altura de letra); si es otra etiqueta, se pregunta otra vez diciendo cuál no es, y un segundo punto así no pulsa. En nb-9 y nb-10 rechazó los puntos malos. U05 sigue fallando porque el modelo a veces no pide «Carrito» (pulsa «Tienda» u ofertas): límite del modelo |
 | 20 | Opera GX en el notebook: página «Actualización finalizada» y bucles de pestaña nueva | Entorno (actualización) y el modelo | Pasó en nb-2 y nb-4; repetir con el entorno quieto |
+| 29 | «Pon una canción de rock»: sonó una canción con «rock» en el título | El proveedor de Spotify busca la palabra y toca el primer resultado | Pendiente (buscar por género toca el prefijo) |
+| 30 | Tras pausar, el modelo dijo que la canción «sigue sonando»; el recibo decía `paused` | El modelo narró de más | Límite del modelo |
 | 21 | Steam en el notebook: la ventana no aparece en la mirada | Entorno: el agente local del notebook trabajaba en el escritorio durante nb-5 | Con el entorno quieto (nb-8) Steam sí se vio; luego resuelto como el caso 23 |
 | 22 | Abrir la página de un juego en el lanzador: el modelo pulsó por la tienda hasta la caja de pago de otro juego («Cómpralo ya» ×2) e intentó «Pagar» | Seguro de compras: sólo reconocía el verbo en infinitivo (`RiskPolicy.cs:363`), así que «Cómpralo ya» pasó sin preguntar. «Pagar» sí se detuvo y se respondió «no»: no se pagó nada (journal sin la entrada de ese clic) | Arreglado en 587477ff9: también el imperativo, con pronombre pegado, «Purchase», «Pre-order» y «Adquirir»; el sustantivo («Compras») no. Kernel 588/588, y el patrón probado con el motor de PowerShell del worker de UIA. **Falta la prueba en BAXY**, que espera al dueño |
 
@@ -56,5 +64,8 @@ El plan general (investigación y piezas A1-A7, B1-B3, C1-C4) está en `PLAN_GEN
 | nb-8 | 0/4 (U03, U05, U06, U13) | Con el seguro de compras arreglado y un vigilante que corta todo ante una caja de pago: no cortó nada |
 | nb-9 | U06 1/1, U05 0/1 | Ayuda del campo con el cursor; la visión ya no pulsa sobre otra etiqueta |
 | nb-10 | U05 0/1 | El modelo no pidió «Carrito»; la visión rechazó dos puntos malos |
+| nb-11 | U03 0/1 | Con la frase «buscar en una tienda» (revertida) |
+| nb-12 | 10/17 | Banco con U16 (página de un juego en Steam) y U17 (salir de pantalla completa); estos dos con la ruta del oráculo rota |
+| nb-13 | 3/4 (U11, U16, U17 sí; U12 no) | Sin «Chrome Legacy Window» en la vista y con los oráculos arreglados |
 
 Toda corrida desde nb-8 lleva el vigilante de compras (`guard_compras.ps1`, fuera del repositorio): ninguna caja de pago, ningún clic de compra.
