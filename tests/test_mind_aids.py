@@ -82,6 +82,25 @@ def test_a_click_that_fails_in_an_application_with_places_tells_them_once(tmp_pa
         assert not [r for r in _trace(mind) if r["stage"] == "turn.aid"]
 
 
+def test_a_look_that_fails_after_another_windows_look_still_names_the_opened_applications_places(
+        tmp_path: Path, monkeypatch) -> None:
+    # Uso real 2026-10-21: Epic opened and pressed, then its look found no window and the model looked at the browser.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    not_found = json.dumps({"status": "failed", "error": "application_window_not_found"})
+    looked = json.dumps({"status": "completed", "observed": {"ok": True}})
+    script = [_call("app_open", {"appId": "Epic Games Launcher"}),
+              _call("input_visible_controls", {"application": "Fortnite | Epic Games Store - Opera"}),
+              _call("input_visible_controls", {"application": "Epic Games Launcher"}), _say("Listo.")]
+    mind, server = _mind(tmp_path, script)
+    mind.decide(1, "ahora en la app")
+    mind.continue_turn(2, OPENED)
+    mind.continue_turn(3, looked)
+    mind.continue_turn(4, not_found)
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert tool.endswith("[Ayuda: Epic Games Launcher también se abre directo en sus lugares, sin pulsar: app_open con "
+                         "appId «Epic Games Launcher» y place results (placeValue: lo que se busca), store.]")
+
+
 SETTINGS_AND_TRASH = {"capabilities": [
     {"name": "system.settings.set", "description": "Set a setting.", "argumentsSchema": {"type": "object", "properties": {}}},
     {"name": "filesystem.known.trash.named", "description": "Delete by name.",

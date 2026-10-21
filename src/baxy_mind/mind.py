@@ -183,8 +183,8 @@ APP_PLACES = _app_places()
 
 def places_note(application: str) -> str:
     """Aid «app_places_next» (uso real 2026-10-20: seven clicks in Steam's and Epic's web-drawn windows, whose own
-    addresses app_open already opens): after a click there fails or is unsure, the places the application opens straight
-    at, as a fact; the model chooses. Empty for an application with none."""
+    addresses app_open already opens): after a click or a look there fails or is unsure, the places the application
+    opens straight at, as a fact; the model chooses. Empty for an application with none."""
     places = APP_PLACES.get(_fold(application))
     if not places:
         return ""
@@ -632,10 +632,13 @@ class Mind:
             done.append(entry)
         aids = _aids_seen(observation)
         named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
-        if isinstance(named, dict) and isinstance(named.get("appId") or named.get("application"), str):
-            turn["app_named"] = named.get("appId") or named.get("application")
+        # Uso real: a look at another window (the browser's) came between the opening and the failures; the application
+        # kept is the last one named that has places of its own.
+        application = named.get("appId") or named.get("application") if isinstance(named, dict) else None
+        if isinstance(application, str) and _fold(application) in APP_PLACES:
+            turn["app_named"] = application
         note = ""
-        if (calling == "input_visible_click" and not outcome.startswith("completado")
+        if (calling in {"input_visible_click", "input_visible_controls"} and not outcome.startswith("completado")
                 and turn.get("app_named") and not turn.get("places_told") and _aid_on("app_places_next")):
             note = places_note(turn["app_named"])
             if note:
