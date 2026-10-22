@@ -26,14 +26,17 @@ public sealed class BeatProposalTests
         "memory.disable", "memory.save", "memory.session.clear", "note.create", "note.restore", "note.update",
         "office.document.create", "schedule.alarms", "system.settings.adjust", "task.complete", "task.create",
         "task.reopen", "task.restore", "task.update", "window.minimize", "window.restore",
+        // As before R10.1 (owner, 2026-10-15): reads of the screen and of the person's data, which the heartbeat says
+        // it looked at, and the settings that are not a system change (brightness, a saved Wi-Fi profile).
+        "capture.active.window", "capture.screenshot", "clipboard.read.text", "email.latest.read", "memory.enable",
+        "memory.export", "memory.sensitive.save", "ocr.read", "peripheral.scan", "system.settings.set",
+        "vision.describe", "wifi.connect", "wifi.connect.named",
     ];
 
     [TestCase("system.settings.set", "{\"setting\":\"airplane_mode\",\"value\":1}")]
-    [TestCase("system.settings.set", "{\"setting\":\"brightness\",\"value\":30}")]
     [TestCase("wifi.radio.set", "{\"state\":false}")]
     [TestCase("bluetooth.radio.set", "{\"state\":false}")]
     [TestCase("display.mode.set", "{\"width\":1280,\"height\":720}")]
-    [TestCase("capture.screenshot", "{}")]
     [TestCase("clipboard.write.text", "{\"text\":\"x\"}")]
     [TestCase("app.open", "{\"appId\":\"Spotify\",\"foreground\":true}")]
     [TestCase("web.search", "{\"query\":\"x\"}")]
@@ -41,6 +44,14 @@ public sealed class BeatProposalTests
     public void AHeartbeatProposesWhatIsNotHarmlessAndReversible(string operation, string arguments) =>
         Assert.That(NativeTurnLoop.BeatProposes(ProductCatalog.GetRequired(operation),
             (JsonObject)JsonNode.Parse(arguments)!), Is.True);
+
+    // Measured on the practice scenes (2026-10-22): holding these too took act 4/7 → 1/7 (P007 and P027 lower the
+    // brightness, P024 reconnects the home Wi-Fi).
+    [TestCase("system.settings.set", "{\"setting\":\"brightness\",\"value\":30}")]
+    [TestCase("wifi.connect.named", "{\"ssid\":\"Casa\"}")]
+    public void AHeartbeatActsAloneOnAReversibleSettingThatIsNoSystemChange(string operation, string arguments) =>
+        Assert.That(NativeTurnLoop.BeatProposes(ProductCatalog.GetRequired(operation),
+            (JsonObject)JsonNode.Parse(arguments)!), Is.False);
 
     [Test]
     public void AHeartbeatChangesAloneOnlyWhatTheOwnerCanReviewHere()

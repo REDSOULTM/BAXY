@@ -3,9 +3,9 @@
 usage: py -3.12 -X utf8 scripts/renew/bench_escenas.py <label> --scenes FILE [--catalog FILE] [--src DIR]
 Each scene's context goes to Mind.beat as the App would send it. What the model does is classified by the judge of
 <banks>/escenas/README.md: observing (read-only calls) changes nothing and gets the scene's own context back as its
-result; a call the App holds in a heartbeat for the person's «sí» is a proposal (a risk other than read_only or
-low_reversible, or an effect of the catalog with its arguments: a window, the network, a radio or the display, as
-NativeTurnLoop.BeatProposes reads them; held_by_app); any other
+result; a call the App holds in a heartbeat for the person's «sí» is a proposal (a risk of ProposedRisks, the person's
+clipboard written over, or an effect of the catalog with its arguments: a window, the network, a radio, airplane mode
+or the display, as NativeTurnLoop.BeatProposes reads them; held_by_app); any other
 effect is an action; words alone are a message; LATIDO_OK is silence. The channel (voice or a notification) is the
 App's (HeartbeatMoment.Speaks), not the model's, and is not judged (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
 """
@@ -63,10 +63,27 @@ def heartbeat_holds() -> dict[str, list[list[tuple[str, str, str | None]]]]:
     return holds
 
 
+def beat_rule() -> tuple[set[str], set[str]]:
+    """The risks and the named operations NativeTurnLoop.BeatProposes always holds, read from its source (the risks by
+    their OperationRisks constants, ProtocolConstants.cs)."""
+    loop = (ROOT / "src" / "Baxy.App" / "NativeTurnLoop.cs").read_text(encoding="utf-8")
+    constants = dict(re.findall(r'public const string (\w+) = "([a-z_]+)";',
+                                (ROOT / "src" / "Baxy.Contracts" / "ProtocolConstants.cs").read_text(encoding="utf-8")))
+    block = re.search(r"HashSet<string> ProposedRisks = new\(StringComparer\.Ordinal\)\s*\{(.*?)\};", loop, re.S)
+    rule = re.search(r"static bool BeatProposes\(.*?\n    \}", loop, re.S)
+    if not block or not rule:
+        raise SystemExit("NativeTurnLoop.cs no longer has ProposedRisks and BeatProposes: update bench_escenas.py")
+    risks = {constants[name] for name in re.findall(r"OperationRisks\.(\w+)", block.group(1))}
+    return risks, set(re.findall(r'descriptor\.Name == "([a-z.]+)"', rule.group(0)))
+
+
+PROPOSED_RISKS, PROPOSED_OPERATIONS = beat_rule()
+
+
 def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
-    """As NativeTurnLoop.BeatProposes: a known risk other than read_only or low_reversible, or an effect with these
-    arguments (EffectCondition: a boolean only when true, a text only when not blank, a value in any case)."""
-    if risk is not None and risk not in {"read_only", "low_reversible"}:
+    """As NativeTurnLoop.BeatProposes: a risk of ProposedRisks, an operation it names, or an effect with these arguments
+    (EffectCondition: a boolean only when true, a text only when not blank, a value in any case)."""
+    if risk in PROPOSED_RISKS or op in PROPOSED_OPERATIONS:
         return True
     given = arguments if isinstance(arguments, dict) else {}
 

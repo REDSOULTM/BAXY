@@ -1839,8 +1839,7 @@ public static class ProductCatalog
             Schema([String("profileId", maximumLength: 128, nonWhitespace: true)], ["profileId"]),
             OperationRisks.PrivacySensitive,
             "wifi.connect.wlan.profile.postread.v1",
-            "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales.",
-            effects: [SystemChange()]),
+            "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0170/H0376 «conectate al wifi de
         // casa», D24): «casa» no es un SSID. Con `place`, el proveedor conecta la red
         // que la persona asoció antes a ese lugar; si nombra el perfil y el lugar a la
@@ -1855,8 +1854,7 @@ public static class ProductCatalog
                 ["profileName"]),
             OperationRisks.PrivacySensitive,
             "wifi.connect.named.wlan.profile.postread.v1",
-            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado (o por el lugar asociado antes: casa, trabajo, oficina), lo conecta, verifica el estado sin exponer credenciales y recuerda la asociación lugar→red cuando se dan ambos.",
-            effects: [SystemChange()]),
+            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado (o por el lugar asociado antes: casa, trabajo, oficina), lo conecta, verifica el estado sin exponer credenciales y recuerda la asociación lugar→red cuando se dan ambos."),
         Descriptor(
             "wifi.disconnect",
             EmptySchema(),

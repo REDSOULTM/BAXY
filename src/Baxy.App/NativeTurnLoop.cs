@@ -480,9 +480,21 @@ internal sealed class NativeTurnLoop
     // no radio, network, pairing, airplane or display mode. Privacy_sensitive ran alone (trace nb-beat-none-pC, P026:
     // airplane mode switched on at 8 % battery), and so did a capture, the clipboard's text or the Wi-Fi radio; writing
     // over what the person copied (clipboard.write.text, audit round A) is privacy_sensitive too.
+    // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, instalar, cerrar con trabajo).
+    private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)
+    {
+        OperationRisks.WorkLoss, OperationRisks.RecoverableDelete, OperationRisks.ExternalCommunication,
+        OperationRisks.Installation,
+    };
+
     internal static bool BeatProposes(ProductOperationDescriptor descriptor, JsonObject arguments)
     {
-        if (descriptor.Risk is not (OperationRisks.ReadOnly or OperationRisks.LowReversible))
+        // Renew al máximo R10.1, measured (2026-10-22): holding every risk above low_reversible also held lowering the
+        // brightness at night or on a low battery and reconnecting the home Wi-Fi (practice scenes P007, P027, P024:
+        // act 4/7 → 1/7). What a heartbeat never takes alone is what destroys, reaches a person, installs or writes over
+        // what the person copied, plus the catalog's effects: a window, the network, and a system change (airplane
+        // mode, a radio, the display mode: P026, airplane mode on at 8 % battery).
+        if (ProposedRisks.Contains(descriptor.Risk) || descriptor.Name == "clipboard.write.text")
         {
             return true;
         }
