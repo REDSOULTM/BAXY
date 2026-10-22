@@ -406,6 +406,8 @@ public sealed class ComputerUseWindowIdentityTests
     [TestCase("cmd", "Steam", null, true)]
     [TestCase("Baxy", "Steam", null, true)]
     [TestCase("baxy-core", "Steam", null, true)]
+    // Renew al máximo (B-CU-2): the App as a development host runs it.
+    [TestCase("Baxy.App", "Steam", null, true)]
     [TestCase("Code", null, null, true)]
     // Auditoría final V3: named as Windows names it (its process or its executable's description), never by an alias.
     [TestCase("Code", "code", null, false)]
@@ -431,6 +433,29 @@ public sealed class ComputerUseWindowIdentityTests
     {
         Func<string>? described = description is null ? null : () => description;
         Assert.That(VisibleControlSurface.ProtectedFrom(process, application, described), Is.EqualTo(protectedFrom));
+    }
+
+    // Renew al máximo (B-CU-2): BAXY's chat is Baxy.exe's window, not the Core's (the Core shows none). With the chat in
+    // front, a look or an act without a window named takes the person's window right below it, never BAXY's own; the
+    // person's window in front stays the one. Only described windows: nothing on the desktop is read.
+    [Test]
+    public void TheProductsOwnWindowInFrontGivesWayToThePersonsWindow()
+    {
+        const nint chat = 101, below = 202;
+        var processes = new Dictionary<nint, uint> { [chat] = 4242, [below] = 5151 };
+        var images = new Dictionary<int, string>
+        {
+            [4242] = @"C:\Program Files\BAXY\Baxy.exe",
+            [5151] = @"C:\Apps\editor.exe",
+        };
+        nint Surface(nint front) => VisibleControlSurface.PersonsSurface(
+            front, window => processes[window], _ => true, _ => false, () => [chat, below],
+            process => images.GetValueOrDefault(process));
+
+        Assert.That(Surface(chat), Is.EqualTo(below));
+        Assert.That(Surface(below), Is.EqualTo(below));
+        images[4242] = @"D:\src\Baxy.App\bin\Release\Baxy.App.exe";
+        Assert.That(Surface(chat), Is.EqualTo(below));
     }
 
     // Estabilización D2 (banco h1, s11 and u1: Discord and Spotify already running and minimized, rect -32000; the view

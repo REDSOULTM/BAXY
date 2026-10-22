@@ -87,9 +87,7 @@ internal static partial class ForegroundHandBack
         if (window == 0)
             return 0;
         int process = ProcessOf(window);
-        bool product = process <= 0 || process == Environment.ProcessId
-            || (WindowsInstalledApplicationPlatform.ExecutableImagePath(process) is { } path
-                && Windows.WindowsWindowControlProvider.OwnProcessNames.Contains(Path.GetFileNameWithoutExtension(path)));
+        bool product = process <= 0 || Windows.WindowsWindowControlProvider.ProductProcess(process);
         return PersonWorksIn(product, WindowsUserInputPause.Shared.LastReachingInputMs, Environment.TickCount64) ? window : 0;
     }
 

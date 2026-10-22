@@ -485,6 +485,17 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         "Baxy", "Baxy.App", "baxy-core",
     };
 
+    /// <summary>
+    /// Renew al máximo (B-CU-2): whether <paramref name="processId"/> is the product's own: this process (the Core,
+    /// which shows no window) or one whose executable is named as the product's (<see cref="OwnProcessNames"/>: BAXY's
+    /// chat is Baxy.exe's window). <paramref name="imageOf"/> reads a process's executable (tests give it).
+    /// </summary>
+    internal static bool ProductProcess(int processId, Func<int, string?>? imageOf = null) =>
+        processId == Environment.ProcessId
+        || (processId > 0
+            && (imageOf ?? WindowsInstalledApplicationPlatform.ExecutableImagePath)(processId) is { } path
+            && OwnProcessNames.Contains(Path.GetFileNameWithoutExtension(path)));
+
     private async ValueTask<WindowCloseAllResult> CloseAllReadAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
