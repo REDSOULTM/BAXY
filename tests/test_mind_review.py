@@ -237,3 +237,14 @@ def test_a_reply_of_the_decision_model_that_is_not_its_shape_is_no_answer(monkey
     monkeypatch.setattr(system_one.urllib.request, "urlopen",
                         lambda request, timeout: io.BytesIO(json.dumps(payload).encode("utf-8")))
     assert laya.choose("ciérralo", [], OPTIONS) is None
+
+
+@pytest.mark.parametrize("raw", ["<tool_call>\n<function=app_open>\n<parameter=appId>\nSpotify",
+                                 "Claro. <function=app_open><parameter=appId>Spotify</parameter></function>"])
+def test_a_call_written_as_text_is_a_failed_call_never_an_answer(tmp_path: Path, raw: str) -> None:
+    # Review 7: a malformed call llama-server left in content reached the person as BAXY's words.
+    mind, server = _mind(tmp_path, [_say(raw), _say("Esa aplicación no respondió.")])
+    result = mind.decide(1, "abre spotify")
+    assert result["reply"] == "Esa aplicación no respondió."
+    assert server.bodies[-1]["tool_choice"] == "none" and server.bodies[-1]["logit_bias"]
+    assert raw not in json.dumps(mind.conversation, ensure_ascii=False)

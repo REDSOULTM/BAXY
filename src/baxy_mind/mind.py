@@ -957,6 +957,12 @@ class Mind:
                 for c in calls]})
             turn["queue"] = calls[1:]
             return self._result(request_id, turn, calls[0], reply, stage, started, content)
+        if not final and ("<tool_call>" in content or "<function=" in content):
+            # Review 2026-10-22: a call llama-server could not parse stays as text in content, and it reached the person
+            # as BAXY's words. It is a failed call: the model answers in words, where a call cannot be written.
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="malformed_call",
+                      operation=None, arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
         if not content and not final and stage == "turn.continue" and not turn.get("beat"):
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
