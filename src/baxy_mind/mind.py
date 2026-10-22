@@ -1042,9 +1042,11 @@ class Mind:
         chose, the tools it nearly wrote at its weakest name token (the rest of each name written greedily on the same
         slot), asking, and answering in words."""
         described = {t["function"]["name"]: short(t["function"]["description"]) for t in self.tools}
+        # B-MED-3 (2026-10-22): the rule of its training (qwen_signals.py, rollouts): the chosen tool and the next three
+        # tokens of the weakest one, each of p ≥ 0.01 (served, the chosen token took a place and a rival needed 0.02).
         names = [chosen]
         for token, p in doubt.get("rivals") or []:
-            if p < 0.02 or len(names) >= 4:
+            if p < 0.01 or len(names) >= 4:
                 continue
             written = doubt.get("written", "") + token
             try:

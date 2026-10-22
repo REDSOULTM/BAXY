@@ -248,3 +248,25 @@ def test_a_call_written_as_text_is_a_failed_call_never_an_answer(tmp_path: Path,
     assert result["reply"] == "Esa aplicación no respondió."
     assert server.bodies[-1]["tool_choice"] == "none" and server.bodies[-1]["logit_bias"]
     assert raw not in json.dumps(mind.conversation, ensure_ascii=False)
+
+
+@pytest.mark.parametrize("move", [0.025, 0.015])
+def test_the_decision_model_reads_the_options_it_was_trained_on(tmp_path: Path, monkeypatch, move: float) -> None:
+    # B-MED-3 (notebook): served, the chosen token took one of the 4 places and a rival needed p ≥ 0.02; trained
+    # (scripts/renew/system_one/qwen_signals.py, rollouts), the chosen tool and up to 3 rivals of p ≥ 0.01.
+    import math
+    from test_mind_doubt_policy import _layer2, _token
+    weakest = _token("_resolve", 0.54)
+    weakest["top_logprobs"] += [{"token": t, "logprob": math.log(q)}
+                                for t, q in (("_active", 0.41), ("_snap", 0.03), ("_move", move))]
+    tokens = [_token("<tool_call>", 0.95), _token("\n", 1.0), _token("<", 1.0), _token("function", 1.0),
+              _token("=", 1.0), _token("window", 1.0), weakest, _token(">", 1.0)]
+    reply = {"choices": [{"message": {"content": "", "tool_calls": [
+        {"id": "c1", "function": {"name": "window_resolve", "arguments": "{}"}}]}, "logprobs": {"content": tokens}}]}
+    mind, server, one = _layer2(tmp_path, monkeypatch, "window_resolve", [reply])
+    server.complete_name = lambda body, written: ""
+    mind.tools = [{"type": "function", "function": {"name": f"window{n}", "description": "Window. More.",
+                                                    "parameters": {}}} for n in ("_resolve", "_active", "_snap", "_move")]
+    mind.decide(1, "esa ventana")
+    tools = [o for o in one.asked[0]["options"] if o.startswith("window")]
+    assert tools == ["window_resolve", "window_active", "window_snap", "window_move"]
