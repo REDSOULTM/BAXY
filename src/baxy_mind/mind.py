@@ -323,7 +323,8 @@ CLOCK_MARK = "[Reloj:"
 SESSION_STATE = "baxy.session"
 
 # The session's conversation keeps the last turns that fit both bounds; it is only ever cut at a turn's start (the
-# model is hybrid: its cache is reused from the front, so the middle of the prompt is never edited).
+# model is hybrid: its cache is reused from the front, so the middle of the prompt is edited only where a cut would
+# have moved its start anyway: the oldest results that lose their bodies, 1.1).
 HISTORY_TURNS = 8
 HISTORY_CHARS = 24000
 # Ronda final 44: the context also holds the tool prefix (about 42k of its 49,152 tokens with the descriptions of the
@@ -340,6 +341,12 @@ TRIM_TO = 0.6
 # («nunca me lo dijiste» about a turn no longer shown).
 TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "
            "no lo sabes]")
+# Al máximo 1.1 (2026-10-22): before a cut, the oldest results lose their bodies; their calls and the line of their
+# turn's facts (continue_turn writes it last) stay. A turn of 5+ calls held 3.6k tokens (p50): about three turns were
+# left. The ids a body carried (windows, controls) are gone with it, and the model is told so (regla 10: look again).
+TURN_FACTS = "\n[En este turno: "
+COMPACTED = ("[Resultado omitido para que quepa la conversación: los ids de ventanas y controles que traía ya no "
+             "valen; si lo necesitas, míralo de nuevo]")
 
 # FT/proveedores goal (e2e E022): the results of one turn's calls grow its prompt past the context (eight pages of 6,000
 # characters beside the prefix), and llama-server refuses it. Each earlier result of the turn then keeps its start, and
@@ -797,9 +804,18 @@ class Mind:
 
     def _trim(self) -> None:
         """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result. Past it, the
-        oldest turns go until what is left fits TRIM_TO of every bound."""
+        oldest closed turns' results lose their bodies until their characters and tokens fit TRIM_TO (1.1), and if that
+        is not enough the oldest turns go until what is left fits TRIM_TO of every bound."""
         turns = self._turn_sizes()
         if len(turns) <= 1 or self._fits(turns):
+            return
+        starts = [t[0] for t in turns]
+        for start, end in zip(starts, starts[1:]):
+            if self._fits(turns, TRIM_TO, count=False):
+                break
+            if self._compact(self.conversation[start:end]):
+                turns = self._turn_sizes()
+        if self._fits(turns):
             return
         dropped = 1
         while dropped < len(turns) - 1 and not self._fits(turns[dropped:], TRIM_TO):
@@ -809,6 +825,19 @@ class Mind:
         del self.conversation[:turns[dropped][0]]
         self.trimmed_turns += dropped
         self.conversation.insert(0, {"role": "user", "content": TRIMMED.format(n=self.trimmed_turns)})
+
+    @staticmethod
+    def _compact(messages: list[dict[str, Any]]) -> bool:
+        """Each call's result among these messages (the ones that end with their turn's facts) keeps only those facts
+        after COMPACTED; the calls stay, so none loses its result. Whether any result changed."""
+        compacted = False
+        for message in messages:
+            content = str(message.get("content") or "")
+            at = content.rfind(TURN_FACTS)
+            if message["role"] == "tool" and at > len(COMPACTED):
+                message["content"] = COMPACTED + content[at:]
+                compacted = True
+        return compacted
 
     def _turn_sizes(self) -> list[tuple[int, int, int]]:
         """Each turn of the conversation as (its first message, characters, tokens); the first turn takes in what comes
@@ -828,10 +857,11 @@ class Mind:
             self._tokens = {t: self._tokens[t] if t in self._tokens else len(self.server.tokenize(t)) for t in texts}
         return [(a, len(t), self._tokens.get(t, 0)) for a, t in zip(bounds, texts)]
 
-    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0) -> bool:
-        """Whether these turns fit `share` of every bound: turns, characters and the tokens the prefix leaves."""
+    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0, count: bool = True) -> bool:
+        """Whether these turns fit `share` of every bound: turns (unless not `count`: leaving out results never changes
+        how many there are), characters and the tokens the prefix leaves."""
         room = self.server.context - self.prefix_tokens - TURN_ROOM_TOKENS
-        return (len(turns) <= HISTORY_TURNS * share and sum(t[1] for t in turns) <= HISTORY_CHARS * share
+        return ((not count or len(turns) <= HISTORY_TURNS * share) and sum(t[1] for t in turns) <= HISTORY_CHARS * share
                 and (not self.prefix_tokens or sum(t[2] for t in turns) <= room * share))
 
     def _turn_starts(self) -> list[int]:

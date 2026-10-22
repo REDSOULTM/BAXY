@@ -71,3 +71,22 @@ def test_only_the_decision_asks_the_server_for_its_token_probabilities(tmp_path:
     assert decide["logprobs"] is True and decide["top_logprobs"] == 10
     assert not {"logprobs", "top_logprobs"} & (set(follow) | set(last))
     assert last["tool_choice"] == "none"
+
+
+def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_path: Path) -> None:
+    # 1.1: past its bound the history dropped whole turns (about three were left); the bodies of the oldest results go
+    # first now, while their calls and the line of each turn's facts stay, and what is left out says its ids are gone.
+    from test_mind_final import _call, _mind, _say
+    mind, _ = _mind(tmp_path, [_call("input_visible_controls", {"application": "Paint"}), _say("Listo.")] * 7)
+    for turn in range(7):
+        mind.decide(turn, f"pedido {turn}")
+        mind.continue_turn(turn, json.dumps({"status": "completed", "observed": {"windowId": f"w{turn}",
+                                                                                "text": "x" * 5000}}))
+    assert mind.trimmed_turns == 0
+    assert len([m for m in mind.conversation if m.get("tool_calls")]) == 7
+    results = [m["content"] for m in mind.conversation if m["role"] == "tool"]
+    # Cut down to TRIM_TO of its characters, as a cut is: the next turns leave the oldest results as they were.
+    assert ["míralo de nuevo" in r for r in results] == [True] * 3 + [False] * 4
+    assert "ids" in results[0] and "w0" not in results[0]
+    assert "[En este turno: input_visible_controls → completado y verificado]" in results[0]
+    assert "x" * 5000 in results[-1]
