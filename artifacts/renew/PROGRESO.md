@@ -2866,3 +2866,11 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   / 231 (media 229,67; sin los 9: 219/223/223), acciones equivocadas 19/17/14, p50 0,95/0,97/0,89 s. Frente a la fusión
   c1177101d (229): Δ +0,67, IC95 [−2,67; +4,0], McNemar p 0,625 (pareado.py): sin regresión. **Ruido entre semillas:
   ±2.** Referencia nueva: 229,67 (3 semillas).
+- 15:3x fusionados fx-core (8c90bdac3: K-1, K-2, K-5, K-6, C-1..C-7, C-9, B-APP-3; K-3 no: el dueño limitó «pregunta en
+  Bypass» a message.send, commit 1d85ea3a3) y fx-app (11347dd0d: A-1..A-8, A-10, A-11; nuevo tests/Baxy.App.Tests).
+  K-2 mantiene la regla del 15/10 («Enter/Espacio confirman según lo declarado»); lo nuevo es que sin nada declarado
+  pregunta (cierra borrador + Enter sin el sí); la descripción de `target` se ajusta en la tanda 3 para que el modelo
+  declare `text_field` en buscadores. Suites PC sobre 11347dd0d: Kernel 616, Contracts 69, Setup 477, App 24,
+  pytest 166 (verde). Pendiente: Providers entero en el NB sobre 11347dd0d.
+- Tandas de palancas en ramas: lv-t1 (3.3, 4.1, 1.4, 9.5; medición en curso: d2 ×3 en el PC, sesión larga en el NB),
+  lv-t2 (8.2, 7.7, 11.1, 11.2), lv-t3 (2.2, 2.3, 2.6). voz-maximo (9.3) espera el oído del dueño.
