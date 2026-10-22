@@ -388,6 +388,11 @@ ASKED = json.dumps({"status": "asked", "reason": "the person saw the question; t
 # The operation the App reads as «the person answered the pending confirmation» (the kernel's challenge): the App sends
 # the exact invocation the kernel challenged again with its token, or drops it.
 CONFIRM_OPERATION = "confirmation.answer"
+# Renew al máximo (F005 of the notebook's falsehood bench, 2026-10-22): «¿ya lo subiste?» was answered with
+# confirm_pending approve:true and nothing waiting for a «sí»; with a confirmation pending it would have approved what
+# nobody approved. Without one, the call never reaches the App: its result says so and the model answers in words.
+NOTHING_PENDING = json.dumps({"status": "failed", "error": "nothing_pending",
+                              "reason": "no action is waiting for the person's confirmation"})
 CONFIRM = {
     "type": "function",
     "function": {
@@ -694,7 +699,8 @@ class Mind:
             while keep > CUT_TEXT_FLOOR and not self._fits(self._turn_sizes()):
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
-            self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
+            self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
+                          "pending": bool(isinstance(pending, dict) and pending.get("operation"))}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -1171,6 +1177,14 @@ class Mind:
                               kind="ask_user_empty", operation=None, arguments=None, content=None)
                     return self._next(request_id, stage, turn, final=True)
                 result.update(reply=content)
+        elif call is not None and call["wire"] == CONFIRM["function"]["name"] and not turn.get("pending"):
+            for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
+                turn["conv"].append({"role": "tool", "tool_call_id": call_id,
+                                     "content": NOTHING_PENDING if call_id == call["id"] else NOT_RUN})
+            turn["queue"], turn["awaiting"] = [], None
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                      kind="nothing_pending", operation=None, arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=True)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))
