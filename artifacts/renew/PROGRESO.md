@@ -2922,3 +2922,9 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   Δ −0,33, IC95 [−3,0; +2,33]. Con el catálogo de la tanda 5 (`renew_v4\catalog-t5.json`, 51 de 180 operaciones con
   efecto) se mide antes de las falsedades: es el costo de que «corrige» no rellene herramientas de ventana o de red.
   Escenas de la tanda 5 (3 réplicas por edición neutra frente a la tanda 4) en curso.
+- 16:38 (NB) **tanda 1 en sesión larga** (22 turnos reales por el conductor, S1 on, 2 rondas intercaladas): pico USS de
+  llama-server (Qwen) base ca9d75de0 3 123 / 2 920 MiB; con 3.3 2 078 / 2 077; 3.3+1.4 2 077 / 2 074 → **3.3 quita ~950
+  MiB de pico** (privada 8,0 → 6,9 GB), estable. Relectura de turn.decide (suma de prompt_ms): base 19,3 / 19,7 s; sólo
+  3.3 21,5 / 23,3 s (relee algo más sin -cram); **3.3+1.4 15,9 / 12,9 s (−4 a −7 s)**; decides con prompt_n >1 500: base
+  4/5, 3.3+1.4 3/0. «erasing old context checkpoint» = 0 en las 6 corridas. **3.3 y 1.4 se quedan** (ya en renew-maximo).
+  9.5 no se distingue en esta medida (sin regresión).
