@@ -6,8 +6,8 @@ namespace Baxy.App;
 
 /// <summary>
 /// How the model reads a look at an application window (<c>input.visible.controls</c>): one line per control with the
-/// index it clicks by, its kind, name and state, then the text on screen grouped top, middle and bottom in reading
-/// order. The reader's own bookkeeping is left out: version, ok, elapsedMs, authority, the name of the text's reader
+/// index it clicks by, its kind, name and state, after one line with the controls the reader marked as selected or on,
+/// then the text on screen grouped top, middle and bottom in reading order. The reader's own bookkeeping is left out: version, ok, elapsedMs, authority, the name of the text's reader
 /// (textAuthority; only its absence or its cut is said), and of the window its processId, its family of processes and the
 /// process of the window covering it. The model acts by index or label, and a 4B reads a short text view far better
 /// than a long JSON one (AgentOccam, ICLR 2025: the same agent +161 % from the observation alone; OSWorld and UFO2
@@ -104,6 +104,18 @@ internal static class ScreenViewProjection
             {
                 text.Append("Foco: ").Append(Control(focused)).Append('\n');
             }
+        }
+
+        // BAXY Renew al máximo P8.4 (sonda F019: «quedó en la tienda» with the library's tab selected): what the reader
+        // marked as chosen (selected, or toggled on) is said first, before the reading order buries it between brackets.
+        string[] chosen = controls.OfType<JsonObject>()
+            .Where(static control => ((string?)control["state"] ?? string.Empty).Split(' ')
+                .Any(static part => part is "selected" or "on"))
+            .Select(static control => $"[{(int?)control["i"]}] {(string?)control["kind"]} «{(string?)control["name"]}»")
+            .ToArray();
+        if (chosen.Length > 0)
+        {
+            text.Append("Seleccionados o activados: ").Append(string.Join(" | ", chosen)).Append('\n');
         }
 
         text.Append("Controles:\n");
