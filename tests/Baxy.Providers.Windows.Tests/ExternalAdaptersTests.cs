@@ -1305,6 +1305,30 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, decision2): a name no manifest bears exactly names the closest ones read.
+    [Test]
+    public async Task ANameNoManifestBearsNamesTheClosestOnes()
+    {
+        using TemporaryDirectory temporary = new();
+        string steamApps = Path.Combine(temporary.Path, "steamapps");
+        Directory.CreateDirectory(Path.Combine(steamApps, "common", "WormsWMD"));
+        await File.WriteAllTextAsync(
+            Path.Combine(steamApps, "appmanifest_327030.acf"),
+            "\"AppState\" { \"appid\" \"327030\" \"name\" \"Worms W.M.D\" " +
+            "\"StateFlags\" \"4\" \"installdir\" \"WormsWMD\" }");
+        var adapter = new WindowsGameInstallationAdapter([steamApps], []);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"worms"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result?.GetProperty("state").GetString(),
+                Is.EqualTo("no_steam_or_epic_manifest_with_that_name"));
+            Assert.That(receipt.Result?.GetProperty("closestTitles")[0].GetString(), Is.EqualTo("Worms W.M.D"));
+        });
+    }
+
     [Test]
     public async Task RecycleBinEmptyRequiresZeroItemPostread()
     {

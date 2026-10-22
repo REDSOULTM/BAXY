@@ -721,6 +721,49 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, decision2): a title that is not exactly one game failed with nothing to name
+    // next. The closest titles go back as a fact (words in common, a prefix): the store's and the installed games' for an
+    // install, only the installed ones when the store did not answer, for an uninstall and for a library check.
+    [Test]
+    public async Task ATitleNotResolvedNamesTheClosestTitles()
+    {
+        SteamLocalGame[] catalog = [.. Catalog, new("327030", "Worms W.M.D", new string('c', 64))];
+        var automation = new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam"));
+        SteamLocalAdapter Adapter(bool online) => new(
+            () => catalog,
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) => online
+                ? ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(
+                    [new("40800", "Super Meat Boy"), new("581660", "Super Meat Boy Forever"), new("9", "Unrelated")])
+                : throw new HttpRequestException("simulated offline store"));
+
+        ExternalCapabilityReceipt install = await Adapter(online: true).InvokeAsync(
+            "game.install.named", Json("""{"title":"super meat"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt offline = await Adapter(online: false).InvokeAsync(
+            "game.install.named", Json("""{"title":"worms"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt uninstall = await Adapter(online: true).InvokeAsync(
+            "game.uninstall.named", Json("""{"title":"el worms"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt owned = await Adapter(online: true).InvokeAsync(
+            "game.entitlement.named", Json("""{"title":"worms"}"""), CancellationToken.None);
+
+        static string?[] Near(ExternalCapabilityReceipt receipt) =>
+            [.. receipt.Result!.Value.GetProperty("closestTitles").EnumerateArray().Select(name => name.GetString())];
+        Assert.Multiple(() =>
+        {
+            Assert.That(install.ErrorCode, Is.EqualTo("steam_title_not_resolved"));
+            Assert.That(Near(install), Is.EqualTo(new[] { "Super Meat Boy", "Super Meat Boy Forever" }));
+            Assert.That(offline.ErrorCode, Is.EqualTo("steam_store_search_failed"));
+            Assert.That(Near(offline), Is.EqualTo(new[] { "Worms W.M.D" }));
+            Assert.That(uninstall.ErrorCode, Is.EqualTo("no_steam_manifest_with_that_name"));
+            Assert.That(Near(uninstall), Is.EqualTo(new[] { "Worms W.M.D" }));
+            Assert.That(owned.Result?.GetProperty("state").GetString(), Is.EqualTo("title_not_resolved"));
+            Assert.That(Near(owned), Is.EqualTo(new[] { "Worms W.M.D" }));
+            Assert.That(automation.DispatchCount, Is.Zero);
+        });
+    }
+
     // The dialog left unconfirmed (its button not found, nothing pressed) is said as such and the manifest is not
     // waited on; a press that may have landed is judged by the manifest, which here never comes.
     [TestCase(false, "steam_install_dialog_not_confirmed", 3)]

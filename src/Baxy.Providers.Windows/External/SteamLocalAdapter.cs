@@ -232,6 +232,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // Ronda final 8: with a library unread, a game not found installed may be installed there.
             if (appId is not null && (installed || !librariesUnread)) writer.WriteBoolean("installed", installed);
             if (librariesUnread) writer.WriteBoolean("librariesUnread", true);
+            if (appId is null) WriteClosest(writer, ClosestTitles(title, catalog.Select(static game => game.Name)));
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
                 : librariesUnread ? "install_not_read"
@@ -259,11 +260,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 .ConfigureAwait(false);
         }
 
-        (string? appId, bool searchFailed) = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
+        (string? appId, bool searchFailed, string[] closest) =
+            await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
         if (searchFailed)
-            return ExternalJson.FailureBeforeEffect(operation, "steam_store_search_failed");
+            return NotResolved(operation, "steam_store_search_failed", title, closest);
         if (appId is null)
-            return ExternalJson.Failure(operation, "steam_title_not_resolved");
+            return NotResolved(operation, "steam_title_not_resolved", title, closest);
         // Encargo imp-steam: the account's library is not read here as a gate. Its local cache is incomplete (measured
         // 2026-10-11: Super Meat Boy, in the owner's account, is absent from the notebook's userdata librarycache);
         // Steam's own install dialog only installs what the account holds, and the manifest proves it did.
@@ -521,14 +523,18 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     }
 
     // Renew al máximo (B-APP-5): a store search that got no answer is SearchFailed, never a title no game bears.
-    private async ValueTask<(string? AppId, bool SearchFailed)> ResolveTitleAsync(
+    // Renew al máximo (auditoría de flujos): unresolved, with the closest titles of the store's answer and the manifests
+    // (only the manifests when the store did not answer).
+    private async ValueTask<(string? AppId, bool SearchFailed, string[] Closest)> ResolveTitleAsync(
         string title, CancellationToken cancellationToken)
     {
         string folded = FoldTitle(title);
-        string? installed = ResolveSnapshotTitle(folded);
+        IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        string? installed = Bearing(catalog, folded) is [string one] ? one : null;
+        string[] Local() => ClosestTitles(title, catalog.Select(static game => game.Name));
         if (installed is not null || _storeTitles is null)
         {
-            return (installed, false);
+            return (installed, false, installed is null ? Local() : []);
         }
 
         IReadOnlyList<SteamStoreTitle> found;
@@ -539,7 +545,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
             || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
-            return (null, true);
+            return (null, true, Local());
         }
 
         // Exactly one game of the store answer bears the title (folded): «Super Meat Boy» is not «Super Meat Boy Forever».
@@ -548,8 +554,65 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .Select(item => item.AppId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-        return (matches.Length == 1 ? matches[0] : null, false);
+        return matches.Length == 1
+            ? (matches[0], false, [])
+            : (null, false, ClosestTitles(title, found.Select(static item => item.Name)
+                .Concat(catalog.Select(static game => game.Name))));
     }
+
+    // Renew al máximo (auditoría de flujos, decision2): how many of the closest titles an unresolved one names.
+    private const int ClosestTitleCount = 5;
+
+    /// <summary>
+    /// Renew al máximo (auditoría de flujos, decision2: «desinstala el worms» failed with nothing to name): the titles of
+    /// <paramref name="names"/> closest to <paramref name="title"/>, folded as titles are: by the words of three letters or
+    /// more they share (one said as the start of the other's counts), then by one title starting the other; at most five,
+    /// none sharing nothing. Only said, never resolved.
+    /// </summary>
+    internal static string[] ClosestTitles(string title, IEnumerable<string> names)
+    {
+        string folded = FoldTitle(title);
+        string[] asked = [.. folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(static word => word.Length >= 3)];
+        return [.. names
+            .Where(static name => !string.IsNullOrWhiteSpace(name))
+            .DistinctBy(FoldTitle, StringComparer.Ordinal)
+            .Select(name => (Name: name, Score: Nearness(folded, asked, FoldTitle(name))))
+            .Where(static scored => scored.Score > 0)
+            .OrderByDescending(static scored => scored.Score)
+            .ThenBy(static scored => scored.Name, StringComparer.OrdinalIgnoreCase)
+            .Take(ClosestTitleCount)
+            .Select(static scored => scored.Name)];
+    }
+
+    private static int Nearness(string folded, string[] asked, string name)
+    {
+        string[] words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        int shared = asked.Count(word => words.Any(other => other.StartsWith(word, StringComparison.Ordinal)
+            || (other.Length >= 3 && word.StartsWith(other, StringComparison.Ordinal))));
+        bool starts = folded.Length >= 3 && name.Length >= 3
+            && (name.StartsWith(folded, StringComparison.Ordinal) || folded.StartsWith(name, StringComparison.Ordinal));
+        return shared * 2 + (starts ? 1 : 0);
+    }
+
+    internal static void WriteClosest(Utf8JsonWriter writer, string[] closest)
+    {
+        if (closest.Length == 0)
+            return;
+        writer.WriteStartArray("closestTitles");
+        foreach (string name in closest)
+            writer.WriteStringValue(name);
+        writer.WriteEndArray();
+    }
+
+    // A title that resolved to no game, failed before anything is sent, with what was asked and the closest titles.
+    private static ExternalCapabilityReceipt NotResolved(string operation, string code, string title, string[] closest) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("query", title);
+            WriteClosest(writer, closest);
+            writer.WriteEndObject();
+        }), code);
 
     /// <summary>
     /// BAXY Renew cu (C04): the game whose store page is asked for by its title (app.open, place game). The installed
@@ -654,8 +717,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return titles;
     }
 
-    private string? ResolveSnapshotTitle(string folded) => Bearing(_snapshot(), folded) is [string one] ? one : null;
-
     // The AppIDs of the manifests bearing the title (folded): the title resolves when exactly one does.
     private static string[] Bearing(IReadOnlyList<SteamLocalGame> catalog, string folded) => catalog
         .Where(game => FoldTitle(game.Name) == folded)
@@ -663,7 +724,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         .Distinct(StringComparer.Ordinal)
         .ToArray();
 
-    private static string FoldTitle(string value)
+    internal static string FoldTitle(string value)
     {
         string decomposed = value.Normalize(NormalizationForm.FormD);
         return string.Join(' ', new string(decomposed
