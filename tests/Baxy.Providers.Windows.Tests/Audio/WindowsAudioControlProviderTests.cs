@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Audio;
 using NUnit.Framework;
 
@@ -158,6 +161,39 @@ public sealed class WindowsAudioControlProviderTests
             Assert.That(result.Final, Is.EqualTo(new AudioEndpointState(27, false)));
             Assert.That(environment.Platform.SetVolumeCalls, Is.EqualTo(1));
             Assert.That(environment.Platform.SetMuteCalls, Is.Zero);
+        });
+    }
+
+    // Renew al máximo: the handler dropped the provider's final reading of an unverified set, so the mind only heard
+    // «could not». A verification failure carries the level and mute read after; a setter failure stays bare.
+    [TestCase(false, AudioControlErrorCodes.VerificationFailed)]
+    [TestCase(true, AudioControlErrorCodes.OperationFailed)]
+    public async Task AnUnverifiedVolumeFailureCarriesTheFinalReading(bool setterFails, string errorCode)
+    {
+        using TestEnvironment environment = new(volumeScalar: 0.50f, muted: false);
+        environment.Platform.VolumeQuantizer = _ => 0.27f;
+        if (setterFails)
+            environment.Platform.VolumeSetErrorCode = AudioControlErrorCodes.OperationFailed;
+
+        OperationOutcome outcome = await new AudioVolumeHandler(environment.Provider()).ExecuteAsync(
+            new OperationInvocation(
+                "request", "mission", InvocationId(), JsonSerializer.SerializeToElement(new { level = 30 })),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo(errorCode));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            if (setterFails)
+            {
+                Assert.That(outcome.Result, Is.Null);
+                return;
+            }
+
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That(state.GetProperty("level").GetInt32(), Is.EqualTo(27));
+            Assert.That(state.GetProperty("muted").GetBoolean(), Is.False);
         });
     }
 
