@@ -6,8 +6,9 @@ namespace Baxy.App;
 
 /// <summary>
 /// How the model reads a look at an application window (<c>input.visible.controls</c>): one line per control with the
-/// index it clicks by, its kind, name and state, after one line with the controls the reader marked as selected or on,
-/// then the text on screen grouped top, middle and bottom in reading order. The reader's own bookkeeping is left out: version, ok, elapsedMs, authority, the name of the text's reader
+/// index it clicks by, its kind, name, zone of the window (when the reader gave it) and state, after one line with the
+/// controls the reader marked as selected or on, then the text on screen grouped top, middle and bottom in reading
+/// order. The reader's own bookkeeping is left out: version, ok, elapsedMs, authority, the name of the text's reader
 /// (textAuthority; only its absence or its cut is said), and of the window its processId, its family of processes and the
 /// process of the window covering it. The model acts by index or label, and a 4B reads a short text view far better
 /// than a long JSON one (AgentOccam, ICLR 2025: the same agent +161 % from the observation alone; OSWorld and UFO2
@@ -28,6 +29,15 @@ internal static class ScreenViewProjection
         ("centro", ["L", "C", "R"]),
         ("abajo", ["BL", "B", "BR"]),
     ];
+
+    // BAXY Renew al máximo 7.3 (A11y-Compressor; OSWorld, UFO2): where a control's centre sits in the window's 3×3
+    // grid, in the words of the text's bands, so two «Buscar» or «el primer resultado» are told apart.
+    private static readonly Dictionary<string, string> Zones = new(StringComparer.Ordinal)
+    {
+        ["TL"] = "arriba izq.", ["T"] = "arriba", ["TR"] = "arriba der.",
+        ["L"] = "centro izq.", ["C"] = "centro", ["R"] = "centro der.",
+        ["BL"] = "abajo izq.", ["B"] = "abajo", ["BR"] = "abajo der.",
+    };
 
     /// <param name="message">The kernel's visible facts of the look (status, error, cause, effectUncertain).</param>
     /// <param name="result">The look's receipt: the whole view the reader returned.</param>
@@ -268,6 +278,12 @@ internal static class ScreenViewProjection
         var line = new StringBuilder();
         line.Append('[').Append((int?)control["i"]).Append("] ").Append((string?)control["kind"]).Append(" «")
             .Append((string?)control["name"]).Append('»');
+        // Only when the reader gave one: a control without its rectangle has no zone.
+        if ((string?)control["zone"] is { } zone && Zones.TryGetValue(zone, out string? place))
+        {
+            line.Append(" (").Append(place).Append(')');
+        }
+
         if ((string?)control["value"] is { Length: > 0 } value)
         {
             line.Append(" = ").Append(value);

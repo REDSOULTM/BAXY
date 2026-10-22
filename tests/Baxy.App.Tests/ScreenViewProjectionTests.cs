@@ -59,6 +59,23 @@ public sealed class ScreenViewProjectionTests
             "(3 líneas de texto no se listan: repiten el nombre de un control listado)"));
     }
 
+    // BAXY Renew al máximo 7.3: two «Buscar» told apart by where each sits in the window; a control without a rect
+    // has no zone and says none.
+    [Test]
+    public void AControlSaysItsZoneOnlyWhenTheReaderGaveOne()
+    {
+        string view = View(Steam.Replace(
+            "{\"i\":4,\"kind\":\"Button\",\"name\":\"Menú\",\"state\":\"collapsed\",\"value\":null}",
+            "{\"i\":4,\"kind\":\"Button\",\"name\":\"Buscar\",\"state\":\"\",\"value\":null,\"zone\":\"TR\"}," +
+            "{\"i\":5,\"kind\":\"Button\",\"name\":\"Buscar\",\"state\":\"\",\"value\":null,\"zone\":\"L\"}," +
+            "{\"i\":6,\"kind\":\"Button\",\"name\":\"Buscar\",\"state\":\"\",\"value\":null}"));
+
+        Assert.That(view, Does.Contain(
+            "[4] Button «Buscar» (arriba der.)\n" +
+            "[5] Button «Buscar» (centro izq.)\n" +
+            "[6] Button «Buscar»\n"));
+    }
+
     private static string View(string lookJson)
     {
         using JsonDocument look = JsonDocument.Parse(lookJson);
