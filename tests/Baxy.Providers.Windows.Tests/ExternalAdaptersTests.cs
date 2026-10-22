@@ -1326,6 +1326,73 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (8.3): an emptying whose receipt was lost (the process ended with nothing read) left the model not
+    // knowing whether the bin was emptied; one read of the bins after it says what is there, the failure kept.
+    [TestCase(0L, true)]
+    [TestCase(3L, false)]
+    public async Task RecycleBinEmptyWithItsReceiptLostSaysWhatTheBinHoldsAfter(long items, bool reached)
+    {
+        var adapter = new WindowsRecycleBinAdapter(
+            new ThrowingProcessRunner(new IOException("simulated receipt loss after process dispatch")), () => items);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("itemCount").GetInt64(), Is.EqualTo(items));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.EqualTo(reached));
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_recycle_bin_query_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3): the script's own post-read found items still there; that count is the state after, never
+    // dropped, and no second read is made.
+    [Test]
+    public async Task RecycleBinEmptyWhosePostreadStillFoundItemsSaysHowMany()
+    {
+        int reads = 0;
+        var adapter = new WindowsRecycleBinAdapter(
+            new StubProcessRunner("{\"ok\":false,\"beforeCount\":3,\"afterCount\":2,\"effectObserved\":true}"),
+            () => { reads++; return 0; });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_postread_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("itemCount").GetInt64(), Is.EqualTo(2));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_recycle_bin_empty_postread"));
+            Assert.That(reads, Is.Zero);
+        });
+    }
+
+    // Renew al máximo (8.3): a read of the bins that fails adds nothing: the ambiguous failure stays as it was.
+    [Test]
+    public async Task RecycleBinEmptyWhoseRereadFailsAddsNoState()
+    {
+        var adapter = new WindowsRecycleBinAdapter(
+            new ThrowingProcessRunner(new TimeoutException("simulated")), () => -1);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_failed"));
+            Assert.That(receipt.Result, Is.Null);
+        });
+    }
+
     [Test]
     public async Task KnownFolderBackupCreatesListsAndReverifiesAnActualZipHash()
     {

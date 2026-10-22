@@ -171,11 +171,14 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
         }
     }
 
-    private static long Items(string drive)
+    private static long Items(string? drive)
     {
         var info = new RecycleBinInfo { Size = Marshal.SizeOf<RecycleBinInfo>() };
         return SHQueryRecycleBin(drive, ref info) == 0 ? info.Items : -1;
     }
+
+    // Renew al máximo (8.3): the items in the bins of every drive (a null root asks for all of them), -1 when unread.
+    internal static long AllItems() => Items(null);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct FileOperation
@@ -202,5 +205,5 @@ internal sealed partial class WindowsRecycleBin : IRecycleBin
     private static partial int SHFileOperation(ref FileOperation operation);
 
     [LibraryImport("shell32.dll", EntryPoint = "SHQueryRecycleBinW", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial int SHQueryRecycleBin(string rootPath, ref RecycleBinInfo info);
+    private static partial int SHQueryRecycleBin(string? rootPath, ref RecycleBinInfo info);
 }
