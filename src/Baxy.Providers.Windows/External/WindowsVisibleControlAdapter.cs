@@ -1969,6 +1969,8 @@ internal sealed class WindowsVisibleControlAdapter
             // Pasada r15b (v3-27, v3-29): the actionables the window shows disabled (a «Copy» waiting for text), apart:
             // the mind knows they exist and wait for input; nothing presses them (no identity).
             List<ViewControl> disabled = ParseControls(root, "disabled");
+            // Renew al máximo (7.3): the window's box the worker read with the rectangles, for each control's zone.
+            Rect? windowBox = ReadRect(root, "box");
             // Whether the window held the front when its tree was read: only then can its keyboard focus be told.
             bool inFront = VisibleControlSurface.ForegroundIs(hwnd);
             int counted = root.TryGetProperty("controlCount", out JsonElement total)
@@ -2142,6 +2144,9 @@ internal sealed class WindowsVisibleControlAdapter
                     // BAXY Renew cu (C11): what the grid itself says a DataItem is («Encabezado de fila», «Celda»).
                     if (control.ItemType.Length > 0)
                         writer.WriteString("itemType", control.ItemType);
+                    // Renew al máximo (7.3): where in the window it lies (two «Buscar», «the first result»).
+                    if (ControlZone(control.RectValue, windowBox) is { Length: > 0 } zone)
+                        writer.WriteString("zone", zone);
                     writer.WriteEndObject();
                 }
 
@@ -2297,12 +2302,7 @@ internal sealed class WindowsVisibleControlAdapter
             string name = ReadString(item, "name");
             if (name.Length == 0)
                 continue;
-            Rect? rect = null;
-            if (item.TryGetProperty("rect", out JsonElement box) && box.ValueKind == JsonValueKind.Object)
-            {
-                rect = new Rect(ReadInt(box, "x"), ReadInt(box, "y"), ReadInt(box, "w"), ReadInt(box, "h"));
-            }
-
+            Rect? rect = ReadRect(item, "rect");
             controls.Add(new ViewControl
             {
                 Index = controls.Count,
@@ -2329,6 +2329,11 @@ internal sealed class WindowsVisibleControlAdapter
             ? value.GetString() ?? string.Empty
             : string.Empty;
 
+    private static Rect? ReadRect(JsonElement item, string name) =>
+        item.TryGetProperty(name, out JsonElement box) && box.ValueKind == JsonValueKind.Object
+            ? new Rect(ReadInt(box, "x"), ReadInt(box, "y"), ReadInt(box, "w"), ReadInt(box, "h"))
+            : null;
+
     private static int ReadInt(JsonElement item, string name) =>
         item.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.Number
             && value.TryGetInt32(out int number)
@@ -2348,6 +2353,17 @@ internal sealed class WindowsVisibleControlAdapter
         string column = fx < 1.0 / 3 ? "L" : fx < 2.0 / 3 ? string.Empty : "R";
         string zone = row + column;
         return zone.Length == 0 ? "C" : zone;
+    }
+
+    // Renew al máximo (7.3): the zone of the window a control's centre lies in; none without its rectangle, without the
+    // window's box, or with its centre outside that box (never guessed).
+    internal static string ControlZone(Rect? control, Rect? window)
+    {
+        if (control is not { } rect || window is not { } box)
+            return string.Empty;
+        double x = rect.X + rect.W / 2.0;
+        double y = rect.Y + rect.H / 2.0;
+        return x < box.X || y < box.Y || x >= box.X + box.W || y >= box.Y + box.H ? string.Empty : Zone(x, y, box);
     }
 
     // ---------------------------------------------------------------- click
