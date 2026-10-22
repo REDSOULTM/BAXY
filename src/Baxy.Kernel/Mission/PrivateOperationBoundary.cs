@@ -9,6 +9,9 @@ internal static class PrivateOperationBoundary
 {
     private const int MaximumCiphertextBytes = (256 * 1024) + 64;
     private const int MaximumCiphertextCharacters = ((MaximumCiphertextBytes + 2) / 3) * 4;
+    // Every code MemoryHandlers returns is a fixed name for the call's shape or the store's state, never a value it holds;
+    // al máximo 11.1: memory_recall_all_takes_no_selector too (it read as memory_operation_failed). Its default
+    // unknown_operation is left out: the registry never routes another operation to it.
     private static readonly HashSet<string> AllowedFailureCodes = new(StringComparer.Ordinal)
     {
         "invalid_arguments",
@@ -21,6 +24,7 @@ internal static class PrivateOperationBoundary
         "memory_not_found",
         "memory_operation_failed",
         "memory_protection_failed",
+        "memory_recall_all_takes_no_selector",
         "memory_store_unavailable",
         "operation_failed",
         "reconciliation_required",
