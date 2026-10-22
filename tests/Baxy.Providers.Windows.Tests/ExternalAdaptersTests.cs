@@ -4105,6 +4105,83 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-APP-1): a local player left paused answered every unnamed media request, so «pausa la música»
+    // said «already paused» while the person's music played on. It answers while it plays, while paused with nothing
+    // else playing, or when named; otherwise the next player answers.
+    [TestCase("media.control", """{"action":"pause"}""", true, false)]
+    [TestCase("media.status", "{}", true, false)]
+    [TestCase("media.control", """{"action":"pause","sourceApp":"BAXY YouTube (mpv)"}""", true, true)]
+    [TestCase("media.control", """{"action":"pause"}""", false, true)]
+    [TestCase("media.status", "{}", false, true)]
+    public async Task APausedLocalPlayerStandsAsideWhenAnotherSessionPlays(
+        string operation, string arguments, bool anotherPlays, bool localAnswers)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePausedPlayerAsync(pipeName, stopPlayer.Token);
+        var other = new StubExternalAdapter(new ExternalCapabilityReceipt(operation, true, true, Json("{}"), null));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(anotherPlays),
+        };
+        using var provider = new WindowsExternalCapabilityProvider([local, other]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+        }
+        finally
+        {
+            // The player stands for this test's own process: nothing stops it when the provider is disposed.
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(other.Calls, Is.EqualTo(localAnswers ? 0 : 1));
+            Assert.That(receipt.Result?.TryGetProperty("authority", out _), Is.EqualTo(localAnswers));
+        });
+    }
+
+    // A player whose pause property reads true on every connection until stopped (a set is answered as done).
+    private static async Task ServePausedPlayerAsync(string pipeName, CancellationToken stop)
+    {
+        try
+        {
+            while (true)
+            {
+                await using var pipe = new NamedPipeServerStream(
+                    pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                await pipe.WaitForConnectionAsync(stop);
+                var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
+                var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true)
+                { AutoFlush = true };
+                try
+                {
+                    while (await reader.ReadLineAsync(stop) is { } request)
+                        await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success","data":true}""");
+                }
+                catch (IOException)
+                {
+                    // The client closed its end: the next connection is served.
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
     // One connection of the player's IPC: one request line answered, then the client's close.
     private static async Task AnswerOnceAsync(string pipeName, Func<string, string> answer)
     {

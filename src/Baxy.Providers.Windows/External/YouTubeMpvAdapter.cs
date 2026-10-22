@@ -49,6 +49,13 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
 
     internal TimeSpan PlayerConnectTimeout { get; init; } = TimeSpan.FromSeconds(15);
 
+    // Renew al máximo (B-APP-1): whether a system media session plays now; a test gives its own answer.
+    internal Func<CancellationToken, ValueTask<bool>> SystemSessionPlays { get; init; } = SystemSessionPlaysAsync;
+
+    private static async ValueTask<bool> SystemSessionPlaysAsync(CancellationToken cancellationToken) =>
+        (await MediaSessionCalls.ReadAsync(cancellationToken).ConfigureAwait(false))
+            .Any(static session => session.PlaybackStatus == "playing");
+
     public bool CanHandle(string operation) =>
         operation is "media.play.youtube" or "media.status" or "media.control";
 
@@ -384,6 +391,9 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             bool? paused = await ReadPauseAsync(cancellationToken).ConfigureAwait(false);
             if (paused is null)
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_ipc_unavailable");
+            // Renew al máximo (B-APP-1): left paused while a system session plays, it is not what is playing.
+            if (paused.Value && await SystemSessionPlays(cancellationToken).ConfigureAwait(false))
+                return ExternalJson.FailureBeforeEffect(operation, "local_player_paused");
             return ExternalJson.Success(operation, LocalResult(paused.Value ? "paused" : "playing"),
                 effectObserved: false);
         }
@@ -414,10 +424,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         }
         // A player the model named (the sourceAppUserModelId media.status gave) is this one only by its own id: it
         // paused itself for «pausa Spotify» while it played, as it went first (BAXY Renew audit 2026-10-15).
-        if (arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
+        bool named = arguments.TryGetProperty("sourceApp", out JsonElement sourceApp)
             && sourceApp.ValueKind == JsonValueKind.String
-            && !string.IsNullOrWhiteSpace(sourceApp.GetString())
-            && !string.Equals(sourceApp.GetString(), SourceAppUserModelId, StringComparison.OrdinalIgnoreCase))
+            && !string.IsNullOrWhiteSpace(sourceApp.GetString());
+        if (named && !string.Equals(sourceApp.GetString(), SourceAppUserModelId, StringComparison.OrdinalIgnoreCase))
             return ExternalJson.FailureBeforeEffect(operation, "media_source_app_not_local_player");
         var effectBoundary = new ExternalEffectBoundary();
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -427,6 +437,20 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_inactive");
             if (action is "next" or "previous")
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_action_unsupported");
+            bool? current;
+            try
+            {
+                current = await ReadPauseAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (action == "stop" && exception is IOException or JsonException)
+            {
+                // A player whose IPC fails is still stopped by ending it.
+                current = null;
+            }
+            // Renew al máximo (B-APP-1): unnamed, a player left paused while a system session plays is not what the
+            // request means («pausa la música» said «already paused» and the person's music played on): the next answers.
+            if (!named && current == true && await SystemSessionPlays(cancellationToken).ConfigureAwait(false))
+                return ExternalJson.FailureBeforeEffect(operation, "local_player_paused");
             if (action == "stop")
             {
                 Process player = _activePlayer!;
@@ -449,7 +473,6 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                     ? ExternalJson.Success(operation, stopped, effectObserved: true)
                     : ExternalJson.Failure(operation, "local_player_stop_not_verified", effectObserved: true);
             }
-            bool? current = await ReadPauseAsync(cancellationToken).ConfigureAwait(false);
             if (current is null)
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_ipc_unavailable");
             bool wanted = action switch
