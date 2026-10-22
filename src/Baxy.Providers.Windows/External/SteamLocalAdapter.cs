@@ -832,7 +832,23 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return ExternalJson.FailureBeforeEffect(operation, "steam_act_not_declared");
         }
 
-        HashSet<int> before = ReadProcessIds();
+        string installRoot = Path.GetFullPath(game.InstallDirectory);
+        (HashSet<int> before, int? running) = ReadProcesses(installRoot);
+        // Renew al máximo (B-APP-8): a game already running is the state reached, said before anything is sent: its
+        // address would minimize Steam's windows, maybe press «Jugar» and wait 35 s for no new process.
+        if (running is not null)
+        {
+            JsonElement reached = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteString("appId", appId); writer.WriteString("name", game.Name);
+                writer.WriteNumber("processId", running.Value);
+                writer.WriteBoolean("alreadyRunning", true);
+                writer.WriteString("authority", "steam_manifest_process_preread"); writer.WriteEndObject();
+            });
+            return ExternalJson.Switched(operation, reached, effectObserved: false);
+        }
+
         effectBoundary.Cross(cancellationToken);
         SteamDispatchResult dispatch = await _automation.DispatchAsync(launch.Address, cancellationToken)
             .ConfigureAwait(false);
@@ -841,7 +857,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return effectBoundary.Failure(
                 operation, "steam_launch_dispatch_rejected", dispatch.EffectObserved);
         }
-        string installRoot = Path.GetFullPath(game.InstallDirectory);
         // Ronda final 21 (regla 3): the Steam windows the launch minimized (so its dialog opens apart from the library)
         // are shown again, without taking the front, whatever the launch's end; the receipt says how many.
         try
@@ -890,34 +905,42 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         }
     }
 
-    private HashSet<int> ReadProcessIds()
+    // Every process running now, and one whose executable lies under the game's folder (null: none). The executable is
+    // read with the least access Windows grants (an elevated game too).
+    private (HashSet<int> Ids, int? Running) ReadProcesses(string installRoot)
     {
-        if (_processSnapshot is not null)
+        IEnumerable<SteamProcessObservation> processes = _processSnapshot is not null
+            ? _processSnapshot()
+            : Process.GetProcesses().Select(static process =>
+            {
+                using (process)
+                    return new SteamProcessObservation(
+                        process.Id, Applications.WindowsInstalledApplicationPlatform.ExecutableImagePath(process.Id));
+            });
+        var ids = new HashSet<int>();
+        int? running = null;
+        foreach (SteamProcessObservation process in processes)
         {
-            return _processSnapshot()
-                .Select(static process => process.ProcessId)
-                .ToHashSet();
+            ids.Add(process.ProcessId);
+            if (running is null && RunsFrom(process.ExecutablePath, installRoot))
+                running = process.ProcessId;
         }
 
-        return Process.GetProcesses().Select(process =>
-        {
-            using (process) return process.Id;
-        }).ToHashSet();
+        return (ids, running);
     }
+
+    private static bool RunsFrom(string? executable, string installRoot) =>
+        executable is not null && Path.GetFullPath(executable).StartsWith(
+            Path.TrimEndingDirectorySeparator(installRoot) + Path.DirectorySeparatorChar,
+            StringComparison.OrdinalIgnoreCase);
 
     private int? FindLaunchedProcess(HashSet<int> before, string installRoot)
     {
-        string installPrefix =
-            Path.TrimEndingDirectorySeparator(installRoot) + Path.DirectorySeparatorChar;
         if (_processSnapshot is not null)
         {
             foreach (SteamProcessObservation process in _processSnapshot())
             {
-                if (!before.Contains(process.ProcessId)
-                    && process.ExecutablePath is not null
-                    && Path.GetFullPath(process.ExecutablePath).StartsWith(
-                        installPrefix,
-                        StringComparison.OrdinalIgnoreCase))
+                if (!before.Contains(process.ProcessId) && RunsFrom(process.ExecutablePath, installRoot))
                 {
                     return process.ProcessId;
                 }
@@ -933,10 +956,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 if (before.Contains(process.Id)) continue;
                 try
                 {
-                    string? executable = process.MainModule?.FileName;
-                    if (executable is not null && Path.GetFullPath(executable).StartsWith(
-                        installPrefix,
-                        StringComparison.OrdinalIgnoreCase))
+                    if (RunsFrom(process.MainModule?.FileName, installRoot))
                     {
                         return process.Id;
                     }

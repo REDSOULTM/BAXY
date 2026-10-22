@@ -271,6 +271,43 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Renew al máximo (B-APP-8): a game already running is the state reached: nothing is sent to Steam (no window of it
+    // minimized, no «Jugar» pressed) and nothing is waited for; the receipt names the process that runs.
+    [Test]
+    public async Task AGameAlreadyRunningIsTheStateReached()
+    {
+        string installDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture");
+        var delays = new RecordingDelay();
+        var automation = new FakeSteamAutomation(onDispatch: null);
+        SteamLocalGame installed = Catalog[0] with { InstallDirectory = installDirectory };
+        var adapter = new SteamLocalAdapter(
+            () => [installed],
+            () => new HashSet<string>(["620"], StringComparer.Ordinal),
+            automation,
+            delays.DelayAsync,
+            () =>
+            [
+                new SteamProcessObservation(7, null),
+                new SteamProcessObservation(4242, Path.Combine(installDirectory, "bin", "portal2.exe")),
+            ]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.launch", Json("""{"appId":"620"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("alreadyRunning").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("processId").GetInt32(), Is.EqualTo(4242));
+            Assert.That(automation.DispatchCount, Is.Zero);
+            Assert.That(automation.ContinueCount, Is.Zero);
+            Assert.That(delays.Calls, Is.Zero);
+        });
+    }
+
     [Test]
     public async Task InstallFailureRetainsThirtySecondRetryHorizon()
     {
