@@ -3961,6 +3961,99 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-APP-2): yt-dlp still running at its own deadline came out as an uncaught cancellation (an
+    // ambiguous failure, the browser never tried) and yt-dlp was left running.
+    [Test]
+    public async Task AResolverTimeoutIsNotAnAmbiguousEffect()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.cmd");
+        string alive = Path.Combine(temporary.Path, "alive.txt");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        // A resolver that answers nothing for about three seconds, then leaves a mark if nobody ended it.
+        await File.WriteAllTextAsync(ytDlp, "@ping -n 4 127.0.0.1 >nul\r\n@echo x>\"%~dp0alive.txt\"\r\n");
+        bool started = false;
+        using var adapter = new YouTubeMpvAdapter(mpv, ytDlp, nodePath: null)
+        {
+            ResolveTimeout = TimeSpan.FromMilliseconds(300),
+            StartPlayer = _ =>
+            {
+                started = true;
+                return null;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+        await Task.Delay(TimeSpan.FromSeconds(4.5));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_stream_not_resolved"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(started, Is.False);
+            Assert.That(File.Exists(alive), Is.False, "yt-dlp was left running");
+        });
+    }
+
+    // Renew al máximo (B-APP-2): the player's IPC not opening in time came out as an uncaught cancellation; the player
+    // was started (and any earlier one stopped), so it is the local player's failure after its effect boundary.
+    [Test]
+    public async Task APlayerWhoseIpcNeverOpensIsAFailureAfterTheEffectBoundary()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.exe");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "fixture");
+        int standIn = 0;
+        using var adapter = new YouTubeMpvAdapter(
+            mpv, ytDlp, nodePath: null,
+            (_, _) => ValueTask.FromResult<Uri?>(new Uri("https://rr1.googlevideo.com/videoplayback")))
+        {
+            PlayerConnectTimeout = TimeSpan.FromMilliseconds(300),
+            // A hidden process that opens no IPC stands for the player.
+            StartPlayer = _ =>
+            {
+                Process? process = Process.Start(new ProcessStartInfo("ping", "-n 30 127.0.0.1")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                });
+                standIn = process?.Id ?? 0;
+                return process;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(standIn, Is.Not.Zero);
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_local_player_failed"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(Ended(standIn), Is.True, "the player that never answered was left running");
+        });
+
+        static bool Ended(int id)
+        {
+            try
+            {
+                using Process process = Process.GetProcessById(id);
+                return process.HasExited;
+            }
+            catch (ArgumentException)
+            {
+                return true;
+            }
+        }
+    }
+
     // BAXY Renew (notebook): the pause command reached the player and its answer could not be read; the request
     // may have paused it, so the dispatch stops there and no other player gets pressed.
     [Test]

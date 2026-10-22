@@ -44,6 +44,11 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
     // Renew al máximo (B-APP-7): how the player is started; a test reads its arguments or starts a stand-in.
     internal Func<ProcessStartInfo, Process?> StartPlayer { get; init; } = Process.Start;
 
+    // Renew al máximo (B-APP-2): yt-dlp's own deadline and the one for the player's IPC to open; a test shortens them.
+    internal TimeSpan ResolveTimeout { get; init; } = TimeSpan.FromSeconds(45);
+
+    internal TimeSpan PlayerConnectTimeout { get; init; } = TimeSpan.FromSeconds(15);
+
     public bool CanHandle(string operation) =>
         operation is "media.play.youtube" or "media.status" or "media.control";
 
@@ -102,8 +107,9 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             }
             return receipt;
         }
-        catch (OperationCanceledException) when (
-            cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
+        // Renew al máximo (B-APP-2): past the boundary, the player's own IPC deadline is the local player's failure as
+        // much as the caller's cancel; it used to leave as an uncaught cancellation.
+        catch (OperationCanceledException) when (effectBoundary.WasCrossed)
         {
             return effectBoundary.Failure(operation, "youtube_local_player_failed");
         }
@@ -168,8 +174,20 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         Task<string> outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
         Task<string> errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeout.CancelAfter(TimeSpan.FromSeconds(45));
-        await process.WaitForExitAsync(timeout.Token).ConfigureAwait(false);
+        timeout.CancelAfter(ResolveTimeout);
+        try
+        {
+            await process.WaitForExitAsync(timeout.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Renew al máximo (B-APP-2): yt-dlp still running is ended, never left behind; its own deadline is a
+            // stream not resolved (nothing played yet, so the browser gets its try), the caller's cancel stays one.
+            TryStop(process);
+            if (cancellationToken.IsCancellationRequested)
+                throw;
+            return (null, null);
+        }
         string output = await outputTask.ConfigureAwait(false);
         _ = await errorTask.ConfigureAwait(false);
         if (process.ExitCode != 0) return (null, null);
@@ -229,7 +247,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             using var pipe = new NamedPipeClientStream(
                 ".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
             using var connectTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            connectTimeout.CancelAfter(TimeSpan.FromSeconds(15));
+            connectTimeout.CancelAfter(PlayerConnectTimeout);
             await pipe.ConnectAsync(connectTimeout.Token).ConfigureAwait(false);
             using var reader = new StreamReader(
                 pipe, new UTF8Encoding(false), detectEncodingFromByteOrderMarks: false,
