@@ -89,11 +89,16 @@ class LlmServer:
             return {"cause": "proceso_salio", "exitCode": code}
         return {"cause": "tiempo"}
 
+    def _alive(self) -> None:
+        """The model server died: the sidecar exits, so the App sees the mind close and relaunches it. Before every call
+        to it (review 2026-10-22: only chat() checked, and the history's tokenize raised URLError first, so the mind
+        stayed up without its model and was never relaunched)."""
+        if self._process is not None and self._process.poll() is not None:
+            os._exit(70)
+
     def chat(self, body: dict[str, Any], *, timeout: float = 120.0) -> dict[str, Any]:
         """One chat completion on the one slot, whose prefix stays cached between turns."""
-        if self._process is not None and self._process.poll() is not None:
-            # The model server died: the sidecar exits, so the App sees the mind close and relaunches it.
-            os._exit(70)
+        self._alive()
         self.wait_ready(timeout)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
@@ -137,6 +142,7 @@ class LlmServer:
                 "timings": reply.get("timings") or {}}
 
     def _post(self, path: str, body: dict[str, Any], timeout: float) -> dict[str, Any]:
+        self._alive()
         request = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", data=json.dumps(body).encode("utf-8"),
                                          headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(request, timeout=timeout) as reply:
@@ -144,6 +150,7 @@ class LlmServer:
 
     def tokenize(self, text: str) -> list[int]:
         """The model's tokens for a text, special tokens included (<tool_call> is one)."""
+        self._alive()
         self.wait_ready(600)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/tokenize",

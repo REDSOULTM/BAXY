@@ -624,22 +624,42 @@ class Mind:
         self._trim()
 
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None) -> dict[str, Any]:
+        # Review 2026-10-22: a decision that fails (the model server down, an error) takes back what it added, so the
+        # next turn never reads an old request without its answer as one still to do.
         turn = self._turn
         if turn and turn.get("asked"):
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
             # the steps already run stay in the conversation and are never run again. A new request instead of an
             # answer reaches the model the same way, and the model reads it as what it is.
-            turn["conv"].append({"role": "tool", "tool_call_id": turn.pop("asked"), "content": text})
-            for later in turn.pop("after_asked", []):
+            asked, after, said = turn.pop("asked"), turn.pop("after_asked", []), turn["text"]
+            answer = {"role": "tool", "tool_call_id": asked, "content": text}
+            turn["conv"].append(answer)
+            for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
             turn["text"] = text
-            return self._next(request_id, "turn.decide", turn)
+            try:
+                return self._next(request_id, "turn.decide", turn)
+            except Exception:
+                self._take_back(turn["conv"], answer)
+                turn.update(asked=asked, after_asked=after, text=said)
+                raise
         self._close_open_calls()
-        self.conversation.append({"role": "user", "content": self._clock() + self._pending_note(pending)})
+        clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
+        self.conversation.append(clock)
         self.conversation.append({"role": "user", "content": text})
-        self._trim()
-        self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
-        return self._next(request_id, "turn.decide", self._turn)
+        try:
+            self._trim()
+            self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
+            return self._next(request_id, "turn.decide", self._turn)
+        except Exception:
+            self._take_back(self.conversation, clock)
+            self._turn = None
+            raise
+
+    @staticmethod
+    def _take_back(conv: list[dict[str, Any]], first: dict[str, Any]) -> None:
+        """Remove `first` (that very message) and everything after it."""
+        del conv[next(i for i, m in enumerate(conv) if m is first):]
 
     def beat(self, request_id: Any, context: dict[str, Any]) -> dict[str, Any]:
         """The heartbeat: nobody spoke; the model looks at the moment in a conversation of its own (OpenClaw's isolated
