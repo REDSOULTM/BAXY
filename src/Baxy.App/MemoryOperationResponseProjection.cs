@@ -385,9 +385,15 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         out ProjectedRecords? projected)
     {
         projected = null;
+        // Al máximo 11.2: an exact recall says whether its records are the ones it named.
+        bool saysExact = payload.ValueKind == JsonValueKind.Object && payload.TryGetProperty("exactMatch", out _);
+        bool exact = false;
         if (!HasExactProperties(
                 payload,
-                ["version", "records", "count", "totalCount", "offset", "limit"])
+                saysExact
+                    ? ["version", "records", "count", "totalCount", "offset", "limit", "exactMatch"]
+                    : ["version", "records", "count", "totalCount", "offset", "limit"])
+            || (saysExact && !TryGetBoolean(payload, "exactMatch", out exact))
             || !HasVersionOne(payload)
             || !payload.TryGetProperty("records", out JsonElement records)
             || records.ValueKind != JsonValueKind.Array
@@ -421,7 +427,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             values.Add(value);
         }
 
-        projected = new ProjectedRecords(values, totalCount, offset);
+        projected = new ProjectedRecords(values, totalCount, offset, saysExact ? exact : null);
         return true;
     }
 
@@ -545,6 +551,11 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             ["total"] = projected.TotalCount,
             ["records"] = records,
         };
+        if (projected.ExactMatch is bool exactMatch)
+        {
+            extra["exactMatch"] = exactMatch;
+        }
+
         return shown == 0
             ? TurnVisibleFacts.Failure(cause, extra)
             : CompletedFacts(cause, extra, responseReplayed);
@@ -890,5 +901,6 @@ internal sealed record MemoryOperationResponseProjection(string Message)
     private sealed record ProjectedRecords(
         IReadOnlyList<ProjectedRecord> Records,
         int TotalCount,
-        int Offset);
+        int Offset,
+        bool? ExactMatch);
 }
