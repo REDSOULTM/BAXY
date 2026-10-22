@@ -191,6 +191,14 @@ public sealed class MissionEngine : IDisposable
             OperationResponse response = ToResponse(request, outcome);
             if (outcome.Retryable)
             {
+                // Revisión 2026-10-22 (K-6): a retryable outcome keeps its grant for the retry, unless its effect may
+                // have happened: the yes was given to one execution, so the retry asks again (reconciliationRequired)
+                // instead of running a second time on the same token.
+                if (outcome.EffectMayHaveOccurred && grantedBinding is { } spent)
+                {
+                    _confirmationAuthority.Revoke(spent);
+                }
+
                 return response;
             }
 
