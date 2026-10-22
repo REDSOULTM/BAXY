@@ -176,3 +176,35 @@ def test_layer2_does_not_correct_when_correcting_is_off(tmp_path, monkeypatch) -
     monkeypatch.setenv("BAXY_S1_CORRECT", "")
     assert mind.decide(1, "ahora ciérralo")["operation"] is None
     assert fills == []
+
+
+def test_layer_0_asks_once_per_misunderstanding(tmp_path, monkeypatch) -> None:
+    # 4.2 (SAGE-Agent): the person's answer to BAXY's doubt question was held again by the same doubt, with no limit.
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, _ = _mind(tmp_path, [_call("system_power", {"action": "shutdown"}, 0.3), _say("¿Qué cierro?"),
+                               _call("system_power", {"action": "shutdown"}, 0.3),
+                               _call("system_power", {"action": "shutdown"}, 0.3), _say("¿Qué cierro?")])
+    assert mind.decide(1, "ciérralo")["operation"] is None
+    assert mind.decide(2, "el PC")["operation"] == "system.power"  # its answer: layer 0 does not ask again
+    mind.continue_turn(3, json.dumps({"status": "cancelled"}))
+    assert mind.decide(4, "ciérralo otra vez")["operation"] is None  # a new request is held as before
+
+
+def test_the_answer_to_ask_user_is_not_held_by_layer_0(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, _ = _mind(tmp_path, [_call("ask_user", {"question": "¿Qué cierro?"}, 0.9),
+                               _call("system_power", {"action": "shutdown"}, 0.3)])
+    assert mind.decide(1, "ciérralo")["kind"] == "clarify"
+    assert mind.decide(2, "el PC")["operation"] == "system.power"
+
+
+def test_the_answer_to_a_doubt_question_goes_to_layer_2(tmp_path, monkeypatch) -> None:
+    mind, server, one = _layer2(tmp_path, monkeypatch, "app_close",
+                                [_rival_call(0.3), _say("¿Cierro la ventana o apago el PC?"), _rival_call(0.3),
+                                 _say("¿La ventana de delante o el PC entero?")])
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    assert mind.decide(1, "ciérralo")["operation"] is None
+    assert one.asked == []  # layer 0 asked first
+    assert mind.decide(2, "eso")["operation"] is None
+    assert len(one.asked) == 1  # the answer: the decision model reads it, and it asks (with its other option)
+    assert "app_close" in server.bodies[-1]["messages"][-1]["content"]

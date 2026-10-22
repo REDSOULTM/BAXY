@@ -359,6 +359,10 @@ DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de ha
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
                     "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
                     "qué quiere exactamente.]")
+# Al máximo 4.2 (SAGE-Agent): one question per misunderstanding. The person's words right after a doubt question (both
+# notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
+# They still go to layer 2 (the decision model and «corrige», with its safeguards).
+DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
@@ -673,7 +677,7 @@ class Mind:
             turn["conv"].append(answer)
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
-            turn["text"] = text
+            turn["text"], turn["answering"] = text, True
             try:
                 return self._next(request_id, "turn.decide", turn)
             except Exception:
@@ -681,6 +685,7 @@ class Mind:
                 turn.update(asked=asked, after_asked=after, text=said)
                 raise
         self._close_open_calls()
+        answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
         clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
         self.conversation.append(clock)
         request = {"role": "user", "content": text}
@@ -694,7 +699,8 @@ class Mind:
             while keep > CUT_TEXT_FLOOR and not self._fits(self._turn_sizes()):
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
-            self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
+            self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
+                          "answering": answering}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -1042,10 +1048,11 @@ class Mind:
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
-        model's confidence is under the threshold. Layer 2 (BAXY_S1_VETO, with a decision model): under that one, the
-        decision model is asked which of the model's own candidates the person meant, and a different answer holds it —
-        or, with BAXY_S1_CORRECT=1 and a tool of CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking
-        and confirming are never held: they already put the person in the loop."""
+        model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED). Layer 2
+        (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
+        candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
+        CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking and confirming are never held: they
+        already put the person in the loop."""
         if not self._doubted(stage, turn, final):
             return None
         if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
@@ -1053,7 +1060,7 @@ class Mind:
         doubt = read_doubt(reply)
         if doubt is None:
             return None
-        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT"):
+        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering"):
             return DOUBT_NOTE.format(call=call["wire"])
         if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
             return None
