@@ -239,6 +239,12 @@ internal static class ScreenViewProjection
             line.Append(" (").Append(state).Append(')');
         }
 
+        // BAXY Renew cu (C11): what the application says the item is (Excel's «1» is «Encabezado de fila»).
+        if ((string?)control["itemType"] is { Length: > 0 } itemType)
+        {
+            line.Append(" (tipo: ").Append(itemType).Append(')');
+        }
+
         // The worker counts the copies after the first (DesktopUiaWorker.ps1, $seen[$key].repeated): found three
         // times it says 2, and the view says the three.
         if ((int?)control["repeated"] is > 0 and int copies)

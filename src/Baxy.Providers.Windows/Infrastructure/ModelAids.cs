@@ -14,11 +14,35 @@ public static class ModelAids
     /// <summary>Accessible mode: system.settings.set says what the mode changes and which modes do not exist yet.</summary>
     public const string AccessibleScope = "accessible_scope";
 
+    /// <summary>BAXY Renew cu (C14): audio.microphone.mute says it is Windows' switch, not an application's own mute.</summary>
+    public const string MicrophoneScope = "microphone_scope";
+
+    /// <summary>BAXY Renew cu (C02): a click that changed nothing on a control already chosen says it was already so.</summary>
+    public const string AlreadySelected = "already_selected";
+
     /// <summary>E024: a file.write with no folder says it went to BAXY's working folder (and a home folder of that name).</summary>
     public const string WorkFolder = "work_folder";
 
     /// <summary>F019, E015: an app.open with a place says the place was only asked for and how to look.</summary>
     public const string PlaceUnverified = "place_unverified";
+
+    /// <summary>BAXY Renew cu (C04): an app.open with no place names the places its application opens at directly.</summary>
+    public const string AppPlaces = "app_places";
+
+    /// <summary>BAXY Renew cu (C18): a protected_window refusal says nothing was sent and how another app's window is reached.</summary>
+    public const string ProtectedFrontNext = "protected_front_next";
+
+    /// <summary>BAXY Renew cu (C18): a clipboard.paste says, as a sentence, the one window that received it.</summary>
+    public const string PasteTargetNext = "paste_target_next";
+
+    /// <summary>BAXY Renew cu (C13): a window.resolve by an application name that matched nothing lists the visible windows.</summary>
+    public const string WindowCandidates = "window_candidates";
+
+    /// <summary>BAXY Renew cu (C03): a click whose index names another control says so and how a read text is clicked.</summary>
+    public const string IndexLabelNext = "index_label_next";
+
+    /// <summary>BAXY Renew cu (C11): a click whose label no control has lists the collapsed entries of the last look.</summary>
+    public const string CollapsedNext = "collapsed_next";
 
     private static readonly AsyncLocal<string?> Setting = new();
 

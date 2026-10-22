@@ -59,6 +59,14 @@ public static class ApplicationPlaces
     public static string? Address(string? application, string? place, string? value) =>
         Address(Loaded.Value, application, place, value);
 
+    /// <summary>
+    /// BAXY Renew cu (C03 en frío): whether the data says <paramref name="application"/> starts behind its own sign-in
+    /// (Steam: an updater and «Iniciar sesión», then its window), so a place handed while it starts is lost and goes
+    /// again to the window it settles on.
+    /// </summary>
+    public static bool StartsBehindSignIn(string? application) =>
+        application is not null && Loaded.Value.TryGetValue(Fold(application), out Application? found) && found.StartsBehindSignIn;
+
     internal static string? Address(
         IReadOnlyDictionary<string, Application> applications, string? application, string? place, string? value)
     {
@@ -90,6 +98,39 @@ public static class ApplicationPlaces
         };
         return filled is null ? null : template.Replace(slot, filled, StringComparison.Ordinal);
     }
+
+    /// <summary>
+    /// BAXY Renew cu (C04): the places <paramref name="application"/> opens at directly, ordinally sorted, each with what
+    /// its slot takes («query»: what is searched; «game»: a game), null for none; empty for an application with none.
+    /// </summary>
+    public static IReadOnlyList<(string Place, string? Takes)> PlacesOf(string? application) =>
+        application is not null && Loaded.Value.TryGetValue(Fold(application), out Application? declared)
+            ? [.. declared.Places.OrderBy(place => place.Key, StringComparer.Ordinal)
+                .Select(place => (place.Key, SlotOf(place.Value)?.Trim('{', '}')))]
+            : [];
+
+    /// <summary>
+    /// BAXY Renew cu (C04): the game catalog of <paramref name="application"/> when its <paramref name="place"/> takes a
+    /// game (its slot is the catalog number), so a game's title said for it is that catalog's to turn into the number.
+    /// Null for any other application or place.
+    /// </summary>
+    public static string? GameCatalogOf(string? application, string? place) =>
+        application is not null && place is not null
+        && Loaded.Value.TryGetValue(Fold(application), out Application? declared)
+        && declared.GameCatalog is not null
+        && declared.Places.TryGetValue(place, out string? template) && SlotOf(template) == "{game}"
+            ? declared.GameCatalog
+            : null;
+
+    /// <summary>
+    /// BAXY Renew cu (C04 variant, C05): the application whose data name the game catalog <paramref name="catalog"/>, by
+    /// the name the data give it (its name in the Start catalog); null when none does.
+    /// </summary>
+    public static string? ApplicationOfCatalog(string? catalog) =>
+        catalog is null ? null : Named.Value
+            .Select(entry => entry.Name)
+            .FirstOrDefault(name => Loaded.Value.TryGetValue(Fold(name), out Application? declared)
+                && string.Equals(declared.GameCatalog, catalog, StringComparison.Ordinal));
 
     /// <summary>
     /// The act <paramref name="act"/> of the application whose data name the game catalog <paramref name="catalog"/>
@@ -156,7 +197,8 @@ public static class ApplicationPlaces
         IReadOnlyDictionary<string, string> Places,
         string? GameCatalog,
         IReadOnlyDictionary<string, GameAct> Acts,
-        TitleSearch? Titles);
+        TitleSearch? Titles,
+        bool StartsBehindSignIn = false);
 
     /// <summary>
     /// The data's applications by folded name. Every address must open with one of its application's schemes and carry at
@@ -190,8 +232,10 @@ public static class ApplicationPlaces
             }
 
             string? catalog = entry.Value.TryGetProperty("gameCatalog", out JsonElement named) ? named.GetString() : null;
+            bool signIn = entry.Value.TryGetProperty("startsBehindSignIn", out JsonElement behind)
+                && behind.ValueKind == JsonValueKind.True;
             applications[Fold(entry.Name)] = new Application(
-                schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog));
+                schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog), signIn);
         }
 
         return applications;

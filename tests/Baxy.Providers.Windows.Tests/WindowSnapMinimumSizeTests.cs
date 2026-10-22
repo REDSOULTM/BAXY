@@ -168,6 +168,84 @@ public sealed class WindowSnapMinimumSizeTests
         });
     }
 
+    // BAXY Renew cu (C13 en el PC): a maximized window, restored to its whole screen, that does not take the first move
+    // is moved once more and ends on the exact half; never accepted at the whole width as «larger than half».
+    [Test]
+    public async Task ARestoredWindowThatIgnoresTheFirstMoveIsMovedOnceMore()
+    {
+        var platform = new SnapPlatform(new WindowBounds(0, 0, 1536, 816))
+        {
+            StartsMaximized = true,
+            IgnoresFirstMoveAfterRestore = true,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowActionResult result = await SnapAsync(provider, "left");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded && result.Verified, Is.True, result.ErrorCode);
+            Assert.That(Bounds(result.Window!), Is.EqualTo(new WindowBounds(0, 0, 768, 816)));
+            Assert.That(result.LargerThanRequested, Is.Null);
+            Assert.That(platform.Moves, Has.Count.EqualTo(2));
+        });
+    }
+
+    // BAXY Renew cu (C13 en el PC): a maximized window that takes no move at all (a browser in full screen) is put back
+    // maximized and the result says the window took no size, never «verification failed» with it left restored.
+    [Test]
+    public async Task AMaximizedWindowThatTakesNoMoveIsPutBackAndSaysSo()
+    {
+        var platform = new SnapPlatform(new WindowBounds(0, 0, 1536, 816))
+        {
+            StartsMaximized = true,
+            IgnoresMovesAfterRestore = true,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowActionResult result = await SnapAsync(provider, "left");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowSizeNotTaken));
+            Assert.That(result.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.Actions, Is.EqualTo(new[] { WindowControlAction.Restore, WindowControlAction.Maximize }));
+        });
+    }
+
+    // BAXY Renew cu (C13 en el PC): a window in full screen keeps its whole monitor and takes no size. It is asked to leave
+    // by its own keys posted to it (Esc, then F11), read back after each, and placed once it left; one that stays in
+    // full screen is left as it was and says so.
+    [TestCase((ushort)0x7A, new ushort[] { 0x1B, 0x7A }, true)]
+    [TestCase((ushort)0x1B, new ushort[] { 0x1B }, true)]
+    [TestCase((ushort)0, new ushort[] { 0x1B, 0x7A }, false)]
+    public async Task AWindowInFullScreenLeavesItByItsOwnKeysAndIsPlaced(ushort leavesBy, ushort[] keys, bool placed)
+    {
+        var platform = new SnapPlatform(new WindowBounds(0, 0, 1536, 864)) { StartsFullScreen = true, LeavesFullScreenBy = leavesBy };
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowActionResult result = await SnapAsync(provider, "left");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.EqualTo(placed), result.ErrorCode);
+            Assert.That(platform.Keys, Is.EqualTo(keys));
+            if (placed)
+                Assert.That(Bounds(result.Window!), Is.EqualTo(new WindowBounds(0, 0, 768, 816)));
+            else
+            {
+                Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowSizeNotTaken));
+                Assert.That(result.EffectMayHaveOccurred, Is.False);
+            }
+        });
+    }
+
+    [Test]
+    public void AsWideAsTheWholeWorkAreaIsNoMinimum() =>
+        Assert.That(WindowsWindowControlProvider.KeepsLargerMinimum(
+            new WindowBounds(0, 0, 1536, 816), new WindowBounds(0, 0, 768, 816), WorkArea), Is.False);
+
     private static async Task<WindowActionResult> SnapAsync(WindowsWindowControlProvider provider, string side)
     {
         WindowResolveResult resolved = await provider.ResolveForegroundAsync(CancellationToken.None);
@@ -193,6 +271,31 @@ public sealed class WindowSnapMinimumSizeTests
         public bool PullsBackOnScreen { get; init; }
         public bool IgnoresMovesAfterFirst { get; init; }
         public int StaleReadsAfterMove { get; init; }
+        public bool StartsMaximized { get; init; }
+        public bool IgnoresFirstMoveAfterRestore { get; init; }
+        public bool IgnoresMovesAfterRestore { get; init; }
+        public List<WindowControlAction> Actions { get; } = [];
+        public bool StartsFullScreen { get; init; }
+        public ushort LeavesFullScreenBy { get; init; }
+        public List<ushort> Keys { get; } = [];
+        private bool? _fullScreen;
+        private bool Full => _fullScreen ?? StartsFullScreen;
+
+        public bool FullScreen(WindowIdentity identity) => Full;
+
+        public bool PostKey(WindowIdentity identity, ushort virtualKey, ushort scanCode)
+        {
+            Keys.Add(virtualKey);
+            if (Full && virtualKey == LeavesFullScreenBy)
+            {
+                _fullScreen = false;
+                _bounds = new WindowBounds(200, 100, 900, 600);
+            }
+
+            return true;
+        }
+        private bool? _maximized;
+        private bool _ignoredAfterRestore;
         public List<WindowBounds> Moves { get; } = [];
         public DateTimeOffset UtcNow { get; } = new(2026, 10, 4, 0, 0, 0, TimeSpan.Zero);
 
@@ -219,6 +322,19 @@ public sealed class WindowSnapMinimumSizeTests
         public bool SetBounds(WindowIdentity identity, WindowBounds requested)
         {
             Moves.Add(requested);
+            if (Full)
+            {
+                return true;
+            }
+            if (IgnoresMovesAfterRestore && _maximized == false)
+            {
+                return true;
+            }
+            if (IgnoresFirstMoveAfterRestore && _maximized == false && !_ignoredAfterRestore)
+            {
+                _ignoredAfterRestore = true;
+                return true;
+            }
             if (IgnoresMovesAfterFirst && Moves.Count > 1)
             {
                 return true;
@@ -236,7 +352,17 @@ public sealed class WindowSnapMinimumSizeTests
             return true;
         }
 
-        public bool Execute(WindowIdentity identity, WindowControlAction action) => true;
+        public bool Execute(WindowIdentity identity, WindowControlAction action)
+        {
+            Actions.Add(action);
+            if (action == WindowControlAction.Restore)
+            {
+                _maximized = false;
+                _bounds = WindowSnapMinimumSizeTests.WorkArea;
+            }
+
+            return true;
+        }
         public bool RequestClose(WindowIdentity identity) => false;
         public bool RequestSystemClose(WindowIdentity identity) => false;
 
@@ -244,6 +370,7 @@ public sealed class WindowSnapMinimumSizeTests
             ValueTask.CompletedTask;
 
         private WindowSnapshot Snapshot(WindowBounds current) =>
-            new(_identity, "normal", true, current, "Mon Laferte - Mi Buen Amor");
+            new(_identity, StartsMaximized && _maximized is null ? "maximized" : "normal", true, current,
+                "Mon Laferte - Mi Buen Amor");
     }
 }

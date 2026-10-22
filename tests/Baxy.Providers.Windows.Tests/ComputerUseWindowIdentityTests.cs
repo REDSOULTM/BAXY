@@ -83,6 +83,21 @@ public sealed class ComputerUseWindowIdentityTests
         Assert.That(VisibleControlSurface.Toolkit(own, classes), Is.EqualTo(toolkit));
     }
 
+    // BAXY Renew cu (C07): the person's browser named as Windows names it is its process, and only that name.
+    [TestCase("Opera GX", "opera")]
+    [TestCase("opera gx", "opera")]
+    [TestCase("Opera", null)]
+    [TestCase("Google Chrome", null)]
+    [TestCase("Steam", null)]
+    public void ThePersonsBrowserByItsNameIsItsProcess(string application, string? process)
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.BrowserProcessFor(application, ("Opera GX", "opera")), Is.EqualTo(process));
+            Assert.That(VisibleControlSurface.BrowserProcessFor(application, null), Is.Null);
+        });
+    }
+
     // Goal v3, analysis r3a M5 (v3-49): a file manager whose title is the folder it shows is found by its executable's
     // own description, when it is the name asked; one that only starts with it or shares a word never is.
     [TestCase("7-Zip File Manager", "7-Zip File Manager", true)]

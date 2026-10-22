@@ -73,7 +73,7 @@ public sealed class ComputerUseWalkFailureTests
             "False",  // the end kept is whole
             "True", "True",
             "True",   // contracase: a name without pairs is cut exactly as before
-            "60",     // the look before the click, unchanged
+            "63",     // the look before the click: its 60 and, since no row was in them, the rows (C11, reserved room)
             "61", "1", "Abuela 23:18", // the look after it: the contact named by the goal's words, past the cap
         }));
     }

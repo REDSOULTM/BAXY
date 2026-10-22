@@ -306,17 +306,34 @@ internal static partial class VisibleControlSurface
             return executable;
         }
 
-        nint chosen = PreferReadableCopy(
-            ResolveTitledWindow(application, accept: null),
+        nint Resolve(string name) => PreferReadableCopy(
+            ResolveTitledWindow(name, accept: null),
             window => WindowProcess(window).ProcessId,
             RunsAboveUs,
             Applications.InvokerLaunch.WindowReopensUnraised,
             ExecutableOf,
-            accept => ResolveTitledWindow(application, accept));
+            accept => ResolveTitledWindow(name, accept));
+
+        nint chosen = Resolve(application);
+        // BAXY Renew cu (C07): the person's browser named as Windows names it («Opera GX») is no process, description
+        // or title of its own windows («opera», «… - Opera»); only when nothing else is that name, its process is.
+        if (chosen == 0 && BrowserProcessFor(application, Windows.DesktopWindowNames.PersonBrowser()) is { } browser)
+            chosen = Resolve(browser);
 
         // v3 point 1: content drawn by a process the application started (WebView2, CEF) is its surface.
         return ValueTask.FromResult(FamilySurface(chosen));
     }
+
+    /// <summary>
+    /// BAXY Renew cu (C07): the process of the person's browser (<paramref name="browser"/>, Windows' own) when
+    /// <paramref name="application"/> is its name, folded; null for any other name, or when the name already is the
+    /// process.
+    /// </summary>
+    internal static string? BrowserProcessFor(string application, (string Name, string Process)? browser) =>
+        browser is { } known && FoldTitle(known.Process).Length > 0
+        && FoldTitle(application) == FoldTitle(known.Name) && FoldTitle(application) != FoldTitle(known.Process)
+            ? known.Process
+            : null;
 
     /// <summary>
     /// Review of cu-v3-elevacion (finding 1): <paramref name="chosen"/> stays unless it runs as administrator

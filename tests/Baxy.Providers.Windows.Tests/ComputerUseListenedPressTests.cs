@@ -799,7 +799,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void AtAPointAContainerIsSkippedNeverTheEnd()
     {
-        string answer = Run(Worker(), ["Do-At", "Click-Result", "Get-AskingName"], """
+        string answer = Run(Worker(), ["Do-At", "Click-Result", "Get-AskingName", "Get-SettingsSwitchRefusal"], """
             function Read-RenderHosts($request){ return @() }
             function Get-RenderHosts($top){ return @() }
             function Get-Root([long]$hwnd){ return @{ hwnd=[IntPtr]77; root=(New-Object psobject -Property @{ Current=(New-Object psobject -Property @{ BoundingRectangle=[System.Windows.Rect]::Empty }) }) } }

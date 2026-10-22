@@ -305,6 +305,19 @@ public static class ProductCatalog
             // The locate is a post-read: it joins and opens nothing, so it verifies by its result
             // (the matches read from the switcher), not by an observed external mutation.
             requiresObservedEffect: false),
+        // BAXY Renew cu (C14): the person's own microphone inside the chat client, by its own mute button (Discord's
+        // «Silenciar»), read back by UI Automation; Windows' microphone is audio.microphone.mute.
+        Descriptor(
+            "client.microphone.set",
+            Schema(
+                [
+                    String("client", values: ["discord"]),
+                    Boolean("muted"),
+                ],
+                ["client", "muted"]),
+            OperationRisks.LowReversible,
+            "client.microphone.set.discord.uia.toggle.postread.v1",
+            "Silencia o activa el micrófono propio de la persona dentro del cliente de escritorio (Discord: su botón «Silenciar») por UI Automation y relee su estado; no toca el micrófono de Windows ni une a ninguna llamada."),
         Descriptor(
             "clipboard.copy",
             EmptySchema(),
@@ -317,6 +330,13 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "clipboard.paste.win32.clipboard.foreground.sendinput.accepted.v1",
             "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V."),
+        // BAXY Renew cu (C18): the clipboard pasted into a new document of the application named, opened first.
+        Descriptor(
+            "clipboard.paste.into",
+            Schema([String("appId", maximumUtf8Bytes: 512, nonWhitespace: true)], ["appId"]),
+            OperationRisks.PrivacySensitive,
+            "clipboard.paste.into.app.open.document.paste.v1",
+            "Abre un documento nuevo de la aplicación nombrada (app.open al frente, con documento nuevo) y pega en él el contenido del portapapeles (clipboard.paste); si la aplicación no se abre no pega nada."),
         Descriptor(
             "clipboard.read.text",
             Schema([Integer("maxCharacters", 1, 6_000)], []),
@@ -718,6 +738,20 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "game.launch.steam.process.postread.v1",
             "Inicia un AppID instalado en este PC y verifica la identidad del proceso lanzado."),
+        // BAXY Renew cu (C04 variante, C05): los lugares propios de la tienda de juegos como operaciones con nombre: su
+        // búsqueda con lo que se busca y la página de un juego por su título. Son app.open con ese lugar, al frente.
+        Descriptor(
+            "game.store.page",
+            Schema([String("title", maximumUtf8Bytes: 128, nonWhitespace: true)], ["title"]),
+            OperationRisks.LowReversible,
+            "game.store.page.app.open.place.v1",
+            "Abre en Steam, al frente, la página de la tienda del juego que lleva ese título (lo resuelve su búsqueda pública) y dice qué juego es; mirar la ventana dice si llegó."),
+        Descriptor(
+            "game.store.search",
+            Schema([String("query", maximumUtf8Bytes: 128, nonWhitespace: true)], ["query"]),
+            OperationRisks.LowReversible,
+            "game.store.search.app.open.place.v1",
+            "Abre en Steam, al frente, la búsqueda de su tienda con lo que se busca (un título, un tema o un tipo de juego); mirar la ventana dice qué resultados muestra."),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
         // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
         // dirección del dato y el diálogo propio de Steam, ya no por su consola),
@@ -1270,6 +1304,25 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "office.document.read.adapter.snapshot.v1",
             "Lee una proyección estructurada de un documento identificado mediante el adapter oficial."),
+        // BAXY Renew cu (C10 variante, C11): a format given to what the person has open in Word (its selection) or Excel
+        // (its selection, a row, a column or a range), through the running application's object model, read back.
+        Descriptor(
+            "office.format.apply",
+            Schema(
+                [
+                    String("app", values: ["excel", "word"]),
+                    String("cells", types: NullableString, maximumLength: 32, nonWhitespace: true),
+                    String("column", types: NullableString, maximumLength: 3, nonWhitespace: true),
+                    Boolean("on", types: NullableBoolean),
+                    Integer("paragraph", 1, 100_000, types: NullableInteger),
+                    Integer("row", 1, 1_048_576, types: NullableInteger),
+                    String("style", values: ["bold", "center", "italic", "left", "right", "underline"]),
+                    String("target", types: NullableString, values: ["cells", "column", "paragraph", "row", "selection", "title"]),
+                ],
+                ["app", "style"]),
+            OperationRisks.LowReversible,
+            "office.format.apply.com.postread.v1",
+            "Da un formato (negrita, cursiva, subrayado o una alineación) a lo que la persona tiene abierto en Word (su selección, su título o un párrafo por número) o en Excel (su selección, una fila, una columna o un rango, que deja elegido) por el modelo de objetos de la aplicación en marcha, y lo relee; no abre ninguna aplicación."),
         // BAXY Renew 2026-10-15: one call that resolves, installs and verifies, after the person's yes (installation
         // risk); it replaces the prepare/commit pair, which the 4B took for uninstalling.
         Descriptor(

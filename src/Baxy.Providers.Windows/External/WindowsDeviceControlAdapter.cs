@@ -313,7 +313,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
         or "bluetooth.radio.set" or "bluetooth.radio.status"
-        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "client.channel.locate" or "calculator.expression.evaluate"
+        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "client.channel.locate" or "client.microphone.set" or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -339,6 +339,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 "software.python.status" => PythonStatus(operation),
                 "storage.removable.list" => RemovableStorageList(operation),
                 "client.channel.locate" => await ClientChannelLocateAsync(operation, arguments, cancellationToken),
+                "client.microphone.set" => await ClientMicrophoneSetAsync(
+                    operation, arguments, effectBoundary, cancellationToken),
                 "software.python.package.status" => await PythonPackageStatusAsync(operation, arguments, cancellationToken),
                 "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -1228,6 +1230,96 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // DISCORD1839 «ve a Cotele en Discord»: the channel is looked up in the
     // client's quick switcher (Ctrl+K), its matches read by UI Automation and
     // the switcher closed with Escape; nothing is joined or opened.
+    // BAXY Renew cu (C14): Discord's own mute button («Silenciar» / «Mute», a toggle: On is muted), found in its window by
+    // UI Automation (Chromium builds its tree on the first query, so it is asked again for a short while), switched only
+    // when it is not as asked, and read back. Nothing else is pressed; the window is not raised.
+    private const string ClientMicrophoneScript = """
+        $ErrorActionPreference='Stop';$desired=[int]$args[0];$effect=$false
+        try {
+          Add-Type -AssemblyName UIAutomationClient
+          $windows=@(Get-Process -Name Discord -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 })
+          if($windows.Count -eq 0){[pscustomobject]@{ok=$false;effectObserved=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 0}
+          $root=[System.Windows.Automation.AutomationElement]::FromHandle($windows[0].MainWindowHandle)
+          $buttons=New-Object System.Windows.Automation.PropertyCondition(
+            [System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
+          $mute=$null
+          for($attempt=0;$attempt -lt 12 -and $null -eq $mute;$attempt++){
+            foreach($button in $root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttons)){
+              $name=[string]$button.Current.Name
+              $pattern=$null
+              if(@('Silenciar','Mute') -contains $name -and $button.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern,[ref]$pattern)){ $mute=$button; break }
+            }
+            if($null -eq $mute){Start-Sleep -Milliseconds 250}
+          }
+          if($null -eq $mute){[pscustomobject]@{ok=$false;effectObserved=$false;error='client_mute_button_not_found'}|ConvertTo-Json -Compress;exit 0}
+          $toggle=$mute.GetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern)
+          $before=[int]$toggle.Current.ToggleState
+          $after=$before
+          if($before -ne $desired){
+            $toggle.Toggle();$effect=$true
+            for($read=0;$read -lt 20;$read++){
+              $after=[int]$toggle.Current.ToggleState
+              if($after -eq $desired){break}
+              Start-Sleep -Milliseconds 100
+            }
+            # The button's own click, once, when its toggle did not take (the window was behind another).
+            $invoke=$null
+            if($after -ne $desired -and $mute.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$invoke)){
+              $invoke.Invoke()
+              for($read=0;$read -lt 20;$read++){
+                $after=[int]$toggle.Current.ToggleState
+                if($after -eq $desired){break}
+                Start-Sleep -Milliseconds 100
+              }
+            }
+          }
+          if($after -ne $desired){[pscustomobject]@{ok=$false;effectObserved=$effect;before=$before;value=$after;error='client_mute_postread_unchanged'}|ConvertTo-Json -Compress;exit 0}
+          [pscustomobject]@{ok=$true;effectObserved=$effect;before=$before;value=$after}|ConvertTo-Json -Compress
+        } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='client_microphone_failed'}|ConvertTo-Json -Compress;exit 2}
+        """;
+
+    private async ValueTask<ExternalCapabilityReceipt> ClientMicrophoneSetAsync(
+        string operation,
+        JsonElement arguments,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken token)
+    {
+        if (ExternalJson.RequiredString(arguments, "client") != "discord"
+            || !arguments.TryGetProperty("muted", out JsonElement muted)
+            || muted.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+        {
+            return ExternalJson.Failure(operation, "client_microphone_arguments_invalid");
+        }
+
+        bool wanted = muted.GetBoolean();
+        effectBoundary.Cross(token);
+        ExternalProcessResult process = await RunPowerShellAsync(
+            ClientMicrophoneScript, [wanted ? "1" : "0"], token).ConfigureAwait(false);
+        using JsonDocument response = ParseLastJson(process.Output);
+        bool effect = Bool(response.RootElement, "effectObserved");
+        if (!Bool(response.RootElement, "ok"))
+        {
+            string error = String(response.RootElement, "error") is { Length: > 0 } said
+                ? said
+                : "client_microphone_postread_failed";
+            return effect
+                ? effectBoundary.Failure(operation, error, effect)
+                : ExternalJson.FailureBeforeEffect(operation, error);
+        }
+
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("client", "discord");
+            writer.WriteBoolean("muted", wanted);
+            writer.WriteBoolean("mutedBefore", response.RootElement.GetProperty("before").GetInt32() == 1);
+            writer.WriteString("authority", "discord_uia_mute_toggle_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Switched(operation, result, effect);
+    }
+
     private const string ClientChannelLocateScript = """
         $ErrorActionPreference='Stop';$label=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
         Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes

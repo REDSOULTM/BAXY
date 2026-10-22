@@ -19,6 +19,7 @@ namespace Baxy.Core.Operations;
 [JsonSerializable(typeof(ListNotesArguments))]
 [JsonSerializable(typeof(OpenApplicationArguments))]
 [JsonSerializable(typeof(OpenApplicationResult))]
+[JsonSerializable(typeof(PastedIntoOffice))]
 [JsonSerializable(typeof(AudioVolumeArguments))]
 [JsonSerializable(typeof(AudioMuteArguments))]
 [JsonSerializable(typeof(AudioEndpointStateResult))]

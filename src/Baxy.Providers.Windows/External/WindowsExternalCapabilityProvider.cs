@@ -110,6 +110,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new NamedBrowserAdapter(root, browserSessionContext),
             new OpenMeteoWeatherAdapter(),
             new MicrosoftAccountAdapter(),
+            new OfficeFormatAdapter(),
         ];
     }
 
@@ -374,6 +375,15 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                     writer.WriteStartObject();
                     writer.WriteNumber("version", 1);
                     writer.WriteString("refusedProcess", program);
+                    // BAXY Renew cu (C18): a paste with no app opened went to the window in front (a developer's) and
+                    // the reply blamed the app it meant; the fact of where it went, and how another window is reached.
+                    if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.ProtectedFrontNext))
+                    {
+                        writer.WriteString("next", $"nothing was sent: the window it would go to belongs to {program}, "
+                            + "where BAXY does not act; BAXY itself can open the application it meant (app_open) or bring "
+                            + "its window to the front (window_focus) and then do this step again there");
+                    }
+
                     writer.WriteEndObject();
                 }), "protected_window");
         }

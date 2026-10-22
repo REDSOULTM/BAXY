@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -765,7 +766,32 @@ internal sealed class WindowsVisibleControlAdapter
         // Ronda B (falta 3): a toolbar button seen through its MSAA proxy whose bar answers another window or another
         // button at its point: nothing was sent, neither as a message nor by the pointer.
         "visible_control_covered",
+        // BAXY Renew cu (C02): a switch of Windows' own Settings, refused before anything was pressed.
+        SettingsSwitchRefused,
     };
+
+    /// <summary>
+    /// BAXY Renew cu (C02): the worker found the control a switch (On/Off) of Windows' own Settings, which changes the
+    /// machine (its Wi-Fi radio, its Bluetooth, airplane mode) and no click presses: «mira si el wifi está conectado»
+    /// pressed the «Wi-Fi» switch (on → off) and the radio stayed off. Refused before anything was pressed, with its state.
+    /// </summary>
+    internal const string SettingsSwitchRefused = "visible_settings_switch_refused";
+
+    internal static JsonElement SettingsSwitchFacts(JsonElement root) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        if (root.TryGetProperty("name", out JsonElement name) && name.ValueKind == JsonValueKind.String)
+            writer.WriteString("name", name.GetString());
+        string? state = root.TryGetProperty("switchState", out JsonElement value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString()
+            : null;
+        if (state is "On" or "Off")
+            writer.WriteString("switch", state == "On" ? "on" : "off");
+        writer.WriteString("next", "nothing was pressed: a switch of Windows' Settings changes the machine, so a click "
+            + "never flips it; its state is the one shown (on or off). wifi_radio_set and bluetooth_radio_set change "
+            + "those radios when the person asks it");
+        writer.WriteEndObject();
+    });
 
     // Encargo IMP4: the lines a look that asks for «lines» reads, each by its place (a chat's whole pane: 79 lines
     // measured on redpc); encargo WA-LEER: up to OperationVisibleFacts.ChatLines.
@@ -960,6 +986,17 @@ internal sealed class WindowsVisibleControlAdapter
 
         ExternalCapabilityReceipt receipt;
         _pressedUnchanged = null;
+        // BAXY Renew cu (C11): the grid item a click names by its index, as the look called it («Encabezado de columna»).
+        string? clickedType = null;
+        if (arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("index", out JsonElement clickedIndex)
+            && clickedIndex.ValueKind == JsonValueKind.Number && clickedIndex.TryGetInt32(out int clickedAt))
+        {
+            lock (_viewLock)
+            {
+                clickedType = _lastView?.Controls.FirstOrDefault(control => control.Index == clickedAt)?.ItemType;
+            }
+        }
+
         // Revision 3 of r24b (finding 3): counted before it acts, so a focus owed to a field is void after any click.
         Interlocked.Increment(ref _clicks);
         try
@@ -969,6 +1006,32 @@ internal sealed class WindowsVisibleControlAdapter
         finally
         {
             _pressedUnchanged = null;
+        }
+
+        // BAXY Renew cu (C11): Excel in a normal window folds its ribbon groups into collapsed entries («Fuente»), and a
+        // click on «Negrita» by its label found nothing, three times. The refusal says which collapsed entries the last
+        // look showed: what a narrow window keeps folded may be inside one.
+        // BAXY Renew cu (C11): the column header «A» pressed for «la fila 1» was told back as «la fila 1»; the receipt
+        // says what the pressed item is, in the window's own words.
+        if (receipt.Verified && clickedType is { Length: > 0 } && receipt.Result is { ValueKind: JsonValueKind.Object } pressedResult
+            && !pressedResult.TryGetProperty("itemType", out _))
+        {
+            System.Text.Json.Nodes.JsonObject withType = System.Text.Json.Nodes.JsonNode.Parse(pressedResult.GetRawText())!.AsObject();
+            withType["itemType"] = clickedType;
+            receipt = receipt with { Result = JsonDocument.Parse(withType.ToJsonString()).RootElement.Clone() };
+        }
+
+        if (receipt.ErrorCode == "visible_button_not_found" && receipt.Result is null
+            && Infrastructure.ModelAids.On(Infrastructure.ModelAids.CollapsedNext))
+        {
+            LastView? seen;
+            lock (_viewLock)
+            {
+                seen = _lastView;
+            }
+
+            if (seen is not null && CollapsedHint(seen.Controls) is { } hint)
+                receipt = receipt with { Result = hint };
         }
 
         if (receipt.Verified
@@ -1062,9 +1125,25 @@ internal sealed class WindowsVisibleControlAdapter
                     : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd : 0;
                 if (known == 0)
                 {
-                    return chosen is null
-                        ? ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale")
-                        : NotNamed(operation, "visible_control_label_mismatch", [chosen.Name]);
+                    // BAXY Renew cu (C03): with no window to look in, the refusal says what the last look held at that
+                    // index and how a text it read is pressed (Steam's page gave one control and its words only as text).
+                    if (chosen is null)
+                        return view is not null && view.Controls.Count > 0
+                            && Infrastructure.ModelAids.On(Infrastructure.ModelAids.IndexLabelNext)
+                            ? new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+                            {
+                                writer.WriteStartObject();
+                                writer.WriteString("next", $"nothing was pressed: your last look listed no control [{position}] "
+                                    + $"(its controls go from [0] to [{view.Controls.Max(control => control.Index)}]); a text it read "
+                                    + "that is not in its list of controls is clicked by its label alone, without index");
+                                writer.WriteEndObject();
+                            }), "visible_control_identity_stale")
+                            : ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
+                    return NotNamed(operation, "visible_control_label_mismatch", [chosen.Name],
+                        next: Infrastructure.ModelAids.On(Infrastructure.ModelAids.IndexLabelNext)
+                            ? $"nothing was pressed: index {position} is «{chosen.Name}», not «{label}»; a text your look read "
+                                + "that is not in its list of controls is clicked by its label alone, without index"
+                            : null);
                 }
 
                 namedWindow = known;
@@ -1098,6 +1177,20 @@ internal sealed class WindowsVisibleControlAdapter
         // the view is not pressed.
         if (manner is not null)
         {
+            // BAXY Renew cu (C11): «Fuente» opened by its manner with no index answered stale three times, though the last
+            // look showed exactly one control of that name: the identity is that control's (by its exact name only,
+            // never a sentence that mentions it), as a label alone after an opener takes it.
+            if (controlId is null && index is null && search is null)
+            {
+                nint mannerWindow;
+                lock (_viewLock)
+                {
+                    mannerWindow = namedWindow != 0 ? namedWindow : _lastView?.Hwnd ?? 0;
+                }
+
+                controlId = NamedInView(mannerWindow, label);
+            }
+
             if (search is not null || controlId is null)
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
             HashSet<string>? shownBefore = ChainedNames(opener, namedWindow, controlId, ViewNames(namedWindow));
@@ -2040,6 +2133,9 @@ internal sealed class WindowsVisibleControlAdapter
                         writer.WriteString("shortcut", control.Shortcut);
                     if (control.Repeated > 0)
                         writer.WriteNumber("repeated", control.Repeated);
+                    // BAXY Renew cu (C11): what the grid itself says a DataItem is («Encabezado de fila», «Celda»).
+                    if (control.ItemType.Length > 0)
+                        writer.WriteString("itemType", control.ItemType);
                     writer.WriteEndObject();
                 }
 
@@ -2213,6 +2309,7 @@ internal sealed class WindowsVisibleControlAdapter
                         ? value.GetString()
                         : null,
                 Shortcut = ReadString(item, "shortcut"),
+                ItemType = ReadString(item, "itemType"),
                 RectValue = rect,
                 Repeated = ReadInt(item, "repeated"),
             });
@@ -2931,6 +3028,7 @@ internal sealed class WindowsVisibleControlAdapter
         TimeSpan budget = before is null ? _timing.ControlPostread : _timing.SurfacePostread;
         bool surfaceRead = false;
         bool controlSaidUnchanged = false;
+        bool controlWasSelected = false;
         bool arrivedUncaused = false;
         while (true)
         {
@@ -2955,6 +3053,8 @@ internal sealed class WindowsVisibleControlAdapter
                     return ReceiptFromWorker(operation, root, effectBoundary);
                 controlSaidUnchanged |= root.TryGetProperty("error", out JsonElement said)
                     && said.ValueKind == JsonValueKind.String && said.GetString() == "visible_button_postread_unchanged";
+                controlWasSelected |= root.TryGetProperty("alreadySelected", out JsonElement chosen)
+                    && chosen.ValueKind == JsonValueKind.True;
                 // Anything but «not yet» ends the questions to the control; the surface may still answer.
                 askControl = root.TryGetProperty("error", out JsonElement error)
                     && error.ValueKind == JsonValueKind.String
@@ -3028,8 +3128,24 @@ internal sealed class WindowsVisibleControlAdapter
             return effectBoundary.Failure(operation, "visible_click_handoff_uncertain", effectObserved: true);
         // Pressed and seen unchanged: no later stage of this click presses that control again (finding 4).
         _pressedUnchanged = PressedIdentity(clicked);
-        return effectBoundary.Failure(operation, "visible_button_postread_unchanged", effectObserved: true);
+        ExternalCapabilityReceipt unchanged =
+            effectBoundary.Failure(operation, "visible_button_postread_unchanged", effectObserved: true);
+        return controlWasSelected && ModelAids.On(ModelAids.AlreadySelected)
+            ? unchanged with { Result = AlreadySelected() }
+            : unchanged;
     }
+
+    // BAXY Renew cu (C02): the control was already the chosen one before the click (a section the window already
+    // showed): said, so the window's view is read for what was asked instead of pressing it again (five presses of the
+    // section Settings had opened at, its device list unread in the look the model already had).
+    internal static JsonElement AlreadySelected() => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteBoolean("alreadySelected", true);
+        writer.WriteString("next", "it was already selected before this click: the window already shows it, and the "
+            + "last look's controls are what it shows");
+        writer.WriteEndObject();
+    });
 
     /// <summary>The clicked window and the desktop's root windows before the click (ronda 20b, palanca 8,
     /// objetivo 3).</summary>
@@ -3230,6 +3346,8 @@ internal sealed class WindowsVisibleControlAdapter
             // The control left unpressed is named («name»), for the step that names it.
             if (!effect && error == NeedsConfirmation)
                 return new ExternalCapabilityReceipt(operation, false, false, root.Clone(), error);
+            if (!effect && error == SettingsSwitchRefused)
+                return new ExternalCapabilityReceipt(operation, false, false, SettingsSwitchFacts(root), error);
             // Auditoría P3 y C10: the controls whose name holds the label, none of them pressed, go with the «not found»
             // so the model can name one exactly.
             if (!effect && BeforeAnyPress.Contains(error)
@@ -3261,8 +3379,32 @@ internal sealed class WindowsVisibleControlAdapter
 
     // Nothing was pressed: the failure says the names seen instead (auditoría P3), for the model to name one exactly.
     // Ronda final 19 (regla 3): with the count of all of them when the list is a first part (<paramref name="total"/>).
+    /// <summary>The collapsed entries of a look (a folded ribbon group, a closed menu or list), by index and name, as a
+    /// fact for a label no control had; null when the look showed none.</summary>
+    internal static JsonElement? CollapsedHint(IReadOnlyList<ViewControl> controls)
+    {
+        ViewControl[] folded = [.. controls.Where(static control => control.State.Contains("collapsed", StringComparison.Ordinal)
+            && control.Kind is "MenuItem" or "SplitButton" or "Button" or "ComboBox").Take(CollapsedHintLimit)];
+        if (folded.Length == 0)
+            return null;
+        return ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteStartArray("collapsed");
+            foreach (ViewControl control in folded)
+                writer.WriteStringValue($"[{control.Index}] {control.Kind} «{control.Name}»");
+            writer.WriteEndArray();
+            writer.WriteString("next", "nothing was pressed: no control of the window has that name now; your last look "
+                + "showed these collapsed entries, and what a window keeps folded may be inside one (open it with "
+                + "manner open, then look again)");
+            writer.WriteEndObject();
+        });
+    }
+
+    internal const int CollapsedHintLimit = 12;
+
     internal static ExternalCapabilityReceipt NotNamed(
-        string operation, string error, IReadOnlyList<string> candidates, int? total = null) =>
+        string operation, string error, IReadOnlyList<string> candidates, int? total = null, string? next = null) =>
         candidates.Count == 0
             ? ExternalJson.FailureBeforeEffect(operation, error)
             : new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
@@ -3277,6 +3419,8 @@ internal sealed class WindowsVisibleControlAdapter
                 foreach (string candidate in candidates)
                     writer.WriteStringValue(candidate);
                 writer.WriteEndArray();
+                if (next is not null)
+                    writer.WriteString("next", next);
                 writer.WriteEndObject();
             }), error);
 
@@ -3491,6 +3635,7 @@ internal sealed class WindowsVisibleControlAdapter
         internal string State { get; set; } = string.Empty;
         internal string? Value { get; set; }
         internal string Shortcut { get; set; } = string.Empty;
+        internal string ItemType { get; set; } = string.Empty;
         internal Rect? RectValue { get; set; }
         internal int Repeated { get; set; }
     }

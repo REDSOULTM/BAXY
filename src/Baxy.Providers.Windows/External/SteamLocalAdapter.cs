@@ -13,7 +13,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 {
     // The game catalog this adapter reads (InstalledGameCatalogEntry's provider), and the name its application's acts and
     // title search are declared under in the data (app_places.v1.json «gameCatalog»).
-    private const string GameCatalog = "steam";
+    internal const string GameCatalog = "steam";
     private const int InstallObservationIntervals = 60;
     private const int CancelObservationIntervals = 30;
     private const int LaunchObservationIntervals = 70;
@@ -542,6 +542,49 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .Distinct(StringComparer.Ordinal)
             .ToArray();
         return matches.Length == 1 ? matches[0] : null;
+    }
+
+    /// <summary>
+    /// BAXY Renew cu (C04): the game whose store page is asked for by its title (app.open, place game). The installed
+    /// game bearing the title, else the store's answer: the one game bearing it, else the first, in the store's own
+    /// order, whose name holds every word of it («Sid Meier Civilization VI» is «Sid Meier's Civilization VI»). Only a page is
+    /// opened with it, and its name goes back with the opening; null when nothing bears the title.
+    /// </summary>
+    internal static async ValueTask<SteamStoreTitle?> PageTitleAsync(
+        string title,
+        CancellationToken cancellationToken,
+        Func<IReadOnlyList<SteamLocalGame>>? installed = null,
+        Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? storeTitles = null)
+    {
+        string folded = FoldTitle(title);
+        SteamLocalGame[] local = [.. (installed ?? ReadInstalledCatalog)().Where(game => FoldTitle(game.Name) == folded)];
+        if (local.Select(game => game.AppId).Distinct(StringComparer.Ordinal).Count() == 1)
+        {
+            return new SteamStoreTitle(local[0].AppId, local[0].Name);
+        }
+
+        IReadOnlyList<SteamStoreTitle> found;
+        try
+        {
+            found = await (storeTitles ?? SearchStoreAsync)(title, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
+            || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
+        {
+            return null;
+        }
+
+        SteamStoreTitle[] bearing = [.. found.Where(item => FoldTitle(item.Name) == folded)
+            .DistinctBy(item => item.AppId, StringComparer.Ordinal)];
+        if (bearing.Length == 1)
+        {
+            return bearing[0];
+        }
+
+        string[] words = folded.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return words.Length == 0 ? null : found.FirstOrDefault(
+            item => FoldTitle(item.Name).Split(' ', StringSplitOptions.RemoveEmptyEntries) is string[] name
+                && words.All(word => name.Contains(word, StringComparer.Ordinal)));
     }
 
     private static readonly HttpClient StoreHttp = new() { Timeout = TimeSpan.FromSeconds(8) };

@@ -236,10 +236,12 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                     throw new IOException("The local engine exited before receiving the request.");
                 }
 
-                if (operation.OperationName is "app.open" or "file.open"
-                    && operation.Arguments.ValueKind == JsonValueKind.Object
-                    && operation.Arguments.TryGetProperty("foreground", out JsonElement foreground)
-                    && foreground.ValueKind == JsonValueKind.True)
+                if ((operation.OperationName is "app.open" or "file.open"
+                        && operation.Arguments.ValueKind == JsonValueKind.Object
+                        && operation.Arguments.TryGetProperty("foreground", out JsonElement foreground)
+                        && foreground.ValueKind == JsonValueKind.True)
+                    // BAXY Renew cu (C18, C04, C05): the operations that are an app.open in front by themselves.
+                    || operation.OperationName is "clipboard.paste.into" or "game.store.page" or "game.store.search")
                 {
                     // Grant only the trusted core immediately before its serialized
                     // request can be observed, and only for an opening the person

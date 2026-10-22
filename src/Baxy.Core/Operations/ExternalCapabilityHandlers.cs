@@ -28,6 +28,7 @@ internal static class ExternalCapabilityHandlers
         "calendar.event.create",
         "calendar.event.list",
         "client.channel.locate",
+        "client.microphone.set",
         "clipboard.copy",
         "clipboard.paste",
         "display.mode.set",
@@ -75,6 +76,7 @@ internal static class ExternalCapabilityHandlers
         "message.send.test",
         "office.document.create",
         "office.document.read",
+        "office.format.apply",
         "ocr.read",
         "package.install",
         "package.uninstall",
@@ -321,8 +323,10 @@ internal sealed class ExternalCapabilityHandler(
                 receipt.EffectObserved || receipt.EffectMayHaveOccurred;
             // What a failing provider still observed (how many tabs it closed
             // before stopping) travels with the failure, never as success.
+            // BAXY Renew cu (C14): an empty code from a provider is no code; journaled as «» it kept the engine from
+            // starting again on that profile (the journal's read-back refused the entry).
             return OperationOutcome.Failure(
-                receipt.ErrorCode ?? "external_verification_failed",
+                string.IsNullOrWhiteSpace(receipt.ErrorCode) ? "external_verification_failed" : receipt.ErrorCode,
                 result: receipt.Verified ? null : receipt.Result,
                 effectMayHaveOccurred: effectMayHaveOccurred,
                 causeCode: effectMayHaveOccurred ? "external_effect_ambiguous" : null);

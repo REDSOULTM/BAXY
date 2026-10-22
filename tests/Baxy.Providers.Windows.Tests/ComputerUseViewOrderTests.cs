@@ -325,6 +325,48 @@ public sealed class ComputerUseViewOrderTests
     // the catalog took indexes 0..59, so a rule's click on the 61st ended the mission. The worker's own constants and
     // its own join over a full view with the goal's words and a body number up to the kernel's highest index, and the
     // real catalog takes that index on every act on a control of the look (and refuses the next one).
+    // BAXY Renew cu (C11, Excel): the ribbon filled the cap and no row of the sheet came into the look. Without words the
+    // reserved room takes the rows, by turns between the item types the window gives them (a column header, a row
+    // header, a cell...), so a maximized sheet's many column headers no longer leave row «1» out. Contracases: a look
+    // whose base already has a row adds none, and a look with words keeps their room.
+    [Test]
+    public void WithNoRowInTheCutTheReservedRoomTakesTheRowsByTurnsOfTheirType()
+    {
+        string answer = Run(["Join-ViewControls", "Get-FoldedFields", "Test-WantedName", "Get-Folded", "Test-CenterWithin"], """
+            foreach($assignment in @($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and @('$script:ViewCap','$script:WantedRoom','$script:ViewRowKinds') -contains $node.Left.Extent.Text },$false))){
+              . ([scriptblock]::Create($assignment.Extent.Text))
+            }
+            $primary=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 70;$k++){ [void]$primary.Add(@{ kind='Button'; name=('Cinta '+$k); systemMenu=$false }) }
+            $secondary=New-Object System.Collections.ArrayList
+            foreach($c in @('A','B','C','D','E','F','G','H','I','J','K','L')){ [void]$secondary.Add(@{ kind='DataItem'; name=$c; itemType='Encabezado de columna'; systemMenu=$false }) }
+            foreach($r in 1..3){
+              [void]$secondary.Add(@{ kind='DataItem'; name=[string]$r; itemType='Encabezado de fila'; systemMenu=$false })
+              foreach($c in @('A','B')){ [void]$secondary.Add(@{ kind='DataItem'; name=($c+$r); itemType='Celda'; systemMenu=$false }) }
+            }
+            $sheet=Join-ViewControls $primary $secondary @() 60
+            $worded=Join-ViewControls $primary $secondary @() 60 @('cinta')
+            $rowed=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 55;$k++){ [void]$rowed.Add(@{ kind='Button'; name=('Cinta '+$k); systemMenu=$false }) }
+            [void]$rowed.Add(@{ kind='ListItem'; name='Fila vista'; systemMenu=$false })
+            $texts=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 15;$k++){ [void]$texts.Add(@{ kind='Text'; name=('Texto '+$k); systemMenu=$false }) }
+            [void]$texts.Add(@{ kind='DataItem'; name='Otra fila'; systemMenu=$false })
+            $base=Join-ViewControls $rowed $texts @() 60
+            [Console]::Out.Write((@(
+              (@($sheet.controls | Select-Object -Skip 60 | ForEach-Object { [string]$_.name }) -join ' '),
+              [string]$worded.controls.Count,
+              [string]$base.controls.Count) -join ','))
+            """);
+
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "A 1 A1 B 2 B1 C 3 A2 D", // a column header, a row header, a cell, by turns; rows past the base, reserved
+            "70",                      // contracase: the goal's words keep their room (ten «Cinta» past the cap)
+            "60",                      // contracase: a base that already shows a row adds none
+        }));
+    }
+
     [Test]
     public void TheHighestIndexAFullViewNumbersIsTheOneTheCatalogTakes()
     {
