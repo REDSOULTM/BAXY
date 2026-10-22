@@ -147,8 +147,15 @@ def _outcome(observation: str) -> str:
     if status != "completed" and shown.get("sent") is False and shown.get("messageWritten") is False:
         error = facts.get("error") or facts.get("cause")
         return "falló" + (f" ({error})" if error else "") + ": el mensaje no se escribió ni se envió"
+    # Al máximo 8.3 (notebook): an act that failed or stayed unsure but whose state was read again after it says whether
+    # what was asked holds now; the result's code and its uncertainty stay as they are.
+    after = shown.get("stateAfter")
+    reread = ""
+    if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool):
+        reread = ("; releído después: quedó como se pidió" if after["requestedStateReached"]
+                  else "; releído después: no quedó como se pidió")
     if status == "pending" or facts.get("effectUncertain"):
-        return "sin confirmar: pudo o no ocurrir"
+        return "sin confirmar: pudo o no ocurrir" + reread
     if status == "completed":
         # Al máximo 8.2: how it was verified is the result's own typed fact (OperationVisibleFacts' table in the kernel,
         # and the App's for memory and for a result it could not read); one without it is not taken as verified.
@@ -156,9 +163,14 @@ def _outcome(observation: str) -> str:
         # the model tells («lo creé en BAXY-bench» after a write that went to the home folder).
         where = shown.get("fullPath")
         where = f" en {where}" if isinstance(where, str) and where else ""
-        return VERIFICATION.get(str(facts.get("verification")), VERIFICATION["none"]) + where
+        # Al máximo 7.1 (notebook): an act in a window brings the window as it is after it; what it says is told.
+        view = shown.get("after")
+        seen = ("" if not isinstance(view, dict) or view.get("omitted")
+                else "; la ventana no cambió" if view.get("same") is True
+                else "; su after es la ventana de después")
+        return VERIFICATION.get(str(facts.get("verification")), VERIFICATION["none"]) + where + seen
     error = facts.get("error") or facts.get("cause")
-    return f"falló ({error})" if error else "falló"
+    return (f"falló ({error})" if error else "falló") + reread
 
 
 def _aid_on(aid: str) -> bool:

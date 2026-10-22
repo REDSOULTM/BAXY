@@ -236,3 +236,25 @@ def test_a_completed_call_is_told_by_its_typed_verification_alone(verification: 
     if verification is not None:
         facts["verification"] = verification
     assert _outcome(json.dumps(facts)) == told
+
+
+def test_a_failed_act_read_again_after_it_tells_whether_what_was_asked_holds() -> None:
+    # Al máximo 8.3 (notebook): the failure keeps its code; the reread after it says whether the state asked for holds.
+    from baxy_mind.mind import _outcome
+    reached = {"status": "failed", "error": "window_state_not_verified",
+               "observed": {"stateAfter": {"state": "minimized", "requestedStateReached": True, "authority": "win32"}}}
+    unsure = {"status": "failed", "error": "verification_failed", "effectUncertain": True,
+              "observed": {"stateAfter": {"level": 40, "requestedStateReached": False}}}
+    assert _outcome(json.dumps(reached)) == "falló (window_state_not_verified); releído después: quedó como se pidió"
+    assert _outcome(json.dumps(unsure)) == "sin confirmar: pudo o no ocurrir; releído después: no quedó como se pidió"
+    assert _outcome(json.dumps({"status": "failed", "error": "x", "observed": {}})) == "falló (x)"
+
+
+def test_an_act_in_a_window_tells_what_its_after_view_shows() -> None:
+    # Al máximo 7.1 (notebook): the click's receipt brings the window after it; with entries omitted it is not whole.
+    from baxy_mind.mind import _outcome
+    def told(after: dict) -> str:
+        return _outcome(json.dumps({"status": "completed", "verification": "delivered_only", "observed": {"after": after}}))
+    assert told({"same": True}) == "completado sin verificar: entregado, sin releer su efecto; la ventana no cambió"
+    assert told({"changed": [{"index": 3}]}).endswith("; su after es la ventana de después")
+    assert told({"changed": [], "omitted": 4}) == "completado sin verificar: entregado, sin releer su efecto"
