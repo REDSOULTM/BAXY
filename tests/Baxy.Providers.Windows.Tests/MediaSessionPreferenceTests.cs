@@ -34,6 +34,44 @@ public sealed class MediaSessionPreferenceTests
                 [(Spotify, true, false), (Opera, false, true)], Opera),
             Is.Null);
 
+    // Renew al máximo (R6.1): with a paused session in front and the person's music playing, «pausa la música» said
+    // «paused» on the paused one and the music played on.
+    [TestCase(new[] { false, true }, "pause", 1)]
+    [TestCase(new[] { true, false }, "stop", 0)]
+    [TestCase(new[] { false, false, true }, "next", 2)]
+    [TestCase(new[] { false, true }, "previous", 1)]
+    [TestCase(new[] { false, true }, "toggle", 1)]
+    public void AnUnnamedControlReachesTheOneSessionPlayingWhenTheCurrentDoesNot(bool[] playing, string action, int expected) =>
+        Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, playing, action), Is.EqualTo(expected));
+
+    [Test]
+    public void TheCurrentSessionStaysWhenItPlaysWhenNoneOrSeveralOthersDoOrToResume()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(true, [true, true], "pause"), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, [false, false], "pause"), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, [true, false, true], "pause"), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, [false, true], "play"), Is.Null);
+        });
+    }
+
+    // Renew al máximo (R6.5): two sessions of the client made the choice throw, and media.play.exact answered
+    // smtc_session_access_failed. The one playing is checked, else the first; the play is verified on it either way.
+    [Test]
+    public void TwoSessionsOfTheClientNeverMakeTheExactPlayFail()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsMediaSessionAdapter.ClientSession([(Opera, true), (Spotify, false), (Spotify, true)]),
+                Is.EqualTo(2));
+            Assert.That(WindowsMediaSessionAdapter.ClientSession([(Spotify, false), (Opera, true), (Spotify, false)]),
+                Is.EqualTo(0));
+            Assert.That(WindowsMediaSessionAdapter.ClientSession([(Opera, true), (Spotify, false)]), Is.EqualTo(1));
+            Assert.That(WindowsMediaSessionAdapter.ClientSession([(Opera, true)]), Is.Null);
+        });
+    }
+
     [Test]
     public void WithoutAPlaybackOfItsOwnWindowsDecides()
     {

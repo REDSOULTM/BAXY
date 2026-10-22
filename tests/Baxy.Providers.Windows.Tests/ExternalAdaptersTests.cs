@@ -3981,6 +3981,132 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-APP-7): the player wrote a log of its own per playback, with the stream's URL (the person's
+    // address in it), that nothing read and nothing removed.
+    [Test]
+    public async Task TheLocalPlayerWritesNoLogOfItsOwn()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.exe");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "fixture");
+        var stream = new Uri("https://rr1.googlevideo.com/videoplayback?ip=203.0.113.7");
+        List<string>? arguments = null;
+        using var adapter = new YouTubeMpvAdapter(
+            mpv, ytDlp, nodePath: null, (_, _) => ValueTask.FromResult<Uri?>(stream))
+        {
+            StartPlayer = start =>
+            {
+                arguments = [.. start.ArgumentList];
+                return null;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments, Does.Contain(stream.AbsoluteUri));
+            Assert.That(arguments, Has.None.StartsWith("--log-file"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_local_player_failed"));
+        });
+    }
+
+    // Renew al máximo (B-APP-2): yt-dlp still running at its own deadline came out as an uncaught cancellation (an
+    // ambiguous failure, the browser never tried) and yt-dlp was left running.
+    [Test]
+    public async Task AResolverTimeoutIsNotAnAmbiguousEffect()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.cmd");
+        string alive = Path.Combine(temporary.Path, "alive.txt");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        // A resolver that answers nothing for about three seconds, then leaves a mark if nobody ended it.
+        await File.WriteAllTextAsync(ytDlp, "@ping -n 4 127.0.0.1 >nul\r\n@echo x>\"%~dp0alive.txt\"\r\n");
+        bool started = false;
+        using var adapter = new YouTubeMpvAdapter(mpv, ytDlp, nodePath: null)
+        {
+            ResolveTimeout = TimeSpan.FromMilliseconds(300),
+            StartPlayer = _ =>
+            {
+                started = true;
+                return null;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+        await Task.Delay(TimeSpan.FromSeconds(4.5));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_stream_not_resolved"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(started, Is.False);
+            Assert.That(File.Exists(alive), Is.False, "yt-dlp was left running");
+        });
+    }
+
+    // Renew al máximo (B-APP-2): the player's IPC not opening in time came out as an uncaught cancellation; the player
+    // was started (and any earlier one stopped), so it is the local player's failure after its effect boundary.
+    [Test]
+    public async Task APlayerWhoseIpcNeverOpensIsAFailureAfterTheEffectBoundary()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.exe");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "fixture");
+        int standIn = 0;
+        using var adapter = new YouTubeMpvAdapter(
+            mpv, ytDlp, nodePath: null,
+            (_, _) => ValueTask.FromResult<Uri?>(new Uri("https://rr1.googlevideo.com/videoplayback")))
+        {
+            PlayerConnectTimeout = TimeSpan.FromMilliseconds(300),
+            // A hidden process that opens no IPC stands for the player.
+            StartPlayer = _ =>
+            {
+                Process? process = Process.Start(new ProcessStartInfo("ping", "-n 30 127.0.0.1")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                });
+                standIn = process?.Id ?? 0;
+                return process;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(standIn, Is.Not.Zero);
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_local_player_failed"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(Ended(standIn), Is.True, "the player that never answered was left running");
+        });
+
+        static bool Ended(int id)
+        {
+            try
+            {
+                using Process process = Process.GetProcessById(id);
+                return process.HasExited;
+            }
+            catch (ArgumentException)
+            {
+                return true;
+            }
+        }
+    }
+
     // BAXY Renew (notebook): the pause command reached the player and its answer could not be read; the request
     // may have paused it, so the dispatch stops there and no other player gets pressed.
     [Test]
@@ -4030,6 +4156,83 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(other.Calls, Is.Zero);
         });
+    }
+
+    // Renew al máximo (B-APP-1): a local player left paused answered every unnamed media request, so «pausa la música»
+    // said «already paused» while the person's music played on. It answers while it plays, while paused with nothing
+    // else playing, or when named; otherwise the next player answers.
+    [TestCase("media.control", """{"action":"pause"}""", true, false)]
+    [TestCase("media.status", "{}", true, false)]
+    [TestCase("media.control", """{"action":"pause","sourceApp":"BAXY YouTube (mpv)"}""", true, true)]
+    [TestCase("media.control", """{"action":"pause"}""", false, true)]
+    [TestCase("media.status", "{}", false, true)]
+    public async Task APausedLocalPlayerStandsAsideWhenAnotherSessionPlays(
+        string operation, string arguments, bool anotherPlays, bool localAnswers)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePausedPlayerAsync(pipeName, stopPlayer.Token);
+        var other = new StubExternalAdapter(new ExternalCapabilityReceipt(operation, true, true, Json("{}"), null));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(anotherPlays),
+        };
+        using var provider = new WindowsExternalCapabilityProvider([local, other]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+        }
+        finally
+        {
+            // The player stands for this test's own process: nothing stops it when the provider is disposed.
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(other.Calls, Is.EqualTo(localAnswers ? 0 : 1));
+            Assert.That(receipt.Result?.TryGetProperty("authority", out _), Is.EqualTo(localAnswers));
+        });
+    }
+
+    // A player whose pause property reads true on every connection until stopped (a set is answered as done).
+    private static async Task ServePausedPlayerAsync(string pipeName, CancellationToken stop)
+    {
+        try
+        {
+            while (true)
+            {
+                await using var pipe = new NamedPipeServerStream(
+                    pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                await pipe.WaitForConnectionAsync(stop);
+                var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
+                var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true)
+                { AutoFlush = true };
+                try
+                {
+                    while (await reader.ReadLineAsync(stop) is { } request)
+                        await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success","data":true}""");
+                }
+                catch (IOException)
+                {
+                    // The client closed its end: the next connection is served.
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     // One connection of the player's IPC: one request line answered, then the client's close.
