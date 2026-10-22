@@ -80,3 +80,20 @@ def test_closing_the_voice_never_closes_the_output_while_it_is_written(
     speech.close()
     assert output.overlaps == []
     assert output.closed
+
+
+@pytest.mark.parametrize(("reply", "takes"), [
+    ("Listo, Spotify está abierto. ¿Quieres que suba el volumen?", 2),  # a short reply: its first sentence sounds sooner
+    ("Listo. Spotify está abierto y sonando.", 1),                      # a word or two first: one call (issue #30)
+    ("Spotify está abierto y sonando.", 1),
+])
+def test_a_first_sentence_of_more_than_a_few_words_is_synthesized_alone(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, reply: str, takes: int) -> None:
+    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
+    monkeypatch.setattr(Speech, "_run", lambda self: self._ready.set())
+    synthesized: list[str] = []
+    monkeypatch.setattr(Speech, "_synthesize",
+                        lambda self, text, pause=True: synthesized.append(text) or np.zeros(1, np.float32))
+    speech = Speech(lambda speaking: None, lambda queued, sounded: None)
+    list(speech._sentences(reply))
+    assert len(synthesized) == takes
