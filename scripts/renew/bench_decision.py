@@ -130,7 +130,7 @@ def main():
     parser.add_argument("--server", default=os.environ.get("BAXY_MIND_LLAMA_SERVER", r"F:\BAXYeval\llama\llama-server.exe"))
     parser.add_argument("--server-args", default="")
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
-    parser.add_argument("--ctx", default="49152")
+    parser.add_argument("--ctx", default="53248")
     parser.add_argument("--src", default=str(ROOT / "src"), help="the mind to measure (a copy for an A/B of the prompt)")
     args = parser.parse_args()
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = args.temp
