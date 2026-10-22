@@ -71,8 +71,10 @@ def test_layer_2_is_off_without_its_threshold_even_with_the_decision_model_up(tm
     assert one.asked == []
 
 
-# d) «corrige» only to a harmless tool (mutation: CORRECTABLE_RISKS widened, or an unknown risk let through).
-@pytest.mark.parametrize("risk", ["", "external", "irreversible", "work_loss", "high"])
+# d) «corrige» only to a harmless tool or one the kernel confirms (mutation: CORRECTABLE_RISKS widened, or an unknown risk
+# let through). Al máximo, System One 3: work_loss, installation and recoverable_delete are corrected in normal mode only
+# (test_mind_system_one_max.py); what the kernel does not always confirm never is.
+@pytest.mark.parametrize("risk", ["", "external", "irreversible", "external_communication", "privacy_sensitive", "high"])
 def test_a_correction_to_any_other_risk_asks_and_never_fills(tmp_path: Path, monkeypatch, risk: str) -> None:
     mind, _, fills = _correcting(tmp_path, monkeypatch, risk, {"name": "app_close", "arguments": {}, "timings": {}})
     result = mind.decide(1, "ahora ciérralo")

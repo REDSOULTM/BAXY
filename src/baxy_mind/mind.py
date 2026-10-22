@@ -412,12 +412,35 @@ DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
-# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth. Al máximo 5.1: nor
+# other risk still asks: the core authorizes, and a riskier tool it would run unasked is never put in the model's mouth
+# (below: what it confirms). Al máximo 5.1: nor
 # one with an effect of the catalog (keys, clicks or commands to a window that may be the person's; what the model wrote
 # sent out of the PC; a radio, a network, a pairing, airplane or display mode changed), whatever its risk: a call the
 # model did not choose never lands there. A catalog without the field (the measurement catalogs saved before it)
 # corrects by risk alone, as before.
-CORRECTABLE_RISKS = ("read_only", "low_reversible")
+# Al máximo, System One 3: also the risks the kernel always confirms in normal mode (RiskPolicy.Evaluate: work_loss and
+# installation and recoverable_delete are Irreversible there), because its confirmation names the exact action and
+# replaces the vague question (P215 «desinstala el Worms»: Laya read game_uninstall_named at 0.91 and BAXY asked what to
+# do). Not external_communication: normal mode confirms only five of its operations. Not system.power, which normal mode
+# runs unasked, and none of them in Bypass, which runs them unasked too (only message.send asks there, and it has an
+# effect of the catalog); a mode that cannot be read counts as Bypass. With _founded and the effects rule, as for the rest.
+CONFIRMED_RISKS = ("work_loss", "installation", "recoverable_delete")
+CORRECTABLE_RISKS = ("read_only", "low_reversible", *CONFIRMED_RISKS)
+UNCONFIRMED_OPERATIONS = ("system.power",)
+
+
+def _bypass() -> bool:
+    """Whether the kernel's confirmation mode is Bypass, as ConfirmationModeStore reads it: the file «confirmation-mode»
+    of the data root (BAXY_DATA_DIR, or %LOCALAPPDATA%\\BAXY\\1), «bypass» or «all»; no file or another word is normal.
+    Read at each correction, as the engine reads it at each invocation: the switch can change between turns."""
+    root = os.environ.get("BAXY_DATA_DIR", "").strip() or str(Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "1")
+    try:
+        word = (Path(root) / "confirmation-mode").read_text(encoding="utf-8-sig").strip().lower()
+    except FileNotFoundError:
+        return False
+    except (OSError, UnicodeDecodeError):
+        return True  # unreadable: «corrige» puts no confirmed risk in the model's mouth
+    return word in ("bypass", "all")
 
 
 def _threshold(name: str) -> float:
@@ -1195,10 +1218,12 @@ class Mind:
 
     def _corrected(self, wire: str, body: dict[str, Any]) -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
-        is off, the tool's risk is not in CORRECTABLE_RISKS, it has an effect of the catalog, or the model did not write
-        that tool's call."""
-        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS \
-                or self.effects.get(wire):
+        is off, the tool's risk is not in CORRECTABLE_RISKS (or is one of CONFIRMED_RISKS the kernel would not confirm
+        now), it has an effect of the catalog, or the model did not write that tool's call."""
+        risk = self.risk.get(wire)
+        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or risk not in CORRECTABLE_RISKS \
+                or self.effects.get(wire) or (risk in CONFIRMED_RISKS and (
+                    self.wire_to_op.get(wire) in UNCONFIRMED_OPERATIONS or _bypass())):
             return None
         try:
             filled = self.server.fill_call(body, wire)

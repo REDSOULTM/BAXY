@@ -120,3 +120,61 @@ def test_layer_2_corrects_a_low_reversible_call_or_lets_it_run(tmp_path, monkeyp
     # P113 ×1) and none useful; its corrections of them, 6 useful (P257) against 2 harmful.
     mind, _ = _corrects(tmp_path, monkeypatch, [APP_OPEN, GAME_LAUNCH, FILE_FIND], doubted, choice, filled)
     assert mind.decide(1, "abre el teams")["operation"] == operation
+
+
+# ---- 3. «corrige» puts in the model's mouth what the kernel will confirm --------------------------------------------
+def _risky(name: str, risk: str, argument: str) -> dict:
+    return {"name": name, "description": name, "risk": risk,
+            "argumentsSchema": {"type": "object", "properties": {argument: {"type": "string"}},
+                                "required": [argument], "additionalProperties": False}}
+
+
+PACKAGE_UNINSTALL = _risky("package.uninstall", "work_loss", "packageId")
+GAME_UNINSTALL = _risky("game.uninstall.named", "work_loss", "title")
+NOTE_TRASH = _risky("note.trash", "recoverable_delete", "noteId")
+PACKAGE_INSTALL = _risky("package.install", "installation", "packageId")
+SYSTEM_POWER = {"name": "system.power", "description": "Power", "risk": "work_loss",
+                "argumentsSchema": {"type": "object", "properties": {"action": {"type": "string",
+                                                                                "enum": ["restart", "shutdown"]}},
+                                    "required": ["action"], "additionalProperties": False}}
+CALENDAR = _risky("calendar.event.create", "external_communication", "title")
+RISKY = [PACKAGE_UNINSTALL, GAME_UNINSTALL, NOTE_TRASH, PACKAGE_INSTALL, SYSTEM_POWER, CALENDAR, GAME_LAUNCH]  # the games list
+
+
+@pytest.mark.parametrize("choice, filled, operation", [
+    ("game_uninstall_named", {"title": "Worms W.M.D"}, "game.uninstall.named"),  # P215: work_loss, from the catalog
+    ("note_trash", {"noteId": "worms"}, "note.trash"),  # recoverable_delete
+    ("package_install", {"packageId": "worms"}, "package.install"),  # installation
+    ("system_power", {"action": "shutdown"}, None),  # work_loss in the catalog, but the kernel runs it without asking
+    ("calendar_event_create", {"title": "worms"}, None),  # external_communication: the kernel asks for only some
+    ("game_uninstall_named", {"title": "Age of Empires"}, None)])  # still founded or nothing (B-MED-1)
+def test_in_normal_mode_a_correction_the_kernel_confirms_arrives_as_the_action(tmp_path, monkeypatch, choice, filled,
+                                                                                operation) -> None:
+    # P215 «desinstala el Worms»: Qwen doubted package_uninstall, Laya read game_uninstall_named at 0.91, and work_loss was
+    # not correctable: a vague question (3 runs) instead of the kernel's confirmation, which names the exact action.
+    mind, _ = _corrects(tmp_path, monkeypatch, RISKY, "package_uninstall", choice, filled)
+    result = mind.decide(1, "desinstala el Worms")
+    assert result["operation"] == operation
+    if operation:
+        assert result["kind"] == "action" and result["arguments"] == filled
+
+
+@pytest.mark.parametrize("mode", ["bypass", "Bypass\n", "all", None])  # None: a file that cannot be read
+def test_in_bypass_a_confirmed_risk_is_not_corrected(tmp_path, monkeypatch, mode) -> None:
+    # RiskPolicy.Evaluate: Bypass allows everything but message.send, so a work_loss correction would run unasked.
+    mind, fills = _corrects(tmp_path, monkeypatch, RISKY, "package_uninstall", "game_uninstall_named",
+                            {"title": "Worms W.M.D"})
+    if mode is None:
+        (tmp_path / "confirmation-mode").mkdir()
+    else:
+        (tmp_path / "confirmation-mode").write_text(mode, encoding="utf-8")
+    assert mind.decide(1, "desinstala el Worms")["operation"] is None
+    assert fills == []
+
+
+@pytest.mark.parametrize("mode", ["normal", "risk-aware", "otra cosa"])
+def test_a_normal_mode_file_corrects_like_no_file(tmp_path, monkeypatch, mode) -> None:
+    mind, _ = _corrects(tmp_path, monkeypatch, RISKY, "package_uninstall", "game_uninstall_named",
+                        {"title": "Worms W.M.D"})
+    (tmp_path / "confirmation-mode").write_text(mode, encoding="utf-8")
+    assert mind.decide(1, "desinstala el Worms")["operation"] == "game.uninstall.named"

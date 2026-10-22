@@ -161,7 +161,8 @@ def test_layer2_corrects_to_a_harmless_tool_the_model_fills_itself(tmp_path, mon
 
 
 @pytest.mark.parametrize("risk, filled", [
-    ("work_loss", {"name": "app_close", "arguments": {}, "timings": {}}),  # a risky tool is never put in its mouth
+    # a tool the kernel does not always confirm is never put in its mouth (work_loss: test_mind_system_one_max.py)
+    ("external_communication", {"name": "app_close", "arguments": {}, "timings": {}}),
     ("low_reversible", None),  # the model did not write that call
     ("low_reversible", {"name": "system_power", "arguments": {}, "timings": {}})])
 def test_layer2_asks_when_it_cannot_correct(tmp_path, monkeypatch, risk, filled) -> None:
