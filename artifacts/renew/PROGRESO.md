@@ -2961,3 +2961,16 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   de Claude que queda, ~40 %); llevar toda la aplicación al máximo SIN reentrenar (el ajuste fino queda para otro
   momento); lanzar muchos agentes en las dos máquinas; vale medir con casos individuales representativos de cada
   categoría en vez de suites o bancos enteros cuando acelere, siempre que se haga bien.
+- 18:4x **segunda ola** (modo ráfaga): agentes en w2-ctxmem (1.1/1.2 hecho: compactar resultados viejos antes de quitar
+  turnos; un turno que no cabe hace sitio en vez de forzar el final; se retira el recorte a 1 200 caracteres), w2-voz2
+  (aviso escrito por Qwen, aviso hasta el primer sonido, final en streaming), w2-beat2 / w2-beat2-min (10.2 hecho, dos
+  versiones a medir en escenas), w2-kern2 (errores accionables), w2-app2 (vista, freno de red, traza, sesiones
+  borrables), w2-flujos-core y w2-flujos-app (auditoría de flujos: cerrar apps sin documento sin confirmar, prevuelo
+  antes del desafío, provenance sólo con escritura en ventana, settle async, currentSha256, carpeta conocida en la ruta,
+  window.resolve sin selector; latido tras «app opened», presupuesto por operación y señal repetida, llamadas pendientes
+  tras confirmar) y w2-s1 (System One: _founded con enums y nombres del catálogo, capa 0 sin retener low_reversible,
+  corrige hacia lo que el kernel confirma).
+- Notas de la auditoría de la mente sobre el BANCO (no se optimiza hacia ellas): P254 (OBS está en el catálogo de juegos
+  de Steam de este PC: game.installed.named es correcto), P251 (window.resolve es el ejemplo literal de su descripción),
+  P253, P220 tienen etiquetas discutibles; P112 y P164 premian inventar amount:10 en «baja el volumen» cuando la regla
+  del dueño de C03 es preguntar la cantidad (se mantiene la regla del dueño).
