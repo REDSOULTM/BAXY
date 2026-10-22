@@ -210,3 +210,30 @@ def test_the_tool_chosen_is_not_completed_again_as_its_own_rival(tmp_path: Path,
     server.complete_name = lambda body, text: written.append(text) or "_close"
     mind.decide(1, "apaga el pc")
     assert [text[-3:] for text in written] == ["app"]
+
+
+def _laya(monkeypatch):
+    from baxy_mind.system_one import SystemOne
+    monkeypatch.setattr(SystemOne, "ready", property(lambda self: True))
+    return SystemOne("laya.gguf", "llama-server.exe")
+
+
+OPTIONS = {"app_close": "Close an application.", "ask_user": "preguntar", "responder_con_palabras": "contestar"}
+
+
+@pytest.mark.parametrize("probabilities", [{"app_close": "alta"}, ["app_close"], {"app_close": None}])
+def test_an_answer_of_the_decision_model_that_cannot_be_read_goes_on_as_qwen_decided(monkeypatch, probabilities) -> None:
+    # Review 9: a value that is not a number raised out of choose(), and the turn failed (turn_runtime_failure).
+    laya = _laya(monkeypatch)
+    laya._ask = lambda text, history, options, timeout: {"probabilities": probabilities}
+    assert laya.choose("ciérralo", [], OPTIONS) is None
+
+
+@pytest.mark.parametrize("payload", [{"answers": ["operacion"]}, {"answers": {"operacion": "app_close"}}, []])
+def test_a_reply_of_the_decision_model_that_is_not_its_shape_is_no_answer(monkeypatch, payload) -> None:
+    import io
+    from baxy_mind import system_one
+    laya = _laya(monkeypatch)
+    monkeypatch.setattr(system_one.urllib.request, "urlopen",
+                        lambda request, timeout: io.BytesIO(json.dumps(payload).encode("utf-8")))
+    assert laya.choose("ciérralo", [], OPTIONS) is None
