@@ -3019,3 +3019,7 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   voz, 2 rondas): 49 152 → VRAM 3 902 MiB, RAM producto 2 603-2 735 MiB (Qwen USS ~2 012, Laya ~196); 53 248 → VRAM
   **3 990 MiB** (+88; 106 de margen bajo 4 096), RAM 2 606-2 735. **Se queda** (en int). La sesión larga de int dirá el
   pico con historial lleno.
+- 19:4x **decision2 de int completa** (1e4496020, catalog-int1, S1 ×3): 231 / 227 / 229 (229,0) frente a la tanda 1
+  depurada 230,0: Δ −1,0, IC95 [−6,67; +5,0], McNemar p 1,0; acciones equivocadas 13/15/17 (15). Suben P041, P099, P152,
+  P165, P203 (corrige lee el PDF de Descargas), P254; bajan P028, P086, P112, P169, P215, P223, P257. Sin regresión.
+  Pendiente del NB sobre int: Providers entero, e2e ×2, falsedades ×3, sesión larga.
