@@ -2504,6 +2504,90 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (8.3): the output did not take the new level and the post-read that saw it was dropped; the level
+    // and mute read after are the state, the failure kept.
+    [Test]
+    public async Task VolumeAdjustWhosePostreadMismatchedSaysTheLevelReadAfter()
+    {
+        var endpoint = new StuckAudioEndpoint("output-private", 0.40f);
+        var adapter = new WindowsAudioAdjustmentAdapter(() => endpoint);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.volume.adjust", Json("""{"direction":"up","amount":10}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("volume_adjustment_postread_mismatch"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(40));
+            Assert.That(state?.GetProperty("muted").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_core_audio_output_endpoint_postread"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("output-private"));
+        });
+    }
+
+    // Renew al máximo (8.3): the level was set and its post-read threw; one more read of the same output says the level
+    // it has. Another output in its place (the default changed) is not that state, and adds nothing.
+    [TestCase("post-dispatch-failure", true)]
+    [TestCase("another-output", false)]
+    public async Task VolumeAdjustWhosePostreadThrewReadsTheSameOutputOnceMore(string rereadEndpoint, bool added)
+    {
+        var opened = new Queue<IWindowsAudioEndpoint>(
+        [
+            new PostDispatchFailingAudioEndpoint(),
+            new FakeAudioEndpoint(rereadEndpoint, muted: false, volume: 0.5f),
+        ]);
+        var adapter = new WindowsAudioAdjustmentAdapter(opened.Dequeue);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.volume.adjust", Json("""{"direction":"up","amount":10}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("audio_output_endpoint_unavailable"));
+            if (!added)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.True);
+        });
+    }
+
+    // Renew al máximo (8.3): an application's level read after a set that did not take is the state after.
+    [Test]
+    public async Task AppVolumeSetWhosePostreadMismatchedSaysTheLevelReadAfter()
+    {
+        var adapter = new WindowsAppVolumeSetAdapter((_, _, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 1, 30, 30, false, "endpoint-1", Changed: false);
+        });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":60}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("volume_postread_mismatch"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(30));
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(60));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_core_audio_session_postread"));
+        });
+    }
+
     [Test]
     public async Task AudioPostreadExceptionAfterSetPreservesAmbiguousEffect()
     {
@@ -5398,6 +5482,18 @@ public sealed class ExternalAdaptersTests
         public bool ReadMuted() => _muted;
         public void SetVolumeScalar(float scalar, Guid eventContext) => _volume = scalar;
         public void SetMuted(bool value, Guid eventContext) => _muted = value;
+        public void Dispose() { }
+    }
+
+    // Renew al máximo (8.3): an output that keeps its level whatever it is set to.
+    private sealed class StuckAudioEndpoint(string endpointId, float volume) : IWindowsAudioEndpoint
+    {
+        public string EndpointId { get; } = endpointId;
+        public string? ReadDisplayName() => "Test stuck endpoint";
+        public float ReadVolumeScalar() => volume;
+        public bool ReadMuted() => false;
+        public void SetVolumeScalar(float scalar, Guid eventContext) { }
+        public void SetMuted(bool value, Guid eventContext) { }
         public void Dispose() { }
     }
 
