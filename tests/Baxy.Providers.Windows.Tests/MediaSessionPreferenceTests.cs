@@ -34,6 +34,28 @@ public sealed class MediaSessionPreferenceTests
                 [(Spotify, true, false), (Opera, false, true)], Opera),
             Is.Null);
 
+    // Renew al máximo (R6.1): with a paused session in front and the person's music playing, «pausa la música» said
+    // «paused» on the paused one and the music played on.
+    [TestCase(new[] { false, true }, "pause", 1)]
+    [TestCase(new[] { true, false }, "stop", 0)]
+    [TestCase(new[] { false, false, true }, "next", 2)]
+    [TestCase(new[] { false, true }, "previous", 1)]
+    [TestCase(new[] { false, true }, "toggle", 1)]
+    public void AnUnnamedControlReachesTheOneSessionPlayingWhenTheCurrentDoesNot(bool[] playing, string action, int expected) =>
+        Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, playing, action), Is.EqualTo(expected));
+
+    [Test]
+    public void TheCurrentSessionStaysWhenItPlaysWhenNoneOrSeveralOthersDoOrToResume()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(true, [true, true], "pause"), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, [false, false], "pause"), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, [true, false, true], "pause"), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, [false, true], "play"), Is.Null);
+        });
+    }
+
     [Test]
     public void WithoutAPlaybackOfItsOwnWindowsDecides()
     {
