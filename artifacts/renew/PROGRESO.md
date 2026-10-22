@@ -2874,3 +2874,10 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   pytest 166 (verde). Pendiente: Providers entero en el NB sobre 11347dd0d.
 - Tandas de palancas en ramas: lv-t1 (3.3, 4.1, 1.4, 9.5; medición en curso: d2 ×3 en el PC, sesión larga en el NB),
   lv-t2 (8.2, 7.7, 11.1, 11.2), lv-t3 (2.2, 2.3, 2.6). voz-maximo (9.3) espera el oído del dueño.
+- 15:4x **tanda 1 medida en decision2** (S1 on ×3 semillas sobre lv-t1 132b7e3da..2f500ad28 frente a ca9d75de0): 226 /
+  228 / 227 (media 227,0) frente a 229,67, Δ −2,67, IC95 [−5,67; −0,33], McNemar p 0,25; bajan P028, P124, P257.
+  Latencia de todas las decisiones: media 1,107 → 1,036 s, p99 3,36 → 2,89 s; turnos con S1 p50 1 961 → 1 601 ms. La
+  caída es de **4.1** (P028 «batería»: con los rivales por el catálogo, el token «memory» entra como memory_correct y
+  Laya corrige hacia storage.removable.list en las 3 semillas). **4.1 RETIRADA** (d4d2d39d2, su cifra en el commit).
+  Quedan 3.3, 1.4 y 9.5, que no cambian decisiones de un turno: su medida (RAM, prompt_n en sesión larga, ms por
+  continuación) la hace el notebook en una sesión de 22 turnos.
