@@ -622,6 +622,9 @@ class Mind:
         self._ran_count = 0
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
+        # A person's turn or a heartbeat reached the model in this process: the slot holds more than the prefix, and
+        # the warm-up no longer keeps it on disk (al máximo V1).
+        self._turned = False
 
     # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
     def _shorten(self, observation: str) -> tuple[str, dict[str, str]]:
@@ -718,31 +721,46 @@ class Mind:
         return len(capabilities)
 
     def warm(self) -> None:
-        """Process the tools and the system prompt once, so every turn starts from a cached prefix."""
+        """Process the tools and the system prompt once, so every turn starts from a cached prefix. Al máximo V1
+        (2026-10-22): that state is kept on disk (LlmServer.save_prefix) with the notice and the prefix's tokens, and a
+        start whose tools, system prompt, model and server are the same restores it instead (18.3 s → under 1 s)."""
+        started = time.perf_counter()
         self.call_tokens = self.server.tokenize("<tool_call>")
         if len(self.call_tokens) != 1:
             raise RuntimeError(f"<tool_call> is not one token of this model: {self.call_tokens}")
-        reply = self.server.chat({"messages": [{"role": "system", "content": self._system()},
-                                                   {"role": "user", "content": "hola"}],
-                                  "tools": self.tools, "max_tokens": 1,
-                                  "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+        warm = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": "hola"}],
+                "tools": self.tools, "max_tokens": 1, "chat_template_kwargs": {"enable_thinking": False}}
+        notice = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": NOTICE_ASK}],
+                  "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
+                  "logit_bias": [[token, False] for token in self.call_tokens],
+                  "chat_template_kwargs": {"enable_thinking": False}}
+        key = self.server.prefix_key([warm, notice])
+        held = self.server.restore_prefix(key)
+        if held is not None and isinstance(held.get("prefix_tokens"), int) and isinstance(held.get("notice"), str):
+            self.prefix_tokens, self.notice = held["prefix_tokens"], held["notice"]
+            self._log("warm.prefix", started, None, restored=True, content=self.notice or None)
+            return
+        reply = self.server.chat(warm, timeout=600)
         self.prefix_tokens = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
-        self.notice = self._write_notice()
+        phrase = self._write_notice(notice)
+        self.notice = phrase or ""
+        # The file holds the slot: only the prefix (the tools, the system prompt, the notice's request and words) may be
+        # in it, never a person's conversation, so it is saved only before any turn of this process reached the model.
+        saved = phrase is not None and not self._turned and self.server.save_prefix(
+            key, {"prefix_tokens": self.prefix_tokens, "notice": self.notice})
+        self._log("warm.prefix", started, None, restored=False, saved=saved)
 
-    def _write_notice(self) -> str:
+    def _write_notice(self, body: dict[str, Any]) -> str | None:
         """The notice in the model's own words (NOTICE_ASK), once, on the cached prefix: words only, as the last answer
-        of a turn, and greedy. Empty when it gave nothing usable or the call failed: then BAXY says no notice."""
+        of a turn, and greedy. Empty when it gave nothing usable: then BAXY says no notice; None when the call failed
+        (nor is the warm-up kept on disk then)."""
         started = time.perf_counter()
         try:
-            reply = self.server.chat({"messages": [{"role": "system", "content": self._system()},
-                                                   {"role": "user", "content": NOTICE_ASK}],
-                                      "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed,
-                                      "tool_choice": "none",
-                                      "logit_bias": [[token, False] for token in self.call_tokens],
-                                      "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+            reply = self.server.chat(body, timeout=600)
             written = str(reply["choices"][0]["message"].get("content") or "")
         except Exception:  # noqa: BLE001 - without its words BAXY says no notice; the warm-up itself is done
-            reply, written = None, ""
+            self._log("warm.notice", started, None, content=None, written="")
+            return None
         phrase = written.strip().strip("«»\"'“”").strip()
         usable = bool(phrase) and "\n" not in phrase and "<" not in phrase and len(phrase) <= NOTICE_MAX_CHARS \
             and len(phrase.split()) <= NOTICE_MAX_WORDS
@@ -879,6 +897,7 @@ class Mind:
         something. Same tools (the cached prefix: the template puts them first) and a system text without the «¿ya lo
         hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
         started = time.perf_counter()
+        self._turned = True
         if self._beat is not None:
             # Review 2026-10-22: a heartbeat the App never ended is closed as end_beat closes it, never overwritten
             # with what BAXY said or did in it unsaid.
@@ -1153,6 +1172,7 @@ class Mind:
 
     def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
         started = time.perf_counter()
+        self._turned = True
         conv = turn["conv"]
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,

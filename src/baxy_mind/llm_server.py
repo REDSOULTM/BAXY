@@ -1,6 +1,7 @@
-"""The local model server: one llama-server process owned by the mind, one slot, its prompt prefix kept in cache."""
+"""The local model server: one llama-server process owned by the mind, one slot, its prompt prefix kept in cache and on disk."""
 from __future__ import annotations
 
+import hashlib
 import http.client
 import json
 import os
@@ -50,6 +51,10 @@ class LlmServer:
         self._ready = threading.Event()
         self._failure: str | None = None
         self.deadline: float | None = None
+        # Where the server writes a slot's state (--slot-save-path): the prompt prefix kept between starts (V1) and the
+        # state a vision question sets aside (BAXY_VISION_SLOT_DIR, the same folder).
+        self.slot_dir = _slot_dir()
+        self._settings: list[str] = []  # the server's arguments but its address, set by start (part of the prefix key)
 
     @property
     def name(self) -> str:
@@ -57,8 +62,7 @@ class LlmServer:
 
     def start(self) -> None:
         vision = _vision_args()
-        command = [
-            self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
+        self._settings = [
             "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
@@ -75,11 +79,13 @@ class LlmServer:
             # (every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM, decision2 d6 vs d6b, 2026-10-15). Watch
             # «erasing old context checkpoint» with n_tokens ≈ the prefix in llama-server.log: it should stay at 0.
             "-cram", "0", "-ctxcp", "10",
-        ] + vision + self.extra_args
-        # A state a vision question set aside and never put back holds the person's conversation: none is kept.
-        if held := os.environ.get("BAXY_VISION_SLOT_DIR", "").strip():
-            for stale in Path(held).glob("*.bin"):
-                stale.unlink(missing_ok=True)
+        ] + vision + ["--slot-save-path", str(self.slot_dir)] + self.extra_args
+        command = [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), *self._settings]
+        # A state a vision question set aside and never put back holds the person's conversation: none is kept. The
+        # kept prefix (PREFIX) is not one of them: it is saved before any turn (Mind.warm).
+        self.slot_dir.mkdir(parents=True, exist_ok=True)
+        for stale in self.slot_dir.glob("*.bin"):
+            stale.unlink(missing_ok=True)
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         log = open(log_dir / self.log_name, "w", encoding="utf-8")
@@ -293,6 +299,59 @@ class LlmServer:
         with urllib.request.urlopen(request, timeout=self._within(30)) as reply:
             return list(json.loads(reply.read())["tokens"])
 
+    # ---- the prompt prefix kept between starts (al máximo V1) -------------------------------------------------------
+    # Every start re-read the tools and the system prompt (~44,600 tokens, 18.3 s in llama-server.log) and the App was
+    # ready at ~22-23 s. The slot's state after the warm-up is saved with the server's own slot save (the vision's:
+    # 42,910 tokens restored in 0.74 s) under a key of everything that makes that state; the next start restores it.
+
+    def prefix_key(self, warm: Any) -> str:
+        """The key of the slot's state after the warm-up: the requests that make it (``warm``: the tools, the installed
+        applications among them, and the system prompt), the server's arguments but its address (context, KV cache
+        types, projector…), the GGUF and the server binary (size and time: hashing 2.7 GB costs what is saved) and the
+        server's build as it tells it."""
+        self.wait_ready(self._within(600))
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/props", timeout=self._within(10)) as reply:
+                build = str(json.loads(reply.read()).get("build_info") or "")
+        except (OSError, ValueError, http.client.HTTPException):
+            build = ""
+        identity = {"settings": self._settings, "gguf": _stamp(self.gguf), "server": _stamp(self.server),
+                    "build": build, "warm": warm}
+        return hashlib.sha256(json.dumps(identity, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:32]
+
+    def restore_prefix(self, key: str) -> dict[str, Any] | None:
+        """The slot back to the state saved under ``key``, and the facts kept beside it; None when there is none or the
+        server could not restore it (the warm-up then runs as always)."""
+        state = self.slot_dir / f"{PREFIX}{key}.slot"
+        try:
+            facts = json.loads(state.with_suffix(".json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        if not isinstance(facts, dict) or not state.is_file():
+            return None
+        try:
+            reply = self._post("/slots/0?action=restore", {"filename": state.name}, 120)
+        except (OSError, ValueError, http.client.HTTPException):
+            return None
+        return facts if int(reply.get("n_restored") or 0) > 0 else None
+
+    def save_prefix(self, key: str, facts: dict[str, Any]) -> bool:
+        """The slot's state saved under ``key`` with ``facts`` beside it; every other key's state is removed. Only the
+        prefix may be in the slot: Mind.warm saves it before any turn."""
+        state = self.slot_dir / f"{PREFIX}{key}.slot"
+        kept = state.with_suffix(".json")
+        kept.unlink(missing_ok=True)  # the facts are written last: a state cut halfway is never restored
+        try:
+            saved = int(self._post("/slots/0?action=save", {"filename": state.name}, 120).get("n_saved") or 0) > 0
+        except (OSError, ValueError, http.client.HTTPException):
+            saved = False
+        if saved:
+            kept.write_text(json.dumps(facts, ensure_ascii=False), encoding="utf-8")
+        for stale in self.slot_dir.glob(f"{PREFIX}*"):
+            if not saved or stale.name not in (state.name, kept.name):
+                stale.unlink(missing_ok=True)
+        return saved
+
     def close(self) -> None:
         if self._process is not None and self._process.poll() is None:
             self._process.terminate()
@@ -302,20 +361,37 @@ class LlmServer:
                 self._process.kill()
 
 
+# The kept prefix's files in the slot folder: its state (.slot, never *.bin: start() removes those) and its facts (.json).
+PREFIX = "baxy_prefix_"
+
+
 def _vision_args() -> list[str]:
     """PLAN_GENERAL A5 (measured 2026-10-21): the model's own projector, on the CPU (no VRAM; ~0.7 GB of RAM), so the
-    click's last stage can ask this server where a control is on a window without an accessible tree; and where the
-    one slot's state is set aside meanwhile (BAXY_VISION_SLOT_DIR). A question on the slot evicted the conversation,
+    click's last stage can ask this server where a control is on a window without an accessible tree; the one slot's
+    state is set aside meanwhile in the slot folder (_slot_dir). A question on the slot evicted the conversation,
     whose state (2 GB) the RAM prompt cache refused, and the next decision re-read it for 25 s; a second slot on a
     unified KV cache lost it too with this hybrid model (21 s). Saved and restored around the question: 1.35 s and
     0.74 s for 42,910 tokens, then 17 tokens re-read."""
     projector = os.environ.get("BAXY_MIND_MMPROJ", "").strip()
     if not projector or not Path(projector).is_file():
         return []
+    return ["--mmproj", projector, "--no-mmproj-offload"]
+
+
+def _slot_dir() -> Path:
+    """The server's --slot-save-path: BAXY_VISION_SLOT_DIR, where the App's vision sets the slot's state aside, or the
+    same folder run_renew.cmd gives it when the vision is off."""
     held = os.environ.get("BAXY_VISION_SLOT_DIR", "").strip()
-    if held:
-        Path(held).mkdir(parents=True, exist_ok=True)
-    return ["--mmproj", projector, "--no-mmproj-offload"] + (["--slot-save-path", held] if held else [])
+    return Path(held) if held else Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "slots"
+
+
+def _stamp(path: str) -> list[int] | None:
+    """A file's size and modification time, or None when it is not there."""
+    try:
+        status = os.stat(path)
+    except OSError:
+        return None
+    return [status.st_size, status.st_mtime_ns]
 
 
 def _pinned_port() -> int | None:

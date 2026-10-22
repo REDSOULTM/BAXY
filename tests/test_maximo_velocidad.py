@@ -136,3 +136,213 @@ def test_a_call_or_a_heartbeat_is_never_foreseen(tmp_path: Path) -> None:
     assert mind.decide(1, "abre spotify")["kind"] == "action"
     mind.beat(2, {"activity": "idle"})
     assert told == []
+
+
+# --- V1: the prompt prefix is kept on disk and restored at the next start --------------------------------------------
+
+class _FakeLlama:
+    """llama-server's double: the endpoints the warm-up uses and its slot files. Its one slot holds the last prompt it
+    read; /slots save and restore write and read that in its --slot-save-path, as the server does."""
+
+    def __init__(self, folder: Path) -> None:
+        import http.server
+        import threading
+        import urllib.parse
+        from baxy_mind.mind import NOTICE_ASK
+        folder.mkdir(parents=True, exist_ok=True)
+        self.folder, self.calls, self.slot, self.build, self.fail_restore = folder, [], "", "b11609-test", False
+        fake = self
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *args) -> None:
+                pass
+
+            def _answer(self, status: int, payload: dict) -> None:
+                data = json.dumps(payload).encode("utf-8")
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+
+            def do_GET(self) -> None:
+                fake.calls.append(self.path)
+                self._answer(200, {"build_info": fake.build})
+
+            def do_POST(self) -> None:
+                body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                fake.calls.append(self.path)
+                path, query = urllib.parse.urlsplit(self.path)[2:4]
+                if path == "/tokenize":
+                    return self._answer(200, {"tokens": [248058] if body["content"] == "<tool_call>" else [0]})
+                if path == "/v1/chat/completions":
+                    fake.slot = json.dumps(body["messages"], ensure_ascii=False)
+                    said = body["messages"][-1]["content"]
+                    if said == "hola":
+                        return self._answer(200, {"choices": [{"message": {"content": "H"}}],
+                                                  "usage": {"prompt_tokens": 37000}})
+                    return self._answer(200, {"choices": [{"message": {
+                        "content": "Dame un segundo." if said == NOTICE_ASK else "Listo."}}]})
+                state = fake.folder / body["filename"]
+                if query == "action=save":
+                    state.write_text(fake.slot, encoding="utf-8")
+                    return self._answer(200, {"id_slot": 0, "filename": state.name, "n_saved": 10})
+                if fake.fail_restore or not state.is_file():
+                    return self._answer(400, {"error": {"code": 400, "message": "Unable to restore slot"}})
+                fake.slot = state.read_text(encoding="utf-8")
+                return self._answer(200, {"id_slot": 0, "filename": state.name, "n_restored": 10})
+
+        self.httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
+
+    def files(self) -> list[str]:
+        return sorted(p.name for p in self.folder.iterdir())
+
+
+_TOOLS = [{"type": "function", "function": {"name": "app_open", "description": "Open an application. Installed "
+                                            "applications (use one of these names as appId): Paint; Spotify.",
+                                            "parameters": {}}}]
+
+
+def _warmed(tmp_path: Path, fake: _FakeLlama, tools: list | None = None, gguf: Path | None = None,
+            context: int = 53248):
+    from baxy_mind.llm_server import LlmServer
+    from baxy_mind.mind import Mind
+    if gguf is None:
+        gguf = tmp_path / "model.gguf"
+        if not gguf.exists():
+            gguf.write_bytes(b"GGUF")
+    server = LlmServer(str(gguf), "llama-server.exe", context=context)
+    server.port, server.slot_dir = fake.httpd.server_address[1], fake.folder
+    server._settings = ["-c", str(context)]  # what start() sets
+    server._ready.set()
+    mind = Mind(server, tmp_path / "turns.jsonl")
+    mind.tools = json.loads(json.dumps(tools or _TOOLS))
+    mind.warm()
+    return mind
+
+
+def _rows(tmp_path: Path, stage: str) -> list[dict]:
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    return [row for row in rows if row["stage"] == stage]
+
+
+WARM = ["/tokenize", "/props", "/v1/chat/completions", "/v1/chat/completions", "/slots/0?action=save"]
+
+
+def test_a_start_restores_the_prefix_the_last_one_kept_instead_of_reading_it_again(tmp_path: Path) -> None:
+    # Every start re-read ~44,600 tokens (18.3 s); the vision's own slot restore read 42,910 back in 0.74 s.
+    fake = _FakeLlama(tmp_path / "slots")
+    first = _warmed(tmp_path, fake)
+    assert fake.calls == WARM
+    assert first.notice == "Dame un segundo." and first.prefix_tokens == 37000
+    kept = fake.files()
+    assert len(kept) == 2 and {Path(name).suffix for name in kept} == {".json", ".slot"}
+    fake.calls.clear()
+    again = _warmed(tmp_path, fake)  # the next start: a new server process and a new mind
+    assert fake.calls == ["/tokenize", "/props", "/slots/0?action=restore"]  # nothing read again, no notice asked
+    assert again.notice == "Dame un segundo." and again.prefix_tokens == 37000  # the notice the model wrote then
+    assert fake.files() == kept
+    assert [row.get("restored") for row in _rows(tmp_path, "warm.prefix")] == [False, True]
+
+
+@pytest.mark.parametrize("change", ["tools", "gguf", "context", "build"])
+def test_a_prefix_made_of_anything_else_is_read_again_and_replaces_the_one_kept(tmp_path: Path, change: str) -> None:
+    fake = _FakeLlama(tmp_path / "slots")
+    _warmed(tmp_path, fake)
+    old = fake.files()
+    fake.calls.clear()
+    tools, gguf, context = None, None, 53248
+    if change == "tools":  # an application installed since: its name is in app_open's description
+        tools = json.loads(json.dumps(_TOOLS).replace("Spotify.", "Spotify; Steam."))
+    elif change == "gguf":
+        gguf = tmp_path / "other.gguf"
+        gguf.write_bytes(b"GGUF2")
+    elif change == "context":
+        context = 49152
+    else:
+        fake.build = "b11700-test"
+    mind = _warmed(tmp_path, fake, tools, gguf, context)
+    assert fake.calls == WARM  # its key has no state: no restore asked, the warm-up as always, then kept
+    assert mind.notice == "Dame un segundo."
+    assert len(fake.files()) == 2 and not set(fake.files()) & set(old)  # the other key's state is removed
+
+
+def test_a_prefix_the_server_cannot_restore_is_read_again_and_kept_anew(tmp_path: Path) -> None:
+    fake = _FakeLlama(tmp_path / "slots")
+    _warmed(tmp_path, fake)
+    kept = fake.files()
+    fake.calls.clear()
+    fake.fail_restore = True
+    mind = _warmed(tmp_path, fake)
+    assert fake.calls == ["/tokenize", "/props", "/slots/0?action=restore", *WARM[2:]]
+    assert mind.notice == "Dame un segundo." and mind.prefix_tokens == 37000 and fake.files() == kept
+
+
+def test_the_prefix_is_kept_only_before_any_turn_so_no_conversation_reaches_the_disk(tmp_path: Path) -> None:
+    from baxy_mind.mind import NOTICE_ASK
+    fake = _FakeLlama(tmp_path / "slots")
+    mind = _warmed(tmp_path, fake)
+    assert json.loads(next(fake.folder.glob("*.slot")).read_text(encoding="utf-8"))[-1]["content"] == NOTICE_ASK
+    for kept in fake.folder.iterdir():
+        kept.unlink()
+    mind.decide(1, "mi clave del banco es 4321")
+    fake.calls.clear()
+    mind.warm()  # the App configures the catalog again after a turn: the slot may hold the turn's checkpoints
+    assert "/v1/chat/completions" in fake.calls and "/slots/0?action=save" not in fake.calls
+    assert fake.files() == []
+
+
+def test_the_vision_sets_the_slot_aside_in_the_same_folder_and_the_prefix_survives_it(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from baxy_mind import llm_server
+    slots, projector = tmp_path / "slots", tmp_path / "mmproj.gguf"
+    projector.write_bytes(b"GGUF")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setenv("BAXY_VISION_SLOT_DIR", str(slots))  # LocalVisionEndpoint.SlotDirectory, run_renew.cmd
+    monkeypatch.setenv("BAXY_MIND_MMPROJ", str(projector))
+    fake = _FakeLlama(slots)
+    _warmed(tmp_path, fake)
+    prefix = fake.files()
+    # The App's vision (WindowsVisibleVisionLocator): its state set aside, a question on the slot, the state put back.
+    server = llm_server.LlmServer(str(tmp_path / "model.gguf"), "llama-server.exe")
+    server.port = fake.httpd.server_address[1]
+    server._ready.set()
+    before = fake.slot
+    assert server._post("/slots/0?action=save", {"filename": "baxy_vision_hold.bin"}, 5)["n_saved"]
+    server.chat({"messages": [{"role": "user", "content": "¿Dónde está el botón Guardar?"}]})
+    assert server._post("/slots/0?action=restore", {"filename": "baxy_vision_hold.bin"}, 5)["n_restored"]
+    assert fake.slot == before
+    assert fake.files() == sorted([*prefix, "baxy_vision_hold.bin"])  # one folder, neither file touched the other
+    # The next start: a held state left behind is removed (it holds a conversation), the prefix stays and is restored.
+    commands: list[list[str]] = []
+
+    class Alive:
+        def poll(self) -> None:
+            return None
+
+    monkeypatch.setattr(llm_server.subprocess, "Popen", lambda command, **kw: commands.append(command) or Alive())
+    monkeypatch.setattr(llm_server.LlmServer, "_wait_health", lambda self: None)
+    llm_server.LlmServer(str(tmp_path / "model.gguf"), "llama-server.exe").start()
+    command = commands[0]
+    assert command.count("--slot-save-path") == 1 and command[command.index("--slot-save-path") + 1] == str(slots)
+    assert "--mmproj" in command
+    assert fake.files() == prefix
+    fake.calls.clear()
+    _warmed(tmp_path, fake)
+    assert fake.calls[-1] == "/slots/0?action=restore"
+
+
+def test_without_the_vision_the_prefix_has_its_folder_all_the_same(tmp_path: Path,
+                                                                  monkeypatch: pytest.MonkeyPatch) -> None:
+    from baxy_mind import llm_server
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.delenv("BAXY_VISION_SLOT_DIR", raising=False)
+    monkeypatch.delenv("BAXY_MIND_MMPROJ", raising=False)
+    commands: list[list[str]] = []
+    monkeypatch.setattr(llm_server.subprocess, "Popen", lambda command, **kw: commands.append(command) or object())
+    monkeypatch.setattr(llm_server.LlmServer, "_wait_health", lambda self: None)
+    llm_server.LlmServer("model.gguf", "llama-server.exe").start()
+    command = commands[0]
+    assert command[command.index("--slot-save-path") + 1] == str(tmp_path / "BAXY" / "renew" / "slots")
+    assert "--mmproj" not in command
