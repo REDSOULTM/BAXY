@@ -130,16 +130,6 @@ class LlmServer:
         with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
             return json.loads(reply.read())
 
-    def complete_name(self, body: dict[str, Any], written: str, timeout: float = 10.0) -> str:
-        """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:
-        the chat's own prompt (/apply-template) plus that text, stopped at the name's end."""
-        self.wait_ready(self._within(timeout))
-        prompt = self._post("/apply-template", {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")},
-                            timeout)["prompt"]
-        reply = self._post("/completion", {"prompt": prompt + written, "n_predict": 24, "temperature": 0.0,
-                                           "stop": [">", "\n"], "cache_prompt": True, "id_slot": 0}, timeout)
-        return str(reply.get("content", ""))
-
     def fill_call(self, body: dict[str, Any], wire: str, timeout: float = 30.0) -> dict[str, Any] | None:
         """The model's arguments for one tool another layer chose (System One, piece A): the same chat, with the call
         already started as the assistant's last message, so the prompt and its cached prefix stay the same and only the

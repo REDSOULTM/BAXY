@@ -2,6 +2,8 @@
 Each test holds one lever, so it can be measured and withdrawn on its own."""
 from pathlib import Path
 
+import pytest
+
 
 def test_the_model_server_keeps_no_prompt_cache_in_ram_and_ten_checkpoints(tmp_path: Path, monkeypatch) -> None:
     # 3.3: the cache in RAM held nothing (no prompt fit its 1,536 MiB) and 32 checkpoints cost ~1.6 GB of RAM.
@@ -20,3 +22,52 @@ def test_the_model_server_keeps_no_prompt_cache_in_ram_and_ten_checkpoints(tmp_p
     assert command[command.index("-cram") + 1] == "0"
     assert command[command.index("-ctxcp") + 1] == "10"
     assert "-cms" not in command and "--checkpoint-min-step" not in command
+
+
+CATALOG = ("system_power", "app_open", "app_close", "app_snap", "window_resolve", "window_snap")
+
+
+def _doubted(name_tokens: list[str], weakest: int, rivals: list[tuple[str, float]]) -> dict:
+    """A reply that calls the tool spelled by `name_tokens`, unsure (p 0.5) at its `weakest` token, with those rivals."""
+    import math
+    from test_mind_doubt_policy import _token
+    tokens = [_token(t, 0.5 if i == weakest else 1.0) for i, t in enumerate(name_tokens)]
+    tokens[weakest]["top_logprobs"] += [{"token": t, "logprob": math.log(q)} for t, q in rivals]
+    head = [_token("<tool_call>", 0.95), _token("\n", 1.0), _token("<", 1.0), _token("function", 1.0)]
+    name = "".join(name_tokens).lstrip("=")
+    return {"choices": [{"message": {"content": "", "tool_calls": [{"id": "c1", "function": {
+        "name": name, "arguments": "{}"}}]}, "logprobs": {"content": [*head, *tokens, _token(">", 1.0)]}}]}
+
+
+@pytest.mark.parametrize("name_tokens, weakest, rivals, expected", [
+    # The first token of the name: every tool «app» begins counts, in the catalog's order, within the four places.
+    (["=", "system", "_power"], 1, [("app", 0.3), ("window", 0.1)], ["system_power", "app_open", "app_close", "app_snap"]),
+    # A later token: one tool each; a token that begins no tool, one under p 0.01 and the chosen tool again do not count.
+    (["=", "window", "_resolve"], 2, [("_snap", 0.2), ("_foo", 0.1), ("_res", 0.05), ("_open", 0.005)],
+     ["window_resolve", "window_snap"]),
+    # A token that carries the «=» of «<function=»; one that writes nothing of the name, or leaves the «=» out, is none.
+    (["=app", "_close"], 0, [("=window", 0.2), ("=", 0.1), ("app", 0.05)], ["app_close", "window_resolve", "window_snap"]),
+    # A token that closes the name: only that very name.
+    (["=", "app", "_snap"], 2, [("_open>", 0.1), ("_s>", 0.05)], ["app_snap", "app_open"]),
+])
+def test_the_doubts_candidates_come_from_the_catalog_without_asking_the_server(tmp_path: Path, monkeypatch, name_tokens,
+                                                                               weakest, rivals, expected) -> None:
+    # 4.1: per rival, the chat's prompt was applied again and the name completed (/apply-template, /completion): ~0.8 s
+    # per doubtful turn. The fake server only answers chat: any other call would leave its rival out.
+    from baxy_mind.mind import Mind
+    from test_mind_doubt_policy import FakeServer, FakeSystemOne
+    monkeypatch.setenv("BAXY_S1_DOUBT", "")
+    monkeypatch.setenv("BAXY_S1_VETO", "0.9")
+    reply = _doubted(name_tokens, weakest, rivals)
+    chosen = reply["choices"][0]["message"]["tool_calls"][0]["function"]["name"]
+    server = FakeServer([reply])
+    mind = Mind(server, tmp_path / "turns.jsonl")  # type: ignore[arg-type]
+    mind.call_tokens = [248058]
+    mind.tools = [{"type": "function", "function": {"name": n, "description": "Tool. More.", "parameters": {}}}
+                  for n in CATALOG]
+    mind.wire_to_op = {n: n.replace("_", ".") for n in CATALOG}
+    one = FakeSystemOne(chosen)
+    mind.system_one = one  # type: ignore[assignment]
+    assert mind.decide(1, "hazlo")["kind"] == "action"
+    assert [o for o in one.asked[0]["options"] if o in CATALOG] == expected
+    assert len(server.bodies) == 1

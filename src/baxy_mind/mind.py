@@ -19,7 +19,7 @@ import urllib.error
 from pathlib import Path
 from typing import Any
 
-from .doubt import read as read_doubt
+from .doubt import NAME_OPEN, read as read_doubt
 from .llm_server import LlmServer
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 
@@ -1023,7 +1023,7 @@ class Mind:
             return DOUBT_NOTE.format(call=call["wire"])
         if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
             return None
-        options = self._candidates(call["wire"], doubt, body)
+        options = self._candidates(call["wire"], doubt)
         judged = self.system_one.choose(turn["text"], self._said(), options)
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
         if not judged or judged["choice"] == call["wire"]:
@@ -1093,25 +1093,33 @@ class Mind:
                 return False
         return True
 
-    def _candidates(self, chosen: str, doubt: dict[str, Any], body: dict[str, Any]) -> dict[str, str]:
+    def _candidates(self, chosen: str, doubt: dict[str, Any]) -> dict[str, str]:
         """The model's own candidates as the decision model's options (as in its training, build_kev_data.py): the tool it
-        chose, the tools it nearly wrote at its weakest name token (the rest of each name written greedily on the same
-        slot), asking, and answering in words."""
+        chose, the tools it nearly wrote at its weakest name token (the catalog's names that begin as the model had
+        written the name, with that rival token in place of its own), asking, and answering in words."""
         described = {t["function"]["name"]: short(t["function"]["description"]) for t in self.tools}
         # B-MED-3 (2026-10-22): the rule of its training (qwen_signals.py, rollouts): the chosen tool and the next three
         # tokens of the weakest one, each of p ≥ 0.01 (served, the chosen token took a place and a rival needed 0.02).
+        # Al máximo 4.1 (2026-10-22): the name behind a rival token is read from the catalog, not written by the model
+        # (the chat's prompt applied again and the name completed greedily, per rival: turns where System One was asked
+        # took 1.9 s p50 against 0.9 s). A token that begins no tool, or writes nothing of the name, is no rival and
+        # takes no place (the rollout's unknown name never reached the options either). A token several tools begin
+        # with («app») gives them all, in the catalog's order, within the same four places: the rollout's greedy pick
+        # among them cannot be read without generating, and the decision model reads its options shuffled (its
+        # training, build_kev_data.py), never more tools than the rule allows.
         names = [chosen]
         for token, p in doubt.get("rivals") or []:
-            if p < 0.01 or len(names) >= 4:
-                continue
             written = doubt.get("written", "") + token
-            try:
-                written += self.server.complete_name(body, written) if ">" not in written[written.find("<function="):] else ""
-            except Exception:  # noqa: BLE001 - a rival that cannot be read is left out
+            at = written.find(NAME_OPEN)
+            begun = written[at + len(NAME_OPEN):].lstrip() if at >= 0 else ""
+            prefix = re.match(r"[^>\s]*", begun).group(0)
+            if p < 0.01 or not prefix:
                 continue
-            at = written.find("<function=")
-            names.append(written[at + len("<function="):].split(">")[0].strip() if at >= 0 else "")
-        options = {n: described[n] for n in dict.fromkeys(names) if n in described and n != ASK}
+            ended = len(prefix) < len(begun)  # the token closed the name: only that very name
+            for name in described:
+                if len(names) < 4 and name not in names and (name == prefix if ended else name.startswith(prefix)):
+                    names.append(name)
+        options = {n: described[n] for n in names if n in described and n != ASK}
         return {**options, ASK: OPTION_TEXT[ASK], ANSWER: OPTION_TEXT[ANSWER]}
 
     def _result(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any] | None, reply: dict | None,
