@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text.Json;
 using Baxy.Providers.Windows.Audio;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -117,16 +118,22 @@ internal sealed class WindowsAudioAdjustmentAdapter : IExternalOperationAdapter
 internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
 {
     private readonly Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> _adjust;
+    private readonly Func<IReadOnlyList<string>> _sessionNames;
 
     internal WindowsAppVolumeAdapter()
     {
         _adjust = static (application, delta, beforeEffect, cancellationToken) =>
             WindowsCoreAudioPlatform.AdjustApplicationSessions(application, delta, beforeEffect, cancellationToken);
+        _sessionNames = WindowsCoreAudioPlatform.ApplicationSessionNames;
     }
 
     internal WindowsAppVolumeAdapter(
-        Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> adjust) =>
+        Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> adjust,
+        Func<IReadOnlyList<string>>? sessionNames = null)
+    {
         _adjust = adjust ?? throw new ArgumentNullException(nameof(adjust));
+        _sessionNames = sessionNames ?? (static () => []);
+    }
 
     public bool CanHandle(string operation) => operation == "audio.app.volume.adjust";
 
@@ -166,8 +173,7 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
                 cancellationToken);
             if (adjusted is null)
             {
-                return ValueTask.FromResult(ExternalJson.Failure(
-                    operation, "app_audio_session_not_found_on_default_output"));
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, "audio_volume_adjust"));
             }
             // FT/proveedores goal (review): an application already at the end it is moved towards, with no session
             // changed, says that state, as the system volume does (M54); it was a success with no observed effect,
@@ -235,16 +241,22 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
 internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
 {
     private readonly Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> _set;
+    private readonly Func<IReadOnlyList<string>> _sessionNames;
 
     internal WindowsAppVolumeSetAdapter()
     {
         _set = static (application, level, beforeEffect, cancellationToken) =>
             WindowsCoreAudioPlatform.SetApplicationSessions(application, level, beforeEffect, cancellationToken);
+        _sessionNames = WindowsCoreAudioPlatform.ApplicationSessionNames;
     }
 
     internal WindowsAppVolumeSetAdapter(
-        Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> set) =>
+        Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> set,
+        Func<IReadOnlyList<string>>? sessionNames = null)
+    {
         _set = set ?? throw new ArgumentNullException(nameof(set));
+        _sessionNames = sessionNames ?? (static () => []);
+    }
 
     public bool CanHandle(string operation) => operation == "audio.app.volume.set";
 
@@ -282,8 +294,7 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
                 cancellationToken);
             if (adjusted is null)
             {
-                return ValueTask.FromResult(ExternalJson.Failure(
-                    operation, "app_audio_session_not_found_on_default_output"));
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, "audio_volume"));
             }
             if (Math.Abs(adjusted.Level - level) > 2)
             {
@@ -325,5 +336,58 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
             return ValueTask.FromResult(effectBoundary.Failure(
                 operation, "audio_output_endpoint_unavailable"));
         }
+    }
+}
+
+/// <summary>
+/// Renew al máximo (auditoría de flujos, P257 «deja el volumen en 20» → audio.app.volume.set {app:"volumen"}): an
+/// application with no audio session on the default output fails before any effect, and (model aid) the failure names
+/// the applications that have one, few and by their process names, and the operation of the PC's own volume.
+/// </summary>
+internal static class AppSessionNotFound
+{
+    internal const string ErrorCode = "app_audio_session_not_found_on_default_output";
+
+    internal const int NameLimit = 8;
+
+    internal static ExternalCapabilityReceipt Receipt(
+        string operation,
+        Func<IReadOnlyList<string>> sessionNames,
+        string systemOperation)
+    {
+        ExternalCapabilityReceipt failure = ExternalJson.FailureBeforeEffect(operation, ErrorCode);
+        if (!ModelAids.On(ModelAids.AppVolumeCandidates))
+            return failure;
+        string[] names;
+        try
+        {
+            names = sessionNames()
+                .Where(static name => !string.IsNullOrWhiteSpace(name))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Take(NameLimit)
+                .ToArray();
+        }
+        catch (Exception exception) when (exception is AudioPlatformException or COMException
+            or InvalidComObjectException or UnauthorizedAccessException or SecurityException)
+        {
+            // An unread list is no list: the code alone stands.
+            return failure;
+        }
+
+        return failure with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteStartArray("appsWithAudio");
+                foreach (string name in names)
+                    writer.WriteStringValue(name);
+                writer.WriteEndArray();
+                writer.WriteString("next", "only these applications have a volume of their own now (app takes one of "
+                    + $"them); the volume of the whole PC is {systemOperation}, not an application");
+                writer.WriteEndObject();
+            }),
+        };
     }
 }

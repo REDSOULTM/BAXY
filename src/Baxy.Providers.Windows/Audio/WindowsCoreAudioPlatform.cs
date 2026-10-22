@@ -604,7 +604,64 @@ internal sealed partial class WindowsCoreAudioPlatform
         int delta,
         Func<CancellationToken>? beforeEffect,
         int? absoluteLevel,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken) =>
+        WithDefaultOutputSessions((sessions, endpointId) => AdjustMatchingSessions(
+            sessions,
+            applicationName,
+            delta,
+            endpointId,
+            beforeEffect,
+            absoluteLevel,
+            cancellationToken));
+
+    /// <summary>
+    /// Renew al máximo (auditoría de flujos): the process names of the applications with an audio session on the
+    /// default output (the system sounds session left out), in the enumerator's order; a read only.
+    /// </summary>
+    internal static IReadOnlyList<string> ApplicationSessionNames() =>
+        WithDefaultOutputSessions(static (sessions, _) =>
+        {
+            ThrowForHResult(sessions.GetCount(out int count), AudioControlErrorCodes.EndpointUnavailable);
+            var names = new List<string>();
+            for (int index = 0; index < count; index++)
+            {
+                int result = sessions.GetSession(index, out nint sessionPointer);
+                ReleaseOnFailure(result, sessionPointer);
+                if (result < 0 || sessionPointer == 0)
+                {
+                    continue;
+                }
+
+                nint controlPointer;
+                try
+                {
+                    if (Marshal.QueryInterface(sessionPointer, in IidAudioSessionControl2, out controlPointer) < 0)
+                    {
+                        continue;
+                    }
+                }
+                finally
+                {
+                    ReleaseIUnknown(sessionPointer);
+                }
+
+                IAudioSessionControl2 control = WrapUnique<IAudioSessionControl2>(controlPointer, out IDisposable lease);
+                using (lease)
+                {
+                    // S_OK from IsSystemSoundsSession: the system sounds session belongs to no application.
+                    if (control.IsSystemSoundsSession() != 0
+                        && control.GetProcessId(out uint processId) >= 0 && processId != 0
+                        && ProcessNameOf(processId) is { } processName)
+                    {
+                        names.Add(processName);
+                    }
+                }
+            }
+
+            return (IReadOnlyList<string>)names;
+        });
+
+    private static T WithDefaultOutputSessions<T>(Func<IAudioSessionEnumerator, string, T> use)
     {
         using ComInitialization initialization = InitializeCom();
         int result = CoCreateInstance(
@@ -650,14 +707,7 @@ internal sealed partial class WindowsCoreAudioPlatform
                         out IDisposable sessionsLease);
                     using (sessionsLease)
                     {
-                        return AdjustMatchingSessions(
-                            sessions,
-                            applicationName,
-                            delta,
-                            endpointId,
-                            beforeEffect,
-                            absoluteLevel,
-                            cancellationToken);
+                        return use(sessions, endpointId);
                     }
                 }
             }

@@ -47,6 +47,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (6.3): a failed app.open says whether its launch was issued and where to look next.</summary>
     public const string OpenRecovery = "open_recovery";
 
+    /// <summary>Renew al máximo (auditoría de flujos, P257): an app volume with no audio session names the apps that have one.</summary>
+    public const string AppVolumeCandidates = "app_volume_candidates";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

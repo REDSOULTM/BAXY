@@ -3895,6 +3895,43 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, P257: «deja el volumen en 20» chose audio.app.volume.set {app:"volumen"} in
+    // 7 of 27 runs): an application with no audio session failed with the bare code, so the next step had nothing to go
+    // on. The failure names the applications that do have one (few, short) and that the PC's own volume is another
+    // operation; a model aid, off with the others.
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "all", "audio_volume")]
+    [TestCase("audio.app.volume.adjust", """{"app":"volumen","amount":10,"direction":"down"}""", "all",
+        "audio_volume_adjust")]
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "none", null)]
+    public async Task AnAppWithNoAudioSessionNamesTheAppsThatHaveOne(
+        string operation, string arguments, string aids, string? systemOperation)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        string[] withAudio = ["Spotify", "chrome", "Discord", "mpv", "steam", "opera", "Teams", "zoom", "vlc", "obs64"];
+        IExternalOperationAdapter adapter = operation == "audio.app.volume.set"
+            ? new WindowsAppVolumeSetAdapter((_, _, _, _) => null, () => withAudio)
+            : new WindowsAppVolumeAdapter((_, _, _, _) => null, () => withAudio);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("app_audio_session_not_found_on_default_output"));
+            if (systemOperation is null)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+
+            string[] named = receipt.Result!.Value.GetProperty("appsWithAudio").EnumerateArray()
+                .Select(item => item.GetString()!).ToArray();
+            Assert.That(named, Is.EqualTo(withAudio.Take(8).ToArray()));
+            Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.Contain(" is " + systemOperation + ","));
+        });
+    }
+
     [Test]
     public async Task OutlookLatestReplyRequiresASentFolderPostread()
     {
