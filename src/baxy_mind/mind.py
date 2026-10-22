@@ -779,8 +779,10 @@ class Mind:
             return {"type": "turn.result", "id": request_id, "kind": "silence", "operation": None, "arguments": None,
                     "question": "", "reply": ""}
         # The analysis stays as the model's own words, not as JSON: with its JSON before it, the model answered the
-        # second move in JSON again (practice scene P023).
-        conv.append({"role": "assistant", "content": str(decision.get("analisis") or "")})
+        # second move in JSON again (practice scene P023). Al máximo 10.3: the motives it found go before it, as words
+        # too: the move that acts read only the analysis (PALANCAS-nb 10.3, scenes P002 and P023).
+        motives = "; ".join(f"{m}: {decision.get(m) or ''}" for m in _MOTIVES)
+        conv.append({"role": "assistant", "content": f"{motives}. {decision.get('analisis') or ''}".rstrip()})
         conv.append({"role": "user", "content": BEAT_ACT})
         return self._next(request_id, "turn.beat", self._beat)
 
