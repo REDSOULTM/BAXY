@@ -23,8 +23,11 @@ def main() -> int:
         sys.stderr.write("baxy_mind_renew_failure: BAXY_MIND_LLM_GGUF and BAXY_MIND_LLAMA_SERVER are required\n")
         return 2
     try:
+        # Renew al máximo 1.5 (2026-10-22): 53,248 and not 49,152. With the ~43k-token prefix the history had ~2.5k
+        # tokens (about three turns); 4,096 more cost ~68 MiB of KV (8 full-attention layers × 4 KV heads × 256, q8_0),
+        # room left once Laya stopped using the GPU (3.1: 3,902 MiB with System One on).
         server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
-                           context=int(os.environ.get("BAXY_RENEW_CTX", "49152")))
+                           context=int(os.environ.get("BAXY_RENEW_CTX", "53248")))
     except RuntimeError as error:  # a pinned port in use (llm_server._pinned_port)
         sys.stderr.write(f"baxy_mind_renew_failure: {error}\n")
         return 2

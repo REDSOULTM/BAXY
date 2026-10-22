@@ -1007,7 +1007,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         string? raw = Environment.GetEnvironmentVariable("BAXY_RENEW_CTX");
         return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value) && value > 0
             ? value
-            : 49152;
+            : 53248;
     }
 
     // A reading the PC did not give (no GPU counter, no temperature, no model process) travels as null; the view
