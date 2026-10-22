@@ -181,6 +181,9 @@ internal sealed class NativeTurnLoop
         }
     }
 
+    /// <summary>A line BAXY says (not the notice) began to sound: the notice of the turn that published it closes.</summary>
+    internal void AnswerSounded() => _notice.Sounded();
+
     // The call that waits for the person's «sí», as the mind reads it with their next words when it was asked before
     // they arrived: its operation, and its arguments unless it is a memory call (their values stay sealed).
     private JsonObject? WaitingCall()

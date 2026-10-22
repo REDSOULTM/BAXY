@@ -38,10 +38,10 @@ def main() -> int:
     trace = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl"
     trace.parent.mkdir(parents=True, exist_ok=True)
     mind = Mind(server, trace, system_one)
-    def spoken(queued: float, sounded: float) -> None:
+    def spoken(queued: float, sounded: float, notice: bool) -> None:
         # From the App's voice.speak to the first sound, and when it sounded (the turn's own rows say when its text
-        # reached the mind), so text-to-first-sound is read from this trace.
-        mind._log("voice.speak", queued, None, sound_ms=round((sounded - queued) * 1000),
+        # reached the mind), so text-to-first-sound is read from this trace; a notice's row says so.
+        mind._log("voice.speak", queued, None, sound_ms=round((sounded - queued) * 1000), notice=notice,
                   sound_at=(_dt.datetime.now() + _dt.timedelta(seconds=sounded - time.monotonic()))
                   .isoformat(timespec="milliseconds"))
 

@@ -277,3 +277,68 @@ def test_a_voice_cut_short_tells_the_mouth_to_close(tmp_path: Path, monkeypatch:
     speech._play(iter([np.full(2000, 0.1, np.float32)]), speech._generation, time.monotonic())
     assert [k for lip in lips for k in lip if k in ("t0", "stop")] == ["t0", "stop"]
     assert abs(lips[-1]["stop"] - time.time() * 1000) < 500
+
+
+# --- 9.2b: the notice counts until the answer is heard, not until it is published -------------------------------------
+
+def test_a_notice_asked_while_a_given_answer_is_still_synthesized_sounds_before_it(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """An answer published at 2.4 s that sounds at 3.9 s left more than 3 s without a signal: the notice asked at 2.5 s
+    waited behind the answer's synthesis. It sounds from its own audio while that synthesis runs."""
+    from concurrent.futures import Future
+
+    played: list[str] = []
+    speech = _loaded_voice(tmp_path, monkeypatch, played, notice="Dame un segundo.")
+    first: Future = Future()
+
+    def sentences(self: Speech, text: str):
+        def audio():
+            yield first.result()
+        return voice_output._Sentences(first, audio())
+
+    monkeypatch.setattr(Speech, "_sentences", sentences)
+    assert speech.speak("Listo, abrí Steam.")
+    time.sleep(0.1)  # the speech thread waits for the answer's first sentence
+    assert speech.speak("Dame un segundo.", notice=True)
+    _wait_for(played, 1)
+    assert played == ["audio:Dame un segundo."]
+    first.set_result("Listo, abrí Steam.")
+    _wait_for(played, 2)
+    assert played == ["audio:Dame un segundo.", "Listo, abrí Steam."]
+
+
+def test_a_notice_asked_once_the_answer_sounds_is_never_said(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import numpy as np
+
+    lips: list[dict] = []
+    stream = _FakeStream()
+    speech = _player(tmp_path, monkeypatch, lips, stream)
+    speech._notice_text, speech._notice_audio = "Sigo en ello.", np.zeros(10, np.float32)
+    asked: list[bool] = []
+    stream.on_write = lambda: asked.append(speech.speak("Sigo en ello.", notice=True)) if not asked else None
+    speech._play(iter([np.full(500, 0.1, np.float32)]), speech._generation, time.monotonic())
+    assert asked == [False]
+    assert speech.speak("Sigo en ello.", notice=True)  # the answer ended: a later turn's notice is taken
+
+
+def test_the_first_sound_says_whether_it_is_the_notice_or_the_answer(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import numpy as np
+    from baxy_mind.voice import Voice
+
+    sounds: list[tuple] = []
+    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
+    monkeypatch.setattr(Speech, "_start", lambda self: None)
+    monkeypatch.setattr(Speech, "_open_stream", lambda self: _FakeStream())
+    monkeypatch.setattr(voice_output, "TAIL_S", 0.0)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, notice: sounds.append(notice))
+    speech.rate = 1000
+    speech._play(iter([np.full(100, 0.1, np.float32)]), speech._generation, time.monotonic(), True)
+    speech._play(iter([np.full(100, 0.1, np.float32)]), speech._generation, time.monotonic())
+    assert sounds == [True, False]
+    # The App closes a turn's notice when its answer is heard: the voice tells it so.
+    events: list[dict] = []
+    voice = object.__new__(Voice)
+    voice._write, voice._mode, voice._on_spoken = events.append, "wake", lambda *rest: None
+    voice._sounding(1.0, 1.2, False)
+    assert events == [{"type": "voice.event", "event": "sound", "mode": "wake", "notice": False}]

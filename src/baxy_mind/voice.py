@@ -77,7 +77,7 @@ class Voice:
     """Listens on its own thread; the mind's request loop only starts, stops and reads it."""
 
     def __init__(self, write: Callable[[dict[str, Any]], None],
-                 on_spoken: Callable[[float, float], None] = lambda _queued, _sounded: None) -> None:
+                 on_spoken: Callable[[float, float, bool], None] = lambda *_spoken: None) -> None:
         self._write = write
         self._loaded = threading.Event()
         self._lock = threading.Lock()
@@ -91,7 +91,8 @@ class Voice:
         self._blocks: queue.Queue[np.ndarray] = queue.Queue()
         self._heard = 0                 # moved on by every reset and stop
         self._reset()
-        self.speech = Speech(self._speaking, on_spoken, self._lip)
+        self._on_spoken = on_spoken
+        self.speech = Speech(self._speaking, self._sounding, self._lip)
         threading.Thread(target=self._load, name="voice-load", daemon=True).start()
         threading.Thread(target=self._listen, name="voice", daemon=True).start()
 
@@ -346,6 +347,12 @@ class Voice:
 
     def _event(self, name: str) -> None:
         self._write({"type": "voice.event", "event": name, "mode": self._mode})
+
+    def _sounding(self, queued: float, sounded: float, notice: bool) -> None:
+        """An utterance's first sound: the App's notice of a silent turn counts until its answer is heard (al máximo
+        9.2b), so it is told whether this one is the notice."""
+        self._write({"type": "voice.event", "event": "sound", "mode": self._mode, "notice": notice})
+        self._on_spoken(queued, sounded, notice)
 
     def _lip(self, lip: dict[str, Any]) -> None:
         self._write({"type": "voice.event", "event": "lip", "mode": self._mode, **lip})
