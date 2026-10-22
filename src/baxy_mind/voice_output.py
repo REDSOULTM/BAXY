@@ -10,6 +10,8 @@ engine's level varies with the sentence.
 
 An answer sounds sentence by sentence: the first plays as soon as it is synthesized and the next is synthesized while
 it sounds; a loaded voice starts synthesizing an answer the moment it is given, while what is ahead of it still sounds.
+A turn's last answer is even seen as the model writes it (foresee, al máximo 9.4): its first sentence is synthesized
+then and kept, and the answer given later uses that take; nothing sounds before the App publishes the answer.
 The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote at warm-up, which the mind
 gives the voice with its catalog.ready (set_notice; al máximo 9.2a: it was «Un momento.», fixed in the code). It is
 synthesized as soon as the voice has it and said from that audio only: a notice never takes the one synthesis an answer
@@ -148,6 +150,9 @@ class Speech:
         self._sounded = 0                    # answers that began to sound: a notice is not said after its answer
         self._answer_sounding = False        # an answer sounds now: a notice asked meanwhile is refused
         self._early: _Notice | None = None   # the last notice asked: said while an answer's first sentence is synthesized
+        # Al máximo 9.4: first sentences synthesized while the model still wrote their answer (foresee), by the text
+        # synthesized, with the generation they were asked in; an answer whose first sentence is one of them uses it.
+        self._foreseen: dict[str, tuple[int, Future]] = {}
         self._notice_text = ""               # the mind's notice phrase (set_notice), said only as a notice
         self._notice_audio: np.ndarray | None = None  # its audio, synthesized once, with no pause after it
         self._loaded = False                 # Supertonic is loaded: a notice given from now on is synthesized at once
@@ -207,6 +212,36 @@ class Speech:
                 except Exception:  # noqa: BLE001 - the speech thread synthesizes it then, and says what failed
                     audio = None
             self._queue.put_nowait((self._generation, text, time.monotonic(), None, audio))
+        return True
+
+    def foresee(self, text: str, done: bool) -> bool:
+        """The last answer as the model writes it (al máximo 9.4): once its first sentence is closed (or the answer is
+        done), that sentence is synthesized now, the same take _sentences would make, and kept; nothing sounds until the
+        App publishes the answer and asks for it (speak). True once there is nothing more to look at."""
+        raw = str(text or "")
+        text = " ".join(raw.split())[:MAX_CHARS]
+        if not self.ready:
+            return True
+        if not text:
+            return done
+        # A sentence is closed by the space after its stop, which the text so far may end with.
+        pieces = _SENTENCE_END.split(spoken(text) + (" " if raw[-1:].isspace() else ""))
+        units = [piece for piece in pieces if piece.strip()]
+        if not units:
+            return done
+        if not done and len(pieces) < 2:
+            return False  # the first sentence is not closed yet
+        if not done and len(units[0].split()) <= 3:
+            return False  # a reply that starts with a word or two is one take with what follows: wait for its end
+        first = self._takes(units, text)[0] if done else units[0]
+        with self._posting:
+            if first not in self._foreseen:
+                generation = self._generation
+                future = self._synthesis.submit(
+                    lambda: self._synthesize(first) if generation == self._generation else np.zeros(0, np.float32))
+                self._foreseen[first] = (generation, future)
+                while len(self._foreseen) > 4:
+                    self._foreseen.pop(next(iter(self._foreseen)))
         return True
 
     def set_notice(self, text: str) -> None:
@@ -354,14 +389,7 @@ class Speech:
     def _sentences(self, text: str) -> _Sentences:
         """Each sentence's audio in order: the first is already being synthesized (while the output opens), and each
         next one is synthesized while the previous one sounds."""
-        said = spoken(text)
-        sentences = [sentence for sentence in _SENTENCE_END.split(said) if sentence.strip()]
-        # A reply that starts with a word or two («Listo.», «Hecho.») is one call: the very short utterance is
-        # Supertonic's weak spot (issue #30). Any other first sentence is synthesized alone, so it sounds sooner: joining
-        # every reply of up to 120 characters (84 % of them) cost 1 595 ms to the first audio against 989 ms for the first
-        # sentence alone (p50 of 16 two-sentence replies, 10 steps, PC CPU, renew al máximo 9.3, 2026-10-22).
-        if len(sentences) > 1 and len(sentences[0].split()) <= 3:
-            sentences = [said]
+        sentences = self._takes(self._units(text), text)
         generation = self._generation
 
         def synthesize(sentence: str) -> np.ndarray:
@@ -370,7 +398,12 @@ class Speech:
             # 2026-10-20).
             return self._synthesize(sentence) if generation == self._generation else np.zeros(0, np.float32)
 
-        first = self._synthesis.submit(synthesize, sentences[0])
+        with self._posting:
+            foreseen = self._foreseen.pop(sentences[0], None)
+        if foreseen is not None and foreseen[0] == generation:
+            first = foreseen[1]
+        else:
+            first = self._synthesis.submit(synthesize, sentences[0])
 
         def audio() -> Iterator[np.ndarray]:
             pending = first
@@ -383,6 +416,22 @@ class Speech:
             yield pending.result()
 
         return _Sentences(first, audio())
+
+    @staticmethod
+    def _units(text: str) -> list[str]:
+        """The sentences of what is said."""
+        return [sentence for sentence in _SENTENCE_END.split(spoken(text)) if sentence.strip()]
+
+    @staticmethod
+    def _takes(sentences: list[str], text: str) -> list[str]:
+        """What is synthesized, one take each. A reply that starts with a word or two («Listo.», «Hecho.») is one call:
+        the very short utterance is Supertonic's weak spot (issue #30). Any other first sentence is synthesized alone,
+        so it sounds sooner: joining every reply of up to 120 characters (84 % of them) cost 1 595 ms to the first
+        audio against 989 ms for the first sentence alone (p50 of 16 two-sentence replies, 10 steps, PC CPU, renew al
+        máximo 9.3, 2026-10-22)."""
+        if len(sentences) > 1 and len(sentences[0].split()) <= 3:
+            return [spoken(text)]
+        return sentences
 
     def _synthesize(self, text: str, pause: bool = True) -> np.ndarray:
         import sherpa_onnx

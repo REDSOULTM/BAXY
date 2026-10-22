@@ -46,6 +46,7 @@ def main() -> int:
                   .isoformat(timespec="milliseconds"))
 
     voice = Voice(protocol.write_message, spoken)  # loads beside the model; turns never wait for it
+    mind.foresee = voice.speech.foresee  # the last answer's first sentence is synthesized while it is written
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL,
         "models": {"llm": server.name},

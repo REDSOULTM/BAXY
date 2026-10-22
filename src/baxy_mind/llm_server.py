@@ -9,7 +9,7 @@ import threading
 import time
 import urllib.request
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 class LlmServer:
@@ -119,9 +119,13 @@ class LlmServer:
             raise TimeoutError("the request's time budget is spent")
         return min(timeout, left)
 
-    def chat(self, body: dict[str, Any], *, timeout: float = 120.0) -> dict[str, Any]:
-        """One chat completion on the one slot, whose prefix stays cached between turns."""
+    def chat(self, body: dict[str, Any], *, timeout: float = 120.0,
+             on_text: Callable[[str, bool], bool] | None = None) -> dict[str, Any]:
+        """One chat completion on the one slot, whose prefix stays cached between turns. With ``on_text`` it streams
+        (_stream) and returns the same reply."""
         self.wait_ready(self._within(timeout))
+        if on_text is not None:
+            return self._stream(body, timeout, on_text)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
             data=json.dumps({**body, "id_slot": 0, "cache_prompt": True}).encode("utf-8"),
@@ -129,6 +133,70 @@ class LlmServer:
         )
         with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
             return json.loads(reply.read())
+
+    def _stream(self, body: dict[str, Any], timeout: float, on_text: Callable[[str, bool], bool]) -> dict[str, Any]:
+        """Al máximo 9.4 (2026-10-22): the chat streamed (SSE), its text so far handed to ``on_text`` after each delta
+        (and once more, done, at the end) until it returns True, and the reply built as the non-streamed one is:
+        message content and tool calls, usage and timings. At b11609 streaming only changes how the result is sent:
+        sampling is the same (server-context.cpp:2020, send_partial_response after the same add_token), the final
+        message is parsed from the same accumulated text (common_chat_session feed/finish, common/chat.cpp:1740-1759;
+        server-task.h:408-410), the deltas are its successive differences (compute_diffs, string_diff in
+        common/chat.cpp:58-71,236-253), with tool_choice none the content is the rest of the output
+        (common/parsers/qwen3-coder.cpp:90,174), and the last chunk carries the timings and, with include_usage, the
+        usage (server-task.cpp:454-509). An error before the first token still comes as an HTTP error (a context
+        overflow's 400, server-context.cpp:4902-4914); one later comes as a data line and ends the request. A failing
+        ``on_text`` is dropped: the answer never depends on it."""
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{self.port}/v1/chat/completions",
+            data=json.dumps({**body, "stream": True, "stream_options": {"include_usage": True}, "id_slot": 0,
+                             "cache_prompt": True}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        content = ""
+        calls: dict[int, dict[str, Any]] = {}
+        timings: dict[str, Any] = {}
+        usage: dict[str, Any] = {}
+
+        def tell(done: bool) -> bool:
+            try:
+                return bool(on_text(content, done))
+            except Exception:  # noqa: BLE001 - the voice's look-ahead never fails the answer
+                return True
+
+        telling = True
+        with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
+            for raw in reply:
+                line = raw.decode("utf-8").strip()
+                if not line.startswith("data:"):
+                    continue
+                data = line[5:].strip()
+                if data == "[DONE]":
+                    break
+                chunk = json.loads(data)
+                if "error" in chunk:
+                    raise RuntimeError(f"llama-server stream error: {chunk['error']}")
+                timings = chunk.get("timings") or timings
+                usage = chunk.get("usage") or usage
+                for choice in chunk.get("choices") or []:
+                    delta = choice.get("delta") or {}
+                    for call in delta.get("tool_calls") or []:
+                        held = calls.setdefault(int(call.get("index") or 0), {"id": None, "type": "function",
+                                                                               "function": {"name": "", "arguments": ""}})
+                        held["id"] = call.get("id") or held["id"]
+                        function = call.get("function") or {}
+                        held["function"]["name"] += function.get("name") or ""
+                        held["function"]["arguments"] += function.get("arguments") or ""
+                    if delta.get("content"):
+                        content += delta["content"]
+                        if telling:
+                            telling = not tell(False)
+                self._within(timeout)  # the request's budget holds while the answer is written
+        if telling:
+            tell(True)
+        message: dict[str, Any] = {"role": "assistant", "content": content}
+        if calls:
+            message["tool_calls"] = [calls[index] for index in sorted(calls)]
+        return {"choices": [{"message": message}], "timings": timings, "usage": usage}
 
     def complete_name(self, body: dict[str, Any], written: str, timeout: float = 10.0) -> str:
         """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:

@@ -475,6 +475,9 @@ def _env_float(name: str, default: float) -> float:
 
 class Mind:
     notice = ""  # the model's notice phrase, written at warm-up (NOTICE_ASK); empty before it or when unusable
+    # Al máximo 9.4: the voice's look-ahead (Speech.foresee), given the last answer's text as it is written; None: the
+    # last answer is not streamed.
+    foresee: Any = None
 
     def __init__(self, server: LlmServer, trace: Path, system_one: SystemOne | None = None) -> None:
         self.server = server
@@ -1007,7 +1010,10 @@ class Mind:
             body["tool_choice"] = "none"
             body["logit_bias"] = [[token, False] for token in self.call_tokens]
         try:
-            reply = self.server.chat(body)
+            # Al máximo 9.4: the last answer of a person's turn is words only, so it streams to the voice, which
+            # synthesizes its first sentence while the rest is written; nothing sounds before the App publishes it.
+            streams = final and self.foresee is not None and not turn.get("beat")
+            reply = self.server.chat(body, on_text=self.foresee) if streams else self.server.chat(body)
         except urllib.error.HTTPError as error:
             # llama-server refuses a prompt past its context with HTTP 400: within a turn that is its own results, so
             # they are cut (said where the model reads) and the model answers in words from what is left, once.
