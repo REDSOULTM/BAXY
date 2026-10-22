@@ -53,7 +53,9 @@ internal sealed class NetworkPingHandler(INetworkDiagnosticProvider provider) : 
     {
         if (!TryReadHost(invocation.Arguments, out string? host))
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            // P5.3: a URL or a name with spaces is no host to ping.
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments,
+                new ArgumentProblem("host", "expected a host name or an IP address, not a URL"));
         }
 
         NetworkPingSnapshot snapshot = await provider.PingAsync(

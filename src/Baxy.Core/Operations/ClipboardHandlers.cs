@@ -30,7 +30,7 @@ internal abstract class ClipboardHandlerBase(IClipboardProvider provider) : IOpe
         }
         catch (JsonException)
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
         catch (ClipboardProviderException exception)
         {

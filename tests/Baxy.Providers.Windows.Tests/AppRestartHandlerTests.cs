@@ -147,10 +147,13 @@ public sealed class AppRestartHandlerTests
         });
     }
 
-    [TestCase("{}")]
-    [TestCase("{\"appId\":3}")]
-    [TestCase("{\"appId\":\"   \"}")]
-    public async Task ArgumentsWithoutAnApplicationAreRefused(string json)
+    // P5.3: the refusal names appId and what is wrong with it: the schema's problem, or a path or a command line
+    // where the application's name goes.
+    [TestCase("{}", "required and missing")]
+    [TestCase("{\"appId\":3}", "expected text")]
+    [TestCase("{\"appId\":\"   \"}", "expected text")]
+    [TestCase("{\"appId\":\"C:/Windows/notepad.exe\"}", "expected an application's name, not a path or a command")]
+    public async Task ArgumentsWithoutAnApplicationAreRefused(string json, string problem)
     {
         var windows = new FakeWindows([Frame("win_a", 100)]);
         var handler = new AppRestartHandler(windows, Opens([], 200), (_, _, _) => ValueTask.FromResult(true));
@@ -160,6 +163,8 @@ public sealed class AppRestartHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(outcome.ArgumentProblems.Single().Name, Is.EqualTo("appId"));
+            Assert.That(outcome.ArgumentProblems.Single().Problem, Does.StartWith(problem));
             Assert.That(windows.Closed, Is.Empty);
         });
     }

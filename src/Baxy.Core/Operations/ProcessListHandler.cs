@@ -19,7 +19,7 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
     {
         if (!HasValidArgumentShape(invocation.Arguments))
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         ProcessListArguments arguments;
@@ -32,13 +32,13 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
         }
         catch (JsonException)
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         int limit = arguments.Limit ?? 10;
         if (limit is < 1 or > 50 || !TryParseSort(arguments.Sort, out ProcessStatusSort sort))
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         ProcessStatusSnapshot snapshot;

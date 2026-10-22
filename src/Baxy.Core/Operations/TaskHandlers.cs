@@ -37,7 +37,7 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
         }
         catch (JsonException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("invalid_arguments"));
+            return ValueTask.FromResult(OperationOutcome.InvalidArguments(Definition, invocation.Arguments));
         }
         catch (LocalTaskValidationException)
         {

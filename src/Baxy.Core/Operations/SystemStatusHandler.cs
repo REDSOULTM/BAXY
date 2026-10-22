@@ -45,7 +45,7 @@ internal sealed class SystemStatusHandler : IOperationHandler
         cancellationToken.ThrowIfCancellationRequested();
         if (!HasValidArgumentShape(invocation.Arguments))
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         SystemStatusArguments arguments;
@@ -58,7 +58,7 @@ internal sealed class SystemStatusHandler : IOperationHandler
         }
         catch (JsonException)
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         string requestedScope = arguments.Scope ?? "summary";
@@ -83,7 +83,7 @@ internal sealed class SystemStatusHandler : IOperationHandler
 
         if (!TryMapScope(requestedScope, out SystemStatusScope providerScope))
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         SystemStatusSnapshot snapshot = await _provider.GetStatusAsync(
@@ -112,9 +112,6 @@ internal sealed class SystemStatusHandler : IOperationHandler
 
         return OperationOutcome.Success(serialized);
     }
-
-    private static OperationOutcome InvalidArguments() =>
-        OperationOutcome.Failure("invalid_arguments");
 
     private async ValueTask<OperationOutcome> ExecuteGpuAsync(
         string requestedScope,

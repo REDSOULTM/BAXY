@@ -82,6 +82,59 @@ public sealed class OperationCallValidationTests
         });
     }
 
+    // P5.3 (c): a handler's own refusal of arguments its schema takes reaches the model as the kernel's does, by
+    // argument and as data, never a bare invalid_arguments.
+    [Test]
+    public async Task AHandlersOwnRefusalReachesTheModelByArgument()
+    {
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([new OwnRefusalHandler()]), journal);
+
+        OperationResponse response = await engine.ExecuteAsync(
+            Request("network.ping", "{\"host\":\"https://example.com/\"}"), CancellationToken.None);
+
+        using JsonDocument facts = JsonDocument.Parse(response.Message);
+        JsonElement problem = facts.RootElement.GetProperty("argumentProblems").EnumerateArray().Single();
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(response.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(problem.GetProperty("argument").GetString(), Is.EqualTo("host"));
+            Assert.That(problem.GetProperty("problem").GetString(), Is.EqualTo("not a host"));
+        });
+    }
+
+    // P5.3 (c) counter-case: what the schema refuses is named by the schema, before the handler's own reading.
+    [Test]
+    public void TheSchemasProblemsComeBeforeTheHandlersOwn()
+    {
+        OperationDefinition definition = ProductCatalog.CreateDefinition("app.close");
+        using JsonDocument wrong = JsonDocument.Parse("{\"windowId\":7}");
+        using JsonDocument taken = JsonDocument.Parse("{}");
+
+        OperationOutcome bySchema = OperationOutcome.InvalidArguments(
+            definition, wrong.RootElement, ArgumentProblem.ExactlyOneOf("appId", "windowId"));
+        OperationOutcome own = OperationOutcome.InvalidArguments(
+            definition, taken.RootElement, ArgumentProblem.ExactlyOneOf("appId", "windowId"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(bySchema.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(bySchema.ArgumentProblems.Single().Name, Is.EqualTo("windowId"));
+            Assert.That(bySchema.ArgumentProblems.Single().Problem, Does.StartWith("expected text"));
+            Assert.That(own.ArgumentProblems.Single().OneOf, Is.EqualTo(new[] { "appId", "windowId" }));
+        });
+        using JsonDocument facts = JsonDocument.Parse(OperationVisibleFacts.FromOutcome("app.close", own));
+        JsonElement problem = facts.RootElement.GetProperty("argumentProblems").EnumerateArray().Single();
+        Assert.Multiple(() =>
+        {
+            Assert.That(problem.GetProperty("argument").GetString(), Is.EqualTo("appId"));
+            Assert.That(problem.GetProperty("problem").GetString(), Is.EqualTo("exactly one of oneOf must be given"));
+            Assert.That(problem.GetProperty("oneOf").EnumerateArray().Select(static name => name.GetString()),
+                Is.EqualTo(new[] { "appId", "windowId" }));
+        });
+    }
+
     [Test]
     public async Task PublicValidCallReachesExactlyOneHandler()
     {
@@ -339,6 +392,16 @@ public sealed class OperationCallValidationTests
 
             return ValueTask.FromResult(OperationOutcome.Success(Parse("{}")));
         }
+    }
+
+    // A handler that refuses, as NetworkPingHandler does, a call its schema takes.
+    private sealed class OwnRefusalHandler : IOperationHandler
+    {
+        public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("network.ping");
+
+        public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(OperationOutcome.InvalidArguments(
+                Definition, invocation.Arguments, new ArgumentProblem("host", "not a host")));
     }
 
     private sealed class SchemaGeneratedPrivateAuthenticator

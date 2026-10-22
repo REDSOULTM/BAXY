@@ -49,6 +49,7 @@ public sealed class AppCloseByApplicationTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(outcome.ArgumentProblems.Single().OneOf, Is.EqualTo(new[] { "appId", "windowId" }));
             Assert.That(windows.Closed, Is.Empty);
         });
     }

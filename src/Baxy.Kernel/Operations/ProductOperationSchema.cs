@@ -495,6 +495,16 @@ public sealed record ArgumentProblem(string Name, string Problem)
 
     /// <summary>The values the argument takes, when they are <see cref="OperationArgumentValidator.AllowedShown"/> or fewer.</summary>
     public IReadOnlyList<string>? Allowed { get; init; }
+
+    /// <summary>The arguments of which a call gives exactly one (<see cref="ExactlyOneOf"/>).</summary>
+    public IReadOnlyList<string>? OneOf { get; init; }
+
+    /// <summary>A required argument the call does not give.</summary>
+    public static ArgumentProblem Missing(string name) => new(name, "required and missing");
+
+    /// <summary>A call that gives none or more than one of arguments of which it gives exactly one.</summary>
+    public static ArgumentProblem ExactlyOneOf(params string[] names) =>
+        new(names[0], "exactly one of oneOf must be given") { OneOf = names };
 }
 
 public static class OperationArgumentValidator
@@ -573,7 +583,7 @@ public static class OperationArgumentValidator
         }
 
         problems.AddRange(schema.Required.Where(name => !seen.Contains(name))
-            .Select(static name => new ArgumentProblem(name, "required and missing")));
+            .Select(ArgumentProblem.Missing));
         return problems;
     }
 

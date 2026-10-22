@@ -98,6 +98,11 @@ public static class OperationVisibleFacts
             payload["effectUncertain"] = true;
         }
 
+        if (outcome.ArgumentProblems.Count > 0)
+        {
+            payload["argumentProblems"] = ArgumentProblemsJson(outcome.ArgumentProblems);
+        }
+
         JsonNode? sanitized = null;
         if (!outcome.ProtectedPrivateResult
             && outcome.Result is { } result
@@ -186,7 +191,7 @@ public static class OperationVisibleFacts
 
     /// <summary>
     /// The arguments a call got wrong as the model reads them: one object per argument, name and problem, and the
-    /// fields that correct it when known (<c>nearest</c>, <c>allowed</c>, <c>accepted</c>).
+    /// fields that correct it when known (<c>nearest</c>, <c>allowed</c>, <c>accepted</c>, <c>oneOf</c>).
     /// </summary>
     public static JsonArray ArgumentProblemsJson(IReadOnlyList<ArgumentProblem> problems) =>
         new([.. problems.Select(static problem =>
@@ -209,6 +214,11 @@ public static class OperationVisibleFacts
             if (problem.Accepted is { } accepted)
             {
                 item["accepted"] = new JsonArray([.. accepted.Select(static name => (JsonNode?)name)]);
+            }
+
+            if (problem.OneOf is { } oneOf)
+            {
+                item["oneOf"] = new JsonArray([.. oneOf.Select(static name => (JsonNode?)name)]);
             }
 
             return (JsonNode?)item;

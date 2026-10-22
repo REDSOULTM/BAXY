@@ -16,6 +16,29 @@ public sealed record OperationOutcome(
 
     internal bool ProtectedPrivateResult { get; private init; }
 
+    /// <summary>The arguments an invalid_arguments refusal names, as the kernel's validation names them.</summary>
+    public IReadOnlyList<ArgumentProblem> ArgumentProblems { get; private init; } = [];
+
+    /// <summary>
+    /// P5.3: a handler's refusal of the call's arguments, never bare: what the catalog's schema refuses in them (a
+    /// handler's own check of what its schema says) or, for arguments the schema takes, what the operation itself
+    /// refuses (<paramref name="own"/>: exactly one of two, a pair given together).
+    /// </summary>
+    public static OperationOutcome InvalidArguments(
+        OperationDefinition definition,
+        JsonElement arguments,
+        params IReadOnlyList<ArgumentProblem> own)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+        IReadOnlyList<ArgumentProblem> bySchema = definition.ProductDescriptor is { } descriptor
+            ? OperationArgumentValidator.Problems(arguments, descriptor.ArgumentsSchema)
+            : [];
+        return new OperationOutcome(false, false, null, "invalid_arguments")
+        {
+            ArgumentProblems = bySchema.Count > 0 ? bySchema : own,
+        };
+    }
+
     public static OperationOutcome Success(JsonElement? result = null) =>
         new(true, true, result, null);
 
