@@ -2840,3 +2840,15 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   (copia en `D:`), md5 7fb060eb, el mismo de las corridas de System One.
 - 14:15 línea base PC en marcha (`F:\BAXYeval\renew_v4\base_pc.sh`): decision2 y escenas de práctica, S1 apagado
   (`max-base-*-off`) y encendido (`max-base-*-on`), GGUF ft c2e1, temp 0,2. Siete subagentes de investigación lanzados.
+- 14:20-14:40 línea base PC sobre 86991ca9d (catalog-base, seed 0): decision2 S1 OFF 231/268 (sin los 9 ids de los
+  datos de Laya: 223/259), ON 233/268 (225/259), acciones equivocadas 25 → 19, p50 0,94 / 0,88 s; escenas 32/39 en
+  ambos (S1 no actúa en el latido: B-MED-6 del NB). La primera OFF cayó por «bad allocation» (RAM del PC en uso por el
+  dueño) y se repitió sola desde el worktree fijo `BAXY-Renew-base`.
+- 14:2x **decisión del dueño: fusionar `hub/pc-cu`** (AskUserQuestion, «Fusionar pc-cu»). Fusión c1177101d, 4
+  conflictos resueltos (ver el commit). Suites en c1177101d: Kernel 603, Contracts 69, Setup 477, pytest 85, todo verde.
+  Catálogo de la fusión: `renew_v4\catalog-max.json` (180 ops; las 175 comunes idénticas a catalog-base, comprobado).
+  decision2 S1 ON sobre la fusión: **229/268** (sin los 9: 220/259), p50 0,98 s, acciones equivocadas 20. Frente a la
+  base: 8 casos cambian (−6/+2, McNemar no significativo); P252 era la «ganancia» de «corrige» con un windowId
+  inventado (B-MED-1). **Referencia de renew-maximo para las palancas: 229.**
+- Fase B adelantada: 7 revisores PC + 4 NB. Arreglos en worktrees: fx-voz fusionado (12278e86d, pytest 89); fx-mente,
+  fx-core, fx-app en curso; B-SYS-1 (Bypass por archivo) en nb-maximo-fix.
