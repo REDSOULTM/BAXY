@@ -22,8 +22,12 @@ def main() -> int:
     if not gguf or not server_path:
         sys.stderr.write("baxy_mind_renew_failure: BAXY_MIND_LLM_GGUF and BAXY_MIND_LLAMA_SERVER are required\n")
         return 2
-    server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
-                       context=int(os.environ.get("BAXY_RENEW_CTX", "49152")))
+    try:
+        server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
+                           context=int(os.environ.get("BAXY_RENEW_CTX", "49152")))
+    except RuntimeError as error:  # a pinned port in use (llm_server._pinned_port)
+        sys.stderr.write(f"baxy_mind_renew_failure: {error}\n")
+        return 2
     server.start()
     # System One, layer 2: the decision model on the CPU, beside Qwen, when its GGUF is given (off otherwise).
     system_one = None

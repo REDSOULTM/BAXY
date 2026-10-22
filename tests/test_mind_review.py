@@ -449,3 +449,17 @@ def test_without_a_budget_the_calls_keep_their_own_timeouts(monkeypatch) -> None
     server = _server_answering(monkeypatch, timeouts)
     server.chat({"messages": []}, timeout=600)
     assert timeouts == [600]
+
+
+def test_a_pinned_port_in_use_fails_the_start_with_its_cause(monkeypatch) -> None:
+    # Review 18: another port was taken in silence, and the core's vision kept pointing at the pinned one.
+    import socket
+    from baxy_mind.llm_server import LlmServer
+    with socket.socket() as taken:
+        taken.bind(("127.0.0.1", 0))
+        taken.listen()
+        port = taken.getsockname()[1]
+        monkeypatch.setenv("BAXY_MIND_LLAMA_PORT", str(port))
+        with pytest.raises(RuntimeError, match=str(port)):
+            LlmServer("model.gguf", "llama-server.exe")
+    assert LlmServer("model.gguf", "llama-server.exe").port == port

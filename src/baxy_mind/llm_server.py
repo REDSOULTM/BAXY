@@ -200,7 +200,8 @@ def _vision_args() -> list[str]:
 
 
 def _pinned_port() -> int | None:
-    """BAXY_MIND_LLAMA_PORT when set and free on the loopback; None otherwise (a free port is taken)."""
+    """BAXY_MIND_LLAMA_PORT when set; None when not (a free port is taken). Review 2026-10-22: a pinned port in use
+    fails the start with its cause; another port taken in silence left the core's vision pointing at the pinned one."""
     try:
         port = int(os.environ.get("BAXY_MIND_LLAMA_PORT", ""))
     except ValueError:
@@ -208,8 +209,8 @@ def _pinned_port() -> int | None:
     with socket.socket() as probe:
         try:
             probe.bind(("127.0.0.1", port))
-        except OSError:
-            return None
+        except OSError as error:
+            raise RuntimeError(f"BAXY_MIND_LLAMA_PORT {port} is in use on the loopback: {error}") from error
     return port
 
 
