@@ -110,8 +110,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return operation switch
             {
                 "game.catalog.list" => List(operation, arguments),
-                "game.entitlement.named" => await EntitlementNamedAsync(operation, arguments, cancellationToken)
-                    .ConfigureAwait(false),
+                "game.entitlement.named" => EntitlementNamed(operation, arguments),
                 "game.install.named" => await InstallNamedAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
@@ -187,10 +186,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
     // INSTALL1617 «Descarga Worms Rumble en Steam»: before any download the
     // turn needs a truthful answer to «is this game mine and is it installed?».
-    // The title resolves like game.install.named (the local snapshot, then the
-    // store's title search); an unresolved title is reported as such, never guessed.
-    private async ValueTask<ExternalCapabilityReceipt> EntitlementNamedAsync(
-        string operation, JsonElement arguments, CancellationToken cancellationToken)
+    // Renew al máximo (B-APP-6): the title resolves only by the installed games'
+    // manifests, never by the store's search (nothing of the person's leaves the
+    // PC for a local check); an unresolved title is reported as such, never guessed.
+    private ExternalCapabilityReceipt EntitlementNamed(string operation, JsonElement arguments)
     {
         string title = ExternalJson.RequiredString(arguments, "title");
         if (string.IsNullOrWhiteSpace(title) || Encoding.UTF8.GetByteCount(title) > 256)
@@ -204,8 +203,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             return EpicEntitlementNamed(operation, title);
         }
-        string? appId = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
         IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        string[] bearing = Bearing(catalog, FoldTitle(title));
+        string? appId = bearing.Length == 1 ? bearing[0] : null;
         bool librariesUnread = UnreadLibraries(catalog) > 0;
         SteamLocalGame? game = appId is null
             ? null
@@ -220,6 +220,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteBoolean("resolved", appId is not null);
             if (appId is null) writer.WriteNull("appId"); else writer.WriteString("appId", appId);
             writer.WriteString("title", game?.Name ?? title);
+            // How many manifests bear the title (none, or two that leave it ambiguous); with a library unread, only some.
+            if (bearing.Length > 0 || !librariesUnread) writer.WriteNumber("steamManifestsWithThatName", bearing.Length);
             // Ronda final: the local library cache is incomplete (see InstallNamedAsync), so a game absent from it is
             // absent from the cache, never «not owned».
             // An installed manifest is not the account's ownership (a shared or free game): only the cache says owned.
@@ -234,7 +236,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 : installed ? "installed"
                 : librariesUnread ? "install_not_read"
                 : owned ? "owned_not_installed" : cache is not null ? "not_in_local_library_cache" : "library_cache_unavailable");
-            writer.WriteString("authority", installed
+            writer.WriteString("authority", installed || appId is null
                 ? "steam_local_appmanifest" : "steam_authenticated_library_cache");
             writer.WriteEndObject();
         });
@@ -650,15 +652,14 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return titles;
     }
 
-    private string? ResolveSnapshotTitle(string folded)
-    {
-        string[] matches = _snapshot()
-            .Where(game => FoldTitle(game.Name) == folded)
-            .Select(game => game.AppId)
-            .Distinct(StringComparer.Ordinal)
-            .ToArray();
-        return matches.Length == 1 ? matches[0] : null;
-    }
+    private string? ResolveSnapshotTitle(string folded) => Bearing(_snapshot(), folded) is [string one] ? one : null;
+
+    // The AppIDs of the manifests bearing the title (folded): the title resolves when exactly one does.
+    private static string[] Bearing(IReadOnlyList<SteamLocalGame> catalog, string folded) => catalog
+        .Where(game => FoldTitle(game.Name) == folded)
+        .Select(game => game.AppId)
+        .Distinct(StringComparer.Ordinal)
+        .ToArray();
 
     private static string FoldTitle(string value)
     {

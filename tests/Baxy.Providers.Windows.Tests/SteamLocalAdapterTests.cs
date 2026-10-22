@@ -592,6 +592,40 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Renew al máximo (B-APP-6): whether a game is in the library is read on this PC alone: the title resolves only by
+    // the installed games' manifests and never goes to the store; one no manifest bears is said as such, unresolved.
+    [TestCase("Portal 2", true, 1)]
+    [TestCase("Super Meat Boy", false, 0)]
+    [TestCase("Doubled", false, 2)]
+    public async Task EntitlementNeverSearchesTheStore(string title, bool resolved, int bearing)
+    {
+        bool asked = false;
+        var adapter = new SteamLocalAdapter(
+            () => [.. Catalog, new("11", "Doubled", "d1"), new("12", "DOUBLED", "d2")],
+            () => new HashSet<string>(["620"], StringComparer.Ordinal),
+            new FakeSteamAutomation(onDispatch: null),
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) =>
+            {
+                asked = true;
+                return ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>([new("40800", "Super Meat Boy")]);
+            });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.entitlement.named", Json($$"""{"title":"{{title}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked, Is.False);
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("resolved").GetBoolean(), Is.EqualTo(resolved));
+            Assert.That(receipt.Result?.GetProperty("state").GetString(),
+                Is.EqualTo(resolved ? "installed" : "title_not_resolved"));
+            Assert.That(receipt.Result?.GetProperty("steamManifestsWithThatName").GetInt32(), Is.EqualTo(bearing));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("steam_local_appmanifest"));
+        });
+    }
+
     // The dialog left unconfirmed (its button not found, nothing pressed) is said as such and the manifest is not
     // waited on; a press that may have landed is judged by the manifest, which here never comes.
     [TestCase(false, "steam_install_dialog_not_confirmed", 3)]

@@ -196,7 +196,6 @@ internal static class FieldStepProjection
             "web.download" => "descarga de " + Host("url"),
             "weather.current" => "clima · " + (Arg("location") is { Length: > 0 } place ? place : "este lugar"),
             "network.ping" => "ping a " + Arg("host"),
-            "game.entitlement.named" => "tienda de juegos · " + Arg("title"),
             "shell.command.run" => "comando de consola",
             "peripheral.print" => "impresión",
             "system.time" => "hora de " + Arg("place"),
