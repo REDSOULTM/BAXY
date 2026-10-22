@@ -44,6 +44,21 @@ public sealed class ScreenViewProjectionTests
         Assert.That(view, Does.Not.Contain("Seleccionados"));
     }
 
+    // BAXY Renew al máximo 7.2: the text read off the drawing repeats the names of the controls already listed.
+    [Test]
+    public void ALineOfTextThatOnlyRepeatsAListedControlsNameIsLeftOutAndCounted()
+    {
+        string view = View(Steam.Replace(
+            "\"textAuthority\":\"not_read\"",
+            "\"text\":{\"T\":[\"Tienda\",\" BIBLIOTECA \",\"Comunidad\"],\"C\":[\"Sólo  instalados\",\"Sólo instalados (3)\"]}," +
+            "\"textAuthority\":\"windows_media_ocr_lines\""));
+
+        Assert.That(view, Does.EndWith(
+            "Texto arriba: Comunidad\n" +
+            "Texto centro: Sólo instalados (3)\n" +
+            "(3 líneas de texto no se listan: repiten el nombre de un control listado)"));
+    }
+
     private static string View(string lookJson)
     {
         using JsonDocument look = JsonDocument.Parse(lookJson);

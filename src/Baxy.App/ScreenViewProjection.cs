@@ -15,10 +15,10 @@ namespace Baxy.App;
 /// Presentation only: every control the reader returned is kept, one it found several times once with «×N», N the
 /// times it found it (the worker's «repeated» counts the copies after the first); every line of text the reader
 /// returned is kept in its zone, a line that repeats included (a chat read by its lines repeats a bubble's text, and
-/// two «ok» are two messages); nothing is ranked or chosen, and what the reader said about its own reading stays said:
-/// a cut walk, a frame without content, a tree it could not read, text it could not read, the disabled controls, the
-/// window being a modal dialog, protected or run as administrator (audit 2026-10-15: those were dropped, and a cut
-/// walk read as «(ninguno)» with no cause).
+/// two «ok» are two messages), except one that only repeats a listed control's name, left out and counted; nothing is
+/// ranked or chosen, and what the reader said about its own reading stays said: a cut walk, a frame without content, a
+/// tree it could not read, text it could not read, the disabled controls, the window being a modal dialog, protected or
+/// run as administrator (audit 2026-10-15: those were dropped, and a cut walk read as «(ninguno)» with no cause).
 /// </summary>
 internal static class ScreenViewProjection
 {
@@ -185,6 +185,15 @@ internal static class ScreenViewProjection
 
         if (view["text"] is JsonObject zones)
         {
+            // BAXY Renew al máximo 7.2 (A11y-Compressor; AgentOccam, table 10): a line that only repeats the name of a
+            // control listed above says nothing new; it is left out and how many were is said, so a notice worded as a
+            // button is never taken for absent.
+            var listedNames = new HashSet<string>(
+                controls.Concat(view["disabled"] as JsonArray ?? [])
+                    .Select(static control => Folded((string?)control?["name"]))
+                    .Where(static name => name.Length > 0),
+                StringComparer.OrdinalIgnoreCase);
+            int repeatedNames = 0;
             foreach ((string label, string[] bandZones) in Bands)
             {
                 var lines = new List<string>();
@@ -197,7 +206,16 @@ internal static class ScreenViewProjection
 
                     foreach (JsonNode? line in zoneLines)
                     {
-                        if ((string?)line is { Length: > 0 } value)
+                        if ((string?)line is not { Length: > 0 } value)
+                        {
+                            continue;
+                        }
+
+                        if (listedNames.Contains(Folded(value)))
+                        {
+                            repeatedNames++;
+                        }
+                        else
                         {
                             lines.Add(value);
                         }
@@ -208,6 +226,12 @@ internal static class ScreenViewProjection
                 {
                     text.Append("Texto ").Append(label).Append(": ").Append(string.Join(" | ", lines)).Append('\n');
                 }
+            }
+
+            if (repeatedNames > 0)
+            {
+                text.Append('(').Append(repeatedNames)
+                    .Append(" líneas de texto no se listan: repiten el nombre de un control listado)\n");
             }
         }
 
@@ -235,6 +259,9 @@ internal static class ScreenViewProjection
         });
         return true;
     }
+
+    private static string Folded(string? text) => string.Join(' ',
+        (text ?? string.Empty).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
     private static string Control(JsonObject control)
     {
