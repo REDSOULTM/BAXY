@@ -637,6 +637,52 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // Renew al máximo (auditoría de flujos): the name typed into the client's chat search follows the same rule (an Enter
+    // there opens a result): a recipient, or the owner's test destination a test send types, holding a control character
+    // is refused before anything is opened.
+    [TestCase("message.draft", "Le\ntras", "Letras", "U+000A")]
+    [TestCase("message.send", "Letras\r", "Letras", "U+000D")]
+    [TestCase("message.send.test", "Letras", "Le\ttras", "U+0009")]
+    public async Task ARecipientWithAControlCharacterIsRefusedBeforeAnythingIsOpened(
+        string operation, string recipient, string destination, string first)
+    {
+        string arguments = JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["channel"] = "whatsapp",
+            [operation == "message.send.test" ? "requestedRecipient" : "recipient"] = recipient,
+            ["text"] = "hola",
+        });
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            new DesktopMessageObservation(true, true, "hash", null, "hola", "exact"));
+        string destinations = TestDestinations(JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["whatsapp"] = destination,
+        }));
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_recipient_has_control_characters"));
+                Assert.That(automation.Calls, Is.Zero);
+                Assert.That(receipt.Result?.GetProperty("messageWritten").GetBoolean(), Is.False);
+                Assert.That(receipt.Result?.GetProperty("controlCharacterCount").GetInt32(), Is.EqualTo(1));
+                Assert.That(receipt.Result?.GetProperty("controlCharacters")[0].GetString(), Is.EqualTo(first));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {

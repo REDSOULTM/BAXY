@@ -100,7 +100,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string channel = RequiredString(arguments, "channel");
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
-        if (WithControlCharacters("message.draft", text) is { } refused)
+        if ((WithControlCharacters("message.draft", text, TextHasControlCharacters)
+                ?? WithControlCharacters("message.draft", recipient, RecipientHasControlCharacters)) is { } refused)
         {
             return refused;
         }
@@ -176,7 +177,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string channel = RequiredString(arguments, "channel");
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
-        if (WithControlCharacters("message.send", text) is { } refused)
+        if ((WithControlCharacters("message.send", text, TextHasControlCharacters)
+                ?? WithControlCharacters("message.send", recipient, RecipientHasControlCharacters)) is { } refused)
         {
             return refused;
         }
@@ -261,7 +263,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 .ConfigureAwait(false);
         }
 
-        if (WithControlCharacters("message.send.test", text) is { } refused)
+        // The owner's test destination is the name typed into the chat search.
+        if ((WithControlCharacters("message.send.test", text, TextHasControlCharacters)
+                ?? WithControlCharacters("message.send.test", forced, RecipientHasControlCharacters)) is { } refused)
         {
             return refused;
         }
@@ -461,8 +465,13 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
 
     // Renew al máximo (auditoría de flujos): a line break or a tab typed into a chat is a key of its own (Enter types the
     // same WM_CHAR 13, and whether a client sends on it cannot be read), the rule input.text.type keeps (char.IsControl):
-    // a text holding one is refused before the client is opened or anything typed, and says how many and which.
-    private static ExternalCapabilityReceipt? WithControlCharacters(string operation, string text)
+    // a text holding one is refused before the client is opened or anything typed, and says how many and which. So is a
+    // name typed into the client's chat search (the recipient, or the owner's test destination): an Enter there opens a
+    // result.
+    private const string TextHasControlCharacters = "message_text_has_control_characters";
+    private const string RecipientHasControlCharacters = "message_recipient_has_control_characters";
+
+    private static ExternalCapabilityReceipt? WithControlCharacters(string operation, string text, string errorCode)
     {
         char[] found = [.. text.Where(char.IsControl)];
         if (found.Length == 0)
@@ -490,7 +499,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 writer.WriteEndArray();
                 writer.WriteEndObject();
             }),
-            "message_text_has_control_characters");
+            errorCode);
     }
 
     // A flow stopped at the person's own draft in the composer, before the message was typed: nothing written or sent.
