@@ -270,3 +270,18 @@ def test_the_decision_model_reads_the_options_it_was_trained_on(tmp_path: Path, 
     mind.decide(1, "esa ventana")
     tools = [o for o in one.asked[0]["options"] if o.startswith("window")]
     assert tools == ["window_resolve", "window_active", "window_snap", "window_move"]
+
+
+def test_a_correction_drops_the_words_written_for_the_doubted_call_and_its_row_names_both(tmp_path: Path,
+                                                                                         monkeypatch) -> None:
+    # Review 11 and B-MED-8: «Apago el PC.» stayed beside the corrected app_close, and the row read the doubt of
+    # system_power as if it were app_close's.
+    from test_mind_doubt_policy import _correcting
+    mind, server, _ = _correcting(tmp_path, monkeypatch, "low_reversible",
+                                  {"name": "app_close", "arguments": {"appId": "Spotify"}, "timings": {}})
+    server.replies[0]["choices"][0]["message"]["content"] = "Apago el PC."
+    assert mind.decide(1, "ahora ciérralo")["operation"] == "app.close"
+    assert mind.conversation[-1]["content"] == ""
+    row = _rows(tmp_path)[-1]
+    assert row["operation"] == "app.close" and row["doubt_of"] == "system.power" and row["content"] == ""
+    assert row["doubt"]["confidence"] < 0.6

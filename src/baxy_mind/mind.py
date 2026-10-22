@@ -937,8 +937,11 @@ class Mind:
         note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
         if isinstance(note, dict):
             # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
-            # the action the model doubted (and anything queued behind it, chosen on the same misreading).
-            calls, note = [note], None
+            # the action the model doubted (and anything queued behind it, chosen on the same misreading). Review
+            # 2026-10-22 (and B-MED-8): the words it wrote for the doubted call go with it, and the row says whose doubt
+            # it carries (doubt_of) beside the operation that runs.
+            turn["doubt_of"] = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
+            calls, note, content = [note], None, ""
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads and asks the person, in its own words, what
@@ -1091,14 +1094,15 @@ class Mind:
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)
-        if str(result["operation"] or "").startswith("memory."):
+        doubt_of = {"doubt_of": turn.pop("doubt_of")} if "doubt_of" in turn else {}
+        if str(result["operation"] or "").startswith("memory.") or str(doubt_of.get("doubt_of")).startswith("memory."):
             turn["private"] = True
         private = bool(turn.get("private"))
         # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop): from the memory
         # call on, their words, the calls' arguments and the model's text.
         self._log(stage, started, reply, text=None if private else turn["text"], kind=result["kind"],
                   operation=result["operation"], arguments=call["arguments"] if call and not private else None,
-                  content=None if private else content)
+                  content=None if private else content, **doubt_of)
         return result
 
     # ---- trace ---------------------------------------------------------------------------------------------
