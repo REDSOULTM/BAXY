@@ -3,7 +3,7 @@ using Baxy.Providers.Windows.Windows;
 namespace Baxy.Core.Operations;
 
 /// <summary>What closing every window of one application observed.</summary>
-/// <param name="ErrorCode">Why it stopped (app_not_running, close_prompted, the window provider's code), or null.</param>
+/// <param name="ErrorCode">Why it stopped (app_not_running, app_running_in_background, close_prompted, the window provider's code), or null.</param>
 /// <param name="ClosedWindows">Windows that went away after BAXY's close (not those already gone or hidden).</param>
 /// <param name="ProcessIds">The processes of the windows BAXY closed or found gone.</param>
 /// <param name="Titles">The titles the closed windows had, as Windows wrote them.</param>
@@ -25,6 +25,7 @@ internal sealed record ApplicationWindowsClosed(
 internal static class ApplicationWindowCloser
 {
     private const int MaximumWindows = 20;
+    internal const string AppRunningInBackground = "app_running_in_background";
 
     internal static async ValueTask<ApplicationWindowsClosed> CloseAllAsync(
         IWindowControlProvider windows,
@@ -33,15 +34,24 @@ internal static class ApplicationWindowCloser
     {
         WindowResolveResult resolved = await windows.ResolveApplicationAsync(appId, MaximumWindows, cancellationToken)
             .ConfigureAwait(false);
-        if (!resolved.Succeeded || !resolved.Verified)
-        {
-            return new(resolved.ErrorCode ?? WindowControlErrorCodes.WindowNotFound, 0, [], [], false, 0, 0);
-        }
-
-        WindowCandidate[] frames = resolved.Windows.Where(window => !window.Owned).ToArray();
+        WindowCandidate[] frames = resolved.Succeeded && resolved.Verified
+            ? resolved.Windows.Where(window => !window.Owned).ToArray()
+            : [];
         if (frames.Length == 0)
         {
-            return new("app_not_running", 0, [], [], false, 0, 0);
+            if (resolved.Succeeded && resolved.Verified
+                || resolved.ErrorCode == WindowControlErrorCodes.WindowNotFound)
+            {
+                // Renew al máximo (auditoría de flujos): with no window of it, an application whose processes still run
+                // (Steam in the notification area) is said running in the background, with them; never «not running».
+                IReadOnlyList<int> background = await windows.BackgroundProcessesAsync(appId, cancellationToken)
+                    .ConfigureAwait(false);
+                return background.Count > 0
+                    ? new(AppRunningInBackground, 0, [.. background.Order()], [], false, 0, 0)
+                    : new("app_not_running", 0, [], [], false, 0, 0);
+            }
+
+            return new(resolved.ErrorCode ?? WindowControlErrorCodes.WindowNotFound, 0, [], [], false, 0, 0);
         }
 
         var processes = new SortedSet<int>();
@@ -75,6 +85,10 @@ internal static class ApplicationWindowCloser
             }
         }
 
-        return new(null, closedWindows, processes, titles, closedWindows > 0, hidden, frames.Length);
+        // Renew al máximo (auditoría de flujos): a window that only hid (the application went on in the notification
+        // area) leaves its process running: never an application closed.
+        return hidden > 0
+            ? new(AppRunningInBackground, closedWindows, processes, titles, true, hidden, frames.Length)
+            : new(null, closedWindows, processes, titles, closedWindows > 0, hidden, frames.Length);
     }
 }

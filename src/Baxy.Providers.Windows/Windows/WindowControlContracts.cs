@@ -173,6 +173,14 @@ public interface IWindowControlProvider
         ValueTask.FromResult(new WindowResolveResult(
             false, false, [], WindowControlErrorCodes.InvalidSelector));
 
+    // Renew al máximo (auditoría de flujos): the processes of the application (by the executable its windows are told
+    // by) that run with no visible window, as in the notification area; empty when none, or when the provider cannot
+    // tell (a packaged application, the shell's own entry).
+    ValueTask<IReadOnlyList<int>> BackgroundProcessesAsync(
+        string applicationName,
+        CancellationToken cancellationToken) =>
+        ValueTask.FromResult<IReadOnlyList<int>>([]);
+
     ValueTask<WindowActionResult> ExecuteAsync(
         string windowId,
         WindowControlAction action,

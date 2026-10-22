@@ -9,6 +9,24 @@ namespace Baxy.Providers.Windows.Tests;
 [NonParallelizable]
 public sealed class InstalledApplicationWindowEnumerationTests
 {
+    // Renew al máximo (auditoría de flujos): an application running with no window (Steam in the notification area) is
+    // read by its own executable: here the test process, which shows none; a packaged entry is never read this way.
+    [Test]
+    public void AnApplicationsRunningProcessesAreReadByItsExecutableWindowsOrNot()
+    {
+        using Process current = Process.GetCurrentProcess();
+        var entry = new InstalledApplicationEntry(
+            "Background fixture", current.ProcessName + ".exe", current.MainModule!.FileName);
+        var platform = new WindowsInstalledApplicationPlatform();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.RunningProcesses(entry), Does.Contain(current.Id));
+            Assert.That(platform.RunningProcesses(new InstalledApplicationEntry("Packaged", "Some.Package_x!App")),
+                Is.Empty);
+        });
+    }
+
     [Test]
     public void InventoryIncludesEveryVisibleWindowOfOneProcessAndExcludesHiddenWindows()
     {

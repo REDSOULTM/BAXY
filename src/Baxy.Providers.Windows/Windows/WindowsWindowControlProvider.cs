@@ -284,6 +284,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
     }
 
+    // Renew al máximo (auditoría de flujos): the application's processes running with no visible window.
+    public ValueTask<IReadOnlyList<int>> BackgroundProcessesAsync(
+        string applicationName,
+        CancellationToken cancellationToken) =>
+        _applications.ResolveBackgroundProcessesAsync(applicationName, cancellationToken);
+
     public async ValueTask<WindowActionResult> ExecuteAsync(
         string windowId,
         WindowControlAction action,

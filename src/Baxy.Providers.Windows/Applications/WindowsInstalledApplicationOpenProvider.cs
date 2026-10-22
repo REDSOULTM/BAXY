@@ -554,6 +554,29 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
     }
 
+    // Renew al máximo (auditoría de flujos): the processes of an installed application that run with no visible window
+    // (Steam in the notification area), told by the executable its windows are told by; empty when it resolves to none
+    // or its catalog cannot be read.
+    internal async ValueTask<IReadOnlyList<int>> ResolveBackgroundProcessesAsync(
+        string applicationName,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!ApplicationIds.IsValidRequest(applicationName))
+            return [];
+        try
+        {
+            IReadOnlyList<InstalledApplicationEntry> catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
+            return InstalledApplicationResolver.Resolve(applicationName, catalog).Entry is { } entry
+                ? _platform.RunningProcesses(entry)
+                : [];
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return [];
+        }
+    }
+
     public async ValueTask<ApplicationWindowStatusResult> GetWindowStatusAsync(
         string applicationName,
         CancellationToken cancellationToken)
@@ -1334,6 +1357,10 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
         CancellationToken cancellationToken) =>
         throw new ApplicationInventoryException("Strong application window identity is unavailable.");
 
+    // Renew al máximo (auditoría de flujos): the running processes of a classic application's own executable, windows
+    // or not; none for a packaged application (suspended in the background by Windows itself) or the shell's entry.
+    IReadOnlyList<int> RunningProcesses(InstalledApplicationEntry entry) => [];
+
     bool Activate(InstalledApplicationEntry entry);
 
     // forControl: the application starts with the person's own rights (ApplicationOpenRequest.ForControl).
@@ -1754,6 +1781,28 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         InstalledApplicationEntry entry,
         CancellationToken cancellationToken) =>
         Inventory(entry, strongIdentityOnly: true, cancellationToken);
+
+    public IReadOnlyList<int> RunningProcesses(InstalledApplicationEntry entry)
+    {
+        if (entry.AppUserModelId.Contains('!')
+            || string.Equals(entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal)
+            || ExpectedExecutable(entry) is not { } expected)
+            return [];
+        Process[] processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(expected));
+        try
+        {
+            return [.. processes
+                .Where(process => ExecutableImagePath(process.Id) is { } image && Path.IsPathFullyQualified(image)
+                    && ExecutableIsLaunchedImage(Path.GetFullPath(image), expected))
+                .Select(static process => process.Id)
+                .Order()];
+        }
+        finally
+        {
+            foreach (Process process in processes)
+                process.Dispose();
+        }
+    }
 
     private static bool ProcessHasExited(Process process)
     {
