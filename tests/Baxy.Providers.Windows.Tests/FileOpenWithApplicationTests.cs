@@ -152,6 +152,34 @@ public sealed class FileOpenWithApplicationTests
         });
     }
 
+    // Renew al máximo (lote 4, a; R6.6): an application not installed under that name (or two of it) fails file.open
+    // with the closest installed names the opener read, as app.open says them; none of them was opened.
+    [TestCase(ApplicationOpenErrorCodes.ApplicationNotFound)]
+    [TestCase(ApplicationOpenErrorCodes.ApplicationAmbiguous)]
+    public async Task AnApplicationNotFoundCarriesTheOpenersCandidates(string code)
+    {
+        var adapter = new WindowsFileToolsAdapter(
+            folder => folder == "documents" ? _root : null,
+            fetch: null,
+            openWith: (request, _) => ValueTask.FromResult(new ApplicationOpenResult(false, false, "Fotis", false, null,
+                null, code,
+                new ApplicationLaunchReceipt(request.InvocationId, request.ApplicationId, false, false, null, null,
+                    null, null, null, null, code),
+                Candidates: ["Fotos", "Fotos heredado"])));
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("file.open", JsonSerializer.SerializeToElement(
+            new { folder = "documents", name = "baxy-prueba-v3\\paisaje.jpg", application = "Fotis" }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved || receipt.EffectMayHaveOccurred, Is.False, "nothing was launched");
+            Assert.That(receipt.Result, Is.Not.Null, "the candidates travel with the failure");
+            Assert.That(receipt.Result!.Value.GetProperty("candidates").EnumerateArray().Select(item => item.GetString()),
+                Is.EqualTo(new[] { "Fotos", "Fotos heredado" }));
+        });
+    }
+
     // molestia-ayudantes (riesgos-fusion 5): a file the person asked to see («foreground», set by the App outside a
     // mission) is opened in front; the test above is the contracase (a mission's file.open, behind).
     [Test]
