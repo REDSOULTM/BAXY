@@ -56,6 +56,22 @@ public sealed class MediaSessionPreferenceTests
         });
     }
 
+    // Renew al máximo (R6.5): two sessions of the client made the choice throw, and media.play.exact answered
+    // smtc_session_access_failed. The one playing is checked, else the first; the play is verified on it either way.
+    [Test]
+    public void TwoSessionsOfTheClientNeverMakeTheExactPlayFail()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsMediaSessionAdapter.ClientSession([(Opera, true), (Spotify, false), (Spotify, true)]),
+                Is.EqualTo(2));
+            Assert.That(WindowsMediaSessionAdapter.ClientSession([(Spotify, false), (Opera, true), (Spotify, false)]),
+                Is.EqualTo(0));
+            Assert.That(WindowsMediaSessionAdapter.ClientSession([(Opera, true), (Spotify, false)]), Is.EqualTo(1));
+            Assert.That(WindowsMediaSessionAdapter.ClientSession([(Opera, true)]), Is.Null);
+        });
+    }
+
     [Test]
     public void WithoutAPlaybackOfItsOwnWindowsDecides()
     {

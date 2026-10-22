@@ -282,6 +282,19 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         return playingNow.Length == 1 ? playingNow[0] : null;
     }
 
+    /// <summary>
+    /// The desktop music client's session media.play.exact checks (the operation plays on that client by its schema):
+    /// the index of one whose source names it, or null. Renew al máximo (R6.5): with several, the one playing, else
+    /// the first (its title and play are read back on it); two used to throw and read as smtc_session_access_failed.
+    /// </summary>
+    internal static int? ClientSession(IReadOnlyList<(string Source, bool Playing)> sessions)
+    {
+        int[] client = Enumerable.Range(0, sessions.Count)
+            .Where(index => sessions[index].Source.Contains("spotify", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        return client.Length == 0 ? null : client.FirstOrDefault(index => sessions[index].Playing, client[0]);
+    }
+
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
         JsonElement arguments,
@@ -371,8 +384,11 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             }
             else
             {
-                session = manager.GetSessions().SingleOrDefault(item =>
-                    item.SourceAppUserModelId.Contains("spotify", StringComparison.OrdinalIgnoreCase));
+                IReadOnlyList<GlobalSystemMediaTransportControlsSession> sessions = manager.GetSessions();
+                session = ClientSession(sessions.Select(item => (item.SourceAppUserModelId,
+                        item.GetPlaybackInfo().PlaybackStatus
+                            == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)).ToArray())
+                    is int client ? sessions[client] : null;
             }
         }
         catch
