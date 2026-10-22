@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO.Pipes;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -4101,6 +4102,43 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, P257: «deja el volumen en 20» chose audio.app.volume.set {app:"volumen"} in
+    // 7 of 27 runs): an application with no audio session failed with the bare code, so the next step had nothing to go
+    // on. The failure names the applications that do have one (few, short) and that the PC's own volume is another
+    // operation; a model aid, off with the others.
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "all", "audio_volume")]
+    [TestCase("audio.app.volume.adjust", """{"app":"volumen","amount":10,"direction":"down"}""", "all",
+        "audio_volume_adjust")]
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "none", null)]
+    public async Task AnAppWithNoAudioSessionNamesTheAppsThatHaveOne(
+        string operation, string arguments, string aids, string? systemOperation)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        string[] withAudio = ["Spotify", "chrome", "Discord", "mpv", "steam", "opera", "Teams", "zoom", "vlc", "obs64"];
+        IExternalOperationAdapter adapter = operation == "audio.app.volume.set"
+            ? new WindowsAppVolumeSetAdapter((_, _, _, _) => null, () => withAudio)
+            : new WindowsAppVolumeAdapter((_, _, _, _) => null, () => withAudio);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("app_audio_session_not_found_on_default_output"));
+            if (systemOperation is null)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+
+            string[] named = receipt.Result!.Value.GetProperty("appsWithAudio").EnumerateArray()
+                .Select(item => item.GetString()!).ToArray();
+            Assert.That(named, Is.EqualTo(withAudio.Take(8).ToArray()));
+            Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.Contain(" is " + systemOperation + ","));
+        });
+    }
+
     [Test]
     public async Task OutlookLatestReplyRequiresASentFolderPostread()
     {
@@ -4511,8 +4549,155 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    // A player whose pause property reads true on every connection until stopped (a set is answered as done).
-    private static async Task ServePausedPlayerAsync(string pipeName, CancellationToken stop)
+    // Renew al máximo (auditoría de flujos): «siguiente» while BAXY's own YouTube player played alone ended in
+    // media_session_not_found («nothing is playing»): the player's refusal of a skip carried no state, so the system's
+    // «no session» replaced it. It now says the skip is not its own with what it plays, which the provider keeps.
+    [TestCase("next")]
+    [TestCase("previous")]
+    public async Task ASkipTheLocalPlayerCannotDoSaysWhatItPlays(string action)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePlayerAsync(pipeName, paused: false, stopPlayer.Token);
+        var session = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "media_session_not_found"));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(false),
+        };
+        using var provider = new WindowsExternalCapabilityProvider([local, session]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(
+                "media.control", Json($$"""{"action":"{{action}}"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            // The player stands for this test's own process: nothing stops it when the provider is disposed.
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("local_player_action_unsupported"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            Assert.That(receipt.Result?.GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo("BAXY YouTube (mpv)"));
+            // Another player may still be the one meant: it gets its chance.
+            Assert.That(session.Calls, Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): with BAXY's own YouTube player playing, media.status answered from it alone
+    // and named no other session (6.1 named them only from the system's read), so «pausa Spotify» had no id to name.
+    [Test]
+    public async Task TheLocalPlayersStatusNamesTheOtherSessionsToo()
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePlayerAsync(pipeName, paused: false, stopPlayer.Token);
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(true),
+            SystemSessions = _ => ValueTask.FromResult<IReadOnlyList<UserMediaSession>>(
+                [new UserMediaSession("Spotify.exe", "Bailando Solo", "Los Bunkers", "playing")]),
+        };
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await local.InvokeAsync("media.status", Json("{}"), CancellationToken.None);
+        }
+        finally
+        {
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            Assert.That(receipt.Result?.TryGetProperty("otherSessions", out _), Is.True);
+            if (receipt.Result?.TryGetProperty("otherSessions", out JsonElement others) == true)
+            {
+                Assert.That(others.GetArrayLength(), Is.EqualTo(1));
+                Assert.That(others[0].GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo("Spotify.exe"));
+                Assert.That(others[0].GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            }
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): «pon lofi en youtube» (BAXY's own player) then «mejor pon a los Bunkers en
+    // Spotify» left both playing: ronda 19 pauses what BAXY left playing before a playback of another way, but only
+    // among the system's sessions, which never see that player. It is paused like them, and played again when the new
+    // playback fails before its effect.
+    [TestCase(true, true, false)]
+    [TestCase(false, false, true)]
+    public async Task BaxysOwnPlayerIsPausedForAnotherPlayback(bool played, bool pausedAfter, bool resumed)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        var state = new StrongBox<bool>(false);
+        Task player = ServeStatefulPlayerAsync(pipeName, state, stopPlayer.Token);
+        var client = new StubExternalAdapter(played
+            ? new ExternalCapabilityReceipt("media.play.query", true, true, Json("{}"), null)
+            : new ExternalCapabilityReceipt("media.play.query", false, false, null, "spotify_exact_result_not_found"));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null);
+        using var provider = new WindowsExternalCapabilityProvider([local, client]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        FieldInfo activeTitle = typeof(YouTubeMpvAdapter).GetField("_activeTitle", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        activeTitle.SetValue(local, "Lofi para estudiar");
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(
+                "media.play.query", Json("""{"provider":"spotify","query":"los bunkers"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.EqualTo(played));
+            Assert.That(state.Value, Is.EqualTo(pausedAfter), "the player's pause property after the playback");
+            Assert.That(receipt.AssistantPlaybackPauses, Is.EqualTo(new[]
+            {
+                new AssistantPlaybackPause("BAXY YouTube (mpv)", "Lofi para estudiar", Resumed: resumed),
+            }));
+            Assert.That(receipt.EffectObserved, Is.EqualTo(played));
+        });
+    }
+
+    // A player whose pause property is <paramref name="paused"/>: read by get_property, changed by set_property.
+    private static async Task ServeStatefulPlayerAsync(string pipeName, StrongBox<bool> paused, CancellationToken stop)
     {
         try
         {
@@ -4527,7 +4712,54 @@ public sealed class ExternalAdaptersTests
                 try
                 {
                     while (await reader.ReadLineAsync(stop) is { } request)
-                        await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success","data":true}""");
+                    {
+                        using JsonDocument document = JsonDocument.Parse(request);
+                        JsonElement command = document.RootElement.GetProperty("command");
+                        if (command[0].GetString() == "set_property")
+                        {
+                            paused.Value = command[2].GetBoolean();
+                            await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success"}""");
+                        }
+                        else
+                        {
+                            await writer.WriteLineAsync(
+                                $$"""{"request_id":{{RequestId(request)}},"error":"success","data":{{(paused.Value ? "true" : "false")}}}""");
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    // The client closed its end: the next connection is served.
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    // A player whose pause property reads true on every connection until stopped (a set is answered as done).
+    private static Task ServePausedPlayerAsync(string pipeName, CancellationToken stop) =>
+        ServePlayerAsync(pipeName, paused: true, stop);
+
+    // A player whose pause property reads <paramref name="paused"/> on every connection until stopped.
+    private static async Task ServePlayerAsync(string pipeName, bool paused, CancellationToken stop)
+    {
+        try
+        {
+            while (true)
+            {
+                await using var pipe = new NamedPipeServerStream(
+                    pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                await pipe.WaitForConnectionAsync(stop);
+                var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
+                var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true)
+                { AutoFlush = true };
+                try
+                {
+                    while (await reader.ReadLineAsync(stop) is { } request)
+                        await writer.WriteLineAsync(
+                            $$"""{"request_id":{{RequestId(request)}},"error":"success","data":{{(paused ? "true" : "false")}}}""");
                 }
                 catch (IOException)
                 {
@@ -4668,6 +4900,36 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("spotify_windows_uia_postread"));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): a search whose playback holds none of the words searched says so as a field
+    // of its own (queryMatched:false), never only in the titles; a playback that holds one carries no such field.
+    [TestCase("romeo santos propuesta indecente", "Propuesta Indecente - Spotify", false)]
+    [TestCase("los bunkers bailando solo", "Los Bunkers - Spotify", true)]
+    public async Task ASpotifySearchSaysWhenWhatPlaysHoldsNoneOfItsWords(
+        string nowPlaying, string windowTitle, bool matched)
+    {
+        var adapter = new SpotifyDesktopAdapter(new StubProcessRunner(JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            ["ok"] = true,
+            ["effectObserved"] = true,
+            ["title"] = windowTitle,
+            ["selectedControl"] = "Reproducir Los Bunkers",
+            ["observedNowPlaying"] = nowPlaying,
+            ["playbackEvidence"] = "now_playing_changed",
+            ["processId"] = 42,
+        })));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query", Json("""{"provider":"spotify","query":"otra de los Bunkers"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result!.Value.TryGetProperty("queryMatched", out JsonElement field), Is.EqualTo(!matched));
+            if (!matched)
+                Assert.That(field.ValueKind, Is.EqualTo(JsonValueKind.False));
         });
     }
 
@@ -5008,6 +5270,59 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_tab_not_found"));
         });
+    }
+
+    // Renew al máximo (auditoría de flujos): «siguiente canción» with nothing playing ended in
+    // youtube_tab_action_unsupported, though there was no tab: the tab's refusal of a skip replaced the system's
+    // «no session». With no tab of its own it stands aside for any action; with one, it says the skip is not its own
+    // with the state it read, and nothing is sent.
+    [TestCase(false, false, "youtube_tab_not_found", false, 0)]
+    [TestCase(true, false, "youtube_tab_not_found", false, 1)]
+    [TestCase(true, true, "youtube_tab_action_unsupported", true, 1)]
+    public async Task ASkipTheTabCannotDoSaysWhetherThereIsATab(
+        bool hasEndpoint, bool hasTab, string error, bool readState, int reads)
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(
+            temporary.Path,
+            hasTab
+                ? new CdpMediaControlResult(true, false, "status", "Lofi - YouTube",
+                    "https://www.youtube.com/watch?v=abc", "t1", "playing", string.Empty)
+                : null,
+            hasEndpoint);
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control", Json("""{"action":"next"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(),
+                Is.EqualTo(readState ? "playing" : null));
+            Assert.That(browser.Calls, Is.EqualTo(reads));
+            Assert.That(browser.LastAction, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task ASkipWithNothingPlayingKeepsTheSystemSessionRead()
+    {
+        using TemporaryDirectory temporary = new();
+        var session = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "media_session_not_found"));
+        var browser = new StubYouTubeTabSession(temporary.Path, result: null, hasEndpoint: false);
+        using var http = new HttpClient();
+        var tab = new WebBrowserAdapter(browser, http);
+        using var provider = new WindowsExternalCapabilityProvider([session, tab]);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "media.control", Json("""{"action":"next"}"""), CancellationToken.None);
+
+        Assert.That(receipt.ErrorCode, Is.EqualTo("media_session_not_found"));
     }
 
     // media.control's sourceApp names a player by the id media.status gave it, compared whole (BAXY Renew audit
