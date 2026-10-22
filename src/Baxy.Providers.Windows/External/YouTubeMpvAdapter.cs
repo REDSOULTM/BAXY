@@ -550,6 +550,57 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
+    /// <summary>
+    /// Renew al máximo (auditoría de flujos): pauses this player while it plays, before another playback (ronda 19 does
+    /// so for the system's sessions BAXY left playing, which never include this one), and says what it paused: its
+    /// sourceAppUserModelId and title. Null when nothing was playing here or the pause was not read back.
+    /// </summary>
+    internal async ValueTask<(string Source, string Title)?> PauseForAnotherPlaybackAsync(
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            if (!HasActivePlayer
+                || await ReadPauseAsync(cancellationToken).ConfigureAwait(false) != false
+                || await SetPauseAsync(true, cancellationToken).ConfigureAwait(false) != true)
+            {
+                return null;
+            }
+
+            return (SourceAppUserModelId, _activeTitle ?? _activeQuery ?? string.Empty);
+        }
+        catch (Exception exception) when (exception is IOException or JsonException
+            or InvalidOperationException or TimeoutException)
+        {
+            // Nothing read back as paused: the new playback goes on.
+            return null;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <summary>Plays again what <see cref="PauseForAnotherPlaybackAsync"/> paused, and says whether it reads playing.</summary>
+    internal async ValueTask<bool> ResumeAfterAnotherPlaybackAsync(CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            return HasActivePlayer && await SetPauseAsync(false, cancellationToken).ConfigureAwait(false) == false;
+        }
+        catch (Exception exception) when (exception is IOException or JsonException
+            or InvalidOperationException or TimeoutException)
+        {
+            return false;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     private JsonElement LocalResult(string playbackStatus, IReadOnlyList<UserMediaSession>? others = null) =>
         ExternalJson.Create(json =>
     {

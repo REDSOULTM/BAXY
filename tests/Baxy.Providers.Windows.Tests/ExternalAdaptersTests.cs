@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO.Pipes;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -4436,6 +4437,99 @@ public sealed class ExternalAdaptersTests
                 Assert.That(others[0].GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
             }
         });
+    }
+
+    // Renew al máximo (auditoría de flujos): «pon lofi en youtube» (BAXY's own player) then «mejor pon a los Bunkers en
+    // Spotify» left both playing: ronda 19 pauses what BAXY left playing before a playback of another way, but only
+    // among the system's sessions, which never see that player. It is paused like them, and played again when the new
+    // playback fails before its effect.
+    [TestCase(true, true, false)]
+    [TestCase(false, false, true)]
+    public async Task BaxysOwnPlayerIsPausedForAnotherPlayback(bool played, bool pausedAfter, bool resumed)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        var state = new StrongBox<bool>(false);
+        Task player = ServeStatefulPlayerAsync(pipeName, state, stopPlayer.Token);
+        var client = new StubExternalAdapter(played
+            ? new ExternalCapabilityReceipt("media.play.query", true, true, Json("{}"), null)
+            : new ExternalCapabilityReceipt("media.play.query", false, false, null, "spotify_exact_result_not_found"));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null);
+        using var provider = new WindowsExternalCapabilityProvider([local, client]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        FieldInfo activeTitle = typeof(YouTubeMpvAdapter).GetField("_activeTitle", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        activeTitle.SetValue(local, "Lofi para estudiar");
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(
+                "media.play.query", Json("""{"provider":"spotify","query":"los bunkers"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.EqualTo(played));
+            Assert.That(state.Value, Is.EqualTo(pausedAfter), "the player's pause property after the playback");
+            Assert.That(receipt.AssistantPlaybackPauses, Is.EqualTo(new[]
+            {
+                new AssistantPlaybackPause("BAXY YouTube (mpv)", "Lofi para estudiar", Resumed: resumed),
+            }));
+            Assert.That(receipt.EffectObserved, Is.EqualTo(played));
+        });
+    }
+
+    // A player whose pause property is <paramref name="paused"/>: read by get_property, changed by set_property.
+    private static async Task ServeStatefulPlayerAsync(string pipeName, StrongBox<bool> paused, CancellationToken stop)
+    {
+        try
+        {
+            while (true)
+            {
+                await using var pipe = new NamedPipeServerStream(
+                    pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                await pipe.WaitForConnectionAsync(stop);
+                var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
+                var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true)
+                { AutoFlush = true };
+                try
+                {
+                    while (await reader.ReadLineAsync(stop) is { } request)
+                    {
+                        using JsonDocument document = JsonDocument.Parse(request);
+                        JsonElement command = document.RootElement.GetProperty("command");
+                        if (command[0].GetString() == "set_property")
+                        {
+                            paused.Value = command[2].GetBoolean();
+                            await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success"}""");
+                        }
+                        else
+                        {
+                            await writer.WriteLineAsync(
+                                $$"""{"request_id":{{RequestId(request)}},"error":"success","data":{{(paused.Value ? "true" : "false")}}}""");
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    // The client closed its end: the next connection is served.
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     // A player whose pause property reads true on every connection until stopped (a set is answered as done).
