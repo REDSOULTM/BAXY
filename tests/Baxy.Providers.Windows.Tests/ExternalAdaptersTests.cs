@@ -3677,6 +3677,35 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): an address said without its scheme («es.wikipedia.org/wiki/Arroz», as
+    // the person dictates it and web.download takes it) is read over https; it was refused as not public.
+    [Test]
+    public async Task AWebFetchOfAnAddressWithoutSchemeReadsItOverHttps()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = new(HttpStatusCode.OK,
+                "<html><head><title>Arroz</title></head><body><p>El arroz es una semilla.</p></body></html>", "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"es.wikipedia.org/wiki/Arroz"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt local = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"192.168.1.10/admin"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("requestedUrl").GetString(), Is.EqualTo("https://es.wikipedia.org/wiki/Arroz"));
+            Assert.That(read.Result?.GetProperty("text").GetString(), Does.Contain("El arroz es una semilla."));
+            Assert.That(local.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "es.wikipedia.org" }));
+        });
+    }
+
     // Renew al máximo (auditoría de flujos, web): an address whose host does not exist (an invented URL), no network,
     // and a host that resolves into the local network each say so; all three were web_adapter_unavailable, read as the
     // web tool itself being broken.

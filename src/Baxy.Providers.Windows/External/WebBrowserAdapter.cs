@@ -299,7 +299,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", 4_000), 500, 20_000);
         int offset = Math.Max(0, ExternalJson.OptionalInt(arguments, "offset", 0));
-        if (!Uri.TryCreate(ExternalJson.RequiredString(arguments, "url").Trim(), UriKind.Absolute, out Uri? address)
+        string url = ExternalJson.RequiredString(arguments, "url").Trim();
+        // Renew al máximo (auditoría de flujos): an address said without its scheme is read over https, as web.download
+        // reads it; it was refused as not public.
+        if (!url.Contains("://", StringComparison.Ordinal))
+            url = "https://" + url;
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? address)
             || !SearchPageReader.IsPublicPageAddress(address))
             return ExternalJson.Failure(operation, "web_fetch_address_not_public");
         SearchPageReader.PageRead read;
