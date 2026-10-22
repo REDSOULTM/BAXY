@@ -57,6 +57,29 @@ public sealed class MediaSessionPreferenceTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): «¿qué está sonando?» with a paused tab in front and the person's music
+    // playing read the paused tab as what plays (playbackStatus paused), the music only among otherSessions. A read
+    // reports the one session playing when the current does not, as an unnamed control acts on it (R6.1).
+    [Test]
+    public void TheStatusReadsTheOneSessionPlayingWhenTheCurrentDoesNot()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(
+                false, [false, true], "media.status", action: null), Is.EqualTo(1));
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(
+                true, [true, true], "media.status", action: null), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(
+                false, [true, false, true], "media.status", action: null), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(
+                false, [false, true], "media.control", "pause"), Is.EqualTo(1));
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(
+                false, [false, true], "media.control", "play"), Is.Null);
+            Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(
+                false, [false, true], "media.seek.relative", action: null), Is.Null);
+        });
+    }
+
     // Renew al máximo (R6.5): two sessions of the client made the choice throw, and media.play.exact answered
     // smtc_session_access_failed. The one playing is checked, else the first; the play is verified on it either way.
     [Test]
