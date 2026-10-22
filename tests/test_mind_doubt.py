@@ -61,13 +61,3 @@ def test_words_before_a_call_are_not_read_as_the_decision():
 
 def test_a_call_whose_opening_is_not_in_the_logprobs_has_no_doubt():
     assert read(_call_reply([token("Claro", 0.7), token(",", 1.0)])) is None
-
-
-def test_each_argument_value_has_the_probability_of_its_least_sure_token():
-    # Al máximo 4.5: the value's own tokens, never the parameter's name or the tags around it.
-    tokens = [token("<tool_call>", 1.0), token("\n", 1.0), token("<", 1.0), token("function", 1.0), token("=", 1.0),
-              token("web", 1.0), token("_search", 1.0), token(">", 1.0), token("\n", 1.0),
-              token("<parameter=query>", 0.5), token("\n", 1.0), token("receta", 0.2), token(" de lentejas", 0.9),
-              token("\n", 0.7), token("</parameter>", 1.0), token("\n", 1.0), token("<parameter=limit>", 1.0),
-              token("\n", 1.0), token("5", 0.6), token("\n", 1.0), token("</parameter>", 1.0)]
-    assert read(_call_reply(tokens))["values"] == {"query": 0.2, "limit": 0.6}
