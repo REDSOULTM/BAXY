@@ -84,7 +84,17 @@ def test_a_correction_to_any_other_risk_asks_and_never_fills(tmp_path: Path, mon
 def test_the_doubt_never_holds_a_confirmation(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.9")
     mind, _ = _doubt_mind(tmp_path, [_sure("confirm_pending", {"approve": True}, 0.2)])
-    assert mind.decide(1, "sí, dale")["operation"] == "confirmation.answer"
+    pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
+    assert mind.decide(1, "sí, dale", pending=pending)["operation"] == "confirmation.answer"
+
+
+# F005 (notebook's falsehood bench): an approval with nothing pending never reaches the App; the model answers in words.
+def test_a_confirmation_with_nothing_pending_is_not_sent(tmp_path: Path) -> None:
+    mind, server = _mind(tmp_path, [_call("confirm_pending", {"approve": True}), _say("No, todavía no lo hice.")])
+    result = mind.decide(1, "¿ya lo subiste?")
+    assert result["operation"] is None and result["reply"] == "No, todavía no lo hice."
+    told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert told and json.loads(told[-1])["error"] == "nothing_pending"
 
 
 def test_the_doubt_never_holds_a_continuation_step(tmp_path: Path, monkeypatch) -> None:
