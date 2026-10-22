@@ -54,7 +54,7 @@ internal sealed class NetworkEgress
             : null;
     }
 
-    /// <summary>The person's words in this session.</summary>
+    /// <summary>The person's words in this session, and the addresses they wrote or dictated in them.</summary>
     internal void Heard(string words)
     {
         foreach (string word in Regex.Split(Folded(words), @"[^\p{L}\p{Nd}]+"))
@@ -62,6 +62,16 @@ internal sealed class NetworkEgress
             if (word.Length > 0)
             {
                 _words.Add(word);
+            }
+        }
+
+        // «https://www.rfc-editor.org/rfc/rfc2324» or «rfc-editor.org» is the person's own host, as a result's address
+        // is (e2e E022, 2026-10-22: its name split at the hyphen never matched their words).
+        foreach (Match address in Regex.Matches(words, @"(?:https?://)?[\p{L}\p{Nd}-]+(?:\.[\p{L}\p{Nd}-]+)*\.\p{L}{2,}\b"))
+        {
+            if (HostOf(address.Value) is { Length: > 0 } host)
+            {
+                _hosts.Add(host);
             }
         }
     }
@@ -155,7 +165,9 @@ internal sealed class NetworkEgress
             2 => labels[0],
             _ => labels[^2].Length <= 3 ? labels[^3] : labels[^2],
         };
-        return name.Length >= 3 && _words.Contains(name);
+        // A name with hyphens is the person's when they said every part of it («rfc editor» for rfc-editor.org).
+        string[] parts = name.Split('-', StringSplitOptions.RemoveEmptyEntries);
+        return name.Length >= 3 && parts.Length > 0 && parts.All(_words.Contains);
     }
 
     private static string HostOf(string address)

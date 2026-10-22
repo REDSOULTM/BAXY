@@ -49,6 +49,27 @@ public sealed class NetworkEgressTests
     }
 
     [Test]
+    public void AnAddressThePersonWroteOrAHyphenatedNameTheySaidGoes()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("lee la página https://www.rfc-editor.org/rfc/rfc2324 y dime de qué trata");
+
+        Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://www.rfc-editor.org/rfc/rfc2324" }),
+            Is.Null);
+
+        egress.Reset();
+        egress.Heard("abre la página de rfc editor");
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://www.rfc-editor.org/" }), Is.Null);
+
+        egress.Reset();
+        egress.Heard("abre rfc-editor.org");
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://rfc-editor.org/" }), Is.Null);
+        // One part said is not the name.
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://rfc-exfil.example/" }),
+            Is.EqualTo("host_not_from_session"));
+    }
+
+    [Test]
     public void AValueMemoryReadInThisTurnWaitsHoweverItIsWritten()
     {
         var egress = new NetworkEgress();
