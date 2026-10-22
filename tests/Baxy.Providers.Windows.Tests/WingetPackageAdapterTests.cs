@@ -262,6 +262,46 @@ public sealed class WingetPackageAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, P215: package.uninstall and game.uninstall.named chosen at a coin toss): a
+    // candidate row that is a game of the installed game catalog (its name, or its key ending in its number) says so,
+    // and with the aid on the receipt says which operation uninstalls it.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnInstalledGamesRowSaysItIsAGame(string aids, bool next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        const string list = """
+            Nombre      Id               Versión  Origen
+            ---------------------------------------------
+            Worms W.M.D Steam App 327030 Unknown
+            Discord     XPDC2RH70K22MN   1.0.9258 winget
+            """;
+        var runner = new ScriptedRunner(args => args[0] == "list" ? (0, list) : (1, Nothing));
+        var adapter = new WingetPackageAdapter(
+            runner, _ => throw new AssertionException("nothing is launched"),
+            () => [new SteamLocalGame("327030", "Worms W.M.D", new string('a', 64))]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "package.uninstall", JsonSerializer.SerializeToElement(new { packageId = "worms" }), CancellationToken.None);
+
+        ExternalCapabilityReceipt exact = await adapter.InvokeAsync(
+            "package.uninstall", JsonSerializer.SerializeToElement(new { packageId = "Worms W.M.D" }), CancellationToken.None);
+
+        JsonElement candidates = receipt.Result!.Value.GetProperty("candidates");
+        Assert.Multiple(() =>
+        {
+            Assert.That(exact.ErrorCode, Is.EqualTo("package_is_steam_game"), "never uninstalled through winget");
+            Assert.That(exact.Result!.Value.GetProperty("candidates")[0].GetProperty("packageId").GetString(),
+                Is.EqualTo("Steam App 327030"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("winget_package_not_resolved"));
+            Assert.That(candidates[0].GetProperty("steamGame").GetBoolean(), Is.True);
+            Assert.That(candidates[1].TryGetProperty("steamGame", out _), Is.False);
+            Assert.That(receipt.Result!.Value.TryGetProperty("next", out JsonElement hint), Is.EqualTo(next));
+            if (next)
+                Assert.That(hint.GetString(), Does.Contain("game_uninstall_named"));
+        });
+    }
+
     [Test]
     public async Task AnUninstallThatEndedWithoutRemovingSaysWhatWingetSaid()
     {

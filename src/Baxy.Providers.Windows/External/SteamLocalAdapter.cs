@@ -1112,6 +1112,21 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private static int UnreadLibraries(IReadOnlyList<SteamLocalGame> games) =>
         games is InstalledCatalog catalog ? catalog.UnreadLibraries : 0;
 
+    // Renew al máximo (auditoría de flujos, P215): the games installed, as their manifests say them; none when the
+    // manifests cannot be read (what reads them is only told a game apart).
+    internal static IReadOnlyList<SteamLocalGame> InstalledGames()
+    {
+        try
+        {
+            return [.. ReadInstalledCatalog().Where(static game => game.Installed)];
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or System.Security.SecurityException)
+        {
+            return [];
+        }
+    }
+
     private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog()
     {
         (_, string[] libraries) = SteamRoots();

@@ -47,6 +47,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (6.3): a failed app.open says whether its launch was issued and where to look next.</summary>
     public const string OpenRecovery = "open_recovery";
 
+    /// <summary>Renew al máximo (auditoría de flujos, P215): a package.uninstall candidate that is a game names game_uninstall_named.</summary>
+    public const string GameUninstall = "game_uninstall";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
