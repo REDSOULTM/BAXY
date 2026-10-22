@@ -475,3 +475,24 @@ def test_the_decisions_seed_comes_from_baxy_renew_seed(tmp_path: Path, monkeypat
     mind, server = _mind(tmp_path, [_say("Hola.")])
     mind.decide(1, "hola")
     assert server.bodies[0]["seed"] == seed
+
+
+# Renew al máximo (palanca 3.1): Laya runs on the CPU, but with only -ngl 0 the CUDA build of llama-server still made a
+# CUDA context and offloaded its big batches (op offload is on by default): with System One on the product's VRAM went
+# 3902 → 4091 MiB, 5 MiB under the 4 GB ceiling (notebook, 2026-10-22). Its server is started with no device at all.
+def test_laya_is_started_with_no_gpu_device(monkeypatch, tmp_path):
+    from baxy_mind import system_one
+    started = []
+
+    class Started:
+        def __init__(self, args, **_):
+            started.append(list(args))
+
+        def poll(self):
+            return 0
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setattr(system_one.subprocess, "Popen", Started)
+    system_one.SystemOne("laya.gguf", "llama-server.exe").start()
+    args = started[0]
+    assert args[args.index("-dev") + 1] == "none"

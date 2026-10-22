@@ -69,9 +69,11 @@ class SystemOne:
         log_dir.mkdir(parents=True, exist_ok=True)
         log = open(log_dir / "system-one.log", "w", encoding="utf-8")
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-        # An encoder reads its whole input in one batch: -b/-ub cover the longest state plus its options.
+        # An encoder reads its whole input in one batch: -b/-ub cover the longest state plus its options. No device at
+        # all (-dev none): with only -ngl 0 the CUDA build still made a context and offloaded its big batches, and the
+        # product's VRAM went 3902 → 4091 MiB with System One on (Renew al máximo, palanca 3.1).
         self._process = subprocess.Popen(
-            [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), "-ngl", "0",
+            [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), "-ngl", "0", "-dev", "none",
              "-t", str(self.threads), "-c", "4096", "-np", "1", "-b", "2048", "-ub", "2048"],
             stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
         threading.Thread(target=self._wait_health, daemon=True).start()
