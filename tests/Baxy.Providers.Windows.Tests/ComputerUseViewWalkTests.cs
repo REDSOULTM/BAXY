@@ -55,7 +55,8 @@ public sealed class ComputerUseViewWalkTests
             Assert.That(Function(script, "Get-WalkCondition"),
                 Does.Contain("if($script:WithDimmed){ return $script:OnScreenCondition }; return $script:ShownCondition"));
             Assert.That(script, Does.Contain("$script:OnScreenCondition=New-Object System.Windows.Automation.PropertyCondition($AE::IsOffscreenProperty,$false)"));
-            Assert.That(view, Does.Contain("$all=Get-ShownDescendants $root ([long]$target.hwnd) 0 $withDimmed"));
+            // Renew al máximo (7.1): with the look's own deadline (0: the worker's), the read after an act's shorter one.
+            Assert.That(view, Does.Contain("$all=Get-ShownDescendants $root ([long]$target.hwnd) $walkSeconds $withDimmed"));
         });
     }
 
