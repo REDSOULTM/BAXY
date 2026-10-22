@@ -405,3 +405,20 @@ mismo: al abrirlo aquí, la misma sustitución.
   05cf4b052, C nb-maximo-fix 153b7a068; falsedades s0-s2 de C; las de A/B las corre el PC) y `cola4.sh` (sonda en vivo
   de la 7.4, rama `nb-t3places`).
 - 3.1 (`-dev none` de Laya): cambio y prueba hechos, sin commit hasta medir VRAM, latencia y elecciones (cola2).
+
+**Al día, 2026-10-22 19:30 (modo ráfaga del dueño hasta mañana 10:00; latido fuera).**
+- Medido en el notebook: tanda 1 del PC en sesión larga (3.3 −950 MiB de pico de RAM de Qwen; 3.3+1.4 −4..−7 s de
+  relectura) y 3.1 (`-dev none`: VRAM con S1 3902 en vez de 4091, Laya 140 → 687 ms por pregunta, 60/60 iguales):
+  las tres se quedaron. E2E ×3 de la tanda 2 del PC (+1,5, IC [0; 3,5]) y de mi Tanda 0+2 (+0,67, IC [−0,67; 2,33]):
+  ninguna pierde. Falsedades de mi rama (s0-s2, criterio escrito): 4 claras + 1 dudosa en 60 conversaciones.
+- Hallazgos graves cerrados hoy: B-SYS-1 y su hueco por la unión «Application Data» (el modelo podía poner Bypass),
+  clic por índice en otra ventana (B-CU-1), salto de línea que podía enviar un borrador sin el sí (mensajería),
+  winget que desinstalaba con un id equivocado, cookies que ataban búsquedas entre sí, game.launch que lanzaba otro
+  juego (title obligatorio). Abierto y avisado al líder: el modelo pulsó «Sí» en «¿Quieres reemplazarlo?» sin
+  preguntar (propuesta: prevuelo del adaptador de clic que pide el sí ante diálogos destructivos).
+- Incidentes de escritorio: un Administrador de tareas elevado apareció a las 17:36 (lo cerró el líder por ssh);
+  GameInputSvc volvió a tomar el frente a las 16:48 (las colas nuevas lo limpian antes de cada corrida). Trampa de
+  pruebas: crear ventanas Win32 en el hilo de la prueba y esperar con GetResult() se interbloquea si el código lee su
+  título desde otro hilo (ayudante `Pumped` en ComputerUseSpeedTests).
+- Colas en `%TEMP%\claude\nb\mx`: `cola5.sh` (recursos de contexto 53 248: VRAM 3990), `cola8.sh` (int 1e4496020 vs
+  renew-maximo d9a971bbe: e2e ×2, falsedades ×3, recursos, sesión larga). Turnero de compilaciones: `dotnet_turno.sh`.
