@@ -3015,3 +3015,7 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   la primera coma (cambia cómo suena: decisión del dueño) y lo del latido (apagado).
 - decision2 S1 ×3 de la integración temprana (int f5f22ec06, catalog-int0): 228 / 230 / 231 (229,67) frente a 230,0;
   acciones equivocadas 15 de media (16,7 antes). Sin regresión.
+- 19:29 (NB) **1.5 contexto 53 248, recursos** (measure_resources nuevo, pico durante turnos, S1 on con Laya -dev none,
+  voz, 2 rondas): 49 152 → VRAM 3 902 MiB, RAM producto 2 603-2 735 MiB (Qwen USS ~2 012, Laya ~196); 53 248 → VRAM
+  **3 990 MiB** (+88; 106 de margen bajo 4 096), RAM 2 606-2 735. **Se queda** (en int). La sesión larga de int dirá el
+  pico con historial lleno.
