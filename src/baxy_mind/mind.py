@@ -686,6 +686,9 @@ class Mind:
         hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
         started = time.monotonic()
         conv = [{"role": "user", "content": beat_message(context)}]
+        # Review 2026-10-22: a heartbeat that read the person's memory keeps out of the trace what it deduced from it and
+        # what it said, as a turn does from its memory call on (_result).
+        private = bool(context.get("memory"))
         # The decision whether to intervene is greedy: on the open scenes 32 → 34 of 40 sampled against greedy.
         reply = self.server.chat({"messages": [{"role": "system", "content": self._system(beat=True)}, *conv],
                                   "tools": self.tools, "tool_choice": "none", "max_tokens": 400,
@@ -701,13 +704,15 @@ class Mind:
             decision = None
         if not isinstance(decision, dict) or not isinstance(decision.get("intervenir"), bool):
             # Unreadable (cut by the token budget, or not the schema): said as what it is, never as a silence.
-            self._log("turn.beat.decide", started, reply, text="[latido]", content=content, failure="unreadable")
+            self._log("turn.beat.decide", started, reply, text="[latido]", content=None if private else content,
+                      failure="unreadable")
             return {"type": "turn.result", "id": request_id, "kind": "failure", "operation": None, "arguments": None,
                     "question": "", "reply": ""}
         intervene = decision["intervenir"]
-        self._log("turn.beat.decide", started, reply, text="[latido]", content=content, intervene=intervene)
+        self._log("turn.beat.decide", started, reply, text="[latido]", content=None if private else content,
+                  intervene=intervene)
         self._beat = {"conv": conv, "queue": [], "awaiting": None, "text": "[latido]", "beat": True,
-                      "silent": not intervene}
+                      "silent": not intervene, "private": private}
         if not intervene:
             return {"type": "turn.result", "id": request_id, "kind": "silence", "operation": None, "arguments": None,
                     "question": "", "reply": ""}
@@ -939,8 +944,11 @@ class Mind:
             # otherwise (layer 2). Nothing runs; it is told so where it reads and asks the person, in its own words, what
             # they want (the call it nearly made never enters the conversation).
             conv.append({"role": "user", "content": note})
+            doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
+            if doubted.startswith("memory."):
+                turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
-                      operation=self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"]), arguments=None, content=None)
+                      operation=doubted, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [

@@ -168,3 +168,35 @@ def test_the_ids_the_mind_writes_never_repeat_in_a_session(tmp_path: Path, monke
     mind.confirm(5, True, "Sí")
     ids.append(mind.conversation[-1]["tool_calls"][0]["id"])
     assert len(set(ids)) == 3
+
+
+def _rows(tmp_path: Path) -> list[dict]:
+    return [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+
+
+def test_a_heartbeat_that_read_the_persons_memory_keeps_it_out_of_the_trace(tmp_path: Path) -> None:
+    # Review 4: the heartbeat's JSON and its words carried what it deduced from memory into turns.jsonl.
+    decision = {"pedido": "ninguno", "preferencia": "le gusta el jazz de noche", "vence": "nada", "bloqueo": "nada",
+                "analisis": "Es de noche y le gusta el jazz.", "intervenir": True}
+    mind, _ = _mind(tmp_path, [_say(json.dumps(decision, ensure_ascii=False)), _say("¿Te pongo jazz?")])
+    mind.beat(1, {"now": "22:00", "memory": ["le gusta el jazz de noche"]})
+    rows = _rows(tmp_path)
+    assert "jazz" not in json.dumps(rows, ensure_ascii=False)
+    assert rows[0]["intervene"] is True
+
+
+def test_a_heartbeat_without_memory_keeps_its_trace(tmp_path: Path) -> None:
+    decision = {"pedido": "ninguno", "preferencia": "ninguna", "vence": "nada", "bloqueo": "disco lleno",
+                "analisis": "El disco está lleno.", "intervenir": True}
+    mind, _ = _mind(tmp_path, [_say(json.dumps(decision, ensure_ascii=False)), _say("Tu disco está lleno.")])
+    mind.beat(1, {"now": "22:00"})
+    assert "disco lleno" in _rows(tmp_path)[0]["content"]
+
+
+def test_a_doubted_memory_call_keeps_the_persons_words_out_of_the_trace(tmp_path: Path, monkeypatch) -> None:
+    from test_mind_doubt_policy import _call as _doubted, _mind as _doubt_mind
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.9")
+    mind, _ = _doubt_mind(tmp_path, [_doubted("memory_save", {"text": "mi clave es 4321"}, 0.3), _say("¿Lo guardo?")])
+    mind.wire_to_op["memory_save"] = "memory.save"
+    mind.decide(1, "recuerda que mi clave es 4321")
+    assert "4321" not in json.dumps(_rows(tmp_path), ensure_ascii=False)
