@@ -18,6 +18,11 @@ public sealed class LocalMemoryStore : IMemoryStore
     public const int MaximumTagUtf8Bytes = 64;
     public const int MaximumRecallResults = 5;
     public const int MaximumListResults = MaximumRecords;
+
+    // Renew al máximo (B-SYS-3): the receipt ledger is a ring of the most recent mutations, not a lifetime cap. A retry
+    // of the exact invocation only reaches the store for an invocation still in flight (the kernel journal answers a
+    // completed one), so the last 4096 mutations is far beyond any real retry window; the size stays the old cap so
+    // every existing store loads unchanged and the snapshot bound already accounts for it.
     public const int MaximumMutationReceipts = 4096;
     public const int MaximumClearSnapshotBytes = 4 * 1024 * 1024;
     public const string RedactedSecretValue = "[REDACTED]";
@@ -129,11 +134,6 @@ public sealed class LocalMemoryStore : IMemoryStore
                 return new MemoryConfigurationResult(replay.Enabled.Value, Replayed: true);
             }
 
-            if (request.Enabled)
-            {
-                EnsureReceiptCapacity(state);
-            }
-
             AdvanceClockAndPurgeUnsafe(state);
             bool changed = state.Enabled != request.Enabled;
             state.Enabled = request.Enabled;
@@ -144,7 +144,7 @@ public sealed class LocalMemoryStore : IMemoryStore
                 Operation = "configure",
                 Enabled = request.Enabled,
             };
-            AddReceiptUnsafe(state, receipt, privacyReducing: !request.Enabled);
+            AddReceiptUnsafe(state, receipt);
             CommitMutationUnsafe(state, allowPrivacyHeadroom: !request.Enabled);
             return new MemoryConfigurationResult(request.Enabled, Replayed: false, Changed: changed);
         }
@@ -210,7 +210,6 @@ public sealed class LocalMemoryStore : IMemoryStore
             }
 
             EnsureEnabled(state);
-            EnsureReceiptCapacity(state);
             DateTimeOffset now = AdvanceClockAndPurgeUnsafe(state);
             ValidateRetention(normalized.Retention, normalized.ExpiresAtUtc, normalized.SessionId, now);
 
@@ -266,7 +265,7 @@ public sealed class LocalMemoryStore : IMemoryStore
                 state.Records.Add(record);
             }
 
-            state.Receipts.Add(new MemoryReceiptDocument
+            AddReceiptUnsafe(state, new MemoryReceiptDocument
             {
                 InvocationId = invocationId,
                 RequestDigest = digest,
@@ -383,7 +382,6 @@ public sealed class LocalMemoryStore : IMemoryStore
             }
 
             EnsureEnabled(state);
-            EnsureReceiptCapacity(state);
             DateTimeOffset now = AdvanceClockAndPurgeUnsafe(state);
             MemoryRecordDocument[] matches = state.Records
                 .Where(record => string.Equals(record.Selector, selector, StringComparison.Ordinal)
@@ -423,7 +421,7 @@ public sealed class LocalMemoryStore : IMemoryStore
                 record.CapturedAtUtc = capturedAt ?? now;
             }
 
-            state.Receipts.Add(new MemoryReceiptDocument
+            AddReceiptUnsafe(state, new MemoryReceiptDocument
             {
                 InvocationId = invocationId,
                 RequestDigest = digest,
@@ -462,6 +460,16 @@ public sealed class LocalMemoryStore : IMemoryStore
 
             AdvanceClockAndPurgeUnsafe(state);
             int deleted = state.Records.RemoveAll(record => MatchesForget(record, normalized));
+            if (normalized.Scope == MemoryForgetScope.All)
+            {
+                // Renew al máximo (B-SYS-3): forgetting everything also empties the ledger of what was saved, corrected
+                // or forgotten; only configure receipts stay, they name no memory and keep a stale enable from undoing
+                // a later disable.
+                FoldEmergencyReceiptUnsafe(state);
+                _ = state.Receipts.RemoveAll(candidate =>
+                    !string.Equals(candidate.Operation, "configure", StringComparison.Ordinal));
+            }
+
             var receipt = new MemoryReceiptDocument
             {
                 InvocationId = invocationId,
@@ -469,7 +477,7 @@ public sealed class LocalMemoryStore : IMemoryStore
                 Operation = "forget",
                 DeletedCount = deleted,
             };
-            AddReceiptUnsafe(state, receipt, privacyReducing: true);
+            AddReceiptUnsafe(state, receipt);
             CommitMutationUnsafe(state, allowPrivacyHeadroom: true);
             VerifyForgetAbsentUnsafe(normalized);
             return new MemoryForgetResult(deleted, Replayed: false);
@@ -1023,31 +1031,31 @@ public sealed class LocalMemoryStore : IMemoryStore
         return receipt;
     }
 
+    // Renew al máximo (B-SYS-3): a full ledger drops its oldest receipts instead of refusing the mutation.
     private void AddReceiptUnsafe(
         MemoryStateDocument state,
-        MemoryReceiptDocument receipt,
-        bool privacyReducing)
+        MemoryReceiptDocument receipt)
     {
-        if (state.Receipts.Count < _maximumReceipts)
+        FoldEmergencyReceiptUnsafe(state);
+        int excess = state.Receipts.Count + 1 - _maximumReceipts;
+        if (excess > 0)
         {
-            state.Receipts.Add(receipt);
+            state.Receipts.RemoveRange(0, excess);
+        }
+
+        state.Receipts.Add(receipt);
+    }
+
+    // A store written before the ring may hold one privacy receipt past the old cap; it joins the ring as its newest.
+    private static void FoldEmergencyReceiptUnsafe(MemoryStateDocument state)
+    {
+        if (state.EmergencyPrivacyReceipt is null)
+        {
             return;
         }
 
-        if (!privacyReducing || !IsPrivacyReducingReceipt(receipt))
-        {
-            throw new MemoryCapacityException();
-        }
-
-        state.EmergencyPrivacyReceipt = receipt;
-    }
-
-    private void EnsureReceiptCapacity(MemoryStateDocument state)
-    {
-        if (state.Receipts.Count >= _maximumReceipts)
-        {
-            throw new MemoryCapacityException();
-        }
+        state.Receipts.Add(state.EmergencyPrivacyReceipt);
+        state.EmergencyPrivacyReceipt = null;
     }
 
     private static bool IsPrivacyReducingReceipt(MemoryReceiptDocument receipt) =>
