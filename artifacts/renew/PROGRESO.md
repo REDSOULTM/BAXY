@@ -3028,3 +3028,23 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   decisiones iguales; archivo ~0,98 GB en %LOCALAPPDATA%\BAXY\renew\slots. decision2 s0 228 (int 227-231): las 10
   decisiones que cambian son variación numérica entre corridas (228 de 259 confianzas difieren en milésimas); con
   igual confianza las opciones de Laya son idénticas (V3 no cambia decisiones). pytest 296.
+- 20:0x-20:29 **NB: e2e de int (1e4496020) frente a la base d9a971bbe**, s0-s1 intercaladas: 24,5 → 22,5 (Δ −2,0, IC95
+  [−6,0; +2,5], McNemar p 1). Regresión real en **E014** («abre la configuración de sonido»): P2.6 había dejado la lista
+  de lugares sólo en el argumento `place`; sin ella en la descripción de app_open, el 4B tomó «Configuración del
+  sistema» (msconfig) de las apps instaladas: s0 lo rechazó el núcleo por el lugar, s1 **abrió msconfig elevado** en el
+  notebook. Sin daño (MSConfig\services 0, ningún 7040); msconfig (PID 6064) y un Taskmgr elevado (6680) cerrados por
+  ssh desde el PC. Baja también E017 (input_text_not_read_back).
+- 20:3x **ab182a770** (int): la lista de lugares vuelve a la descripción de app_open, como antes de P2.6 (pytest 296).
+- 20:4x **2a7a44fe5** (int): freno de red (11.5), E022 del NB: el nombre con guion («rfc-editor») nunca coincidía con
+  las palabras partidas de la persona → needs_confirmation falso al leer una URL que ella dictó. Ahora la dirección que
+  escribe cuenta como host de la sesión y un nombre con guiones vale si dijo todas sus partes (prueba nueva; App 72).
+- 20:5x **int2 = c654557ca** (hub/int2): int + 2.º empuje del NB d677c5ca1 (auditorías Steam/apps/ventanas y
+  web/archivos, 7.4). Choques con el prevuelo resueltos: app.close dice app_running_in_background con sus procesos ya en
+  el prevuelo; UninstallTarget con la lectura exacta y closestTitles; TrashTarget rechaza path_reserved; app.open
+  espera el inicio de sesión sólo si lanzó el proceso. Kernel 675, Contracts 74, App 72, Setup 477, pytest 296,
+  Providers de lo tocado 198. Privacidad: 3 coincidencias falsas (una frase genérica del PROGRESO del NB y dos de
+  código). decision2 ×3 de int2 corriendo (7.4 alarga la lista de lugares, ahora en descripción y argumento).
+- 21:0x **w4-mind 1514060c3**: la lista de llamadas del turno cuenta stateAfter (8.3: «releído después: quedó / no
+  quedó como se pidió») y after (7.1: «la ventana no cambió» / «su after es la ventana de después»); en el texto de
+  cada resultado, no en el prefijo. pytest 298. Pendiente: e2e del NB. **w4-core** (agente): stateAfter en los fallos
+  de ventanas y audio del Core, allClosed de cerrar todo, título sólo de dígitos en GameStore.
