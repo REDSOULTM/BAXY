@@ -687,7 +687,10 @@ class Mind:
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
-            description = self.english.get(name) or str(cap.get("description") or "")
+            # Renew al máximo: the places stay in app_open's description too (P2.6 left them only in `place`; e2e E014
+            # then opened msconfig for «abre la configuración de sonido», twice, on the notebook, 2026-10-22).
+            description = (self.english.get(name) or str(cap.get("description") or "")).replace(
+                "{app_places}", APP_PLACES_TEXT)
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:

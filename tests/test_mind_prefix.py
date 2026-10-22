@@ -11,8 +11,9 @@ def _installed(tmp_path: Path, names: list[str]) -> str:
         "type": "object", "properties": {"appId": {"type": "string"}, "place": {"type": "string"}}}}],
         "applicationCatalog": {"names": names}})
     tool = next(t for t in mind.tools if t["function"]["name"] == "app_open")["function"]
-    assert tool["description"].count("«Steam» (") + tool["parameters"]["properties"]["place"]["description"].count(
-        "«Steam» (") == 1  # the places are named once, on the argument
+    # The places are named in the description as the model learnt them (taking them out of it made the model open
+    # msconfig for «abre la configuración de sonido», e2e E014, 2026-10-22) and in the argument.
+    assert tool["description"].count("«Steam» (") == 1
     return tool["description"].split("Installed applications (use one of these names as appId): ")[1]
 
 
