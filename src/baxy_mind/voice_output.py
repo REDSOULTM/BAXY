@@ -53,7 +53,6 @@ FADE_S = 0.015      # no click at a sentence's trimmed edges
 SILENCE_DB = -40.0
 LEAD_S, TAIL_S_KEPT = 0.03, 0.10
 GAP_S, GAP_QUESTION_S = 0.35, 0.45
-JOIN_CHARS = 120    # a reply this short is synthesized in one call (the model places its own pauses, ~0.24 s)
 # The mouth follows the voice (owner, 2026-10-21: the avatar's speaking animation ended while BAXY still spoke): each
 # take's loudness every LIP_STEP_S, from LIP_FLOOR_DB (closed) to LIP_TOP_DB (open), goes to the view with the wall
 # clock time its first sample sounds, so the view moves the mouth with what is heard and not with the state.
@@ -273,9 +272,11 @@ class Speech:
         next one is synthesized while the previous one sounds."""
         said = spoken(text)
         sentences = [sentence for sentence in _SENTENCE_END.split(said) if sentence.strip()]
-        # A short reply, or one that starts with a word or two («Listo.», «Hecho.»), is one call: the model's own
-        # chunker joins up to 300 characters, and its weak spot is the very short utterance (Supertonic issue #30).
-        if len(sentences) > 1 and (len(said) <= JOIN_CHARS or len(sentences[0].split()) <= 3):
+        # A reply that starts with a word or two («Listo.», «Hecho.») is one call: the very short utterance is
+        # Supertonic's weak spot (issue #30). Any other first sentence is synthesized alone, so it sounds sooner: joining
+        # every reply of up to 120 characters (84 % of them) cost 1 595 ms to the first audio against 989 ms for the first
+        # sentence alone (p50 of 16 two-sentence replies, 10 steps, PC CPU, renew al máximo 9.3, 2026-10-22).
+        if len(sentences) > 1 and len(sentences[0].split()) <= 3:
             sentences = [said]
         generation = self._generation
 
