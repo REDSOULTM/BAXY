@@ -182,8 +182,8 @@ internal sealed class WindowActionHandler(string operation, WindowControlAction 
 
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window))
-            : OperationOutcome.Failure(
-                result.ErrorCode ?? "window_action_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
+            : WindowControlResultJson.Failure(
+                result.ErrorCode ?? "window_action_failed", result.EffectMayHaveOccurred, result.StateAfter);
     }
 }
 
@@ -261,8 +261,8 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
 
         if (!result.Succeeded || !result.Verified || result.ProcessId is null)
         {
-            return OperationOutcome.Failure(
-                result.ErrorCode ?? "app_close_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
+            return WindowControlResultJson.Failure(
+                result.ErrorCode ?? "app_close_failed", result.EffectMayHaveOccurred, result.StateAfter);
         }
 
         // Auditoría D7: «closed» only for a window that went away after BAXY's close; one already gone, or hidden instead
@@ -497,8 +497,8 @@ internal sealed class WindowBoundsHandler(string operation, IWindowControlProvid
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Unchanged(
                 WindowControlResultJson.Serialize(result.Window), result.AlreadyReached))
-            : OperationOutcome.Failure(
-                result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
+            : WindowControlResultJson.Failure(
+                result.ErrorCode ?? "window_bounds_failed", result.EffectMayHaveOccurred, result.StateAfter);
     }
 }
 
@@ -616,6 +616,36 @@ internal static class WindowControlResultJson
         unchanged["next"] = "it already was so: done, nothing needed to change";
         using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
         return document.RootElement.Clone();
+    }
+
+    // Renew al máximo (8.3): an ambiguous failure (the act reached the window and its verification did not hold)
+    // carries the window as the provider's one read found it after, so the mind can say how it stayed instead of a
+    // bare «could not». Still a failure with its code and uncertainty; without that read, the bare failure.
+    public static OperationOutcome Failure(string errorCode, bool effectMayHaveOccurred, WindowStateAfter? stateAfter)
+    {
+        if (!effectMayHaveOccurred || stateAfter is null)
+            return OperationOutcome.Failure(errorCode, effectMayHaveOccurred: effectMayHaveOccurred);
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteStartObject("stateAfter");
+            writer.WriteBoolean("present", stateAfter.Present);
+            writer.WriteBoolean("hidden", stateAfter.Hidden);
+            // A window gone, or hidden, has no state nor bounds read: only what the read gave is said.
+            if (stateAfter.State is not null) writer.WriteString("state", stateAfter.State);
+            if (stateAfter.Foreground is bool foreground) writer.WriteBoolean("foreground", foreground);
+            if (stateAfter.X is int x) writer.WriteNumber("x", x);
+            if (stateAfter.Y is int y) writer.WriteNumber("y", y);
+            if (stateAfter.Width is int width) writer.WriteNumber("width", width);
+            if (stateAfter.Height is int height) writer.WriteNumber("height", height);
+            writer.WriteBoolean("requestedStateReached", stateAfter.RequestedStateReached);
+            writer.WriteString("authority", stateAfter.Authority);
+            writer.WriteEndObject();
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return OperationOutcome.Failure(errorCode, document.RootElement.Clone(), effectMayHaveOccurred: true);
     }
 
     public static JsonElement Serialize(WindowCandidate window)

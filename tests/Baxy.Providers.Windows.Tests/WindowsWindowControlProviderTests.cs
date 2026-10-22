@@ -389,6 +389,96 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Renew al máximo (8.3, Core): the handlers dropped the state read after an ambiguous failure, so the mind
+    // only heard «could not». The failure keeps its code and uncertainty and carries stateAfter; a maximize
+    // Windows refused changed nothing and says nothing more.
+    [TestCase(WindowControlAction.Minimize, true, "normal")]
+    [TestCase(WindowControlAction.Maximize, false, null)]
+    public async Task AWindowActionFailureCarriesTheStateReadAfter(
+        WindowControlAction action, bool accepted, string? stateAfter)
+    {
+        var platform = new FakePlatform
+        {
+            ExecuteAccepted = accepted,
+            ActionConvergenceDelayCount = accepted ? 1000 : 0,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None))
+            .Windows.Single().WindowId;
+
+        string operation = "window." + action.ToString().ToLowerInvariant();
+        OperationOutcome outcome = await Run(new WindowActionHandler(operation, action, provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(accepted));
+            if (stateAfter is null)
+            {
+                Assert.That(outcome.Result, Is.Null);
+                return;
+            }
+
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That(state.GetProperty("present").GetBoolean(), Is.True);
+            Assert.That(state.GetProperty("hidden").GetBoolean(), Is.False);
+            Assert.That(state.GetProperty("state").GetString(), Is.EqualTo(stateAfter));
+            Assert.That(state.GetProperty("foreground").GetBoolean(), Is.False);
+            Assert.That(state.GetProperty("width").GetInt32(), Is.EqualTo(640));
+            Assert.That(state.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state.GetProperty("authority").GetString(), Is.EqualTo("windows_window_identity_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3, Core): a move Windows took and the window did not keeps the bounds read after.
+    [Test]
+    public async Task AMoveFailureCarriesTheBoundsReadAfter()
+    {
+        var platform = new FakePlatform { SetBoundsIgnored = true };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None))
+            .Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(
+            new WindowBoundsHandler("window.move", provider), new { windowId, x = 20, y = 30 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That((state.GetProperty("x").GetInt32(), state.GetProperty("y").GetInt32()), Is.EqualTo((0, 0)));
+            Assert.That(state.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+        });
+    }
+
+    // Renew al máximo (8.3, Core): a close Windows took with the window still there says it is still there.
+    [Test]
+    public async Task ACloseFailureCarriesWhetherTheWindowIsStillThere()
+    {
+        var platform = new FakePlatform
+        {
+            PrimaryCloseAccepted = true,
+            PrimaryCloseCloses = false,
+            SystemCloseAccepted = true,
+            SystemCloseCloses = false,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None))
+            .Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new AppCloseHandler(provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That(state.GetProperty("present").GetBoolean(), Is.True);
+            Assert.That(state.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+        });
+    }
+
     // A maximized window is restored before it is placed; a placement Windows then refused leaves it restored.
     [TestCase("maximized", true)]
     [TestCase("normal", false)]
