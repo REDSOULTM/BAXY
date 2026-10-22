@@ -980,9 +980,30 @@ class Mind:
             filled = self.server.fill_call(body, wire)
         except Exception:  # noqa: BLE001 - a fill that failed falls back to asking
             return None
-        if not filled or filled.get("name") != wire:
+        if not filled or filled.get("name") != wire or not self._founded(wire, filled["arguments"], body["messages"]):
             return None
         return {"id": f"call_{len(body['messages'])}_s1", "wire": wire, "arguments": filled["arguments"]}
+
+    def _founded(self, wire: str, arguments: dict[str, Any], messages: list[dict[str, Any]]) -> bool:
+        """Whether a filled call holds every required argument of its tool and each text or number among them appears
+        in what the conversation showed: the person's words or a tool's result (folded, as a whole word). B-MED-1 of the
+        notebook (2026-10-22): Laya chose window_snap where Qwen chose window_resolve, and fill_call wrote windowId «1»,
+        which no result had listed, and it ran; a web_download got a page of results as its url."""
+        tool = next((t["function"] for t in self.tools if t["function"]["name"] == wire), {})
+        required = (tool.get("parameters") or {}).get("required") or []
+        seen = _fold(" ".join(str(m.get("content") or "") for m in messages
+                              if m.get("role") == "tool" or (m.get("role") == "user"
+                                                             and not str(m.get("content") or "").startswith("["))))
+        for name in required:
+            value = arguments.get(name)
+            if value is None or value == "":
+                return False
+            if isinstance(value, bool) or not isinstance(value, (str, int, float)):
+                continue
+            text = _fold(str(int(value) if isinstance(value, float) and value.is_integer() else value))
+            if not text or not re.search(rf"(?<!\w){re.escape(text)}(?!\w)", seen):
+                return False
+        return True
 
     def _candidates(self, chosen: str, doubt: dict[str, Any], body: dict[str, Any]) -> dict[str, str]:
         """The model's own candidates as the decision model's options (as in its training, build_kev_data.py): the tool it

@@ -88,3 +88,42 @@ def test_an_answer_to_a_question_whose_decision_failed_still_answers_it_next_tim
     messages = server.bodies[-1]["messages"]
     assert [m["content"] for m in messages if m["role"] == "tool"] == ["a las 7"]
     assert [m["role"] for m in messages[-2:]] == ["assistant", "tool"]  # the answer, not a new request
+
+
+def _snap_correction(tmp_path: Path, monkeypatch, filled: dict):
+    # B-MED-1 (notebook traces): Qwen chose window_resolve, Laya window_snap, and fill_call wrote windowId "1", invented.
+    from test_mind_doubt_policy import FakeSystemOne, _call as _doubted, _mind as _doubt_mind
+    monkeypatch.setenv("BAXY_S1_DOUBT", "")
+    monkeypatch.setenv("BAXY_S1_VETO", "0.6")
+    monkeypatch.setenv("BAXY_S1_CORRECT", "1")
+    reply = _doubted("window_resolve", {"query": "la ventana"}, 0.5)
+    reply["choices"][0]["logprobs"]["content"][5]["top_logprobs"].append({"token": "app", "logprob": -0.7})
+    mind, server = _doubt_mind(tmp_path, [reply, _say("¿Qué ventana pongo a la izquierda?")])
+    server.complete_name = lambda body, written: "_snap"
+    server.fill_call = lambda body, wire: {"name": wire, "arguments": filled, "timings": {}}
+    schema = {"type": "object", "properties": {"windowId": {"type": "string"}, "position": {"type": "string"}},
+              "required": ["windowId", "position"]}
+    mind.tools = [{"type": "function", "function": {"name": n, "description": "Window. More.", "parameters": p}}
+                  for n, p in (("window_resolve", {}), ("app_snap", schema))]
+    mind.wire_to_op = {"window_resolve": "window.resolve", "app_snap": "app.snap"}
+    mind.risk = {"window_resolve": "read_only", "app_snap": "low_reversible"}
+    mind.system_one = FakeSystemOne("app_snap")  # type: ignore[assignment]
+    return mind, server
+
+
+def test_a_correction_with_an_argument_the_conversation_never_showed_asks(tmp_path: Path, monkeypatch) -> None:
+    mind, server = _snap_correction(tmp_path, monkeypatch, {"windowId": "1", "position": "left"})
+    result = mind.decide(1, "pon la ventana de la izquierda")
+    assert result["kind"] == "conversation" and result["operation"] is None
+    assert "app_snap" not in json.dumps([m.get("tool_calls") for m in server.bodies[-1]["messages"]])
+
+
+def test_a_correction_missing_a_required_argument_asks(tmp_path: Path, monkeypatch) -> None:
+    mind, _ = _snap_correction(tmp_path, monkeypatch, {"position": "left"})
+    assert mind.decide(1, "pon la ventana 1 a la left")["operation"] is None
+
+
+def test_a_correction_whose_arguments_the_person_said_runs(tmp_path: Path, monkeypatch) -> None:
+    mind, _ = _snap_correction(tmp_path, monkeypatch, {"windowId": "1", "position": "Left"})
+    result = mind.decide(1, "pon la ventana 1 a la left")
+    assert result["operation"] == "app.snap" and result["arguments"] == {"windowId": "1", "position": "Left"}
