@@ -2718,7 +2718,8 @@ function Do-View($request){
     for($k=0;$k -lt $ordered.Count;$k++){ if([object]::ReferenceEquals($controls[$k],$focused)){ $focusedIndex=$k; break } }
     $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; value=$focused.value; i=$focusedIndex }
   }
-  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; disabledCut=($withDimmed -and [bool]$script:DisabledCut); frameOnly=$frameOnly; partial=$viewPartial }
+  # Renew al maximo (7.3): la caja de la ventana, en los mismos pixeles que los rect: el adaptador da a cada control su zona.
+  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; disabledCut=($withDimmed -and [bool]$script:DisabledCut); frameOnly=$frameOnly; partial=$viewPartial; box=$box }
 }
 # Los accionables que se ven pero estan deshabilitados (pasada r15b, v3-27 y v3-29: «Copiar» y «Buscar» del Mapa de
 # caracteres esperan texto en su campo y la vista los quitaba, asi que el modelo no sabia que existian). Van aparte de
