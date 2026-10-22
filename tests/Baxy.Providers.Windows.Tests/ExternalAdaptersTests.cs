@@ -4556,6 +4556,36 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): a search whose playback holds none of the words searched says so as a field
+    // of its own (queryMatched:false), never only in the titles; a playback that holds one carries no such field.
+    [TestCase("romeo santos propuesta indecente", "Propuesta Indecente - Spotify", false)]
+    [TestCase("los bunkers bailando solo", "Los Bunkers - Spotify", true)]
+    public async Task ASpotifySearchSaysWhenWhatPlaysHoldsNoneOfItsWords(
+        string nowPlaying, string windowTitle, bool matched)
+    {
+        var adapter = new SpotifyDesktopAdapter(new StubProcessRunner(JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            ["ok"] = true,
+            ["effectObserved"] = true,
+            ["title"] = windowTitle,
+            ["selectedControl"] = "Reproducir Los Bunkers",
+            ["observedNowPlaying"] = nowPlaying,
+            ["playbackEvidence"] = "now_playing_changed",
+            ["processId"] = 42,
+        })));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query", Json("""{"provider":"spotify","query":"otra de los Bunkers"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result!.Value.TryGetProperty("queryMatched", out JsonElement field), Is.EqualTo(!matched));
+            if (!matched)
+                Assert.That(field.ValueKind, Is.EqualTo(JsonValueKind.False));
+        });
+    }
+
     [Test]
     public async Task SpotifyExactSelectionRetriesOneUnobservedEmptyResult()
     {
