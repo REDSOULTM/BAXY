@@ -2881,3 +2881,12 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   Laya corrige hacia storage.removable.list en las 3 semillas). **4.1 RETIRADA** (d4d2d39d2, su cifra en el commit).
   Quedan 3.3, 1.4 y 9.5, que no cambian decisiones de un turno: su medida (RAM, prompt_n en sesión larga, ms por
   continuación) la hace el notebook en una sesión de 22 turnos.
+- 15:5x **tanda 3 (prefijo) en decision2** S1 on ×3 (lv-t3 00d7df344, −698 tokens de prefijo): 229 / 226 / 229 (media
+  228,0) frente a 229,67: Δ −1,67, IC95 [−6,0; +2,33], McNemar p 0,69 (dentro del ruido). Cambios consistentes en las 3
+  semillas: P017 (alarma) pasa a pregunta de duda, P215 elige package.uninstall en vez de game.uninstall.named, P254
+  (OBS) se arregla con la descripción de game_entitlement_named. Bisección por commit sobre los 9 casos que cambian
+  (`renew_v4\d2_sub.json`) en cola en la GPU.
+- Tanda 2 (lv-t2: 8.2, 7.7, 11.1, 11.2; Kernel 633, App 27, pytest 174) pedida al NB en falsedades + e2e. Tanda 4
+  (lv-t4: 4.2 y 8.1; **4.4 no se implementa**: por clase de riesgo los datos no separan con honestidad, la ganancia
+  viene de MASSIVE y elegir entre ~100 combinaciones sobreajusta; **4.5 retirada**: ningún umbral retiene <2 % de
+  acciones buenas; a <0,3, 12,9 %) en cola de decision2. Tanda 5 (5.1 efecto tipado, R10.1, R10.3, 10.3-10.5) en curso.
