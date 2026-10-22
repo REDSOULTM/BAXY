@@ -618,7 +618,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     /// BAXY Renew cu (C04): the game whose store page is asked for by its title (app.open, place game). The installed
     /// game bearing the title, else the store's answer: the one game bearing it, else the first, in the store's own
     /// order, whose name holds every word of it («Sid Meier Civilization VI» is «Sid Meier's Civilization VI»). Only a page is
-    /// opened with it, and its name goes back with the opening; null when nothing bears the title.
+    /// opened with it, and its name goes back with the opening; null when nothing bears the title, and
+    /// <see cref="Applications.GameTitleSearchFailedException"/> when the store's search got no answer.
     /// </summary>
     internal static async ValueTask<SteamStoreTitle?> PageTitleAsync(
         string title,
@@ -638,10 +639,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             found = await (storeTitles ?? SearchStoreAsync)(title, cancellationToken).ConfigureAwait(false);
         }
+        // Renew al máximo (auditoría de flujos): a search with no answer is not a title nothing bears.
         catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
             || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
-            return null;
+            throw new Applications.GameTitleSearchFailedException(exception);
         }
 
         SteamStoreTitle[] bearing = [.. found.Where(item => FoldTitle(item.Name) == folded)

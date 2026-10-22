@@ -62,11 +62,21 @@ internal sealed class AppOpenHandler(
         if (ApplicationPlaces.GameCatalogOf(arguments.AppId, arguments.Place) is { } catalog
             && !string.IsNullOrWhiteSpace(placeValue) && !placeValue.All(char.IsAsciiDigit))
         {
-            game = await _games.FindAsync(catalog, placeValue, cancellationToken).ConfigureAwait(false);
+            bool searchFailed = false;
+            try
+            {
+                game = await _games.FindAsync(catalog, placeValue, cancellationToken).ConfigureAwait(false);
+            }
+            catch (GameTitleSearchFailedException)
+            {
+                // Renew al máximo (auditoría de flujos): no answer (no network) is not a title nothing bears.
+                searchFailed = true;
+            }
+
             if (game is null)
             {
                 return OperationOutcome.Failure(
-                    "game_title_not_found",
+                    searchFailed ? "game_title_search_failed" : "game_title_not_found",
                     result: Facts(writer =>
                     {
                         writer.WriteString("appId", arguments.AppId);

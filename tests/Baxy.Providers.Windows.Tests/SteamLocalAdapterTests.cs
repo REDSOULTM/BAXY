@@ -910,6 +910,18 @@ public sealed class SteamLocalAdapterTests
 
     // BAXY Renew cu (C04): a game's page by its title. The installed game bearing it first; else the store's one game
     // bearing it; else the first, in the store's order, whose name holds every word of it; else none.
+    // Renew al máximo (auditoría de flujos): with no network, a game page asked for by its title was «game_title_not_found»;
+    // a search that got no answer is said as such.
+    [Test]
+    public void AGamePageSearchThatGotNoAnswerIsNotATitleNothingBears()
+    {
+        static ValueTask<IReadOnlyList<SteamStoreTitle>> Offline(string title, CancellationToken token) =>
+            throw new HttpRequestException("simulated offline store");
+
+        Assert.ThrowsAsync<Baxy.Providers.Windows.Applications.GameTitleSearchFailedException>(async () =>
+            await SteamLocalAdapter.PageTitleAsync("Hades", default, () => [], Offline));
+    }
+
     [Test]
     public async Task AGamePageTitleIsTheInstalledOneThenTheStoreOneBearingItThenTheFirstHoldingItsWords()
     {

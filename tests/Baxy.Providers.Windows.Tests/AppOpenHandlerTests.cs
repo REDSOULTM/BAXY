@@ -373,6 +373,23 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): a title search that got no answer (no network) opens nothing and says so,
+    // never that no game bears the title.
+    [Test]
+    public async Task AGameTitleSearchWithNoAnswerIsSaidAsSuch()
+    {
+        var opened = new List<string>();
+        OperationOutcome outcome = await SteamHandler(opened, new FailedTitles()).ExecuteAsync(
+            Invocation("""{"appId":"Steam","place":"game","placeValue":"Hades"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("game_title_search_failed"));
+            Assert.That(outcome.Result!.Value.GetProperty("title").GetString(), Is.EqualTo("Hades"));
+            Assert.That(opened, Is.Empty);
+        });
+    }
+
     // BAXY Renew cu (aid app_places): opened with no place, an application with places of its own names them and what
     // each takes; with BAXY_AYUDAS=none it is the result it was.
     [TestCase("all", true)]
@@ -514,6 +531,12 @@ public sealed class AppOpenHandlerTests
             Asked.Add($"{catalog}:{title}");
             return ValueTask.FromResult(found);
         }
+    }
+
+    private sealed class FailedTitles : IGameTitles
+    {
+        public ValueTask<GameTitle?> FindAsync(string catalog, string title, CancellationToken cancellationToken) =>
+            throw new GameTitleSearchFailedException(new HttpRequestException("simulated offline store"));
     }
 
     private sealed class RecordedPlace(List<string> opened) : IApplicationPlaceOpener
