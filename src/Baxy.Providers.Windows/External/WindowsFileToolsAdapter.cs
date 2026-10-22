@@ -43,14 +43,16 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
     internal WindowsFileToolsAdapter(
         Func<string, string?> knownFolder,
         Func<string, CancellationToken, Task<(byte[] Body, string ContentType)>>? fetch,
-        Func<ApplicationOpenRequest, CancellationToken, ValueTask<ApplicationOpenResult>>? openWith = null)
+        Func<ApplicationOpenRequest, CancellationToken, ValueTask<ApplicationOpenResult>>? openWith = null,
+        HttpMessageHandler? downloadHandler = null)
     {
         _knownFolder = knownFolder ?? throw new ArgumentNullException(nameof(knownFolder));
         _fetch = fetch;
         _openWith = openWith;
         // Auditoría final: a download reads only public web addresses, as web.fetch does (SearchPageReader): no cookie,
         // every redirect checked before it is followed, and a connection only to the public addresses a name resolves to.
-        _http = new HttpClient(new SocketsHttpHandler
+        // Tests answer from their own handler.
+        _http = new HttpClient(downloadHandler ?? new SocketsHttpHandler
         {
             UseCookies = false,
             AllowAutoRedirect = false,
@@ -830,8 +832,11 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         response.EnsureSuccessStatusCode();
         if (response.Content.Headers.ContentLength is > MaximumDownloadBytes)
             throw new InvalidDataException("download too large");
-        byte[] body = await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
-        if (body.Length > MaximumDownloadBytes)
+        // Renew al máximo (auditoría de flujos): a size the server did not announce is bounded while reading; the whole
+        // body (up to 2 GB) was read into memory and only then refused.
+        (byte[] body, bool truncated) = await WebBrowserAdapter.ReadBoundedBytesAsync(
+            response, MaximumDownloadBytes, cancellationToken).ConfigureAwait(false);
+        if (truncated)
             throw new InvalidDataException("download too large");
         return (body, response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream");
     }

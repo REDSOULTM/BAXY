@@ -387,6 +387,66 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): a file over 50 MiB whose size the server does not announce (sent in
+    // chunks) stops being read past the bound; it was read whole into memory (up to 2 GB) and only then refused.
+    [Test]
+    public async Task AnUnannouncedFileOverTheBoundIsNotReadWhole()
+    {
+        var body = new EndlessStream();
+        var adapter = new WindowsFileToolsAdapter(folder => folder == "desktop" ? _root : null, null, null,
+            new AnsweringHandler(() =>
+            {
+                var content = new StreamContent(body);
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/zip");
+                return new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK) { Content = content };
+            }));
+        using var turn = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.download",
+            JsonSerializer.SerializeToElement(new { url = "https://example.org/grande.zip", folder = "desktop" }),
+            turn.Token);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("download_too_large"));
+            Assert.That(body.Served, Is.LessThanOrEqualTo(50L * 1024 * 1024 + 1024 * 1024));
+            Assert.That(Directory.EnumerateFiles(_root), Is.Empty);
+        });
+    }
+
+    private sealed class AnsweringHandler(Func<System.Net.Http.HttpResponseMessage> answer)
+        : System.Net.Http.HttpMessageHandler
+    {
+        protected override Task<System.Net.Http.HttpResponseMessage> SendAsync(
+            System.Net.Http.HttpRequestMessage request, CancellationToken cancellationToken) =>
+            Task.FromResult(answer());
+    }
+
+    // A body that never ends (a server streaming chunks with no announced length), counting what was read of it.
+    private sealed class EndlessStream : Stream
+    {
+        private const long Ceiling = 300L * 1024 * 1024;
+        internal long Served { get; private set; }
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => Served; set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            // Past the ceiling it ends, so a reader without a bound stops too instead of filling the test's memory.
+            int served = (int)Math.Min(count, Ceiling - Served);
+            Array.Clear(buffer, offset, served);
+            Served += served;
+            return served;
+        }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
+
     [TestCase("portada", "image/png", "portada.png")]
     [TestCase("", "image/jpeg", "descarga.jpg")]
     [TestCase("a:b*c.txt", "text/plain", "abc.txt")]
