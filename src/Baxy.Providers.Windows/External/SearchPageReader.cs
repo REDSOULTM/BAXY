@@ -76,8 +76,12 @@ internal sealed class SearchPageReader : IDisposable
             MediaTypeHeaderValue? type = response.Content.Headers.ContentType;
             if (type?.MediaType is not ("text/html" or "application/xhtml+xml"))
                 return PageRead.Failed("web_fetch_not_html");
+            // Renew al máximo (auditoría de flujos): the client's timeout covers only the headers; the body gets as long
+            // again, so a page that trickles ends as one that took too long, not at the operation's own deadline.
+            using var bodyDeadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            bodyDeadline.CancelAfter(_http.Timeout);
             (byte[] body, bool truncated) = await WebBrowserAdapter.ReadBoundedBytesAsync(
-                response, MaximumBytes, cancellationToken).ConfigureAwait(false);
+                response, MaximumBytes, bodyDeadline.Token).ConfigureAwait(false);
             return new PageRead(current, Decode(body, type.CharSet), truncated, null);
         }
         return PageRead.Failed("web_fetch_too_many_redirects");

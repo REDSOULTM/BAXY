@@ -3643,6 +3643,69 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): a page that does not answer in time, before its headers or in the
+    // middle of its body, is a page that took too long (web_fetch_timeout); the client's timeout escaped the adapter
+    // (external_provider_exception) and a body that trickled held the turn until the operation's own deadline.
+    [Test]
+    public async Task AWebFetchThatTakesTooLongSaysSo()
+    {
+        using TemporaryDirectory temporary = new();
+        using var silent = new HttpClient(new LambdaHttpHandler((_, _) =>
+            throw new TaskCanceledException("timeout", new TimeoutException())));
+        using var trickling = new HttpClient(new LambdaHttpHandler((_, _) =>
+        {
+            var content = new StreamContent(new StalledStream());
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = content });
+        }))
+        { Timeout = TimeSpan.FromMilliseconds(300) };
+        using WebBrowserAdapter beforeHeaders = SearchAdapter(temporary, silent);
+        using WebBrowserAdapter midBody = SearchAdapter(temporary, trickling);
+        using var turn = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        ExternalCapabilityReceipt headers = await beforeHeaders.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lenta.example.com/"}"""), turn.Token);
+        ExternalCapabilityReceipt body = await midBody.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lenta.example.com/"}"""), turn.Token);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(headers.ErrorCode, Is.EqualTo("web_fetch_timeout"));
+            Assert.That(body.ErrorCode, Is.EqualTo("web_fetch_timeout"));
+            Assert.That(turn.IsCancellationRequested, Is.False);
+            Assert.That(headers.EffectMayHaveOccurred | body.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
+    private sealed class LambdaHttpHandler(
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> answer) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken) => answer(request, cancellationToken);
+    }
+
+    // A body whose bytes never come: each read waits until it is cancelled.
+    private sealed class StalledStream : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => 0; set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken).ConfigureAwait(false);
+            return 0;
+        }
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
+            ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
+
     private static HttpAnswer WikipediaAnswer(
         string language,
         params (string Title, string Extract, bool Disambiguation)[] pages)

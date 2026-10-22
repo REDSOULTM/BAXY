@@ -302,7 +302,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         if (!Uri.TryCreate(ExternalJson.RequiredString(arguments, "url").Trim(), UriKind.Absolute, out Uri? address)
             || !SearchPageReader.IsPublicPageAddress(address))
             return ExternalJson.Failure(operation, "web_fetch_address_not_public");
-        SearchPageReader.PageRead read = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+        SearchPageReader.PageRead read;
+        try
+        {
+            read = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // Renew al máximo (auditoría de flujos): the page did not answer in time (its headers or its body); the
+            // client's timeout escaped as an exception of the provider.
+            return ExternalJson.Failure(operation, "web_fetch_timeout");
+        }
         if (read.Html is null || read.Final is null)
             return ExternalJson.Failure(operation, read.Error ?? "web_fetch_page_unreadable");
         (string title, string whole, int skipped) = PageText.Prose(read.Html);
