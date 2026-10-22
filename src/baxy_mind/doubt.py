@@ -27,15 +27,20 @@ def read(reply: dict[str, Any] | None) -> dict[str, Any] | None:
         return None
     if not content:
         return None
-    first = content[0]
+    # Review 2026-10-22: words written before the call («Claro,» then <tool_call>) are not the decision; the call is
+    # measured from its own opening token, and a call whose opening is not in the logprobs gets no judgment.
+    opening = next((i for i, token in enumerate(content) if token.get("token") == CALL), None)
+    if opening is None and ((reply or {})["choices"][0].get("message") or {}).get("tool_calls"):
+        return None
+    first = content[opening or 0]
     alternatives = {a["token"]: _p(a.get("logprob")) for a in first.get("top_logprobs") or []}
     p_call = _p(first.get("logprob")) if first.get("token") == CALL else alternatives.get(CALL, 0.0)
     starts, text = [], ""
     for token in content:
         starts.append(len(text))
         text += token.get("token", "")
-    at = text.find(NAME_OPEN)
-    if first.get("token") != CALL or at < 0:
+    at = text.find(NAME_OPEN, starts[opening or 0])
+    if opening is None or at < 0:
         return {"confidence": round(1.0 - p_call, 4), "p_call": round(p_call, 4)}
     name_from = at + len(NAME_OPEN)
     name_to = text.find(">", name_from)
@@ -43,7 +48,8 @@ def read(reply: dict[str, Any] | None) -> dict[str, Any] | None:
     name = [i for i, s in enumerate(starts) if s + len(content[i].get("token", "")) > name_from and s < name_to]
     p_name = math.prod(_p(content[i].get("logprob")) for i in name) if name else 0.0
     weakest = min(name, key=lambda i: content[i].get("logprob", 0.0)) if name else None
-    rivals = ([(a["token"], round(_p(a.get("logprob")), 3)) for a in content[weakest].get("top_logprobs") or []][:4]
-              if weakest is not None else [])
+    # The token chosen is not its own rival (review 2026-10-22: it was the first, completed again for nothing).
+    rivals = ([(a["token"], round(_p(a.get("logprob")), 3)) for a in content[weakest].get("top_logprobs") or []
+               if a["token"] != content[weakest].get("token")][:4] if weakest is not None else [])
     return {"confidence": round(p_call * p_name, 4), "p_call": round(p_call, 4), "p_name": round(p_name, 4),
             "rivals": rivals, "written": text[:starts[weakest]] if weakest is not None else ""}

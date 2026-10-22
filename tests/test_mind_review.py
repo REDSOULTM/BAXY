@@ -200,3 +200,13 @@ def test_a_doubted_memory_call_keeps_the_persons_words_out_of_the_trace(tmp_path
     mind.wire_to_op["memory_save"] = "memory.save"
     mind.decide(1, "recuerda que mi clave es 4321")
     assert "4321" not in json.dumps(_rows(tmp_path), ensure_ascii=False)
+
+
+def test_the_tool_chosen_is_not_completed_again_as_its_own_rival(tmp_path: Path, monkeypatch) -> None:
+    # Review 9: the first «rival» was the chosen token itself: one more call to the server and one less real rival.
+    from test_mind_doubt_policy import _layer2, _rival_call
+    mind, server, _ = _layer2(tmp_path, monkeypatch, "system_power", [_rival_call(0.5)])
+    written: list[str] = []
+    server.complete_name = lambda body, text: written.append(text) or "_close"
+    mind.decide(1, "apaga el pc")
+    assert [text[-3:] for text in written] == ["app"]
