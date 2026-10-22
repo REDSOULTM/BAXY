@@ -63,6 +63,22 @@ public sealed class OperationOutcomeNarrationTests
         Assert.That(keys, Is.EquivalentTo(new[] { "id", "noteId", "deviceId", "sha256", "hash", "recordId" }));
     }
 
+    // Revisión 2026-10-22 (C-2): a retryable outcome is what the engine answers as pending; the facts say pending too,
+    // not failed beside a pending flag.
+    [Test]
+    public void ARetryableOutcomeIsPendingInTheFactsAsInTheResponse()
+    {
+        using JsonDocument message = JsonDocument.Parse(OperationVisibleFacts.FromOutcome(
+            "note.create", OperationOutcome.RetryableFailure("reconciliation_required", effectMayHaveOccurred: true)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message.RootElement.GetProperty("status").GetString(), Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(message.RootElement.GetProperty("error").GetString(), Is.EqualTo("reconciliation_required"));
+            Assert.That(message.RootElement.GetProperty("effectUncertain").GetBoolean(), Is.True);
+        });
+    }
+
     // Audit 2026-10-15 R2: a page of a text read by offset whose text the message cuts goes on from where the shown
     // text ends, so the model never pages past text it did not see.
     [Test]
