@@ -40,11 +40,10 @@ internal sealed record NativeTurnConfirmation(
 /// directly). The kernel's token is bound to the exact invocation it challenged; anything else the person asks drops it.
 /// </para>
 /// <para>
-/// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: a call with one of the catalog's
-/// risks in <see cref="ProposedRisks"/>, one that sends keys, clicks or commands to a window or something out of the PC
-/// (the catalog's <see cref="OperationEffects"/>, <see cref="Has"/>), or one
-/// that writes over what the person copied (<see cref="ReplacesThePersonsClipboard"/>), is held as a proposal and never reaches the kernel until the person says «sí» to that exact invocation; any other call
-/// runs. A heartbeat never starts while a confirmation waits for the person.
+/// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: a call that is not harmless and
+/// reversible (<see cref="BeatProposes"/>: a risk other than read_only or low_reversible, or one of the catalog's
+/// <see cref="OperationEffects"/>) is held as a proposal and never reaches the kernel until the person says «sí» to that
+/// exact invocation; any other call runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
@@ -93,12 +92,6 @@ internal sealed class NativeTurnLoop
 
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
     internal static readonly TimeSpan ProposalLifetime = TimeSpan.FromMinutes(10);
-
-    // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, instalar, cerrar con trabajo).
-    private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)
-    {
-        "work_loss", "recoverable_delete", "external_communication", "installation",
-    };
 
     private readonly Host _host;
     // 2026-10-22, review of the App: one clock for whether a waiting call is still waiting and how it ended.
@@ -446,8 +439,7 @@ internal sealed class NativeTurnLoop
                 "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
-        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || Has(operation, arguments, OperationEffects.WindowInput)
-                || Has(operation, arguments, OperationEffects.Network) || ReplacesThePersonsClipboard(operation)))
+        if (_beat && BeatProposes(descriptor, arguments))
         {
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
@@ -482,8 +474,22 @@ internal sealed class NativeTurnLoop
         return descriptor.Has(effect, given.RootElement);
     }
 
-    // The clipboard holds what the person copied: writing over it unasked is an effect on their data (audit, round A).
-    private static bool ReplacesThePersonsClipboard(string operation) => operation is "clipboard.write.text";
+    // R10.1 (owner: a heartbeat acts alone only on what is harmless and reversible, and proposes the rest): a call nobody
+    // asked for runs only when the catalog says it reads or changes something reversibly (read_only, low_reversible)
+    // and, with these arguments, it has none of the catalog's effects: no window of the person's, nothing out of the PC,
+    // no radio, network, pairing, airplane or display mode. Privacy_sensitive ran alone (trace nb-beat-none-pC, P026:
+    // airplane mode switched on at 8 % battery), and so did a capture, the clipboard's text or the Wi-Fi radio; writing
+    // over what the person copied (clipboard.write.text, audit round A) is privacy_sensitive too.
+    internal static bool BeatProposes(ProductOperationDescriptor descriptor, JsonObject arguments)
+    {
+        if (descriptor.Risk is not (OperationRisks.ReadOnly or OperationRisks.LowReversible))
+        {
+            return true;
+        }
+
+        using System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString());
+        return descriptor.Effects.Any(effect => effect.Applies(given.RootElement));
+    }
 
     // The turn ends on a call that waits for the person's «sí»: the last result says that call has not run, so the
     // answer cannot tell what it would have done (e2e E021: «Python 3.11.2» after a console command that never ran).

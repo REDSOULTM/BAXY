@@ -372,8 +372,9 @@ DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
 # other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth. Al máximo 5.1: nor
 # one with an effect of the catalog (keys, clicks or commands to a window that may be the person's; what the model wrote
-# sent out of the PC), whatever its risk: a call the model did not choose never lands there. A catalog without the field
-# (the measurement catalogs saved before it) corrects by risk alone, as before.
+# sent out of the PC; a radio, a network, a pairing, airplane or display mode changed), whatever its risk: a call the
+# model did not choose never lands there. A catalog without the field (the measurement catalogs saved before it)
+# corrects by risk alone, as before.
 CORRECTABLE_RISKS = ("read_only", "low_reversible")
 
 

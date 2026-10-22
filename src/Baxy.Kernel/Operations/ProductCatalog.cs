@@ -208,13 +208,15 @@ public static class ProductCatalog
             Schema([String("deviceId", maximumUtf8Bytes: 256, nonWhitespace: true)], ["deviceId"]),
             OperationRisks.PrivacySensitive,
             "bluetooth.device.pair.hardware.postread.v1",
-            "Empareja un dispositivo resuelto mediante el diálogo y permisos oficiales del sistema."),
+            "Empareja un dispositivo resuelto mediante el diálogo y permisos oficiales del sistema.",
+            effects: [SystemChange()]),
         Descriptor(
             "bluetooth.radio.set",
             Schema([Boolean("state")], ["state"]),
             OperationRisks.LowReversible,
             "bluetooth.radio.set.windows.radio.postread.v1",
-            "Enciende o apaga las radios Bluetooth mediante la API oficial de Windows y verifica su estado final."),
+            "Enciende o apaga las radios Bluetooth mediante la API oficial de Windows y verifica su estado final.",
+            effects: [SystemChange()]),
         Descriptor(
             "bluetooth.radio.status",
             EmptySchema(),
@@ -403,7 +405,8 @@ public static class ProductCatalog
                 []),
             OperationRisks.LowReversible,
             "display.mode.set.win32.test.apply.readback.v1",
-            "Cambia el modo del monitor principal (resolución, frecuencia de refresco o ambas) a uno que su controlador lista: lo prueba con CDS_TEST, lo aplica, relee el modo y, si no es el pedido, vuelve al anterior y lo relee; con sólo la resolución mantiene la frecuencia si ese modo la lista, si no toma la más alta listada."),
+            "Cambia el modo del monitor principal (resolución, frecuencia de refresco o ambas) a uno que su controlador lista: lo prueba con CDS_TEST, lo aplica, relee el modo y, si no es el pedido, vuelve al anterior y lo relee; con sólo la resolución mantiene la frecuencia si ese modo la lista, si no toma la más alta listada.",
+            effects: [SystemChange()]),
         Descriptor(
             "display.status",
             EmptySchema(),
@@ -1601,7 +1604,11 @@ public static class ProductCatalog
             "Cambia un ajuste permitido (brillo; no molestar, por la página Notificaciones de Configuración, que queda abierta; o modo avión sobre todas las radios, por la API de radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura.",
             // do_not_disturb opens ms-settings:notifications (it takes the front) and presses its switch by UI
             // Automation's Toggle (DoNotDisturbScript); airplane_mode goes through the radios API and reaches no window.
-            effects: [WindowInput(EffectCondition.Is("setting", "do_not_disturb"))]),
+            effects:
+            [
+                WindowInput(EffectCondition.Is("setting", "do_not_disturb")),
+                SystemChange(EffectCondition.Is("setting", "airplane_mode")),
+            ]),
         Descriptor(
             "system.settings.status",
             Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),
@@ -1832,7 +1839,8 @@ public static class ProductCatalog
             Schema([String("profileId", maximumLength: 128, nonWhitespace: true)], ["profileId"]),
             OperationRisks.PrivacySensitive,
             "wifi.connect.wlan.profile.postread.v1",
-            "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales."),
+            "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales.",
+            effects: [SystemChange()]),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0170/H0376 «conectate al wifi de
         // casa», D24): «casa» no es un SSID. Con `place`, el proveedor conecta la red
         // que la persona asoció antes a ese lugar; si nombra el perfil y el lugar a la
@@ -1847,13 +1855,15 @@ public static class ProductCatalog
                 ["profileName"]),
             OperationRisks.PrivacySensitive,
             "wifi.connect.named.wlan.profile.postread.v1",
-            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado (o por el lugar asociado antes: casa, trabajo, oficina), lo conecta, verifica el estado sin exponer credenciales y recuerda la asociación lugar→red cuando se dan ambos."),
+            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado (o por el lugar asociado antes: casa, trabajo, oficina), lo conecta, verifica el estado sin exponer credenciales y recuerda la asociación lugar→red cuando se dan ambos.",
+            effects: [SystemChange()]),
         Descriptor(
             "wifi.disconnect",
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "wifi.disconnect.wlan.postread.v1",
-            "Desconecta WLAN mediante API oficial y verifica ausencia de conexión."),
+            "Desconecta WLAN mediante API oficial y verifica ausencia de conexión.",
+            effects: [SystemChange()]),
         Descriptor(
             "wifi.ensure.connected",
             EmptySchema(),
@@ -1871,7 +1881,8 @@ public static class ProductCatalog
             Schema([Boolean("state")], ["state"]),
             OperationRisks.PrivacySensitive,
             "wifi.radio.set.windows.radio.postread.v1",
-            "Enciende o apaga la radio Wi-Fi mediante la API oficial de Windows y verifica su estado final."),
+            "Enciende o apaga la radio Wi-Fi mediante la API oficial de Windows y verifica su estado final.",
+            effects: [SystemChange()]),
         Descriptor(
             "wifi.radio.status",
             EmptySchema(),
@@ -2118,6 +2129,11 @@ public static class ProductCatalog
         when.Length == 0
             ? OperationEffect.Always(OperationEffects.Network)
             : OperationEffect.With(OperationEffects.Network, when);
+
+    private static OperationEffect SystemChange(params EffectCondition[] when) =>
+        when.Length == 0
+            ? OperationEffect.Always(OperationEffects.System)
+            : OperationEffect.With(OperationEffects.System, when);
 
     private static OperationArgumentsSchema EmptySchema() => Schema([], []);
 

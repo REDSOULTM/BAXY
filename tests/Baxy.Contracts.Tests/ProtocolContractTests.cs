@@ -721,7 +721,7 @@ public sealed class ProtocolContractTests
 
     // Al máximo 5.1: where a capability's effect lands is a typed fact; none is no field at all.
     [TestCase(new string[0], false)]
-    [TestCase(new[] { "window_input", "network" }, true)]
+    [TestCase(new[] { "window_input", "network", "system" }, true)]
     [TestCase(new[] { "window_input", "window_input" }, false)]
     [TestCase(new[] { "keyboard" }, false)]
     public void Capability_effects_are_distinct_known_effects(string[] effects, bool accepted)
