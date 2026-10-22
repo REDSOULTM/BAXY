@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Providers.Windows.Filesystem;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -15,13 +16,19 @@ internal sealed class WindowsRecycleBinAdapter : IExternalOperationAdapter
         """;
 
     private readonly IExternalProcessRunner _runner;
+    private readonly Func<long>? _itemsInBin;
 
-    internal WindowsRecycleBinAdapter() : this(new ExternalProcessRunner())
+    internal WindowsRecycleBinAdapter() : this(new ExternalProcessRunner(), WindowsRecycleBin.AllItems)
     {
     }
 
-    internal WindowsRecycleBinAdapter(IExternalProcessRunner runner) =>
+    // Renew al máximo (8.3): itemsInBin is the cheap read of every drive's bin (-1 when it cannot be read), done once
+    // after an emptying whose own receipt was lost; null reads nothing.
+    internal WindowsRecycleBinAdapter(IExternalProcessRunner runner, Func<long>? itemsInBin = null)
+    {
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
+        _itemsInBin = itemsInBin;
+    }
 
     public bool CanHandle(string operation) => operation == "system.recyclebin.empty";
 
@@ -39,7 +46,8 @@ internal sealed class WindowsRecycleBinAdapter : IExternalOperationAdapter
             string? line = process.Output.Split(
                 ['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
             if (process.ExitCode != 0 || line is null)
-                return effectBoundary.Failure(operation, "recycle_bin_empty_process_failed");
+                return ExternalJson.WithStateAfter(
+                    effectBoundary.Failure(operation, "recycle_bin_empty_process_failed"), ReadBin());
             using JsonDocument document = JsonDocument.Parse(line);
             JsonElement source = document.RootElement;
             if (!source.TryGetProperty("ok", out JsonElement ok)
@@ -50,8 +58,13 @@ internal sealed class WindowsRecycleBinAdapter : IExternalOperationAdapter
                 bool ambiguous = source.TryGetProperty(
                     "effectObserved", out JsonElement observed)
                     && observed.ValueKind == JsonValueKind.True;
-                return effectBoundary.Failure(
-                    operation, "recycle_bin_empty_postread_failed", ambiguous);
+                // Renew al máximo (8.3): the script's own post-read is the state after when it counted the bin.
+                return ExternalJson.WithStateAfter(
+                    effectBoundary.Failure(operation, "recycle_bin_empty_postread_failed", ambiguous),
+                    source.TryGetProperty("afterCount", out JsonElement counted)
+                        && counted.ValueKind == JsonValueKind.Number && counted.TryGetInt64(out long left) && left >= 0
+                        ? BinState(left, "windows_recycle_bin_empty_postread")
+                        : ReadBin());
             }
             int beforeCount = source.GetProperty("beforeCount").GetInt32();
             JsonElement result = ExternalJson.Create(writer =>
@@ -72,12 +85,30 @@ internal sealed class WindowsRecycleBinAdapter : IExternalOperationAdapter
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
         {
-            return effectBoundary.Failure(operation, "recycle_bin_empty_failed");
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "recycle_bin_empty_failed"), ReadBin());
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException or JsonException or TimeoutException)
         {
-            return effectBoundary.Failure(operation, "recycle_bin_empty_failed");
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "recycle_bin_empty_failed"), ReadBin());
         }
     }
+
+    // Renew al máximo (8.3): one read of the bins after an emptying left ambiguous; nothing when it cannot be read.
+    private JsonElement? ReadBin()
+    {
+        long items = _itemsInBin?.Invoke() ?? -1;
+        return items >= 0 ? BinState(items, "windows_recycle_bin_query_postread") : null;
+    }
+
+    private static JsonElement BinState(long items, string authority) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteNumber("itemCount", items);
+        writer.WriteBoolean("requestedStateReached", items == 0);
+        writer.WriteString("authority", authority);
+        writer.WriteEndObject();
+    });
 }

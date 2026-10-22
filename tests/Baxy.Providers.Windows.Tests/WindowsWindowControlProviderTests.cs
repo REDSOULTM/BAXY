@@ -308,6 +308,87 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Renew al máximo (8.3): a minimize that never converged, and a focus refused after restoring a minimized window,
+    // failed with nothing of the window; the state one read found after is said, with whether it is the one asked.
+    [TestCase(WindowControlAction.Minimize, "normal", true, "normal")]
+    [TestCase(WindowControlAction.Focus, "minimized", false, "minimized")]
+    public async Task AnAmbiguousWindowActionSaysTheStateReadAfter(
+        WindowControlAction action, string initialState, bool accepted, string stateAfter)
+    {
+        var platform = new FakePlatform { ExecuteAccepted = accepted, ActionConvergenceDelayCount = accepted ? 1000 : 0 };
+        platform.SetInitialState(initialState);
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.ExecuteAsync(windowId, action, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.EffectMayHaveOccurred, Is.True);
+            Assert.That(result.StateAfter?.Present, Is.True);
+            Assert.That(result.StateAfter?.State, Is.EqualTo(stateAfter));
+            Assert.That(result.StateAfter?.Foreground, Is.False);
+            Assert.That(result.StateAfter?.RequestedStateReached, Is.False);
+        });
+    }
+
+    // Renew al máximo (8.3): a move Windows took and the window did not: the bounds read after are said.
+    [Test]
+    public async Task AMoveTheWindowDidNotTakeSaysTheBoundsReadAfter()
+    {
+        var platform = new FakePlatform { SetBoundsIgnored = true };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SetBoundsAsync(windowId, 20, 30, null, null, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(result.EffectMayHaveOccurred, Is.True);
+            Assert.That((result.StateAfter?.X, result.StateAfter?.Y), Is.EqualTo(((int?)0, (int?)0)));
+            Assert.That(result.StateAfter?.RequestedStateReached, Is.False);
+        });
+    }
+
+    // Renew al máximo (8.3): a close Windows took with the window still there says it is there, read once more; a
+    // window gone by that read is said gone, the failure kept.
+    [TestCase(false, true, false)]
+    [TestCase(true, false, true)]
+    public async Task ACloseWindowsTookSaysWhetherTheWindowIsStillThere(bool goneAtLastRead, bool present, bool reached)
+    {
+        static FakePlatform Stubborn() => new()
+        {
+            PrimaryCloseAccepted = true,
+            PrimaryCloseCloses = false,
+            SystemCloseAccepted = true,
+            SystemCloseCloses = false,
+        };
+        // How many reads a close of that window makes, counted on a twin: the window is gone at the last of them.
+        FakePlatform twin = Stubborn();
+        var twinProvider = new WindowsWindowControlProvider(twin);
+        string twinId = (await twinProvider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+        int readsBefore = twin.ObserveCalls;
+        _ = await twinProvider.CloseAsync(twinId, CancellationToken.None);
+        int closeReads = twin.ObserveCalls - readsBefore;
+
+        FakePlatform platform = Stubborn();
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+        platform.GoneAfterObservations = goneAtLastRead ? platform.ObserveCalls + closeReads : -1;
+
+        WindowCloseResult result = await provider.CloseAsync(windowId, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(result.EffectMayHaveOccurred, Is.True);
+            Assert.That(result.StateAfter?.Present, Is.EqualTo(present));
+            Assert.That(result.StateAfter?.RequestedStateReached, Is.EqualTo(reached));
+        });
+    }
+
     // A maximized window is restored before it is placed; a placement Windows then refused leaves it restored.
     [TestCase("maximized", true)]
     [TestCase("normal", false)]
@@ -394,6 +475,11 @@ public sealed class WindowsWindowControlProviderTests
         public bool SystemCloseCloses { get; set; }
         public bool ExecuteAccepted { get; set; } = true;
         public bool SetBoundsAccepted { get; set; } = true;
+        // Renew al máximo (8.3): Windows takes the placement and the window keeps its bounds.
+        public bool SetBoundsIgnored { get; set; }
+        // Renew al máximo (8.3): the read from which the window is gone (-1: never), and the reads so far.
+        public int GoneAfterObservations { get; set; } = -1;
+        public int ObserveCalls { get; private set; }
         public WindowBounds? WorkAreaBounds { get; set; }
         public IReadOnlyList<WindowSnapshot> Desktop { get; set; } = [];
         private WindowControlAction? _pendingAction;
@@ -429,6 +515,8 @@ public sealed class WindowsWindowControlProviderTests
 
         public WindowSnapshot Observe(WindowIdentity identity)
         {
+            if (++ObserveCalls >= GoneAfterObservations && GoneAfterObservations >= 0)
+                throw new WindowIdentityChangedException();
             if (Closed && CloseHides && (HiddenReads < 0 || _hiddenSeen++ < HiddenReads))
                 throw new WindowIdentityChangedException(hidden: true);
             if (IdentityChanged || Closed) throw new WindowIdentityChangedException();
@@ -504,7 +592,8 @@ public sealed class WindowsWindowControlProviderTests
             _ = Observe(identity);
             if (!SetBoundsAccepted)
                 return false;
-            _bounds = bounds;
+            if (!SetBoundsIgnored)
+                _bounds = bounds;
             return true;
         }
 

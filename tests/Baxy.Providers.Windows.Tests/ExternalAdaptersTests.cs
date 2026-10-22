@@ -143,6 +143,61 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (8.3): the post-read that still found the instance was dropped from the failure; it is the state
+    // after, with its authority, and the failure stays.
+    [Test]
+    public async Task ProcessTerminationWhosePostreadStillFindsItSaysItIsStillRunning()
+    {
+        var identity = new WindowsProcessIdentity(5151, 638900000000000001);
+        var platform = new StubProcessTerminationPlatform(
+            [[identity], [identity]], terminateResult: WindowsProcessTermination.NotTerminated);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_postread_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_process_original_identity_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3): the kill was sent and the post-read threw: one more read of the name says whether the
+    // instances asked to end are gone; one that fails too adds nothing.
+    [TestCase(false, 0, true)]
+    [TestCase(false, 1, false)]
+    [TestCase(true, -1, false)]
+    public async Task ProcessTerminationWhosePostreadThrewReadsOnceMore(bool rereadThrows, int stillRunning, bool reached)
+    {
+        var identity = new WindowsProcessIdentity(5151, 638900000000000001);
+        var platform = new FlakyProcessTerminationPlatform(identity, rereadThrows, stillRunning == 1);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_failed"));
+            if (rereadThrows)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(stillRunning));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.EqualTo(reached));
+        });
+    }
+
     // FT/proveedores goal (review of receipts): the one instance runs elevated (Windows refuses BAXY): the receipt names
     // that, with the counts, and nothing was done, so its effect is not «possible».
     [Test]
@@ -1326,6 +1381,73 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (8.3): an emptying whose receipt was lost (the process ended with nothing read) left the model not
+    // knowing whether the bin was emptied; one read of the bins after it says what is there, the failure kept.
+    [TestCase(0L, true)]
+    [TestCase(3L, false)]
+    public async Task RecycleBinEmptyWithItsReceiptLostSaysWhatTheBinHoldsAfter(long items, bool reached)
+    {
+        var adapter = new WindowsRecycleBinAdapter(
+            new ThrowingProcessRunner(new IOException("simulated receipt loss after process dispatch")), () => items);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("itemCount").GetInt64(), Is.EqualTo(items));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.EqualTo(reached));
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_recycle_bin_query_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3): the script's own post-read found items still there; that count is the state after, never
+    // dropped, and no second read is made.
+    [Test]
+    public async Task RecycleBinEmptyWhosePostreadStillFoundItemsSaysHowMany()
+    {
+        int reads = 0;
+        var adapter = new WindowsRecycleBinAdapter(
+            new StubProcessRunner("{\"ok\":false,\"beforeCount\":3,\"afterCount\":2,\"effectObserved\":true}"),
+            () => { reads++; return 0; });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_postread_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("itemCount").GetInt64(), Is.EqualTo(2));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_recycle_bin_empty_postread"));
+            Assert.That(reads, Is.Zero);
+        });
+    }
+
+    // Renew al máximo (8.3): a read of the bins that fails adds nothing: the ambiguous failure stays as it was.
+    [Test]
+    public async Task RecycleBinEmptyWhoseRereadFailsAddsNoState()
+    {
+        var adapter = new WindowsRecycleBinAdapter(
+            new ThrowingProcessRunner(new TimeoutException("simulated")), () => -1);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_failed"));
+            Assert.That(receipt.Result, Is.Null);
+        });
+    }
+
     [Test]
     public async Task KnownFolderBackupCreatesListsAndReverifiesAnActualZipHash()
     {
@@ -2379,6 +2501,90 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.ErrorCode, Is.EqualTo(expectedError));
             Assert.That(endpoint.ReadVolumeScalar(), Is.EqualTo(volume));
             Assert.That(endpoint.ReadMuted(), Is.EqualTo(muted));
+        });
+    }
+
+    // Renew al máximo (8.3): the output did not take the new level and the post-read that saw it was dropped; the level
+    // and mute read after are the state, the failure kept.
+    [Test]
+    public async Task VolumeAdjustWhosePostreadMismatchedSaysTheLevelReadAfter()
+    {
+        var endpoint = new StuckAudioEndpoint("output-private", 0.40f);
+        var adapter = new WindowsAudioAdjustmentAdapter(() => endpoint);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.volume.adjust", Json("""{"direction":"up","amount":10}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("volume_adjustment_postread_mismatch"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(40));
+            Assert.That(state?.GetProperty("muted").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_core_audio_output_endpoint_postread"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("output-private"));
+        });
+    }
+
+    // Renew al máximo (8.3): the level was set and its post-read threw; one more read of the same output says the level
+    // it has. Another output in its place (the default changed) is not that state, and adds nothing.
+    [TestCase("post-dispatch-failure", true)]
+    [TestCase("another-output", false)]
+    public async Task VolumeAdjustWhosePostreadThrewReadsTheSameOutputOnceMore(string rereadEndpoint, bool added)
+    {
+        var opened = new Queue<IWindowsAudioEndpoint>(
+        [
+            new PostDispatchFailingAudioEndpoint(),
+            new FakeAudioEndpoint(rereadEndpoint, muted: false, volume: 0.5f),
+        ]);
+        var adapter = new WindowsAudioAdjustmentAdapter(opened.Dequeue);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.volume.adjust", Json("""{"direction":"up","amount":10}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("audio_output_endpoint_unavailable"));
+            if (!added)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.True);
+        });
+    }
+
+    // Renew al máximo (8.3): an application's level read after a set that did not take is the state after.
+    [Test]
+    public async Task AppVolumeSetWhosePostreadMismatchedSaysTheLevelReadAfter()
+    {
+        var adapter = new WindowsAppVolumeSetAdapter((_, _, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 1, 30, 30, false, "endpoint-1", Changed: false);
+        });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":60}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("volume_postread_mismatch"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(30));
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(60));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_core_audio_session_postread"));
         });
     }
 
@@ -5279,6 +5485,18 @@ public sealed class ExternalAdaptersTests
         public void Dispose() { }
     }
 
+    // Renew al máximo (8.3): an output that keeps its level whatever it is set to.
+    private sealed class StuckAudioEndpoint(string endpointId, float volume) : IWindowsAudioEndpoint
+    {
+        public string EndpointId { get; } = endpointId;
+        public string? ReadDisplayName() => "Test stuck endpoint";
+        public float ReadVolumeScalar() => volume;
+        public bool ReadMuted() => false;
+        public void SetVolumeScalar(float scalar, Guid eventContext) { }
+        public void SetMuted(bool value, Guid eventContext) { }
+        public void Dispose() { }
+    }
+
     private sealed class PostDispatchFailingAudioEndpoint : IWindowsAudioEndpoint
     {
         private bool _setCalled;
@@ -5346,6 +5564,25 @@ public sealed class ExternalAdaptersTests
             Terminated.Add(identity);
             return terminateResult;
         }
+    }
+
+    // Renew al máximo (8.3): the post-read after the kill throws; the read after it throws too, or finds the instance
+    // still there, or not.
+    private sealed class FlakyProcessTerminationPlatform(
+        WindowsProcessIdentity identity, bool rereadThrows, bool stillThere) : IWindowsProcessTerminationPlatform
+    {
+        private int _snapshots;
+
+        public IReadOnlyList<WindowsProcessIdentity> Snapshot(string processName) => ++_snapshots switch
+        {
+            1 => [identity],
+            2 => throw new InvalidOperationException("simulated post-read failure"),
+            _ when rereadThrows => throw new InvalidOperationException("simulated re-read failure"),
+            _ => stillThere ? [identity] : [],
+        };
+
+        public WindowsProcessTermination Terminate(string processName, WindowsProcessIdentity identity) =>
+            WindowsProcessTermination.KillSent;
     }
 
     private sealed class StubPowerTransitionPlatform(string authority, bool accepted, bool alreadyPending = false)

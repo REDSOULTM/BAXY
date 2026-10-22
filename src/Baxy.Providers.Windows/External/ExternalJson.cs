@@ -72,6 +72,27 @@ internal static class ExternalJson
             EffectMayHaveOccurred = true,
         };
 
+    /// <summary>
+    /// Renew al máximo (8.3): an ambiguous failure (the effect was dispatched and its verification was lost or did not
+    /// hold) with the state one cheap read found after it, as <c>stateAfter</c> with that read's authority and whether
+    /// it shows the requested state. Evidence beside the failure, never a success: the code and the uncertainty stay.
+    /// Without a read (null), or for any other receipt, it is returned as it was.
+    /// </summary>
+    internal static ExternalCapabilityReceipt WithStateAfter(
+        ExternalCapabilityReceipt failure,
+        JsonElement? stateAfter) =>
+        failure.EffectMayHaveOccurred && !failure.Verified && failure.ErrorCode is not null
+            && stateAfter is { ValueKind: JsonValueKind.Object } state
+            ? failure with
+            {
+                Result = Extended(failure.Result, writer =>
+                {
+                    writer.WritePropertyName("stateAfter");
+                    state.WriteTo(writer);
+                }),
+            }
+            : failure;
+
     internal static string RequiredString(JsonElement arguments, string name)
     {
         if (!arguments.TryGetProperty(name, out JsonElement value)
