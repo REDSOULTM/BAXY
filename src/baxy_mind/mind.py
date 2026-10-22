@@ -107,6 +107,16 @@ BEAT_RULES = (
 BEAT_MARK = "[Latido: nadie te habló; lo que sigue lo dijiste o hiciste por tu cuenta]"
 
 
+# How a completed call was verified (the result's «verification»), in the words the model reads.
+VERIFICATION = {
+    "readback": "completado y verificado",
+    "unchanged": "completado: ya estaba así, no cambió nada",
+    "delivered_only": "completado sin verificar: entregado, sin releer su efecto",
+    "output_only": "completado: lectura, su resultado está arriba",
+    "none": "completado sin verificar",
+}
+
+
 def _outcome(observation: str) -> str:
     """How a call ended, in the words the model reads: from the result's own status, verification and error."""
     try:
@@ -132,20 +142,13 @@ def _outcome(observation: str) -> str:
     if status == "pending" or facts.get("effectUncertain"):
         return "sin confirmar: pudo o no ocurrir"
     if status == "completed":
-        # A completed call is verified unless its result says it is not (the App's own completed-but-unreadable), that
-        # what it changed was not read back (ronda final: a shell command that exited 0) or that it was only delivered
-        # (keys and text Windows accepted, with no read-back of what the window did with them).
-        observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
-        # Ronda final: an observation left out for its size («observedLimit») cannot show it was more than delivered.
+        # Al máximo 8.2: how it was verified is the result's own typed fact (OperationVisibleFacts' table in the kernel,
+        # and the App's for memory and for a result it could not read); one without it is not taken as verified.
         # FT/proveedores goal (e2e E006, E017): where a file or folder was made, from its own result, beside the facts
         # the model tells («lo creé en BAXY-bench» after a write that went to the home folder).
-        where = observed.get("fullPath")
+        where = shown.get("fullPath")
         where = f" en {where}" if isinstance(where, str) and where else ""
-        if (facts.get("verified") is False or observed.get("effectReadBack") is False
-                or ("delivered" in observed and observed.get("readBack") is not True)
-                or facts.get("observedLimit") == "omitted"):
-            return "completado sin verificar" + where
-        return "completado y verificado" + where
+        return VERIFICATION.get(str(facts.get("verification")), VERIFICATION["none"]) + where
     error = facts.get("error") or facts.get("cause")
     return f"falló ({error})" if error else "falló"
 

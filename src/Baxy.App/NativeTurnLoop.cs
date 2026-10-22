@@ -855,7 +855,8 @@ internal sealed class NativeTurnLoop
     }
 
     // What BAXY itself says of a call it did not send or whose answer it could not read, with one header: how it ended
-    // (status), its code and, only when they hold, that it may have happened and that a completion is unverified.
+    // (status), its code and, only when they hold, that it may have happened and that a completion is unverified
+    // (verification none, OperationVisibleFacts' table).
     // The call is the model's own (the result answers its tool_call_id); about names another one, the call a
     // confirm_pending answered.
     private static string Observation(
@@ -868,7 +869,7 @@ internal sealed class NativeTurnLoop
         var facts = new JsonObject { ["status"] = status };
         if (status == OperationStatuses.Completed)
         {
-            facts["verified"] = false;
+            facts[OperationVisibleFacts.VerificationKey] = OperationVisibleFacts.VerificationNone;
         }
 
         facts["error"] = error;

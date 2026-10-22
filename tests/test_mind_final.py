@@ -83,7 +83,7 @@ def test_the_turns_facts_say_where_a_file_was_made(tmp_path: Path) -> None:
     mind, server = _mind(tmp_path, [_call("file_write", {"relativePath": "compras.txt", "folder": "home"}),
                                     _say("Lo creé.")])
     mind.decide(1, "crea un archivo")
-    observed = {"status": "completed", "verified": True,
+    observed = {"status": "completed", "verification": "readback",
                 "observed": {"name": "compras.txt", "fullPath": r"C:\Users\ana\compras.txt"}}
     mind.continue_turn(2, json.dumps(observed))
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]

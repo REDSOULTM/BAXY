@@ -88,6 +88,54 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
+    // Al máximo 8.2: how a completed call was verified is one typed fact, from what its receipt already says; the mind
+    // translates only it («ya estaba así» was told «completado y verificado»).
+    [TestCase("app.close", "{\"windowClosed\":true}", "readback")]
+    [TestCase("audio.volume", "{\"applied\":false,\"reconciled\":true}", "readback")]
+    [TestCase("input.text.type", "{\"delivered\":true,\"readBack\":true}", "readback")]
+    [TestCase("clipboard.write.text", "{\"characterCount\":4,\"changed\":false}", "unchanged")]
+    [TestCase("app.close", "{\"windowClosed\":false,\"alreadyGone\":true}", "unchanged")]
+    [TestCase("audio.volume", "{\"applied\":false,\"reconciled\":false}", "unchanged")]
+    [TestCase("input.text.type", "{\"delivered\":true}", "delivered_only")]
+    [TestCase("input.text.type", "{\"delivered\":true,\"readBack\":false}", "delivered_only")]
+    [TestCase("shell.command.run", "{\"exitCode\":0,\"effectReadBack\":false}", "delivered_only")]
+    [TestCase("note.read", "{\"title\":\"Compras\"}", "output_only")]
+    [TestCase("browser.page.read", "{\"title\":\"Compras\"}", "output_only")]
+    public void ACompletedCallSaysHowItWasVerified(string operation, string result, string verification)
+    {
+        using JsonDocument message = JsonDocument.Parse(OperationVisibleFacts.FromOutcome(
+            operation, OperationOutcome.Success(JsonDocument.Parse(result).RootElement.Clone())));
+
+        Assert.That(message.RootElement.GetProperty("verification").GetString(), Is.EqualTo(verification));
+    }
+
+    // Al máximo 8.2: a verified result whose observation did not fit the message is still verified (it was told «sin
+    // verificar»): the receipt is read before the observation is cut.
+    [Test]
+    public void AVerifiedResultWhoseObservationDidNotFitStaysVerified()
+    {
+        JsonElement result = JsonSerializer.SerializeToElement(new { windowClosed = true, title = new string('a', 9_000) });
+        using JsonDocument message = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("app.close", OperationOutcome.Success(result)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message.RootElement.GetProperty(OperationVisibleFacts.ObservedLimitKey).GetString(),
+                Is.EqualTo(OperationVisibleFacts.ObservedOmitted));
+            Assert.That(message.RootElement.GetProperty("verification").GetString(), Is.EqualTo("readback"));
+        });
+    }
+
+    // A call that did not complete says how it ended by its status and error, and nothing of a verification.
+    [Test]
+    public void ACallThatDidNotCompleteSaysNoVerification()
+    {
+        using JsonDocument message = JsonDocument.Parse(OperationVisibleFacts.FromOutcome(
+            "app.close", OperationOutcome.Failure("window_not_found")));
+
+        Assert.That(message.RootElement.TryGetProperty("verification", out _), Is.False);
+    }
+
     // Revisión 2026-10-22 (C-2): a retryable outcome is what the engine answers as pending; the facts say pending too,
     // not failed beside a pending flag.
     [Test]

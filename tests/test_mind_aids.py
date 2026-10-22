@@ -10,7 +10,7 @@ from baxy_mind.mind import Mind
 from test_mind_final import _call, _mind, _say
 
 CLOSE_FAILED = json.dumps({"status": "failed", "error": "window_not_found"})
-OPENED = json.dumps({"status": "completed", "observed": {"applicationName": "Paint"}})
+OPENED = json.dumps({"status": "completed", "verification": "readback", "observed": {"applicationName": "Paint"}})
 
 
 def _two_calls(tmp_path: Path) -> tuple[Mind, list[str]]:
@@ -218,3 +218,21 @@ def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None
     unsure = json.dumps({"status": "failed", "error": "message_delivery_not_verified", "effectUncertain": True})
     assert _outcome(stopped) == "falló (composer_has_person_draft): el mensaje no se escribió ni se envió"
     assert _outcome(unsure) == "sin confirmar: pudo o no ocurrir"
+
+
+@pytest.mark.parametrize("verification,told", [
+    ("readback", "completado y verificado"),
+    ("unchanged", "completado: ya estaba así, no cambió nada"),
+    ("delivered_only", "completado sin verificar: entregado, sin releer su efecto"),
+    ("output_only", "completado: lectura, su resultado está arriba"),
+    ("none", "completado sin verificar"),
+    (None, "completado sin verificar"),
+])
+def test_a_completed_call_is_told_by_its_typed_verification_alone(verification: str | None, told: str) -> None:
+    # Al máximo 8.2: «ya estaba así» (changed:false) was told «completado y verificado», and a verified result whose
+    # observation did not fit (observedLimit omitted) «sin verificar»; the field names no longer decide it.
+    from baxy_mind.mind import _outcome
+    facts = {"status": "completed", "observedLimit": "omitted", "observed": {"changed": False, "delivered": True}}
+    if verification is not None:
+        facts["verification"] = verification
+    assert _outcome(json.dumps(facts)) == told
