@@ -16,25 +16,35 @@ internal sealed partial class SteamLocalAdapter
 {
     private const int UninstallObservationIntervals = 90;
 
+    // Al máximo, flujos: the title looked up in the local manifests before the person is asked; a game that is not
+    // installed there under that name fails here, before any yes.
+    public ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (operation != "game.uninstall.named")
+            return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+        try
+        {
+            return ValueTask.FromResult(UninstallTarget(operation, arguments, out _, out _));
+        }
+        catch (Exception exception) when (exception is InvalidDataException or IOException
+            or UnauthorizedAccessException or InvalidOperationException)
+        {
+            return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+        }
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> UninstallNamedAsync(
         string operation,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        string title = ExternalJson.RequiredString(arguments, "title");
-        string store = arguments.TryGetProperty("store", out JsonElement named)
-            && named.ValueKind == JsonValueKind.String ? named.GetString() ?? "steam" : "steam";
-        if (store == "epic")
-            return ExternalJson.FailureBeforeEffect(operation, "epic_uninstall_not_supported");
-        // Ronda final: what is read is the manifests by the exact (folded) title: none bearing it is no manifest of that
-        // name (another name may be installed), and only a manifest found and not installed is «not installed».
-        string? appId = ResolveSnapshotTitle(FoldTitle(title));
-        SteamLocalGame? before = appId is null ? null : _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
-        if (appId is null || before is null)
-            return ExternalJson.FailureBeforeEffect(operation, "no_steam_manifest_with_that_name");
-        if (!before.Installed)
-            return ExternalJson.FailureBeforeEffect(operation, "steam_game_not_installed");
+        if (UninstallTarget(operation, arguments, out string appId, out SteamLocalGame before) is { } refused)
+            return refused;
 
         if (await ActAsync(operation, "uninstall", appId, effectBoundary, cancellationToken).ConfigureAwait(false)
             is { } failed)
@@ -66,6 +76,35 @@ internal sealed partial class SteamLocalAdapter
         }
 
         return effectBoundary.Failure(operation, "steam_uninstall_not_verified", effectObserved: true);
+    }
+
+    // The installed game the title names, or the refusal before any effect. Ronda final: what is read is the manifests
+    // by the exact (folded) title: none bearing it is no manifest of that name (another name may be installed), and
+    // only a manifest found and not installed is «not installed».
+    private ExternalCapabilityReceipt? UninstallTarget(
+        string operation,
+        JsonElement arguments,
+        out string appId,
+        out SteamLocalGame before)
+    {
+        appId = string.Empty;
+        before = null!;
+        string title = ExternalJson.RequiredString(arguments, "title");
+        string store = arguments.TryGetProperty("store", out JsonElement named)
+            && named.ValueKind == JsonValueKind.String ? named.GetString() ?? "steam" : "steam";
+        if (store == "epic")
+            return ExternalJson.FailureBeforeEffect(operation, "epic_uninstall_not_supported");
+        string? resolved = ResolveSnapshotTitle(FoldTitle(title));
+        SteamLocalGame? game = resolved is null
+            ? null
+            : _snapshot().SingleOrDefault(candidate => candidate.AppId == resolved);
+        if (resolved is null || game is null)
+            return ExternalJson.FailureBeforeEffect(operation, "no_steam_manifest_with_that_name");
+        if (!game.Installed)
+            return ExternalJson.FailureBeforeEffect(operation, "steam_game_not_installed");
+        appId = resolved;
+        before = game;
+        return null;
     }
 
     // Epic: el lanzador acepta un enlace de instalación con el espacio de nombres,

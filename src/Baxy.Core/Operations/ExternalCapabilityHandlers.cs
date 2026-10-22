@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
 using Baxy.Providers.Windows.External;
@@ -244,12 +245,14 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
 
 internal sealed class ExternalCapabilityHandler(
     string operation,
-    IExternalCapabilityProvider provider) : IOperationHandler
+    IExternalCapabilityProvider provider) : IOperationHandler, IInvocationPreflight
 {
     // v3 r22 uso real: the operations that only point at or move through what a window shows (a click on a control,
-    // a scroll, the list of visible controls) put nothing into it. Every other operation that is not read-only may
-    // have written into some window, and which one is not always known, so it marks every process BAXY launched as
-    // written (LaunchProvenance, fail-closed): their windows ask again before closing.
+    // a scroll, the list of visible controls) put nothing into it. Every other call that reaches a window (the
+    // catalog's typed effect window_input) may have written into it, and which one is not always known, so it marks
+    // every process BAXY launched as written (LaunchProvenance, fail-closed): their windows ask again before closing.
+    // Al máximo, flujos: a call that reaches no window (the volume, a radio) wrote into none («abre el bloc de notas»,
+    // «sube el volumen», «ciérralo» asked).
     // v3 r22 revisión: a pointing operation may still carry text it types into what it opens (a click's «search» is
     // typed into the box the click opened, SearchBurst.TypeAsync); with any such argument present and not empty it
     // writes as well.
@@ -266,7 +269,8 @@ internal sealed class ExternalCapabilityHandler(
 
     internal static bool MayWriteIntoAWindow(OperationDefinition definition, JsonElement arguments)
     {
-        if (definition.Risk == OperationRisk.ReadOnly)
+        if (definition.Risk == OperationRisk.ReadOnly
+            || definition.ProductDescriptor?.Has(OperationEffects.WindowInput, arguments) == false)
         {
             return false;
         }
@@ -297,6 +301,34 @@ internal sealed class ExternalCapabilityHandler(
         }
 
         return false;
+    }
+
+    // Al máximo, flujos: what the provider reads of the call's target before the person is asked (a name that is not
+    // there, or is there several times, with its candidates): that failure answers without a yes. A provider that
+    // cannot tell, or fails to read, leaves the call to ask and to run as always.
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        ExternalCapabilityReceipt? found;
+        try
+        {
+            found = await _provider.PreflightAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            return InvocationPreflightResult.Proceed;
+        }
+
+        return found is { Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }
+            && string.Equals(found.Operation, operation, StringComparison.Ordinal)
+            && !string.IsNullOrWhiteSpace(found.ErrorCode)
+                ? InvocationPreflightResult.Fails(OperationOutcome.Failure(found.ErrorCode, result: found.Result))
+                : InvocationPreflightResult.Proceed;
     }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(

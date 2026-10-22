@@ -13,13 +13,13 @@ internal sealed class AppOpenHandler(
     Func<nint, string?>? windowIdFor = null,
     Func<long, OpenedWindowFront>? frontOf = null,
     IGameTitles? games = null,
-    Func<long, string, CancellationToken, long>? settle = null)
+    Func<long, string, CancellationToken, ValueTask<long>>? settle = null)
     : IOperationHandler
 {
     // BAXY Renew cu (C03 en frío): how long an application started behind its sign-in may take to show its window.
     internal static readonly TimeSpan SignInBudget = TimeSpan.FromSeconds(30);
-    private readonly Func<long, string, CancellationToken, long> _settle =
-        settle ?? ((window, name, token) => ApplicationWindowSettle.WaitSettled(window, name, SignInBudget, token));
+    private readonly Func<long, string, CancellationToken, ValueTask<long>> _settle =
+        settle ?? ((window, name, token) => ApplicationWindowSettle.WaitSettledAsync(window, name, SignInBudget, token));
     private readonly IApplicationOpenProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
     private readonly LaunchProvenance _provenance = provenance ?? LaunchProvenance.Shared;
@@ -183,7 +183,8 @@ internal sealed class AppOpenHandler(
         // and the receipt names that window.
         long openedWindow = providerResult.WindowHandle.GetValueOrDefault();
         if (place is not null && !providerResult.AlreadyRunning && ApplicationPlaces.StartsBehindSignIn(arguments.AppId)
-            && _settle(openedWindow, providerResult.DisplayName, cancellationToken) is long settled and not 0)
+            && await _settle(openedWindow, providerResult.DisplayName, cancellationToken).ConfigureAwait(false)
+                is long settled and not 0)
         {
             openedWindow = settled;
             place = _places.Open(placeAddress!, arguments.Foreground == true, settled) is { Opened: true } again

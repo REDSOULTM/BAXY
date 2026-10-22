@@ -3,8 +3,9 @@
 usage: py -3.12 -X utf8 scripts/renew/bench_escenas.py <label> --scenes FILE [--catalog FILE] [--src DIR]
 Each scene's context goes to Mind.beat as the App would send it. What the model does is classified by the judge of
 <banks>/escenas/README.md: observing (read-only calls) changes nothing and gets the scene's own context back as its
-result; a call the App holds in a heartbeat for the person's «sí» is a proposal (the high risks, and what sends input
-to a window or something out of the PC, read from src/Baxy.App/NativeTurnLoop.cs as the App has them); any other
+result; a call the App holds in a heartbeat for the person's «sí» is a proposal (a risk of ProposedRisks, the person's
+clipboard written over, or an effect of the catalog with its arguments: a window, the network, a radio, airplane mode
+or the display, as NativeTurnLoop.BeatProposes reads them; held_by_app); any other
 effect is an action; words alone are a message; LATIDO_OK is silence. The channel (voice or a notification) is the
 App's (HeartbeatMoment.Speaks), not the model's, and is not judged (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
 """
@@ -29,64 +30,78 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_decision import current  # noqa: E402
 
 
-def heartbeat_holds() -> tuple[set[str], set[str], dict[str, set[str]], dict[str, tuple[str, set[str]]],
-                               dict[str, tuple[str, str]]]:
-    """What the App holds in a heartbeat, read from its source: the risks of ProposedRisks, the operations named in
-    SendsInputToAWindow, ReachesTheNetwork and ReplacesThePersonsClipboard, those held only with an argument («operation == "x" && arguments["y"]»),
-    those held only with an argument of one value («operation == "x" && (string?)arguments["y"] == "v"»: the argument and
-    the value), and those held unless an argument names something other than the provider's ids it is compared with
-    («operation == "x" && !(arguments["y"] … WindowsExternalCapabilityProvider.Z)»: the argument and those ids)."""
-    source = (ROOT / "src" / "Baxy.App" / "NativeTurnLoop.cs").read_text(encoding="utf-8")
-    provider = (ROOT / "src" / "Baxy.Providers.Windows" / "External" /
-                "WindowsExternalCapabilityProvider.cs").read_text(encoding="utf-8")
-    risks = re.search(r"HashSet<string> ProposedRisks = new\(StringComparer\.Ordinal\)\s*\{(.*?)\};", source, re.S)
-    bodies = [re.search(rf"(?:private|internal) static bool {name}\(.*?\) =>(.*?);\r?\n", source, re.S)
-              for name in ("SendsInputToAWindow", "ReachesTheNetwork", "ReplacesThePersonsClipboard")]
-    if risks is None or None in bodies:
-        raise SystemExit("NativeTurnLoop.cs no longer has ProposedRisks, SendsInputToAWindow, ReachesTheNetwork and "
-                         "ReplacesThePersonsClipboard")
-    text = "".join(body.group(1) for body in bodies)
-    conditional: dict[str, set[str]] = {}
-    for op, argument in re.findall(r'operation == "([^"]+)"\s*&&\s*\(?\s*arguments\["([^"]+)"\]', text):
-        conditional.setdefault(op, set()).add(argument)
-    unless: dict[str, tuple[str, set[str]]] = {}
-    for op, argument, compared in re.findall(
-            r'operation == "([^"]+)"\s*&&\s*!\(\s*arguments\["([^"]+)"\]((?:[^|;]|\|(?!\|))*)', text):
-        ids = set()
-        for name in re.findall(r'WindowsExternalCapabilityProvider\.(\w+)', compared):
-            value = re.search(rf'public const string {name} = "([^"]+)";', provider)
-            if value is None:
-                raise SystemExit(f"WindowsExternalCapabilityProvider.cs no longer has {name}")
-            ids.add(value.group(1).lower())
-        unless[op] = (argument, ids)
-    valued: dict[str, tuple[str, str]] = {}
-    for op, argument, value in re.findall(
-            r'operation == "([^"]+)"\s*&&\s*\(string\?\)arguments\["([^"]+)"\]\s*==\s*"([^"]+)"', text):
-        valued[op] = (argument, value)
-    if len(re.findall(r'operation ==', text)) != (sum(len(arguments) for arguments in conditional.values())
-                                                  + len(unless) + len(valued)):
-        raise SystemExit("NativeTurnLoop.cs holds an operation by a condition this bench does not read")
-    named = set(re.findall(r'"([a-z]+(?:\.[a-z]+)+)"', text)) - set(conditional) - set(unless) - set(valued)
-    return set(re.findall(r'"([^"]+)"', risks.group(1))), named, conditional, unless, valued
+def heartbeat_holds() -> dict[str, list[list[tuple[str, str, str | None]]]]:
+    """What the App holds in a heartbeat besides the risks (NativeTurnLoop.BeatProposes, R10.1): every effect each
+    operation declares in src/Baxy.Kernel/Operations/ProductCatalog.cs (al máximo 5.1; the saved catalogs have no
+    effects, and the conditions never travel), as a list of effects per operation, each the list of its conditions
+    (kind, argument, value): none, it always has it; one or more, it has it when one of them holds."""
+    source = (ROOT / "src" / "Baxy.Kernel" / "Operations" / "ProductCatalog.cs").read_text(encoding="utf-8")
+    constants = dict(re.findall(r'private const string (\w+) = "([^"]+)";', source))
+    holds: dict[str, list[list[tuple[str, str, str | None]]]] = {}
+    for block in source.split("        Descriptor(")[1:]:
+        name = re.match(r'\s*"([a-z]+(?:\.[a-z]+)+)",', block)
+        declared = re.search(r'effects:\s*\[(.*?)\]\),', block, re.S)
+        if name is None or declared is None:
+            continue
+        declared = declared.group(1)
+        effects = []
+        for _, body in re.findall(r'\b(WindowInput|Network|SystemChange)\(((?:[^()]|\([^()]*\))*)\)', declared):
+            conditions = []
+            for kind, argument, text, constant in re.findall(
+                    r'EffectCondition\.(IsTrue|Named|Unnamed|Is)\("([^"]+)"(?:,\s*(?:"([^"]+)"|(\w+)))?\)', body):
+                if constant and constant not in constants:
+                    raise SystemExit(f"ProductCatalog.cs no longer has {constant}")
+                conditions.append((kind, argument, text or constants.get(constant)))
+            if body.strip() and not conditions:
+                raise SystemExit(f"ProductCatalog.cs declares an effect of {name.group(1)} this bench does not read")
+            effects.append(conditions)
+        if not effects:
+            raise SystemExit(f"ProductCatalog.cs declares effects of {name.group(1)} this bench does not read")
+        holds[name.group(1)] = effects
+    if not holds:
+        raise SystemExit("ProductCatalog.cs declares no effects")
+    return holds
+
+
+def beat_rule() -> tuple[set[str], set[str]]:
+    """The risks and the named operations NativeTurnLoop.BeatProposes always holds, read from its source (the risks by
+    their OperationRisks constants, ProtocolConstants.cs)."""
+    loop = (ROOT / "src" / "Baxy.App" / "NativeTurnLoop.cs").read_text(encoding="utf-8")
+    constants = dict(re.findall(r'public const string (\w+) = "([a-z_]+)";',
+                                (ROOT / "src" / "Baxy.Contracts" / "ProtocolConstants.cs").read_text(encoding="utf-8")))
+    block = re.search(r"HashSet<string> ProposedRisks = new\(StringComparer\.Ordinal\)\s*\{(.*?)\};", loop, re.S)
+    rule = re.search(r"static bool BeatProposes\(.*?\n    \}", loop, re.S)
+    if not block or not rule:
+        raise SystemExit("NativeTurnLoop.cs no longer has ProposedRisks and BeatProposes: update bench_escenas.py")
+    risks = {constants[name] for name in re.findall(r"OperationRisks\.(\w+)", block.group(1))}
+    return risks, set(re.findall(r'descriptor\.Name == "([a-z.]+)"', rule.group(0)))
+
+
+PROPOSED_RISKS, PROPOSED_OPERATIONS = beat_rule()
 
 
 def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
-    risks, named, conditional, unless, valued = holds
-    if risk in risks or op in named:
+    """As NativeTurnLoop.BeatProposes: a risk of ProposedRisks, an operation it names, or an effect with these arguments
+    (EffectCondition: a boolean only when true, a text only when not blank, a value in any case)."""
+    if risk in PROPOSED_RISKS or op in PROPOSED_OPERATIONS:
         return True
     given = arguments if isinstance(arguments, dict) else {}
-    if op in unless:
-        argument, ids = unless[op]
-        value = given.get(argument)
-        return not (isinstance(value, str) and value.strip()) or value.lower() in ids
-    if op in valued:
-        argument, value = valued[op]
-        if given.get(argument) == value:
-            return True
-    # As the App reads them (IsTrue / Named): a boolean only when true, a text only when not blank; «false» is not held.
-    def set_(value) -> bool:
-        return value is True or (isinstance(value, str) and bool(value.strip()))
-    return any(set_(given.get(argument)) for argument in conditional.get(op, ()))
+
+    def named(value) -> bool:
+        return isinstance(value, str) and bool(value.strip())
+
+    def meets(kind: str, argument: str, value: str | None) -> bool:
+        found = given.get(argument)
+        if kind == "IsTrue":
+            return found is True
+        if kind == "Named":
+            return named(found)
+        if kind == "Unnamed":
+            return not named(found)
+        return named(found) and found.lower() == str(value).lower()
+
+    return any(not conditions or any(meets(*condition) for condition in conditions)
+               for conditions in holds.get(op, ()))
 
 
 def main() -> None:

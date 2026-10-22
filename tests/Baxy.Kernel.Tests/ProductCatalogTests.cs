@@ -398,6 +398,7 @@ public sealed class ProductCatalogTests
                     Is.EqualTo(product.VerifierContractId),
                     product.Name);
                 Assert.That(tool.Description, Is.EqualTo(product.Description), product.Name);
+                Assert.That(tool.Effects ?? [], Is.EqualTo(product.EffectKinds), product.Name);
             });
         }
 
@@ -405,6 +406,37 @@ public sealed class ProductCatalogTests
             () => ProductCatalog.CreateToolDescriptor(
                 new OperationDefinition("note.create", OperationRisk.Reversible, "Not from the catalog.")),
             Throws.ArgumentException);
+    }
+
+    // Al máximo, B-APP-10 (00_IDENTIDAD: cero listas de apps, nada de código que nombre una app): app.open decía
+    // «También acepta windows.calculator», un alias con proveedor propio junto al camino genérico del catálogo Inicio.
+    // Ninguna descripción ofrece un identificador con puntos que no sea el nombre de una operación del catálogo.
+    [Test]
+    public void NoDescriptionOffersAnIdentifierThatIsNotAnOperation()
+    {
+        HashSet<string> operations = [.. ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)];
+        string[] aliases = [.. ProductCatalog.ToolDescriptors
+            .SelectMany(static descriptor => System.Text.RegularExpressions.Regex
+                .Matches(descriptor.Description, @"(?<![\w/\\])[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+(?!\w)")
+                .Select(match => (descriptor.Name, Identifier: match.Value)))
+            .Where(found => !operations.Contains(found.Identifier))
+            .Select(static found => $"{found.Name}: {found.Identifier}")];
+
+        Assert.That(aliases, Is.Empty);
+    }
+
+    // Al máximo 5.1: a conditional effect holds only with the arguments that make it happen.
+    [TestCase("app.open", "{\"appId\":\"Spotify\"}", false)]
+    [TestCase("app.open", "{\"appId\":\"Spotify\",\"foreground\":true}", true)]
+    [TestCase("system.settings.set", "{\"setting\":\"airplane_mode\",\"value\":1}", false)]
+    [TestCase("system.settings.set", "{\"setting\":\"do_not_disturb\",\"value\":1}", true)]
+    [TestCase("input.key.press", "{}", true)]
+    [TestCase("window.minimize", "{}", false)]
+    public void AWindowEffectIsReadWithTheCallsArguments(string operation, string arguments, bool expected)
+    {
+        using JsonDocument given = JsonDocument.Parse(arguments);
+        Assert.That(ProductCatalog.GetRequired(operation).Has(OperationEffects.WindowInput, given.RootElement),
+            Is.EqualTo(expected));
     }
 
     [Test]

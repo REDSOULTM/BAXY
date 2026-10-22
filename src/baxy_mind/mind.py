@@ -301,12 +301,52 @@ def _aids_seen(observation: str) -> dict[str, Any]:
     return seen
 
 
+_WEEKDAYS = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
+
+
+def _when(text: Any) -> _dt.datetime | None:
+    """A time the App wrote (ISO, with or without its offset; a reminder's «yyyy-MM-dd HH:mm» is local), or None."""
+    try:
+        return _dt.datetime.fromisoformat(str(text))
+    except ValueError:
+        return None
+
+
+def _span(minutes: int) -> str:
+    minutes = abs(minutes)
+    if minutes < 60:
+        return f"{minutes} min"
+    if minutes < 48 * 60:
+        return f"{minutes // 60} h" + (f" {minutes % 60} min" if minutes % 60 else "")
+    return f"{round(minutes / 1440)} días"
+
+
+def _relative(due: Any, now: _dt.datetime | None) -> str:
+    """Al máximo 10.4 (Test of Time): a reminder's time as its day and hour from the moment and how far it is («hoy
+    10:00, en 20 min»), facts the model reads instead of subtracting ISO stamps; as it came when either does not read."""
+    when = _when(due)
+    if now is None or when is None:
+        return str(due)
+    if when.tzinfo is None and now.tzinfo is not None:
+        when = when.replace(tzinfo=now.tzinfo)  # the App's local time, in the moment's zone
+    elif when.tzinfo is not None and now.tzinfo is not None:
+        when = when.astimezone(now.tzinfo)
+    days = (when.date() - now.date()).days
+    day = {0: "hoy", 1: "mañana", -1: "ayer"}.get(days, f"{_WEEKDAYS[when.weekday()]} {when:%d/%m}")
+    minutes = round((when.replace(tzinfo=None) - now.replace(tzinfo=None)).total_seconds() / 60)
+    far = "ahora" if minutes == 0 else f"en {_span(minutes)}" if minutes > 0 else f"hace {_span(minutes)}"
+    return f"{day} {when:%H:%M}, {far}"
+
+
 def beat_message(context: dict[str, Any]) -> str:
     """What the heartbeat sees, as lines the model reads: the moment, the screen, the PC, what changed, what BAXY
     remembers, the recent conversation and the reminders. Presentation only: every field the App observed is shown."""
     lines = []
     fg = context.get("foreground") or {}
-    lines.append(f"Momento: {context.get('weekday', '')} {context.get('now', '')} · la persona está: "
+    now = _when(context.get("now"))
+    # Al máximo 10.4: the moment as a day and a clock, not an ISO stamp (as it came when it does not read).
+    shown = f"{now:%d/%m/%Y %H:%M}" if now else context.get("now", "")
+    lines.append(f"Momento: {context.get('weekday', '')} {shown} · la persona está: "
                  f"{context.get('owner_activity', 'desconocido')}")
     if fg:
         lines.append(f"Al frente: {fg.get('title', '')} ({fg.get('process', '')})"
@@ -331,8 +371,10 @@ def beat_message(context: dict[str, Any]) -> str:
             for h in history))
     reminders = context.get("reminders") or []
     if reminders:
-        lines.append("Recordatorios: " + "; ".join(f"{r.get('text') or 'sin título'} ({r.get('due', '')})"
-                                                   for r in reminders))
+        # R10.3: one without a time (the App's «y 3 más sin listar») has no empty brackets.
+        lines.append("Recordatorios: " + "; ".join(
+            f"{r.get('text') or 'sin título'}" + (f" ({_relative(r['due'], now)})" if r.get("due") else "")
+            for r in reminders))
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
 
@@ -388,7 +430,11 @@ DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
-# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth.
+# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth. Al máximo 5.1: nor
+# one with an effect of the catalog (keys, clicks or commands to a window that may be the person's; what the model wrote
+# sent out of the PC; a radio, a network, a pairing, airplane or display mode changed), whatever its risk: a call the
+# model did not choose never lands there. A catalog without the field (the measurement catalogs saved before it)
+# corrects by risk alone, as before.
 CORRECTABLE_RISKS = ("read_only", "low_reversible")
 
 
@@ -502,6 +548,7 @@ class Mind:
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
+        self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -582,7 +629,7 @@ class Mind:
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, risk = [ASK_USER, CONFIRM], {}, {}
+        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
@@ -613,7 +660,8 @@ class Mind:
             tools.append(tool)
             wire_to_op[wire] = name
             risk[wire] = str(cap.get("risk") or "")
-        self.tools, self.wire_to_op, self.risk = tools, wire_to_op, risk
+            effects[wire] = [str(e) for e in cap.get("effects") or []]
+        self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
             self._log("configure.aid", time.monotonic(), None, aids=aids)
@@ -796,8 +844,10 @@ class Mind:
             return {"type": "turn.result", "id": request_id, "kind": "silence", "operation": None, "arguments": None,
                     "question": "", "reply": ""}
         # The analysis stays as the model's own words, not as JSON: with its JSON before it, the model answered the
-        # second move in JSON again (practice scene P023).
-        conv.append({"role": "assistant", "content": str(decision.get("analisis") or "")})
+        # second move in JSON again (practice scene P023). Al máximo 10.3: the motives it found go before it, as words
+        # too: the move that acts read only the analysis (PALANCAS-nb 10.3, scenes P002 and P023).
+        motives = "; ".join(f"{m}: {decision.get(m) or ''}" for m in _MOTIVES)
+        conv.append({"role": "assistant", "content": f"{motives}. {decision.get('analisis') or ''}".rstrip()})
         conv.append({"role": "user", "content": BEAT_ACT})
         return self._next(request_id, "turn.beat", self._beat)
 
@@ -1153,8 +1203,10 @@ class Mind:
 
     def _corrected(self, wire: str, body: dict[str, Any]) -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
-        is off, the tool's risk is not in CORRECTABLE_RISKS, or the model did not write that tool's call."""
-        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS:
+        is off, the tool's risk is not in CORRECTABLE_RISKS, it has an effect of the catalog, or the model did not write
+        that tool's call."""
+        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS \
+                or self.effects.get(wire):
             return None
         try:
             filled = self.server.fill_call(body, wire)

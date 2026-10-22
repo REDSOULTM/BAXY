@@ -78,3 +78,19 @@ public static class OperationRisks
             or ExternalCommunication
             or WorkLoss;
 }
+
+/// <summary>
+/// Where an operation's effect lands besides its risk (al máximo 5.1): <see cref="WindowInput"/> sends keys, clicks,
+/// window commands or a script to a window that may be the person's; <see cref="Network"/> sends what the model wrote
+/// (a query, an address, a host, a place, a title) out of the PC; <see cref="System"/> (R10.1) changes how the PC
+/// connects or what it shows: a radio, a network connection or a pairing, airplane mode, the display mode. A heartbeat
+/// holds them and «corrige» never fills them.
+/// </summary>
+public static class OperationEffects
+{
+    public const string WindowInput = "window_input";
+    public const string Network = "network";
+    public const string System = "system";
+
+    public static bool IsKnown(string? value) => value is WindowInput or Network or System;
+}
