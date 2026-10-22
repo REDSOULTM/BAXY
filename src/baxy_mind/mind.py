@@ -313,8 +313,9 @@ def beat_message(context: dict[str, Any]) -> str:
             for h in history))
     reminders = context.get("reminders") or []
     if reminders:
-        lines.append("Recordatorios: " + "; ".join(f"{r.get('text') or 'sin título'} ({r.get('due', '')})"
-                                                   for r in reminders))
+        # R10.3: one without a time (the App's «y 3 más sin listar») has no empty brackets.
+        lines.append("Recordatorios: " + "; ".join(
+            f"{r.get('text') or 'sin título'}" + (f" ({r['due']})" if r.get("due") else "") for r in reminders))
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
 
