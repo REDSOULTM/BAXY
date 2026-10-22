@@ -341,6 +341,9 @@ TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesi�
 # the cut is said where the model reads it.
 SHRUNK_CHARS = 1200
 SHRUNK = "\n[Resultado recortado para que quepa el turno: {n} caracteres más de este resultado ya no se muestran]"
+# The same for the person's own text when it alone does not fit (decide); never cut below this many characters.
+CUT_TEXT = "\n[Texto recortado para que quepa el turno: {n} caracteres más de lo que escribió la persona ya no se muestran]"
+CUT_TEXT_FLOOR = 500
 
 # System One, layer 0 (doubt.py): what the model reads when it was not sure of the action it chose. Off unless
 # BAXY_S1_DOUBT holds a threshold; on the 1,839 labelled real requests, below 0.4 held 95 of 210 wrong actions and asked
@@ -673,9 +676,17 @@ class Mind:
         self._close_open_calls()
         clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
         self.conversation.append(clock)
-        self.conversation.append({"role": "user", "content": text})
+        request = {"role": "user", "content": text}
+        self.conversation.append(request)
         try:
             self._trim()
+            # Review 2026-10-22: a text that alone does not fit beside the prefix (a pasted log) failed the turn whole
+            # and wordless, as only earlier turns can be trimmed: it keeps its start, halved until it fits, and the cut
+            # is said where the model reads it.
+            keep = len(text)
+            while keep > CUT_TEXT_FLOOR and self._history_too_long():
+                keep //= 2
+                request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:

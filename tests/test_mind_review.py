@@ -383,3 +383,19 @@ def test_the_same_call_aid_offers_more_tools_only_when_the_turn_admits_them(tmp_
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert "ya se hizo 3 veces en este turno" in last
     assert ("Opciones: otra herramienta" in last) is not final
+
+
+def test_a_pasted_text_past_what_the_turn_holds_keeps_its_start_and_the_cut_is_said(tmp_path: Path) -> None:
+    # Review 16: one turn alone past the context failed whole and wordless (only earlier turns can be trimmed).
+    from test_mind_final import _overflow
+    mind, server = _mind(tmp_path, [_say("Es un registro de errores de red.")])
+    mind.prefix_tokens = 45000  # with 49,152 of context, about 2,200 characters for the turn
+    chat = server.chat
+    server.chat = lambda body: (_ for _ in ()).throw(_overflow()) if len(json.dumps(body["messages"][1:])) > 4000 \
+        else chat(body)
+    pasted = "ERROR timeout en 10.0.0.1 " * 800
+    assert mind.decide(1, pasted)["reply"] == "Es un registro de errores de red."
+    request = mind.conversation[-2]["content"]
+    assert request.startswith(pasted[:500])
+    kept = request.split("\n[")[0]
+    assert f"{len(pasted) - len(kept)} caracteres" in request
