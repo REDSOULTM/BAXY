@@ -484,29 +484,38 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal async Task<bool> OpenSessionAsync(System.Text.Json.Nodes.JsonArray? mindConversation,
         IReadOnlyList<ConversationMessage> messages, CancellationToken cancellationToken)
     {
-        if (IsBusy || _beatActive || _mindClient is not { IsReady: true } mind)
+        // 2026-10-22, review of the App: the opening holds the turn while the mind loads the session; a person's turn
+        // sent meanwhile ran across it (its words cleared with the old conversation) and a heartbeat could start.
+        if (IsBusy || _mindClient is not { IsReady: true } mind || !_turnGate.Wait(0, CancellationToken.None))
         {
             return false;
         }
 
-        bool loaded = mindConversation is { Count: > 0 }
-            ? await mind.SessionLoadAsync(mindConversation, cancellationToken)
-            : await mind.NewSessionAsync(cancellationToken);
-        if (!loaded)
+        try
         {
-            return false;
-        }
+            bool loaded = mindConversation is { Count: > 0 }
+                ? await mind.SessionLoadAsync(mindConversation, cancellationToken)
+                : await mind.NewSessionAsync(cancellationToken);
+            if (!loaded)
+            {
+                return false;
+            }
 
-        _loop.Reset();
-        Messages.Clear();
-        foreach (ConversationMessage message in messages)
+            _loop.Reset();
+            Messages.Clear();
+            foreach (ConversationMessage message in messages)
+            {
+                Messages.Add(message);
+            }
+
+            OnPropertyChanged(nameof(HasPendingConfirmation));
+            StatusDescription = IdleStatus();
+            return true;
+        }
+        finally
         {
-            Messages.Add(message);
+            _turnGate.Release();
         }
-
-        OnPropertyChanged(nameof(HasPendingConfirmation));
-        StatusDescription = IdleStatus();
-        return true;
     }
 
     /// <summary>What the heartbeat last saw the person doing (libre, jugando, llamada, viendo, ausente…).</summary>
