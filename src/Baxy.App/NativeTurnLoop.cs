@@ -48,6 +48,10 @@ internal sealed record NativeTurnConfirmation(
 /// runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// <para>
+/// In a turn the person opened, a call that sends out a value memory read in it or a host nobody gave
+/// (<see cref="NetworkEgress"/>) is held the same way, and asks as a confirmation.
+/// </para>
+/// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
 /// arrived says the mind's notice once (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
 /// </para>
@@ -105,9 +109,12 @@ internal sealed class NativeTurnLoop
     // 2026-10-22, review of the App: one clock for whether a waiting call is still waiting and how it ended.
     private readonly TimeProvider _time;
     private readonly SilenceNotice _notice;
+    private readonly NetworkEgress _egress = new();
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
+    // A call held in a heartbeat is its proposal; one held in the person's turn (NetworkEgress) asks as a confirmation.
+    private bool _proposalByBeat;
     private bool _beat;
     // The person's answer is the person's: it answers only a call whose question was published before their words or
     // their press arrived (ConfirmationAsk.Answers: _askedAt before _personAt, both Stopwatch timestamps;
@@ -150,6 +157,7 @@ internal sealed class NativeTurnLoop
             return;
         }
 
+        _egress.Heard(text);
         await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, WaitingCall(), cancellationToken),
             cancellationToken);
     }
@@ -167,6 +175,7 @@ internal sealed class NativeTurnLoop
         CancellationToken cancellationToken)
     {
         _personAt = arrivedAt;
+        _egress.NewTurn();
         long started = Stopwatch.GetTimestamp();
         _turnStarted = started;
         _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedAt < started, _host.Notice);
@@ -245,6 +254,7 @@ internal sealed class NativeTurnLoop
         }
 
         _beat = true;
+        _egress.NewTurn();
         _turnStarted = Stopwatch.GetTimestamp();
         try
         {
@@ -263,6 +273,7 @@ internal sealed class NativeTurnLoop
     internal void Reset()
     {
         DropPending();
+        _egress.Reset();
     }
 
     private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken)
@@ -297,6 +308,7 @@ internal sealed class NativeTurnLoop
 
             _recorded = null;
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
+            _egress.Observed(step.Operation!, observation);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
             // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same
             // terminal call eight times, then «no puedo ejecutar comandos»), so the model answers from what it has, as
@@ -348,9 +360,9 @@ internal sealed class NativeTurnLoop
             return null;
         }
 
-        bool proposal = ReferenceEquals(prepared, _proposal);
+        bool held = ReferenceEquals(prepared, _proposal);
         return new NativeTurnConfirmation(prepared.OperationName, PrivateArguments(prepared), descriptor.Risk,
-            proposal ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, proposal);
+            held ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, held && _proposalByBeat);
     }
 
     private void Resolved(string outcome)
@@ -447,18 +459,26 @@ internal sealed class NativeTurnLoop
                 "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
-        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation, arguments)
-                || ReachesTheNetwork(operation, arguments) || ReplacesThePersonsClipboard(operation)))
+        string? egress = _beat ? null : _egress.Holds(operation, arguments);
+        if (egress is not null || (_beat && (ProposedRisks.Contains(descriptor.Risk)
+                || SendsInputToAWindow(operation, arguments) || ReachesTheNetwork(operation, arguments)
+                || ReplacesThePersonsClipboard(operation))))
         {
-            // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
+            // Nobody asked (a heartbeat), or what it sends out is not the person's to send unasked (NetworkEgress): the
+            // call is held for the person's «sí», untouched, and the model words the question.
             _proposal = prepared;
+            _proposalByBeat = _beat;
             _proposalExpiresUtc = _time.GetUtcNow() + ProposalLifetime;
             _askedAt = ConfirmationAsk.Unpublished;
-            return Record(operation, arguments, started, WithArguments(new JsonObject
+            var held = new JsonObject { ["status"] = "needs_confirmation" };
+            if (egress is not null)
             {
-                ["status"] = "needs_confirmation",
-                ["next"] = AskThePersonAbout(operation),
-            }, "arguments", operation, arguments).ToJsonString());
+                held["cause"] = egress;
+            }
+
+            held["next"] = AskThePersonAbout(operation);
+            return Record(operation, arguments, started, WithArguments(held, "arguments", operation, arguments)
+                .ToJsonString());
         }
 
         return await SendAsync(core, prepared, arguments, confirmationToken: null, answered: false, started,
