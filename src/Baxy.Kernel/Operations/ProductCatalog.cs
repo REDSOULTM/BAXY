@@ -778,10 +778,18 @@ public static class ProductCatalog
             "Comprueba por nombre si un juego esta instalado mediante manifiestos de Steam y Epic y verifica que exista su directorio local."),
         Descriptor(
             "game.launch",
-            Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
+            // Renew al máximo (falsedades F001 y F016 del NB, 2026-10-22): el modelo lanzó el único juego instalado
+            // por «Doom Eternal» y por «Fortnite». El título que pidió la persona va con el AppID y el proveedor lo
+            // compara con el nombre del manifiesto antes de lanzar (game_title_required, game_title_mismatch).
+            Schema(
+                [
+                    String("appId", maximumLength: 16, nonWhitespace: true),
+                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["appId", "title"]),
             OperationRisks.LowReversible,
             "game.launch.steam.process.postread.v1",
-            "Inicia un AppID instalado en este PC y verifica la identidad del proceso lanzado.",
+            "Inicia un AppID instalado en este PC cuyo nombre es el juego que pidió la persona y verifica la identidad del proceso lanzado.",
             // It clicks «Jugar» in the dialog Steam opens for the game's address (SteamLocalAdapter.LaunchAsync); what Steam
             // publishes by itself (its «playing») is not the person's data leaving through BAXY (owner, 2026-10-16).
             effects: [WindowInput()]),

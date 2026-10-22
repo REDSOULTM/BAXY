@@ -826,6 +826,32 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             return ExternalJson.Failure(operation, "steam_installed_game_not_verified");
         }
+        // Renew al máximo (falsedades F001/F016): the model launched the one installed game's appId (Rocket League) for
+        // «Doom Eternal» and «Fortnite», twice in front of the owner, and said it had launched what was asked. The title
+        // asked for goes in the call and must be this manifest's own (folded as an entitlement's title is); another,
+        // or none, fails before anything is sent, with the games installed.
+        string? title = arguments.TryGetProperty("title", out JsonElement titleElement)
+            && titleElement.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(titleElement.GetString()) ? titleElement.GetString()!.Trim() : null;
+        if (title is null || FoldTitle(title) != FoldTitle(game.Name))
+        {
+            SteamLocalGame[] installedGames = [.. _snapshot().Where(candidate => candidate.Installed).Take(20)];
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteString("appId", appId); writer.WriteString("name", game.Name);
+                if (title is not null) writer.WriteString("title", title);
+                writer.WriteStartArray("installedGames");
+                foreach (SteamLocalGame candidate in installedGames)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("appId", candidate.AppId); writer.WriteString("name", candidate.Name);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                writer.WriteString("authority", "steam_manifest_preread"); writer.WriteEndObject();
+            }), title is null ? "game_title_required" : "game_title_mismatch");
+        }
         ApplicationPlaces.GameAct? launch = ApplicationPlaces.GameActOf(GameCatalog, "launch", appId);
         if (launch is null)
         {
