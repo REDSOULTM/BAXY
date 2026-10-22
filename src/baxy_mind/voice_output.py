@@ -108,6 +108,7 @@ class Speech:
         # when its synthesis already started)
         self._queue: queue.Queue[tuple[int, str | None, float, int | None, Iterator[np.ndarray] | None]] = \
             queue.Queue(maxsize=16)
+        self._posting = threading.Lock()     # speak() (the reader) and prepare() (the request loop) share the queue
         self._generation = 0                 # cancel() moves it on; older utterances are dropped
         self._answers = 0                    # answers given so far: a notice with an answer after it is not said
         self._notice_audio: np.ndarray | None = None  # the notice, synthesized once at load, with no pause after it
@@ -143,32 +144,33 @@ class Speech:
         text = " ".join(str(text or "").split())[:MAX_CHARS]
         if not text or self.failure:
             return False
-        if not notice:
-            self._answers += 1
-        audio = None
-        if notice and text == NOTICE and self._notice_audio is not None:
-            # Ready at once and nothing to synthesize: it never holds the synthesis an answer given now needs (owner,
-            # 2026-10-20: an answer waited 3.6 s behind «Un momento», then being synthesized like any sentence).
-            audio = iter([self._notice_audio])
-        elif self.ready:
-            try:
-                audio = self._sentences(text)
-            except Exception:  # noqa: BLE001 - the speech thread synthesizes it then, and says what failed
-                audio = None
-        try:
+        with self._posting:
+            # A refused answer leaves nothing behind: not counted (it would drop a notice) and not synthesized.
+            if self._queue.full():
+                return False
+            if not notice:
+                self._answers += 1
+            audio = None
+            if notice and text == NOTICE and self._notice_audio is not None:
+                # Ready at once and nothing to synthesize: it never holds the synthesis an answer given now needs
+                # (owner, 2026-10-20: an answer waited 3.6 s behind «Un momento», then being synthesized like any
+                # sentence).
+                audio = iter([self._notice_audio])
+            elif self.ready:
+                try:
+                    audio = self._sentences(text)
+                except Exception:  # noqa: BLE001 - the speech thread synthesizes it then, and says what failed
+                    audio = None
             self._queue.put_nowait((self._generation, text, time.monotonic(), self._answers if notice else None,
                                     audio))
-        except queue.Full:
-            return False
         return True
 
     def prepare(self) -> None:
         """A turn started: open the output now, so its answer does not wait for the device."""
         if self.ready:
-            try:
-                self._queue.put_nowait((self._generation, None, time.monotonic(), None, None))
-            except queue.Full:
-                pass
+            with self._posting:
+                if not self._queue.full():
+                    self._queue.put_nowait((self._generation, None, time.monotonic(), None, None))
 
     def cancel(self) -> None:
         self._generation += 1
