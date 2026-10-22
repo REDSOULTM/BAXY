@@ -119,18 +119,51 @@ internal sealed class FieldSessionStore
         return session is not null && Save(session with { Label = label });
     }
 
+    /// <summary>
+    /// BAXY Renew al máximo 11.4 (identity: the memory «se puede borrar entera»; the mind's conversation here holds what
+    /// memory calls read): every kept conversation but <paramref name="keep"/> goes, with any half-written copy. How
+    /// many conversations went.
+    /// </summary>
+    internal int DeleteAll(string? keep = null)
+    {
+        if (!Directory.Exists(_directory))
+        {
+            return 0;
+        }
+
+        int deleted = 0;
+        foreach (string file in Directory.EnumerateFiles(_directory, "*.json*"))
+        {
+            string name = Path.GetFileName(file);
+            if ((keep is null || (name != keep + ".json" && name != keep + ".json.tmp")) && Delete(file)
+                && name.EndsWith(".json", StringComparison.Ordinal))
+            {
+                deleted++;
+            }
+        }
+
+        return deleted;
+    }
+
     // Past the limit, the conversations touched longest ago go.
     private void Prune()
     {
         foreach (Session old in List().Skip(MaximumSessions))
         {
-            try
-            {
-                File.Delete(PathOf(old.Id));
-            }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-            {
-            }
+            Delete(PathOf(old.Id));
+        }
+    }
+
+    private static bool Delete(string path)
+    {
+        try
+        {
+            File.Delete(path);
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return false;
         }
     }
 

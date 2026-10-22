@@ -94,6 +94,9 @@ internal sealed class NativeTurnLoop
         internal Func<string, JsonObject, string?>? Refuse { get; init; }
 
         internal Action? MemoryChanged { get; init; }
+
+        /// <summary>The chat forgot everything memory held (memory.forget, scope all): the kept conversations go too.</summary>
+        internal Action? ForgotEverything { get; init; }
     }
 
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
@@ -754,6 +757,10 @@ internal sealed class NativeTurnLoop
             && operation is not ("memory.recall" or "memory.list" or "memory.status" or "memory.export"))
         {
             _host.MemoryChanged?.Invoke();
+            if (operation == "memory.forget" && ForgetsAll(prepared))
+            {
+                _host.ForgotEverything?.Invoke();
+            }
         }
 
         return Record(operation, arguments, started, body, response);
@@ -786,6 +793,28 @@ internal sealed class NativeTurnLoop
             or ProtectedPayloadException)
         {
             return Observation("completed", "result_unreadable");
+        }
+    }
+
+    // Whether a memory.forget was the whole memory (its sealed arguments' scope).
+    private bool ForgetsAll(PreparedOperation prepared)
+    {
+        if (_host.MemoryProtector() is not { } protector)
+        {
+            return false;
+        }
+
+        try
+        {
+            using OpenedBoundProtectedJson opened = protector.OpenPrivateArguments(prepared);
+            return opened.Payload.ValueKind == System.Text.Json.JsonValueKind.Object
+                && opened.Payload.TryGetProperty("scope", out System.Text.Json.JsonElement scope)
+                && scope.ValueKind == System.Text.Json.JsonValueKind.String && scope.GetString() == "all";
+        }
+        catch (Exception exception) when (exception is System.IO.InvalidDataException or MemoryRequestRefusedException
+            or ProtectedPayloadException)
+        {
+            return false;
         }
     }
 

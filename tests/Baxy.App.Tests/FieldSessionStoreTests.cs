@@ -78,6 +78,26 @@ public sealed class FieldSessionStoreTests
         Assert.That(Contains(File.ReadAllBytes(file), Secret), Is.False, "the old session stayed in clear");
     }
 
+    // BAXY Renew al máximo 11.4: «olvida todo» and the view's «borrar» leave no conversation behind but the one shown.
+    [Test]
+    public void DeletingAllLeavesOnlyTheConversationKept()
+    {
+        var store = new FieldSessionStore(_root);
+        foreach (string id in (string[])["old1", "old2", "now3"])
+        {
+            Assert.That(store.Save(Session(id)), Is.True);
+        }
+
+        File.WriteAllText(Path.Combine(_root, "sessions", "old4.json.tmp"), "half");
+
+        Assert.That(store.DeleteAll(keep: "now3"), Is.EqualTo(2));
+
+        Assert.That(Directory.GetFiles(Path.Combine(_root, "sessions")).Select(Path.GetFileName),
+            Is.EqualTo(new[] { "now3.json" }));
+        Assert.That(store.DeleteAll(), Is.EqualTo(1));
+        Assert.That(store.List(), Is.Empty);
+    }
+
     private static FieldSessionStore.Session Session(string id) => new(
         id,
         "Contraseña",
