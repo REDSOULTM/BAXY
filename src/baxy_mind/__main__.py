@@ -104,6 +104,10 @@ def main() -> int:
             if message is None:
                 break
             request_id, kind = message.get("id"), str(message.get("type"))
+            # Review 2026-10-22: a request's calls to the model share one budget under the App's 30 s, except the
+            # warm-up and a kept session's load (LlmServer.REQUEST_SECONDS).
+            server.deadline = (None if kind in ("catalog.configure", "session.load")
+                               else time.monotonic() + LlmServer.REQUEST_SECONDS)
             try:
                 if kind == "catalog.configure":
                     count = mind.configure(message)

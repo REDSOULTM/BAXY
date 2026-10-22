@@ -399,3 +399,53 @@ def test_a_pasted_text_past_what_the_turn_holds_keeps_its_start_and_the_cut_is_s
     assert request.startswith(pasted[:500])
     kept = request.split("\n[")[0]
     assert f"{len(pasted) - len(kept)} caracteres" in request
+
+
+def _server_answering(monkeypatch, timeouts: list):
+    import io
+    from baxy_mind import llm_server
+
+    def urlopen(request, timeout):
+        timeouts.append(timeout)
+        return io.BytesIO(json.dumps({"tokens": [1], "prompt": "p", "content": "_close",
+                                      "choices": [{"message": {"content": "Hola."}}]}).encode("utf-8"))
+
+    monkeypatch.setattr(llm_server.urllib.request, "urlopen", urlopen)
+    server = llm_server.LlmServer("model.gguf", "llama-server.exe")
+    server._ready.set()
+    return server
+
+
+ALL_CALLS = [lambda s: s.chat({"messages": []}), lambda s: s.tokenize("hola"),
+             lambda s: s.complete_name({"messages": [], "tools": [], "chat_template_kwargs": {}}, "<tool_call>"),
+             lambda s: s.fill_call({"messages": []}, "app_open")]
+
+
+@pytest.mark.parametrize("call", ALL_CALLS)
+def test_every_call_to_the_model_server_waits_within_the_requests_budget(monkeypatch, call) -> None:
+    # Review 17: the App ends a turn's request at 30 s; the mind waited 120 s for a chat, 30 s for a fill, 10 s for a
+    # name, and answered after the App had given up.
+    import time
+    timeouts: list = []
+    server = _server_answering(monkeypatch, timeouts)
+    server.deadline = time.monotonic() + 5
+    call(server)
+    assert timeouts and all(t <= 5 for t in timeouts)
+
+
+@pytest.mark.parametrize("call", ALL_CALLS)
+def test_a_spent_budget_ends_the_request_without_calling_the_server(monkeypatch, call) -> None:
+    import time
+    timeouts: list = []
+    server = _server_answering(monkeypatch, timeouts)
+    server.deadline = time.monotonic() - 0.1
+    with pytest.raises(TimeoutError):
+        call(server)
+    assert timeouts == []
+
+
+def test_without_a_budget_the_calls_keep_their_own_timeouts(monkeypatch) -> None:
+    timeouts: list = []
+    server = _server_answering(monkeypatch, timeouts)
+    server.chat({"messages": []}, timeout=600)
+    assert timeouts == [600]
