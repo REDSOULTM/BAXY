@@ -29,7 +29,10 @@ public sealed class OpenMeteoPlaceTimeZoneResolver : IPlaceTimeZoneResolver, IDi
 
     public OpenMeteoPlaceTimeZoneResolver()
     {
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(6) };
+        _http = new HttpClient(Baxy.Providers.Windows.External.SearchPageReader.StrangerHandler())
+        {
+            Timeout = TimeSpan.FromSeconds(6),
+        };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 time-zone-read");
     }
 

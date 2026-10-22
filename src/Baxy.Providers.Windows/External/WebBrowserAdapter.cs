@@ -60,11 +60,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _sessionContext = sessionContext;
         _userBrowser = new UserBrowserSurface(new WindowsUserBrowserPlatform());
         _capturesDirectory = Path.Combine(dataRoot, "captures");
-        _http = new HttpClient(new SocketsHttpHandler
-        {
-            AutomaticDecompression = System.Net.DecompressionMethods.All,
-        })
-        { Timeout = TimeSpan.FromSeconds(20) };
+        _http = new HttpClient(SearchPageReader.StrangerHandler()) { Timeout = TimeSpan.FromSeconds(20) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 structured-search");
         _locator = new PublicPlaceLocator(_http.GetStringAsync);
         _wikipedia = new WikipediaSearchSource(_http);

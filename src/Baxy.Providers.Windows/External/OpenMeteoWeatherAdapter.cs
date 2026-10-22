@@ -32,7 +32,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
 
     internal OpenMeteoWeatherAdapter()
     {
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(12) };
+        _http = new HttpClient(SearchPageReader.StrangerHandler()) { Timeout = TimeSpan.FromSeconds(12) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 weather-read");
         _locator = new PublicPlaceLocator(FetchAsync);
     }

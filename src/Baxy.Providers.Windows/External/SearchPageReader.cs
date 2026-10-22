@@ -35,6 +35,15 @@ internal sealed class SearchPageReader : IDisposable
         _ownsClient = true;
     }
 
+    // The connection of the clients that ask public services for the person's search, weather or place (the search
+    // sources, the place by this PC's address, the weather and a place's time zone). Renew al máximo (auditoría de
+    // flujos): no cookie is kept or sent back, so one search is never tied to the next by what a service set.
+    internal static SocketsHttpHandler StrangerHandler() => new()
+    {
+        UseCookies = false,
+        AutomaticDecompression = DecompressionMethods.All,
+    };
+
     // Tests answer from their own handler.
     internal SearchPageReader(HttpClient http)
     {

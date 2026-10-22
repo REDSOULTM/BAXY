@@ -3677,6 +3677,17 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): the client that asks the search sources (and the place by this PC's
+    // address), the weather and a place's time zone keeps no cookie: one jar lived as long as BAXY and sent back what
+    // each service set (Wikipedia's, Google's), so the person's searches went out tied to one another.
+    [Test]
+    public void ThePublicServicesClientKeepsNoCookie()
+    {
+        using SocketsHttpHandler handler = SearchPageReader.StrangerHandler();
+
+        Assert.That(handler.UseCookies, Is.False);
+    }
+
     // Renew al máximo (auditoría de flujos, web): an address said without its scheme («es.wikipedia.org/wiki/Arroz», as
     // the person dictates it and web.download takes it) is read over https; it was refused as not public.
     [Test]
