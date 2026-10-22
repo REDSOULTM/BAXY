@@ -866,7 +866,9 @@ public static class ProductCatalog
                 // salvo que el paso declare que el teclado está en un campo de
                 // texto (text_field): fuera de uno borra lo seleccionado. Revisión
                 // 2026-10-22 (K-2): Enter o Espacio sin target ni onto no declaran
-                // dónde caen y preguntan; sobre text_field van directos.
+                // dónde caen y preguntan, salvo que el prevuelo del Core lea que la
+                // ventana destino no es de mensajería ni consola (K-2 refinada);
+                // sobre text_field van directos.
                 String("target", types: NullableString, values: ["message_composer", "text_field"]),
                 // La ventana mirada (el número que dio la vista): la tecla va sólo
                 // a ella; si no está delante y no se la puede traer, nada se envía.

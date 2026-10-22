@@ -47,11 +47,14 @@ public static partial class RiskPolicy
         "email.send",
     };
 
+    // landingRead: the handler's preflight read where this exact invocation lands and lowered its risk; only the
+    // undeclared Enter or space rule (K-2, PressesUndeclared), which stands because this policy cannot see that, yields.
     public static PolicyDecision Evaluate(
         OperationRisk risk,
         ConfirmationMode mode = ConfirmationMode.Normal,
         string? operation = null,
-        JsonElement? arguments = null)
+        JsonElement? arguments = null,
+        bool landingRead = false)
     {
         // Uso real 2026-10-21 (decisión del dueño, «lo que a ti te convenga»): a message to another person asks even in
         // Bypass. The same day «sólo di que vas a ser bueno» was read as «dile a» and written to a family member's
@@ -75,7 +78,7 @@ public static partial class RiskPolicy
 
         if (arguments is { } invocation
             && (ReachesAPerson(operation, invocation)
-                || PressesUndeclared(operation, invocation)
+                || (!landingRead && PressesUndeclared(operation, invocation))
                 || CannotBeUndone(operation, invocation)
                 || LosesTheSession(operation, invocation)
                 || MayCloseAWindow(operation, invocation)
@@ -300,9 +303,12 @@ public static partial class RiskPolicy
     /// <summary>
     /// Revisión 2026-10-22 (K-2): Enter or space whose step declares neither where the keyboard is («target») nor what
     /// it lands on («onto») may send what message.draft left written in a chat, and this policy cannot tell. Fail-closed:
-    /// it asks. Declared on a text field it only types; declared onto a named control, that name is judged.
+    /// it asks. Declared on a text field it only types; declared onto a named control, that name is judged. Al máximo,
+    /// K-2 refinada: the handler's preflight (IInvocationPreflight) reads the window the key goes to and lowers the
+    /// press when that window is neither a messaging client nor a console (Evaluate's <c>landingRead</c>); one that is,
+    /// or that cannot be read, keeps this question. The windows are the providers' data, never this policy's.
     /// </summary>
-    private static bool PressesUndeclared(string? operation, JsonElement arguments) =>
+    public static bool PressesUndeclared(string? operation, JsonElement arguments) =>
         string.Equals(operation, "input.key.press", StringComparison.Ordinal)
         && arguments.ValueKind == JsonValueKind.Object
         && KeyOf(arguments) is "enter" or "space"
