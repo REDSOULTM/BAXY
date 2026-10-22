@@ -199,6 +199,7 @@ internal sealed class AppOpenHandler(
             providerResult.NewDocument,
             providerResult.ShownWithoutFocus,
             PlaceRequested: place is not null,
+            EffectReadBack: place is null ? null : false,
             Next: place is not null && ModelAids.On(ModelAids.PlaceUnverified)
                 ? $"{providerResult.DisplayName} was asked to show its {arguments.Place ?? "place"}"
                     + (game is null ? string.Empty : $" of {game.Name}") + "; whether it shows now "

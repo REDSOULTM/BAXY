@@ -53,6 +53,9 @@ internal sealed record OpenApplicationResult(
     // PlaceRequested (estabilización, encargo C; auditoría K10): the place's address was handed to Windows. Nothing here
     // reads whether it arrived; a look at the window does.
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool PlaceRequested = false,
+    // EffectReadBack (revisión 2026-10-22, C-5): false with a place, aids on or off: the opening is verified, whether
+    // the place shows is not (the mind's outcome reads it as «completado sin verificar»). Absent without a place.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? EffectReadBack = null,
     // Next (pc-ayudas, aid place_unverified): with a place, that it was only asked for and how to look; F019 said
     // «abrí Steam en la biblioteca» from placeRequested alone (continuation probe: 3/3 without it, 0/3 with it, the
     // model looked with input_visible_controls).

@@ -184,6 +184,8 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(result.GetProperty("placeRequested").GetBoolean(), Is.True);
+            // Revisión 2026-10-22 (C-5): with the aids on or off, a structured fact says the place was not read back.
+            Assert.That(result.GetProperty("effectReadBack").GetBoolean(), Is.False);
             Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
             if (hint)
             {
@@ -199,7 +201,11 @@ public sealed class AppOpenHandlerTests
     {
         OperationOutcome outcome = await Handler(new VerifiedOpening(@"C:\Windows\System32\notepad.exe"))
             .ExecuteAsync(Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
-        Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+            Assert.That(outcome.Result!.Value.TryGetProperty("effectReadBack", out _), Is.False);
+        });
     }
 
     // BAXY Renew cu (C04): a game's page asked for by the game's title opens by the number its catalog found, and the
