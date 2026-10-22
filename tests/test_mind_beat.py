@@ -25,3 +25,22 @@ def test_the_second_move_of_a_heartbeat_reads_the_motives_it_found(tmp_path: Pat
     assert analysis["role"] == "assistant"
     assert analysis["content"] == ("pedido: avisarle cuando termine la descarga; preferencia: ninguna; vence: nada; "
                                    "bloqueo: nada. Terminó una descarga.")
+
+
+def test_the_heartbeat_reads_its_times_as_a_clock_and_how_far_they_are() -> None:
+    # 10.4 (Test of Time): the moment and each reminder were ISO stamps the model had to subtract; now the day and the
+    # time, and how long until or since, as facts. The App's «yyyy-MM-dd HH:mm» (local) and ISO with an offset both read.
+    message = beat_message({"now": "2026-10-22T09:40:00-03:00", "weekday": "jueves", "reminders": [
+        {"text": "Clase", "due": "2026-10-22 10:00"}, {"text": "Entrega", "due": "2026-10-23T08:00:00-03:00"},
+        {"text": "Pagar", "due": "2026-10-22T09:30:00-03:00"}, {"text": "Viaje", "due": "2026-10-27 07:00"}]})
+    lines = message.splitlines()
+    assert lines[0] == "Momento: jueves 22/10/2026 09:40 · la persona está: desconocido"
+    assert next(line for line in lines if line.startswith("Recordatorios:")) == (
+        "Recordatorios: Clase (hoy 10:00, en 20 min); Entrega (mañana 08:00, en 22 h 20 min); "
+        "Pagar (hoy 09:30, hace 10 min); Viaje (martes 27/10 07:00, en 5 días)")
+
+
+def test_times_the_heartbeat_cannot_read_are_shown_as_they_came() -> None:
+    message = beat_message({"now": "22:00", "reminders": [{"text": "Clase", "due": "mañana temprano"}]})
+    assert message.splitlines()[0] == "Momento:  22:00 · la persona está: desconocido"
+    assert "Recordatorios: Clase (mañana temprano)" in message

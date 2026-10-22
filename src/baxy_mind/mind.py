@@ -283,12 +283,52 @@ def _aids_seen(observation: str) -> dict[str, Any]:
     return seen
 
 
+_WEEKDAYS = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
+
+
+def _when(text: Any) -> _dt.datetime | None:
+    """A time the App wrote (ISO, with or without its offset; a reminder's «yyyy-MM-dd HH:mm» is local), or None."""
+    try:
+        return _dt.datetime.fromisoformat(str(text))
+    except ValueError:
+        return None
+
+
+def _span(minutes: int) -> str:
+    minutes = abs(minutes)
+    if minutes < 60:
+        return f"{minutes} min"
+    if minutes < 48 * 60:
+        return f"{minutes // 60} h" + (f" {minutes % 60} min" if minutes % 60 else "")
+    return f"{round(minutes / 1440)} días"
+
+
+def _relative(due: Any, now: _dt.datetime | None) -> str:
+    """Al máximo 10.4 (Test of Time): a reminder's time as its day and hour from the moment and how far it is («hoy
+    10:00, en 20 min»), facts the model reads instead of subtracting ISO stamps; as it came when either does not read."""
+    when = _when(due)
+    if now is None or when is None:
+        return str(due)
+    if when.tzinfo is None and now.tzinfo is not None:
+        when = when.replace(tzinfo=now.tzinfo)  # the App's local time, in the moment's zone
+    elif when.tzinfo is not None and now.tzinfo is not None:
+        when = when.astimezone(now.tzinfo)
+    days = (when.date() - now.date()).days
+    day = {0: "hoy", 1: "mañana", -1: "ayer"}.get(days, f"{_WEEKDAYS[when.weekday()]} {when:%d/%m}")
+    minutes = round((when.replace(tzinfo=None) - now.replace(tzinfo=None)).total_seconds() / 60)
+    far = "ahora" if minutes == 0 else f"en {_span(minutes)}" if minutes > 0 else f"hace {_span(minutes)}"
+    return f"{day} {when:%H:%M}, {far}"
+
+
 def beat_message(context: dict[str, Any]) -> str:
     """What the heartbeat sees, as lines the model reads: the moment, the screen, the PC, what changed, what BAXY
     remembers, the recent conversation and the reminders. Presentation only: every field the App observed is shown."""
     lines = []
     fg = context.get("foreground") or {}
-    lines.append(f"Momento: {context.get('weekday', '')} {context.get('now', '')} · la persona está: "
+    now = _when(context.get("now"))
+    # Al máximo 10.4: the moment as a day and a clock, not an ISO stamp (as it came when it does not read).
+    shown = f"{now:%d/%m/%Y %H:%M}" if now else context.get("now", "")
+    lines.append(f"Momento: {context.get('weekday', '')} {shown} · la persona está: "
                  f"{context.get('owner_activity', 'desconocido')}")
     if fg:
         lines.append(f"Al frente: {fg.get('title', '')} ({fg.get('process', '')})"
@@ -315,7 +355,8 @@ def beat_message(context: dict[str, Any]) -> str:
     if reminders:
         # R10.3: one without a time (the App's «y 3 más sin listar») has no empty brackets.
         lines.append("Recordatorios: " + "; ".join(
-            f"{r.get('text') or 'sin título'}" + (f" ({r['due']})" if r.get("due") else "") for r in reminders))
+            f"{r.get('text') or 'sin título'}" + (f" ({_relative(r['due'], now)})" if r.get("due") else "")
+            for r in reminders))
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
 
