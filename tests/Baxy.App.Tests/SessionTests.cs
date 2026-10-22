@@ -37,4 +37,38 @@ public sealed class SessionTests
             }), "the turn ran across the opening and lost the person's words");
         }
     }
+
+    [Test]
+    public async Task ANewConversationTheMindCouldNotStartLeavesTheCurrentOne()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject { ["fail"] = new JsonArray("session.new") });
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        {
+            viewModel.Messages.Add(new ConversationMessage("Tú", "hola", true, DateTimeOffset.Now));
+
+            bool started = await viewModel.StartNewUiSessionAsync(CancellationToken.None);
+
+            Assert.That(await fake.WaitSeenAsync("session.new"), Is.True);
+            Assert.That(started, Is.False, "the view started over while the model kept the old conversation");
+            Assert.That(viewModel.Messages.Select(static m => m.Body), Is.EqualTo(new[] { "hola" }));
+        }
+    }
+
+    [Test]
+    public async Task ANewConversationStartsOnceTheMindStartedIt()
+    {
+        using var fake = new FakeMind();
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        {
+            viewModel.Messages.Add(new ConversationMessage("Tú", "hola", true, DateTimeOffset.Now));
+
+            Assert.That(await viewModel.StartNewUiSessionAsync(CancellationToken.None), Is.True);
+
+            Assert.That(fake.Seen, Does.Contain("session.new"));
+            Assert.That(viewModel.Messages, Is.Empty);
+        }
+    }
 }

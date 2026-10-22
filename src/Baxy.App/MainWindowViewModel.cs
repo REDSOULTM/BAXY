@@ -664,25 +664,35 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         : "BAXY disponible";
 
     /// <summary>A new conversation: the transcript, the model's session and anything pending start over.</summary>
-    internal bool StartNewUiSession()
+    internal async Task<bool> StartNewUiSessionAsync(CancellationToken cancellationToken)
     {
         // Ronda final 33 (regla 3): not while a heartbeat holds the turn either (its line would land in the new session).
-        if (IsBusy || _beatActive)
+        // 2026-10-22, review of the App: it holds the turn itself while the mind starts over, and it waits for the mind:
+        // a session.new that failed left the view empty and the model in the old conversation. A mind that is not up
+        // has nothing to start over (the next one starts empty).
+        if (IsBusy || !_turnGate.Wait(0, CancellationToken.None))
         {
             return false;
         }
 
-        _loop.Reset();
-        Messages.Clear();
-        SilenceVoice();
-        if (_mindClient is { IsReady: true } mind)
+        try
         {
-            _ = mind.NewSessionAsync(CancellationToken.None);
-        }
+            if (_mindClient is { IsReady: true } mind && !await mind.NewSessionAsync(cancellationToken))
+            {
+                return false;
+            }
 
-        OnPropertyChanged(nameof(HasPendingConfirmation));
-        StatusDescription = IdleStatus();
-        return true;
+            _loop.Reset();
+            Messages.Clear();
+            SilenceVoice();
+            OnPropertyChanged(nameof(HasPendingConfirmation));
+            StatusDescription = IdleStatus();
+            return true;
+        }
+        finally
+        {
+            _turnGate.Release();
+        }
     }
 
     /// <summary>

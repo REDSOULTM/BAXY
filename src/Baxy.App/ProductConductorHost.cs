@@ -214,7 +214,7 @@ internal static class ProductConductorHost
 
                 if ((string?)turn["session"] == "new")
                 {
-                    bool started = viewModel.StartNewUiSession();
+                    bool started = await viewModel.StartNewUiSessionAsync(lifetime.Token).ConfigureAwait(true);
                     Emit(new JsonObject { ["type"] = "command.done", ["session"] = "new", ["ok"] = started });
                     continue;
                 }

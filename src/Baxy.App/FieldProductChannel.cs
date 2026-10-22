@@ -476,9 +476,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         await SaveCurrentAsync().ConfigureAwait(true);
-        if (!_viewModel.StartNewUiSession())
+        if (!await _viewModel.StartNewUiSessionAsync(_lifetimeCancellation).ConfigureAwait(true))
         {
-            return Error("turn_in_progress", 409);
+            return Error(_viewModel.IsBusy ? "turn_in_progress" : "session_not_started", 409);
         }
 
         StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
