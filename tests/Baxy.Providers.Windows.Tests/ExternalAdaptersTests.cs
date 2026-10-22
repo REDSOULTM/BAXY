@@ -143,6 +143,61 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (8.3): the post-read that still found the instance was dropped from the failure; it is the state
+    // after, with its authority, and the failure stays.
+    [Test]
+    public async Task ProcessTerminationWhosePostreadStillFindsItSaysItIsStillRunning()
+    {
+        var identity = new WindowsProcessIdentity(5151, 638900000000000001);
+        var platform = new StubProcessTerminationPlatform(
+            [[identity], [identity]], terminateResult: WindowsProcessTermination.NotTerminated);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_postread_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_process_original_identity_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3): the kill was sent and the post-read threw: one more read of the name says whether the
+    // instances asked to end are gone; one that fails too adds nothing.
+    [TestCase(false, 0, true)]
+    [TestCase(false, 1, false)]
+    [TestCase(true, -1, false)]
+    public async Task ProcessTerminationWhosePostreadThrewReadsOnceMore(bool rereadThrows, int stillRunning, bool reached)
+    {
+        var identity = new WindowsProcessIdentity(5151, 638900000000000001);
+        var platform = new FlakyProcessTerminationPlatform(identity, rereadThrows, stillRunning == 1);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_failed"));
+            if (rereadThrows)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(stillRunning));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.EqualTo(reached));
+        });
+    }
+
     // FT/proveedores goal (review of receipts): the one instance runs elevated (Windows refuses BAXY): the receipt names
     // that, with the counts, and nothing was done, so its effect is not «possible».
     [Test]
@@ -5413,6 +5468,25 @@ public sealed class ExternalAdaptersTests
             Terminated.Add(identity);
             return terminateResult;
         }
+    }
+
+    // Renew al máximo (8.3): the post-read after the kill throws; the read after it throws too, or finds the instance
+    // still there, or not.
+    private sealed class FlakyProcessTerminationPlatform(
+        WindowsProcessIdentity identity, bool rereadThrows, bool stillThere) : IWindowsProcessTerminationPlatform
+    {
+        private int _snapshots;
+
+        public IReadOnlyList<WindowsProcessIdentity> Snapshot(string processName) => ++_snapshots switch
+        {
+            1 => [identity],
+            2 => throw new InvalidOperationException("simulated post-read failure"),
+            _ when rereadThrows => throw new InvalidOperationException("simulated re-read failure"),
+            _ => stillThere ? [identity] : [],
+        };
+
+        public WindowsProcessTermination Terminate(string processName, WindowsProcessIdentity identity) =>
+            WindowsProcessTermination.KillSent;
     }
 
     private sealed class StubPowerTransitionPlatform(string authority, bool accepted, bool alreadyPending = false)
