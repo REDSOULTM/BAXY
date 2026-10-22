@@ -86,6 +86,14 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-SYS-7): Windows shows lpMessage in its restart/shutdown notice; BAXY wrote a fixed «BAXY confirmó
+    // el reinicio solicitado…» there (a visible fixed reply, and in Normal mode nobody had confirmed anything). Windows
+    // takes NULL («if no message is required») and shows its own notice and countdown.
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ARestartOrShutdownPassesNoTextOfItsOwnToWindows(bool reboot) =>
+        Assert.That(WindowsPowerTransitionPlatform.DialogMessage(reboot), Is.Null);
+
     [Test]
     public async Task ExactNamedProcessTerminationPreservesIdentityAndVerifiesAbsence()
     {
@@ -153,6 +161,51 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_access_denied"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("deniedCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (B-SYS-6): «cierra svchost» finds dozens of instances, most of them SYSTEM services whose start
+    // time Windows will not let BAXY read; the read threw and the whole call ended as process_termination_failed
+    // before ending the person's own instances. Each unreadable one is now its own denied identity.
+    [Test]
+    public void ASnapshotCountsAnInstanceWhoseStartTimeIsRefusedAsDeniedAndSkipsOneThatExited()
+    {
+        DateTime started = new(2026, 10, 22, 9, 0, 0, DateTimeKind.Utc);
+
+        IReadOnlyList<WindowsProcessIdentity> identities = WindowsProcessTerminationPlatform.Identities(
+        [
+            (4242, () => started),
+            (9001, () => throw new System.ComponentModel.Win32Exception(5)),
+            (7070, () => throw new InvalidOperationException("exited")),
+        ]);
+
+        Assert.That(identities, Is.EqualTo(new[]
+        {
+            new WindowsProcessIdentity(4242, started.Ticks),
+            new WindowsProcessIdentity(9001, 0, AccessDenied: true),
+        }));
+    }
+
+    [Test]
+    public async Task AnInstanceWhoseIdentityCannotBeReadIsNeverEndedAndIsNamedAsDenied()
+    {
+        var system = new WindowsProcessIdentity(9001, 0, AccessDenied: true);
+        var own = new WindowsProcessIdentity(4242, 638900000000000000);
+        var platform = new StubProcessTerminationPlatform(
+            [[own, system], [system]], terminateResult: WindowsProcessTermination.Terminated);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"svchost"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.Terminated, Is.EqualTo(new[] { own }));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_access_denied"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("terminatedCount").GetInt32(), Is.EqualTo(1));
             Assert.That(receipt.Result?.GetProperty("deniedCount").GetInt32(), Is.EqualTo(1));
             Assert.That(receipt.Result?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
         });

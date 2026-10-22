@@ -24,8 +24,17 @@ internal interface IDisplayModePlatform
     /// <summary>ChangeDisplaySettingsEx with CDS_TEST: 0 (DISP_CHANGE_SUCCESSFUL) when Windows would accept it.</summary>
     int Test(string device, DisplayModeValue mode);
 
-    /// <summary>ChangeDisplaySettingsEx with CDS_UPDATEREGISTRY: the mode is applied and kept after a restart.</summary>
+    /// <summary>
+    /// ChangeDisplaySettingsEx with 0: the mode is shown now and not saved; a restart or a new sign-in shows the saved
+    /// one again.
+    /// </summary>
     int Apply(string device, DisplayModeValue mode);
+
+    /// <summary>The mode Windows has saved for the device (ENUM_REGISTRY_SETTINGS), or null when it could not be read.</summary>
+    DisplayModeValue? Saved(string device);
+
+    /// <summary>ChangeDisplaySettingsEx with CDS_UPDATEREGISTRY: the mode is applied and kept after a restart.</summary>
+    int Save(string device, DisplayModeValue mode);
 }
 
 internal sealed partial class WindowsDisplayModePlatform : IDisplayModePlatform
@@ -33,6 +42,7 @@ internal sealed partial class WindowsDisplayModePlatform : IDisplayModePlatform
     private const uint AttachedToDesktop = 0x1;
     private const uint PrimaryDeviceFlag = 0x4;
     private const int CurrentSettings = -1;
+    private const int RegistrySettings = -2;
     private const uint FieldBitsPerPel = 0x00040000;
     private const uint FieldPelsWidth = 0x00080000;
     private const uint FieldPelsHeight = 0x00100000;
@@ -80,7 +90,15 @@ internal sealed partial class WindowsDisplayModePlatform : IDisplayModePlatform
 
     public int Test(string device, DisplayModeValue mode) => Change(device, mode, ChangeTest);
 
-    public int Apply(string device, DisplayModeValue mode) => Change(device, mode, ChangeUpdateRegistry);
+    public int Apply(string device, DisplayModeValue mode) => Change(device, mode, 0);
+
+    public DisplayModeValue? Saved(string device)
+    {
+        DeviceMode mode = NewMode();
+        return EnumDisplaySettingsW(device, RegistrySettings, ref mode) ? Value(mode) : null;
+    }
+
+    public int Save(string device, DisplayModeValue mode) => Change(device, mode, ChangeUpdateRegistry);
 
     private static int Change(string device, DisplayModeValue value, uint flags)
     {
@@ -169,6 +187,10 @@ internal sealed partial class WindowsDisplayModePlatform : IDisplayModePlatform
 /// read-back is not the mode asked for, the previous mode is put back and read again, and the receipt says so. A width
 /// without a height (or the reverse) is refused; with only a resolution the refresh rate is kept when that mode lists it,
 /// otherwise the highest it lists is taken.
+/// Renew al máximo (B-SYS-5): the read-back is the mode the graphics card took, not what the monitor shows, so a change
+/// is shown only (ChangeDisplaySettingsEx with 0) and never saved by itself: a mode the monitor cannot show goes away at
+/// the next restart or sign-in. Asking for the mode again while it is shown is what saves it (CDS_UPDATEREGISTRY), and
+/// the saved mode (ENUM_REGISTRY_SETTINGS) is read back; the receipt says whether the shown mode is the saved one.
 /// </summary>
 internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
 {
@@ -259,7 +281,7 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
         }
 
         if (Same(previous, target))
-            return ExternalJson.Switched(operation, Result(previous, previous, refreshChosen, changed: false), false);
+            return Keep(operation, device, previous, refreshChosen, effectBoundary, cancellationToken);
         if (_platform.Test(device, target) != 0)
             return ExternalJson.FailureBeforeEffect(operation, "display_mode_test_failed");
 
@@ -267,15 +289,14 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
         int applied = _platform.Apply(device, target);
         DisplayModeValue? after = _platform.Current(device);
         if (after is { } shown && Same(shown, target))
-            return ExternalJson.Success(operation, Result(previous, shown, refreshChosen, changed: true));
+        {
+            return ExternalJson.Success(operation, Result(
+                previous, shown, refreshChosen, changed: true, SavedIs(device, shown)));
+        }
+        // Windows did not show it (DISP_CHANGE_RESTART, a refusal, or a success not shown yet): the screen reads as
+        // before and, the change being only dynamic, nothing was saved for a restart either.
         if (after is { } unchanged && Same(unchanged, previous))
         {
-            // FT/proveedores goal (review of receipts): Windows kept the new mode for later without showing it
-            // (DISP_CHANGE_RESTART, 1, or a success not shown yet): CDS_UPDATEREGISTRY had saved it, and it would come
-            // at the next sign-in, maybe a mode the screen cannot show. The shown mode is saved back first.
-            if (applied is 0 or 1 && _platform.Apply(device, previous) != 0)
-                return ExternalJson.FailureAfterEffect(operation, "display_mode_saved_for_restart");
-            // Windows did not apply it (or applied nothing): the screen reads as before, nothing changed.
             return ExternalJson.FailureBeforeEffect(
                 operation, applied != 0 ? "display_mode_not_applied" : "display_mode_not_verified");
         }
@@ -286,6 +307,38 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             ? ExternalJson.FailureAfterEffect(operation, "display_mode_not_verified_reverted")
             : ExternalJson.FailureAfterEffect(operation, "display_mode_revert_not_verified", effectObserved: true);
     }
+
+    // Renew al máximo (B-SYS-5): the mode asked for is the one shown. When Windows has another one saved (an earlier
+    // change only shown), asking again while seeing it is the person keeping it: it is saved and the save read back.
+    private ExternalCapabilityReceipt Keep(
+        string operation,
+        string device,
+        DisplayModeValue shown,
+        string refreshChosen,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        if (_platform.Saved(device) is not { } saved || Same(saved, shown))
+        {
+            return ExternalJson.Switched(
+                operation, Result(shown, shown, refreshChosen, changed: false, SavedIs(device, shown)), false);
+        }
+
+        effectBoundary.Cross(cancellationToken);
+        _platform.Save(device, shown);
+        DisplayModeValue? after = _platform.Saved(device);
+        if (after is { } stored && Same(stored, shown))
+        {
+            return ExternalJson.Success(
+                operation, Result(shown, shown, refreshChosen, changed: false, savedForRestart: true));
+        }
+        return after is { } unchanged && Same(unchanged, saved)
+            ? ExternalJson.FailureBeforeEffect(operation, "display_mode_not_saved")
+            : ExternalJson.FailureAfterEffect(operation, "display_mode_save_not_verified");
+    }
+
+    private bool? SavedIs(string device, DisplayModeValue shown) =>
+        _platform.Saved(device) is { } saved ? Same(saved, shown) : null;
 
     private static bool Same(DisplayModeValue a, DisplayModeValue b) =>
         a.Width == b.Width && a.Height == b.Height && a.RefreshHz == b.RefreshHz;
@@ -298,7 +351,8 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             ? number
             : null;
 
-    private static JsonElement Result(DisplayModeValue previous, DisplayModeValue final, string refreshChosen, bool changed) =>
+    private static JsonElement Result(
+        DisplayModeValue previous, DisplayModeValue final, string refreshChosen, bool changed, bool? savedForRestart) =>
         ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -307,6 +361,9 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             Write(writer, "previous", previous);
             Write(writer, "final", final);
             writer.WriteString("refreshChosen", refreshChosen);
+            // Whether a restart keeps the final mode; absent when the mode Windows has saved could not be read.
+            if (savedForRestart is { } saved)
+                writer.WriteBoolean("savedForRestart", saved);
             writer.WriteString("authority", "windows_display_settings_readback");
             writer.WriteEndObject();
         });
