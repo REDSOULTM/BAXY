@@ -205,6 +205,17 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // Renew al máximo (F001, F016): a launch carries the game the person asked for, so the provider can refuse an appId
+    // that is another game before anything starts.
+    [TestCase("{\"appId\":\"252950\"}", false)]
+    [TestCase("{\"appId\":\"252950\",\"title\":\"Rocket League\"}", true)]
+    public void AGameLaunchCarriesTheTitleThePersonAskedFor(string json, bool expected)
+    {
+        using JsonDocument arguments = JsonDocument.Parse(json);
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("game.launch").ArgumentsSchema;
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, schema), Is.EqualTo(expected));
+    }
+
     // Ronda 23 (índices de vista y esquema, t-menu-2 r21): a look numbers up to its cap, the goal's reserved room and
     // the body; the acts on a control of the look take all of it and nothing past it, and the look's own limit is the cap.
     [TestCase("input.visible.click", "index", "\"label\":\"Tamaño\"")]
