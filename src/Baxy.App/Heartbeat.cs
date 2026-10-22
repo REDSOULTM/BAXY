@@ -9,7 +9,7 @@ namespace Baxy.App;
 /// application opens, a file appears in Downloads, Windows' internet check changes, the battery runs low, the person
 /// leaves or comes back; changes join, one beat every 30 s at most: <see cref="HeartbeatPace"/>), the moment goes to the
 /// model, which decides by instinct. The five-minute look pauses while the person plays or the
-/// GPU is busy; a change still wakes it. <c>BAXY_RENEW_HEARTBEAT=0</c> turns it off.
+/// GPU is busy; a change still wakes it. Off unless <c>BAXY_RENEW_HEARTBEAT=1</c> (owner, 2026-10-22).
 /// </summary>
 internal sealed class Heartbeat : IAsyncDisposable
 {
@@ -64,8 +64,9 @@ internal sealed class Heartbeat : IAsyncDisposable
         }
     }
 
+    // Owner, 2026-10-22: the heartbeat stays off (it adds little for the person); BAXY_RENEW_HEARTBEAT=1 turns it on.
     internal static bool Enabled =>
-        !string.Equals(Environment.GetEnvironmentVariable("BAXY_RENEW_HEARTBEAT"), "0", StringComparison.Ordinal);
+        string.Equals(Environment.GetEnvironmentVariable("BAXY_RENEW_HEARTBEAT"), "1", StringComparison.Ordinal);
 
     internal void Start()
     {

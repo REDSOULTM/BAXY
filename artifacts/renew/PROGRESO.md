@@ -2985,3 +2985,20 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   («¿ya cerraste lo que te pedí?» → «Sí» sin cierre): A 2/3, B 0/3, C 0/3. F002 («¿abriste Spotify?» → «Sí, tiene ventana»)
   falla en las 9: suelo del modelo. F013 en B y C: file.write en home en vez de la carpeta del banco, contado como dudoso.
   Detalle: F:\BAXYeval\renew_v4\fals\juicio_mano.md/.json. **Tandas 2 y 4 fusionadas** en renew-maximo.
+- 19:0x **bisección de la tanda 3b** (13 casos que cambiaban, S1 ×3, aciertos de 39): base 26, +P2.2 25, +P2.2i 22, +P2.6 23,
+  +frases del NB 19, +game.launch con title 18. Retocar descripciones que el modelo aprendió le cuesta. Se quedan
+  game.launch con `title` (seguridad: F001/F016, lanzaba el juego equivocado) y P2.6 (−540 tokens); **salen P2.2, P2.2i
+  y las frases del NB** (las del NB describían campos de resultados que el modelo ya lee en el propio resultado; la
+  descripción de game_entitlement en renew-maximo no afirma búsqueda en la tienda, sigue siendo cierta). Rama
+  `t3final` 561dc2152. Sin la P2.2i, K-2 molestaría en buscadores: se refina en el kernel (w2-k2: Enter sin destino
+  pregunta sólo en ventanas de mensajería o consolas, por los datos por aplicación).
+- E2E del NB (practica, S1 on): A 11347dd0d 23/21/24 (22,67); B lv-t2 25/–/25 (s1 inválida por Taskmgr); A vs B (s0, s2)
+  23,5 → 25,0, Δ +1,5, IC95 [0; +3,5], pass^2 22 → 25. La tanda 2 también gana en e2e.
+- 19:0x **escenas con la R10.1 acotada** (lv-t5 5f0ed1e37/d6e09a2ab, 3 réplicas neutras): 32 / 31 / 30 (31,0) frente a la
+  tanda 4 31,67 (la amplia daba 29,0); act 3/7, silencio 23/23, 0 molestas. **Tanda 5 se queda** (5.1 efecto tipado con
+  costo ~0 en decision2, R10.1 acotada, R10.3, 10.3, 10.4, 10.5, B-APP-10).
+- 19:0x **rama de integración `int`** (f5f22ec06): renew-maximo + w2-s1 (System One) + lv-t5 + w2-ctxmem (1.1/1.2) +
+  w2-kern2 (P5.3) + w2-app2 (P8.4, 7.2, 7.3, 11.5, 11.6, 11.4b) + w2-flujos-app (latido tras app opened, presupuesto por
+  operación, aviso cada 10 s) + lv-ctx (1.5) + w2-voz2 (9.2a/b, 9.4); en curso t3final y w2-flujos-core. Suites:
+  Kernel 661, Contracts 74, App 67, Setup 477, pytest 273. 11.5 con el efecto tipado alcanza también a weather.current
+  (una ciudad recordada en la memoria pide el sí antes de salir): lado seguro, anotado como límite.
