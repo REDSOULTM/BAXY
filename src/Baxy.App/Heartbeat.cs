@@ -14,6 +14,7 @@ namespace Baxy.App;
 internal sealed class Heartbeat : IAsyncDisposable
 {
     private static readonly TimeSpan Watch = TimeSpan.FromSeconds(15);
+    private const string AppOpened = "app opened: ";
 
     private readonly Func<JsonObject, bool, Task> _beat;
     private readonly Func<bool> _canBeat;
@@ -28,6 +29,7 @@ internal sealed class Heartbeat : IAsyncDisposable
     private readonly FileSystemWatcher? _downloads;
     private readonly WindowsNetworkStatusProvider _network = new();
     private HashSet<string>? _windows;
+    private bool _personActed;
     private string? _connectivity;
     private int? _battery;
     private readonly AwayWatch _awayWatch = new();
@@ -167,20 +169,7 @@ internal sealed class Heartbeat : IAsyncDisposable
     // What changed since the last look, as the lines the model reads («app opened: …», «internet connectivity: …» …).
     private async Task NoteChangesAsync(CancellationToken cancellationToken)
     {
-        // Ronda final 30 (regla 3): only two lists both read say what opened in between.
-        HashSet<string>? windows = CurrentApplications();
-        if (windows is not null && _windows is not null)
-        {
-            foreach (string opened in windows.Except(_windows))
-            {
-                Note($"app opened: {opened}");
-            }
-        }
-
-        if (windows is not null)
-        {
-            _windows = windows;
-        }
+        NoteApplications(CurrentApplications());
         // Windows' own internet check, the signal network.status reads; a reading that changed between its two looks
         // is left for the next one.
         if ((await _network.ReadVerifiedAsync(cancellationToken).ConfigureAwait(false))?.Connectivity is { } connectivity)
@@ -214,6 +203,48 @@ internal sealed class Heartbeat : IAsyncDisposable
                 is { } presence)
         {
             Note(presence);
+        }
+    }
+
+    // Ronda final 30 (regla 3): only two lists both read say what opened in between. Al máximo, flujos: what opened
+    // while BAXY acted for the person (PersonTurnEnded) was asked for, and is no news: the beat it woke spoke of the
+    // application BAXY had just opened.
+    internal void NoteApplications(HashSet<string>? windows)
+    {
+        if (windows is null)
+        {
+            return;
+        }
+
+        lock (_gate)
+        {
+            if (_personActed)
+            {
+                _personActed = false;
+                _events.RemoveAll(static line => line.StartsWith(AppOpened, StringComparison.Ordinal));
+            }
+            else if (_windows is not null)
+            {
+                foreach (string opened in windows.Except(_windows))
+                {
+                    Note(AppOpened + opened);
+                }
+            }
+        }
+
+        _windows = windows;
+    }
+
+    /// <summary>A turn of the person's ended; <paramref name="acted"/>: a call in it reached its provider.</summary>
+    internal void PersonTurnEnded(bool acted)
+    {
+        _pace.PersonTurn();
+        if (acted)
+        {
+            lock (_gate)
+            {
+                _personActed = true;
+            }
         }
     }
 

@@ -25,6 +25,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly SemaphoreSlim _turnGate = new(1, 1);
     private bool _beatActive;
     private bool _beatSpeaks;
+    // The heartbeat running now stops before its next call when the person's words arrive (al máximo, flujos): they
+    // waited for all its calls.
+    private CancellationTokenSource? _beatInterrupt;
+    // A call of the person's turn running now reached its provider (what it opened was asked for).
+    private bool _personActed;
     private readonly ConversationLog? _conversationLog = ConversationLog.CreateDefault();
     private RetryableOperationRegistry? _retryableOperations;
     private MemoryOperationProtector? _memoryProtector;
@@ -121,7 +126,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         _ = SpeakNoticeAsync(mind, notice);
                     }
                 },
-                StepCompleted = step => StepCompleted?.Invoke(step),
+                StepCompleted = step =>
+                {
+                    _personActed |= step.Sent && !_beatActive;
+                    StepCompleted?.Invoke(step);
+                },
                 StepStarted = (id, operation, arguments) => StepStarted?.Invoke(id, operation, arguments),
                 ConfirmationAsked = asked =>
                 {
@@ -206,6 +215,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>The chat changed what the memory holds (the interface reads its count again).</summary>
     internal event Action? MemoryChanged;
+
+    /// <summary>A turn of the person's ended; true when a call in it reached its provider (the heartbeat's pace).</summary>
+    internal event Action<bool>? PersonTurnEnded;
 
     /// <summary>A heartbeat's words for a person who is playing, in a call, watching or away: shown, not spoken.</summary>
     internal event Action<string>? NotificationRequested;
@@ -447,6 +459,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string text = MissionInputContract.ValidateAndTrim(input);
         // Secrets the person typed never enter the transcript, the conversation log or the voice.
         string visible = SensitiveText.Contains(text) ? SensitiveText.Hidden : text;
+        _beatInterrupt?.Cancel();
         await RunTurnAsync(visible, () => _loop.RunAsync(text, arrivedAt, cancellationToken), cancellationToken);
     }
 
@@ -593,12 +606,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _beatActive = true;
         _beatSpeaks = speak;
         _beatActivity = (string?)moment["owner_activity"] ?? string.Empty;
+        // Not disposed: the person's words may cancel it from another thread as the beat ends; it holds no timer.
+        _beatInterrupt = new CancellationTokenSource();
         try
         {
-            await _loop.RunBeatAsync(moment, cancellationToken);
+            await _loop.RunBeatAsync(moment, cancellationToken, _beatInterrupt.Token);
         }
         finally
         {
+            _beatInterrupt = null;
             _beatActive = false;
             _turnGate.Release();
             OnPropertyChanged(nameof(HasPendingConfirmation));
@@ -638,6 +654,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.QueueWaitEnd);
         AddMessageCore("Tú", visibleUserText, isUser: true);
         _turnExecutionActive = true;
+        _personActed = false;
         LastTurnFailure = null;
         IsBusy = true;
         StatusDescription = "understanding";
@@ -662,6 +679,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.ResponseFinal);
             _turnExecutionActive = false;
             IsBusy = false;
+            PersonTurnEnded?.Invoke(_personActed);
             OnPropertyChanged(nameof(HasPendingConfirmation));
             if (_coreRecoveryPending)
             {
