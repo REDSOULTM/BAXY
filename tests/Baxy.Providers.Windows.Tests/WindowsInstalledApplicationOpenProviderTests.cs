@@ -362,6 +362,74 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (B-APP-11): the window BAXY was about to reuse closed before it was looked at again, so the
+    // application was launched: the window that shows is the launch's, never «already running».
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AReusedWindowGoneBeforeFocusIsALaunch(bool foreground)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            WindowsGoneAfterFirstInventory = true,
+            ObservationAfterActivation = Launched(),
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(platform.ActivateCalls, Is.EqualTo(1));
+            Assert.That(result.WindowHandle, Is.EqualTo(78));
+            Assert.That(result.AlreadyRunning, Is.False);
+            Assert.That(result.Receipt.LaunchIssued, Is.True);
+            Assert.That(result.Receipt.ReusedExisting, Is.False);
+        });
+    }
+
+    // Renew al máximo (B-APP-11): the new document asked in front is brought up within the front's budget (M89), as
+    // every other window of an opening: a window whose thread does not answer never holds the opening.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ANewDocumentsFrontIsAskedWithinItsBudget(bool bornEmpty)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            ForegroundHangsAfter = 1,
+            WindowAfterNewDocument = bornEmpty ? null : Observation(foreground: false) with { WindowHandle = 75 },
+        };
+        if (bornEmpty)
+        {
+            platform.Titles[73] = "*lista pan - Bloc de notas";
+            platform.Titles[78] = "Sin título - Bloc de notas";
+            platform.Empty.Add(78);
+        }
+
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+        Task<ApplicationOpenResult> opening = Task.Run(async () => await provider.OpenAsync(
+            NewDocument("Bloc de notas") with { Foreground = true }, CancellationToken.None));
+        try
+        {
+            Task done = await Task.WhenAny(opening, Task.Delay(TimeSpan.FromSeconds(15)));
+            Assert.That(done, Is.SameAs(opening), "the opening waited on a front request that never answered");
+            ApplicationOpenResult result = await opening;
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.NewDocument, Is.True);
+                Assert.That(result.WindowHandle, Is.EqualTo(bornEmpty ? 78 : 75));
+            });
+        }
+        finally
+        {
+            platform.ForegroundReleased.Set();
+        }
+    }
+
     // Renew al máximo (B-APP-9): a catalog read that cannot even start (PowerShell blocked by AppLocker or an antivirus:
     // Win32Exception), or whose output breaks off (IOException), is the same inventory failure as an unreadable catalog,
     // for an opening and for a new document; it never escapes the provider and leaves the opening without a terminal state.
@@ -1818,9 +1886,20 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             return ValueTask.FromResult(catalog);
         }
 
-        public IReadOnlyList<InstalledApplicationObservation> Inventory(
-            InstalledApplicationEntry entry) => InventoryFailure is null
-                ? Observations : throw InventoryFailure;
+        // Renew al máximo (B-APP-11): the windows the application had close right after the first inventory, before
+        // anything is launched (the person closed the window BAXY was about to reuse).
+        public bool WindowsGoneAfterFirstInventory { get; init; }
+
+        private int _inventoryReads;
+
+        public IReadOnlyList<InstalledApplicationObservation> Inventory(InstalledApplicationEntry entry)
+        {
+            if (InventoryFailure is not null)
+                throw InventoryFailure;
+            if (WindowsGoneAfterFirstInventory && _inventoryReads++ > 0 && ActivateCalls == 0)
+                Observations = [];
+            return Observations;
+        }
 
         // The window status reads the strict inventory (ronda final 9); this fake's inventory is complete or fails.
         public IReadOnlyList<InstalledApplicationObservation> InventoryForWindowResolution(
@@ -1859,9 +1938,20 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         // Auditoría D6: the window a launch shows beside the ones the application already had.
         public InstalledApplicationObservation? LaunchedWindow { get; init; }
 
+        // Renew al máximo (B-APP-11): past this many front requests, one never answers (a window whose thread hangs)
+        // until the test releases it.
+        public int ForegroundHangsAfter { get; init; } = int.MaxValue;
+
+        public ManualResetEventSlim ForegroundReleased { get; } = new(false);
+
         public void RequestForeground(long windowHandle)
         {
             FocusCalls++;
+            if (FocusCalls > ForegroundHangsAfter)
+            {
+                ForegroundReleased.Wait();
+            }
+
             _requestedForegroundHandle = windowHandle;
             if (!FocusRequiresDelay)
             {
