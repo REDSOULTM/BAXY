@@ -33,6 +33,14 @@ internal sealed class FakeMind : IDisposable
         SetVariable(MindSidecarClient.PythonPathEnvironmentVariable, Folder);
         SetVariable(MindSidecarClient.DisabledEnvironmentVariable, null);
         SetVariable("BAXY_DATA_DIR", DataRoot);
+        // What the App's first start leaves in its environment (MindRuntimeDiscovery.ApplyVerified fills the model's
+        // variables), so every start a test runs finds the environment it verified, as each one after the first does.
+        foreach (string name in (string[])["BAXY_MIND_LLM_GGUF", "BAXY_MIND_LLAMA_SERVER", "BAXY_MIND_NGL"])
+        {
+            SetVariable(name, Environment.GetEnvironmentVariable(name));
+        }
+
+        _ = MindRuntimeDiscovery.ApplyVerified(MindRuntimeDiscovery.DiscoverVerified());
     }
 
     internal string Folder { get; }

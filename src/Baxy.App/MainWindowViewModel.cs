@@ -31,6 +31,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private CoreProcessClient? _coreClient;
     private MindSidecarClient? _mindClient;
     private Task? _mindInitializationTask;
+    // 2026-10-22, review of the App: one start of the mind at a time. Two at once (a relaunch after a lost mind and the
+    // engine's recovery, which starts one whenever none is ready) each launched a process, and the later took
+    // _mindClient over the first without ending it: an orphan holding its model's VRAM. A start that waited finds the
+    // other's mind ready and leaves it.
+    private readonly SemaphoreSlim _mindStart = new(1, 1);
     private volatile MindStartupState _mindStartupState;
     private int _mindStartupFailureCount;
     private int _coreStartupFailureCount;
@@ -1135,13 +1140,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken, startupAbandoned, _mindLifetimeCancellation.Token);
-        _mindStartupState = MindStartupState.Starting;
-        _mindStartedAt = DateTimeOffset.UtcNow;
-        _mindReadyAt = null;
-        OnPropertyChanged(nameof(MindStartedAt));
         MindSidecarClient? mind = null;
+        bool starting = false;
         try
         {
+            await _mindStart.WaitAsync(linked.Token);
+            starting = true;
+            if (_mindClient is { IsReady: true })
+            {
+                // The start this one waited for brought the mind up.
+                return;
+            }
+
+            _mindStartupState = MindStartupState.Starting;
+            _mindStartedAt = DateTimeOffset.UtcNow;
+            _mindReadyAt = null;
+            OnPropertyChanged(nameof(MindStartedAt));
             MindRuntimeDiscoveryResult discovery = await Task.Run(
                 static () => MindRuntimeDiscovery.DiscoverVerified(), linked.Token);
             if (!MindRuntimeDiscovery.ApplyVerified(discovery) || !MindSidecarClient.IsConfigured)
@@ -1200,13 +1214,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 await mind.DisposeAsync();
             }
 
-            if (_mindStartupState == MindStartupState.Starting)
+            if (starting && _mindStartupState == MindStartupState.Starting)
             {
                 _mindStartupState = MindStartupState.Failed;
             }
         }
         finally
         {
+            if (starting)
+            {
+                _mindStart.Release();
+            }
+
             _startupMindPending = false;
             OnPropertyChanged(nameof(IsMindPreparing));
             if (IsReady && !IsBusy)
