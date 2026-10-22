@@ -75,6 +75,7 @@ public static partial class RiskPolicy
 
         if (arguments is { } invocation
             && (ReachesAPerson(operation, invocation)
+                || PressesUndeclared(operation, invocation)
                 || CannotBeUndone(operation, invocation)
                 || LosesTheSession(operation, invocation)
                 || MayCloseAWindow(operation, invocation)
@@ -295,6 +296,18 @@ public static partial class RiskPolicy
         string.Equals(operation, "input.key.press", StringComparison.Ordinal)
         && arguments.ValueKind == JsonValueKind.Object
         && KeyOf(arguments) is "ctrl_w";
+
+    /// <summary>
+    /// Revisión 2026-10-22 (K-2): Enter or space whose step declares neither where the keyboard is («target») nor what
+    /// it lands on («onto») may send what message.draft left written in a chat, and this policy cannot tell. Fail-closed:
+    /// it asks. Declared on a text field it only types; declared onto a named control, that name is judged.
+    /// </summary>
+    private static bool PressesUndeclared(string? operation, JsonElement arguments) =>
+        string.Equals(operation, "input.key.press", StringComparison.Ordinal)
+        && arguments.ValueKind == JsonValueKind.Object
+        && KeyOf(arguments) is "enter" or "space"
+        && TargetOf(arguments) is null
+        && OntoOf(arguments) is null;
 
     /// <summary>
     /// Revisión 2026-10-22 (K-1): input.pointer.control's click presses whatever lies under the pointer, in a window no
