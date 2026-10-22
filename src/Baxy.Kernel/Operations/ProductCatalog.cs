@@ -55,7 +55,7 @@ public static class ProductCatalog
                 ["appId"]),
             OperationRisks.LowReversible,
             "app.open.process.window.focus.v1",
-            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso y su ventana visible, y dice si quedó al frente; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos. También acepta windows.calculator.",
+            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso y su ventana visible, y dice si quedó al frente; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos.",
             // It reuses the window of an application that already runs and raises it (foreground), presses Ctrl+N in it
             // (newDocument) or hands it a place's address, which the application opens in its window and raises
             // (ApplicationPlaceOpener); without those three the window that runs is left as it is, or a new process
