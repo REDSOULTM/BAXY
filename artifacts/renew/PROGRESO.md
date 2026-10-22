@@ -3023,3 +3023,8 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   depurada 230,0: Δ −1,0, IC95 [−6,67; +5,0], McNemar p 1,0; acciones equivocadas 13/15/17 (15). Suben P041, P099, P152,
   P165, P203 (corrige lee el PDF de Descargas), P254; bajan P028, P086, P112, P169, P215, P223, P257. Sin regresión.
   Pendiente del NB sobre int: Providers entero, e2e ×2, falsedades ×3, sesión larga.
+- 19:5x **w3-speed medida y en int (049935467)**: V1 prefijo guardado/restaurado — arranque con la misma clave:
+  calentamiento 17,2 → **0,8 s**, primer turno con prompt_n 103 en ambos (los checkpoints vuelven con el slot), 12/12
+  decisiones iguales; archivo ~0,98 GB en %LOCALAPPDATA%\BAXY\renew\slots. decision2 s0 228 (int 227-231): las 10
+  decisiones que cambian son variación numérica entre corridas (228 de 259 confianzas difieren en milésimas); con
+  igual confianza las opciones de Laya son idénticas (V3 no cambia decisiones). pytest 296.
