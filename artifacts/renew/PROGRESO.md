@@ -2910,3 +2910,10 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   decision2 S1 ×3 frente a la tanda 1 depurada: 229 / 228 / 229 (228,67) frente a 230,0, Δ −1,33, IC95 [−6,0; +3,33],
   McNemar p 0,73: dentro del ruido. 8.1 se juzga en falsedades: brazo C de las falsedades del PC (A = 11347dd0d, B =
   lv-t2, C = lv-t4; semillas 0-5) tras la tanda 5. t3b (descripciones del NB + open_recovery) lista en lv-t3b.
+- 16:3x **bisección de la tanda 3** (9 casos que cambiaban, S1 ×3; aciertos de 27): base 18, +P2.2 16, +P2.2i 18, +P2.3
+  13, +P2.6 13. **P2.3 RETIRADA** (P215 desinstalar un juego 3/3 → 0/3, elige package.uninstall; P254 3/3 → 1/3; los
+  −316 tokens no compensan; 9b44a08cb en lv-t3b). F005 del NB arreglado y fusionado (f86234070: confirm_pending sin
+  nada pendiente no llega a la App). game.launch con `title` requerido (F001/F016: lanzaba el único juego instalado por
+  otro título): esquema y descripción míos + proveedor del NB, en lv-t3b 15a5d73a0 (Kernel 618, pytest 172; catálogo de
+  medida `renew_v4\catalog-t3b.json`, que difiere de catalog-max sólo en game.launch y game.entitlement.named).
+  lv-t3b (t3 sin P2.3 + t3b + game.launch) en cola de decision2 tras la tanda 5; luego falsedades A/B/C.
