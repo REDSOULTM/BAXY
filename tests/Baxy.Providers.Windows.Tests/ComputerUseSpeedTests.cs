@@ -842,7 +842,7 @@ public sealed class ComputerUseSpeedTests
     }
 
     // A call run elsewhere while this thread answers what is sent to the windows it made, until the call ends.
-    private static T Pumped<T>(Func<Task<T>> call)
+    internal static T Pumped<T>(Func<Task<T>> call)
     {
         Task<T> running = Task.Run(call);
         while (!running.Wait(10))

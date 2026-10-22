@@ -157,7 +157,9 @@ internal sealed class KeyPressHandler(ExternalCapabilityHandler keys, IKeyWindow
         CancellationToken cancellationToken)
     {
         InvocationPreflightResult found = await keys.PreflightAsync(arguments, cancellationToken).ConfigureAwait(false);
+        // Renew al máximo (guarda diálogo destructivo): a risk the provider raised is never lowered here.
         if (found.Failure is not null
+            || found.Risk is not null
             || !RiskPolicy.PressesUndeclared(Operation, arguments)
             || !TryWindow(arguments, out long? window))
         {
@@ -176,6 +178,8 @@ internal sealed class KeyPressHandler(ExternalCapabilityHandler keys, IKeyWindow
 
         return kind == KeyWindowKind.Ordinary ? InvocationPreflightResult.Lowered(OperationRisk.Reversible) : found;
     }
+
+    public bool MayRaise(JsonElement arguments) => keys.MayRaise(arguments);
 
     public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken) =>
         keys.ExecuteAsync(invocation, cancellationToken);
@@ -396,11 +400,34 @@ internal sealed class ExternalCapabilityHandler(
             return InvocationPreflightResult.Proceed;
         }
 
+        // Renew al máximo (guarda diálogo destructivo): a call the provider found needs the person's yes (the «Sí» under
+        // «¿Quieres reemplazarlo?») asks, bound to it, as what cannot be undone.
+        if (found is { NeedsConfirmation: true, Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }
+            && string.Equals(found.Operation, operation, StringComparison.Ordinal))
+        {
+            return InvocationPreflightResult.Raised(OperationRisk.Irreversible);
+        }
+
         return found is { Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }
             && string.Equals(found.Operation, operation, StringComparison.Ordinal)
             && !string.IsNullOrWhiteSpace(found.ErrorCode)
                 ? InvocationPreflightResult.Fails(OperationOutcome.Failure(found.ErrorCode, result: found.Result))
                 : InvocationPreflightResult.Proceed;
+    }
+
+    // Renew al máximo (guarda diálogo destructivo): only a call the provider says may need a yes is read when its
+    // declared risk goes without asking; a provider that fails to say keeps it as declared.
+    public bool MayRaise(JsonElement arguments)
+    {
+        try
+        {
+            return _provider.PreflightMayRaise(operation, arguments);
+        }
+        catch (Exception exception) when (exception is InvalidOperationException or ArgumentException
+            or JsonException or KeyNotFoundException or ObjectDisposedException)
+        {
+            return false;
+        }
     }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(

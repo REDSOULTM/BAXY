@@ -28,6 +28,13 @@ public sealed record ExternalCapabilityReceipt(
     /// of playing), and whether it was resumed because the new playback failed before its effect.
     /// </summary>
     public IReadOnlyList<AssistantPlaybackPause> AssistantPlaybackPauses { get; init; } = [];
+
+    /// <summary>
+    /// Renew al máximo (guarda diálogo destructivo): a preflight's answer that this exact call needs the person's yes
+    /// though its declared risk goes without (the «Sí» of a dialog that asks about replacing a file). Never a failure:
+    /// nothing was done, and the call runs as always once the person says yes.
+    /// </summary>
+    public bool NeedsConfirmation { get; init; }
 }
 
 /// <summary>A media session BAXY paused before a new playback: its source, its title and whether it plays again.</summary>
@@ -50,6 +57,13 @@ public interface IExternalCapabilityProvider
         JsonElement arguments,
         CancellationToken cancellationToken) =>
         ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+
+    /// <summary>
+    /// Renew al máximo (guarda diálogo destructivo): pure, nothing read. Whether the preflight of this call may find it
+    /// needs the person's yes though its declared risk goes without (<see cref="ExternalCapabilityReceipt.NeedsConfirmation"/>);
+    /// only then is a call that would go without asking read first.
+    /// </summary>
+    bool PreflightMayRaise(string operation, JsonElement arguments) => false;
 }
 
 public sealed record InstalledGameCatalogEntry(
