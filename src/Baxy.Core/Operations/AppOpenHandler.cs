@@ -86,7 +86,9 @@ internal sealed class AppOpenHandler(
                 // Said with what was asked (BAXY Renew, notebook) and the applications that do have that place, so
                 // the next opening can name the right one. BAXY Renew cu (C04 variant): a place the application has,
                 // refused for its value (a game's name given to its library), is told apart, with what each place takes.
-                bool placeOfApplication = ApplicationPlaces.PlacesOf(arguments.AppId)
+                // Revisión 2026-10-22 (B-APP-3): a value given with no place is a value not taken too, never a place of
+                // another application.
+                bool placeOfApplication = arguments.Place is null || ApplicationPlaces.PlacesOf(arguments.AppId)
                     .Any(declared => declared.Place == arguments.Place);
                 string? places = ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(arguments.AppId, arguments.AppId) : null;
                 return OperationOutcome.Failure(
@@ -97,6 +99,9 @@ internal sealed class AppOpenHandler(
                         if (arguments.Place is not null) writer.WriteString("place", arguments.Place);
                         if (placeOfApplication && arguments.PlaceValue is not null)
                             writer.WriteString("placeValue", arguments.PlaceValue);
+                        // The places of its application and what each takes, as a fact whether the aids are on or off.
+                        if (placeOfApplication)
+                            WritePlaces(writer, arguments.AppId);
                         WriteNames(writer, "placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place));
                         if (places is not null) writer.WriteString("next", places);
                     }));
@@ -237,6 +242,19 @@ internal sealed class AppOpenHandler(
     // said with the failure (nothing was opened).
     private static JsonElement? Names(string property, IReadOnlyList<string>? names) =>
         names is { Count: > 0 } ? Facts(writer => WriteNames(writer, property, names)) : null;
+
+    private static void WritePlaces(Utf8JsonWriter writer, string appId)
+    {
+        writer.WriteStartArray("places");
+        foreach ((string place, string? takes) in ApplicationPlaces.PlacesOf(appId))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("place", place);
+            if (takes is not null) writer.WriteString("takes", takes);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
 
     private static void WriteNames(Utf8JsonWriter writer, string property, IReadOnlyList<string>? names)
     {

@@ -298,6 +298,36 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Revisión 2026-10-22 (B-APP-3): a value that does not fit its place, or a value given with no place, is a value
+    // not taken, never a place of another application (Steam has «game»); with the aids off too it says the places of
+    // its application and what each takes. Nothing is looked up or opened.
+    [TestCase("""{"appId":"Steam","placeValue":"Rocket League"}""", null)]
+    [TestCase("""{"appId":"Steam","place":"game","placeValue":"12345678901234567"}""", "game")]
+    [TestCase("""{"appId":"Steam","place":"library","placeValue":"Hollow Knight"}""", "library")]
+    public async Task AValueItsPlaceDoesNotTakeSaysThePlacesAndWhatEachTakes(string arguments, string? place)
+    {
+        using IDisposable setting = ModelAids.Use("none");
+        var opened = new List<string>();
+        var titles = new FoundTitles(null);
+
+        OperationOutcome outcome = await SteamHandler(opened, titles).ExecuteAsync(Invocation(arguments), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+        Dictionary<string, string?> places = result.GetProperty("places").EnumerateArray().ToDictionary(
+            static entry => entry.GetProperty("place").GetString()!,
+            static entry => entry.TryGetProperty("takes", out JsonElement takes) ? takes.GetString() : null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("place_value_not_taken"));
+            Assert.That(result.TryGetProperty("place", out JsonElement asked) ? asked.GetString() : null, Is.EqualTo(place));
+            Assert.That(places["game"], Is.EqualTo("game"));
+            Assert.That(places["results"], Is.EqualTo("query"));
+            Assert.That(places["library"], Is.Null);
+            Assert.That(titles.Asked, Is.Empty);
+            Assert.That(opened, Is.Empty);
+        });
+    }
+
     // A search's text is never a game's title to look up.
     [Test]
     public async Task ASearchTextIsNotLookedUpAsAGame()
