@@ -2957,3 +2957,7 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
 - Las escenas de la R10.1 acotada murieron: la cadena de falsedades hace `taskkill /IM llama-server.exe` entre corridas
   y se llevó su servidor. Se repiten tras las falsedades (la GPU del PC queda en exclusiva ~3 h). Corregir el script
   para matar sólo sus propios procesos antes del holdout.
+- **Decisión del dueño 2026-10-22 ~18:25:** máximo esfuerzo y velocidad hasta mañana a las 10:00 (gastar el presupuesto
+  de Claude que queda, ~40 %); llevar toda la aplicación al máximo SIN reentrenar (el ajuste fino queda para otro
+  momento); lanzar muchos agentes en las dos máquinas; vale medir con casos individuales representativos de cada
+  categoría en vez de suites o bancos enteros cuando acelere, siempre que se haga bien.
