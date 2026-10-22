@@ -98,9 +98,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is InvalidDataException
-            or InvalidOperationException
-            or JsonException)
+        // Renew al máximo (B-APP-9): any catalog read that fails (PowerShell blocked from starting, its output broken)
+        // is the inventory failure, as for IsInstalledAsync; only a cancellation goes on.
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
@@ -825,11 +825,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             theirs = entry is null || !_platform.IdentifiesWindows(entry)
                 ? [] : [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)];
         }
-        catch (Exception exception) when (exception is ApplicationInventoryException
-            or InvalidDataException
-            or InvalidOperationException
-            or JsonException
-            or System.ComponentModel.Win32Exception)
+        // Renew al máximo (B-APP-9): as in the opening, any failed read is the inventory failure.
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }

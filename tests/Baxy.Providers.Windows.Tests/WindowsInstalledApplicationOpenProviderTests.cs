@@ -362,6 +362,35 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (B-APP-9): a catalog read that cannot even start (PowerShell blocked by AppLocker or an antivirus:
+    // Win32Exception), or whose output breaks off (IOException), is the same inventory failure as an unreadable catalog,
+    // for an opening and for a new document; it never escapes the provider and leaves the opening without a terminal state.
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    public async Task AnUnstartableCatalogReadIsInventoryFailed(bool newDocument, bool brokenOutput)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            CatalogFailure = brokenOutput
+                ? new IOException("pipe broken")
+                : new System.ComponentModel.Win32Exception(5, "blocked"),
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult opened = await provider.OpenAsync(
+            newDocument ? NewDocument("Bloc de notas") : Request("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(opened.Succeeded, Is.False);
+            Assert.That(opened.Verified, Is.False);
+            Assert.That(opened.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.InventoryFailed));
+            Assert.That(platform.ActivateCalls, Is.Zero);
+        });
+    }
+
     // Auditoría D5: the launch showed a window the application already had (it ran hidden; Windows showed it): no new
     // window, so nothing was launched, and the result says already running, never «launched».
     [Test]
