@@ -749,17 +749,19 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 string? place = OptionalText(arguments, "place");
                 if (place is null && !nearby) throw new InvalidDataException("A places search names its place.");
                 string kind = ExternalJson.RequiredString(arguments, "kind").Trim();
-                string? city = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
+                (string? city, bool cityUnreachable) = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
                 if (nearby && city is null)
-                    return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
+                    return ExternalJson.FailureBeforeEffect(
+                        operation, cityUnreachable ? SearchUnavailable : "web_search_place_unavailable");
                 return await PlacesAsync(operation, query,
                         new OpenStreetMapPlaceSource.PlaceAsk(kind, string.Join(", ", new[] { place, city }.OfType<string>())),
                         limit, language, city is not null, cancellationToken)
                     .ConfigureAwait(false);
             case "web" or "news" or "encyclopedia":
-                string? near = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
+                (string? near, bool nearUnreachable) = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
                 if (nearby && near is null)
-                    return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
+                    return ExternalJson.FailureBeforeEffect(
+                        operation, nearUnreachable ? SearchUnavailable : "web_search_place_unavailable");
                 string sent = near is null ? query : query + " " + near;
                 return source switch
                 {
@@ -782,15 +784,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     // Uso real tanda 4c: with nearby, this PC's city, read from its public address, and its country (M81: «Curico»
     // alone is also in Indiana). Only their names leave; no coordinates, nothing of the person. Null without nearby, or
-    // when the PC's place could not be read.
-    private async Task<string?> NearAsync(bool nearby, CancellationToken cancellationToken)
+    // when the PC's place could not be read; Unreachable when the place service did not answer at all (no network:
+    // the search is not answering either, not a place unknown).
+    private async Task<(string? Near, bool Unreachable)> NearAsync(bool nearby, CancellationToken cancellationToken)
     {
-        if (!nearby) return null;
-        if (await _locator.LocateAsync(cancellationToken).ConfigureAwait(false) is not { } place) return null;
+        if (!nearby) return (null, false);
+        PublicPlaceLocator.Lookup here = await _locator.LocateAsync(cancellationToken).ConfigureAwait(false);
+        if (here.Place is not { } place) return (null, here.Unreachable);
         string country = place.Country.Trim();
-        return country.Length > 0 && !place.Name.Contains(country, StringComparison.OrdinalIgnoreCase)
+        return (country.Length > 0 && !place.Name.Contains(country, StringComparison.OrdinalIgnoreCase)
             ? place.Name + ", " + country
-            : place.Name;
+            : place.Name, false);
     }
 
     private static FrankfurterRateSource.CurrencyAsk CurrencyArguments(JsonElement arguments)

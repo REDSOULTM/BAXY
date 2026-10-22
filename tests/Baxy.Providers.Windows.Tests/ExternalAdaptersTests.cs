@@ -3058,6 +3058,29 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): «farmacias cerca» without network is the search not answering
+    // (web_search_unavailable); it was web_search_place_unavailable, as if the PC's place were unknown.
+    [Test]
+    public async Task ASearchNearbyWithoutNetworkIsTheSearchNotAnswering()
+    {
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt web = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"farmacias","nearby":true}"""), CancellationToken.None);
+        ExternalCapabilityReceipt places = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"farmacias","source":"places","kind":"pharmacy","nearby":true}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(web.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(places.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(web.EffectMayHaveOccurred | places.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     // Without nearby nothing asks where this PC is; neither does a source nearby does not apply to (currency).
     [Test]
     public async Task ASearchWithoutNearbyNeverAsksWhereThisPcIs()
