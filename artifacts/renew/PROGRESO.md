@@ -2928,3 +2928,7 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   3.3 21,5 / 23,3 s (relee algo más sin -cram); **3.3+1.4 15,9 / 12,9 s (−4 a −7 s)**; decides con prompt_n >1 500: base
   4/5, 3.3+1.4 3/0. «erasing old context checkpoint» = 0 en las 6 corridas. **3.3 y 1.4 se quedan** (ya en renew-maximo).
   9.5 no se distingue en esta medida (sin regresión).
+- 16:42 (NB) **3.1 Laya con -dev none** (7ba30ec05, traída a renew-maximo como 56754a091): Laya sola en 60 pedidos de d2
+  — sin -dev none 190-224 MiB de VRAM y 140 ms p50; con -dev none 0 MiB y 687 ms p50 (828 p90); elige lo mismo 60/60.
+  Producto S1 on: VRAM 4 091 → **3 902 MiB** (= S1 apagado), RAM 2 637-2 852 MiB. Costo: ~+0,55 s sólo en turnos dudosos
+  (~20 %). Se queda: el techo de 4 GB es duro y estaba a 5 MiB.
