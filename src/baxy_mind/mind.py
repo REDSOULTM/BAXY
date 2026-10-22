@@ -180,6 +180,7 @@ def _fold(name: str) -> str:
     return " ".join("".join(ch for ch in text if not unicodedata.combining(ch)).split())
 
 
+
 def _app_places() -> dict[str, dict[str, str]]:
     """The places of each application with an address of its own (app_places.v1.json, the kernel's data), by folded
     name: place → the placeValue it takes, empty for none."""
@@ -486,6 +487,17 @@ def _model_schema(schema: Any, constants: dict[str, Any] | None = None) -> Any:
     return out
 
 
+# Palanca P2.6: Start menu entries no one opens as an application, by the shape of their (folded) name, never by an
+# application's name: an uninstaller («Uninstall X», «Desinstalar X»; «X Uninstaller» is an application), help, a
+# manual, documentation or a license, release notes, and a web page. They leave app_open's list of installed
+# applications (67 of 600 names on the PC, ~1,7k characters of prefix); app_open still opens any of them by name.
+_NOT_AN_APP = re.compile(
+    r"\b(?:un-?install|desinstalar)(?!er)"
+    r"|\b(?:help|ayuda|manuals?|faq|readme|documentation|documentacion|dokumentation|user guide|release notes"
+    r"|what'?s new|que hay de nuevo|reference|website)\b"
+    r"|\b(?:on the|en la) web\b|\(online\)|^licen[cs]e\b|\blicen[cs]e agreement\b")
+
+
 def _env_float(name: str, default: float) -> float:
     try:
         return float(os.environ.get(name, default))
@@ -578,7 +590,8 @@ class Mind:
                 json.dumps(message, ensure_ascii=False), encoding="utf-8")
         except OSError:
             pass
-        apps = [str(n) for n in ((message.get("applicationCatalog") or {}).get("names") or []) if str(n).strip()]
+        apps = [str(n) for n in ((message.get("applicationCatalog") or {}).get("names") or [])
+                if str(n).strip() and not _NOT_AN_APP.search(_fold(str(n)))]
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
@@ -586,8 +599,7 @@ class Mind:
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
-            description = (self.english.get(name) or str(cap.get("description") or "")).replace(
-                "{app_places}", APP_PLACES_TEXT)
+            description = self.english.get(name) or str(cap.get("description") or "")
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
