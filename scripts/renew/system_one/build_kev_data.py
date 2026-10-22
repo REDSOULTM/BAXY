@@ -37,10 +37,27 @@ def split_of(group):
     return "calib" if bucket == 0 else "dev" if bucket == 1 else "train"
 
 
+def confusion_map(rows):
+    """For each expected tool, the other tools Qwen chose or nearly chose for it across the runs, most frequent first."""
+    pairs = collections.defaultdict(collections.Counter)
+    for row in rows:
+        expect = row["expect"]
+        if expect["kind"] != "call":
+            continue
+        gold = (bench.current(expect["op"])[0] or "").replace(".", "_")
+        if not gold:
+            continue
+        for name in [qwen_choice(row)] + [r["wire"] for r in row["rivals"] if r.get("known")]:
+            if name not in (gold, "ask_user", ANSWER):
+                pairs[gold][name] += 1
+    return {gold: [name for name, _ in counter.most_common()] for gold, counter in pairs.items()}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("outdir")
     parser.add_argument("--signals", nargs="+", required=True)
+    parser.add_argument("--confusers", type=int, default=0, help="training only: add up to N look-alike tools per case")
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
     args = parser.parse_args()
     sys.path.insert(0, str(bench.ROOT / "src"))
@@ -59,6 +76,7 @@ def main():
                   for name in ("train", "calib", "dev")}
     stats = collections.Counter()
     seen = set()  # shards that met in the middle repeat cases: the first one read counts
+    rows = []
     for label in args.signals:
         for line in open(bench.BANKS / "runs" / f"{label}.jsonl", encoding="utf-8"):
             row = json.loads(line)
@@ -66,6 +84,11 @@ def main():
                 stats["skipped"] += 1
                 continue
             seen.add(row["id"])
+            rows.append(row)
+    confusers = confusion_map(rows) if args.confusers else {}
+    ids = {name: open(Path(args.outdir) / f"{name}.ids.jsonl", "w", encoding="utf-8", newline="\n")
+           for name in ("train", "calib", "dev")}
+    for row in rows:
             expect = row["expect"]
             if expect["kind"] == "call":
                 gold = [bench.current(expect["op"])[0]]
@@ -81,6 +104,13 @@ def main():
             if expect["kind"] in ("call", "call_any") and not any(g in options for g in gold):
                 options.append(next(g for g in gold if g in described))
                 stats["gold_added"] += 1
+            split = split_of(group_of(row))
+            if split == "train" and confusers and gold:
+                # Hard negatives (training only): the tools Qwen took for this one elsewhere in the runs, so the small
+                # model learns the catalog's look-alikes (alarm/calendar, app/game, search/weather).
+                extra = [c for c in confusers.get(gold[0], []) if c not in options and c in described]
+                options += extra[:args.confusers]
+                stats["confusers_added"] += len(extra[:args.confusers])
             options = [o for o in dict.fromkeys(options + ["ask_user", ANSWER]) if o in described]
             rng.shuffle(options)
             if expect["kind"] == "ask":
@@ -97,8 +127,9 @@ def main():
                                         "criteria": {o: described[o] for o in options}, "label": answer},
                           "tipo": {"type": "choice", "instructions": "¿Qué tipo de respuesta pide este mensaje?",
                                    "criteria": dict(kinds), "label": kind}}}
-            split = split_of(group_of(row))
             files[split].write(json.dumps(record, ensure_ascii=False) + "\n")
+            ids[split].write(json.dumps({"id": row["id"], "group": group_of(row), "family": row["family"],
+                                         "text": row["text"], "history": row["history"]}, ensure_ascii=False) + "\n")
             laya = {"state": record["state"],
                     "questions": {q: {k: v for k, v in body.items() if k != "label"}
                                   for q, body in record["questions"].items()},
@@ -107,7 +138,7 @@ def main():
             stats[split] += 1
             stats[f"{split}:{kind}"] += 1
             stats[f"qwen_{'ok' if row['ok'] else 'wrong'}"] += 1
-    for f in [*files.values(), *laya_files.values()]:
+    for f in [*files.values(), *laya_files.values(), *ids.values()]:
         f.close()
     (Path(args.outdir) / "stats.json").write_text(json.dumps(dict(stats), ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps(dict(stats), ensure_ascii=False))
