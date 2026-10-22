@@ -140,6 +140,33 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, archivos): a folder that holds BAXY's own area («Local» under AppData) is not
+    // sent to the Recycle Bin by name: B-SYS-1 refused the area itself, and the folder around it took it all the same.
+    [Test]
+    public async Task AFolderHoldingBaxysOwnStateIsNotTrashed()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string privateArea = Path.Combine(home, "AppData", "Local", "BAXY");
+        string mode = Path.Combine(privateArea, "1", "confirmation-mode");
+        Directory.CreateDirectory(Path.GetDirectoryName(mode)!);
+        await File.WriteAllTextAsync(mode, "normal");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin,
+            [privateArea]);
+
+        ExternalCapabilityReceipt trashed = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"home","subdirectory":"AppData","fileName":"Local"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(trashed.ErrorCode, Is.EqualTo("path_reserved"));
+            Assert.That(trashed.EffectObserved, Is.False);
+            Assert.That(File.ReadAllText(mode), Is.EqualTo("normal"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];

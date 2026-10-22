@@ -452,6 +452,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (matches.Length > 1) return CandidatesRefusal(operation, "known_file_ambiguous", matches);
         (string label, _, string source) = matches[0];
         bool isFolder = Directory.Exists(source);
+        // Renew al máximo (auditoría de flujos): a folder that holds BAXY's own area would take it to the bin with it.
+        if (isFolder && _privateRoots.Any(root => BaxyPrivateArea.Holds([source], root)))
+            return ExternalJson.Failure(operation, "path_reserved");
         int entries = isFolder
             ? Directory.EnumerateFileSystemEntries(source, "*", SearchOption.AllDirectories).Count()
             : 0;
