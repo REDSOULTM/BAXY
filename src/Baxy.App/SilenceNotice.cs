@@ -5,10 +5,10 @@ namespace Baxy.App;
 /// <summary>
 /// The goal's notice (PROMPT_GOAL_RENEW.md, identity: «un aviso que no afirma resultado si el turno va a pasar de 3 s en
 /// silencio»): a turn the person opened that has published nothing <see cref="After"/> after the person's words (or
-/// press) arrived, and is still working, says once the mind's own notice phrase (the <c>notice</c> of its
-/// <c>catalog.ready</c>). The words are the mind's: with no phrase from it there is no notice. The notice is not the
-/// turn's answer: it is only said aloud, never a line of the conversation. Whatever comes first closes it, the turn's
-/// own line or the notice, under one gate, so the notice is never said after the answer nor twice.
+/// press) arrived, and is still working, says the mind's own notice phrase (the <c>notice</c> of its
+/// <c>catalog.ready</c>), and again every <see cref="Again"/> while it stays silent. The words are the mind's: with no
+/// phrase from it there is no notice. The notice is not the turn's answer: it is only said aloud, never a line of the
+/// conversation. The turn's own line closes it under one gate, so the notice is never said after the answer.
 /// </summary>
 internal sealed class SilenceNotice
 {
@@ -19,6 +19,12 @@ internal sealed class SilenceNotice
     /// come first (leader, 2026-10-16).
     /// </summary>
     internal static readonly TimeSpan After = TimeSpan.FromSeconds(2.5);
+
+    /// <summary>
+    /// While the turn stays silent, the same notice comes again this often (al máximo, flujos: a call of 30 to 160 s
+    /// said it once at 2.5 s and then nothing, past the owner's 3 s without a sign).
+    /// </summary>
+    internal static readonly TimeSpan Again = TimeSpan.FromSeconds(10);
 
     private readonly object _gate = new();
     private readonly TimeProvider _time;
@@ -42,8 +48,8 @@ internal sealed class SilenceNotice
     /// A turn the person opened starts; their words or press arrived at <paramref name="arrivedAt"/>, a timestamp of this
     /// notice's clock (<see cref="System.Diagnostics.Stopwatch.GetTimestamp"/> for the system's), maybe well before the
     /// turn started (it waited for a heartbeat to end). <see cref="After"/> after that moment, if the turn has published
-    /// nothing, has not ended and <paramref name="mayNotice"/> holds, <paramref name="say"/> gets <paramref name="phrase"/>
-    /// once; with that moment already past, the check and the notice run now, on the turn's thread. Otherwise the timer
+    /// nothing, has not ended and <paramref name="mayNotice"/> holds, <paramref name="say"/> gets <paramref name="phrase"/>,
+    /// and again every <see cref="Again"/>; with that moment already past, the check and the notice run now, on the turn's thread. Otherwise the timer
     /// fires on the thread pool and the check and the notice run on the context the turn runs on (the interface's thread,
     /// where the turn publishes too), when it has one.
     /// </summary>
@@ -63,12 +69,6 @@ internal sealed class SilenceNotice
             _open = true;
             Action notice = () => Notice(turn, phrase, mayNotice, say);
             TimeSpan due = After - _time.GetElapsedTime(arrivedAt);
-            if (due <= TimeSpan.Zero)
-            {
-                notice();
-                return;
-            }
-
             SynchronizationContext? context = SynchronizationContext.Current;
             _timer = _time.CreateTimer(
                 _ =>
@@ -83,8 +83,12 @@ internal sealed class SilenceNotice
                     }
                 },
                 null,
-                due,
-                Timeout.InfiniteTimeSpan);
+                due <= TimeSpan.Zero ? Again : due,
+                Again);
+            if (due <= TimeSpan.Zero)
+            {
+                notice();
+            }
         }
     }
 
@@ -117,7 +121,6 @@ internal sealed class SilenceNotice
                 return;
             }
 
-            CloseLocked();
             say(phrase);
         }
     }

@@ -41,6 +41,20 @@ public sealed class HeartbeatPaceTests
         Assert.That(pace.Due(changed: false), Is.True);
     }
 
+    [Test]
+    public void NoBeatInTheMinuteAfterThePersonsTurn()
+    {
+        var clock = new ManualClock();
+        var pace = new HeartbeatPace(clock);
+        clock.Now += HeartbeatPace.Tick;
+        pace.PersonTurn();
+
+        clock.Now += HeartbeatPace.AfterPerson - TimeSpan.FromSeconds(1);
+        Assert.That(pace.Due(changed: true), Is.False, "a change beat while the person had just been answered");
+        clock.Now += TimeSpan.FromSeconds(1);
+        Assert.That(pace.Due(changed: true), Is.True);
+    }
+
     private sealed class ManualClock : TimeProvider
     {
         internal DateTimeOffset Now { get; set; } = new(2026, 10, 22, 10, 0, 0, TimeSpan.Zero);

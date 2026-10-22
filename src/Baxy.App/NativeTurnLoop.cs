@@ -51,7 +51,8 @@ internal sealed record NativeTurnConfirmation(
 /// </para>
 /// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
-/// arrived says the mind's notice once (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
+/// arrived says the mind's notice, again while it stays silent (<see cref="SilenceNotice"/>); the model's decisions are
+/// untouched by it.
 /// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
@@ -229,9 +230,11 @@ internal sealed class NativeTurnLoop
 
     /// <summary>
     /// The heartbeat: the moment goes to the model, which says whether to intervene and, if so, acts, proposes or says
-    /// something; what it wrote is published on the channel the person's activity allows.
+    /// something; what it wrote is published on the channel the person's activity allows. <paramref name="interrupted"/>:
+    /// the person's words arrived, and the heartbeat stops before its next call (al máximo, flujos).
     /// </summary>
-    internal async Task RunBeatAsync(JsonObject context, CancellationToken cancellationToken)
+    internal async Task RunBeatAsync(JsonObject context, CancellationToken cancellationToken,
+        CancellationToken interrupted = default)
     {
         MindSidecarClient? mind = _host.Mind();
         if (mind is not { IsTurnAvailable: true })
@@ -252,7 +255,7 @@ internal sealed class NativeTurnLoop
         try
         {
             await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken),
-                cancellationToken);
+                cancellationToken, interrupted);
         }
         finally
         {
@@ -269,7 +272,8 @@ internal sealed class NativeTurnLoop
         _egress.Reset();
     }
 
-    private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken)
+    private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken,
+        CancellationToken interrupted = default)
     {
         var closing = new TurnClosing();
         for (int calls = 1; ; calls++)
@@ -297,6 +301,13 @@ internal sealed class NativeTurnLoop
                 case { Kind: "question" }:
                     Publish(step.Text, PublicResponseRoute.Clarification);
                     return;
+            }
+
+            if (interrupted.IsCancellationRequested)
+            {
+                // The mind's end of the heartbeat closes the call it chose (EndBeatAsync).
+                ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "beat.interrupted", "");
+                return;
             }
 
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);

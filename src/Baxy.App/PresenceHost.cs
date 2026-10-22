@@ -71,6 +71,7 @@ internal sealed class PresenceHost : IDisposable
                 beating.Settings.QuietDuring,
                 activity => window.Dispatcher.BeginInvoke(() => beating.ReportActivity(activity)));
             _heartbeat.Start();
+            beating.PersonTurnEnded += acted => _heartbeat?.PersonTurnEnded(acted);
         }
 
     }

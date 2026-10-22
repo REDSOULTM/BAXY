@@ -482,6 +482,28 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // Al máximo, flujos (audit of the daily flows, finding 2): the operations whose provider may take longer than an
+    // ordinary call say how long (the provider's own budget), and the App waits that long before its margin runs out.
+    [Test]
+    public void OnlyTheOperationsWhoseProviderTakesLongDeclareTheirBudget()
+    {
+        var expected = new Dictionary<string, TimeSpan>(StringComparer.Ordinal)
+        {
+            ["file.read"] = TimeSpan.FromSeconds(90),
+            ["media.play.exact"] = TimeSpan.FromSeconds(85),
+            ["media.play.query"] = TimeSpan.FromSeconds(85),
+            ["message.send.test"] = TimeSpan.FromSeconds(90),
+            ["ocr.read"] = TimeSpan.FromSeconds(90),
+            ["system.status"] = TimeSpan.FromSeconds(90),
+            ["vision.describe"] = TimeSpan.FromSeconds(90),
+        };
+
+        Assert.That(
+            ProductCatalog.ToolDescriptors.Where(static d => d.Budget is not null)
+                .ToDictionary(static d => d.Name, static d => d.Budget!.Value, StringComparer.Ordinal),
+            Is.EquivalentTo(expected));
+    }
+
     [Test]
     public void PublicToolProjectionCarriesTheExactSchemaRiskVerifierAndDescription()
     {

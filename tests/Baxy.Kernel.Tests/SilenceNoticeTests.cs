@@ -22,7 +22,7 @@ public sealed class SilenceNoticeTests
     }
 
     [Test]
-    public void ASilentTurnSaysTheNoticeOnceAtItsDelay()
+    public void ASilentTurnSaysTheNoticeAtItsDelayAndAgainWhileItStaysSilent()
     {
         var time = new ManualTime();
         var notice = new SilenceNotice(time);
@@ -32,11 +32,14 @@ public sealed class SilenceNoticeTests
 
         Assert.That(time.Timers, Has.Count.EqualTo(1));
         Assert.That(time.Timers[0].DueTime, Is.EqualTo(SilenceNotice.After));
+        Assert.That(time.Timers[0].Period, Is.EqualTo(SilenceNotice.Again));
         Assert.That(said, Is.Empty);
+        // Al máximo, flujos: a call of 30 to 160 s said it once at 2.5 s and then nothing until it ended.
         time.Timers[0].Fire();
         time.Timers[0].Fire();
         notice.Publish(() => said.Add("answer"));
-        Assert.That(said, Is.EqualTo(new[] { "Dame un momento.", "answer" }));
+        time.Timers[0].Fire();
+        Assert.That(said, Is.EqualTo(new[] { "Dame un momento.", "Dame un momento.", "answer" }));
     }
 
     [Test]
@@ -78,16 +81,21 @@ public sealed class SilenceNoticeTests
             SynchronizationContext.SetSynchronizationContext(previous);
         }
 
-        Assert.That(time.Timers, Is.Empty);
+        // Said now; the timer only says it again while the turn stays silent.
+        Assert.That(time.Timers, Has.Count.EqualTo(1));
+        Assert.That(time.Timers[0].DueTime, Is.EqualTo(SilenceNotice.Again));
         Assert.That(turnContext.Posted, Is.Empty);
         Assert.That(said, Is.EqualTo(new[] { "Dame un momento." }));
         notice.Publish(() => said.Add("answer"));
+        Assert.That(said, Is.EqualTo(new[] { "Dame un momento.", "answer" }));
+        time.Timers[0].Fire();
+        turnContext.RunAll();
         Assert.That(said, Is.EqualTo(new[] { "Dame un momento.", "answer" }));
 
         // Already past and a call this turn raised waits for the person: still nothing, now or later.
         said.Clear();
         notice.Open("Dame un momento.", arrived, () => false, said.Add);
-        Assert.That(time.Timers, Is.Empty);
+        time.Timers[1].Fire();
         Assert.That(said, Is.Empty);
     }
 
@@ -216,15 +224,17 @@ public sealed class SilenceNoticeTests
 
         public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
         {
-            var timer = new ManualTimer(callback, state, dueTime);
+            var timer = new ManualTimer(callback, state, dueTime, period);
             Timers.Add(timer);
             return timer;
         }
     }
 
-    private sealed class ManualTimer(TimerCallback callback, object? state, TimeSpan dueTime) : ITimer
+    private sealed class ManualTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period) : ITimer
     {
         internal TimeSpan DueTime { get; } = dueTime;
+
+        internal TimeSpan Period { get; } = period;
 
         internal bool Disposed { get; private set; }
 

@@ -396,7 +396,8 @@ public sealed class ProductOperationDescriptor
         string verifierContractId,
         string description,
         bool? requiresObservedEffect = null,
-        IReadOnlyList<OperationEffect>? effects = null)
+        IReadOnlyList<OperationEffect>? effects = null,
+        TimeSpan? budget = null)
     {
         if (!Baxy.Contracts.ContractValidator.IsOperationName(name))
         {
@@ -424,8 +425,14 @@ public sealed class ProductOperationDescriptor
         Risk = risk;
         VerifierContractId = verifierContractId;
         Description = description;
+        if (budget <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(budget), "An operation's budget is a positive time.");
+        }
+
         RequiresObservedEffect = requiresObservedEffect ?? (risk != Baxy.Contracts.OperationRisks.ReadOnly);
         Effects = effects ?? [];
+        Budget = budget;
         if (Effects.SelectMany(static effect => effect.When).Any(condition =>
                 !argumentsSchema.Properties.Any(property => property.Name == condition.Argument)))
         {
@@ -455,6 +462,12 @@ public sealed class ProductOperationDescriptor
 
     /// <summary>The kinds of <see cref="Effects"/>, each once, in order: what the operation may do with some call.</summary>
     public IReadOnlyList<string> EffectKinds { get; }
+
+    /// <summary>
+    /// How long its provider may take, declared only where it takes longer than an ordinary call (al máximo, flujos):
+    /// the App waits that long for its answer before its margin starts, instead of the same time for every call.
+    /// </summary>
+    public TimeSpan? Budget { get; }
 
     /// <summary>Whether this call, with these arguments, has that effect.</summary>
     public bool Has(string effect, JsonElement arguments) =>

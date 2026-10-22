@@ -550,7 +550,9 @@ public static class ProductCatalog
                 ["fileName", "folder"]),
             OperationRisks.ReadOnly,
             "file.read.windows.known.text.pdf.paged.v1",
-            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR), hasta 4 MiB de texto o 64 MiB de PDF; dice qué tipo leyó, el largo total y si queda más; sin efecto; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles; la extracción de un PDF para a los 90 segundos."),
+            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR), hasta 4 MiB de texto o 64 MiB de PDF; dice qué tipo leyó, el largo total y si queda más; sin efecto; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles; la extracción de un PDF para a los 90 segundos.",
+            // Al máximo, flujos: PdfExtractionTimeout: a PDF's text is extracted for up to 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         Descriptor(
             "file.write",
             Schema(
@@ -1062,7 +1064,9 @@ public static class ProductCatalog
                 ["provider", "title"]),
             OperationRisks.ExternalCommunication,
             "media.play.exact.session.postread.v1",
-            "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing."),
+            "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+            // Al máximo, flujos: SpotifyDesktopAdapter.CallBudget.
+            budget: TimeSpan.FromSeconds(85)),
         Descriptor(
             "media.play.query",
             Schema(
@@ -1073,7 +1077,9 @@ public static class ProductCatalog
                 ["provider", "query"]),
             OperationRisks.ExternalCommunication,
             "media.play.query.session.postread.v1",
-            "Busca en Spotify y reproduce el primer resultado de su propia búsqueda (o el titulado como la búsqueda, si Spotify muestra uno) y verifica now-playing."),
+            "Busca en Spotify y reproduce el primer resultado de su propia búsqueda (o el titulado como la búsqueda, si Spotify muestra uno) y verifica now-playing.",
+            // Al máximo, flujos: SpotifyDesktopAdapter.CallBudget.
+            budget: TimeSpan.FromSeconds(85)),
         Descriptor(
             "media.play.youtube",
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
@@ -1245,7 +1251,9 @@ public static class ProductCatalog
                 ["channel", "requestedRecipient", "text"]),
             OperationRisks.ExternalCommunication,
             "message.send.test.forced.destination.ocr.postread.v1",
-            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al destino de prueba del dueño para ese canal (un chat de WhatsApp, un mensaje directo de Discord o su casilla de correo de pruebas, guardados en sus datos privados), nunca al destinatario nombrado; sin ese destino configurado no envía nada; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
+            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al destino de prueba del dueño para ese canal (un chat de WhatsApp, un mensaje directo de Discord o su casilla de correo de pruebas, guardados en sus datos privados), nunca al destinatario nombrado; sin ese destino configurado no envía nada; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado.",
+            // Al máximo, flujos: the mail is sent by a script given 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         Descriptor(
             "network.dns.status",
             EmptySchema(),
@@ -1359,7 +1367,9 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "ocr.read.windows.capture.binding.v1",
             "Ejecuta OCR local sobre una captura identificada y un language pack disponible; sólo se guardan las 16 últimas capturas.",
-            requiresObservedEffect: false),
+            requiresObservedEffect: false,
+            // Al máximo, flujos: CaptureVisionAdapter: the local endpoint has 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         Descriptor(
             "office.document.create",
             Schema(
@@ -1641,7 +1651,9 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "system.status.windows.measurement.v1",
-            "Mide CPU, memoria, disco, batería, GPU y Windows; lee también el cortafuegos (sus perfiles, si están activos y los conectados ahora) y Windows Update (reinicio pendiente y actualizaciones por instalar según la última búsqueda de Windows, leída de su caché local: los títulos de las 10 primeras), sin modificar el equipo."),
+            "Mide CPU, memoria, disco, batería, GPU y Windows; lee también el cortafuegos (sus perfiles, si están activos y los conectados ahora) y Windows Update (reinicio pendiente y actualizaciones por instalar según la última búsqueda de Windows, leída de su caché local: los títulos de las 10 primeras), sin modificar el equipo.",
+            // Al máximo, flujos: WindowsSecurityStatusProvider: Windows Update is read for up to 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         Descriptor(
             "system.time",
             // Uso real tanda 4 «convertir nueve de la mañana huso horario a madrid»:
@@ -1745,7 +1757,9 @@ public static class ProductCatalog
                 ["captureId"]),
             OperationRisks.PrivacySensitive,
             "vision.describe.provider.capture.binding.v1",
-            "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured; sólo se guardan las 16 últimas capturas."),
+            "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured; sólo se guardan las 16 últimas capturas.",
+            // Al máximo, flujos: CaptureVisionAdapter: the local endpoint has 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
         // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:
         // geocodificación del lugar nombrado, o la ubicación de este PC por su IP) con
@@ -2117,8 +2131,9 @@ public static class ProductCatalog
         string verifierContractId,
         string description,
         bool? requiresObservedEffect = null,
-        IReadOnlyList<OperationEffect>? effects = null) =>
-        new(name, schema, risk, verifierContractId, description, requiresObservedEffect, effects);
+        IReadOnlyList<OperationEffect>? effects = null,
+        TimeSpan? budget = null) =>
+        new(name, schema, risk, verifierContractId, description, requiresObservedEffect, effects, budget);
 
     // Al máximo 5.1: what each provider does, read from it (the App held these by name before).
     private static OperationEffect WindowInput(params EffectCondition[] when) =>
