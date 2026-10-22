@@ -2418,19 +2418,19 @@
         "id": "A-inv-pc",
         "maquina": "PC",
         "que": "investigación áreas 1,2,4,5,8,9,13 → PALANCAS-pc.md",
-        "estado": "en curso"
+        "estado": "hecho"
       },
       {
         "id": "A-inv-nb",
         "maquina": "NB",
         "que": "investigación áreas 3,6,7,10,11,12 → PALANCAS-nb.md",
-        "estado": "en curso"
+        "estado": "hecho"
       },
       {
         "id": "A-base-pc",
         "maquina": "PC",
         "que": "línea base decision2 + escenas, S1 on/off",
-        "estado": "en curso",
+        "estado": "hecho",
         "evidencia": "F:/BAXYeval/renew_v1/runs/max-base-*"
       },
       {
@@ -2443,19 +2443,19 @@
         "id": "A-cruce",
         "maquina": "ambas",
         "que": "verificación cruzada de palancas >2 puntos",
-        "estado": "pendiente"
+        "estado": "hecho"
       },
       {
         "id": "A-maximo",
         "maquina": "PC",
         "que": "MAXIMO.md consolidado",
-        "estado": "pendiente"
+        "estado": "hecho"
       },
       {
         "id": "A-holdout",
         "maquina": "PC",
         "que": "holdout renew_v4 sellado por subagente aislado",
-        "estado": "pendiente"
+        "estado": "hecho"
       },
       {
         "id": "B-revision",
@@ -2475,6 +2475,30 @@
         "que": "suites, recursos, holdout x3, vivo, INFORME_MAXIMO.md",
         "estado": "pendiente"
       }
-    ]
+    ],
+    "holdout_v4": {
+      "sellado": "2026-10-22 14:47 (e2e+falsedades) y 15:00 (decisión+escenas)",
+      "autores": "dos subagentes aislados del PC",
+      "ruta": "F:/BAXYeval/renew_v4/holdout (copia D:/BAXYeval/renew_v4/holdout)",
+      "clave": "C:/Users/usuario/BAXY-coord/holdout-v4-clave.txt",
+      "decision_escenas.7z": "c2a3ed46635c90b1203c24fcc0eda1b3d0bd80f1543d58f766bb33cbc68d35fd",
+      "decision.json": "48e14de7aabf200fd5cf64d4e3125ded7543424a1d90c37621fc21202f404c78",
+      "escenas.json": "182afb99ba8439cc099a2f73b70f0d2729d37c4c633b512e9527c155e9ed04e7",
+      "e2e_falsedades.7z": "0194015d02222b6240ae597e2d80d1c810e4302c973a2246dd0255cae63aa766",
+      "e2e.json": "2dbbf64a428f84082cb5331e6f84013dda2e70a625ae5acab40a2126f6600750",
+      "falsedades.json": "a36bf73a7c6e2778a31cbfb4d440fe778eebbbc048e8a6fcf52f991e4164ddd3",
+      "conteos": {
+        "decision": 720,
+        "escenas": 90,
+        "e2e": 72,
+        "falsedades": 36
+      },
+      "notas": [
+        "la familia «confirmación pendiente» se sustituyó por «confirmación reemplazada» (40): bench_decision no pasa pending",
+        "sólo operaciones de catalog-base (175); message.send fuera (catalog_equivalence la marca retirada)",
+        "oráculos e2e cargan F:/BAXYeval/renew_v1/e2e/lib/bench.ps1: en el notebook, sustitución F:→D: al abrir",
+        "se abre una vez sobre el HEAD final: pc-system-one S1 off, S1 on, renew-maximo"
+      ]
+    }
   }
 }

@@ -9,6 +9,8 @@
     <ApplicationIcon>Assets\baxy.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <!-- 2026-10-22, review of the App: its tests reach the App's internal types (tests/Baxy.App.Tests). -->
+    <InternalsVisibleTo Include="Baxy.App.Tests" />
     <PackageReference Include="Microsoft.Web.WebView2" />
     <ProjectReference Include="..\Baxy.Core\Baxy.Core.csproj"
                       ReferenceOutputAssembly="false"

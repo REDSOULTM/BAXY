@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The App's own tests (2026-10-22, review of the App): the turn loop, the view model and the view's channel need the
+       App's types together, so this project references the App instead of linking its files one by one. A mind they
+       talk to is FakeMind (Python, the mind's JSONL protocol only), never the real one. -->
+  <PropertyGroup>
+    <TargetFramework>$(BaxyWindowsTargetFramework)</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <ProjectReference Include="..\..\src\Baxy.App\Baxy.App.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FakeMind\baxy_mind\*.py" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

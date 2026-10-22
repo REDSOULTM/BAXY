@@ -72,7 +72,7 @@ internal sealed class AudioStatusHandler(IAudioControlProvider provider) : IOper
         if (receipt.Verified)
         {
             return receipt.ErrorCode is null
-                && IsLowerHexSha256(receipt.EndpointIdHash)
+                && AudioControlEvidence.IsLowerHexSha256(receipt.EndpointIdHash)
                 && receipt.State is { VolumePercent: >= 0 and <= 100 };
         }
 
@@ -84,25 +84,6 @@ internal sealed class AudioStatusHandler(IAudioControlProvider provider) : IOper
                 or AudioControlErrorCodes.NoDefaultOutput
                 or AudioControlErrorCodes.AudioServiceUnavailable
                 or AudioControlErrorCodes.EndpointUnavailable;
-    }
-
-    private static bool IsLowerHexSha256(string? value)
-    {
-        if (value is null || value.Length != 64)
-        {
-            return false;
-        }
-
-        foreach (char character in value)
-        {
-            if (character is not (>= '0' and <= '9')
-                and not (>= 'a' and <= 'f'))
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private static OperationOutcome InvalidArguments() =>

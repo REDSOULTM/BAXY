@@ -102,7 +102,9 @@ internal sealed class NativeTurnLoop
     };
 
     private readonly Host _host;
-    private readonly SilenceNotice _notice = new(TimeProvider.System);
+    // 2026-10-22, review of the App: one clock for whether a waiting call is still waiting and how it ended.
+    private readonly TimeProvider _time;
+    private readonly SilenceNotice _notice;
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
@@ -124,15 +126,17 @@ internal sealed class NativeTurnLoop
     // The last call's step as it was recorded (its status and error code), for TurnClosing.
     private NativeTurnStep? _recorded;
 
-    internal NativeTurnLoop(Host host)
+    internal NativeTurnLoop(Host host, TimeProvider? time = null)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
+        _time = time ?? TimeProvider.System;
+        _notice = new SilenceNotice(_time);
     }
 
     /// <summary>A risky call waits for the person's Sí or No (the kernel's challenge or a heartbeat's proposal).</summary>
     internal bool HasPendingConfirmation =>
-        (_pending is { } pending && pending.ExpiresAtUtc > DateTimeOffset.UtcNow)
-        || (_proposal is not null && _proposalExpiresUtc > DateTimeOffset.UtcNow);
+        (_pending is { } pending && pending.ExpiresAtUtc > _time.GetUtcNow())
+        || (_proposal is not null && _proposalExpiresUtc > _time.GetUtcNow());
 
     /// <summary>
     /// The person's words open a turn; they arrived at <paramref name="arrivedAt"/> (<see cref="Stopwatch.GetTimestamp"/>).
@@ -196,8 +200,8 @@ internal sealed class NativeTurnLoop
     }
 
     private PreparedOperation? WaitingPrepared() =>
-        _pending is { } pending && pending.ExpiresAtUtc > DateTimeOffset.UtcNow ? pending.Prepared
-        : _proposal is not null && _proposalExpiresUtc > DateTimeOffset.UtcNow ? _proposal
+        _pending is { } pending && pending.ExpiresAtUtc > _time.GetUtcNow() ? pending.Prepared
+        : _proposal is not null && _proposalExpiresUtc > _time.GetUtcNow() ? _proposal
         : null;
 
     /// <summary>
@@ -448,7 +452,7 @@ internal sealed class NativeTurnLoop
         {
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
-            _proposalExpiresUtc = DateTimeOffset.UtcNow + ProposalLifetime;
+            _proposalExpiresUtc = _time.GetUtcNow() + ProposalLifetime;
             _askedAt = ConfirmationAsk.Unpublished;
             return Record(operation, arguments, started, WithArguments(new JsonObject
             {
@@ -598,7 +602,7 @@ internal sealed class NativeTurnLoop
             }.ToJsonString());
         }
 
-        if (_proposal is { } proposal && _proposalExpiresUtc > DateTimeOffset.UtcNow)
+        if (_proposal is { } proposal && _proposalExpiresUtc > _time.GetUtcNow())
         {
             return await AnswerProposalAsync(proposal, approve, started, cancellationToken);
         }
@@ -706,7 +710,7 @@ internal sealed class NativeTurnLoop
                 sent: true);
         }
 
-        if (PendingOperationConfirmation.TryCreate(response, prepared, TimeProvider.System,
+        if (PendingOperationConfirmation.TryCreate(response, prepared, _time,
                 out PendingOperationConfirmation? challenge) && challenge is not null)
         {
             // The kernel asks for the person's «sí» for this exact invocation: the model asks; the answer comes back
@@ -796,7 +800,10 @@ internal sealed class NativeTurnLoop
 
     private void DropPending()
     {
-        Resolved("dropped");
+        // 2026-10-22, review of the App: a call whose time ran out before the person answered ended «expired», even when
+        // what drops it comes later (their next words, a new session); it read as «dropped», another end.
+        bool expired = (_pending is not null || _proposal is not null) && WaitingPrepared() is null;
+        Resolved(expired ? "expired" : "dropped");
         if (_proposal is { } proposal)
         {
             _proposal = null;

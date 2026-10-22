@@ -239,6 +239,38 @@ public sealed class MissionEngineTests
         });
     }
 
+    // Revisión 2026-10-22 (K-6): the yes was given to one execution. A retryable outcome whose effect may have happened
+    // leaves the invocation open, and the same token used to run it again without asking; it is spent, and the retry
+    // asks again, saying an execution already began (reconciliationRequired). One with no effect keeps its grant
+    // (ConfirmationAuthorityTests.Retryable_outcome_keeps_grant_and_terminal_outcome_revokes_it).
+    [Test]
+    public async Task ARetryableOutcomeSpendsTheConfirmationAndTheRetryAsksAgain()
+    {
+        var handler = new RetryableOnceHandler(OperationRisk.Irreversible, effectMayHaveOccurred: true);
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = CreateRequest("{\"title\":\"Compras\",\"content\":\"pan\"}");
+
+        OperationResponse challenge = await engine.ExecuteAsync(request, CancellationToken.None);
+        string token = challenge.Result!.Value.GetProperty("token").GetString()!;
+        OperationResponse confirmed = await engine.ExecuteAsync(
+            request with { RequestId = Guid.NewGuid().ToString("D"), ConfirmationToken = token },
+            CancellationToken.None);
+        OperationResponse retried = await engine.ExecuteAsync(
+            request with { RequestId = Guid.NewGuid().ToString("D"), ConfirmationToken = token },
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(confirmed.ErrorCode, Is.EqualTo("reconciliation_required"));
+            Assert.That(retried.Status, Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(retried.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(retried.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
     [Test]
     public async Task UnexpectedHandlerFailureRemainsStartedAndRetriesWithTheSameIdentity()
     {
@@ -272,6 +304,28 @@ public sealed class MissionEngineTests
             Assert.That(recovered.Verified, Is.True);
             Assert.That(recovered.Replayed, Is.False);
             Assert.That(handler.ExecutionCount, Is.EqualTo(2));
+        });
+    }
+
+    // Revisión 2026-10-22 (K-5): a JSON string with a lone surrogate («\uD800») parses, but reading it as text throws;
+    // it used to escape the engine before any terminal state and end the core (exit 70). It is refused as invalid
+    // arguments, in a value or in a name, and nothing runs.
+    [TestCase("""{"title":"\uD800","content":"pan"}""")]
+    [TestCase("""{"title":"Compras","content":["\uDC00x"]}""")]
+    [TestCase("""{"\uD800":"pan"}""")]
+    public async Task ArgumentsThatAreNotTextAreRefusedAsInvalidArguments(string json)
+    {
+        var handler = new CountingHandler(OperationRisk.Reversible);
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse response = await engine.ExecuteAsync(CreateRequest(json), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Rejected));
+            Assert.That(response.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(handler.ExecutionCount, Is.Zero);
         });
     }
 
@@ -360,12 +414,14 @@ public sealed class MissionEngineTests
         }
     }
 
-    private sealed class RetryableOnceHandler : IOperationHandler
+    private sealed class RetryableOnceHandler(
+        OperationRisk risk = OperationRisk.Reversible,
+        bool effectMayHaveOccurred = false) : IOperationHandler
     {
         public int ExecutionCount { get; private set; }
 
         public OperationDefinition Definition { get; } =
-            new("note.create", OperationRisk.Reversible, "Resolve a recoverable operation.");
+            new("note.create", risk, "Resolve a recoverable operation.");
 
         public ValueTask<OperationOutcome> ExecuteAsync(
             OperationInvocation invocation,
@@ -375,7 +431,8 @@ public sealed class MissionEngineTests
             ExecutionCount++;
             return ValueTask.FromResult(ExecutionCount == 1
                 ? OperationOutcome.RetryableFailure(
-                    "reconciliation_required")
+                    "reconciliation_required",
+                    effectMayHaveOccurred: effectMayHaveOccurred)
                 : OperationOutcome.Success());
         }
     }

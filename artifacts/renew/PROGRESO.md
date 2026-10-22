@@ -2859,3 +2859,25 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   dos frases, Python del runtime): hasta el audio de la primera frase, p50 — 10 pasos: juntas 1 595 ms / primera sola
   989 ms; 8 pasos: 1 164 / 764; 6 pasos: 946 / 646. Cambian cómo suena: van a una rama aparte con muestras y esperan el
   oído del dueño (su decisión).
+- 15:0x fusiones: fx-mente (ca9d75de0, 19 arreglos con prueba, pytest 166), nb-maximo con B-CU-1/B-CU-3 (78e475ee8) y
+  pareado.py (ee96ca1f9). Holdout v4 sellado (decisión 720 + escenas 90: 7z c2a3ed46…; e2e 72 + falsedades 36: 7z
+  0194015d…), copiado a D: con sha verificado; sellos en metas.json.
+- 15:1x decision2 S1 on sobre ca9d75de0 (tras los arreglos de la mente), semillas 0/1/2 (`BAXY_RENEW_SEED`): 227 / 231
+  / 231 (media 229,67; sin los 9: 219/223/223), acciones equivocadas 19/17/14, p50 0,95/0,97/0,89 s. Frente a la fusión
+  c1177101d (229): Δ +0,67, IC95 [−2,67; +4,0], McNemar p 0,625 (pareado.py): sin regresión. **Ruido entre semillas:
+  ±2.** Referencia nueva: 229,67 (3 semillas).
+- 15:3x fusionados fx-core (8c90bdac3: K-1, K-2, K-5, K-6, C-1..C-7, C-9, B-APP-3; K-3 no: el dueño limitó «pregunta en
+  Bypass» a message.send, commit 1d85ea3a3) y fx-app (11347dd0d: A-1..A-8, A-10, A-11; nuevo tests/Baxy.App.Tests).
+  K-2 mantiene la regla del 15/10 («Enter/Espacio confirman según lo declarado»); lo nuevo es que sin nada declarado
+  pregunta (cierra borrador + Enter sin el sí); la descripción de `target` se ajusta en la tanda 3 para que el modelo
+  declare `text_field` en buscadores. Suites PC sobre 11347dd0d: Kernel 616, Contracts 69, Setup 477, App 24,
+  pytest 166 (verde). Pendiente: Providers entero en el NB sobre 11347dd0d.
+- Tandas de palancas en ramas: lv-t1 (3.3, 4.1, 1.4, 9.5; medición en curso: d2 ×3 en el PC, sesión larga en el NB),
+  lv-t2 (8.2, 7.7, 11.1, 11.2), lv-t3 (2.2, 2.3, 2.6). voz-maximo (9.3) espera el oído del dueño.
+- 15:4x **tanda 1 medida en decision2** (S1 on ×3 semillas sobre lv-t1 132b7e3da..2f500ad28 frente a ca9d75de0): 226 /
+  228 / 227 (media 227,0) frente a 229,67, Δ −2,67, IC95 [−5,67; −0,33], McNemar p 0,25; bajan P028, P124, P257.
+  Latencia de todas las decisiones: media 1,107 → 1,036 s, p99 3,36 → 2,89 s; turnos con S1 p50 1 961 → 1 601 ms. La
+  caída es de **4.1** (P028 «batería»: con los rivales por el catálogo, el token «memory» entra como memory_correct y
+  Laya corrige hacia storage.removable.list en las 3 semillas). **4.1 RETIRADA** (d4d2d39d2, su cifra en el commit).
+  Quedan 3.3, 1.4 y 9.5, que no cambian decisiones de un turno: su medida (RAM, prompt_n en sesión larga, ms por
+  continuación) la hace el notebook en una sesión de 22 turnos.

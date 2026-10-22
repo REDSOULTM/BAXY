@@ -108,6 +108,7 @@ más que el ruido sin empeorar otro banco (si no, sale del código con su cifra)
 | Best-of-n con verificador | sólo gana con n=32 y un RM de 14B. |
 | MTP / decodificación especulativa | desactiva la reutilización de caché; el GGUF ajustado no trae cabeza MTP. |
 | Calibrar una sola puntuación; subir el umbral de Laya a 0,7; duda nombre × argumento | monótona sin efecto; +1 frenada por +1 correcta perdida; empeora la cola. |
+| 4.1 candidatos de duda por el catálogo, sin rollout (medida) | decision2 S1 ×3: −2,67 (IC95 −5,67; −0,33); un token ambiguo entra con la primera herramienta del catálogo y Laya corrige mal (P028); sólo −360 ms p50 en turnos con S1. Retirada en d4d2d39d2. |
 | 7.5 `input.visible.path` (por ahora) | C02, C10, C11 ya cubiertos por pc-cu; falta un caso de menú sin cubrir. |
 | Lo ya descartado antes | Laya primero (73,5 % vs 86,6 %), pregunta lateral (0,738), Kev, sopa, maestro 35B, ayudas 4, 5a, 6, 7, 9. |
 
