@@ -1130,7 +1130,8 @@ class Mind:
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
-        model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED). Layer 2
+        model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
+        low_reversible. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking and confirming are never held: they
@@ -1142,7 +1143,11 @@ class Mind:
         doubt = read_doubt(reply)
         if doubt is None:
             return None
-        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering"):
+        # Al máximo, System One 2: layer 0 never holds a low_reversible call; its error is undone and the kernel verifies
+        # it. On 26 runs of decision2 with System One (2026-10-22) it held 23, 22 of them right without System One (P040
+        # ×7, P085 ×15) and none useful; read_only it holds still (24 useful against 5 harmful), and anything riskier.
+        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
+                and self.risk.get(call["wire"]) != "low_reversible":
             return DOUBT_NOTE.format(call=call["wire"])
         if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
             return None
