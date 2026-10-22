@@ -77,6 +77,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             // MUSIC1593: the local YouTube player answers media.status and
             // media.control while it plays (SMTC never sees mpv); without an
             // active player it stands aside and the SMTC adapter answers.
+            // Renew al máximo (B-APP-1): so it does, unnamed, when left paused
+            // while a system session plays.
             new YouTubeMpvAdapter(),
             new WindowsMediaSessionAdapter(),
             // 2026-09-22 (owner's turn 148): the YouTube tab this session plays answers

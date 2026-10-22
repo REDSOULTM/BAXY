@@ -229,7 +229,7 @@ internal static partial class VisibleControlSurface
         _ = GetWindowThreadProcessId(frame, out uint owner);
         if (owner == 0 || owner == ShellProcess())
             return 0;
-        uint self = unchecked((uint)Environment.ProcessId);
+        Func<uint, bool> product = ProductProcesses();
         var found = new List<(nint Window, uint Process, int L, int T, int R, int B, bool Above, bool Cloaked, long ExStyle, nint Owner)>();
         bool frameSeen = false;
         EnumWindowsProc callback = (candidate, unused) =>
@@ -246,7 +246,7 @@ internal static partial class VisibleControlSurface
             if (!IsWindowVisible(candidate))
                 return true;
             _ = GetWindowThreadProcessId(candidate, out uint process);
-            if (process == 0 || process == owner || process == self || IsShellSurface(candidate))
+            if (process == 0 || process == owner || product(process) || IsShellSurface(candidate))
                 return true;
             if (!TryBounds(candidate, out int l, out int t, out int r, out int b)
                 || Area(Math.Max(left, l), Math.Max(top, t), Math.Min(right, r), Math.Min(bottom, b)) <= 0)
@@ -289,7 +289,7 @@ internal static partial class VisibleControlSurface
         _ = GetWindowThreadProcessId(window, out uint owner);
         if (owner == 0 || owner == ShellProcess())
             return window;
-        uint self = unchecked((uint)Environment.ProcessId);
+        Func<uint, bool> product = ProductProcesses();
         var candidates = new List<FamilyWindow>();
         bool frameSeen = false;
         EnumWindowsProc callback = (candidate, unused) =>
@@ -305,7 +305,7 @@ internal static partial class VisibleControlSurface
             if (DwmGetWindowAttribute(candidate, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
                 return true;
             _ = GetWindowThreadProcessId(candidate, out uint process);
-            if (process == 0 || process == owner || process == self || IsShellSurface(candidate))
+            if (process == 0 || process == owner || product(process) || IsShellSurface(candidate))
                 return true;
             if (!TryBounds(candidate, out int l, out int t, out int r, out int b)
                 || !CoversAsSurface((left, top, right, bottom), (l, t, r, b)))
@@ -359,7 +359,7 @@ internal static partial class VisibleControlSurface
         _ = GetWindowThreadProcessId(window, out uint owner);
         if (owner == 0 || owner == ShellProcess())
             return [];
-        uint self = unchecked((uint)Environment.ProcessId);
+        Func<uint, bool> product = ProductProcesses();
         var candidates = new List<FamilyWindow>();
         bool frameSeen = false;
         EnumWindowsProc callback = (candidate, unused) =>
@@ -375,7 +375,7 @@ internal static partial class VisibleControlSurface
             if (DwmGetWindowAttribute(candidate, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
                 return true;
             _ = GetWindowThreadProcessId(candidate, out uint process);
-            if (process == 0 || process == owner || process == self || IsShellSurface(candidate))
+            if (process == 0 || process == owner || product(process) || IsShellSurface(candidate))
                 return true;
             if (!TryBounds(candidate, out int l, out int t, out int r, out int b)
                 || !CoversAsSurface((left, top, right, bottom), (l, t, r, b)))

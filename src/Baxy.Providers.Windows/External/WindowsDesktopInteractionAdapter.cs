@@ -311,6 +311,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
     private const int MaximumTypedText = 4096;
 
+    // Renew al máximo (B-CU-4): how long one act may type, from its start and counting the person's pauses it waits
+    // for. The App waits 30 s for a step and 70 s more before it ends the Core, and 4096 characters at the keyboard's
+    // pace (35 ms) take about 145 s: the Core was ended in the middle, the front never given back, and the text asked
+    // again typed its beginning twice. At this budget the text stops, the front goes back and the receipt says how much
+    // went in (input_text_time_exhausted, charactersTyped); a last wait for the person's pause (8 s at most) and the
+    // read-back stay under 80 s.
+    internal const long TypingBudgetMs = 70_000;
+
     // The characters a burst types when the person's input cannot be told apart from BAXY's (no Raw Input).
     internal const int BlindBurstCharacters = 8;
 
@@ -343,6 +351,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         CancellationToken cancellationToken)
     {
         bool typing = operation == "input.text.type";
+        long typingDeadline = Ticks() + TypingBudgetMs;
         string? key = null;
         string text = string.Empty;
         ushort[] chord = [];
@@ -452,7 +461,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         try
         {
             return await SendInBurstAsync(operation, typing, key, text, chord, window, bursts, cancellationToken,
-                    openedApplication)
+                    openedApplication, typingDeadline)
                 .ConfigureAwait(false);
         }
         finally
@@ -496,7 +505,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         nint window,
         LeasedBursts bursts,
         CancellationToken cancellationToken,
-        bool openedApplication = false)
+        bool openedApplication = false,
+        long typingDeadline = long.MaxValue)
     {
         DesktopForeground before = _keyboard.Foreground();
         if (before.Window == 0 || _keyboard.InputSize != (IntPtr.Size == 8 ? 40 : 28))
@@ -522,9 +532,20 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         bool userActed = false;
         int pausesWaited = 0;
         string? refusedLater = null;
+        bool outOfTime = false;
+        // Renew al máximo (B-CU-4): the act's own budget (TypingBudgetMs) is spent: the text stops there.
+        bool OutOfTime()
+        {
+            outOfTime |= Ticks() >= typingDeadline;
+            interrupted |= outOfTime;
+            return outOfTime;
+        }
+
         bool KeepGoing()
         {
             userActed |= bursts.Current is { UserActed: true };
+            if (!userActed && OutOfTime())
+                return false;
             bool stays = !cancellationToken.IsCancellationRequested
                 && !userActed
                 && (window != 0 ? _keyboard.Holds(window) : _keyboard.Foreground().ProcessId == before.ProcessId);
@@ -598,6 +619,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                         return false;
                     }
 
+                    if (OutOfTime())
+                        return false;
                     if (bursts.Current is { TellsPerson: false } && sent >= BlindBurstCharacters)
                     {
                         blindCut = true;
@@ -623,7 +646,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     break;
                 }
 
-                // The person acted in the middle: their front first, then the rest after their next pause.
+                // The person acted in the middle: their front first, then the rest after their next pause, while the
+                // act's budget lasts.
+                if (OutOfTime())
+                    break;
                 pausesWaited++;
                 _ = bursts.Restore();
                 IInputBurst next;
@@ -684,7 +710,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         DesktopForeground after = _keyboard.Foreground();
         // Given back before the receipt, which says whether it was.
         bool? restored = bursts.Current is null ? null : bursts.Restore();
-        string stopped = refusedLater ?? (userActed ? "input_user_interrupted" : "input_window_changed");
+        string stopped = refusedLater
+            ?? (userActed ? "input_user_interrupted" : outOfTime ? "input_text_time_exhausted" : "input_window_changed");
         if (interrupted)
             return effect
                 ? SentFailure(stopped)

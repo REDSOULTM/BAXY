@@ -74,7 +74,11 @@ internal sealed record OpenApplicationResult(
     // Foreground (BAXY Renew, notebook, F004): whether the window this opening verified holds the front when the opening
     // answers, asked in front or not; ForegroundHeldBy: the window in front instead (none when Windows reports none).
     bool Foreground = false,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] WindowName? ForegroundHeldBy = null);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] WindowName? ForegroundHeldBy = null,
+    // PlaceWindowChanged (Renew al máximo, 6.2): with a place, whether the application's window was drawn differently
+    // within the place's watch after its address, aids on or off; absent when no drawing was read. A change does not
+    // prove the place arrived (a window starting cold nearly always changes).
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? PlaceWindowChanged = null);
 
 // A game of a catalog: its number there and its name.
 internal sealed record PlacedGame(string Number, string Name);

@@ -44,6 +44,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
     private readonly IInstalledApplicationPlatform _platform;
     private readonly TimeSpan _catalogReadBudget;
+    private readonly TimeProvider _time;
     private readonly object _catalogLock = new();
     private IReadOnlyList<InstalledApplicationEntry>? _catalog;
     private Task<IReadOnlyList<InstalledApplicationEntry>>? _catalogLoadTask;
@@ -60,9 +61,19 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     }
 
     internal WindowsInstalledApplicationOpenProvider(IInstalledApplicationPlatform platform, TimeSpan catalogReadBudget)
+        : this(platform, catalogReadBudget, TimeProvider.System)
+    {
+    }
+
+    // Renew al máximo (6.6): the clock the catalog's age is read on.
+    internal WindowsInstalledApplicationOpenProvider(
+        IInstalledApplicationPlatform platform,
+        TimeSpan catalogReadBudget,
+        TimeProvider time)
     {
         _platform = platform ?? throw new ArgumentNullException(nameof(platform));
         _catalogReadBudget = catalogReadBudget;
+        _time = time ?? throw new ArgumentNullException(nameof(time));
     }
 
     public ValueTask<ApplicationOpenResult> OpenAsync(
@@ -96,11 +107,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         IReadOnlyList<InstalledApplicationEntry> catalog;
         try
         {
-            catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
+            catalog = await ReadCatalogAsync(cancellationToken, request.ApplicationId).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is InvalidDataException
-            or InvalidOperationException
-            or JsonException)
+        // Renew al máximo (B-APP-9): any catalog read that fails (PowerShell blocked from starting, its output broken)
+        // is the inventory failure, as for IsInstalledAsync; only a cancellation goes on.
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
@@ -184,6 +195,10 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     .ConfigureAwait(false);
                 return Success(request, entry, focused, reused: true, shownWithoutFocus: shown);
             }
+
+            // Renew al máximo (B-APP-11): the window to reuse is gone; what follows is a launch, and a window it shows
+            // is said already running only when it was there before (the verification below reads it).
+            reused = false;
         }
 
         // v3 point 0 (arreglo 4): an opening the person did not ask to see in front leaves the front where it is.
@@ -605,10 +620,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             ErrorCode: null);
     }
 
+    // resolving: the application an opening resolves on the catalog (app.open), null for any other read.
     private async ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? resolving = null)
     {
-        DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset now = _time.GetUtcNow();
         Task<IReadOnlyList<InstalledApplicationEntry>> loadTask;
         lock (_catalogLock)
         {
@@ -617,59 +634,72 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 return _catalog;
             }
 
-            _catalogLoadTask ??= ReadCatalogWithinBudgetAsync();
-            loadTask = _catalogLoadTask;
+            loadTask = _catalogLoadTask ?? StartCatalogRead();
+            // Renew al máximo (6.6): the first app.open after a pause waited the catalog's PowerShell read. A catalog
+            // past its lifetime that already names the application is opened on while the read refreshes it behind;
+            // the opened window is verified as always. A name it does not resolve waits the fresh catalog.
+            if (resolving is not null && !loadTask.IsCompletedSuccessfully && _catalog is { } stale
+                && InstalledApplicationResolver.Resolve(resolving, stale).Entry is not null)
+            {
+                return stale;
+            }
         }
 
         try
         {
-            IReadOnlyList<InstalledApplicationEntry> loaded;
-            try
+            return await loadTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            // M89: a refresh that did not answer in time leaves the last catalog read in force; with none, the
+            // inventory fails as it does for an unreadable catalog.
+            lock (_catalogLock)
             {
-                loaded = await loadTask.WaitAsync(cancellationToken).ConfigureAwait(false);
-            }
-            catch (TimeoutException)
-            {
-                // M89: a refresh that did not answer in time leaves the last catalog read in force; with none, the
-                // inventory fails as it does for an unreadable catalog.
-                lock (_catalogLock)
+                if (_catalog is not null)
                 {
-                    if (ReferenceEquals(_catalogLoadTask, loadTask))
-                    {
-                        _catalogLoadTask = null;
-                    }
-
-                    if (_catalog is not null)
-                    {
-                        return _catalog;
-                    }
+                    return _catalog;
                 }
-
-                throw new InvalidOperationException("The installed application catalog did not answer in time.");
             }
+
+            throw new InvalidOperationException("The installed application catalog did not answer in time.");
+        }
+    }
+
+    // Renew al máximo (6.6): called under _catalogLock. The one catalog read in flight, whoever waits on it or none:
+    // it keeps what it read and clears itself when it ends, so a refresh left behind lands for the next caller.
+    private Task<IReadOnlyList<InstalledApplicationEntry>> StartCatalogRead()
+    {
+        Task<IReadOnlyList<InstalledApplicationEntry>> read = LoadCatalogAsync();
+        // A read that ended at once has already kept its catalog and cleared itself.
+        _catalogLoadTask = read.IsCompleted ? null : read;
+        // A refresh nobody waits on fails quietly (its failure observed here); the next read tries again.
+        _ = read.ContinueWith(
+            static task => _ = task.Exception,
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default);
+        return read;
+    }
+
+    private async Task<IReadOnlyList<InstalledApplicationEntry>> LoadCatalogAsync()
+    {
+        try
+        {
+            IReadOnlyList<InstalledApplicationEntry> loaded = await ReadCatalogWithinBudgetAsync().ConfigureAwait(false);
             lock (_catalogLock)
             {
                 _catalog = loaded;
-                _catalogLoadedAt = DateTimeOffset.UtcNow;
-                if (ReferenceEquals(_catalogLoadTask, loadTask))
-                {
-                    _catalogLoadTask = null;
-                }
+                _catalogLoadedAt = _time.GetUtcNow();
             }
 
             return loaded;
         }
-        catch
+        finally
         {
             lock (_catalogLock)
             {
-                if (ReferenceEquals(_catalogLoadTask, loadTask))
-                {
-                    _catalogLoadTask = null;
-                }
+                _catalogLoadTask = null;
             }
-
-            throw;
         }
     }
 
@@ -820,16 +850,14 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         try
         {
             entry = InstalledApplicationResolver.Resolve(
-                request.ApplicationId, await ReadCatalogAsync(cancellationToken).ConfigureAwait(false)).Entry;
+                request.ApplicationId,
+                await ReadCatalogAsync(cancellationToken, request.ApplicationId).ConfigureAwait(false)).Entry;
             // An application without a window identity is refused by the opening below, before any launch.
             theirs = entry is null || !_platform.IdentifiesWindows(entry)
                 ? [] : [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)];
         }
-        catch (Exception exception) when (exception is ApplicationInventoryException
-            or InvalidDataException
-            or InvalidOperationException
-            or JsonException
-            or System.ComponentModel.Win32Exception)
+        // Renew al máximo (B-APP-9): as in the opening, any failed read is the inventory failure.
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
@@ -849,7 +877,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             // An application that only shows the instance that runs opened no new window: no new document was made.
             // BAXY Renew cu (C18): unless the launch's new window was handed to that instance (Windows 11's Notepad).
             return opened.ErrorCode == ApplicationOpenErrorCodes.VerificationFailed
-                ? (entry is null ? null : BornEmpty(request, entry, theirs, opened.DisplayName)) ?? NotCreated()
+                ? (entry is null ? null : await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken)
+                    .ConfigureAwait(false)) ?? NotCreated()
                 : opened;
         }
 
@@ -907,8 +936,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 _platform, request.Foreground, other => IsOpened(made, other), frontBeforeCommand);
             if (person == 0)
             {
+                // Renew al máximo (B-APP-11): within the front's budget (M89), as every window of an opening.
                 if (request.Foreground)
-                    _platform.RequestForeground(made.WindowHandle);
+                    await RequestForegroundWithinBudgetAsync(made.WindowHandle, cancellationToken).ConfigureAwait(false);
                 return Success(request, entry, made, reused: false, newDocument: true);
             }
 
@@ -923,7 +953,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         // The command goes only to the application's own window, in a burst of the foreground lease (finding 4).
         if (!await _platform.IssueNewDocumentAsync(window, cancellationToken).ConfigureAwait(false))
         {
-            return BornEmpty(request, entry, theirs, opened.DisplayName) ?? NotCreated();
+            return await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken).ConfigureAwait(false)
+                ?? NotCreated();
         }
 
         Stopwatch verification = Stopwatch.StartNew();
@@ -997,7 +1028,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             }
         }
 
-        return BornEmpty(request, entry, theirs, opened.DisplayName) ?? NotCreated();
+        return await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken).ConfigureAwait(false)
+            ?? NotCreated();
     }
 
     /// <summary>
@@ -1006,11 +1038,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     /// Windows 11's Notepad hands the new window to the instance that runs, and its New then makes no second empty tab,
     /// so neither a launched process nor a title change tells it. Nothing of the person's is in an empty window born now.
     /// </summary>
-    private ApplicationOpenResult? BornEmpty(
+    private async ValueTask<ApplicationOpenResult?> BornEmptyAsync(
         ApplicationOpenRequest request,
         InstalledApplicationEntry entry,
         HashSet<long> theirs,
-        string? displayName)
+        string? displayName,
+        CancellationToken cancellationToken)
     {
         var bare = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Bare(entry.Name), Bare(displayName) };
         bare.Remove(string.Empty);
@@ -1038,7 +1071,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
         if (request.Foreground)
         {
-            _platform.RequestForeground(made.WindowHandle);
+            // Renew al máximo (B-APP-11): within the front's budget (M89).
+            await RequestForegroundWithinBudgetAsync(made.WindowHandle, cancellationToken).ConfigureAwait(false);
         }
 
         return Success(request, entry, made, reused: false, newDocument: true);

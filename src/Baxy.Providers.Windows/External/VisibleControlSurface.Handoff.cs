@@ -105,14 +105,14 @@ internal static partial class VisibleControlSurface
     internal static RootSnapshot RootWindowsNow(nint clicked)
     {
         var windows = new List<RootWindow>();
-        uint self = unchecked((uint)Environment.ProcessId);
+        Func<uint, bool> product = ProductProcesses();
         EnumWindowsProc callback = (window, _) =>
         {
             if (!IsWindowVisible(window) || GetAncestor(window, 3) != window
                 || (GetWindowLongPtrW(window, -20).ToInt64() & 0x80) != 0)
                 return true;
             GetWindowThreadProcessId(window, out uint owner);
-            if (owner == 0 || owner == self || IsShellSurface(window) || !HasUsableSurface(window))
+            if (owner == 0 || product(owner) || IsShellSurface(window) || !HasUsableSurface(window))
                 return true;
             uint hosted = HostedProcess(window);
             windows.Add(new RootWindow(window, unchecked((int)(hosted != 0 ? hosted : owner))));

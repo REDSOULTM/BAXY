@@ -80,9 +80,7 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
                 : "win32_initiatesystemshutdownex_shutdown_acceptance");
         }
 
-        string message = reboot
-            ? "BAXY confirmó el reinicio solicitado; reinicia en 30 segundos."
-            : "BAXY confirmó el apagado solicitado; apaga en 30 segundos.";
+        string? message = DialogMessage(reboot);
         if (InitiateSystemShutdownEx(
                 null,
                 message,
@@ -109,6 +107,11 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
                 : "win32_initiateshutdown_shutdown_acceptance",
             AlreadyPending: error != 0 && (PendingShutdown(firstError) || PendingShutdown(unchecked((int)error))));
     }
+
+    // Renew al máximo (B-SYS-7): Windows shows lpMessage in its restart/shutdown notice. BAXY put a fixed «BAXY confirmó
+    // el reinicio solicitado…» there: a visible fixed reply, and in Normal mode nobody had confirmed. Both calls take NULL
+    // (InitiateSystemShutdownEx: «can be NULL if no message is required»), and Windows shows its own notice.
+    internal static string? DialogMessage(bool reboot) => null;
 
     private static bool PendingShutdown(int error) => error is 1115 or 1190;
 

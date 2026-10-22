@@ -515,15 +515,16 @@ internal sealed class NativeTurnLoop
     // title) and whose risk the kernel does not already challenge: in a heartbeat its words come from the moment, which
     // carries the person's memory, window titles and recent lines, and nothing of theirs leaves unasked (owner,
     // 2026-10-15; audit App H3). By name, read from the providers that use HTTP or ping: web.search's sources, web.fetch
-    // and web.download, Open-Meteo for the weather and for a place's clock, the Steam store for whether a game is owned,
-    // ICMP to the host named, a console command (one that only reads still reaches \\host\share or another computer
-    // by name), and a print (the printer may be on the network). What an application syncs or publishes by itself (a
-    // memory export in a folder OneDrive syncs) is not the person's data leaving through BAXY (owner, 2026-10-16). The
+    // and web.download, Open-Meteo for the weather and for a place's clock, ICMP to the host named, a console command
+    // (one that only reads still reaches \\host\share or another computer by name), and a print (the printer may be on
+    // the network). Whether a game is owned is read on the PC alone (Renew al máximo, B-APP-6). What an application
+    // syncs or publishes by itself (a memory export in a folder OneDrive syncs) is not the person's data leaving through
+    // BAXY (owner, 2026-10-16). The
     // ones with an external_communication or installation risk are held by ProposedRisks already, and app.open with a
     // place (app_places builds spotify:search:{value} and Steam's store search from its value) by SendsInputToAWindow.
     internal static bool ReachesTheNetwork(string operation, JsonObject arguments) =>
         operation is "web.search" or "web.fetch" or "web.download" or "weather.current" or "network.ping"
-            or "game.entitlement.named" or "shell.command.run" or "peripheral.print"
+            or "shell.command.run" or "peripheral.print"
         || (operation == "system.time" && arguments["place"] is JsonValue place && Named(place));
 
     // The clipboard holds what the person copied: writing over it unasked is an effect on their data (audit, round A).

@@ -86,6 +86,14 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-SYS-7): Windows shows lpMessage in its restart/shutdown notice; BAXY wrote a fixed «BAXY confirmó
+    // el reinicio solicitado…» there (a visible fixed reply, and in Normal mode nobody had confirmed anything). Windows
+    // takes NULL («if no message is required») and shows its own notice and countdown.
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ARestartOrShutdownPassesNoTextOfItsOwnToWindows(bool reboot) =>
+        Assert.That(WindowsPowerTransitionPlatform.DialogMessage(reboot), Is.Null);
+
     [Test]
     public async Task ExactNamedProcessTerminationPreservesIdentityAndVerifiesAbsence()
     {
@@ -153,6 +161,51 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_access_denied"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("deniedCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (B-SYS-6): «cierra svchost» finds dozens of instances, most of them SYSTEM services whose start
+    // time Windows will not let BAXY read; the read threw and the whole call ended as process_termination_failed
+    // before ending the person's own instances. Each unreadable one is now its own denied identity.
+    [Test]
+    public void ASnapshotCountsAnInstanceWhoseStartTimeIsRefusedAsDeniedAndSkipsOneThatExited()
+    {
+        DateTime started = new(2026, 10, 22, 9, 0, 0, DateTimeKind.Utc);
+
+        IReadOnlyList<WindowsProcessIdentity> identities = WindowsProcessTerminationPlatform.Identities(
+        [
+            (4242, () => started),
+            (9001, () => throw new System.ComponentModel.Win32Exception(5)),
+            (7070, () => throw new InvalidOperationException("exited")),
+        ]);
+
+        Assert.That(identities, Is.EqualTo(new[]
+        {
+            new WindowsProcessIdentity(4242, started.Ticks),
+            new WindowsProcessIdentity(9001, 0, AccessDenied: true),
+        }));
+    }
+
+    [Test]
+    public async Task AnInstanceWhoseIdentityCannotBeReadIsNeverEndedAndIsNamedAsDenied()
+    {
+        var system = new WindowsProcessIdentity(9001, 0, AccessDenied: true);
+        var own = new WindowsProcessIdentity(4242, 638900000000000000);
+        var platform = new StubProcessTerminationPlatform(
+            [[own, system], [system]], terminateResult: WindowsProcessTermination.Terminated);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"svchost"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.Terminated, Is.EqualTo(new[] { own }));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_access_denied"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("terminatedCount").GetInt32(), Is.EqualTo(1));
             Assert.That(receipt.Result?.GetProperty("deniedCount").GetInt32(), Is.EqualTo(1));
             Assert.That(receipt.Result?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
         });
@@ -3928,6 +3981,231 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-APP-7): the player wrote a log of its own per playback, with the stream's URL (the person's
+    // address in it), that nothing read and nothing removed.
+    [Test]
+    public async Task TheLocalPlayerWritesNoLogOfItsOwn()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.exe");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "fixture");
+        var stream = new Uri("https://rr1.googlevideo.com/videoplayback?ip=203.0.113.7");
+        List<string>? arguments = null;
+        using var adapter = new YouTubeMpvAdapter(
+            mpv, ytDlp, nodePath: null, (_, _) => ValueTask.FromResult<Uri?>(stream))
+        {
+            StartPlayer = start =>
+            {
+                arguments = [.. start.ArgumentList];
+                return null;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments, Does.Contain(stream.AbsoluteUri));
+            Assert.That(arguments, Has.None.StartsWith("--log-file"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_local_player_failed"));
+        });
+    }
+
+    // Renew al máximo (B-APP-2): yt-dlp still running at its own deadline came out as an uncaught cancellation (an
+    // ambiguous failure, the browser never tried) and yt-dlp was left running.
+    [Test]
+    public async Task AResolverTimeoutIsNotAnAmbiguousEffect()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.cmd");
+        string alive = Path.Combine(temporary.Path, "alive.txt");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        // A resolver that answers nothing for about three seconds, then leaves a mark if nobody ended it.
+        await File.WriteAllTextAsync(ytDlp, "@ping -n 4 127.0.0.1 >nul\r\n@echo x>\"%~dp0alive.txt\"\r\n");
+        bool started = false;
+        using var adapter = new YouTubeMpvAdapter(mpv, ytDlp, nodePath: null)
+        {
+            ResolveTimeout = TimeSpan.FromMilliseconds(300),
+            StartPlayer = _ =>
+            {
+                started = true;
+                return null;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+        await Task.Delay(TimeSpan.FromSeconds(4.5));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_stream_not_resolved"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(started, Is.False);
+            Assert.That(File.Exists(alive), Is.False, "yt-dlp was left running");
+        });
+    }
+
+    // Renew al máximo (B-APP-2): the player's IPC not opening in time came out as an uncaught cancellation; the player
+    // was started (and any earlier one stopped), so it is the local player's failure after its effect boundary.
+    [Test]
+    public async Task APlayerWhoseIpcNeverOpensIsAFailureAfterTheEffectBoundary()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.exe");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "fixture");
+        int standIn = 0;
+        using var adapter = new YouTubeMpvAdapter(
+            mpv, ytDlp, nodePath: null,
+            (_, _) => ValueTask.FromResult<Uri?>(new Uri("https://rr1.googlevideo.com/videoplayback")))
+        {
+            PlayerConnectTimeout = TimeSpan.FromMilliseconds(300),
+            // A hidden process that opens no IPC stands for the player.
+            StartPlayer = _ =>
+            {
+                Process? process = Process.Start(new ProcessStartInfo("ping", "-n 30 127.0.0.1")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                });
+                standIn = process?.Id ?? 0;
+                return process;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(standIn, Is.Not.Zero);
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_local_player_failed"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(Ended(standIn), Is.True, "the player that never answered was left running");
+        });
+
+        static bool Ended(int id)
+        {
+            try
+            {
+                using Process process = Process.GetProcessById(id);
+                return process.HasExited;
+            }
+            catch (ArgumentException)
+            {
+                return true;
+            }
+        }
+    }
+
+    // Renew al máximo (6.7): yt-dlp's 45 s, the IPC's 15 s and the ~30 s check, repeated by the retry, passed the App's
+    // wait for the core. One budget covers the act: spent before anything played, the browser gets its try.
+    [Test]
+    public async Task ABudgetSpentBeforeThePlayerStartedIsAFailureBeforeTheEffect()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.exe");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "fixture");
+        bool started = false;
+        // A resolver that answers, but only after the budget.
+        using var adapter = new YouTubeMpvAdapter(
+            mpv, ytDlp, nodePath: null,
+            async (_, cancellationToken) =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
+                return new Uri("https://rr1.googlevideo.com/videoplayback");
+            })
+        {
+            PlaybackBudget = TimeSpan.FromMilliseconds(300),
+            StartPlayer = _ =>
+            {
+                started = true;
+                return null;
+            },
+        };
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_stream_not_resolved"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(started, Is.False);
+            Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(2)));
+        });
+    }
+
+    // Renew al máximo (6.7): past the boundary, the budget ends the check (and no retry starts) with the honest failure
+    // whose effect may have occurred; with the time left too short for a retry it is not started; with time it is.
+    [TestCase(2_000, false, 1)]
+    [TestCase(3_000, true, 1)]
+    [TestCase(60_000, true, 2)]
+    public async Task TheRetryRunsOnlyWithinTheBudget(int budgetMilliseconds, bool playerExits, int expectedStarts)
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.cmd");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        // A resolver that prints a title and a stream at once.
+        await File.WriteAllTextAsync(ytDlp, "@echo Gatos\r\n@echo https://rr1.googlevideo.com/videoplayback\r\n");
+        using var stopPlayers = new CancellationTokenSource();
+        var players = new List<Task>();
+        int starts = 0;
+        using var adapter = new YouTubeMpvAdapter(mpv, ytDlp, nodePath: null)
+        {
+            PlaybackBudget = TimeSpan.FromMilliseconds(budgetMilliseconds),
+            // A player whose IPC answers and never plays, alive (a hidden process) or gone at once.
+            StartPlayer = start =>
+            {
+                starts++;
+                string pipe = start.ArgumentList.Single(argument => argument.StartsWith("--input-ipc-server=", StringComparison.Ordinal))
+                    .Split('\\').Last();
+                players.Add(ServePausedPlayerAsync(pipe, stopPlayers.Token));
+                return Process.Start(new ProcessStartInfo("cmd", playerExits ? "/c exit" : "/c ping -n 30 127.0.0.1")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                });
+            },
+        };
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await adapter.InvokeAsync(
+                "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            await stopPlayers.CancelAsync();
+            await Task.WhenAll(players);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(starts, Is.EqualTo(expectedStarts));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            if (budgetMilliseconds < 60_000)
+                Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromMilliseconds(budgetMilliseconds) + TimeSpan.FromSeconds(3)));
+        });
+    }
+
     // BAXY Renew (notebook): the pause command reached the player and its answer could not be read; the request
     // may have paused it, so the dispatch stops there and no other player gets pressed.
     [Test]
@@ -3979,6 +4257,83 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-APP-1): a local player left paused answered every unnamed media request, so «pausa la música»
+    // said «already paused» while the person's music played on. It answers while it plays, while paused with nothing
+    // else playing, or when named; otherwise the next player answers.
+    [TestCase("media.control", """{"action":"pause"}""", true, false)]
+    [TestCase("media.status", "{}", true, false)]
+    [TestCase("media.control", """{"action":"pause","sourceApp":"BAXY YouTube (mpv)"}""", true, true)]
+    [TestCase("media.control", """{"action":"pause"}""", false, true)]
+    [TestCase("media.status", "{}", false, true)]
+    public async Task APausedLocalPlayerStandsAsideWhenAnotherSessionPlays(
+        string operation, string arguments, bool anotherPlays, bool localAnswers)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePausedPlayerAsync(pipeName, stopPlayer.Token);
+        var other = new StubExternalAdapter(new ExternalCapabilityReceipt(operation, true, true, Json("{}"), null));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(anotherPlays),
+        };
+        using var provider = new WindowsExternalCapabilityProvider([local, other]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+        }
+        finally
+        {
+            // The player stands for this test's own process: nothing stops it when the provider is disposed.
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(other.Calls, Is.EqualTo(localAnswers ? 0 : 1));
+            Assert.That(receipt.Result?.TryGetProperty("authority", out _), Is.EqualTo(localAnswers));
+        });
+    }
+
+    // A player whose pause property reads true on every connection until stopped (a set is answered as done).
+    private static async Task ServePausedPlayerAsync(string pipeName, CancellationToken stop)
+    {
+        try
+        {
+            while (true)
+            {
+                await using var pipe = new NamedPipeServerStream(
+                    pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                await pipe.WaitForConnectionAsync(stop);
+                var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
+                var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true)
+                { AutoFlush = true };
+                try
+                {
+                    while (await reader.ReadLineAsync(stop) is { } request)
+                        await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success","data":true}""");
+                }
+                catch (IOException)
+                {
+                    // The client closed its end: the next connection is served.
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
     // One connection of the player's IPC: one request line answered, then the client's close.
     private static async Task AnswerOnceAsync(string pipeName, Func<string, string> answer)
     {
@@ -3986,11 +4341,20 @@ public sealed class ExternalAdaptersTests
             pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
         await pipe.WaitForConnectionAsync();
         using var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
-        using var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true) { AutoFlush = true };
-        string request = await reader.ReadLineAsync() ?? throw new IOException("No request.");
-        await writer.WriteLineAsync(answer(request));
-        while (await reader.ReadLineAsync() is not null)
+        var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true) { AutoFlush = true };
+        try
         {
+            string request = await reader.ReadLineAsync() ?? throw new IOException("No request.");
+            await writer.WriteLineAsync(answer(request));
+            while (await reader.ReadLineAsync() is not null)
+            {
+            }
+        }
+        finally
+        {
+            // Renew al máximo: the client closed first (its answer read), so the writer's closing flush finds the pipe
+            // broken; that is the end of the connection, not a failure of the test (it raced under load).
+            try { writer.Dispose(); } catch (IOException) { }
         }
     }
 

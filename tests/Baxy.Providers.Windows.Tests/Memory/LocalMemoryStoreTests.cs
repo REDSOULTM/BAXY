@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Baxy.Providers.Windows.Memory;
 using Baxy.Security.Windows;
 using NUnit.Framework;
@@ -385,6 +386,53 @@ public sealed class LocalMemoryStoreTests
     }
 
     [Test]
+    public void ReadsDoNotRewriteTheStoreUntilTheClockMovesAnHourOrSomethingExpires()
+    {
+        // Renew al máximo (R11.4): every recall, list and status sealed and fsynced a full snapshot just to persist the
+        // newest observed time.
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        MutableTimeProvider clock = new(Start);
+        LocalMemoryStore store = EnabledStore(temporary.Path, protector, clock);
+        _ = store.Save(Save("save", "color", "azul"));
+        _ = store.Save(new MemorySaveRequest(
+            "temporary",
+            "reunion",
+            "Reunión",
+            "a las 11",
+            Retention: MemoryRetention.Temporary,
+            ExpiresAtUtc: Start.AddMinutes(90)));
+        int sealsAfterSave = protector.SealCount;
+
+        clock.UtcNow = Start.AddMinutes(1);
+        _ = store.Recall(new("color"));
+        clock.UtcNow = Start.AddMinutes(2);
+        _ = store.Recall(new("color"));
+        _ = store.List(new());
+        _ = store.Status(new());
+        int sealsAfterReads = protector.SealCount;
+
+        clock.UtcNow = Start.AddMinutes(91);
+        bool expired = store.Recall(new("reunion")).Records.Count == 0;
+        int sealsAfterExpiry = protector.SealCount;
+        clock.UtcNow = Start.AddMinutes(91 + 61);
+        _ = store.Recall(new("color"));
+        int sealsAfterAnHour = protector.SealCount;
+        clock.UtcNow = Start.AddMinutes(1);
+        LocalMemoryStore restarted = CreateStore(temporary.Path, protector, clock);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sealsAfterReads, Is.EqualTo(sealsAfterSave));
+            Assert.That(expired, Is.True);
+            Assert.That(sealsAfterExpiry, Is.GreaterThan(sealsAfterReads));
+            Assert.That(sealsAfterAnHour, Is.GreaterThan(sealsAfterExpiry));
+            Assert.That(restarted.Recall(new("reunion")).Records, Is.Empty);
+            Assert.That(restarted.Recall(new("color")).Records.Single().Value, Is.EqualTo("azul"));
+        });
+    }
+
+    [Test]
     public void SensitiveAndSecretValuesAreAlwaysRedactedFromRecallAndList()
     {
         using TemporaryDirectory temporary = new();
@@ -418,7 +466,7 @@ public sealed class LocalMemoryStoreTests
     }
 
     [Test]
-    public void RecordAndReceiptCapacityFailBeforeAnyEffect()
+    public void RecordCapacityFailsBeforeAnyEffectAndAFullReceiptLedgerRollsOver()
     {
         using TemporaryDirectory recordDirectory = new();
         TestProtectedPayload recordProtector = new();
@@ -450,14 +498,22 @@ public sealed class LocalMemoryStoreTests
         _ = receiptStore.Configure(new("configure", true));
         _ = receiptStore.Save(Save("save-1", "uno", "1"));
 
-        Assert.That(
-            () => receiptStore.Save(Save("save-2", "dos", "2")),
-            Throws.TypeOf<MemoryCapacityException>());
-        Assert.That(receiptStore.List(new()).Records, Has.Count.EqualTo(1));
+        // Renew al máximo (B-SYS-3): a full ledger drops its oldest receipt instead of refusing the save; the recent
+        // invocations still replay and the dropped one runs again with no change.
+        MemorySaveResult second = receiptStore.Save(Save("save-2", "dos", "2"));
+        MemorySaveResult firstReplay = receiptStore.Save(Save("save-1", "uno", "1"));
+        MemoryConfigurationResult configureAgain = receiptStore.Configure(new("configure", true));
+        Assert.Multiple(() =>
+        {
+            Assert.That(second.Replayed, Is.False);
+            Assert.That(firstReplay.Replayed, Is.True);
+            Assert.That(configureAgain, Is.EqualTo(new MemoryConfigurationResult(true, false, Changed: false)));
+            Assert.That(receiptStore.List(new()).Records, Has.Count.EqualTo(2));
+        });
     }
 
     [Test]
-    public void FullReceiptLedgerCannotBlockForgetOrDisable()
+    public void FullReceiptLedgerCannotBlockForgetDisableOrALaterEnable()
     {
         using TemporaryDirectory temporary = new();
         TestProtectedPayload protector = new();
@@ -480,7 +536,66 @@ public sealed class LocalMemoryStoreTests
         MemoryRecord[] visibleAfterForget = store.List(new()).Records.ToArray();
         MemoryConfigurationResult disabled = store.Configure(new("configure-off", false));
         MemoryConfigurationResult disabledReplay = store.Configure(new("configure-off", false));
-        MemoryForgetResult monotonicReplay = store.Forget(forgetRequest);
+        MemoryForgetResult recentReplay = store.Forget(forgetRequest);
+        LocalMemoryStore restarted = new(
+            temporary.Path,
+            protector,
+            timeProvider: null,
+            crashHook: null,
+            maximumRecords: 10,
+            maximumReceipts: 2);
+        bool disabledAfterRestart = !restarted.Status(new()).Enabled;
+        TestDelegate saveWhileDisabled = () => restarted.Save(Save("save-disabled", "selector", "resurrected"));
+
+        // Renew al máximo (B-SYS-3): this test used to assert that enabling again failed with memory_capacity_reached
+        // once two receipts existed; that defended the lifetime cap itself (a «full» memory with zero records), not a
+        // privacy property. What it guards now: the disable survives a restart, a new enable works, and the forgotten
+        // value never comes back.
+        Assert.Multiple(() =>
+        {
+            Assert.That(forgotten, Is.EqualTo(new MemoryForgetResult(1, false)));
+            Assert.That(replay, Is.EqualTo(new MemoryForgetResult(1, true)));
+            Assert.That(visibleAfterForget, Is.Empty);
+            Assert.That(disabled, Is.EqualTo(new MemoryConfigurationResult(false, false)));
+            Assert.That(disabledReplay, Is.EqualTo(new MemoryConfigurationResult(false, true)));
+            Assert.That(recentReplay, Is.EqualTo(new MemoryForgetResult(1, true)));
+            Assert.That(disabledAfterRestart, Is.True);
+            Assert.That(saveWhileDisabled, Throws.TypeOf<MemoryDisabledException>());
+        });
+
+        MemoryConfigurationResult enabledAgain = restarted.Configure(new("configure-new", true));
+        MemorySaveResult saved = restarted.Save(Save("save-new", "otro", "nuevo"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(enabledAgain, Is.EqualTo(new MemoryConfigurationResult(true, false)));
+            Assert.That(saved.Replayed, Is.False);
+            Assert.That(
+                restarted.List(new()).Records.Select(record => record.Value),
+                Is.EqualTo(new[] { "nuevo" }));
+        });
+    }
+
+    [Test]
+    public void ForgetAllFreesTheReceiptLedgerAndOldReceiptsRollOff()
+    {
+        // Renew al máximo (B-SYS-3): a lifetime receipt cap left the memory «full» with zero records.
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        LocalMemoryStore store = new(
+            temporary.Path,
+            protector,
+            timeProvider: null,
+            crashHook: null,
+            maximumRecords: 10,
+            maximumReceipts: 2);
+        _ = store.Configure(new("configure-on", true));
+        _ = store.Save(Save("save-1", "uno", "1"));
+        MemoryForgetResult forgotten = store.Forget(new("forget-all", MemoryForgetScope.All));
+
+        MemorySaveResult afterForget = store.Save(Save("save-2", "dos", "2"));
+        MemorySaveResult third = store.Save(Save("save-3", "tres", "3"));
+        MemorySaveResult fourth = store.Save(Save("save-4", "cuatro", "4"));
+        MemorySaveResult fourthReplay = store.Save(Save("save-4", "cuatro", "4"));
         LocalMemoryStore restarted = new(
             temporary.Path,
             protector,
@@ -492,17 +607,107 @@ public sealed class LocalMemoryStoreTests
         Assert.Multiple(() =>
         {
             Assert.That(forgotten, Is.EqualTo(new MemoryForgetResult(1, false)));
-            Assert.That(replay, Is.EqualTo(new MemoryForgetResult(1, true)));
-            Assert.That(visibleAfterForget, Is.Empty);
-            Assert.That(disabled, Is.EqualTo(new MemoryConfigurationResult(false, false)));
-            Assert.That(disabledReplay, Is.EqualTo(new MemoryConfigurationResult(false, true)));
-            Assert.That(monotonicReplay, Is.EqualTo(new MemoryForgetResult(0, false)));
+            Assert.That(afterForget.Replayed, Is.False);
+            Assert.That(third.Replayed, Is.False);
+            Assert.That(fourth.Replayed, Is.False);
+            Assert.That(fourthReplay, Is.EqualTo(fourth with { Replayed = true, Changed = true }));
+            Assert.That(restarted.Status(new()).TotalRecords, Is.EqualTo(3));
             Assert.That(
-                () => restarted.Configure(new("configure-new", true)),
-                Throws.TypeOf<MemoryCapacityException>());
+                () => restarted.Configure(new("configure-again", true)),
+                Throws.Nothing);
+        });
+    }
+
+    [Test]
+    public void ForgottenAndExpiredMemoriesLeaveNoReceiptNamingThemAtRest()
+    {
+        // Renew al máximo (R11.3): save and correct receipts carried the selector of a memory already forgotten.
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        MutableTimeProvider clock = new(Start);
+        LocalMemoryStore store = EnabledStore(temporary.Path, protector, clock);
+        MemorySaveResult diagnosis = store.Save(Save("save-diag", "diagnostico privado", "reservado"));
+        _ = store.Correct(new MemoryCorrectRequest(
+            "correct-diag",
+            "diagnostico privado",
+            "corregido",
+            ExpectedRevision: diagnosis.Revision));
+        _ = store.Save(new MemorySaveRequest(
+            "save-cita",
+            "cita pasajera",
+            "Cita pasajera",
+            "a las 11",
+            Retention: MemoryRetention.Temporary,
+            ExpiresAtUtc: Start.AddMinutes(10)));
+        _ = store.Save(Save("save-kept", "color", "azul"));
+
+        MemoryForgetResult forgotten = store.Forget(new(
+            "forget-diag",
+            MemoryForgetScope.Exact,
+            Selector: "diagnostico privado"));
+        clock.UtcNow = Start.AddMinutes(11);
+        Assert.That(store.Recall(new("cita pasajera")).Records, Is.Empty);
+        MemorySaveResult keptReplay = store.Save(Save("save-kept", "color", "azul"));
+
+        string[] atRest = new[] { "current.bin", "recovery.bin" }
+            .Select(name => Encoding.UTF8.GetString(protector.Open(
+                File.ReadAllBytes(Path.Combine(temporary.Path, name)),
+                "memory.store.v1")))
+            .ToArray();
+        Assert.Multiple(() =>
+        {
+            Assert.That(forgotten, Is.EqualTo(new MemoryForgetResult(1, false)));
+            Assert.That(keptReplay.Replayed, Is.True);
+            Assert.That(atRest, Has.All.Not.Contains("DIAGNOSTICO").IgnoreCase);
+            Assert.That(atRest, Has.All.Not.Contains("save-diag"));
+            Assert.That(atRest, Has.All.Not.Contains("correct-diag"));
+            Assert.That(atRest, Has.All.Not.Contains("CITA PASAJERA").IgnoreCase);
+            Assert.That(atRest, Has.All.Not.Contains("save-cita"));
+            Assert.That(atRest, Has.All.Contains("save-kept"));
+        });
+    }
+
+    [Test]
+    public void AStoreWithTheOldEmergencyPrivacyReceiptStillLoadsAndFoldsItIntoTheRing()
+    {
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        LocalMemoryStore store = new(
+            temporary.Path,
+            protector,
+            timeProvider: null,
+            crashHook: null,
+            maximumRecords: 10,
+            maximumReceipts: 2);
+        _ = store.Configure(new("configure-on", true));
+        _ = store.Save(Save("save-1", "uno", "1"));
+        RewriteSnapshotWithMatchingWatermark(temporary.Path, protector, state => state.EmergencyPrivacyReceipt =
+            new MemoryReceiptDocument
+            {
+                InvocationId = "legacy-forget",
+                RequestDigest = new string('a', 64),
+                Operation = "forget",
+                DeletedCount = 0,
+            });
+
+        LocalMemoryStore restarted = new(
+            temporary.Path,
+            protector,
+            timeProvider: null,
+            crashHook: null,
+            maximumRecords: 10,
+            maximumReceipts: 2);
+        MemorySaveResult saved = restarted.Save(Save("save-2", "dos", "2"));
+        MemoryStateDocument after = ReadState(temporary.Path, protector);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(saved.Replayed, Is.False);
+            Assert.That(after.EmergencyPrivacyReceipt, Is.Null);
             Assert.That(
-                () => restarted.Save(Save("save-new", "selector", "resurrected")),
-                Throws.TypeOf<MemoryDisabledException>());
+                after.Receipts.Select(receipt => receipt.InvocationId),
+                Is.EqualTo(new[] { "legacy-forget", "save-2" }));
+            Assert.That(restarted.Status(new()).TotalRecords, Is.EqualTo(2));
         });
     }
 
@@ -863,6 +1068,40 @@ public sealed class LocalMemoryStoreTests
         File.WriteAllBytes(path, protector.Seal(noncanonical, purpose));
     }
 
+    private static MemoryStateDocument ReadState(string root, TestProtectedPayload protector) =>
+        JsonSerializer.Deserialize(
+            protector.Open(File.ReadAllBytes(Path.Combine(root, "current.bin")), "memory.store.v1"),
+            MemoryJsonContext.Default.MemoryStateDocument)!;
+
+    private static void RewriteSnapshotWithMatchingWatermark(
+        string root,
+        TestProtectedPayload protector,
+        Action<MemoryStateDocument> change)
+    {
+        string currentPath = Path.Combine(root, "current.bin");
+        byte[] clear = protector.Open(File.ReadAllBytes(currentPath), "memory.store.v1");
+        MemoryStateDocument state = JsonSerializer.Deserialize(
+            clear,
+            MemoryJsonContext.Default.MemoryStateDocument)!;
+        change(state);
+        byte[] changed = JsonSerializer.SerializeToUtf8Bytes(state, MemoryJsonContext.Default.MemoryStateDocument);
+        byte[] snapshotEnvelope = protector.Seal(changed, "memory.store.v1");
+        File.WriteAllBytes(currentPath, snapshotEnvelope);
+        File.WriteAllBytes(Path.Combine(root, "recovery.bin"), snapshotEnvelope);
+
+        string watermarkPath = Path.Combine(root, "watermark.bin");
+        byte[] watermarkClear = protector.Open(File.ReadAllBytes(watermarkPath), "memory.watermark.v1");
+        string updatedWatermark = Encoding.UTF8
+            .GetString(watermarkClear)
+            .Replace(
+                Convert.ToHexStringLower(SHA256.HashData(clear)),
+                Convert.ToHexStringLower(SHA256.HashData(changed)),
+                StringComparison.Ordinal);
+        File.WriteAllBytes(
+            watermarkPath,
+            protector.Seal(Encoding.UTF8.GetBytes(updatedWatermark), "memory.watermark.v1"));
+    }
+
     private static void RewriteSnapshotWithLeadingWhitespaceAndMatchingWatermark(
         string root,
         TestProtectedPayload protector)
@@ -911,8 +1150,11 @@ public sealed class LocalMemoryStoreTests
 
         public string ProtectionMode => "test-aes-gcm";
 
+        public int SealCount { get; private set; }
+
         public byte[] Seal(ReadOnlySpan<byte> plaintext, string purpose)
         {
+            SealCount++;
             byte[] nonce = RandomNumberGenerator.GetBytes(NonceLength);
             byte[] ciphertext = new byte[plaintext.Length];
             byte[] tag = new byte[TagLength];

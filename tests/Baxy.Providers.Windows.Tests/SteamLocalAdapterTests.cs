@@ -14,6 +14,45 @@ public sealed class SteamLocalAdapterTests
         new("123", "Another Game", new string('b', 64)),
     ];
 
+    // Renew al máximo (B-APP-4): Steam's EAppState flags as its manifests write them: a download running
+    // (UpdateRequired 2 | UpdateStarted 1024 | Downloading 1048576), one in pause (UpdateRequired 2 | UpdatePaused 512 |
+    // UpdateStarted 1024), and one left with no running flag (a download cut with Steam closed).
+    private const ulong Downloading = 2 | 1024 | 1048576;
+    private const ulong Paused = 2 | 512 | 1024;
+    private const ulong Stopped = 2 | 1024;
+
+    // Renew al máximo (B-APP-4): only a running flag says «downloading»; a download in pause, or one with bytes and no
+    // running flag, is «paused», in its status and in the catalog.
+    [Test]
+    public async Task APausedDownloadIsNotSaidDownloading()
+    {
+        SteamLocalGame[] observed =
+        [
+            new("10", "Paused Game", new string('a', 64), Paused, 250, 1000),
+            new("11", "Running Game", new string('b', 64), Downloading, 250, 1000),
+            new("12", "Stopped Game", new string('c', 64), Stopped, 250, 1000),
+        ];
+        var adapter = new SteamLocalAdapter(() => observed);
+        var said = new Dictionary<string, string?>(StringComparer.Ordinal);
+        foreach (string appId in new[] { "10", "11", "12" })
+        {
+            ExternalCapabilityReceipt status = await adapter.InvokeAsync(
+                "game.install.status", Json($$"""{"appId":"{{appId}}"}"""), CancellationToken.None);
+            said[appId] = status.Result?.GetProperty("state").GetString();
+        }
+
+        ExternalCapabilityReceipt list = await adapter.InvokeAsync("game.catalog.list", Json("{}"), CancellationToken.None);
+        Dictionary<string, string?> listed = list.Result!.Value.GetProperty("games").EnumerateArray().ToDictionary(
+            game => game.GetProperty("appId").GetString()!, game => game.GetProperty("state").GetString());
+
+        var expected = new Dictionary<string, string?> { ["10"] = "paused", ["11"] = "downloading", ["12"] = "paused" };
+        Assert.Multiple(() =>
+        {
+            Assert.That(said, Is.EquivalentTo(expected));
+            Assert.That(listed, Is.EquivalentTo(expected));
+        });
+    }
+
     [Test]
     public void AuthenticatedSnapshotContainsOnlyInstalledGamesInStableOrder()
     {
@@ -129,7 +168,7 @@ public sealed class SteamLocalAdapterTests
     {
         SteamLocalGame[] downloading =
         [
-            new("620", "Portal 2", new string('a', 64), StateFlags: 1,
+            new("620", "Portal 2", new string('a', 64), StateFlags: Downloading,
                 BytesDownloaded: 250, BytesToDownload: 1000),
         ];
         var adapter = new SteamLocalAdapter(() => downloading);
@@ -150,14 +189,14 @@ public sealed class SteamLocalAdapterTests
     public async Task CancelRequiresPartialDownloadAndVerifiesPausedManifest()
     {
         SteamLocalGame observed = new("888", "Partial Game", new string('d', 64),
-            StateFlags: 1, BytesDownloaded: 50, BytesToDownload: 100);
+            StateFlags: Downloading, BytesDownloaded: 50, BytesToDownload: 100);
         var delays = new RecordingDelay();
         var automation = new FakeSteamAutomation(
             onDispatch: uri => Assert.That(uri, Is.EqualTo("steam://uninstall/888")),
             onCancel: appId =>
             {
                 Assert.That(appId, Is.EqualTo("888"));
-                observed = observed with { StateFlags = 2 };
+                observed = observed with { StateFlags = Paused };
             });
         var adapter = new SteamLocalAdapter(
             () => [observed],
@@ -228,6 +267,43 @@ public sealed class SteamLocalAdapterTests
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("steam_manifest_process_postread"));
             Assert.That(processReads, Is.EqualTo(2));
+            Assert.That(delays.Calls, Is.Zero);
+        });
+    }
+
+    // Renew al máximo (B-APP-8): a game already running is the state reached: nothing is sent to Steam (no window of it
+    // minimized, no «Jugar» pressed) and nothing is waited for; the receipt names the process that runs.
+    [Test]
+    public async Task AGameAlreadyRunningIsTheStateReached()
+    {
+        string installDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture");
+        var delays = new RecordingDelay();
+        var automation = new FakeSteamAutomation(onDispatch: null);
+        SteamLocalGame installed = Catalog[0] with { InstallDirectory = installDirectory };
+        var adapter = new SteamLocalAdapter(
+            () => [installed],
+            () => new HashSet<string>(["620"], StringComparer.Ordinal),
+            automation,
+            delays.DelayAsync,
+            () =>
+            [
+                new SteamProcessObservation(7, null),
+                new SteamProcessObservation(4242, Path.Combine(installDirectory, "bin", "portal2.exe")),
+            ]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.launch", Json("""{"appId":"620"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("alreadyRunning").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("processId").GetInt32(), Is.EqualTo(4242));
+            Assert.That(automation.DispatchCount, Is.Zero);
+            Assert.That(automation.ContinueCount, Is.Zero);
             Assert.That(delays.Calls, Is.Zero);
         });
     }
@@ -353,12 +429,13 @@ public sealed class SteamLocalAdapterTests
     {
         var observed = new Dictionary<string, SteamLocalGame>(StringComparer.Ordinal)
         {
-            ["888"] = new("888", "Partial One", new string('d', 64), 1, 50, 100),
-            ["999"] = new("999", "Partial Two", new string('e', 64), 1, 25, 100),
+            ["888"] = new("888", "Partial One", new string('d', 64), Downloading, 50, 100),
+            // Renew al máximo (B-APP-4): a download in pause was started too, and is cancelled as well.
+            ["999"] = new("999", "Partial Two", new string('e', 64), Paused, 25, 100),
         };
         var automation = new FakeSteamAutomation(
             onDispatch: null,
-            onCancel: appId => observed[appId] = observed[appId] with { StateFlags = 2 });
+            onCancel: appId => observed.Remove(appId));
         var adapter = new SteamLocalAdapter(
             () => observed.Values.ToArray(),
             () => observed.Keys.ToHashSet(StringComparer.Ordinal),
@@ -513,12 +590,11 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
-    // Counter-cases: an installed title never asks the store; a store answer with no game of exactly that title, two of
-    // them, or no answer at all resolves nothing and nothing is opened.
+    // Counter-cases: an installed title never asks the store; a store answer with no game of exactly that title, or two
+    // of them, resolves nothing and nothing is opened.
     [TestCase("Portal 2", true)]
     [TestCase("Super Meat", false)]
     [TestCase("Doubled", false)]
-    [TestCase("Offline", false)]
     public async Task OnlyOneExactTitleResolvesAndNothingElseIsOpened(string title, bool installed)
     {
         bool asked = false;
@@ -531,14 +607,12 @@ public sealed class SteamLocalAdapterTests
             storeTitles: (said, _) =>
             {
                 asked = true;
-                return said == "Offline"
-                    ? throw new HttpRequestException("simulated offline store")
-                    : ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(
-                    [
-                        new("40800", "Super Meat Boy"),
-                        new("11", "Doubled"),
-                        new("12", "DOUBLED"),
-                    ]);
+                return ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(
+                [
+                    new("40800", "Super Meat Boy"),
+                    new("11", "Doubled"),
+                    new("12", "DOUBLED"),
+                ]);
             });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -548,6 +622,73 @@ public sealed class SteamLocalAdapterTests
         {
             Assert.That(asked, Is.EqualTo(!installed));
             Assert.That(receipt.ErrorCode, Is.EqualTo(installed ? null : "steam_title_not_resolved"));
+            Assert.That(automation.DispatchCount, Is.Zero);
+        });
+    }
+
+    // Renew al máximo (B-APP-6): whether a game is in the library is read on this PC alone: the title resolves only by
+    // the installed games' manifests and never goes to the store; one no manifest bears is said as such, unresolved.
+    [TestCase("Portal 2", true, 1)]
+    [TestCase("Super Meat Boy", false, 0)]
+    [TestCase("Doubled", false, 2)]
+    public async Task EntitlementNeverSearchesTheStore(string title, bool resolved, int bearing)
+    {
+        bool asked = false;
+        var adapter = new SteamLocalAdapter(
+            () => [.. Catalog, new("11", "Doubled", "d1"), new("12", "DOUBLED", "d2")],
+            () => new HashSet<string>(["620"], StringComparer.Ordinal),
+            new FakeSteamAutomation(onDispatch: null),
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) =>
+            {
+                asked = true;
+                return ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>([new("40800", "Super Meat Boy")]);
+            });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.entitlement.named", Json($$"""{"title":"{{title}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked, Is.False);
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("resolved").GetBoolean(), Is.EqualTo(resolved));
+            Assert.That(receipt.Result?.GetProperty("state").GetString(),
+                Is.EqualTo(resolved ? "installed" : "title_not_resolved"));
+            Assert.That(receipt.Result?.GetProperty("steamManifestsWithThatName").GetInt32(), Is.EqualTo(bearing));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("steam_local_appmanifest"));
+        });
+    }
+
+    // Renew al máximo (B-APP-5): a store search that got no answer (offline, a timeout, an error status, a body not
+    // read) is said as such before any effect, never as a title no game bears.
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(2)]
+    public async Task AStoreSearchThatFailedIsNotAnUnresolvedTitle(int failure)
+    {
+        var automation = new FakeSteamAutomation(onDispatch: null);
+        var adapter = new SteamLocalAdapter(
+            () => Catalog,
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) => failure switch
+            {
+                0 => throw new HttpRequestException("simulated offline store"),
+                1 => throw new TaskCanceledException("simulated store timeout"),
+                _ => throw new JsonException("simulated cut answer"),
+            });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.named", Json("""{"title":"Super Meat Boy"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_store_search_failed"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(automation.DispatchCount, Is.Zero);
         });
     }

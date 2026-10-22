@@ -19,8 +19,10 @@ public interface IApplicationPlaceOpener
     PlaceOpening Open(string address, bool keepFront, long applicationWindow);
 }
 
-/// <summary>The hand-over: whether Windows took the address, the front moved, and the front is back.</summary>
-public sealed record PlaceOpening(bool Opened, bool FrontChanged = false, bool FrontRestored = false);
+/// <summary>The hand-over: whether Windows took the address, the front moved, and the front is back. Renew al máximo
+/// (6.2): WindowChanged, whether the application's window was drawn differently within PlaceArrival of the address
+/// (null: no drawing was read). Only that: a window that changed does not prove the place arrived.</summary>
+public sealed record PlaceOpening(bool Opened, bool FrontChanged = false, bool FrontRestored = false, bool? WindowChanged = null);
 
 public sealed class ShellApplicationPlaceOpener : IApplicationPlaceOpener
 {
@@ -30,7 +32,7 @@ public sealed class ShellApplicationPlaceOpener : IApplicationPlaceOpener
     // PLAN_GENERAL (uso real 2026-10-21: Epic's search came 1-2 s after its address and the look right after the opening
     // read the page before, so the model pressed «Tienda» over the results): how long a place may take to be drawn, and
     // how often the window is read meanwhile.
-    internal static readonly TimeSpan PlaceArrival = TimeSpan.FromSeconds(5);
+    public static readonly TimeSpan PlaceArrival = TimeSpan.FromSeconds(5);
     private const int ArrivalPollMs = 200;
 
     public PlaceOpening Open(string address, bool keepFront, long applicationWindow)
@@ -54,34 +56,40 @@ public sealed class ShellApplicationPlaceOpener : IApplicationPlaceOpener
         }
 
         PlaceOpening opening = HandFront(keepFront, before, applicationWindow);
-        AwaitPlaceDrawn(drawnBefore);
-        return opening;
+        return opening with { WindowChanged = AwaitPlaceDrawn(drawnBefore, Capture, Thread.Sleep, PlaceArrival) };
     }
 
     // The application's window, drawn by itself, until its drawing changes from the one before the address and then
     // stays still (VisibleControlSurface.StableSurfaceAsync), within PlaceArrival: what a look reads next is the place,
-    // not the page before it. Nothing is said from it: a place that did not change the window is for the look to tell.
-    private static void AwaitPlaceDrawn(External.VisibleControlSurface.CapturedWindow? drawnBefore)
+    // not the page before it. Renew al máximo (6.2): whether the drawing changed is said (null when no drawing was read);
+    // whether the place shows is still for the look to tell.
+    internal static bool? AwaitPlaceDrawn(
+        External.VisibleControlSurface.CapturedWindow? drawnBefore,
+        Func<nint, CancellationToken, ValueTask<External.VisibleControlSurface.CapturedWindow?>> capture,
+        Action<int> pause,
+        TimeSpan within)
     {
         if (drawnBefore is not { } earlier)
-            return;
-        ValueTask<External.VisibleControlSurface.CapturedWindow?> Capture(nint hwnd, CancellationToken token) =>
-            External.VisibleControlSurface.CaptureAsync(hwnd, token, selfDrawn: true);
+            return null;
         var watch = Stopwatch.StartNew();
-        while (watch.Elapsed < PlaceArrival)
+        while (watch.Elapsed < within)
         {
-            Thread.Sleep(ArrivalPollMs);
-            if (Capture(earlier.Hwnd, CancellationToken.None).AsTask().GetAwaiter().GetResult() is not { } now)
-                return;
+            pause(ArrivalPollMs);
+            if (capture(earlier.Hwnd, CancellationToken.None).AsTask().GetAwaiter().GetResult() is not { } now)
+                return null;
             if (!External.VisibleControlSurface.SameSurface(earlier, now))
             {
                 _ = External.VisibleControlSurface.StableSurfaceAsync(
-                        now, Capture, (ms, token) => Task.Delay(ms, token), CancellationToken.None)
+                        now, capture, (ms, token) => { pause(ms); return Task.CompletedTask; }, CancellationToken.None)
                     .AsTask().GetAwaiter().GetResult();
-                return;
+                return true;
             }
         }
+        return false;
     }
+
+    private static ValueTask<External.VisibleControlSurface.CapturedWindow?> Capture(nint hwnd, CancellationToken token) =>
+        External.VisibleControlSurface.CaptureAsync(hwnd, token, selfDrawn: true);
 
     private static PlaceOpening HandFront(bool keepFront, long before, long applicationWindow)
     {
