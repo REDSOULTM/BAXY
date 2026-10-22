@@ -2,8 +2,6 @@ namespace Baxy.Providers.Windows.Applications;
 
 public static class ApplicationIds
 {
-    public const string Calculator = "windows.calculator";
-
     public static bool IsValidRequest(string id)
     {
         if (string.IsNullOrWhiteSpace(id) || id.Length > 256)
@@ -146,17 +144,4 @@ public interface IApplicationCatalogProvider
 {
     ValueTask<InstalledApplicationCatalogSnapshot> GetCatalogSnapshotAsync(
         CancellationToken cancellationToken);
-}
-
-public sealed class ApplicationOpenProviderRouter(
-    IApplicationOpenProvider calculator,
-    IApplicationOpenProvider installedApplication) : IApplicationOpenProvider
-{
-    public ValueTask<ApplicationOpenResult> OpenAsync(
-        ApplicationOpenRequest request,
-        CancellationToken cancellationToken) => request.ApplicationId switch
-        {
-            ApplicationIds.Calculator => calculator.OpenAsync(request, cancellationToken),
-            _ => installedApplication.OpenAsync(request, cancellationToken),
-        };
 }

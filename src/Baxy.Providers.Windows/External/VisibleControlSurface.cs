@@ -875,25 +875,6 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
-    /// The visible ApplicationFrameHost frame that hosts this process (a packaged app such as the Calculator, the
-    /// Clock or Settings draws inside a frame of another process and has no top-level window of its own); 0 when
-    /// none shows it. A cloaked frame (a suspended app) is not on screen.
-    /// </summary>
-    internal static nint FrameHosting(uint processId)
-    {
-        nint frame = 0;
-        EnumWindowsProc callback = (window, outerParameter) =>
-        {
-            if (!IsVisibleFrame(window) || !FrameHosts(window, owner => owner == processId))
-                return true;
-            frame = window;
-            return false;
-        };
-        _ = EnumWindows(callback, nint.Zero);
-        return frame;
-    }
-
-    /// <summary>
     /// The process a visible ApplicationFrameHost frame hosts; 0 when the window is no such frame or hosts nothing.
     /// Review 2026-10-07: the frame's own process is one ApplicationFrameHost shared by every packaged app on screen
     /// (Settings, the Store, the Calculator); a look bound to it could take another app's frame the next time.
