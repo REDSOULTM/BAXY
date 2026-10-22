@@ -71,3 +71,67 @@ def test_only_the_decision_asks_the_server_for_its_token_probabilities(tmp_path:
     assert decide["logprobs"] is True and decide["top_logprobs"] == 10
     assert not {"logprobs", "top_logprobs"} & (set(follow) | set(last))
     assert last["tool_choice"] == "none"
+
+
+def _clocks(server) -> list[str]:
+    return [m["content"] for m in server.bodies[-1]["messages"] if str(m.get("content") or "").startswith("[Reloj:")]
+
+
+def test_the_clock_says_which_calls_ran_in_the_session_even_after_a_cut(tmp_path: Path, monkeypatch) -> None:
+    # 8.1 (F015: «¿ya lo cerraste?» → «Sí» with nothing run): the session's calls and how they ended, from a count of
+    # the session's own; a cut history no longer shows them, and a «none» read from it would be false.
+    from baxy_mind import mind as mind_module
+    from test_mind_final import _call, _mind, _say
+    monkeypatch.setattr(mind_module, "HISTORY_TURNS", 1)
+    mind, server = _mind(tmp_path, [_say("Hola."), _call("app_open", {"appId": "Paint"}), _say("Abrí Paint."),
+                                    _say("Sí."), _say("Vale.")])
+    mind.decide(1, "hola")
+    assert _clocks(server)[-1].endswith("llamadas a herramientas en esta sesión: ninguna]")
+    mind.decide(2, "abre paint")
+    mind.continue_turn(3, json.dumps({"status": "completed", "verification": "readback"}))
+    mind.decide(4, "¿ya lo abriste?")
+    assert mind.trimmed_turns and len(_clocks(server)) == 1
+    assert _clocks(server)[-1].endswith("llamadas a herramientas en esta sesión: 1 (app_open → completado y verificado)]")
+    kept = mind.export_session()
+    mind.load_session(kept)
+    mind.decide(5, "gracias")
+    assert "en esta sesión: 1 (app_open → completado y verificado)" in _clocks(server)[-1]
+
+
+def test_the_clock_lists_only_the_last_calls_of_a_long_session(tmp_path: Path) -> None:
+    from baxy_mind.mind import SESSION_CALLS
+    from test_mind_final import _call, _mind, _say
+    calls = SESSION_CALLS + 2
+    mind, server = _mind(tmp_path, [*[_call("app_open", {"appId": f"App{i}"}) for i in range(calls)], _say("Listo."),
+                                    _say("Sí.")])
+    mind.decide(1, "abre todas")
+    for i in range(calls):
+        mind.continue_turn(2 + i, json.dumps({"status": "failed", "error": f"e{i}"}), final=i == calls - 1)
+    mind.decide(99, "¿las abriste?")
+    clock = _clocks(server)[-1]
+    assert f"en esta sesión: {calls}, las {SESSION_CALLS} últimas (app_open → falló (e2) / " in clock
+    assert "(e1)" not in clock and "falló (e9))]" in clock
+    mind.new_session()
+    mind.server.replies.append(_say("Hola."))
+    mind.decide(100, "hola")
+    assert _clocks(server)[-1].endswith("en esta sesión: ninguna]")
+
+
+def test_a_session_kept_before_the_count_says_how_many_calls_it_shows(tmp_path: Path) -> None:
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Paint"}), _say("Abrí Paint."), _say("Sí.")])
+    mind.decide(1, "abre paint")
+    mind.continue_turn(2, json.dumps({"status": "completed"}))
+    kept = [m for m in mind.export_session() if m.get("role") != "baxy.session"]
+    mind.load_session(kept)
+    mind.decide(3, "¿lo abriste?")
+    assert _clocks(server)[-1].endswith("llamadas a herramientas en esta sesión: 1]")
+
+
+def test_a_call_whose_result_never_came_is_in_the_session_calls(tmp_path: Path) -> None:
+    # 8.1: the turn ended while the call ran; it may have run, so the clock never says that none did.
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Paint"}), _say("Sí.")])
+    mind.decide(1, "cierra paint")
+    mind.decide(2, "¿ya lo cerraste?")
+    assert _clocks(server)[-1].endswith("en esta sesión: 1 (app_close → sin resultado: pudo o no ocurrir)]")
