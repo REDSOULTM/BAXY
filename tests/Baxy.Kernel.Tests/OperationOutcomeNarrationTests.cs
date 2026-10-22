@@ -63,6 +63,31 @@ public sealed class OperationOutcomeNarrationTests
         Assert.That(keys, Is.EquivalentTo(new[] { "id", "noteId", "deviceId", "sha256", "hash", "recordId" }));
     }
 
+    // Revisión 2026-10-22 (C-7): a window's raw handle is no id any operation takes (e2e p3 E007: the model passed
+    // app.open's windowHandle as windowId and read the refusal as «it is no longer open»); app.open's and a capture's
+    // stay with the receipt, and the windowId the window operations take reaches the model.
+    [Test]
+    public void AWindowHandleNeverReachesTheModel()
+    {
+        JsonElement opened = JsonSerializer.SerializeToElement(new { appId = "Bloc de notas", windowHandle = 777, windowId = "w-1" });
+        JsonElement captured = JsonSerializer.SerializeToElement(new { captureId = "c1", activeWindow = new { windowHandle = 777, isClipped = false } });
+
+        using JsonDocument openedFacts = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("app.open", OperationOutcome.Success(opened)));
+        using JsonDocument capturedFacts = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("capture.active.window", OperationOutcome.Success(captured)));
+        JsonElement openedObserved = openedFacts.RootElement.GetProperty("observed");
+        JsonElement window = capturedFacts.RootElement.GetProperty("observed").GetProperty("activeWindow");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(openedObserved.TryGetProperty("windowHandle", out _), Is.False);
+            Assert.That(openedObserved.GetProperty("windowId").GetString(), Is.EqualTo("w-1"));
+            Assert.That(window.TryGetProperty("windowHandle", out _), Is.False);
+            Assert.That(window.GetProperty("isClipped").GetBoolean(), Is.False);
+        });
+    }
+
     // Revisión 2026-10-22 (C-2): a retryable outcome is what the engine answers as pending; the facts say pending too,
     // not failed beside a pending flag.
     [Test]

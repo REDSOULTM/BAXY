@@ -503,8 +503,9 @@ public static class OperationVisibleFacts
     // Held back from the model is only what is a secret or the kernel's own
     // bookkeeping: the confirmation «token», the request «fingerprint», the
     // invocation, request and mission ids, and window and process handles
-    // («hwnd», «handle», «pid», «processId») of a provider's receipt: the window number an operation takes is the
-    // one a look shows («window <hwnd>», ScreenViewProjection), not these.
+    // («hwnd», «handle», «windowHandle», «pid», «processId») of a provider's receipt: the window number an operation
+    // takes is the one a look shows («window <hwnd>», ScreenViewProjection), or app.open's windowId, not these
+    // (revisión 2026-10-22, C-7: app.open's and a capture's windowHandle reopened e2e p3 E007).
     // An id a typed argument asks for travels: «id», «noteId» (note.update),
     // «deviceId» (peripheral.print, peripheral.scan, bluetooth.device.pair),
     // «sha256»/«hash» (expectedSha256 of filesystem.copy and filesystem.move)
@@ -546,7 +547,7 @@ public static class OperationVisibleFacts
                         continue;
                     }
 
-                    if ((key is "hwnd" or "handle" or "pid" or "processId" or "fingerprint"
+                    if ((key is "hwnd" or "handle" or "windowHandle" or "pid" or "processId" or "fingerprint"
                         or "invocationId" or "requestId" or "missionId" or "token")
                         && !(processInventory && key == "processId")
                         && !(ocrObservation && key is "pid" or "processId" or "hwnd" or "handle")
