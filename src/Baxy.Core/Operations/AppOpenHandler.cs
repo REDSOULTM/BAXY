@@ -205,9 +205,14 @@ internal sealed class AppOpenHandler(
             providerResult.ShownWithoutFocus,
             PlaceRequested: place is not null,
             EffectReadBack: place is null ? null : false,
+            // Renew al máximo (6.2): a window that did not change after the address is said with the aid's sentence.
             Next: place is not null && ModelAids.On(ModelAids.PlaceUnverified)
                 ? $"{providerResult.DisplayName} was asked to show its {arguments.Place ?? "place"}"
-                    + (game is null ? string.Empty : $" of {game.Name}") + "; whether it shows now "
+                    + (game is null ? string.Empty : $" of {game.Name}")
+                    + (place.WindowChanged == false
+                        ? $"; its window did not change within {ShellApplicationPlaceOpener.PlaceArrival.TotalSeconds:0} s"
+                        : string.Empty)
+                    + "; whether it shows now "
                     + "was not checked: input_visible_controls can look before saying so"
                 : place is null && ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(providerResult.DisplayName, arguments.AppId)
                 : null,
@@ -216,7 +221,8 @@ internal sealed class AppOpenHandler(
             WindowId: windowIdFor?.Invoke((nint)openedWindow),
             ProcessName: front.Process,
             Foreground: front.Held,
-            ForegroundHeldBy: front.HolderTitle is { } title ? new WindowName(title, front.HolderProcess ?? string.Empty) : null);
+            ForegroundHeldBy: front.HolderTitle is { } title ? new WindowName(title, front.HolderProcess ?? string.Empty) : null,
+            PlaceWindowChanged: place?.WindowChanged);
         JsonElement serialized = JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.OpenApplicationResult);

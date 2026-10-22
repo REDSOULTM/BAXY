@@ -2,6 +2,7 @@ using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Applications;
+using Baxy.Providers.Windows.External;
 using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
@@ -193,6 +194,63 @@ public sealed class AppOpenHandlerTests
                     + "not checked: input_visible_controls can look before saying so"));
             }
         });
+    }
+
+    // Renew al máximo (6.2): whether the application's window changed from its drawing before the address is said
+    // (placeWindowChanged), aids on or off, and only that: a change does not prove the place arrived. Unknown (no
+    // drawing read) is not said. With the aid place_unverified, a window that did not change is said in its sentence.
+    [TestCase("all", true, null)]
+    [TestCase("all", false, "Steam was asked to show its library; its window did not change within 5 s; whether it "
+        + "shows now was not checked: input_visible_controls can look before saying so")]
+    [TestCase("all", null, "Steam was asked to show its library; whether it shows now was not checked: "
+        + "input_visible_controls can look before saying so")]
+    [TestCase("none", false, null)]
+    public async Task APlaceHandedOverSaysWhetherTheWindowChanged(string aids, bool? changed, string? sentence)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        var handler = new AppOpenHandler(
+            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe"),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+            new DrawnPlace(changed),
+            frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Steam","place":"library"}"""), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(result.TryGetProperty("placeWindowChanged", out JsonElement said)
+                ? said.GetBoolean() : (bool?)null, Is.EqualTo(changed));
+            if (sentence is not null)
+                Assert.That(result.GetProperty("next").GetString(), Is.EqualTo(sentence));
+            if (aids == "none")
+                Assert.That(result.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
+    // Renew al máximo (6.2): the place opener's watch of the window's drawing says changed, unchanged within its time,
+    // or nothing when no drawing could be read (before the address, or during the watch).
+    // Each frame is one drawing read in turn; the last one is read again from then on. Only an unchanged drawing waits
+    // out the watch, so the others get time enough to be read on a loaded machine.
+    [TestCase(new[] { "a", "a", "b" }, true)]
+    [TestCase(new[] { "a" }, false)]
+    [TestCase(new[] { "a", "a", null }, null)]
+    [TestCase(new string?[] { null }, null)]
+    public void ThePlaceWatchSaysWhetherTheWindowsDrawingChanged(string?[] frames, bool? expected)
+    {
+        int read = 0;
+        VisibleControlSurface.CapturedWindow? Frame(int index) =>
+            frames[Math.Min(index, frames.Length - 1)] is { } sha
+                ? new VisibleControlSurface.CapturedWindow(4660, [], 0, 0, 10, 10, sha) : null;
+        ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint window, CancellationToken token) =>
+            ValueTask.FromResult(Frame(++read));
+
+        bool? changed = ShellApplicationPlaceOpener.AwaitPlaceDrawn(
+            Frame(0), Capture, static _ => Thread.Sleep(1), TimeSpan.FromMilliseconds(expected == false ? 50 : 5000));
+
+        Assert.That(changed, Is.EqualTo(expected));
     }
 
     // Contracaso: an opening with no place says nothing of one.
@@ -404,6 +462,11 @@ public sealed class AppOpenHandlerTests
     private sealed class HandedPlace : IApplicationPlaceOpener
     {
         public PlaceOpening Open(string address, bool keepFront, long applicationWindow) => new(true);
+    }
+
+    private sealed class DrawnPlace(bool? changed) : IApplicationPlaceOpener
+    {
+        public PlaceOpening Open(string address, bool keepFront, long applicationWindow) => new(true, WindowChanged: changed);
     }
 
     private sealed class RefusedPlace : IApplicationPlaceOpener
