@@ -271,6 +271,34 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): the launched game's process was looked for by its main module, which Windows
+    // refuses for an elevated game or one its anti-cheat protects: launched, it was said not verified after 35 s. It is
+    // read as the game already running is, by the executable's image with the least access.
+    [Test]
+    public async Task ALaunchedGameIsFoundByItsImageEvenWhenItsModulesCannotBeRead()
+    {
+        string installDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture");
+        bool launched = false;
+        var automation = new FakeSteamAutomation(onDispatch: _ => launched = true);
+        SteamLocalGame installed = Catalog[0] with { InstallDirectory = installDirectory };
+        var adapter = new SteamLocalAdapter(
+            () => [installed],
+            () => new HashSet<string>(["620"], StringComparer.Ordinal),
+            automation,
+            new RecordingDelay().DelayAsync,
+            processIds: () => launched ? [7, 2_000_000_001] : [7],
+            imagePath: id => id == 2_000_000_001 ? Path.Combine(installDirectory, "portal2.exe") : null);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.launch", Json("""{"appId":"620","title":"Portal 2"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("processId").GetInt32(), Is.EqualTo(2_000_000_001));
+        });
+    }
+
     // Renew al máximo (falsedades F001/F016): the model launched Rocket League's appId, the one game installed, for
     // «Doom Eternal» and for «Fortnite», twice in front of the owner. The title asked for goes in the call and is the
     // manifest's own (folded as an entitlement's title is): another, or none, fails before anything is sent, with the

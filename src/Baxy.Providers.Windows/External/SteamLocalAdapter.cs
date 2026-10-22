@@ -25,6 +25,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
     private readonly Func<IReadOnlyList<SteamProcessObservation>>? _processSnapshot;
     private readonly Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? _storeTitles;
+    // Renew al máximo (auditoría de flujos): the processes running now and each one's executable, read with the least
+    // access Windows grants (an elevated game, or one its anti-cheat protects, too).
+    private readonly Func<IReadOnlyList<int>> _processIds;
+    private readonly Func<int, string?> _imagePath;
 
     // Encargo imp-steam: a title turns into its catalog number by the installed games' manifests and, for one not
     // installed, by the store's public title search the data declare (only the title leaves); 13 titles written here
@@ -53,7 +57,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         ISteamClientAutomation automation,
         Func<TimeSpan, CancellationToken, ValueTask>? delay = null,
         Func<IReadOnlyList<SteamProcessObservation>>? processSnapshot = null,
-        Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? storeTitles = null)
+        Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? storeTitles = null,
+        Func<IReadOnlyList<int>>? processIds = null,
+        Func<int, string?>? imagePath = null)
     {
         _snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         _owned = owned ?? throw new ArgumentNullException(nameof(owned));
@@ -61,6 +67,22 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         _delay = delay ?? DelayAsync;
         _processSnapshot = processSnapshot;
         _storeTitles = storeTitles;
+        _processIds = processIds ?? RunningProcessIds;
+        _imagePath = imagePath ?? Applications.WindowsInstalledApplicationPlatform.ExecutableImagePath;
+    }
+
+    private static IReadOnlyList<int> RunningProcessIds()
+    {
+        Process[] processes = Process.GetProcesses();
+        try
+        {
+            return [.. processes.Select(static process => process.Id)];
+        }
+        finally
+        {
+            foreach (Process process in processes)
+                process.Dispose();
+        }
     }
 
     /// <summary>The mission's click on a window by a label (input.visible.click), as the act's confirmation.</summary>
@@ -1000,12 +1022,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     {
         IEnumerable<SteamProcessObservation> processes = _processSnapshot is not null
             ? _processSnapshot()
-            : Process.GetProcesses().Select(static process =>
-            {
-                using (process)
-                    return new SteamProcessObservation(
-                        process.Id, Applications.WindowsInstalledApplicationPlatform.ExecutableImagePath(process.Id));
-            });
+            : _processIds().Select(id => new SteamProcessObservation(id, _imagePath(id)));
         var ids = new HashSet<int>();
         int? running = null;
         foreach (SteamProcessObservation process in processes)
@@ -1023,6 +1040,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             Path.TrimEndingDirectorySeparator(installRoot) + Path.DirectorySeparatorChar,
             StringComparison.OrdinalIgnoreCase);
 
+    // Renew al máximo (auditoría de flujos): a process born after the launch is read as one already running is (by its
+    // image, with the least access); its main module, read before, is refused for an elevated or protected game.
     private int? FindLaunchedProcess(HashSet<int> before, string installRoot)
     {
         if (_processSnapshot is not null)
@@ -1038,22 +1057,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return null;
         }
 
-        foreach (Process process in Process.GetProcesses())
+        foreach (int processId in _processIds())
         {
-            using (process)
+            if (!before.Contains(processId) && RunsFrom(_imagePath(processId), installRoot))
             {
-                if (before.Contains(process.Id)) continue;
-                try
-                {
-                    if (RunsFrom(process.MainModule?.FileName, installRoot))
-                    {
-                        return process.Id;
-                    }
-                }
-                catch (Exception exception) when (exception is InvalidOperationException
-                    or System.ComponentModel.Win32Exception)
-                {
-                }
+                return processId;
             }
         }
 
