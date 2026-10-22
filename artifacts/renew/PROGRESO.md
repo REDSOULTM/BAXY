@@ -2890,3 +2890,9 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   (lv-t4: 4.2 y 8.1; **4.4 no se implementa**: por clase de riesgo los datos no separan con honestidad, la ganancia
   viene de MASSIVE y elegir entre ~100 combinaciones sobreajusta; **4.5 retirada**: ningún umbral retiene <2 % de
   acciones buenas; a <0,3, 12,9 %) en cola de decision2. Tanda 5 (5.1 efecto tipado, R10.1, R10.3, 10.3-10.5) en curso.
+- 15:51 (NB) **línea base e2e** de práctica sobre 86991ca9d (30 casos, semillas 0-2 intercaladas): S1 ON 20/20/24 =
+  21,33; S1 OFF 18/23/24 = 21,67; Δ(OFF−ON) +0,33, IC95 [−2,33; +3,33], McNemar p 0,25; pass^3 ON 18 / OFF 16. En e2e
+  S1 no se distingue del ruido.
+- 15:5x fusionado hub/nb-maximo 153b7a068 (69a306d00): tanda 0 del NB (revisión de providers) y su tanda 2 (6.1, 6.2,
+  6.3, 6.6, 6.7); display.mode.set nuevo (dura hasta reiniciar; pedir el mismo modo lo guarda) aceptado. Pendiente mío:
+  frases de descripción que pidió el NB (t3b) y B-APP-10 (retirar el proveedor de la Calculadora) tras la tanda 5.
