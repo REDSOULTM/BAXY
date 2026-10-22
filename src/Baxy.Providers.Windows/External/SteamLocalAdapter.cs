@@ -289,9 +289,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         // Ronda final: a download already running grows by itself, so it cannot show this request's start. A manifest
         // that reads «downloading» may also be a download cut with Steam closed: only bytes seen growing between two
         // reads, before anything is sent, are the state reached (changed:false); otherwise the second read is the
-        // baseline and the request goes on.
+        // baseline and the request goes on. Renew al máximo (B-APP-4): one that reads «paused» is read twice too: only its
+        // growth says whether it runs.
         SteamLocalGame? running = null;
-        if (before is { Installed: false } first && InstallState(first) == "downloading")
+        if (before is { Installed: false } first && InstallState(first) is "downloading" or "paused")
         {
             await _delay(ObservationInterval, cancellationToken).ConfigureAwait(false);
             SteamLocalGame? second = _snapshot().SingleOrDefault(game => game.AppId == appId);
@@ -734,7 +735,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             SteamLocalGame? after = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
             bool terminal = after is null
                 || (after.BytesDownloaded == lastBytes
-                    && InstallState(after) is "paused" or "not_installed");
+                    && InstallState(after) == "paused");
             bool changedFromPreDispatch = after is null
                 || after.BytesDownloaded != before.BytesDownloaded
                 || !string.Equals(
@@ -769,9 +770,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
+        // Renew al máximo (B-APP-4): every download already started of a game not installed is cancelled, one in pause
+        // too; the post-read below says none still runs.
         string[] active = _snapshot()
-            .Where(game => !game.Installed && game.BytesDownloaded > 0
-                && InstallState(game) is "downloading" or "installing")
+            .Where(game => !game.Installed && game.BytesDownloaded > 0)
             .Select(game => game.AppId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
@@ -971,11 +973,18 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         writer.WriteEndObject();
     }
 
+    // Renew al máximo (B-APP-4): Steam's EAppState flags (Open Steamworks AppsCommon.h): UpdateRunning 256, UpdatePaused
+    // 512, Downloading 1048576. Only a running flag says «downloading»; a download in pause (1538: UpdateRequired |
+    // UpdatePaused | UpdateStarted), or one with bytes and no running flag, is «paused».
+    private const ulong RunningFlags = 256UL | 1048576UL;
+    private const ulong PausedFlag = 512UL;
+
     private static string InstallState(SteamLocalGame game)
     {
         if (game.Installed) return "installed";
         if (game.BytesToDownload > 0 && game.BytesDownloaded >= game.BytesToDownload) return "installing";
-        if (game.BytesDownloaded > 0) return game.StateFlags == 2 ? "paused" : "downloading";
+        if ((game.StateFlags & PausedFlag) != 0) return "paused";
+        if (game.BytesDownloaded > 0) return (game.StateFlags & RunningFlags) != 0 ? "downloading" : "paused";
         return "queued";
     }
 

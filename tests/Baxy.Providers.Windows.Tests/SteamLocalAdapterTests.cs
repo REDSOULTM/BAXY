@@ -14,6 +14,45 @@ public sealed class SteamLocalAdapterTests
         new("123", "Another Game", new string('b', 64)),
     ];
 
+    // Renew al máximo (B-APP-4): Steam's EAppState flags as its manifests write them: a download running
+    // (UpdateRequired 2 | UpdateStarted 1024 | Downloading 1048576), one in pause (UpdateRequired 2 | UpdatePaused 512 |
+    // UpdateStarted 1024), and one left with no running flag (a download cut with Steam closed).
+    private const ulong Downloading = 2 | 1024 | 1048576;
+    private const ulong Paused = 2 | 512 | 1024;
+    private const ulong Stopped = 2 | 1024;
+
+    // Renew al máximo (B-APP-4): only a running flag says «downloading»; a download in pause, or one with bytes and no
+    // running flag, is «paused», in its status and in the catalog.
+    [Test]
+    public async Task APausedDownloadIsNotSaidDownloading()
+    {
+        SteamLocalGame[] observed =
+        [
+            new("10", "Paused Game", new string('a', 64), Paused, 250, 1000),
+            new("11", "Running Game", new string('b', 64), Downloading, 250, 1000),
+            new("12", "Stopped Game", new string('c', 64), Stopped, 250, 1000),
+        ];
+        var adapter = new SteamLocalAdapter(() => observed);
+        var said = new Dictionary<string, string?>(StringComparer.Ordinal);
+        foreach (string appId in new[] { "10", "11", "12" })
+        {
+            ExternalCapabilityReceipt status = await adapter.InvokeAsync(
+                "game.install.status", Json($$"""{"appId":"{{appId}}"}"""), CancellationToken.None);
+            said[appId] = status.Result?.GetProperty("state").GetString();
+        }
+
+        ExternalCapabilityReceipt list = await adapter.InvokeAsync("game.catalog.list", Json("{}"), CancellationToken.None);
+        Dictionary<string, string?> listed = list.Result!.Value.GetProperty("games").EnumerateArray().ToDictionary(
+            game => game.GetProperty("appId").GetString()!, game => game.GetProperty("state").GetString());
+
+        var expected = new Dictionary<string, string?> { ["10"] = "paused", ["11"] = "downloading", ["12"] = "paused" };
+        Assert.Multiple(() =>
+        {
+            Assert.That(said, Is.EquivalentTo(expected));
+            Assert.That(listed, Is.EquivalentTo(expected));
+        });
+    }
+
     [Test]
     public void AuthenticatedSnapshotContainsOnlyInstalledGamesInStableOrder()
     {
@@ -129,7 +168,7 @@ public sealed class SteamLocalAdapterTests
     {
         SteamLocalGame[] downloading =
         [
-            new("620", "Portal 2", new string('a', 64), StateFlags: 1,
+            new("620", "Portal 2", new string('a', 64), StateFlags: Downloading,
                 BytesDownloaded: 250, BytesToDownload: 1000),
         ];
         var adapter = new SteamLocalAdapter(() => downloading);
@@ -150,14 +189,14 @@ public sealed class SteamLocalAdapterTests
     public async Task CancelRequiresPartialDownloadAndVerifiesPausedManifest()
     {
         SteamLocalGame observed = new("888", "Partial Game", new string('d', 64),
-            StateFlags: 1, BytesDownloaded: 50, BytesToDownload: 100);
+            StateFlags: Downloading, BytesDownloaded: 50, BytesToDownload: 100);
         var delays = new RecordingDelay();
         var automation = new FakeSteamAutomation(
             onDispatch: uri => Assert.That(uri, Is.EqualTo("steam://uninstall/888")),
             onCancel: appId =>
             {
                 Assert.That(appId, Is.EqualTo("888"));
-                observed = observed with { StateFlags = 2 };
+                observed = observed with { StateFlags = Paused };
             });
         var adapter = new SteamLocalAdapter(
             () => [observed],
@@ -353,12 +392,13 @@ public sealed class SteamLocalAdapterTests
     {
         var observed = new Dictionary<string, SteamLocalGame>(StringComparer.Ordinal)
         {
-            ["888"] = new("888", "Partial One", new string('d', 64), 1, 50, 100),
-            ["999"] = new("999", "Partial Two", new string('e', 64), 1, 25, 100),
+            ["888"] = new("888", "Partial One", new string('d', 64), Downloading, 50, 100),
+            // Renew al máximo (B-APP-4): a download in pause was started too, and is cancelled as well.
+            ["999"] = new("999", "Partial Two", new string('e', 64), Paused, 25, 100),
         };
         var automation = new FakeSteamAutomation(
             onDispatch: null,
-            onCancel: appId => observed[appId] = observed[appId] with { StateFlags = 2 });
+            onCancel: appId => observed.Remove(appId));
         var adapter = new SteamLocalAdapter(
             () => observed.Values.ToArray(),
             () => observed.Keys.ToHashSet(StringComparer.Ordinal),
