@@ -2946,3 +2946,14 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
 - 17:2x **el dueño cambió a D** (primera frase aparte y 6 pasos de Supertonic): receta `make_baxy_voice.py` steps 6 y
   `baxy-voice.json` instalado en el PC (%LOCALAPPDATA%\BAXYRuntime) y en el NB (D:\BAXYRuntime), sin BOM, comprobado.
   Primer audio de una respuesta de dos frases: 1 595 ms (como era) → 646 ms (p50, CPU del PC).
+- 17:3x **tanda 3b** (lv-t3b 15a5d73a0: t3 sin P2.3 + frases del NB + game.launch con title; catálogo catalog-t3b) en
+  decision2 S1 ×3: 226 / 227 / 229 (227,33) frente a la tanda 1 depurada 230,0: Δ −2,67, IC95 [−7,67; +2,0], McNemar p
+  0,125; bajan P028, P036, P085, P113, P164, P215; sube P099. No gana y tiende a perder: hay que separar sus piezas
+  (P2.2 defectos, P2.2i target, P2.6 recorte, frases del NB, game.launch). Latencias de esta corrida no comparables
+  (corrió a la vez que otra).
+- **tanda 5 con su catálogo** (catalog-t5, 51 operaciones con `effects`: 5.1 activa): 226 / 228 / 228 (227,33) frente a
+  la tanda 5 con catalog-max 228,33: Δ −1,0, IC95 [−4,0; +1,67]: el freno de «corrige» hacia herramientas de ventana o
+  red cuesta poco o nada. Se queda.
+- Las escenas de la R10.1 acotada murieron: la cadena de falsedades hace `taskkill /IM llama-server.exe` entre corridas
+  y se llevó su servidor. Se repiten tras las falsedades (la GPU del PC queda en exclusiva ~3 h). Corregir el script
+  para matar sólo sus propios procesos antes del holdout.
