@@ -448,6 +448,24 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): Enter was already pressed; a read-back that fails after it (a black capture,
+    // the window gone, the turn cancelled) says the message may be out, never a bare provider failure.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AReadBackThatFailsAfterEnterSaysTheMessageMayBeOut(bool cancelled)
+    {
+        DesktopMessageObservation observed = await WindowsDesktopMessagingAutomation.SentReadBackAsync(
+            _ => cancelled ? throw new OperationCanceledException() : throw new IOException("Messaging evidence capture came back black."),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.Verified, Is.False);
+            Assert.That(observed.EffectObserved, Is.True);
+            Assert.That(observed.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
+        });
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {

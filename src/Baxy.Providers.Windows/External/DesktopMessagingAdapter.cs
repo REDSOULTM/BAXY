@@ -1118,6 +1118,39 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             throw;
         }
 
+        return await SentReadBackAsync(
+            token => ReadBackAfterEnterAsync(recipient, text, beforeSend, beforePane, token),
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The read-back of a message whose Enter was already pressed. Renew al máximo (auditoría de flujos): a capture, a
+    /// read or a cancel that failed here escaped as a bare provider failure, and the message may already be in the chat
+    /// (a model told «failed» sends it again); it is said as a delivery not verified, with its effect observed.
+    /// </summary>
+    internal static async ValueTask<DesktopMessageObservation> SentReadBackAsync(
+        Func<CancellationToken, ValueTask<DesktopMessageObservation>> readBack,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(readBack);
+        try
+        {
+            return await readBack(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception failure) when (failure is IOException or InvalidOperationException or ExternalException
+            or OperationCanceledException)
+        {
+            return new(false, true, string.Empty, "message_delivery_not_verified");
+        }
+    }
+
+    private static async ValueTask<DesktopMessageObservation> ReadBackAfterEnterAsync(
+        ResolvedRecipient recipient,
+        string text,
+        byte[] beforeSend,
+        byte[] beforePane,
+        CancellationToken cancellationToken)
+    {
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
         byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
         string afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
