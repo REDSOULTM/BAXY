@@ -476,6 +476,7 @@ class Mind:
         self.english: dict[str, str] = english.get("tools") or {}
         self.arguments: dict[str, dict[str, str]] = english.get("arguments") or {}
         self.decide_temperature = _env_float("BAXY_RENEW_DECIDE_TEMPERATURE", 0.2)
+        self.seed = int(_env_float("BAXY_RENEW_SEED", 0))
         # PLAN_GENERAL C1: the long addresses results carried, by the short reference the model saw, and back.
         self._refs: dict[str, str] = {}
         self._ref_of: dict[str, str] = {}
@@ -929,8 +930,9 @@ class Mind:
                 "chat_template_kwargs": {"enable_thinking": False},
                 "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
                 # A fixed seed: the same conversation gets the same decision, so two runs of a bench differ by the
-                # change measured, not by sampling noise (±3 of 90 without it).
-                "seed": 0,
+                # change measured, not by sampling noise (±3 of 90 without it). Review 2026-10-22: BAXY_RENEW_SEED moves
+                # it, to measure that noise (0 by default).
+                "seed": self.seed,
                 # The decision's own token probabilities, for its doubt in the trace (doubt.py): same call, no other pass.
                 "logprobs": True, "top_logprobs": 10}
         if final:

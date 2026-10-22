@@ -463,3 +463,15 @@ def test_a_pinned_port_in_use_fails_the_start_with_its_cause(monkeypatch) -> Non
         with pytest.raises(RuntimeError, match=str(port)):
             LlmServer("model.gguf", "llama-server.exe")
     assert LlmServer("model.gguf", "llama-server.exe").port == port
+
+
+@pytest.mark.parametrize("setting, seed", [(None, 0), ("7", 7), ("x", 0)])
+def test_the_decisions_seed_comes_from_baxy_renew_seed(tmp_path: Path, monkeypatch, setting, seed) -> None:
+    # Review 19: to measure the noise, the decisions' fixed seed 0 can be moved by the environment.
+    if setting is None:
+        monkeypatch.delenv("BAXY_RENEW_SEED", raising=False)
+    else:
+        monkeypatch.setenv("BAXY_RENEW_SEED", setting)
+    mind, server = _mind(tmp_path, [_say("Hola.")])
+    mind.decide(1, "hola")
+    assert server.bodies[0]["seed"] == seed
