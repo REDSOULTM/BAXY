@@ -3006,3 +3006,12 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   al usuario final»). fx-latido e895fcd0d: Heartbeat.Enabled sólo con BAXY_RENEW_HEARTBEAT=1 (antes, salvo =0). 10.2
   (w2-beat2, w2-beat2-min) no se integra ni se mide; sus escenas se cortaron. En el cierre no se corren las escenas del
   holdout v4 (el banco del latido); lo ya fusionado del latido (tanda 5) queda inactivo con el latido apagado.
+- 19:2x **tercera ola**: F002 (w3-f002 d626f2212: las lecturas de ventanas y de estado de app dicen `openedByBaxy` por
+  LaunchProvenance; F002 fallaba 9/9) en medida en el NB; auditoría de rendimiento sobre int: turno medio 4 365 ms =
+  Core+proveedores 43 %, modelo 40 %, mente fuera del modelo 11 %, App+IPC 6 %; arranque en frío ~22 s, de ellos 18,3 s
+  recalculando el prefijo. Arreglos en w3-speed (guardar/restaurar el slot del prefijo, presíntesis de las respuestas
+  de turn.decide, una sola plantilla por decisión con duda, reloj de la traza) y en el NB (PowerShell persistente para
+  Calculadora y Spotify, inventario de app.open en una pasada, SettleStart más corto). Fuera: cortar la primera toma en
+  la primera coma (cambia cómo suena: decisión del dueño) y lo del latido (apagado).
+- decision2 S1 ×3 de la integración temprana (int f5f22ec06, catalog-int0): 228 / 230 / 231 (229,67) frente a 230,0;
+  acciones equivocadas 15 de media (16,7 antes). Sin regresión.
