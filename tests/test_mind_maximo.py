@@ -71,3 +71,50 @@ def test_only_the_decision_asks_the_server_for_its_token_probabilities(tmp_path:
     assert decide["logprobs"] is True and decide["top_logprobs"] == 10
     assert not {"logprobs", "top_logprobs"} & (set(follow) | set(last))
     assert last["tool_choice"] == "none"
+
+
+# --- 9.2a: the notice is the model's words, not the code's (invariant 5: cero respuestas visibles fijas) ---------------
+
+def _warm_mind(tmp_path: Path, notice_reply):
+    from test_mind_final import FakeServer, _say
+    from baxy_mind.mind import Mind
+
+    class Server(FakeServer):
+        def chat(self, body: dict, timeout: float = 120.0) -> dict:
+            return super().chat(body)
+
+        def tokenize(self, text: str) -> list[int]:
+            return [248058] if text == "<tool_call>" else super().tokenize(text)
+
+    replies = [{"choices": [{"message": {"content": "H"}}], "usage": {"prompt_tokens": 37000}},
+               notice_reply if isinstance(notice_reply, Exception) else _say(notice_reply)]
+    server = Server(replies)
+    mind = Mind(server, tmp_path / "turns.jsonl")  # type: ignore[arg-type]
+    mind.tools = [{"type": "function", "function": {"name": "app_open", "parameters": {}}}]
+    mind.warm()
+    return mind, server
+
+
+def test_the_notice_is_written_by_the_model_once_at_warm_up(tmp_path: Path) -> None:
+    from baxy_mind import mind as mind_module
+    mind, server = _warm_mind(tmp_path, "«Dame un segundo.»")
+    assert not hasattr(mind_module, "NOTICE")  # no phrase of BAXY's is fixed in the code
+    assert mind.notice == "Dame un segundo."
+    assert mind.prefix_tokens == 37000
+    warm, notice = server.bodies
+    # The same cached prefix (system prompt and tools) and words only: the token that opens a call cannot be sampled.
+    assert notice["messages"][0] == warm["messages"][0] and notice["tools"] == warm["tools"]
+    assert notice["tool_choice"] == "none" and notice["logit_bias"] == [[248058, False]]
+    assert notice["temperature"] == 0.0 and notice["max_tokens"] <= 32
+
+
+@pytest.mark.parametrize("written", ["", "   ", "Ya abrí la aplicación que me pediste y todo quedó funcionando perfecto.",
+                                     "Un momento.\nYa está.", "<tool_call>"])
+def test_a_notice_the_model_did_not_write_usably_goes_empty(tmp_path: Path, written: str) -> None:
+    mind, _ = _warm_mind(tmp_path, written)
+    assert mind.notice == ""
+
+
+def test_a_failed_notice_call_leaves_the_notice_empty_and_the_warm_up_done(tmp_path: Path) -> None:
+    mind, _ = _warm_mind(tmp_path, TimeoutError("slow"))
+    assert mind.notice == "" and mind.prefix_tokens == 37000

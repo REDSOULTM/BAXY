@@ -11,7 +11,7 @@ from pathlib import Path
 
 from . import protocol
 from .llm_server import LlmServer
-from .mind import NOTICE, Mind
+from .mind import Mind
 from .system_one import SystemOne
 from .voice import Voice
 
@@ -76,11 +76,12 @@ def main() -> int:
                 kind = str(message.get("type"))
                 if kind == "voice.speak":
                     # FT/proveedores goal (review of E001's fix): an answer asked while the voice loads waits and
-                    # sounds once it is loaded, but the turn's «Un momento.» says the turn is under way: heard after
-                    # the answer is on screen it would say something false, so it is only taken from a loaded voice.
+                    # sounds once it is loaded, but the turn's notice says the turn is under way: heard after the
+                    # answer is on screen it would say something false, so it is only taken with its audio ready
+                    # (Speech.speak). The notice is the model's phrase sent with catalog.ready (al máximo 9.2a).
                     text = str(message.get("text") or "")
-                    accepted = (voice.speech.ready or text != NOTICE) and voice.speech.speak(text,
-                                                                                            notice=text == NOTICE)
+                    notice = mind.notice
+                    accepted = voice.speech.speak(text, notice=bool(notice) and text == notice)
                     protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
                                             "accepted": accepted})
                 elif kind == "voice.cancel":
@@ -125,8 +126,10 @@ def main() -> int:
                         reply["startup"] = server.startup_failure()
                         protocol.write_message(reply)
                         continue
+                    # The notice the model wrote at warm-up (empty: none is said); the voice synthesizes it now.
+                    voice.speech.set_notice(mind.notice)
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count,
-                                            "notice": NOTICE})
+                                            "notice": mind.notice})
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
                     protocol.write_message(mind.decide(request_id, str(message.get("text") or ""),

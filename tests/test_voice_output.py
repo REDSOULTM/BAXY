@@ -26,8 +26,8 @@ def test_an_answer_given_while_the_voice_loads_sounds_once_it_has(tmp_path: Path
 
     monkeypatch.setattr(Speech, "_start", slow_start)
     monkeypatch.setattr(Speech, "_sentences", lambda self, text: iter([text]))
-    monkeypatch.setattr(Speech, "_play", lambda self, audio, generation, queued: played.extend(audio))
-    speech = Speech(lambda speaking: None, lambda queued, sounded: None)
+    monkeypatch.setattr(Speech, "_play", lambda self, audio, generation, queued, *rest: played.extend(audio))
+    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
 
     assert not speech.ready
     assert speech.speak("Hola, ya estoy aquí.")
@@ -42,23 +42,24 @@ def test_an_answer_given_while_the_voice_loads_sounds_once_it_has(tmp_path: Path
 
 
 def _loaded_voice(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, played: list[str],
-                  notice_gate: threading.Event | None = None) -> Speech:
-    """A loaded voice whose synthesis is the text itself; a notice's waits for notice_gate."""
+                  notice: str = "") -> Speech:
+    """A loaded voice whose synthesis is the text itself (a notice's: «audio:» and its text), with the mind's notice
+    phrase given and its audio ready when one is."""
     monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
     monkeypatch.setattr(Speech, "_start", lambda self: None)
-
-    def sentences(self: Speech, text: str):
-        if notice_gate is not None and text == "Un momento.":
-            notice_gate.wait(5)
-        yield text
-
-    monkeypatch.setattr(Speech, "_sentences", sentences)
-    monkeypatch.setattr(Speech, "_play", lambda self, audio, generation, queued: played.extend(audio))
-    speech = Speech(lambda speaking: None, lambda queued, sounded: None)
+    monkeypatch.setattr(Speech, "_synthesize", lambda self, text, pause=True: f"audio:{text}")
+    monkeypatch.setattr(Speech, "_sentences", lambda self, text: iter([text]))
+    monkeypatch.setattr(Speech, "_play", lambda self, audio, generation, queued, *rest: played.extend(audio))
+    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
     deadline = time.monotonic() + 5
     while not speech.ready and time.monotonic() < deadline:
         time.sleep(0.01)
     assert speech.ready
+    if notice:
+        speech.set_notice(notice)
+        while speech._notice_audio is None and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert speech._notice_audio == f"audio:{notice}"
     return speech
 
 
@@ -73,11 +74,13 @@ def test_an_answer_given_before_the_notice_sounds_drops_the_notice(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Owner, 2026-10-20: «Un momento.» cut in on what BAXY was about to say and held the answer back."""
     played: list[str] = []
-    gate = threading.Event()
-    speech = _loaded_voice(tmp_path, monkeypatch, played, gate)
-    assert speech.speak("Un momento.", notice=True)
+    speech = _loaded_voice(tmp_path, monkeypatch, played, notice="Dame un segundo.")
+    busy = threading.Event()
+    monkeypatch.setattr(Speech, "_open_stream", lambda self: busy.wait(5))
+    speech.prepare()  # the speech thread opens the output: what follows waits in the queue
+    assert speech.speak("Dame un segundo.", notice=True)
     assert speech.speak("Tienes 36 juegos en Steam.")
-    gate.set()
+    busy.set()
     _wait_for(played, 1)
     assert played == ["Tienes 36 juegos en Steam."]
 
@@ -85,12 +88,53 @@ def test_an_answer_given_before_the_notice_sounds_drops_the_notice(
 def test_a_notice_with_no_answer_yet_is_said_and_the_answer_follows(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     played: list[str] = []
-    speech = _loaded_voice(tmp_path, monkeypatch, played)
-    assert speech.speak("Un momento.", notice=True)
+    speech = _loaded_voice(tmp_path, monkeypatch, played, notice="Dame un segundo.")
+    assert speech.speak("Dame un segundo.", notice=True)
     _wait_for(played, 1)
     assert speech.speak("Listo, abrí Steam.")
     _wait_for(played, 2)
-    assert played == ["Un momento.", "Listo, abrí Steam."]
+    assert played == ["audio:Dame un segundo.", "Listo, abrí Steam."]
+
+
+def test_the_notice_is_the_mind_s_phrase_synthesized_when_it_is_given(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Al máximo 9.2a: the notice was «Un momento.», fixed in the code and synthesized at load; it is now the phrase
+    the model wrote (catalog.ready), synthesized as soon as the voice has it, and nothing else is taken as the notice."""
+    played: list[str] = []
+    speech = _loaded_voice(tmp_path, monkeypatch, played)
+    assert not speech.speak("Un momento.", notice=True)  # no phrase from the mind: no notice
+    speech.set_notice("Sigo en ello.")
+    deadline = time.monotonic() + 5
+    while speech._notice_audio is None and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert not speech.speak("Un momento.", notice=True)
+    assert speech.speak("Sigo en ello.", notice=True)
+    _wait_for(played, 1)
+    assert played == ["audio:Sigo en ello."]
+
+
+def test_a_notice_given_while_the_voice_loads_is_synthesized_once_it_has(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
+    loaded = threading.Event()
+    monkeypatch.setattr(Speech, "_start", lambda self: loaded.wait(5))
+    monkeypatch.setattr(Speech, "_synthesize", lambda self, text, pause=True: f"audio:{text}")
+    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
+    speech.set_notice("Sigo en ello.")
+    assert not speech.speak("Sigo en ello.", notice=True)  # a notice is never synthesized when it is asked
+    loaded.set()
+    deadline = time.monotonic() + 5
+    while speech._notice_audio is None and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert speech._notice_audio == "audio:Sigo en ello."
+
+
+def test_an_empty_notice_from_the_mind_is_never_said(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    played: list[str] = []
+    speech = _loaded_voice(tmp_path, monkeypatch, played)
+    speech.set_notice("")
+    assert not speech.speak("", notice=True)
+    assert speech._notice_audio is None
 
 
 def test_a_loaded_voice_starts_an_answers_synthesis_when_it_is_given(
@@ -108,7 +152,7 @@ def test_a_loaded_voice_starts_an_answers_synthesis_when_it_is_given(
 
 def test_a_voice_with_no_model_files_refuses_at_once(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(tmp_path))
-    speech = Speech(lambda speaking: None, lambda queued, sounded: None)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
     assert speech.failure
     assert not speech.speak("Hola.")
     assert not speech.ready
@@ -117,17 +161,16 @@ def test_a_voice_with_no_model_files_refuses_at_once(tmp_path: Path, monkeypatch
 def test_the_notice_sounds_from_its_audio_kept_at_load_and_never_holds_the_synthesis(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Owner, 2026-10-20: an answer waited 3.6 s behind «Un momento», which was synthesized like any sentence."""
-    played: list[object] = []
-    speech = _loaded_voice(tmp_path, monkeypatch, played)  # type: ignore[arg-type]
+    played: list[str] = []
+    speech = _loaded_voice(tmp_path, monkeypatch, played, notice="Dame un segundo.")
     started: list[str] = []
     monkeypatch.setattr(Speech, "_sentences", lambda self, text: started.append(text) or iter([text]))
-    speech._notice_audio = "audio del aviso"  # type: ignore[assignment]
-    assert speech.speak("Un momento.", notice=True)
-    _wait_for(played, 1)  # type: ignore[arg-type]
+    assert speech.speak("Dame un segundo.", notice=True)
+    _wait_for(played, 1)
     assert speech.speak("Listo, abrí Steam.")
-    _wait_for(played, 2)  # type: ignore[arg-type]
+    _wait_for(played, 2)
     assert started == ["Listo, abrí Steam."]
-    assert played == ["audio del aviso", "Listo, abrí Steam."]
+    assert played == ["audio:Dame un segundo.", "Listo, abrí Steam."]
 
 
 def test_what_was_cancelled_is_not_synthesized_and_does_not_hold_the_next_answer(
@@ -148,8 +191,8 @@ def test_what_was_cancelled_is_not_synthesized_and_does_not_hold_the_next_answer
     monkeypatch.setattr(Speech, "_synthesize", synthesize)
     monkeypatch.setattr(voice_output, "spoken", lambda text: text)
     played: list[str] = []
-    monkeypatch.setattr(Speech, "_play", lambda self, audio, generation, queued: played.extend(audio))
-    speech = Speech(lambda speaking: None, lambda queued, sounded: None)
+    monkeypatch.setattr(Speech, "_play", lambda self, audio, generation, queued, *rest: played.extend(audio))
+    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
     deadline = time.monotonic() + 5
     while not speech.ready and time.monotonic() < deadline:
         time.sleep(0.01)
@@ -188,7 +231,7 @@ def _player(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, lips: list[dict], s
     monkeypatch.setattr(Speech, "_start", lambda self: None)
     monkeypatch.setattr(Speech, "_open_stream", lambda self: stream)
     monkeypatch.setattr(voice_output, "TAIL_S", 0.0)
-    speech = Speech(lambda speaking: None, lambda queued, sounded: None, lips.append)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None, lips.append)
     speech.rate = 1000
     return speech
 

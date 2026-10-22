@@ -10,9 +10,12 @@ engine's level varies with the sentence.
 
 An answer sounds sentence by sentence: the first plays as soon as it is synthesized and the next is synthesized while
 it sounds; a loaded voice starts synthesizing an answer the moment it is given, while what is ahead of it still sounds.
-The turn's notice («Un momento.», said when a turn has been silent for 2.5 s) is dropped if an answer was given before
-it began to sound: said then, it came right before the answer and held it back (owner, 2026-10-20: the notice cut in
-on what BAXY was about to say; answers waited up to 4.8 s behind it). Opening the output takes 0.38 s on the PC (its USB interface, under MME, DirectSound and WASAPI alike), so it
+The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote at warm-up, which the mind
+gives the voice with its catalog.ready (set_notice; al máximo 9.2a: it was «Un momento.», fixed in the code). It is
+synthesized as soon as the voice has it and said from that audio only: a notice never takes the one synthesis an answer
+needs (owner, 2026-10-20: an answer waited 3.6 s behind a notice synthesized like any sentence). It is dropped if an
+answer was given before it began to sound: said then, it came right before the answer and held it back (owner,
+2026-10-20: the notice cut in on what BAXY was about to say; answers waited up to 4.8 s behind it). Opening the output takes 0.38 s on the PC (its USB interface, under MME, DirectSound and WASAPI alike), so it
 opens when a turn starts, while the model thinks (prepare), and closes after HOLD_S without sound, so the voice still
 follows the default output.
 """
@@ -34,7 +37,6 @@ from typing import Callable
 
 import numpy as np
 
-from .mind import NOTICE
 from .speech_text import spoken
 
 MAX_CHARS = 8192
@@ -108,10 +110,14 @@ class Speech:
         # when its synthesis already started), or None to end the speech thread (close)
         self._queue: queue.Queue[tuple[int, str | None, float, int | None, Iterator[np.ndarray] | None] | None] = \
             queue.Queue(maxsize=16)
-        self._posting = threading.Lock()     # speak() (the reader) and prepare() (the request loop) share the queue
+        # speak() (the reader) and prepare() (the request loop) share the queue; reentrant, since a notice whose
+        # synthesis is already done keeps its audio from inside set_notice (add_done_callback runs it at once)
+        self._posting = threading.RLock()
         self._generation = 0                 # cancel() moves it on; older utterances are dropped
         self._answers = 0                    # answers given so far: a notice with an answer after it is not said
-        self._notice_audio: np.ndarray | None = None  # the notice, synthesized once at load, with no pause after it
+        self._notice_text = ""               # the mind's notice phrase (set_notice), said only as a notice
+        self._notice_audio: np.ndarray | None = None  # its audio, synthesized once, with no pause after it
+        self._loaded = False                 # Supertonic is loaded: a notice given from now on is synthesized at once
         self._ready = threading.Event()
         self.failure = ""
         self.speaking = False
@@ -150,15 +156,16 @@ class Speech:
             # A refused answer leaves nothing behind: not counted (it would drop a notice) and not synthesized.
             if self._queue.full():
                 return False
-            if not notice:
-                self._answers += 1
             audio = None
-            if notice and text == NOTICE and self._notice_audio is not None:
-                # Ready at once and nothing to synthesize: it never holds the synthesis an answer given now needs
-                # (owner, 2026-10-20: an answer waited 3.6 s behind «Un momento», then being synthesized like any
-                # sentence).
+            if notice:
+                # Only the mind's phrase, from its audio: ready at once and nothing to synthesize, it never holds the
+                # synthesis an answer given now needs. With no audio yet (the voice still loads) it is not said.
+                if text != self._notice_text or self._notice_audio is None:
+                    return False
                 audio = iter([self._notice_audio])
-            elif self.ready:
+            else:
+                self._answers += 1
+            if audio is None and self.ready:
                 try:
                     audio = self._sentences(text)
                 except Exception:  # noqa: BLE001 - the speech thread synthesizes it then, and says what failed
@@ -166,6 +173,28 @@ class Speech:
             self._queue.put_nowait((self._generation, text, time.monotonic(), self._answers if notice else None,
                                     audio))
         return True
+
+    def set_notice(self, text: str) -> None:
+        """The mind's notice phrase (its catalog.ready): synthesized now, or as soon as the voice has loaded; empty, no
+        notice is said."""
+        text = " ".join(str(text or "").split())[:MAX_CHARS]
+        with self._posting:
+            self._notice_text, self._notice_audio = text, None
+            if text and self._loaded and not self.failure:
+                self._synthesize_notice(text)
+
+    def _synthesize_notice(self, text: str) -> None:
+        """Called under _posting. Kept only while it is still the mind's phrase."""
+        def keep(done) -> None:
+            if done.exception() is None:
+                with self._posting:
+                    if self._notice_text == text:
+                        self._notice_audio = done.result()
+            else:
+                sys.stderr.write(f"baxy_mind_renew_speech: notice: {done.exception()!r}\n")
+                sys.stderr.flush()
+
+        self._synthesis.submit(self._synthesize, text, False).add_done_callback(keep)
 
     def prepare(self) -> None:
         """A turn started: open the output now, so its answer does not wait for the device."""
@@ -194,6 +223,10 @@ class Speech:
     def _run(self) -> None:
         try:
             self._start()
+            with self._posting:
+                self._loaded = True
+                if self._notice_text:
+                    self._synthesize_notice(self._notice_text)
         except Exception as error:  # noqa: BLE001 - without a voice BAXY still answers on screen
             self.failure = repr(error)
             sys.stderr.write(f"baxy_mind_renew_speech: {self.failure}\n")
@@ -264,8 +297,8 @@ class Speech:
             num_threads=THREADS, provider="cpu")))
         self.rate = int(self._tts.sample_rate)
         self._shift = Fraction(2 ** (float(self._voice.get("shift", 0)) / 12)).limit_denominator(100)
-        # Loads the voice now, so the first answer does not wait for it, and keeps the notice ready to sound.
-        self._notice_audio = self._synthesize(NOTICE, pause=False)
+        # Loads the voice now, so the first answer does not wait for it.
+        self._synthesize("Hola.", pause=False)
 
     def _sentences(self, text: str) -> Iterator[np.ndarray]:
         """Each sentence's audio in order: the first is already being synthesized (while the output opens), and each
