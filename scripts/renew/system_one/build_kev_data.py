@@ -86,6 +86,9 @@ def main():
             seen.add(row["id"])
             rows.append(row)
     confusers = confusion_map(rows) if args.confusers else {}
+    gold_tools = collections.Counter((bench.current(r["expect"]["op"])[0] or "").replace(".", "_") for r in rows
+                                     if r["expect"]["kind"] == "call")
+    common = [t for t, _ in gold_tools.most_common(60) if t in described]
     ids = {name: open(Path(args.outdir) / f"{name}.ids.jsonl", "w", encoding="utf-8", newline="\n")
            for name in ("train", "calib", "dev")}
     for row in rows:
@@ -105,12 +108,21 @@ def main():
                 options.append(next(g for g in gold if g in described))
                 stats["gold_added"] += 1
             split = split_of(group_of(row))
-            if split == "train" and confusers and gold:
+            anchor = gold[0] if gold else options[0]
+            if split == "train" and confusers and anchor in confusers and rng.random() < 0.5:
                 # Hard negatives (training only): the tools Qwen took for this one elsewhere in the runs, so the small
-                # model learns the catalog's look-alikes (alarm/calendar, app/game, search/weather).
-                extra = [c for c in confusers.get(gold[0], []) if c not in options and c in described]
+                # model learns the catalog's look-alikes (alarm/calendar, app/game, search/weather). On half the cases
+                # whatever their answer: added only to «act» cases (v2a, 2026-10-22), the number of tools told the answer
+                # (one tool → «answer in words»: decision2 230 → 196).
+                extra = [c for c in confusers[anchor] if c not in options and c in described]
                 options += extra[:args.confusers]
                 stats["confusers_added"] += len(extra[:args.confusers])
+            tools = [o for o in options if o not in ("ask_user", ANSWER)]
+            if split == "train" and confusers and not tools and rng.random() < 0.7:
+                # In BAXY the decision model is asked only about a tool Qwen proposed: a case whose right answer is words
+                # or a question also gets one or two common tools, so «no tool offered» never tells the answer.
+                options += rng.sample(common, rng.choice((1, 2)))
+                stats["distractors_added"] += 1
             options = [o for o in dict.fromkeys(options + ["ask_user", ANSWER]) if o in described]
             rng.shuffle(options)
             if expect["kind"] == "ask":
