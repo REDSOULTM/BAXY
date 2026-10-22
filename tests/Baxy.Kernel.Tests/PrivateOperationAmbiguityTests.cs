@@ -112,6 +112,34 @@ public sealed class PrivateOperationAmbiguityTests
         });
     }
 
+    // Al máximo 11.1 (e2e, USO_REAL fila 24): a recall of everything with a selector failed with its own code
+    // (MemoryHandlers), and the model read memory_operation_failed and said the memory did not work. The code names the
+    // call's shape, never what is remembered.
+    [Test]
+    public async Task AMemoryCodeThatTellsNoContentReachesTheModel()
+    {
+        using var journal = new InMemoryInvocationJournal();
+        var handler = new AmbiguousMemoryHandler(
+            retryable: false,
+            ambiguous: false,
+            errorCode: "memory_recall_all_takes_no_selector");
+        using var engine = new MissionEngine(
+            new OperationRegistry([handler]),
+            journal,
+            new MissionEngineOptions { PrivateEnvelopeAuthenticator = new AcceptingEnvelopeAuthenticator() });
+
+        OperationResponse response = await engine.ExecuteAsync(
+            CreateMemoryRequest(),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.EqualTo("memory_recall_all_takes_no_selector"));
+            Assert.That(response.Message, Does.Contain("memory_recall_all_takes_no_selector"));
+            Assert.That(response.CauseCode, Is.Null);
+        });
+    }
+
     private static OperationRequest CreateMemoryRequest()
     {
         string requestId = Guid.NewGuid().ToString("D");

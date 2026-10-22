@@ -1,4 +1,9 @@
-﻿namespace Baxy.App;
+﻿using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+
+namespace Baxy.App;
 
 /// <summary>
 /// When a turn of the native tool loop takes no more calls and the model answers in words from the results it has (the
@@ -9,8 +14,8 @@
 /// <item>Its time (FT/proveedores goal, E5): <see cref="Budget"/> from the turn's start. An app.open of a console app
 /// waited 30 s per verification and the model retried it up to the move cap: 7.5 min with no answer.</item>
 /// <item>A call that came back the same three times in a row: the same operation with the same arguments and the same
-/// outcome (e2e E022: the same page fetched eight times, until the results overflowed the context and the turn ended
-/// with no answer). Not twice: after two identical failures the model still changes course (e2e E011, base 0be0f9de9,
+/// result, its content (e2e E022: the same page fetched eight times, until the results overflowed the context and the
+/// turn ended with no answer). Not twice: after two identical failures the model still changes course (e2e E011, base 0be0f9de9,
 /// all three seeds: two calculator_window_not_found, then app.open and the sum); the branch that closed the turn at the
 /// second one lost that case.</item>
 /// </list>
@@ -23,7 +28,7 @@ internal sealed class TurnClosing
     /// <summary>The turn's time: longer than any turn of the practice e2e that passes (57 s at most, lote 3).</summary>
     internal static readonly TimeSpan Budget = TimeSpan.FromSeconds(90);
 
-    /// <summary>The same call with the same outcome this many times in a row closes the turn.</summary>
+    /// <summary>The same call with the same result this many times in a row closes the turn.</summary>
     internal const int RepeatsThatClose = 3;
 
     private string? _last;
@@ -31,13 +36,63 @@ internal sealed class TurnClosing
 
     /// <summary>
     /// The call number <paramref name="calls"/> of the turn came back, <paramref name="elapsed"/> after the turn started,
-    /// with <paramref name="status"/> and <paramref name="error"/>: whether the model answers now.
+    /// with <paramref name="observation"/> (the result the model reads): whether the model answers now.
     /// </summary>
-    internal bool AfterCall(int calls, TimeSpan elapsed, string operation, string arguments, string status, string? error)
+    internal bool AfterCall(int calls, TimeSpan elapsed, string operation, string arguments, string observation)
     {
-        string call = string.Join('\n', operation, arguments, status, error ?? string.Empty);
+        string call = string.Join('\n', operation, arguments, ResultHash(observation));
         _same = call == _last ? _same + 1 : 1;
         _last = call;
         return calls >= MaximumModelCalls || elapsed >= Budget || _same >= RepeatsThatClose;
+    }
+
+    // Al máximo 7.7: the same result is the same content, status and error with it (three looks at a window still
+    // loading, each with another view, are three results, not a repeat). How long the call took («…Ms»: durationMs,
+    // elapsedMs, burstMs) is not part of it: the same console output each time in its own time is a repeat. The mind's
+    // «same call» aid compares the same way (mind.py, _result_key).
+    private static string ResultHash(string observation)
+    {
+        string content = observation;
+        try
+        {
+            if (JsonNode.Parse(observation) is { } facts)
+            {
+                WithoutTimes(facts);
+                content = facts.ToJsonString();
+            }
+        }
+        catch (JsonException)
+        {
+        }
+
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content)));
+    }
+
+    private static void WithoutTimes(JsonNode node)
+    {
+        if (node is JsonObject facts)
+        {
+            foreach (string key in facts.Select(static pair => pair.Key).ToArray())
+            {
+                if (key.EndsWith("Ms", StringComparison.Ordinal))
+                {
+                    facts.Remove(key);
+                }
+                else if (facts[key] is { } child)
+                {
+                    WithoutTimes(child);
+                }
+            }
+        }
+        else if (node is JsonArray items)
+        {
+            foreach (JsonNode? item in items)
+            {
+                if (item is not null)
+                {
+                    WithoutTimes(item);
+                }
+            }
+        }
     }
 }

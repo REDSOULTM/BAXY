@@ -46,13 +46,15 @@ internal sealed record MemoryRecordWireResult(
     DateTimeOffset CapturedAtUtc,
     string? SessionId);
 
+// ExactMatch: only an exact recall's, whether its records are the ones it named (al máximo 11.2).
 internal sealed record MemoryRecordsWireResult(
     int Version,
     IReadOnlyList<MemoryRecordWireResult> Records,
     int Count,
     int TotalCount,
     int Offset,
-    int Limit);
+    int Limit,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? ExactMatch = null);
 
 internal sealed record MemoryStatusWireResult(
     int Version,

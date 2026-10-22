@@ -10,7 +10,7 @@ from baxy_mind.mind import Mind
 from test_mind_final import _call, _mind, _say
 
 CLOSE_FAILED = json.dumps({"status": "failed", "error": "window_not_found"})
-OPENED = json.dumps({"status": "completed", "observed": {"applicationName": "Paint"}})
+OPENED = json.dumps({"status": "completed", "verification": "readback", "observed": {"applicationName": "Paint"}})
 
 
 def _two_calls(tmp_path: Path) -> tuple[Mind, list[str]]:
@@ -140,6 +140,22 @@ def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: 
     assert "input_visible_click ya se hizo 3 veces en este turno" in tools[4]
 
 
+@pytest.mark.parametrize("views,told", [(["Cargando…", "Biblioteca", "Biblioteca · Tienda"], False),
+                                        (["Cargando…"] * 3, True)])
+def test_the_same_call_is_told_only_when_its_result_is_the_same_too(tmp_path: Path, monkeypatch, views: list[str],
+                                                                    told: bool) -> None:
+    # Al máximo 7.7: three looks at a window still loading, each with another view, were told «el mismo resultado».
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    look = _call("input_visible_controls", {"application": "steam"})
+    mind, server = _mind(tmp_path, [look, look, look, _say("Ya cargó.")])
+    mind.decide(1, "mira steam")
+    for index, view in enumerate(views):
+        mind.continue_turn(2 + index, json.dumps({"status": "completed", "view": f"window 1 Steam\n{view}",
+                                                  "observed": {"elapsedMs": {"read": 300 + index}}}))
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert ("ya se hizo 3 veces en este turno" in last) is told
+
+
 @pytest.mark.parametrize("setting,still,told", [("all", False, 1), ("all", True, 0), ("all", None, 0), ("none", False, 0)])
 def test_a_click_whose_label_left_the_screen_tells_the_field_may_have_the_cursor_once(
         tmp_path: Path, monkeypatch, setting: str, still: bool | None, told: int) -> None:
@@ -202,3 +218,21 @@ def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None
     unsure = json.dumps({"status": "failed", "error": "message_delivery_not_verified", "effectUncertain": True})
     assert _outcome(stopped) == "falló (composer_has_person_draft): el mensaje no se escribió ni se envió"
     assert _outcome(unsure) == "sin confirmar: pudo o no ocurrir"
+
+
+@pytest.mark.parametrize("verification,told", [
+    ("readback", "completado y verificado"),
+    ("unchanged", "completado: ya estaba así, no cambió nada"),
+    ("delivered_only", "completado sin verificar: entregado, sin releer su efecto"),
+    ("output_only", "completado: lectura, su resultado está arriba"),
+    ("none", "completado sin verificar"),
+    (None, "completado sin verificar"),
+])
+def test_a_completed_call_is_told_by_its_typed_verification_alone(verification: str | None, told: str) -> None:
+    # Al máximo 8.2: «ya estaba así» (changed:false) was told «completado y verificado», and a verified result whose
+    # observation did not fit (observedLimit omitted) «sin verificar»; the field names no longer decide it.
+    from baxy_mind.mind import _outcome
+    facts = {"status": "completed", "observedLimit": "omitted", "observed": {"changed": False, "delivered": True}}
+    if verification is not None:
+        facts["verification"] = verification
+    assert _outcome(json.dumps(facts)) == told

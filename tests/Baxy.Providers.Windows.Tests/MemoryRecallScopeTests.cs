@@ -55,24 +55,69 @@ public sealed class MemoryRecallScopeTests
         Assert.That(outcome.ErrorCode, Is.Not.EqualTo("invalid_arguments"));
     }
 
+    // Al máximo 11.2: an exact recall that matched nothing showed what is remembered as if it were the match (the model
+    // told the favorite food as the name asked for). The list comes back said as not the exact match.
+    [Test]
+    public async Task AnExactRecallThatMatchesNothingSaysSo()
+    {
+        using var temporary = new Temporary();
+        temporary.Remember("comida favorita", "pizza");
+        JsonObject missed = await temporary.RecallOpenedAsync(
+            new JsonObject { ["version"] = 1, ["scope"] = "exact", ["selector"] = "nombre" });
+        JsonObject matched = await temporary.RecallOpenedAsync(
+            new JsonObject { ["version"] = 1, ["scope"] = "exact", ["selector"] = "comida favorita" });
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)missed["exactMatch"], Is.False);
+            Assert.That(missed["records"]!.AsArray(), Has.Count.EqualTo(1));
+            Assert.That((bool?)matched["exactMatch"], Is.True);
+        });
+    }
+
     private sealed class Temporary : IDisposable
     {
         private readonly string _path = Path.Combine(Path.GetTempPath(), "baxy-memory-recall-" + Guid.NewGuid().ToString("N"));
+        private readonly WindowsProtectedPayload _protector;
+        private readonly LocalMemoryStore _store;
+        private readonly BoundProtectedJsonCodec _codec;
 
-        internal async Task<OperationOutcome> RecallAsync(JsonObject payload)
+        internal Temporary()
         {
             Directory.CreateDirectory(_path);
-            var protector = new WindowsProtectedPayload(Path.Combine(_path, "payload.key"));
-            var store = new LocalMemoryStore(Path.Combine(_path, "memory-store"), protector);
-            var codec = new BoundProtectedJsonCodec(protector);
-            IOperationHandler recall = MemoryHandlers.Create(store, codec)
+            _protector = new WindowsProtectedPayload(Path.Combine(_path, "payload.key"));
+            _store = new LocalMemoryStore(Path.Combine(_path, "memory-store"), _protector);
+            _codec = new BoundProtectedJsonCodec(_protector);
+        }
+
+        internal void Remember(string selector, string value)
+        {
+            _store.Configure(new MemoryConfigureRequest("enable-1", Enabled: true));
+            _store.Save(new MemorySaveRequest("save-1", selector, selector, value));
+        }
+
+        internal async Task<OperationOutcome> RecallAsync(JsonObject payload) =>
+            (await RecallSealedAsync(payload)).Outcome;
+
+        internal async Task<JsonObject> RecallOpenedAsync(JsonObject payload)
+        {
+            (OperationOutcome outcome, string mission, string invocation) = await RecallSealedAsync(payload);
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            using OpenedBoundProtectedJson opened = _codec.OpenResult(outcome.Result!.Value, "memory.recall", mission,
+                invocation);
+            return JsonNode.Parse(opened.Payload.GetRawText())!.AsObject();
+        }
+
+        private async Task<(OperationOutcome Outcome, string Mission, string Invocation)> RecallSealedAsync(
+            JsonObject payload)
+        {
+            IOperationHandler recall = MemoryHandlers.Create(_store, _codec)
                 .Single(static handler => handler.Definition.Name == "memory.recall");
             string mission = Guid.NewGuid().ToString("D");
             string invocation = Guid.NewGuid().ToString("D");
-            JsonElement sealedArguments = codec.SealArguments("memory.recall", mission, invocation,
+            JsonElement sealedArguments = _codec.SealArguments("memory.recall", mission, invocation,
                 Guid.NewGuid().ToString("D"), payload);
-            return await recall.ExecuteAsync(new OperationInvocation("r1", mission, invocation, sealedArguments),
-                CancellationToken.None);
+            return (await recall.ExecuteAsync(new OperationInvocation("r1", mission, invocation, sealedArguments),
+                CancellationToken.None), mission, invocation);
         }
 
         public void Dispose()

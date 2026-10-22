@@ -621,7 +621,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                         // Uso real 2026-10-21 (e2e del notebook y el «¿cómo me llamo?» del dueño): the model saves under
                         // a name it makes up and asks under another («comida favorita» for favorite_food), and an exact
                         // miss read «nothing remembered» with the fact there. With no exact match, what is remembered
-                        // comes back (the first ones, with the total), and the model tells which one answers.
+                        // comes back (the first ones, with the total), and the model tells which one answers. Al máximo
+                        // 11.2: said as no exact match (exactMatch:false), never as the record named.
                         MemoryRecord[] all = _store.List(new MemoryListRequest(
                             opened.SessionId,
                             MaximumResults: LocalMemoryStore.MaximumListResults)).Records.ToArray();
@@ -633,7 +634,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                             records,
                             totalCount,
                             offset: 0,
-                            limit: RecallMissShown);
+                            limit: RecallMissShown,
+                            exactMatch: false);
                     }
 
                     break;
@@ -667,7 +669,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             records,
             totalCount,
             offset: 0,
-            limit: LocalMemoryStore.MaximumRecallResults);
+            limit: LocalMemoryStore.MaximumRecallResults,
+            exactMatch: scope == "exact" ? true : null);
     }
 
     private OperationOutcome List(
@@ -730,7 +733,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         IReadOnlyList<MemoryRecord> records,
         int totalCount,
         int offset,
-        int limit)
+        int limit,
+        bool? exactMatch = null)
     {
         MemoryRecordWireResult[] projected = records.Select(static record =>
             new MemoryRecordWireResult(
@@ -756,7 +760,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             projected.Length,
             totalCount,
             offset,
-            limit);
+            limit,
+            exactMatch);
         return Success(
             invocation,
             sessionId,

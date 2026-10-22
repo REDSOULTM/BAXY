@@ -1,9 +1,10 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
+using Baxy.Kernel.Operations;
 
 namespace Baxy.App;
 
@@ -89,7 +90,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             case "memory.list":
                 message = TryProjectRecords(privatePayload, out ProjectedRecords? records)
                     && records is not null
-                        ? CreateRecordsMessage(records, responseReplayed)
+                        ? CreateRecordsMessage(operationName, records, responseReplayed)
                         : null;
                 break;
             default:
@@ -127,7 +128,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         var configured = new JsonObject { ["enabled"] = enabled };
         if (!changed && !(responseReplayed || replayed))
             configured["changed"] = false;
-        message = CompletedFacts("memory_configuration", configured, responseReplayed || replayed);
+        message = CompletedFacts(operationName, "memory_configuration", configured, responseReplayed || replayed);
         return true;
     }
 
@@ -191,7 +192,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             // («Listo, me acuerdo: tu color favorito es el verde.»).
             observed["selector"] = selector.ToLowerInvariant();
         }
-        message = CompletedFacts("memory_updated", observed, responseReplayed || replayed);
+        message = CompletedFacts(operationName, "memory_updated", observed, responseReplayed || replayed);
         return true;
     }
 
@@ -241,7 +242,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
 
         message = deleted == 0 && operationName != "memory.session.clear"
             ? TurnVisibleFacts.Failure("memory_forget_empty")
-            : CompletedFacts("memory_deleted", observed, responseReplayed || replayed);
+            : CompletedFacts(operationName, "memory_deleted", observed, responseReplayed || replayed);
         return true;
     }
 
@@ -276,7 +277,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        message = CompletedFacts("memory_status", new JsonObject
+        message = CompletedFacts("memory.status", "memory_status", new JsonObject
         {
             ["enabled"] = enabled,
             ["totalRecords"] = total,
@@ -324,7 +325,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        message = CompletedFacts("memory_exported", new JsonObject
+        message = CompletedFacts("memory.export", "memory_exported", new JsonObject
         {
             ["fullPath"] = path,
             ["recordCount"] = count,
@@ -385,9 +386,15 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         out ProjectedRecords? projected)
     {
         projected = null;
+        // Al máximo 11.2: an exact recall says whether its records are the ones it named.
+        bool saysExact = payload.ValueKind == JsonValueKind.Object && payload.TryGetProperty("exactMatch", out _);
+        bool exact = false;
         if (!HasExactProperties(
                 payload,
-                ["version", "records", "count", "totalCount", "offset", "limit"])
+                saysExact
+                    ? ["version", "records", "count", "totalCount", "offset", "limit", "exactMatch"]
+                    : ["version", "records", "count", "totalCount", "offset", "limit"])
+            || (saysExact && !TryGetBoolean(payload, "exactMatch", out exact))
             || !HasVersionOne(payload)
             || !payload.TryGetProperty("records", out JsonElement records)
             || records.ValueKind != JsonValueKind.Array
@@ -421,7 +428,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             values.Add(value);
         }
 
-        projected = new ProjectedRecords(values, totalCount, offset);
+        projected = new ProjectedRecords(values, totalCount, offset, saysExact ? exact : null);
         return true;
     }
 
@@ -513,7 +520,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             _ => false,
         };
 
-    private static string CreateRecordsMessage(ProjectedRecords projected, bool responseReplayed)
+    private static string CreateRecordsMessage(string operationName, ProjectedRecords projected, bool responseReplayed)
     {
         if (projected.TotalCount == 0)
         {
@@ -545,12 +552,19 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             ["total"] = projected.TotalCount,
             ["records"] = records,
         };
+        if (projected.ExactMatch is bool exactMatch)
+        {
+            extra["exactMatch"] = exactMatch;
+        }
+
         return shown == 0
             ? TurnVisibleFacts.Failure(cause, extra)
-            : CompletedFacts(cause, extra, responseReplayed);
+            : CompletedFacts(operationName, cause, extra, responseReplayed);
     }
 
-    private static string CompletedFacts(string cause, JsonObject observed, bool replayed)
+    // Al máximo 8.2: how it was verified, as the kernel says it of every other completed call (OperationVisibleFacts'
+    // table): a memory already as asked (changed:false) is unchanged, a read is output only.
+    private static string CompletedFacts(string operationName, string cause, JsonObject observed, bool replayed)
     {
         if (replayed)
         {
@@ -558,6 +572,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         }
         return TurnVisibleFacts.Status(cause, new JsonObject
         {
+            [OperationVisibleFacts.VerificationKey] = OperationVisibleFacts.Verification(
+                operationName, JsonSerializer.SerializeToElement(observed)),
             ["observed"] = observed,
         });
     }
@@ -890,5 +906,6 @@ internal sealed record MemoryOperationResponseProjection(string Message)
     private sealed record ProjectedRecords(
         IReadOnlyList<ProjectedRecord> Records,
         int TotalCount,
-        int Offset);
+        int Offset,
+        bool? ExactMatch);
 }

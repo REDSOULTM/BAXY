@@ -28,6 +28,38 @@ public static class OperationVisibleFacts
     public const string ObservedLimitKey = "observedLimit";
     public const string ObservedProjected = "projected";
     public const string ObservedOmitted = "omitted";
+
+    // Al máximo 8.2 (Tool Receipts, arXiv 2603.10060): how a completed call was verified, one typed fact the mind
+    // translates (mind.py, _outcome), from what the receipts already write at the top of their result. The table, by
+    // what the receipt says, first match:
+    //   changed:false                  → unchanged       the state asked was already the current one: ExternalCapability
+    //                                                     handlers' StateAlreadyReached (Spotify alreadyPlaying, winget
+    //                                                     alreadyInstalled, a field alreadyFocused, radios, Bluetooth,
+    //                                                     display, brightness, a bin already empty…), windows already as
+    //                                                     asked, an app.close with nothing to close, note, task, clipboard
+    //                                                     (the same text), known files, memory configuration and mutation
+    //   alreadyGone:true               → unchanged       app.close: the window was gone before BAXY touched it
+    //   applied:false, reconciled:false→ unchanged       audio: already at the level or state asked, nothing set
+    //   effectReadBack:false           → delivered_only  sent and its effect never read: a console command that exited,
+    //                                                     app.open's place, a power transition, a media command, a link
+    //                                                     to a page the browser already showed (alreadyShown)
+    //   delivered, readBack not true   → delivered_only  keys and text Windows accepted, a queued key
+    //   an operation that requires no observed effect (catalog) → output_only   a read: its output is the result
+    //   otherwise                      → readback        the effect was read back (the engine turns an unverified success
+    //                                                     into a failure)
+    // The App's own completed result it could not read (result_unreadable) says none. A call that did not complete says
+    // nothing of it: its status and error tell how it ended. observedLimit is not in the table: the receipt is read here
+    // before the observation is cut, so a verified result that did not fit stays verified. Neither is a «verified» inside
+    // a result (a backup's manifest, a restore): it is a fact of that item, not of how the call was verified; nor a
+    // count of windows or processes already gone among others (window.close.all, process ends), which the others' ends
+    // read back.
+    public const string VerificationKey = "verification";
+    public const string VerificationReadback = "readback";
+    public const string VerificationDeliveredOnly = "delivered_only";
+    public const string VerificationUnchanged = "unchanged";
+    public const string VerificationOutputOnly = "output_only";
+    public const string VerificationNone = "none";
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -83,6 +115,12 @@ public static class OperationVisibleFacts
                 : outcome.Retryable ? OperationStatuses.Pending
                 : OperationStatuses.Failed,
         };
+        if (success)
+        {
+            // A sealed private result is read by the App, which says its own (MemoryOperationResponseProjection).
+            payload[VerificationKey] = Verification(operation, outcome.ProtectedPrivateResult ? null : outcome.Result);
+        }
+
         if (!string.IsNullOrWhiteSpace(outcome.ErrorCode))
         {
             payload["error"] = outcome.ErrorCode;
@@ -154,6 +192,34 @@ public static class OperationVisibleFacts
 
         return json;
     }
+
+    /// <summary>How a completed <paramref name="operation"/> was verified, by the table above, from its result.</summary>
+    public static string Verification(string operation, JsonElement? result)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(operation);
+        if (result is { ValueKind: JsonValueKind.Object } receipt)
+        {
+            if (Is(receipt, "changed", JsonValueKind.False) || Is(receipt, "alreadyGone", JsonValueKind.True)
+                || (Is(receipt, "applied", JsonValueKind.False) && Is(receipt, "reconciled", JsonValueKind.False)))
+            {
+                return VerificationUnchanged;
+            }
+
+            if (Is(receipt, "effectReadBack", JsonValueKind.False)
+                || (receipt.TryGetProperty("delivered", out _) && !Is(receipt, "readBack", JsonValueKind.True)))
+            {
+                return VerificationDeliveredOnly;
+            }
+        }
+
+        return ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
+            && !descriptor.RequiresObservedEffect
+                ? VerificationOutputOnly
+                : VerificationReadback;
+    }
+
+    private static bool Is(JsonElement receipt, string name, JsonValueKind kind) =>
+        receipt.TryGetProperty(name, out JsonElement value) && value.ValueKind == kind;
 
     public static string FromStatus(string operation, string status, string? errorCode) =>
         FromStatus(operation, status, errorCode, problems: null);
