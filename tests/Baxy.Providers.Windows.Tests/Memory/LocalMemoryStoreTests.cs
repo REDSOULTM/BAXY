@@ -386,6 +386,53 @@ public sealed class LocalMemoryStoreTests
     }
 
     [Test]
+    public void ReadsDoNotRewriteTheStoreUntilTheClockMovesAnHourOrSomethingExpires()
+    {
+        // Renew al máximo (R11.4): every recall, list and status sealed and fsynced a full snapshot just to persist the
+        // newest observed time.
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        MutableTimeProvider clock = new(Start);
+        LocalMemoryStore store = EnabledStore(temporary.Path, protector, clock);
+        _ = store.Save(Save("save", "color", "azul"));
+        _ = store.Save(new MemorySaveRequest(
+            "temporary",
+            "reunion",
+            "Reunión",
+            "a las 11",
+            Retention: MemoryRetention.Temporary,
+            ExpiresAtUtc: Start.AddMinutes(90)));
+        int sealsAfterSave = protector.SealCount;
+
+        clock.UtcNow = Start.AddMinutes(1);
+        _ = store.Recall(new("color"));
+        clock.UtcNow = Start.AddMinutes(2);
+        _ = store.Recall(new("color"));
+        _ = store.List(new());
+        _ = store.Status(new());
+        int sealsAfterReads = protector.SealCount;
+
+        clock.UtcNow = Start.AddMinutes(91);
+        bool expired = store.Recall(new("reunion")).Records.Count == 0;
+        int sealsAfterExpiry = protector.SealCount;
+        clock.UtcNow = Start.AddMinutes(91 + 61);
+        _ = store.Recall(new("color"));
+        int sealsAfterAnHour = protector.SealCount;
+        clock.UtcNow = Start.AddMinutes(1);
+        LocalMemoryStore restarted = CreateStore(temporary.Path, protector, clock);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sealsAfterReads, Is.EqualTo(sealsAfterSave));
+            Assert.That(expired, Is.True);
+            Assert.That(sealsAfterExpiry, Is.GreaterThan(sealsAfterReads));
+            Assert.That(sealsAfterAnHour, Is.GreaterThan(sealsAfterExpiry));
+            Assert.That(restarted.Recall(new("reunion")).Records, Is.Empty);
+            Assert.That(restarted.Recall(new("color")).Records.Single().Value, Is.EqualTo("azul"));
+        });
+    }
+
+    [Test]
     public void SensitiveAndSecretValuesAreAlwaysRedactedFromRecallAndList()
     {
         using TemporaryDirectory temporary = new();
@@ -1103,8 +1150,11 @@ public sealed class LocalMemoryStoreTests
 
         public string ProtectionMode => "test-aes-gcm";
 
+        public int SealCount { get; private set; }
+
         public byte[] Seal(ReadOnlySpan<byte> plaintext, string purpose)
         {
+            SealCount++;
             byte[] nonce = RandomNumberGenerator.GetBytes(NonceLength);
             byte[] ciphertext = new byte[plaintext.Length];
             byte[] tag = new byte[TagLength];

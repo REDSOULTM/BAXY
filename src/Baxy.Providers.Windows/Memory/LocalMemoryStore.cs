@@ -42,6 +42,7 @@ public sealed class LocalMemoryStore : IMemoryStore
     private const string RecoveryFileName = "recovery.bin";
     private const string WatermarkFileName = "watermark.bin";
     private const string IntentFileName = "mutation.intent";
+    private static readonly TimeSpan ClockPersistenceInterval = TimeSpan.FromHours(1);
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
     private static readonly ConcurrentDictionary<string, object> RootLocks =
         new(StringComparer.OrdinalIgnoreCase);
@@ -976,7 +977,10 @@ public sealed class LocalMemoryStore : IMemoryStore
         int count = state.Records.Count;
         DateTimeOffset previous = state.MaxObservedUtc;
         DateTimeOffset now = AdvanceClockAndPurgeUnsafe(state);
-        if (state.Records.Count != count || state.MaxObservedUtc != previous)
+        // Renew al máximo (R11.4): a read no longer seals and fsyncs a full snapshot just to record a newer time. An
+        // expiry it purges is always persisted and every mutation persists the clock, so a persisted time up to
+        // ClockPersistenceInterval behind can never revive a deleted memory; it only lags the rollback floor.
+        if (state.Records.Count != count || state.MaxObservedUtc - previous >= ClockPersistenceInterval)
         {
             if (generation == long.MaxValue)
             {
