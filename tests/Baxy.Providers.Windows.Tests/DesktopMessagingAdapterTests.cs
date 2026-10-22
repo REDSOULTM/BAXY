@@ -594,6 +594,49 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // Renew al máximo (auditoría de flujos): a line break or a tab typed into a chat is a key of its own (WM_CHAR 13 is
+    // what Enter types, and whether a client sends on it cannot be read), as input.text.type already rules: a message
+    // with a control character is refused before the client is opened or anything typed, and says which it held.
+    [TestCase("message.draft", "recipient", "hola\nchao", 1, "U+000A")]
+    [TestCase("message.send", "recipient", "hola\r\nchao\t.", 3, "U+000D")]
+    [TestCase("message.send.test", "requestedRecipient", "a\u0007b", 1, "U+0007")]
+    public async Task AMessageWithAControlCharacterIsRefusedBeforeAnythingIsOpened(
+        string operation, string recipientField, string text, int count, string first)
+    {
+        string arguments = JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["channel"] = "whatsapp",
+            [recipientField] = "Letras",
+            ["text"] = text,
+        });
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            new DesktopMessageObservation(true, true, "hash", null, "hola chao", "exact"));
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_text_has_control_characters"));
+                Assert.That(automation.Calls, Is.Zero);
+                Assert.That(receipt.Result?.GetProperty("messageWritten").GetBoolean(), Is.False);
+                Assert.That(receipt.Result?.GetProperty("controlCharacterCount").GetInt32(), Is.EqualTo(count));
+                Assert.That(receipt.Result?.GetProperty("controlCharacters")[0].GetString(), Is.EqualTo(first));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {
@@ -613,17 +656,25 @@ public sealed class DesktopMessagingAdapterTests
     {
         internal ResolvedRecipient? SentRecipient { get; private set; }
         internal string? SentText { get; private set; }
+        internal int Calls { get; private set; }
 
         public ValueTask<DesktopClientReadiness> EnsureClientOpenAsync(
             string channel,
-            CancellationToken cancellationToken) =>
-            ValueTask.FromResult(DesktopClientReadiness.AlreadyOpen);
+            CancellationToken cancellationToken)
+        {
+            Calls++;
+            return ValueTask.FromResult(DesktopClientReadiness.AlreadyOpen);
+        }
 
         public ValueTask<DesktopMessageObservation> DraftAsync(
             ResolvedRecipient recipient,
             string text,
-            CancellationToken cancellationToken) =>
-            ValueTask.FromResult(send);
+            CancellationToken cancellationToken)
+        {
+            Calls++;
+            SentText = text;
+            return ValueTask.FromResult(send);
+        }
 
         public ValueTask<DesktopRecipientObservation> ResolveAsync(
             string channel,
@@ -631,6 +682,7 @@ public sealed class DesktopMessagingAdapterTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            Calls++;
             return ValueTask.FromResult(resolve);
         }
 
@@ -640,6 +692,7 @@ public sealed class DesktopMessagingAdapterTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            Calls++;
             SentRecipient = recipient;
             SentText = text;
             return ValueTask.FromResult(send);
