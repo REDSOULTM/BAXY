@@ -331,6 +331,11 @@ HISTORY_CHARS = 24000
 # a turn failed whole. The history keeps the tokens the prefix leaves, less room for the turn: its reply (512) and one
 # result within the kernel's 8 KiB (~3k tokens).
 TURN_ROOM_TOKENS = 3584
+# Al máximo 1.4 (2026-10-22): a history past a bound is cut down to this share of every bound, not just under it. A cut
+# moves the conversation's start, and the model (hybrid: its cache is reused from the front) re-reads all the history
+# after it: 28 % of turn.decide re-read over 500 tokens (p50 761 tokens / 701 ms, p90 2.5k / 1.6 s), and a session at
+# its bound cut one turn at every new one. Cut to 60 %, the next turns grow at its end until the bound again.
+TRIM_TO = 0.6
 # Ronda final 45 (regla 3): what is cut is said where the model reads, or it took what is left for the whole session
 # («nunca me lo dijiste» about a turn no longer shown).
 TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "
@@ -471,6 +476,7 @@ class Mind:
         self.trimmed_turns = 0
         # The tools and the system prompt in tokens, as the server counted them at warm-up (0 before it).
         self.prefix_tokens = 0
+        self._tokens: dict[str, int] = {}  # each turn's text in the conversation and its tokens (_turn_sizes)
         self.constants: dict[str, dict[str, Any]] = {}
         english = json.loads(_ENGLISH_FILE.read_text(encoding="utf-8")) if _ENGLISH_FILE.is_file() else {}
         self.english: dict[str, str] = english.get("tools") or {}
@@ -685,7 +691,7 @@ class Mind:
             # and wordless, as only earlier turns can be trimmed: it keeps its start, halved until it fits, and the cut
             # is said where the model reads it.
             keep = len(text)
-            while keep > CUT_TEXT_FLOOR and self._history_too_long():
+            while keep > CUT_TEXT_FLOOR and not self._fits(self._turn_sizes()):
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text}
@@ -784,25 +790,43 @@ class Mind:
         self._turn = None
 
     def _trim(self) -> None:
-        """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result."""
-        starts = self._turn_starts()
-        dropped = 0
-        while len(starts) > 1 and (len(starts) > HISTORY_TURNS or self._history_too_long()):
-            # From the second turn's clock on: an earlier note of what was cut goes with the first turn.
-            self.conversation = self.conversation[starts[1]:]
+        """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result. Past it, the
+        oldest turns go until what is left fits TRIM_TO of every bound."""
+        turns = self._turn_sizes()
+        if len(turns) <= 1 or self._fits(turns):
+            return
+        dropped = 1
+        while dropped < len(turns) - 1 and not self._fits(turns[dropped:], TRIM_TO):
             dropped += 1
-            starts = self._turn_starts()
-        if dropped:
-            self.trimmed_turns += dropped
-            self.conversation.insert(0, {"role": "user", "content": TRIMMED.format(n=self.trimmed_turns)})
+        # Up to the first kept turn's clock: an earlier note of what was cut goes with the turns cut. In place: an open
+        # turn's conversation is this same list (the notebook's review of 1.1/1.2, 2026-10-22).
+        del self.conversation[:turns[dropped][0]]
+        self.trimmed_turns += dropped
+        self.conversation.insert(0, {"role": "user", "content": TRIMMED.format(n=self.trimmed_turns)})
 
-    def _history_too_long(self) -> bool:
-        text = "".join(json.dumps(m, ensure_ascii=False) for m in self.conversation)
-        if len(text) > HISTORY_CHARS:
-            return True
-        if not self.prefix_tokens:
-            return False
-        return len(self.server.tokenize(text)) > self.server.context - self.prefix_tokens - TURN_ROOM_TOKENS
+    def _turn_sizes(self) -> list[tuple[int, int, int]]:
+        """Each turn of the conversation as (its first message, characters, tokens); the first turn takes in what comes
+        before its clock (the note of a cut, a bench's history). Al máximo 1.3/1.4 (2026-10-22): the whole history went
+        to /tokenize at every check, and the cut checked again after each turn it took out; now each turn's text is
+        counted once and kept (their sum differs from the whole text's by a token at most where two turns meet), so a
+        check counts only the turns that changed (the open one, the one before once its answer came) and a cut counts
+        nothing more. The last reply's
+        usage.prompt_tokens was not used: it does not count what came after that reply (a result, the clock, the
+        request), and the template's own tokens are not the history's."""
+        if not self.conversation:
+            return []
+        bounds = [0, *self._turn_starts()[1:], len(self.conversation)]
+        texts = ["".join(json.dumps(m, ensure_ascii=False) for m in self.conversation[a:b])
+                 for a, b in zip(bounds, bounds[1:])]
+        if self.prefix_tokens:
+            self._tokens = {t: self._tokens[t] if t in self._tokens else len(self.server.tokenize(t)) for t in texts}
+        return [(a, len(t), self._tokens.get(t, 0)) for a, t in zip(bounds, texts)]
+
+    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0) -> bool:
+        """Whether these turns fit `share` of every bound: turns, characters and the tokens the prefix leaves."""
+        room = self.server.context - self.prefix_tokens - TURN_ROOM_TOKENS
+        return (len(turns) <= HISTORY_TURNS * share and sum(t[1] for t in turns) <= HISTORY_CHARS * share
+                and (not self.prefix_tokens or sum(t[2] for t in turns) <= room * share))
 
     def _turn_starts(self) -> list[int]:
         return [i for i, m in enumerate(self.conversation)
@@ -932,9 +956,13 @@ class Mind:
                 # A fixed seed: the same conversation gets the same decision, so two runs of a bench differ by the
                 # change measured, not by sampling noise (±3 of 90 without it). Review 2026-10-22: BAXY_RENEW_SEED moves
                 # it, to measure that noise (0 by default).
-                "seed": self.seed,
-                # The decision's own token probabilities, for its doubt in the trace (doubt.py): same call, no other pass.
-                "logprobs": True, "top_logprobs": 10}
+                "seed": self.seed}
+        if self._doubted(stage, turn, final):
+            # The decision's own token probabilities, for its doubt (doubt.py, System One) and the trace: same call, no
+            # other pass. Al máximo 9.5 (2026-10-22): only where the doubt is read; elsewhere (turn.continue, the last
+            # answer, the heartbeat) the server sorted the vocabulary at every token for a doubt only the trace kept,
+            # which those rows no longer carry (−20 to −100 ms per call, expected).
+            body.update(logprobs=True, top_logprobs=10)
         if final:
             # The last answer of an exhausted turn is words only. The tools stay, so the cached prefix (37k tokens)
             # is not evicted by a shorter prompt (llama.cpp PR #24176: a restore re-reads ~4k tokens; measured 2.3-3.6 s
@@ -1005,6 +1033,12 @@ class Mind:
             conv.append({"role": "assistant", "content": content})
         return self._result(request_id, turn, None, reply, stage, started, content)
 
+    @staticmethod
+    def _doubted(stage: str, turn: dict[str, Any], final: bool) -> bool:
+        """Whether this call's decision is read for its doubt: a person's turn deciding, not its last answer, a
+        continuation or a heartbeat."""
+        return stage == "turn.decide" and not final and not turn.get("beat")
+
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
@@ -1012,7 +1046,7 @@ class Mind:
         decision model is asked which of the model's own candidates the person meant, and a different answer holds it —
         or, with BAXY_S1_CORRECT=1 and a tool of CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking
         and confirming are never held: they already put the person in the loop."""
-        if final or stage != "turn.decide" or turn.get("beat"):
+        if not self._doubted(stage, turn, final):
             return None
         if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
             return None
