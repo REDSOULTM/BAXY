@@ -63,3 +63,8 @@ tras otra.
    de la copia y el número de rutas sustituidas, sin leer el texto de los casos.
 6. **Métrica secundaria pre-registrada** en decisión: acciones equivocadas ejecutadas, con su McNemar; los gemelos de
    dictado con error estándar agrupado por pareja.
+
+## Cambio del dueño (2026-10-22 ~19:10)
+
+El latido queda apagado y fuera del goal: **no se corren las escenas del holdout v4** (90). Decisión, e2e y falsedades se
+corren como está escrito.

@@ -3002,3 +3002,7 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   operación, aviso cada 10 s) + lv-ctx (1.5) + w2-voz2 (9.2a/b, 9.4); en curso t3final y w2-flujos-core. Suites:
   Kernel 661, Contracts 74, App 67, Setup 477, pytest 273. 11.5 con el efecto tipado alcanza también a weather.current
   (una ciudad recordada en la memoria pide el sí antes de salir): lado seguro, anotado como límite.
+- **Decisión del dueño 2026-10-22 ~19:10:** el latido queda FUERA y DESHABILITADO; no se trabaja más en él («aporta poco
+  al usuario final»). fx-latido e895fcd0d: Heartbeat.Enabled sólo con BAXY_RENEW_HEARTBEAT=1 (antes, salvo =0). 10.2
+  (w2-beat2, w2-beat2-min) no se integra ni se mide; sus escenas se cortaron. En el cierre no se corren las escenas del
+  holdout v4 (el banco del latido); lo ya fusionado del latido (tanda 5) queda inactivo con el latido apagado.
