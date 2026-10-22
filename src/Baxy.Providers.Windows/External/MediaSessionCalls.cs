@@ -147,7 +147,7 @@ internal static class MediaSessionCalls
                 .ConfigureAwait(false);
     }
 
-    private static async Task<UserMediaSession> ReadOneAsync(GlobalSystemMediaTransportControlsSession session)
+    internal static async Task<UserMediaSession> ReadOneAsync(GlobalSystemMediaTransportControlsSession session)
     {
         string title = string.Empty;
         string artist = string.Empty;
