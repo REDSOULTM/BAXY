@@ -947,7 +947,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 return UnverifiedChat(handle, processId, composerUntouched: true) with { EffectObserved = true };
             }
 
-            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after ctrl+k");
             // C5: the switcher opens with an empty input, so nothing is deleted before the name; a selection that
             // shows text in the conversation's composer means the keys go there, onto the person's draft.
             if (await ComposerHoldsTextAsync(
@@ -961,7 +960,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             SendText(recipient);
             (bool named, string? row) = await AwaitNamedResultAsync(
                 Read, name => RowNamesRecipient(name, recipient), InteractionPoll, cancellationToken).ConfigureAwait(false);
-            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"discord: after typing «{recipient}», named {named}");
             if (named)
             {
                 // No stray modifier key-up is sent here: a lone Alt release activates
@@ -982,7 +980,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     ChatTitleBudget,
                     ChatTitlePoll,
                     cancellationToken).ConfigureAwait(false);
-                AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after click, title " + WindowTitle(handle));
                 if (opened)
                 {
                     return new(true, true, handle, processId, null, shown);
@@ -1310,7 +1307,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
             if (expired)
             {
-                await AuditUnverifiedDraftAsync(before, bitmap, cancellationToken).ConfigureAwait(false);
                 return new(bitmap, false, null, null);
             }
 
@@ -1705,59 +1701,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         string text = string.Join('\n', readings);
-        AuditReading(bitmap, text);
         return text;
-    }
-
-    // Opt-in evidence of what the OCR saw (crop and the joined readings): set
-    // BAXY_MESSAGING_OCR_AUDIT_DIR to a directory.
-    private static void AuditReading(byte[] bitmap, string text)
-    {
-        string? directory = Environment.GetEnvironmentVariable("BAXY_MESSAGING_OCR_AUDIT_DIR");
-        if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-        {
-            return;
-        }
-
-        try
-        {
-            string stem = Path.Combine(
-                directory,
-                $"{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}-{Environment.ProcessId}");
-            File.WriteAllBytes(stem + ".bmp", bitmap);
-            File.WriteAllText(stem + ".txt", text, Encoding.UTF8);
-        }
-        catch (IOException)
-        {
-            // The audit never changes delivery evidence.
-        }
-    }
-
-    // With the audit on, an unverified draft keeps the band before typing and the
-    // last band seen (read even when unchanged, so its OCR is kept too).
-    private static async ValueTask AuditUnverifiedDraftAsync(
-        byte[] before,
-        byte[] observed,
-        CancellationToken cancellationToken)
-    {
-        string? directory = Environment.GetEnvironmentVariable("BAXY_MESSAGING_OCR_AUDIT_DIR");
-        if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-        {
-            return;
-        }
-
-        try
-        {
-            File.WriteAllBytes(
-                Path.Combine(directory, $"{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}-{Environment.ProcessId}-draft-before.bmp"),
-                before);
-        }
-        catch (IOException)
-        {
-            // The audit never changes delivery evidence.
-        }
-
-        _ = await ReadTextAsync(observed, cancellationToken).ConfigureAwait(false);
     }
 
     private static byte[] Upscale2xNearest(byte[] bitmap)
