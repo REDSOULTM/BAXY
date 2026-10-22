@@ -87,6 +87,12 @@ internal interface IViewedFields
     ValueTask<System.Text.Json.JsonDocument?> CaretTextAsync(
         nint window, int processId, int maximum, CancellationToken cancellationToken) =>
         ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
+
+    /// <summary>Renew al máximo (7.1): the view of <paramref name="window"/> read again after a completed act, as the
+    /// difference from its last view (which it replaces); null when it was not read (no last view of that window, a
+    /// read that failed or ran out of time).</summary>
+    ValueTask<System.Text.Json.JsonElement?> AfterActAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<System.Text.Json.JsonElement?>(null);
 }
 
 internal readonly record struct WindowIdentity(nint Window, int ProcessId, long Created)

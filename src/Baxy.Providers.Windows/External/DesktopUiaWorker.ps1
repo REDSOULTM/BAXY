@@ -2588,7 +2588,12 @@ function Do-View($request){
   # Ronda 25 (latencia): una sola busqueda del arbol. Los deshabilitados que se ven llegan en el mismo recorrido y se
   # apartan aqui (Get-DisabledShown los lista); el resto de la vista lee solo los habilitados, como antes.
   $withDimmed=($request.disabled -ne $false)
-  $all=Get-ShownDescendants $root ([long]$target.hwnd) 0 $withDimmed
+  # Renew al maximo (7.1): la relectura tras un acto trae su propio plazo («seconds», nunca mas que el de una mirada),
+  # por debajo del que el host la espera: pasado, la vista sale «partial» en vez de que maten al worker.
+  $walkSeconds=0.0
+  try { if($null -ne $request.seconds){ $walkSeconds=[double]$request.seconds } } catch { $walkSeconds=0.0 }
+  if($walkSeconds -gt $script:ViewSeconds){ $walkSeconds=$script:ViewSeconds }
+  $all=Get-ShownDescendants $root ([long]$target.hwnd) $walkSeconds $withDimmed
   $dimmed=New-Object System.Collections.Generic.List[object]
   if($withDimmed){
     $lit=New-Object System.Collections.Generic.List[object]
