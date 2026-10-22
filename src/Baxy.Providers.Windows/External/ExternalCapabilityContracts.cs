@@ -39,6 +39,17 @@ public interface IExternalCapabilityProvider
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Al máximo, flujos: read only, before the person is asked for the call. A receipt that fails before any effect
+    /// when the target the call names is not there once (none, or several, with its candidates); null when it is, or
+    /// when the operation has no such read. The call itself resolves again.
+    /// </summary>
+    ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken) =>
+        ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
 }
 
 public sealed record InstalledGameCatalogEntry(

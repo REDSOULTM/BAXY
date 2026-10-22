@@ -327,6 +327,35 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Al máximo, flujos («¿Borro viejo.txt?» → «sí» → «no existe»): the name is looked up before the person is asked;
+    // none or several is that refusal now (with its places), one leaves the call to ask; the read trashes nothing.
+    [Test]
+    public async Task TheReadBeforeTheYesRefusesANameThatIsNotThereOnce()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, FolderRecycleBin bin) = Folders(temporary);
+        await File.WriteAllTextAsync(Path.Combine(desktop, "notas.txt"), "x");
+        await File.WriteAllTextAsync(Path.Combine(documents, "notas.txt"), "x");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "viejo.txt"), "x");
+
+        ExternalCapabilityReceipt? missing = await adapter.PreflightAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"nada.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt? ambiguous = await adapter.PreflightAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"notas.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt? one = await adapter.PreflightAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"viejo.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing?.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(ambiguous?.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+            Assert.That(ambiguous?.Result?.GetProperty("candidates").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(one, Is.Null);
+            Assert.That(bin.Recycled, Is.Empty);
+            Assert.That(File.Exists(Path.Combine(desktop, "viejo.txt")), Is.True);
+        });
+    }
+
     [TestCase("", 0)]
     [TestCase("uno", 1)]
     [TestCase("uno\n", 1)]

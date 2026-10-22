@@ -166,6 +166,44 @@ public sealed class ExternalCapabilityHandlerTests
             adapter.InvokeAsync(operation, arguments, cancellationToken);
     }
 
+    // Al máximo, flujos: what the provider reads of the target before the person is asked becomes the invocation's end
+    // only as a failure before any effect; anything else leaves the call to ask and run.
+    [Test]
+    public async Task AReadBeforeTheYesEndsTheCallOnlyAsAFailureBeforeAnyEffect()
+    {
+        JsonElement walked = Json("""{"searchedFolders":["desktop"]}""");
+        var missing = new ExternalCapabilityReceipt("filesystem.known.trash.named", false, false, walked, "known_file_not_found");
+
+        InvocationPreflightResult refused = await Preflight(missing);
+        InvocationPreflightResult afterAnEffect = await Preflight(missing with { EffectMayHaveOccurred = true });
+        InvocationPreflightResult another = await Preflight(missing with { Operation = "file.read" });
+        InvocationPreflightResult nothing = await Preflight(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused.Failure?.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(refused.Failure?.Result?.GetProperty("searchedFolders").GetArrayLength(), Is.EqualTo(1));
+            Assert.That(afterAnEffect, Is.SameAs(InvocationPreflightResult.Proceed));
+            Assert.That(another, Is.SameAs(InvocationPreflightResult.Proceed));
+            Assert.That(nothing, Is.SameAs(InvocationPreflightResult.Proceed));
+        });
+    }
+
+    private static ValueTask<InvocationPreflightResult> Preflight(ExternalCapabilityReceipt? found) =>
+        new ExternalCapabilityHandler("filesystem.known.trash.named", new PreflightProvider(found)).PreflightAsync(
+            Json("""{"folder":"desktop","fileName":"viejo.txt"}"""), CancellationToken.None);
+
+    private sealed class PreflightProvider(ExternalCapabilityReceipt? found) : IExternalCapabilityProvider
+    {
+        public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+            string operation, JsonElement arguments, CancellationToken cancellationToken) =>
+            throw new AssertionException("a read runs nothing");
+
+        public ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+            string operation, JsonElement arguments, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(found);
+    }
+
     private static ValueTask<OperationOutcome> Handle(ExternalCapabilityReceipt receipt) =>
         new ExternalCapabilityHandler("wifi.disconnect", new FixedProvider(receipt)).ExecuteAsync(
             new OperationInvocation("request", "mission", "invocation", Json("{}")), CancellationToken.None);

@@ -414,12 +414,73 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             ? value.GetString()!.Trim()
             : null;
 
+    // Al máximo, flujos: the name looked up before the person is asked; a name that names no one target fails here.
+    public ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (operation != "filesystem.known.trash.named")
+            return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+        try
+        {
+            (string Label, string Root)[] roots = Roots(ExternalJson.RequiredString(arguments, "folder"));
+            if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectory))
+                roots = SubdirectoryRoots(roots, subdirectory.GetString()?.Trim()
+                    ?? throw new InvalidDataException("known_subdirectory_invalid"));
+            return ValueTask.FromResult(TrashTarget(operation, roots, arguments, out _));
+        }
+        catch (Exception exception) when (exception is InvalidDataException or IOException
+            or UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+        }
+    }
+
     private ExternalCapabilityReceipt Trash(
         string operation,
         IReadOnlyList<(string Label, string Root)> roots,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary)
     {
+        if (TrashTarget(operation, roots, arguments, out KnownEntry target) is { } refused)
+            return refused;
+        string fileName = ExternalJson.RequiredString(arguments, "fileName").Trim();
+        (string label, _, string source) = target;
+        bool isFolder = Directory.Exists(source);
+        int entries = isFolder
+            ? Directory.EnumerateFileSystemEntries(source, "*", SearchOption.AllDirectories).Count()
+            : 0;
+        // To the Windows Recycle Bin, where the person restores it (BAXY Renew audit 2026-10-15: it went to a private
+        // trash that nothing restored from). When the bin cannot take it, it stays where it was.
+        effectBoundary.Cross();
+        if (!_recycleBin.Recycle(source))
+            return ExternalJson.Failure(operation, "known_file_not_recycled");
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("reviewLabel", fileName); writer.WriteString("folder", label);
+            writer.WriteBoolean("sourceAbsent", true);
+            writer.WriteBoolean("inRecycleBin", true);
+            writer.WriteBoolean("isFolder", isFolder);
+            if (isFolder)
+                writer.WriteNumber("entries", entries);
+            writer.WriteString("authority", "windows_recycle_bin_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: true);
+    }
+
+    // The one file or folder of that name in the known folders, or the refusal: an invalid name, none (with the folders
+    // walked) or several (with their places).
+    private ExternalCapabilityReceipt? TrashTarget(
+        string operation,
+        IReadOnlyList<(string Label, string Root)> roots,
+        JsonElement arguments,
+        out KnownEntry target)
+    {
+        target = default;
         string fileName = ExternalJson.RequiredString(arguments, "fileName").Trim();
         if (fileName != Path.GetFileName(fileName)
             || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
@@ -450,29 +511,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             }), "known_file_not_found");
         }
         if (matches.Length > 1) return CandidatesRefusal(operation, "known_file_ambiguous", matches);
-        (string label, _, string source) = matches[0];
-        bool isFolder = Directory.Exists(source);
-        int entries = isFolder
-            ? Directory.EnumerateFileSystemEntries(source, "*", SearchOption.AllDirectories).Count()
-            : 0;
-        // To the Windows Recycle Bin, where the person restores it (BAXY Renew audit 2026-10-15: it went to a private
-        // trash that nothing restored from). When the bin cannot take it, it stays where it was.
-        effectBoundary.Cross();
-        if (!_recycleBin.Recycle(source))
-            return ExternalJson.Failure(operation, "known_file_not_recycled");
-        JsonElement result = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("reviewLabel", fileName); writer.WriteString("folder", label);
-            writer.WriteBoolean("sourceAbsent", true);
-            writer.WriteBoolean("inRecycleBin", true);
-            writer.WriteBoolean("isFolder", isFolder);
-            if (isFolder)
-                writer.WriteNumber("entries", entries);
-            writer.WriteString("authority", "windows_recycle_bin_postread");
-            writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, result, effectObserved: true);
+        target = matches[0];
+        return null;
     }
 
     // file.read (BAXY Renew agent tools, 2026-10-15; before, document.text.read REOPEN1957 H0299 and

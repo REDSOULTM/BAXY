@@ -493,6 +493,13 @@ internal interface IExternalOperationAdapter
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken);
+
+    // Al máximo, flujos: IExternalCapabilityProvider.PreflightAsync, for the operations this adapter claims.
+    ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken) =>
+        ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
 }
 
 // Name: the recipient the model asked for, matched (folded, whole) against what the client shows. Shown: what the
