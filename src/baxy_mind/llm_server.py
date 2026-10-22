@@ -51,11 +51,17 @@ class LlmServer:
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
             # they reach the GPU (measured on the PC 2026-10-15: RAM 3237 → 1132 MiB, same VRAM 3905 MiB and speed).
             "--load-mode", "none",
-            # The prompt cache in RAM holds a prompt the slot set aside (a heartbeat between two turns): at most 1.5 GB
-            # instead of 8 GB, so the harness stays under 4 GB of RAM (one 37k prompt with its state is ~0.7 GB).
-            # Checkpoints stay at llama.cpp's spacing: every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM
-            # (decision2 d6 vs d6b, 2026-10-15) once the last answer of a turn keeps the tools and the prefix.
-            "-cram", "1536",
+            # Al máximo 3.3 (2026-10-22): no prompt cache in RAM, and at most 10 context checkpoints instead of 32. The
+            # cache (1,536 MiB) held nothing: it only takes a prompt the slot is losing over half of (f_keep < 0.5,
+            # server-context.cpp:1751 at b11609), and no prompt with its state and checkpoints fit it
+            # (server-task.cpp:1735). The checkpoints live in RAM (~50 MiB each): up to ~1.1 GB less in a long session
+            # (the notebook's count, not yet measured). With the list full llama.cpp first drops the other tasks'
+            # checkpoints closer than -cms to the one before, never the first, then the oldest
+            # (server-context.cpp:2537-2563), so the one at the prefix's end stays. The two flags go together: with 10
+            # checkpoints a prompt would fit the cache, and the RAM would grow instead. The spacing stays llama.cpp's
+            # (every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM, decision2 d6 vs d6b, 2026-10-15). Watch
+            # «erasing old context checkpoint» with n_tokens ≈ the prefix in llama-server.log: it should stay at 0.
+            "-cram", "0", "-ctxcp", "10",
         ] + vision + self.extra_args
         # A state a vision question set aside and never put back holds the person's conversation: none is kept.
         if held := os.environ.get("BAXY_VISION_SLOT_DIR", "").strip():

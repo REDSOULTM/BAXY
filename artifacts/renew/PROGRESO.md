@@ -2881,3 +2881,54 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   Laya corrige hacia storage.removable.list en las 3 semillas). **4.1 RETIRADA** (d4d2d39d2, su cifra en el commit).
   Quedan 3.3, 1.4 y 9.5, que no cambian decisiones de un turno: su medida (RAM, prompt_n en sesión larga, ms por
   continuación) la hace el notebook en una sesión de 22 turnos.
+- 15:5x **tanda 3 (prefijo) en decision2** S1 on ×3 (lv-t3 00d7df344, −698 tokens de prefijo): 229 / 226 / 229 (media
+  228,0) frente a 229,67: Δ −1,67, IC95 [−6,0; +2,33], McNemar p 0,69 (dentro del ruido). Cambios consistentes en las 3
+  semillas: P017 (alarma) pasa a pregunta de duda, P215 elige package.uninstall en vez de game.uninstall.named, P254
+  (OBS) se arregla con la descripción de game_entitlement_named. Bisección por commit sobre los 9 casos que cambian
+  (`renew_v4\d2_sub.json`) en cola en la GPU.
+- Tanda 2 (lv-t2: 8.2, 7.7, 11.1, 11.2; Kernel 633, App 27, pytest 174) pedida al NB en falsedades + e2e. Tanda 4
+  (lv-t4: 4.2 y 8.1; **4.4 no se implementa**: por clase de riesgo los datos no separan con honestidad, la ganancia
+  viene de MASSIVE y elegir entre ~100 combinaciones sobreajusta; **4.5 retirada**: ningún umbral retiene <2 % de
+  acciones buenas; a <0,3, 12,9 %) en cola de decision2. Tanda 5 (5.1 efecto tipado, R10.1, R10.3, 10.3-10.5) en curso.
+- 15:51 (NB) **línea base e2e** de práctica sobre 86991ca9d (30 casos, semillas 0-2 intercaladas): S1 ON 20/20/24 =
+  21,33; S1 OFF 18/23/24 = 21,67; Δ(OFF−ON) +0,33, IC95 [−2,33; +3,33], McNemar p 0,25; pass^3 ON 18 / OFF 16. En e2e
+  S1 no se distingue del ruido.
+- 15:5x fusionado hub/nb-maximo 153b7a068 (69a306d00): tanda 0 del NB (revisión de providers) y su tanda 2 (6.1, 6.2,
+  6.3, 6.6, 6.7); display.mode.set nuevo (dura hasta reiniciar; pedir el mismo modo lo guarda) aceptado. Pendiente mío:
+  frases de descripción que pidió el NB (t3b) y B-APP-10 (retirar el proveedor de la Calculadora) tras la tanda 5.
+- **Incidente 2026-10-22 ~16:00 (tanda 5):** el subagente de la tanda 5, para ver el formato de las horas del latido,
+  imprimió los campos `now`, `due`, `reminders` y `events` de 5 escenas (L004, S011, S012, S020, S035) de
+  `F:\BAXYeval\renew_v1\escenas\holdout_latido.json` (holdout de ayudas, ya gastado) y de `escenas\sealed.json`
+  (holdout sellado v1 de escenas), contra la regla del prompt. Sólo usó el formato ISO con zona; no ajustó nada con
+  ellos. Consecuencia: **`renew_v1\escenas\sealed.json` deja de ser un holdout limpio** (5 escenas vistas en parte); no
+  se usa para ninguna decisión de este goal. El holdout del cierre es renew_v4, que nadie ha abierto (sha en metas.json).
+  Se avisará al dueño en el informe.
+- 16:0x **tanda 1 depurada** (3.3, 1.4, 9.5) en decision2 S1 ×3: 229 / 232 / 229 (230,0) frente a 229,67, Δ +0,33, IC95
+  [−1,0; +1,67]: no cambia decisiones. Fusionada (9d6ea550a); su ganancia (RAM con 3.3, relecturas con 1.4, ms por
+  continuación con 9.5) la mide el NB en sesión larga; si no gana, se revierte.
+- 16:2x **tanda 4** (lv-t4 b6b731f94: 4.2 una pregunta por malentendido + 8.1 registro de la sesión en el reloj) en
+  decision2 S1 ×3 frente a la tanda 1 depurada: 229 / 228 / 229 (228,67) frente a 230,0, Δ −1,33, IC95 [−6,0; +3,33],
+  McNemar p 0,73: dentro del ruido. 8.1 se juzga en falsedades: brazo C de las falsedades del PC (A = 11347dd0d, B =
+  lv-t2, C = lv-t4; semillas 0-5) tras la tanda 5. t3b (descripciones del NB + open_recovery) lista en lv-t3b.
+- 16:3x **bisección de la tanda 3** (9 casos que cambiaban, S1 ×3; aciertos de 27): base 18, +P2.2 16, +P2.2i 18, +P2.3
+  13, +P2.6 13. **P2.3 RETIRADA** (P215 desinstalar un juego 3/3 → 0/3, elige package.uninstall; P254 3/3 → 1/3; los
+  −316 tokens no compensan; 9b44a08cb en lv-t3b). F005 del NB arreglado y fusionado (f86234070: confirm_pending sin
+  nada pendiente no llega a la App). game.launch con `title` requerido (F001/F016: lanzaba el único juego instalado por
+  otro título): esquema y descripción míos + proveedor del NB, en lv-t3b 15a5d73a0 (Kernel 618, pytest 172; catálogo de
+  medida `renew_v4\catalog-t3b.json`, que difiere de catalog-max sólo en game.launch y game.entitlement.named).
+  lv-t3b (t3 sin P2.3 + t3b + game.launch) en cola de decision2 tras la tanda 5; luego falsedades A/B/C.
+- 16:4x **tanda 5** (lv-t5 d445b6ae0: 5.1 efecto tipado, R10.1, R10.3, 10.3, 10.4, 10.5) en decision2 S1 ×3 con
+  catalog-max (sin el campo `effects`, así que 5.1 no actúa): 230 / 227 / 228 (228,33) frente a la tanda 4 228,67:
+  Δ −0,33, IC95 [−3,0; +2,33]. Con el catálogo de la tanda 5 (`renew_v4\catalog-t5.json`, 51 de 180 operaciones con
+  efecto) se mide antes de las falsedades: es el costo de que «corrige» no rellene herramientas de ventana o de red.
+  Escenas de la tanda 5 (3 réplicas por edición neutra frente a la tanda 4) en curso.
+- 16:38 (NB) **tanda 1 en sesión larga** (22 turnos reales por el conductor, S1 on, 2 rondas intercaladas): pico USS de
+  llama-server (Qwen) base ca9d75de0 3 123 / 2 920 MiB; con 3.3 2 078 / 2 077; 3.3+1.4 2 077 / 2 074 → **3.3 quita ~950
+  MiB de pico** (privada 8,0 → 6,9 GB), estable. Relectura de turn.decide (suma de prompt_ms): base 19,3 / 19,7 s; sólo
+  3.3 21,5 / 23,3 s (relee algo más sin -cram); **3.3+1.4 15,9 / 12,9 s (−4 a −7 s)**; decides con prompt_n >1 500: base
+  4/5, 3.3+1.4 3/0. «erasing old context checkpoint» = 0 en las 6 corridas. **3.3 y 1.4 se quedan** (ya en renew-maximo).
+  9.5 no se distingue en esta medida (sin regresión).
+- 16:42 (NB) **3.1 Laya con -dev none** (7ba30ec05, traída a renew-maximo como 56754a091): Laya sola en 60 pedidos de d2
+  — sin -dev none 190-224 MiB de VRAM y 140 ms p50; con -dev none 0 MiB y 687 ms p50 (828 p90); elige lo mismo 60/60.
+  Producto S1 on: VRAM 4 091 → **3 902 MiB** (= S1 apagado), RAM 2 637-2 852 MiB. Costo: ~+0,55 s sólo en turnos dudosos
+  (~20 %). Se queda: el techo de 4 GB es duro y estaba a 5 MiB.
