@@ -130,7 +130,10 @@ public sealed record ApplicationWindowStatusResult(
     bool HasVisibleWindow,
     int VisibleWindowCount,
     bool Verified,
-    string? ErrorCode);
+    string? ErrorCode,
+    // BAXY Renew al máximo, F002: who each visible window is (its handle, process id and process creation time), so
+    // whether BAXY launched it is told beside the count (LaunchProvenance).
+    IReadOnlyList<(long WindowHandle, int ProcessId, long ProcessCreationTimeUtcTicks)>? VisibleWindows = null);
 
 public interface IApplicationInventoryProvider
 {

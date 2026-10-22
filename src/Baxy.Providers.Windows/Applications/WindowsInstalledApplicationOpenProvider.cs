@@ -658,16 +658,20 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        int visibleWindowCount = observations.Count(static observation =>
-            observation.Visible && observation.WindowHandle != 0);
+        (long, int, long)[] visibleWindows = observations
+            .Where(static observation => observation.Visible && observation.WindowHandle != 0)
+            .Select(static observation =>
+                (observation.WindowHandle, observation.ProcessId, observation.ProcessCreationTimeUtcTicks))
+            .ToArray();
         return new(
             applicationName,
             resolution.Entry.Name,
             Installed: true,
-            HasVisibleWindow: visibleWindowCount > 0,
-            VisibleWindowCount: visibleWindowCount,
+            HasVisibleWindow: visibleWindows.Length > 0,
+            VisibleWindowCount: visibleWindows.Length,
             Verified: true,
-            ErrorCode: null);
+            ErrorCode: null,
+            VisibleWindows: visibleWindows);
     }
 
     // resolving: the application an opening resolves on the catalog (app.open), null for any other read.

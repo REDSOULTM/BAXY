@@ -686,6 +686,8 @@ internal static class WindowControlResultJson
             writer.WriteNumber("zOrder", zOrder);
         if (window.Topmost)
             writer.WriteBoolean("topmost", true);
+        if (window.OpenedByBaxy is bool opened)
+            writer.WriteBoolean("openedByBaxy", opened);
         if (window.WorkAreaWidth is int workWidth && window.WorkAreaHeight is int workHeight)
         {
             writer.WriteNumber("workAreaWidth", workWidth);

@@ -44,7 +44,10 @@ public sealed record WindowCandidate(
     int? ZOrder = null,
     bool Topmost = false,
     int? WorkAreaWidth = null,
-    int? WorkAreaHeight = null);
+    int? WorkAreaHeight = null,
+    // BAXY Renew al máximo, F002: whether a verified opening of BAXY launched it in this run (LaunchProvenance), on
+    // the reads that tell which windows are open; null when that cannot be told or the result does not say it.
+    bool? OpenedByBaxy = null);
 
 public sealed record WindowResolveResult(
     bool Succeeded,

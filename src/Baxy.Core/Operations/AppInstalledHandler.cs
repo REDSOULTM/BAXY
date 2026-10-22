@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Text.Json;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Applications;
+using Baxy.Providers.Windows.Windows;
 
 namespace Baxy.Core.Operations;
 
@@ -59,11 +60,14 @@ internal sealed class AppInstalledHandler(IApplicationInventoryProvider provider
     }
 }
 
-internal sealed class ApplicationWindowStatusHandler(IApplicationInventoryProvider provider)
+internal sealed class ApplicationWindowStatusHandler(
+    IApplicationInventoryProvider provider,
+    LaunchProvenance? provenance = null)
     : IOperationHandler
 {
     private readonly IApplicationInventoryProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
+    private readonly LaunchProvenance _provenance = provenance ?? LaunchProvenance.Shared;
 
     public OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("window.application.status");
@@ -94,6 +98,10 @@ internal sealed class ApplicationWindowStatusHandler(IApplicationInventoryProvid
                 writer.WriteBoolean("installed", true);
                 writer.WriteBoolean("hasVisibleWindow", observed.HasVisibleWindow);
                 writer.WriteNumber("visibleWindowCount", observed.VisibleWindowCount);
+                // BAXY Renew al máximo, F002 («¿abriste Spotify?» sobre el Spotify que la persona ya tenía → «Sí»):
+                // whether BAXY launched one of its windows in this run; left out when that cannot be told.
+                if (OpenedByBaxy(observed.VisibleWindows) is bool opened)
+                    writer.WriteBoolean("openedByBaxy", opened);
             }
             else writer.WriteBoolean("inStartCatalog", false);
             writer.WriteString("authority", "windows_start_catalog_and_visible_window_snapshot");
@@ -101,5 +109,25 @@ internal sealed class ApplicationWindowStatusHandler(IApplicationInventoryProvid
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
         return OperationOutcome.Success(document.RootElement.Clone());
+    }
+
+    // True when BAXY launched any of the windows, false when it launched none of them, null with no window or when one
+    // of them cannot be told.
+    private bool? OpenedByBaxy(
+        IReadOnlyList<(long WindowHandle, int ProcessId, long ProcessCreationTimeUtcTicks)>? windows)
+    {
+        if (windows is not { Count: > 0 })
+            return null;
+        bool? opened = false;
+        foreach ((long handle, int processId, long creation) in windows)
+        {
+            bool? launched = _provenance.Launched(handle, processId, creation);
+            if (launched == true)
+                return true;
+            if (launched is null)
+                opened = null;
+        }
+
+        return opened;
     }
 }

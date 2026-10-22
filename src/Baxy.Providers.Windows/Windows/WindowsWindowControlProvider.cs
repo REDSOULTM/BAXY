@@ -116,7 +116,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
 
         string windowId = Issue(snapshot.Identity);
-        WindowCandidate candidate = ToCandidate(snapshot, windowId);
+        WindowCandidate candidate = WithProvenance(ToCandidate(snapshot, windowId), snapshot.Identity);
         bool verified = baxyInFront is null
             ? candidate.Foreground && _verifier.Verify(snapshot.Identity, candidate, expectedAction: null)
             : !candidate.Foreground && _verifier.Verify(snapshot.Identity, candidate, expectedAction: null)
@@ -199,7 +199,8 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         {
             cancellationToken.ThrowIfCancellationRequested();
             string windowId = Issue(snapshot.Identity);
-            WindowCandidate candidate = WithStanding(ToCandidate(snapshot, windowId), snapshot.Identity);
+            WindowCandidate candidate = WithProvenance(
+                WithStanding(ToCandidate(snapshot, windowId), snapshot.Identity), snapshot.Identity);
             if (!_verifier.Verify(snapshot.Identity, candidate, expectedAction: null))
             {
                 Revoke(windowId);
@@ -261,7 +262,8 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 WindowSnapshot snapshot = _platform.Observe(identity);
                 string windowId = Issue(identity);
                 issued.Add(windowId);
-                WindowCandidate candidate = WithStanding(ToCandidate(snapshot, windowId), identity);
+                WindowCandidate candidate = WithProvenance(
+                    WithStanding(ToCandidate(snapshot, windowId), identity), identity);
                 if (!_verifier.Verify(identity, candidate, expectedAction: null))
                     return new(false, false, [], WindowControlErrorCodes.VerificationFailed);
                 candidates.Add(candidate);
@@ -1429,6 +1431,15 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 WorkAreaHeight = standing.WorkArea?.Height,
             };
     }
+
+    // BAXY Renew al máximo, F002 («¿abriste Spotify?» sobre el Spotify de la persona → «Sí»): a read that tells which
+    // windows are open says beside each whether BAXY launched it in this run, as a fact.
+    private WindowCandidate WithProvenance(WindowCandidate candidate, WindowIdentity identity) =>
+        candidate with
+        {
+            OpenedByBaxy = _provenance.Launched(
+                identity.Handle, identity.ProcessId, identity.ProcessCreationTimeUtcTicks),
+        };
 
     private static WindowCandidate ToCandidate(WindowSnapshot snapshot, string id) =>
         new(id, snapshot.Identity.ProcessId, snapshot.Identity.ProcessName,
