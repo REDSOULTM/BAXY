@@ -4242,11 +4242,20 @@ public sealed class ExternalAdaptersTests
             pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
         await pipe.WaitForConnectionAsync();
         using var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
-        using var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true) { AutoFlush = true };
-        string request = await reader.ReadLineAsync() ?? throw new IOException("No request.");
-        await writer.WriteLineAsync(answer(request));
-        while (await reader.ReadLineAsync() is not null)
+        var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true) { AutoFlush = true };
+        try
         {
+            string request = await reader.ReadLineAsync() ?? throw new IOException("No request.");
+            await writer.WriteLineAsync(answer(request));
+            while (await reader.ReadLineAsync() is not null)
+            {
+            }
+        }
+        finally
+        {
+            // Renew al máximo: the client closed first (its answer read), so the writer's closing flush finds the pipe
+            // broken; that is the end of the connection, not a failure of the test (it raced under load).
+            try { writer.Dispose(); } catch (IOException) { }
         }
     }
 
