@@ -737,6 +737,81 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
+    // Renew al máximo (B-CU-3): a turn cancelled while the worker said its hello left that hello in the pipe, and every
+    // later command read the answer of the one before it (a click taken as invalid though it was pressed, the cascade
+    // pressing again). A worker of this test answers its hello late and echoes each command's number.
+    [Test]
+    public void ACancelDuringTheWorkersHelloNeverLeavesItsAnswerForTheNextCommand()
+    {
+        string script = Path.Combine(Path.GetTempPath(), "baxy-slow-hello-" + Guid.NewGuid().ToString("N") + ".ps1");
+        File.WriteAllText(script, """
+            while($true){
+              $line=[Console]::In.ReadLine(); if($null -eq $line){ break }
+              $command=$line | ConvertFrom-Json
+              if($command.cmd -eq 'exit'){ break }
+              if($command.cmd -eq 'ping'){ Start-Sleep -Milliseconds 1500; [Console]::Out.WriteLine('{"ok":true,"hello":true}') }
+              else { [Console]::Out.WriteLine('{"ok":true,"n":' + $command.n + '}') }
+              [Console]::Out.Flush()
+            }
+            """);
+        try
+        {
+            using var host = new UiaWorkerHost(script);
+            using var cancelled = new CancellationTokenSource(TimeSpan.FromMilliseconds(400));
+            Assert.That(async () => await host.SendAsync("{\"cmd\":\"view\",\"n\":1}", TimeSpan.FromSeconds(30), cancelled.Token),
+                Throws.InstanceOf<OperationCanceledException>());
+
+            using JsonDocument? second = host.SendAsync("{\"cmd\":\"view\",\"n\":2}", TimeSpan.FromSeconds(30), CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+
+            Assert.That(second?.RootElement.TryGetProperty("n", out JsonElement n) == true ? n.GetInt32() : -1, Is.EqualTo(2),
+                second?.RootElement.GetRawText());
+        }
+        finally
+        {
+            File.Delete(script);
+        }
+    }
+
+    // Renew al máximo (B-CU-1): an index of the last look, of window B, with the scroll naming window A is B's control,
+    // never A's: refused before any effect, as input.text.type refuses it (B may be the person's window). Synchronous,
+    // so the windows are destroyed by the thread that made them.
+    [Test]
+    public void AScrollByIndexOfAnotherWindowsViewIsRefusedBeforeAnyEffect()
+    {
+        nint viewed = CreateWindowEx(0x08000080, "STATIC", "BAXY scroll fixture viewed", 0x90000000u, -31000, -31000, 200, 120, 0, 0, 0, 0);
+        nint named = CreateWindowEx(0x08000080, "STATIC", "BAXY scroll fixture named", 0x90000000u, -31000, -31000, 200, 120, 0, 0, 0, 0);
+        Assert.That(viewed != 0 && named != 0, Is.True, $"CreateWindowEx failed: {Marshal.GetLastPInvokeError()}");
+        try
+        {
+            var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
+                "{\"ok\":true,\"error\":\"\",\"hwnd\":" + (long)viewed + ",\"window\":\"Lista\",\"controls\":[" +
+                "{\"kind\":\"List\",\"name\":\"Canciones\",\"id\":\"7.1\",\"state\":\"\",\"value\":null," +
+                "\"rect\":{\"x\":10,\"y\":10,\"w\":200,\"h\":300},\"repeated\":0}],\"controlCount\":1,\"focused\":null}");
+            var controls = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _) => ValueTask.FromResult(viewed));
+            _ = controls.InvokeAsync("input.visible.controls", Json("""{"application":"la lista"}"""), CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+            int looked = worker.Commands.Count;
+            var scroll = new WindowsScrollAdapter(controls);
+
+            ExternalCapabilityReceipt receipt = scroll.InvokeAsync(
+                    "input.scroll", Json("{\"direction\":\"down\",\"index\":0,\"window\":" + (long)named + "}"), CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("visible_control_identity_stale"));
+                Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+                Assert.That(worker.Commands.Skip(looked), Is.Empty, string.Join(" | ", worker.Commands));
+            });
+        }
+        finally
+        {
+            _ = DestroyWindow(viewed);
+            _ = DestroyWindow(named);
+        }
+    }
+
     [TestCase("""{"direction":"down","index":"cuatro"}""")]
     [TestCase("""{"direction":"down","index":1.5}""")]
     [TestCase("""{"direction":"sideways","index":1}""")]

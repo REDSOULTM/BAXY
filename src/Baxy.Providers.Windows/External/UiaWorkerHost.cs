@@ -213,6 +213,13 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
             Terminate();
             return null;
         }
+        catch (OperationCanceledException)
+        {
+            // Renew al máximo (B-CU-3): the caller cancelled during the hello, which stays in the pipe; kept, every later
+            // command would read the answer of the one before it. The worker is replaced, as SendAsync does.
+            Terminate();
+            throw;
+        }
 
         return process;
     }

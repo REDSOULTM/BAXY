@@ -115,7 +115,9 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
                 {
                     if (_controls is null
                         || !_controls.TryViewedControl(position, out window, out string controlId, out WindowsVisibleControlAdapter.Rect? rect)
-                        || !VisibleControlSurface.IsAlive(window))
+                        || !VisibleControlSurface.IsAlive(window)
+                        // Renew al máximo (B-CU-1): the index is of the last view's window, never of the one named.
+                        || (missionWindow != 0 && window != missionWindow))
                     {
                         return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
                     }

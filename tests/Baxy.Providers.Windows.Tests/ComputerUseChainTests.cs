@@ -508,6 +508,28 @@ public sealed class ComputerUseChainTests
         });
     }
 
+    // Renew al máximo (B-CU-1): the last look was of another window (B) than the one the click names (A), and its index 3
+    // is «Aceptar» there too. That index is B's, never A's: B's control is never pressed (B may be the person's window or a
+    // protected one that can be looked at), and the label is looked for in A.
+    [Test]
+    public void AnIndexOfAnotherWindowsViewIsNeverPressedInTheNamedWindow()
+    {
+        WithWindow(named => WithWindow(viewed =>
+        {
+            var worker = new OrderedWorker();
+            WindowsVisibleControlAdapter adapter = Adapter(worker, new RecordingLease());
+            RememberView(adapter, viewed, Control(3, "42.1", "Button", "Aceptar", string.Empty));
+
+            _ = adapter.InvokeAsync(
+                    "input.visible.click", Json("{\"label\":\"Aceptar\",\"index\":3,\"window\":" + (long)named + "}"),
+                    CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+
+            Assert.That(worker.Commands.Any(command => command.Contains("\"controlId\":\"42.1\"", StringComparison.Ordinal)),
+                Is.False, string.Join(" | ", worker.Commands));
+        }));
+    }
+
     private static ExternalCapabilityReceipt Click(WindowsVisibleControlAdapter adapter, nint window, string label, string id, string? manner = null) =>
         adapter.InvokeAsync(
                 "input.visible.click",
