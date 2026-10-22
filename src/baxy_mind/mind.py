@@ -102,6 +102,8 @@ BEAT_RULES = (
     "una frase. Si juega, está en llamada o viendo algo, interviene sólo por un motivo 1, 2 o urgente. Nunca escribas "
     "ni hagas clic en sus ventanas, no comentes datos privados de la pantalla y no repitas un aviso ya dado."
 )
+# What stands in the person's conversation for a heartbeat that intervened, before what BAXY said and did in it.
+BEAT_MARK = "[Latido: nadie te habló; lo que sigue lo dijiste o hiciste por tu cuenta]"
 
 
 def _outcome(observation: str) -> str:
@@ -740,7 +742,11 @@ class Mind:
             if call_id:
                 beat["conv"].append({"role": "tool", "tool_call_id": call_id, "content": NOT_RUN})
         self._close_open_calls()
-        self.conversation.extend(beat["conv"])
+        # Review 2026-10-22 (R10.2 of the notebook): what the person may answer is what BAXY said and did, not what the
+        # heartbeat read (its moment, its rules, its analysis and the order to act, the first three messages).
+        acted = beat["conv"][3:]
+        if acted:
+            self.conversation.extend([{"role": "user", "content": BEAT_MARK}, *acted])
         self._trim()
 
     def _close_open_calls(self) -> None:

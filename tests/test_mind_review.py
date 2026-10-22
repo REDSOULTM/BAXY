@@ -318,3 +318,21 @@ def test_the_trace_written_from_the_voice_thread_and_the_turns_keeps_whole_rows(
     for thread in threads:
         thread.join()
     assert len(overlaps) == 40 and not any(overlaps)
+
+
+INTERVENE = json.dumps({"pedido": "ninguno", "preferencia": "ninguna", "vence": "nada", "bloqueo": "disco lleno",
+                        "analisis": "El disco está lleno.", "intervenir": True}, ensure_ascii=False)
+
+
+def test_a_heartbeat_joins_the_conversation_with_what_baxy_did_not_its_rules(tmp_path: Path) -> None:
+    # Review 14 (R10.2 of the notebook): the heartbeat's whole message, its rules and «Responde en JSON…» included,
+    # entered the person's conversation.
+    from baxy_mind.mind import BEAT_ACT, BEAT_DECIDE, BEAT_RULES
+    mind, _ = _mind(tmp_path, [_say(INTERVENE), _say("Tu disco está casi lleno.")])
+    mind.beat(1, {"now": "22:00", "pc": {"disk_free_gb": 1}})
+    mind.end_beat()
+    text = json.dumps(mind.conversation, ensure_ascii=False)
+    for internal in (BEAT_RULES, BEAT_DECIDE, BEAT_ACT, "El disco está lleno.", "disk_free_gb"):
+        assert json.dumps(internal, ensure_ascii=False)[1:-1] not in text
+    assert mind.conversation[-1] == {"role": "assistant", "content": "Tu disco está casi lleno."}
+    assert mind.conversation[-2]["role"] == "user" and mind.conversation[-2]["content"].startswith("[")
