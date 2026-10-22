@@ -4305,8 +4305,61 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): «siguiente» while BAXY's own YouTube player played alone ended in
+    // media_session_not_found («nothing is playing»): the player's refusal of a skip carried no state, so the system's
+    // «no session» replaced it. It now says the skip is not its own with what it plays, which the provider keeps.
+    [TestCase("next")]
+    [TestCase("previous")]
+    public async Task ASkipTheLocalPlayerCannotDoSaysWhatItPlays(string action)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePlayerAsync(pipeName, paused: false, stopPlayer.Token);
+        var session = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "media_session_not_found"));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(false),
+        };
+        using var provider = new WindowsExternalCapabilityProvider([local, session]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(
+                "media.control", Json($$"""{"action":"{{action}}"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            // The player stands for this test's own process: nothing stops it when the provider is disposed.
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("local_player_action_unsupported"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            Assert.That(receipt.Result?.GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo("BAXY YouTube (mpv)"));
+            // Another player may still be the one meant: it gets its chance.
+            Assert.That(session.Calls, Is.EqualTo(1));
+        });
+    }
+
     // A player whose pause property reads true on every connection until stopped (a set is answered as done).
-    private static async Task ServePausedPlayerAsync(string pipeName, CancellationToken stop)
+    private static Task ServePausedPlayerAsync(string pipeName, CancellationToken stop) =>
+        ServePlayerAsync(pipeName, paused: true, stop);
+
+    // A player whose pause property reads <paramref name="paused"/> on every connection until stopped.
+    private static async Task ServePlayerAsync(string pipeName, bool paused, CancellationToken stop)
     {
         try
         {
@@ -4321,7 +4374,8 @@ public sealed class ExternalAdaptersTests
                 try
                 {
                     while (await reader.ReadLineAsync(stop) is { } request)
-                        await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success","data":true}""");
+                        await writer.WriteLineAsync(
+                            $$"""{"request_id":{{RequestId(request)}},"error":"success","data":{{(paused ? "true" : "false")}}}""");
                 }
                 catch (IOException)
                 {

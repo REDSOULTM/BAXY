@@ -461,8 +461,6 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         {
             if (!HasActivePlayer)
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_inactive");
-            if (action is "next" or "previous")
-                return ExternalJson.FailureBeforeEffect(operation, "local_player_action_unsupported");
             bool? current;
             try
             {
@@ -477,6 +475,15 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             // request means («pausa la música» said «already paused» and the person's music played on): the next answers.
             if (!named && current == true && await SystemSessionPlays(cancellationToken).ConfigureAwait(false))
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_paused");
+            // Renew al máximo (auditoría de flujos): a skip is not this player's; the refusal says what it plays (a read:
+            // nothing is sent), so a later «no session» never tells the person nothing plays while it does.
+            if (action is "next" or "previous")
+            {
+                return current is { } skipPaused
+                    ? new ExternalCapabilityReceipt(operation, EffectObserved: false, Verified: false,
+                        LocalResult(skipPaused ? "paused" : "playing"), "local_player_action_unsupported")
+                    : ExternalJson.FailureBeforeEffect(operation, "local_player_ipc_unavailable");
+            }
             if (action == "stop")
             {
                 Process player = _activePlayer!;
