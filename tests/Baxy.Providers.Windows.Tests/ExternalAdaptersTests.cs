@@ -86,6 +86,14 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-SYS-7): Windows shows lpMessage in its restart/shutdown notice; BAXY wrote a fixed «BAXY confirmó
+    // el reinicio solicitado…» there (a visible fixed reply, and in Normal mode nobody had confirmed anything). Windows
+    // takes NULL («if no message is required») and shows its own notice and countdown.
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ARestartOrShutdownPassesNoTextOfItsOwnToWindows(bool reboot) =>
+        Assert.That(WindowsPowerTransitionPlatform.DialogMessage(reboot), Is.Null);
+
     [Test]
     public async Task ExactNamedProcessTerminationPreservesIdentityAndVerifiesAbsence()
     {
