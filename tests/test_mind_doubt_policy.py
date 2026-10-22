@@ -131,3 +131,48 @@ def test_asking_is_never_held(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.9")
     mind, _ = _mind(tmp_path, [_call("ask_user", {"question": "¿Qué cierro?"}, 0.2)])
     assert mind.decide(1, "ciérralo")["kind"] == "clarify"
+
+
+def _correcting(tmp_path, monkeypatch, risk: str, filled):
+    monkeypatch.setenv("BAXY_S1_CORRECT", "1")
+    mind, server, one = _layer2(tmp_path, monkeypatch, "app_close",
+                                [_rival_call(0.5), _say("¿Cierro la ventana de delante o apago el PC?")])
+    mind.wire_to_op["app_close"] = "app.close"
+    mind.risk = {"system_power": "work_loss", "app_close": risk}
+    fills: list[str] = []
+
+    def fill_call(body, wire):
+        fills.append(wire)
+        return filled
+
+    server.fill_call = fill_call
+    return mind, server, fills
+
+
+def test_layer2_corrects_to_a_harmless_tool_the_model_fills_itself(tmp_path, monkeypatch) -> None:
+    mind, server, fills = _correcting(tmp_path, monkeypatch, "low_reversible",
+                                      {"name": "app_close", "arguments": {"appId": "Spotify"}, "timings": {}})
+    result = mind.decide(1, "ahora ciérralo")
+    assert result["kind"] == "action" and result["operation"] == "app.close"
+    assert result["arguments"] == {"appId": "Spotify"}
+    assert fills == ["app_close"] and len(server.bodies) == 1  # no second decision: the model only filled the tool
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert rows[0]["system_one"]["corrected"] is True
+
+
+@pytest.mark.parametrize("risk, filled", [
+    ("work_loss", {"name": "app_close", "arguments": {}, "timings": {}}),  # a risky tool is never put in its mouth
+    ("low_reversible", None),  # the model did not write that call
+    ("low_reversible", {"name": "system_power", "arguments": {}, "timings": {}})])
+def test_layer2_asks_when_it_cannot_correct(tmp_path, monkeypatch, risk, filled) -> None:
+    mind, _, _ = _correcting(tmp_path, monkeypatch, risk, filled)
+    result = mind.decide(1, "ahora ciérralo")
+    assert result["kind"] == "conversation" and result["operation"] is None
+
+
+def test_layer2_does_not_correct_when_correcting_is_off(tmp_path, monkeypatch) -> None:
+    mind, _, fills = _correcting(tmp_path, monkeypatch, "low_reversible",
+                                 {"name": "app_close", "arguments": {}, "timings": {}})
+    monkeypatch.setenv("BAXY_S1_CORRECT", "")
+    assert mind.decide(1, "ahora ciérralo")["operation"] is None
+    assert fills == []

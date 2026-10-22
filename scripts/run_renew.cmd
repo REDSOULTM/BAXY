@@ -34,12 +34,14 @@ set "BAXY_VISION_MODEL=baxy"
 set "BAXY_VISION_SLOT=0"
 set "BAXY_VISION_SLOT_DIR=%LOCALAPPDATA%\BAXY\renew\slots"
 :run
-rem System One (rama pc-system-one): la duda de Qwen (capa 0) y Laya como freno (capa 2). Encendido salvo que exista el
-rem interruptor %LOCALAPPDATA%\BAXY\renew\system_one.off (scripts\system_one.cmd on ^| off ^| estado). Umbrales medidos en
-rem la fase 0: preguntar bajo 0,4 de confianza; consultar a Laya bajo 0,6.
+rem System One (rama pc-system-one): la duda de Qwen (capa 0) y Laya como freno o corrector (capa 2). Encendido si no
+rem existe el interruptor %LOCALAPPDATA%\BAXY\renew\system_one.off (scripts\system_one.cmd on ^| off ^| estado). Umbrales medidos en
+rem la fase 0: preguntar bajo 0,4 de confianza; consultar a Laya bajo 0,6; si Laya elige otra operacion inofensiva,
+rem Qwen la rellena y se ejecuta (BAXY_S1_CORRECT); si es riesgosa, BAXY pregunta.
 if not exist "%LOCALAPPDATA%\BAXY\renew\system_one.off" (
   if not defined BAXY_S1_DOUBT set "BAXY_S1_DOUBT=0.4"
   if not defined BAXY_S1_VETO set "BAXY_S1_VETO=0.6"
+  if not defined BAXY_S1_CORRECT set "BAXY_S1_CORRECT=1"
   if /I "%COMPUTERNAME%"=="REDNOTE" (
     if not defined BAXY_S1_GGUF set "BAXY_S1_GGUF=D:\BAXYeval\s1\tuned\layam-long-s1-Q8_0.gguf"
   ) else (

@@ -342,6 +342,11 @@ DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de ha
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
                     "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
                     "qué quiere exactamente.]")
+# Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
+# model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
+# (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
+# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth.
+CORRECTABLE_RISKS = ("read_only", "low_reversible")
 
 
 def _threshold(name: str) -> float:
@@ -444,6 +449,7 @@ class Mind:
         self._judged: dict[str, Any] | None = None
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
+        self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -510,7 +516,7 @@ class Mind:
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op = [ASK_USER, CONFIRM], {}
+        tools, wire_to_op, risk = [ASK_USER, CONFIRM], {}, {}
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
@@ -540,7 +546,8 @@ class Mind:
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
             tools.append(tool)
             wire_to_op[wire] = name
-        self.tools, self.wire_to_op = tools, wire_to_op
+            risk[wire] = str(cap.get("risk") or "")
+        self.tools, self.wire_to_op, self.risk = tools, wire_to_op, risk
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
             self._log("configure.aid", time.monotonic(), None, aids=aids)
@@ -881,6 +888,10 @@ class Mind:
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or f"call_{len(conv)}_{index}", "wire": wire, "arguments": arguments})
         note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
+        if isinstance(note, dict):
+            # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
+            # the action the model doubted (and anything queued behind it, chosen on the same misreading).
+            calls, note = [note], None
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads and asks the person, in its own words, what
@@ -905,11 +916,12 @@ class Mind:
         return self._result(request_id, turn, None, reply, stage, started, content)
 
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
-              body: dict[str, Any]) -> str | None:
-        """The note that holds the turn's first action, or None. Layer 0 (BAXY_S1_DOUBT): the model's confidence is under
-        the threshold. Layer 2 (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of
-        the model's own candidates the person meant, and a different answer holds it. Asking and confirming are never
-        held: they already put the person in the loop."""
+              body: dict[str, Any]) -> str | dict[str, Any] | None:
+        """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
+        model's confidence is under the threshold. Layer 2 (BAXY_S1_VETO, with a decision model): under that one, the
+        decision model is asked which of the model's own candidates the person meant, and a different answer holds it —
+        or, with BAXY_S1_CORRECT=1 and a tool of CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking
+        and confirming are never held: they already put the person in the loop."""
         if final or stage != "turn.decide" or turn.get("beat"):
             return None
         if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
@@ -928,8 +940,25 @@ class Mind:
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
         if not judged or judged["choice"] == call["wire"]:
             return None
+        corrected = self._corrected(judged["choice"], body)
+        if corrected is not None:
+            self._judged["corrected"] = True
+            return corrected
         other = OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
+
+    def _corrected(self, wire: str, body: dict[str, Any]) -> dict[str, Any] | None:
+        """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
+        is off, the tool's risk is not in CORRECTABLE_RISKS, or the model did not write that tool's call."""
+        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS:
+            return None
+        try:
+            filled = self.server.fill_call(body, wire)
+        except Exception:  # noqa: BLE001 - a fill that failed falls back to asking
+            return None
+        if not filled or filled.get("name") != wire:
+            return None
+        return {"id": f"call_{len(body['messages'])}_s1", "wire": wire, "arguments": filled["arguments"]}
 
     def _candidates(self, chosen: str, doubt: dict[str, Any], body: dict[str, Any]) -> dict[str, str]:
         """The model's own candidates as the decision model's options (as in its training, build_kev_data.py): the tool it
