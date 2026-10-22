@@ -304,8 +304,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             });
         }
 
-        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4).
-        if (step.Sent && ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
+        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4). «hecho» only for
+        // a call that completed and was verified (2026-10-22, review of the App: one that reached its provider and
+        // failed was said done too).
+        if (step is { Status: OperationStatuses.Completed, Verified: true }
+            && ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
             && FieldStepProjection.NormalModeAsks(step.Operation, step.Arguments))
         {
             string title = FieldStepProjection.Label(step.Operation, step.Arguments);
