@@ -38,6 +38,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private string? _sessionLabel;
     private DateTimeOffset _sessionCreated = DateTimeOffset.UtcNow;
     private int? _triggerCount;
+    // The card that waits for the person's Sí or No and the call it shows: an answer that names another card is refused.
+    private (string Id, NativeTurnConfirmation Asked)? _pendingCard;
     private bool _disposed;
     // The memory panel runs the chat's own catalog operations; its count is read from the store when the view asks
     // for the surfaces and the store may have changed since (first read, a chat change).
@@ -68,6 +70,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.VoiceLip += OnVoiceLip;
         _viewModel.VoiceWake += OnVoiceWake;
         _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
+        // A mind that starts again gets back the conversation this view shows (2026-10-22, review of the App).
+        _viewModel.KeptConversation = () => _sessions.Load(_sessionId)?.Mind;
     }
 
     internal async Task<FieldHttpResponse> HandleHttpAsync(string method, string path, string? body)
@@ -140,7 +144,20 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                     return Error("nothing_pending", 409);
                 }
 
-                await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation).ConfigureAwait(true);
+                // 2026-10-22, review of the App: the answer names the card pressed («card»); a late press on an ended
+                // card no longer answers the next one. A press while a turn runs is refused, never taken and lost.
+                string? card = (string?)ParseBody(body)?["card"];
+                if (card is not null && _pendingCard?.Id != card)
+                {
+                    return Error("card_not_pending", 409);
+                }
+
+                if (!await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation,
+                        card is null ? null : _pendingCard?.Asked).ConfigureAwait(true))
+                {
+                    return Error(_viewModel.HasPendingConfirmation ? "turn_in_progress" : "nothing_pending", 409);
+                }
+
                 return Json(new JsonObject { ["ok"] = true });
             }
 
@@ -302,8 +319,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             });
         }
 
-        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4).
-        if (step.Sent && ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
+        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4). «hecho» only for
+        // a call that completed and was verified (2026-10-22, review of the App: one that reached its provider and
+        // failed was said done too).
+        if (step is { Status: OperationStatuses.Completed, Verified: true }
+            && ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
             && FieldStepProjection.NormalModeAsks(step.Operation, step.Arguments))
         {
             string title = FieldStepProjection.Label(step.Operation, step.Arguments);
@@ -325,13 +345,16 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             HeartbeatMoment.Watching => "porque estás viendo algo",
             _ => "por iniciativa propia",
         } : null;
-        JsonObject card = FieldStepProjection.Card(_transcript.NextId("k"), asked.Proposal ? "proposal" : "confirm",
+        string id = _transcript.NextId("k");
+        JsonObject card = FieldStepProjection.Card(id, asked.Proposal ? "proposal" : "confirm",
             asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context);
+        _pendingCard = (id, asked);
         Publish(ItemEvent(_transcript.Card(card)));
     }
 
     private void OnConfirmationResolved(string outcome)
     {
+        _pendingCard = null;
         string status = outcome switch
         {
             "approved" => "yes",
@@ -463,6 +486,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             // At close a mind that does not answer in time leaves what the view showed, still kept.
             mind = null;
         }
+
+        // A mind lost in the turn exports nothing: its conversation stays as last kept, for the one that starts next
+        // (2026-10-22, review of the App: the save wrote it away and the relaunched mind had nothing to get back).
+        mind ??= _sessions.Load(_sessionId)?.Mind;
         _sessions.Save(new FieldSessionStore.Session(_sessionId, SessionTitle, _sessionCreated, DateTimeOffset.UtcNow,
             _transcript.Snapshot(), mind));
         Publish(SurfacesEvent());
@@ -476,9 +503,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         await SaveCurrentAsync().ConfigureAwait(true);
-        if (!_viewModel.StartNewUiSession())
+        if (!await _viewModel.StartNewUiSessionAsync(_lifetimeCancellation).ConfigureAwait(true))
         {
-            return Error("turn_in_progress", 409);
+            return Error(_viewModel.IsBusy ? "turn_in_progress" : "session_not_started", 409);
         }
 
         StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
@@ -1042,6 +1069,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.VoicePartial -= OnVoicePartial;
         _viewModel.VoiceLip -= OnVoiceLip;
         _viewModel.VoiceWake -= OnVoiceWake;
+        _viewModel.KeptConversation = null;
         try
         {
             // The conversation as it stands is kept when BAXY closes. FT/proveedores goal (review of the App): the window

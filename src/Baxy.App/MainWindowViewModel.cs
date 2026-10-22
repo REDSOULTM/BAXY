@@ -31,6 +31,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private CoreProcessClient? _coreClient;
     private MindSidecarClient? _mindClient;
     private Task? _mindInitializationTask;
+    // 2026-10-22, review of the App: one start of the mind at a time. Two at once (a relaunch after a lost mind and the
+    // engine's recovery, which starts one whenever none is ready) each launched a process, and the later took
+    // _mindClient over the first without ending it: an orphan holding its model's VRAM. A start that waited finds the
+    // other's mind ready and leaves it.
+    private readonly SemaphoreSlim _mindStart = new(1, 1);
     private volatile MindStartupState _mindStartupState;
     private int _mindStartupFailureCount;
     private int _coreStartupFailureCount;
@@ -63,6 +68,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private long _turnTraceSequence;
     private bool _isPowered = true;
     private string? _quietProposal;
+    // The call whose question was published last and has not ended (the view's card, the toast): a Sí/No that names
+    // another one answers nothing.
+    private NativeTurnConfirmation? _askedConfirmation;
     private string _beatActivity = string.Empty;
     private MindVoiceStatus? _voicePieces;
     private DateTimeOffset _mindStartedAt = DateTimeOffset.UtcNow;
@@ -117,14 +125,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 StepStarted = (id, operation, arguments) => StepStarted?.Invoke(id, operation, arguments),
                 ConfirmationAsked = asked =>
                 {
+                    _askedConfirmation = asked;
                     ConfirmationAsked?.Invoke(asked, _beatActive ? _beatActivity : null);
                     if (asked.Proposal && _quietProposal is { } question)
                     {
                         _quietProposal = null;
-                        ProposalNotificationRequested?.Invoke(question, SilentBecause(_beatActivity));
+                        ProposalNotificationRequested?.Invoke(question, SilentBecause(_beatActivity), asked);
                     }
                 },
-                ConfirmationResolved = outcome => ConfirmationResolved?.Invoke(outcome),
+                ConfirmationResolved = outcome =>
+                {
+                    _askedConfirmation = null;
+                    ConfirmationResolved?.Invoke(outcome);
+                },
                 Refuse = Settings.Refusal,
                 MemoryChanged = () => MemoryChanged?.Invoke(),
             });
@@ -142,9 +155,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal event Action<string>? ConfirmationResolved;
 
-    /// <summary>A heartbeat's proposal for a person who should not be spoken to: the model's question and why it is
-    /// not said aloud (the Windows notification with Sí / No).</summary>
-    internal event Action<string, string>? ProposalNotificationRequested;
+    /// <summary>A heartbeat's proposal for a person who should not be spoken to: the model's question, why it is not
+    /// said aloud (the Windows notification with Sí / No) and the call it asks about, which its answer names.</summary>
+    internal event Action<string, string, NativeTurnConfirmation>? ProposalNotificationRequested;
 
     /// <summary>What the ear has heard of the request so far (live captions); it starts nothing.</summary>
     internal event Action<string>? VoicePartial;
@@ -439,18 +452,24 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>
     /// The person pressed Sí (<paramref name="approve"/>) or No on the pending confirmation; the press arrived at
-    /// <paramref name="arrivedAt"/>, as in <see cref="SubmitAsync"/>.
+    /// <paramref name="arrivedAt"/>, as in <see cref="SubmitAsync"/>. <paramref name="answering"/> is the call whose card
+    /// or toast they pressed, when the press says it. 2026-10-22, review of the App: false when the answer was not taken
+    /// (a turn runs, nothing waits, or the press was on another call's card: a late click on one approved the next), so
+    /// the caller says so instead of reporting it done.
     /// </summary>
-    internal async Task AnswerConfirmationAsync(bool approve, long arrivedAt, CancellationToken cancellationToken)
+    internal async Task<bool> AnswerConfirmationAsync(bool approve, long arrivedAt, CancellationToken cancellationToken,
+        NativeTurnConfirmation? answering = null)
     {
-        if (!IsInputEnabled || !_loop.HasPendingConfirmation)
+        if (!IsInputEnabled || !_loop.HasPendingConfirmation
+            || (answering is not null && !ReferenceEquals(answering, _askedConfirmation)))
         {
-            return;
+            return false;
         }
 
         string label = approve ? "Sí" : "No";
         await RunTurnAsync(label, () => _loop.AnswerConfirmationAsync(approve, label, arrivedAt, cancellationToken),
             cancellationToken);
+        return true;
     }
 
     /// <summary>Whether a heartbeat may run now: everything is up and nothing holds the turn or waits for the person.</summary>
@@ -479,30 +498,43 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal async Task<bool> OpenSessionAsync(System.Text.Json.Nodes.JsonArray? mindConversation,
         IReadOnlyList<ConversationMessage> messages, CancellationToken cancellationToken)
     {
-        if (IsBusy || _beatActive || _mindClient is not { IsReady: true } mind)
+        // 2026-10-22, review of the App: the opening holds the turn while the mind loads the session; a person's turn
+        // sent meanwhile ran across it (its words cleared with the old conversation) and a heartbeat could start.
+        if (IsBusy || _mindClient is not { IsReady: true } mind || !_turnGate.Wait(0, CancellationToken.None))
         {
             return false;
         }
 
-        bool loaded = mindConversation is { Count: > 0 }
-            ? await mind.SessionLoadAsync(mindConversation, cancellationToken)
-            : await mind.NewSessionAsync(cancellationToken);
-        if (!loaded)
+        try
         {
-            return false;
-        }
+            bool loaded = mindConversation is { Count: > 0 }
+                ? await mind.SessionLoadAsync(mindConversation, cancellationToken)
+                : await mind.NewSessionAsync(cancellationToken);
+            if (!loaded)
+            {
+                return false;
+            }
 
-        _loop.Reset();
-        Messages.Clear();
-        foreach (ConversationMessage message in messages)
+            _loop.Reset();
+            Messages.Clear();
+            foreach (ConversationMessage message in messages)
+            {
+                Messages.Add(message);
+            }
+
+            OnPropertyChanged(nameof(HasPendingConfirmation));
+            StatusDescription = IdleStatus();
+            return true;
+        }
+        finally
         {
-            Messages.Add(message);
+            _turnGate.Release();
         }
-
-        OnPropertyChanged(nameof(HasPendingConfirmation));
-        StatusDescription = IdleStatus();
-        return true;
     }
+
+    /// <summary>The mind's conversation of the session the view shows, as the view's channel last kept it, or null: what
+    /// a mind that starts is given back.</summary>
+    internal Func<System.Text.Json.Nodes.JsonArray?>? KeptConversation { get; set; }
 
     /// <summary>What the heartbeat last saw the person doing (libre, jugando, llamada, viendo, ausente…).</summary>
     internal string OwnerActivity { get; private set; } = string.Empty;
@@ -650,25 +682,35 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         : "BAXY disponible";
 
     /// <summary>A new conversation: the transcript, the model's session and anything pending start over.</summary>
-    internal bool StartNewUiSession()
+    internal async Task<bool> StartNewUiSessionAsync(CancellationToken cancellationToken)
     {
         // Ronda final 33 (regla 3): not while a heartbeat holds the turn either (its line would land in the new session).
-        if (IsBusy || _beatActive)
+        // 2026-10-22, review of the App: it holds the turn itself while the mind starts over, and it waits for the mind:
+        // a session.new that failed left the view empty and the model in the old conversation. A mind that is not up
+        // has nothing to start over (the next one starts empty).
+        if (IsBusy || !_turnGate.Wait(0, CancellationToken.None))
         {
             return false;
         }
 
-        _loop.Reset();
-        Messages.Clear();
-        SilenceVoice();
-        if (_mindClient is { IsReady: true } mind)
+        try
         {
-            _ = mind.NewSessionAsync(CancellationToken.None);
-        }
+            if (_mindClient is { IsReady: true } mind && !await mind.NewSessionAsync(cancellationToken))
+            {
+                return false;
+            }
 
-        OnPropertyChanged(nameof(HasPendingConfirmation));
-        StatusDescription = IdleStatus();
-        return true;
+            _loop.Reset();
+            Messages.Clear();
+            SilenceVoice();
+            OnPropertyChanged(nameof(HasPendingConfirmation));
+            StatusDescription = IdleStatus();
+            return true;
+        }
+        finally
+        {
+            _turnGate.Release();
+        }
     }
 
     /// <summary>
@@ -928,7 +970,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task DispatchTranscriptAsync(string transcript, long arrivedAt)
     {
-        if (_isDisposed)
+        // 2026-10-22, review of the App: words from a microphone the App does not believe open (a voice.start answered
+        // after its deadline, before the stop behind it closed it) start nothing.
+        if (_isDisposed || (!IsListening && !IsWakeListening))
         {
             return;
         }
@@ -1133,13 +1177,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken, startupAbandoned, _mindLifetimeCancellation.Token);
-        _mindStartupState = MindStartupState.Starting;
-        _mindStartedAt = DateTimeOffset.UtcNow;
-        _mindReadyAt = null;
-        OnPropertyChanged(nameof(MindStartedAt));
         MindSidecarClient? mind = null;
+        bool starting = false;
         try
         {
+            await _mindStart.WaitAsync(linked.Token);
+            starting = true;
+            if (_mindClient is { IsReady: true })
+            {
+                // The start this one waited for brought the mind up.
+                return;
+            }
+
+            _mindStartupState = MindStartupState.Starting;
+            _mindStartedAt = DateTimeOffset.UtcNow;
+            _mindReadyAt = null;
+            OnPropertyChanged(nameof(MindStartedAt));
             MindRuntimeDiscoveryResult discovery = await Task.Run(
                 static () => MindRuntimeDiscovery.DiscoverVerified(), linked.Token);
             if (!MindRuntimeDiscovery.ApplyVerified(discovery) || !MindSidecarClient.IsConfigured)
@@ -1163,6 +1216,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(600), linked.Token))
             {
                 RecordMindStartupFailure(mind.LastStartupFailure);
+                await mind.DisposeAsync();
+                return;
+            }
+
+            // 2026-10-22, review of the App: a mind started while the view shows a conversation (a relaunch after the
+            // last one was lost) began empty, and the model answered as if nothing had been said. It gets back that
+            // conversation as it was last kept; with none, nothing pending survives either (the lost mind asked it).
+            if (KeptConversation?.Invoke() is not { Count: > 0 } kept || !await mind.SessionLoadAsync(kept, linked.Token))
+            {
+                _loop.Reset();
+            }
+
+            if (!mind.IsReady)
+            {
+                RecordMindStartupFailure(null);
                 await mind.DisposeAsync();
                 return;
             }
@@ -1198,13 +1266,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 await mind.DisposeAsync();
             }
 
-            if (_mindStartupState == MindStartupState.Starting)
+            if (starting && _mindStartupState == MindStartupState.Starting)
             {
                 _mindStartupState = MindStartupState.Failed;
             }
         }
         finally
         {
+            if (starting)
+            {
+                _mindStart.Release();
+            }
+
             _startupMindPending = false;
             OnPropertyChanged(nameof(IsMindPreparing));
             if (IsReady && !IsBusy)

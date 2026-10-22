@@ -15,17 +15,13 @@ namespace Baxy.App;
 internal sealed class ProposalToast
 {
     private const string AppId = "BAXY.Product.App";
-    private readonly Action<bool> _answer;
     private ToastNotification? _shown;
 
-    internal ProposalToast(Action<bool> answer)
+    /// <summary>Shows the proposal with its buttons, whose press goes to <paramref name="answer"/> (that proposal's own);
+    /// false when Windows did not take it (the caller notifies plainly).</summary>
+    internal bool Show(string title, string? context, Action<bool> answer)
     {
-        _answer = answer ?? throw new ArgumentNullException(nameof(answer));
-    }
-
-    /// <summary>Shows the proposal with its buttons; false when Windows did not take it (the caller notifies plainly).</summary>
-    internal bool Show(string title, string? context)
-    {
+        ArgumentNullException.ThrowIfNull(answer);
         try
         {
             Register();
@@ -41,7 +37,7 @@ internal sealed class ProposalToast
             {
                 if (args is ToastActivatedEventArgs activated && activated.Arguments is "yes" or "no")
                 {
-                    _answer(activated.Arguments == "yes");
+                    answer(activated.Arguments == "yes");
                 }
             };
             Hide();

@@ -47,11 +47,12 @@ internal sealed class PresenceHost : IDisposable
         _viewModel = viewModel;
         _viewModel.NotificationRequested += text => _tray?.Notify(text);
         MainWindowViewModel answering = viewModel;
-        _toast = new ProposalToast(approve => window.Dispatcher.InvokeAsync(() => answering.AnswerConfirmationAsync(
-            approve, System.Diagnostics.Stopwatch.GetTimestamp(), CancellationToken.None)));
-        _viewModel.ProposalNotificationRequested += (question, why) =>
+        _toast = new ProposalToast();
+        _viewModel.ProposalNotificationRequested += (question, why, asked) =>
         {
-            if (_toast?.Show(question, why) != true)
+            // The toast answers the proposal it shows, never one asked after it (2026-10-22, review of the App).
+            if (_toast?.Show(question, why, approve => window.Dispatcher.InvokeAsync(() => answering.AnswerConfirmationAsync(
+                    approve, System.Diagnostics.Stopwatch.GetTimestamp(), CancellationToken.None, asked))) != true)
             {
                 _tray?.Notify(question);
             }
