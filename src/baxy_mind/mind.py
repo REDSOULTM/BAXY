@@ -1006,9 +1006,7 @@ class Mind:
         if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
             return None
         options = self._candidates(call["wire"], doubt, body)
-        history = [m for m in self.conversation[:-2] if m.get("role") in ("user", "assistant")
-                   and isinstance(m.get("content"), str) and m["content"].strip() and not m["content"].startswith("[")]
-        judged = self.system_one.choose(turn["text"], history, options)
+        judged = self.system_one.choose(turn["text"], self._said(), options)
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
         if not judged or judged["choice"] == call["wire"]:
             return None
@@ -1018,6 +1016,30 @@ class Mind:
             return corrected
         other = OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
+
+    def _said(self) -> list[dict[str, str]]:
+        """What the person and BAXY said before the words being decided, for the decision model: their messages and
+        BAXY's answers and questions (an ask_user's question lives in its call), never an internal note «[...]». Review
+        2026-10-22: answering ask_user, the last two messages are not the clock and the request, and the question was
+        left out."""
+        source = self.conversation
+        if source and source[-1].get("role") == "user":
+            source = source[:-1]  # the request itself (an answer to ask_user is the tool message, left out by role)
+        said = []
+        for message in source:
+            content = message.get("content")
+            if message.get("role") in ("user", "assistant") and isinstance(content, str) and content.strip() \
+                    and not content.startswith("["):
+                said.append({"role": message["role"], "content": content})
+            for call in message.get("tool_calls") or []:
+                if call["function"]["name"] == ASK_USER["function"]["name"]:
+                    try:
+                        question = json.loads(call["function"]["arguments"]).get("question")
+                    except (json.JSONDecodeError, AttributeError):
+                        question = None
+                    if isinstance(question, str) and question.strip():
+                        said.append({"role": "assistant", "content": question})
+        return said
 
     def _corrected(self, wire: str, body: dict[str, Any]) -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting

@@ -347,3 +347,22 @@ def test_a_heartbeat_never_ended_is_closed_honestly_by_the_next_one(tmp_path: Pa
     calls = [m for m in mind.conversation if m.get("tool_calls")]
     assert calls and calls[0]["tool_calls"][0]["function"]["name"] == "app_close"
     assert mind.conversation[-1]["role"] == "tool" and json.loads(mind.conversation[-1]["content"])["status"] == "unknown"
+
+
+def test_the_decision_model_reads_the_request_and_the_question_its_answer_answers(tmp_path: Path, monkeypatch) -> None:
+    # Review 10: answering ask_user, Laya's history was cut two messages short of the right place, and the question
+    # (in tool_calls) was never in it.
+    from test_mind_doubt_policy import _call as _doubted, _layer2, _rival_call
+    mind, _, one = _layer2(tmp_path, monkeypatch, "system_power",
+                           [_doubted("ask_user", {"question": "¿Apago el PC o cierro la ventana?"}, 0.9),
+                            _rival_call(0.5), _say("Hola."), _rival_call(0.5)])
+    seen: list = []
+    choose = one.choose
+    one.choose = lambda text, history, options: seen.append(history) or choose(text, history, options)
+    mind.decide(1, "ciérralo")
+    mind.decide(2, "el PC")
+    assert seen[0] == [{"role": "user", "content": "ciérralo"},
+                       {"role": "assistant", "content": "¿Apago el PC o cierro la ventana?"}]
+    mind.continue_turn(3, json.dumps({"status": "completed"}))
+    mind.decide(4, "apágalo otra vez")
+    assert seen[1][:2] == seen[0] and seen[1][-1]["content"] != "apágalo otra vez"
