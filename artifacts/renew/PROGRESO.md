@@ -2994,3 +2994,11 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   pregunta sólo en ventanas de mensajería o consolas, por los datos por aplicación).
 - E2E del NB (practica, S1 on): A 11347dd0d 23/21/24 (22,67); B lv-t2 25/–/25 (s1 inválida por Taskmgr); A vs B (s0, s2)
   23,5 → 25,0, Δ +1,5, IC95 [0; +3,5], pass^2 22 → 25. La tanda 2 también gana en e2e.
+- 19:0x **escenas con la R10.1 acotada** (lv-t5 5f0ed1e37/d6e09a2ab, 3 réplicas neutras): 32 / 31 / 30 (31,0) frente a la
+  tanda 4 31,67 (la amplia daba 29,0); act 3/7, silencio 23/23, 0 molestas. **Tanda 5 se queda** (5.1 efecto tipado con
+  costo ~0 en decision2, R10.1 acotada, R10.3, 10.3, 10.4, 10.5, B-APP-10).
+- 19:0x **rama de integración `int`** (f5f22ec06): renew-maximo + w2-s1 (System One) + lv-t5 + w2-ctxmem (1.1/1.2) +
+  w2-kern2 (P5.3) + w2-app2 (P8.4, 7.2, 7.3, 11.5, 11.6, 11.4b) + w2-flujos-app (latido tras app opened, presupuesto por
+  operación, aviso cada 10 s) + lv-ctx (1.5) + w2-voz2 (9.2a/b, 9.4); en curso t3final y w2-flujos-core. Suites:
+  Kernel 661, Contracts 74, App 67, Setup 477, pytest 273. 11.5 con el efecto tipado alcanza también a weather.current
+  (una ciudad recordada en la memoria pide el sí antes de salir): lado seguro, anotado como límite.
