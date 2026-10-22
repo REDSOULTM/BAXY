@@ -18,11 +18,16 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     internal WindowsKnownFileAdapter(
         IReadOnlyDictionary<string, string[]> configuredRoots,
-        IRecycleBin? recycleBin = null)
+        IRecycleBin? recycleBin = null,
+        IReadOnlyList<string>? privateRoots = null)
     {
         _configuredRoots = configuredRoots;
         _recycleBin = recycleBin ?? WindowsRecycleBin.Instance;
+        _privateRoots = privateRoots ?? BaxyPrivateArea.DefaultRoots();
     }
+
+    // BAXY's own state (BaxyPrivateArea): never read, edited, found or trashed as one of the person's files.
+    private readonly IReadOnlyList<string> _privateRoots;
 
     public bool CanHandle(string operation) => operation is
         "file.edit" or "file.find" or "file.read"
@@ -79,7 +84,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         }
     }
 
-    private static ExternalCapabilityReceipt Duplicates(
+    private ExternalCapabilityReceipt Duplicates(
         string operation,
         IReadOnlyList<(string Label, string Root)> roots,
         JsonElement arguments,
@@ -301,6 +306,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             if (!Directory.Exists(root)) continue;
             foreach (string path in Directory.EnumerateFileSystemEntries(root, "*", options))
             {
+                if (BaxyPrivateArea.Holds(_privateRoots, path)) continue;
                 bool isFolder = Directory.Exists(path);
                 entries.Add((
                     new KnownEntry(label, root, path),
@@ -792,6 +798,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             foreach ((string label, string root) in roots)
             {
                 string path = Path.GetFullPath(Path.Combine(root, name));
+                if (BaxyPrivateArea.Holds(_privateRoots, path)) return ExternalJson.Failure(operation, "path_reserved");
                 if (File.Exists(path) && !CrossesReparsePoint(root, path)) matches.Add(new KnownEntry(label, root, path));
             }
         }
@@ -1049,14 +1056,16 @@ if __name__ == "__main__":
         MaxRecursionDepth = 12,
     };
 
-    private static IEnumerable<KnownEntry> EnumerateDirectories(
+    private IEnumerable<KnownEntry> EnumerateDirectories(
         IReadOnlyList<(string Label, string Root)> roots)
     {
         foreach ((string label, string root) in roots)
         {
             if (!Directory.Exists(root)) continue;
             foreach (string directory in Directory.EnumerateDirectories(root, "*", WalkOptions(label)))
-                yield return new KnownEntry(label, root, directory);
+            {
+                if (!BaxyPrivateArea.Holds(_privateRoots, directory)) yield return new KnownEntry(label, root, directory);
+            }
         }
     }
 
@@ -1071,7 +1080,7 @@ if __name__ == "__main__":
         internal bool Reached { get; set; }
     }
 
-    private static IEnumerable<KnownEntry> Enumerate(
+    private IEnumerable<KnownEntry> Enumerate(
         IReadOnlyList<(string Label, string Root)> roots,
         List<(string Label, string Root)>? enumerationRoots = null,
         WalkBudget? budget = null)
@@ -1089,7 +1098,7 @@ if __name__ == "__main__":
                     budget.Reached = true;
                     yield break;
                 }
-                yield return new KnownEntry(label, root, file);
+                if (!BaxyPrivateArea.Holds(_privateRoots, file)) yield return new KnownEntry(label, root, file);
             }
         }
     }
@@ -1114,7 +1123,7 @@ if __name__ == "__main__":
         ["home"] = [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)],
     };
 
-    private static (string Label, string Root)[] SubdirectoryRoots(
+    private (string Label, string Root)[] SubdirectoryRoots(
         IReadOnlyList<(string Label, string Root)> roots,
         string subdirectory)
     {
@@ -1138,6 +1147,7 @@ if __name__ == "__main__":
             if (!candidate.StartsWith(root + Path.DirectorySeparatorChar,
                     StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("known_subdirectory_invalid");
+            if (BaxyPrivateArea.Holds(_privateRoots, candidate)) throw new InvalidDataException("path_reserved");
             if (Directory.Exists(candidate)
                 && (File.GetAttributes(candidate) & FileAttributes.ReparsePoint) != 0)
                 throw new InvalidDataException("known_subdirectory_reparse_point");

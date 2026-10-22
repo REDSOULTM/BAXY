@@ -286,6 +286,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         _ => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
     };
 
+    /// <summary>BAXY's own state (<see cref="BaxyPrivateArea"/>); tests point it at a temporary folder.</summary>
+    internal IReadOnlyList<string> PrivateRoots { get; init; } = BaxyPrivateArea.DefaultRoots();
+
     private string RootFor(string? folder)
     {
         if (folder is null) return _root;
@@ -512,6 +515,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 ? OutsideTheSandbox(takesFolder)
                 : Error("path_outside_folder");
         if (string.Equals(root, _root, StringComparison.OrdinalIgnoreCase) && IsReserved(full)) throw Error("path_reserved");
+        // Renew al máximo (B-SYS-1): BAXY's own state is not one of the person's files, whichever folder names it; the
+        // working folder, inside it, is this provider's own.
+        bool inWorkingFolder = string.Equals(full, _root, StringComparison.OrdinalIgnoreCase)
+            || full.StartsWith(_root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+        if (!inWorkingFolder && BaxyPrivateArea.Holds(PrivateRoots, full)) throw Error("path_reserved");
         EnsureSafePathIn(root, full, allowMissingLeaf);
         return full;
     }

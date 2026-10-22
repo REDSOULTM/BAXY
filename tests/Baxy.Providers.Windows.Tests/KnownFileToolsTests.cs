@@ -42,6 +42,45 @@ public sealed class KnownFileToolsTests
         Assert.That(read.ErrorCode, Is.EqualTo("file_in_use"));
     }
 
+    // Renew al máximo (B-SYS-1): BAXY's private area is not one of the person's files, under home or anywhere: file.edit
+    // could turn confirmation-mode from normal to bypass. Read, edit, trash or a search there are refused or skip it.
+    [Test]
+    public async Task BaxysOwnStateIsNeitherReadEditedNorFound()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string privateArea = Path.Combine(home, "AppData", "Local", "BAXY");
+        string mode = Path.Combine(privateArea, "1", "confirmation-mode");
+        Directory.CreateDirectory(Path.GetDirectoryName(mode)!);
+        await File.WriteAllTextAsync(mode, "normal");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin,
+            [privateArea]);
+
+        ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"home","fileName":"AppData\\Local\\BAXY\\1\\confirmation-mode","oldText":"normal","newText":"bypass"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt byFullPath = await adapter.InvokeAsync("file.read", Json(
+            JsonSerializer.Serialize(new { folder = "home", fileName = mode })), CancellationToken.None);
+        ExternalCapabilityReceipt inside = await adapter.InvokeAsync("file.find", Json(
+            """{"folder":"home","subdirectory":"AppData/Local/BAXY"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt around = await adapter.InvokeAsync("file.find", Json(
+            """{"folder":"home","subdirectory":"AppData/Local","query":"confirmation-mode"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt trashed = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"home","subdirectory":"AppData/Local","fileName":"BAXY"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(edited.ErrorCode, Is.EqualTo("path_reserved"));
+            Assert.That(byFullPath.ErrorCode, Is.EqualTo("path_reserved"));
+            Assert.That(inside.ErrorCode, Is.EqualTo("path_reserved"));
+            Assert.That(around.Result?.GetProperty("matchCount").GetInt32(), Is.Zero);
+            Assert.That(trashed.EffectObserved, Is.False);
+            Assert.That(File.ReadAllText(mode), Is.EqualTo("normal"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];
