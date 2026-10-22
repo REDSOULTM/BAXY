@@ -2941,3 +2941,5 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
 - 16:5x incidencia de cola: una cadena de falsedades que di por detenida (TaskStop) siguió viva; corrieron a la vez la
   decision2 de la tanda 3b y la de la tanda 5 con su catálogo (4 llama-server, sin errores; latencias de esas corridas no
   comparables, aciertos sí). Quité la cadena duplicada; las falsedades A/B/C corren una sola vez tras la tanda 5.
+- 17:1x **el dueño escuchó las muestras y eligió B** (primera frase aparte, 10 pasos): 9.3 fusionada (voz-maximo); 9.1
+  (bajar pasos) no se aplica. Primer audio de respuestas de dos frases −0,6 s p50 (medido sin GPU).
