@@ -81,6 +81,92 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, archivos): a subdirectory reached through a link part way («AppData\Local\
+    // Application Data» is Windows' own junction back to AppData\Local) is refused like one that is itself a link; only
+    // the last part was checked, so BAXY's area was listed and its confirmation-mode edited to bypass through it.
+    [Test]
+    public async Task ASubdirectoryThroughALinkPartWayIsRefused()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string local = Path.Combine(home, "AppData", "Local");
+        string privateArea = Path.Combine(local, "BAXY");
+        string mode = Path.Combine(privateArea, "1", "confirmation-mode");
+        Directory.CreateDirectory(Path.GetDirectoryName(mode)!);
+        await File.WriteAllTextAsync(mode, "normal");
+        _ = Baxy.Tests.NtfsTestJunction.Create(Path.Combine(local, "Application Data"), local);
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin,
+            [privateArea]);
+
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find", Json(
+            """{"folder":"home","subdirectory":"AppData/Local/Application Data/BAXY/1"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"home","subdirectory":"AppData/Local/Application Data/BAXY/1","fileName":"confirmation-mode","oldText":"normal","newText":"bypass"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.ErrorCode, Is.EqualTo("known_subdirectory_reparse_point"));
+            Assert.That(edited.ErrorCode, Is.EqualTo("known_subdirectory_reparse_point"));
+            Assert.That(File.ReadAllText(mode), Is.EqualTo("normal"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, archivos): «¿qué hay en C:\Users\ana\Documents?» with the folder's own full
+    // path as subdirectory is the folder itself; it was refused as known_path_outside_folder, a path outside it.
+    [Test]
+    public async Task TheKnownFolderItselfNamedByItsFullPathIsTheFolder()
+    {
+        using TemporaryDirectory temporary = new();
+        string documents = Path.Combine(temporary.Path, "Documentos");
+        Directory.CreateDirectory(documents);
+        await File.WriteAllTextAsync(Path.Combine(documents, "informe.txt"), "hola");
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["documents"] = [documents] },
+            new FolderRecycleBin(Path.Combine(temporary.Path, "bin")), []);
+
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find", Json(JsonSerializer.Serialize(
+            new { folder = "documents", subdirectory = documents + Path.DirectorySeparatorChar })), CancellationToken.None);
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(JsonSerializer.Serialize(
+            new { folder = "documents", subdirectory = documents, fileName = "informe.txt" })), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.Verified, Is.True, listed.ErrorCode);
+            Assert.That(listed.Result?.GetProperty("entries")[0].GetProperty("name").GetString(), Is.EqualTo("informe.txt"));
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("hola"));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, archivos): a folder that holds BAXY's own area («Local» under AppData) is not
+    // sent to the Recycle Bin by name: B-SYS-1 refused the area itself, and the folder around it took it all the same.
+    [Test]
+    public async Task AFolderHoldingBaxysOwnStateIsNotTrashed()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string privateArea = Path.Combine(home, "AppData", "Local", "BAXY");
+        string mode = Path.Combine(privateArea, "1", "confirmation-mode");
+        Directory.CreateDirectory(Path.GetDirectoryName(mode)!);
+        await File.WriteAllTextAsync(mode, "normal");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin,
+            [privateArea]);
+
+        ExternalCapabilityReceipt trashed = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"home","subdirectory":"AppData","fileName":"Local"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(trashed.ErrorCode, Is.EqualTo("path_reserved"));
+            Assert.That(trashed.EffectObserved, Is.False);
+            Assert.That(File.ReadAllText(mode), Is.EqualTo("normal"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];

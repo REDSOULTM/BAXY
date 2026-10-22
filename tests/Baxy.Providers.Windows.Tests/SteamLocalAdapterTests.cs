@@ -271,6 +271,34 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): the launched game's process was looked for by its main module, which Windows
+    // refuses for an elevated game or one its anti-cheat protects: launched, it was said not verified after 35 s. It is
+    // read as the game already running is, by the executable's image with the least access.
+    [Test]
+    public async Task ALaunchedGameIsFoundByItsImageEvenWhenItsModulesCannotBeRead()
+    {
+        string installDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture");
+        bool launched = false;
+        var automation = new FakeSteamAutomation(onDispatch: _ => launched = true);
+        SteamLocalGame installed = Catalog[0] with { InstallDirectory = installDirectory };
+        var adapter = new SteamLocalAdapter(
+            () => [installed],
+            () => new HashSet<string>(["620"], StringComparer.Ordinal),
+            automation,
+            new RecordingDelay().DelayAsync,
+            processIds: () => launched ? [7, 2_000_000_001] : [7],
+            imagePath: id => id == 2_000_000_001 ? Path.Combine(installDirectory, "portal2.exe") : null);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.launch", Json("""{"appId":"620","title":"Portal 2"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("processId").GetInt32(), Is.EqualTo(2_000_000_001));
+        });
+    }
+
     // Renew al máximo (falsedades F001/F016): the model launched Rocket League's appId, the one game installed, for
     // «Doom Eternal» and for «Fortnite», twice in front of the owner. The title asked for goes in the call and is the
     // manifest's own (folded as an entitlement's title is): another, or none, fails before anything is sent, with the
@@ -721,6 +749,49 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, decision2): a title that is not exactly one game failed with nothing to name
+    // next. The closest titles go back as a fact (words in common, a prefix): the store's and the installed games' for an
+    // install, only the installed ones when the store did not answer, for an uninstall and for a library check.
+    [Test]
+    public async Task ATitleNotResolvedNamesTheClosestTitles()
+    {
+        SteamLocalGame[] catalog = [.. Catalog, new("327030", "Worms W.M.D", new string('c', 64))];
+        var automation = new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam"));
+        SteamLocalAdapter Adapter(bool online) => new(
+            () => catalog,
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) => online
+                ? ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(
+                    [new("40800", "Super Meat Boy"), new("581660", "Super Meat Boy Forever"), new("9", "Unrelated")])
+                : throw new HttpRequestException("simulated offline store"));
+
+        ExternalCapabilityReceipt install = await Adapter(online: true).InvokeAsync(
+            "game.install.named", Json("""{"title":"super meat"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt offline = await Adapter(online: false).InvokeAsync(
+            "game.install.named", Json("""{"title":"worms"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt uninstall = await Adapter(online: true).InvokeAsync(
+            "game.uninstall.named", Json("""{"title":"el worms"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt owned = await Adapter(online: true).InvokeAsync(
+            "game.entitlement.named", Json("""{"title":"worms"}"""), CancellationToken.None);
+
+        static string?[] Near(ExternalCapabilityReceipt receipt) =>
+            [.. receipt.Result!.Value.GetProperty("closestTitles").EnumerateArray().Select(name => name.GetString())];
+        Assert.Multiple(() =>
+        {
+            Assert.That(install.ErrorCode, Is.EqualTo("steam_title_not_resolved"));
+            Assert.That(Near(install), Is.EqualTo(new[] { "Super Meat Boy", "Super Meat Boy Forever" }));
+            Assert.That(offline.ErrorCode, Is.EqualTo("steam_store_search_failed"));
+            Assert.That(Near(offline), Is.EqualTo(new[] { "Worms W.M.D" }));
+            Assert.That(uninstall.ErrorCode, Is.EqualTo("no_steam_manifest_with_that_name"));
+            Assert.That(Near(uninstall), Is.EqualTo(new[] { "Worms W.M.D" }));
+            Assert.That(owned.Result?.GetProperty("state").GetString(), Is.EqualTo("title_not_resolved"));
+            Assert.That(Near(owned), Is.EqualTo(new[] { "Worms W.M.D" }));
+            Assert.That(automation.DispatchCount, Is.Zero);
+        });
+    }
+
     // The dialog left unconfirmed (its button not found, nothing pressed) is said as such and the manifest is not
     // waited on; a press that may have landed is judged by the manifest, which here never comes.
     [TestCase(false, "steam_install_dialog_not_confirmed", 3)]
@@ -867,6 +938,18 @@ public sealed class SteamLocalAdapterTests
 
     // BAXY Renew cu (C04): a game's page by its title. The installed game bearing it first; else the store's one game
     // bearing it; else the first, in the store's order, whose name holds every word of it; else none.
+    // Renew al máximo (auditoría de flujos): with no network, a game page asked for by its title was «game_title_not_found»;
+    // a search that got no answer is said as such.
+    [Test]
+    public void AGamePageSearchThatGotNoAnswerIsNotATitleNothingBears()
+    {
+        static ValueTask<IReadOnlyList<SteamStoreTitle>> Offline(string title, CancellationToken token) =>
+            throw new HttpRequestException("simulated offline store");
+
+        Assert.ThrowsAsync<Baxy.Providers.Windows.Applications.GameTitleSearchFailedException>(async () =>
+            await SteamLocalAdapter.PageTitleAsync("Hades", default, () => [], Offline));
+    }
+
     [Test]
     public async Task AGamePageTitleIsTheInstalledOneThenTheStoreOneBearingItThenTheFirstHoldingItsWords()
     {

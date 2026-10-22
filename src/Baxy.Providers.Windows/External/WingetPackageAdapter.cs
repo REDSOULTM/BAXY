@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -27,18 +28,22 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
 
     private readonly IExternalProcessRunner _runner;
     private readonly Func<IReadOnlyList<string>, WingetLaunch?> _launch;
+    private readonly Func<IReadOnlyList<SteamLocalGame>> _games;
 
     internal WingetPackageAdapter()
         : this(new ExternalProcessRunner(), null)
     {
     }
 
+    // games: the installed game catalog's manifests, which tell a game's row among the packages (P215).
     internal WingetPackageAdapter(
         IExternalProcessRunner runner,
-        Func<IReadOnlyList<string>, WingetLaunch?>? launch)
+        Func<IReadOnlyList<string>, WingetLaunch?>? launch,
+        Func<IReadOnlyList<SteamLocalGame>>? games = null)
     {
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
         _launch = launch ?? LaunchDetached;
+        _games = games ?? SteamLocalAdapter.InstalledGames;
     }
 
     public bool CanHandle(string operation) => operation is "package.install" or "package.uninstall";
@@ -193,12 +198,25 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             writer.WriteEndObject();
         });
 
+    // Renew al máximo (auditoría de flujos, P215: package.uninstall and game.uninstall.named chosen at a coin toss): a row
+    // of the installed list that is a game of the installed game catalog, by its name or by its key ending in the game's
+    // number (the key Steam writes, «… 327030»).
+    private Func<PackageRow, bool> GameRows()
+    {
+        IReadOnlyList<SteamLocalGame> games = _games();
+        HashSet<string> names = [.. games.Select(static game => SteamLocalAdapter.FoldTitle(game.Name))];
+        HashSet<string> numbers = [.. games.Select(static game => game.AppId)];
+        return row => names.Contains(SteamLocalAdapter.FoldTitle(row.Name))
+            || (row.Id.Contains(' ', StringComparison.Ordinal) && numbers.Contains(row.Id[(row.Id.LastIndexOf(' ') + 1)..]));
+    }
+
     // The packages winget gave for the name, as it gave them (at most 8), so the next call can name one by its id.
     private static ExternalCapabilityReceipt Candidates(
         string operation,
         string errorCode,
         string requested,
-        List<PackageRow> rows) =>
+        List<PackageRow> rows,
+        Func<PackageRow, bool>? isGame = null) =>
         new(operation, false, false, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -215,9 +233,13 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
                 writer.WriteString("packageId", row.Id);
                 writer.WriteString("packageVersion", row.Version);
                 writer.WriteString("packageSource", row.Source);
+                if (isGame?.Invoke(row) == true)
+                    writer.WriteBoolean("steamGame", true);
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
+            if (isGame is not null && ModelAids.On(ModelAids.GameUninstall) && rows.Take(8).Any(isGame))
+                writer.WriteString("next", "a candidate with steamGame true is a game: game_uninstall_named uninstalls it by its title");
             writer.WriteEndObject();
         }), errorCode);
 
@@ -251,11 +273,16 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         // Installed packages the list gave for the name, none of them named so, go back as candidates, as for install.
         if (named.Count == 0)
             return installed.Count > 0
-                ? Candidates(operation, "winget_package_not_resolved", requested, installed)
+                ? Candidates(operation, "winget_package_not_resolved", requested, installed, GameRows())
                 : ExternalJson.FailureBeforeEffect(operation, "winget_package_not_installed");
         if (named.Count > 1)
-            return Candidates(operation, "winget_package_ambiguous", requested, named);
+            return Candidates(operation, "winget_package_ambiguous", requested, named, GameRows());
         PackageRow package = named[0];
+        // Renew al máximo (auditoría de flujos, P215): a game of the installed game catalog is not winget's to uninstall
+        // (its key runs the store's own dialog, which winget does not wait on): said before anything, with its row.
+        Func<PackageRow, bool> isGame = GameRows();
+        if (isGame(package))
+            return Candidates(operation, "package_is_steam_game", requested, named, isGame);
         // Ronda final 13 (regla 3): the id read from the table is the one the absence will be read by, so it must name
         // the installed package first (an ARP key with spaces read in part names nothing, and would read «gone»).
         try
@@ -414,6 +441,7 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         bool body = false;
         string header = string.Empty;
         int idColumn = -1;
+        int nextColumn = -1;
         foreach (string rawLine in output.Split('\n'))
         {
             string line = rawLine.TrimEnd('\r');
@@ -426,6 +454,8 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
                     // column starts where the header's «Id» does.
                     Match idHeader = Regex.Match(header, @"(?<=\s)Id(?=\s)");
                     idColumn = idHeader.Success ? idHeader.Index : -1;
+                    Match nextHeader = Regex.Match(header, @"(?<=\sId\s+)\S");
+                    nextColumn = idColumn > 0 && nextHeader.Success ? nextHeader.Index : -1;
                 }
                 else if (!string.IsNullOrWhiteSpace(line))
                 {
@@ -446,16 +476,23 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
             Match id = idIndex > 0 && idIndex < line.Length
                 ? IdToken.Match(line, idIndex)
                 : Match.Empty;
-            if (!id.Success)
+            // Renew al máximo (auditoría de flujos, P215): an id with spaces of its own (the key Steam writes for a game,
+            // «Steam App 327030») matched no token at its column, and the line's first dotted word («W.M.D» of «Worms
+            // W.M.D») was read as the id. Under an aligned header it is the text of the Id column.
+            int nextIndex = nextColumn > 0 ? IndexAtColumn(line, nextColumn) : -1;
+            string? columnId = id.Success ? null : AlignedColumn(line, idIndex, nextIndex);
+            if (!id.Success && columnId is null)
                 id = IdToken.Match(line);
-            if (!id.Success)
+            if (!id.Success && columnId is null)
                 continue;
-            string name = line[..id.Index].Trim();
-            string[] rest = line[(id.Index + id.Length)..].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            int idStart = columnId is null ? id.Index : idIndex;
+            int idEnd = columnId is null ? id.Index + id.Length : nextIndex;
+            string name = line[..idStart].Trim();
+            string[] rest = line[idEnd..].Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (name.Length == 0 || rest.Length == 0)
                 continue;
             string source = rest[^1] is "winget" or "msstore" ? rest[^1] : string.Empty;
-            rows.Add(new PackageRow(name, id.Groups["id"].Value, rest[0], source));
+            rows.Add(new PackageRow(name, columnId ?? id.Groups["id"].Value, rest[0], source));
         }
 
         // Auditoría final (regla 3): a winget that exited 0 without its table was not read; «no rows» is only an empty
@@ -463,6 +500,16 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         if (!body)
             throw new IOException("winget printed no table.");
         return rows;
+    }
+
+    // The text of a column from its start to the next one's, when both fall on a space-separated boundary; null otherwise.
+    private static string? AlignedColumn(string line, int start, int next)
+    {
+        if (start <= 0 || next <= start || next > line.Length || line[start - 1] != ' ' || line[next - 1] != ' '
+            || line[start] == ' ')
+            return null;
+        string text = line[start..next].Trim();
+        return text.Length == 0 ? null : text;
     }
 
     // winget aligns its table by display columns, and an East Asian wide character takes two («蓝湖» in a name moved

@@ -94,12 +94,15 @@ internal sealed partial class SteamLocalAdapter
             && named.ValueKind == JsonValueKind.String ? named.GetString() ?? "steam" : "steam";
         if (store == "epic")
             return ExternalJson.FailureBeforeEffect(operation, "epic_uninstall_not_supported");
-        string? resolved = ResolveSnapshotTitle(FoldTitle(title));
-        SteamLocalGame? game = resolved is null
-            ? null
-            : _snapshot().SingleOrDefault(candidate => candidate.AppId == resolved);
+        // Ronda final: what is read is the manifests by the exact (folded) title: none bearing it is no manifest of that
+        // name (another name may be installed), and only a manifest found and not installed is «not installed».
+        IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        string? resolved = Bearing(catalog, FoldTitle(title)) is [string one] ? one : null;
+        SteamLocalGame? game = resolved is null ? null : catalog.SingleOrDefault(candidate => candidate.AppId == resolved);
+        // Renew al máximo (auditoría de flujos): with the closest titles of the games installed.
         if (resolved is null || game is null)
-            return ExternalJson.FailureBeforeEffect(operation, "no_steam_manifest_with_that_name");
+            return NotResolved(operation, "no_steam_manifest_with_that_name", title,
+                ClosestTitles(title, catalog.Where(static game => game.Installed).Select(static game => game.Name)));
         if (!game.Installed)
             return ExternalJson.FailureBeforeEffect(operation, "steam_game_not_installed");
         appId = resolved;

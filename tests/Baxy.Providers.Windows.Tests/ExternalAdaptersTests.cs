@@ -1361,6 +1361,30 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, decision2): a name no manifest bears exactly names the closest ones read.
+    [Test]
+    public async Task ANameNoManifestBearsNamesTheClosestOnes()
+    {
+        using TemporaryDirectory temporary = new();
+        string steamApps = Path.Combine(temporary.Path, "steamapps");
+        Directory.CreateDirectory(Path.Combine(steamApps, "common", "WormsWMD"));
+        await File.WriteAllTextAsync(
+            Path.Combine(steamApps, "appmanifest_327030.acf"),
+            "\"AppState\" { \"appid\" \"327030\" \"name\" \"Worms W.M.D\" " +
+            "\"StateFlags\" \"4\" \"installdir\" \"WormsWMD\" }");
+        var adapter = new WindowsGameInstallationAdapter([steamApps], []);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"worms"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result?.GetProperty("state").GetString(),
+                Is.EqualTo("no_steam_or_epic_manifest_with_that_name"));
+            Assert.That(receipt.Result?.GetProperty("closestTitles")[0].GetString(), Is.EqualTo("Worms W.M.D"));
+        });
+    }
+
     [Test]
     public async Task RecycleBinEmptyRequiresZeroItemPostread()
     {
@@ -3265,6 +3289,29 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): «farmacias cerca» without network is the search not answering
+    // (web_search_unavailable); it was web_search_place_unavailable, as if the PC's place were unknown.
+    [Test]
+    public async Task ASearchNearbyWithoutNetworkIsTheSearchNotAnswering()
+    {
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt web = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"farmacias","nearby":true}"""), CancellationToken.None);
+        ExternalCapabilityReceipt places = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"farmacias","source":"places","kind":"pharmacy","nearby":true}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(web.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(places.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(web.EffectMayHaveOccurred | places.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     // Without nearby nothing asks where this PC is; neither does a source nearby does not apply to (currency).
     [Test]
     public async Task ASearchWithoutNearbyNeverAsksWhereThisPcIs()
@@ -3848,6 +3895,161 @@ public sealed class ExternalAdaptersTests
             Assert.That(redirected.ErrorCode, Is.EqualTo("web_fetch_redirect_not_public"));
             Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "recetas.example.es" }));
         });
+    }
+
+    // Renew al máximo (auditoría de flujos, web): a page that does not answer in time, before its headers or in the
+    // middle of its body, is a page that took too long (web_fetch_timeout); the client's timeout escaped the adapter
+    // (external_provider_exception) and a body that trickled held the turn until the operation's own deadline.
+    [Test]
+    public async Task AWebFetchThatTakesTooLongSaysSo()
+    {
+        using TemporaryDirectory temporary = new();
+        using var silent = new HttpClient(new LambdaHttpHandler((_, _) =>
+            throw new TaskCanceledException("timeout", new TimeoutException())));
+        using var trickling = new HttpClient(new LambdaHttpHandler((_, _) =>
+        {
+            var content = new StreamContent(new StalledStream());
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = content });
+        }))
+        { Timeout = TimeSpan.FromMilliseconds(300) };
+        using WebBrowserAdapter beforeHeaders = SearchAdapter(temporary, silent);
+        using WebBrowserAdapter midBody = SearchAdapter(temporary, trickling);
+        using var turn = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        ExternalCapabilityReceipt headers = await beforeHeaders.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lenta.example.com/"}"""), turn.Token);
+        ExternalCapabilityReceipt body = await midBody.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lenta.example.com/"}"""), turn.Token);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(headers.ErrorCode, Is.EqualTo("web_fetch_timeout"));
+            Assert.That(body.ErrorCode, Is.EqualTo("web_fetch_timeout"));
+            Assert.That(turn.IsCancellationRequested, Is.False);
+            Assert.That(headers.EffectMayHaveOccurred | body.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, web): the client that asks the search sources (and the place by this PC's
+    // address), the weather and a place's time zone keeps no cookie: one jar lived as long as BAXY and sent back what
+    // each service set (Wikipedia's, Google's), so the person's searches went out tied to one another.
+    [Test]
+    public void ThePublicServicesClientKeepsNoCookie()
+    {
+        using SocketsHttpHandler handler = SearchPageReader.StrangerHandler();
+
+        Assert.That(handler.UseCookies, Is.False);
+    }
+
+    // Renew al máximo (auditoría de flujos, web): an address said without its scheme («es.wikipedia.org/wiki/Arroz», as
+    // the person dictates it and web.download takes it) is read over https; it was refused as not public.
+    [Test]
+    public async Task AWebFetchOfAnAddressWithoutSchemeReadsItOverHttps()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = new(HttpStatusCode.OK,
+                "<html><head><title>Arroz</title></head><body><p>El arroz es una semilla.</p></body></html>", "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"es.wikipedia.org/wiki/Arroz"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt local = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"192.168.1.10/admin"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("requestedUrl").GetString(), Is.EqualTo("https://es.wikipedia.org/wiki/Arroz"));
+            Assert.That(read.Result?.GetProperty("text").GetString(), Does.Contain("El arroz es una semilla."));
+            Assert.That(local.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "es.wikipedia.org" }));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, web): an address whose host does not exist (an invented URL), no network,
+    // and a host that resolves into the local network each say so; all three were web_adapter_unavailable, read as the
+    // web tool itself being broken.
+    [Test]
+    public async Task AWebFetchThatReachesNoPageSaysWhy()
+    {
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(new LambdaHttpHandler((request, _) => throw (request.RequestUri!.Host switch
+        {
+            "inventada.example.com" => new HttpRequestException(HttpRequestError.NameResolutionError, "no such host"),
+            "lan.example.com" => new HttpRequestException(
+                "connect refused", new SearchPageReader.AddressNotPublicException()),
+            _ => new HttpRequestException(HttpRequestError.ConnectionError, "no network"),
+        })));
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt invented = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://inventada.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt offline = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://recetas.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt lan = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lan.example.com/"}"""), CancellationToken.None);
+        // The same two causes as the production client's connection step raises them (no socket is opened).
+        using var unresolved = new HttpClient(new SocketsHttpHandler
+        {
+            ConnectCallback = (_, _) => throw new System.Net.Sockets.SocketException(
+                (int)System.Net.Sockets.SocketError.HostNotFound),
+        });
+        using var refused = new HttpClient(new SocketsHttpHandler
+        {
+            ConnectCallback = (_, _) => throw new HttpRequestException(
+                "connect refused", new SearchPageReader.AddressNotPublicException()),
+        });
+        using WebBrowserAdapter unresolvedAdapter = SearchAdapter(temporary, unresolved);
+        using WebBrowserAdapter refusedAdapter = SearchAdapter(temporary, refused);
+        ExternalCapabilityReceipt unresolvedRead = await unresolvedAdapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://inventada.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt refusedRead = await refusedAdapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lan.example.com/"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(invented.ErrorCode, Is.EqualTo("web_fetch_host_not_found"));
+            Assert.That(offline.ErrorCode, Is.EqualTo("web_fetch_unreachable"));
+            Assert.That(lan.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(unresolvedRead.ErrorCode, Is.EqualTo("web_fetch_host_not_found"));
+            Assert.That(refusedRead.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(invented.EffectMayHaveOccurred | offline.EffectMayHaveOccurred | lan.EffectMayHaveOccurred,
+                Is.False);
+        });
+    }
+
+    private sealed class LambdaHttpHandler(
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> answer) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken) => answer(request, cancellationToken);
+    }
+
+    // A body whose bytes never come: each read waits until it is cancelled.
+    private sealed class StalledStream : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => 0; set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken).ConfigureAwait(false);
+            return 0;
+        }
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
+            ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
     private static HttpAnswer WikipediaAnswer(

@@ -32,7 +32,7 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
 
     internal OpenMeteoWeatherAdapter()
     {
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(12) };
+        _http = new HttpClient(SearchPageReader.StrangerHandler()) { Timeout = TimeSpan.FromSeconds(12) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 weather-read");
         _locator = new PublicPlaceLocator(FetchAsync);
     }
@@ -71,9 +71,17 @@ internal sealed class OpenMeteoWeatherAdapter : IExternalOperationAdapter, IDisp
             var namesakes = new Namesakes(dialectCountry);
             // Ronda 22: where the time of a weather read goes (the place, the forecast) travels in elapsedMs.
             var clock = Stopwatch.StartNew();
-            PlaceChoice choice = location is null
-                ? new(await _locator.LocateAsync(cancellationToken).ConfigureAwait(false), [], false)
-                : await ResolvePlaceAsync(location, namesakes, cancellationToken).ConfigureAwait(false);
+            PlaceChoice choice;
+            if (location is null)
+            {
+                PublicPlaceLocator.Lookup here = await _locator.LocateAsync(cancellationToken).ConfigureAwait(false);
+                if (here.Unreachable) return ExternalJson.FailureBeforeEffect(operation, "weather_service_unavailable");
+                choice = new(here.Place, [], false);
+            }
+            else
+            {
+                choice = await ResolvePlaceAsync(location, namesakes, cancellationToken).ConfigureAwait(false);
+            }
             PublicPlace? place = choice.Place;
             long placeMs = clock.ElapsedMilliseconds;
             if (place is null)

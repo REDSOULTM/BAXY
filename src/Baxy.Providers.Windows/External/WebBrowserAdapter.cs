@@ -60,11 +60,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _sessionContext = sessionContext;
         _userBrowser = new UserBrowserSurface(new WindowsUserBrowserPlatform());
         _capturesDirectory = Path.Combine(dataRoot, "captures");
-        _http = new HttpClient(new SocketsHttpHandler
-        {
-            AutomaticDecompression = System.Net.DecompressionMethods.All,
-        })
-        { Timeout = TimeSpan.FromSeconds(20) };
+        _http = new HttpClient(SearchPageReader.StrangerHandler()) { Timeout = TimeSpan.FromSeconds(20) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 structured-search");
         _locator = new PublicPlaceLocator(_http.GetStringAsync);
         _wikipedia = new WikipediaSearchSource(_http);
@@ -299,10 +295,36 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", 4_000), 500, 20_000);
         int offset = Math.Max(0, ExternalJson.OptionalInt(arguments, "offset", 0));
-        if (!Uri.TryCreate(ExternalJson.RequiredString(arguments, "url").Trim(), UriKind.Absolute, out Uri? address)
+        string url = ExternalJson.RequiredString(arguments, "url").Trim();
+        // Renew al máximo (auditoría de flujos): an address said without its scheme is read over https, as web.download
+        // reads it; it was refused as not public.
+        if (!url.Contains("://", StringComparison.Ordinal))
+            url = "https://" + url;
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? address)
             || !SearchPageReader.IsPublicPageAddress(address))
             return ExternalJson.Failure(operation, "web_fetch_address_not_public");
-        SearchPageReader.PageRead read = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+        SearchPageReader.PageRead read;
+        try
+        {
+            read = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // Renew al máximo (auditoría de flujos): the page did not answer in time (its headers or its body); the
+            // client's timeout escaped as an exception of the provider.
+            return ExternalJson.Failure(operation, "web_fetch_timeout");
+        }
+        catch (Exception exception) when (exception is HttpRequestException or IOException)
+        {
+            // Renew al máximo (auditoría de flujos): a host that does not exist (an invented address), one that resolves
+            // into the local network, or no network at all, each said; they were web_adapter_unavailable, the tool broken.
+            bool notPublic = false;
+            for (Exception? cause = exception; cause is not null; cause = cause.InnerException)
+                notPublic |= cause is SearchPageReader.AddressNotPublicException;
+            return ExternalJson.Failure(operation, notPublic ? "web_fetch_address_not_public"
+                : exception is HttpRequestException { HttpRequestError: HttpRequestError.NameResolutionError }
+                    ? "web_fetch_host_not_found" : "web_fetch_unreachable");
+        }
         if (read.Html is null || read.Final is null)
             return ExternalJson.Failure(operation, read.Error ?? "web_fetch_page_unreadable");
         (string title, string whole, int skipped) = PageText.Prose(read.Html);
@@ -736,17 +758,19 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 string? place = OptionalText(arguments, "place");
                 if (place is null && !nearby) throw new InvalidDataException("A places search names its place.");
                 string kind = ExternalJson.RequiredString(arguments, "kind").Trim();
-                string? city = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
+                (string? city, bool cityUnreachable) = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
                 if (nearby && city is null)
-                    return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
+                    return ExternalJson.FailureBeforeEffect(
+                        operation, cityUnreachable ? SearchUnavailable : "web_search_place_unavailable");
                 return await PlacesAsync(operation, query,
                         new OpenStreetMapPlaceSource.PlaceAsk(kind, string.Join(", ", new[] { place, city }.OfType<string>())),
                         limit, language, city is not null, cancellationToken)
                     .ConfigureAwait(false);
             case "web" or "news" or "encyclopedia":
-                string? near = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
+                (string? near, bool nearUnreachable) = await NearAsync(nearby, cancellationToken).ConfigureAwait(false);
                 if (nearby && near is null)
-                    return ExternalJson.FailureBeforeEffect(operation, "web_search_place_unavailable");
+                    return ExternalJson.FailureBeforeEffect(
+                        operation, nearUnreachable ? SearchUnavailable : "web_search_place_unavailable");
                 string sent = near is null ? query : query + " " + near;
                 return source switch
                 {
@@ -769,15 +793,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     // Uso real tanda 4c: with nearby, this PC's city, read from its public address, and its country (M81: «Curico»
     // alone is also in Indiana). Only their names leave; no coordinates, nothing of the person. Null without nearby, or
-    // when the PC's place could not be read.
-    private async Task<string?> NearAsync(bool nearby, CancellationToken cancellationToken)
+    // when the PC's place could not be read; Unreachable when the place service did not answer at all (no network:
+    // the search is not answering either, not a place unknown).
+    private async Task<(string? Near, bool Unreachable)> NearAsync(bool nearby, CancellationToken cancellationToken)
     {
-        if (!nearby) return null;
-        if (await _locator.LocateAsync(cancellationToken).ConfigureAwait(false) is not { } place) return null;
+        if (!nearby) return (null, false);
+        PublicPlaceLocator.Lookup here = await _locator.LocateAsync(cancellationToken).ConfigureAwait(false);
+        if (here.Place is not { } place) return (null, here.Unreachable);
         string country = place.Country.Trim();
-        return country.Length > 0 && !place.Name.Contains(country, StringComparison.OrdinalIgnoreCase)
+        return (country.Length > 0 && !place.Name.Contains(country, StringComparison.OrdinalIgnoreCase)
             ? place.Name + ", " + country
-            : place.Name;
+            : place.Name, false);
     }
 
     private static FrankfurterRateSource.CurrencyAsk CurrencyArguments(JsonElement arguments)

@@ -217,7 +217,12 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
         ApplicationWindows found = await ApplicationWindowCloser.ResolveAsync(provider, appId.GetString()!, cancellationToken)
             .ConfigureAwait(false);
         if (found.ErrorCode is { } missing)
-            return InvocationPreflightResult.Fails(OperationOutcome.Failure(missing));
+        {
+            return InvocationPreflightResult.Fails(found.Background.Count == 0
+                ? OperationOutcome.Failure(missing)
+                : OperationOutcome.Failure(missing, ApplicationReceipt(appId.GetString()!,
+                    new ApplicationWindowsClosed(missing, 0, found.Background, [], false, 0, 0))));
+        }
         return found.Windows.All(window => provider.HoldsNoDocument(window.WindowId))
             ? InvocationPreflightResult.Lowered(OperationRisk.Reversible)
             : InvocationPreflightResult.Proceed;
@@ -278,7 +283,8 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             .ConfigureAwait(false);
         if (closing.ErrorCode is { } stopped)
         {
-            return closing.Frames == 0
+            // Renew al máximo (auditoría de flujos): with no window, the processes running in the background are said.
+            return closing.Frames == 0 && closing.ProcessIds.Count == 0
                 ? OperationOutcome.Failure(stopped)
                 : OperationOutcome.Failure(stopped, ApplicationReceipt(appId, closing),
                     effectMayHaveOccurred: closing.EffectMayHaveOccurred);

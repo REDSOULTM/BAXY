@@ -25,6 +25,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
     private readonly Func<IReadOnlyList<SteamProcessObservation>>? _processSnapshot;
     private readonly Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? _storeTitles;
+    // Renew al máximo (auditoría de flujos): the processes running now and each one's executable, read with the least
+    // access Windows grants (an elevated game, or one its anti-cheat protects, too).
+    private readonly Func<IReadOnlyList<int>> _processIds;
+    private readonly Func<int, string?> _imagePath;
 
     // Encargo imp-steam: a title turns into its catalog number by the installed games' manifests and, for one not
     // installed, by the store's public title search the data declare (only the title leaves); 13 titles written here
@@ -53,7 +57,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         ISteamClientAutomation automation,
         Func<TimeSpan, CancellationToken, ValueTask>? delay = null,
         Func<IReadOnlyList<SteamProcessObservation>>? processSnapshot = null,
-        Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? storeTitles = null)
+        Func<string, CancellationToken, ValueTask<IReadOnlyList<SteamStoreTitle>>>? storeTitles = null,
+        Func<IReadOnlyList<int>>? processIds = null,
+        Func<int, string?>? imagePath = null)
     {
         _snapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         _owned = owned ?? throw new ArgumentNullException(nameof(owned));
@@ -61,6 +67,22 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         _delay = delay ?? DelayAsync;
         _processSnapshot = processSnapshot;
         _storeTitles = storeTitles;
+        _processIds = processIds ?? RunningProcessIds;
+        _imagePath = imagePath ?? Applications.WindowsInstalledApplicationPlatform.ExecutableImagePath;
+    }
+
+    private static IReadOnlyList<int> RunningProcessIds()
+    {
+        Process[] processes = Process.GetProcesses();
+        try
+        {
+            return [.. processes.Select(static process => process.Id)];
+        }
+        finally
+        {
+            foreach (Process process in processes)
+                process.Dispose();
+        }
     }
 
     /// <summary>The mission's click on a window by a label (input.visible.click), as the act's confirmation.</summary>
@@ -232,6 +254,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // Ronda final 8: with a library unread, a game not found installed may be installed there.
             if (appId is not null && (installed || !librariesUnread)) writer.WriteBoolean("installed", installed);
             if (librariesUnread) writer.WriteBoolean("librariesUnread", true);
+            if (appId is null) WriteClosest(writer, ClosestTitles(title, catalog.Select(static game => game.Name)));
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
                 : librariesUnread ? "install_not_read"
@@ -259,11 +282,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 .ConfigureAwait(false);
         }
 
-        (string? appId, bool searchFailed) = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
+        (string? appId, bool searchFailed, string[] closest) =
+            await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
         if (searchFailed)
-            return ExternalJson.FailureBeforeEffect(operation, "steam_store_search_failed");
+            return NotResolved(operation, "steam_store_search_failed", title, closest);
         if (appId is null)
-            return ExternalJson.Failure(operation, "steam_title_not_resolved");
+            return NotResolved(operation, "steam_title_not_resolved", title, closest);
         // Encargo imp-steam: the account's library is not read here as a gate. Its local cache is incomplete (measured
         // 2026-10-11: Super Meat Boy, in the owner's account, is absent from the notebook's userdata librarycache);
         // Steam's own install dialog only installs what the account holds, and the manifest proves it did.
@@ -521,14 +545,18 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     }
 
     // Renew al máximo (B-APP-5): a store search that got no answer is SearchFailed, never a title no game bears.
-    private async ValueTask<(string? AppId, bool SearchFailed)> ResolveTitleAsync(
+    // Renew al máximo (auditoría de flujos): unresolved, with the closest titles of the store's answer and the manifests
+    // (only the manifests when the store did not answer).
+    private async ValueTask<(string? AppId, bool SearchFailed, string[] Closest)> ResolveTitleAsync(
         string title, CancellationToken cancellationToken)
     {
         string folded = FoldTitle(title);
-        string? installed = ResolveSnapshotTitle(folded);
+        IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        string? installed = Bearing(catalog, folded) is [string one] ? one : null;
+        string[] Local() => ClosestTitles(title, catalog.Select(static game => game.Name));
         if (installed is not null || _storeTitles is null)
         {
-            return (installed, false);
+            return (installed, false, installed is null ? Local() : []);
         }
 
         IReadOnlyList<SteamStoreTitle> found;
@@ -539,7 +567,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
             || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
-            return (null, true);
+            return (null, true, Local());
         }
 
         // Exactly one game of the store answer bears the title (folded): «Super Meat Boy» is not «Super Meat Boy Forever».
@@ -548,14 +576,72 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .Select(item => item.AppId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-        return (matches.Length == 1 ? matches[0] : null, false);
+        return matches.Length == 1
+            ? (matches[0], false, [])
+            : (null, false, ClosestTitles(title, found.Select(static item => item.Name)
+                .Concat(catalog.Select(static game => game.Name))));
     }
+
+    // Renew al máximo (auditoría de flujos, decision2): how many of the closest titles an unresolved one names.
+    private const int ClosestTitleCount = 5;
+
+    /// <summary>
+    /// Renew al máximo (auditoría de flujos, decision2: «desinstala el worms» failed with nothing to name): the titles of
+    /// <paramref name="names"/> closest to <paramref name="title"/>, folded as titles are: by the words of three letters or
+    /// more they share (one said as the start of the other's counts), then by one title starting the other; at most five,
+    /// none sharing nothing. Only said, never resolved.
+    /// </summary>
+    internal static string[] ClosestTitles(string title, IEnumerable<string> names)
+    {
+        string folded = FoldTitle(title);
+        string[] asked = [.. folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(static word => word.Length >= 3)];
+        return [.. names
+            .Where(static name => !string.IsNullOrWhiteSpace(name))
+            .DistinctBy(FoldTitle, StringComparer.Ordinal)
+            .Select(name => (Name: name, Score: Nearness(folded, asked, FoldTitle(name))))
+            .Where(static scored => scored.Score > 0)
+            .OrderByDescending(static scored => scored.Score)
+            .ThenBy(static scored => scored.Name, StringComparer.OrdinalIgnoreCase)
+            .Take(ClosestTitleCount)
+            .Select(static scored => scored.Name)];
+    }
+
+    private static int Nearness(string folded, string[] asked, string name)
+    {
+        string[] words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        int shared = asked.Count(word => words.Any(other => other.StartsWith(word, StringComparison.Ordinal)
+            || (other.Length >= 3 && word.StartsWith(other, StringComparison.Ordinal))));
+        bool starts = folded.Length >= 3 && name.Length >= 3
+            && (name.StartsWith(folded, StringComparison.Ordinal) || folded.StartsWith(name, StringComparison.Ordinal));
+        return shared * 2 + (starts ? 1 : 0);
+    }
+
+    internal static void WriteClosest(Utf8JsonWriter writer, string[] closest)
+    {
+        if (closest.Length == 0)
+            return;
+        writer.WriteStartArray("closestTitles");
+        foreach (string name in closest)
+            writer.WriteStringValue(name);
+        writer.WriteEndArray();
+    }
+
+    // A title that resolved to no game, failed before anything is sent, with what was asked and the closest titles.
+    private static ExternalCapabilityReceipt NotResolved(string operation, string code, string title, string[] closest) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("query", title);
+            WriteClosest(writer, closest);
+            writer.WriteEndObject();
+        }), code);
 
     /// <summary>
     /// BAXY Renew cu (C04): the game whose store page is asked for by its title (app.open, place game). The installed
     /// game bearing the title, else the store's answer: the one game bearing it, else the first, in the store's own
     /// order, whose name holds every word of it («Sid Meier Civilization VI» is «Sid Meier's Civilization VI»). Only a page is
-    /// opened with it, and its name goes back with the opening; null when nothing bears the title.
+    /// opened with it, and its name goes back with the opening; null when nothing bears the title, and
+    /// <see cref="Applications.GameTitleSearchFailedException"/> when the store's search got no answer.
     /// </summary>
     internal static async ValueTask<SteamStoreTitle?> PageTitleAsync(
         string title,
@@ -575,10 +661,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             found = await (storeTitles ?? SearchStoreAsync)(title, cancellationToken).ConfigureAwait(false);
         }
+        // Renew al máximo (auditoría de flujos): a search with no answer is not a title nothing bears.
         catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
             || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
-            return null;
+            throw new Applications.GameTitleSearchFailedException(exception);
         }
 
         SteamStoreTitle[] bearing = [.. found.Where(item => FoldTitle(item.Name) == folded)
@@ -654,8 +741,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return titles;
     }
 
-    private string? ResolveSnapshotTitle(string folded) => Bearing(_snapshot(), folded) is [string one] ? one : null;
-
     // The AppIDs of the manifests bearing the title (folded): the title resolves when exactly one does.
     private static string[] Bearing(IReadOnlyList<SteamLocalGame> catalog, string folded) => catalog
         .Where(game => FoldTitle(game.Name) == folded)
@@ -663,7 +748,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         .Distinct(StringComparer.Ordinal)
         .ToArray();
 
-    private static string FoldTitle(string value)
+    internal static string FoldTitle(string value)
     {
         string decomposed = value.Normalize(NormalizationForm.FormD);
         return string.Join(' ', new string(decomposed
@@ -937,12 +1022,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     {
         IEnumerable<SteamProcessObservation> processes = _processSnapshot is not null
             ? _processSnapshot()
-            : Process.GetProcesses().Select(static process =>
-            {
-                using (process)
-                    return new SteamProcessObservation(
-                        process.Id, Applications.WindowsInstalledApplicationPlatform.ExecutableImagePath(process.Id));
-            });
+            : _processIds().Select(id => new SteamProcessObservation(id, _imagePath(id)));
         var ids = new HashSet<int>();
         int? running = null;
         foreach (SteamProcessObservation process in processes)
@@ -960,6 +1040,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             Path.TrimEndingDirectorySeparator(installRoot) + Path.DirectorySeparatorChar,
             StringComparison.OrdinalIgnoreCase);
 
+    // Renew al máximo (auditoría de flujos): a process born after the launch is read as one already running is (by its
+    // image, with the least access); its main module, read before, is refused for an elevated or protected game.
     private int? FindLaunchedProcess(HashSet<int> before, string installRoot)
     {
         if (_processSnapshot is not null)
@@ -975,22 +1057,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return null;
         }
 
-        foreach (Process process in Process.GetProcesses())
+        foreach (int processId in _processIds())
         {
-            using (process)
+            if (!before.Contains(processId) && RunsFrom(_imagePath(processId), installRoot))
             {
-                if (before.Contains(process.Id)) continue;
-                try
-                {
-                    if (RunsFrom(process.MainModule?.FileName, installRoot))
-                    {
-                        return process.Id;
-                    }
-                }
-                catch (Exception exception) when (exception is InvalidOperationException
-                    or System.ComponentModel.Win32Exception)
-                {
-                }
+                return processId;
             }
         }
 
@@ -1050,6 +1121,21 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
     private static int UnreadLibraries(IReadOnlyList<SteamLocalGame> games) =>
         games is InstalledCatalog catalog ? catalog.UnreadLibraries : 0;
+
+    // Renew al máximo (auditoría de flujos, P215): the games installed, as their manifests say them; none when the
+    // manifests cannot be read (what reads them is only told a game apart).
+    internal static IReadOnlyList<SteamLocalGame> InstalledGames()
+    {
+        try
+        {
+            return [.. ReadInstalledCatalog().Where(static game => game.Installed)];
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or System.Security.SecurityException)
+        {
+            return [];
+        }
+    }
 
     private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog()
     {
