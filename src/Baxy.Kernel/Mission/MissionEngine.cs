@@ -128,6 +128,21 @@ public sealed class MissionEngine : IDisposable
                     policy = Evaluate(handler, risk, request.Arguments, landingRead: true);
                 }
             }
+            // Renew al máximo (guarda msconfig, guarda diálogo destructivo): an invocation whose handler says it may be
+            // riskier than declared is read in normal mode though it would go without asking; only a higher risk it
+            // finds is taken (it then asks, bound to this invocation), never a failure. Bypass asks as RiskPolicy says.
+            else if (policy == PolicyDecision.Allow
+                && handler is IInvocationPreflight raising
+                && _confirmationMode() == ConfirmationMode.Normal
+                && raising.MayRaise(request.Arguments))
+            {
+                InvocationPreflightResult found = await Preflight(raising, request.Arguments, cancellationToken)
+                    .ConfigureAwait(false);
+                if (found.Risk is { } risk && risk > handler.Definition.Risk)
+                {
+                    policy = Evaluate(handler, risk, request.Arguments);
+                }
+            }
 
             ConfirmationBinding? grantedBinding = null;
             if (policy == PolicyDecision.RequireConfirmation)

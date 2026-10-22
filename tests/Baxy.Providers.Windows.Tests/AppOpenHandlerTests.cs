@@ -1,5 +1,9 @@
+using System.Security.Cryptography;
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Applications;
 using Baxy.Providers.Windows.External;
@@ -566,6 +570,138 @@ public sealed class AppOpenHandlerTests
     {
         public ValueTask<GameTitle?> FindAsync(string catalog, string title, CancellationToken cancellationToken) =>
             throw new GameTitleSearchFailedException(new HttpRequestException("simulated offline store"));
+    }
+
+    // Renew al máximo (guarda msconfig): E014 «abre la configuración de sonido» asked app.open for «Configuración del
+    // sistema», which is msconfig, and it opened elevated without asking (the incidente del 2026-10-15 disabled 256
+    // services from that window). An opening whose name resolves to a tool that configures Windows itself (the system
+    // tools no click acts on) waits for the person's yes, bound to that invocation, and launches nothing before it;
+    // Windows' Settings app and Notepad open straight. Through the engine, with the provider's own catalog resolution.
+    [TestCase("Configuración del sistema", true)]
+    [TestCase("Servicios", true)]
+    [TestCase("Configuración", false)]
+    [TestCase("Bloc de notas", false)]
+    public async Task OpeningASystemToolWaitsForTheYesAndLaunchesNothing(string appId, bool asks)
+    {
+        var platform = new SystemToolsPlatform();
+
+        OperationResponse response = await OpenThroughEngine(platform, appId, confirm: false);
+
+        Assert.Multiple(() =>
+        {
+            if (asks)
+            {
+                Assert.That(response.Status, Is.EqualTo(OperationStatuses.Pending));
+                Assert.That(response.ErrorCode, Is.EqualTo("confirmation_required"));
+                Assert.That(platform.Activated, Is.Empty, "nothing is launched before the yes");
+            }
+            else
+            {
+                Assert.That(response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+                Assert.That(platform.Activated, Is.EqualTo(new[] { appId }));
+            }
+        });
+    }
+
+    // The yes given to that same invocation launches it.
+    [Test]
+    public async Task ASystemToolOpensOnTheYesToThatInvocation()
+    {
+        var platform = new SystemToolsPlatform();
+
+        OperationResponse response = await OpenThroughEngine(platform, "Configuración del sistema", confirm: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+            Assert.That(platform.Activated, Is.EqualTo(new[] { "Configuración del sistema" }));
+        });
+    }
+
+    // The rule is the one clicks are refused by (SystemToolProcesses, the applets of lote 4 c): the program a shortcut
+    // runs, a console of the MMC host, an applet by its .cpl or run by rundll32. Contracasos: the Sound applet the person
+    // asks for, Notepad, a document.
+    [TestCase(@"C:\WINDOWS\system32\msconfig.exe", null, true)]
+    [TestCase(@"C:\WINDOWS\regedit.exe", null, true)]
+    [TestCase(@"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\taskschd.msc", null, true)]
+    [TestCase(@"C:\WINDOWS\system32\compmgmt.msc", null, true)]
+    [TestCase(@"C:\WINDOWS\system32\firewall.cpl", null, true)]
+    [TestCase(@"C:\WINDOWS\system32\rundll32.exe", "shell32.dll,Control_RunDLL ncpa.cpl", true)]
+    [TestCase(@"C:\WINDOWS\system32\rundll32.exe", "shell32.dll,Control_RunDLL mmsys.cpl", false)]
+    [TestCase(@"C:\WINDOWS\system32\notepad.exe", null, false)]
+    [TestCase(@"C:\Users\persona\Documents\msconfig.txt", null, false)]
+    [TestCase(null, null, false)]
+    public void ALaunchIsASystemToolByTheRuleClicksAreRefusedBy(string? target, string? arguments, bool expected) =>
+        Assert.That(VisibleControlSurface.SystemToolLaunch(target, arguments), Is.EqualTo(expected));
+
+    private static async Task<OperationResponse> OpenThroughEngine(SystemToolsPlatform platform, string appId, bool confirm)
+    {
+        AppOpenHandler handler = Handler(new WindowsInstalledApplicationOpenProvider(platform));
+        string root = Path.Combine(Path.GetTempPath(), "baxy-system-tool-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+                Path.Combine(root, "journal.jsonl"),
+                new JournalHmacAuthenticator(RandomNumberGenerator.GetBytes(JournalHmacAuthenticator.KeyLength)));
+            using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+            var request = new OperationRequest(
+                ProtocolTypes.OperationRequest,
+                Guid.NewGuid().ToString("D"),
+                Guid.NewGuid().ToString("D"),
+                Guid.NewGuid().ToString("D"),
+                "app.open",
+                JsonSerializer.SerializeToElement(new { appId }));
+            OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
+            if (confirm && response.ErrorCode == "confirmation_required")
+            {
+                response = await engine.ExecuteAsync(
+                    request with { ConfirmationToken = response.Result!.Value.GetProperty("token").GetString() },
+                    CancellationToken.None);
+            }
+
+            return response;
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// The Start catalog as Windows lists it: msconfig and the Services console by the shortcuts of Windows' tools, the
+    /// Settings app and Notepad as packaged applications. An activation is recorded and refused (nothing runs).
+    /// </summary>
+    private sealed class SystemToolsPlatform : IInstalledApplicationPlatform
+    {
+        private static readonly InstalledApplicationEntry[] Catalog =
+        [
+            new("Configuración del sistema", @"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\msconfig.exe",
+                @"C:\WINDOWS\system32\msconfig.exe"),
+            new("Servicios", @"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\services.msc",
+                @"C:\WINDOWS\system32\services.msc"),
+            new("Configuración", "windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"),
+            new("Bloc de notas", "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App"),
+        ];
+
+        public List<string> Activated { get; } = [];
+
+        public ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(CancellationToken cancellationToken) =>
+            ValueTask.FromResult<IReadOnlyList<InstalledApplicationEntry>>(Catalog);
+
+        public IReadOnlyList<InstalledApplicationObservation> Inventory(InstalledApplicationEntry entry) => [];
+
+        public bool Activate(InstalledApplicationEntry entry)
+        {
+            Activated.Add(entry.Name);
+            return false;
+        }
+
+        public void RequestForeground(long windowHandle)
+        {
+        }
+
+        public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) => ValueTask.CompletedTask;
     }
 
     private sealed class RecordedPlace(List<string> opened) : IApplicationPlaceOpener

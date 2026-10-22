@@ -103,6 +103,14 @@ public interface IApplicationOpenProvider
     ValueTask<ApplicationOpenResult> OpenAsync(
         ApplicationOpenRequest request,
         CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Renew al máximo (guarda msconfig): read only, nothing launched. Whether the application this name resolves to is
+    /// a tool that configures Windows itself, by the same rule no click acts on such a tool; false when it resolves to
+    /// none or the provider cannot tell (the opening then fails or runs as always).
+    /// </summary>
+    ValueTask<bool> OpensSystemToolAsync(string applicationId, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(false);
 }
 
 // Candidates: not installed under that name, the installed names closest to it, as app.open says them (auditoría D1).

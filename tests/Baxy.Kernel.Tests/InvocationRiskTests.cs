@@ -3,6 +3,7 @@ using Baxy.Contracts;
 using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 using NUnit.Framework;
 
 namespace Baxy.Kernel.Tests;
@@ -155,6 +156,106 @@ public sealed class InvocationRiskTests
             Assert.That(handler.PreflightCount, Is.Zero);
             Assert.That(handler.ExecutionCount, Is.EqualTo(1));
         });
+    }
+
+    // Renew al máximo (guarda msconfig, guarda diálogo destructivo): an invocation whose declared risk goes without
+    // asking, and whose handler finds it riskier (an opening of msconfig, the «Sí» that replaces a file), waits for the
+    // yes bound to it, and runs on that yes.
+    [Test]
+    public async Task AnInvocationTheHandlerFindsRiskierAsksThoughItsDeclaredRiskWouldNot()
+    {
+        var handler = new RaisingHandler(InvocationPreflightResult.Raised(OperationRisk.Irreversible));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = Request("""{"windowId":"win_dialog"}""") with { Operation = "app.open" };
+
+        OperationResponse asked = await engine.ExecuteAsync(request, CancellationToken.None);
+        int executedBeforeTheYes = handler.ExecutionCount;
+        string token = asked.Result!.Value.GetProperty("token").GetString()!;
+        OperationResponse confirmed = await engine.ExecuteAsync(
+            request with { ConfirmationToken = token }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(executedBeforeTheYes, Is.Zero);
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Contracasos: a read that finds nothing riskier, or a failure, goes without asking and runs (a failure is never taken
+    // from this read); in Bypass the invocation is not read and goes as the rest of what is risky.
+    [Test]
+    public async Task ARaisingReadThatFindsNothingOrAFailureGoesWithoutAsking()
+    {
+        foreach (InvocationPreflightResult found in new[]
+        {
+            InvocationPreflightResult.Proceed,
+            InvocationPreflightResult.Fails(OperationOutcome.Failure("known_file_not_found")),
+        })
+        {
+            var handler = new RaisingHandler(found);
+            using var journal = new InMemoryInvocationJournal();
+            using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+            OperationResponse response = await engine.ExecuteAsync(
+                Request("""{"windowId":"win_dialog"}""") with { Operation = "app.open" }, CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+                Assert.That(handler.PreflightCount, Is.EqualTo(1));
+                Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+            });
+        }
+    }
+
+    [Test]
+    public async Task InBypassARaisingInvocationIsNotReadAndGoes()
+    {
+        var handler = new RaisingHandler(InvocationPreflightResult.Raised(OperationRisk.Irreversible));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([handler]),
+            journal,
+            new MissionEngineOptions { ConfirmationMode = static () => ConfirmationMode.Bypass });
+
+        OperationResponse response = await engine.ExecuteAsync(
+            Request("""{"windowId":"win_dialog"}""") with { Operation = "app.open" }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.PreflightCount, Is.Zero);
+        });
+    }
+
+    private sealed class RaisingHandler(InvocationPreflightResult found) : IOperationHandler, IInvocationPreflight
+    {
+        public int ExecutionCount { get; private set; }
+
+        public int PreflightCount { get; private set; }
+
+        public OperationDefinition Definition { get; } = new("app.open", OperationRisk.Reversible, "Open an application.");
+
+        public bool MayRaise(JsonElement arguments) => true;
+
+        public ValueTask<InvocationPreflightResult> PreflightAsync(
+            JsonElement arguments,
+            CancellationToken cancellationToken)
+        {
+            PreflightCount++;
+            return ValueTask.FromResult(found);
+        }
+
+        public ValueTask<OperationOutcome> ExecuteAsync(
+            OperationInvocation invocation,
+            CancellationToken cancellationToken)
+        {
+            ExecutionCount++;
+            return ValueTask.FromResult(OperationOutcome.Success(invocation.Arguments));
+        }
     }
 
     private static OperationRequest Request(string json) => new(

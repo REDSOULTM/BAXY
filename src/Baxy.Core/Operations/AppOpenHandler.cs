@@ -14,7 +14,7 @@ internal sealed class AppOpenHandler(
     Func<long, OpenedWindowFront>? frontOf = null,
     IGameTitles? games = null,
     Func<long, string, CancellationToken, ValueTask<long>>? settle = null)
-    : IOperationHandler
+    : IOperationHandler, IInvocationPreflight
 {
     // BAXY Renew cu (C03 en frío): how long an application started behind its sign-in may take to show its window.
     internal static readonly TimeSpan SignInBudget = TimeSpan.FromSeconds(30);
@@ -29,6 +29,27 @@ internal sealed class AppOpenHandler(
 
     public OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("app.open");
+
+    // Renew al máximo (guarda msconfig): E014 «abre la configuración de sonido» opened «Configuración del sistema»
+    // (msconfig) elevated without asking, the window where the incidente del 2026-10-15 disabled 256 services. An
+    // opening whose name resolves to a tool that configures Windows itself (the provider's rule, the one no click acts
+    // on) is this invocation's own risk: it asks in normal mode, bound to it. Read only; any other opening goes straight.
+    public bool MayRaise(JsonElement arguments) => true;
+
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        string? appId = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("appId", out JsonElement named)
+            && named.ValueKind == JsonValueKind.String
+                ? named.GetString()
+                : null;
+        return appId is not null && ApplicationIds.IsValidRequest(appId)
+            && await _provider.OpensSystemToolAsync(appId, cancellationToken).ConfigureAwait(false)
+                ? InvocationPreflightResult.Raised(OperationRisk.Irreversible)
+                : InvocationPreflightResult.Proceed;
+    }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(
         OperationInvocation invocation,
