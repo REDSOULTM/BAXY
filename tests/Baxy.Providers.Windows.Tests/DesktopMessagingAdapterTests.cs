@@ -448,6 +448,241 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): Enter was already pressed; a read-back that fails after it (a black capture,
+    // the window gone, the turn cancelled) says the message may be out, never a bare provider failure.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AReadBackThatFailsAfterEnterSaysTheMessageMayBeOut(bool cancelled)
+    {
+        DesktopMessageObservation observed = await WindowsDesktopMessagingAutomation.SentReadBackAsync(
+            _ => cancelled ? throw new OperationCanceledException() : throw new IOException("Messaging evidence capture came back black."),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.Verified, Is.False);
+            Assert.That(observed.EffectObserved, Is.True);
+            Assert.That(observed.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): every OCR pass of a chat (its header, composer, last messages, chat list)
+    // was written to %TEMP% as a bitmap for Tesseract; the picture now goes through the process's standard input and
+    // no capture of a chat touches the disk (as B-CU-5 took away the debug path that kept them).
+    [Test]
+    public void AChatCaptureIsReadWithoutTouchingTheDisk()
+    {
+        string source = AdapterSource();
+        int start = source.IndexOf("private static async ValueTask<string> RunTesseractAsync(", StringComparison.Ordinal);
+        int end = source.IndexOf("\n    }\n", Math.Max(start, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(start, Is.GreaterThan(0));
+            Assert.That(source[start..end], Does.Not.Contain("File.Write"));
+            Assert.That(source[start..end], Does.Not.Contain("GetTempPath"));
+            Assert.That(source[start..end], Does.Contain("\"stdin\""));
+        });
+    }
+
+    [Test]
+    public async Task TheOcrProcessIsFedThroughItsStandardInput()
+    {
+        var start = new ProcessStartInfo("cmd.exe")
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        start.ArgumentList.Add("/d");
+        start.ArgumentList.Add("/c");
+        start.ArgumentList.Add("more");
+        using Process process = Process.Start(start)
+            ?? throw new IOException("Test process did not start.");
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        string output = await WindowsDesktopMessagingAutomation.ReadRedirectedOutputAsync(
+            process, timeout.Token, System.Text.Encoding.ASCII.GetBytes("hola test\r\n"));
+
+        Assert.That(output.Trim(), Is.EqualTo("hola test"));
+    }
+
+    // An engine that fails before reading its input (a missing language) answers nothing, as it did when the picture was
+    // a file: no broken-pipe exception escapes the read.
+    [Test]
+    public async Task AnOcrProcessThatExitsUnfedReadsNothing()
+    {
+        var start = new ProcessStartInfo("cmd.exe")
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        start.ArgumentList.Add("/d");
+        start.ArgumentList.Add("/c");
+        start.ArgumentList.Add("exit");
+        start.ArgumentList.Add("1");
+        using Process process = Process.Start(start)
+            ?? throw new IOException("Test process did not start.");
+        await process.WaitForExitAsync();
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        string output = await WindowsDesktopMessagingAutomation.ReadRedirectedOutputAsync(
+            process, timeout.Token, new byte[4 * 1024 * 1024]);
+
+        Assert.That(output, Is.Empty);
+    }
+
+    // Renew al máximo (auditoría de flujos): messaging looked for Tesseract only on PATH and in Program Files, not where
+    // the product's assets declare it (BAXY_TESSERACT_EXE, BAXYRuntime), as ocr.read finds it.
+    [Test]
+    [NonParallelizable]
+    public void MessagingFindsTheOcrEngineTheProductDeclares()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-messaging-ocr-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        string executable = Path.Combine(directory, "tesseract.exe");
+        File.WriteAllBytes(executable, [0x4d, 0x5a]);
+        string? previous = Environment.GetEnvironmentVariable("BAXY_TESSERACT_EXE");
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", executable);
+            Assert.That(WindowsDesktopMessagingAutomation.FindTesseract(), Is.EqualTo(executable));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", previous);
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    // Renew al máximo (auditoría de flujos): with no OCR engine every flow typed into the person's chat (Discord's title
+    // needs none), never saw the text, cleared it and said «message_draft_not_verified». It stops before the client is
+    // even opened, with its cause.
+    [Test]
+    public async Task WithoutAnOcrEngineNothingIsOpenedOrTyped()
+    {
+        var probe = new SilentProbe();
+        var automation = new WindowsDesktopMessagingAutomation(probe, lease: null, ocrEngine: () => null);
+
+        DesktopClientReadiness readiness = await automation.EnsureClientOpenAsync("discord", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(readiness.Ready, Is.False);
+            Assert.That(readiness.Opened, Is.False);
+            Assert.That(readiness.ErrorCode, Is.EqualTo(WindowsDesktopMessagingAutomation.OcrUnavailable));
+            Assert.That(probe.Reads, Is.Zero);
+        });
+    }
+
+    private sealed class SilentProbe : IClientInteractionProbe
+    {
+        internal int Reads { get; private set; }
+
+        public void Prewarm()
+        {
+        }
+
+        public ValueTask<ClientInteraction> ReadAsync(nint handle, bool content, CancellationToken cancellationToken)
+        {
+            Reads++;
+            return ValueTask.FromResult(ClientInteraction.Unanswered);
+        }
+    }
+
+    // Renew al máximo (auditoría de flujos): a line break or a tab typed into a chat is a key of its own (WM_CHAR 13 is
+    // what Enter types, and whether a client sends on it cannot be read), as input.text.type already rules: a message
+    // with a control character is refused before the client is opened or anything typed, and says which it held.
+    [TestCase("message.draft", "recipient", "hola\nchao", 1, "U+000A")]
+    [TestCase("message.send", "recipient", "hola\r\nchao\t.", 3, "U+000D")]
+    [TestCase("message.send.test", "requestedRecipient", "a\u0007b", 1, "U+0007")]
+    public async Task AMessageWithAControlCharacterIsRefusedBeforeAnythingIsOpened(
+        string operation, string recipientField, string text, int count, string first)
+    {
+        string arguments = JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["channel"] = "whatsapp",
+            [recipientField] = "Letras",
+            ["text"] = text,
+        });
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            new DesktopMessageObservation(true, true, "hash", null, "hola chao", "exact"));
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_text_has_control_characters"));
+                Assert.That(automation.Calls, Is.Zero);
+                Assert.That(receipt.Result?.GetProperty("messageWritten").GetBoolean(), Is.False);
+                Assert.That(receipt.Result?.GetProperty("controlCharacterCount").GetInt32(), Is.EqualTo(count));
+                Assert.That(receipt.Result?.GetProperty("controlCharacters")[0].GetString(), Is.EqualTo(first));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // Renew al máximo (auditoría de flujos): the name typed into the client's chat search follows the same rule (an Enter
+    // there opens a result): a recipient, or the owner's test destination a test send types, holding a control character
+    // is refused before anything is opened.
+    [TestCase("message.draft", "Le\ntras", "Letras", "U+000A")]
+    [TestCase("message.send", "Letras\r", "Letras", "U+000D")]
+    [TestCase("message.send.test", "Letras", "Le\ttras", "U+0009")]
+    public async Task ARecipientWithAControlCharacterIsRefusedBeforeAnythingIsOpened(
+        string operation, string recipient, string destination, string first)
+    {
+        string arguments = JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["channel"] = "whatsapp",
+            [operation == "message.send.test" ? "requestedRecipient" : "recipient"] = recipient,
+            ["text"] = "hola",
+        });
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            new DesktopMessageObservation(true, true, "hash", null, "hola", "exact"));
+        string destinations = TestDestinations(JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["whatsapp"] = destination,
+        }));
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_recipient_has_control_characters"));
+                Assert.That(automation.Calls, Is.Zero);
+                Assert.That(receipt.Result?.GetProperty("messageWritten").GetBoolean(), Is.False);
+                Assert.That(receipt.Result?.GetProperty("controlCharacterCount").GetInt32(), Is.EqualTo(1));
+                Assert.That(receipt.Result?.GetProperty("controlCharacters")[0].GetString(), Is.EqualTo(first));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {
@@ -467,17 +702,25 @@ public sealed class DesktopMessagingAdapterTests
     {
         internal ResolvedRecipient? SentRecipient { get; private set; }
         internal string? SentText { get; private set; }
+        internal int Calls { get; private set; }
 
         public ValueTask<DesktopClientReadiness> EnsureClientOpenAsync(
             string channel,
-            CancellationToken cancellationToken) =>
-            ValueTask.FromResult(DesktopClientReadiness.AlreadyOpen);
+            CancellationToken cancellationToken)
+        {
+            Calls++;
+            return ValueTask.FromResult(DesktopClientReadiness.AlreadyOpen);
+        }
 
         public ValueTask<DesktopMessageObservation> DraftAsync(
             ResolvedRecipient recipient,
             string text,
-            CancellationToken cancellationToken) =>
-            ValueTask.FromResult(send);
+            CancellationToken cancellationToken)
+        {
+            Calls++;
+            SentText = text;
+            return ValueTask.FromResult(send);
+        }
 
         public ValueTask<DesktopRecipientObservation> ResolveAsync(
             string channel,
@@ -485,6 +728,7 @@ public sealed class DesktopMessagingAdapterTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            Calls++;
             return ValueTask.FromResult(resolve);
         }
 
@@ -494,6 +738,7 @@ public sealed class DesktopMessagingAdapterTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            Calls++;
             SentRecipient = recipient;
             SentText = text;
             return ValueTask.FromResult(send);

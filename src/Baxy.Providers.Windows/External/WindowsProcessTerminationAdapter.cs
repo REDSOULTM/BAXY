@@ -122,11 +122,13 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
         CancellationToken cancellationToken)
     {
         bool effectMayHaveOccurred = false;
+        string? processName = null;
+        IReadOnlyList<WindowsProcessIdentity> before = [];
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
-            string processName = NormalizeName(ExternalJson.RequiredString(arguments, "name"));
-            IReadOnlyList<WindowsProcessIdentity> before = _platform.Snapshot(processName);
+            processName = NormalizeName(ExternalJson.RequiredString(arguments, "name"));
+            before = _platform.Snapshot(processName);
             if (before.Count == 0)
             {
                 return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(operation, "process_not_running"));
@@ -166,8 +168,10 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
             {
                 if (denied == 0)
                 {
-                    return ValueTask.FromResult(ExternalJson.Failure(
-                        operation, "process_termination_postread_failed", effectMayHaveOccurred));
+                    // Renew al máximo (8.3): what the post-read found is the state after, never dropped.
+                    return ValueTask.FromResult(ExternalJson.WithStateAfter(
+                        ExternalJson.Failure(operation, "process_termination_postread_failed", effectMayHaveOccurred),
+                        StillRunning(lingering.Length)));
                 }
 
                 // FT/proveedores goal (review of receipts): the instances Windows would not let BAXY end (elevated, or
@@ -240,10 +244,38 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
         catch (Exception exception) when (exception is InvalidOperationException
             or System.ComponentModel.Win32Exception or NotSupportedException)
         {
-            return ValueTask.FromResult(ExternalJson.Failure(
-                operation, "process_termination_failed", effectMayHaveOccurred));
+            ExternalCapabilityReceipt failure = ExternalJson.Failure(
+                operation, "process_termination_failed", effectMayHaveOccurred);
+            return ValueTask.FromResult(failure.EffectMayHaveOccurred && processName is not null
+                ? ExternalJson.WithStateAfter(failure, Reread(processName, before))
+                : failure);
         }
     }
+
+    // Renew al máximo (8.3): one more read of the name after a kill whose post-read threw: how many of the instances
+    // asked to end are still there; nothing when that read fails too.
+    private JsonElement? Reread(string processName, IReadOnlyList<WindowsProcessIdentity> before)
+    {
+        try
+        {
+            var original = before.ToHashSet();
+            return StillRunning(_platform.Snapshot(processName).Count(original.Contains));
+        }
+        catch (Exception exception) when (exception is InvalidOperationException
+            or System.ComponentModel.Win32Exception or NotSupportedException)
+        {
+            return null;
+        }
+    }
+
+    private static JsonElement StillRunning(int count) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteNumber("stillRunningCount", count);
+        writer.WriteBoolean("requestedStateReached", count == 0);
+        writer.WriteString("authority", "windows_process_original_identity_postread");
+        writer.WriteEndObject();
+    });
 
     private static string NormalizeName(string value)
     {

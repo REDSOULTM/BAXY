@@ -66,38 +66,42 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
         setup = case_dir / "setup.ps1"
         ps_file(setup, case.get("setup") or [])
         code, out = run_ps(setup, env, 300)
-        if code != 0:
-            transcripts.append({"id": case["id"], "status": "setup_fallido", "detail": out[-500:], "turns": []})
-            continue
-        run_turn(conductor, {"session": "new"}, 30)
-        turns = []
-        for number, turn in enumerate(case.get("turns") or [], start=1):
-            if number > 1:
-                wait_silence(conductor, 30)
-            events = run_turn(conductor, {"text": turn["text"]}, 180)
-            end = next((e for e in events if e["type"] == "turn.end"), {})
-            reply = turn.get("reply_if_confirmation")
-            if end.get("pendingConfirmation") and reply:
-                events += run_turn(conductor, {"text": reply}, 180)
-            ends = [e for e in events if e["type"] == "turn.end"]
-            turns.append({
-                # The turn's last end: the answer to a confirmation is the one that may have failed.
-                "failure": ("bench.timeout" if any(e["type"] == "bench.timeout" for e in events)
-                            else ends[-1].get("failure") if ends else None),
-                "person": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "person"],
-                "baxy": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"],
-                "steps": [step_of(e) for e in events if e["type"] == "step"],
-                # Ronda final: the same turn in the order it happened, so a line said before the «sí» is judged
-                # without the tool that ran after it (the lists above lose that order).
-                "ordered": [{"kind": "step", **step_of(e)} if e["type"] == "step"
-                            else {"kind": e["speaker"], "text": e["body"]}
-                            for e in events if e["type"] == "step"
-                            or (e["type"] == "message" and e["speaker"] in ("person", "baxy"))],
-            })
-        wait_silence(conductor, 30)
-        cleanup = case_dir / "cleanup.ps1"
-        ps_file(cleanup, case.get("cleanup") or [])
-        run_ps(cleanup, env, 300)
+        # R12.6: the cleanup runs whatever happened, a failed setup too (as in bench_e2e), so the next case starts on
+        # a clean desktop.
+        try:
+            if code != 0:
+                transcripts.append({"id": case["id"], "status": "setup_fallido", "detail": out[-500:], "turns": []})
+                continue
+            run_turn(conductor, {"session": "new"}, 30)
+            turns = []
+            for number, turn in enumerate(case.get("turns") or [], start=1):
+                if number > 1:
+                    wait_silence(conductor, 30)
+                events = run_turn(conductor, {"text": turn["text"]}, 180)
+                end = next((e for e in events if e["type"] == "turn.end"), {})
+                reply = turn.get("reply_if_confirmation")
+                if end.get("pendingConfirmation") and reply:
+                    events += run_turn(conductor, {"text": reply}, 180)
+                ends = [e for e in events if e["type"] == "turn.end"]
+                turns.append({
+                    # The turn's last end: the answer to a confirmation is the one that may have failed.
+                    "failure": ("bench.timeout" if any(e["type"] == "bench.timeout" for e in events)
+                                else ends[-1].get("failure") if ends else None),
+                    "person": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "person"],
+                    "baxy": [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"],
+                    "steps": [step_of(e) for e in events if e["type"] == "step"],
+                    # Ronda final: the same turn in the order it happened, so a line said before the «sí» is judged
+                    # without the tool that ran after it (the lists above lose that order).
+                    "ordered": [{"kind": "step", **step_of(e)} if e["type"] == "step"
+                                else {"kind": e["speaker"], "text": e["body"]}
+                                for e in events if e["type"] == "step"
+                                or (e["type"] == "message" and e["speaker"] in ("person", "baxy"))],
+                })
+            wait_silence(conductor, 30)
+        finally:
+            cleanup = case_dir / "cleanup.ps1"
+            ps_file(cleanup, case.get("cleanup") or [])
+            run_ps(cleanup, env, 300)
         transcripts.append({"id": case["id"], "trap": case.get("trap"), "status": "ok", "turns": turns})
         print(f"{case['id']} {len(turns)} turnos", flush=True)
     conductor.close()

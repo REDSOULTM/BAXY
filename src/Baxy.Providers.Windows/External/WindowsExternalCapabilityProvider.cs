@@ -445,7 +445,22 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         CancellationToken cancellationToken)
     {
         IReadOnlyList<(string Source, string Title, bool Playing)>? sessionsBefore = null;
-        var paused = new List<(WindowsMediaSessionAdapter Media, (string Source, string Title) Session)>();
+        var paused = new List<PausedPlayback>();
+        if (IsPlayback(operation))
+        {
+            // Renew al máximo (auditoría de flujos): BAXY's own YouTube player is always BAXY's; playing, it is paused
+            // for any other playback as the sessions below are (its own next playback replaces it anyway), and played
+            // again by the same rule.
+            foreach (YouTubeMpvAdapter local in _adapters.OfType<YouTubeMpvAdapter>())
+            {
+                if (await local.PauseForAnotherPlaybackAsync(cancellationToken).ConfigureAwait(false) is { } own)
+                {
+                    paused.Add(new(() => local.ResumeAfterAnotherPlaybackAsync(CancellationToken.None), own.Source,
+                        own.Title));
+                }
+            }
+        }
+
         if (IsPlayback(operation)
             && _adapters.OfType<WindowsMediaSessionAdapter>().FirstOrDefault() is { } sessions)
         {
@@ -453,7 +468,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             {
                 if (await media.PauseAssistantPlaybackBeforeAsync(operation).ConfigureAwait(false) is { } session)
                 {
-                    paused.Add((media, session));
+                    paused.Add(new(() => media.ResumeAssistantPlaybackAsync(session), session.Source, session.Title));
                 }
             }
 
@@ -475,9 +490,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         catch (Exception)
         {
             // The new playback never answered: what BAXY paused for it plays again, best effort.
-            foreach ((WindowsMediaSessionAdapter media, (string Source, string Title) session) in paused)
+            foreach (PausedPlayback pause in paused)
             {
-                _ = await media.ResumeAssistantPlaybackAsync(session).ConfigureAwait(false);
+                _ = await pause.Resume().ConfigureAwait(false);
             }
 
             throw;
@@ -494,15 +509,14 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// </summary>
     private static async ValueTask<ExternalCapabilityReceipt> SettlePausedPlaybackAsync(
         ExternalCapabilityReceipt receipt,
-        IReadOnlyList<(WindowsMediaSessionAdapter Media, (string Source, string Title) Session)> paused)
+        IReadOnlyList<PausedPlayback> paused)
     {
         bool effectCrossed = receipt.Verified || receipt.EffectObserved || receipt.EffectMayHaveOccurred;
         var pauses = new List<AssistantPlaybackPause>();
-        foreach ((WindowsMediaSessionAdapter media, (string Source, string Title) session) in paused)
+        foreach (PausedPlayback pause in paused)
         {
-            bool resumed = !effectCrossed
-                && await media.ResumeAssistantPlaybackAsync(session).ConfigureAwait(false);
-            pauses.Add(new AssistantPlaybackPause(session.Source, session.Title, resumed));
+            bool resumed = !effectCrossed && await pause.Resume().ConfigureAwait(false);
+            pauses.Add(new AssistantPlaybackPause(pause.Source, pause.Title, resumed));
         }
 
         if (effectCrossed || pauses.All(pause => pause.Resumed))
@@ -525,6 +539,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         });
         return receipt with { EffectObserved = true, Result = result, AssistantPlaybackPauses = pauses };
     }
+
+    // What BAXY paused before a new playback: how to play it again and what it was (its source and title).
+    private sealed record PausedPlayback(Func<ValueTask<bool>> Resume, string Source, string Title);
 
     private async ValueTask<ExternalCapabilityReceipt> DispatchAsync(
         string operation,

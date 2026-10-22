@@ -392,3 +392,16 @@ mismo: al abrirlo aquí, la misma sustitución.
 - Palancas 12.2/12.3/12.5 (83c178b8b): `scripts/renew/pareado.py` y `scripts/renew/neutras.py`.
 - Pendientes míos: el resto de la Tanda 0 (6 subagentes), 3.1 (`-dev none` de Laya, espera la fusión de fx-mente del
   líder; experimento listo en `laya_dev.py`), Tandas 2 y 3 (6.x, 7.4).
+
+**Al día, 2026-10-22 16:00.**
+- Línea base e2e (86991ca9d, s0-s2 intercaladas, mismo binario): System One encendido 21,33 / apagado 21,67 de 30;
+  Δ +0,33 con IC95 [−2,33; +3,33], McNemar p=0,25, pass^3 18 frente a 16. En e2e, S1 no se distingue del ruido.
+- Tanda 0 y Tanda 2 del notebook en `hub/nb-maximo` 153b7a068, fusionadas por el líder en renew-maximo 69a306d00.
+  Suites sobre 153b7a068: Providers 2570, App 24, Kernel 616, Contracts 69, todo verde. 6.5 (ActivateApplication) no
+  se hizo: en este PC el gestor de activación ya dio falsos fallos con apps que abren; queda la sonda en vivo diseñada.
+- Verificación cruzada de las palancas del PC: P13.1, P2.1 y P2.4 tumbadas (el líder las sacó de MAXIMO.md).
+- Cola de medidas encadenada en `%TEMP%\claude\nb\mx`: `cola2.sh` (tanda 1 del PC en sesión larga: A ca9d75de0,
+  B 492336c75 = 3.3, C = 3.3 + sólo el diff de 1.4; luego 3.1 de Laya), `cola3b.sh` (e2e ×3 de A 11347dd0d, B lv-t2
+  05cf4b052, C nb-maximo-fix 153b7a068; falsedades s0-s2 de C; las de A/B las corre el PC) y `cola4.sh` (sonda en vivo
+  de la 7.4, rama `nb-t3places`).
+- 3.1 (`-dev none` de Laya): cambio y prueba hechos, sin commit hasta medir VRAM, latencia y elecciones (cola2).

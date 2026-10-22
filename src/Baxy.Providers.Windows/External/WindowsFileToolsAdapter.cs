@@ -284,8 +284,20 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         if (!opened.Verified)
         {
             // Nothing was launched (the application is not installed, is two, or takes no file): nothing happened.
-            return opened.Receipt.LaunchIssued
-                ? ExternalJson.FailureAfterEffect(operation, "file_open_not_verified", effectObserved: true)
+            if (opened.Receipt.LaunchIssued)
+                return ExternalJson.FailureAfterEffect(operation, "file_open_not_verified", effectObserved: true);
+            // Renew al máximo (lote 4, a; R6.6): the installed names closest to the one asked, none of them opened,
+            // travel with the failure as app.open's do (auditoría D1).
+            return opened.Candidates is { Count: > 0 } candidates
+                ? new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteStartArray("candidates");
+                    foreach (string candidate in candidates)
+                        writer.WriteStringValue(candidate);
+                    writer.WriteEndArray();
+                    writer.WriteEndObject();
+                }), opened.ErrorCode ?? "file_open_not_verified")
                 : ExternalJson.FailureBeforeEffect(operation, opened.ErrorCode ?? "file_open_not_verified");
         }
 

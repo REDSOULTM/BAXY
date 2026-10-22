@@ -287,6 +287,19 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
     }
 
     /// <summary>
+    /// The session an unnamed <paramref name="operation"/> reaches instead of the current one, or null. Renew al máximo
+    /// (auditoría de flujos): media.status reads «what is playing now», so with the current one not playing and exactly
+    /// one session playing it reports that one (the current one then among otherSessions).
+    /// </summary>
+    internal static int? PlayingInsteadOfCurrent(
+        bool currentPlays, IReadOnlyList<bool> playing, string operation, string? action) => operation switch
+        {
+            "media.control" => PlayingInsteadOfCurrent(currentPlays, playing, action),
+            "media.status" => PlayingInsteadOfCurrent(currentPlays, playing, "pause"),
+            _ => null,
+        };
+
+    /// <summary>
     /// The desktop music client's session media.play.exact checks (the operation plays on that client by its schema):
     /// the index of one whose source names it, or null. Renew al máximo (R6.5): with several, the one playing, else
     /// the first (its title and play are read back on it); two used to throw and read as smtc_session_access_failed.
@@ -373,14 +386,16 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                         && candidate.SourceAppUserModelId.Contains(
                             closedSource, StringComparison.OrdinalIgnoreCase));
                 }
-                if (operation == "media.control" && session is not null
+                if (session is not null
                     && !namedSource
                     && PlayingInsteadOfCurrent(
                         session.GetPlaybackInfo().PlaybackStatus
                             == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing,
                         sessions.Select(candidate => candidate.GetPlaybackInfo().PlaybackStatus
                             == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing).ToArray(),
-                        arguments.TryGetProperty("action", out JsonElement action)
+                        operation,
+                        arguments.ValueKind == JsonValueKind.Object
+                            && arguments.TryGetProperty("action", out JsonElement action)
                             && action.ValueKind == JsonValueKind.String ? action.GetString() : null) is int playing)
                 {
                     insteadOfCurrent = session.SourceAppUserModelId;
@@ -719,28 +734,39 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         }
 
         writer.WriteString("playbackStatus", playbackStatus);
+        WriteOtherSessions(writer, others);
+        writer.WriteString("authority", "windows_smtc_current_session_read");
+        writer.WriteEndObject();
+    });
+
+    /// <summary>
+    /// The otherSessions of a media.status result (6.1): those playing first, closed ones left out, at most
+    /// <see cref="StatusOtherSessionsLimit"/>, titles cut short; with none nothing is written. Renew al máximo (auditoría
+    /// de flujos): the local player's status writes them too.
+    /// </summary>
+    internal static void WriteOtherSessions(Utf8JsonWriter writer, IReadOnlyList<UserMediaSession> others)
+    {
         UserMediaSession[] shown = others
             .Where(other => other.SourceAppUserModelId.Length > 0 && other.PlaybackStatus != "closed")
             .OrderBy(other => other.PlaybackStatus == "playing" ? 0 : 1)
             .Take(StatusOtherSessionsLimit)
             .ToArray();
-        if (shown.Length > 0)
+        if (shown.Length == 0)
         {
-            writer.WriteStartArray("otherSessions");
-            foreach (UserMediaSession other in shown)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("sourceAppUserModelId", other.SourceAppUserModelId);
-                writer.WriteString("title", ShortTitle(other.Title));
-                writer.WriteString("playbackStatus", other.PlaybackStatus);
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
+            return;
         }
 
-        writer.WriteString("authority", "windows_smtc_current_session_read");
-        writer.WriteEndObject();
-    });
+        writer.WriteStartArray("otherSessions");
+        foreach (UserMediaSession other in shown)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("sourceAppUserModelId", other.SourceAppUserModelId);
+            writer.WriteString("title", ShortTitle(other.Title));
+            writer.WriteString("playbackStatus", other.PlaybackStatus);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
 
     // A title cut at a whole text element, never inside one.
     private static string ShortTitle(string title)

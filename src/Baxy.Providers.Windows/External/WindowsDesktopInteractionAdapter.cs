@@ -112,13 +112,28 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         _focusOwed = TakeUnfocusedValue();
         try
         {
-            return await InvokeActAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            ExternalCapabilityReceipt receipt = await InvokeActAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            // Renew al máximo (7.1): a text or a key completed in a named window carries the view of that window after
+            // it (the visible controls' adapter reads it again; it becomes the last view); nothing when it was not read.
+            if (operation is "input.text.type" or "input.key.press" && _fields is not null
+                && receipt is { Verified: true, ErrorCode: null, EffectObserved: true }
+                && NamedWindow(arguments) is nint window and not 0
+                && await _fields.AfterActAsync(window, cancellationToken).ConfigureAwait(false) is { } after)
+                receipt = WindowsVisibleControlAdapter.WithAfter(receipt, after);
+            return receipt;
         }
         finally
         {
             _focusOwed = null;
         }
     }
+
+    // The window a step names («window»); 0 when it names none or not as a handle.
+    private static nint NamedWindow(JsonElement arguments) =>
+        arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("window", out JsonElement named)
+        && named.ValueKind == JsonValueKind.Number && named.TryGetInt64(out long handle) && handle > 0
+            ? (nint)handle
+            : 0;
 
     // Revision 3 of r24b (finding 3): the pending focus, taken by the act that asks for it; null when a click came in
     // between or a step's time went by.

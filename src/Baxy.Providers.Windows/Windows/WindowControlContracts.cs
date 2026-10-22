@@ -71,7 +71,26 @@ public sealed record WindowActionResult(
     // sent and not read back as asked), so the window may have changed.
     bool EffectMayHaveOccurred = false,
     // Ronda final: the window already was as asked, read before anything was sent; nothing was sent.
-    bool AlreadyReached = false);
+    bool AlreadyReached = false,
+    // Renew al máximo (8.3): with EffectMayHaveOccurred, the window as one read found it after the failure.
+    WindowStateAfter? StateAfter = null);
+
+// Renew al máximo (8.3): the window as one read found it after an ambiguous failure (the command reached it and its
+// verification did not hold): there, gone or hidden, its state and bounds when there, and whether that read alone shows
+// what was asked. Evidence beside the failure, never a success; none when that read failed.
+public sealed record WindowStateAfter(
+    bool Present,
+    bool Hidden,
+    string? State,
+    bool? Foreground,
+    int? X,
+    int? Y,
+    int? Width,
+    int? Height,
+    bool RequestedStateReached)
+{
+    public string Authority { get; init; } = "windows_window_identity_postread";
+}
 
 // M159 (DEV-I v4w I-s048 «pasame la ventana de spotify a la derecha»): a placed
 // window whose own minimum size is larger than the half it was asked to take.
@@ -91,7 +110,9 @@ public sealed record WindowCloseResult(
     // Auditoría D7: what was observed of the window (WindowCloseOutcomes), never «closed» for what BAXY did not close.
     string Outcome = WindowCloseOutcomes.Closed,
     // Round A: Windows took the close request and the window was still there when the reads ended.
-    bool EffectMayHaveOccurred = false);
+    bool EffectMayHaveOccurred = false,
+    // Renew al máximo (8.3): with EffectMayHaveOccurred, the window as one read found it after the failure.
+    WindowStateAfter? StateAfter = null);
 
 // Auditoría D7: closed (it went away after BAXY's close), alreadyGone (it was gone before BAXY's close reached it) or
 // hidden (it still exists, invisible: an application that hides in the notification area instead of closing).
@@ -122,7 +143,7 @@ public sealed record WindowMinimizeAllResult(
 
 // CLOSEALL1733 «cerrame todo»: the desktop windows found before, how many were
 // verified closed, how many stayed visible, how many were kept on purpose
-// (BAXY's own windows, WindowsWindowControlProvider.OwnProcessNames).
+// (BAXY's own windows, WindowsWindowControlProvider.OwnProcessNames, and the protected ones).
 public sealed record WindowCloseAllResult(
     bool Succeeded,
     bool Verified,
@@ -140,7 +161,11 @@ public sealed record WindowCloseAllResult(
     // Auditoría final: desktop windows there and not read, so not among «all».
     int Unread = 0,
     // Ronda final 11: titled windows DWM cloaks (another virtual desktop, a suspended app), not touched.
-    int Cloaked = 0);
+    int Cloaked = 0,
+    // Renew al máximo (lote 4, d): of the kept, the windows no act reaches (a terminal, a console, an editor, a system
+    // configuration tool: VisibleControlSurface.ProtectedFrom), never asked to close, and their processes.
+    int ProtectedKept = 0,
+    IReadOnlyList<string>? ProtectedProcesses = null);
 
 public interface IWindowControlProvider
 {

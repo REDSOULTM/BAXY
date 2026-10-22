@@ -1229,7 +1229,11 @@ function Get-State($el){
       $state=([System.Windows.Automation.ExpandCollapsePattern]$pattern).Cached.ExpandCollapseState
       if($state -eq [System.Windows.Automation.ExpandCollapseState]::Expanded){$parts+='expanded'} elseif($state -eq [System.Windows.Automation.ExpandCollapseState]::Collapsed){$parts+='collapsed'}
     }
-    if($el.TryGetCachedPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){
+    # Renew al maximo (lote 4, b): a password field is said as one, with no value: its ValuePattern is never read, so a
+    # provider that exposes the password in clear text cannot put it in the view, the model or the trace.
+    $password=[bool]$el.Cached.IsPassword
+    if($password){ $value=$null
+    } elseif($el.TryGetCachedPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){
       $vp=([System.Windows.Automation.ValuePattern]$pattern)
       if($vp.Cached.IsReadOnly){$parts+='readonly'}
       $raw=[string]$vp.Cached.Value
@@ -1241,7 +1245,7 @@ function Get-State($el){
       # Ronda 24 (v3-39): un desplegable sin ValuePattern dice su valor por la seleccion: el nombre del elemento elegido.
       $value=Get-ChosenEntry $el
     }
-    if($el.Cached.IsPassword){$parts+='password'}
+    if($password){$parts+='password'}
     if($el.Cached.HasKeyboardFocus){$parts+='focused'}
   } catch [System.Windows.Automation.ElementNotAvailableException] {}
   return @{ state=($parts -join ' '); value=$value }
@@ -2584,7 +2588,12 @@ function Do-View($request){
   # Ronda 25 (latencia): una sola busqueda del arbol. Los deshabilitados que se ven llegan en el mismo recorrido y se
   # apartan aqui (Get-DisabledShown los lista); el resto de la vista lee solo los habilitados, como antes.
   $withDimmed=($request.disabled -ne $false)
-  $all=Get-ShownDescendants $root ([long]$target.hwnd) 0 $withDimmed
+  # Renew al maximo (7.1): la relectura tras un acto trae su propio plazo («seconds», nunca mas que el de una mirada),
+  # por debajo del que el host la espera: pasado, la vista sale «partial» en vez de que maten al worker.
+  $walkSeconds=0.0
+  try { if($null -ne $request.seconds){ $walkSeconds=[double]$request.seconds } } catch { $walkSeconds=0.0 }
+  if($walkSeconds -gt $script:ViewSeconds){ $walkSeconds=$script:ViewSeconds }
+  $all=Get-ShownDescendants $root ([long]$target.hwnd) $walkSeconds $withDimmed
   $dimmed=New-Object System.Collections.Generic.List[object]
   if($withDimmed){
     $lit=New-Object System.Collections.Generic.List[object]
@@ -2714,7 +2723,8 @@ function Do-View($request){
     for($k=0;$k -lt $ordered.Count;$k++){ if([object]::ReferenceEquals($controls[$k],$focused)){ $focusedIndex=$k; break } }
     $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; value=$focused.value; i=$focusedIndex }
   }
-  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; disabledCut=($withDimmed -and [bool]$script:DisabledCut); frameOnly=$frameOnly; partial=$viewPartial }
+  # Renew al maximo (7.3): la caja de la ventana, en los mismos pixeles que los rect: el adaptador da a cada control su zona.
+  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; disabledCut=($withDimmed -and [bool]$script:DisabledCut); frameOnly=$frameOnly; partial=$viewPartial; box=$box }
 }
 # Los accionables que se ven pero estan deshabilitados (pasada r15b, v3-27 y v3-29: «Copiar» y «Buscar» del Mapa de
 # caracteres esperan texto en su campo y la vista los quitaba, asi que el modelo no sabia que existian). Van aparte de
