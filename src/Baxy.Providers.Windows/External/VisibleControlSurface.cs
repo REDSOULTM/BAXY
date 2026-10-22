@@ -805,7 +805,8 @@ internal static partial class VisibleControlSurface
         // Ronda final 21: a system configuration tool is refused even on a handle a named look once opened to acts, and
         // judged by the process a view names too (a packaged app's, as Windows Security's SecHealthUI, hosted in the
         // ApplicationFrameHost frame whose own process is the frame's).
-        return SystemTool(process) || SystemTool(ViewProcess(root).ProcessName)
+        // Renew al máximo (lote 4, c): and a Control Panel applet that configures Windows, inside rundll32 or explorer.
+        return SystemTool(process) || SystemTool(ViewProcess(root).ProcessName) || SystemToolWindow(root)
             || (ProtectedFrom(process, null) && !NamedProtectedRoots.ContainsKey(root));
     }
 

@@ -2062,12 +2062,14 @@ internal sealed class WindowsVisibleControlAdapter
                 // BAXY) that the request did not name, told by its process, never by its title. No act reaches such a
                 // window (protected_window, VisibleControlSurface.ActRefused); one this look named by its application
                 // may be acted on.
-                if (VisibleControlSurface.ProtectedFrom(processName, application,
+                // Renew al máximo (lote 4, c): a Control Panel applet that configures Windows (rundll32, explorer).
+                bool systemApplet = VisibleControlSurface.SystemToolWindow(windowRoot != 0 ? windowRoot : hwnd);
+                if (systemApplet || VisibleControlSurface.ProtectedFrom(processName, application,
                         () => VisibleControlSurface.ProcessDescription(unchecked((uint)ownerProcessId))))
                 {
                     writer.WriteBoolean("protected", true);
                     // Incidente del 2026-10-15: a system configuration tool, which no name opens to acts.
-                    if (VisibleControlSurface.SystemTool(processName))
+                    if (systemApplet || VisibleControlSurface.SystemTool(processName))
                         writer.WriteBoolean("systemTool", true);
                 }
                 else
