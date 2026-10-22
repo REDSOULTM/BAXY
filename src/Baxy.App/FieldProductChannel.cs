@@ -68,6 +68,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.VoiceLip += OnVoiceLip;
         _viewModel.VoiceWake += OnVoiceWake;
         _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
+        // A mind that starts again gets back the conversation this view shows (2026-10-22, review of the App).
+        _viewModel.KeptConversation = () => _sessions.Load(_sessionId)?.Mind;
     }
 
     internal async Task<FieldHttpResponse> HandleHttpAsync(string method, string path, string? body)
@@ -463,6 +465,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             // At close a mind that does not answer in time leaves what the view showed, still kept.
             mind = null;
         }
+
+        // A mind lost in the turn exports nothing: its conversation stays as last kept, for the one that starts next
+        // (2026-10-22, review of the App: the save wrote it away and the relaunched mind had nothing to get back).
+        mind ??= _sessions.Load(_sessionId)?.Mind;
         _sessions.Save(new FieldSessionStore.Session(_sessionId, SessionTitle, _sessionCreated, DateTimeOffset.UtcNow,
             _transcript.Snapshot(), mind));
         Publish(SurfacesEvent());
@@ -1042,6 +1048,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.VoicePartial -= OnVoicePartial;
         _viewModel.VoiceLip -= OnVoiceLip;
         _viewModel.VoiceWake -= OnVoiceWake;
+        _viewModel.KeptConversation = null;
         try
         {
             // The conversation as it stands is kept when BAXY closes. FT/proveedores goal (review of the App): the window

@@ -518,6 +518,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
+    /// <summary>The mind's conversation of the session the view shows, as the view's channel last kept it, or null: what
+    /// a mind that starts is given back.</summary>
+    internal Func<System.Text.Json.Nodes.JsonArray?>? KeptConversation { get; set; }
+
     /// <summary>What the heartbeat last saw the person doing (libre, jugando, llamada, viendo, ausente…).</summary>
     internal string OwnerActivity { get; private set; } = string.Empty;
 
@@ -1198,6 +1202,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(600), linked.Token))
             {
                 RecordMindStartupFailure(mind.LastStartupFailure);
+                await mind.DisposeAsync();
+                return;
+            }
+
+            // 2026-10-22, review of the App: a mind started while the view shows a conversation (a relaunch after the
+            // last one was lost) began empty, and the model answered as if nothing had been said. It gets back that
+            // conversation as it was last kept; with none, nothing pending survives either (the lost mind asked it).
+            if (KeptConversation?.Invoke() is not { Count: > 0 } kept || !await mind.SessionLoadAsync(kept, linked.Token))
+            {
+                _loop.Reset();
+            }
+
+            if (!mind.IsReady)
+            {
+                RecordMindStartupFailure(null);
                 await mind.DisposeAsync();
                 return;
             }
