@@ -173,7 +173,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             // BAXY Renew (notebook): a hash expected of a file that is not there is no other version of it.
             if (conflict)
                 throw WriteRefused(
-                    current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append);
+                    current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append,
+                    current, current is null ? 0 : append ? previous.Length : new FileInfo(path).Length);
 
             // A refused write leaves nothing behind: the folder of a new file is made only now.
             EnsureHandleRoom();
@@ -604,8 +605,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 : null,
         };
 
-    // What a refused write saw: whether the file is there, where, and whether the call appended.
-    private static FilesystemProviderException WriteRefused(string code, string path, bool exists, bool append) =>
+    // What a refused write saw: whether the file is there, where, and whether the call appended. Al máximo, flujos: and
+    // the version of it the refusal was decided on (its SHA-256 and size), so a replace that came without the hash goes
+    // straight in a second call instead of a file.read first; its previous version still goes to the Recycle Bin.
+    private static FilesystemProviderException WriteRefused(
+        string code, string path, bool exists, bool append, string? currentSha256 = null, long size = 0) =>
         new(code)
         {
             Result = ExternalJson.Create(writer =>
@@ -614,6 +618,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 writer.WriteBoolean("exists", exists);
                 writer.WriteString("fullPath", Path.GetFullPath(path));
                 writer.WriteBoolean("append", append);
+                if (currentSha256 is not null)
+                {
+                    writer.WriteString("currentSha256", currentSha256);
+                    writer.WriteNumber("size", size);
+                }
                 writer.WriteEndObject();
             }),
         };

@@ -296,6 +296,33 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Al máximo, flujos: the refusal of a replace without the hash took a file.read and another file.write; it carries
+    // the version it saw (its hash and size), so the second call goes straight, its previous version to the bin.
+    [Test]
+    public async Task AVersionConflictCarriesTheVersionItSawSoTheSecondWriteGoesStraight()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        provider.WriteText("dato.txt", "uno", null);
+
+        OperationOutcome refused = await Handle(
+            provider, "file.write", """{"relativePath":"dato.txt","text":"dos"}""");
+        string seen = refused.Result!.Value.GetProperty("currentSha256").GetString()!;
+        OperationOutcome written = await Handle(
+            provider, "file.write", $$"""{"relativePath":"dato.txt","text":"dos","expectedSha256":"{{seen}}"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused.ErrorCode, Is.EqualTo("version_conflict"));
+            Assert.That(refused.Result!.Value.GetProperty("size").GetInt64(), Is.EqualTo(3));
+            Assert.That(written.Succeeded && written.Verified, Is.True, written.ErrorCode);
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "dato.txt")), Is.EqualTo("dos"));
+            Assert.That(bin.Recycled, Has.Count.EqualTo(1));
+        });
+    }
+
     // The list says which folder it read and whether its limit left entries out.
     [Test]
     public async Task AListSaysItsFolderAndWhetherTheLimitLeftEntriesOut()
