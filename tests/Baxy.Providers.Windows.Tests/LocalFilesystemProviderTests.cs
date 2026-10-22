@@ -702,6 +702,44 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Renew al máximo (B-SYS-1): BAXY's own state (its data root, where confirmation-mode lives, and the rest of its
+    // private area) is not one of the person's files. Written through the home folder or by its full path, the model
+    // turned Bypass on with a LowReversible file.write; now that is refused before any effect, and the working folder,
+    // which lives inside that area, still works.
+    [Test]
+    public void BaxysOwnStateIsNeverWrittenThroughAKnownFolderOrAFullPath()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string privateArea = Path.Combine(home, "AppData", "Local", "BAXY");
+        string sandbox = Path.Combine(privateArea, "1", "filesystem-sandbox");
+        Directory.CreateDirectory(sandbox);
+        var provider = new LocalFilesystemProvider(sandbox)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+            PrivateRoots = [privateArea],
+        };
+        string mode = Path.Combine(privateArea, "1", "confirmation-mode");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => provider.WriteText("AppData/Local/BAXY/1/confirmation-mode", "bypass", null, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(() => provider.WriteText(mode, "bypass", null),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(() => provider.CreateDirectory("AppData/Local/BAXY/renew", "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(File.Exists(mode), Is.False);
+            provider.WriteText("nota.txt", "trabajo", null);
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "nota.txt")), Is.EqualTo("trabajo"));
+            provider.WriteText("AppData/Local/otra-app/ajustes.txt", "suyo", null, "home");
+            Assert.That(File.Exists(Path.Combine(home, "AppData", "Local", "otra-app", "ajustes.txt")), Is.True);
+        });
+    }
+
     // What the model reads of a file.write: the observed part of its message.
     private static async Task<JsonElement> WriteMessage(IFilesystemProvider provider, string arguments)
     {
