@@ -9,6 +9,7 @@ applications and games), not from code that decides for it.
 from __future__ import annotations
 
 import datetime as _dt
+import hashlib
 import json
 import os
 import re
@@ -250,6 +251,20 @@ SAME_CALL_OPTIONS = ("; otra vez igual dará lo mismo. Opciones: otra herramient
 # Review 2026-10-22: in a turn the App closes, the fact alone (it offered another tool beside «no admite más
 # herramientas»).
 SAME_CALL_CLOSED = "."
+
+
+def _result_key(observation: str) -> str:
+    """Al máximo 7.7: the same result is the same content (three looks at a window still loading, each with another view,
+    were told «el mismo resultado»), without how long the call took («…Ms»), as the App's TurnClosing compares it."""
+    def untimed(node: Any) -> Any:
+        if isinstance(node, dict):
+            return {k: untimed(v) for k, v in node.items() if not k.endswith("Ms")}
+        return [untimed(v) for v in node] if isinstance(node, list) else node
+    try:
+        content = json.dumps(untimed(json.loads(observation)), ensure_ascii=False)
+    except json.JSONDecodeError:
+        content = observation
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 # PLAN_GENERAL C1: an address longer than this reaches the model as a short reference.
 LONG_REF_CHARS = 120
@@ -854,10 +869,11 @@ class Mind:
                 note += field
                 aids["field_focused_next"] = field.strip()
         # Aid «same_call_next» (PLAN_GENERAL C2; uso real: the same click 5-7 times, a reload and a typing in turn): a
-        # call made a third time in this turn with the same arguments and the same result, whatever came between, is
-        # told as a fact with its options, once per turn (a loop of a look and a click repeats both).
+        # call made a third time in this turn with the same arguments and the same result (its content, _result_key),
+        # whatever came between, is told as a fact with its options, once per turn (a loop of a look and a click repeats
+        # both).
         seen = turn.setdefault("calls_seen", {})
-        key = json.dumps([calling, turn.get("calling_args"), outcome], ensure_ascii=False)
+        key = json.dumps([calling, turn.get("calling_args"), _result_key(observation)], ensure_ascii=False)
         seen[key] = seen.get(key, 0) + 1
         if seen[key] == SAME_CALL_TOLD and not turn.get("same_told") and _aid_on("same_call_next"):
             turn["same_told"] = True

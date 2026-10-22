@@ -140,6 +140,22 @@ def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: 
     assert "input_visible_click ya se hizo 3 veces en este turno" in tools[4]
 
 
+@pytest.mark.parametrize("views,told", [(["Cargando…", "Biblioteca", "Biblioteca · Tienda"], False),
+                                        (["Cargando…"] * 3, True)])
+def test_the_same_call_is_told_only_when_its_result_is_the_same_too(tmp_path: Path, monkeypatch, views: list[str],
+                                                                    told: bool) -> None:
+    # Al máximo 7.7: three looks at a window still loading, each with another view, were told «el mismo resultado».
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    look = _call("input_visible_controls", {"application": "steam"})
+    mind, server = _mind(tmp_path, [look, look, look, _say("Ya cargó.")])
+    mind.decide(1, "mira steam")
+    for index, view in enumerate(views):
+        mind.continue_turn(2 + index, json.dumps({"status": "completed", "view": f"window 1 Steam\n{view}",
+                                                  "observed": {"elapsedMs": {"read": 300 + index}}}))
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert ("ya se hizo 3 veces en este turno" in last) is told
+
+
 @pytest.mark.parametrize("setting,still,told", [("all", False, 1), ("all", True, 0), ("all", None, 0), ("none", False, 0)])
 def test_a_click_whose_label_left_the_screen_tells_the_field_may_have_the_cursor_once(
         tmp_path: Path, monkeypatch, setting: str, still: bool | None, told: int) -> None:

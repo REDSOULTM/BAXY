@@ -19,11 +19,11 @@ public sealed class TurnClosingTests
         for (int call = 1; call < TurnClosing.MaximumModelCalls; call++)
         {
             Assert.That(closing.AfterCall(call, Soon, "web.fetch", $"{{\"url\":\"https://a.example/{call}\"}}",
-                "completed", null), Is.False, $"call {call}");
+                Result("completed")), Is.False, $"call {call}");
         }
 
         Assert.That(closing.AfterCall(TurnClosing.MaximumModelCalls, Soon, "web.fetch", "{\"url\":\"https://b.example\"}",
-            "completed", null), Is.True);
+            Result("completed")), Is.True);
     }
 
     // E5: four app.open of a console app, each verification_failed after 30 s, and no answer in time. After two the
@@ -32,12 +32,12 @@ public sealed class TurnClosingTests
     public void TheSameFailedCallThreeTimesClosesTheTurnTwiceDoesNot()
     {
         var closing = new TurnClosing();
-        Assert.That(closing.AfterCall(1, Soon, "app.open", "{\"appId\":\"cmd\"}", "failed", "verification_failed"),
-            Is.False);
-        Assert.That(closing.AfterCall(2, Soon, "app.open", "{\"appId\":\"cmd\"}", "failed", "verification_failed"),
-            Is.False);
-        Assert.That(closing.AfterCall(3, Soon, "app.open", "{\"appId\":\"cmd\"}", "failed", "verification_failed"),
-            Is.True);
+        Assert.That(closing.AfterCall(1, Soon, "app.open", "{\"appId\":\"cmd\"}",
+            Result("failed", "verification_failed")), Is.False);
+        Assert.That(closing.AfterCall(2, Soon, "app.open", "{\"appId\":\"cmd\"}",
+            Result("failed", "verification_failed")), Is.False);
+        Assert.That(closing.AfterCall(3, Soon, "app.open", "{\"appId\":\"cmd\"}",
+            Result("failed", "verification_failed")), Is.True);
     }
 
     // E022: the same page fetched eight times until the results overflowed the context.
@@ -46,9 +46,9 @@ public sealed class TurnClosingTests
     {
         var closing = new TurnClosing();
         const string page = "{\"url\":\"https://www.rfc-editor.org/info/rfc2324/\"}";
-        Assert.That(closing.AfterCall(1, Soon, "web.fetch", page, "completed", null), Is.False);
-        Assert.That(closing.AfterCall(2, Soon, "web.fetch", page, "completed", null), Is.False);
-        Assert.That(closing.AfterCall(3, Soon, "web.fetch", page, "completed", null), Is.True);
+        Assert.That(closing.AfterCall(1, Soon, "web.fetch", page, Result("completed")), Is.False);
+        Assert.That(closing.AfterCall(2, Soon, "web.fetch", page, Result("completed")), Is.False);
+        Assert.That(closing.AfterCall(3, Soon, "web.fetch", page, Result("completed")), Is.True);
     }
 
     [Test]
@@ -57,15 +57,15 @@ public sealed class TurnClosingTests
         var closing = new TurnClosing();
         Assert.Multiple(() =>
         {
-            Assert.That(closing.AfterCall(1, Soon, "app.open", "{\"appId\":\"cmd\"}", "failed", "verification_failed"),
-                Is.False);
-            Assert.That(closing.AfterCall(2, Soon, "app.open", "{\"appId\":\"terminal\"}", "failed",
-                "verification_failed"), Is.False);
-            Assert.That(closing.AfterCall(3, Soon, "app.open", "{\"appId\":\"terminal\"}", "failed", "launch_failed"),
-                Is.False);
+            Assert.That(closing.AfterCall(1, Soon, "app.open", "{\"appId\":\"cmd\"}",
+                Result("failed", "verification_failed")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "app.open", "{\"appId\":\"terminal\"}",
+                Result("failed", "verification_failed")), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "app.open", "{\"appId\":\"terminal\"}",
+                Result("failed", "launch_failed")), Is.False);
             // A call between two equal ones breaks the run: only consecutive repeats count.
-            Assert.That(closing.AfterCall(4, Soon, "app.open", "{\"appId\":\"cmd\"}", "failed", "verification_failed"),
-                Is.False);
+            Assert.That(closing.AfterCall(4, Soon, "app.open", "{\"appId\":\"cmd\"}",
+                Result("failed", "verification_failed")), Is.False);
         });
     }
 
@@ -73,10 +73,10 @@ public sealed class TurnClosingTests
     public void AWaitingConfirmationIsNotAFailureToRepeat()
     {
         var closing = new TurnClosing();
-        Assert.That(closing.AfterCall(1, Soon, "shell.command.run", "{\"command\":\"python --version\"}", "pending",
-            "confirmation_required"), Is.False);
-        Assert.That(closing.AfterCall(2, Soon, "shell.command.run", "{\"command\":\"python --version\"}", "pending",
-            "confirmation_required"), Is.False);
+        Assert.That(closing.AfterCall(1, Soon, "shell.command.run", "{\"command\":\"python --version\"}",
+            Result("pending", "confirmation_required")), Is.False);
+        Assert.That(closing.AfterCall(2, Soon, "shell.command.run", "{\"command\":\"python --version\"}",
+            Result("pending", "confirmation_required")), Is.False);
     }
 
     [Test]
@@ -86,9 +86,56 @@ public sealed class TurnClosingTests
         Assert.Multiple(() =>
         {
             Assert.That(closing.AfterCall(1, TurnClosing.Budget - TimeSpan.FromSeconds(1), "app.open",
-                "{\"appId\":\"steam\"}", "completed", null), Is.False);
+                "{\"appId\":\"steam\"}", Result("completed")), Is.False);
             Assert.That(closing.AfterCall(2, TurnClosing.Budget, "input.text.type", "{\"text\":\"hola\"}",
-                "completed", null), Is.True);
+                Result("completed")), Is.True);
         });
     }
+
+    // Al máximo 7.7: three looks at a window that is still loading, each with another view, are three results: the turn
+    // went on (before, the third closed it and the model read «same result»).
+    [Test]
+    public void TheSameCallWithAnotherResultIsNotARepeat()
+    {
+        var closing = new TurnClosing();
+        const string look = "{\"application\":\"steam\"}";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "input.visible.controls", look, View("Cargando…")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "input.visible.controls", look, View("Biblioteca")), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "input.visible.controls", look, View("Biblioteca · Tienda")),
+                Is.False);
+        });
+    }
+
+    [Test]
+    public void TheSameCallWithTheSameResultThreeTimesClosesTheTurn()
+    {
+        var closing = new TurnClosing();
+        const string look = "{\"application\":\"steam\"}";
+        Assert.That(closing.AfterCall(1, Soon, "input.visible.controls", look, View("Cargando…")), Is.False);
+        Assert.That(closing.AfterCall(2, Soon, "input.visible.controls", look, View("Cargando…")), Is.False);
+        Assert.That(closing.AfterCall(3, Soon, "input.visible.controls", look, View("Cargando…")), Is.True);
+    }
+
+    // How long a call took is not its result: the same console output thrice, each in its own time, is a repeat.
+    [Test]
+    public void TheTimeACallTookIsNotPartOfItsResult()
+    {
+        var closing = new TurnClosing();
+        const string command = "{\"command\":\"python --version\"}";
+        Assert.That(closing.AfterCall(1, Soon, "shell.command.run", command, ConsoleRun(812)), Is.False);
+        Assert.That(closing.AfterCall(2, Soon, "shell.command.run", command, ConsoleRun(790)), Is.False);
+        Assert.That(closing.AfterCall(3, Soon, "shell.command.run", command, ConsoleRun(805)), Is.True);
+    }
+
+    private static string Result(string status, string? error = null) =>
+        error is null ? $"{{\"status\":\"{status}\"}}" : $"{{\"status\":\"{status}\",\"error\":\"{error}\"}}";
+
+    private static string View(string text) =>
+        $"{{\"status\":\"completed\",\"view\":\"window 1 Steam\\n{text}\"}}";
+
+    private static string ConsoleRun(int milliseconds) =>
+        "{\"status\":\"completed\",\"observed\":{\"exitCode\":9009,\"stdout\":\"\",\"durationMs\":"
+        + milliseconds + ",\"effectReadBack\":false}}";
 }

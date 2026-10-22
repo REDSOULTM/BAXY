@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
@@ -123,8 +123,6 @@ internal sealed class NativeTurnLoop
     private string _stepId = string.Empty;
     private long _stepSequence;
     private bool _asking;
-    // The last call's step as it was recorded (its status and error code), for TurnClosing.
-    private NativeTurnStep? _recorded;
 
     internal NativeTurnLoop(Host host, TimeProvider? time = null)
     {
@@ -295,14 +293,13 @@ internal sealed class NativeTurnLoop
                     return;
             }
 
-            _recorded = null;
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
             // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same
             // terminal call eight times, then «no puedo ejecutar comandos»), so the model answers from what it has, as
             // at the call budget. So it does past the turn's time and after a call that came back the same (TurnClosing).
             bool spent = closing.AfterCall(calls, Stopwatch.GetElapsedTime(_turnStarted), step.Operation!,
-                step.Arguments!.ToJsonString(), _recorded?.Status ?? StatusOf(observation), _recorded?.ErrorCode);
+                step.Arguments!.ToJsonString(), observation);
             bool final = spent || _host.Core() is not { IsReady: true } || HasPendingConfirmation;
             if (WaitingPrepared() is { } waiting)
             {
@@ -841,7 +838,6 @@ internal sealed class NativeTurnLoop
             sent ?? response?.Status is OperationStatuses.Completed or OperationStatuses.Failed);
         ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.step",
             $"{operation}.{step.Status}.{(step.Verified ? "verified" : "unverified")}.ms.{elapsed}");
-        _recorded = step;
         _host.StepCompleted?.Invoke(step);
         return observation;
     }
