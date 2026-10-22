@@ -244,8 +244,12 @@ def field_note(observation: str, args: str | None) -> str:
 
 SAME_CALL_TOLD = 3
 SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se hizo {times} veces en este turno con los mismos argumentos y el mismo "
-                  "resultado ({outcome}); otra vez igual dará lo mismo. Opciones: otra herramienta, otros argumentos, "
-                  "o decir a la persona lo que pasó.]")
+                  "resultado ({outcome}){options}]")
+SAME_CALL_OPTIONS = ("; otra vez igual dará lo mismo. Opciones: otra herramienta, otros argumentos, o decir a la persona "
+                     "lo que pasó.")
+# Review 2026-10-22: in a turn the App closes, the fact alone (it offered another tool beside «no admite más
+# herramientas»).
+SAME_CALL_CLOSED = "."
 
 # PLAN_GENERAL C1: an address longer than this reaches the model as a short reference.
 LONG_REF_CHARS = 120
@@ -845,7 +849,8 @@ class Mind:
         seen[key] = seen.get(key, 0) + 1
         if seen[key] == SAME_CALL_TOLD and not turn.get("same_told") and _aid_on("same_call_next"):
             turn["same_told"] = True
-            repeated = SAME_CALL_NOTE.format(call=calling, times=SAME_CALL_TOLD, outcome=outcome)
+            repeated = SAME_CALL_NOTE.format(call=calling, times=SAME_CALL_TOLD, outcome=outcome,
+                                             options=SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS)
             note += repeated
             aids["same_call_next"] = repeated.strip()
         # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long
