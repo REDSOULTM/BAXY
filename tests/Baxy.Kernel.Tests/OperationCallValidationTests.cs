@@ -55,6 +55,33 @@ public sealed class OperationCallValidationTests
         });
     }
 
+    // P5.3: the refusal the model reads says, beside the argument and its problem, what to call with instead.
+    [Test]
+    public async Task ARefusedCallTellsTheModelWhatToCallWithInstead()
+    {
+        var handler = new CountingProductHandler("system.status");
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse response = await engine.ExecuteAsync(
+            Request("system.status", "{\"scope\":\"Batery\",\"scop\":\"cpu\"}"),
+            CancellationToken.None);
+
+        using JsonDocument facts = JsonDocument.Parse(response.Message);
+        JsonElement problems = facts.RootElement.GetProperty("argumentProblems");
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(handler.ExecutionCount, Is.Zero);
+            Assert.That(problems[0].GetProperty("argument").GetString(), Is.EqualTo("scope"));
+            Assert.That(problems[0].GetProperty("nearest").GetString(), Is.EqualTo("battery"));
+            Assert.That(problems[0].GetProperty("allowed").GetArrayLength(), Is.EqualTo(12));
+            Assert.That(problems[1].GetProperty("argument").GetString(), Is.EqualTo("scop"));
+            Assert.That(problems[1].GetProperty("accepted")[0].GetString(), Is.EqualTo("scope"));
+            Assert.That(problems[1].TryGetProperty("nearest", out _), Is.False, "scope is given already");
+        });
+    }
+
     [Test]
     public async Task PublicValidCallReachesExactlyOneHandler()
     {

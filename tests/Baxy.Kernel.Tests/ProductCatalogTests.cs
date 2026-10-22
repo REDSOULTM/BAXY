@@ -246,11 +246,121 @@ public sealed class ProductCatalogTests
             Assert.That(problems.Select(static problem => problem.Name),
                 Is.EqualTo(new[] { "index", "manner", "labelz", "label" }));
             Assert.That(problems[0].Problem, Does.StartWith("expected an integer").And.Contain(" from "));
-            Assert.That(problems[1].Problem, Does.StartWith("expected one of: "));
+            Assert.That(problems[1].Problem, Is.EqualTo("expected one of the allowed values or null"));
+            Assert.That(problems[1].Allowed, Is.EqualTo(new[] { "double", "menu", "open" }));
             Assert.That(problems[2].Problem, Is.EqualTo("not an argument of this tool"));
+            Assert.That(problems[2].Nearest, Is.EqualTo("label"));
+            Assert.That(problems[2].Accepted, Is.EqualTo(schema.Properties.Select(static property => property.Name)));
             Assert.That(problems[3].Problem, Is.EqualTo("required and missing"));
             Assert.That(OperationArgumentValidator.Problems(right.RootElement, schema), Is.Empty);
             Assert.That(OperationArgumentValidator.IsValid(right.RootElement, schema), Is.True);
+        });
+    }
+
+    // P5.3: an argument the tool does not take is answered with the ones it takes and, when one is close enough to be
+    // the one meant, that one; never one far off, one as near as another, nor one already given.
+    [TestCase("app.close", "{\"app_id\":\"Paint\"}", "appId")]
+    [TestCase("app.close", "{\"window\":\"w1\"}", "windowId")]
+    [TestCase("app.close", "{\"windowid\":\"w1\"}", "windowId")]
+    [TestCase("audio.volume", "{\"level\":5,\"levle\":5}", null)]
+    [TestCase("audio.volume", "{\"volume\":50}", null)]
+    [TestCase("app.close", "{\"process\":\"paint\"}", null)]
+    public void AnArgumentTheToolDoesNotTakeSaysWhichItTakesAndTheNearest(
+        string operation, string arguments, string? nearest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired(operation).ArgumentsSchema;
+        using JsonDocument given = JsonDocument.Parse(arguments);
+
+        ArgumentProblem unknown = OperationArgumentValidator.Problems(given.RootElement, schema)
+            .Single(static problem => problem.Problem == "not an argument of this tool");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unknown.Nearest, Is.EqualTo(nearest));
+            Assert.That(unknown.Accepted, Is.EqualTo(schema.Properties.Select(static property => property.Name)));
+            Assert.That(unknown.Allowed, Is.Null);
+        });
+    }
+
+    // P5.3: a value outside an argument's values is answered with the nearest of them and, when they are few, all of
+    // them; a value of another type gets no nearest.
+    [TestCase("{\"scope\":\"cpu memory\"}", "cpu_memory")]
+    [TestCase("{\"scope\":\"Batery\"}", "battery")]
+    [TestCase("{\"scope\":\"batt\"}", "battery")]
+    [TestCase("{\"scope\":\"gpu\"}", null)]
+    [TestCase("{\"scope\":\"weather\"}", null)]
+    [TestCase("{\"scope\":7}", null)]
+    public void AValueOutsideTheEnumSaysTheNearestAndTheFewAllowed(string arguments, string? nearest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("system.status").ArgumentsSchema;
+        using JsonDocument given = JsonDocument.Parse(arguments);
+
+        ArgumentProblem problem = OperationArgumentValidator.Problems(given.RootElement, schema).Single();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(problem.Name, Is.EqualTo("scope"));
+            Assert.That(problem.Problem, Is.EqualTo("expected one of the allowed values"));
+            Assert.That(problem.Nearest, Is.EqualTo(nearest));
+            Assert.That(problem.Allowed, Is.EqualTo(schema.Properties.Single().AllowedValues));
+            Assert.That(problem.Allowed, Has.Count.LessThanOrEqualTo(OperationArgumentValidator.AllowedShown));
+            Assert.That(problem.Accepted, Is.Null);
+        });
+    }
+
+    // P5.3 counter-case: past twelve values the list is left to the tool's own schema; the nearest still goes back.
+    [TestCase("Page Down", "page_down")]
+    [TestCase("ctrl+c", "ctrl_c")]
+    [TestCase("ctrl", null)]
+    public void ManyAllowedValuesAreNotListedButTheNearestIs(string key, string? nearest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("input.key.press").ArgumentsSchema;
+        using JsonDocument given = JsonDocument.Parse(JsonSerializer.Serialize(new { key }));
+
+        ArgumentProblem problem = OperationArgumentValidator.Problems(given.RootElement, schema)
+            .Single(static candidate => candidate.Name == "key");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(schema.Properties.Single(static property => property.Name == "key").AllowedValues,
+                Has.Count.GreaterThan(OperationArgumentValidator.AllowedShown));
+            Assert.That(problem.Problem, Is.EqualTo("expected one of the allowed values"));
+            Assert.That(problem.Allowed, Is.Null);
+            Assert.That(problem.Nearest, Is.EqualTo(nearest));
+        });
+    }
+
+    // P5.3: the model reads those fields as data beside the argument and its problem, and only those it has.
+    [Test]
+    public void TheCorrectingFieldsReachTheModelAsStructuredData()
+    {
+        string message = OperationVisibleFacts.FromStatus(
+            "app.close",
+            OperationStatuses.Failed,
+            "invalid_arguments",
+            [
+                new ArgumentProblem("windowid", "not an argument of this tool")
+                {
+                    Accepted = ["appId", "windowId"],
+                    Nearest = "windowId",
+                },
+                new ArgumentProblem("scope", "expected one of the allowed values") { Allowed = ["cpu", "disk"] },
+                new ArgumentProblem("level", "required and missing"),
+            ]);
+
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement problems = facts.RootElement.GetProperty("argumentProblems");
+        Assert.Multiple(() =>
+        {
+            Assert.That(problems[0].GetProperty("nearest").GetString(), Is.EqualTo("windowId"));
+            Assert.That(problems[0].GetProperty("accepted").EnumerateArray().Select(static name => name.GetString()),
+                Is.EqualTo(new[] { "appId", "windowId" }));
+            Assert.That(problems[0].TryGetProperty("allowed", out _), Is.False);
+            Assert.That(problems[1].GetProperty("allowed").EnumerateArray().Select(static value => value.GetString()),
+                Is.EqualTo(new[] { "cpu", "disk" }));
+            Assert.That(problems[1].TryGetProperty("nearest", out _), Is.False);
+            Assert.That(problems[2].EnumerateObject().Select(static field => field.Name),
+                Is.EqualTo(new[] { "argument", "problem" }));
         });
     }
 
