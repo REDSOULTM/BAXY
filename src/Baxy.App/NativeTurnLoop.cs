@@ -47,7 +47,8 @@ internal sealed record NativeTurnConfirmation(
 /// </para>
 /// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
-/// arrived says the mind's notice once (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
+/// arrived says the mind's notice, again while it stays silent (<see cref="SilenceNotice"/>); the model's decisions are
+/// untouched by it.
 /// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
