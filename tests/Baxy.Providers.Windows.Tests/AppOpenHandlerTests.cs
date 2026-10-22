@@ -467,16 +467,20 @@ public sealed class AppOpenHandlerTests
     // BAXY Renew cu (C03 en frío): Steam started by this opening shows its sign-in first and the place handed then was
     // lost. The data says it starts behind its sign-in: once its window settles the place goes again, and the receipt
     // names that window. Contracases: already running, or an application the data does not mark, waits for nothing.
-    [TestCase("Steam", "library", false, 2, 999)]
-    [TestCase("Steam", "library", true, 1, 777)]
-    [TestCase("Configuración", "display", false, 1, 777)]
+    // Renew al máximo (auditoría de flujos): Steam in the notification area shows a window new to the opening from a
+    // process that was already running: no sign-in to wait for (it waited the whole 30 s for its window to go away).
+    [TestCase("Steam", "library", false, true, 2, 999)]
+    [TestCase("Steam", "library", true, false, 1, 777)]
+    [TestCase("Steam", "library", false, false, 1, 777)]
+    [TestCase("Configuración", "display", false, true, 1, 777)]
     public async Task AnApplicationStartedBehindItsSignInGetsItsPlaceAgainOnceItsWindowSettles(
-        string app, string place, bool running, int handed, long window)
+        string app, string place, bool running, bool startedNow, int handed, long window)
     {
         var opened = new List<string>();
         int waited = 0;
         var handler = new AppOpenHandler(
-            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", running),
+            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", running,
+                startedNow ? DateTime.UtcNow.Ticks : 638900000000000000),
             new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RecordedPlace(opened),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
@@ -566,7 +570,8 @@ public sealed class AppOpenHandlerTests
     }
 
     /// <summary>A window of a program already running, verified for the opening asked.</summary>
-    private sealed class VerifiedOpening(string executablePath, bool running = true) : IApplicationOpenProvider
+    private sealed class VerifiedOpening(
+        string executablePath, bool running = true, long created = 638900000000000000) : IApplicationOpenProvider
     {
         internal int Calls { get; private set; }
 
@@ -577,7 +582,7 @@ public sealed class AppOpenHandlerTests
             Calls++;
             var receipt = new ApplicationLaunchReceipt(
                 request.InvocationId, request.ApplicationId, LaunchIssued: !running, ReusedExisting: running,
-                ProcessId: 4242, ProcessCreationTimeUtcTicks: 638900000000000000, executablePath,
+                ProcessId: 4242, ProcessCreationTimeUtcTicks: created, executablePath,
                 PackageFamilyName: null, PackageFullName: null, WindowHandle: 777, ErrorCode: null);
             return ValueTask.FromResult(new ApplicationOpenResult(
                 Succeeded: true, Verified: true, request.ApplicationId, AlreadyRunning: running,
