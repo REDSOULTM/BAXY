@@ -714,7 +714,7 @@ class Mind:
         self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
-            self._log("configure.aid", time.monotonic(), None, aids=aids)
+            self._log("configure.aid", time.perf_counter(), None, aids=aids)
         return len(capabilities)
 
     def warm(self) -> None:
@@ -732,7 +732,7 @@ class Mind:
     def _write_notice(self) -> str:
         """The notice in the model's own words (NOTICE_ASK), once, on the cached prefix: words only, as the last answer
         of a turn, and greedy. Empty when it gave nothing usable or the call failed: then BAXY says no notice."""
-        started = time.monotonic()
+        started = time.perf_counter()
         try:
             reply = self.server.chat({"messages": [{"role": "system", "content": self._system()},
                                                    {"role": "user", "content": NOTICE_ASK}],
@@ -878,7 +878,7 @@ class Mind:
         heartbeat session), says what is happening and whether to intervene, and only then acts, proposes or says
         something. Same tools (the cached prefix: the template puts them first) and a system text without the «¿ya lo
         hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
-        started = time.monotonic()
+        started = time.perf_counter()
         if self._beat is not None:
             # Review 2026-10-22: a heartbeat the App never ended is closed as end_beat closes it, never overwritten
             # with what BAXY said or did in it unsaid.
@@ -1104,7 +1104,7 @@ class Mind:
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
-            self._log("turn.aid", time.monotonic(), None, operation=turn.get("calling"),
+            self._log("turn.aid", time.perf_counter(), None, operation=turn.get("calling"),
                       aids=sorted(aids) if turn.get("private") else aids)
         if final:
             # The App closes the turn (its step budget spent, the engine down, or a confirmation waiting for the
@@ -1114,7 +1114,7 @@ class Mind:
                                     "con lo que muestran los resultados.]")
         completed = outcome.startswith("completado")
         if turn["queue"] and not final and completed:
-            return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.monotonic(), "")
+            return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.perf_counter(), "")
         for call in turn["queue"]:
             conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN if final else NOT_RUN_AFTER})
         turn["queue"] = []
@@ -1123,7 +1123,7 @@ class Mind:
     def confirm(self, request_id: Any, approve: bool, label: str) -> dict[str, Any]:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
-        started = time.monotonic()
+        started = time.perf_counter()
         self._close_open_calls()
         call_id = self._new_id("confirm")
         self.conversation.append({"role": "user", "content": label})
@@ -1152,7 +1152,7 @@ class Mind:
         return self._compact(results[:-1])
 
     def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
-        started = time.monotonic()
+        started = time.perf_counter()
         conv = turn["conv"]
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
@@ -1464,8 +1464,10 @@ class Mind:
     # ---- trace ---------------------------------------------------------------------------------------------
     def _log(self, stage: str, started: float, reply: dict[str, Any] | None, **fields: Any) -> None:
         timings = (reply or {}).get("timings") or {}
+        # Every time of the trace is read on perf_counter (al máximo V4): on Windows, Python 3.12's monotonic clock
+        # moves in steps of ~15.6 ms, and every ms was a multiple of it. The voice's times (voice.speak) too.
         row = {"t": _dt.datetime.now().isoformat(timespec="milliseconds"), "stage": stage,
-               "ms": round((time.monotonic() - started) * 1000),
+               "ms": round((time.perf_counter() - started) * 1000),
                "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
         doubt = read_doubt(reply)

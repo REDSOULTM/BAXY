@@ -310,7 +310,7 @@ def test_the_trace_written_from_the_voice_thread_and_the_turns_keeps_whole_rows(
             time.sleep(0.002)  # a write long enough for the other thread to arrive
 
     mind.trace = Trace()  # type: ignore[assignment]
-    threads = [threading.Thread(target=lambda stage=stage: [mind._log(stage, time.monotonic(), None)
+    threads = [threading.Thread(target=lambda stage=stage: [mind._log(stage, time.perf_counter(), None)
                                                             for _ in range(20)])
                for stage in ("voice.speak", "turn.decide")]
     for thread in threads:
