@@ -2917,3 +2917,8 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   otro título): esquema y descripción míos + proveedor del NB, en lv-t3b 15a5d73a0 (Kernel 618, pytest 172; catálogo de
   medida `renew_v4\catalog-t3b.json`, que difiere de catalog-max sólo en game.launch y game.entitlement.named).
   lv-t3b (t3 sin P2.3 + t3b + game.launch) en cola de decision2 tras la tanda 5; luego falsedades A/B/C.
+- 16:4x **tanda 5** (lv-t5 d445b6ae0: 5.1 efecto tipado, R10.1, R10.3, 10.3, 10.4, 10.5) en decision2 S1 ×3 con
+  catalog-max (sin el campo `effects`, así que 5.1 no actúa): 230 / 227 / 228 (228,33) frente a la tanda 4 228,67:
+  Δ −0,33, IC95 [−3,0; +2,33]. Con el catálogo de la tanda 5 (`renew_v4\catalog-t5.json`, 51 de 180 operaciones con
+  efecto) se mide antes de las falsedades: es el costo de que «corrige» no rellene herramientas de ventana o de red.
+  Escenas de la tanda 5 (3 réplicas por edición neutra frente a la tanda 4) en curso.
