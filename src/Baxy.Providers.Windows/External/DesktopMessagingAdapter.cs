@@ -588,11 +588,23 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private WindowsInstalledApplicationOpenProvider? _clientOpener;
     private readonly IForegroundLease? _lease;
 
-    internal WindowsDesktopMessagingAutomation(IClientInteractionProbe probe, IForegroundLease? lease = null)
+    private readonly Func<string?> _ocrEngine;
+
+    internal WindowsDesktopMessagingAutomation(
+        IClientInteractionProbe probe,
+        IForegroundLease? lease = null,
+        Func<string?>? ocrEngine = null)
     {
         Probe = probe ?? throw new ArgumentNullException(nameof(probe));
         _lease = lease;
+        _ocrEngine = ocrEngine ?? FindTesseract;
     }
+
+    /// <summary>
+    /// Renew al máximo (auditoría de flujos): no OCR engine was found, so neither the chat's name (WhatsApp's header)
+    /// nor the typed or sent message could be read; nothing was opened, typed or sent.
+    /// </summary>
+    internal const string OcrUnavailable = "message_ocr_unavailable";
 
     // v3 point 0, fix 3: the client is driven with the real keyboard and mouse (its chat search, composer and quick
     // switcher expose no pattern this flow can use), so each resolve, send and draft runs inside one burst of the
@@ -720,6 +732,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string channel,
         CancellationToken cancellationToken)
     {
+        // Renew al máximo (auditoría de flujos): every flow reads the chat by OCR; without an engine it would type into the
+        // person's chat, never see the text and clear it. Nothing is opened or typed then.
+        if (_ocrEngine() is null)
+        {
+            return new(false, false, OcrUnavailable);
+        }
+
         // The reads that prove a window ready start now, off the turn: a client already open never waits for them.
         Probe.Prewarm();
         if (FindWindow(channel).Handle != 0)
@@ -1829,6 +1848,15 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         };
         start.ArgumentList.Add("stdin");
         start.ArgumentList.Add("stdout");
+        // The product's runtime keeps its languages apart from the executable (BAXYRuntime\ocr\tessdata-fast); an engine
+        // with its own English model keeps reading with it, as the reads above were tuned.
+        if (!File.Exists(Path.Combine(Path.GetDirectoryName(executable) ?? string.Empty, "tessdata", "eng.traineddata"))
+            && CaptureVisionAdapter.FindTessdata(executable, "en", out _) is { } tessdata)
+        {
+            start.ArgumentList.Add("--tessdata-dir");
+            start.ArgumentList.Add(tessdata);
+        }
+
         start.ArgumentList.Add("-l");
         start.ArgumentList.Add("eng");
         start.ArgumentList.Add("--psm");
@@ -1868,11 +1896,23 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string? Read,
         string? Match);
 
-    private static string? FindTesseract()
+    // Renew al máximo (auditoría de flujos): first where the product's assets declare Tesseract (BAXY_TESSERACT_EXE,
+    // BAXYRuntime, Program Files), the lookup ocr.read uses; PATH only after them, and only its absolute directories.
+    internal static string? FindTesseract()
     {
+        if (CaptureVisionAdapter.FindTesseract() is { } declared)
+        {
+            return declared;
+        }
+
         string? path = Environment.GetEnvironmentVariable("PATH");
         foreach (string directory in (path ?? string.Empty).Split(Path.PathSeparator))
         {
+            if (!Path.IsPathFullyQualified(directory))
+            {
+                continue;
+            }
+
             string candidate = Path.Combine(directory, "tesseract.exe");
             if (File.Exists(candidate))
             {
@@ -1880,11 +1920,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             }
         }
 
-        string fallback = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-            "Tesseract-OCR",
-            "tesseract.exe");
-        return File.Exists(fallback) ? fallback : null;
+        return null;
     }
 
     private static (nint Handle, int ProcessId) FindWindow(string channel)

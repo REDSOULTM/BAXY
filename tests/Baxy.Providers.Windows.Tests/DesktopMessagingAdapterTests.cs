@@ -508,6 +508,64 @@ public sealed class DesktopMessagingAdapterTests
         Assert.That(output.Trim(), Is.EqualTo("hola test"));
     }
 
+    // Renew al máximo (auditoría de flujos): messaging looked for Tesseract only on PATH and in Program Files, not where
+    // the product's assets declare it (BAXY_TESSERACT_EXE, BAXYRuntime), as ocr.read finds it.
+    [Test]
+    [NonParallelizable]
+    public void MessagingFindsTheOcrEngineTheProductDeclares()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-messaging-ocr-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        string executable = Path.Combine(directory, "tesseract.exe");
+        File.WriteAllBytes(executable, [0x4d, 0x5a]);
+        string? previous = Environment.GetEnvironmentVariable("BAXY_TESSERACT_EXE");
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", executable);
+            Assert.That(WindowsDesktopMessagingAutomation.FindTesseract(), Is.EqualTo(executable));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", previous);
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    // Renew al máximo (auditoría de flujos): with no OCR engine every flow typed into the person's chat (Discord's title
+    // needs none), never saw the text, cleared it and said «message_draft_not_verified». It stops before the client is
+    // even opened, with its cause.
+    [Test]
+    public async Task WithoutAnOcrEngineNothingIsOpenedOrTyped()
+    {
+        var probe = new SilentProbe();
+        var automation = new WindowsDesktopMessagingAutomation(probe, lease: null, ocrEngine: () => null);
+
+        DesktopClientReadiness readiness = await automation.EnsureClientOpenAsync("discord", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(readiness.Ready, Is.False);
+            Assert.That(readiness.Opened, Is.False);
+            Assert.That(readiness.ErrorCode, Is.EqualTo(WindowsDesktopMessagingAutomation.OcrUnavailable));
+            Assert.That(probe.Reads, Is.Zero);
+        });
+    }
+
+    private sealed class SilentProbe : IClientInteractionProbe
+    {
+        internal int Reads { get; private set; }
+
+        public void Prewarm()
+        {
+        }
+
+        public ValueTask<ClientInteraction> ReadAsync(nint handle, bool content, CancellationToken cancellationToken)
+        {
+            Reads++;
+            return ValueTask.FromResult(ClientInteraction.Unanswered);
+        }
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {
