@@ -50,6 +50,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (auditoría de flujos, P257): an app volume with no audio session names the apps that have one.</summary>
     public const string AppVolumeCandidates = "app_volume_candidates";
 
+    /// <summary>Renew al máximo (auditoría de flujos, P215): a package.uninstall candidate that is a game names game_uninstall_named.</summary>
+    public const string GameUninstall = "game_uninstall";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

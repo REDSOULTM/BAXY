@@ -62,11 +62,21 @@ internal sealed class AppOpenHandler(
         if (ApplicationPlaces.GameCatalogOf(arguments.AppId, arguments.Place) is { } catalog
             && !string.IsNullOrWhiteSpace(placeValue) && !placeValue.All(char.IsAsciiDigit))
         {
-            game = await _games.FindAsync(catalog, placeValue, cancellationToken).ConfigureAwait(false);
+            bool searchFailed = false;
+            try
+            {
+                game = await _games.FindAsync(catalog, placeValue, cancellationToken).ConfigureAwait(false);
+            }
+            catch (GameTitleSearchFailedException)
+            {
+                // Renew al máximo (auditoría de flujos): no answer (no network) is not a title nothing bears.
+                searchFailed = true;
+            }
+
             if (game is null)
             {
                 return OperationOutcome.Failure(
-                    "game_title_not_found",
+                    searchFailed ? "game_title_search_failed" : "game_title_not_found",
                     result: Facts(writer =>
                     {
                         writer.WriteString("appId", arguments.AppId);
@@ -181,8 +191,12 @@ internal sealed class AppOpenHandler(
         // BAXY Renew cu (C03 en frío): started by this opening behind its own sign-in, the place handed during it was
         // lost (the look showed «Iniciando sesión» and then the store); once its window settles the place goes again,
         // and the receipt names that window.
+        // Renew al máximo (auditoría de flujos): only a process this opening started is behind its sign-in; one already
+        // running (Steam in the notification area, showing a window new to the opening) waited 30 s for nothing.
         long openedWindow = providerResult.WindowHandle.GetValueOrDefault();
-        if (place is not null && !providerResult.AlreadyRunning && ApplicationPlaces.StartsBehindSignIn(arguments.AppId)
+        if (place is not null && !providerResult.AlreadyRunning
+            && LaunchedByThisOpening(providerResult.Receipt.ProcessCreationTimeUtcTicks, openingStartedTicks)
+            && ApplicationPlaces.StartsBehindSignIn(arguments.AppId)
             && _settle(openedWindow, providerResult.DisplayName, cancellationToken) is long settled and not 0)
         {
             openedWindow = settled;

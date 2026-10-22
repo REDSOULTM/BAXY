@@ -68,6 +68,43 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): «cierra Steam» with Steam only in the notification area, or with its window
+    // hidden by the close, said the application was not running (or closed): it runs, with no window, and is said so.
+    [Test]
+    public async Task AnApplicationRunningWithNoWindowIsSaidRunningInTheBackground()
+    {
+        var windows = new FakeWindows([]) { Background = [4242] };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Steam\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_running_in_background"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(4242));
+            Assert.That(windows.Closed, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task AWindowThatOnlyHidesLeavesTheApplicationRunningInTheBackground()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "Steam")]) { Hides = "win_a" };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Steam\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False, "a hidden window is no closed application");
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_running_in_background"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True, "its window was hidden");
+            Assert.That(outcome.Result!.Value.GetProperty("hiddenWindows").GetInt32(), Is.EqualTo(1));
+            Assert.That(outcome.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(100));
+        });
+    }
+
     [Test]
     public async Task AWindowThatAsksToSaveStopsAndIsSaid()
     {
@@ -120,15 +157,28 @@ public sealed class AppCloseByApplicationTests
 
         internal string? Prompts { get; init; }
 
+        internal string? Hides { get; init; }
+
+        internal int[] Background { get; init; } = [];
+
         public ValueTask<WindowResolveResult> ResolveApplicationAsync(
             string applicationName, int limit, CancellationToken cancellationToken) =>
-            ValueTask.FromResult(new WindowResolveResult(true, true, windows, null));
+            ValueTask.FromResult(windows.Length == 0
+                ? new WindowResolveResult(false, false, [], WindowControlErrorCodes.WindowNotFound)
+                : new WindowResolveResult(true, true, windows, null));
+
+        public ValueTask<IReadOnlyList<int>> BackgroundProcessesAsync(
+            string applicationName, CancellationToken cancellationToken) =>
+            ValueTask.FromResult<IReadOnlyList<int>>(Background);
 
         public ValueTask<WindowCloseResult> CloseAsync(string windowId, CancellationToken cancellationToken)
         {
             WindowCandidate window = windows.Single(candidate => candidate.WindowId == windowId);
             if (windowId == Prompts)
                 return ValueTask.FromResult(new WindowCloseResult(true, true, window.ProcessId, null, ClosePrompted: true));
+            if (windowId == Hides)
+                return ValueTask.FromResult(new WindowCloseResult(
+                    true, true, window.ProcessId, null, Outcome: WindowCloseOutcomes.Hidden));
             Closed.Add(windowId);
             return ValueTask.FromResult(new WindowCloseResult(true, true, window.ProcessId, null, Title: window.Title));
         }

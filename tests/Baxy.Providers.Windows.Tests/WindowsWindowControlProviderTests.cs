@@ -408,6 +408,30 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): Windows brings a window minimized from maximized back maximized
+    // (WPF_RESTORETOMAXIMIZED): «restaura el chrome» then failed verification, and «ponlo a la izquierda» said the window
+    // takes no size (window_size_not_taken). The restore is asked once more and the window ends at its normal size.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AWindowMinimizedFromMaximizedIsRestoredToItsNormalSize(bool snap)
+    {
+        var platform = new FakePlatform { RestoresToMaximized = true, WorkAreaBounds = new WindowBounds(0, 0, 1536, 816) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+        windowId = (await provider.ExecuteAsync(windowId, WindowControlAction.Maximize, CancellationToken.None)).Window!.WindowId;
+        windowId = (await provider.ExecuteAsync(windowId, WindowControlAction.Minimize, CancellationToken.None)).Window!.WindowId;
+
+        WindowActionResult result = snap
+            ? await provider.SnapAsync(windowId, "left", CancellationToken.None)
+            : await provider.ExecuteAsync(windowId, WindowControlAction.Restore, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded && result.Verified, Is.True, result.ErrorCode);
+            Assert.That(result.Window?.State, Is.EqualTo("normal"));
+        });
+    }
+
     // Round A: «cerrame todo» keeps only BAXY's own windows open; the receipt said «editorKeptOpen» of them.
     [Test]
     public async Task CloseAllSaysItKeptBaxysOwnWindowsAndNeverAnEditor()
@@ -480,6 +504,9 @@ public sealed class WindowsWindowControlProviderTests
         // Renew al máximo (8.3): the read from which the window is gone (-1: never), and the reads so far.
         public int GoneAfterObservations { get; set; } = -1;
         public int ObserveCalls { get; private set; }
+        // As Windows: a window minimized from maximized comes back maximized from its first restore.
+        public bool RestoresToMaximized { get; set; }
+        private bool _minimizedFromMaximized;
         public WindowBounds? WorkAreaBounds { get; set; }
         public IReadOnlyList<WindowSnapshot> Desktop { get; set; } = [];
         private WindowControlAction? _pendingAction;
@@ -551,6 +578,7 @@ public sealed class WindowsWindowControlProviderTests
                     _state = "normal";
                     break;
                 case WindowControlAction.Minimize:
+                    _minimizedFromMaximized = RestoresToMaximized && _state == "maximized";
                     _foreground = false;
                     _state = "minimized";
                     break;
@@ -558,7 +586,8 @@ public sealed class WindowsWindowControlProviderTests
                     _state = "maximized";
                     break;
                 case WindowControlAction.Restore:
-                    _state = "normal";
+                    _state = _state == "minimized" && _minimizedFromMaximized ? "maximized" : "normal";
+                    _minimizedFromMaximized = false;
                     break;
             }
         }

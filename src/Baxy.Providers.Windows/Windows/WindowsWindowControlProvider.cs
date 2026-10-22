@@ -284,6 +284,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
     }
 
+    // Renew al máximo (auditoría de flujos): the application's processes running with no visible window.
+    public ValueTask<IReadOnlyList<int>> BackgroundProcessesAsync(
+        string applicationName,
+        CancellationToken cancellationToken) =>
+        _applications.ResolveBackgroundProcessesAsync(applicationName, cancellationToken);
+
     public async ValueTask<WindowActionResult> ExecuteAsync(
         string windowId,
         WindowControlAction action,
@@ -336,6 +342,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
 
         WindowSnapshot? lastRead = null;
+        bool restoredAgain = false;
         for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -343,6 +350,15 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             try
             {
                 after = _platform.Observe(before.Identity);
+                // Renew al máximo (auditoría de flujos): a window minimized from maximized comes back maximized from its
+                // first restore (WPF_RESTORETOMAXIMIZED); the restore is asked once more for its normal size.
+                if (action == WindowControlAction.Restore && !restoredAgain && before.State == "minimized"
+                    && after.State == "maximized")
+                {
+                    restoredAgain = true;
+                    _ = _platform.Execute(before.Identity, WindowControlAction.Restore);
+                    after = _platform.Observe(before.Identity);
+                }
             }
             catch (WindowIdentityChangedException changed)
             {
@@ -729,7 +745,30 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         return ValueTask.FromResult(new WindowActionResult(true, true, candidate, null));
     }
 
+    // Renew al máximo (auditoría de flujos): a window closed or changed while it is placed (each act reads it first, for
+    // seconds when it leaves a full screen) threw out of the provider and stopped the core; the placement ends saying so.
     public async ValueTask<WindowActionResult> SnapAsync(
+        string windowId,
+        string side,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await PlaceOnHalfAsync(windowId, side, cancellationToken).ConfigureAwait(false);
+        }
+        catch (WindowIdentityChangedException)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.WindowIdentityChanged, EffectMayHaveOccurred: true);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException or ArgumentException)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
+        }
+    }
+
+    private async ValueTask<WindowActionResult> PlaceOnHalfAsync(
         string windowId,
         string side,
         CancellationToken cancellationToken)
@@ -797,6 +836,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             restored = true;
             await _platform.DelayAsync(VerificationDelay, cancellationToken)
                 .ConfigureAwait(false);
+            // Renew al máximo (auditoría de flujos): one minimized from maximized came back maximized; restored once more.
+            if (before.State == "minimized" && _platform.Observe(before.Identity).State == "maximized")
+            {
+                _ = _platform.Execute(before.Identity, WindowControlAction.Restore);
+                await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         int half = workArea.Width / 2;
@@ -1543,6 +1588,21 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     private const int ShowMaximized = 3;
     private const int Restore = 9;
 
+    // Renew al máximo (auditoría de flujos): a window's executable, read as the application inventory reads it (the least
+    // access Windows grants); its main module, read before, is refused for a program running as administrator, and every
+    // window of one resolved by its application failed verification.
+    private readonly Func<int, string?> _imagePath;
+
+    public Win32WindowControlPlatform()
+        : this(null)
+    {
+    }
+
+    internal Win32WindowControlPlatform(Func<int, string?>? imagePath)
+    {
+        _imagePath = imagePath ?? WindowsInstalledApplicationPlatform.ExecutableImagePath;
+    }
+
     public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
 
     public WindowSnapshot? FindForegroundWindow()
@@ -1646,7 +1706,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             || !string.Equals(process.ProcessName, identity.ProcessName,
                 StringComparison.OrdinalIgnoreCase)
             || (identity.ExecutablePath is not null
-                && !string.Equals(process.MainModule?.FileName, identity.ExecutablePath,
+                && !string.Equals(_imagePath(identity.ProcessId), identity.ExecutablePath,
                     StringComparison.OrdinalIgnoreCase)))
         {
             throw new WindowIdentityChangedException();

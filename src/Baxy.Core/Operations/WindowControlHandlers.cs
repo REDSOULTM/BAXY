@@ -238,7 +238,8 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             .ConfigureAwait(false);
         if (closing.ErrorCode is { } stopped)
         {
-            return closing.Frames == 0
+            // Renew al máximo (auditoría de flujos): with no window, the processes running in the background are said.
+            return closing.Frames == 0 && closing.ProcessIds.Count == 0
                 ? OperationOutcome.Failure(stopped)
                 : OperationOutcome.Failure(stopped, ApplicationReceipt(appId, closing),
                     effectMayHaveOccurred: closing.EffectMayHaveOccurred);
