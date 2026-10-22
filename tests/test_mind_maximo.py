@@ -201,6 +201,15 @@ def _warm_mind(tmp_path: Path, notice_reply):
         def tokenize(self, text: str) -> list[int]:
             return [248058] if text == "<tool_call>" else super().tokenize(text)
 
+        def prefix_key(self, warm) -> str:
+            return "key"
+
+        def restore_prefix(self, key: str) -> None:
+            return None  # no prefix kept: the warm-up runs (al máximo V1, test_maximo_velocidad)
+
+        def save_prefix(self, key: str, facts: dict) -> bool:
+            return True
+
     replies = [{"choices": [{"message": {"content": "H"}}], "usage": {"prompt_tokens": 37000}},
                notice_reply if isinstance(notice_reply, Exception) else _say(notice_reply)]
     server = Server(replies)

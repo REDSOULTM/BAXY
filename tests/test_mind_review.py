@@ -43,7 +43,8 @@ class _Dead:
 
 @pytest.mark.parametrize("call", [
     lambda s: s.tokenize("hola"), lambda s: s.chat({"messages": []}),
-    lambda s: s.complete_name({"messages": [], "tools": [], "chat_template_kwargs": {}}, "<tool_call>"),
+    lambda s: s.template({"messages": [], "tools": [], "chat_template_kwargs": {}}),
+    lambda s: s.complete_name("PROMPT", "<tool_call>"),
     lambda s: s.fill_call({"messages": []}, "app_open")])
 def test_a_dead_model_server_ends_the_mind_from_any_call(monkeypatch, call) -> None:
     # Review 2: only chat() exited, and tokenize (the history's trim) raised URLError first: the mind never relaunched.
@@ -99,7 +100,7 @@ def _snap_correction(tmp_path: Path, monkeypatch, filled: dict):
     reply = _doubted("window_resolve", {"query": "la ventana"}, 0.5)
     reply["choices"][0]["logprobs"]["content"][5]["top_logprobs"].append({"token": "app", "logprob": -0.7})
     mind, server = _doubt_mind(tmp_path, [reply, _say("¿Qué ventana pongo a la izquierda?")])
-    server.complete_name = lambda body, written: "_snap"
+    server.complete_name = lambda prompt, written: "_snap"
     server.fill_call = lambda body, wire: {"name": wire, "arguments": filled, "timings": {}}
     schema = {"type": "object", "properties": {"windowId": {"type": "string"}, "position": {"type": "string"}},
               "required": ["windowId", "position"]}
@@ -207,7 +208,7 @@ def test_the_tool_chosen_is_not_completed_again_as_its_own_rival(tmp_path: Path,
     from test_mind_doubt_policy import _layer2, _rival_call
     mind, server, _ = _layer2(tmp_path, monkeypatch, "system_power", [_rival_call(0.5)])
     written: list[str] = []
-    server.complete_name = lambda body, text: written.append(text) or "_close"
+    server.complete_name = lambda prompt, text: written.append(text) or "_close"
     mind.decide(1, "apaga el pc")
     assert [text[-3:] for text in written] == ["app"]
 
@@ -264,7 +265,7 @@ def test_the_decision_model_reads_the_options_it_was_trained_on(tmp_path: Path, 
     reply = {"choices": [{"message": {"content": "", "tool_calls": [
         {"id": "c1", "function": {"name": "window_resolve", "arguments": "{}"}}]}, "logprobs": {"content": tokens}}]}
     mind, server, one = _layer2(tmp_path, monkeypatch, "window_resolve", [reply])
-    server.complete_name = lambda body, written: ""
+    server.complete_name = lambda prompt, written: ""
     mind.tools = [{"type": "function", "function": {"name": f"window{n}", "description": "Window. More.",
                                                     "parameters": {}}} for n in ("_resolve", "_active", "_snap", "_move")]
     mind.decide(1, "esa ventana")
@@ -310,7 +311,7 @@ def test_the_trace_written_from_the_voice_thread_and_the_turns_keeps_whole_rows(
             time.sleep(0.002)  # a write long enough for the other thread to arrive
 
     mind.trace = Trace()  # type: ignore[assignment]
-    threads = [threading.Thread(target=lambda stage=stage: [mind._log(stage, time.monotonic(), None)
+    threads = [threading.Thread(target=lambda stage=stage: [mind._log(stage, time.perf_counter(), None)
                                                             for _ in range(20)])
                for stage in ("voice.speak", "turn.decide")]
     for thread in threads:
@@ -417,7 +418,8 @@ def _server_answering(monkeypatch, timeouts: list):
 
 
 ALL_CALLS = [lambda s: s.chat({"messages": []}), lambda s: s.tokenize("hola"),
-             lambda s: s.complete_name({"messages": [], "tools": [], "chat_template_kwargs": {}}, "<tool_call>"),
+             lambda s: s.template({"messages": [], "tools": [], "chat_template_kwargs": {}}),
+    lambda s: s.complete_name("PROMPT", "<tool_call>"),
              lambda s: s.fill_call({"messages": []}, "app_open")]
 
 

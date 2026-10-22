@@ -622,6 +622,9 @@ class Mind:
         self._ran_count = 0
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
+        # A person's turn or a heartbeat reached the model in this process: the slot holds more than the prefix, and
+        # the warm-up no longer keeps it on disk (al máximo V1).
+        self._turned = False
 
     # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
     def _shorten(self, observation: str) -> tuple[str, dict[str, str]]:
@@ -714,35 +717,50 @@ class Mind:
         self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
-            self._log("configure.aid", time.monotonic(), None, aids=aids)
+            self._log("configure.aid", time.perf_counter(), None, aids=aids)
         return len(capabilities)
 
     def warm(self) -> None:
-        """Process the tools and the system prompt once, so every turn starts from a cached prefix."""
+        """Process the tools and the system prompt once, so every turn starts from a cached prefix. Al máximo V1
+        (2026-10-22): that state is kept on disk (LlmServer.save_prefix) with the notice and the prefix's tokens, and a
+        start whose tools, system prompt, model and server are the same restores it instead (18.3 s → under 1 s)."""
+        started = time.perf_counter()
         self.call_tokens = self.server.tokenize("<tool_call>")
         if len(self.call_tokens) != 1:
             raise RuntimeError(f"<tool_call> is not one token of this model: {self.call_tokens}")
-        reply = self.server.chat({"messages": [{"role": "system", "content": self._system()},
-                                                   {"role": "user", "content": "hola"}],
-                                  "tools": self.tools, "max_tokens": 1,
-                                  "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+        warm = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": "hola"}],
+                "tools": self.tools, "max_tokens": 1, "chat_template_kwargs": {"enable_thinking": False}}
+        notice = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": NOTICE_ASK}],
+                  "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
+                  "logit_bias": [[token, False] for token in self.call_tokens],
+                  "chat_template_kwargs": {"enable_thinking": False}}
+        key = self.server.prefix_key([warm, notice])
+        held = self.server.restore_prefix(key)
+        if held is not None and isinstance(held.get("prefix_tokens"), int) and isinstance(held.get("notice"), str):
+            self.prefix_tokens, self.notice = held["prefix_tokens"], held["notice"]
+            self._log("warm.prefix", started, None, restored=True, content=self.notice or None)
+            return
+        reply = self.server.chat(warm, timeout=600)
         self.prefix_tokens = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
-        self.notice = self._write_notice()
+        phrase = self._write_notice(notice)
+        self.notice = phrase or ""
+        # The file holds the slot: only the prefix (the tools, the system prompt, the notice's request and words) may be
+        # in it, never a person's conversation, so it is saved only before any turn of this process reached the model.
+        saved = phrase is not None and not self._turned and self.server.save_prefix(
+            key, {"prefix_tokens": self.prefix_tokens, "notice": self.notice})
+        self._log("warm.prefix", started, None, restored=False, saved=saved)
 
-    def _write_notice(self) -> str:
+    def _write_notice(self, body: dict[str, Any]) -> str | None:
         """The notice in the model's own words (NOTICE_ASK), once, on the cached prefix: words only, as the last answer
-        of a turn, and greedy. Empty when it gave nothing usable or the call failed: then BAXY says no notice."""
-        started = time.monotonic()
+        of a turn, and greedy. Empty when it gave nothing usable: then BAXY says no notice; None when the call failed
+        (nor is the warm-up kept on disk then)."""
+        started = time.perf_counter()
         try:
-            reply = self.server.chat({"messages": [{"role": "system", "content": self._system()},
-                                                   {"role": "user", "content": NOTICE_ASK}],
-                                      "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed,
-                                      "tool_choice": "none",
-                                      "logit_bias": [[token, False] for token in self.call_tokens],
-                                      "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+            reply = self.server.chat(body, timeout=600)
             written = str(reply["choices"][0]["message"].get("content") or "")
         except Exception:  # noqa: BLE001 - without its words BAXY says no notice; the warm-up itself is done
-            reply, written = None, ""
+            self._log("warm.notice", started, None, content=None, written="")
+            return None
         phrase = written.strip().strip("«»\"'“”").strip()
         usable = bool(phrase) and "\n" not in phrase and "<" not in phrase and len(phrase) <= NOTICE_MAX_CHARS \
             and len(phrase.split()) <= NOTICE_MAX_WORDS
@@ -878,7 +896,8 @@ class Mind:
         heartbeat session), says what is happening and whether to intervene, and only then acts, proposes or says
         something. Same tools (the cached prefix: the template puts them first) and a system text without the «¿ya lo
         hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
-        started = time.monotonic()
+        started = time.perf_counter()
+        self._turned = True
         if self._beat is not None:
             # Review 2026-10-22: a heartbeat the App never ended is closed as end_beat closes it, never overwritten
             # with what BAXY said or did in it unsaid.
@@ -1104,7 +1123,7 @@ class Mind:
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
-            self._log("turn.aid", time.monotonic(), None, operation=turn.get("calling"),
+            self._log("turn.aid", time.perf_counter(), None, operation=turn.get("calling"),
                       aids=sorted(aids) if turn.get("private") else aids)
         if final:
             # The App closes the turn (its step budget spent, the engine down, or a confirmation waiting for the
@@ -1114,7 +1133,7 @@ class Mind:
                                     "con lo que muestran los resultados.]")
         completed = outcome.startswith("completado")
         if turn["queue"] and not final and completed:
-            return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.monotonic(), "")
+            return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.perf_counter(), "")
         for call in turn["queue"]:
             conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN if final else NOT_RUN_AFTER})
         turn["queue"] = []
@@ -1123,7 +1142,7 @@ class Mind:
     def confirm(self, request_id: Any, approve: bool, label: str) -> dict[str, Any]:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
-        started = time.monotonic()
+        started = time.perf_counter()
         self._close_open_calls()
         call_id = self._new_id("confirm")
         self.conversation.append({"role": "user", "content": label})
@@ -1152,7 +1171,8 @@ class Mind:
         return self._compact(results[:-1])
 
     def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
-        started = time.monotonic()
+        started = time.perf_counter()
+        self._turned = True
         conv = turn["conv"]
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
@@ -1243,6 +1263,14 @@ class Mind:
             return self._next(request_id, stage, turn, final=True)
         if content:
             conv.append({"role": "assistant", "content": content})
+            if not streams and self.foresee is not None and not turn.get("beat"):
+                # Al máximo V2 (2026-10-22): words that came whole, not streamed (the decision whose doubt is read),
+                # never reached the voice's look-ahead (first sound p50 966 ms, p90 2,388): their first sentence is
+                # synthesized now, while the App publishes them; it still sounds only when the App asks (voice.speak).
+                try:
+                    self.foresee(content, True)
+                except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
+                    pass
         return self._result(request_id, turn, None, reply, stage, started, content)
 
     @staticmethod
@@ -1396,12 +1424,15 @@ class Mind:
         # B-MED-3 (2026-10-22): the rule of its training (qwen_signals.py, rollouts): the chosen tool and the next three
         # tokens of the weakest one, each of p ≥ 0.01 (served, the chosen token took a place and a rival needed 0.02).
         names = [chosen]
+        prompt: str | None = None  # the decision's prompt, rendered once for all of its rivals (al máximo V3)
         for token, p in doubt.get("rivals") or []:
             if p < 0.01 or len(names) >= 4:
                 continue
             written = doubt.get("written", "") + token
             try:
-                written += self.server.complete_name(body, written) if ">" not in written[written.find("<function="):] else ""
+                if ">" not in written[written.find("<function="):]:
+                    prompt = prompt if prompt is not None else self.server.template(body)
+                    written += self.server.complete_name(prompt, written)
             except Exception:  # noqa: BLE001 - a rival that cannot be read is left out
                 continue
             at = written.find("<function=")
@@ -1464,8 +1495,10 @@ class Mind:
     # ---- trace ---------------------------------------------------------------------------------------------
     def _log(self, stage: str, started: float, reply: dict[str, Any] | None, **fields: Any) -> None:
         timings = (reply or {}).get("timings") or {}
+        # Every time of the trace is read on perf_counter (al máximo V4): on Windows, Python 3.12's monotonic clock
+        # moves in steps of ~15.6 ms, and every ms was a multiple of it. The voice's times (voice.speak) too.
         row = {"t": _dt.datetime.now().isoformat(timespec="milliseconds"), "stage": stage,
-               "ms": round((time.monotonic() - started) * 1000),
+               "ms": round((time.perf_counter() - started) * 1000),
                "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
         doubt = read_doubt(reply)

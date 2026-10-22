@@ -60,7 +60,7 @@ def main() -> int:
         # From the App's voice.speak to the first sound, and when it sounded (the turn's own rows say when its text
         # reached the mind), so text-to-first-sound is read from this trace; a notice's row says so.
         mind._log("voice.speak", queued, None, sound_ms=round((sounded - queued) * 1000), notice=notice,
-                  sound_at=(_dt.datetime.now() + _dt.timedelta(seconds=sounded - time.monotonic()))
+                  sound_at=(_dt.datetime.now() + _dt.timedelta(seconds=sounded - time.perf_counter()))
                   .isoformat(timespec="milliseconds"))
 
     voice = Voice(protocol.write_message, spoken)  # loads beside the model; turns never wait for it

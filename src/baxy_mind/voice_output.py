@@ -10,8 +10,9 @@ engine's level varies with the sentence.
 
 An answer sounds sentence by sentence: the first plays as soon as it is synthesized and the next is synthesized while
 it sounds; a loaded voice starts synthesizing an answer the moment it is given, while what is ahead of it still sounds.
-An answer is even seen as the model writes it (foresee, al máximo 9.4): its first sentence is synthesized then and
-kept, and the answer given later uses that take; a call written after it drops the take; nothing sounds before the App
+An answer is even seen as the model writes it (foresee, al máximo 9.4), or as soon as it is in when it came whole (the
+decision whose doubt is read, al máximo V2): its first sentence is synthesized then and kept, and the answer given later
+uses that take; a call written after it drops the take; nothing sounds before the App
 publishes the answer.
 The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote at warm-up, which the mind
 gives the voice with its catalog.ready (set_notice; al máximo 9.2a: it was «Un momento.», fixed in the code). It is
@@ -137,7 +138,7 @@ class Speech:
     def __init__(self, on_state: Callable[[bool], None], on_spoken: Callable[[float, float, bool], None],
                  on_lip: Callable[[dict], None] = lambda _lip: None) -> None:
         self._on_state = on_state            # speaking started (True) or ended (False)
-        self._on_spoken = on_spoken          # (queued at, first sound at, a notice), monotonic seconds
+        self._on_spoken = on_spoken          # (queued at, first sound at, a notice), perf_counter seconds (the trace's clock)
         self._on_lip = on_lip                # a take's loudness and when it sounds, or when the sound was cut
         # (generation, text or None to open the output, queued at, a notice, its audio when its synthesis already
         # started), or None to end the speech thread (close)
@@ -202,7 +203,7 @@ class Speech:
                 if text != self._notice_text or self._notice_audio is None or self._answer_sounding:
                     return False
                 self._early = _Notice(self._generation, self._answers, self._sounded, self._notice_audio,
-                                      time.monotonic())
+                                      time.perf_counter())
                 self._queue.put_nowait((self._generation, text, self._early.queued, self._early, None))
                 return True
             self._answers += 1
@@ -212,7 +213,7 @@ class Speech:
                     audio = self._sentences(text)
                 except Exception:  # noqa: BLE001 - the speech thread synthesizes it then, and says what failed
                     audio = None
-            self._queue.put_nowait((self._generation, text, time.monotonic(), None, audio))
+            self._queue.put_nowait((self._generation, text, time.perf_counter(), None, audio))
         return True
 
     def foresee(self, text: str | None, done: bool) -> bool:
@@ -279,7 +280,7 @@ class Speech:
         if self.ready:
             with self._posting:
                 if not self._queue.full():
-                    self._queue.put_nowait((self._generation, None, time.monotonic(), None, None))
+                    self._queue.put_nowait((self._generation, None, time.perf_counter(), None, None))
 
     def cancel(self) -> None:
         self._generation += 1
@@ -484,7 +485,7 @@ class Speech:
         heard_until = 0.0  # wall clock (s) when what was written so far ends sounding
         try:
             # The first block sounds once the device's output latency has passed.
-            self._on_spoken(queued, time.monotonic() + stream.latency, notice)
+            self._on_spoken(queued, time.perf_counter() + stream.latency, notice)
             for audio in itertools.chain([audio], sentences):
                 # A take written right after the last one sounds right after it; one that waited for its synthesis
                 # (the output ran dry) sounds once the device's latency has passed.
