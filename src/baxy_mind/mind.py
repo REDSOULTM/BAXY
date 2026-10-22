@@ -1201,22 +1201,55 @@ class Mind:
         """Whether a filled call holds every required argument of its tool and each text or number among them appears
         in what the conversation showed: the person's words or a tool's result (folded, as a whole word). B-MED-1 of the
         notebook (2026-10-22): Laya chose window_snap where Qwen chose window_resolve, and fill_call wrote windowId «1»,
-        which no result had listed, and it ran; a web_download got a page of results as its url."""
+        which no result had listed, and it ran; a web_download got a page of results as its url.
+        Al máximo, System One 1: three kinds of value are the catalog's, not the person's words, and count as founded: a
+        code of the argument's own enum («downloads» for «Descargas», «pause», «left»), an application or game the mind
+        listed to the model in app_open and game_launch, or that game's appId («Worms W.M.D» for «el Worms»), and a file
+        name whose name and extension were both said («contrato.pdf» for «el PDF contrato»: Qwen writes it so). Practice
+        P203 (26 runs with System One, 2026-10-22): Laya chose file_read at 0.91 in 7 and «corrige» asked every time.
+        Ids (windowId, reminderId…) and any other text still have to appear in the conversation or in a result."""
         tool = next((t["function"] for t in self.tools if t["function"]["name"] == wire), {})
         required = (tool.get("parameters") or {}).get("required") or []
+        properties = (tool.get("parameters") or {}).get("properties") or {}
         seen = _fold(" ".join(str(m.get("content") or "") for m in messages
                               if m.get("role") == "tool" or (m.get("role") == "user"
                                                              and not str(m.get("content") or "").startswith("["))))
+
+        def said(text: str) -> bool:
+            return bool(text) and re.search(rf"(?<!\w){re.escape(text)}(?!\w)", seen) is not None
+
         for name in required:
             value = arguments.get(name)
             if value is None or value == "":
                 return False
             if isinstance(value, bool) or not isinstance(value, (str, int, float)):
                 continue
+            prop = properties.get(name)
+            if isinstance(value, str) and ((isinstance(prop, dict) and value in (prop.get("enum") or []))
+                                           or self._listed(value)):
+                continue
             text = _fold(str(int(value) if isinstance(value, float) and value.is_integer() else value))
-            if not text or not re.search(rf"(?<!\w){re.escape(text)}(?!\w)", seen):
+            stem, dot, extension = text.rpartition(".")
+            if not said(text) and not (dot and re.fullmatch(r"[a-z0-9]{1,5}", extension) and said(stem)
+                                       and said(extension)):
                 return False
         return True
+
+    def _listed(self, value: str) -> bool:
+        """Whether a value is a whole entry of the lists configure put in the descriptions of app_open («Installed
+        applications (use one of these names as appId): A; B.») and game_launch («The person's installed games: Name
+        (appId N, provider); …»): an application's name, a game's name or a game's appId."""
+        folded = re.escape(_fold(value))
+        lists = {"app_open": ("installed applications (use one of these names as appid): ",
+                              rf"(?:^|; ){folded}(?=;|\.(?: |$))"),
+                 "game_launch": ("the person's installed games: ", rf"(?:^|; ){folded} \(appid |\(appid {folded}, ")}
+        for tool in self.tools:
+            marker, entry = lists.get(tool["function"]["name"], ("", ""))
+            description = _fold(str(tool["function"].get("description") or ""))
+            at = description.find(marker) if marker else -1
+            if at >= 0 and re.search(entry, description[at + len(marker):]):
+                return True
+        return False
 
     def _candidates(self, chosen: str, doubt: dict[str, Any], body: dict[str, Any]) -> dict[str, str]:
         """The model's own candidates as the decision model's options (as in its training, build_kev_data.py): the tool it

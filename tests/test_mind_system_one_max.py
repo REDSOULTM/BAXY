@@ -1,0 +1,95 @@
+"""System One al máximo (2026-10-22): what «corrige» counts as founded, what layer 0 holds and which risks it corrects.
+Each test holds one finding of the flow audit on the practice cases of decision2 (P040, P112, P113, P124, P203, P215)."""
+import math
+
+import pytest
+
+from test_mind_doubt_policy import FakeSystemOne, _call, _mind, _say
+
+FOLDERS = ["all_known", "desktop", "documents", "downloads", "home"]
+FILE_FIND = {"name": "file.find", "description": "Find files", "risk": "read_only",
+             "argumentsSchema": {"type": "object", "properties": {"folder": {"type": "string", "enum": FOLDERS},
+                                                                  "query": {"type": "string"}},
+                                 "required": ["folder"], "additionalProperties": False}}
+FILE_READ = {"name": "file.read", "description": "Read a file", "risk": "read_only",
+             "argumentsSchema": {"type": "object", "properties": {"fileName": {"type": "string"},
+                                                                  "folder": {"type": "string", "enum": FOLDERS}},
+                                 "required": ["fileName", "folder"], "additionalProperties": False}}
+APP_OPEN = {"name": "app.open", "description": "Open an application", "risk": "low_reversible",
+            "argumentsSchema": {"type": "object", "properties": {"appId": {"type": "string"}}, "required": ["appId"],
+                                "additionalProperties": False}}
+GAME_LAUNCH = {"name": "game.launch", "description": "Launch a game", "risk": "low_reversible",
+               "argumentsSchema": {"type": "object", "properties": {"appId": {"type": "string"}},
+                                   "required": ["appId"], "additionalProperties": False}}
+WINDOW_RESOLVE = {"name": "window.resolve", "description": "Find a window", "risk": "read_only",
+                  "argumentsSchema": {"type": "object", "properties": {"query": {"type": "string"}},
+                                      "required": [], "additionalProperties": False}}
+WINDOW_SNAP = {"name": "window.snap", "description": "Snap a window", "risk": "low_reversible",
+               "argumentsSchema": {"type": "object", "properties": {"side": {"type": "string",
+                                                                             "enum": ["left", "right"]},
+                                                                    "windowId": {"type": "string"}},
+                                   "required": ["side", "windowId"], "additionalProperties": False}}
+CATALOGS = {"applicationCatalog": {"names": ["Microsoft Teams", "Spotify"]},
+            "gameCatalog": {"entries": [{"provider": "steam", "appId": "327030", "name": "Worms W.M.D"},
+                                        {"provider": "steam", "appId": "570", "name": "Dota 2"}]}}
+
+
+def _corrects(tmp_path, monkeypatch, capabilities, doubted, choice, filled):
+    """Qwen chose `doubted` unsure (0.5, under the veto), Laya reads `choice`, and the model fills it with `filled`."""
+    monkeypatch.setenv("BAXY_S1_DOUBT", "")
+    monkeypatch.setenv("BAXY_S1_VETO", "0.6")
+    monkeypatch.setenv("BAXY_S1_CORRECT", "1")
+    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))  # no confirmation-mode file: the kernel's normal mode
+    reply = _call(doubted, {}, 0.5)
+    reply["choices"][0]["logprobs"]["content"][5]["top_logprobs"].append({"token": "x", "logprob": math.log(0.4)})
+    mind, server = _mind(tmp_path, [reply, _say("¿Qué quieres exactamente?")])
+    server.complete_name = lambda body, written: "_y"
+    fills: list[str] = []
+
+    def fill_call(body, wire):
+        fills.append(wire)
+        return {"name": wire, "arguments": filled, "timings": {}}
+
+    server.fill_call = fill_call
+    mind.configure({"capabilities": capabilities, **CATALOGS})
+    mind.system_one = FakeSystemOne(choice)  # type: ignore[assignment]
+    return mind, fills
+
+
+# ---- 1. _founded: the catalog's own values count -----------------------------------------------------------------
+@pytest.mark.parametrize("filled", [{"fileName": "contrato", "folder": "downloads"},
+                                    {"fileName": "contrato.pdf", "folder": "downloads"}])
+def test_a_correction_with_an_enum_code_and_a_said_file_name_runs(tmp_path, monkeypatch, filled) -> None:
+    # P203: «resúmeme el PDF contrato que está en Descargas»; Qwen file_find, Laya file_read at 0.91, and «corrige» asked
+    # in 7 of 26 runs because «downloads» is a code the person never says.
+    mind, fills = _corrects(tmp_path, monkeypatch, [FILE_FIND, FILE_READ], "file_find", "file_read", filled)
+    result = mind.decide(1, "resúmeme el PDF contrato que está en Descargas")
+    assert fills == ["file_read"]
+    assert result["kind"] == "action" and result["operation"] == "file.read" and result["arguments"] == filled
+
+
+@pytest.mark.parametrize("filled", [{"fileName": "informe.pdf", "folder": "downloads"},  # a name nobody said
+                                    {"fileName": "contrato.docx", "folder": "downloads"}])  # an extension nobody said
+def test_a_correction_with_a_file_name_or_folder_nobody_said_asks(tmp_path, monkeypatch, filled) -> None:
+    mind, _ = _corrects(tmp_path, monkeypatch, [FILE_FIND, FILE_READ], "file_find", "file_read", filled)
+    assert mind.decide(1, "resúmeme el PDF contrato que está en Descargas")["operation"] is None
+
+
+@pytest.mark.parametrize("capabilities, doubted, choice, filled, operation", [
+    ([GAME_LAUNCH, APP_OPEN], "game_launch", "app_open", {"appId": "Microsoft Teams"}, "app.open"),
+    ([APP_OPEN, GAME_LAUNCH], "app_open", "game_launch", {"appId": "327030"}, "game.launch"),
+    ([GAME_LAUNCH, APP_OPEN], "game_launch", "app_open", {"appId": "Zoom"}, None),  # not in the list it was given
+    ([GAME_LAUNCH, APP_OPEN], "game_launch", "app_open", {"appId": "Microsoft"}, None),  # part of an entry
+    ([APP_OPEN, GAME_LAUNCH], "app_open", "game_launch", {"appId": "999"}, None)])  # an appId of no listed game
+def test_a_correction_with_an_application_or_game_of_the_catalog_runs(tmp_path, monkeypatch, capabilities, doubted,
+                                                                         choice, filled, operation) -> None:
+    mind, _ = _corrects(tmp_path, monkeypatch, capabilities, doubted, choice, filled)
+    assert mind.decide(1, "abre el teams o el worms")["operation"] == operation
+
+
+def test_an_invented_window_id_still_asks_beside_an_enum_code(tmp_path, monkeypatch) -> None:
+    # B-MED-1 stays closed: «left» is the enum's, «1» is an id no result listed.
+    mind, fills = _corrects(tmp_path, monkeypatch, [WINDOW_RESOLVE, WINDOW_SNAP], "window_resolve", "window_snap",
+                            {"side": "left", "windowId": "1"})
+    assert mind.decide(1, "pon la ventana a la izquierda")["operation"] is None
+    assert fills == ["window_snap"]
