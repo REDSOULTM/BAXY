@@ -256,7 +256,7 @@ public sealed class SteamLocalAdapterTests
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "game.launch",
-            Json("""{"appId":"620"}"""),
+            Json("""{"appId":"620","title":"Portal 2"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -268,6 +268,34 @@ public sealed class SteamLocalAdapterTests
                 Is.EqualTo("steam_manifest_process_postread"));
             Assert.That(processReads, Is.EqualTo(2));
             Assert.That(delays.Calls, Is.Zero);
+        });
+    }
+
+    // Renew al máximo (falsedades F001/F016): the model launched Rocket League's appId, the one game installed, for
+    // «Doom Eternal» and for «Fortnite», twice in front of the owner. The title asked for goes in the call and is the
+    // manifest's own (folded as an entitlement's title is): another, or none, fails before anything is sent, with the
+    // games installed.
+    [TestCase("""{"appId":"620","title":"Doom Eternal"}""", "game_title_mismatch")]
+    [TestCase("""{"appId":"620"}""", "game_title_required")]
+    public async Task ALaunchOfAnotherGamesAppIdIsNeverSent(string arguments, string code)
+    {
+        var automation = new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam"));
+        SteamLocalGame installed = Catalog[0] with { InstallDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture") };
+        var adapter = new SteamLocalAdapter(
+            () => [installed],
+            () => new HashSet<string>(["620"], StringComparer.Ordinal),
+            automation,
+            new RecordingDelay().DelayAsync,
+            () => []);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("game.launch", Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("installedGames")[0].GetProperty("name").GetString(), Is.EqualTo("Portal 2"));
         });
     }
 
@@ -292,7 +320,7 @@ public sealed class SteamLocalAdapterTests
             ]);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "game.launch", Json("""{"appId":"620"}"""), CancellationToken.None);
+            "game.launch", Json("""{"appId":"620","title":"portal 2"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -409,7 +437,7 @@ public sealed class SteamLocalAdapterTests
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "game.launch",
-            Json("""{"appId":"620"}"""),
+            Json("""{"appId":"620","title":"Portal 2"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
