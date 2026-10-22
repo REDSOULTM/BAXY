@@ -38,6 +38,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private string? _sessionLabel;
     private DateTimeOffset _sessionCreated = DateTimeOffset.UtcNow;
     private int? _triggerCount;
+    // The card that waits for the person's Sí or No and the call it shows: an answer that names another card is refused.
+    private (string Id, NativeTurnConfirmation Asked)? _pendingCard;
     private bool _disposed;
     // The memory panel runs the chat's own catalog operations; its count is read from the store when the view asks
     // for the surfaces and the store may have changed since (first read, a chat change).
@@ -142,7 +144,20 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                     return Error("nothing_pending", 409);
                 }
 
-                await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation).ConfigureAwait(true);
+                // 2026-10-22, review of the App: the answer names the card pressed («card»); a late press on an ended
+                // card no longer answers the next one. A press while a turn runs is refused, never taken and lost.
+                string? card = (string?)ParseBody(body)?["card"];
+                if (card is not null && _pendingCard?.Id != card)
+                {
+                    return Error("card_not_pending", 409);
+                }
+
+                if (!await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation,
+                        card is null ? null : _pendingCard?.Asked).ConfigureAwait(true))
+                {
+                    return Error(_viewModel.HasPendingConfirmation ? "turn_in_progress" : "nothing_pending", 409);
+                }
+
                 return Json(new JsonObject { ["ok"] = true });
             }
 
@@ -330,13 +345,16 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             HeartbeatMoment.Watching => "porque estás viendo algo",
             _ => "por iniciativa propia",
         } : null;
-        JsonObject card = FieldStepProjection.Card(_transcript.NextId("k"), asked.Proposal ? "proposal" : "confirm",
+        string id = _transcript.NextId("k");
+        JsonObject card = FieldStepProjection.Card(id, asked.Proposal ? "proposal" : "confirm",
             asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context);
+        _pendingCard = (id, asked);
         Publish(ItemEvent(_transcript.Card(card)));
     }
 
     private void OnConfirmationResolved(string outcome)
     {
+        _pendingCard = null;
         string status = outcome switch
         {
             "approved" => "yes",

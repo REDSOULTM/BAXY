@@ -68,6 +68,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private long _turnTraceSequence;
     private bool _isPowered = true;
     private string? _quietProposal;
+    // The call whose question was published last and has not ended (the view's card, the toast): a Sí/No that names
+    // another one answers nothing.
+    private NativeTurnConfirmation? _askedConfirmation;
     private string _beatActivity = string.Empty;
     private MindVoiceStatus? _voicePieces;
     private DateTimeOffset _mindStartedAt = DateTimeOffset.UtcNow;
@@ -122,14 +125,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 StepStarted = (id, operation, arguments) => StepStarted?.Invoke(id, operation, arguments),
                 ConfirmationAsked = asked =>
                 {
+                    _askedConfirmation = asked;
                     ConfirmationAsked?.Invoke(asked, _beatActive ? _beatActivity : null);
                     if (asked.Proposal && _quietProposal is { } question)
                     {
                         _quietProposal = null;
-                        ProposalNotificationRequested?.Invoke(question, SilentBecause(_beatActivity));
+                        ProposalNotificationRequested?.Invoke(question, SilentBecause(_beatActivity), asked);
                     }
                 },
-                ConfirmationResolved = outcome => ConfirmationResolved?.Invoke(outcome),
+                ConfirmationResolved = outcome =>
+                {
+                    _askedConfirmation = null;
+                    ConfirmationResolved?.Invoke(outcome);
+                },
                 Refuse = Settings.Refusal,
                 MemoryChanged = () => MemoryChanged?.Invoke(),
             });
@@ -147,9 +155,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal event Action<string>? ConfirmationResolved;
 
-    /// <summary>A heartbeat's proposal for a person who should not be spoken to: the model's question and why it is
-    /// not said aloud (the Windows notification with Sí / No).</summary>
-    internal event Action<string, string>? ProposalNotificationRequested;
+    /// <summary>A heartbeat's proposal for a person who should not be spoken to: the model's question, why it is not
+    /// said aloud (the Windows notification with Sí / No) and the call it asks about, which its answer names.</summary>
+    internal event Action<string, string, NativeTurnConfirmation>? ProposalNotificationRequested;
 
     /// <summary>What the ear has heard of the request so far (live captions); it starts nothing.</summary>
     internal event Action<string>? VoicePartial;
@@ -444,18 +452,24 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>
     /// The person pressed Sí (<paramref name="approve"/>) or No on the pending confirmation; the press arrived at
-    /// <paramref name="arrivedAt"/>, as in <see cref="SubmitAsync"/>.
+    /// <paramref name="arrivedAt"/>, as in <see cref="SubmitAsync"/>. <paramref name="answering"/> is the call whose card
+    /// or toast they pressed, when the press says it. 2026-10-22, review of the App: false when the answer was not taken
+    /// (a turn runs, nothing waits, or the press was on another call's card: a late click on one approved the next), so
+    /// the caller says so instead of reporting it done.
     /// </summary>
-    internal async Task AnswerConfirmationAsync(bool approve, long arrivedAt, CancellationToken cancellationToken)
+    internal async Task<bool> AnswerConfirmationAsync(bool approve, long arrivedAt, CancellationToken cancellationToken,
+        NativeTurnConfirmation? answering = null)
     {
-        if (!IsInputEnabled || !_loop.HasPendingConfirmation)
+        if (!IsInputEnabled || !_loop.HasPendingConfirmation
+            || (answering is not null && !ReferenceEquals(answering, _askedConfirmation)))
         {
-            return;
+            return false;
         }
 
         string label = approve ? "Sí" : "No";
         await RunTurnAsync(label, () => _loop.AnswerConfirmationAsync(approve, label, arrivedAt, cancellationToken),
             cancellationToken);
+        return true;
     }
 
     /// <summary>Whether a heartbeat may run now: everything is up and nothing holds the turn or waits for the person.</summary>

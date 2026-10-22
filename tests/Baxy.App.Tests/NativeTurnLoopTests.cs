@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Reflection;
-using System.Text.Json.Nodes;
 using Baxy.App;
 using NUnit.Framework;
 
@@ -10,15 +7,13 @@ namespace Baxy.App.Tests;
 [TestFixture]
 public sealed class NativeTurnLoopTests
 {
-    private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
-
     [Test]
     public void AProposalThatRanOutOfTimeEndsExpiredNotDropped()
     {
         var clock = new ManualClock();
         var outcomes = new List<string>();
         NativeTurnLoop loop = Loop(outcomes, clock);
-        HoldAskedProposal(loop, clock.GetUtcNow() + NativeTurnLoop.ProposalLifetime);
+        WaitingCalls.HoldAskedProposal(loop, clock.GetUtcNow() + NativeTurnLoop.ProposalLifetime);
         Assert.That(loop.HasPendingConfirmation, Is.True);
 
         clock.Now += NativeTurnLoop.ProposalLifetime + TimeSpan.FromSeconds(1);
@@ -34,7 +29,7 @@ public sealed class NativeTurnLoopTests
         var clock = new ManualClock();
         var outcomes = new List<string>();
         NativeTurnLoop loop = Loop(outcomes, clock);
-        HoldAskedProposal(loop, clock.GetUtcNow() + NativeTurnLoop.ProposalLifetime);
+        WaitingCalls.HoldAskedProposal(loop, clock.GetUtcNow() + NativeTurnLoop.ProposalLifetime);
 
         clock.Now += NativeTurnLoop.ProposalLifetime - TimeSpan.FromSeconds(1);
         loop.Reset();
@@ -54,17 +49,6 @@ public sealed class NativeTurnLoopTests
         Notice = static _ => { },
         ConfirmationResolved = outcomes.Add,
     }, clock);
-
-    // A heartbeat's proposal whose question was published (its card shows), as NativeTurnLoop leaves it.
-    private static void HoldAskedProposal(NativeTurnLoop loop, DateTimeOffset expiresUtc)
-    {
-        PreparedOperation proposal = new RetryableOperationRegistry().GetOrAdd(
-            new RoutedOperation("web.search", new JsonObject { ["query"] = "clima de mañana" }));
-        typeof(NativeTurnLoop).GetField("_proposal", Private)!.SetValue(loop, proposal);
-        typeof(NativeTurnLoop).GetField("_proposalExpiresUtc", Private)!.SetValue(loop, expiresUtc);
-        typeof(NativeTurnLoop).GetField("_askedAt", Private)!.SetValue(loop, Stopwatch.GetTimestamp());
-        typeof(NativeTurnLoop).GetField("_asking", Private)!.SetValue(loop, true);
-    }
 
     private sealed class ManualClock : TimeProvider
     {
