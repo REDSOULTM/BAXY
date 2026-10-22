@@ -124,3 +124,76 @@ def test_falsedades_cleans_up_after_a_failed_setup(tmp_path, monkeypatch):
     transcripts = bench_falsedades.run_conversations([case], tmp_path)
     assert ran == ["setup.ps1", "cleanup.ps1"]
     assert transcripts[0]["status"] == "setup_fallido"
+
+
+# R12.7: measure_resources, with doubles of the product's processes and nvidia-smi. While a turn runs, Qwen's
+# llama-server holds 3100 MiB and the GPU 4000; idle, 2300 and 1000 (3500 after the turns). Laya's server (System
+# One, on the CPU) holds 340 MiB and its GGUF path contains BAXYeval, as on the notebook.
+QWEN = ["D:\BAXYeval\llama\llama-server.exe", "-m", "D:\BAXYeval\models\BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf",
+        "--port", "8077", "-ngl", "99"]
+LAYA = ["D:\BAXYeval\llama\llama-server.exe", "-m", "D:\BAXYeval\s1\tuned\layam-long-s1-Q8_0.gguf",
+        "--port", "8078", "-ngl", "0"]
+MIND = ["py.exe", "-3.12", "-m", "baxy_mind"]
+
+
+class FakeProcess:
+    def __init__(self, state, name, cmdline, idle_mib, busy_mib):
+        self.info = {"name": name, "cmdline": cmdline}
+        self.state, self.idle, self.busy = state, idle_mib, busy_mib
+
+    def memory_full_info(self):
+        from types import SimpleNamespace
+        return SimpleNamespace(uss=(self.busy if self.state["busy"] else self.idle) * 2**20)
+
+
+@pytest.fixture
+def measured(tmp_path, monkeypatch):
+    import time as real_time
+    from types import SimpleNamespace
+
+    import measure_resources
+    state = {"busy": False, "after": False, "reads": 0}
+    processes = [FakeProcess(state, "llama-server.exe", QWEN, 2300, 3100),
+                 FakeProcess(state, "llama-server.exe", LAYA, 340, 340),
+                 FakeProcess(state, "python.exe", MIND, 500, 520)]
+
+    def process_iter(attrs=None):
+        state["reads"] += 1
+        return list(processes)
+
+    def gpu_used_mib():
+        return 4000 if state["busy"] else 3500 if state["after"] else 1000
+
+    def run_turn(conductor, command, timeout):
+        # The turn lasts until the samples taken during it are two (or half a second without any).
+        state["busy"], reads, deadline = True, state["reads"], real_time.monotonic() + 0.5
+        while state["reads"] < reads + 2 and real_time.monotonic() < deadline:
+            real_time.sleep(0.005)
+        state["busy"], state["after"] = False, True
+        return []
+
+    monkeypatch.setattr(measure_resources, "BANKS", tmp_path)
+    monkeypatch.setattr(measure_resources, "Conductor", FakeConductor)
+    monkeypatch.setattr(measure_resources, "run_turn", run_turn)
+    monkeypatch.setattr(measure_resources, "wait_silence", lambda conductor, timeout: None)
+    monkeypatch.setattr(measure_resources, "gpu_used_mib", gpu_used_mib)
+    monkeypatch.setattr(measure_resources.psutil, "process_iter", process_iter)
+    monkeypatch.setattr(measure_resources, "time", SimpleNamespace(
+        sleep=lambda seconds: real_time.sleep(min(seconds, 0.02)), monotonic=real_time.monotonic, time=real_time.time))
+    monkeypatch.setattr(measure_resources, "SAMPLE_S", 0.005, raising=False)
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setenv("BAXY_RENEW_WAKE_DIR", "")
+    monkeypatch.setenv("BAXY_RENEW_STT_DIR", "")
+    return measure_resources.measure("prueba", ear=False)
+
+
+def test_resources_keep_the_peak_of_the_turns(measured):
+    assert measured["gpu_peak_mib"] == 4000
+    assert measured["vram_mib"] == 3000
+    assert measured["uss_mib"]["llama-server"] == 3100
+    assert measured["uss_mib"]["mente"] == 520
+
+
+def test_resources_count_laya_apart_and_in_the_total(measured):
+    assert measured["uss_mib"]["laya"] == 340
+    assert measured["producto_ram_mib"] == 3100 + 340 + 520
