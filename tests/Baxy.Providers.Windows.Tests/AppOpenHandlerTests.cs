@@ -253,6 +253,68 @@ public sealed class AppOpenHandlerTests
         Assert.That(changed, Is.EqualTo(expected));
     }
 
+    // Renew al máximo (6.3, aid open_recovery): a failed opening says, as facts, whether its launch was issued (and an
+    // instance it reused), and where the model can look before telling the person: after a launch whose window was not
+    // verified, or a launch Windows did not take. Only the facts of the provider's receipt; with BAXY_AYUDAS=none, or
+    // another aid alone, it is the result it was.
+    [TestCase("all", "verification_failed", true, false, true,
+        "Bloc de notas was started and no window of it was verified; window_application_status can tell whether one "
+        + "shows now, before saying it opened or not")]
+    [TestCase("open_recovery", "verification_failed", false, false, true,
+        "no window of Bloc de notas was verified; window_application_status can tell whether one shows now, before "
+        + "saying it opened or not")]
+    [TestCase("all", "inventory_failed", false, true, true,
+        "Bloc de notas was already running and no window of it was verified; window_application_status can tell "
+        + "whether one shows now, before saying it opened or not")]
+    [TestCase("all", "launch_failed", false, false, true,
+        "the launch of Bloc de notas was not issued (Windows did not take it); window_application_status can tell "
+        + "whether it is open already")]
+    [TestCase("all", "inventory_failed", false, false, true, null)]
+    [TestCase("all", "new_document_not_created", true, false, true, null)]
+    [TestCase("none", "verification_failed", true, false, false, null)]
+    [TestCase("none", "launch_failed", false, false, false, null)]
+    [TestCase("place_unverified", "verification_failed", true, false, false, null)]
+    public async Task AFailedOpeningSaysWhetherItsLaunchWasIssuedAndWhereToLook(
+        string aids, string code, bool launchIssued, bool reused, bool facts, string? next)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+
+        OperationOutcome outcome = await Handler(new FailedOpening(code, launchIssued, reused))
+            .ExecuteAsync(Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
+        JsonElement? result = outcome.Result;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(code));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(launchIssued || reused));
+            Assert.That(result?.TryGetProperty("launchIssued", out JsonElement issued) == true
+                ? issued.GetBoolean() : (bool?)null, Is.EqualTo(facts ? launchIssued : null));
+            Assert.That(result?.TryGetProperty("alreadyRunning", out JsonElement running) == true
+                ? running.GetBoolean() : (bool?)null, Is.EqualTo(facts && reused ? true : null));
+            Assert.That(result?.TryGetProperty("next", out JsonElement said) == true ? said.GetString() : null,
+                Is.EqualTo(next));
+        });
+    }
+
+    // Contracaso (6.3): the closest installed names of a name that matched none are said as before, with the aid or not.
+    [TestCase("all")]
+    [TestCase("none")]
+    public async Task ANameThatMatchedNoneKeepsItsCandidates(string aids)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+
+        OperationOutcome outcome = await Handler(new FailedOpening("app_not_found", false, false, ["Bloc de notas"]))
+            .ExecuteAsync(Invocation("""{"appId":"Bloc"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_not_found"));
+            Assert.That(outcome.Result!.Value.GetProperty("candidates").EnumerateArray().Select(name => name.GetString()),
+                Is.EqualTo(new[] { "Bloc de notas" }));
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
     // Contracaso: an opening with no place says nothing of one.
     [Test]
     public async Task AnOpeningWithNoPlaceCarriesNoPlaceHint()
@@ -483,6 +545,24 @@ public sealed class AppOpenHandlerTests
     {
         using JsonDocument document = JsonDocument.Parse(arguments);
         return new OperationInvocation("request", "mission", "invocation", document.RootElement.Clone());
+    }
+
+    /// <summary>An opening that failed with a code, as the provider's receipt tells it.</summary>
+    private sealed class FailedOpening(
+        string code, bool launchIssued, bool reused, IReadOnlyList<string>? candidates = null) : IApplicationOpenProvider
+    {
+        public ValueTask<ApplicationOpenResult> OpenAsync(
+            ApplicationOpenRequest request,
+            CancellationToken cancellationToken)
+        {
+            var receipt = new ApplicationLaunchReceipt(
+                request.InvocationId, request.ApplicationId, launchIssued, reused, ProcessId: null,
+                ProcessCreationTimeUtcTicks: null, ExecutablePath: null, PackageFamilyName: null, PackageFullName: null,
+                WindowHandle: null, code);
+            return ValueTask.FromResult(new ApplicationOpenResult(
+                Succeeded: launchIssued || reused, Verified: false, request.ApplicationId, AlreadyRunning: reused,
+                ProcessId: null, WindowHandle: null, code, receipt, Candidates: candidates));
+        }
     }
 
     /// <summary>A window of a program already running, verified for the opening asked.</summary>

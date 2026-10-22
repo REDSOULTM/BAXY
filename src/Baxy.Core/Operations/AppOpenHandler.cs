@@ -128,7 +128,9 @@ internal sealed class AppOpenHandler(
             string errorCode = NormalizeErrorCode(providerResult.ErrorCode, providerResult.Verified);
             return OperationOutcome.Failure(
                 errorCode,
-                result: Names("candidates", providerResult.Candidates),
+                result: ModelAids.On(ModelAids.OpenRecovery)
+                    ? Facts(writer => WriteRecovery(writer, errorCode, arguments.AppId, providerResult))
+                    : Names("candidates", providerResult.Candidates),
                 effectMayHaveOccurred: providerResult.Succeeded);
         }
 
@@ -242,6 +244,37 @@ internal sealed class AppOpenHandler(
                     "query" => $"{place.Place} (placeValue: what to search)",
                     _ => place.Place,
                 }));
+    }
+
+    // Renew al máximo (6.3, aid open_recovery): a failed opening says what its provider's receipt knows (whether the
+    // launch was issued, and an instance reused) and, where no window was verified after it or Windows did not take the
+    // launch, which tool can look before the person is told (specific and actionable errors: Anthropic, «Writing
+    // effective tools for agents»; recovery from a tool's error, Fission-GRPO, doi.org/10.48550/arXiv.2601.15625).
+    // Facts only: nothing here says the application opened or not.
+    private static void WriteRecovery(
+        Utf8JsonWriter writer, string errorCode, string appId, ApplicationOpenResult opening)
+    {
+        WriteNames(writer, "candidates", opening.Candidates);
+        ApplicationLaunchReceipt receipt = opening.Receipt;
+        writer.WriteBoolean("launchIssued", receipt.LaunchIssued);
+        if (receipt.ReusedExisting)
+            writer.WriteBoolean("alreadyRunning", true);
+        string name = string.IsNullOrWhiteSpace(opening.DisplayName) ? appId : opening.DisplayName;
+        const string look = "window_application_status can tell whether one shows now, before saying it opened or not";
+        string? next = errorCode switch
+        {
+            "verification_failed" or "inventory_failed" when receipt.LaunchIssued =>
+                $"{name} was started and no window of it was verified; {look}",
+            "verification_failed" or "inventory_failed" when receipt.ReusedExisting =>
+                $"{name} was already running and no window of it was verified; {look}",
+            "verification_failed" => $"no window of {name} was verified; {look}",
+            "launch_failed" when !receipt.LaunchIssued =>
+                $"the launch of {name} was not issued (Windows did not take it); window_application_status can tell "
+                    + "whether it is open already",
+            _ => null,
+        };
+        if (next is not null)
+            writer.WriteString("next", next);
     }
 
     // Auditoría D1: the installed names closest to one that matched none (or the applications that have a place),
