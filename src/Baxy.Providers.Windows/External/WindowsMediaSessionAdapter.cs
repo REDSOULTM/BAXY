@@ -734,28 +734,39 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         }
 
         writer.WriteString("playbackStatus", playbackStatus);
+        WriteOtherSessions(writer, others);
+        writer.WriteString("authority", "windows_smtc_current_session_read");
+        writer.WriteEndObject();
+    });
+
+    /// <summary>
+    /// The otherSessions of a media.status result (6.1): those playing first, closed ones left out, at most
+    /// <see cref="StatusOtherSessionsLimit"/>, titles cut short; with none nothing is written. Renew al máximo (auditoría
+    /// de flujos): the local player's status writes them too.
+    /// </summary>
+    internal static void WriteOtherSessions(Utf8JsonWriter writer, IReadOnlyList<UserMediaSession> others)
+    {
         UserMediaSession[] shown = others
             .Where(other => other.SourceAppUserModelId.Length > 0 && other.PlaybackStatus != "closed")
             .OrderBy(other => other.PlaybackStatus == "playing" ? 0 : 1)
             .Take(StatusOtherSessionsLimit)
             .ToArray();
-        if (shown.Length > 0)
+        if (shown.Length == 0)
         {
-            writer.WriteStartArray("otherSessions");
-            foreach (UserMediaSession other in shown)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("sourceAppUserModelId", other.SourceAppUserModelId);
-                writer.WriteString("title", ShortTitle(other.Title));
-                writer.WriteString("playbackStatus", other.PlaybackStatus);
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
+            return;
         }
 
-        writer.WriteString("authority", "windows_smtc_current_session_read");
-        writer.WriteEndObject();
-    });
+        writer.WriteStartArray("otherSessions");
+        foreach (UserMediaSession other in shown)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("sourceAppUserModelId", other.SourceAppUserModelId);
+            writer.WriteString("title", ShortTitle(other.Title));
+            writer.WriteString("playbackStatus", other.PlaybackStatus);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
 
     // A title cut at a whole text element, never inside one.
     private static string ShortTitle(string title)

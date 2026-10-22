@@ -4391,6 +4391,53 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): with BAXY's own YouTube player playing, media.status answered from it alone
+    // and named no other session (6.1 named them only from the system's read), so «pausa Spotify» had no id to name.
+    [Test]
+    public async Task TheLocalPlayersStatusNamesTheOtherSessionsToo()
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePlayerAsync(pipeName, paused: false, stopPlayer.Token);
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(true),
+            SystemSessions = _ => ValueTask.FromResult<IReadOnlyList<UserMediaSession>>(
+                [new UserMediaSession("Spotify.exe", "Bailando Solo", "Los Bunkers", "playing")]),
+        };
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await local.InvokeAsync("media.status", Json("{}"), CancellationToken.None);
+        }
+        finally
+        {
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            Assert.That(receipt.Result?.TryGetProperty("otherSessions", out _), Is.True);
+            if (receipt.Result?.TryGetProperty("otherSessions", out JsonElement others) == true)
+            {
+                Assert.That(others.GetArrayLength(), Is.EqualTo(1));
+                Assert.That(others[0].GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo("Spotify.exe"));
+                Assert.That(others[0].GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            }
+        });
+    }
+
     // A player whose pause property reads true on every connection until stopped (a set is answered as done).
     private static Task ServePausedPlayerAsync(string pipeName, CancellationToken stop) =>
         ServePlayerAsync(pipeName, paused: true, stop);
