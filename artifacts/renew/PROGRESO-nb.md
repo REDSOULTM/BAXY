@@ -359,3 +359,36 @@ computer use, la App y la mente.
 - Arranque en 30 s. «hola» se responde en 555 ms y **Piper empieza a sonar a los 713 ms** de llegar el texto (la
   meta es ≤ 2,5 s).
 - El banco de punta a punta de práctica corre aquí sin E026, porque «para» apagó o bloqueó el PC del líder.
+
+## Renew al máximo (2026-10-22, apoyo del PC; prompt PROMPT_MAXIMO_NOTEBOOK.md)
+
+**Dónde se trabaja.** Worktree `BAXY-Renew-s1` fijo en 86991ca9d para la línea base (no se edita mientras corre);
+el trabajo va en `BAXY-Renew-mx` (rama `nb-maximo-fix`, que se sube a `hub/nb-maximo`); la Tanda 0 de la fase B en
+worktrees `BAXY-Renew-b-{media,steam,apps,memoria,sistema,cu}` (ramas `nb-b-*`), uno por subagente. Scripts de banco en
+`%TEMP%\claude\nb\mx` (`base_s1b.sh`, `vigia.sh`, `laya_dev.py`, `casos_d.py`).
+
+**Trampa nueva: `F:` del notebook es hoy un USB del dueño («PREPARAR_MULTIBOOT»).** Los casos e2e y de falsedades de
+práctica (iguales al PC por sha256) cargan `F:\BAXYeval\...\bench.ps1`: la primera semilla dio 0/30. Se corre con
+copias `practice.nbD.json` (e2e y falsedades) que sólo cambian `F:` por `D:` (96 y 40 rutas). El holdout v4 tendrá lo
+mismo: al abrirlo aquí, la misma sustitución.
+
+**Fase A (cerrada por el líder, `MAXIMO.md`).**
+- `maximo/PALANCAS-nb.md` (2a65e88db): 45 palancas de las áreas 3, 6, 7, 10, 11 y 12, errores reales por área y el
+  diseño del holdout v4 (adoptado tal cual).
+- Recursos medidos aquí (86991ca9d, `measure_resources`): System One apagado VRAM 3902 MiB, RAM del producto 2438 MiB;
+  encendido **4091 MiB** (+189: Laya sin `-dev none` usa la GPU) y 2719 MiB.
+- Hallazgos que cambiaron el goal: la base no tenía `hub/pc-cu` (el dueño ordenó fusionarlo; c1177101d); el parche de
+  semilla de los scripts viejos ya no cambia la semilla (`"seed": 0,` desde c7abe77ed); 9 textos de decision2 están en
+  los datos de Laya.
+- Verificación cruzada de las 7 palancas del PC de más de 2 puntos: P13.1, P2.1 y P2.4 tumbadas; P4.3, P1.1, P1.2 y
+  P8.1 con reservas; ninguna sostiene más de 2 puntos.
+
+**Fase B (en curso).**
+- `maximo/REVISION-nb.md`: 4 revisores (apps/Steam/medios, ventanas/CU, sistema/archivos/memoria, bancos/System One).
+- Arreglados con prueba que fallaba antes: **B-SYS-1** (0ff4df60f: el modelo podía encender Bypass escribiendo
+  `confirmation-mode` por `file.write` con `folder: home`; la papelera por nombre reciclaba la carpeta BAXY) y
+  **B-CU-1 + B-CU-3** (14e88b2d0: clic y scroll por índice en la ventana de otra vista; worker desfasado tras un saludo
+  cancelado). Providers entero sobre 96d592064: 2485/2485.
+- Palancas 12.2/12.3/12.5 (83c178b8b): `scripts/renew/pareado.py` y `scripts/renew/neutras.py`.
+- Pendientes míos: el resto de la Tanda 0 (6 subagentes), 3.1 (`-dev none` de Laya, espera la fusión de fx-mente del
+  líder; experimento listo en `laya_dev.py`), Tandas 2 y 3 (6.x, 7.4).
