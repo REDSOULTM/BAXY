@@ -14,7 +14,6 @@ public static partial class DesktopWindowNames
     public static IReadOnlyList<(string Process, string Title)> Visible()
     {
         var windows = new List<(string, string)>();
-        int self = Environment.ProcessId;
         EnumWindowsProc callback = (window, _) =>
         {
             if (!IsWindowVisible(window) || GetAncestor(window, 3) != window
@@ -27,7 +26,7 @@ public static partial class DesktopWindowNames
             var buffer = new char[length + 1];
             string title = new(buffer, 0, Math.Max(0, GetWindowTextW(window, buffer, buffer.Length)));
             WindowThreadProcessId(window, out uint owner);
-            if (owner == 0 || owner == self)
+            if (owner == 0)
                 return true;
             string process;
             try
@@ -40,6 +39,9 @@ public static partial class DesktopWindowNames
                 return true;
             }
 
+            // Renew al máximo (B-CU-2): BAXY's chat is Baxy.exe's window, not this process's.
+            if (WindowsWindowControlProvider.OwnProcessNames.Contains(process))
+                return true;
             windows.Add((process, IsIconic(window) ? title + " (minimizada)" : title));
             return true;
         };

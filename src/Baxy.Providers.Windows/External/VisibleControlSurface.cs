@@ -254,19 +254,61 @@ internal static partial class VisibleControlSurface
         // the topmost window that is not BAXY: when the foreground is ours or
         // has no usable surface, take that window (an act by coordinates brings
         // it up in its burst, because the click lands on whatever is on top).
-        _ = GetWindowThreadProcessId(hwnd, out uint foregroundProcess);
         // The desktop itself (Progman / WorkerW, «Program Manager») and the
         // taskbar are never the surface a person acts on: when nothing owns the
         // foreground the act lands on the topmost application window.
-        if (foregroundProcess == unchecked((uint)Environment.ProcessId) || !HasUsableSurface(hwnd)
-            || IsShellSurface(hwnd))
+        return PersonsSurface(hwnd, ProcessOf, HasUsableSurface, IsShellSurface, TopDownRootWindows);
+    }
+
+    /// <summary>
+    /// The surface a person acts on with <paramref name="front"/> in front: that window, unless it is the product's own,
+    /// has no usable surface or is the shell's; then the topmost window below of another process with a usable surface
+    /// (<see cref="FirstForeignWindow"/>), else <paramref name="front"/> all the same. <paramref name="imageOf"/> reads a
+    /// process's executable (tests give it).
+    /// </summary>
+    internal static nint PersonsSurface(
+        nint front,
+        Func<nint, uint> processOf,
+        Func<nint, bool> usable,
+        Func<nint, bool> shell,
+        Func<IEnumerable<nint>> topDown,
+        Func<int, string?>? imageOf = null)
+    {
+        Func<uint, bool> product = ProductProcesses(imageOf);
+        if (!product(processOf(front)) && usable(front) && !shell(front))
+            return front;
+        nint candidate = FirstForeignWindow(topDown(), processOf, usable, product);
+        return candidate != 0 ? candidate : front;
+    }
+
+    // The first window, top of the Z order first, of a process that is not the product's with a usable surface; 0 when none.
+    internal static nint FirstForeignWindow(
+        IEnumerable<nint> topDown,
+        Func<nint, uint> processOf,
+        Func<nint, bool> usable,
+        Func<uint, bool> product)
+    {
+        foreach (nint window in topDown)
         {
-            nint candidate = TopmostForeignWindow();
-            if (candidate != 0)
-                hwnd = candidate;
+            uint owner = processOf(window);
+            if (owner != 0 && !product(owner) && usable(window))
+                return window;
         }
 
-        return hwnd;
+        return 0;
+    }
+
+    // Renew al máximo (B-CU-2): the product's own processes (Windows.WindowsWindowControlProvider.ProductProcess: BAXY's
+    // chat is Baxy.exe's, the Core shows no window), each read once per walk of the desktop.
+    internal static Func<uint, bool> ProductProcesses(Func<int, string?>? imageOf = null)
+    {
+        var known = new Dictionary<uint, bool>();
+        return process =>
+        {
+            if (!known.TryGetValue(process, out bool product))
+                known[process] = product = Windows.WindowsWindowControlProvider.ProductProcess(unchecked((int)process), imageOf);
+            return product;
+        };
     }
 
     /// <summary>
@@ -381,7 +423,7 @@ internal static partial class VisibleControlSurface
         nint byDescriptionAndTitle = 0;
         nint byDescription = 0;
         nint byTitle = 0;
-        uint self = unchecked((uint)Environment.ProcessId);
+        Func<uint, bool> product = ProductProcesses();
         var names = new Dictionary<uint, string>();
         var descriptions = new Dictionary<uint, string>();
         var described = new Dictionary<uint, bool>();
@@ -410,7 +452,7 @@ internal static partial class VisibleControlSurface
             if ((GetWindowLongPtrW(window, -20).ToInt64() & 0x80) != 0)
                 return true;
             GetWindowThreadProcessId(window, out uint owner);
-            if (owner == 0 || owner == self || !(HasUsableSurface(window) || (minimized && MinimizedDocumentWindow(window))))
+            if (owner == 0 || product(owner) || !(HasUsableSurface(window) || (minimized && MinimizedDocumentWindow(window))))
                 return true;
             if (accept is not null && !accept(unchecked((int)owner)))
                 return true;
@@ -484,7 +526,7 @@ internal static partial class VisibleControlSurface
                         StartedNoLaterThan,
                         process => (windowed ??= ProcessesOwningTopLevelWindows()).Contains(process),
                         shell ??= ShellProcess(),
-                        self);
+                        unchecked((uint)Environment.ProcessId));
                 described[owner] = descriptionNames;
             }
 
@@ -669,7 +711,7 @@ internal static partial class VisibleControlSurface
         // frame hosts (its process is not the frame's), nor a window of the
         // application's process family (v3 point 1: the content a WebView2 or
         // CEF child process draws over the application's own window).
-        if (coverOwner == owner || coverOwner == unchecked((uint)Environment.ProcessId)
+        if (coverOwner == owner || Windows.WindowsWindowControlProvider.ProductProcess(unchecked((int)coverOwner))
             || root == FamilyPeer(hwnd)
             || (IsVisibleFrame(hwnd) && FrameHosts(hwnd, hosted => hosted == coverOwner))
             || IsFamilyContent(hwnd, owner, root, coverOwner))
@@ -686,10 +728,6 @@ internal static partial class VisibleControlSurface
     {
         "Code", "Code - Insiders", "devenv", "WindowsTerminal", "OpenConsole", "powershell", "pwsh", "cmd", "conhost",
     };
-
-    // Estabilización U (revisión H2): BAXY's own window is never acted on, named or not: its view holds its own settings
-    // (the bypass switch and its question), which only the person changes.
-    private static readonly HashSet<string> OwnProcesses = new(StringComparer.OrdinalIgnoreCase) { "Baxy", "baxy-core" };
 
     // Incidente del 2026-10-15 (banco e2e de práctica p6, «abre la configuración de sonido»): BAXY abrió la
     // Configuración del sistema (msconfig), pulsó «Servicios», «Deshabilitar todos» y «Aceptar» sin pedir nada, y 256
@@ -731,7 +769,9 @@ internal static partial class VisibleControlSurface
         string process = (processName ?? string.Empty).Trim();
         if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
             process = process[..^4];
-        if (OwnProcesses.Contains(process) || SystemToolProcesses.Contains(process))
+        // Estabilización U (revisión H2): BAXY's own window is never acted on, named or not: its view holds its own
+        // settings (the bypass switch and its question), which only the person changes.
+        if (Windows.WindowsWindowControlProvider.OwnProcessNames.Contains(process) || SystemToolProcesses.Contains(process))
             return true;
         if (!ProtectedProcesses.Contains(process))
             return false;
@@ -1994,25 +2034,22 @@ internal static partial class VisibleControlSurface
     // EnumWindows walks top-level windows from the top of the Z order down:
     // the first visible, titled, uncloaked, non-tool window of another
     // process with a real surface is what the person sees in front.
-    private static nint TopmostForeignWindow()
+    private static nint TopmostForeignWindow() =>
+        FirstForeignWindow(TopDownRootWindows(), ProcessOf, HasUsableSurface, ProductProcesses());
+
+    // The visible root windows that are no tool windows, top of the Z order first.
+    private static List<nint> TopDownRootWindows()
     {
-        nint found = 0;
-        uint self = unchecked((uint)Environment.ProcessId);
+        var found = new List<nint>();
         EnumWindowsProc callback = (window, _) =>
         {
-            if (!IsWindowVisible(window) || GetAncestor(window, 3) != window)
-                return true;
-            if ((GetWindowLongPtrW(window, -20).ToInt64() & 0x80) != 0)
-                return true;
-            GetWindowThreadProcessId(window, out uint owner);
-            if (owner == 0 || owner == self)
-                return true;
-            if (!HasUsableSurface(window))
-                return true;
-            found = window;
-            return false;
+            if (IsWindowVisible(window) && GetAncestor(window, 3) == window
+                && (GetWindowLongPtrW(window, -20).ToInt64() & 0x80) == 0)
+                found.Add(window);
+            return true;
         };
         _ = EnumWindows(callback, nint.Zero);
+        GC.KeepAlive(callback);
         return found;
     }
 
