@@ -44,6 +44,9 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C11): a click whose label no control has lists the collapsed entries of the last look.</summary>
     public const string CollapsedNext = "collapsed_next";
 
+    /// <summary>Renew al máximo (6.3): a failed app.open says whether its launch was issued and where to look next.</summary>
+    public const string OpenRecovery = "open_recovery";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
