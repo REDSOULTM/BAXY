@@ -4107,6 +4107,105 @@ public sealed class ExternalAdaptersTests
         }
     }
 
+    // Renew al máximo (6.7): yt-dlp's 45 s, the IPC's 15 s and the ~30 s check, repeated by the retry, passed the App's
+    // wait for the core. One budget covers the act: spent before anything played, the browser gets its try.
+    [Test]
+    public async Task ABudgetSpentBeforeThePlayerStartedIsAFailureBeforeTheEffect()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.exe");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "fixture");
+        bool started = false;
+        // A resolver that answers, but only after the budget.
+        using var adapter = new YouTubeMpvAdapter(
+            mpv, ytDlp, nodePath: null,
+            async (_, cancellationToken) =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
+                return new Uri("https://rr1.googlevideo.com/videoplayback");
+            })
+        {
+            PlaybackBudget = TimeSpan.FromMilliseconds(300),
+            StartPlayer = _ =>
+            {
+                started = true;
+                return null;
+            },
+        };
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_stream_not_resolved"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(started, Is.False);
+            Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(2)));
+        });
+    }
+
+    // Renew al máximo (6.7): past the boundary, the budget ends the check (and no retry starts) with the honest failure
+    // whose effect may have occurred; with the time left too short for a retry it is not started; with time it is.
+    [TestCase(2_000, false, 1)]
+    [TestCase(3_000, true, 1)]
+    [TestCase(60_000, true, 2)]
+    public async Task TheRetryRunsOnlyWithinTheBudget(int budgetMilliseconds, bool playerExits, int expectedStarts)
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.cmd");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        // A resolver that prints a title and a stream at once.
+        await File.WriteAllTextAsync(ytDlp, "@echo Gatos\r\n@echo https://rr1.googlevideo.com/videoplayback\r\n");
+        using var stopPlayers = new CancellationTokenSource();
+        var players = new List<Task>();
+        int starts = 0;
+        using var adapter = new YouTubeMpvAdapter(mpv, ytDlp, nodePath: null)
+        {
+            PlaybackBudget = TimeSpan.FromMilliseconds(budgetMilliseconds),
+            // A player whose IPC answers and never plays, alive (a hidden process) or gone at once.
+            StartPlayer = start =>
+            {
+                starts++;
+                string pipe = start.ArgumentList.Single(argument => argument.StartsWith("--input-ipc-server=", StringComparison.Ordinal))
+                    .Split('\\').Last();
+                players.Add(ServePausedPlayerAsync(pipe, stopPlayers.Token));
+                return Process.Start(new ProcessStartInfo("cmd", playerExits ? "/c exit" : "/c ping -n 30 127.0.0.1")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                });
+            },
+        };
+        var clock = Stopwatch.StartNew();
+
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await adapter.InvokeAsync(
+                "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            await stopPlayers.CancelAsync();
+            await Task.WhenAll(players);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(starts, Is.EqualTo(expectedStarts));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            if (budgetMilliseconds < 60_000)
+                Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromMilliseconds(budgetMilliseconds) + TimeSpan.FromSeconds(3)));
+        });
+    }
+
     // BAXY Renew (notebook): the pause command reached the player and its answer could not be read; the request
     // may have paused it, so the dispatch stops there and no other player gets pressed.
     [Test]

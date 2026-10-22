@@ -49,6 +49,16 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
 
     internal TimeSpan PlayerConnectTimeout { get; init; } = TimeSpan.FromSeconds(15);
 
+    // Renew al máximo (6.7): one budget for the whole act (resolution, player, check and retry). yt-dlp's 45 s, the
+    // IPC's 15 s and the ~30 s check, repeated by the retry, outlasted the App's wait for the core (20 + 70 s), which
+    // then dropped it; 60 s keeps the act inside it with time for the browser, the next adapter, to try. A test
+    // shortens it.
+    internal TimeSpan PlaybackBudget { get; init; } = TimeSpan.FromSeconds(60);
+
+    // Renew al máximo (6.7): the retry starts only with this much of the budget left; a fresh resolution and the first
+    // half second of progress take about that, and with less it would only be cut before it could verify.
+    private static readonly TimeSpan MinimumLeftForRetry = TimeSpan.FromSeconds(20);
+
     // Renew al máximo (B-APP-1): whether a system media session plays now; a test gives its own answer.
     internal Func<CancellationToken, ValueTask<bool>> SystemSessionPlays { get; init; } = SystemSessionPlaysAsync;
 
@@ -83,42 +93,58 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             return ExternalJson.Failure(operation, "youtube_query_invalid");
 
         var effectBoundary = new ExternalEffectBoundary();
-        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        budget.CancelAfter(PlaybackBudget);
+        var spent = Stopwatch.StartNew();
+        try
+        {
+            await _gate.WaitAsync(budget.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // Renew al máximo (6.7): the budget spent waiting for another playback: nothing was resolved or played.
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_stream_not_resolved");
+        }
         try
         {
             Uri? stream;
             string? title = null;
             if (_streamResolver is null)
-                (stream, title) = await ResolveStreamAsync(query, cancellationToken).ConfigureAwait(false);
+                (stream, title) = await ResolveStreamAsync(query, budget.Token).ConfigureAwait(false);
             else
-                stream = await _streamResolver(query, cancellationToken).ConfigureAwait(false);
+                stream = await _streamResolver(query, budget.Token).ConfigureAwait(false);
             if (stream is null)
                 return ExternalJson.FailureBeforeEffect(
                     operation, "youtube_stream_not_resolved");
-            effectBoundary.Cross(cancellationToken);
+            effectBoundary.Cross(budget.Token);
             StopActivePlayer();
             ExternalCapabilityReceipt receipt = await StartAndVerifyAsync(
-                operation, query, title, stream, cancellationToken).ConfigureAwait(false);
-            if (!receipt.Verified && _streamResolver is null)
+                operation, query, title, stream, budget.Token).ConfigureAwait(false);
+            if (!receipt.Verified && _streamResolver is null && PlaybackBudget - spent.Elapsed >= MinimumLeftForRetry)
             {
                 // MUSIC1563: the same query that plays by hand stalled twice inside a
                 // tanda; a fresh resolution lands on another media server. One retry.
-                (Uri? again, string? againTitle) = await ResolveStreamAsync(query, cancellationToken)
+                (Uri? again, string? againTitle) = await ResolveStreamAsync(query, budget.Token)
                     .ConfigureAwait(false);
                 if (again is not null)
                 {
                     StopActivePlayer();
                     receipt = await StartAndVerifyAsync(
-                        operation, query, againTitle ?? title, again, cancellationToken).ConfigureAwait(false);
+                        operation, query, againTitle ?? title, again, budget.Token).ConfigureAwait(false);
                 }
             }
             return receipt;
         }
         // Renew al máximo (B-APP-2): past the boundary, the player's own IPC deadline is the local player's failure as
-        // much as the caller's cancel; it used to leave as an uncaught cancellation.
+        // much as the caller's cancel; it used to leave as an uncaught cancellation. (6.7) So is the budget's end.
         catch (OperationCanceledException) when (effectBoundary.WasCrossed)
         {
             return effectBoundary.Failure(operation, "youtube_local_player_failed");
+        }
+        // Renew al máximo (6.7): the budget spent before anything played is a stream not resolved: the browser tries.
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "youtube_stream_not_resolved");
         }
         catch (Exception exception) when (exception is IOException or JsonException
             or InvalidOperationException or TimeoutException)
