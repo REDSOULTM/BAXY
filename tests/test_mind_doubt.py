@@ -21,7 +21,8 @@ def test_a_call_is_as_sure_as_opening_it_times_its_name():
     assert doubt["p_call"] == 0.9
     assert doubt["p_name"] == 0.75
     assert doubt["confidence"] == round(0.9 * 0.75, 4)
-    assert doubt["rivals"][:2] == [("system", 0.75), ("app", 0.24)]
+    # Review 2026-10-22: the token chosen is not its own rival.
+    assert doubt["rivals"] == [("app", 0.24)]
 
 
 def test_a_rival_token_that_carries_the_equals_sign_still_counts_as_the_name():
@@ -29,7 +30,7 @@ def test_a_rival_token_that_carries_the_equals_sign_still_counts_as_the_name():
               token("=schedule", 0.6, [("=schedules", 0.4)]), token("_alarms", 1.0), token(">", 1.0)]
     doubt = read(reply(tokens))
     assert doubt["p_name"] == 0.6
-    assert doubt["rivals"][1] == ("=schedules", 0.4)
+    assert doubt["rivals"] == [("=schedules", 0.4)]
 
 
 def test_words_are_as_sure_as_not_opening_a_call():
@@ -41,3 +42,22 @@ def test_a_reply_without_logprobs_has_no_doubt():
     assert read({"choices": [{"message": {"content": "hola"}}]}) is None
     assert read(None) is None
     assert read(reply([])) is None
+
+
+def _call_reply(tokens):
+    return {"choices": [{"message": {"tool_calls": [{"function": {"name": "system_power"}}]},
+                         "logprobs": {"content": tokens}}]}
+
+
+def test_words_before_a_call_are_not_read_as_the_decision():
+    # Review 2026-10-22: «Claro,» before <tool_call> was read as words, 1 − p(call) at the first token.
+    tokens = [token("Claro", 0.7, [("<tool_call>", 0.3)]), token(",", 1.0), token("<tool_call>", 0.9),
+              token("\n", 1.0), token("<", 1.0), token("function", 1.0), token("=", 1.0),
+              token("system", 0.75, [("app", 0.24)]), token("_power", 1.0), token(">", 1.0)]
+    doubt = read(_call_reply(tokens))
+    assert doubt["p_call"] == 0.9 and doubt["p_name"] == 0.75
+    assert doubt["confidence"] == round(0.9 * 0.75, 4)
+
+
+def test_a_call_whose_opening_is_not_in_the_logprobs_has_no_doubt():
+    assert read(_call_reply([token("Claro", 0.7), token(",", 1.0)])) is None

@@ -101,12 +101,15 @@ class SystemOne:
         # The order of the options moves the answer («cierra el spotify»: close the app 0.52 listed second, 0.94 first;
         # 2026-10-21): asked in both orders, the probabilities averaged.
         totals: dict[str, float] = {}
-        for order in (list(options), list(reversed(options))):
-            answer = self._ask(text, history, {k: options[k] for k in order}, timeout)
-            if answer is None:
-                return None
-            for key, value in (answer.get("probabilities") or {}).items():
-                totals[key] = totals.get(key, 0.0) + float(value) / 2
+        try:
+            for order in (list(options), list(reversed(options))):
+                answer = self._ask(text, history, {k: options[k] for k in order}, timeout)
+                if answer is None:
+                    return None
+                for key, value in (answer.get("probabilities") or {}).items():
+                    totals[key] = totals.get(key, 0.0) + float(value) / 2
+        except Exception:  # noqa: BLE001 - review 2026-10-22: an answer not of its shape is no answer, never a failed turn
+            return None
         choice = max(totals, key=lambda key: totals[key]) if totals else None
         if choice not in options:
             return None
