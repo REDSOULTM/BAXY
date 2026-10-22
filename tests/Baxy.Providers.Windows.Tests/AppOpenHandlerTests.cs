@@ -480,7 +480,7 @@ public sealed class AppOpenHandlerTests
             new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RecordedPlace(opened),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
-            settle: (_, _, _) => { waited++; return 999; });
+            settle: (_, _, _) => { waited++; return ValueTask.FromResult(999L); });
 
         OperationOutcome outcome = await handler.ExecuteAsync(
             Invocation($$"""{"appId":"{{app}}","place":"{{place}}"}"""), CancellationToken.None);
@@ -491,6 +491,35 @@ public sealed class AppOpenHandlerTests
             Assert.That(opened, Has.Count.EqualTo(handed));
             Assert.That(waited, Is.EqualTo(handed - 1));
             Assert.That(outcome.Result!.Value.GetProperty("windowHandle").GetInt64(), Is.EqualTo(window));
+        });
+    }
+
+    // Al máximo, flujos: the wait for that window (up to 30 s) held a thread asleep inside app.open, under the engine's
+    // one execution at a time; it is awaited, and the opening answers once it settles.
+    [Test]
+    public async Task TheWaitForTheSignInWindowHoldsNoThread()
+    {
+        var opened = new List<string>();
+        var settled = new TaskCompletionSource<long>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var handler = new AppOpenHandler(
+            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", false),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+            new RecordedPlace(opened),
+            frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
+            settle: (_, _, _) => new ValueTask<long>(settled.Task));
+
+        ValueTask<OperationOutcome> opening = handler.ExecuteAsync(
+            Invocation("""{"appId":"Steam","place":"library"}"""), CancellationToken.None);
+        bool answeredBeforeTheWindowSettled = opening.IsCompleted;
+        settled.SetResult(999);
+        OperationOutcome outcome = await opening;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(answeredBeforeTheWindowSettled, Is.False);
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(opened, Has.Count.EqualTo(2));
+            Assert.That(outcome.Result!.Value.GetProperty("windowHandle").GetInt64(), Is.EqualTo(999));
         });
     }
 

@@ -8,7 +8,8 @@ namespace Baxy.Providers.Windows.Applications;
 /// sesión en Steam», then its window) shows first a window that goes away; a place handed to it then is lost. This waits
 /// until the window the opening verified is gone and a visible window with the application's own name (its window
 /// title, as the Start catalog names it) and the size of a main window (Steam's updater, titled «Steam» too, is a small
-/// box) has stayed for a moment, and gives that window; 0 when the budget ran out.
+/// box) has stayed for a moment, and gives that window; 0 when the budget ran out. Al máximo, flujos: it waits without
+/// holding a thread (it runs inside app.open, under the engine's one execution at a time).
 /// </summary>
 public static partial class ApplicationWindowSettle
 {
@@ -18,7 +19,8 @@ public static partial class ApplicationWindowSettle
     internal const int MainWidth = 600;
     internal const int MainHeight = 400;
 
-    public static long WaitSettled(long openedWindow, string applicationName, TimeSpan budget, CancellationToken cancellationToken)
+    public static async ValueTask<long> WaitSettledAsync(
+        long openedWindow, string applicationName, TimeSpan budget, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(applicationName))
             return 0;
@@ -33,7 +35,7 @@ public static partial class ApplicationWindowSettle
             if (named != 0 && named == seen)
                 return named;
             seen = named;
-            Thread.Sleep(Poll);
+            await Task.Delay(Poll, cancellationToken).ConfigureAwait(false);
         }
 
         return 0;
