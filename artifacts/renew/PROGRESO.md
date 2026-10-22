@@ -2903,3 +2903,6 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   ellos. Consecuencia: **`renew_v1\escenas\sealed.json` deja de ser un holdout limpio** (5 escenas vistas en parte); no
   se usa para ninguna decisión de este goal. El holdout del cierre es renew_v4, que nadie ha abierto (sha en metas.json).
   Se avisará al dueño en el informe.
+- 16:0x **tanda 1 depurada** (3.3, 1.4, 9.5) en decision2 S1 ×3: 229 / 232 / 229 (230,0) frente a 229,67, Δ +0,33, IC95
+  [−1,0; +1,67]: no cambia decisiones. Fusionada (9d6ea550a); su ganancia (RAM con 3.3, relecturas con 1.4, ms por
+  continuación con 9.5) la mide el NB en sesión larga; si no gana, se revierte.
