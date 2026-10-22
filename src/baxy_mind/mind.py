@@ -1243,6 +1243,14 @@ class Mind:
             return self._next(request_id, stage, turn, final=True)
         if content:
             conv.append({"role": "assistant", "content": content})
+            if not streams and self.foresee is not None and not turn.get("beat"):
+                # Al máximo V2 (2026-10-22): words that came whole, not streamed (the decision whose doubt is read),
+                # never reached the voice's look-ahead (first sound p50 966 ms, p90 2,388): their first sentence is
+                # synthesized now, while the App publishes them; it still sounds only when the App asks (voice.speak).
+                try:
+                    self.foresee(content, True)
+                except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
+                    pass
         return self._result(request_id, turn, None, reply, stage, started, content)
 
     @staticmethod

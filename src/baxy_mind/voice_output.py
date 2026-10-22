@@ -10,8 +10,9 @@ engine's level varies with the sentence.
 
 An answer sounds sentence by sentence: the first plays as soon as it is synthesized and the next is synthesized while
 it sounds; a loaded voice starts synthesizing an answer the moment it is given, while what is ahead of it still sounds.
-An answer is even seen as the model writes it (foresee, al máximo 9.4): its first sentence is synthesized then and
-kept, and the answer given later uses that take; a call written after it drops the take; nothing sounds before the App
+An answer is even seen as the model writes it (foresee, al máximo 9.4), or as soon as it is in when it came whole (the
+decision whose doubt is read, al máximo V2): its first sentence is synthesized then and kept, and the answer given later
+uses that take; a call written after it drops the take; nothing sounds before the App
 publishes the answer.
 The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote at warm-up, which the mind
 gives the voice with its catalog.ready (set_notice; al máximo 9.2a: it was «Un momento.», fixed in the code). It is

@@ -102,3 +102,37 @@ def test_the_rivals_of_a_doubted_decision_share_one_rendered_prompt(tmp_path: Pa
         for path, body in calls[1:])
     assert list(one.asked[0]["options"]) == ["window_resolve", "app_close", "file_read", "web_search", "ask_user",
                                              "responder_con_palabras"]
+
+
+# --- V2: an answer that comes straight from the decision is synthesized before the App has it --------------------------
+
+def test_an_answer_straight_from_the_decision_is_synthesized_before_the_turn_returns_and_sounds_only_when_asked(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # turn.decide is not streamed (its doubt reads every token's probabilities), so foresee never ran for its words:
+    # first sound p50 966 ms, p90 2,388. Now its first sentence is synthesized as soon as the reply is in.
+    from test_maximo_stream import FIRST, REST, _until, _voice
+    synthesized: list[str] = []
+    played: list[str] = []
+    speech = _voice(tmp_path, monkeypatch, synthesized, played)
+    mind, server = _mind(tmp_path, [_say(FIRST + REST)])
+    told: list[tuple] = []
+    mind.foresee = lambda text, done: told.append((text, done)) or speech.foresee(text, done)
+    result = mind.decide(1, "¿está spotify abierto?")
+    assert "logprobs" in server.bodies[0]  # not streamed: the doubt is read
+    assert told == [(result["reply"], True)]  # given to the voice before the turn's result went back
+    _until(lambda: synthesized)
+    assert synthesized == [FIRST.strip()] and played == []  # nothing sounds before the App publishes it
+    assert speech.speak(result["reply"])  # the App's voice.speak, after publishing
+    _until(lambda: len(played) == 2)
+    assert played == [FIRST.strip(), REST] and synthesized == [FIRST.strip(), REST]  # the take was reused
+
+
+def test_a_call_or_a_heartbeat_is_never_foreseen(tmp_path: Path) -> None:
+    from test_mind_final import _call
+    told: list[tuple] = []
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Spotify"}), _say(""), _say(""), _say("")])
+    server.chat = (lambda chat: lambda body, on_text=None: chat(body))(server.chat)  # type: ignore[method-assign]
+    mind.foresee = lambda text, done: told.append((text, done)) or True
+    assert mind.decide(1, "abre spotify")["kind"] == "action"
+    mind.beat(2, {"activity": "idle"})
+    assert told == []
