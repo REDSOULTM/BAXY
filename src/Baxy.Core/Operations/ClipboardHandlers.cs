@@ -106,7 +106,9 @@ internal sealed class ClipboardWriteTextHandler(IClipboardProvider provider)
             return OperationOutcome.Failure(exception.Code, effectMayHaveOccurred: true);
         }
 
-        if (!string.Equals(observed.Text, arguments.Text, StringComparison.Ordinal))
+        // Revisión 2026-10-22 (C-6): the read-back is bounded by the written text's length, so a longer text the
+        // clipboard holds comes back cut to it (truncated); it is not the text written.
+        if (observed.Truncated || !string.Equals(observed.Text, arguments.Text, StringComparison.Ordinal))
         {
             return OperationOutcome.Failure(
                 "verification_failed",
