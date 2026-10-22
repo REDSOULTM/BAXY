@@ -760,6 +760,18 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
+    /// K-2 refinada: a window where Enter may run what was typed: a terminal, a console, or an editor or IDE that hosts
+    /// one (the protected processes above, by the same exact names).
+    /// </summary>
+    internal static bool RunsWhatIsTyped(string? processName)
+    {
+        string process = (processName ?? string.Empty).Trim();
+        if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            process = process[..^4];
+        return ProtectedProcesses.Contains(process);
+    }
+
+    /// <summary>
     /// A developer's or BAXY's own process that the request did not name: <paramref name="application"/> is neither
     /// its process name nor its executable's <paramref name="description"/>, folded. BAXY's own and the system's
     /// configuration tools (<see cref="SystemTool"/>) are always protected.

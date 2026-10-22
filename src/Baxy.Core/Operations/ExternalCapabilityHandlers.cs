@@ -118,14 +118,86 @@ internal static class ExternalCapabilityHandlers
         "wifi.status",
     ];
 
-    public static IOperationHandler[] Create(IExternalCapabilityProvider provider, string? dataRoot = null) =>
+    /// <param name="keyWindows">The window a key press lands on (K-2 refinada); null (the test seams) reads none, and
+    /// every Enter or space that declares neither target nor onto keeps asking in normal mode.</param>
+    public static IOperationHandler[] Create(
+        IExternalCapabilityProvider provider,
+        string? dataRoot = null,
+        IKeyWindowReader? keyWindows = null) =>
         Operations.Select(operation =>
         {
-            IOperationHandler handler = new ExternalCapabilityHandler(operation, provider);
-            return operation == BaxySettingHandler.Operation
-                ? new BaxySettingHandler(handler, dataRoot)
-                : handler;
+            var external = new ExternalCapabilityHandler(operation, provider);
+            return operation switch
+            {
+                BaxySettingHandler.Operation => new BaxySettingHandler(external, dataRoot),
+                KeyPressHandler.Operation when keyWindows is not null => new KeyPressHandler(external, keyWindows),
+                _ => (IOperationHandler)external,
+            };
         }).ToArray();
+}
+
+/// <summary>
+/// Al máximo, K-2 refinada (2026-10-22): Enter or space that declares neither where the keyboard is (target) nor what it
+/// lands on (onto) asks in normal mode (RiskPolicy.PressesUndeclared), because message.draft leaves a message written in
+/// a chat and that Enter would send it. Asking for every such Enter also asked for each one in a search box or an
+/// address bar. Before the person is asked, this preflight reads the window the key would reach (the window argument,
+/// or the one the provider sends a key with no window to): neither a messaging client nor a console lowers the press
+/// to a reversible act and it goes without asking; one that is, or one that cannot be read, keeps the question. The
+/// windows are told by the providers' data (<see cref="IKeyWindowReader"/>).
+/// </summary>
+internal sealed class KeyPressHandler(ExternalCapabilityHandler keys, IKeyWindowReader windows)
+    : IOperationHandler, IInvocationPreflight
+{
+    internal const string Operation = "input.key.press";
+
+    public OperationDefinition Definition => keys.Definition;
+
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        InvocationPreflightResult found = await keys.PreflightAsync(arguments, cancellationToken).ConfigureAwait(false);
+        if (found.Failure is not null
+            || !RiskPolicy.PressesUndeclared(Operation, arguments)
+            || !TryWindow(arguments, out long? window))
+        {
+            return found;
+        }
+
+        KeyWindowKind kind;
+        try
+        {
+            kind = windows.KindOf(window);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return found;
+        }
+
+        return kind == KeyWindowKind.Ordinary ? InvocationPreflightResult.Lowered(OperationRisk.Reversible) : found;
+    }
+
+    public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken) =>
+        keys.ExecuteAsync(invocation, cancellationToken);
+
+    // No window (absent or null): the key goes where the provider sends it. A positive whole number: that window.
+    // Anything else cannot be placed.
+    private static bool TryWindow(JsonElement arguments, out long? window)
+    {
+        window = null;
+        if (!arguments.TryGetProperty("window", out JsonElement named) || named.ValueKind == JsonValueKind.Null)
+        {
+            return true;
+        }
+
+        if (named.ValueKind == JsonValueKind.Number && named.TryGetInt64(out long handle) && handle > 0)
+        {
+            window = handle;
+            return true;
+        }
+
+        return false;
+    }
 }
 
 /// <summary>

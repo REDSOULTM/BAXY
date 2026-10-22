@@ -125,7 +125,7 @@ public sealed class MissionEngine : IDisposable
                 }
                 else if (found.Risk is { } risk)
                 {
-                    policy = Evaluate(handler, risk, request.Arguments);
+                    policy = Evaluate(handler, risk, request.Arguments, landingRead: true);
                 }
             }
 
@@ -288,14 +288,20 @@ public sealed class MissionEngine : IDisposable
         return response;
     }
 
-    private PolicyDecision Evaluate(IOperationHandler handler, OperationRisk risk, JsonElement arguments) =>
+    // K-2 refinada: a risk the preflight lowered read where the invocation lands (landingRead).
+    private PolicyDecision Evaluate(
+        IOperationHandler handler,
+        OperationRisk risk,
+        JsonElement arguments,
+        bool landingRead = false) =>
         RiskPolicy.Evaluate(
             risk,
             _confirmationMode(),
             handler.Definition.Name,
             // Computer use (CONTRATO_VISTA_ACCION.md §2.1): the step's
             // exact arguments decide whether it reaches a person.
-            arguments);
+            arguments,
+            landingRead);
 
     // v3 r6 lectores: what the handler reads of the exact invocation. A handler that fails to answer keeps the declared
     // risk, and only a terminal failure with nothing done is taken as the invocation's end (never a success, a retry or

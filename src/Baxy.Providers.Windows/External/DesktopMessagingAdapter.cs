@@ -1866,11 +1866,19 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return File.Exists(fallback) ? fallback : null;
     }
 
+    // The processes whose main window is each channel's client (message.draft, message.send): read by FindWindow and
+    // by the key press's preflight (KeyWindowReader, K-2 refinada), where Enter may send what was left written.
+    private static readonly string[] WhatsAppProcesses = ["WhatsApp.Root"];
+    private static readonly string[] DiscordProcesses = ["Discord"];
+
+    /// <summary>The process names of every messaging client message.draft and message.send write into.</summary>
+    internal static IReadOnlyList<string> ClientProcessNames { get; } = [.. WhatsAppProcesses, .. DiscordProcesses];
+
     private static (nint Handle, int ProcessId) FindWindow(string channel)
     {
         string[] processNames = string.Equals(channel, "whatsapp", StringComparison.Ordinal)
-            ? ["WhatsApp.Root"]
-            : ["Discord"];
+            ? WhatsAppProcesses
+            : DiscordProcesses;
         foreach (string processName in processNames)
         {
             Process[] processes = Process.GetProcessesByName(processName);
