@@ -339,6 +339,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 EffectMayHaveOccurred: action == WindowControlAction.Focus && before.State == "minimized");
         }
 
+        bool restoredAgain = false;
         for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -346,6 +347,15 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             try
             {
                 after = _platform.Observe(before.Identity);
+                // Renew al máximo (auditoría de flujos): a window minimized from maximized comes back maximized from its
+                // first restore (WPF_RESTORETOMAXIMIZED); the restore is asked once more for its normal size.
+                if (action == WindowControlAction.Restore && !restoredAgain && before.State == "minimized"
+                    && after.State == "maximized")
+                {
+                    restoredAgain = true;
+                    _ = _platform.Execute(before.Identity, WindowControlAction.Restore);
+                    after = _platform.Observe(before.Identity);
+                }
             }
             catch (Exception exception) when (exception is Win32Exception
                 or InvalidOperationException
@@ -776,6 +786,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             restored = true;
             await _platform.DelayAsync(VerificationDelay, cancellationToken)
                 .ConfigureAwait(false);
+            // Renew al máximo (auditoría de flujos): one minimized from maximized came back maximized; restored once more.
+            if (before.State == "minimized" && _platform.Observe(before.Identity).State == "maximized")
+            {
+                _ = _platform.Execute(before.Identity, WindowControlAction.Restore);
+                await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         int half = workArea.Width / 2;
