@@ -703,6 +703,58 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Al máximo, flujos (P263, 26 of 27 runs: «crea la carpeta Proyectos en Documentos» → relativePath
+    // «Documentos/Proyectos» with no folder, made in BAXY's working folder): a first part that names one of the person's
+    // known folders the catalog's folder takes, in Spanish or English, is that folder, where Windows really keeps it
+    // (OneDrive's included), and the receipt's full path says so. A folder the catalog does not take («Imágenes») is
+    // only told beside the working folder, by its physical place, never by a «home\Imágenes» that does not exist.
+    [Test]
+    public async Task AFirstPartNamingAKnownFolderIsThatFolderWhereWindowsKeepsIt()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        string home = Path.Combine(temporary.Path, "home");
+        string documents = Path.Combine(temporary.Path, "OneDrive", "Documentos");
+        string pictures = Path.Combine(home, "Pictures");
+        string desktop = Path.Combine(temporary.Path, "OneDrive", "Escritorio");
+        foreach (string folder in new[] { home, documents, pictures, desktop })
+            Directory.CreateDirectory(folder);
+        var provider = new LocalFilesystemProvider(sandbox, bin)
+        {
+            KnownFolderPath = folder => folder switch
+            {
+                "home" => home,
+                "documents" => documents,
+                "pictures" => pictures,
+                "desktop" => desktop,
+                _ => Path.Combine(temporary.Path, "absent", folder),
+            },
+        };
+
+        FilesystemMutationResult made = provider.CreateDirectory("Documentos/Proyectos", null);
+        FilesystemMutationResult english = provider.WriteText(@"documents\Proyectos\notas.txt", "uno", null);
+        FilesystemMutationResult accented = provider.WriteText("ESCRITORIO/lista.txt", "dos", null);
+        JsonElement told = await WriteMessage(provider, """{"relativePath":"Imágenes/foto.txt","text":"tres"}""");
+        FilesystemMutationResult named = provider.WriteText("Documentos/nota.txt", "cuatro", null, "home");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(made.FullPath, Is.EqualTo(Path.Combine(documents, "Proyectos")));
+            Assert.That(Directory.Exists(Path.Combine(documents, "Proyectos")), Is.True);
+            Assert.That(english.FullPath, Is.EqualTo(Path.Combine(documents, "Proyectos", "notas.txt")));
+            Assert.That(english.InWorkFolder, Is.False);
+            Assert.That(accented.FullPath, Is.EqualTo(Path.Combine(desktop, "lista.txt")));
+            Assert.That(Directory.Exists(Path.Combine(sandbox, "Documentos")), Is.False);
+            Assert.That(Directory.Exists(Path.Combine(sandbox, "documents")), Is.False);
+            // Imágenes is not a folder the catalog takes: the working folder, with the person's Pictures told beside it.
+            Assert.That(told.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
+            Assert.That(told.GetProperty("sameNameInHome").GetString(), Is.EqualTo(pictures));
+            // A folder named in the call is that folder, as before.
+            Assert.That(named.FullPath, Is.EqualTo(Path.Combine(home, "Documentos", "nota.txt")));
+        });
+    }
+
     // With the aid off (BAXY_AYUDAS=none) the receipt is the one of the starting product: the full path, no folder.
     [Test]
     public async Task AWriteWithNoFolderWithTheAidOffGivesOnlyTheFullPath()
