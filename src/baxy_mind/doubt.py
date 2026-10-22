@@ -7,10 +7,13 @@ there; on decision2, AUROC 0.818. Only read and traced here: nothing decides on 
 from __future__ import annotations
 
 import math
+import re
 from typing import Any
 
 CALL = "<tool_call>"
 NAME_OPEN = "<function="
+PARAMETER = re.compile(r"<parameter=([^>]+)>")
+PARAMETER_CLOSE = "</parameter>"
 
 
 def _p(logprob: float | None) -> float:
@@ -19,8 +22,8 @@ def _p(logprob: float | None) -> float:
 
 def read(reply: dict[str, Any] | None) -> dict[str, Any] | None:
     """Confidence of the decision in a chat reply with `logprobs`: for a call, p(open a call) × p(this tool's name); for
-    words, 1 − p(open a call). Also the weakest name token's rivals (what else the model nearly called). None without
-    logprobs."""
+    words, 1 − p(open a call). Also the weakest name token's rivals (what else the model nearly called) and, by argument,
+    the probability of its value's least sure token (values). None without logprobs."""
     try:
         content = (reply or {})["choices"][0]["logprobs"]["content"]
     except (KeyError, IndexError, TypeError):
@@ -51,5 +54,15 @@ def read(reply: dict[str, Any] | None) -> dict[str, Any] | None:
     # The token chosen is not its own rival (review 2026-10-22: it was the first, completed again for nothing).
     rivals = ([(a["token"], round(_p(a.get("logprob")), 3)) for a in content[weakest].get("top_logprobs") or []
                if a["token"] != content[weakest].get("token")][:4] if weakest is not None else [])
+    values = {}
+    for parameter in PARAMETER.finditer(text, name_to):
+        end = text.find(PARAMETER_CLOSE, parameter.end())
+        value = text[parameter.end():len(text) if end < 0 else end]
+        begin = parameter.end() + len(value) - len(value.lstrip())
+        finish = begin + len(value.strip())
+        shown = [_p(t.get("logprob")) for t, s in zip(content, starts)
+                 if s < finish and s + len(t.get("token", "")) > begin and t.get("token", "").strip()]
+        if shown:
+            values[parameter.group(1).strip()] = round(min(shown), 4)
     return {"confidence": round(p_call * p_name, 4), "p_call": round(p_call, 4), "p_name": round(p_name, 4),
-            "rivals": rivals, "written": text[:starts[weakest]] if weakest is not None else ""}
+            "rivals": rivals, "written": text[:starts[weakest]] if weakest is not None else "", "values": values}

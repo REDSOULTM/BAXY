@@ -208,3 +208,31 @@ def test_the_answer_to_a_doubt_question_goes_to_layer_2(tmp_path, monkeypatch) -
     assert mind.decide(2, "eso")["operation"] is None
     assert len(one.asked) == 1  # the answer: the decision model reads it, and it asks (with its other option)
     assert "app_close" in server.bodies[-1]["messages"][-1]["content"]
+
+
+def _search(query: str, p_value: float) -> dict:
+    reply = _call("web_search", {"query": query, "engine": "web"}, 0.99)
+    reply["choices"][0]["logprobs"]["content"] += [
+        _token("\n", 1.0), _token("<parameter=query>", 1.0), _token("\n", 1.0), _token(query, p_value),
+        _token("\n", 1.0), _token("</parameter>", 1.0), _token("<parameter=engine>", 1.0), _token("web", 0.1),
+        _token("</parameter>", 1.0)]
+    return reply
+
+
+@pytest.mark.parametrize("text, doubted", [("busca cómo se hacen las lentejas", True),
+                                            ("busca receta de lentejas", False)])
+def test_the_trace_says_how_sure_the_model_was_of_a_free_text_value_the_person_did_not_say(
+        tmp_path, monkeypatch, text, doubted) -> None:
+    # Al máximo 4.5, only traced (the runs do not show it would hold under 2 % of the right actions): a free-text
+    # value not in the person's words nor in a result; an enum (engine) or a value they said is not doubted.
+    monkeypatch.setenv("BAXY_S1_DOUBT", "")
+    mind, _ = _mind(tmp_path, [_search("receta de lentejas", 0.3)])
+    mind.wire_to_op["web_search"] = "web.search"
+    mind.tools = [{"type": "function", "function": {"name": "web_search", "description": "Search the web.",
+                                                    "parameters": {"type": "object", "properties": {
+                                                        "query": {"type": "string"},
+                                                        "engine": {"type": "string", "enum": ["web", "news"]}}}}}]
+    assert mind.decide(1, text)["operation"] == "web.search"
+    row = json.loads((tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert row.get("arg_doubt") == ({"argument": "query", "p": 0.3} if doubted else None)
+    assert "values" not in row["doubt"]

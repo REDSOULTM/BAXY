@@ -471,6 +471,7 @@ class Mind:
         self.trace = trace
         self.system_one = system_one  # layer 2: the decision model beside Qwen (None: off)
         self._judged: dict[str, Any] | None = None
+        self._arg_doubt: dict[str, Any] | None = None  # the decision's least sure free-text value (_value_doubt)
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
@@ -1060,6 +1061,7 @@ class Mind:
         doubt = read_doubt(reply)
         if doubt is None:
             return None
+        self._arg_doubt = self._value_doubt(call, doubt, body["messages"])
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering"):
             return DOUBT_NOTE.format(call=call["wire"])
         if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
@@ -1120,19 +1122,48 @@ class Mind:
         which no result had listed, and it ran; a web_download got a page of results as its url."""
         tool = next((t["function"] for t in self.tools if t["function"]["name"] == wire), {})
         required = (tool.get("parameters") or {}).get("required") or []
-        seen = _fold(" ".join(str(m.get("content") or "") for m in messages
-                              if m.get("role") == "tool" or (m.get("role") == "user"
-                                                             and not str(m.get("content") or "").startswith("["))))
+        seen = self._shown(messages)
         for name in required:
             value = arguments.get(name)
             if value is None or value == "":
                 return False
             if isinstance(value, bool) or not isinstance(value, (str, int, float)):
                 continue
-            text = _fold(str(int(value) if isinstance(value, float) and value.is_integer() else value))
-            if not text or not re.search(rf"(?<!\w){re.escape(text)}(?!\w)", seen):
+            if not self._appears(value, seen):
                 return False
         return True
+
+    def _value_doubt(self, call: dict[str, Any], doubt: dict[str, Any],
+                     messages: list[dict[str, Any]]) -> dict[str, Any] | None:
+        """Al máximo 4.5, only traced (arg_doubt): the least sure value of a free-text argument (a string with no enum or
+        const) that neither the person's words nor a result showed, as {argument, p}; None when there is none. Nothing
+        is held on it: the s1 runs kept only the least sure token of all a call's arguments, and among the right
+        operations with such a value it held, at 0.3, up to 4 of 256 right actions for up to 3 of 32 wrong arguments
+        (devmix, the only run that judges arguments) and up to 2.6 % (agentes) and 17 % (massive) of the right ones."""
+        tool = next((t["function"] for t in self.tools if t["function"]["name"] == call["wire"]), {})
+        properties = (tool.get("parameters") or {}).get("properties") or {}
+        seen = self._shown(messages)
+        free = [(p, name) for name, p in (doubt.get("values") or {}).items()
+                if isinstance(call["arguments"].get(name), str) and isinstance(properties.get(name), dict)
+                and properties[name].get("type", "string") == "string" and not {"enum", "const"} & set(properties[name])
+                and not self._appears(call["arguments"][name], seen)]
+        if not free:
+            return None
+        p, name = min(free)
+        return {"argument": name, "p": p}
+
+    @staticmethod
+    def _shown(messages: list[dict[str, Any]]) -> str:
+        """What the conversation showed, folded: the person's words and the tools' results, never an internal note."""
+        return _fold(" ".join(str(m.get("content") or "") for m in messages
+                              if m.get("role") == "tool" or (m.get("role") == "user"
+                                                             and not str(m.get("content") or "").startswith("["))))
+
+    @staticmethod
+    def _appears(value: str | int | float, seen: str) -> bool:
+        """Whether a value is in what the conversation showed (_shown), folded, as a whole word."""
+        text = _fold(str(int(value) if isinstance(value, float) and value.is_integer() else value))
+        return bool(text) and re.search(rf"(?<!\w){re.escape(text)}(?!\w)", seen) is not None
 
     def _candidates(self, chosen: str, doubt: dict[str, Any], body: dict[str, Any]) -> dict[str, str]:
         """The model's own candidates as the decision model's options (as in its training, build_kev_data.py): the tool it
@@ -1209,7 +1240,10 @@ class Mind:
         doubt = read_doubt(reply)
         if doubt is not None:
             doubt.pop("written", None)  # the call's own text up to its weakest token: only for reading the rivals
+            doubt.pop("values", None)  # by argument, read into arg_doubt
             row["doubt"] = doubt
+        if self._arg_doubt is not None and stage.startswith("turn."):
+            row["arg_doubt"], self._arg_doubt = self._arg_doubt, None
         if self._judged is not None and stage.startswith("turn."):
             # Only a turn's own row carries the decision model's answer: the voice thread logs here too (voice.speak).
             row["system_one"], self._judged = self._judged, None
