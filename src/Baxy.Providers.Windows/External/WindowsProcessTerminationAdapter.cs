@@ -3,7 +3,9 @@ using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
 
-internal sealed record WindowsProcessIdentity(int ProcessId, long StartTimeUtcTicks);
+// Renew al máximo (B-SYS-6): AccessDenied marks an instance whose start time Windows would not let BAXY read (a service
+// running as SYSTEM): its identity cannot be pinned, so it is never ended, only counted.
+internal sealed record WindowsProcessIdentity(int ProcessId, long StartTimeUtcTicks, bool AccessDenied = false);
 
 // What ending one observed process came to: this kill ended it, it had already exited on its own, or it is still
 // there (or its id now belongs to another process).
@@ -32,16 +34,36 @@ internal sealed class WindowsProcessTerminationPlatform : IWindowsProcessTermina
         Process[] processes = Process.GetProcessesByName(processName);
         try
         {
-            return processes
-                .Select(process => new WindowsProcessIdentity(
-                    process.Id, process.StartTime.ToUniversalTime().Ticks))
-                .OrderBy(identity => identity.ProcessId)
-                .ToArray();
+            return Identities(processes.Select(process => (process.Id, (Func<DateTime>)(() => process.StartTime))));
         }
         finally
         {
             foreach (Process process in processes) process.Dispose();
         }
+    }
+
+    // Renew al máximo (B-SYS-6): each instance is read on its own. One Windows will not let BAXY read (Win32Exception,
+    // a SYSTEM service) is kept as denied; one that exited while being read (InvalidOperationException) is gone and
+    // left out. Before, either ended the whole call before any of the person's own instances were tried.
+    internal static IReadOnlyList<WindowsProcessIdentity> Identities(
+        IEnumerable<(int ProcessId, Func<DateTime> StartTime)> processes)
+    {
+        var identities = new List<WindowsProcessIdentity>();
+        foreach ((int processId, Func<DateTime> startTime) in processes)
+        {
+            try
+            {
+                identities.Add(new WindowsProcessIdentity(processId, startTime().ToUniversalTime().Ticks));
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                identities.Add(new WindowsProcessIdentity(processId, 0, AccessDenied: true));
+            }
+            catch (InvalidOperationException)
+            {
+            }
+        }
+        return identities.OrderBy(identity => identity.ProcessId).ToArray();
     }
 
     // Only the named process is ended: the confirmation names one executable, so the processes it started (an
@@ -114,6 +136,13 @@ internal sealed class WindowsProcessTerminationAdapter : IExternalOperationAdapt
             foreach (WindowsProcessIdentity identity in before)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                // Renew al máximo (B-SYS-6): an instance whose identity could not be read is not ended: the kill could
+                // not be bound to it, and Windows refuses BAXY there anyway.
+                if (identity.AccessDenied)
+                {
+                    denied++;
+                    continue;
+                }
                 effectMayHaveOccurred = true;
                 switch (_platform.Terminate(processName, identity))
                 {
