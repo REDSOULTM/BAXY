@@ -96,12 +96,13 @@ public sealed class DisplayModeAdapterTests
         });
     }
 
-    // FT/proveedores goal (review of receipts): Windows answers DISP_CHANGE_RESTART and keeps showing the old mode: the
-    // new one was saved for the next sign-in, so the shown mode is saved back, and the receipt says nothing changed.
+    // FT/proveedores goal (review of receipts): Windows answers DISP_CHANGE_RESTART and keeps showing the old mode.
+    // Renew al máximo (B-SYS-5): the change is only dynamic, so nothing was saved for the next sign-in either, and the
+    // receipt says nothing changed.
     [Test]
-    public async Task AModeKeptForARestartIsSavedBackToTheShownOne()
+    public async Task AModeWindowsWouldOnlyShowAfterARestartIsNeitherShownNorSaved()
     {
-        var display = new FakeDisplay(Now, Modes) { AppliesNow = false, ApplyResults = new Queue<int>([1, 0]) };
+        var display = new FakeDisplay(Now, Modes) { AppliesNow = false, ApplyResults = new Queue<int>([1]) };
 
         ExternalCapabilityReceipt receipt = await Invoke(display, new { refreshHz = 60 });
 
@@ -110,8 +111,9 @@ public sealed class DisplayModeAdapterTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("display_mode_not_applied"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
-            Assert.That(display.Applied, Is.EqualTo(new[] { new DisplayModeValue(1920, 1080, 60, 32), Now }),
-                "the shown mode saved back");
+            Assert.That(display.Applied, Is.EqualTo(new[] { new DisplayModeValue(1920, 1080, 60, 32) }));
+            Assert.That(display.Saves, Is.Empty);
+            Assert.That(display.Saved("\\\\.\\DISPLAY1"), Is.EqualTo(Now));
         });
     }
 
@@ -161,6 +163,68 @@ public sealed class DisplayModeAdapterTests
             Assert.That(receipt.StateAlreadyReached, Is.True);
             Assert.That(receipt.Result?.GetProperty("changed").GetBoolean(), Is.False);
             Assert.That(display.Applied, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (B-SYS-5): the read-back is what the graphics card took, not what the monitor shows. A mode the
+    // monitor cannot show (a cable or adapter short of bandwidth) left the screen black, saved for every restart. The
+    // change is now shown only (a restart brings back the saved mode); asking for the mode again while it is shown is
+    // what saves it, and the saved mode is read back.
+    [Test]
+    public async Task AChangedModeIsShownButSavedOnlyWhenAskedAgainWhileShown()
+    {
+        var display = new FakeDisplay(Now, Modes);
+        var sixty = new DisplayModeValue(1920, 1080, 60, 32);
+
+        ExternalCapabilityReceipt shown = await Invoke(display, new { refreshHz = 60 });
+        DisplayModeValue? savedAfterChange = display.Saved("\\\\.\\DISPLAY1");
+        ExternalCapabilityReceipt kept = await Invoke(display, new { refreshHz = 60 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(savedAfterChange, Is.EqualTo(Now), "the change alone saves nothing");
+            Assert.That(shown.Verified, Is.True);
+            Assert.That(shown.Result?.GetProperty("changed").GetBoolean(), Is.True);
+            Assert.That(shown.Result?.GetProperty("savedForRestart").GetBoolean(), Is.False);
+            Assert.That(kept.Verified, Is.True);
+            Assert.That(kept.EffectObserved, Is.True);
+            Assert.That(kept.Result?.GetProperty("changed").GetBoolean(), Is.False);
+            Assert.That(kept.Result?.GetProperty("savedForRestart").GetBoolean(), Is.True);
+            Assert.That(display.Saves, Is.EqualTo(new[] { sixty }));
+            Assert.That(display.Saved("\\\\.\\DISPLAY1"), Is.EqualTo(sixty));
+        });
+    }
+
+    [Test]
+    public async Task AModeShownAndAlreadySavedIsNeitherAppliedNorSaved()
+    {
+        var display = new FakeDisplay(Now, Modes);
+
+        ExternalCapabilityReceipt receipt = await Invoke(display, new { refreshHz = 144 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(receipt.Result?.GetProperty("savedForRestart").GetBoolean(), Is.True);
+            Assert.That(display.Applied, Is.Empty);
+            Assert.That(display.Saves, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task ASaveWindowsRefusesLeavesTheShownModeAndSaysItWasNotSaved()
+    {
+        var display = new FakeDisplay(Now, Modes) { SaveResult = -1 };
+        await Invoke(display, new { refreshHz = 60 });
+
+        ExternalCapabilityReceipt receipt = await Invoke(display, new { refreshHz = 60 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("display_mode_not_saved"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(display.Saved("\\\\.\\DISPLAY1"), Is.EqualTo(Now));
         });
     }
 
@@ -219,6 +283,28 @@ public sealed class DisplayModeAdapterTests
             if (AppliesNow)
                 _current = Shows(mode);
             return ApplyResults.Count > 0 ? ApplyResults.Dequeue() : 0;
+        }
+
+        private DisplayModeValue _saved = current;
+        private readonly List<DisplayModeValue> _saves = [];
+
+        /// <summary>Every mode written to the registry (CDS_UPDATEREGISTRY), in order.</summary>
+        internal DisplayModeValue[] Saves => [.. _saves];
+
+        /// <summary>What Save returns (by default 0); a failed save writes nothing.</summary>
+        internal int SaveResult { get; init; }
+
+        public DisplayModeValue? Saved(string device) => _saved;
+
+        // CDS_UPDATEREGISTRY also changes the screen, as Apply does.
+        public int Save(string device, DisplayModeValue mode)
+        {
+            _saves.Add(mode);
+            int result = Apply(device, mode);
+            if (SaveResult != 0)
+                return SaveResult;
+            _saved = mode;
+            return result;
         }
     }
 }
