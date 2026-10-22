@@ -2859,3 +2859,10 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   dos frases, Python del runtime): hasta el audio de la primera frase, p50 — 10 pasos: juntas 1 595 ms / primera sola
   989 ms; 8 pasos: 1 164 / 764; 6 pasos: 946 / 646. Cambian cómo suena: van a una rama aparte con muestras y esperan el
   oído del dueño (su decisión).
+- 15:0x fusiones: fx-mente (ca9d75de0, 19 arreglos con prueba, pytest 166), nb-maximo con B-CU-1/B-CU-3 (78e475ee8) y
+  pareado.py (ee96ca1f9). Holdout v4 sellado (decisión 720 + escenas 90: 7z c2a3ed46…; e2e 72 + falsedades 36: 7z
+  0194015d…), copiado a D: con sha verificado; sellos en metas.json.
+- 15:1x decision2 S1 on sobre ca9d75de0 (tras los arreglos de la mente), semillas 0/1/2 (`BAXY_RENEW_SEED`): 227 / 231
+  / 231 (media 229,67; sin los 9: 219/223/223), acciones equivocadas 19/17/14, p50 0,95/0,97/0,89 s. Frente a la fusión
+  c1177101d (229): Δ +0,67, IC95 [−2,67; +4,0], McNemar p 0,625 (pareado.py): sin regresión. **Ruido entre semillas:
+  ±2.** Referencia nueva: 229,67 (3 semillas).
