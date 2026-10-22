@@ -87,6 +87,7 @@ def _layer2(tmp_path, monkeypatch, choice, replies):
     monkeypatch.setenv("BAXY_S1_DOUBT", "")
     monkeypatch.setenv("BAXY_S1_VETO", "0.6")
     mind, server = _mind(tmp_path, replies)
+    server.complete_name = lambda body, written: "_close"  # the rest of the rival «app»: app_close
     mind.tools = [{"type": "function", "function": {"name": n, "description": d + ". More.", "parameters": {}}}
                   for n, d in (("system_power", "Shut down the PC"), ("app_close", "Close an application"))]
     one = FakeSystemOne(choice)
