@@ -259,7 +259,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 .ConfigureAwait(false);
         }
 
-        string? appId = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
+        (string? appId, bool searchFailed) = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
+        if (searchFailed)
+            return ExternalJson.FailureBeforeEffect(operation, "steam_store_search_failed");
         if (appId is null)
             return ExternalJson.Failure(operation, "steam_title_not_resolved");
         // Encargo imp-steam: the account's library is not read here as a gate. Its local cache is incomplete (measured
@@ -518,13 +520,15 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    private async ValueTask<string?> ResolveTitleAsync(string title, CancellationToken cancellationToken)
+    // Renew al máximo (B-APP-5): a store search that got no answer is SearchFailed, never a title no game bears.
+    private async ValueTask<(string? AppId, bool SearchFailed)> ResolveTitleAsync(
+        string title, CancellationToken cancellationToken)
     {
         string folded = FoldTitle(title);
         string? installed = ResolveSnapshotTitle(folded);
         if (installed is not null || _storeTitles is null)
         {
-            return installed;
+            return (installed, false);
         }
 
         IReadOnlyList<SteamStoreTitle> found;
@@ -535,7 +539,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
             || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
-            return null;
+            return (null, true);
         }
 
         // Exactly one game of the store answer bears the title (folded): «Super Meat Boy» is not «Super Meat Boy Forever».
@@ -544,7 +548,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .Select(item => item.AppId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-        return matches.Length == 1 ? matches[0] : null;
+        return (matches.Length == 1 ? matches[0] : null, false);
     }
 
     /// <summary>
@@ -605,10 +609,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
         using HttpResponseMessage response = await StoreHttp.GetAsync(search.Address, cancellationToken)
             .ConfigureAwait(false);
-        if (!response.IsSuccessStatusCode)
-        {
-            return [];
-        }
+        // Renew al máximo (B-APP-5): an error status is a search that failed (HttpRequestException), not an empty answer.
+        response.EnsureSuccessStatusCode();
 
         await using Stream body = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         using JsonDocument document = await JsonDocument.ParseAsync(body, cancellationToken: cancellationToken)

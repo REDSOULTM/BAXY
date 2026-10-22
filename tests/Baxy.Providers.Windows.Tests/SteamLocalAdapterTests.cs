@@ -553,12 +553,11 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
-    // Counter-cases: an installed title never asks the store; a store answer with no game of exactly that title, two of
-    // them, or no answer at all resolves nothing and nothing is opened.
+    // Counter-cases: an installed title never asks the store; a store answer with no game of exactly that title, or two
+    // of them, resolves nothing and nothing is opened.
     [TestCase("Portal 2", true)]
     [TestCase("Super Meat", false)]
     [TestCase("Doubled", false)]
-    [TestCase("Offline", false)]
     public async Task OnlyOneExactTitleResolvesAndNothingElseIsOpened(string title, bool installed)
     {
         bool asked = false;
@@ -571,14 +570,12 @@ public sealed class SteamLocalAdapterTests
             storeTitles: (said, _) =>
             {
                 asked = true;
-                return said == "Offline"
-                    ? throw new HttpRequestException("simulated offline store")
-                    : ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(
-                    [
-                        new("40800", "Super Meat Boy"),
-                        new("11", "Doubled"),
-                        new("12", "DOUBLED"),
-                    ]);
+                return ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(
+                [
+                    new("40800", "Super Meat Boy"),
+                    new("11", "Doubled"),
+                    new("12", "DOUBLED"),
+                ]);
             });
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -623,6 +620,39 @@ public sealed class SteamLocalAdapterTests
                 Is.EqualTo(resolved ? "installed" : "title_not_resolved"));
             Assert.That(receipt.Result?.GetProperty("steamManifestsWithThatName").GetInt32(), Is.EqualTo(bearing));
             Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("steam_local_appmanifest"));
+        });
+    }
+
+    // Renew al máximo (B-APP-5): a store search that got no answer (offline, a timeout, an error status, a body not
+    // read) is said as such before any effect, never as a title no game bears.
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(2)]
+    public async Task AStoreSearchThatFailedIsNotAnUnresolvedTitle(int failure)
+    {
+        var automation = new FakeSteamAutomation(onDispatch: null);
+        var adapter = new SteamLocalAdapter(
+            () => Catalog,
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) => failure switch
+            {
+                0 => throw new HttpRequestException("simulated offline store"),
+                1 => throw new TaskCanceledException("simulated store timeout"),
+                _ => throw new JsonException("simulated cut answer"),
+            });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.named", Json("""{"title":"Super Meat Boy"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_store_search_failed"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(automation.DispatchCount, Is.Zero);
         });
     }
 
