@@ -2829,3 +2829,14 @@ guardián instantáneo, el modo accesible a «normal» tras cada caso):
   - ≤4 GB medidos con el producto final (3.902 / 1.790 MiB);
   - holdout nuevo corrido una vez y comparado con el del FT;
   - informe en artifacts/renew/ayudas/INFORME_AYUDAS.md.
+
+## Renew al máximo (PROMPT_MAXIMO_PC.md, 2026-10-22)
+
+Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líder (`renew-maximo`), notebook apoyo
+(`nb-maximo`, notas en `PROGRESO-nb.md`). Base `pc-system-one` 86991ca9d. Estado por tarea en `metas.json` → `maximo`.
+
+- 14:12 arranque. Rama `hub/renew-maximo` = 86991ca9d. Notebook vivo (buzón 14:11). Reparto fase A: PC áreas 1, 2, 4,
+  5, 8, 9, 13; notebook 3, 6, 7, 10, 11, 12. Catálogo fijo de la línea base: `F:\BAXYeval\renew_v4\catalog-base.json`
+  (copia en `D:`), md5 7fb060eb, el mismo de las corridas de System One.
+- 14:15 línea base PC en marcha (`F:\BAXYeval\renew_v4\base_pc.sh`): decision2 y escenas de práctica, S1 apagado
+  (`max-base-*-off`) y encendido (`max-base-*-on`), GGUF ft c2e1, temp 0,2. Siete subagentes de investigación lanzados.

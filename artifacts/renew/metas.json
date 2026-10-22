@@ -2408,5 +2408,73 @@
       "Latido: proponer donde debía actuar o decir, y callar avisos pedidos (decisión, no falta de un dato)"
     ],
     "cierre": "2026-10-20: lote final d7a76adf1 (hub/pc-ayudas, hub/baxy-renew) con las ayudas 1, 2, 3b, 1c y 8; informe en artifacts/renew/ayudas/INFORME_AYUDAS.md"
+  },
+  "maximo": {
+    "prompt": "PROMPT_MAXIMO_PC.md / PROMPT_MAXIMO_NOTEBOOK.md",
+    "base": "pc-system-one 86991ca9d",
+    "inicio": "2026-10-22 14:12",
+    "tareas": [
+      {
+        "id": "A-inv-pc",
+        "maquina": "PC",
+        "que": "investigación áreas 1,2,4,5,8,9,13 → PALANCAS-pc.md",
+        "estado": "en curso"
+      },
+      {
+        "id": "A-inv-nb",
+        "maquina": "NB",
+        "que": "investigación áreas 3,6,7,10,11,12 → PALANCAS-nb.md",
+        "estado": "en curso"
+      },
+      {
+        "id": "A-base-pc",
+        "maquina": "PC",
+        "que": "línea base decision2 + escenas, S1 on/off",
+        "estado": "en curso",
+        "evidencia": "F:/BAXYeval/renew_v1/runs/max-base-*"
+      },
+      {
+        "id": "A-base-nb",
+        "maquina": "NB",
+        "que": "línea base e2e + falsedades, S1 on/off; perfil 4 GB",
+        "estado": "en curso"
+      },
+      {
+        "id": "A-cruce",
+        "maquina": "ambas",
+        "que": "verificación cruzada de palancas >2 puntos",
+        "estado": "pendiente"
+      },
+      {
+        "id": "A-maximo",
+        "maquina": "PC",
+        "que": "MAXIMO.md consolidado",
+        "estado": "pendiente"
+      },
+      {
+        "id": "A-holdout",
+        "maquina": "PC",
+        "que": "holdout renew_v4 sellado por subagente aislado",
+        "estado": "pendiente"
+      },
+      {
+        "id": "B-revision",
+        "maquina": "ambas",
+        "que": "revisión completa y arreglos con prueba",
+        "estado": "pendiente"
+      },
+      {
+        "id": "B-palancas",
+        "maquina": "ambas",
+        "que": "palancas por tandas, medidas",
+        "estado": "pendiente"
+      },
+      {
+        "id": "C-cierre",
+        "maquina": "ambas",
+        "que": "suites, recursos, holdout x3, vivo, INFORME_MAXIMO.md",
+        "estado": "pendiente"
+      }
+    ]
   }
 }
