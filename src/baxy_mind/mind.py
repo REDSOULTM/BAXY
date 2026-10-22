@@ -1134,7 +1134,8 @@ class Mind:
         low_reversible. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
-        CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking and confirming are never held: they
+        CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
+        runs. Asking and confirming are never held: they
         already put the person in the loop."""
         if not self._doubted(stage, turn, final):
             return None
@@ -1160,6 +1161,11 @@ class Mind:
         if corrected is not None:
             self._judged["corrected"] = True
             return corrected
+        if self.risk.get(call["wire"]) == "low_reversible":
+            # Al máximo, System One 2: nor does layer 2 turn a low_reversible call into a question; it only corrects it.
+            # On the same 26 runs it asked instead of 11, all right without System One (P112 ×4, P124 ×6, P113 ×1);
+            # its corrections of them were 6 useful (P257) against 2 harmful.
+            return None
         other = OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
 

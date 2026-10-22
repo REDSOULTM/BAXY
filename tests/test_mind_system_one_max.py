@@ -75,15 +75,16 @@ def test_a_correction_with_a_file_name_or_folder_nobody_said_asks(tmp_path, monk
     assert mind.decide(1, "resúmeme el PDF contrato que está en Descargas")["operation"] is None
 
 
-@pytest.mark.parametrize("capabilities, doubted, choice, filled, operation", [
-    ([GAME_LAUNCH, APP_OPEN], "game_launch", "app_open", {"appId": "Microsoft Teams"}, "app.open"),
-    ([APP_OPEN, GAME_LAUNCH], "app_open", "game_launch", {"appId": "327030"}, "game.launch"),
-    ([GAME_LAUNCH, APP_OPEN], "game_launch", "app_open", {"appId": "Zoom"}, None),  # not in the list it was given
-    ([GAME_LAUNCH, APP_OPEN], "game_launch", "app_open", {"appId": "Microsoft"}, None),  # part of an entry
-    ([APP_OPEN, GAME_LAUNCH], "app_open", "game_launch", {"appId": "999"}, None)])  # an appId of no listed game
-def test_a_correction_with_an_application_or_game_of_the_catalog_runs(tmp_path, monkeypatch, capabilities, doubted,
-                                                                         choice, filled, operation) -> None:
-    mind, _ = _corrects(tmp_path, monkeypatch, capabilities, doubted, choice, filled)
+@pytest.mark.parametrize("choice, filled, operation", [
+    ("app_open", {"appId": "Microsoft Teams"}, "app.open"),
+    ("game_launch", {"appId": "327030"}, "game.launch"),
+    ("app_open", {"appId": "Zoom"}, None),  # not in the list it was given
+    ("app_open", {"appId": "Microsoft"}, None),  # part of an entry
+    ("game_launch", {"appId": "999"}, None)])  # an appId of no listed game
+def test_a_correction_with_an_application_or_game_of_the_catalog_runs(tmp_path, monkeypatch, choice, filled,
+                                                                         operation) -> None:
+    # The doubted call reads (read_only), so a correction that is not founded asks.
+    mind, _ = _corrects(tmp_path, monkeypatch, [FILE_FIND, APP_OPEN, GAME_LAUNCH], "file_find", choice, filled)
     assert mind.decide(1, "abre el teams o el worms")["operation"] == operation
 
 
@@ -106,3 +107,16 @@ def test_layer_0_holds_an_unsure_call_unless_it_is_low_reversible(tmp_path, monk
     mind, _ = _mind(tmp_path, [_call("app_open", {"appId": "Discord"}, 0.3), _say("¿Qué abro?")])
     mind.risk = {"app_open": risk}
     assert mind.decide(1, "abre discord")["operation"] == operation
+
+
+@pytest.mark.parametrize("doubted, choice, filled, operation", [
+    ("app_open", "responder_con_palabras", {}, "app.open"),  # P124: Laya said «answer in words»; the call runs
+    ("app_open", "file_find", {"folder": "music"}, "app.open"),  # it cannot be corrected (not founded): it runs
+    ("app_open", "game_launch", {"appId": "327030"}, "game.launch"),  # what it can correct, it still corrects
+    ("file_find", "responder_con_palabras", {}, None)])  # read_only still asks
+def test_layer_2_corrects_a_low_reversible_call_or_lets_it_run(tmp_path, monkeypatch, doubted, choice, filled,
+                                                                 operation) -> None:
+    # The same 26 runs: layer 2 asked instead of 11 low_reversible calls right without System One (P112 ×4, P124 ×6,
+    # P113 ×1) and none useful; its corrections of them, 6 useful (P257) against 2 harmful.
+    mind, _ = _corrects(tmp_path, monkeypatch, [APP_OPEN, GAME_LAUNCH, FILE_FIND], doubted, choice, filled)
+    assert mind.decide(1, "abre el teams")["operation"] == operation
