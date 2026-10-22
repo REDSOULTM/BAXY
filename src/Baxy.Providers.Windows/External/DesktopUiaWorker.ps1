@@ -2753,7 +2753,13 @@ function Find-ById($root,[string]$controlId){
   # Revision de la palanca 8 (hallazgo 3): si la ultima vista de esta ventana se leyo sin el filtro IsOffscreen, lo
   # marcado fuera de pantalla que cae dentro de la caja de la ventana sigue valiendo (es lo que se ofrecio).
   $offscreenBox=Get-UnfilteredBox $root
-  $cached=$script:LastView.elements[$controlId]
+  # Renew al maximo (B-CU-1): lo que la ultima vista guardo es de su ventana; una identidad pedida bajo otra raiz se busca
+  # en esa ventana, nunca se toma de la vista de otra (se pulsaba en la ventana mirada antes, detras de la nombrada).
+  $rootHwnd=0
+  try { $rootHwnd=[long]$root.Current.NativeWindowHandle } catch {}
+  $ownView=($rootHwnd -ne 0 -and $rootHwnd -eq [long]$script:LastView.hwnd)
+  $cached=$null
+  if($ownView){ $cached=$script:LastView.elements[$controlId] }
   if($null -ne $cached){
     try { if($cached.Current.IsEnabled -and (Test-OffscreenUsable ([bool]$cached.Current.IsOffscreen) (Get-CurrentRect $cached) $offscreenBox)){ return $cached } } catch {}
   }
@@ -2761,7 +2767,8 @@ function Find-ById($root,[string]$controlId){
     try { if((Get-Id $item) -eq $controlId -and (Test-OffscreenUsable ([bool]$item.Cached.IsOffscreen) (Get-Rect $item) $offscreenBox)){ return $item } } catch [System.Windows.Automation.ElementNotAvailableException] {}
   }
   # Ronda 20b, palanca 8: el contenido de un dialogo que la vista leyo bajo su ventana duena.
-  $client=$script:LastView.client
+  $client=$null
+  if($ownView){ $client=$script:LastView.client }
   if($null -ne $client -and -not [System.Windows.Automation.Automation]::Compare($client,$root)){
     $script:Partial=$false
     foreach($item in (Get-Descendants $client)){

@@ -1108,7 +1108,11 @@ internal sealed class WindowsVisibleControlAdapter
                 view = _lastView;
             }
 
-            ViewControl? chosen = view?.Controls.FirstOrDefault(control => control.Index == position);
+            // Renew al máximo (B-CU-1): an index is of the last view's window; with the click naming another one it is
+            // not that window's control (it was pressed in the window looked at before, behind the named one).
+            ViewControl? chosen = view is not null && (namedWindow == 0 || view.Hwnd == namedWindow)
+                ? view.Controls.FirstOrDefault(control => control.Index == position)
+                : null;
             if (chosen is not null && SameLabel(label, chosen.Name))
             {
                 controlId = chosen.Id.Length > 0 ? chosen.Id : null;

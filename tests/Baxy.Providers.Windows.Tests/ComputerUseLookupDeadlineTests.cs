@@ -112,6 +112,36 @@ public sealed class ComputerUseLookupDeadlineTests
         Assert.That(RunScript(script), Is.EqualTo("True|0|0|0|False"));
     }
 
+    // Renew al máximo (B-CU-1): the worker keeps the elements of its last view, of one window. An identity asked under
+    // another window's root is looked for in that window, never taken from the kept elements of the other one, nor from
+    // the dialog content the other one's view read.
+    [Test]
+    public void AnIdentityIsNeverTakenFromAnotherWindowsView()
+    {
+        const string script = """
+            $ErrorActionPreference='Stop'
+            $tokens=$null;$errors=$null
+            $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_FRAME_WORKER,[ref]$tokens,[ref]$errors)
+            if($errors.Count -gt 0){ throw 'worker does not parse' }
+            $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Find-ById' },$true))
+            if($found.Count -ne 1){ throw 'rule function missing' }
+            . ([scriptblock]::Create($found[0].Extent.Text))
+            function Get-UnfilteredBox($root){ return $null }
+            function Test-OffscreenUsable($offscreen,$rect,$box){ return $true }
+            function Get-CurrentRect($el){ return $null }
+            function Get-LookupScope($root,$box){ return @() }
+            function Get-Descendants($root){ return @([pscustomobject]@{ Id='42.1' }) }
+            function Get-Id($el){ return [string]$el.Id }
+            $kept=[pscustomobject]@{ Current=[pscustomobject]@{ IsEnabled=$true; IsOffscreen=$false } }
+            $script:LastView=@{ hwnd=[IntPtr]200; elements=@{ '42.1'=$kept }; client=[pscustomobject]@{ Id='client' } }
+            $other=[pscustomobject]@{ Current=[pscustomobject]@{ NativeWindowHandle=100 } }
+            $same=[pscustomobject]@{ Current=[pscustomobject]@{ NativeWindowHandle=200 } }
+            $answers=@(($null -eq (Find-ById $other '42.1')), ($null -ne (Find-ById $same '42.1')))
+            [Console]::Out.Write(($answers -join '|'))
+            """;
+        Assert.That(RunScript(script), Is.EqualTo("True|True"));
+    }
+
     private static string RunScript(string script)
     {
         string worker = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
