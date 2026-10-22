@@ -114,6 +114,32 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, archivos): «¿qué hay en C:\Users\ana\Documents?» with the folder's own full
+    // path as subdirectory is the folder itself; it was refused as known_path_outside_folder, a path outside it.
+    [Test]
+    public async Task TheKnownFolderItselfNamedByItsFullPathIsTheFolder()
+    {
+        using TemporaryDirectory temporary = new();
+        string documents = Path.Combine(temporary.Path, "Documentos");
+        Directory.CreateDirectory(documents);
+        await File.WriteAllTextAsync(Path.Combine(documents, "informe.txt"), "hola");
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["documents"] = [documents] },
+            new FolderRecycleBin(Path.Combine(temporary.Path, "bin")), []);
+
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find", Json(JsonSerializer.Serialize(
+            new { folder = "documents", subdirectory = documents + Path.DirectorySeparatorChar })), CancellationToken.None);
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(JsonSerializer.Serialize(
+            new { folder = "documents", subdirectory = documents, fileName = "informe.txt" })), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.Verified, Is.True, listed.ErrorCode);
+            Assert.That(listed.Result?.GetProperty("entries")[0].GetProperty("name").GetString(), Is.EqualTo("informe.txt"));
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("hola"));
+        });
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];

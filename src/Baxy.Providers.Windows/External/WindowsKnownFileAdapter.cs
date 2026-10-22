@@ -1129,6 +1129,12 @@ if __name__ == "__main__":
     {
         if (!string.IsNullOrWhiteSpace(subdirectory) && Path.IsPathFullyQualified(subdirectory))
         {
+            // Renew al máximo (auditoría de flujos): the known folder's own full path is that folder, not a path outside it.
+            string named = Path.GetFullPath(subdirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            (string Label, string Root)[] itself = [.. roots.Where(item => string.Equals(named,
+                Path.GetFullPath(item.Root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
+                StringComparison.OrdinalIgnoreCase))];
+            if (itself.Length > 0) return [itself[0]];
             (string Label, string Root)[] holding = [.. roots.Where(item => IsInside(item.Root, subdirectory))];
             if (holding.Length == 0) throw new InvalidDataException("known_path_outside_folder");
             roots = [holding[0]];
