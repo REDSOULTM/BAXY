@@ -510,12 +510,20 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             return new WindowCloseAllResult(false, false, 0, 0, 0, 0, [], [], WindowControlErrorCodes.InventoryFailed);
         }
 
-        List<WindowSnapshot> kept = desktop.Where(static window => OwnProcessNames.Contains(window.Identity.ProcessName)).ToList();
-        List<WindowSnapshot> targets = desktop.Where(static window => !OwnProcessNames.Contains(window.Identity.ProcessName)).ToList();
+        // Renew al máximo (lote 4, d): «never forces» holds only where a close can be answered. A console's close ends
+        // the processes attached to it without asking, and a terminal or an editor is where the developer's agent
+        // lives: every window no act reaches (VisibleControlSurface.ProtectedFrom, BAXY's own included) is kept, and
+        // the result says how many and which.
+        static bool Spared(WindowSnapshot window) => External.VisibleControlSurface.ProtectedFrom(window.Identity.ProcessName, null);
+        List<WindowSnapshot> kept = desktop.Where(Spared).ToList();
+        List<WindowSnapshot> targets = desktop.Where(static window => !Spared(window)).ToList();
         List<string> keptNames = kept.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
+        List<WindowSnapshot> spared = kept.Where(static window => !OwnProcessNames.Contains(window.Identity.ProcessName)).ToList();
+        List<string> sparedNames = spared.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
         if (targets.Count == 0)
         {
-            return new WindowCloseAllResult(true, true, desktop.Count, 0, 0, kept.Count, keptNames, [], null);
+            return new WindowCloseAllResult(true, true, desktop.Count, 0, 0, kept.Count, keptNames, [], null,
+                ProtectedKept: spared.Count, ProtectedProcesses: sparedNames);
         }
 
         // Auditoría D7 and final G2: only a window BAXY's close reached (Windows took the request) is BAXY's to count
@@ -563,7 +571,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             && _verifier.Fate(window.Identity) != WindowFate.Hidden);
         return new WindowCloseAllResult(
             true, true, desktop.Count, ended.Count - hidden - alreadyGone, remaining.Count, kept.Count, keptNames, remainingNames,
-            null, hidden, alreadyGone);
+            null, hidden, alreadyGone, ProtectedKept: spared.Count, ProtectedProcesses: sparedNames);
     }
 
     private async ValueTask<List<WindowSnapshot>> RemainingOpenAsync(

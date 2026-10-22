@@ -122,7 +122,7 @@ public sealed record WindowMinimizeAllResult(
 
 // CLOSEALL1733 «cerrame todo»: the desktop windows found before, how many were
 // verified closed, how many stayed visible, how many were kept on purpose
-// (BAXY's own windows, WindowsWindowControlProvider.OwnProcessNames).
+// (BAXY's own windows, WindowsWindowControlProvider.OwnProcessNames, and the protected ones).
 public sealed record WindowCloseAllResult(
     bool Succeeded,
     bool Verified,
@@ -140,7 +140,11 @@ public sealed record WindowCloseAllResult(
     // Auditoría final: desktop windows there and not read, so not among «all».
     int Unread = 0,
     // Ronda final 11: titled windows DWM cloaks (another virtual desktop, a suspended app), not touched.
-    int Cloaked = 0);
+    int Cloaked = 0,
+    // Renew al máximo (lote 4, d): of the kept, the windows no act reaches (a terminal, a console, an editor, a system
+    // configuration tool: VisibleControlSurface.ProtectedFrom), never asked to close, and their processes.
+    int ProtectedKept = 0,
+    IReadOnlyList<string>? ProtectedProcesses = null);
 
 public interface IWindowControlProvider
 {
