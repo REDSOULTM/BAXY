@@ -1881,8 +1881,15 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         if (input is not null)
         {
             // Read concurrently above, so a process that answers while it is still being fed never blocks the write.
-            await process.StandardInput.BaseStream.WriteAsync(input, cancellationToken).ConfigureAwait(false);
-            process.StandardInput.Close();
+            try
+            {
+                await process.StandardInput.BaseStream.WriteAsync(input, cancellationToken).ConfigureAwait(false);
+                process.StandardInput.Close();
+            }
+            catch (IOException)
+            {
+                // The process stopped reading (it failed before the picture, a missing language): its exit code answers.
+            }
         }
 
         await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);

@@ -508,6 +508,34 @@ public sealed class DesktopMessagingAdapterTests
         Assert.That(output.Trim(), Is.EqualTo("hola test"));
     }
 
+    // An engine that fails before reading its input (a missing language) answers nothing, as it did when the picture was
+    // a file: no broken-pipe exception escapes the read.
+    [Test]
+    public async Task AnOcrProcessThatExitsUnfedReadsNothing()
+    {
+        var start = new ProcessStartInfo("cmd.exe")
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        start.ArgumentList.Add("/d");
+        start.ArgumentList.Add("/c");
+        start.ArgumentList.Add("exit");
+        start.ArgumentList.Add("1");
+        using Process process = Process.Start(start)
+            ?? throw new IOException("Test process did not start.");
+        await process.WaitForExitAsync();
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        string output = await WindowsDesktopMessagingAutomation.ReadRedirectedOutputAsync(
+            process, timeout.Token, new byte[4 * 1024 * 1024]);
+
+        Assert.That(output, Is.Empty);
+    }
+
     // Renew al máximo (auditoría de flujos): messaging looked for Tesseract only on PATH and in Program Files, not where
     // the product's assets declare it (BAXY_TESSERACT_EXE, BAXYRuntime), as ocr.read finds it.
     [Test]
