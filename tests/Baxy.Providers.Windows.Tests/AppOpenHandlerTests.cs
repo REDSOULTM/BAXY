@@ -133,7 +133,8 @@ public sealed class AppOpenHandlerTests
     }
 
     // Round A: Steam opened and verified, and its library's address could not be handed over: the place failed, not the
-    // launch, and the opening already happened.
+    // launch, and the opening already happened. Revisión 2026-10-22 (C-4): the failure says the application is open,
+    // with the window id the window operations take, so nothing tells it as not opened.
     [Test]
     public async Task APlaceThatCouldNotBeHandedOverAfterAVerifiedOpeningIsNotALaunchFailure()
     {
@@ -142,6 +143,7 @@ public sealed class AppOpenHandlerTests
             provider,
             new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RefusedPlace(),
+            windowIdFor: static window => window == 777 ? "w-777" : null,
             frontOf: static _ => new OpenedWindowFront(true, "steam"));
 
         OperationOutcome outcome = await handler.ExecuteAsync(
@@ -152,6 +154,12 @@ public sealed class AppOpenHandlerTests
             Assert.That(provider.Calls, Is.EqualTo(1));
             Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_opened"));
             Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("appId").GetString(), Is.EqualTo("Steam"));
+            Assert.That(result.GetProperty("displayName").GetString(), Is.EqualTo("Steam"));
+            Assert.That(result.GetProperty("opened").GetBoolean(), Is.True);
+            Assert.That(result.GetProperty("windowId").GetString(), Is.EqualTo("w-777"));
+            Assert.That(result.GetProperty("place").GetString(), Is.EqualTo("library"));
         });
     }
 
@@ -176,6 +184,8 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(result.GetProperty("placeRequested").GetBoolean(), Is.True);
+            // Revisión 2026-10-22 (C-5): with the aids on or off, a structured fact says the place was not read back.
+            Assert.That(result.GetProperty("effectReadBack").GetBoolean(), Is.False);
             Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
             if (hint)
             {
@@ -191,7 +201,11 @@ public sealed class AppOpenHandlerTests
     {
         OperationOutcome outcome = await Handler(new VerifiedOpening(@"C:\Windows\System32\notepad.exe"))
             .ExecuteAsync(Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
-        Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+            Assert.That(outcome.Result!.Value.TryGetProperty("effectReadBack", out _), Is.False);
+        });
     }
 
     // BAXY Renew cu (C04): a game's page asked for by the game's title opens by the number its catalog found, and the
@@ -280,6 +294,36 @@ public sealed class AppOpenHandlerTests
             Assert.That(outcome.ErrorCode, Is.EqualTo("place_value_not_taken"));
             Assert.That(result.GetProperty("placeValue").GetString(), Is.EqualTo("Hollow Knight"));
             Assert.That(result.GetProperty("next").GetString(), Does.Contain("game (placeValue: the game's name)"));
+            Assert.That(opened, Is.Empty);
+        });
+    }
+
+    // Revisión 2026-10-22 (B-APP-3): a value that does not fit its place, or a value given with no place, is a value
+    // not taken, never a place of another application (Steam has «game»); with the aids off too it says the places of
+    // its application and what each takes. Nothing is looked up or opened.
+    [TestCase("""{"appId":"Steam","placeValue":"Rocket League"}""", null)]
+    [TestCase("""{"appId":"Steam","place":"game","placeValue":"12345678901234567"}""", "game")]
+    [TestCase("""{"appId":"Steam","place":"library","placeValue":"Hollow Knight"}""", "library")]
+    public async Task AValueItsPlaceDoesNotTakeSaysThePlacesAndWhatEachTakes(string arguments, string? place)
+    {
+        using IDisposable setting = ModelAids.Use("none");
+        var opened = new List<string>();
+        var titles = new FoundTitles(null);
+
+        OperationOutcome outcome = await SteamHandler(opened, titles).ExecuteAsync(Invocation(arguments), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+        Dictionary<string, string?> places = result.GetProperty("places").EnumerateArray().ToDictionary(
+            static entry => entry.GetProperty("place").GetString()!,
+            static entry => entry.TryGetProperty("takes", out JsonElement takes) ? takes.GetString() : null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("place_value_not_taken"));
+            Assert.That(result.TryGetProperty("place", out JsonElement asked) ? asked.GetString() : null, Is.EqualTo(place));
+            Assert.That(places["game"], Is.EqualTo("game"));
+            Assert.That(places["results"], Is.EqualTo("query"));
+            Assert.That(places["library"], Is.Null);
+            Assert.That(titles.Asked, Is.Empty);
             Assert.That(opened, Is.Empty);
         });
     }

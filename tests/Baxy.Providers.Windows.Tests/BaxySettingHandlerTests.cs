@@ -72,6 +72,40 @@ public sealed class BaxySettingHandlerTests
         }
     }
 
+    // Revisión 2026-10-22 (C-3): a setting file another program holds locked cannot be read, and «I could not read it»
+    // was taken for «off»: switching it off answered changed:false, done, while the file still said on. Unreadable is
+    // its own failure, and nothing is written.
+    [TestCase("accessible_mode", "presentation-mode", "accessible")]
+    [TestCase("confirmation_bypass", "confirmation-mode", "bypass")]
+    public async Task ASettingThatCannotBeReadIsNotTakenForOff(string setting, string fileName, string stored)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-accessible-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        string path = Path.Combine(root, fileName);
+        File.WriteAllText(path, stored);
+        try
+        {
+            string message;
+            using (new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                message = await SettingMessage(root, $$"""{"setting":"{{setting}}","value":0}""");
+            }
+
+            using JsonDocument facts = JsonDocument.Parse(message);
+            Assert.Multiple(() =>
+            {
+                Assert.That(facts.RootElement.GetProperty("status").GetString(), Is.EqualTo("failed"));
+                Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("baxy_setting_unreadable"));
+                Assert.That(facts.RootElement.TryGetProperty("effectUncertain", out _), Is.False);
+                Assert.That(File.ReadAllText(path), Is.EqualTo(stored));
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     // BAXY_AYUDAS: unset or «all» turns every aid on, «none» or «0» none, a list only the ids it names.
     [TestCase("all", true, true)]
     [TestCase("", true, true)]

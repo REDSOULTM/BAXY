@@ -151,7 +151,13 @@ public sealed class OperationRegistryTests
     [TestCase("input.visible.click", """{"label":"Enviar búsqueda a Ana"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Send"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
-    [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.Allow)]
+    // Revisión 2026-10-22 (K-2): Enter or space that declares neither where the keyboard is nor what it lands on may
+    // send what message_draft left written: it asks. Declared on a text field, it goes directly.
+    [TestCase("input.key.press", """{"key":"enter"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.key.press", """{"key":"space","window":4660}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.key.press", """{"key":"enter","target":"text_field"}""", PolicyDecision.Allow)]
+    [TestCase("input.key.press", """{"key":"space","target":"text_field"}""", PolicyDecision.Allow)]
+    [TestCase("input.key.press", """{"key":"tab"}""", PolicyDecision.Allow)]
     [TestCase("input.key.press", """{"key":"escape","target":"message_composer"}""", PolicyDecision.Allow)]
     // Safety review 2026-10-07: the send verb opens the label whatever follows it, a shortcut hint or a format
     // character does not hide it, and space on a composer's send control sends like Enter.
@@ -339,8 +345,8 @@ public sealed class OperationRegistryTests
     // the same key unmarked does not.
     [TestCase("""{"key":"enter","consequence":"overwrite"}""", true)]
     [TestCase("""{"key":"space","consequence":"overwrite","window":4660}""", true)]
-    [TestCase("""{"key":"enter"}""", false)]
-    [TestCase("""{"key":"enter","consequence":null}""", false)]
+    [TestCase("""{"key":"enter","target":"text_field"}""", false)]
+    [TestCase("""{"key":"enter","target":"text_field","consequence":null}""", false)]
     public void The_delete_key_asks_unless_the_keyboard_is_on_a_text_field(string arguments, bool asks)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");
@@ -376,6 +382,30 @@ public sealed class OperationRegistryTests
             Assert.That(
                 RiskPolicy.Evaluate(
                     ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, "input.key.press", document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
+    // Revisión 2026-10-22 (K-1): input.pointer.control's click presses whatever lies under the pointer, in a window no
+    // step named and under no label the policy can judge (it may send, buy or delete): it asks, as Suprimir outside a
+    // text field does. Moving the pointer and scrolling press nothing; bypass never asks.
+    [TestCase("""{"action":"click"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("""{"action":"move_center"}""", PolicyDecision.Allow)]
+    [TestCase("""{"action":"scroll_down"}""", PolicyDecision.Allow)]
+    public void A_click_where_the_pointer_lies_asks(string arguments, PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.pointer.control");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, "input.pointer.control", document.RootElement),
+                Is.EqualTo(expected));
+            Assert.That(
+                RiskPolicy.Evaluate(
+                    ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, "input.pointer.control", document.RootElement),
                 Is.EqualTo(PolicyDecision.Allow));
         });
     }

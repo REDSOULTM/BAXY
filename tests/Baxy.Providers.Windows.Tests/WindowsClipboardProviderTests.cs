@@ -148,6 +148,36 @@ public sealed class WindowsClipboardProviderTests
         Assert.That(result.Changed, Is.EqualTo(changed));
     }
 
+    // Revisión 2026-10-22 (C-6): the read-back is bounded by the length of the text written, so «hola mundo» read for
+    // «hola» comes back as «hola», truncated; it is not the text written, and is never told as verified.
+    [Test]
+    public async Task AReadBackCutToTheWrittenLengthIsNotTheTextWritten()
+    {
+        using JsonDocument arguments = JsonDocument.Parse("{\"text\":\"hola\"}");
+
+        OperationOutcome outcome = await new ClipboardWriteTextHandler(new HoldingClipboard("hola mundo")).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", arguments.RootElement.Clone()),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    // A clipboard that accepts every write and goes on holding its own text.
+    private sealed class HoldingClipboard(string held) : IClipboardProvider
+    {
+        public ValueTask<ClipboardTextSnapshot> ReadTextAsync(int maximumCharacters, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(new ClipboardTextSnapshot(
+                held[..Math.Min(held.Length, maximumCharacters)], held.Length, held.Length > maximumCharacters, 2));
+
+        public ValueTask<ClipboardWriteResult> WriteTextAsync(string text, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(new ClipboardWriteResult(2, text.Length, true));
+    }
+
     private sealed class FakeClipboardPlatform(string text, uint sequence) : IClipboardPlatform
     {
         // Text alone is 4 formats (Unicode, ANSI, OEM text and the locale); a rich copy holds more.

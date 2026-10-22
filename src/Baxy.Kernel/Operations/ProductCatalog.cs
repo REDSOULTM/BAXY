@@ -807,7 +807,9 @@ public static class ProductCatalog
                 // mensajes con texto: esa pulsación llega a una persona y el
                 // Kernel la confirma en modo normal (§2.1). Suprimir pregunta
                 // salvo que el paso declare que el teclado está en un campo de
-                // texto (text_field): fuera de uno borra lo seleccionado.
+                // texto (text_field): fuera de uno borra lo seleccionado. Revisión
+                // 2026-10-22 (K-2): Enter o Espacio sin target ni onto no declaran
+                // dónde caen y preguntan; sobre text_field van directos.
                 String("target", types: NullableString, values: ["message_composer", "text_field"]),
                 // La ventana mirada (el número que dio la vista): la tecla va sólo
                 // a ella; si no está delante y no se la puede traer, nada se envía.

@@ -194,12 +194,13 @@ public sealed class RiskPolicyWorldActsTests
     }
 
     // Revisión de V (H1): Enter or space on what the step's view says it lands on («onto»: the voice channel the search
-    // holds chosen) asks as a click on it would; a text channel, no name, or another key does not; bypass never asks.
+    // holds chosen) asks as a click on it would; a text channel or another key does not; bypass never asks. Revisión
+    // 2026-10-22 (K-2): no name and no target declares nothing, and then it asks.
     [TestCase("""{"key":"enter","onto":"Cotele!!!😎, Canal de voz, Choche","window":68208}""", true)]
     [TestCase("""{"key":"space","onto":"Cotele (canal de voz)"}""", true)]
     [TestCase("""{"key":"enter","onto":"Eliminar pruebas"}""", true)]
     [TestCase("""{"key":"enter","onto":"general (canal de texto)"}""", false)]
-    [TestCase("""{"key":"enter","onto":null}""", false)]
+    [TestCase("""{"key":"enter","onto":null}""", true)]
     [TestCase("""{"key":"tab","onto":"Cotele!!!😎, Canal de voz, Choche"}""", false)]
     public void A_key_on_what_asks_asks_as_its_click_would(string arguments, bool asks)
     {

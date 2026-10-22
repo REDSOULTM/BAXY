@@ -65,9 +65,12 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         {
             return ValueTask.FromResult(OperationOutcome.Failure("unsafe_storage"));
         }
-        catch (IOException) when (Definition.Risk == OperationRisk.ReadOnly)
+        // Revisión 2026-10-22 (C-1): a write the disk or a guarded folder failed threw past this handler and ended the
+        // core (exit 70); it is this operation's failure, and a change may have begun only for one that changes.
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("storage_failed"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "storage_failed", effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
         }
     }
 
