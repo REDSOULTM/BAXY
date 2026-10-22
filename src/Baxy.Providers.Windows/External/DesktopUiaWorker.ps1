@@ -1229,7 +1229,11 @@ function Get-State($el){
       $state=([System.Windows.Automation.ExpandCollapsePattern]$pattern).Cached.ExpandCollapseState
       if($state -eq [System.Windows.Automation.ExpandCollapseState]::Expanded){$parts+='expanded'} elseif($state -eq [System.Windows.Automation.ExpandCollapseState]::Collapsed){$parts+='collapsed'}
     }
-    if($el.TryGetCachedPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){
+    # Renew al maximo (lote 4, b): a password field is said as one, with no value: its ValuePattern is never read, so a
+    # provider that exposes the password in clear text cannot put it in the view, the model or the trace.
+    $password=[bool]$el.Cached.IsPassword
+    if($password){ $value=$null
+    } elseif($el.TryGetCachedPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){
       $vp=([System.Windows.Automation.ValuePattern]$pattern)
       if($vp.Cached.IsReadOnly){$parts+='readonly'}
       $raw=[string]$vp.Cached.Value
@@ -1241,7 +1245,7 @@ function Get-State($el){
       # Ronda 24 (v3-39): un desplegable sin ValuePattern dice su valor por la seleccion: el nombre del elemento elegido.
       $value=Get-ChosenEntry $el
     }
-    if($el.Cached.IsPassword){$parts+='password'}
+    if($password){$parts+='password'}
     if($el.Cached.HasKeyboardFocus){$parts+='focused'}
   } catch [System.Windows.Automation.ElementNotAvailableException] {}
   return @{ state=($parts -join ' '); value=$value }
