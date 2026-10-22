@@ -2852,3 +2852,10 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   inventado (B-MED-1). **Referencia de renew-maximo para las palancas: 229.**
 - Fase B adelantada: 7 revisores PC + 4 NB. Arreglos en worktrees: fx-voz fusionado (12278e86d, pytest 89); fx-mente,
   fx-core, fx-app en curso; B-SYS-1 (Bypass por archivo) en nb-maximo-fix.
+- **Decisión del dueño 2026-10-22 ~14:55:** permisos totales para actuar sin consultar (fusiones y lo demás del goal);
+  lo del sonido de la voz (9.1 pasos de Supertonic, 9.2 señal no verbal) va **al final** y espera su validación de
+  oído cuando vuelva; el resto del goal se completa sin esperarlo.
+- 15:0x palancas 9.3 y 9.1 medidas sin GPU (`F:\BAXYeval\renew_v4\voz\medir_primera_frase.py`, 16 respuestas genéricas de
+  dos frases, Python del runtime): hasta el audio de la primera frase, p50 — 10 pasos: juntas 1 595 ms / primera sola
+  989 ms; 8 pasos: 1 164 / 764; 6 pasos: 946 / 646. Cambian cómo suena: van a una rama aparte con muestras y esperan el
+  oído del dueño (su decisión).
