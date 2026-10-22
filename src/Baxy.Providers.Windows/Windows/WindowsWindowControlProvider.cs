@@ -1516,6 +1516,21 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     private const int ShowMaximized = 3;
     private const int Restore = 9;
 
+    // Renew al máximo (auditoría de flujos): a window's executable, read as the application inventory reads it (the least
+    // access Windows grants); its main module, read before, is refused for a program running as administrator, and every
+    // window of one resolved by its application failed verification.
+    private readonly Func<int, string?> _imagePath;
+
+    public Win32WindowControlPlatform()
+        : this(null)
+    {
+    }
+
+    internal Win32WindowControlPlatform(Func<int, string?>? imagePath)
+    {
+        _imagePath = imagePath ?? WindowsInstalledApplicationPlatform.ExecutableImagePath;
+    }
+
     public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
 
     public WindowSnapshot? FindForegroundWindow()
@@ -1619,7 +1634,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             || !string.Equals(process.ProcessName, identity.ProcessName,
                 StringComparison.OrdinalIgnoreCase)
             || (identity.ExecutablePath is not null
-                && !string.Equals(process.MainModule?.FileName, identity.ExecutablePath,
+                && !string.Equals(_imagePath(identity.ProcessId), identity.ExecutablePath,
                     StringComparison.OrdinalIgnoreCase)))
         {
             throw new WindowIdentityChangedException();

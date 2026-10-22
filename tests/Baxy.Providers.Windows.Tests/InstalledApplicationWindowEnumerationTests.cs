@@ -9,6 +9,32 @@ namespace Baxy.Providers.Windows.Tests;
 [NonParallelizable]
 public sealed class InstalledApplicationWindowEnumerationTests
 {
+    // Renew al máximo (auditoría de flujos): a window resolved by its application carries the executable the inventory
+    // read with the least access (a program running as administrator too); reading it back by the main module, which
+    // Windows refuses for such a program, failed every one. Here the read the inventory makes gives that path.
+    [Test]
+    public void AWindowIsReadBackByTheExecutableTheInventoryRead()
+    {
+        nint window = CreateWindowEx(0x08000000, "STATIC", "Image fixture", 0x90000000u, -31000, -31000, 120, 80, 0, 0, 0, 0);
+        Assert.That(window, Is.Not.EqualTo(nint.Zero));
+        try
+        {
+            using Process current = Process.GetCurrentProcess();
+            const string ReadByInventory = @"C:\Elevated Program\program.exe";
+            var platform = new Baxy.Providers.Windows.Windows.Win32WindowControlPlatform(
+                processId => processId == current.Id ? ReadByInventory : null);
+            var identity = new Baxy.Providers.Windows.Windows.WindowIdentity(
+                window, current.Id, current.StartTime.ToUniversalTime().Ticks, current.ProcessName,
+                DateTimeOffset.UtcNow, ReadByInventory);
+
+            Assert.That(platform.Observe(identity).Identity.Handle, Is.EqualTo(window));
+        }
+        finally
+        {
+            _ = DestroyWindow(window);
+        }
+    }
+
     // Renew al máximo (auditoría de flujos): an application running with no window (Steam in the notification area) is
     // read by its own executable: here the test process, which shows none; a packaged entry is never read this way.
     [Test]
