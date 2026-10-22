@@ -956,9 +956,13 @@ class Mind:
                 # A fixed seed: the same conversation gets the same decision, so two runs of a bench differ by the
                 # change measured, not by sampling noise (±3 of 90 without it). Review 2026-10-22: BAXY_RENEW_SEED moves
                 # it, to measure that noise (0 by default).
-                "seed": self.seed,
-                # The decision's own token probabilities, for its doubt in the trace (doubt.py): same call, no other pass.
-                "logprobs": True, "top_logprobs": 10}
+                "seed": self.seed}
+        if self._doubted(stage, turn, final):
+            # The decision's own token probabilities, for its doubt (doubt.py, System One) and the trace: same call, no
+            # other pass. Al máximo 9.5 (2026-10-22): only where the doubt is read; elsewhere (turn.continue, the last
+            # answer, the heartbeat) the server sorted the vocabulary at every token for a doubt only the trace kept,
+            # which those rows no longer carry (−20 to −100 ms per call, expected).
+            body.update(logprobs=True, top_logprobs=10)
         if final:
             # The last answer of an exhausted turn is words only. The tools stay, so the cached prefix (37k tokens)
             # is not evicted by a shorter prompt (llama.cpp PR #24176: a restore re-reads ~4k tokens; measured 2.3-3.6 s
@@ -1029,6 +1033,12 @@ class Mind:
             conv.append({"role": "assistant", "content": content})
         return self._result(request_id, turn, None, reply, stage, started, content)
 
+    @staticmethod
+    def _doubted(stage: str, turn: dict[str, Any], final: bool) -> bool:
+        """Whether this call's decision is read for its doubt: a person's turn deciding, not its last answer, a
+        continuation or a heartbeat."""
+        return stage == "turn.decide" and not final and not turn.get("beat")
+
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
@@ -1036,7 +1046,7 @@ class Mind:
         decision model is asked which of the model's own candidates the person meant, and a different answer holds it —
         or, with BAXY_S1_CORRECT=1 and a tool of CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking
         and confirming are never held: they already put the person in the loop."""
-        if final or stage != "turn.decide" or turn.get("beat"):
+        if not self._doubted(stage, turn, final):
             return None
         if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
             return None

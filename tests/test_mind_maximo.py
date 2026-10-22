@@ -105,3 +105,18 @@ def test_a_cut_history_keeps_room_so_the_next_turns_do_not_move_its_start(tmp_pa
         # first one (the note of the cut went into it); never the turns between.
         assert all(f"pedido {later}:" in text or f"pedido {later - 1}:" in text or "[Conversación recortada" in text
                    for text in counted)
+
+
+def test_only_the_decision_asks_the_server_for_its_token_probabilities(tmp_path: Path) -> None:
+    # 9.5: every call asked for top_logprobs (the server sorts the vocabulary at every token), for a doubt read only in
+    # turn.decide; a continuation and the last answer now go without them.
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Paint"}), _call("app_open", {"appId": "Paint"}),
+                                    _say("Abrí Paint.")])
+    mind.decide(1, "abre paint")
+    mind.continue_turn(2, json.dumps({"status": "completed"}))
+    mind.continue_turn(3, json.dumps({"status": "completed"}), final=True)
+    decide, follow, last = server.bodies
+    assert decide["logprobs"] is True and decide["top_logprobs"] == 10
+    assert not {"logprobs", "top_logprobs"} & (set(follow) | set(last))
+    assert last["tool_choice"] == "none"
