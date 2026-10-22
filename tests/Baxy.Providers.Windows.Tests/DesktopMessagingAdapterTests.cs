@@ -466,6 +466,48 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): every OCR pass of a chat (its header, composer, last messages, chat list)
+    // was written to %TEMP% as a bitmap for Tesseract; the picture now goes through the process's standard input and
+    // no capture of a chat touches the disk (as B-CU-5 took away the debug path that kept them).
+    [Test]
+    public void AChatCaptureIsReadWithoutTouchingTheDisk()
+    {
+        string source = AdapterSource();
+        int start = source.IndexOf("private static async ValueTask<string> RunTesseractAsync(", StringComparison.Ordinal);
+        int end = source.IndexOf("\n    }\n", Math.Max(start, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(start, Is.GreaterThan(0));
+            Assert.That(source[start..end], Does.Not.Contain("File.Write"));
+            Assert.That(source[start..end], Does.Not.Contain("GetTempPath"));
+            Assert.That(source[start..end], Does.Contain("\"stdin\""));
+        });
+    }
+
+    [Test]
+    public async Task TheOcrProcessIsFedThroughItsStandardInput()
+    {
+        var start = new ProcessStartInfo("cmd.exe")
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        start.ArgumentList.Add("/d");
+        start.ArgumentList.Add("/c");
+        start.ArgumentList.Add("more");
+        using Process process = Process.Start(start)
+            ?? throw new IOException("Test process did not start.");
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        string output = await WindowsDesktopMessagingAutomation.ReadRedirectedOutputAsync(
+            process, timeout.Token, System.Text.Encoding.ASCII.GetBytes("hola test\r\n"));
+
+        Assert.That(output.Trim(), Is.EqualTo("hola test"));
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {

@@ -1812,56 +1812,51 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return result;
     }
 
+    // Renew al máximo (auditoría de flujos): the capture of a chat goes to Tesseract through its standard input; it was
+    // written to %TEMP% for each pass and left there whenever its deletion failed (B-CU-5's rule: no chat on disk).
     private static async ValueTask<string> RunTesseractAsync(
         string executable,
         byte[] bitmap,
         CancellationToken cancellationToken)
     {
-        string path = Path.Combine(Path.GetTempPath(), $"baxy-ocr-{Guid.NewGuid():N}.bmp");
-        try
+        var start = new ProcessStartInfo(executable)
         {
-            await File.WriteAllBytesAsync(path, bitmap, cancellationToken).ConfigureAwait(false);
-            var start = new ProcessStartInfo(executable)
-            {
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-            };
-            start.ArgumentList.Add(path);
-            start.ArgumentList.Add("stdout");
-            start.ArgumentList.Add("-l");
-            start.ArgumentList.Add("eng");
-            start.ArgumentList.Add("--psm");
-            start.ArgumentList.Add("6");
-            using Process process = Process.Start(start)
-                ?? throw new IOException("Tesseract did not start.");
-            HelperProcessJob.Assign(process);
-            return await ReadRedirectedOutputAsync(process, cancellationToken)
-                .ConfigureAwait(false);
-        }
-        finally
-        {
-            try
-            {
-                File.Delete(path);
-            }
-            catch (IOException)
-            {
-                // A failed local cleanup does not change delivery evidence.
-            }
-        }
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        start.ArgumentList.Add("stdin");
+        start.ArgumentList.Add("stdout");
+        start.ArgumentList.Add("-l");
+        start.ArgumentList.Add("eng");
+        start.ArgumentList.Add("--psm");
+        start.ArgumentList.Add("6");
+        using Process process = Process.Start(start)
+            ?? throw new IOException("Tesseract did not start.");
+        HelperProcessJob.Assign(process);
+        return await ReadRedirectedOutputAsync(process, cancellationToken, bitmap)
+            .ConfigureAwait(false);
     }
 
     internal static async ValueTask<string> ReadRedirectedOutputAsync(
         Process process,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        byte[]? input = null)
     {
         ArgumentNullException.ThrowIfNull(process);
         Task<string> outputTask =
             process.StandardOutput.ReadToEndAsync(cancellationToken);
         Task<string> errorTask =
             process.StandardError.ReadToEndAsync(cancellationToken);
+        if (input is not null)
+        {
+            // Read concurrently above, so a process that answers while it is still being fed never blocks the write.
+            await process.StandardInput.BaseStream.WriteAsync(input, cancellationToken).ConfigureAwait(false);
+            process.StandardInput.Close();
+        }
+
         await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
         string[] streams = await Task.WhenAll(outputTask, errorTask).ConfigureAwait(false);
         return process.ExitCode == 0 ? streams[0] : string.Empty;
