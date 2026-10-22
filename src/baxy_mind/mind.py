@@ -1396,12 +1396,15 @@ class Mind:
         # B-MED-3 (2026-10-22): the rule of its training (qwen_signals.py, rollouts): the chosen tool and the next three
         # tokens of the weakest one, each of p ≥ 0.01 (served, the chosen token took a place and a rival needed 0.02).
         names = [chosen]
+        prompt: str | None = None  # the decision's prompt, rendered once for all of its rivals (al máximo V3)
         for token, p in doubt.get("rivals") or []:
             if p < 0.01 or len(names) >= 4:
                 continue
             written = doubt.get("written", "") + token
             try:
-                written += self.server.complete_name(body, written) if ">" not in written[written.find("<function="):] else ""
+                if ">" not in written[written.find("<function="):]:
+                    prompt = prompt if prompt is not None else self.server.template(body)
+                    written += self.server.complete_name(prompt, written)
             except Exception:  # noqa: BLE001 - a rival that cannot be read is left out
                 continue
             at = written.find("<function=")

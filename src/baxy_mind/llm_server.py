@@ -238,12 +238,17 @@ class LlmServer:
                 **{key: head[key] for key in ("created", "id", "model", "system_fingerprint") if key in head},
                 "object": "chat.completion", **{key: head[key] for key in ("usage", "timings") if key in head}}
 
-    def complete_name(self, body: dict[str, Any], written: str, timeout: float = 10.0) -> str:
-        """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:
-        the chat's own prompt (/apply-template) plus that text, stopped at the name's end."""
+    def template(self, body: dict[str, Any], timeout: float = 10.0) -> str:
+        """The chat's own prompt as the server renders it (/apply-template). Al máximo V3 (2026-10-22): once per
+        decision, for all of its rivals (complete_name); each rival rendered the whole prompt again (decisions with
+        System One took 1.5-2.75 s against 1.1-1.4 s)."""
         self.wait_ready(self._within(timeout))
-        prompt = self._post("/apply-template", {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")},
-                            timeout)["prompt"]
+        return self._post("/apply-template", {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")},
+                          timeout)["prompt"]
+
+    def complete_name(self, prompt: str, written: str, timeout: float = 10.0) -> str:
+        """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:
+        the chat's own prompt (template) plus that text, stopped at the name's end."""
         reply = self._post("/completion", {"prompt": prompt + written, "n_predict": 24, "temperature": 0.0,
                                            "stop": [">", "\n"], "cache_prompt": True, "id_slot": 0}, timeout)
         return str(reply.get("content", ""))
