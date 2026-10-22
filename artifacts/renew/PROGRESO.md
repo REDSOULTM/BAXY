@@ -2906,3 +2906,7 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
 - 16:0x **tanda 1 depurada** (3.3, 1.4, 9.5) en decision2 S1 ×3: 229 / 232 / 229 (230,0) frente a 229,67, Δ +0,33, IC95
   [−1,0; +1,67]: no cambia decisiones. Fusionada (9d6ea550a); su ganancia (RAM con 3.3, relecturas con 1.4, ms por
   continuación con 9.5) la mide el NB en sesión larga; si no gana, se revierte.
+- 16:2x **tanda 4** (lv-t4 b6b731f94: 4.2 una pregunta por malentendido + 8.1 registro de la sesión en el reloj) en
+  decision2 S1 ×3 frente a la tanda 1 depurada: 229 / 228 / 229 (228,67) frente a 230,0, Δ −1,33, IC95 [−6,0; +3,33],
+  McNemar p 0,73: dentro del ruido. 8.1 se juzga en falsedades: brazo C de las falsedades del PC (A = 11347dd0d, B =
+  lv-t2, C = lv-t4; semillas 0-5) tras la tanda 5. t3b (descripciones del NB + open_recovery) lista en lv-t3b.
