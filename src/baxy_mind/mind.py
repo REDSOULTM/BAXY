@@ -12,6 +12,7 @@ import datetime as _dt
 import json
 import os
 import re
+import threading
 import time
 import unicodedata
 import urllib.error
@@ -472,6 +473,8 @@ class Mind:
         # Review 2026-10-22: the ids the mind writes itself (a confirmation's call, a call the server gave none, a
         # correction) count up for the whole session: from the conversation's length they repeated once it was trimmed.
         self._ids = 0
+        # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
+        self._log_lock = threading.Lock()
 
     # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
     def _shorten(self, observation: str) -> tuple[str, dict[str, str]]:
@@ -1120,7 +1123,7 @@ class Mind:
             # Only a turn's own row carries the decision model's answer: the voice thread logs here too (voice.speak).
             row["system_one"], self._judged = self._judged, None
         try:
-            with self.trace.open("a", encoding="utf-8") as out:
+            with self._log_lock, self.trace.open("a", encoding="utf-8") as out:
                 out.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
         except OSError:
             pass

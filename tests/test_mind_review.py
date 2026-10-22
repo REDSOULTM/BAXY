@@ -285,3 +285,36 @@ def test_a_correction_drops_the_words_written_for_the_doubted_call_and_its_row_n
     row = _rows(tmp_path)[-1]
     assert row["operation"] == "app.close" and row["doubt_of"] == "system.power" and row["content"] == ""
     assert row["doubt"]["confidence"] < 0.6
+
+
+def test_the_trace_written_from_the_voice_thread_and_the_turns_keeps_whole_rows(tmp_path: Path) -> None:
+    # Review 8: voice.speak's rows (the voice thread) and the turn's rows were written with no lock between them.
+    import threading
+    import time
+    mind, _ = _mind(tmp_path, [])
+    inside, overlaps = [0], []
+
+    class Trace:
+        def open(self, mode: str, encoding: str):
+            return self
+
+        def __enter__(self):
+            inside[0] += 1
+            overlaps.append(inside[0] > 1)
+            return self
+
+        def __exit__(self, *exc) -> None:
+            inside[0] -= 1
+
+        def write(self, row: str) -> None:
+            time.sleep(0.002)  # a write long enough for the other thread to arrive
+
+    mind.trace = Trace()  # type: ignore[assignment]
+    threads = [threading.Thread(target=lambda stage=stage: [mind._log(stage, time.monotonic(), None)
+                                                            for _ in range(20)])
+               for stage in ("voice.speak", "turn.decide")]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert len(overlaps) == 40 and not any(overlaps)
