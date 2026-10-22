@@ -110,8 +110,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return operation switch
             {
                 "game.catalog.list" => List(operation, arguments),
-                "game.entitlement.named" => await EntitlementNamedAsync(operation, arguments, cancellationToken)
-                    .ConfigureAwait(false),
+                "game.entitlement.named" => EntitlementNamed(operation, arguments),
                 "game.install.named" => await InstallNamedAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
@@ -187,10 +186,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
     // INSTALL1617 «Descarga Worms Rumble en Steam»: before any download the
     // turn needs a truthful answer to «is this game mine and is it installed?».
-    // The title resolves like game.install.named (the local snapshot, then the
-    // store's title search); an unresolved title is reported as such, never guessed.
-    private async ValueTask<ExternalCapabilityReceipt> EntitlementNamedAsync(
-        string operation, JsonElement arguments, CancellationToken cancellationToken)
+    // Renew al máximo (B-APP-6): the title resolves only by the installed games'
+    // manifests, never by the store's search (nothing of the person's leaves the
+    // PC for a local check); an unresolved title is reported as such, never guessed.
+    private ExternalCapabilityReceipt EntitlementNamed(string operation, JsonElement arguments)
     {
         string title = ExternalJson.RequiredString(arguments, "title");
         if (string.IsNullOrWhiteSpace(title) || Encoding.UTF8.GetByteCount(title) > 256)
@@ -204,8 +203,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             return EpicEntitlementNamed(operation, title);
         }
-        string? appId = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
         IReadOnlyList<SteamLocalGame> catalog = _snapshot();
+        string[] bearing = Bearing(catalog, FoldTitle(title));
+        string? appId = bearing.Length == 1 ? bearing[0] : null;
         bool librariesUnread = UnreadLibraries(catalog) > 0;
         SteamLocalGame? game = appId is null
             ? null
@@ -220,6 +220,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteBoolean("resolved", appId is not null);
             if (appId is null) writer.WriteNull("appId"); else writer.WriteString("appId", appId);
             writer.WriteString("title", game?.Name ?? title);
+            // How many manifests bear the title (none, or two that leave it ambiguous); with a library unread, only some.
+            if (bearing.Length > 0 || !librariesUnread) writer.WriteNumber("steamManifestsWithThatName", bearing.Length);
             // Ronda final: the local library cache is incomplete (see InstallNamedAsync), so a game absent from it is
             // absent from the cache, never «not owned».
             // An installed manifest is not the account's ownership (a shared or free game): only the cache says owned.
@@ -234,7 +236,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 : installed ? "installed"
                 : librariesUnread ? "install_not_read"
                 : owned ? "owned_not_installed" : cache is not null ? "not_in_local_library_cache" : "library_cache_unavailable");
-            writer.WriteString("authority", installed
+            writer.WriteString("authority", installed || appId is null
                 ? "steam_local_appmanifest" : "steam_authenticated_library_cache");
             writer.WriteEndObject();
         });
@@ -257,7 +259,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 .ConfigureAwait(false);
         }
 
-        string? appId = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
+        (string? appId, bool searchFailed) = await ResolveTitleAsync(title, cancellationToken).ConfigureAwait(false);
+        if (searchFailed)
+            return ExternalJson.FailureBeforeEffect(operation, "steam_store_search_failed");
         if (appId is null)
             return ExternalJson.Failure(operation, "steam_title_not_resolved");
         // Encargo imp-steam: the account's library is not read here as a gate. Its local cache is incomplete (measured
@@ -289,9 +293,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         // Ronda final: a download already running grows by itself, so it cannot show this request's start. A manifest
         // that reads «downloading» may also be a download cut with Steam closed: only bytes seen growing between two
         // reads, before anything is sent, are the state reached (changed:false); otherwise the second read is the
-        // baseline and the request goes on.
+        // baseline and the request goes on. Renew al máximo (B-APP-4): one that reads «paused» is read twice too: only its
+        // growth says whether it runs.
         SteamLocalGame? running = null;
-        if (before is { Installed: false } first && InstallState(first) == "downloading")
+        if (before is { Installed: false } first && InstallState(first) is "downloading" or "paused")
         {
             await _delay(ObservationInterval, cancellationToken).ConfigureAwait(false);
             SteamLocalGame? second = _snapshot().SingleOrDefault(game => game.AppId == appId);
@@ -515,13 +520,15 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    private async ValueTask<string?> ResolveTitleAsync(string title, CancellationToken cancellationToken)
+    // Renew al máximo (B-APP-5): a store search that got no answer is SearchFailed, never a title no game bears.
+    private async ValueTask<(string? AppId, bool SearchFailed)> ResolveTitleAsync(
+        string title, CancellationToken cancellationToken)
     {
         string folded = FoldTitle(title);
         string? installed = ResolveSnapshotTitle(folded);
         if (installed is not null || _storeTitles is null)
         {
-            return installed;
+            return (installed, false);
         }
 
         IReadOnlyList<SteamStoreTitle> found;
@@ -532,7 +539,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
             || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
-            return null;
+            return (null, true);
         }
 
         // Exactly one game of the store answer bears the title (folded): «Super Meat Boy» is not «Super Meat Boy Forever».
@@ -541,7 +548,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .Select(item => item.AppId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-        return matches.Length == 1 ? matches[0] : null;
+        return (matches.Length == 1 ? matches[0] : null, false);
     }
 
     /// <summary>
@@ -602,10 +609,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
         using HttpResponseMessage response = await StoreHttp.GetAsync(search.Address, cancellationToken)
             .ConfigureAwait(false);
-        if (!response.IsSuccessStatusCode)
-        {
-            return [];
-        }
+        // Renew al máximo (B-APP-5): an error status is a search that failed (HttpRequestException), not an empty answer.
+        response.EnsureSuccessStatusCode();
 
         await using Stream body = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         using JsonDocument document = await JsonDocument.ParseAsync(body, cancellationToken: cancellationToken)
@@ -649,15 +654,14 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return titles;
     }
 
-    private string? ResolveSnapshotTitle(string folded)
-    {
-        string[] matches = _snapshot()
-            .Where(game => FoldTitle(game.Name) == folded)
-            .Select(game => game.AppId)
-            .Distinct(StringComparer.Ordinal)
-            .ToArray();
-        return matches.Length == 1 ? matches[0] : null;
-    }
+    private string? ResolveSnapshotTitle(string folded) => Bearing(_snapshot(), folded) is [string one] ? one : null;
+
+    // The AppIDs of the manifests bearing the title (folded): the title resolves when exactly one does.
+    private static string[] Bearing(IReadOnlyList<SteamLocalGame> catalog, string folded) => catalog
+        .Where(game => FoldTitle(game.Name) == folded)
+        .Select(game => game.AppId)
+        .Distinct(StringComparer.Ordinal)
+        .ToArray();
 
     private static string FoldTitle(string value)
     {
@@ -734,7 +738,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             SteamLocalGame? after = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
             bool terminal = after is null
                 || (after.BytesDownloaded == lastBytes
-                    && InstallState(after) is "paused" or "not_installed");
+                    && InstallState(after) == "paused");
             bool changedFromPreDispatch = after is null
                 || after.BytesDownloaded != before.BytesDownloaded
                 || !string.Equals(
@@ -769,9 +773,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
+        // Renew al máximo (B-APP-4): every download already started of a game not installed is cancelled, one in pause
+        // too; the post-read below says none still runs.
         string[] active = _snapshot()
-            .Where(game => !game.Installed && game.BytesDownloaded > 0
-                && InstallState(game) is "downloading" or "installing")
+            .Where(game => !game.Installed && game.BytesDownloaded > 0)
             .Select(game => game.AppId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
@@ -827,7 +832,23 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return ExternalJson.FailureBeforeEffect(operation, "steam_act_not_declared");
         }
 
-        HashSet<int> before = ReadProcessIds();
+        string installRoot = Path.GetFullPath(game.InstallDirectory);
+        (HashSet<int> before, int? running) = ReadProcesses(installRoot);
+        // Renew al máximo (B-APP-8): a game already running is the state reached, said before anything is sent: its
+        // address would minimize Steam's windows, maybe press «Jugar» and wait 35 s for no new process.
+        if (running is not null)
+        {
+            JsonElement reached = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteString("appId", appId); writer.WriteString("name", game.Name);
+                writer.WriteNumber("processId", running.Value);
+                writer.WriteBoolean("alreadyRunning", true);
+                writer.WriteString("authority", "steam_manifest_process_preread"); writer.WriteEndObject();
+            });
+            return ExternalJson.Switched(operation, reached, effectObserved: false);
+        }
+
         effectBoundary.Cross(cancellationToken);
         SteamDispatchResult dispatch = await _automation.DispatchAsync(launch.Address, cancellationToken)
             .ConfigureAwait(false);
@@ -836,7 +857,6 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return effectBoundary.Failure(
                 operation, "steam_launch_dispatch_rejected", dispatch.EffectObserved);
         }
-        string installRoot = Path.GetFullPath(game.InstallDirectory);
         // Ronda final 21 (regla 3): the Steam windows the launch minimized (so its dialog opens apart from the library)
         // are shown again, without taking the front, whatever the launch's end; the receipt says how many.
         try
@@ -885,34 +905,42 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         }
     }
 
-    private HashSet<int> ReadProcessIds()
+    // Every process running now, and one whose executable lies under the game's folder (null: none). The executable is
+    // read with the least access Windows grants (an elevated game too).
+    private (HashSet<int> Ids, int? Running) ReadProcesses(string installRoot)
     {
-        if (_processSnapshot is not null)
+        IEnumerable<SteamProcessObservation> processes = _processSnapshot is not null
+            ? _processSnapshot()
+            : Process.GetProcesses().Select(static process =>
+            {
+                using (process)
+                    return new SteamProcessObservation(
+                        process.Id, Applications.WindowsInstalledApplicationPlatform.ExecutableImagePath(process.Id));
+            });
+        var ids = new HashSet<int>();
+        int? running = null;
+        foreach (SteamProcessObservation process in processes)
         {
-            return _processSnapshot()
-                .Select(static process => process.ProcessId)
-                .ToHashSet();
+            ids.Add(process.ProcessId);
+            if (running is null && RunsFrom(process.ExecutablePath, installRoot))
+                running = process.ProcessId;
         }
 
-        return Process.GetProcesses().Select(process =>
-        {
-            using (process) return process.Id;
-        }).ToHashSet();
+        return (ids, running);
     }
+
+    private static bool RunsFrom(string? executable, string installRoot) =>
+        executable is not null && Path.GetFullPath(executable).StartsWith(
+            Path.TrimEndingDirectorySeparator(installRoot) + Path.DirectorySeparatorChar,
+            StringComparison.OrdinalIgnoreCase);
 
     private int? FindLaunchedProcess(HashSet<int> before, string installRoot)
     {
-        string installPrefix =
-            Path.TrimEndingDirectorySeparator(installRoot) + Path.DirectorySeparatorChar;
         if (_processSnapshot is not null)
         {
             foreach (SteamProcessObservation process in _processSnapshot())
             {
-                if (!before.Contains(process.ProcessId)
-                    && process.ExecutablePath is not null
-                    && Path.GetFullPath(process.ExecutablePath).StartsWith(
-                        installPrefix,
-                        StringComparison.OrdinalIgnoreCase))
+                if (!before.Contains(process.ProcessId) && RunsFrom(process.ExecutablePath, installRoot))
                 {
                     return process.ProcessId;
                 }
@@ -928,10 +956,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 if (before.Contains(process.Id)) continue;
                 try
                 {
-                    string? executable = process.MainModule?.FileName;
-                    if (executable is not null && Path.GetFullPath(executable).StartsWith(
-                        installPrefix,
-                        StringComparison.OrdinalIgnoreCase))
+                    if (RunsFrom(process.MainModule?.FileName, installRoot))
                     {
                         return process.Id;
                     }
@@ -971,11 +996,18 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         writer.WriteEndObject();
     }
 
+    // Renew al máximo (B-APP-4): Steam's EAppState flags (Open Steamworks AppsCommon.h): UpdateRunning 256, UpdatePaused
+    // 512, Downloading 1048576. Only a running flag says «downloading»; a download in pause (1538: UpdateRequired |
+    // UpdatePaused | UpdateStarted), or one with bytes and no running flag, is «paused».
+    private const ulong RunningFlags = 256UL | 1048576UL;
+    private const ulong PausedFlag = 512UL;
+
     private static string InstallState(SteamLocalGame game)
     {
         if (game.Installed) return "installed";
         if (game.BytesToDownload > 0 && game.BytesDownloaded >= game.BytesToDownload) return "installing";
-        if (game.BytesDownloaded > 0) return game.StateFlags == 2 ? "paused" : "downloading";
+        if ((game.StateFlags & PausedFlag) != 0) return "paused";
+        if (game.BytesDownloaded > 0) return (game.StateFlags & RunningFlags) != 0 ? "downloading" : "paused";
         return "queued";
     }
 
