@@ -685,7 +685,30 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         return ValueTask.FromResult(new WindowActionResult(true, true, candidate, null));
     }
 
+    // Renew al máximo (auditoría de flujos): a window closed or changed while it is placed (each act reads it first, for
+    // seconds when it leaves a full screen) threw out of the provider and stopped the core; the placement ends saying so.
     public async ValueTask<WindowActionResult> SnapAsync(
+        string windowId,
+        string side,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await PlaceOnHalfAsync(windowId, side, cancellationToken).ConfigureAwait(false);
+        }
+        catch (WindowIdentityChangedException)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.WindowIdentityChanged, EffectMayHaveOccurred: true);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException or ArgumentException)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
+        }
+    }
+
+    private async ValueTask<WindowActionResult> PlaceOnHalfAsync(
         string windowId,
         string side,
         CancellationToken cancellationToken)
