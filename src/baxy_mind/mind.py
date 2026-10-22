@@ -1004,7 +1004,8 @@ class Mind:
         if doubt is not None:
             doubt.pop("written", None)  # the call's own text up to its weakest token: only for reading the rivals
             row["doubt"] = doubt
-        if self._judged is not None:
+        if self._judged is not None and stage.startswith("turn."):
+            # Only a turn's own row carries the decision model's answer: the voice thread logs here too (voice.speak).
             row["system_one"], self._judged = self._judged, None
         try:
             with self.trace.open("a", encoding="utf-8") as out:
