@@ -1,7 +1,10 @@
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Baxy.Security.Windows;
 
 namespace Baxy.App;
 
@@ -11,6 +14,12 @@ namespace Baxy.App;
 /// showed and the mind's own conversation, calls and results included, so an opened session gives the model back what
 /// really ran — never a retelling of bare replies, which taught it to say «Listo» without calling (mind.py,
 /// new_session).
+/// <para>
+/// 2026-10-22, review of the App: the mind's conversation holds what the view never shows (a secret typed and masked on
+/// screen, what memory calls read), so each file is sealed with the profile's DPAPI-wrapped key (AES-GCM,
+/// <see cref="WindowsProtectedPayload"/>, as the private memory) and opens only for this Windows user. A session kept in
+/// clear before then is read once and written back sealed.
+/// </para>
 /// </summary>
 internal sealed class FieldSessionStore
 {
@@ -18,10 +27,12 @@ internal sealed class FieldSessionStore
     private const string Schema = "baxy.field-session.v1";
 
     private readonly string _directory;
+    private readonly WindowsProtectedPayload _seal;
 
     internal FieldSessionStore(string dataRoot)
     {
         _directory = Path.Combine(dataRoot, "sessions");
+        _seal = new WindowsProtectedPayload(Path.Combine(dataRoot, "security", "field-sessions.v1.key"));
     }
 
     internal static FieldSessionStore CreateDefault() => new(MemoryOperationProtector.ResolveDataRoot());
@@ -52,6 +63,17 @@ internal sealed class FieldSessionStore
 
     internal bool Save(Session session)
     {
+        if (!Write(session))
+        {
+            return false;
+        }
+
+        Prune();
+        return true;
+    }
+
+    private bool Write(Session session)
+    {
         if (!IsId(session.Id))
         {
             return false;
@@ -71,12 +93,21 @@ internal sealed class FieldSessionStore
                 ["mind"] = session.Mind?.DeepClone(),
             };
             string path = PathOf(session.Id), temporary = path + ".tmp";
-            File.WriteAllText(temporary, document.ToJsonString());
+            byte[] plain = Encoding.UTF8.GetBytes(document.ToJsonString());
+            try
+            {
+                File.WriteAllBytes(temporary, _seal.Seal(plain, Schema));
+            }
+            finally
+            {
+                CryptographicOperations.ZeroMemory(plain);
+            }
+
             File.Move(temporary, path, overwrite: true);
-            Prune();
             return true;
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or ProtectedPayloadException)
         {
             return false;
         }
@@ -107,11 +138,30 @@ internal sealed class FieldSessionStore
 
     private static bool IsId(string id) => id.Length is > 0 and <= 32 && id.All(static c => char.IsAsciiLetterOrDigit(c));
 
-    private static Session? Read(string path)
+    private Session? Read(string path)
     {
         try
         {
-            if (!File.Exists(path) || JsonNode.Parse(File.ReadAllText(path)) is not JsonObject document
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            byte[] stored = File.ReadAllBytes(path);
+            // A session kept before the files were sealed is plain JSON: it is read this once and written back sealed.
+            bool clear = stored is [(byte)'{', ..];
+            byte[] plain = clear ? stored : _seal.Open(stored, Schema);
+            JsonNode? parsed;
+            try
+            {
+                parsed = JsonNode.Parse(plain);
+            }
+            finally
+            {
+                CryptographicOperations.ZeroMemory(plain);
+            }
+
+            if (parsed is not JsonObject document
                 || (string?)document["schema"] != Schema
                 || (string?)document["id"] is not { } id
                 || !DateTimeOffset.TryParse((string?)document["created"], CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTimeOffset created)
@@ -120,11 +170,17 @@ internal sealed class FieldSessionStore
                 return null;
             }
 
-            return new Session(id, (string?)document["label"] ?? string.Empty, created, updated,
+            var session = new Session(id, (string?)document["label"] ?? string.Empty, created, updated,
                 document["items"] as JsonArray ?? [], document["mind"] as JsonArray);
+            if (clear && id == Path.GetFileNameWithoutExtension(path))
+            {
+                Write(session);
+            }
+
+            return session;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException
-            or InvalidOperationException)
+            or InvalidOperationException or ProtectedPayloadException)
         {
             return null;
         }
