@@ -20,7 +20,8 @@ MODEL_FILES = ["duration_predictor.int8.onnx", "text_encoder.int8.onnx", "vector
 BLEND = {5: 0.5, 6: 0.3, 8: 0.2}
 RECIPE = {
     "lang": "es",
-    "steps": 10,      # flow-matching steps: 8 is near the paper's plateau (Supertonic v1, NFE sweep), 10 a little cleaner
+    "steps": 6,       # flow-matching steps: the owner chose 6 by ear (2026-10-22, samples A-D): first audio of a two-sentence
+                      # reply 989 ms at 10 steps, 646 ms at 6 (p50, PC CPU, renew al máximo 9.1)
     "speed": 1.0,     # sherpa's 1.0 is the demo's «0.95x»: calm, not slow
     "shift": 0.5,     # semitones up, pitch and formants together: the small robot, barely
     "seed": 7,        # fixed noise: the same sentence always sounds the same

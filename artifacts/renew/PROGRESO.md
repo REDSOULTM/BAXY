@@ -2943,3 +2943,6 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   comparables, aciertos sí). Quité la cadena duplicada; las falsedades A/B/C corren una sola vez tras la tanda 5.
 - 17:1x **el dueño escuchó las muestras y eligió B** (primera frase aparte, 10 pasos): 9.3 fusionada (voz-maximo); 9.1
   (bajar pasos) no se aplica. Primer audio de respuestas de dos frases −0,6 s p50 (medido sin GPU).
+- 17:2x **el dueño cambió a D** (primera frase aparte y 6 pasos de Supertonic): receta `make_baxy_voice.py` steps 6 y
+  `baxy-voice.json` instalado en el PC (%LOCALAPPDATA%\BAXYRuntime) y en el NB (D:\BAXYRuntime), sin BOM, comprobado.
+  Primer audio de una respuesta de dos frases: 1 595 ms (como era) → 646 ms (p50, CPU del PC).
