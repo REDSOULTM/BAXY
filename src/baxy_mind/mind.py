@@ -312,6 +312,8 @@ def beat_message(context: dict[str, Any]) -> str:
 
 
 CLOCK_MARK = "[Reloj:"
+# The role of the session's own state at the end of an exported conversation (export_session); never a message.
+SESSION_STATE = "baxy.session"
 
 # The session's conversation keeps the last turns that fit both bounds; it is only ever cut at a turn's start (the
 # model is hybrid: its cache is reused from the front, so the middle of the prompt is never edited).
@@ -467,6 +469,9 @@ class Mind:
         # PLAN_GENERAL C1: the long addresses results carried, by the short reference the model saw, and back.
         self._refs: dict[str, str] = {}
         self._ref_of: dict[str, str] = {}
+        # Review 2026-10-22: the ids the mind writes itself (a confirmation's call, a call the server gave none, a
+        # correction) count up for the whole session: from the conversation's length they repeated once it was trimmed.
+        self._ids = 0
 
     # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
     def _shorten(self, observation: str) -> tuple[str, dict[str, str]]:
@@ -506,6 +511,11 @@ class Mind:
         if isinstance(value, str) and REF_PREFIX in value:
             return _REF.sub(lambda m: self._refs.get(m.group(0), m.group(0)), value)
         return value
+
+    def _new_id(self, kind: str) -> str:
+        # A hyphen, never an underscore: an id written before the counter (confirm_12, call_5_0) is never repeated.
+        self._ids += 1
+        return f"{kind}-{self._ids}"
 
     # ---- catalog -------------------------------------------------------------------------------------------
     def configure(self, message: dict[str, Any]) -> int:
@@ -607,18 +617,26 @@ class Mind:
         """Start a fresh conversation, optionally from earlier plain exchanges (a bench case's context)."""
         self._turn = self._beat = None
         self.trimmed_turns = 0
+        self._refs, self._ref_of, self._ids = {}, {}, 0
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
     def export_session(self) -> list[dict[str, Any]]:
         """The session's conversation as it stands (calls and results included), for the App to keep with the session it
-        shows (design v4, Sessions); it is asked for between turns."""
-        return json.loads(json.dumps(self.conversation, ensure_ascii=False))
+        shows (design v4, Sessions); it is asked for between turns. Its last element is the session's own state (review
+        2026-10-22: the short references and the ids, or after a relaunch ref:r1 stood for another address); the App
+        keeps the array as it is."""
+        state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids}
+        return json.loads(json.dumps([*self.conversation, state], ensure_ascii=False))
 
     def load_session(self, conversation: list[Any]) -> None:
         """Go back to a kept session: its conversation exactly as exported, so the model reads what really ran."""
-        self._turn = self._beat = None
-        self.trimmed_turns = 0
+        self.new_session()
+        state = next((m for m in conversation if isinstance(m, dict) and m.get("role") == SESSION_STATE), {})
+        if isinstance(state.get("refs"), dict):
+            self._refs = {str(ref): str(value) for ref, value in state["refs"].items()}
+            self._ref_of = {value: ref for ref, value in self._refs.items()}
+        self._ids = state["ids"] if isinstance(state.get("ids"), int) and state["ids"] > 0 else 0
         self.conversation = [m for m in conversation if isinstance(m, dict)
                              and m.get("role") in {"user", "assistant", "tool"}]
         self._trim()
@@ -843,7 +861,7 @@ class Mind:
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
         started = time.monotonic()
         self._close_open_calls()
-        call_id = f"confirm_{len(self.conversation)}"
+        call_id = self._new_id("confirm")
         self.conversation.append({"role": "user", "content": label})
         self.conversation.append({"role": "assistant", "content": "", "tool_calls": [
             {"id": call_id, "type": "function",
@@ -910,7 +928,7 @@ class Mind:
             if not isinstance(arguments, dict):
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
-            calls.append({"id": call.get("id") or f"call_{len(conv)}_{index}", "wire": wire, "arguments": arguments})
+            calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
         note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
         if isinstance(note, dict):
             # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
@@ -982,7 +1000,7 @@ class Mind:
             return None
         if not filled or filled.get("name") != wire or not self._founded(wire, filled["arguments"], body["messages"]):
             return None
-        return {"id": f"call_{len(body['messages'])}_s1", "wire": wire, "arguments": filled["arguments"]}
+        return {"id": self._new_id("s1"), "wire": wire, "arguments": filled["arguments"]}
 
     def _founded(self, wire: str, arguments: dict[str, Any], messages: list[dict[str, Any]]) -> bool:
         """Whether a filled call holds every required argument of its tool and each text or number among them appears

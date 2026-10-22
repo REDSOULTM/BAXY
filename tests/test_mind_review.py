@@ -127,3 +127,44 @@ def test_a_correction_whose_arguments_the_person_said_runs(tmp_path: Path, monke
     mind, _ = _snap_correction(tmp_path, monkeypatch, {"windowId": "1", "position": "Left"})
     result = mind.decide(1, "pon la ventana 1 a la left")
     assert result["operation"] == "app.snap" and result["arguments"] == {"windowId": "1", "position": "Left"}
+
+
+LONG = "https://news.google.com/rss/articles/" + "CBMi" + "x" * 300 + "?oc=5"
+FOUND = json.dumps({"status": "completed", "observed": {"results": [{"title": "Lluvia", "url": LONG}]}})
+
+
+def test_short_references_go_with_the_exported_session_and_a_new_session_forgets_them(tmp_path: Path,
+                                                                                         monkeypatch) -> None:
+    # Review 3: after a relaunch ref:r1 stood for another address, or for none.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("web_search", {"query": "clima"}), _say("Encontré una noticia.")])
+    mind.decide(1, "el clima")
+    mind.continue_turn(2, FOUND)
+    kept = mind.export_session()
+    relaunched, _ = _mind(tmp_path, [_call("web_fetch", {"url": "ref:r1"})])
+    relaunched.load_session(kept)
+    assert relaunched.conversation == [m for m in kept if m.get("role") in {"user", "assistant", "tool"}]
+    assert relaunched.decide(3, "ábrela")["arguments"]["url"] == LONG
+    relaunched.server.replies.append(_call("web_fetch", {"url": "ref:r1"}))
+    relaunched.new_session()
+    assert relaunched.decide(4, "ábrela")["arguments"]["url"] == "ref:r1"
+
+
+def test_the_ids_the_mind_writes_never_repeat_in_a_session(tmp_path: Path, monkeypatch) -> None:
+    # Review 13: confirm_{len(conversation)} repeated once the conversation was trimmed to the same length.
+    from baxy_mind import mind as mind_module
+    monkeypatch.setattr(mind_module, "HISTORY_TURNS", 1)
+    mind, _ = _mind(tmp_path, [_say("¿Lo borro?"), _say("Listo."), _say("¿Lo borro?"), _say("Listo.")])
+    ids = []
+    for request in ("borra a.txt", "borra b.txt"):
+        mind.decide(1, request)
+        mind.confirm(2, True, "Sí")
+        ids.append(mind.conversation[-1]["tool_calls"][0]["id"])
+        mind.continue_turn(3, json.dumps({"status": "completed"}))
+    kept = mind.export_session()
+    mind.load_session(kept)
+    mind.server.replies.append(_say("¿Lo borro?"))
+    mind.decide(4, "borra c.txt")
+    mind.confirm(5, True, "Sí")
+    ids.append(mind.conversation[-1]["tool_calls"][0]["id"])
+    assert len(set(ids)) == 3
