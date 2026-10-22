@@ -3677,6 +3677,58 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): an address whose host does not exist (an invented URL), no network,
+    // and a host that resolves into the local network each say so; all three were web_adapter_unavailable, read as the
+    // web tool itself being broken.
+    [Test]
+    public async Task AWebFetchThatReachesNoPageSaysWhy()
+    {
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(new LambdaHttpHandler((request, _) => throw (request.RequestUri!.Host switch
+        {
+            "inventada.example.com" => new HttpRequestException(HttpRequestError.NameResolutionError, "no such host"),
+            "lan.example.com" => new HttpRequestException(
+                "connect refused", new SearchPageReader.AddressNotPublicException()),
+            _ => new HttpRequestException(HttpRequestError.ConnectionError, "no network"),
+        })));
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt invented = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://inventada.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt offline = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://recetas.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt lan = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lan.example.com/"}"""), CancellationToken.None);
+        // The same two causes as the production client's connection step raises them (no socket is opened).
+        using var unresolved = new HttpClient(new SocketsHttpHandler
+        {
+            ConnectCallback = (_, _) => throw new System.Net.Sockets.SocketException(
+                (int)System.Net.Sockets.SocketError.HostNotFound),
+        });
+        using var refused = new HttpClient(new SocketsHttpHandler
+        {
+            ConnectCallback = (_, _) => throw new HttpRequestException(
+                "connect refused", new SearchPageReader.AddressNotPublicException()),
+        });
+        using WebBrowserAdapter unresolvedAdapter = SearchAdapter(temporary, unresolved);
+        using WebBrowserAdapter refusedAdapter = SearchAdapter(temporary, refused);
+        ExternalCapabilityReceipt unresolvedRead = await unresolvedAdapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://inventada.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt refusedRead = await refusedAdapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lan.example.com/"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(invented.ErrorCode, Is.EqualTo("web_fetch_host_not_found"));
+            Assert.That(offline.ErrorCode, Is.EqualTo("web_fetch_unreachable"));
+            Assert.That(lan.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(unresolvedRead.ErrorCode, Is.EqualTo("web_fetch_host_not_found"));
+            Assert.That(refusedRead.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(invented.EffectMayHaveOccurred | offline.EffectMayHaveOccurred | lan.EffectMayHaveOccurred,
+                Is.False);
+        });
+    }
+
     private sealed class LambdaHttpHandler(
         Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> answer) : HttpMessageHandler
     {

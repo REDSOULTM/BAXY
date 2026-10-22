@@ -135,6 +135,10 @@ internal sealed class SearchPageReader : IDisposable
     internal static IPAddress? PublicEndpoint(IReadOnlyList<IPAddress> resolved) =>
         resolved.Count > 0 && resolved.All(IsPublicAddress) ? resolved[0] : null;
 
+    // The connection refused because the host resolves to an address that is not public (the cause of the
+    // HttpRequestException the client throws), told apart from a page that could not be reached.
+    internal sealed class AddressNotPublicException() : IOException("not a public address");
+
     internal static async ValueTask<Stream> ConnectToPublicAddressAsync(
         SocketsHttpConnectionContext context,
         CancellationToken cancellationToken)
@@ -142,7 +146,8 @@ internal sealed class SearchPageReader : IDisposable
         IPAddress[] resolved = await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, cancellationToken)
             .ConfigureAwait(false);
         IPAddress address = PublicEndpoint(resolved)
-            ?? throw new HttpRequestException("The page's host does not resolve to a public address.");
+            ?? throw new HttpRequestException(
+                "The page's host does not resolve to a public address.", new AddressNotPublicException());
         var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
         try
         {

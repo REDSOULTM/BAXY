@@ -313,6 +313,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             // client's timeout escaped as an exception of the provider.
             return ExternalJson.Failure(operation, "web_fetch_timeout");
         }
+        catch (Exception exception) when (exception is HttpRequestException or IOException)
+        {
+            // Renew al máximo (auditoría de flujos): a host that does not exist (an invented address), one that resolves
+            // into the local network, or no network at all, each said; they were web_adapter_unavailable, the tool broken.
+            bool notPublic = false;
+            for (Exception? cause = exception; cause is not null; cause = cause.InnerException)
+                notPublic |= cause is SearchPageReader.AddressNotPublicException;
+            return ExternalJson.Failure(operation, notPublic ? "web_fetch_address_not_public"
+                : exception is HttpRequestException { HttpRequestError: HttpRequestError.NameResolutionError }
+                    ? "web_fetch_host_not_found" : "web_fetch_unreachable");
+        }
         if (read.Html is null || read.Final is null)
             return ExternalJson.Failure(operation, read.Error ?? "web_fetch_page_unreadable");
         (string title, string whole, int skipped) = PageText.Prose(read.Html);
