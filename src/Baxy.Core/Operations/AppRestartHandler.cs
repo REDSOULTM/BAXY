@@ -50,7 +50,9 @@ internal sealed class AppRestartHandler : IOperationHandler
             || appIdValue.GetString() is not { } requested
             || !ApplicationIds.IsValidRequest(requested))
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            // P5.3: a path or a command line (ApplicationIds refuses \ / : ; | & > < $) is not an application's name.
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments,
+                new ArgumentProblem("appId", "expected an application's name, not a path or a command"));
         }
 
         string appId = requested;

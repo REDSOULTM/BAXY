@@ -195,7 +195,7 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             && appValue.ValueKind == JsonValueKind.String;
         if (byWindow == byApplication)
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, arguments, ArgumentProblem.ExactlyOneOf("appId", "windowId"));
         }
 
         if (byApplication)

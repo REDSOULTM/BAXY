@@ -26,7 +26,7 @@ internal sealed class AudioStatusHandler(IAudioControlProvider provider) : IOper
         }
         catch (JsonException)
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         AudioStatusReceipt receipt = await _provider.GetStatusAsync(
@@ -85,7 +85,4 @@ internal sealed class AudioStatusHandler(IAudioControlProvider provider) : IOper
                 or AudioControlErrorCodes.AudioServiceUnavailable
                 or AudioControlErrorCodes.EndpointUnavailable;
     }
-
-    private static OperationOutcome InvalidArguments() =>
-        OperationOutcome.Failure("invalid_arguments");
 }

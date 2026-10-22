@@ -19,9 +19,13 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         {
             return ValueTask.FromResult(Execute(invocation));
         }
+        catch (NoteSelectorException refused)
+        {
+            return ValueTask.FromResult(OperationOutcome.InvalidArguments(Definition, invocation.Arguments, refused.Problems));
+        }
         catch (JsonException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("invalid_arguments"));
+            return ValueTask.FromResult(OperationOutcome.InvalidArguments(Definition, invocation.Arguments));
         }
         catch (NoteValidationException)
         {
@@ -148,11 +152,19 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         bool hasAnyExpectation = hasExpectedTitle || hasExpectedRevision || hasExpectedState;
         bool hasAllExpectations = hasExpectedTitle && hasExpectedRevision && hasExpectedState;
 
+        // P5.3: what is wrong with the selector goes back by argument (NoteSelectorException), as the schema's own.
         if (hasTitle)
         {
-            if (hasId || hasAnyExpectation)
+            if (hasId)
             {
-                throw new JsonException("A title selector cannot contain an ID or snapshot expectations.");
+                throw new NoteSelectorException([ArgumentProblem.ExactlyOneOf("noteId", "title")]);
+            }
+
+            if (hasAnyExpectation)
+            {
+                throw new NoteSelectorException([.. Expectations(arguments)
+                    .Where(static expectation => expectation.Given)
+                    .Select(static expectation => new ArgumentProblem(expectation.Name, "only with noteId"))]);
             }
 
             return selectByTitle(arguments.Title!);
@@ -160,7 +172,7 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
 
         if (!hasId)
         {
-            throw new JsonException("Exactly one of noteId or title must be provided.");
+            throw new NoteSelectorException([ArgumentProblem.ExactlyOneOf("noteId", "title")]);
         }
 
         Guid id = ParseNoteId(arguments.NoteId!);
@@ -171,7 +183,10 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
 
         if (!hasAllExpectations || arguments.ExpectedRevision < 1)
         {
-            throw new JsonException("A selected note requires a complete valid snapshot.");
+            // A snapshot is the three expectations together; a revision below 1 is the schema's to name.
+            throw new NoteSelectorException([.. Expectations(arguments)
+                .Where(static expectation => !expectation.Given)
+                .Select(static expectation => ArgumentProblem.Missing(expectation.Name))]);
         }
 
         return selectSelected(new NoteSelection(
@@ -180,6 +195,13 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
             arguments.ExpectedRevision!.Value,
             arguments.ExpectedIsTrashed!.Value));
     }
+
+    private static (string Name, bool Given)[] Expectations(NoteSelectorArguments arguments) =>
+    [
+        ("expectedTitle", arguments.ExpectedTitle is not null),
+        ("expectedRevision", arguments.ExpectedRevision.HasValue),
+        ("expectedIsTrashed", arguments.ExpectedIsTrashed.HasValue),
+    ];
 
     protected static NoteResult ToResult(NoteRecord note) => new(
         note.Id.ToString("D"),
@@ -500,3 +522,9 @@ internal sealed record NoteUpdateArguments(
     long ExpectedRevision,
     string Title,
     string Content);
+
+/// <summary>A note selector the schema takes and the operation does not, with what is wrong by argument (P5.3).</summary>
+internal sealed class NoteSelectorException(IReadOnlyList<ArgumentProblem> problems) : Exception
+{
+    public IReadOnlyList<ArgumentProblem> Problems { get; } = problems;
+}

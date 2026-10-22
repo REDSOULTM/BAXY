@@ -22,7 +22,7 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
                 "level",
                 JsonValueKind.Number))
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         AudioVolumeArguments arguments;
@@ -35,12 +35,12 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
         }
         catch (JsonException)
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         if (arguments.Level is < 0 or > 100)
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         AudioControlReceipt receipt = await _provider.SetVolumeAsync(
@@ -81,9 +81,6 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
         JsonElement serialized = AudioControlEvidence.SerializeVerified(receipt);
         return OperationOutcome.Success(serialized);
     }
-
-    private static OperationOutcome InvalidArguments() =>
-        OperationOutcome.Failure("invalid_arguments");
 }
 
 internal static class AudioControlEvidence

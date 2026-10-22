@@ -35,7 +35,7 @@ internal sealed class PasteIntoNewDocumentHandler(
             || named.ValueKind != JsonValueKind.String
             || named.GetString() is not { Length: > 0 } application)
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         if (await _office(application, cancellationToken).ConfigureAwait(false) is { } inOffice)

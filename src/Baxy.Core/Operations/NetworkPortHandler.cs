@@ -18,7 +18,7 @@ internal sealed class NetworkPortHandler(INetworkPortProvider provider) : IOpera
         if (invocation.Arguments.ValueKind != JsonValueKind.Object
             || (invocation.Arguments.TryGetProperty("limit", out JsonElement value)
                 && (!value.TryGetInt32(out limit) || limit is < 1 or > 100)))
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
 
         NetworkPortSnapshot snapshot = await provider.ReadVerifiedAsync(
             limit, cancellationToken).ConfigureAwait(false);
