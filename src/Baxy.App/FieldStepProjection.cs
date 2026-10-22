@@ -192,7 +192,7 @@ internal static class FieldStepProjection
         return operation switch
         {
             "web.search" => "búsqueda «" + Arg("query") + "»",
-            "web.fetch" => "página de " + Host("url"),
+            "web.fetch" or "browser.navigate" or "browser.navigate.named" => "página de " + Host("url"),
             "web.download" => "descarga de " + Host("url"),
             "weather.current" => "clima · " + (Arg("location") is { Length: > 0 } place ? place : "este lugar"),
             "network.ping" => "ping a " + Arg("host"),

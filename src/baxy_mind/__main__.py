@@ -16,6 +16,22 @@ from .system_one import SystemOne
 from .voice import Voice
 
 
+# BAXY Renew al máximo 11.6: the trace keeps every turn's rows (the person's words among them) on this PC, so it has a
+# cap: past it when the mind starts, it becomes turns.jsonl.1 (the one before is dropped) and a new one begins. It stays
+# in %LOCALAPPDATA%\BAXY\renew: catalog.configure.json is written beside it (mind.py) and the benches read it there.
+TRACE_LIMIT_BYTES = 50 * 1024 * 1024
+
+
+def bounded_trace(trace: Path, limit: int = TRACE_LIMIT_BYTES) -> Path:
+    trace.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        if trace.stat().st_size > limit:
+            os.replace(trace, trace.with_name(trace.name + ".1"))
+    except FileNotFoundError:
+        pass  # the first start: nothing to cap
+    return trace
+
+
 def main() -> int:
     gguf = os.environ.get("BAXY_MIND_LLM_GGUF", "")
     server_path = os.environ.get("BAXY_MIND_LLAMA_SERVER", "")
@@ -35,8 +51,7 @@ def main() -> int:
         system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), server_path,
                                int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
         system_one.start()
-    trace = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl"
-    trace.parent.mkdir(parents=True, exist_ok=True)
+    trace = bounded_trace(Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl")
     mind = Mind(server, trace, system_one)
     def spoken(queued: float, sounded: float) -> None:
         # From the App's voice.speak to the first sound, and when it sounded (the turn's own rows say when its text

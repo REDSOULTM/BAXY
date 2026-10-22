@@ -237,7 +237,10 @@ public static class ProductCatalog
             Schema([String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["url"]),
             OperationRisks.ExternalCommunication,
             "browser.navigate.cdp.url.postread.v1",
-            "Abre una URL exacta en el navegador predeterminado de la persona, con su perfil y sus sesiones, y verifica la llegada leyendo su barra de direcciones o el título de su ventana; sólo si no hay navegador predeterminado o no se puede lanzar, la abre en el navegador propio del producto por CDP y verifica la URL final."),
+            "Abre una URL exacta en el navegador predeterminado de la persona, con su perfil y sus sesiones, y verifica la llegada leyendo su barra de direcciones o el título de su ventana; sólo si no hay navegador predeterminado o no se puede lanzar, la abre en el navegador propio del producto por CDP y verifica la URL final.",
+            // Al máximo 11.5: the URL BAXY opens leaves the PC (NetworkEgress reads this fact; the heartbeat held it by
+            // its risk already).
+            effects: [Network()]),
         Descriptor(
             "browser.navigate.named",
             Schema(
@@ -248,7 +251,8 @@ public static class ProductCatalog
                 ["browser", "url"]),
             OperationRisks.ExternalCommunication,
             "browser.navigate.named.cdp.url.postread.v1",
-            "Navega el navegador Chromium indicado (Opera, Opera GX, Chrome, Edge o Brave) mediante un perfil CDP privado y verifica ejecutable y URL final."),
+            "Navega el navegador Chromium indicado (Opera, Opera GX, Chrome, Edge o Brave) mediante un perfil CDP privado y verifica ejecutable y URL final.",
+            effects: [Network()]),
         Descriptor(
             "browser.page.read",
             Schema([Integer("maximumCharacters", 256, 6_000)], []),

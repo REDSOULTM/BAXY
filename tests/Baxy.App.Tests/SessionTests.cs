@@ -71,4 +71,50 @@ public sealed class SessionTests
             Assert.That(viewModel.Messages, Is.Empty);
         }
     }
+
+    // BAXY Renew al máximo 11.4: the view's «borrar todo» deletes every kept conversation, only by its own request.
+    [Test]
+    public async Task DeletingAllConversationsLeavesNoneKept()
+    {
+        using var fake = new FakeMind();
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            var store = new FieldSessionStore(MemoryOperationProtector.ResolveDataRoot());
+            Assert.That(store.Save(Kept("old1")) && store.Save(Kept("old2")), Is.True);
+
+            Assert.That((await view.SendAsync("DELETE", "/sessions")).Status, Is.EqualTo(400));
+            Assert.That(store.List(), Has.Count.EqualTo(2));
+
+            (int status, JsonObject body) = await view.SendAsync("DELETE", "/sessions", new JsonObject { ["scope"] = "all" });
+
+            Assert.That(status, Is.EqualTo(200));
+            Assert.That((int?)body["deleted"], Is.EqualTo(2));
+            Assert.That(store.List(), Is.Empty);
+            Assert.That(fake.Seen, Does.Contain("session.new"));
+        }
+    }
+
+    // BAXY Renew al máximo 11.4: memory forgot everything (the chat's «olvida todo»): the kept conversations go with it.
+    [Test]
+    public async Task ForgettingEverythingDeletesTheKeptConversations()
+    {
+        using var fake = new FakeMind();
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            var store = new FieldSessionStore(MemoryOperationProtector.ResolveDataRoot());
+            Assert.That(store.Save(Kept("old1")), Is.True);
+
+            ((Action)typeof(MainWindowViewModel).GetField("EverythingForgotten",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(viewModel)!)();
+
+            Assert.That(store.List(), Is.Empty);
+        }
+    }
+
+    private static FieldSessionStore.Session Kept(string id) => new(id, "Ayer", DateTimeOffset.UtcNow.AddDays(-1),
+        DateTimeOffset.UtcNow.AddDays(-1), new JsonArray(new JsonObject { ["who"] = "you", ["text"] = "hola" }), null);
 }

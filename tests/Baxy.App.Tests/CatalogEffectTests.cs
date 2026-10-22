@@ -30,6 +30,8 @@ public sealed class CatalogEffectTests
     [
         "web.search", "web.fetch", "web.download", "weather.current", "network.ping",
         "shell.command.run", "peripheral.print",
+        // Al máximo 11.5 (after the lists): the URL a navigation opens leaves the PC too; NetworkEgress reads the fact.
+        "browser.navigate", "browser.navigate.named",
     ];
 
     [Test]

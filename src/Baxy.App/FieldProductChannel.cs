@@ -62,6 +62,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.MessageAdded += OnMessageAdded;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         _viewModel.MemoryChanged += OnMemoryChanged;
+        _viewModel.EverythingForgotten += OnEverythingForgotten;
         _viewModel.StepStarted += OnStepStarted;
         _viewModel.StepCompleted += OnStepCompleted;
         _viewModel.ConfirmationAsked += OnConfirmationAsked;
@@ -180,6 +181,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return await LoadSessionAsync((string?)ParseBody(body)?["id"] ?? string.Empty).ConfigureAwait(true);
             case ("POST", "/sessions/rename"):
                 return RenameSession(ParseBody(body));
+            case ("DELETE", "/sessions"):
+                return await DeleteSessionsAsync(ParseBody(body)).ConfigureAwait(true);
             case ("GET", "/catalog"):
                 return Json(FieldStepProjection.Catalog());
             case ("GET", "/triggers"):
@@ -240,6 +243,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             if (_memory.Count != before)
             {
                 Publish(SurfacesEvent());
+            }
+
+            // The panel's «olvidar todo» (DELETE /memory, scope all) takes the kept conversations with it.
+            if (method == "DELETE" && route == "/memory" && memory.Status == 200)
+            {
+                OnEverythingForgotten();
             }
 
             return memory;
@@ -579,6 +588,38 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         return _sessions.Rename(id, title) ? Json(new JsonObject { ["ok"] = true }) : Error("session_not_found", 404);
+    }
+
+    // BAXY Renew al máximo 11.4 (identity: «se puede ver, editar y borrar entera»): every conversation goes, the one
+    // shown included, which the mind leaves for a new one first, never kept. Only by its own request, as the memory's.
+    private async Task<FieldHttpResponse> DeleteSessionsAsync(JsonObject? payload)
+    {
+        if ((string?)payload?["scope"] != "all")
+        {
+            return Error("invalid_scope", 400);
+        }
+
+        if (_viewModel.IsBusy)
+        {
+            return Error("turn_in_progress", 409);
+        }
+
+        if (!await _viewModel.StartNewUiSessionAsync(_lifetimeCancellation).ConfigureAwait(true))
+        {
+            return Error(_viewModel.IsBusy ? "turn_in_progress" : "session_not_started", 409);
+        }
+
+        int deleted = _sessions.DeleteAll();
+        StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
+        return Json(new JsonObject { ["ok"] = true, ["deleted"] = deleted });
+    }
+
+    // Memory forgot everything (the chat's memory.forget or the panel's): the kept conversations, which hold what memory
+    // calls read, go too; the one shown stays on screen and is kept again as it goes on.
+    private void OnEverythingForgotten()
+    {
+        _sessions.DeleteAll(keep: _sessionId);
+        Publish(SurfacesEvent());
     }
 
     private static string NewSessionId() => Guid.NewGuid().ToString("N")[..12];
@@ -1062,6 +1103,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.MessageAdded -= OnMessageAdded;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         _viewModel.MemoryChanged -= OnMemoryChanged;
+        _viewModel.EverythingForgotten -= OnEverythingForgotten;
         _viewModel.StepStarted -= OnStepStarted;
         _viewModel.StepCompleted -= OnStepCompleted;
         _viewModel.ConfirmationAsked -= OnConfirmationAsked;

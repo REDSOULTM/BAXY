@@ -6,7 +6,8 @@ namespace Baxy.App;
 
 /// <summary>
 /// How the model reads a look at an application window (<c>input.visible.controls</c>): one line per control with the
-/// index it clicks by, its kind, name and state, then the text on screen grouped top, middle and bottom in reading
+/// index it clicks by, its kind, name, zone of the window (when the reader gave it) and state, after one line with the
+/// controls the reader marked as selected or on, then the text on screen grouped top, middle and bottom in reading
 /// order. The reader's own bookkeeping is left out: version, ok, elapsedMs, authority, the name of the text's reader
 /// (textAuthority; only its absence or its cut is said), and of the window its processId, its family of processes and the
 /// process of the window covering it. The model acts by index or label, and a 4B reads a short text view far better
@@ -15,10 +16,10 @@ namespace Baxy.App;
 /// Presentation only: every control the reader returned is kept, one it found several times once with «×N», N the
 /// times it found it (the worker's «repeated» counts the copies after the first); every line of text the reader
 /// returned is kept in its zone, a line that repeats included (a chat read by its lines repeats a bubble's text, and
-/// two «ok» are two messages); nothing is ranked or chosen, and what the reader said about its own reading stays said:
-/// a cut walk, a frame without content, a tree it could not read, text it could not read, the disabled controls, the
-/// window being a modal dialog, protected or run as administrator (audit 2026-10-15: those were dropped, and a cut
-/// walk read as «(ninguno)» with no cause).
+/// two «ok» are two messages), except one that only repeats a listed control's name, left out and counted; nothing is
+/// ranked or chosen, and what the reader said about its own reading stays said: a cut walk, a frame without content, a
+/// tree it could not read, text it could not read, the disabled controls, the window being a modal dialog, protected or
+/// run as administrator (audit 2026-10-15: those were dropped, and a cut walk read as «(ninguno)» with no cause).
 /// </summary>
 internal static class ScreenViewProjection
 {
@@ -28,6 +29,15 @@ internal static class ScreenViewProjection
         ("centro", ["L", "C", "R"]),
         ("abajo", ["BL", "B", "BR"]),
     ];
+
+    // BAXY Renew al máximo 7.3 (A11y-Compressor; OSWorld, UFO2): where a control's centre sits in the window's 3×3
+    // grid, in the words of the text's bands, so two «Buscar» or «el primer resultado» are told apart.
+    private static readonly Dictionary<string, string> Zones = new(StringComparer.Ordinal)
+    {
+        ["TL"] = "arriba izq.", ["T"] = "arriba", ["TR"] = "arriba der.",
+        ["L"] = "centro izq.", ["C"] = "centro", ["R"] = "centro der.",
+        ["BL"] = "abajo izq.", ["B"] = "abajo", ["BR"] = "abajo der.",
+    };
 
     /// <param name="message">The kernel's visible facts of the look (status, error, cause, effectUncertain).</param>
     /// <param name="result">The look's receipt: the whole view the reader returned.</param>
@@ -106,6 +116,18 @@ internal static class ScreenViewProjection
             }
         }
 
+        // BAXY Renew al máximo P8.4 (sonda F019: «quedó en la tienda» with the library's tab selected): what the reader
+        // marked as chosen (selected, or toggled on) is said first, before the reading order buries it between brackets.
+        string[] chosen = controls.OfType<JsonObject>()
+            .Where(static control => ((string?)control["state"] ?? string.Empty).Split(' ')
+                .Any(static part => part is "selected" or "on"))
+            .Select(static control => $"[{(int?)control["i"]}] {(string?)control["kind"]} «{(string?)control["name"]}»")
+            .ToArray();
+        if (chosen.Length > 0)
+        {
+            text.Append("Seleccionados o activados: ").Append(string.Join(" | ", chosen)).Append('\n');
+        }
+
         text.Append("Controles:\n");
         foreach (JsonNode? node in controls)
         {
@@ -173,6 +195,15 @@ internal static class ScreenViewProjection
 
         if (view["text"] is JsonObject zones)
         {
+            // BAXY Renew al máximo 7.2 (A11y-Compressor; AgentOccam, table 10): a line that only repeats the name of a
+            // control listed above says nothing new; it is left out and how many were is said, so a notice worded as a
+            // button is never taken for absent.
+            var listedNames = new HashSet<string>(
+                controls.Concat(view["disabled"] as JsonArray ?? [])
+                    .Select(static control => Folded((string?)control?["name"]))
+                    .Where(static name => name.Length > 0),
+                StringComparer.OrdinalIgnoreCase);
+            int repeatedNames = 0;
             foreach ((string label, string[] bandZones) in Bands)
             {
                 var lines = new List<string>();
@@ -185,7 +216,16 @@ internal static class ScreenViewProjection
 
                     foreach (JsonNode? line in zoneLines)
                     {
-                        if ((string?)line is { Length: > 0 } value)
+                        if ((string?)line is not { Length: > 0 } value)
+                        {
+                            continue;
+                        }
+
+                        if (listedNames.Contains(Folded(value)))
+                        {
+                            repeatedNames++;
+                        }
+                        else
                         {
                             lines.Add(value);
                         }
@@ -196,6 +236,12 @@ internal static class ScreenViewProjection
                 {
                     text.Append("Texto ").Append(label).Append(": ").Append(string.Join(" | ", lines)).Append('\n');
                 }
+            }
+
+            if (repeatedNames > 0)
+            {
+                text.Append('(').Append(repeatedNames)
+                    .Append(" líneas de texto no se listan: repiten el nombre de un control listado)\n");
             }
         }
 
@@ -224,11 +270,20 @@ internal static class ScreenViewProjection
         return true;
     }
 
+    private static string Folded(string? text) => string.Join(' ',
+        (text ?? string.Empty).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+
     private static string Control(JsonObject control)
     {
         var line = new StringBuilder();
         line.Append('[').Append((int?)control["i"]).Append("] ").Append((string?)control["kind"]).Append(" «")
             .Append((string?)control["name"]).Append('»');
+        // Only when the reader gave one: a control without its rectangle has no zone.
+        if ((string?)control["zone"] is { } zone && Zones.TryGetValue(zone, out string? place))
+        {
+            line.Append(" (").Append(place).Append(')');
+        }
+
         if ((string?)control["value"] is { Length: > 0 } value)
         {
             line.Append(" = ").Append(value);

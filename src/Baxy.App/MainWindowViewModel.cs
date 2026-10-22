@@ -140,6 +140,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 },
                 Refuse = Settings.Refusal,
                 MemoryChanged = () => MemoryChanged?.Invoke(),
+                ForgotEverything = () => EverythingForgotten?.Invoke(),
             });
     }
 
@@ -206,6 +207,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>The chat changed what the memory holds (the interface reads its count again).</summary>
     internal event Action? MemoryChanged;
+
+    /// <summary>The chat forgot everything memory held (the kept conversations go too).</summary>
+    internal event Action? EverythingForgotten;
 
     /// <summary>A heartbeat's words for a person who is playing, in a call, watching or away: shown, not spoken.</summary>
     internal event Action<string>? NotificationRequested;
