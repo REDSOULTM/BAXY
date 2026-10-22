@@ -299,14 +299,21 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         var catalog = new JsonArray();
         foreach (OperationDescriptor capability in capabilities)
         {
-            catalog.Add(new JsonObject
+            var tool = new JsonObject
             {
                 ["name"] = capability.Name,
                 ["description"] = capability.Description,
                 ["argumentsSchema"] = JsonNode.Parse(
                     capability.ArgumentsSchema.GetRawText()),
                 ["risk"] = capability.Risk,
-            });
+            };
+            if (capability.Effects is { } effects)
+            {
+                // Al máximo 5.1: «corrige» never fills a tool with one (mind.py, CORRECTABLE_RISKS).
+                tool["effects"] = new JsonArray([.. effects.Select(static effect => (JsonNode?)effect)]);
+            }
+
+            catalog.Add(tool);
         }
 
         var request = new JsonObject

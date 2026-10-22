@@ -292,7 +292,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private void OnStepCompleted(NativeTurnStep step)
     {
         // What left the PC: a call that reaches the internet and got to its provider (the kernel let it through).
-        string? net = step.Sent && NativeTurnLoop.ReachesTheNetwork(step.Operation, step.Arguments)
+        string? net = step.Sent && NativeTurnLoop.Has(step.Operation, step.Arguments, OperationEffects.Network)
             ? FieldStepProjection.NetWhat(step.Operation, step.Arguments)
             : null;
         JsonObject? view = FieldStepProjection.Finished(step.Id, step, net);

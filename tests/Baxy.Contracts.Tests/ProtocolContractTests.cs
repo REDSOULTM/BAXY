@@ -719,6 +719,38 @@ public sealed class ProtocolContractTests
             Throws.TypeOf<JsonException>().With.Message.Contains("argumentsSchema"));
     }
 
+    // Al máximo 5.1: where a capability's effect lands is a typed fact; none is no field at all.
+    [TestCase(new string[0], false)]
+    [TestCase(new[] { "window_input", "network" }, true)]
+    [TestCase(new[] { "window_input", "window_input" }, false)]
+    [TestCase(new[] { "keyboard" }, false)]
+    public void Capability_effects_are_distinct_known_effects(string[] effects, bool accepted)
+    {
+        var descriptor = new OperationDescriptor("note.create", ClosedEmptyArgumentsSchema(),
+            OperationRisks.LowReversible, "note.create.local.reopen.v1", "Creates a note.", effects);
+
+        if (accepted) Assert.That(() => ContractValidator.Validate(descriptor), Throws.Nothing);
+        else Assert.That(() => ContractValidator.Validate(descriptor),
+            Throws.TypeOf<JsonException>().With.Message.Contains("effects"));
+    }
+
+    [Test]
+    public void A_capability_without_effects_writes_no_effects_field()
+    {
+        var descriptor = new OperationDescriptor("note.create", ClosedEmptyArgumentsSchema(),
+            OperationRisks.LowReversible, "note.create.local.reopen.v1", "Creates a note.");
+        string json = JsonSerializer.Serialize(descriptor, BaxyJsonContext.Default.OperationDescriptor);
+        string withEffects = JsonSerializer.Serialize(descriptor with { Effects = ["network"] },
+            BaxyJsonContext.Default.OperationDescriptor);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(json, Does.Not.Contain("ffects"));
+            Assert.That(JsonSerializer.Deserialize(withEffects, BaxyJsonContext.Default.OperationDescriptor)!.Effects,
+                Is.EqualTo(new[] { "network" }));
+        });
+    }
+
     [TestCase("")]
     [TestCase("Note.create.local.reopen.v1")]
     [TestCase("note..create")]

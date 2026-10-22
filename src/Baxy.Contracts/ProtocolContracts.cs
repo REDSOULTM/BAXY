@@ -36,7 +36,10 @@ public sealed record OperationDescriptor(
     [property: JsonRequired] JsonElement ArgumentsSchema,
     [property: JsonRequired] string Risk,
     [property: JsonRequired] string VerifierContractId,
-    [property: JsonRequired] string Description);
+    [property: JsonRequired] string Description,
+    // The kinds of OperationEffects the operation may have (with some arguments or always); null when none.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    IReadOnlyList<string>? Effects = null);
 
 public sealed record OperationRequest(
     [property: JsonRequired] string Type,

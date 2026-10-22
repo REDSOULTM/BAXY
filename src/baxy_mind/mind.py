@@ -370,7 +370,10 @@ DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
-# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth.
+# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth. Al máximo 5.1: nor
+# one with an effect of the catalog (keys, clicks or commands to a window that may be the person's; what the model wrote
+# sent out of the PC), whatever its risk: a call the model did not choose never lands there. A catalog without the field
+# (the measurement catalogs saved before it) corrects by risk alone, as before.
 CORRECTABLE_RISKS = ("read_only", "low_reversible")
 
 
@@ -479,6 +482,7 @@ class Mind:
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
+        self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -559,7 +563,7 @@ class Mind:
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, risk = [ASK_USER, CONFIRM], {}, {}
+        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
@@ -590,7 +594,8 @@ class Mind:
             tools.append(tool)
             wire_to_op[wire] = name
             risk[wire] = str(cap.get("risk") or "")
-        self.tools, self.wire_to_op, self.risk = tools, wire_to_op, risk
+            effects[wire] = [str(e) for e in cap.get("effects") or []]
+        self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
             self._log("configure.aid", time.monotonic(), None, aids=aids)
@@ -1128,8 +1133,10 @@ class Mind:
 
     def _corrected(self, wire: str, body: dict[str, Any]) -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
-        is off, the tool's risk is not in CORRECTABLE_RISKS, or the model did not write that tool's call."""
-        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS:
+        is off, the tool's risk is not in CORRECTABLE_RISKS, it has an effect of the catalog, or the model did not write
+        that tool's call."""
+        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS \
+                or self.effects.get(wire):
             return None
         try:
             filled = self.server.fill_call(body, wire)

@@ -398,6 +398,7 @@ public sealed class ProductCatalogTests
                     Is.EqualTo(product.VerifierContractId),
                     product.Name);
                 Assert.That(tool.Description, Is.EqualTo(product.Description), product.Name);
+                Assert.That(tool.Effects ?? [], Is.EqualTo(product.EffectKinds), product.Name);
             });
         }
 
@@ -405,6 +406,20 @@ public sealed class ProductCatalogTests
             () => ProductCatalog.CreateToolDescriptor(
                 new OperationDefinition("note.create", OperationRisk.Reversible, "Not from the catalog.")),
             Throws.ArgumentException);
+    }
+
+    // Al máximo 5.1: a conditional effect holds only with the arguments that make it happen.
+    [TestCase("app.open", "{\"appId\":\"Spotify\"}", false)]
+    [TestCase("app.open", "{\"appId\":\"Spotify\",\"foreground\":true}", true)]
+    [TestCase("system.settings.set", "{\"setting\":\"airplane_mode\",\"value\":1}", false)]
+    [TestCase("system.settings.set", "{\"setting\":\"do_not_disturb\",\"value\":1}", true)]
+    [TestCase("input.key.press", "{}", true)]
+    [TestCase("window.minimize", "{}", false)]
+    public void AWindowEffectIsReadWithTheCallsArguments(string operation, string arguments, bool expected)
+    {
+        using JsonDocument given = JsonDocument.Parse(arguments);
+        Assert.That(ProductCatalog.GetRequired(operation).Has(OperationEffects.WindowInput, given.RootElement),
+            Is.EqualTo(expected));
     }
 
     [Test]

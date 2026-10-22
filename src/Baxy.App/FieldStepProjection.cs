@@ -183,7 +183,7 @@ internal static class FieldStepProjection
         ["status"] = "pending",
     };
 
-    /// <summary>What leaves the PC with a call that reaches the internet (NativeTurnLoop.ReachesTheNetwork).</summary>
+    /// <summary>What leaves the PC with a call that reaches the internet (the catalog's OperationEffects.Network).</summary>
     internal static string NetWhat(string operation, JsonObject arguments)
     {
         string Arg(string key) => arguments[key] is JsonValue v && v.TryGetValue(out string? s) && !string.IsNullOrWhiteSpace(s)
