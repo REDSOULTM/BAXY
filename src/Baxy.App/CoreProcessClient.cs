@@ -607,7 +607,8 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                 || !string.Equals(
                     supplied.Description,
                     required.Description,
-                    StringComparison.Ordinal))
+                    StringComparison.Ordinal)
+                || !(supplied.Effects ?? []).SequenceEqual(required.Effects ?? [], StringComparer.Ordinal))
             {
                 return false;
             }

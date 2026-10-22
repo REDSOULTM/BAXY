@@ -283,12 +283,52 @@ def _aids_seen(observation: str) -> dict[str, Any]:
     return seen
 
 
+_WEEKDAYS = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
+
+
+def _when(text: Any) -> _dt.datetime | None:
+    """A time the App wrote (ISO, with or without its offset; a reminder's «yyyy-MM-dd HH:mm» is local), or None."""
+    try:
+        return _dt.datetime.fromisoformat(str(text))
+    except ValueError:
+        return None
+
+
+def _span(minutes: int) -> str:
+    minutes = abs(minutes)
+    if minutes < 60:
+        return f"{minutes} min"
+    if minutes < 48 * 60:
+        return f"{minutes // 60} h" + (f" {minutes % 60} min" if minutes % 60 else "")
+    return f"{round(minutes / 1440)} días"
+
+
+def _relative(due: Any, now: _dt.datetime | None) -> str:
+    """Al máximo 10.4 (Test of Time): a reminder's time as its day and hour from the moment and how far it is («hoy
+    10:00, en 20 min»), facts the model reads instead of subtracting ISO stamps; as it came when either does not read."""
+    when = _when(due)
+    if now is None or when is None:
+        return str(due)
+    if when.tzinfo is None and now.tzinfo is not None:
+        when = when.replace(tzinfo=now.tzinfo)  # the App's local time, in the moment's zone
+    elif when.tzinfo is not None and now.tzinfo is not None:
+        when = when.astimezone(now.tzinfo)
+    days = (when.date() - now.date()).days
+    day = {0: "hoy", 1: "mañana", -1: "ayer"}.get(days, f"{_WEEKDAYS[when.weekday()]} {when:%d/%m}")
+    minutes = round((when.replace(tzinfo=None) - now.replace(tzinfo=None)).total_seconds() / 60)
+    far = "ahora" if minutes == 0 else f"en {_span(minutes)}" if minutes > 0 else f"hace {_span(minutes)}"
+    return f"{day} {when:%H:%M}, {far}"
+
+
 def beat_message(context: dict[str, Any]) -> str:
     """What the heartbeat sees, as lines the model reads: the moment, the screen, the PC, what changed, what BAXY
     remembers, the recent conversation and the reminders. Presentation only: every field the App observed is shown."""
     lines = []
     fg = context.get("foreground") or {}
-    lines.append(f"Momento: {context.get('weekday', '')} {context.get('now', '')} · la persona está: "
+    now = _when(context.get("now"))
+    # Al máximo 10.4: the moment as a day and a clock, not an ISO stamp (as it came when it does not read).
+    shown = f"{now:%d/%m/%Y %H:%M}" if now else context.get("now", "")
+    lines.append(f"Momento: {context.get('weekday', '')} {shown} · la persona está: "
                  f"{context.get('owner_activity', 'desconocido')}")
     if fg:
         lines.append(f"Al frente: {fg.get('title', '')} ({fg.get('process', '')})"
@@ -313,12 +353,18 @@ def beat_message(context: dict[str, Any]) -> str:
             for h in history))
     reminders = context.get("reminders") or []
     if reminders:
-        lines.append("Recordatorios: " + "; ".join(f"{r.get('text') or 'sin título'} ({r.get('due', '')})"
-                                                   for r in reminders))
+        # R10.3: one without a time (the App's «y 3 más sin listar») has no empty brackets.
+        lines.append("Recordatorios: " + "; ".join(
+            f"{r.get('text') or 'sin título'}" + (f" ({_relative(r['due'], now)})" if r.get("due") else "")
+            for r in reminders))
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
 
 CLOCK_MARK = "[Reloj:"
+# Al máximo 8.1 (F015: «¿ya lo cerraste?» → «Sí» with nothing run, 5 of the 10 falsehoods left, which no aid of the
+# result touched): the clock also says which calls ran in the session and how each ended, the last ones of a count of
+# the session's own (a cut history no longer shows them, and a «none» read from it would be false).
+SESSION_CALLS = 8
 # The role of the session's own state at the end of an exported conversation (export_session); never a message.
 SESSION_STATE = "baxy.session"
 
@@ -359,10 +405,18 @@ DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de ha
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
                     "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
                     "qué quiere exactamente.]")
+# Al máximo 4.2 (SAGE-Agent): one question per misunderstanding. The person's words right after a doubt question (both
+# notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
+# They still go to layer 2 (the decision model and «corrige», with its safeguards).
+DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
-# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth.
+# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth. Al máximo 5.1: nor
+# one with an effect of the catalog (keys, clicks or commands to a window that may be the person's; what the model wrote
+# sent out of the PC; a radio, a network, a pairing, airplane or display mode changed), whatever its risk: a call the
+# model did not choose never lands there. A catalog without the field (the measurement catalogs saved before it)
+# corrects by risk alone, as before.
 CORRECTABLE_RISKS = ("read_only", "low_reversible")
 
 
@@ -381,6 +435,7 @@ NOT_RUN_AFTER = json.dumps({"status": "not_run", "reason": "the call before it i
 # A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
 # 2026-10-15: the model read «not run» for a call the core had executed).
 NO_RESULT = json.dumps({"status": "unknown", "reason": "no result came back for this call: it may have run or not"})
+NO_RESULT_RAN = "sin resultado: pudo o no ocurrir"  # the same, among the session's calls (8.1)
 # A question of the model's the person saw and did not answer before the turn ended.
 ASKED = json.dumps({"status": "asked", "reason": "the person saw the question; their answer, if it comes, is their "
                                                  "next message"})
@@ -475,6 +530,7 @@ class Mind:
         self.tools: list[dict[str, Any]] = []
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
+        self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -494,6 +550,8 @@ class Mind:
         # Review 2026-10-22: the ids the mind writes itself (a confirmation's call, a call the server gave none, a
         # correction) count up for the whole session: from the conversation's length they repeated once it was trimmed.
         self._ids = 0
+        self._ran: list[str] = []  # the session's last calls as «tool → how it ended» (8.1), and how many ran in all
+        self._ran_count = 0
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
 
@@ -553,7 +611,7 @@ class Mind:
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, risk = [ASK_USER, CONFIRM], {}, {}
+        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
@@ -584,7 +642,8 @@ class Mind:
             tools.append(tool)
             wire_to_op[wire] = name
             risk[wire] = str(cap.get("risk") or "")
-        self.tools, self.wire_to_op, self.risk = tools, wire_to_op, risk
+            effects[wire] = [str(e) for e in cap.get("effects") or []]
+        self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
             self._log("configure.aid", time.monotonic(), None, aids=aids)
@@ -617,19 +676,22 @@ class Mind:
         return (f"\n[Espera el sí de la persona: {wire}{shown}. Si sus palabras contestan a tu pregunta, llama a "
                 f"confirm_pending con approve true o false.]")
 
-    @staticmethod
-    def _clock() -> str:
+    def _clock(self) -> str:
         # The time is a message of its own just before the person's words (the end of the prompt, the only part that is
         # new anyway). Appended to their words it was copied into arguments: a clipboard text and a web query carried
         # «[Thursday 15/10/2026 04:21 hora local…]» (2026-10-15). It also says no tool has run yet in this turn: the
         # last «[En este turno: …]» the model saw was the previous turn's, and lines of turns without calls were false
         # 24 % of the time against 6 % (falsedades p5-p8); decision2 on the notebook gained by that mechanism (P041
-        # stopped inventing, P049 stopped looking up the clock): 227/230 vs 226.
+        # stopped inventing, P049 stopped looking up the clock): 227/230 vs 226. Al máximo 8.1: and the session's calls.
         now = _dt.datetime.now().astimezone()
         offset = now.strftime("%z")
+        ran = str(self._ran_count or "ninguna")
+        if self._ran:
+            last = "" if len(self._ran) == self._ran_count else f", las {len(self._ran)} últimas"
+            ran += f"{last} ({' / '.join(self._ran)})"
         return (f"{CLOCK_MARK} {now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
                 "los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna herramienta en este "
-                "turno]")
+                f"turno; llamadas a herramientas en esta sesión: {ran}]")
 
     # ---- turn ----------------------------------------------------------------------------------------------
     # One conversation for the whole session (native loop): every tool call the model made, every verified result that
@@ -642,15 +704,17 @@ class Mind:
         self._turn = self._beat = None
         self.trimmed_turns = 0
         self._refs, self._ref_of, self._ids = {}, {}, 0
+        self._ran, self._ran_count = [], 0
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
     def export_session(self) -> list[dict[str, Any]]:
         """The session's conversation as it stands (calls and results included), for the App to keep with the session it
         shows (design v4, Sessions); it is asked for between turns. Its last element is the session's own state (review
-        2026-10-22: the short references and the ids, or after a relaunch ref:r1 stood for another address); the App
-        keeps the array as it is."""
-        state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids}
+        2026-10-22: the short references and the ids, or after a relaunch ref:r1 stood for another address; al máximo
+        8.1: the session's calls); the App keeps the array as it is."""
+        state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids, "ran": self._ran,
+                 "ran_count": self._ran_count}
         return json.loads(json.dumps([*self.conversation, state], ensure_ascii=False))
 
     def load_session(self, conversation: list[Any]) -> None:
@@ -663,6 +727,12 @@ class Mind:
         self._ids = state["ids"] if isinstance(state.get("ids"), int) and state["ids"] > 0 else 0
         self.conversation = [m for m in conversation if isinstance(m, dict)
                              and m.get("role") in {"user", "assistant", "tool"}]
+        if isinstance(state.get("ran_count"), int) and isinstance(state.get("ran"), list):
+            self._ran, self._ran_count = [str(entry) for entry in state["ran"]][-SESSION_CALLS:], state["ran_count"]
+        else:
+            # Kept before 8.1: how many calls its conversation shows (their results are in it), never «none».
+            self._ran_count = sum(1 for m in self.conversation for c in m.get("tool_calls") or []
+                                  if c.get("function", {}).get("name") != ASK_USER["function"]["name"])
         self._trim()
 
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -678,7 +748,7 @@ class Mind:
             turn["conv"].append(answer)
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
-            turn["text"] = text
+            turn["text"], turn["answering"] = text, True
             try:
                 return self._next(request_id, "turn.decide", turn)
             except Exception:
@@ -686,6 +756,7 @@ class Mind:
                 turn.update(asked=asked, after_asked=after, text=said)
                 raise
         self._close_open_calls()
+        answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
         clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
         self.conversation.append(clock)
         request = {"role": "user", "content": text}
@@ -700,7 +771,8 @@ class Mind:
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
-                          "pending": bool(isinstance(pending, dict) and pending.get("operation"))}
+                          "pending": bool(isinstance(pending, dict) and pending.get("operation")),
+                          "answering": answering}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -754,8 +826,10 @@ class Mind:
             return {"type": "turn.result", "id": request_id, "kind": "silence", "operation": None, "arguments": None,
                     "question": "", "reply": ""}
         # The analysis stays as the model's own words, not as JSON: with its JSON before it, the model answered the
-        # second move in JSON again (practice scene P023).
-        conv.append({"role": "assistant", "content": str(decision.get("analisis") or "")})
+        # second move in JSON again (practice scene P023). Al máximo 10.3: the motives it found go before it, as words
+        # too: the move that acts read only the analysis (PALANCAS-nb 10.3, scenes P002 and P023).
+        motives = "; ".join(f"{m}: {decision.get(m) or ''}" for m in _MOTIVES)
+        conv.append({"role": "assistant", "content": f"{motives}. {decision.get('analisis') or ''}".rstrip()})
         conv.append({"role": "user", "content": BEAT_ACT})
         return self._next(request_id, "turn.beat", self._beat)
 
@@ -767,6 +841,7 @@ class Mind:
             return
         if beat.get("awaiting"):
             beat["conv"].append({"role": "tool", "tool_call_id": beat["awaiting"], "content": NO_RESULT})
+            self._ran_add(beat.get("calling"), NO_RESULT_RAN)
         if beat.get("asked"):
             beat["conv"].append({"role": "tool", "tool_call_id": beat["asked"], "content": ASKED})
         pending = [c["id"] for c in beat.get("queue") or []]
@@ -781,12 +856,18 @@ class Mind:
             self.conversation.extend([{"role": "user", "content": BEAT_MARK}, *acted])
         self._trim()
 
+    def _ran_add(self, calling: Any, outcome: str) -> None:
+        """One call of the session and how it ended, for the clock (8.1)."""
+        wire = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else str(calling or "?").replace(".", "_")
+        self._ran, self._ran_count = [*self._ran, f"{wire} → {outcome}"][-SESSION_CALLS:], self._ran_count + 1
+
     def _close_open_calls(self) -> None:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
         valid tool transcript and the model never reads an unanswered call as done."""
         turn = self._turn or {}
         if turn.get("awaiting"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
+            self._ran_add(turn.get("calling"), NO_RESULT_RAN)
         if turn.get("asked"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["asked"], "content": ASKED})
         pending = [c["id"] for c in turn.get("queue") or []]
@@ -863,6 +944,7 @@ class Mind:
         else:
             turn["repeats"] = 1
             done.append(entry)
+        self._ran_add(turn.get("calling"), outcome)
         aids = _aids_seen(observation)
         named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
         # Uso real: a look at another window (the browser's) came between the opening and the failures; the application
@@ -1048,10 +1130,11 @@ class Mind:
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
-        model's confidence is under the threshold. Layer 2 (BAXY_S1_VETO, with a decision model): under that one, the
-        decision model is asked which of the model's own candidates the person meant, and a different answer holds it —
-        or, with BAXY_S1_CORRECT=1 and a tool of CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking
-        and confirming are never held: they already put the person in the loop."""
+        model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED). Layer 2
+        (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
+        candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
+        CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking and confirming are never held: they
+        already put the person in the loop."""
         if not self._doubted(stage, turn, final):
             return None
         if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
@@ -1059,7 +1142,7 @@ class Mind:
         doubt = read_doubt(reply)
         if doubt is None:
             return None
-        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT"):
+        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering"):
             return DOUBT_NOTE.format(call=call["wire"])
         if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
             return None
@@ -1101,8 +1184,10 @@ class Mind:
 
     def _corrected(self, wire: str, body: dict[str, Any]) -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
-        is off, the tool's risk is not in CORRECTABLE_RISKS, or the model did not write that tool's call."""
-        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS:
+        is off, the tool's risk is not in CORRECTABLE_RISKS, it has an effect of the catalog, or the model did not write
+        that tool's call."""
+        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS \
+                or self.effects.get(wire):
             return None
         try:
             filled = self.server.fill_call(body, wire)

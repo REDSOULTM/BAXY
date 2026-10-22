@@ -25,7 +25,7 @@ La vista nunca afirma que algo se hizo si no se ejecutó y verificó. Todo lo qu
 | Conversación, chips de paso y tarjetas Sí/No | `FieldTranscript` (el host la guarda; el evento `item` cambia un elemento, `transcript` la manda entera) |
 | Estado de cada paso | `FieldStepProjection`: `ok` sólo si el proveedor completó **y** verificó; `maybe`, `fail`, `skip` con su motivo |
 | Título del paso y del catálogo | `Baxy.App/Assets/operation-labels.v1.json`, una entrada por operación del catálogo (se comprueba al arrancar) |
-| «Salió a internet» y su registro | `NativeTurnLoop.ReachesTheNetwork` de una llamada que llegó a su proveedor |
+| «Salió a internet» y su registro | el efecto `network` del catálogo (`OperationEffects.Network`) de una llamada que llegó a su proveedor |
 | Métricas del riel | `FieldTelemetrySampler`: CPU, GPU, temperatura (D3DKMT) y memoria de la mente y su llama-server; `—` si no se pudo leer |
 | Arranque | piezas que la mente informa (`voice.status`: stt, wake, tts) y el modelo listo; sin porcentajes |
 | Memoria, triggers, sesiones | la operación del chat por el kernel (`MemoryPanel`, `schedule.alarms`, `FieldSessionStore`) |

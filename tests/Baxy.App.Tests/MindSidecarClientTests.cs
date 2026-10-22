@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Baxy.App;
+using Baxy.Kernel.Operations;
 using NUnit.Framework;
 
 namespace Baxy.App.Tests;
@@ -27,6 +28,25 @@ public sealed class MindSidecarClientTests
         Assert.That(await turn, Is.Not.Null);
         Assert.That(released, Is.True, "voice.release waited behind the turn");
         Assert.That(status, Is.True, "voice.status waited behind the turn");
+    }
+
+    [Test]
+    public void TheCatalogTheMindReadsCarriesEachToolsEffects()
+    {
+        // Al máximo 5.1: «corrige» reads them; a tool without one carries no field, as the saved catalogs.
+        JsonObject request = MindSidecarClient.CreateCatalogConfigureRequest(
+            [.. ProductCatalog.ToolDescriptors.Select(static descriptor =>
+                ProductCatalog.CreateToolDescriptor(new OperationDefinition(descriptor)))],
+            applicationCatalog: null);
+        JsonObject Tool(string name) => request["capabilities"]!.AsArray().OfType<JsonObject>()
+            .Single(tool => (string?)tool["name"] == name);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Tool("input.key.press")["effects"]!.ToJsonString(), Is.EqualTo("[\"window_input\"]"));
+            Assert.That(Tool("web.search")["effects"]!.ToJsonString(), Is.EqualTo("[\"network\"]"));
+            Assert.That(Tool("note.create").ContainsKey("effects"), Is.False);
+        });
     }
 
     // A request that is still waiting when its caller gives up is a false, not an exception.

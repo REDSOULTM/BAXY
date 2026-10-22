@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
-using Baxy.Providers.Windows.External;
 using Baxy.Security.Windows;
 
 namespace Baxy.App;
@@ -41,11 +40,10 @@ internal sealed record NativeTurnConfirmation(
 /// directly). The kernel's token is bound to the exact invocation it challenged; anything else the person asks drops it.
 /// </para>
 /// <para>
-/// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: a call with one of the catalog's
-/// risks in <see cref="ProposedRisks"/>, one that sends keys, clicks or commands to a window
-/// (<see cref="SendsInputToAWindow"/>), one that sends something out of the PC (<see cref="ReachesTheNetwork"/>), or one
-/// that writes over what the person copied (<see cref="ReplacesThePersonsClipboard"/>), is held as a proposal and never reaches the kernel until the person says «sí» to that exact invocation; any other call
-/// runs. A heartbeat never starts while a confirmation waits for the person.
+/// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: a call that is not harmless and
+/// reversible (<see cref="BeatProposes"/>: a risk other than read_only or low_reversible, or one of the catalog's
+/// <see cref="OperationEffects"/>) is held as a proposal and never reaches the kernel until the person says «sí» to that
+/// exact invocation; any other call runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
@@ -94,12 +92,6 @@ internal sealed class NativeTurnLoop
 
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
     internal static readonly TimeSpan ProposalLifetime = TimeSpan.FromMinutes(10);
-
-    // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, instalar, cerrar con trabajo).
-    private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)
-    {
-        "work_loss", "recoverable_delete", "external_communication", "installation",
-    };
 
     private readonly Host _host;
     // 2026-10-22, review of the App: one clock for whether a waiting call is still waiting and how it ended.
@@ -447,8 +439,7 @@ internal sealed class NativeTurnLoop
                 "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
-        if (_beat && (ProposedRisks.Contains(descriptor.Risk) || SendsInputToAWindow(operation, arguments)
-                || ReachesTheNetwork(operation, arguments) || ReplacesThePersonsClipboard(operation)))
+        if (_beat && BeatProposes(descriptor, arguments))
         {
             // Nobody asked: the call is held for the person's «sí», untouched, and the model words the proposal.
             _proposal = prepared;
@@ -466,74 +457,51 @@ internal sealed class NativeTurnLoop
             ;
     }
 
-    // Every operation whose provider sends keys, clicks, window commands or a script (SendInput, UI Automation's Invoke
-    // or SetValue, posted messages, ShowWindow/SetWindowPos, a script run in a page as a user gesture) to a window that
-    // may be the person's. The catalog has no typed fact for it yet, so the list is by name: an operation that starts
-    // sending input joins it (audit 2026-10-15, App H1: input.keyboard.layout posts WM_INPUTLANGCHANGEREQUEST to the
-    // focused window, and window.* move, size, show or focus the person's windows; owner, 2026-10-16: minimizing one and
-    // restoring it are done alone). media.control goes to BAXY's own player (mpv, by the pipe BAXY opened for it), then
-    // to the system's media controls (SMTC: the owner's channel for a heartbeat, 2026-10-16), then to the YouTube tab of
-    // BAXY's browser, which CDP drives by running a script in the page as a user gesture, in a window that holds the
-    // person's session: it is held unless its sourceApp names a session other than that tab, which the tab's adapter
-    // refuses before any effect (WebBrowserAdapter.ControlYouTubeTabAsync). media.seek.relative has only SMTC.
-    // game.launch is held only because it clicks «Jugar» in the dialog Steam opens for the game's address (the data's
-    // «confirm», SteamLocalAdapter.LaunchAsync): what Steam publishes by itself (its «playing») is not the person's
-    // data leaving through BAXY (owner, 2026-10-16). app.open reuses the window of an application that already runs, and
-    // brings it to the front (foreground: ShowWindow and SetForegroundWindow), presses Ctrl+N in it (newDocument) or
-    // hands it a place's address, which the application opens in its window and raises (place, ApplicationPlaceOpener);
-    // whether one runs is read only as it opens, so without those three it is not held: the window that runs is left as
-    // it is, or a new process starts and the front goes back where it was. input.keyboard.open starts osk.exe, which
-    // sends nothing to any window and does not take the focus (DesktopKeyPress.ps1): it is not held either. file.open
-    // is held always (ronda final 8): with an application named or foreground it raises a window, and without them the
-    // default application may be one that already runs and takes the file in the person's window (a single-instance
-    // editor), or a packaged app Windows activates by itself. filesystem.file.open.latest opens the same way, and
-    // filesystem.folder.open starts or raises an Explorer window in front (ronda final 14): held too. browser.page.read
-    // and browser.tabs.list read BAXY's own browser when its session is the one in use, and start it in front when it
-    // is not running (ronda final 15): held too.
-    // system.settings.set with do_not_disturb opens ms-settings:notifications (it takes the front) and presses its switch
-    // by UI Automation's Toggle (WindowsDeviceControlAdapter's DoNotDisturbScript): held; with airplane_mode it goes
-    // through the radios API and reaches no window. The setting is a string by then: the catalog's schema checked it.
-    private static bool SendsInputToAWindow(string operation, JsonObject arguments) =>
-        operation is "input.visible.click" or "input.text.type" or "input.key.press" or "input.pointer.control"
-            or "input.select.all" or "input.scroll" or "input.keyboard.layout" or "clipboard.copy" or "clipboard.paste"
-            or "message.draft" or "message.send" or "client.channel.locate" or "browser.control" or "calculator.expression.evaluate"
-            or "game.launch" or "window.focus" or "window.maximize" or "window.minimize.all" or "window.move"
-            or "window.resize" or "window.snap" or "file.open" or "filesystem.file.open.latest" or "filesystem.folder.open"
-            or "browser.page.read" or "browser.tabs.list" or "game.store.page" or "game.store.search" or "client.microphone.set" or "clipboard.paste.into" or "office.format.apply"
-        || (operation == "app.open" && arguments["foreground"] is JsonValue front && IsTrue(front))
-        || (operation == "app.open" && arguments["newDocument"] is JsonValue fresh && IsTrue(fresh))
-        || (operation == "app.open" && arguments["place"] is JsonValue place && Named(place))
-        || (operation == "system.settings.set" && (string?)arguments["setting"] == "do_not_disturb")
-        // Ronda final 25: a look at an application by its name shows its window behind the person's when it is
-        // minimized (ShowBehind), and it stays shown: held in a beat, as a window raised unasked.
-        || (operation == "input.visible.controls" && arguments["application"] is JsonValue looked && Named(looked))
-        || (operation == "media.control" && !(arguments["sourceApp"] is JsonValue source && Named(source)
-            && !string.Equals((string?)source, WindowsExternalCapabilityProvider.YouTubeTabMediaSource,
-                StringComparison.OrdinalIgnoreCase)));
+    // Al máximo 5.1: what the call does besides its risk is the catalog's typed fact (OperationEffects), read with the
+    // call's exact arguments; it was a list by name here. A window that may be the person's gets nothing unasked (audit
+    // 2026-10-15, App H1; owner, 2026-10-16: minimizing one and restoring it are done alone), and nothing the model wrote
+    // leaves the PC unasked: in a heartbeat its words come from the moment, which carries the person's memory, window
+    // titles and recent lines (owner, 2026-10-15; audit App H3). What an application syncs or publishes by itself is not
+    // the person's data leaving through BAXY (owner, 2026-10-16).
+    internal static bool Has(string operation, JsonObject arguments, string effect)
+    {
+        if (!ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor))
+        {
+            return false;
+        }
 
-    // Every operation whose provider sends what the model wrote out of the PC (a query, an address, a host, a place, a
-    // title) and whose risk the kernel does not already challenge: in a heartbeat its words come from the moment, which
-    // carries the person's memory, window titles and recent lines, and nothing of theirs leaves unasked (owner,
-    // 2026-10-15; audit App H3). By name, read from the providers that use HTTP or ping: web.search's sources, web.fetch
-    // and web.download, Open-Meteo for the weather and for a place's clock, ICMP to the host named, a console command
-    // (one that only reads still reaches \\host\share or another computer by name), and a print (the printer may be on
-    // the network). Whether a game is owned is read on the PC alone (Renew al máximo, B-APP-6). What an application
-    // syncs or publishes by itself (a memory export in a folder OneDrive syncs) is not the person's data leaving through
-    // BAXY (owner, 2026-10-16). The
-    // ones with an external_communication or installation risk are held by ProposedRisks already, and app.open with a
-    // place (app_places builds spotify:search:{value} and Steam's store search from its value) by SendsInputToAWindow.
-    internal static bool ReachesTheNetwork(string operation, JsonObject arguments) =>
-        operation is "web.search" or "web.fetch" or "web.download" or "weather.current" or "network.ping"
-            or "shell.command.run" or "peripheral.print"
-        || (operation == "system.time" && arguments["place"] is JsonValue place && Named(place));
+        using System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString());
+        return descriptor.Has(effect, given.RootElement);
+    }
 
-    // The clipboard holds what the person copied: writing over it unasked is an effect on their data (audit, round A).
-    private static bool ReplacesThePersonsClipboard(string operation) => operation is "clipboard.write.text";
+    // R10.1 (owner: a heartbeat acts alone only on what is harmless and reversible, and proposes the rest): a call nobody
+    // asked for runs only when the catalog says it reads or changes something reversibly (read_only, low_reversible)
+    // and, with these arguments, it has none of the catalog's effects: no window of the person's, nothing out of the PC,
+    // no radio, network, pairing, airplane or display mode. Privacy_sensitive ran alone (trace nb-beat-none-pC, P026:
+    // airplane mode switched on at 8 % battery), and so did a capture, the clipboard's text or the Wi-Fi radio; writing
+    // over what the person copied (clipboard.write.text, audit round A) is privacy_sensitive too.
+    // The catalog risks the heartbeat never takes alone (borrar, enviar, apagar, instalar, cerrar con trabajo).
+    private static readonly HashSet<string> ProposedRisks = new(StringComparer.Ordinal)
+    {
+        OperationRisks.WorkLoss, OperationRisks.RecoverableDelete, OperationRisks.ExternalCommunication,
+        OperationRisks.Installation,
+    };
 
-    private static bool Named(JsonValue value) =>
-        value.TryGetValue(out string? text) && !string.IsNullOrWhiteSpace(text);
+    internal static bool BeatProposes(ProductOperationDescriptor descriptor, JsonObject arguments)
+    {
+        // Renew al máximo R10.1, measured (2026-10-22): holding every risk above low_reversible also held lowering the
+        // brightness at night or on a low battery and reconnecting the home Wi-Fi (practice scenes P007, P027, P024:
+        // act 4/7 → 1/7). What a heartbeat never takes alone is what destroys, reaches a person, installs or writes over
+        // what the person copied, plus the catalog's effects: a window, the network, and a system change (airplane
+        // mode, a radio, the display mode: P026, airplane mode on at 8 % battery).
+        if (ProposedRisks.Contains(descriptor.Risk) || descriptor.Name == "clipboard.write.text")
+        {
+            return true;
+        }
 
-    private static bool IsTrue(JsonValue value) => value.TryGetValue(out bool set) && set;
+        using System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString());
+        return descriptor.Effects.Any(effect => effect.Applies(given.RootElement));
+    }
 
     // The turn ends on a call that waits for the person's «sí»: the last result says that call has not run, so the
     // answer cannot tell what it would have done (e2e E021: «Python 3.11.2» after a console command that never ran).

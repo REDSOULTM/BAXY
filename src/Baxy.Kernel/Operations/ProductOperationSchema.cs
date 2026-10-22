@@ -395,7 +395,8 @@ public sealed class ProductOperationDescriptor
         string risk,
         string verifierContractId,
         string description,
-        bool? requiresObservedEffect = null)
+        bool? requiresObservedEffect = null,
+        IReadOnlyList<OperationEffect>? effects = null)
     {
         if (!Baxy.Contracts.ContractValidator.IsOperationName(name))
         {
@@ -424,6 +425,16 @@ public sealed class ProductOperationDescriptor
         VerifierContractId = verifierContractId;
         Description = description;
         RequiresObservedEffect = requiresObservedEffect ?? (risk != Baxy.Contracts.OperationRisks.ReadOnly);
+        Effects = effects ?? [];
+        if (Effects.SelectMany(static effect => effect.When).Any(condition =>
+                !argumentsSchema.Properties.Any(property => property.Name == condition.Argument)))
+        {
+            throw new ArgumentException("An effect's condition names an argument the schema does not have.",
+                nameof(effects));
+        }
+
+        EffectKinds = Effects.Select(static effect => effect.Kind).Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal).ToArray();
     }
 
     public string Name { get; }
@@ -438,6 +449,16 @@ public sealed class ProductOperationDescriptor
 
     // Privacy risk and requiring an observed mutation are separate contract facts.
     public bool RequiresObservedEffect { get; }
+
+    /// <summary>Where its effect lands besides its risk (<see cref="Baxy.Contracts.OperationEffects"/>).</summary>
+    public IReadOnlyList<OperationEffect> Effects { get; }
+
+    /// <summary>The kinds of <see cref="Effects"/>, each once, in order: what the operation may do with some call.</summary>
+    public IReadOnlyList<string> EffectKinds { get; }
+
+    /// <summary>Whether this call, with these arguments, has that effect.</summary>
+    public bool Has(string effect, JsonElement arguments) =>
+        Effects.Any(declared => declared.Kind == effect && declared.Applies(arguments));
 
     private static bool IsCanonicalContractId(string? value)
     {
