@@ -2499,6 +2499,13 @@
         "oráculos e2e cargan F:/BAXYeval/renew_v1/e2e/lib/bench.ps1: en el notebook, sustitución F:→D: al abrir",
         "se abre una vez sobre el HEAD final: pc-system-one S1 off, S1 on, renew-maximo"
       ]
-    }
+    },
+    "incidentes": [
+      {
+        "fecha": "2026-10-22 ~16:00",
+        "que": "subagente de la tanda 5 leyó campos de hora de 5 escenas de renew_v1/escenas/sealed.json y holdout_latido.json",
+        "efecto": "renew_v1/escenas/sealed.json ya no es holdout limpio; renew_v4 intacto"
+      }
+    ]
   }
 }

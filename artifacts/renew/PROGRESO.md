@@ -2896,3 +2896,10 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
 - 15:5x fusionado hub/nb-maximo 153b7a068 (69a306d00): tanda 0 del NB (revisión de providers) y su tanda 2 (6.1, 6.2,
   6.3, 6.6, 6.7); display.mode.set nuevo (dura hasta reiniciar; pedir el mismo modo lo guarda) aceptado. Pendiente mío:
   frases de descripción que pidió el NB (t3b) y B-APP-10 (retirar el proveedor de la Calculadora) tras la tanda 5.
+- **Incidente 2026-10-22 ~16:00 (tanda 5):** el subagente de la tanda 5, para ver el formato de las horas del latido,
+  imprimió los campos `now`, `due`, `reminders` y `events` de 5 escenas (L004, S011, S012, S020, S035) de
+  `F:\BAXYeval\renew_v1\escenas\holdout_latido.json` (holdout de ayudas, ya gastado) y de `escenas\sealed.json`
+  (holdout sellado v1 de escenas), contra la regla del prompt. Sólo usó el formato ISO con zona; no ajustó nada con
+  ellos. Consecuencia: **`renew_v1\escenas\sealed.json` deja de ser un holdout limpio** (5 escenas vistas en parte); no
+  se usa para ninguna decisión de este goal. El holdout del cierre es renew_v4, que nadie ha abierto (sha en metas.json).
+  Se avisará al dueño en el informe.
