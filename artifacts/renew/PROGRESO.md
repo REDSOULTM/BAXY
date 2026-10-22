@@ -2974,3 +2974,9 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   de Steam de este PC: game.installed.named es correcto), P251 (window.resolve es el ejemplo literal de su descripción),
   P253, P220 tienen etiquetas discutibles; P112 y P164 premian inventar amount:10 en «baja el volumen» cuando la regla
   del dueño de C03 es preguntar la cantidad (se mantiene la regla del dueño).
+- **Incidente 2026-10-22 ~18:38:** el dueño no podía abrir Chrome. Causa: el banco de falsedades corría en su PC (yo lo
+  había puesto ahí porque estaba fuera) y su caso F007 («si Chrome está abierto, ciérralo», respuesta «sí») cerraba su
+  Chrome en cada corrida. Paré el banco y cerré sus procesos (kill_arm.ps1); sin IFEO ni bloqueos de perfil; Chrome
+  arranca. Regla desde ahora: con el dueño en el PC no corre ahí nada que ejecute acciones (sólo decisiones y escenas,
+  que no tocan el escritorio); falsedades y e2e van al notebook. Falsedades del PC: 9 de 18 corridas (A, B, C ×
+  semillas 0-2; la s3 de A quedó a medias y no cuenta).
