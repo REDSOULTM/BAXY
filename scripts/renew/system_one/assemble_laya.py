@@ -79,8 +79,13 @@ def main():
         for record, case in zip(records, cases, strict=True):
             out.write(json.dumps(laya_record(record, record["state"], rng), ensure_ascii=False) + "\n")
             stats["original"] += 1
-            for variant in variants.get(case["id"], []):
-                if fold(variant) == fold(case["text"]) or len(variant) > 3 * len(case["text"]) + 40:
+            # Rewordings only of short requests (a pasted text came back as three odd stories, 2026-10-21), without the
+            # numbering the small rewriter sometimes put in front («1. chilo: …»), and not much longer than the request
+            # (longer ones added things: «en el portátil»).
+            short_request = len(case["text"]) <= 120
+            for variant in variants.get(case["id"], []) if short_request else []:
+                variant = re.sub(r"^\s*\d\s*[).:-]\s*([\wáéíóú ]{1,20}:\s*)?", "", variant).strip()
+                if fold(variant) == fold(case["text"]) or len(variant) > 1.6 * len(case["text"]) + 15:
                     stats["paraphrase_dropped_same_or_long"] += 1
                 elif not keeps_facts(case["text"], variant):
                     stats["paraphrase_dropped_facts"] += 1
