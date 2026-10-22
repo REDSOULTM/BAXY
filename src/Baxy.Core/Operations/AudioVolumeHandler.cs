@@ -237,9 +237,10 @@ internal static class AudioControlEvidence
     private static bool IsValidState(AudioEndpointState state) =>
         state.VolumePercent is >= 0 and <= 100;
 
-    private static bool IsLowerHexSha256(string value)
+    // The endpoint hash both audio handlers check (one copy: revisión 2026-10-22, C-9).
+    internal static bool IsLowerHexSha256(string? value)
     {
-        if (value.Length != 64)
+        if (value is null || value.Length != 64)
         {
             return false;
         }
