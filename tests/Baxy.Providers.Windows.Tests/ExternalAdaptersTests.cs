@@ -4804,6 +4804,59 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): «siguiente canción» with nothing playing ended in
+    // youtube_tab_action_unsupported, though there was no tab: the tab's refusal of a skip replaced the system's
+    // «no session». With no tab of its own it stands aside for any action; with one, it says the skip is not its own
+    // with the state it read, and nothing is sent.
+    [TestCase(false, false, "youtube_tab_not_found", false, 0)]
+    [TestCase(true, false, "youtube_tab_not_found", false, 1)]
+    [TestCase(true, true, "youtube_tab_action_unsupported", true, 1)]
+    public async Task ASkipTheTabCannotDoSaysWhetherThereIsATab(
+        bool hasEndpoint, bool hasTab, string error, bool readState, int reads)
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(
+            temporary.Path,
+            hasTab
+                ? new CdpMediaControlResult(true, false, "status", "Lofi - YouTube",
+                    "https://www.youtube.com/watch?v=abc", "t1", "playing", string.Empty)
+                : null,
+            hasEndpoint);
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control", Json("""{"action":"next"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(),
+                Is.EqualTo(readState ? "playing" : null));
+            Assert.That(browser.Calls, Is.EqualTo(reads));
+            Assert.That(browser.LastAction, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task ASkipWithNothingPlayingKeepsTheSystemSessionRead()
+    {
+        using TemporaryDirectory temporary = new();
+        var session = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "media_session_not_found"));
+        var browser = new StubYouTubeTabSession(temporary.Path, result: null, hasEndpoint: false);
+        using var http = new HttpClient();
+        var tab = new WebBrowserAdapter(browser, http);
+        using var provider = new WindowsExternalCapabilityProvider([session, tab]);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "media.control", Json("""{"action":"next"}"""), CancellationToken.None);
+
+        Assert.That(receipt.ErrorCode, Is.EqualTo("media_session_not_found"));
+    }
+
     // media.control's sourceApp names a player by the id media.status gave it, compared whole (BAXY Renew audit
     // 2026-10-15): the tab and the local player stand aside before any effect for any other, so «pausa Spotify» never
     // pauses them, and a word of the id is not the id.

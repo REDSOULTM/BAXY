@@ -597,13 +597,22 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.FailureBeforeEffect(operation, "media_source_app_not_youtube_tab");
         }
-        if (action is not ("play" or "pause" or "stop" or "toggle"))
-        {
-            return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_action_unsupported");
-        }
         if (!_browser.HasEndpoint)
         {
             return ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
+        }
+        if (action is not ("play" or "pause" or "stop" or "toggle"))
+        {
+            // Renew al máximo (auditoría de flujos): a skip with no tab of this session is no tab («siguiente» with
+            // nothing playing said the tab could not skip and hid the system's «no session»); a tab that is there says
+            // the skip is not its own with the state it read (a read: nothing is sent), which the provider keeps.
+            CdpMediaControlResult? read = await _browser.ControlYouTubeAsync(null, cancellationToken)
+                .ConfigureAwait(false);
+            return read is { Verified: true }
+                ? new ExternalCapabilityReceipt(
+                    operation, EffectObserved: false, Verified: false, YouTubeTabResult(action, read),
+                    "youtube_tab_action_unsupported")
+                : ExternalJson.FailureBeforeEffect(operation, "youtube_tab_not_found");
         }
         effectBoundary.Cross(cancellationToken);
         CdpMediaControlResult? control = await _browser.ControlYouTubeAsync(action, cancellationToken)
