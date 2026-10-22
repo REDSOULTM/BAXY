@@ -100,6 +100,11 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string channel = RequiredString(arguments, "channel");
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
+        if (WithControlCharacters("message.draft", text) is { } refused)
+        {
+            return refused;
+        }
+
         // D59 §1: a closed client is opened first (app.open of that client, its
         // window waited for on a bounded clock); never sent from here.
         DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
@@ -171,6 +176,11 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string channel = RequiredString(arguments, "channel");
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
+        if (WithControlCharacters("message.send", text) is { } refused)
+        {
+            return refused;
+        }
+
         DesktopClientReadiness client = await _automation.EnsureClientOpenAsync(
             channel,
             cancellationToken).ConfigureAwait(false);
@@ -249,6 +259,11 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             return await SendTestMailAsync(requestedRecipient, forced, text, cancellationToken)
                 .ConfigureAwait(false);
+        }
+
+        if (WithControlCharacters("message.send.test", text) is { } refused)
+        {
+            return refused;
         }
 
         // D59 §1: the test channel's client is opened first when it is closed.
@@ -443,6 +458,40 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                     writer.WriteEndObject();
                 }),
                 observation.ErrorCode ?? "recipient_identity_not_verified");
+
+    // Renew al máximo (auditoría de flujos): a line break or a tab typed into a chat is a key of its own (Enter types the
+    // same WM_CHAR 13, and whether a client sends on it cannot be read), the rule input.text.type keeps (char.IsControl):
+    // a text holding one is refused before the client is opened or anything typed, and says how many and which.
+    private static ExternalCapabilityReceipt? WithControlCharacters(string operation, string text)
+    {
+        char[] found = [.. text.Where(char.IsControl)];
+        if (found.Length == 0)
+        {
+            return null;
+        }
+
+        return new(
+            operation,
+            false,
+            false,
+            ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("messageWritten", false);
+                writer.WriteBoolean("sent", false);
+                writer.WriteNumber("controlCharacterCount", found.Length);
+                writer.WriteStartArray("controlCharacters");
+                foreach (char character in found.Distinct())
+                {
+                    writer.WriteStringValue($"U+{(int)character:X4}");
+                }
+
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            }),
+            "message_text_has_control_characters");
+    }
 
     // A flow stopped at the person's own draft in the composer, before the message was typed: nothing written or sent.
     private static ExternalCapabilityReceipt StoppedAtPersonDraft(string operation, DesktopMessageObservation observation) =>
