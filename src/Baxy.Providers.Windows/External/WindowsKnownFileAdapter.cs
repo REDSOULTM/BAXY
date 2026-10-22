@@ -1148,8 +1148,9 @@ if __name__ == "__main__":
                     StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("known_subdirectory_invalid");
             if (BaxyPrivateArea.Holds(_privateRoots, candidate)) throw new InvalidDataException("path_reserved");
-            if (Directory.Exists(candidate)
-                && (File.GetAttributes(candidate) & FileAttributes.ReparsePoint) != 0)
+            // Renew al máximo (auditoría de flujos): every part of the way is checked, not only the last; through
+            // «AppData\Local\Application Data» (Windows' junction back to Local) BAXY's own area was edited.
+            if (Directory.Exists(candidate) && CrossesReparsePoint(root, candidate))
                 throw new InvalidDataException("known_subdirectory_reparse_point");
             return (item.Label, candidate);
         }).ToArray();

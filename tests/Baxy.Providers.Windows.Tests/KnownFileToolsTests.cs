@@ -81,6 +81,39 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, archivos): a subdirectory reached through a link part way («AppData\Local\
+    // Application Data» is Windows' own junction back to AppData\Local) is refused like one that is itself a link; only
+    // the last part was checked, so BAXY's area was listed and its confirmation-mode edited to bypass through it.
+    [Test]
+    public async Task ASubdirectoryThroughALinkPartWayIsRefused()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string local = Path.Combine(home, "AppData", "Local");
+        string privateArea = Path.Combine(local, "BAXY");
+        string mode = Path.Combine(privateArea, "1", "confirmation-mode");
+        Directory.CreateDirectory(Path.GetDirectoryName(mode)!);
+        await File.WriteAllTextAsync(mode, "normal");
+        _ = Baxy.Tests.NtfsTestJunction.Create(Path.Combine(local, "Application Data"), local);
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin,
+            [privateArea]);
+
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find", Json(
+            """{"folder":"home","subdirectory":"AppData/Local/Application Data/BAXY/1"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"home","subdirectory":"AppData/Local/Application Data/BAXY/1","fileName":"confirmation-mode","oldText":"normal","newText":"bypass"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.ErrorCode, Is.EqualTo("known_subdirectory_reparse_point"));
+            Assert.That(edited.ErrorCode, Is.EqualTo("known_subdirectory_reparse_point"));
+            Assert.That(File.ReadAllText(mode), Is.EqualTo("normal"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];
