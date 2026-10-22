@@ -74,6 +74,43 @@ public sealed class ForegroundSequenceTests
         });
     }
 
+    // Renew al máximo (B-CU-4): a long text at the keyboard's pace (35 ms a character, 4096 at most) took longer than
+    // the App waits for one step (30 s, then 70 s more): the App ended the Core in the middle, the front was never given
+    // back, and the model asked again and typed the beginning twice. The act stops at its own budget, gives the front
+    // back and says how much of the text went in.
+    [Test]
+    public async Task ALongTextStopsWithWhatWasTypedBeforeTheAppsBudget()
+    {
+        var clock = new Clock { NowMs = 10_000 };
+        var desktop = new Desktop();
+        var keyboard = new LeaseKeyboard(Lease(new Pause(), clock, desktop), desktop)
+        {
+            EachCharacter = _ => clock.NowMs += 35,
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            new NoProcessRunner(), "folder.ps1", "file.ps1", "select.ps1", "keys.ps1", keyboard)
+        {
+            Ticks = () => clock.NowMs,
+        };
+        string text = new('a', 4000);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.text.type", Json($$"""{"text":"{{text}}","window":18016}"""), CancellationToken.None);
+
+        int typed = keyboard.Typed.Sum(piece => piece.Length);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_time_exhausted"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(typed, Is.InRange(1, text.Length - 1));
+            Assert.That(clock.NowMs - 10_000, Is.LessThan(80_000), "within the App's step");
+            Assert.That(receipt.Result?.GetProperty("charactersTyped").GetInt32(), Is.EqualTo(typed));
+            Assert.That(receipt.Result?.GetProperty("charactersAsked").GetInt32(), Is.EqualTo(text.Length));
+            Assert.That(desktop.Front, Is.EqualTo(Person), "the front is given back");
+        });
+    }
+
     // r4a M1 (c6): a bare move of the person's mouse reaches no field: the front is theirs at once, and the rest of
     // the text waits for their pause; nothing of the text goes to their window.
     [Test]
