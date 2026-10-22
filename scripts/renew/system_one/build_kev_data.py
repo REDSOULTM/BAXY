@@ -23,7 +23,7 @@ sys.path.insert(0, str(HERE))
 import bench_decision as bench  # noqa: E402
 from kev_adjudicate import ANSWER, KINDS, OPTION_TEXT, qwen_choice, short, state_text  # noqa: E402
 
-CANT = {"sint_no_lo_hago", "sint_modo_no_disponible"}
+CANT = {"sint_no_lo_hago", "sint_modo_no_disponible", "massive_cannot", "agente_no_lo_hago"}
 
 
 def group_of(row):
@@ -58,6 +58,7 @@ def main():
     parser.add_argument("outdir")
     parser.add_argument("--signals", nargs="+", required=True)
     parser.add_argument("--confusers", type=int, default=0, help="training only: add up to N look-alike tools per case")
+    parser.add_argument("--only-operacion", action="store_true", help="Laya files without the «tipo» question (unused when serving)")
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
     args = parser.parse_args()
     sys.path.insert(0, str(bench.ROOT / "src"))
@@ -142,10 +143,10 @@ def main():
             files[split].write(json.dumps(record, ensure_ascii=False) + "\n")
             ids[split].write(json.dumps({"id": row["id"], "group": group_of(row), "family": row["family"],
                                          "text": row["text"], "history": row["history"]}, ensure_ascii=False) + "\n")
+            asked = {q: b for q, b in record["questions"].items() if not (args.only_operacion and q == "tipo")}
             laya = {"state": record["state"],
-                    "questions": {q: {k: v for k, v in body.items() if k != "label"}
-                                  for q, body in record["questions"].items()},
-                    "expected": {q: body["label"] for q, body in record["questions"].items()}}
+                    "questions": {q: {k: v for k, v in body.items() if k != "label"} for q, body in asked.items()},
+                    "expected": {q: body["label"] for q, body in asked.items()}}
             laya_files[split].write(json.dumps(laya, ensure_ascii=False) + "\n")
             stats[split] += 1
             stats[f"{split}:{kind}"] += 1
