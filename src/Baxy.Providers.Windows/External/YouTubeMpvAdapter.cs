@@ -41,6 +41,9 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         _streamResolver = streamResolver;
     }
 
+    // Renew al máximo (B-APP-7): how the player is started; a test reads its arguments or starts a stand-in.
+    internal Func<ProcessStartInfo, Process?> StartPlayer { get; init; } = Process.Start;
+
     public bool CanHandle(string operation) =>
         operation is "media.play.youtube" or "media.status" or "media.control";
 
@@ -202,13 +205,9 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             UseShellExecute = false,
             CreateNoWindow = false,
         };
-        // MUSIC1567: the player writes its own log next to the product's local data so a
-        // stalled start can be read afterwards; audio only, so no GPU surface competes
-        // with the language model and the stream is the small audio one.
-        string logDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY", "logs", "youtube");
-        Directory.CreateDirectory(logDirectory);
-        string logFile = Path.Combine(logDirectory, "mpv-" + pipeName + ".log");
+        // MUSIC1567: audio only, so no GPU surface competes with the language model and the
+        // stream is the small audio one. Renew al máximo (B-APP-7): no log of the player's own
+        // (it kept the stream's URL, the person's address in it, and nothing read it).
         foreach (string argument in new[]
         {
             "--no-config",
@@ -217,14 +216,13 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             "--keep-open=no",
             "--vid=no",
             "--title=BAXY YouTube",
-            "--log-file=" + logFile,
             "--input-ipc-server=\\\\.\\pipe\\" + pipeName,
             stream.AbsoluteUri,
         })
         {
             start.ArgumentList.Add(argument);
         }
-        Process player = Process.Start(start) ?? throw new IOException("mpv did not start.");
+        Process player = StartPlayer(start) ?? throw new IOException("mpv did not start.");
         HelperProcessJob.Assign(player);
         try
         {

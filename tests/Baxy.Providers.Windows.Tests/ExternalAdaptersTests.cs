@@ -3928,6 +3928,39 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (B-APP-7): the player wrote a log of its own per playback, with the stream's URL (the person's
+    // address in it), that nothing read and nothing removed.
+    [Test]
+    public async Task TheLocalPlayerWritesNoLogOfItsOwn()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.exe");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "fixture");
+        var stream = new Uri("https://rr1.googlevideo.com/videoplayback?ip=203.0.113.7");
+        List<string>? arguments = null;
+        using var adapter = new YouTubeMpvAdapter(
+            mpv, ytDlp, nodePath: null, (_, _) => ValueTask.FromResult<Uri?>(stream))
+        {
+            StartPlayer = start =>
+            {
+                arguments = [.. start.ArgumentList];
+                return null;
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(arguments, Does.Contain(stream.AbsoluteUri));
+            Assert.That(arguments, Has.None.StartsWith("--log-file"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_local_player_failed"));
+        });
+    }
+
     // BAXY Renew (notebook): the pause command reached the player and its answer could not be read; the request
     // may have paused it, so the dispatch stops there and no other player gets pressed.
     [Test]
