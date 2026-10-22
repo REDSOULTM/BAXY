@@ -41,6 +41,7 @@ MAX_CHARS = 8192
 BLOCK_S = 0.03      # playback block: a cancel stops the sound within one block
 TAIL_S = 0.55       # BAXY counts as speaking this long after the last block (Definitivo's measured tail grace)
 HOLD_S = 20.0       # an open output with nothing to say closes after this long
+CLOSE_S = 2.0       # close() waits this long for the speech thread to close its output (a sentence being synthesized)
 THREADS = 2         # sherpa-onnx CPU threads: first sentence 1.08 s with 2, 1.11 s with 4, 1.59 s with 8 (PC, 2026-10-17)
 LOUDNESS = 0.11     # every sentence's RMS (about -19 dBFS) over its voice only, its peaks kept under PEAK
 PEAK = 0.95
@@ -105,8 +106,8 @@ class Speech:
         self._on_spoken = on_spoken          # (queued at, first sound at), monotonic seconds
         self._on_lip = on_lip                # a take's loudness and when it sounds, or when the sound was cut
         # (generation, text or None to open the output, queued at, for a notice the answers given before it, its audio
-        # when its synthesis already started)
-        self._queue: queue.Queue[tuple[int, str | None, float, int | None, Iterator[np.ndarray] | None]] = \
+        # when its synthesis already started), or None to end the speech thread (close)
+        self._queue: queue.Queue[tuple[int, str | None, float, int | None, Iterator[np.ndarray] | None] | None] = \
             queue.Queue(maxsize=16)
         self._posting = threading.Lock()     # speak() (the reader) and prepare() (the request loop) share the queue
         self._generation = 0                 # cancel() moves it on; older utterances are dropped
@@ -122,6 +123,7 @@ class Speech:
         self._synthesis = ThreadPoolExecutor(1, thread_name_prefix="speech-synthesis")
         self._stream = None                  # the output, open from a turn's start until HOLD_S without sound
         self._stream_until = 0.0
+        self._thread: threading.Thread | None = None
         # A voice whose files are not there fails now, not after the load: speak() never takes what will not sound.
         folder = Path(os.environ.get("BAXY_RENEW_TTS_DIR", ""))
         missing = [name for name in _MODEL_FILES if not (folder / name).is_file()]
@@ -131,7 +133,8 @@ class Speech:
             sys.stderr.flush()
             self._ready.set()
             return
-        threading.Thread(target=self._run, name="speech", daemon=True).start()
+        self._thread = threading.Thread(target=self._run, name="speech", daemon=True)
+        self._thread.start()
 
     @property
     def ready(self) -> bool:
@@ -176,8 +179,16 @@ class Speech:
         self._generation += 1
 
     def close(self) -> None:
+        """The speech thread closes its own output: closed from here it was aborted in the middle of a write."""
         self.cancel()
-        self._close_stream()
+        if self._thread is None:
+            return
+        try:
+            with self._posting:
+                self._queue.put(None, timeout=CLOSE_S)
+        except queue.Full:
+            return
+        self._thread.join(CLOSE_S)
 
     # --- the speech thread ----------------------------------------------------------------------------------------
 
@@ -192,11 +203,15 @@ class Speech:
             self._ready.set()
         while not self.failure:
             try:
-                generation, text, queued, notice, audio = self._queue.get(timeout=1.0)
+                item = self._queue.get(timeout=1.0)
             except queue.Empty:
                 if self._stream is not None and time.monotonic() > self._stream_until:
                     self._close_stream()
                 continue
+            if item is None:
+                self._close_stream()
+                return
+            generation, text, queued, notice, audio = item
             try:
                 if text is None:
                     self._open_stream()
