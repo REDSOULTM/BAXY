@@ -387,7 +387,8 @@ SESSION_CALLS = 8
 SESSION_STATE = "baxy.session"
 
 # The session's conversation keeps the last turns that fit both bounds; it is only ever cut at a turn's start (the
-# model is hybrid: its cache is reused from the front, so the middle of the prompt is never edited).
+# model is hybrid: its cache is reused from the front, so the middle of the prompt is edited only where a cut would
+# have moved its start anyway: the oldest results that lose their bodies, 1.1).
 HISTORY_TURNS = 8
 HISTORY_CHARS = 24000
 # Ronda final 44: the context also holds the tool prefix (about 42k of its 49,152 tokens with the descriptions of the
@@ -404,13 +405,15 @@ TRIM_TO = 0.6
 # («nunca me lo dijiste» about a turn no longer shown).
 TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "
            "no lo sabes]")
+# Al máximo 1.1 (2026-10-22): before a cut, the oldest results lose their bodies; their calls and the line of their
+# turn's facts (continue_turn writes it last) stay. A turn of 5+ calls held 3.6k tokens (p50): about three turns were
+# left. The ids a body carried (windows, controls) are gone with it, and the model is told so (regla 10: look again).
+TURN_FACTS = "\n[En este turno: "
+COMPACTED = ("[Resultado omitido para que quepa la conversación: los ids de ventanas y controles que traía ya no "
+             "valen; si lo necesitas, míralo de nuevo]")
 
-# FT/proveedores goal (e2e E022): the results of one turn's calls grow its prompt past the context (eight pages of 6,000
-# characters beside the prefix), and llama-server refuses it. Each earlier result of the turn then keeps its start, and
-# the cut is said where the model reads it.
-SHRUNK_CHARS = 1200
-SHRUNK = "\n[Resultado recortado para que quepa el turno: {n} caracteres más de este resultado ya no se muestran]"
-# The same for the person's own text when it alone does not fit (decide); never cut below this many characters.
+# Review 16: the person's own text, when it alone does not fit (decide), keeps its start and the cut is said where the
+# model reads it; never cut below this many characters.
 CUT_TEXT = "\n[Texto recortado para que quepa el turno: {n} caracteres más de lo que escribió la persona ya no se muestran]"
 CUT_TEXT_FLOOR = 500
 
@@ -919,18 +922,44 @@ class Mind:
 
     def _trim(self) -> None:
         """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result. Past it, the
-        oldest turns go until what is left fits TRIM_TO of every bound."""
+        oldest closed turns' results lose their bodies until their characters and tokens fit TRIM_TO (1.1), and if that
+        is not enough the oldest turns go until what is left fits TRIM_TO of every bound."""
         turns = self._turn_sizes()
         if len(turns) <= 1 or self._fits(turns):
+            return
+        starts = [t[0] for t in turns]
+        for start, end in zip(starts, starts[1:]):
+            if self._fits(turns, TRIM_TO, count=False):
+                break
+            if self._compact(self.conversation[start:end]):
+                turns = self._turn_sizes()
+        if self._fits(turns):
             return
         dropped = 1
         while dropped < len(turns) - 1 and not self._fits(turns[dropped:], TRIM_TO):
             dropped += 1
-        # Up to the first kept turn's clock: an earlier note of what was cut goes with the turns cut. In place: an open
-        # turn's conversation is this same list (the notebook's review of 1.1/1.2, 2026-10-22).
-        del self.conversation[:turns[dropped][0]]
-        self.trimmed_turns += dropped
+        self._drop(turns[dropped][0], dropped)
+
+    def _drop(self, end: int, turns: int) -> None:
+        """Take out the oldest `turns`, up to the first kept turn's clock (`end`): an earlier note of what was cut goes
+        with them, and the new one says how many are gone. In place: an open turn's conversation is this same list (the
+        notebook's review of 1.1/1.2, 2026-10-22)."""
+        del self.conversation[:end]
+        self.trimmed_turns += turns
         self.conversation.insert(0, {"role": "user", "content": TRIMMED.format(n=self.trimmed_turns)})
+
+    @staticmethod
+    def _compact(messages: list[dict[str, Any]]) -> bool:
+        """Each call's result among these messages (the ones that end with their turn's facts) keeps only those facts
+        after COMPACTED; the calls stay, so none loses its result. Whether any result changed."""
+        compacted = False
+        for message in messages:
+            content = str(message.get("content") or "")
+            at = content.rfind(TURN_FACTS)
+            if message["role"] == "tool" and at > len(COMPACTED):
+                message["content"] = COMPACTED + content[at:]
+                compacted = True
+        return compacted
 
     def _turn_sizes(self) -> list[tuple[int, int, int]]:
         """Each turn of the conversation as (its first message, characters, tokens); the first turn takes in what comes
@@ -950,10 +979,11 @@ class Mind:
             self._tokens = {t: self._tokens[t] if t in self._tokens else len(self.server.tokenize(t)) for t in texts}
         return [(a, len(t), self._tokens.get(t, 0)) for a, t in zip(bounds, texts)]
 
-    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0) -> bool:
-        """Whether these turns fit `share` of every bound: turns, characters and the tokens the prefix leaves."""
+    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0, count: bool = True) -> bool:
+        """Whether these turns fit `share` of every bound: turns (unless not `count`: leaving out results never changes
+        how many there are), characters and the tokens the prefix leaves."""
         room = self.server.context - self.prefix_tokens - TURN_ROOM_TOKENS
-        return (len(turns) <= HISTORY_TURNS * share and sum(t[1] for t in turns) <= HISTORY_CHARS * share
+        return ((not count or len(turns) <= HISTORY_TURNS * share) and sum(t[1] for t in turns) <= HISTORY_CHARS * share
                 and (not self.prefix_tokens or sum(t[2] for t in turns) <= room * share))
 
     def _turn_starts(self) -> list[int]:
@@ -1062,21 +1092,21 @@ class Mind:
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
                 "arguments": {"approve": approve}, "reply": "", "question": ""}
 
-    def _shrink_turn(self, conv: list[dict[str, Any]]) -> bool:
-        """Cut each result of the open turn but the newest to its start (SHRUNK_CHARS), saying so: whether any was."""
+    def _make_room(self, conv: list[dict[str, Any]]) -> bool:
+        """One step of room for an open turn past the context, whether there was one: the earlier turns' results leave
+        out their bodies, else the oldest earlier turn goes, else the open turn's results but the newest leave out
+        theirs. All in place: the person's open turn is this same conversation."""
         starts = [i for i, m in enumerate(conv)
                   if m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
-        results = [m for m in conv[(starts[-1] if starts else 0):] if m["role"] == "tool"]
-        cut = False
-        for message in results[:-1]:
-            content = str(message.get("content") or "")
-            if len(content) > SHRUNK_CHARS and SHRUNK.format(n="")[:20] not in content:
-                message["content"] = content[:SHRUNK_CHARS] + SHRUNK.format(n=len(content) - SHRUNK_CHARS)
-                cut = True
-        return cut
+        if conv is self.conversation and len(starts) > 1:
+            if not self._compact(conv[:starts[-1]]):
+                self._drop(starts[1], 1)
+            return True
+        results = [m for m in conv[(starts[-1] if starts else 0):]
+                   if m["role"] == "tool" and TURN_FACTS in str(m.get("content") or "")]
+        return self._compact(results[:-1])
 
-    def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False,
-              shrunk: bool = False) -> dict[str, Any]:
+    def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
         started = time.monotonic()
         conv = turn["conv"]
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
@@ -1103,12 +1133,14 @@ class Mind:
         try:
             reply = self.server.chat(body)
         except urllib.error.HTTPError as error:
-            # llama-server refuses a prompt past its context with HTTP 400: within a turn that is its own results, so
-            # they are cut (said where the model reads) and the model answers in words from what is left, once.
-            if error.code != 400 or shrunk or not self._shrink_turn(conv):
+            # llama-server refuses a prompt past its context with HTTP 400. Al máximo 1.2 (2026-10-22): its earlier
+            # results were cut and the model answered in words at once (15 context_shrunk in the trace, each one ended
+            # its mission); now room is made a step at a time (_make_room, said where the model reads) and the turn goes
+            # on as it was. With no room left to make, the refusal reaches the App.
+            if error.code != 400 or not self._make_room(conv):
                 raise
             self._log(stage, started, None, kind="context_shrunk", operation=None, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True, shrunk=True)
+            return self._next(request_id, stage, turn, final=final)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
         calls = []
@@ -1141,7 +1173,7 @@ class Mind:
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
                       operation=doubted, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
+            return self._next(request_id, stage, turn, final=True)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
                 {"id": c["id"], "type": "function",
@@ -1154,11 +1186,11 @@ class Mind:
             # as BAXY's words. It is a failed call: the model answers in words, where a call cannot be written.
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="malformed_call",
                       operation=None, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
+            return self._next(request_id, stage, turn, final=True)
         if not content and not final and stage == "turn.continue" and not turn.get("beat"):
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
-            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
+            return self._next(request_id, stage, turn, final=True)
         if content:
             conv.append({"role": "assistant", "content": content})
         return self._result(request_id, turn, None, reply, stage, started, content)

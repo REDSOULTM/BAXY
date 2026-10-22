@@ -135,3 +135,54 @@ def test_a_call_whose_result_never_came_is_in_the_session_calls(tmp_path: Path) 
     mind.decide(1, "cierra paint")
     mind.decide(2, "¿ya lo cerraste?")
     assert _clocks(server)[-1].endswith("en esta sesión: 1 (app_close → sin resultado: pudo o no ocurrir)]")
+
+
+def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_path: Path) -> None:
+    # 1.1: past its bound the history dropped whole turns (about three were left); the bodies of the oldest results go
+    # first now, while their calls and the line of each turn's facts stay, and what is left out says its ids are gone.
+    from test_mind_final import _call, _mind, _say
+    mind, _ = _mind(tmp_path, [_call("input_visible_controls", {"application": "Paint"}), _say("Listo.")] * 7)
+    for turn in range(7):
+        mind.decide(turn, f"pedido {turn}")
+        mind.continue_turn(turn, json.dumps({"status": "completed", "observed": {"windowId": f"w{turn}",
+                                                                                "text": "x" * 5000}}))
+    assert mind.trimmed_turns == 0
+    assert len([m for m in mind.conversation if m.get("tool_calls")]) == 7
+    results = [m["content"] for m in mind.conversation if m["role"] == "tool"]
+    # Cut down to TRIM_TO of its characters, as a cut is: the next turns leave the oldest results as they were. Four,
+    # not three: since 8.1 each clock also lists the session's calls, so each turn here grows ~50 characters per call.
+    assert ["míralo de nuevo" in r for r in results] == [True] * 4 + [False] * 3
+    assert "ids" in results[0] and "w0" not in results[0]
+    # 8.2: a result with no typed verification is «sin verificar»; the line of the turn's facts stays as it was.
+    assert "[En este turno: input_visible_controls → completado sin verificar]" in results[0]
+    assert "x" * 5000 in results[-1]
+
+
+def test_a_turn_past_the_context_makes_room_in_its_history_before_it_ends(tmp_path: Path) -> None:
+    # 1.2: a turn whose results outgrew the context cut them and answered in words at once (15 context_shrunk in the
+    # trace, each one ended its mission). The turns before it give room first (their results, then themselves), then its
+    # own earlier results; the newest stays whole and the model goes on with its tools.
+    from test_mind_final import _call, _mind, _overflow, _say
+    look = _call("input_visible_controls", {"application": "Paint"})
+    mind, server = _mind(tmp_path, [look, _say("Listo.")] * 3 + [look] * 7)
+    chat = server.chat
+    server.chat = lambda body: (_ for _ in ()).throw(_overflow()) \
+        if len(json.dumps(body["messages"][1:], ensure_ascii=False)) > 22000 else chat(body)
+
+    def seen(n: int) -> str:
+        return json.dumps({"status": "completed", "observed": {"windowId": f"w{n}", "text": str(n % 10) * 4000}})
+
+    for turn in range(3):
+        mind.decide(turn, f"pedido {turn}")
+        mind.continue_turn(turn, seen(turn))
+    assert mind.decide(3, "mira Paint otra vez")["kind"] == "action"
+    for step in range(3, 9):
+        assert mind.continue_turn(step, seen(step))["kind"] == "action"
+    assert not any("tool_choice" in body for body in server.bodies)
+    assert mind.trimmed_turns == 3
+    assert len([m for m in mind.conversation if m.get("tool_calls")]) == 7
+    results = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    # The earlier turns' results went at the second result, the turns themselves at the fifth, and only then the turn's
+    # own results but the newest; the one after them came in whole.
+    assert ["míralo de nuevo" in r for r in results] == [True] * 4 + [False] * 2
+    assert "8" * 4000 in results[-1]

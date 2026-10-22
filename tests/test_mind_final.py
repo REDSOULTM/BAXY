@@ -1,11 +1,11 @@
-"""When a turn of the mind (src/baxy_mind/mind.py) answers in words after its calls: the prompt of the turn grew past the
-context (llama-server's HTTP 400) or the model wrote nothing after a call (FT/proveedores goal, e2e E022)."""
+"""A turn of the mind (src/baxy_mind/mind.py) whose prompt grew past the context (llama-server's HTTP 400), and one that
+answers in words after its calls because the model wrote nothing after a call (FT/proveedores goal, e2e E022)."""
 import io
 import json
 import urllib.error
 from pathlib import Path
 
-from baxy_mind.mind import SHRUNK_CHARS, Mind
+from baxy_mind.mind import COMPACTED, Mind
 
 
 class FakeServer:
@@ -47,7 +47,9 @@ def _mind(tmp_path: Path, replies: list) -> tuple[Mind, FakeServer]:
     return mind, server
 
 
-def test_a_turn_past_the_context_cuts_its_earlier_results_and_answers_in_words(tmp_path: Path) -> None:
+def test_a_turn_past_the_context_leaves_out_its_earlier_results_and_goes_on(tmp_path: Path) -> None:
+    # Al máximo 1.2: with nothing before it, the turn's earlier results leave out their bodies (their facts stay) and
+    # the model goes on with its tools; it was made to answer in words at once.
     page = {"url": "https://example.org/rfc"}
     mind, server = _mind(tmp_path, [_call("web_fetch", page), _call("web_fetch", page), _overflow(),
                                     _say("La página no dice el código.")])
@@ -56,9 +58,10 @@ def test_a_turn_past_the_context_cuts_its_earlier_results_and_answers_in_words(t
     result = mind.continue_turn(3, json.dumps({"status": "completed", "text": "b" * 6000}))
     assert result["reply"] == "La página no dice el código."
     last = server.bodies[-1]
-    assert last["tool_choice"] == "none"
+    assert "tool_choice" not in last
     tools = [m["content"] for m in last["messages"] if m["role"] == "tool"]
-    assert len(tools[0]) < SHRUNK_CHARS + 200 and "Resultado recortado" in tools[0]
+    # 8.2: a result with no typed verification is «completado sin verificar».
+    assert tools[0] == COMPACTED + "\n[En este turno: web_fetch → completado sin verificar]"
     assert "b" * 6000 in tools[1]
 
 
