@@ -194,6 +194,24 @@ public sealed class OpenMeteoWeatherAdapterTests
         Assert.That(receipt.ErrorCode, Is.EqualTo("weather_service_unavailable"));
     }
 
+    // Renew al máximo (auditoría de flujos, web): «¿cómo está el clima?» without network is the service not answering;
+    // it was weather_location_unavailable, and the model asked the person where they were.
+    [Test]
+    public async Task WithoutNetworkTheWeatherHereIsTheServiceNotAnsweringNotAnUnknownPlace()
+    {
+        var adapter = new OpenMeteoWeatherAdapter((_, _) =>
+            throw new System.Net.Http.HttpRequestException("offline"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "weather.current", JsonSerializer.SerializeToElement(new { }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("weather_service_unavailable"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     // fable/estab-wx-clima (tanda n6 t1-c05 «va a llover mañana en valpo?» → «el servicio meteorológico no respondió» at
     // 2.1 s; n5 read it): a service that fails once and answers next is read after one pause.
     [Test]

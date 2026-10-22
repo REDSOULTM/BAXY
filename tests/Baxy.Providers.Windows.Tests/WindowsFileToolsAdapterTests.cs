@@ -76,6 +76,39 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, archivos): a folder with a file another program holds open (an Excel book in
+    // use) is not zipped, and nothing is left behind: a half-written zip stayed beside the folder, the failure said
+    // zip_create_failed, and asking again answered zip_already_exists.
+    [Test]
+    public async Task AFolderWithAFileInUseLeavesNoHalfZipAndSaysTheFileIsInUse()
+    {
+        string folder = Path.Combine(_root, "Informe");
+        Directory.CreateDirectory(folder);
+        File.WriteAllText(Path.Combine(folder, "a.txt"), "uno");
+        string held = Path.Combine(folder, "ventas.xlsx");
+        File.WriteAllText(held, "dos");
+
+        ExternalCapabilityReceipt first;
+        ExternalCapabilityReceipt again;
+        using (new FileStream(held, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            first = await Adapter().InvokeAsync(
+                "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "Informe" }),
+                CancellationToken.None);
+            again = await Adapter().InvokeAsync(
+                "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "Informe" }),
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.ErrorCode, Is.EqualTo("file_in_use"));
+            Assert.That(first.EffectMayHaveOccurred, Is.False);
+            Assert.That(again.ErrorCode, Is.EqualTo("file_in_use"));
+            Assert.That(File.Exists(Path.Combine(_root, "Informe.zip")), Is.False);
+        });
+    }
+
     [Test]
     public async Task OpeningAFileThatIsNotThereOrNotSafeTouchesNothing()
     {
@@ -352,6 +385,66 @@ public sealed class WindowsFileToolsAdapterTests
             Assert.That(asked, Is.EqualTo(new[] { "https://example.org/" }));
             Assert.That(Directory.EnumerateFiles(_root), Is.Empty);
         });
+    }
+
+    // Renew al máximo (auditoría de flujos, web): a file over 50 MiB whose size the server does not announce (sent in
+    // chunks) stops being read past the bound; it was read whole into memory (up to 2 GB) and only then refused.
+    [Test]
+    public async Task AnUnannouncedFileOverTheBoundIsNotReadWhole()
+    {
+        var body = new EndlessStream();
+        var adapter = new WindowsFileToolsAdapter(folder => folder == "desktop" ? _root : null, null, null,
+            new AnsweringHandler(() =>
+            {
+                var content = new StreamContent(body);
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/zip");
+                return new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK) { Content = content };
+            }));
+        using var turn = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.download",
+            JsonSerializer.SerializeToElement(new { url = "https://example.org/grande.zip", folder = "desktop" }),
+            turn.Token);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("download_too_large"));
+            Assert.That(body.Served, Is.LessThanOrEqualTo(50L * 1024 * 1024 + 1024 * 1024));
+            Assert.That(Directory.EnumerateFiles(_root), Is.Empty);
+        });
+    }
+
+    private sealed class AnsweringHandler(Func<System.Net.Http.HttpResponseMessage> answer)
+        : System.Net.Http.HttpMessageHandler
+    {
+        protected override Task<System.Net.Http.HttpResponseMessage> SendAsync(
+            System.Net.Http.HttpRequestMessage request, CancellationToken cancellationToken) =>
+            Task.FromResult(answer());
+    }
+
+    // A body that never ends (a server streaming chunks with no announced length), counting what was read of it.
+    private sealed class EndlessStream : Stream
+    {
+        private const long Ceiling = 300L * 1024 * 1024;
+        internal long Served { get; private set; }
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => Served; set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            // Past the ceiling it ends, so a reader without a bound stops too instead of filling the test's memory.
+            int served = (int)Math.Min(count, Ceiling - Served);
+            Array.Clear(buffer, offset, served);
+            Served += served;
+            return served;
+        }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
     [TestCase("portada", "image/png", "portada.png")]

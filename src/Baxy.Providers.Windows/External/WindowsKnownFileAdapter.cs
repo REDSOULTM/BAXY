@@ -452,6 +452,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (matches.Length > 1) return CandidatesRefusal(operation, "known_file_ambiguous", matches);
         (string label, _, string source) = matches[0];
         bool isFolder = Directory.Exists(source);
+        // Renew al máximo (auditoría de flujos): a folder that holds BAXY's own area would take it to the bin with it.
+        if (isFolder && _privateRoots.Any(root => BaxyPrivateArea.Holds([source], root)))
+            return ExternalJson.Failure(operation, "path_reserved");
         int entries = isFolder
             ? Directory.EnumerateFileSystemEntries(source, "*", SearchOption.AllDirectories).Count()
             : 0;
@@ -1129,6 +1132,12 @@ if __name__ == "__main__":
     {
         if (!string.IsNullOrWhiteSpace(subdirectory) && Path.IsPathFullyQualified(subdirectory))
         {
+            // Renew al máximo (auditoría de flujos): the known folder's own full path is that folder, not a path outside it.
+            string named = Path.GetFullPath(subdirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            (string Label, string Root)[] itself = [.. roots.Where(item => string.Equals(named,
+                Path.GetFullPath(item.Root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
+                StringComparison.OrdinalIgnoreCase))];
+            if (itself.Length > 0) return [itself[0]];
             (string Label, string Root)[] holding = [.. roots.Where(item => IsInside(item.Root, subdirectory))];
             if (holding.Length == 0) throw new InvalidDataException("known_path_outside_folder");
             roots = [holding[0]];
@@ -1148,8 +1157,9 @@ if __name__ == "__main__":
                     StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("known_subdirectory_invalid");
             if (BaxyPrivateArea.Holds(_privateRoots, candidate)) throw new InvalidDataException("path_reserved");
-            if (Directory.Exists(candidate)
-                && (File.GetAttributes(candidate) & FileAttributes.ReparsePoint) != 0)
+            // Renew al máximo (auditoría de flujos): every part of the way is checked, not only the last; through
+            // «AppData\Local\Application Data» (Windows' junction back to Local) BAXY's own area was edited.
+            if (Directory.Exists(candidate) && CrossesReparsePoint(root, candidate))
                 throw new InvalidDataException("known_subdirectory_reparse_point");
             return (item.Label, candidate);
         }).ToArray();
