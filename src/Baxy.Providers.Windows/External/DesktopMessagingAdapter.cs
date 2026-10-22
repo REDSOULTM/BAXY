@@ -588,11 +588,23 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private WindowsInstalledApplicationOpenProvider? _clientOpener;
     private readonly IForegroundLease? _lease;
 
-    internal WindowsDesktopMessagingAutomation(IClientInteractionProbe probe, IForegroundLease? lease = null)
+    private readonly Func<string?> _ocrEngine;
+
+    internal WindowsDesktopMessagingAutomation(
+        IClientInteractionProbe probe,
+        IForegroundLease? lease = null,
+        Func<string?>? ocrEngine = null)
     {
         Probe = probe ?? throw new ArgumentNullException(nameof(probe));
         _lease = lease;
+        _ocrEngine = ocrEngine ?? FindTesseract;
     }
+
+    /// <summary>
+    /// Renew al máximo (auditoría de flujos): no OCR engine was found, so neither the chat's name (WhatsApp's header)
+    /// nor the typed or sent message could be read; nothing was opened, typed or sent.
+    /// </summary>
+    internal const string OcrUnavailable = "message_ocr_unavailable";
 
     // v3 point 0, fix 3: the client is driven with the real keyboard and mouse (its chat search, composer and quick
     // switcher expose no pattern this flow can use), so each resolve, send and draft runs inside one burst of the
@@ -720,6 +732,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string channel,
         CancellationToken cancellationToken)
     {
+        // Renew al máximo (auditoría de flujos): every flow reads the chat by OCR; without an engine it would type into the
+        // person's chat, never see the text and clear it. Nothing is opened or typed then.
+        if (_ocrEngine() is null)
+        {
+            return new(false, false, OcrUnavailable);
+        }
+
         // The reads that prove a window ready start now, off the turn: a client already open never waits for them.
         Probe.Prewarm();
         if (FindWindow(channel).Handle != 0)
@@ -1118,6 +1137,39 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             throw;
         }
 
+        return await SentReadBackAsync(
+            token => ReadBackAfterEnterAsync(recipient, text, beforeSend, beforePane, token),
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The read-back of a message whose Enter was already pressed. Renew al máximo (auditoría de flujos): a capture, a
+    /// read or a cancel that failed here escaped as a bare provider failure, and the message may already be in the chat
+    /// (a model told «failed» sends it again); it is said as a delivery not verified, with its effect observed.
+    /// </summary>
+    internal static async ValueTask<DesktopMessageObservation> SentReadBackAsync(
+        Func<CancellationToken, ValueTask<DesktopMessageObservation>> readBack,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(readBack);
+        try
+        {
+            return await readBack(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception failure) when (failure is IOException or InvalidOperationException or ExternalException
+            or OperationCanceledException)
+        {
+            return new(false, true, string.Empty, "message_delivery_not_verified");
+        }
+    }
+
+    private static async ValueTask<DesktopMessageObservation> ReadBackAfterEnterAsync(
+        ResolvedRecipient recipient,
+        string text,
+        byte[] beforeSend,
+        byte[] beforePane,
+        CancellationToken cancellationToken)
+    {
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
         byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
         string afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
@@ -1779,56 +1831,67 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return result;
     }
 
+    // Renew al máximo (auditoría de flujos): the capture of a chat goes to Tesseract through its standard input; it was
+    // written to %TEMP% for each pass and left there whenever its deletion failed (B-CU-5's rule: no chat on disk).
     private static async ValueTask<string> RunTesseractAsync(
         string executable,
         byte[] bitmap,
         CancellationToken cancellationToken)
     {
-        string path = Path.Combine(Path.GetTempPath(), $"baxy-ocr-{Guid.NewGuid():N}.bmp");
-        try
+        var start = new ProcessStartInfo(executable)
         {
-            await File.WriteAllBytesAsync(path, bitmap, cancellationToken).ConfigureAwait(false);
-            var start = new ProcessStartInfo(executable)
-            {
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-            };
-            start.ArgumentList.Add(path);
-            start.ArgumentList.Add("stdout");
-            start.ArgumentList.Add("-l");
-            start.ArgumentList.Add("eng");
-            start.ArgumentList.Add("--psm");
-            start.ArgumentList.Add("6");
-            using Process process = Process.Start(start)
-                ?? throw new IOException("Tesseract did not start.");
-            HelperProcessJob.Assign(process);
-            return await ReadRedirectedOutputAsync(process, cancellationToken)
-                .ConfigureAwait(false);
-        }
-        finally
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        start.ArgumentList.Add("stdin");
+        start.ArgumentList.Add("stdout");
+        // The product's runtime keeps its languages apart from the executable (BAXYRuntime\ocr\tessdata-fast); an engine
+        // with its own English model keeps reading with it, as the reads above were tuned.
+        if (!File.Exists(Path.Combine(Path.GetDirectoryName(executable) ?? string.Empty, "tessdata", "eng.traineddata"))
+            && CaptureVisionAdapter.FindTessdata(executable, "en", out _) is { } tessdata)
         {
-            try
-            {
-                File.Delete(path);
-            }
-            catch (IOException)
-            {
-                // A failed local cleanup does not change delivery evidence.
-            }
+            start.ArgumentList.Add("--tessdata-dir");
+            start.ArgumentList.Add(tessdata);
         }
+
+        start.ArgumentList.Add("-l");
+        start.ArgumentList.Add("eng");
+        start.ArgumentList.Add("--psm");
+        start.ArgumentList.Add("6");
+        using Process process = Process.Start(start)
+            ?? throw new IOException("Tesseract did not start.");
+        HelperProcessJob.Assign(process);
+        return await ReadRedirectedOutputAsync(process, cancellationToken, bitmap)
+            .ConfigureAwait(false);
     }
 
     internal static async ValueTask<string> ReadRedirectedOutputAsync(
         Process process,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        byte[]? input = null)
     {
         ArgumentNullException.ThrowIfNull(process);
         Task<string> outputTask =
             process.StandardOutput.ReadToEndAsync(cancellationToken);
         Task<string> errorTask =
             process.StandardError.ReadToEndAsync(cancellationToken);
+        if (input is not null)
+        {
+            // Read concurrently above, so a process that answers while it is still being fed never blocks the write.
+            try
+            {
+                await process.StandardInput.BaseStream.WriteAsync(input, cancellationToken).ConfigureAwait(false);
+                process.StandardInput.Close();
+            }
+            catch (IOException)
+            {
+                // The process stopped reading (it failed before the picture, a missing language): its exit code answers.
+            }
+        }
+
         await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
         string[] streams = await Task.WhenAll(outputTask, errorTask).ConfigureAwait(false);
         return process.ExitCode == 0 ? streams[0] : string.Empty;
@@ -1840,11 +1903,23 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string? Read,
         string? Match);
 
-    private static string? FindTesseract()
+    // Renew al máximo (auditoría de flujos): first where the product's assets declare Tesseract (BAXY_TESSERACT_EXE,
+    // BAXYRuntime, Program Files), the lookup ocr.read uses; PATH only after them, and only its absolute directories.
+    internal static string? FindTesseract()
     {
+        if (CaptureVisionAdapter.FindTesseract() is { } declared)
+        {
+            return declared;
+        }
+
         string? path = Environment.GetEnvironmentVariable("PATH");
         foreach (string directory in (path ?? string.Empty).Split(Path.PathSeparator))
         {
+            if (!Path.IsPathFullyQualified(directory))
+            {
+                continue;
+            }
+
             string candidate = Path.Combine(directory, "tesseract.exe");
             if (File.Exists(candidate))
             {
@@ -1852,11 +1927,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             }
         }
 
-        string fallback = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-            "Tesseract-OCR",
-            "tesseract.exe");
-        return File.Exists(fallback) ? fallback : null;
+        return null;
     }
 
     private static (nint Handle, int ProcessId) FindWindow(string channel)

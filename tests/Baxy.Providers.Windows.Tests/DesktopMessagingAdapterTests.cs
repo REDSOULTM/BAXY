@@ -448,6 +448,152 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): Enter was already pressed; a read-back that fails after it (a black capture,
+    // the window gone, the turn cancelled) says the message may be out, never a bare provider failure.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AReadBackThatFailsAfterEnterSaysTheMessageMayBeOut(bool cancelled)
+    {
+        DesktopMessageObservation observed = await WindowsDesktopMessagingAutomation.SentReadBackAsync(
+            _ => cancelled ? throw new OperationCanceledException() : throw new IOException("Messaging evidence capture came back black."),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.Verified, Is.False);
+            Assert.That(observed.EffectObserved, Is.True);
+            Assert.That(observed.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): every OCR pass of a chat (its header, composer, last messages, chat list)
+    // was written to %TEMP% as a bitmap for Tesseract; the picture now goes through the process's standard input and
+    // no capture of a chat touches the disk (as B-CU-5 took away the debug path that kept them).
+    [Test]
+    public void AChatCaptureIsReadWithoutTouchingTheDisk()
+    {
+        string source = AdapterSource();
+        int start = source.IndexOf("private static async ValueTask<string> RunTesseractAsync(", StringComparison.Ordinal);
+        int end = source.IndexOf("\n    }\n", Math.Max(start, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(start, Is.GreaterThan(0));
+            Assert.That(source[start..end], Does.Not.Contain("File.Write"));
+            Assert.That(source[start..end], Does.Not.Contain("GetTempPath"));
+            Assert.That(source[start..end], Does.Contain("\"stdin\""));
+        });
+    }
+
+    [Test]
+    public async Task TheOcrProcessIsFedThroughItsStandardInput()
+    {
+        var start = new ProcessStartInfo("cmd.exe")
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        start.ArgumentList.Add("/d");
+        start.ArgumentList.Add("/c");
+        start.ArgumentList.Add("more");
+        using Process process = Process.Start(start)
+            ?? throw new IOException("Test process did not start.");
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        string output = await WindowsDesktopMessagingAutomation.ReadRedirectedOutputAsync(
+            process, timeout.Token, System.Text.Encoding.ASCII.GetBytes("hola test\r\n"));
+
+        Assert.That(output.Trim(), Is.EqualTo("hola test"));
+    }
+
+    // An engine that fails before reading its input (a missing language) answers nothing, as it did when the picture was
+    // a file: no broken-pipe exception escapes the read.
+    [Test]
+    public async Task AnOcrProcessThatExitsUnfedReadsNothing()
+    {
+        var start = new ProcessStartInfo("cmd.exe")
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+        };
+        start.ArgumentList.Add("/d");
+        start.ArgumentList.Add("/c");
+        start.ArgumentList.Add("exit");
+        start.ArgumentList.Add("1");
+        using Process process = Process.Start(start)
+            ?? throw new IOException("Test process did not start.");
+        await process.WaitForExitAsync();
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        string output = await WindowsDesktopMessagingAutomation.ReadRedirectedOutputAsync(
+            process, timeout.Token, new byte[4 * 1024 * 1024]);
+
+        Assert.That(output, Is.Empty);
+    }
+
+    // Renew al máximo (auditoría de flujos): messaging looked for Tesseract only on PATH and in Program Files, not where
+    // the product's assets declare it (BAXY_TESSERACT_EXE, BAXYRuntime), as ocr.read finds it.
+    [Test]
+    [NonParallelizable]
+    public void MessagingFindsTheOcrEngineTheProductDeclares()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-messaging-ocr-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        string executable = Path.Combine(directory, "tesseract.exe");
+        File.WriteAllBytes(executable, [0x4d, 0x5a]);
+        string? previous = Environment.GetEnvironmentVariable("BAXY_TESSERACT_EXE");
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", executable);
+            Assert.That(WindowsDesktopMessagingAutomation.FindTesseract(), Is.EqualTo(executable));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", previous);
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    // Renew al máximo (auditoría de flujos): with no OCR engine every flow typed into the person's chat (Discord's title
+    // needs none), never saw the text, cleared it and said «message_draft_not_verified». It stops before the client is
+    // even opened, with its cause.
+    [Test]
+    public async Task WithoutAnOcrEngineNothingIsOpenedOrTyped()
+    {
+        var probe = new SilentProbe();
+        var automation = new WindowsDesktopMessagingAutomation(probe, lease: null, ocrEngine: () => null);
+
+        DesktopClientReadiness readiness = await automation.EnsureClientOpenAsync("discord", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(readiness.Ready, Is.False);
+            Assert.That(readiness.Opened, Is.False);
+            Assert.That(readiness.ErrorCode, Is.EqualTo(WindowsDesktopMessagingAutomation.OcrUnavailable));
+            Assert.That(probe.Reads, Is.Zero);
+        });
+    }
+
+    private sealed class SilentProbe : IClientInteractionProbe
+    {
+        internal int Reads { get; private set; }
+
+        public void Prewarm()
+        {
+        }
+
+        public ValueTask<ClientInteraction> ReadAsync(nint handle, bool content, CancellationToken cancellationToken)
+        {
+            Reads++;
+            return ValueTask.FromResult(ClientInteraction.Unanswered);
+        }
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {
