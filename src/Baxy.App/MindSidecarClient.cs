@@ -503,12 +503,31 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return false;
         }
 
-        JsonObject? reply = await RequestAsync(
-            new JsonObject { ["type"] = "voice.start", ["mode"] = mode },
-            timeout,
-            cancellationToken).ConfigureAwait(false);
-        return reply is not null
-            && (string?)reply["type"] == "voice.started"
+        // 2026-10-22, review of the App: a start whose answer did not come in time (or that its caller gave up on) still
+        // opens the microphone in the mind once it runs, while the App takes it as failed; a stop queued right behind
+        // it closes it. A start the mind answered, even refusing it, needs none.
+        JsonObject? reply;
+        try
+        {
+            reply = await RequestAsync(
+                new JsonObject { ["type"] = "voice.start", ["mode"] = mode },
+                timeout,
+                cancellationToken,
+                returnProtocolError: true).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            _ = await VoiceStopAsync(timeout, CancellationToken.None).ConfigureAwait(false);
+            throw;
+        }
+
+        if (reply is null)
+        {
+            _ = await VoiceStopAsync(timeout, CancellationToken.None).ConfigureAwait(false);
+            return false;
+        }
+
+        return (string?)reply["type"] == "voice.started"
             && (string?)reply["mode"] == mode;
     }
 

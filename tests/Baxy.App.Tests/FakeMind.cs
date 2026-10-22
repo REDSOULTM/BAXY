@@ -8,7 +8,9 @@ namespace Baxy.App.Tests;
 /// <summary>
 /// The mind the App's tests talk to: FakeMind/baxy_mind (the baxy.mind.v1 protocol only, no model and no voice), run by
 /// this PC's Python through the same variables the App reads (BAXY_MIND_PYTHON, BAXY_MIND_PYTHONPATH). Each test gets its
-/// own folder (its script, what the fake saw and the pids it ran as) and its own data root (BAXY_DATA_DIR).
+/// own folder (its script, what the fake saw and the pids it ran as) and its own data root (BAXY_DATA_DIR), which the
+/// App accepts only directly under %LOCALAPPDATA%\BAXY (WindowsPrivateStorage): one «apptest-…» folder there per test,
+/// removed after it.
 /// </summary>
 internal sealed class FakeMind : IDisposable
 {
@@ -25,8 +27,8 @@ internal sealed class FakeMind : IDisposable
             File.Copy(file, Path.Combine(package, Path.GetFileName(file)));
         }
 
-        DataRoot = Path.Combine(Folder, "data");
-        Directory.CreateDirectory(DataRoot);
+        DataRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY",
+            "apptest-" + Guid.NewGuid().ToString("N"));
         SetVariable(MindSidecarClient.PythonEnvironmentVariable, InstalledPython.Value);
         SetVariable(MindSidecarClient.PythonPathEnvironmentVariable, Folder);
         SetVariable(MindSidecarClient.DisabledEnvironmentVariable, null);
@@ -135,12 +137,18 @@ internal sealed class FakeMind : IDisposable
             Environment.SetEnvironmentVariable(name, value);
         }
 
-        try
+        foreach (string folder in (string[])[Folder, DataRoot])
         {
-            Directory.Delete(Folder, recursive: true);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
+            try
+            {
+                if (Directory.Exists(folder))
+                {
+                    Directory.Delete(folder, recursive: true);
+                }
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+            }
         }
     }
 

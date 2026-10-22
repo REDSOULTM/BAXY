@@ -928,7 +928,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task DispatchTranscriptAsync(string transcript, long arrivedAt)
     {
-        if (_isDisposed)
+        // 2026-10-22, review of the App: words from a microphone the App does not believe open (a voice.start answered
+        // after its deadline, before the stop behind it closed it) start nothing.
+        if (_isDisposed || (!IsListening && !IsWakeListening))
         {
             return;
         }
