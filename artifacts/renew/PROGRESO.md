@@ -2932,3 +2932,12 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   — sin -dev none 190-224 MiB de VRAM y 140 ms p50; con -dev none 0 MiB y 687 ms p50 (828 p90); elige lo mismo 60/60.
   Producto S1 on: VRAM 4 091 → **3 902 MiB** (= S1 apagado), RAM 2 637-2 852 MiB. Costo: ~+0,55 s sólo en turnos dudosos
   (~20 %). Se queda: el techo de 4 GB es duro y estaba a 5 MiB.
+- 16:4x **escenas de la tanda 5** (3 réplicas por edición neutra, neutras.py): tanda 4 31 / 32 / 32 (31,67), tanda 5
+  30 / 29 / 28 (29,0); act 4/7 → 1/7. Causa: la R10.1 amplia retenía también bajar el brillo de noche o con poca batería
+  (P007, P027) y reconectar el Wi-Fi de casa (P024), reversibles; sí arreglaba P026 (modo avión al 8 %). **R10.1
+  acotada** (lv-t5 5f0ed1e37): el latido vuelve a su regla (ProposedRisks, portapapeles, ventana, red) más el efecto
+  «sistema» (modo avión, radios, pantalla); wifi.connect(.named) deja de ser «sistema». El banco de escenas lee la
+  regla de NativeTurnLoop.cs. Se re-mide en escenas (en cola).
+- 16:5x incidencia de cola: una cadena de falsedades que di por detenida (TaskStop) siguió viva; corrieron a la vez la
+  decision2 de la tanda 3b y la de la tanda 5 con su catálogo (4 llama-server, sin errores; latencias de esas corridas no
+  comparables, aciertos sí). Quité la cadena duplicada; las falsedades A/B/C corren una sola vez tras la tanda 5.
