@@ -319,6 +319,10 @@ def beat_message(context: dict[str, Any]) -> str:
 
 
 CLOCK_MARK = "[Reloj:"
+# Al máximo 8.1 (F015: «¿ya lo cerraste?» → «Sí» with nothing run, 5 of the 10 falsehoods left, which no aid of the
+# result touched): the clock also says which calls ran in the session and how each ended, the last ones of a count of
+# the session's own (a cut history no longer shows them, and a «none» read from it would be false).
+SESSION_CALLS = 8
 # The role of the session's own state at the end of an exported conversation (export_session); never a message.
 SESSION_STATE = "baxy.session"
 
@@ -385,6 +389,7 @@ NOT_RUN_AFTER = json.dumps({"status": "not_run", "reason": "the call before it i
 # A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
 # 2026-10-15: the model read «not run» for a call the core had executed).
 NO_RESULT = json.dumps({"status": "unknown", "reason": "no result came back for this call: it may have run or not"})
+NO_RESULT_RAN = "sin resultado: pudo o no ocurrir"  # the same, among the session's calls (8.1)
 # A question of the model's the person saw and did not answer before the turn ended.
 ASKED = json.dumps({"status": "asked", "reason": "the person saw the question; their answer, if it comes, is their "
                                                  "next message"})
@@ -494,6 +499,8 @@ class Mind:
         # Review 2026-10-22: the ids the mind writes itself (a confirmation's call, a call the server gave none, a
         # correction) count up for the whole session: from the conversation's length they repeated once it was trimmed.
         self._ids = 0
+        self._ran: list[str] = []  # the session's last calls as «tool → how it ended» (8.1), and how many ran in all
+        self._ran_count = 0
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
 
@@ -617,19 +624,22 @@ class Mind:
         return (f"\n[Espera el sí de la persona: {wire}{shown}. Si sus palabras contestan a tu pregunta, llama a "
                 f"confirm_pending con approve true o false.]")
 
-    @staticmethod
-    def _clock() -> str:
+    def _clock(self) -> str:
         # The time is a message of its own just before the person's words (the end of the prompt, the only part that is
         # new anyway). Appended to their words it was copied into arguments: a clipboard text and a web query carried
         # «[Thursday 15/10/2026 04:21 hora local…]» (2026-10-15). It also says no tool has run yet in this turn: the
         # last «[En este turno: …]» the model saw was the previous turn's, and lines of turns without calls were false
         # 24 % of the time against 6 % (falsedades p5-p8); decision2 on the notebook gained by that mechanism (P041
-        # stopped inventing, P049 stopped looking up the clock): 227/230 vs 226.
+        # stopped inventing, P049 stopped looking up the clock): 227/230 vs 226. Al máximo 8.1: and the session's calls.
         now = _dt.datetime.now().astimezone()
         offset = now.strftime("%z")
+        ran = str(self._ran_count or "ninguna")
+        if self._ran:
+            last = "" if len(self._ran) == self._ran_count else f", las {len(self._ran)} últimas"
+            ran += f"{last} ({' / '.join(self._ran)})"
         return (f"{CLOCK_MARK} {now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
                 "los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna herramienta en este "
-                "turno]")
+                f"turno; llamadas a herramientas en esta sesión: {ran}]")
 
     # ---- turn ----------------------------------------------------------------------------------------------
     # One conversation for the whole session (native loop): every tool call the model made, every verified result that
@@ -642,15 +652,17 @@ class Mind:
         self._turn = self._beat = None
         self.trimmed_turns = 0
         self._refs, self._ref_of, self._ids = {}, {}, 0
+        self._ran, self._ran_count = [], 0
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
     def export_session(self) -> list[dict[str, Any]]:
         """The session's conversation as it stands (calls and results included), for the App to keep with the session it
         shows (design v4, Sessions); it is asked for between turns. Its last element is the session's own state (review
-        2026-10-22: the short references and the ids, or after a relaunch ref:r1 stood for another address); the App
-        keeps the array as it is."""
-        state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids}
+        2026-10-22: the short references and the ids, or after a relaunch ref:r1 stood for another address; al máximo
+        8.1: the session's calls); the App keeps the array as it is."""
+        state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids, "ran": self._ran,
+                 "ran_count": self._ran_count}
         return json.loads(json.dumps([*self.conversation, state], ensure_ascii=False))
 
     def load_session(self, conversation: list[Any]) -> None:
@@ -663,6 +675,12 @@ class Mind:
         self._ids = state["ids"] if isinstance(state.get("ids"), int) and state["ids"] > 0 else 0
         self.conversation = [m for m in conversation if isinstance(m, dict)
                              and m.get("role") in {"user", "assistant", "tool"}]
+        if isinstance(state.get("ran_count"), int) and isinstance(state.get("ran"), list):
+            self._ran, self._ran_count = [str(entry) for entry in state["ran"]][-SESSION_CALLS:], state["ran_count"]
+        else:
+            # Kept before 8.1: how many calls its conversation shows (their results are in it), never «none».
+            self._ran_count = sum(1 for m in self.conversation for c in m.get("tool_calls") or []
+                                  if c.get("function", {}).get("name") != ASK_USER["function"]["name"])
         self._trim()
 
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -768,6 +786,7 @@ class Mind:
             return
         if beat.get("awaiting"):
             beat["conv"].append({"role": "tool", "tool_call_id": beat["awaiting"], "content": NO_RESULT})
+            self._ran_add(beat.get("calling"), NO_RESULT_RAN)
         if beat.get("asked"):
             beat["conv"].append({"role": "tool", "tool_call_id": beat["asked"], "content": ASKED})
         pending = [c["id"] for c in beat.get("queue") or []]
@@ -782,12 +801,18 @@ class Mind:
             self.conversation.extend([{"role": "user", "content": BEAT_MARK}, *acted])
         self._trim()
 
+    def _ran_add(self, calling: Any, outcome: str) -> None:
+        """One call of the session and how it ended, for the clock (8.1)."""
+        wire = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else str(calling or "?").replace(".", "_")
+        self._ran, self._ran_count = [*self._ran, f"{wire} → {outcome}"][-SESSION_CALLS:], self._ran_count + 1
+
     def _close_open_calls(self) -> None:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
         valid tool transcript and the model never reads an unanswered call as done."""
         turn = self._turn or {}
         if turn.get("awaiting"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
+            self._ran_add(turn.get("calling"), NO_RESULT_RAN)
         if turn.get("asked"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["asked"], "content": ASKED})
         pending = [c["id"] for c in turn.get("queue") or []]
@@ -864,6 +889,7 @@ class Mind:
         else:
             turn["repeats"] = 1
             done.append(entry)
+        self._ran_add(turn.get("calling"), outcome)
         aids = _aids_seen(observation)
         named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
         # Uso real: a look at another window (the browser's) came between the opening and the failures; the application
