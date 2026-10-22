@@ -547,6 +547,33 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Renew al máximo: a protected window (here a terminal) is never asked to close and stays open, yet the receipt
+    // said allClosed true beside it. BAXY's own window kept open still lets «all» stand.
+    [TestCase("WindowsTerminal", false)]
+    [TestCase("Baxy", true)]
+    public async Task CloseAllNeverSaysAllClosedWithAProtectedWindowOpen(string process, bool allClosed)
+    {
+        var platform = new FakePlatform
+        {
+            Desktop =
+            [
+                new WindowSnapshot(
+                    new WindowIdentity((nint)0x99, 7, 638_880_000_000_000_000, process, DateTimeOffset.UnixEpoch),
+                    "normal", true, new WindowBounds(0, 0, 400, 600)),
+            ],
+        };
+
+        var handler = new WindowCloseAllHandler(new WindowsWindowControlProvider(platform));
+        OperationOutcome outcome = await Run(handler, new { });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("remainingVisible").GetInt32(), Is.Zero);
+            Assert.That(outcome.Result!.Value.GetProperty("allClosed").GetBoolean(), Is.EqualTo(allClosed));
+        });
+    }
+
     private static ValueTask<OperationOutcome> Run(IOperationHandler handler, object arguments) =>
         handler.ExecuteAsync(
             new OperationInvocation("request", "mission", "invocation", JsonSerializer.SerializeToElement(arguments)),

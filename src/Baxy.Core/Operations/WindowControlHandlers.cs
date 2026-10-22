@@ -466,8 +466,11 @@ internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : I
             if (result.Unread > 0) writer.WriteNumber("unreadWindows", result.Unread);
             // Ronda final 11 (regla 3): windows Windows hides (another desktop) were not closed: no «all».
             if (result.Cloaked > 0) writer.WriteNumber("cloakedWindows", result.Cloaked);
+            // Renew al máximo: a protected window (a terminal, an editor, a system tool) is never asked to close and
+            // stays open, yet allClosed said true beside it. BAXY's own windows are not counted among the protected.
             if (result.Unread == 0 && result.Cloaked == 0)
-                writer.WriteBoolean("allClosed", result.Remaining == 0 && result.Hidden == 0);
+                writer.WriteBoolean(
+                    "allClosed", result.Remaining == 0 && result.Hidden == 0 && result.ProtectedKept == 0);
             writer.WriteString("authority", "win32_desktop_windows_close_postread");
             writer.WriteEndObject();
         }
