@@ -119,7 +119,22 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException)
         {
-            return effectBoundary.Failure(operation, "zip_create_failed");
+            // Renew al máximo (auditoría de flujos): a file another program holds open (a sharing or lock violation)
+            // is that file in use; the half-written zip, made by this call, goes, so nothing is left and a retry is not
+            // told the zip already exists.
+            string code = exception is IOException && (exception.HResult & 0xFFFF) is 32 or 33
+                ? "file_in_use" : "zip_create_failed";
+            try
+            {
+                if (File.Exists(zipPath)) File.Delete(zipPath);
+            }
+            catch (Exception cleanup) when (cleanup is IOException or UnauthorizedAccessException)
+            {
+                return effectBoundary.Failure(operation, code);
+            }
+            return File.Exists(zipPath)
+                ? effectBoundary.Failure(operation, code)
+                : ExternalJson.FailureBeforeEffect(operation, code);
         }
 
         int entries;

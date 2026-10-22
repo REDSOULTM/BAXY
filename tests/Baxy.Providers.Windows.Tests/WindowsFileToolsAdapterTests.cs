@@ -76,6 +76,39 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, archivos): a folder with a file another program holds open (an Excel book in
+    // use) is not zipped, and nothing is left behind: a half-written zip stayed beside the folder, the failure said
+    // zip_create_failed, and asking again answered zip_already_exists.
+    [Test]
+    public async Task AFolderWithAFileInUseLeavesNoHalfZipAndSaysTheFileIsInUse()
+    {
+        string folder = Path.Combine(_root, "Informe");
+        Directory.CreateDirectory(folder);
+        File.WriteAllText(Path.Combine(folder, "a.txt"), "uno");
+        string held = Path.Combine(folder, "ventas.xlsx");
+        File.WriteAllText(held, "dos");
+
+        ExternalCapabilityReceipt first;
+        ExternalCapabilityReceipt again;
+        using (new FileStream(held, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+        {
+            first = await Adapter().InvokeAsync(
+                "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "Informe" }),
+                CancellationToken.None);
+            again = await Adapter().InvokeAsync(
+                "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "Informe" }),
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.ErrorCode, Is.EqualTo("file_in_use"));
+            Assert.That(first.EffectMayHaveOccurred, Is.False);
+            Assert.That(again.ErrorCode, Is.EqualTo("file_in_use"));
+            Assert.That(File.Exists(Path.Combine(_root, "Informe.zip")), Is.False);
+        });
+    }
+
     [Test]
     public async Task OpeningAFileThatIsNotThereOrNotSafeTouchesNothing()
     {
