@@ -690,6 +690,10 @@ class Mind:
         something. Same tools (the cached prefix: the template puts them first) and a system text without the «¿ya lo
         hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
         started = time.monotonic()
+        if self._beat is not None:
+            # Review 2026-10-22: a heartbeat the App never ended is closed as end_beat closes it, never overwritten
+            # with what BAXY said or did in it unsaid.
+            self.end_beat()
         conv = [{"role": "user", "content": beat_message(context)}]
         # Review 2026-10-22: a heartbeat that read the person's memory keeps out of the trace what it deduced from it and
         # what it said, as a turn does from its memory call on (_result).

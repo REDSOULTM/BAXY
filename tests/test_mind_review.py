@@ -336,3 +336,14 @@ def test_a_heartbeat_joins_the_conversation_with_what_baxy_did_not_its_rules(tmp
         assert json.dumps(internal, ensure_ascii=False)[1:-1] not in text
     assert mind.conversation[-1] == {"role": "assistant", "content": "Tu disco está casi lleno."}
     assert mind.conversation[-2]["role"] == "user" and mind.conversation[-2]["content"].startswith("[")
+
+
+def test_a_heartbeat_never_ended_is_closed_honestly_by_the_next_one(tmp_path: Path) -> None:
+    # Review 15: beat() overwrote a _beat the App never ended, and what BAXY said or did in it was lost unsaid.
+    silent = INTERVENE.replace('"intervenir": true', '"intervenir": false')
+    mind, _ = _mind(tmp_path, [_say(INTERVENE), _call("app_close", {"appId": "Juego"}), _say(silent)])
+    mind.beat(1, {"now": "22:00"})
+    mind.beat(2, {"now": "22:05"})
+    calls = [m for m in mind.conversation if m.get("tool_calls")]
+    assert calls and calls[0]["tool_calls"][0]["function"]["name"] == "app_close"
+    assert mind.conversation[-1]["role"] == "tool" and json.loads(mind.conversation[-1]["content"])["status"] == "unknown"
