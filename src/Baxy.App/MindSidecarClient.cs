@@ -582,7 +582,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         bool returnProtocolError = false)
     {
         // Cancellation and speech are handled by the sidecar apart from model work and never wait for an inference.
-        if ((string?)request["type"] is "voice.cancel" or "voice.speak")
+        // 2026-10-22, review of the App: so are releasing push-to-talk and reading the voice's state (the mind answers
+        // them on its reader, __main__.py), which here still queued behind a turn: a release let go of late.
+        if ((string?)request["type"] is "voice.cancel" or "voice.speak" or "voice.release" or "voice.status")
         {
             return await SendRequestAsync(request, timeout, returnProtocolError,
                 cancellationToken).ConfigureAwait(false);

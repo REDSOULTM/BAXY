@@ -1,0 +1,180 @@
+using System.Diagnostics;
+using System.IO;
+using System.Text.Json.Nodes;
+using Baxy.App;
+
+namespace Baxy.App.Tests;
+
+/// <summary>
+/// The mind the App's tests talk to: FakeMind/baxy_mind (the baxy.mind.v1 protocol only, no model and no voice), run by
+/// this PC's Python through the same variables the App reads (BAXY_MIND_PYTHON, BAXY_MIND_PYTHONPATH). Each test gets its
+/// own folder (its script, what the fake saw and the pids it ran as) and its own data root (BAXY_DATA_DIR).
+/// </summary>
+internal sealed class FakeMind : IDisposable
+{
+    private static readonly Lazy<string> InstalledPython = new(FindPython);
+    private readonly Dictionary<string, string?> _previous = [];
+
+    internal FakeMind()
+    {
+        Folder = Path.Combine(Path.GetTempPath(), "baxy-app-tests", Guid.NewGuid().ToString("N"));
+        string package = Path.Combine(Folder, "baxy_mind");
+        Directory.CreateDirectory(package);
+        foreach (string file in Directory.EnumerateFiles(Path.Combine(AppContext.BaseDirectory, "FakeMind", "baxy_mind")))
+        {
+            File.Copy(file, Path.Combine(package, Path.GetFileName(file)));
+        }
+
+        DataRoot = Path.Combine(Folder, "data");
+        Directory.CreateDirectory(DataRoot);
+        SetVariable(MindSidecarClient.PythonEnvironmentVariable, InstalledPython.Value);
+        SetVariable(MindSidecarClient.PythonPathEnvironmentVariable, Folder);
+        SetVariable(MindSidecarClient.DisabledEnvironmentVariable, null);
+        SetVariable("BAXY_DATA_DIR", DataRoot);
+    }
+
+    internal string Folder { get; }
+
+    internal string DataRoot { get; }
+
+    internal static MindStartupCatalog EmptyCatalog => new([], null, null);
+
+    /// <summary>What the fake does from its next request on (see FakeMind/baxy_mind/__main__.py).</summary>
+    internal void Script(JsonObject script) => File.WriteAllText(Path.Combine(Folder, "script.json"), script.ToJsonString());
+
+    /// <summary>Lets a request held on <paramref name="file"/> go.</summary>
+    internal void Open(string file) => File.WriteAllText(Path.Combine(Folder, file), string.Empty);
+
+    /// <summary>Every request's type, in the order the fake read them.</summary>
+    internal IReadOnlyList<string> Seen
+    {
+        get
+        {
+            string log = Path.Combine(Folder, "seen.log");
+            if (!File.Exists(log))
+            {
+                return [];
+            }
+
+            using var stream = new FileStream(log, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd().Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        }
+    }
+
+    /// <summary>The fake's processes still running.</summary>
+    internal IReadOnlyList<int> LiveProcesses
+    {
+        get
+        {
+            string pids = Path.Combine(Folder, "pids");
+            if (!Directory.Exists(pids))
+            {
+                return [];
+            }
+
+            var live = new List<int>();
+            foreach (string file in Directory.EnumerateFiles(pids))
+            {
+                if (int.TryParse(Path.GetFileName(file), out int pid) && IsRunning(pid))
+                {
+                    live.Add(pid);
+                }
+            }
+
+            return live;
+        }
+    }
+
+    internal async Task<bool> WaitSeenAsync(string type, int count = 1, double seconds = 10)
+    {
+        var clock = Stopwatch.StartNew();
+        while (clock.Elapsed < TimeSpan.FromSeconds(seconds))
+        {
+            if (Seen.Count(seen => seen == type) >= count)
+            {
+                return true;
+            }
+
+            await Task.Delay(20);
+        }
+
+        return false;
+    }
+
+    internal static async Task<MindSidecarClient> StartClientAsync()
+    {
+        var mind = new MindSidecarClient();
+        if (!await mind.TryStartAsync(Task.FromResult(EmptyCatalog), TimeSpan.FromSeconds(30), CancellationToken.None))
+        {
+            await mind.DisposeAsync();
+            throw new InvalidOperationException("The fake mind did not start.");
+        }
+
+        return mind;
+    }
+
+    public void Dispose()
+    {
+        foreach (int pid in LiveProcesses)
+        {
+            try
+            {
+                using Process process = Process.GetProcessById(pid);
+                process.Kill();
+                process.WaitForExit(5_000);
+            }
+            catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+                or System.ComponentModel.Win32Exception)
+            {
+            }
+        }
+
+        foreach ((string name, string? value) in _previous)
+        {
+            Environment.SetEnvironmentVariable(name, value);
+        }
+
+        try
+        {
+            Directory.Delete(Folder, recursive: true);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+        }
+    }
+
+    private void SetVariable(string name, string? value)
+    {
+        _previous.TryAdd(name, Environment.GetEnvironmentVariable(name));
+        Environment.SetEnvironmentVariable(name, value);
+    }
+
+    private static bool IsRunning(int pid)
+    {
+        try
+        {
+            using Process process = Process.GetProcessById(pid);
+            return !process.HasExited;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
+    // This PC's Python 3 (the py launcher's), whatever interpreter the product registered: the fake needs only the
+    // standard library.
+    private static string FindPython()
+    {
+        using var launcher = Process.Start(new ProcessStartInfo("py", ["-3", "-c", "import sys; print(sys.executable)"])
+        {
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        }) ?? throw new InvalidOperationException("The py launcher did not start.");
+        string path = launcher.StandardOutput.ReadToEnd().Trim();
+        launcher.WaitForExit();
+        return File.Exists(path) ? path : throw new InvalidOperationException("No Python 3 for the fake mind.");
+    }
+}
