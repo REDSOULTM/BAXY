@@ -166,6 +166,7 @@ public sealed class LocalMemoryStore : IMemoryStore
             AdvanceClockAndPurgeUnsafe(state);
             int purged = state.Records.RemoveAll(record =>
                 record.Retention == MemoryRetention.Session);
+            DropReceiptsOfDeletedRecordsUnsafe(state);
             state.ActiveSessionId = sessionId;
             CommitMutationUnsafe(state, allowPrivacyHeadroom: true);
             return new MemoryBeginSessionResult(purged, Changed: true);
@@ -460,6 +461,7 @@ public sealed class LocalMemoryStore : IMemoryStore
 
             AdvanceClockAndPurgeUnsafe(state);
             int deleted = state.Records.RemoveAll(record => MatchesForget(record, normalized));
+            DropReceiptsOfDeletedRecordsUnsafe(state);
             if (normalized.Scope == MemoryForgetScope.All)
             {
                 // Renew al máximo (B-SYS-3): forgetting everything also empties the ledger of what was saved, corrected
@@ -995,11 +997,31 @@ public sealed class LocalMemoryStore : IMemoryStore
             ? observed
             : state.MaxObservedUtc;
         state.MaxObservedUtc = effective;
-        _ = state.Records.RemoveAll(record =>
+        int expired = state.Records.RemoveAll(record =>
             record.Retention == MemoryRetention.Temporary
             && record.ExpiresAtUtc.HasValue
             && record.ExpiresAtUtc.Value <= effective);
+        if (expired > 0)
+        {
+            DropReceiptsOfDeletedRecordsUnsafe(state);
+        }
+
         return effective;
+    }
+
+    // Renew al máximo (R11.3): a save or correct receipt names its record's selector and digests its value; once the
+    // record is forgotten, expired or ends with its session, the receipt goes too, so nothing deleted stays sealed in
+    // current.bin or recovery.bin. A retry of that exact save then runs again, as a person saying it again would.
+    private static void DropReceiptsOfDeletedRecordsUnsafe(MemoryStateDocument state)
+    {
+        var live = new HashSet<Guid>(state.Records.Select(record => record.Id));
+        int dropped = state.Receipts.RemoveAll(receipt =>
+            receipt.RecordId.HasValue && !live.Contains(receipt.RecordId.Value));
+        if (dropped > 0)
+        {
+            // A legacy emergency receipt is only valid beside a full ledger; it joins the ring now there is room.
+            FoldEmergencyReceiptUnsafe(state);
+        }
     }
 
     private static MemoryReceiptDocument? FindReceiptUnsafe(

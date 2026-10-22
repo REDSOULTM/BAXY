@@ -572,6 +572,55 @@ public sealed class LocalMemoryStoreTests
     }
 
     [Test]
+    public void ForgottenAndExpiredMemoriesLeaveNoReceiptNamingThemAtRest()
+    {
+        // Renew al máximo (R11.3): save and correct receipts carried the selector of a memory already forgotten.
+        using TemporaryDirectory temporary = new();
+        TestProtectedPayload protector = new();
+        MutableTimeProvider clock = new(Start);
+        LocalMemoryStore store = EnabledStore(temporary.Path, protector, clock);
+        MemorySaveResult diagnosis = store.Save(Save("save-diag", "diagnostico privado", "reservado"));
+        _ = store.Correct(new MemoryCorrectRequest(
+            "correct-diag",
+            "diagnostico privado",
+            "corregido",
+            ExpectedRevision: diagnosis.Revision));
+        _ = store.Save(new MemorySaveRequest(
+            "save-cita",
+            "cita pasajera",
+            "Cita pasajera",
+            "a las 11",
+            Retention: MemoryRetention.Temporary,
+            ExpiresAtUtc: Start.AddMinutes(10)));
+        _ = store.Save(Save("save-kept", "color", "azul"));
+
+        MemoryForgetResult forgotten = store.Forget(new(
+            "forget-diag",
+            MemoryForgetScope.Exact,
+            Selector: "diagnostico privado"));
+        clock.UtcNow = Start.AddMinutes(11);
+        Assert.That(store.Recall(new("cita pasajera")).Records, Is.Empty);
+        MemorySaveResult keptReplay = store.Save(Save("save-kept", "color", "azul"));
+
+        string[] atRest = new[] { "current.bin", "recovery.bin" }
+            .Select(name => Encoding.UTF8.GetString(protector.Open(
+                File.ReadAllBytes(Path.Combine(temporary.Path, name)),
+                "memory.store.v1")))
+            .ToArray();
+        Assert.Multiple(() =>
+        {
+            Assert.That(forgotten, Is.EqualTo(new MemoryForgetResult(1, false)));
+            Assert.That(keptReplay.Replayed, Is.True);
+            Assert.That(atRest, Has.All.Not.Contains("DIAGNOSTICO").IgnoreCase);
+            Assert.That(atRest, Has.All.Not.Contains("save-diag"));
+            Assert.That(atRest, Has.All.Not.Contains("correct-diag"));
+            Assert.That(atRest, Has.All.Not.Contains("CITA PASAJERA").IgnoreCase);
+            Assert.That(atRest, Has.All.Not.Contains("save-cita"));
+            Assert.That(atRest, Has.All.Contains("save-kept"));
+        });
+    }
+
+    [Test]
     public void AStoreWithTheOldEmergencyPrivacyReceiptStillLoadsAndFoldsItIntoTheRing()
     {
         using TemporaryDirectory temporary = new();
