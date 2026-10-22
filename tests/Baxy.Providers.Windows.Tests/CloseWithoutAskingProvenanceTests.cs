@@ -335,6 +335,24 @@ public sealed class CloseWithoutAskingProvenanceTests
         Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
     }
 
+    // Al máximo, flujos: «abre el bloc de notas», «sube el volumen», «ciérralo» asked as if BAXY had written into it.
+    // Only a call the catalog says reaches a window (window_input) may have written into one.
+    [TestCase("audio.volume.adjust", """{"direction":"up","amount":10}""", false)]
+    [TestCase("system.settings.set", """{"setting":"airplane_mode","value":1}""", false)]
+    [TestCase("system.settings.set", """{"setting":"do_not_disturb","value":1}""", true)]
+    [TestCase("input.text.type", """{"text":"hola"}""", true)]
+    [TestCase("input.visible.click", """{"label":"Siete"}""", false)]
+    [TestCase("input.visible.click", """{"label":"Buscar","search":"Ron"}""", true)]
+    public void OnlyACallThatReachesAWindowMayHaveWrittenIntoIt(string operation, string arguments, bool writes)
+    {
+        using System.Text.Json.JsonDocument document = System.Text.Json.JsonDocument.Parse(arguments);
+
+        Assert.That(
+            Baxy.Core.Operations.ExternalCapabilityHandler.MayWriteIntoAWindow(
+                Baxy.Kernel.Operations.ProductCatalog.CreateDefinition(operation), document.RootElement),
+            Is.EqualTo(writes));
+    }
+
     [Test]
     public async Task AnApplicationLaunchedAfterTheWritingStaysUnwritten()
     {

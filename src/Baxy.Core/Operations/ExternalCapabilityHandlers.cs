@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
 using Baxy.Providers.Windows.External;
@@ -247,9 +248,11 @@ internal sealed class ExternalCapabilityHandler(
     IExternalCapabilityProvider provider) : IOperationHandler
 {
     // v3 r22 uso real: the operations that only point at or move through what a window shows (a click on a control,
-    // a scroll, the list of visible controls) put nothing into it. Every other operation that is not read-only may
-    // have written into some window, and which one is not always known, so it marks every process BAXY launched as
-    // written (LaunchProvenance, fail-closed): their windows ask again before closing.
+    // a scroll, the list of visible controls) put nothing into it. Every other call that reaches a window (the
+    // catalog's typed effect window_input) may have written into it, and which one is not always known, so it marks
+    // every process BAXY launched as written (LaunchProvenance, fail-closed): their windows ask again before closing.
+    // Al máximo, flujos: a call that reaches no window (the volume, a radio) wrote into none («abre el bloc de notas»,
+    // «sube el volumen», «ciérralo» asked).
     // v3 r22 revisión: a pointing operation may still carry text it types into what it opens (a click's «search» is
     // typed into the box the click opened, SearchBurst.TypeAsync); with any such argument present and not empty it
     // writes as well.
@@ -266,7 +269,8 @@ internal sealed class ExternalCapabilityHandler(
 
     internal static bool MayWriteIntoAWindow(OperationDefinition definition, JsonElement arguments)
     {
-        if (definition.Risk == OperationRisk.ReadOnly)
+        if (definition.Risk == OperationRisk.ReadOnly
+            || definition.ProductDescriptor?.Has(OperationEffects.WindowInput, arguments) == false)
         {
             return false;
         }
