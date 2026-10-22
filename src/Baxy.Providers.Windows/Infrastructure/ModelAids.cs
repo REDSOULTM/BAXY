@@ -38,6 +38,9 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C13): a window.resolve by an application name that matched nothing lists the visible windows.</summary>
     public const string WindowCandidates = "window_candidates";
 
+    /// <summary>Al máximo, flujos (P252): a window.resolve with no selector says the person's window in front is window_active's.</summary>
+    public const string SelectorNext = "selector_next";
+
     /// <summary>BAXY Renew cu (C03): a click whose index names another control says so and how a read text is clicked.</summary>
     public const string IndexLabelNext = "index_label_next";
 

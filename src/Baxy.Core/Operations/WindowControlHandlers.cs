@@ -29,7 +29,12 @@ internal sealed class WindowResolveHandler(
             || (hasApplication && (invocation.Arguments.TryGetProperty("byTitle", out _)
                 || invocation.Arguments.TryGetProperty("offset", out _))))
         {
-            return OperationOutcome.Failure(WindowControlErrorCodes.InvalidSelector);
+            // Al máximo, flujos (P252, 22 of 27 runs: «pon esta ventana a la izquierda» → window.resolve {}): with no
+            // selector, the person's window in front (BAXY's own left out) is window_active's, as a fact.
+            return !hasApplication && !hasProcess
+                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.SelectorNext)
+                ? OperationOutcome.Failure(WindowControlErrorCodes.InvalidSelector, NoSelector())
+                : OperationOutcome.Failure(WindowControlErrorCodes.InvalidSelector);
         }
         int limit = invocation.Arguments.TryGetProperty("limit", out JsonElement value) ? value.GetInt32() : 20;
         int offset = invocation.Arguments.TryGetProperty("offset", out JsonElement offsetValue) ? offsetValue.GetInt32() : 0;
@@ -57,6 +62,21 @@ internal sealed class WindowResolveHandler(
             && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WindowCandidates)
             ? OperationOutcome.Failure(code, Candidates(_desktop(), _browser()))
             : OperationOutcome.Failure(code);
+    }
+
+    private static JsonElement NoSelector()
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("next", "window_resolve takes exactly one selector, applicationName or process; the window "
+                + "the person has in front (BAXY's own left out) and its windowId are given by window_active");
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 
     // The processes of web browsers, by their executables (identity of the program, never what the person said).
