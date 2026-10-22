@@ -89,6 +89,7 @@ class Voice:
         self._resume = "off"            # the mode a direct request returns to
         self._stream: Any = None
         self._blocks: queue.Queue[np.ndarray] = queue.Queue()
+        self._heard = 0                 # moved on by every reset and stop
         self._reset()
         self.speech = Speech(self._speaking, on_spoken, self._lip)
         threading.Thread(target=self._load, name="voice-load", daemon=True).start()
@@ -131,6 +132,7 @@ class Voice:
     def stop(self) -> None:
         with self._lock:
             self._mode = self._resume = "off"
+            self._heard += 1
             self._close()
         self._state()
 
@@ -207,6 +209,7 @@ class Voice:
             self._blocks.get_nowait()
 
     def _reset(self) -> None:
+        self._heard += 1                # a transcription of what was heard before is not told
         self._audio = np.zeros(0, np.float32)
         self._first = 0                 # absolute index of self._audio[0]
         self._total = 0                 # samples heard since the mode started
@@ -220,18 +223,26 @@ class Voice:
     # --- listening ------------------------------------------------------------------------------------------------
 
     def _listen(self) -> None:
+        """Ultra decodes outside the lock (up to MAX_S of audio, and every PARTIAL_S in a request): a release, a stop,
+        a start or BAXY starting to speak never wait for it, and what they leave behind is not told."""
         while True:
             block = self._blocks.get()
             try:
                 with self._lock:
-                    if self._mode != "off" and not self.speech.speaking:
-                        self._feed(block)
+                    heard = self._heard
+                    job = self._feed(block) if self._mode != "off" and not self.speech.speaking else None
+                if job is not None:
+                    audio, wake_at, then = job
+                    text = self._transcribe(audio, wake_at)
+                    with self._lock:
+                        if heard == self._heard:
+                            then(text)
             except Exception as error:  # noqa: BLE001 - one bad block never ends the voice
                 sys.stderr.write(f"baxy_mind_renew_voice: {error!r}\n")
                 sys.stderr.flush()
                 self._event("error")
 
-    def _feed(self, block: np.ndarray) -> None:
+    def _feed(self, block: np.ndarray) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
         self._audio = np.concatenate([self._audio, block])
         self._total += len(block)
         if len(self._audio) > KEEP_S * RATE:
@@ -245,23 +256,27 @@ class Voice:
                 self._event("wake_detected")
         start = self._start
         if start is not None and self._over(start):
-            self._finish(start)
-        elif start is not None:
-            self._live(start)
+            return self._finish(start)
+        if start is not None:
+            return self._live(start)
+        return None
 
-    def _live(self, start: float) -> None:
+    def _live(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
         """Live captions: the request heard so far, decoded again every PARTIAL_S with the same recognizer and the same
         cut of the call as the final transcript; only a changed text is sent, and it starts nothing."""
         now = self._total / RATE
         if now - self._partial_at < PARTIAL_S or now - start < WORD_TAIL_S + PARTIAL_S:
-            return
+            return None
         self._partial_at = now
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
-        text = self._transcribe(self._segment(begin, now), wake_at=start - begin if wake else None)
-        if text and text != self._partial:
-            self._partial = text
-            self._write({"type": "voice.event", "event": "partial", "mode": self._mode, "text": text})
+
+        def then(text: str) -> None:
+            if text and text != self._partial:
+                self._partial = text
+                self._write({"type": "voice.event", "event": "partial", "mode": self._mode, "text": text})
+
+        return self._segment(begin, now), start - begin if wake else None, then
 
     def _segment(self, start_s: float, stop_s: float) -> np.ndarray:
         a = max(0, int(start_s * RATE) - self._first)
@@ -283,23 +298,25 @@ class Voice:
             return now - start >= (NO_COMMAND_S if self._mode == "wake" else DIRECT_WAIT_S)
         return now - (start + (voiced[-1] + 1) * BLOCK / RATE) >= END_SILENCE_S
 
-    def _finish(self, start: float) -> None:
+    def _finish(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]]:
         self._start = None
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
-        audio = self._segment(begin, self._total / RATE)
         self._event("transcribing")
-        text = self._transcribe(audio, wake_at=start - begin if wake else None)
-        if text:
-            self._write({"type": "voice.transcript", "text": text})
-        if not wake:
-            # A direct request is one utterance; the voice goes back to what it was doing before.
-            self._mode = self._resume
-            self._resume = "off"
-            if self._mode == "off":
-                self._close()
-            self._reset()
-        self._state()
+
+        def then(text: str) -> None:
+            if text:
+                self._write({"type": "voice.transcript", "text": text})
+            if not wake:
+                # A direct request is one utterance; the voice goes back to what it was doing before.
+                self._mode = self._resume
+                self._resume = "off"
+                if self._mode == "off":
+                    self._close()
+                self._reset()
+            self._state()
+
+        return self._segment(begin, self._total / RATE), start - begin if wake else None, then
 
     def _transcribe(self, audio: np.ndarray, wake_at: float | None) -> str:
         peak = float(np.max(np.abs(audio))) if len(audio) else 0.0
