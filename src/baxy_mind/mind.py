@@ -1010,9 +1010,11 @@ class Mind:
             body["tool_choice"] = "none"
             body["logit_bias"] = [[token, False] for token in self.call_tokens]
         try:
-            # Al máximo 9.4: the last answer of a person's turn is words only, so it streams to the voice, which
-            # synthesizes its first sentence while the rest is written; nothing sounds before the App publishes it.
-            streams = final and self.foresee is not None and not turn.get("beat")
+            # Al máximo 9.4: a person's turn streams to the voice, which synthesizes an answer's first sentence while
+            # the rest is written (only while it is words; a call dropped what it foresaw); nothing sounds before the
+            # App publishes it. Not the decision whose doubt is read (_doubted): its token probabilities are not all
+            # sent when streamed (LlmServer.chat). Never a heartbeat.
+            streams = self.foresee is not None and not turn.get("beat") and not self._doubted(stage, turn, final)
             reply = self.server.chat(body, on_text=self.foresee) if streams else self.server.chat(body)
         except urllib.error.HTTPError as error:
             # llama-server refuses a prompt past its context with HTTP 400: within a turn that is its own results, so

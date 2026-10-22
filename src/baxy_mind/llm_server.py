@@ -1,6 +1,7 @@
 """The local model server: one llama-server process owned by the mind, one slot, its prompt prefix kept in cache."""
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import socket
@@ -10,6 +11,18 @@ import time
 import urllib.request
 from pathlib import Path
 from typing import Any, Callable
+
+
+class _StreamBroken(Exception):
+    """A streamed chat ended with an error after its first token, or its stream could not be read."""
+
+
+def _tell(on_text: Callable[[str | None, bool], bool], text: str | None, done: bool) -> bool:
+    """What the model has written so far to the voice's look-ahead, which never fails the answer."""
+    try:
+        return bool(on_text(text, done))
+    except Exception:  # noqa: BLE001 - a failing look-ahead is dropped
+        return True
 
 
 class LlmServer:
@@ -120,12 +133,22 @@ class LlmServer:
         return min(timeout, left)
 
     def chat(self, body: dict[str, Any], *, timeout: float = 120.0,
-             on_text: Callable[[str, bool], bool] | None = None) -> dict[str, Any]:
+             on_text: Callable[[str | None, bool], bool] | None = None) -> dict[str, Any]:
         """One chat completion on the one slot, whose prefix stays cached between turns. With ``on_text`` it streams
-        (_stream) and returns the same reply."""
+        (_stream) and returns the same reply, unless it asks for token probabilities (below)."""
         self.wait_ready(self._within(timeout))
-        if on_text is not None:
-            return self._stream(body, timeout, on_text)
+        # The doubt (doubt.read) reads every token's logprobs. Streamed, b11609 sends a token's logprobs only on a
+        # chunk whose parse adds a difference (server-task.cpp:1136-1145; the first token's always, with the role):
+        # the tokens of «<tool_call>», «<function=» and a name being parsed, and text the partial parser holds back,
+        # add none, and their probabilities are never sent. A call that asks for them is not streamed.
+        if on_text is not None and not body.get("logprobs"):
+            try:
+                return self._stream(body, timeout, on_text)
+            except _StreamBroken:
+                # A stream can fail where the same request does not: compute_diffs throws when a partial parse saw a
+                # call the final parse does not (common/chat.cpp:255-267; a malformed call the non-streamed reply
+                # returns as text). Asked again without streaming, on the same budget: the same answer (fixed seed).
+                _tell(on_text, None, True)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
             data=json.dumps({**body, "id_slot": 0, "cache_prompt": True}).encode("utf-8"),
@@ -134,69 +157,86 @@ class LlmServer:
         with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
             return json.loads(reply.read())
 
-    def _stream(self, body: dict[str, Any], timeout: float, on_text: Callable[[str, bool], bool]) -> dict[str, Any]:
-        """Al máximo 9.4 (2026-10-22): the chat streamed (SSE), its text so far handed to ``on_text`` after each delta
-        (and once more, done, at the end) until it returns True, and the reply built as the non-streamed one is:
-        message content and tool calls, usage and timings. At b11609 streaming only changes how the result is sent:
-        sampling is the same (server-context.cpp:2020, send_partial_response after the same add_token), the final
-        message is parsed from the same accumulated text (common_chat_session feed/finish, common/chat.cpp:1740-1759;
-        server-task.h:408-410), the deltas are its successive differences (compute_diffs, string_diff in
-        common/chat.cpp:58-71,236-253), with tool_choice none the content is the rest of the output
-        (common/parsers/qwen3-coder.cpp:90,174), and the last chunk carries the timings and, with include_usage, the
-        usage (server-task.cpp:454-509). An error before the first token still comes as an HTTP error (a context
-        overflow's 400, server-context.cpp:4902-4914); one later comes as a data line and ends the request. A failing
-        ``on_text`` is dropped: the answer never depends on it."""
+    def _stream(self, body: dict[str, Any], timeout: float,
+                on_text: Callable[[str | None, bool], bool]) -> dict[str, Any]:
+        """Al máximo 9.4 (2026-10-22): the chat streamed (SSE) and its reply built as the non-streamed one is
+        (common_chat_msg::to_json_oaicompat, common/chat.cpp:156-235; to_json_oaicompat_chat, server-task.cpp:410-452):
+        choices[0] with finish_reason, index and the message (role, content, reasoning_content, tool_calls), usage and
+        timings. While the answer is words, its text so far goes to ``on_text`` after each delta (and once more, done,
+        at the end) until it returns True; once a call starts (or the words are a call written as text), ``on_text``
+        gets None, done: what it foresaw is dropped.
+
+        At b11609 streaming only changes how the result is sent: sampling is the same (server-context.cpp:2020,
+        send_partial_response after the same add_token), the final message is parsed from the same accumulated text
+        (common_chat_session feed/finish, common/chat.cpp:1740-1759; server-task.h:408-410), and the deltas are its
+        successive differences (compute_diffs, common/chat.cpp:236-299; server_chat_msg_diff_to_json_oaicompat,
+        server-chat.cpp:621-649): content and arguments as suffixes (string_diff, chat.cpp:58-71), a call's id and name
+        whole whenever they change (a name that grows comes whole again). The last chunk carries the timings and, with
+        include_usage, the usage (server-task.cpp:454-509). An error before the first token still comes as an HTTP
+        error (a context overflow's 400, server-context.cpp:4902-4914); one later is _StreamBroken."""
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
             data=json.dumps({**body, "stream": True, "stream_options": {"include_usage": True}, "id_slot": 0,
                              "cache_prompt": True}).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        content = ""
+        content, reasoning = "", ""
         calls: dict[int, dict[str, Any]] = {}
-        timings: dict[str, Any] = {}
-        usage: dict[str, Any] = {}
-
-        def tell(done: bool) -> bool:
-            try:
-                return bool(on_text(content, done))
-            except Exception:  # noqa: BLE001 - the voice's look-ahead never fails the answer
-                return True
-
+        head: dict[str, Any] = {}
+        finish: Any = None
+        index = 0
         telling = True
         with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
-            for raw in reply:
-                line = raw.decode("utf-8").strip()
-                if not line.startswith("data:"):
-                    continue
-                data = line[5:].strip()
-                if data == "[DONE]":
-                    break
-                chunk = json.loads(data)
-                if "error" in chunk:
-                    raise RuntimeError(f"llama-server stream error: {chunk['error']}")
-                timings = chunk.get("timings") or timings
-                usage = chunk.get("usage") or usage
-                for choice in chunk.get("choices") or []:
-                    delta = choice.get("delta") or {}
-                    for call in delta.get("tool_calls") or []:
-                        held = calls.setdefault(int(call.get("index") or 0), {"id": None, "type": "function",
-                                                                               "function": {"name": "", "arguments": ""}})
-                        held["id"] = call.get("id") or held["id"]
-                        function = call.get("function") or {}
-                        held["function"]["name"] += function.get("name") or ""
-                        held["function"]["arguments"] += function.get("arguments") or ""
-                    if delta.get("content"):
-                        content += delta["content"]
-                        if telling:
-                            telling = not tell(False)
-                self._within(timeout)  # the request's budget holds while the answer is written
+            try:
+                for raw in reply:
+                    line = raw.decode("utf-8").strip()
+                    if not line.startswith("data:"):
+                        continue
+                    data = line[5:].strip()
+                    if data == "[DONE]":
+                        break
+                    chunk = json.loads(data)
+                    if "error" in chunk:
+                        raise _StreamBroken(str(chunk["error"]))
+                    head.update({key: chunk[key] for key in ("created", "id", "model", "system_fingerprint", "usage",
+                                                             "timings") if key in chunk})
+                    for choice in chunk.get("choices") or []:
+                        index = choice.get("index", index)
+                        finish = choice.get("finish_reason") or finish
+                        delta = choice.get("delta") or {}
+                        reasoning += delta.get("reasoning_content") or ""
+                        for call in delta.get("tool_calls") or []:
+                            held = calls.setdefault(int(call.get("index") or 0),
+                                                    {"type": "function", "function": {"name": "", "arguments": ""}})
+                            function = call.get("function") or {}
+                            if call.get("id"):
+                                held["id"] = call["id"]
+                            if function.get("name"):
+                                held["function"]["name"] = function["name"]
+                            held["function"]["arguments"] += function.get("arguments") or ""
+                            if telling:
+                                _tell(on_text, None, True)  # a call: what was foreseen is dropped, nothing more told
+                                telling = False
+                        if delta.get("content"):
+                            content += delta["content"]
+                            if telling and ("<tool_call>" in content or "<function=" in content):
+                                _tell(on_text, None, True)  # a call written as text: dropped as well
+                                telling = False
+                            elif telling:
+                                telling = not _tell(on_text, content, False)
+                    self._within(timeout)  # the request's budget holds while the answer is written
+            except (ValueError, http.client.HTTPException, ConnectionError) as error:
+                raise _StreamBroken(repr(error)) from error
         if telling:
-            tell(True)
+            _tell(on_text, content, True)
         message: dict[str, Any] = {"role": "assistant", "content": content}
+        if reasoning:
+            message["reasoning_content"] = reasoning
         if calls:
-            message["tool_calls"] = [calls[index] for index in sorted(calls)]
-        return {"choices": [{"message": message}], "timings": timings, "usage": usage}
+            message["tool_calls"] = [calls[key] for key in sorted(calls)]
+        return {"choices": [{"finish_reason": finish or "length", "index": index, "message": message}],
+                **{key: head[key] for key in ("created", "id", "model", "system_fingerprint") if key in head},
+                "object": "chat.completion", **{key: head[key] for key in ("usage", "timings") if key in head}}
 
     def complete_name(self, body: dict[str, Any], written: str, timeout: float = 10.0) -> str:
         """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:

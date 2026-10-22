@@ -10,8 +10,9 @@ engine's level varies with the sentence.
 
 An answer sounds sentence by sentence: the first plays as soon as it is synthesized and the next is synthesized while
 it sounds; a loaded voice starts synthesizing an answer the moment it is given, while what is ahead of it still sounds.
-A turn's last answer is even seen as the model writes it (foresee, al máximo 9.4): its first sentence is synthesized
-then and kept, and the answer given later uses that take; nothing sounds before the App publishes the answer.
+An answer is even seen as the model writes it (foresee, al máximo 9.4): its first sentence is synthesized then and
+kept, and the answer given later uses that take; a call written after it drops the take; nothing sounds before the App
+publishes the answer.
 The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote at warm-up, which the mind
 gives the voice with its catalog.ready (set_notice; al máximo 9.2a: it was «Un momento.», fixed in the code). It is
 synthesized as soon as the voice has it and said from that audio only: a notice never takes the one synthesis an answer
@@ -214,11 +215,18 @@ class Speech:
             self._queue.put_nowait((self._generation, text, time.monotonic(), None, audio))
         return True
 
-    def foresee(self, text: str, done: bool) -> bool:
-        """The last answer as the model writes it (al máximo 9.4): once its first sentence is closed (or the answer is
-        done), that sentence is synthesized now, the same take _sentences would make, and kept; nothing sounds until the
-        App publishes the answer and asks for it (speak). True once there is nothing more to look at."""
-        raw = str(text or "")
+    def foresee(self, text: str | None, done: bool) -> bool:
+        """An answer as the model writes it (al máximo 9.4): once its first sentence is closed (or the answer is done),
+        that sentence is synthesized now, the same take _sentences would make, and kept; nothing sounds until the App
+        publishes the answer and asks for it (speak). None: the model went on to call a tool, and what was foreseen is
+        dropped. True once there is nothing more to look at."""
+        if text is None:
+            with self._posting:
+                for _generation, future in self._foreseen.values():
+                    future.cancel()  # not synthesized if it had not started: it never holds an answer's synthesis
+                self._foreseen.clear()
+            return True
+        raw = text
         text = " ".join(raw.split())[:MAX_CHARS]
         if not self.ready:
             return True
