@@ -11,6 +11,10 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
     private const int SmtcControlPostreadPollIntervals = 40;
     private static readonly TimeSpan SmtcPostreadPollInterval =
         TimeSpan.FromMilliseconds(50);
+    // Renew al máximo (6.1): media.status names the other sessions too, few and with short titles (the model reads
+    // every token of the receipt).
+    private const int StatusOtherSessionsLimit = 3;
+    private const int StatusOtherTitleLimit = 60;
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
     private readonly MediaSessionAccess _sessions;
 
@@ -302,6 +306,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
     {
         cancellationToken.ThrowIfCancellationRequested();
         GlobalSystemMediaTransportControlsSession? session;
+        IReadOnlyList<GlobalSystemMediaTransportControlsSession> others = [];
         string? insteadOfCurrent = null;
         bool namedSource = false;
         try
@@ -381,6 +386,17 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                     insteadOfCurrent = session.SourceAppUserModelId;
                     session = sessions[playing];
                 }
+                if (operation == "media.status" && session is not null)
+                {
+                    // Renew al máximo (6.1): every session but the one reported (by reference, else its first of
+                    // that source, as the current one may come back as another wrapper of the same session).
+                    GlobalSystemMediaTransportControlsSession reported = session;
+                    GlobalSystemMediaTransportControlsSession? self =
+                        sessions.FirstOrDefault(candidate => ReferenceEquals(candidate, reported))
+                        ?? sessions.FirstOrDefault(candidate => string.Equals(
+                            candidate.SourceAppUserModelId, reported.SourceAppUserModelId, StringComparison.Ordinal));
+                    others = sessions.Where(candidate => !ReferenceEquals(candidate, self)).ToArray();
+                }
             }
             else
             {
@@ -410,7 +426,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             "media.play.exact" => await PlayExactCurrentAsync(
                 operation, arguments, session, cancellationToken).ConfigureAwait(false),
             "media.status" => await StatusAsync(
-                operation, session, cancellationToken).ConfigureAwait(false),
+                operation, session, others, cancellationToken).ConfigureAwait(false),
             "media.seek.relative" => await SeekRelativeAsync(
                 operation, arguments, session, cancellationToken).ConfigureAwait(false),
             _ => await ControlAsync(
@@ -644,6 +660,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
     private static async ValueTask<ExternalCapabilityReceipt> StatusAsync(
         string operation,
         GlobalSystemMediaTransportControlsSession session,
+        IReadOnlyList<GlobalSystemMediaTransportControlsSession> others,
         CancellationToken cancellationToken)
     {
         try
@@ -653,30 +670,85 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 await session.TryGetMediaPropertiesAsync().Bounded(cancellationToken);
             GlobalSystemMediaTransportControlsSessionPlaybackStatus status =
                 session.GetPlaybackInfo().PlaybackStatus;
-            JsonElement result = ExternalJson.Create(writer =>
+            IReadOnlyList<UserMediaSession> othersRead = [];
+            try
             {
-                writer.WriteStartObject();
-                writer.WriteNumber("version", 1);
-                writer.WriteString("sourceAppUserModelId", session.SourceAppUserModelId);
-                writer.WriteString("title", properties.Title);
-                writer.WriteString("artist", properties.Artist);
-                // M89 (DEV-D v3r D-w05-t3 «de qué disco es esta»): the album is part of what the session
-                // publishes; without it the reply could only repeat the song's name.
-                if (!string.IsNullOrWhiteSpace(properties.AlbumTitle))
-                {
-                    writer.WriteString("album", properties.AlbumTitle);
-                }
+                // Renew al máximo (6.1): the others read as every session read is, each within the limit; a session
+                // that does not answer is left out.
+                othersRead = await MediaSessionCalls.ReadEachAsync(
+                    others, MediaSessionCalls.ReadOneAsync, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                // An unread list is no list: the status itself stands.
+            }
 
-                writer.WriteString("playbackStatus", status.ToString().ToLowerInvariant());
-                writer.WriteString("authority", "windows_smtc_current_session_read");
-                writer.WriteEndObject();
-            });
+            JsonElement result = StatusResult(session.SourceAppUserModelId, properties.Title, properties.Artist,
+                properties.AlbumTitle, status.ToString().ToLowerInvariant(), othersRead);
             return ExternalJson.Success(operation, result, effectObserved: false);
         }
         catch when (!cancellationToken.IsCancellationRequested)
         {
             return ExternalJson.Failure(operation, "media_status_observation_failed");
         }
+    }
+
+    /// <summary>
+    /// The media.status result for the session it reports. Renew al máximo (6.1): media.control's sourceApp is an id a
+    /// media.status result gave, so the other sessions are named too (otherSessions: those playing first, closed ones
+    /// left out, at most <see cref="StatusOtherSessionsLimit"/>, titles cut short); with none the property is absent.
+    /// </summary>
+    internal static JsonElement StatusResult(
+        string sourceAppUserModelId,
+        string title,
+        string artist,
+        string? album,
+        string playbackStatus,
+        IReadOnlyList<UserMediaSession> others) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteNumber("version", 1);
+        writer.WriteString("sourceAppUserModelId", sourceAppUserModelId);
+        writer.WriteString("title", title);
+        writer.WriteString("artist", artist);
+        // M89 (DEV-D v3r D-w05-t3 «de qué disco es esta»): the album is part of what the session
+        // publishes; without it the reply could only repeat the song's name.
+        if (!string.IsNullOrWhiteSpace(album))
+        {
+            writer.WriteString("album", album);
+        }
+
+        writer.WriteString("playbackStatus", playbackStatus);
+        UserMediaSession[] shown = others
+            .Where(other => other.SourceAppUserModelId.Length > 0 && other.PlaybackStatus != "closed")
+            .OrderBy(other => other.PlaybackStatus == "playing" ? 0 : 1)
+            .Take(StatusOtherSessionsLimit)
+            .ToArray();
+        if (shown.Length > 0)
+        {
+            writer.WriteStartArray("otherSessions");
+            foreach (UserMediaSession other in shown)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("sourceAppUserModelId", other.SourceAppUserModelId);
+                writer.WriteString("title", ShortTitle(other.Title));
+                writer.WriteString("playbackStatus", other.PlaybackStatus);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+        }
+
+        writer.WriteString("authority", "windows_smtc_current_session_read");
+        writer.WriteEndObject();
+    });
+
+    // A title cut at a whole text element, never inside one.
+    private static string ShortTitle(string title)
+    {
+        var text = new StringInfo(title);
+        return text.LengthInTextElements <= StatusOtherTitleLimit
+            ? title
+            : text.SubstringByTextElements(0, StatusOtherTitleLimit);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> SeekRelativeAsync(
