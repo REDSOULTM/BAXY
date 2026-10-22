@@ -56,15 +56,25 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
         {
             return ValueTask.FromResult(OperationOutcome.Failure("invalid_task"));
         }
+        // Revisión 2026-10-22 (C-1): a full store threw past this handler and ended the core (exit 70); it refuses
+        // before writing anything.
+        catch (NoteCapacityException)
+        {
+            return ValueTask.FromResult(OperationOutcome.Failure("task_capacity_reached"));
+        }
         catch (Exception exception)
             when (Definition.Risk == OperationRisk.ReadOnly
                 && (exception is LocalTaskStoreException or NoteCorruptionException))
         {
             return ValueTask.FromResult(OperationOutcome.Failure("task_integrity_failed"));
         }
-        catch (IOException) when (Definition.Risk == OperationRisk.ReadOnly)
+        // Revisión 2026-10-22 (C-1): a disk or a guarded folder that fails a write ended the core too; it is this
+        // operation's failure, named, and a change may have begun only for an operation that changes something
+        // (FilesystemHandlers does the same).
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("storage_failed"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "storage_failed", effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
         }
     }
 
