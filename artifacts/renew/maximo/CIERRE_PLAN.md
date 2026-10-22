@@ -47,3 +47,19 @@ tras otra.
 5. `INFORME_MAXIMO.md` y mensaje al dueño.
 6. Lo que espera el oído del dueño: rama `voz-maximo` (9.3), pasos de Supertonic (9.1), muestras en
    `F:\BAXYeval\renew_v4\voz\muestras`.
+
+## Cambios aceptados del NB (buzón 2026-10-22 17:07), antes de abrir
+
+1. **Réplicas simétricas en decisión**: `s1off` y `s1on` corren desde copias de la mente de 86991ca9d con la semilla
+   parcheada (s0/s1/s2, `--src` de bench_decision; las prepara el NB y las copia por scp), de modo que las tres
+   configuraciones usan semillas 0/1/2.
+2. **E2E**: `s1off` ×1, `s1on` ×2, `maximo` ×2 (semillas 0/1; en 86991ca9d por la copia parcheada), intercaladas
+   s1on/maximo; ~2,8 h en el NB. Se informa la media y pass^2.
+3. **Exclusiones fijadas ahora**: un caso con `setup_fallido` es VOID (fuera de las configuraciones comparadas, no
+   fallo); una corrida con el frente sostenido por una ventana invisible (GameInputSvc) se repite entera antes de mirar
+   sus aciertos. Nada más se excluye.
+4. **Jueces congelados**: los de e2e y falsedades son los de hoy; ningún cambio de scripts de puntuación después de abrir.
+5. **NB**: el holdout e2e/falsedades se corre con una copia F:→D: hecha tras extraer; se anotan el sha256 del original y
+   de la copia y el número de rutas sustituidas, sin leer el texto de los casos.
+6. **Métrica secundaria pre-registrada** en decisión: acciones equivocadas ejecutadas, con su McNemar; los gemelos de
+   dictado con error estándar agrupado por pareja.
