@@ -275,6 +275,28 @@ public sealed class MissionEngineTests
         });
     }
 
+    // Revisión 2026-10-22 (K-5): a JSON string with a lone surrogate («\uD800») parses, but reading it as text throws;
+    // it used to escape the engine before any terminal state and end the core (exit 70). It is refused as invalid
+    // arguments, in a value or in a name, and nothing runs.
+    [TestCase("""{"title":"\uD800","content":"pan"}""")]
+    [TestCase("""{"title":"Compras","content":["\uDC00x"]}""")]
+    [TestCase("""{"\uD800":"pan"}""")]
+    public async Task ArgumentsThatAreNotTextAreRefusedAsInvalidArguments(string json)
+    {
+        var handler = new CountingHandler(OperationRisk.Reversible);
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse response = await engine.ExecuteAsync(CreateRequest(json), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Rejected));
+            Assert.That(response.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(handler.ExecutionCount, Is.Zero);
+        });
+    }
+
     // D3 2026-09-20: External asks only for message/email operations; note.create as
     // Irreversible keeps the confirmation-before-effect check.
     [TestCase(OperationRisk.Irreversible, "confirmation_required")]

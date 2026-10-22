@@ -45,6 +45,13 @@ public sealed class MissionEngine : IDisposable
     {
         ArgumentNullException.ThrowIfNull(request);
         ContractValidator.Validate(request);
+        // Revisión 2026-10-22 (K-5): a string or a name escaped as a lone surrogate («\uD800») parses, and reading it as
+        // text throws; past here it escaped the engine before any terminal state and ended the core (exit 70).
+        if (!HoldsOnlyText(request.Arguments))
+        {
+            return Rejected(request, "invalid_arguments");
+        }
+
         if (PrivateOperationBoundary.IsPrivateOperation(request.Operation)
             && (!PrivateOperationBoundary.HasProtectedArguments(request)
                 || !AuthenticatePrivateArguments(request)))
@@ -278,6 +285,26 @@ public sealed class MissionEngine : IDisposable
             or ArgumentException or JsonException or KeyNotFoundException)
         {
             return declared;
+        }
+    }
+
+    // Every string and property name decodes to text (no lone surrogate).
+    private static bool HoldsOnlyText(JsonElement element)
+    {
+        try
+        {
+            return element.ValueKind switch
+            {
+                JsonValueKind.Object => element.EnumerateObject()
+                    .All(static property => property.Name is not null && HoldsOnlyText(property.Value)),
+                JsonValueKind.Array => element.EnumerateArray().All(HoldsOnlyText),
+                JsonValueKind.String => element.GetString() is not null,
+                _ => true,
+            };
+        }
+        catch (InvalidOperationException)
+        {
+            return false;
         }
     }
 
