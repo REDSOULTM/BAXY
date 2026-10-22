@@ -1689,6 +1689,104 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (6.6): the first app.open after a pause no longer waits the catalog's PowerShell read when the
+    // catalog it has, past its lifetime, already names the application: it opens on it and the read refreshes it behind,
+    // one read in flight however many openings come meanwhile. The opened window is verified as always.
+    [Test]
+    public async Task AStaleCatalogThatResolvesTheNameOpensWithoutWaitingItsRefresh()
+    {
+        var time = new ManualTime(new DateTimeOffset(2026, 10, 22, 9, 0, 0, TimeSpan.Zero));
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            CatalogReadsHeldFrom = 2,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform, TimeSpan.FromMinutes(1), time);
+        ApplicationOpenResult first = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+        Assert.That(first.Verified, Is.True);
+
+        time.Now += TimeSpan.FromMinutes(6);
+        try
+        {
+            Task<ApplicationOpenResult> opening = provider.OpenAsync(Request("Steam"), CancellationToken.None).AsTask();
+            Task done = await Task.WhenAny(opening, Task.Delay(TimeSpan.FromSeconds(5)));
+            Assert.That(done, Is.SameAs(opening), "the opening waited the catalog's refresh");
+            ApplicationOpenResult result = await opening;
+            platform.Note("opened");
+            ApplicationOpenResult again = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.Verified, Is.True);
+                Assert.That(again.Verified, Is.True);
+                Assert.That(platform.CatalogReads, Is.EqualTo(2), "one refresh in flight, never one per opening");
+                Assert.That(platform.Events, Is.EqualTo(new[]
+                {
+                    "catalog 1 started", "catalog 1 read", "catalog 2 started", "opened",
+                }));
+            });
+        }
+        finally
+        {
+            platform.CatalogReleased.TrySetResult();
+        }
+
+        // The refresh ends behind and is the catalog from then on: nothing is read again within its lifetime.
+        await WaitUntil(() => platform.Events.Contains("catalog 2 read"));
+        _ = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+        Assert.That(platform.CatalogReads, Is.EqualTo(2));
+    }
+
+    // Counter-case: a name the stale catalog does not resolve (an application installed during the pause) waits the
+    // fresh catalog, as before, and opens on it.
+    [Test]
+    public async Task AStaleCatalogThatDoesNotResolveTheNameWaitsTheFreshOne()
+    {
+        var time = new ManualTime(new DateTimeOffset(2026, 10, 22, 9, 0, 0, TimeSpan.Zero));
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Observation(foreground: false),
+            CatalogReadsHeldFrom = 2,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform, TimeSpan.FromMinutes(1), time);
+        _ = await provider.GetCatalogSnapshotAsync(CancellationToken.None);
+        platform.CatalogNow = [.. Catalog, new("Recién instalada", "Contoso.Fresh_abc!App")];
+
+        time.Now += TimeSpan.FromMinutes(6);
+        Task<ApplicationOpenResult> opening = provider.OpenAsync(Request("Recién instalada"), CancellationToken.None).AsTask();
+        Task done = await Task.WhenAny(opening, Task.Delay(TimeSpan.FromMilliseconds(500)));
+        Assert.That(done, Is.Not.SameAs(opening), "the opening did not wait the fresh catalog");
+        platform.CatalogReleased.TrySetResult();
+        ApplicationOpenResult result = await opening;
+        platform.Note("opened");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.DisplayName, Is.EqualTo("Recién instalada"));
+            Assert.That(platform.CatalogReads, Is.EqualTo(2));
+            Assert.That(platform.Events, Is.EqualTo(new[]
+            {
+                "catalog 1 started", "catalog 1 read", "catalog 2 started", "catalog 2 read", "opened",
+            }));
+        });
+    }
+
+    private static async Task WaitUntil(Func<bool> condition)
+    {
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (!condition() && clock.Elapsed < TimeSpan.FromSeconds(5))
+            await Task.Delay(20);
+        Assert.That(condition(), Is.True, "the condition never held");
+    }
+
+    private sealed class ManualTime(DateTimeOffset now) : TimeProvider
+    {
+        public DateTimeOffset Now { get; set; } = now;
+
+        public override DateTimeOffset GetUtcNow() => Now;
+    }
+
     private sealed class FakePlatform(IReadOnlyList<InstalledApplicationEntry> catalog)
         : IInstalledApplicationPlatform
     {
@@ -1873,6 +1971,33 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         public Exception? InventoryFailure { get; init; }
 
+        // Renew al máximo (6.6): the catalog Windows lists now, how many reads were asked, from which read on each one
+        // waits until the test releases it, and what happened in which order.
+        public IReadOnlyList<InstalledApplicationEntry> CatalogNow { get; set; } = catalog;
+
+        public int CatalogReads { get; private set; }
+
+        public int CatalogReadsHeldFrom { get; init; } = int.MaxValue;
+
+        public TaskCompletionSource CatalogReleased { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        private readonly List<string> _events = [];
+
+        public IReadOnlyList<string> Events
+        {
+            get
+            {
+                lock (_events)
+                    return [.. _events];
+            }
+        }
+
+        public void Note(string happened)
+        {
+            lock (_events)
+                _events.Add(happened);
+        }
+
         public ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
             CancellationToken cancellationToken)
         {
@@ -1883,7 +2008,24 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
                     CatalogFailure);
             }
 
-            return ValueTask.FromResult(catalog);
+            int read = ++CatalogReads;
+            Note($"catalog {read} started");
+            if (read >= CatalogReadsHeldFrom)
+            {
+                return new(HeldReadAsync(read, cancellationToken));
+            }
+
+            Note($"catalog {read} read");
+            return ValueTask.FromResult(CatalogNow);
+        }
+
+        private async Task<IReadOnlyList<InstalledApplicationEntry>> HeldReadAsync(
+            int read,
+            CancellationToken cancellationToken)
+        {
+            await CatalogReleased.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+            Note($"catalog {read} read");
+            return CatalogNow;
         }
 
         // Renew al máximo (B-APP-11): the windows the application had close right after the first inventory, before
