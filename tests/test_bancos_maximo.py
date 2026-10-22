@@ -92,3 +92,35 @@ def test_rescore_says_clearly_when_a_turn_is_not_in_its_case(tmp_path, monkeypat
     run_dir = saved_run(tmp_path / "run", EVENTS[:16])
     with pytest.raises(rescore_e2e.RunMismatch, match="E002"):
         rescored_speech(monkeypatch, run_dir, CASES["E002"])
+
+
+# R12.6: a case whose setup failed still runs its cleanup (bench_e2e does), so the next case starts on a clean desktop.
+class FakeConductor:
+    def __init__(self, run_dir, profile):
+        self.events = self
+
+    def wait(self, predicate, timeout):
+        return {"type": "runtime", "mindReady": True}
+
+    def close(self):
+        pass
+
+
+def test_falsedades_cleans_up_after_a_failed_setup(tmp_path, monkeypatch):
+    import bench_falsedades
+    ran = []
+
+    def run_ps(path, env, timeout):
+        ran.append(Path(path).name)
+        return (1, "setup roto") if Path(path).name == "setup.ps1" else (0, "")
+
+    monkeypatch.setattr(bench_falsedades, "Conductor", FakeConductor)
+    monkeypatch.setattr(bench_falsedades, "ps_file", lambda path, lines: None)
+    monkeypatch.setattr(bench_falsedades, "run_ps", run_ps)
+    monkeypatch.setattr(bench_falsedades, "session_locked", lambda: False)
+    monkeypatch.setattr(bench_falsedades, "run_turn", lambda *a: pytest.fail("a case whose setup failed has no turns"))
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    case = {"id": "F001", "setup": ["exit 1"], "cleanup": ["Remove-Item x"], "turns": [{"text": "abre el bloc"}]}
+    transcripts = bench_falsedades.run_conversations([case], tmp_path)
+    assert ran == ["setup.ps1", "cleanup.ps1"]
+    assert transcripts[0]["status"] == "setup_fallido"
