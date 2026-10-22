@@ -133,7 +133,8 @@ public sealed class AppOpenHandlerTests
     }
 
     // Round A: Steam opened and verified, and its library's address could not be handed over: the place failed, not the
-    // launch, and the opening already happened.
+    // launch, and the opening already happened. Revisión 2026-10-22 (C-4): the failure says the application is open,
+    // with the window id the window operations take, so nothing tells it as not opened.
     [Test]
     public async Task APlaceThatCouldNotBeHandedOverAfterAVerifiedOpeningIsNotALaunchFailure()
     {
@@ -142,6 +143,7 @@ public sealed class AppOpenHandlerTests
             provider,
             new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RefusedPlace(),
+            windowIdFor: static window => window == 777 ? "w-777" : null,
             frontOf: static _ => new OpenedWindowFront(true, "steam"));
 
         OperationOutcome outcome = await handler.ExecuteAsync(
@@ -152,6 +154,12 @@ public sealed class AppOpenHandlerTests
             Assert.That(provider.Calls, Is.EqualTo(1));
             Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_opened"));
             Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("appId").GetString(), Is.EqualTo("Steam"));
+            Assert.That(result.GetProperty("displayName").GetString(), Is.EqualTo("Steam"));
+            Assert.That(result.GetProperty("opened").GetBoolean(), Is.True);
+            Assert.That(result.GetProperty("windowId").GetString(), Is.EqualTo("w-777"));
+            Assert.That(result.GetProperty("place").GetString(), Is.EqualTo("library"));
         });
     }
 

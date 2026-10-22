@@ -155,8 +155,20 @@ internal sealed class AppOpenHandler(
         if (place is { Opened: false })
         {
             // Round A: the application is open and verified; what failed is handing its place over (it said
-            // launch_failed, a launch that had in fact worked).
-            return OperationOutcome.Failure("place_not_opened", effectMayHaveOccurred: true);
+            // launch_failed, a launch that had in fact worked). Revisión 2026-10-22 (C-4): said with the application it
+            // opened and the window id the window operations take, so the failure is never told as «not opened».
+            return OperationOutcome.Failure(
+                "place_not_opened",
+                result: Facts(writer =>
+                {
+                    writer.WriteString("appId", arguments.AppId);
+                    writer.WriteString("displayName", providerResult.DisplayName);
+                    writer.WriteBoolean("opened", true);
+                    if (windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()) is { } windowId)
+                        writer.WriteString("windowId", windowId);
+                    if (arguments.Place is not null) writer.WriteString("place", arguments.Place);
+                }),
+                effectMayHaveOccurred: true);
         }
 
         // BAXY Renew cu (C03 en frío): started by this opening behind its own sign-in, the place handed during it was
