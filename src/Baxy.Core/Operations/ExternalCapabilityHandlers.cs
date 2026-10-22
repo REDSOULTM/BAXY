@@ -176,9 +176,13 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
             return ValueTask.FromResult(OperationOutcome.Failure("confirmation_bypass_interface_only"));
         }
 
-        bool before = setting == AccessibleMode
-            ? PresentationModeStore.ReadAccessible(dataRoot)
-            : ConfirmationModeStore.Read(dataRoot) == ConfirmationMode.Bypass;
+        // Revisión 2026-10-22 (C-3): a file that cannot be read (another program holds it locked) is not «off»: taking it
+        // so answered «already off», done, while the file still said on.
+        if (!TryReadOn(setting, out bool before))
+        {
+            return ValueTask.FromResult(OperationOutcome.Failure("baxy_setting_unreadable"));
+        }
+
         try
         {
             if (before != on)
@@ -195,10 +199,7 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
                 "baxy_setting_write_failed", effectMayHaveOccurred: true, causeCode: "external_effect_ambiguous"));
         }
 
-        bool after = setting == AccessibleMode
-            ? PresentationModeStore.ReadAccessible(dataRoot)
-            : ConfirmationModeStore.Read(dataRoot) == ConfirmationMode.Bypass;
-        if (after != on)
+        if (!TryReadOn(setting, out bool after) || after != on)
         {
             return ValueTask.FromResult(OperationOutcome.Failure(
                 "baxy_setting_postread_failed", effectMayHaveOccurred: before != on));
@@ -225,6 +226,19 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
 
         using JsonDocument result = JsonDocument.Parse(buffer.ToArray());
         return ValueTask.FromResult(OperationOutcome.Success(result.RootElement.Clone()));
+    }
+
+    // Whether the setting's file could be read, and whether it says on.
+    private bool TryReadOn(string setting, out bool on)
+    {
+        if (setting == AccessibleMode)
+        {
+            return PresentationModeStore.TryReadAccessible(dataRoot, out on);
+        }
+
+        bool read = ConfirmationModeStore.TryRead(dataRoot, out ConfirmationMode mode);
+        on = mode == ConfirmationMode.Bypass;
+        return read;
     }
 }
 

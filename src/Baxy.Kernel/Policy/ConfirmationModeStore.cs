@@ -12,26 +12,36 @@ public static class ConfirmationModeStore
 
     public static ConfirmationMode Read(string? dataRoot = null)
     {
-        if (!string.IsNullOrWhiteSpace(dataRoot))
+        _ = TryRead(dataRoot, out ConfirmationMode mode);
+        return mode;
+    }
+
+    /// <summary>
+    /// Revisión 2026-10-22 (C-3): whether the file could be read at all (one another program holds locked cannot), so a
+    /// switch never takes «unreadable» for «normal»; <paramref name="mode"/> is Normal unless a readable file says bypass.
+    /// </summary>
+    public static bool TryRead(string? dataRoot, out ConfirmationMode mode)
+    {
+        mode = ConfirmationMode.Normal;
+        if (string.IsNullOrWhiteSpace(dataRoot))
         {
-            try
-            {
-                string path = Path.Combine(dataRoot, FileName);
-                if (File.Exists(path))
-                {
-                    ConfirmationMode? fromFile = Parse(File.ReadAllText(path));
-                    if (fromFile is { } mode)
-                    {
-                        return mode;
-                    }
-                }
-            }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-            {
-            }
+            return true;
         }
 
-        return ConfirmationMode.Normal;
+        try
+        {
+            string path = Path.Combine(dataRoot, FileName);
+            if (File.Exists(path) && Parse(File.ReadAllText(path)) is { } fromFile)
+            {
+                mode = fromFile;
+            }
+
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 
     public static void Write(string dataRoot, ConfirmationMode mode)
