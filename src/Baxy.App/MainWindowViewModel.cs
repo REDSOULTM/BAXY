@@ -1053,6 +1053,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string eventName = (string?)voiceEvent["event"] ?? string.Empty;
         string mode = (string?)voiceEvent["mode"] ?? string.Empty;
         bool? speaking = (bool?)voiceEvent["speaking"];
+        bool notice = (bool?)voiceEvent["notice"] ?? false;
         string? partial = (string?)voiceEvent["text"];
         _uiContext.Post(
             _ =>
@@ -1089,6 +1090,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         break;
                     case "lip":
                         VoiceLip?.Invoke(voiceEvent);
+                        break;
+                    case "sound" when !notice:
+                        // Al máximo 9.2b: the turn's notice counts until its line is heard, not until it is shown.
+                        _loop.AnswerSounded();
                         break;
                     case "transcribing":
                         VoiceFailure = null;

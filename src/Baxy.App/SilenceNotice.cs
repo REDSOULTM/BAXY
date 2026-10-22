@@ -8,7 +8,12 @@ namespace Baxy.App;
 /// press) arrived, and is still working, says the mind's own notice phrase (the <c>notice</c> of its
 /// <c>catalog.ready</c>), and again every <see cref="Again"/> while it stays silent. The words are the mind's: with no
 /// phrase from it there is no notice. The notice is not the turn's answer: it is only said aloud, never a line of the
-/// conversation. The turn's own line closes it under one gate, so the notice is never said after the answer.
+/// conversation. The first sound of the turn's own line closes it under one gate, so the notice is never said after the
+/// answer is heard. Al máximo 9.2b (2026-10-22): it closed when the line was published, and an answer published at 2.4 s
+/// that sounded at 3.9 s left more than 3 s without a signal; a published line now keeps it open, even after the turn
+/// ends, until the voice says the line began to sound (<see cref="Sounded"/>), for one more notice at most: a line the
+/// voice never sounds (its synthesis failed) does not repeat it until the next turn. The voice says the notice from its
+/// own audio while the line is still synthesized, and never once a line began to sound (voice_output.py).
 /// </summary>
 internal sealed class SilenceNotice
 {
@@ -31,6 +36,8 @@ internal sealed class SilenceNotice
     private ITimer? _timer;
     private long _turn;
     private bool _open;
+    // The turn published its line: the notice waits for that line's first sound, not for the turn's end.
+    private bool _published;
 
     internal SilenceNotice(TimeProvider time)
     {
@@ -92,23 +99,45 @@ internal sealed class SilenceNotice
         }
     }
 
-    /// <summary>The turn publishes its own line (answer, question, confirmation): no notice can follow it.</summary>
+    /// <summary>
+    /// The turn publishes its own line (answer, question, confirmation): the notice still counts until that line is
+    /// heard (<see cref="Sounded"/>). A line that is not said aloud (the voice muted or unavailable) has no notice
+    /// either: the host says none then.
+    /// </summary>
     internal void Publish(Action publish)
     {
         ArgumentNullException.ThrowIfNull(publish);
         lock (_gate)
         {
-            CloseLocked();
+            _published = _open;
             publish();
         }
     }
 
-    /// <summary>The turn ended.</summary>
+    /// <summary>
+    /// A line BAXY says, not the notice, began to sound. Once the turn published its line no notice can follow; a
+    /// sound before that (a heartbeat's words the turn waited for) is not this turn's answer and leaves it open.
+    /// </summary>
+    internal void Sounded()
+    {
+        lock (_gate)
+        {
+            if (_published)
+            {
+                CloseLocked();
+            }
+        }
+    }
+
+    /// <summary>The turn ended: a turn that published nothing says no notice; one whose line is not heard yet still may.</summary>
     internal void Close()
     {
         lock (_gate)
         {
-            CloseLocked();
+            if (!_published)
+            {
+                CloseLocked();
+            }
         }
     }
 
@@ -121,6 +150,11 @@ internal sealed class SilenceNotice
                 return;
             }
 
+            if (_published)
+            {
+                CloseLocked();
+            }
+
             say(phrase);
         }
     }
@@ -128,6 +162,7 @@ internal sealed class SilenceNotice
     private void CloseLocked()
     {
         _open = false;
+        _published = false;
         _timer?.Dispose();
         _timer = null;
     }

@@ -27,10 +27,18 @@ from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 
-# What BAXY says once when a turn of the person's has said nothing for 2.5 s (SilenceNotice.After) and is still working (goal identity: a
-# notice that claims no result when the turn will go past 3 s in silence). The App times it; the words are the
-# persona's, so they live here with the prompt.
-NOTICE = "Un momento."
+# What BAXY says when a turn of the person's has said nothing for 2.5 s (SilenceNotice.After) and is still working,
+# and again every 10 s while it stays silent (goal identity: a notice that claims no result when the turn will go past
+# 3 s in silence). The App times it; the
+# words are the model's, written once at warm-up (Mind.warm): al máximo 9.2a (2026-10-22), a phrase fixed here broke
+# invariant 5 (cero respuestas visibles fijas). What is asked is an instruction, not a phrase; a phrase it does not
+# write usably (empty, more than NOTICE_MAX_CHARS or NOTICE_MAX_WORDS, more than one line, markup) leaves the notice
+# empty, and with no phrase the App says none (SilenceNotice.PhraseOf).
+NOTICE_ASK = ("[Esto no lo dice la persona. Cuando algo que te pidan tarde unos segundos, dirás en voz alta una frase muy "
+              "breve para que sepa que sigues en ello. Escribe sólo esa frase, de dos a cinco palabras, sin decir que "
+              "hiciste algo ni ningún resultado.]")
+NOTICE_MAX_CHARS = 40
+NOTICE_MAX_WORDS = 6
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
@@ -566,6 +574,11 @@ def _env_float(name: str, default: float) -> float:
 
 
 class Mind:
+    notice = ""  # the model's notice phrase, written at warm-up (NOTICE_ASK); empty before it or when unusable
+    # Al máximo 9.4: the voice's look-ahead (Speech.foresee), given the last answer's text as it is written; None: the
+    # last answer is not streamed.
+    foresee: Any = None
+
     def __init__(self, server: LlmServer, trace: Path, system_one: SystemOne | None = None) -> None:
         self.server = server
         self.trace = trace
@@ -703,6 +716,27 @@ class Mind:
                                   "tools": self.tools, "max_tokens": 1,
                                   "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
         self.prefix_tokens = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
+        self.notice = self._write_notice()
+
+    def _write_notice(self) -> str:
+        """The notice in the model's own words (NOTICE_ASK), once, on the cached prefix: words only, as the last answer
+        of a turn, and greedy. Empty when it gave nothing usable or the call failed: then BAXY says no notice."""
+        started = time.monotonic()
+        try:
+            reply = self.server.chat({"messages": [{"role": "system", "content": self._system()},
+                                                   {"role": "user", "content": NOTICE_ASK}],
+                                      "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed,
+                                      "tool_choice": "none",
+                                      "logit_bias": [[token, False] for token in self.call_tokens],
+                                      "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+            written = str(reply["choices"][0]["message"].get("content") or "")
+        except Exception:  # noqa: BLE001 - without its words BAXY says no notice; the warm-up itself is done
+            reply, written = None, ""
+        phrase = written.strip().strip("«»\"'“”").strip()
+        usable = bool(phrase) and "\n" not in phrase and "<" not in phrase and len(phrase) <= NOTICE_MAX_CHARS \
+            and len(phrase.split()) <= NOTICE_MAX_WORDS
+        self._log("warm.notice", started, reply, content=phrase if usable else None, written=written)
+        return phrase if usable else ""
 
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
@@ -1131,7 +1165,12 @@ class Mind:
             body["tool_choice"] = "none"
             body["logit_bias"] = [[token, False] for token in self.call_tokens]
         try:
-            reply = self.server.chat(body)
+            # Al máximo 9.4: a person's turn streams to the voice, which synthesizes an answer's first sentence while
+            # the rest is written (only while it is words; a call dropped what it foresaw); nothing sounds before the
+            # App publishes it. Not the decision whose doubt is read (_doubted): its token probabilities are not all
+            # sent when streamed (LlmServer.chat). Never a heartbeat.
+            streams = self.foresee is not None and not turn.get("beat") and not self._doubted(stage, turn, final)
+            reply = self.server.chat(body, on_text=self.foresee) if streams else self.server.chat(body)
         except urllib.error.HTTPError as error:
             # llama-server refuses a prompt past its context with HTTP 400. Al máximo 1.2 (2026-10-22): its earlier
             # results were cut and the model answered in words at once (15 context_shrunk in the trace, each one ended

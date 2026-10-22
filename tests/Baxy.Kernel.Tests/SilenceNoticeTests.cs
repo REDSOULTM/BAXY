@@ -38,8 +38,30 @@ public sealed class SilenceNoticeTests
         time.Timers[0].Fire();
         time.Timers[0].Fire();
         notice.Publish(() => said.Add("answer"));
+        // Al máximo 9.2b: silent until the answer sounds, not until it is published.
+        notice.Sounded();
         time.Timers[0].Fire();
         Assert.That(said, Is.EqualTo(new[] { "Dame un momento.", "Dame un momento.", "answer" }));
+    }
+
+    [Test]
+    public void AnAnswerTheVoiceNeverSoundsGetsOneMoreNoticeNotOneEveryTenSeconds()
+    {
+        // Al máximo 9.2b with the repetition of flujos: a published line keeps the notice until it sounds, but a line
+        // whose synthesis failed never sounds, and the notice would come back every 10 s until the next turn.
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+
+        notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
+        time.Timers[0].Fire();
+        notice.Publish(() => said.Add("answer"));
+        notice.Close();
+        time.Timers[0].Fire();
+        time.Timers[0].Fire();
+
+        Assert.That(said, Is.EqualTo(new[] { "Dame un momento.", "answer", "Dame un momento." }));
+        Assert.That(time.Timers[0].Disposed, Is.True);
     }
 
     [Test]
@@ -87,6 +109,7 @@ public sealed class SilenceNoticeTests
         Assert.That(turnContext.Posted, Is.Empty);
         Assert.That(said, Is.EqualTo(new[] { "Dame un momento." }));
         notice.Publish(() => said.Add("answer"));
+        notice.Sounded();
         Assert.That(said, Is.EqualTo(new[] { "Dame un momento.", "answer" }));
         time.Timers[0].Fire();
         turnContext.RunAll();
@@ -100,7 +123,7 @@ public sealed class SilenceNoticeTests
     }
 
     [Test]
-    public void NoNoticeFollowsTheTurnsOwnLine()
+    public void NoNoticeFollowsTheTurnsOwnLineOnceItSounds()
     {
         var time = new ManualTime();
         var notice = new SilenceNotice(time);
@@ -108,6 +131,7 @@ public sealed class SilenceNoticeTests
 
         notice.Open("Dame un momento.", time.GetTimestamp(), () => true, said.Add);
         notice.Publish(() => said.Add("answer"));
+        notice.Sounded();
         time.Timers[0].Fire();
 
         Assert.That(said, Is.EqualTo(new[] { "answer" }));
@@ -193,8 +217,9 @@ public sealed class SilenceNoticeTests
         Assert.That(said, Is.Empty);
         Assert.That(turnContext.Posted, Has.Count.EqualTo(1));
 
-        // The answer published on the turn's context before the posted notice ran: the notice is not said after it.
+        // The answer published on the turn's context and heard before the posted notice ran: no notice after it.
         notice.Publish(() => said.Add("answer"));
+        notice.Sounded();
         turnContext.RunAll();
         Assert.That(said, Is.EqualTo(new[] { "answer" }));
     }
