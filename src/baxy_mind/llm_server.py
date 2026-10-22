@@ -113,6 +113,29 @@ class LlmServer:
                                            "stop": [">", "\n"], "cache_prompt": True, "id_slot": 0}, timeout)
         return str(reply.get("content", ""))
 
+    def fill_call(self, body: dict[str, Any], wire: str, timeout: float = 30.0) -> dict[str, Any] | None:
+        """The model's arguments for one tool another layer chose (System One, piece A): the same chat, with the call
+        already started as the assistant's last message, so the prompt and its cached prefix stay the same and only the
+        arguments are written. tool_choice «required» keeps the call grammar active from that prefix on, inside this
+        tool's own parameters (llama.cpp b11609: common/sampling.cpp, common/chat.cpp, common/parsers/qwen3-coder.cpp).
+        Returns the parsed call {"name", "arguments"} or None."""
+        messages = [*body["messages"], {"role": "assistant", "content": f"<tool_call>\n<function={wire}>\n"}]
+        request = {**{k: v for k, v in body.items() if k not in ("logit_bias", "tool_choice", "max_tokens")},
+                   "messages": messages, "tool_choice": "required", "parallel_tool_calls": False,
+                   "continue_final_message": True, "add_generation_prompt": False, "max_tokens": 300,
+                   "temperature": 0.0, "id_slot": 0, "cache_prompt": True}
+        reply = self._post("/v1/chat/completions", request, timeout)
+        calls = (reply.get("choices") or [{}])[0].get("message", {}).get("tool_calls") or []
+        if not calls:
+            return None
+        call = calls[0].get("function") or {}
+        try:
+            arguments = json.loads(call.get("arguments") or "{}")
+        except json.JSONDecodeError:
+            return None
+        return {"name": call.get("name"), "arguments": arguments if isinstance(arguments, dict) else {},
+                "timings": reply.get("timings") or {}}
+
     def _post(self, path: str, body: dict[str, Any], timeout: float) -> dict[str, Any]:
         request = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", data=json.dumps(body).encode("utf-8"),
                                          headers={"Content-Type": "application/json"})
