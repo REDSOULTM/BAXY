@@ -1,5 +1,9 @@
+using System.Security.Cryptography;
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
@@ -108,6 +112,45 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
+    // Al máximo, flujos («cierra discord» asked every time): app.close by the application's name lowers its risk as a
+    // close by a window does when every window it has holds no document of the person (the provider's rule, with the
+    // microphone's); one window with a document, or one it cannot place, keeps the yes. Fake windows: nothing closes
+    // for real.
+    [TestCase(new[] { "win_discord", "win_discord_2" }, false)]
+    [TestCase(new[] { "win_notepad" }, true)]
+    public async Task ByNameAnApplicationAllOfWhoseWindowsHoldNoDocumentClosesWithoutAsking(string[] ids, bool asks)
+    {
+        var windows = new FakeWindows([.. ids.Select((id, index) => Frame(id, 100 + index, id))])
+        {
+            Documentless = ["win_discord", "win_discord_2"],
+        };
+        string root = Path.Combine(Path.GetTempPath(), "baxy-app-close-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+                Path.Combine(root, "journal.jsonl"),
+                new JournalHmacAuthenticator(RandomNumberGenerator.GetBytes(JournalHmacAuthenticator.KeyLength)));
+            using var engine = new MissionEngine(new OperationRegistry([new AppCloseHandler(windows)]), journal);
+
+            OperationResponse response = await engine.ExecuteAsync(
+                new OperationRequest(
+                    ProtocolTypes.OperationRequest, Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"),
+                    Guid.NewGuid().ToString("D"), "app.close", JsonDocument.Parse("{\"appId\":\"Discord\"}").RootElement),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.ErrorCode, asks ? Is.EqualTo("confirmation_required") : Is.Null);
+                Assert.That(windows.Closed, asks ? Is.Empty : Is.EqualTo(ids));
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     // FT/proveedores goal (review of receipts): nine of ten windows minimized and one refused: the failure carries what
     // was done (the counts), its effect is possible, and it is never a success.
     [Test]
@@ -142,6 +185,10 @@ public sealed class AppCloseByApplicationTests
         internal List<string> Closed { get; } = [];
 
         internal string? Prompts { get; init; }
+
+        internal string[] Documentless { get; init; } = [];
+
+        public bool HoldsNoDocument(string windowId) => Documentless.Contains(windowId);
 
         public ValueTask<WindowResolveResult> ResolveApplicationAsync(
             string applicationName, int limit, CancellationToken cancellationToken) =>

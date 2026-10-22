@@ -176,7 +176,8 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
     // window, or one the provider cannot place, keeps work_loss and asks. v3 r22 uso real: the provider also counts
     // an application whose content lives in the person's account and a window BAXY launched and never wrote into.
     // Al máximo, flujos: an application asked for by its name that has no window to close (app_not_running) is that
-    // failure before any yes.
+    // failure before any yes; one all of whose windows hold no document closes as one such window does («cierra
+    // discord» asked every time), and one window with a document, or one the provider cannot place, keeps the yes.
     public async ValueTask<InvocationPreflightResult> PreflightAsync(
         JsonElement arguments,
         CancellationToken cancellationToken)
@@ -195,8 +196,10 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             return InvocationPreflightResult.Proceed;
         ApplicationWindows found = await ApplicationWindowCloser.ResolveAsync(provider, appId.GetString()!, cancellationToken)
             .ConfigureAwait(false);
-        return found.ErrorCode is { } missing
-            ? InvocationPreflightResult.Fails(OperationOutcome.Failure(missing))
+        if (found.ErrorCode is { } missing)
+            return InvocationPreflightResult.Fails(OperationOutcome.Failure(missing));
+        return found.Windows.All(window => provider.HoldsNoDocument(window.WindowId))
+            ? InvocationPreflightResult.Lowered(OperationRisk.Reversible)
             : InvocationPreflightResult.Proceed;
     }
 
