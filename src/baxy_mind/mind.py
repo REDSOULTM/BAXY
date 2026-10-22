@@ -358,6 +358,9 @@ def _threshold(name: str) -> float:
 
 
 NOT_RUN = json.dumps({"status": "not_run", "reason": "the turn ended before this call ran"})
+# Review 2026-10-22: a call queued behind one that did not complete was chosen on what that one would have done (app_open
+# failed and input_text_type then typed into the person's own window): it is not run, and the model decides again.
+NOT_RUN_AFTER = json.dumps({"status": "not_run", "reason": "the call before it in this turn did not complete"})
 # A call the App was already running when its turn ended: it may have run, and nothing says what it did (audit
 # 2026-10-15: the model read «not run» for a call the core had executed).
 NO_RESULT = json.dumps({"status": "unknown", "reason": "no result came back for this call: it may have run or not"})
@@ -807,10 +810,11 @@ class Mind:
             # know.
             conv[-1]["content"] += ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo "
                                     "con lo que muestran los resultados.]")
-        if turn["queue"] and not final:
+        completed = outcome.startswith("completado")
+        if turn["queue"] and not final and completed:
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.monotonic(), "")
         for call in turn["queue"]:
-            conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN})
+            conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN if final else NOT_RUN_AFTER})
         turn["queue"] = []
         return self._next(request_id, "turn.continue", turn, final=final)
 
