@@ -98,9 +98,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is InvalidDataException
-            or InvalidOperationException
-            or JsonException)
+        // Renew al máximo (B-APP-9): any catalog read that fails (PowerShell blocked from starting, its output broken)
+        // is the inventory failure, as for IsInstalledAsync; only a cancellation goes on.
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
@@ -184,6 +184,10 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     .ConfigureAwait(false);
                 return Success(request, entry, focused, reused: true, shownWithoutFocus: shown);
             }
+
+            // Renew al máximo (B-APP-11): the window to reuse is gone; what follows is a launch, and a window it shows
+            // is said already running only when it was there before (the verification below reads it).
+            reused = false;
         }
 
         // v3 point 0 (arreglo 4): an opening the person did not ask to see in front leaves the front where it is.
@@ -825,11 +829,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             theirs = entry is null || !_platform.IdentifiesWindows(entry)
                 ? [] : [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)];
         }
-        catch (Exception exception) when (exception is ApplicationInventoryException
-            or InvalidDataException
-            or InvalidOperationException
-            or JsonException
-            or System.ComponentModel.Win32Exception)
+        // Renew al máximo (B-APP-9): as in the opening, any failed read is the inventory failure.
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
@@ -849,7 +850,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             // An application that only shows the instance that runs opened no new window: no new document was made.
             // BAXY Renew cu (C18): unless the launch's new window was handed to that instance (Windows 11's Notepad).
             return opened.ErrorCode == ApplicationOpenErrorCodes.VerificationFailed
-                ? (entry is null ? null : BornEmpty(request, entry, theirs, opened.DisplayName)) ?? NotCreated()
+                ? (entry is null ? null : await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken)
+                    .ConfigureAwait(false)) ?? NotCreated()
                 : opened;
         }
 
@@ -907,8 +909,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 _platform, request.Foreground, other => IsOpened(made, other), frontBeforeCommand);
             if (person == 0)
             {
+                // Renew al máximo (B-APP-11): within the front's budget (M89), as every window of an opening.
                 if (request.Foreground)
-                    _platform.RequestForeground(made.WindowHandle);
+                    await RequestForegroundWithinBudgetAsync(made.WindowHandle, cancellationToken).ConfigureAwait(false);
                 return Success(request, entry, made, reused: false, newDocument: true);
             }
 
@@ -923,7 +926,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         // The command goes only to the application's own window, in a burst of the foreground lease (finding 4).
         if (!await _platform.IssueNewDocumentAsync(window, cancellationToken).ConfigureAwait(false))
         {
-            return BornEmpty(request, entry, theirs, opened.DisplayName) ?? NotCreated();
+            return await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken).ConfigureAwait(false)
+                ?? NotCreated();
         }
 
         Stopwatch verification = Stopwatch.StartNew();
@@ -997,7 +1001,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             }
         }
 
-        return BornEmpty(request, entry, theirs, opened.DisplayName) ?? NotCreated();
+        return await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken).ConfigureAwait(false)
+            ?? NotCreated();
     }
 
     /// <summary>
@@ -1006,11 +1011,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     /// Windows 11's Notepad hands the new window to the instance that runs, and its New then makes no second empty tab,
     /// so neither a launched process nor a title change tells it. Nothing of the person's is in an empty window born now.
     /// </summary>
-    private ApplicationOpenResult? BornEmpty(
+    private async ValueTask<ApplicationOpenResult?> BornEmptyAsync(
         ApplicationOpenRequest request,
         InstalledApplicationEntry entry,
         HashSet<long> theirs,
-        string? displayName)
+        string? displayName,
+        CancellationToken cancellationToken)
     {
         var bare = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Bare(entry.Name), Bare(displayName) };
         bare.Remove(string.Empty);
@@ -1038,7 +1044,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
         if (request.Foreground)
         {
-            _platform.RequestForeground(made.WindowHandle);
+            // Renew al máximo (B-APP-11): within the front's budget (M89).
+            await RequestForegroundWithinBudgetAsync(made.WindowHandle, cancellationToken).ConfigureAwait(false);
         }
 
         return Success(request, entry, made, reused: false, newDocument: true);
