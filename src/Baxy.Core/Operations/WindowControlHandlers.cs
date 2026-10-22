@@ -167,7 +167,7 @@ internal sealed class WindowActionHandler(string operation, WindowControlAction 
     }
 }
 
-internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperationHandler, IInvocationRiskAssessor
+internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperationHandler, IInvocationPreflight
 {
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("app.close");
 
@@ -175,13 +175,30 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
     // no document of the person (data: documentless_applications.v1.json) closes as a low reversible act; any other
     // window, or one the provider cannot place, keeps work_loss and asks. v3 r22 uso real: the provider also counts
     // an application whose content lives in the person's account and a window BAXY launched and never wrote into.
-    public OperationRisk? AssessInvocationRisk(JsonElement arguments) =>
-        arguments.ValueKind == JsonValueKind.Object
-        && arguments.TryGetProperty("windowId", out JsonElement windowId)
-        && windowId.ValueKind == JsonValueKind.String
-        && provider.HoldsNoDocument(windowId.GetString()!)
-            ? OperationRisk.Reversible
-            : null;
+    // Al máximo, flujos: an application asked for by its name that has no window to close (app_not_running) is that
+    // failure before any yes.
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object)
+            return InvocationPreflightResult.Proceed;
+        if (arguments.TryGetProperty("windowId", out JsonElement windowId) && windowId.ValueKind == JsonValueKind.String)
+        {
+            return provider.HoldsNoDocument(windowId.GetString()!)
+                ? InvocationPreflightResult.Lowered(OperationRisk.Reversible)
+                : InvocationPreflightResult.Proceed;
+        }
+
+        if (!arguments.TryGetProperty("appId", out JsonElement appId) || appId.ValueKind != JsonValueKind.String
+            || !ApplicationIds.IsValidRequest(appId.GetString()!))
+            return InvocationPreflightResult.Proceed;
+        ApplicationWindows found = await ApplicationWindowCloser.ResolveAsync(provider, appId.GetString()!, cancellationToken)
+            .ConfigureAwait(false);
+        return found.ErrorCode is { } missing
+            ? InvocationPreflightResult.Fails(OperationOutcome.Failure(missing))
+            : InvocationPreflightResult.Proceed;
+    }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
     {

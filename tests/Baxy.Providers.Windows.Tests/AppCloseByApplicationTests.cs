@@ -85,6 +85,29 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
+    // Al máximo, flujos: an application asked for by its name with no window to close is that failure before any yes;
+    // one with its windows leaves the close to ask (and to resolve them again).
+    [Test]
+    public async Task AnApplicationNotRunningFailsBeforeTheYesAndOneRunningIsAsked()
+    {
+        var none = new AppCloseHandler(new FakeWindows([]));
+        var running = new FakeWindows([Frame("win_a", 100, "Sin título - Paint")]);
+
+        InvocationPreflightResult missing = await none.PreflightAsync(
+            JsonDocument.Parse("{\"appId\":\"Paint\"}").RootElement, CancellationToken.None);
+        InvocationPreflightResult there = await new AppCloseHandler(running).PreflightAsync(
+            JsonDocument.Parse("{\"appId\":\"Paint\"}").RootElement, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing.Failure?.ErrorCode, Is.EqualTo("app_not_running"));
+            Assert.That(missing.Failure?.EffectMayHaveOccurred, Is.False);
+            Assert.That(there.Failure, Is.Null);
+            Assert.That(there.Risk, Is.Null, "a window holding a document keeps work_loss");
+            Assert.That(running.Closed, Is.Empty);
+        });
+    }
+
     // FT/proveedores goal (review of receipts): nine of ten windows minimized and one refused: the failure carries what
     // was done (the counts), its effect is possible, and it is never a success.
     [Test]

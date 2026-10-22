@@ -245,7 +245,7 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
 
 internal sealed class ExternalCapabilityHandler(
     string operation,
-    IExternalCapabilityProvider provider) : IOperationHandler
+    IExternalCapabilityProvider provider) : IOperationHandler, IInvocationPreflight
 {
     // v3 r22 uso real: the operations that only point at or move through what a window shows (a click on a control,
     // a scroll, the list of visible controls) put nothing into it. Every other call that reaches a window (the
@@ -301,6 +301,34 @@ internal sealed class ExternalCapabilityHandler(
         }
 
         return false;
+    }
+
+    // Al máximo, flujos: what the provider reads of the call's target before the person is asked (a name that is not
+    // there, or is there several times, with its candidates): that failure answers without a yes. A provider that
+    // cannot tell, or fails to read, leaves the call to ask and to run as always.
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        ExternalCapabilityReceipt? found;
+        try
+        {
+            found = await _provider.PreflightAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            return InvocationPreflightResult.Proceed;
+        }
+
+        return found is { Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }
+            && string.Equals(found.Operation, operation, StringComparison.Ordinal)
+            && !string.IsNullOrWhiteSpace(found.ErrorCode)
+                ? InvocationPreflightResult.Fails(OperationOutcome.Failure(found.ErrorCode, result: found.Result))
+                : InvocationPreflightResult.Proceed;
     }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(

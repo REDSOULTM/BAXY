@@ -90,6 +90,32 @@ public sealed class SteamUninstallAdapterTests
         });
     }
 
+    // Al máximo, flujos: the manifests are read before the person is asked; a title not installed under that name is
+    // that failure before any yes, and an installed one leaves the call to ask. Nothing is dispatched by the read.
+    [Test]
+    public async Task TheReadBeforeTheYesFindsOnlyAnInstalledTitle()
+    {
+        var automation = new StubAutomation(_ => Assert.Fail("a read dispatches nothing"));
+        var adapter = new SteamLocalAdapter(
+            () => [new("620", "Portal 2", new string('a', 64)), new("782330", "Doom Eternal", new string('b', 64), StateFlags: 0)],
+            () => new HashSet<string> { "620", "782330" }, automation, (_, _) => ValueTask.CompletedTask);
+
+        ExternalCapabilityReceipt? missing = await adapter.PreflightAsync(
+            "game.uninstall.named", JsonSerializer.SerializeToElement(new { title = "Half-Life 3" }), CancellationToken.None);
+        ExternalCapabilityReceipt? notInstalled = await adapter.PreflightAsync(
+            "game.uninstall.named", JsonSerializer.SerializeToElement(new { title = "Doom Eternal" }), CancellationToken.None);
+        ExternalCapabilityReceipt? installed = await adapter.PreflightAsync(
+            "game.uninstall.named", JsonSerializer.SerializeToElement(new { title = "portal 2" }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing?.ErrorCode, Is.EqualTo("no_steam_manifest_with_that_name"));
+            Assert.That(notInstalled?.ErrorCode, Is.EqualTo("steam_game_not_installed"));
+            Assert.That(installed, Is.Null);
+            Assert.That(automation.Dispatched, Is.Null);
+        });
+    }
+
     [Test]
     public async Task AGameStillInstalledAfterItsDialogIsNotClaimedRemoved()
     {

@@ -362,6 +362,20 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         return await InvokeBoundAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
     }
 
+    // Al máximo, flujos: the read of the one adapter that claims the operation (with several, the dispatch decides
+    // among them, so nothing is read before).
+    public ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        IExternalOperationAdapter[] claiming = _adapters.Where(candidate => candidate.CanHandle(operation)).ToArray();
+        return claiming.Length == 1
+            ? claiming[0].PreflightAsync(operation, arguments, cancellationToken)
+            : ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> InvokeBoundAsync(
         string operation,
         JsonElement arguments,

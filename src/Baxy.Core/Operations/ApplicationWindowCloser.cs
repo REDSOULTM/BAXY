@@ -16,6 +16,10 @@ internal sealed record ApplicationWindowsClosed(
     int HiddenWindows,
     int Frames);
 
+/// <summary>An application's windows as resolved by its name (its dialogs among them), or why there are none.</summary>
+/// <param name="ErrorCode">The window provider's code, or app_not_running when it has no frame; null with its windows.</param>
+internal sealed record ApplicationWindows(string? ErrorCode, IReadOnlyList<WindowCandidate> Windows);
+
 /// <summary>
 /// Auditoría de los pedidos reales (2026-10-17): an application's windows closed by its name, for app.close with appId
 /// and for app.restart. The 4B model did not resolve a window before app.close and invented its windowId («1»), so the
@@ -31,18 +35,13 @@ internal static class ApplicationWindowCloser
         string appId,
         CancellationToken cancellationToken)
     {
-        WindowResolveResult resolved = await windows.ResolveApplicationAsync(appId, MaximumWindows, cancellationToken)
-            .ConfigureAwait(false);
-        if (!resolved.Succeeded || !resolved.Verified)
+        ApplicationWindows resolved = await ResolveAsync(windows, appId, cancellationToken).ConfigureAwait(false);
+        if (resolved.ErrorCode is { } missing)
         {
-            return new(resolved.ErrorCode ?? WindowControlErrorCodes.WindowNotFound, 0, [], [], false, 0, 0);
+            return new(missing, 0, [], [], false, 0, 0);
         }
 
         WindowCandidate[] frames = resolved.Windows.Where(window => !window.Owned).ToArray();
-        if (frames.Length == 0)
-        {
-            return new("app_not_running", 0, [], [], false, 0, 0);
-        }
 
         var processes = new SortedSet<int>();
         var titles = new List<string>();
@@ -76,5 +75,26 @@ internal static class ApplicationWindowCloser
         }
 
         return new(null, closedWindows, processes, titles, closedWindows > 0, hidden, frames.Length);
+    }
+
+    /// <summary>
+    /// Read only: the application's windows, or why there is none to close. Al máximo, flujos: app.close reads it before
+    /// asking the person (IInvocationPreflight), and closing reads it again.
+    /// </summary>
+    internal static async ValueTask<ApplicationWindows> ResolveAsync(
+        IWindowControlProvider windows,
+        string appId,
+        CancellationToken cancellationToken)
+    {
+        WindowResolveResult resolved = await windows.ResolveApplicationAsync(appId, MaximumWindows, cancellationToken)
+            .ConfigureAwait(false);
+        if (!resolved.Succeeded || !resolved.Verified)
+        {
+            return new(resolved.ErrorCode ?? WindowControlErrorCodes.WindowNotFound, []);
+        }
+
+        return resolved.Windows.Any(window => !window.Owned)
+            ? new(null, resolved.Windows)
+            : new("app_not_running", []);
     }
 }
