@@ -7,13 +7,13 @@ namespace Baxy.App;
 /// <summary>
 /// BAXY's heartbeat (owner, 2026-10-15; OpenClaw's heartbeat): every five minutes and when something changes (an
 /// application opens, a file appears in Downloads, Windows' internet check changes, the battery runs low, the person
-/// leaves or comes back), the moment goes to the model, which decides by instinct. The five-minute look pauses while the person plays or the
+/// leaves or comes back; changes join, one beat every 30 s at most: <see cref="HeartbeatPace"/>), the moment goes to the
+/// model, which decides by instinct. The five-minute look pauses while the person plays or the
 /// GPU is busy; a change still wakes it. <c>BAXY_RENEW_HEARTBEAT=0</c> turns it off.
 /// </summary>
 internal sealed class Heartbeat : IAsyncDisposable
 {
     private static readonly TimeSpan Watch = TimeSpan.FromSeconds(15);
-    private static readonly TimeSpan Tick = TimeSpan.FromMinutes(5);
 
     private readonly Func<JsonObject, bool, Task> _beat;
     private readonly Func<bool> _canBeat;
@@ -31,7 +31,7 @@ internal sealed class Heartbeat : IAsyncDisposable
     private string? _connectivity;
     private int? _battery;
     private readonly AwayWatch _awayWatch = new();
-    private DateTimeOffset _lastBeat = DateTimeOffset.UtcNow;
+    private readonly HeartbeatPace _pace = new(TimeProvider.System);
     private Task _loop = Task.CompletedTask;
 
     /// <param name="beat">Runs one heartbeat with the moment; the flag says whether its words may be spoken.</param>
@@ -121,8 +121,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             changed = _events.Count > 0;
         }
 
-        bool due = DateTimeOffset.UtcNow - _lastBeat >= Tick;
-        if ((!changed && !due) || !_canBeat())
+        if (!_pace.Due(changed) || !_canBeat())
         {
             return;
         }
@@ -130,7 +129,7 @@ internal sealed class Heartbeat : IAsyncDisposable
         if (!changed && (activity == HeartbeatMoment.Playing || gpuBusy == true))
         {
             // The five-minute look pauses while the person plays or the GPU is busy; a change still wakes it.
-            _lastBeat = DateTimeOffset.UtcNow;
+            _pace.Beat();
             return;
         }
 
@@ -141,7 +140,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             _events.Clear();
         }
 
-        _lastBeat = DateTimeOffset.UtcNow;
+        _pace.Beat();
         JsonObject moment;
         try
         {
