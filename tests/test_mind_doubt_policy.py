@@ -161,13 +161,33 @@ def test_layer2_corrects_to_a_harmless_tool_the_model_fills_itself(tmp_path, mon
 
 
 @pytest.mark.parametrize("risk, filled", [
-    ("work_loss", {"name": "app_close", "arguments": {}, "timings": {}}),  # a risky tool is never put in its mouth
+    # a tool the kernel does not always confirm is never put in its mouth (work_loss: test_mind_system_one_max.py)
+    ("external_communication", {"name": "app_close", "arguments": {}, "timings": {}}),
     ("low_reversible", None),  # the model did not write that call
     ("low_reversible", {"name": "system_power", "arguments": {}, "timings": {}})])
 def test_layer2_asks_when_it_cannot_correct(tmp_path, monkeypatch, risk, filled) -> None:
     mind, _, _ = _correcting(tmp_path, monkeypatch, risk, filled)
     result = mind.decide(1, "ahora ciérralo")
     assert result["kind"] == "conversation" and result["operation"] is None
+
+
+@pytest.mark.parametrize("effects, operation", [(["window_input"], None), (["network"], None), (None, "app.close")])
+def test_layer2_never_corrects_to_a_tool_with_an_effect_of_the_catalog(tmp_path, monkeypatch, effects,
+                                                                         operation) -> None:
+    # Al máximo 5.1: a tool that sends keys, clicks or commands to a window, or what the model wrote out of the PC, is
+    # never filled by «corrige», whatever its risk; a catalog without the field (the saved measurement ones) corrects by
+    # risk alone, as before.
+    mind, _, fills = _correcting(tmp_path, monkeypatch, "low_reversible",
+                                 {"name": "app_close", "arguments": {"appId": "Spotify"}, "timings": {}})
+    empty = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
+    close = {"name": "app.close", "description": "Close an application", "argumentsSchema": empty,
+             "risk": "low_reversible"}
+    if effects is not None:
+        close["effects"] = effects
+    mind.configure({"capabilities": [{"name": "system.power", "description": "Shut down the PC",
+                                      "argumentsSchema": empty, "risk": "work_loss"}, close]})
+    assert mind.decide(1, "ahora ciérralo")["operation"] == operation
+    assert fills == ([] if operation is None else ["app_close"])
 
 
 def test_layer2_does_not_correct_when_correcting_is_off(tmp_path, monkeypatch) -> None:

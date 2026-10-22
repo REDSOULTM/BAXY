@@ -3,7 +3,7 @@ namespace Baxy.Providers.Windows.Applications;
 /// <summary>
 /// r20b palanca 4 (v3-40, v3-43: an opening asked in front while the person typed in their own window took their
 /// keyboard for 30 and 51 s), and its review: the one rule every path of app.open follows (an application opened or
-/// reused, a new document of it, the packaged Calculator) when the front was asked for. It is read when the opening
+/// reused, a new document of it) when the front was asked for. It is read when the opening
 /// ended, right before the front would be asked for (never before the launch: the person may move to their window
 /// while the application starts), and the window shown without the activation is read back before anything says so.
 /// </summary>

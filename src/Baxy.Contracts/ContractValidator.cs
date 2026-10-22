@@ -230,6 +230,12 @@ public static class ContractValidator
         RequireClosedArgumentsSchema(value.ArgumentsSchema);
         RequireVerifierContractId(value.VerifierContractId);
         RequireText(value.Description, "description");
+        if (value.Effects is { } effects
+            && (effects.Count == 0 || effects.Any(static effect => !OperationEffects.IsKnown(effect))
+                || effects.Distinct(StringComparer.Ordinal).Count() != effects.Count))
+        {
+            ThrowInvalid("effects must be distinct known effects");
+        }
     }
 
     public static void Validate(OperationRequest value)
