@@ -44,6 +44,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
     private readonly IInstalledApplicationPlatform _platform;
     private readonly TimeSpan _catalogReadBudget;
+    private readonly TimeProvider _time;
     private readonly object _catalogLock = new();
     private IReadOnlyList<InstalledApplicationEntry>? _catalog;
     private Task<IReadOnlyList<InstalledApplicationEntry>>? _catalogLoadTask;
@@ -60,9 +61,19 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     }
 
     internal WindowsInstalledApplicationOpenProvider(IInstalledApplicationPlatform platform, TimeSpan catalogReadBudget)
+        : this(platform, catalogReadBudget, TimeProvider.System)
+    {
+    }
+
+    // Renew al máximo (6.6): the clock the catalog's age is read on.
+    internal WindowsInstalledApplicationOpenProvider(
+        IInstalledApplicationPlatform platform,
+        TimeSpan catalogReadBudget,
+        TimeProvider time)
     {
         _platform = platform ?? throw new ArgumentNullException(nameof(platform));
         _catalogReadBudget = catalogReadBudget;
+        _time = time ?? throw new ArgumentNullException(nameof(time));
     }
 
     public ValueTask<ApplicationOpenResult> OpenAsync(
@@ -96,7 +107,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         IReadOnlyList<InstalledApplicationEntry> catalog;
         try
         {
-            catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
+            catalog = await ReadCatalogAsync(cancellationToken, request.ApplicationId).ConfigureAwait(false);
         }
         // Renew al máximo (B-APP-9): any catalog read that fails (PowerShell blocked from starting, its output broken)
         // is the inventory failure, as for IsInstalledAsync; only a cancellation goes on.
@@ -609,10 +620,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             ErrorCode: null);
     }
 
+    // resolving: the application an opening resolves on the catalog (app.open), null for any other read.
     private async ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? resolving = null)
     {
-        DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset now = _time.GetUtcNow();
         Task<IReadOnlyList<InstalledApplicationEntry>> loadTask;
         lock (_catalogLock)
         {
@@ -621,59 +634,72 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 return _catalog;
             }
 
-            _catalogLoadTask ??= ReadCatalogWithinBudgetAsync();
-            loadTask = _catalogLoadTask;
+            loadTask = _catalogLoadTask ?? StartCatalogRead();
+            // Renew al máximo (6.6): the first app.open after a pause waited the catalog's PowerShell read. A catalog
+            // past its lifetime that already names the application is opened on while the read refreshes it behind;
+            // the opened window is verified as always. A name it does not resolve waits the fresh catalog.
+            if (resolving is not null && !loadTask.IsCompletedSuccessfully && _catalog is { } stale
+                && InstalledApplicationResolver.Resolve(resolving, stale).Entry is not null)
+            {
+                return stale;
+            }
         }
 
         try
         {
-            IReadOnlyList<InstalledApplicationEntry> loaded;
-            try
+            return await loadTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            // M89: a refresh that did not answer in time leaves the last catalog read in force; with none, the
+            // inventory fails as it does for an unreadable catalog.
+            lock (_catalogLock)
             {
-                loaded = await loadTask.WaitAsync(cancellationToken).ConfigureAwait(false);
-            }
-            catch (TimeoutException)
-            {
-                // M89: a refresh that did not answer in time leaves the last catalog read in force; with none, the
-                // inventory fails as it does for an unreadable catalog.
-                lock (_catalogLock)
+                if (_catalog is not null)
                 {
-                    if (ReferenceEquals(_catalogLoadTask, loadTask))
-                    {
-                        _catalogLoadTask = null;
-                    }
-
-                    if (_catalog is not null)
-                    {
-                        return _catalog;
-                    }
+                    return _catalog;
                 }
-
-                throw new InvalidOperationException("The installed application catalog did not answer in time.");
             }
+
+            throw new InvalidOperationException("The installed application catalog did not answer in time.");
+        }
+    }
+
+    // Renew al máximo (6.6): called under _catalogLock. The one catalog read in flight, whoever waits on it or none:
+    // it keeps what it read and clears itself when it ends, so a refresh left behind lands for the next caller.
+    private Task<IReadOnlyList<InstalledApplicationEntry>> StartCatalogRead()
+    {
+        Task<IReadOnlyList<InstalledApplicationEntry>> read = LoadCatalogAsync();
+        // A read that ended at once has already kept its catalog and cleared itself.
+        _catalogLoadTask = read.IsCompleted ? null : read;
+        // A refresh nobody waits on fails quietly (its failure observed here); the next read tries again.
+        _ = read.ContinueWith(
+            static task => _ = task.Exception,
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default);
+        return read;
+    }
+
+    private async Task<IReadOnlyList<InstalledApplicationEntry>> LoadCatalogAsync()
+    {
+        try
+        {
+            IReadOnlyList<InstalledApplicationEntry> loaded = await ReadCatalogWithinBudgetAsync().ConfigureAwait(false);
             lock (_catalogLock)
             {
                 _catalog = loaded;
-                _catalogLoadedAt = DateTimeOffset.UtcNow;
-                if (ReferenceEquals(_catalogLoadTask, loadTask))
-                {
-                    _catalogLoadTask = null;
-                }
+                _catalogLoadedAt = _time.GetUtcNow();
             }
 
             return loaded;
         }
-        catch
+        finally
         {
             lock (_catalogLock)
             {
-                if (ReferenceEquals(_catalogLoadTask, loadTask))
-                {
-                    _catalogLoadTask = null;
-                }
+                _catalogLoadTask = null;
             }
-
-            throw;
         }
     }
 
@@ -824,7 +850,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         try
         {
             entry = InstalledApplicationResolver.Resolve(
-                request.ApplicationId, await ReadCatalogAsync(cancellationToken).ConfigureAwait(false)).Entry;
+                request.ApplicationId,
+                await ReadCatalogAsync(cancellationToken, request.ApplicationId).ConfigureAwait(false)).Entry;
             // An application without a window identity is refused by the opening below, before any launch.
             theirs = entry is null || !_platform.IdentifiesWindows(entry)
                 ? [] : [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)];
