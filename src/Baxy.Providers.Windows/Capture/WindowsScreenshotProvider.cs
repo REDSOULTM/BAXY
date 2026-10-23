@@ -258,6 +258,8 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
 
     public ScreenshotFrame CaptureActiveWindow() => CaptureInPhysicalPixels(CaptureActiveWindowCore);
 
+    internal const string ActiveWindowChanged = "active_window_changed_during_capture";
+
     public ScreenshotFrame CaptureWindow(nint window) =>
         CaptureInPhysicalPixels(() => CaptureWindowCore(window));
 
@@ -456,8 +458,11 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
         var crop = new CaptureBounds(left, top, right - left, bottom - top);
         ScreenshotFrame frame = _captureRegion(crop);
         ActiveWindowSnapshot after = _observeActiveWindow();
+        // Renew al máximo (w8): a window that changed while it was copied (another took the front, or it moved or
+        // resized) has its own code, so the failure says what happened and what to do instead of a generic one.
         if (before != after)
-            throw new IOException("Active window identity, focus or bounds changed during capture.");
+            throw new ScreenshotUnavailableException(
+                ActiveWindowChanged, "Active window identity, focus or bounds changed during capture.");
         if (frame.Width != crop.Width || frame.Height != crop.Height)
             throw new IOException("Active window capture dimensions do not match its bounds.");
         return frame with
@@ -488,7 +493,8 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
         CaptureBounds desktop = ReadDesktopBounds();
         if (GetForegroundWindow() != window
             || GetWindowThreadProcessId(window, out uint finalProcessId) == 0 || finalProcessId != processId)
-            throw new IOException("Active window changed while observing its identity.");
+            throw new ScreenshotUnavailableException(
+                ActiveWindowChanged, "Active window changed while observing its identity.");
         return new ActiveWindowSnapshot((long)window, processId, DateTimeOffset.FromFileTime(created),
             bounds, desktop);
     }
