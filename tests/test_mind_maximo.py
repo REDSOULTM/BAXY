@@ -146,16 +146,18 @@ def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_
         mind.decide(turn, f"pedido {turn}")
         mind.continue_turn(turn, json.dumps({"status": "completed", "observed": {"windowId": f"w{turn}",
                                                                                 "text": "x" * 5000}}))
-    assert mind.trimmed_turns == 0
-    assert len([m for m in mind.conversation if m.get("tool_calls")]) == 7
+    # Renew al máximo (w5): the cut (at the fifth turn, past the characters) is one rewrite: the turns down to
+    # TRIM_TURNS_TO of the count and every kept closed turn without its bodies; the next turns are only added.
+    assert mind.trimmed_turns == 3
+    assert len([m for m in mind.conversation if m.get("tool_calls")]) == 4
     results = [m["content"] for m in mind.conversation if m["role"] == "tool"]
-    # Cut down to TRIM_TO of its characters, as a cut is: the next turns leave the oldest results as they were. Four,
-    # not three: since 8.1 each clock also lists the session's calls, so each turn here grows ~50 characters per call.
-    assert ["míralo de nuevo" in r for r in results] == [True] * 4 + [False] * 3
-    assert "ids" in results[0] and "w0" not in results[0]
+    assert ["míralo de nuevo" in r for r in results] == [True] * 2 + [False] * 2
+    assert "ids" in results[0] and "w3" not in results[0]
     # 8.2: a result with no typed verification is «sin verificar»; the line of the turn's facts stays as it was.
     assert "[En este turno: input_visible_controls → completado sin verificar]" in results[0]
     assert "x" * 5000 in results[-1]
+    # What the person asked in the turns cut, and how their calls ended, stay in the note of the cut.
+    assert "«pedido 0» → input_visible_controls → completado sin verificar" in mind.conversation[0]["content"]
 
 
 def test_a_turn_past_the_context_makes_room_in_its_history_before_it_ends(tmp_path: Path) -> None:
