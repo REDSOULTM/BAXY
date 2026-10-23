@@ -10,8 +10,8 @@ BAXY silent and no request hearing voice; the first file waits only for its gap.
 dropped as the microphone's would be; heard while a turn runs, the App drops the words (voice_dropped_busy), so the gap
 starts after the answer. While the voice is closed (stop, or a direct request done) the feed waits where it was.
 BAXY_RENEW_VOICE_FEED_LOG: a JSON-lines file where each file's audio is written when it was heard (wall clock, as the
-trace's ``t`` and ``sound_at``): its start, the end of its voice as voice.py's RMS sees it, its end; then «done» once
-the last one was answered.
+trace's ``t`` and ``sound_at``): its start, the end of its voice as voice.py hears it (loud and heard as speech), its
+end; then «done» once the last one was answered.
 """
 from __future__ import annotations
 
@@ -67,14 +67,14 @@ class Feed:
 
     pace = 1.0  # wall seconds per second of audio (the tests hear faster)
 
-    def __init__(self, items: list[tuple[Path, float | None]], rate: int, block: int, voice_rms: float,
-                 quiet: Callable[[], bool], answered: Callable[[], int], gap_s: float = GAP_S,
-                 log: Path | None = None) -> None:
+    def __init__(self, items: list[tuple[Path, float | None]], rate: int, block: int,
+                 voiced: Callable[[np.ndarray], np.ndarray], quiet: Callable[[], bool], answered: Callable[[], int],
+                 gap_s: float = GAP_S, log: Path | None = None) -> None:
         if not items:
             raise ValueError("BAXY_RENEW_VOICE_FEED names no WAV file")
         self._audio = [read_wav(path, rate) for path, _ in items]  # a missing or wrong file fails now, not mid-bench
         self._items = items
-        self._rate, self._block, self._voice_rms = rate, block, voice_rms
+        self._rate, self._block, self._voiced = rate, block, voiced
         self._quiet, self._answered = quiet, answered
         self._gap_s = gap_s
         self._log = log
@@ -145,8 +145,8 @@ class Feed:
                 return
 
     def _voice_end(self, blocks: np.ndarray) -> int | None:
-        """Blocks up to the end of the last one voice.py takes for voice (its RMS threshold), None when it has none."""
-        voiced = np.flatnonzero(np.sqrt((blocks ** 2).mean(axis=1)) >= self._voice_rms)
+        """Blocks up to the end of the last one voice.py takes for voice, None when it has none."""
+        voiced = np.flatnonzero(self._voiced(blocks.reshape(-1)))
         return int(voiced[-1]) + 1 if len(voiced) else None
 
     def _deliver(self, block: np.ndarray) -> None:
@@ -190,12 +190,13 @@ class _Clock:
         return at + self._offset
 
 
-def from_env(rate: int, block: int, voice_rms: float, quiet: Callable[[], bool],
+def from_env(rate: int, block: int, voiced: Callable[[np.ndarray], np.ndarray], quiet: Callable[[], bool],
              answered: Callable[[], int]) -> Feed | None:
-    """The feed BAXY_RENEW_VOICE_FEED asks for, or None (the microphone). A bad setting raises: the voice says so."""
+    """The feed BAXY_RENEW_VOICE_FEED asks for, or None (the microphone). ``voiced``: which blocks of a file's audio are
+    voice, as voice.py decides it. A bad setting raises: the voice says so."""
     spec = os.environ.get("BAXY_RENEW_VOICE_FEED", "").strip()
     if not spec:
         return None
     gap = float(os.environ.get("BAXY_RENEW_VOICE_FEED_GAP", "").strip() or GAP_S)
     log = os.environ.get("BAXY_RENEW_VOICE_FEED_LOG", "").strip()
-    return Feed(listed(spec), rate, block, voice_rms, quiet, answered, gap, Path(log) if log else None)
+    return Feed(listed(spec), rate, block, voiced, quiet, answered, gap, Path(log) if log else None)

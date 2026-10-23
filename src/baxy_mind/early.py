@@ -35,9 +35,10 @@ from .voice import END_SILENCE_S
 
 # Silence before the early transcript: 2 blocks of 100 ms, so a soft word ending under the voice threshold is in it.
 # Measured (scripts/voice/medir_anticipada.py, 683 clean synthetic utterances through voice.py, hotwords on, 2026-10-23):
-# the early transcript is the request's own in 86.5 % at 0.2 s, 88.4 % at 0.3, 88.9 % at 0.5, 90.5 % at 0.7 (with 10 dB
-# noise, cut where the clean twin was: 73.4 / 78.6 / 83.0 / 85.2 %). A hit saves ~0.9 − wait; a miss costs the rest of
-# the decision (~1.1 s p50) past the request's arrival: 0.2 gives the most (≈0.55 s per order, ≈0.28 at 0.5).
+# the early transcript is the request's own in 86.5 % at 0.2 s, 88.4 % at 0.3, 88.9 % at 0.5, 90.5 % at 0.7 (at 0.2 with
+# pink noise, which Silero lets the request close in: 83.3 % at 20 dB, 81.8 % at 10, 74.1 % at 5). A hit saves ~0.9 −
+# wait; a miss costs the rest of the decision (~1.1 s p50) past the request's arrival: 0.2 gives the most (≈0.55 s per
+# order, ≈0.28 at 0.5).
 EARLY_SILENCE_S = 0.2
 # An early decision nobody asked for is put back after this (the App dropped the words, or nothing was transcribed).
 HOLD_S = 5.0

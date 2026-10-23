@@ -1,23 +1,28 @@
-"""How often the early transcript (palanca 2, src/baxy_mind/early.py) is the request's own: the early decision is used
-only when the two are the same text, so this share bounds what it can save.
+"""When a spoken request closes and how often the early transcript (palanca 2, src/baxy_mind/early.py) is the request's
+own, in a quiet room and under steady noise: the early decision is used only when the two are the same text, so this
+share bounds what it can save.
 
     <mind-runtime python> -X utf8 scripts/voice/medir_anticipada.py MANIFEST CATALOG OUT [--waits 0.2,0.3,0.5]
-        [--only N] [--noise-faithful N]
+        [--conds limpio,20,10,5] [--only N] [--every K]
 
-MANIFEST: the synthetic set of sintetizar_frases.py (clean and pink noise at 10 dB, the same utterance sample-aligned).
-CATALOG: a catalog.configure message; its names are the recognizer's hotwords, as mind.configure gives them to the voice
-(BAXY_RENEW_STT_HOTWORDS, 1.5 by default). BAXY_RENEW_STT_DIR: Parakeet Ultra. CPU only, one recognizer (~1 GB of RAM).
+MANIFEST: the synthetic set of sintetizar_frases.py; its clean utterances are used. CATALOG: a catalog.configure
+message; its names are the recognizer's hotwords, as mind.configure gives them to the voice (BAXY_RENEW_STT_HOTWORDS,
+1.5 by default). BAXY_RENEW_STT_DIR: Parakeet Ultra. CPU only, one recognizer (~1 GB of RAM). --only N: the first N
+utterances; --every K: one of every K (a slow arm on a sample).
 
-Each clean utterance goes through voice.py's own path: a Voice per wait (early_s), in direct mode (no «Baxy» in the set:
-the call is cut at the start, the end of the request is the same), its blocks of 100 ms, its RMS end of voice, its live
-captions, early transcripts (taken back when the voice goes on after a pause) and the request's transcript after
-END_SILENCE_S. A hit: the early transcript standing when the request ends is the request's transcript, character for
-character (early.py compares them so).
+Each utterance is heard in every condition of --conds: «limpio» as it is, and each number the same utterance with pink
+noise at that SNR (sintetizar_frases.py's: against the RMS of its voiced samples), all along what the voice hears: the
+file and then until MAX_S + 1 s, zeros in the clean case and the same noise in the others, so a request that never
+hears the silence ends at MAX_S. It goes through voice.py's own path: a Voice per wait (early_s), in direct mode (no
+«Baxy» in the set: the call is cut at the start, the end of the request is the same), its blocks of 100 ms, its end of
+voice (loud and heard as speech), its live captions, early transcripts (taken back when the voice goes on after a
+pause) and the request's transcript after END_SILENCE_S.
 
-Noise. At 10 dB the noise floor is above VOICE_RMS in almost every file, so voice.py never hears the silence: the request
-ends at MAX_S and no early transcript exists. --noise-faithful N checks that on N noisy files. The «ruido» rows instead
-cut each noisy file where its clean twin was cut (its early and its final cuts, same samples) and decode both with
-voice.py's _transcribe: whether more tail changes the words when there is noise, had the end of voice been found.
+Per wait and condition: the requests that closed before MAX_S; how long after the end of the voice they closed (p50,
+p90; the end of the voice is the clean twin's last block above VOICE_RMS); closed early, before that end (cut in a pause
+or under the last words); the final transcript's WER against the sentence, the same as the clean one and empty; the
+early hits: the early transcript standing when the request ends is the request's transcript, character for character
+(early.py compares them so), and the same words.
 """
 from __future__ import annotations
 
@@ -37,10 +42,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from baxy_mind import voice  # noqa: E402
-from baxy_mind.voice import BLOCK, END_SILENCE_S, MAX_S, RATE, Voice  # noqa: E402
+from baxy_mind.voice import BLOCK, END_SILENCE_S, MAX_S, RATE, VOICE_RMS, Voice  # noqa: E402
 from medir_hotwords import catalog_names  # noqa: E402
-
-TAIL_S = 1.6  # silence after each file (its own 0.3 s pad comes first): past END_SILENCE_S with room
 
 
 class _Speech:
@@ -102,6 +105,22 @@ def pink(n: int, rng: np.random.Generator) -> np.ndarray:
     return (y / np.std(y)).astype(np.float32)
 
 
+def heard_as(x: np.ndarray, cond: str, seed: int) -> np.ndarray:
+    """What the voice hears of the clean utterance ``x`` in ``cond`` (see the docstring)."""
+    audio = np.concatenate([x, np.zeros(max(0, int((MAX_S + 1.0) * RATE) - len(x)), np.float32)])
+    if cond == "limpio":
+        return audio
+    speech_rms = float(np.sqrt(np.mean(x[np.abs(x) > 0.01] ** 2)))
+    return audio + pink(len(audio), np.random.default_rng(seed)) * speech_rms / (10 ** (float(cond) / 20))
+
+
+def voice_end_s(x: np.ndarray) -> float:
+    """The end of the clean utterance's last block above VOICE_RMS (where voice.py closed it before Silero)."""
+    frames = x[: len(x) // BLOCK * BLOCK].reshape(-1, BLOCK)
+    loud = np.flatnonzero(np.sqrt((frames ** 2).mean(axis=1)) >= VOICE_RMS)
+    return (int(loud[-1]) + 1) * BLOCK / RATE
+
+
 def blocks(audio: np.ndarray) -> list[np.ndarray]:
     audio = np.concatenate([audio, np.zeros(-len(audio) % BLOCK, np.float32)])
     return [audio[i:i + BLOCK].copy() for i in range(0, len(audio), BLOCK)]
@@ -114,6 +133,7 @@ def make_voices(waits: list[float], names: list[str]) -> tuple[list[Voice], list
     def load(self: Voice) -> None:
         import sherpa_onnx
         self._input = True
+        self._vad = voice.Vad(sherpa_onnx)  # each Voice hears on its own
         if shared:
             self._recognizer, self._hotwords = shared["recognizer"], shared["hotwords"]
         else:
@@ -160,86 +180,76 @@ def bare(text: str) -> str:
     return " ".join("".join(c for c in text if c.isalnum() or c.isspace()).split())
 
 
+def edits(said: list[str], heard: list[str]) -> int:
+    row = list(range(len(heard) + 1))
+    for i, word in enumerate(said, 1):
+        prev, row[0] = row[0], i
+        for j, other in enumerate(heard, 1):
+            prev, row[j] = row[j], min(row[j] + 1, row[j - 1] + 1, prev + (word != other))
+    return row[-1]
+
+
 def main() -> None:
     manifest, catalog, out = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])
     option = lambda name, default: sys.argv[sys.argv.index(name) + 1] if name in sys.argv else default  # noqa: E731
     waits = [float(w) for w in option("--waits", "0.2,0.3,0.5").split(",")]
-    rows = json.loads(manifest.read_text(encoding="utf-8"))
-    clean = [r for r in rows if r["cond"] == "limpio"]
-    noisy = {(r["id"], r["voz"]): r for r in rows if r["cond"] == "ruido"}
-    if "--only" in sys.argv:
-        clean = clean[:int(option("--only", "0"))]
+    conds = option("--conds", "limpio,20,10,5").split(",")
+    clean = [r for r in json.loads(manifest.read_text(encoding="utf-8")) if r["cond"] == "limpio"]
+    clean = clean[::int(option("--every", "1"))][:int(option("--only", str(len(clean))))]
     voices, heard = make_voices(waits, catalog_names(catalog))
-    print(f"{len(clean)} clean utterances, waits {waits}, hotwords {len(voices[0]._hotwords)} chars", flush=True)
+    print(f"{len(clean)} utterances, conditions {conds}, waits {waits}, hotwords {len(voices[0]._hotwords)} chars",
+          flush=True)
     results: list[dict[str, Any]] = []
     started = time.perf_counter()
     for n, r in enumerate(clean, 1):
-        audio = np.concatenate([read(r["wav"]), np.zeros(int(TAIL_S * RATE), np.float32)])
-        twin = noisy.get((r["id"], r["voz"]))
-        noise_audio = None
-        if twin is not None:
-            x = read(twin["wav"])
-            level = float(np.sqrt(np.mean(x[-int(0.25 * RATE):] ** 2)))  # its pad: noise alone
-            noise_audio = np.concatenate([x, pink(int(TAIL_S * RATE), np.random.default_rng(n)) * level])
-        row: dict[str, Any] = {"id": r["id"], "voz": r["voz"], "clase": r["clase"], "texto": r["texto"], "waits": {}}
-        for wait, v, h in zip(waits, voices, heard):
-            hear(v, h, audio)
-            standing = h.standing()
-            cell: dict[str, Any] = {"final": h.final, "final_s": round(h.final_len / RATE, 2),
-                                    "early": standing[0] if standing else None,
-                                    "early_s": round(standing[1] / RATE, 2) if standing else None,
-                                    "told": h.told, "taken_back": h.taken_back}
-            if noise_audio is not None and standing is not None:
-                final_noisy = v._transcribe(noise_audio[:h.final_len], None)
-                cell["ruido"] = {"final": final_noisy, "early": v._transcribe(noise_audio[:standing[1]], None)}
-            row["waits"][f"{wait:g}"] = cell
-        finals = {cell["final"] for cell in row["waits"].values()}
-        row["same_final"] = len(finals) == 1
+        x = read(r["wav"])
+        row: dict[str, Any] = {"id": r["id"], "voz": r["voz"], "clase": r["clase"], "texto": r["texto"],
+                               "voice_end_s": voice_end_s(x), "conds": {}}
+        for k, cond in enumerate(conds):
+            audio = heard_as(x, cond, 1000 * n + k)
+            cells: dict[str, Any] = {}
+            for wait, v, h in zip(waits, voices, heard):
+                hear(v, h, audio)
+                standing = h.standing()
+                cells[f"{wait:g}"] = {"final": h.final, "final_s": round(h.final_len / RATE, 2),
+                                      "early": standing[0] if standing else None,
+                                      "early_s": round(standing[1] / RATE, 2) if standing else None,
+                                      "told": h.told, "taken_back": h.taken_back}
+            row["conds"][cond] = cells
         results.append(row)
         if n % 25 == 0:
             print(f"{n}/{len(clean)} {time.perf_counter() - started:.0f} s", flush=True)
-    faithful: list[dict[str, Any]] = []
-    for r in list(noisy.values())[:int(option("--noise-faithful", "0"))]:
-        x = read(r["wav"])
-        level = float(np.sqrt(np.mean(x[-int(0.25 * RATE):] ** 2)))
-        tail = int((MAX_S + 1.0) * RATE) - len(x)
-        audio = np.concatenate([x, pink(max(0, tail), np.random.default_rng(7)) * level])
-        v, h = voices[0], heard[0]
-        hear(v, h, audio)
-        faithful.append({"id": r["id"], "voz": r["voz"], "told": h.told, "final_s": round(h.final_len / RATE, 2),
-                         "final": h.final, "texto": r["texto"]})
-    summary = summarize(results, waits, faithful)
-    out.write_text(json.dumps({"summary": summary, "rows": results, "noise_faithful": faithful}, ensure_ascii=False,
-                              indent=1), encoding="utf-8")
+    summary = summarize(results, waits, conds)
+    out.write_text(json.dumps({"summary": summary, "rows": results}, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=1))
 
 
-def summarize(results: list[dict[str, Any]], waits: list[float], faithful: list[dict[str, Any]]) -> dict[str, Any]:
-    def share(cells: list[dict[str, Any]], cond: str) -> dict[str, Any]:
-        pairs = [(c.get("ruido") if cond == "ruido" else c) for c in cells]
-        pairs = [p for p in pairs if p is not None]
-        early = [p for p in pairs if p.get("early") is not None]
-        hits = sum(p["early"] == p["final"] for p in early)
-        bare_hits = sum(bare(p["early"]) == bare(p["final"]) for p in early)
-        return {"n": len(cells), "early": len(early), "hit": hits, "hit_pct": round(100 * hits / max(1, len(cells)), 1),
-                "same_words_pct": round(100 * bare_hits / max(1, len(cells)), 1)}
-
-    summary: dict[str, Any] = {"utterances": len(results), "end_silence_s": END_SILENCE_S,
-                               "finals_equal_across_waits": sum(r["same_final"] for r in results), "waits": {}}
+def summarize(results: list[dict[str, Any]], waits: list[float], conds: list[str]) -> dict[str, Any]:
+    summary: dict[str, Any] = {"utterances": len(results), "end_silence_s": END_SILENCE_S, "max_s": MAX_S,
+                               "waits": {}}
     for wait in waits:
         key = f"{wait:g}"
-        cells = [r["waits"][key] for r in results]
-        entry: dict[str, Any] = {"limpio": share(cells, "limpio"), "ruido": share(cells, "ruido"),
-                                 "taken_back": sum(c["taken_back"] for c in cells), "by_voz": {}, "by_clase": {}}
-        for field in ("voz", "clase"):
-            for value in sorted({r[field] for r in results}):
-                chosen = [r["waits"][key] for r in results if r[field] == value]
-                entry[f"by_{field}"][value] = {"limpio": share(chosen, "limpio")["hit_pct"],
-                                               "ruido": share(chosen, "ruido")["hit_pct"]}
+        entry: dict[str, Any] = {}
+        for cond in conds:
+            rows = [(r, r["conds"][cond][key]) for r in results]
+            after = np.array([c["final_s"] - r["voice_end_s"] for r, c in rows])
+            early = [c for _, c in rows if c["early"] is not None]
+            said = [bare(r["texto"]).split() for r, _ in rows]
+            n = max(1, len(rows))
+            entry[cond] = {
+                "closed_pct": round(100 * sum(c["final_s"] < MAX_S - 0.05 for _, c in rows) / n, 1),
+                "after_voice_p50_s": round(float(np.percentile(after, 50)), 2) if len(after) else None,
+                "after_voice_p90_s": round(float(np.percentile(after, 90)), 2) if len(after) else None,
+                "closed_early": int((after < -1e-6).sum()),
+                "wer_pct": round(100 * sum(edits(s, bare(c["final"]).split()) for s, (_, c) in zip(said, rows))
+                                 / max(1, sum(len(s) for s in said)), 2),
+                "final_as_clean_pct": round(100 * sum(c["final"] == r["conds"][conds[0]][key]["final"]
+                                                      for r, c in rows) / n, 1),
+                "empty": sum(not c["final"] for _, c in rows),
+                "early_hit_pct": round(100 * sum(c["early"] == c["final"] for c in early) / n, 1),
+                "early_same_words_pct": round(100 * sum(bare(c["early"]) == bare(c["final"]) for c in early) / n, 1),
+                "taken_back": sum(c["taken_back"] for _, c in rows)}
         summary["waits"][key] = entry
-    if faithful:
-        summary["noise_faithful"] = {"n": len(faithful), "with_early": sum(f["told"] > 0 for f in faithful),
-                                     "ended_at_max_s": sum(f["final_s"] >= MAX_S - 0.05 for f in faithful)}
     return summary
 
 
