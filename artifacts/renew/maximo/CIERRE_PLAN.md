@@ -68,3 +68,16 @@ tras otra.
 
 El latido queda apagado y fuera del goal: **no se corren las escenas del holdout v4** (90). Decisión, e2e y falsedades se
 corren como está escrito.
+
+## Añadido al congelar (2026-10-23 02:5x), antes de ver ningún resultado del holdout
+
+- HEAD final: `renew-maximo` 452854a18 (código = `fin` 371f4de72). Catálogo final = `catalog-int8.json` (el Kernel no
+  cambió de int8 a fin), sha256 b3184bed…315f; `catalog-base.json` 4441e3b8…5495; Laya 12658256…bdbf; piso de
+  confirmación 0,95 (por defecto en el código).
+- **Un solo juez para la decisión**: el juez de `bench_decision.py` de 86991ca9d no conoce el cambio de nombre de los
+  argumentos de `filesystem.sandbox.diff.named` (P212 de práctica). Para que las tres configuraciones se puntúen igual,
+  cada corrida se **re-juzga** con el juez del HEAD final (`scripts/renew/bench_decision.py` y
+  `catalog_equivalence.json` de 452854a18) desde los argumentos guardados; se informan las dos cifras (juez propio y
+  juez común) y la comparación usa el común.
+- Sin escenas (latido apagado). Decisión: PC semillas 0 y 1, NB semilla 2; orden en el PC s1off, s1on, maximo por
+  semilla.
