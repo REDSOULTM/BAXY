@@ -228,6 +228,57 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Renew al máximo (w5, E024): «añade al final de notas.txt, en la carpeta BAXY-bench» came as relativePath
+    // «notas.txt» in home, the subfolder left out, and the append made a new home\notas.txt (int5 X s0/s1, int M s0).
+    // An append presupposes the file: missing there and found below the same folder, nothing is written and the
+    // places are told; with BAXY_AYUDAS=none, the facts without the sentence. Contracase: found nowhere, it is made.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnAppendToAMissingFileFoundInASubfolderWritesNothingAndSaysWhere(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "BAXY-bench"));
+        Directory.CreateDirectory(Path.Combine(home, ".oculta"));
+        File.SetAttributes(Path.Combine(home, ".oculta"), FileAttributes.Directory | FileAttributes.Hidden);
+        File.WriteAllText(Path.Combine(home, "BAXY-bench", "notas.txt"), "uno\r\ndos\r\ntres\r\n");
+        File.WriteAllText(Path.Combine(home, ".oculta", "lista.txt"), "x");
+        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"))
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+        };
+
+        OperationOutcome outcome = await Handle(provider, "file.write",
+            """{"relativePath":"notas.txt","text":"revisar el router","folder":"home","append":true}""");
+        OperationOutcome made = await Handle(provider, "file.write",
+            """{"relativePath":"lista.txt","text":"pan","folder":"home","append":true}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("append_target_missing"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(File.Exists(Path.Combine(home, "notas.txt")), Is.False);
+            Assert.That(File.ReadAllText(Path.Combine(home, "BAXY-bench", "notas.txt")), Is.EqualTo("uno\r\ndos\r\ntres\r\n"));
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("exists").GetBoolean(), Is.False);
+            Assert.That(result.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(home, "notas.txt")));
+            Assert.That(result.GetProperty("sameNameIn").EnumerateArray().Select(item => item.GetString()),
+                Is.EqualTo(new[] { "BAXY-bench/notas.txt" }));
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo(
+                    $"nothing was written: notas.txt is not in {home}; a file of that name is in BAXY-bench/notas.txt, "
+                    + "and file_write with that relativePath and the same folder appends to it; without append, a new "
+                    + "notas.txt is made here"));
+            }
+            // A name found nowhere (a hidden folder is not looked in) is made, as before.
+            Assert.That(made.Succeeded, Is.True, made.ErrorCode);
+            Assert.That(File.ReadAllText(Path.Combine(home, "lista.txt")), Is.EqualTo("pan"));
+        });
+    }
+
     // BAXY Renew (notebook): a hash expected of a file that is not there is said as that, not as another version;
     // the refusal says what it saw, and nothing is written.
     [TestCase("")]

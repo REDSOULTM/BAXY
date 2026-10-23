@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO.Enumeration;
 using System.Security.Cryptography;
 using System.Text;
 using Baxy.Providers.Windows.External;
@@ -148,6 +150,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
             if (Directory.Exists(path)) throw Error("destination_is_directory");
             bool exists = File.Exists(path);
+            // Renew al máximo (w5, E024): «añade al final de notas.txt, en la carpeta BAXY-bench» came with the subfolder
+            // left out, and the append made a new home\notas.txt beside the person's. An append presupposes the file:
+            // missing here and found below the same folder, nothing is written and the places are told.
+            if (append && !exists && SameNameBelow(root, path) is { Length: > 0 } elsewhere)
+                throw AppendTargetElsewhere(path, elsewhere);
             byte[] previous = [];
             if (exists && append)
             {
@@ -671,6 +678,71 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 {
                     writer.WriteString("currentSha256", currentSha256);
                     writer.WriteNumber("size", size);
+                }
+                writer.WriteEndObject();
+            }),
+        };
+
+    // Renew al máximo (w5, E024): how far an append to a missing file looks for one of that name below its folder.
+    private const int SameNameDepth = 6;
+    private const int SameNameShown = 5;
+    private static readonly TimeSpan SameNameBudget = TimeSpan.FromSeconds(1);
+
+    // Files named like the leaf of path below root (hidden, system and linked folders left out, BAXY's backups too),
+    // the shallowest first; a walk past its budget gives what it found so far, and none found claims nothing.
+    private string[] SameNameBelow(string root, string path)
+    {
+        string name = Path.GetFileName(path);
+        if (name.Length == 0 || name.IndexOfAny(['*', '?']) >= 0) return [];
+        long started = Stopwatch.GetTimestamp();
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            MaxRecursionDepth = SameNameDepth,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.ReparsePoint,
+            IgnoreInaccessible = true,
+        };
+        var found = new List<string>();
+        try
+        {
+            var walk = new FileSystemEnumerable<string>(root,
+                (ref FileSystemEntry entry) => entry.ToFullPath(), options)
+            {
+                ShouldIncludePredicate = (ref FileSystemEntry entry) =>
+                    !entry.IsDirectory && entry.FileName.Equals(name, StringComparison.OrdinalIgnoreCase),
+                ShouldRecursePredicate = (ref FileSystemEntry _) => Stopwatch.GetElapsedTime(started) < SameNameBudget,
+            };
+            foreach (string file in walk)
+            {
+                if (IsReserved(file) || string.Equals(file, path, StringComparison.OrdinalIgnoreCase)) continue;
+                found.Add(Path.GetRelativePath(root, file).Replace(Path.DirectorySeparatorChar, '/'));
+                if (found.Count == SameNameShown) break;
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { }
+
+        return [.. found.OrderBy(static item => item.Count(character => character == '/'))
+            .ThenBy(static item => item, StringComparer.OrdinalIgnoreCase)];
+    }
+
+    private static FilesystemProviderException AppendTargetElsewhere(string path, string[] elsewhere) =>
+        new("append_target_missing")
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("exists", false);
+                writer.WriteString("fullPath", Path.GetFullPath(path));
+                writer.WriteBoolean("append", true);
+                writer.WriteStartArray("sameNameIn");
+                foreach (string item in elsewhere) writer.WriteStringValue(item);
+                writer.WriteEndArray();
+                if (ModelAids.On(ModelAids.AppendElsewhere))
+                {
+                    string name = Path.GetFileName(path);
+                    writer.WriteString("next", $"nothing was written: {name} is not in {Path.GetDirectoryName(Path.GetFullPath(path))}; "
+                        + $"a file of that name is in {string.Join(" and ", elsewhere)}, and file_write with that "
+                        + $"relativePath and the same folder appends to it; without append, a new {name} is made here");
                 }
                 writer.WriteEndObject();
             }),

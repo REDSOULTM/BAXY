@@ -74,6 +74,9 @@ public static class ModelAids
     /// </summary>
     public const string WindowIdSpent = "window_id_spent";
 
+    /// <summary>Renew al máximo (w5, E024): an append refused for a missing file says where one of that name is.</summary>
+    public const string AppendElsewhere = "append_elsewhere";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
