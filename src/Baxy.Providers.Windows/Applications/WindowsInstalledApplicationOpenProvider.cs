@@ -1030,8 +1030,42 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 shownWithoutFocus: shown);
         }
 
+        // Renew al máximo (nuevo2): Ctrl+N is not every window's New. Windows 11's Notepad in Spanish bolds with it
+        // («Negrita (Ctrl+N)»): the shown tab, maybe restored with text, took the format and «un Bloc de notas nuevo»
+        // ended new_document_not_created 10 of 10 after 8 s. A toggle that takes Ctrl+N gets no key: the tab strip's add
+        // button makes the new tab or, with none, no New command is known and nothing is sent.
+        TabStripCommand strip = await _platform.NewTabFromStripAsync(window, cancellationToken).ConfigureAwait(false);
+        if (strip == TabStripCommand.NoNewCommand)
+        {
+            // As a command the lease refused: only a window born empty with this launch is a new document.
+            return await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken).ConfigureAwait(false)
+                ?? NotCreated();
+        }
+
+        if (strip == TabStripCommand.NewEmptyTabShown && IsDocument(window))
+        {
+            InstalledApplicationObservation? tab;
+            try
+            {
+                tab = _platform.Inventory(entry).FirstOrDefault(item =>
+                    item.WindowHandle == window && item.ProcessId == process && item.Visible);
+            }
+            catch (Exception exception) when (exception is ApplicationInventoryException
+                or InvalidOperationException
+                or System.ComponentModel.Win32Exception)
+            {
+                return NotCreated();
+            }
+
+            if (tab is not null)
+            {
+                return await MadeAsync(tab).ConfigureAwait(false);
+            }
+        }
+
         // The command goes only to the application's own window, in a burst of the foreground lease (finding 4).
-        if (!await _platform.IssueNewDocumentAsync(window, cancellationToken).ConfigureAwait(false))
+        if (strip == TabStripCommand.ShortcutIsNew
+            && !await _platform.IssueNewDocumentAsync(window, cancellationToken).ConfigureAwait(false))
         {
             return await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken).ConfigureAwait(false)
                 ?? NotCreated();
@@ -1170,10 +1204,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     }
 
     // A window title with a part besides the application's name («Nueva pestaña - …», «Sin título - …»): a dash
-    // between spaces separates them.
+    // between spaces separates them. Renew al máximo (nuevo2): or a colon before a space, as Windows 11's Notepad 11.2607
+    // titles its tabs («Sin título: Bloc de notas»); read as one segment, its own document was a start title and no new
+    // tab of that window was ever a document.
     private static bool NamesADocument(string title) =>
         title.Contains(" - ", StringComparison.Ordinal) || title.Contains(" — ", StringComparison.Ordinal)
-        || title.Contains(" – ", StringComparison.Ordinal);
+        || title.Contains(" – ", StringComparison.Ordinal) || title.Contains(": ", StringComparison.Ordinal);
 
     // A title as the bare name of an application is compared: its unsaved mark and its spaces left aside.
     private static string Bare(string? title) =>
@@ -1482,6 +1518,24 @@ internal sealed record InstalledApplicationObservation(
 // whether it holds no text (asked only of a shown field; a hidden one is never said empty).
 internal readonly record struct TextFieldObservation(long Handle, bool Shown, bool Empty);
 
+// Renew al máximo (nuevo2): what the window's own controls say of its New command. Windows 11's Notepad in Spanish
+// (11.2607) shows «Negrita (Ctrl+N)»: Ctrl+N bolds the shown tab and makes nothing; its new tab is the tab strip's «+».
+internal enum TabStripCommand
+{
+    // Nothing in the window takes Ctrl+N for another command (or it could not be read): Ctrl+N is sent, as before.
+    ShortcutIsNew,
+
+    // A toggle (a format) takes Ctrl+N and the window has no tab strip button to add a tab: no New command is known.
+    NoNewCommand,
+
+    // The tab strip's add button was invoked; the new tab is looked for as any New command's document.
+    TabAdded,
+
+    // The tab strip's add button was invoked and UI Automation read it made: one tab more, the selected one new, and
+    // every document shown empty.
+    NewEmptyTabShown,
+}
+
 internal interface IInstalledApplicationPlatform : IOpeningFront
 {
     ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
@@ -1528,6 +1582,11 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // sent.
     ValueTask<bool> IssueNewDocumentAsync(long windowHandle, CancellationToken cancellationToken) =>
         ValueTask.FromResult(false);
+
+    // Renew al máximo (nuevo2): read by UI Automation, without a key, before the New command: when a toggle (a format,
+    // never a New) takes Ctrl+N, the window's tab strip add button is invoked instead and the new tab read back.
+    ValueTask<TabStripCommand> NewTabFromStripAsync(long windowHandle, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(TabStripCommand.ShortcutIsNew);
 
     // BAXY Renew cu (C18): Esc given to this window in the same burst of the foreground lease: a start screen dismissed
     // (Office's leaves a blank document); whether Windows took both events.
@@ -2606,6 +2665,114 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         finally
         {
             _ = burst.Restore();
+        }
+    }
+
+    // Renew al máximo (nuevo2): the UI Automation worker that reads a window's tab strip, started on its first use and
+    // kept (one start, then a read of a few dozen elements).
+    private static readonly Lazy<External.UiaWorkerHost> TabStripWorker = new(static () => new External.UiaWorkerHost());
+    internal static readonly TimeSpan TabStripBudget = TimeSpan.FromSeconds(10);
+
+    // $args[0]: the window. Only reads, and one Invoke of the tab strip's add button when a toggle takes Ctrl+N; never a
+    // key, never a tab of the window selected or closed. Its last JSON line is the answer.
+    private const string NewTabScript = """
+        $ErrorActionPreference='Stop'
+        $phase='read'
+        try {
+          Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes
+          $AE=[System.Windows.Automation.AutomationElement]
+          $CT=[System.Windows.Automation.ControlType]
+          $scope=[System.Windows.Automation.TreeScope]
+          function Kind($type){ New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,$type) }
+          $root=$AE::FromHandle([IntPtr][long]$args[0])
+          $toggle=New-Object System.Windows.Automation.PropertyCondition($AE::IsTogglePatternAvailableProperty,$true)
+          $taken=$false
+          foreach($button in $root.FindAll($scope::Descendants,(New-Object System.Windows.Automation.AndCondition((Kind $CT::Button),$toggle)))){
+            $current=$button.Current
+            $shown=[regex]::Match([string]$current.Name,'\(([^()]*)\)\s*$').Groups[1].Value
+            foreach($key in @([string]$current.AcceleratorKey,$shown)){ if($key -match '^\s*(Ctrl|Control|Strg)\s*\+\s*N\s*$'){ $taken=$true } }
+          }
+          if(-not $taken){ '{"outcome":"shortcut"}'; return }
+          $phase='strip'
+          $add=$null; $strip=$null
+          foreach($tab in $root.FindAll($scope::Descendants,(Kind $CT::Tab))){
+            foreach($button in $tab.FindAll($scope::Children,(Kind $CT::Button))){
+              $current=$button.Current
+              if($current.IsEnabled -and -not $current.IsOffscreen -and [string]$current.ClassName -notmatch 'RepeatButton' -and [bool]$button.GetCurrentPropertyValue($AE::IsInvokePatternAvailableProperty)){ $add=$button; $strip=$tab; break }
+            }
+            if($null -ne $add){ break }
+          }
+          if($null -eq $add){ '{"outcome":"none"}'; return }
+          function Items(){ @($strip.FindAll($scope::Descendants,(Kind $CT::TabItem)) | ForEach-Object {
+            $selected=$false; try { $selected=$_.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern).Current.IsSelected } catch {}
+            [pscustomobject]@{ id=[string]::Join('.',$_.GetRuntimeId()); selected=$selected } }) }
+          $before=@(Items)
+          $phase='invoke'
+          $add.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+          $phase='added'
+          $clock=[Diagnostics.Stopwatch]::StartNew()
+          while($clock.ElapsedMilliseconds -lt 2000){
+            Start-Sleep -Milliseconds 100
+            $now=@(Items); $picked=@($now | Where-Object { $_.selected })
+            if($now.Count -eq $before.Count+1 -and $picked.Count -eq 1 -and @($before | ForEach-Object { $_.id }) -notcontains $picked[0].id){
+              $documents=@($root.FindAll($scope::Descendants,(Kind $CT::Document)) | Where-Object { -not $_.Current.IsOffscreen })
+              $empty=$documents.Count -gt 0
+              foreach($document in $documents){
+                $length=-1; try { $length=$document.GetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern).DocumentRange.GetText(1).Length } catch {}
+                if($length -ne 0){ $empty=$false }
+              }
+              if($empty){ '{"outcome":"added","newEmpty":true}'; return }
+            }
+          }
+          '{"outcome":"added","newEmpty":false}'
+        } catch {
+          if($phase -eq 'read'){ '{"outcome":"shortcut"}' } elseif($phase -eq 'added'){ '{"outcome":"added","newEmpty":false}' } else { '{"outcome":"none"}' }
+        }
+        """;
+
+    public async ValueTask<TabStripCommand> NewTabFromStripAsync(long windowHandle, CancellationToken cancellationToken)
+    {
+        External.ExternalProcessResult result;
+        try
+        {
+            result = await External.UiaWorkerScript.RunAsync(
+                TabStripWorker.Value,
+                NewTabScript,
+                [windowHandle.ToString(CultureInfo.InvariantCulture)],
+                TabStripBudget,
+                cancellationToken).ConfigureAwait(false);
+        }
+        // A worker that could not start or answer read nothing: Ctrl+N, as before.
+        catch (TimeoutException)
+        {
+            return TabStripCommand.ShortcutIsNew;
+        }
+
+        return ReadTabStripAnswer(result.Output);
+    }
+
+    // The script's answer; anything else is no answer (Ctrl+N, as before).
+    internal static TabStripCommand ReadTabStripAnswer(string line)
+    {
+        try
+        {
+            using JsonDocument answer = JsonDocument.Parse(line.Length > 0 ? line : "{}");
+            JsonElement root = answer.RootElement;
+            string? outcome = root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("outcome", out JsonElement value) && value.ValueKind == JsonValueKind.String
+                    ? value.GetString() : null;
+            bool newEmpty = root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("newEmpty", out JsonElement empty) && empty.ValueKind == JsonValueKind.True;
+            return outcome switch
+            {
+                "none" => TabStripCommand.NoNewCommand,
+                "added" => newEmpty ? TabStripCommand.NewEmptyTabShown : TabStripCommand.TabAdded,
+                _ => TabStripCommand.ShortcutIsNew,
+            };
+        }
+        catch (JsonException)
+        {
+            return TabStripCommand.ShortcutIsNew;
         }
     }
 

@@ -1478,6 +1478,90 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (nuevo2): Windows 11's Notepad in Spanish (11.2607) takes Ctrl+N as «Negrita (Ctrl+N)»; with its
+    // restored tab holding text, Ctrl+N bolded it, nothing new was shown, and «abre un Bloc de notas nuevo» ended
+    // new_document_not_created 10 of 10 after 8 s. A toggle that takes Ctrl+N gets no key: the tab strip's add button
+    // makes the tab, read back by UI Automation (one tab more, the selected one new, its document empty) or, read as
+    // added only, by its new empty text field.
+    [TestCase("NewEmptyTabShown")]
+    [TestCase("TabAdded")]
+    public async Task ANewTabComesFromTheStripWhenCtrlNIsAFormat(string strip)
+    {
+        TabStripCommand answer = Enum.Parse<TabStripCommand>(strip);
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripAnswer = answer,
+            FieldsAfterStrip = [new(500, Shown: false, Empty: false), new(501, Shown: true, Empty: true)],
+        };
+        platform.Titles[73] = "*lista pan: Bloc de notas";
+        platform.Titles[78] = "*prueba 123: Bloc de notas";
+        platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(78));
+            Assert.That(platform.StripAsked, Is.EqualTo(new[] { 78L }), "only the launched window, never the person's");
+            Assert.That(platform.NewDocumentIssued, Is.Empty, "no Ctrl+N: it would bold the shown tab");
+            Assert.That(
+                platform.DelaysAfterNewDocument.Aggregate(TimeSpan.Zero, static (sum, delay) => sum + delay),
+                Is.LessThan(TimeSpan.FromMilliseconds(500)),
+                "seen at once, never the whole budget");
+        });
+    }
+
+    // Counter-cases, honest: a toggle takes Ctrl+N and no tab strip button adds a tab (no New command known: nothing sent,
+    // ended at once), or the button was invoked and nothing new is seen (the whole budget, then no new document).
+    [TestCase("NoNewCommand")]
+    [TestCase("TabAdded")]
+    public async Task NoNewTabSeenFromTheStripIsNoNewDocument(string strip)
+    {
+        TabStripCommand answer = Enum.Parse<TabStripCommand>(strip);
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripAnswer = answer,
+        };
+        platform.Titles[73] = "*lista pan: Bloc de notas";
+        platform.Titles[78] = "*prueba 123: Bloc de notas";
+        platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(platform.NewDocumentIssued, Is.Empty, "no Ctrl+N");
+            Assert.That(
+                platform.DelaysAfterNewDocument.Aggregate(TimeSpan.Zero, static (sum, delay) => sum + delay),
+                answer == TabStripCommand.NoNewCommand
+                    ? Is.EqualTo(TimeSpan.Zero)
+                    : Is.GreaterThanOrEqualTo(WindowsInstalledApplicationOpenProvider.NewDocumentBudget));
+        });
+    }
+
+    // The worker's answer: only its own words choose the route; anything else is Ctrl+N, as before.
+    [TestCase("{\"outcome\":\"shortcut\"}", "ShortcutIsNew")]
+    [TestCase("{\"outcome\":\"none\"}", "NoNewCommand")]
+    [TestCase("{\"outcome\":\"added\",\"newEmpty\":true}", "NewEmptyTabShown")]
+    [TestCase("{\"outcome\":\"added\",\"newEmpty\":false}", "TabAdded")]
+    [TestCase("{\"outcome\":\"added\"}", "TabAdded")]
+    [TestCase("", "ShortcutIsNew")]
+    [TestCase("[1]", "ShortcutIsNew")]
+    [TestCase("not json", "ShortcutIsNew")]
+    public void TheStripAnswerIsReadStrictly(string line, string expected) =>
+        Assert.That(WindowsInstalledApplicationPlatform.ReadTabStripAnswer(line), Is.EqualTo(Enum.Parse<TabStripCommand>(expected)));
+
     // BAXY Renew cu (C18): the launched window still on its start screen (titled only by the application's name) once the
     // New command made nothing (Office in Spanish takes Ctrl+N as bold) gets Esc once, which leaves a blank document.
     [Test]
@@ -2256,6 +2340,29 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             }
 
             return ValueTask.FromResult(true);
+        }
+
+        // Renew al máximo (nuevo2): what the window's tab strip answers before the New command, the windows asked, and
+        // the text fields an invoked add button leaves (a new tab).
+        public TabStripCommand StripAnswer { get; init; } = TabStripCommand.ShortcutIsNew;
+
+        public IReadOnlyList<TextFieldObservation>? FieldsAfterStrip { get; init; }
+
+        public List<long> StripAsked { get; } = [];
+
+        public ValueTask<TabStripCommand> NewTabFromStripAsync(long windowHandle, CancellationToken cancellationToken)
+        {
+            StripAsked.Add(windowHandle);
+            if (StripAnswer is TabStripCommand.TabAdded or TabStripCommand.NewEmptyTabShown)
+            {
+                _newDocumentIssued = true;
+                if (FieldsAfterStrip is { } fields)
+                {
+                    Fields[windowHandle] = fields;
+                }
+            }
+
+            return ValueTask.FromResult(StripAnswer);
         }
 
         // Ronda 20 P4 (v3-01): a window the start shows after the one the opening verified (the main window after a
