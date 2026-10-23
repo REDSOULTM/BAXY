@@ -302,7 +302,13 @@ export default function App() {
     const r = await send('POST', '/turn', { text });
     if (r === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
   }, []);
-  const answer = useCallback((approve: boolean) => { void send('POST', '/confirmation/answer', { approve }); }, []);
+  // the answer names the card it answers: a press or a key meant for one that ended never answers the next (the host
+  // refuses it), and a refused answer is said, never lost in silence
+  const answer = useCallback(async (approve: boolean, card: string) => {
+    if (await send('POST', '/confirmation/answer', { approve, card }) === null) {
+      setNotice({ b: 'Confirmación', t: 'no se tomó tu respuesta: BAXY seguía ocupado o esa tarjeta ya no espera' });
+    }
+  }, []);
   const newSession = useCallback(async () => {
     if (await send('POST', '/sessions/new') === null) setNotice({ b: 'Sesión', t: 'espera a que BAXY termine' });
     else setPanel(null);
@@ -417,7 +423,7 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       const a = document.activeElement as HTMLInputElement | null;
       const typing = !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') && !!a.value.trim();
-      if (pendingCard && !panel && !typing && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); answer(e.key === 'Enter'); return; }
+      if (pendingCard && !panel && !typing && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); void answer(e.key === 'Enter', pendingCard.id); return; }
       if (e.key === 'Escape' && panel) setPanel(null);
       if (e.key === ' ' && mic === 'ptt' && !e.repeat && !panel && !(a && a.tagName === 'INPUT' && a.value)) { e.preventDefault(); pttStart(); }
     };
