@@ -30,3 +30,54 @@ def test_an_unsure_yes_with_nothing_waiting_reads_why_instead_of_a_doubt_questio
     told = [m["content"] for m in server.bodies[1]["messages"] if m["role"] == "tool"]
     assert json.loads(told[-1])["error"] == error
     assert not any("Nota interna" in str(m["content"]) for m in server.bodies[1]["messages"])
+
+
+def _calls(*calls: tuple[str, dict]) -> dict:
+    return {"choices": [{"message": {"content": "", "tool_calls": [
+        {"id": f"c{i}", "function": {"name": name, "arguments": json.dumps(arguments)}}
+        for i, (name, arguments) in enumerate(calls, 1)]}}]}
+
+
+def test_a_session_kept_with_its_question_open_loads_back_with_the_question_answered_as_asked(tmp_path) -> None:
+    # The App keeps a session between turns, also while BAXY's question waits for its answer; loaded back, the
+    # ask_user call had no result and the next request followed a call still open.
+    from baxy_mind.mind import ASKED, NOT_RUN
+    from test_mind_final import _mind, _say
+    mind, _ = _mind(tmp_path, [_calls(("ask_user", {"question": "¿Cuál archivo?"}), ("file_read", {"path": "x"}))])
+    assert mind.decide(1, "léelo")["kind"] == "clarify"
+    kept = mind.export_session()
+    relaunched, server = _mind(tmp_path, [_say("Vale.")])
+    relaunched.load_session(kept)
+    relaunched.decide(2, "nada, olvídalo")
+    told = {m["tool_call_id"]: m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"}
+    assert told == {"c1": ASKED, "c2": NOT_RUN}
+    roles = [m["role"] for m in server.bodies[-1]["messages"]]
+    assert roles[roles.index("assistant") + 1:roles.index("assistant") + 3] == ["tool", "tool"]
+
+
+def test_a_session_kept_with_a_call_whose_result_never_came_says_it_may_have_run(tmp_path) -> None:
+    from baxy_mind.mind import NO_RESULT, NOT_RUN
+    from test_mind_final import _mind, _say
+    mind, _ = _mind(tmp_path, [_calls(("app_open", {"appId": "Paint"}), ("input_text_type", {"text": "hola"}))])
+    mind.wire_to_op = {"app_open": "app.open", "input_text_type": "input.text.type"}
+    assert mind.decide(1, "abre paint y escribe hola")["kind"] == "action"
+    kept = mind.export_session()
+    relaunched, server = _mind(tmp_path, [_say("No sé si se abrió.")])
+    relaunched.load_session(kept)
+    relaunched.decide(2, "¿lo abriste?")
+    messages = server.bodies[-1]["messages"]
+    told = {m["tool_call_id"]: m["content"] for m in messages if m["role"] == "tool"}
+    assert told == {"c1": NO_RESULT, "c2": NOT_RUN}
+    clock = next(m["content"] for m in reversed(messages) if m["content"].startswith("[Reloj:"))
+    assert "app_open → sin resultado: pudo o no ocurrir" in clock
+
+
+def test_a_kept_session_with_every_call_answered_loads_as_it_was_kept(tmp_path) -> None:
+    from test_mind_final import _mind, _say
+    mind, _ = _mind(tmp_path, [_calls(("app_open", {"appId": "Paint"})), _say("Abrí Paint.")])
+    mind.decide(1, "abre paint")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "readback"}))
+    kept = mind.export_session()
+    relaunched, _ = _mind(tmp_path, [])
+    relaunched.load_session(kept)
+    assert relaunched.conversation == [m for m in kept if m.get("role") in {"user", "assistant", "tool"}]

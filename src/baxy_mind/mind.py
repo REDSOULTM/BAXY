@@ -1136,15 +1136,45 @@ class Mind:
             self._refs = {str(ref): str(value) for ref, value in state["refs"].items()}
             self._ref_of = {value: ref for ref, value in self._refs.items()}
         self._ids = state["ids"] if isinstance(state.get("ids"), int) and state["ids"] > 0 else 0
-        self.conversation = [m for m in conversation if isinstance(m, dict)
-                             and m.get("role") in {"user", "assistant", "tool"}]
+        self.conversation, unanswered = self._answered([m for m in conversation if isinstance(m, dict)
+                                                        and m.get("role") in {"user", "assistant", "tool"}])
         if isinstance(state.get("ran_count"), int) and isinstance(state.get("ran"), list):
             self._ran, self._ran_count = [str(entry) for entry in state["ran"]][-SESSION_CALLS:], state["ran_count"]
+            for wire in unanswered:
+                self._ran_add(wire, NO_RESULT_RAN)
         else:
             # Kept before 8.1: how many calls its conversation shows (their results are in it), never «none».
             self._ran_count = sum(1 for m in self.conversation for c in m.get("tool_calls") or []
                                   if c.get("function", {}).get("name") != ASK_USER["function"]["name"])
         self._trim()
+
+    @staticmethod
+    def _answered(conversation: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[str]]:
+        """A kept conversation where every call has its result, and the calls that may have run without one (their wire
+        names). Auditoría de la mente (w8, 2026-10-23): the App keeps a session between turns, and a turn may be left
+        open there (BAXY's question waiting for its answer, a call whose result never came); the open turn is not kept
+        with it, so loaded back its calls had no result and the model read them as still open. Each gets what
+        _close_open_calls writes: the first call of its message without one ASKED (a question) or NO_RESULT, the ones
+        after it NOT_RUN, right after the results its message has."""
+        answered = {m.get("tool_call_id") for m in conversation if m.get("role") == "tool"}
+        closed: list[dict[str, Any]] = []
+        missing: list[dict[str, Any]] = []
+        unanswered: list[str] = []
+        for message in [*conversation, None]:
+            if message is None or message.get("role") != "tool":
+                closed += missing
+                missing = []
+            if message is None:
+                break
+            closed.append(message)
+            lacking = [c for c in message.get("tool_calls") or [] if isinstance(c, dict) and c.get("id") not in answered]
+            for index, call in enumerate(lacking):
+                wire = str((call.get("function") or {}).get("name") or "?")
+                content = NOT_RUN if index else ASKED if wire == ASK_USER["function"]["name"] else NO_RESULT
+                if content == NO_RESULT:
+                    unanswered.append(wire)
+                missing.append({"role": "tool", "tool_call_id": call.get("id"), "content": content})
+        return closed, unanswered
 
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None) -> dict[str, Any]:
         # Review 2026-10-22: a decision that fails (the model server down, an error) takes back what it added, so the
