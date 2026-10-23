@@ -97,6 +97,53 @@ public sealed class InvocationRiskTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: a MayRaise that throws says nothing; the invocation goes as declared, unread, and
+    // the engine answers.
+    [Test]
+    public async Task AMayRaiseThatThrowsKeepsTheDeclaredRiskUnread()
+    {
+        var handler = new ThrowingMayRaiseHandler();
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse response = await engine.ExecuteAsync(
+            Request("""{"windowId":"win_dialog"}""") with { Operation = "app.open" }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.PreflightCount, Is.Zero);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    private sealed class ThrowingMayRaiseHandler : IOperationHandler, IInvocationPreflight
+    {
+        public int ExecutionCount { get; private set; }
+
+        public int PreflightCount { get; private set; }
+
+        public OperationDefinition Definition { get; } = new("app.open", OperationRisk.Reversible, "Open an application.");
+
+        public bool MayRaise(JsonElement arguments) => throw new System.ComponentModel.Win32Exception(5);
+
+        public ValueTask<InvocationPreflightResult> PreflightAsync(
+            JsonElement arguments,
+            CancellationToken cancellationToken)
+        {
+            PreflightCount++;
+            return ValueTask.FromResult(InvocationPreflightResult.Raised(OperationRisk.Irreversible));
+        }
+
+        public ValueTask<OperationOutcome> ExecuteAsync(
+            OperationInvocation invocation,
+            CancellationToken cancellationToken)
+        {
+            ExecutionCount++;
+            return ValueTask.FromResult(OperationOutcome.Success(invocation.Arguments));
+        }
+    }
+
     [Test]
     public void TheCallersCancellationDuringAReadGoesOnAsACancellation()
     {

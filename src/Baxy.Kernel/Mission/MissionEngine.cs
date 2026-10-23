@@ -134,7 +134,7 @@ public sealed class MissionEngine : IDisposable
             else if (policy == PolicyDecision.Allow
                 && handler is IInvocationPreflight raising
                 && _confirmationMode() == ConfirmationMode.Normal
-                && raising.MayRaise(request.Arguments))
+                && MayRaise(raising, request.Arguments))
             {
                 InvocationPreflightResult found = await Preflight(raising, request.Arguments, cancellationToken)
                     .ConfigureAwait(false);
@@ -369,6 +369,21 @@ public sealed class MissionEngine : IDisposable
             or null
             ? found
             : InvocationPreflightResult.Proceed;
+    }
+
+    // Auditoría del núcleo 2026-10-23: whether a handler says this invocation may be riskier than declared. MayRaise is
+    // pure by contract; one that throws says nothing, and the invocation keeps its declared risk, as a read that fails
+    // does (Preflight), instead of the exception leaving the engine before any terminal state.
+    private static bool MayRaise(IInvocationPreflight preflight, JsonElement arguments)
+    {
+        try
+        {
+            return preflight.MayRaise(arguments);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return false;
+        }
     }
 
     // Every string and property name decodes to text (no lone surrogate).
