@@ -99,6 +99,30 @@ def test_a_confirmation_with_nothing_pending_is_not_sent(tmp_path: Path) -> None
     assert told and json.loads(told[-1])["error"] == "nothing_pending"
 
 
+# Auditoría de confirmaciones (2026-10-23): the answer to the model's own question reads what waits now, as the App says
+# with those words (mutation: the turn keeps the pending flag it began with).
+def test_an_answer_to_a_question_never_approves_a_confirmation_that_no_longer_waits(tmp_path: Path) -> None:
+    pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
+    mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Cuál otro?"}),
+                                    _call("confirm_pending", {"approve": True}), _say("No hay nada esperando tu sí.")])
+    assert mind.decide(1, "sí, pero el otro", pending=pending)["kind"] == "clarify"
+    result = mind.decide(2, "el informe", pending=None)
+    assert result["operation"] is None and result["reply"] == "No hay nada esperando tu sí."
+    told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert told[0] == "el informe" and json.loads(told[-1])["error"] == "nothing_pending"
+
+
+def test_an_answer_to_a_question_can_answer_a_confirmation_asked_since(tmp_path: Path) -> None:
+    pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
+    mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Cuál borro?"}),
+                                    _call("confirm_pending", {"approve": True})])
+    assert mind.decide(1, "borra eso")["kind"] == "clarify"
+    result = mind.decide(2, "sí", pending=pending)
+    assert result["operation"] == "confirmation.answer" and result["arguments"] == {"approve": True}
+    answer = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][0]
+    assert answer.startswith("sí\n[Espera el sí de la persona: file_delete") and "confirm_pending" in answer
+
+
 def test_the_doubt_never_holds_a_continuation_step(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.9")
     mind, _ = _doubt_mind(tmp_path, [_sure("app_open", {"appId": "Paint"}, 0.95), _sure("app_close", {}, 0.2)])

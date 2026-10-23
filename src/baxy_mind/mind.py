@@ -787,6 +787,11 @@ class Mind:
         return BEAT_SYSTEM if beat else SYSTEM
 
     @staticmethod
+    def _waits(pending: dict[str, Any] | None) -> bool:
+        """Whether the App says a call waits for the person's «sí» with these words."""
+        return bool(isinstance(pending, dict) and pending.get("operation"))
+
+    @staticmethod
     def _pending_note(pending: dict[str, Any] | None) -> str:
         """The call the kernel holds for the person's yes, when one is: after «sí» the model called that tool again
         instead of answering it (e2e practice E021, 3 of 3), and the kernel only asked again."""
@@ -865,17 +870,21 @@ class Mind:
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
             # the steps already run stay in the conversation and are never run again. A new request instead of an
             # answer reaches the model the same way, and the model reads it as what it is.
-            asked, after, said = turn.pop("asked"), turn.pop("after_asked", []), turn["text"]
-            answer = {"role": "tool", "tool_call_id": asked, "content": text}
+            # Renew al máximo (auditoría de confirmaciones, 2026-10-23): what waits for the person's «sí» is what the App
+            # says with these words, not what waited when the turn began: a confirmation dropped or expired since then
+            # was approved with the answer to the question (the old file, after «sí pero el otro» → «¿cuál?» → «el
+            # informe»), and one asked since then got nothing_pending.
+            asked, after, said, was = turn.pop("asked"), turn.pop("after_asked", []), turn["text"], turn.get("pending")
+            answer = {"role": "tool", "tool_call_id": asked, "content": text + self._pending_note(pending)}
             turn["conv"].append(answer)
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
-            turn["text"], turn["answering"] = text, True
+            turn["text"], turn["answering"], turn["pending"] = text, True, self._waits(pending)
             try:
                 return self._next(request_id, "turn.decide", turn)
             except Exception:
                 self._take_back(turn["conv"], answer)
-                turn.update(asked=asked, after_asked=after, text=said)
+                turn.update(asked=asked, after_asked=after, text=said, pending=was)
                 raise
         self._close_open_calls()
         answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
@@ -893,8 +902,7 @@ class Mind:
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
-                          "pending": bool(isinstance(pending, dict) and pending.get("operation")),
-                          "answering": answering}
+                          "pending": self._waits(pending), "answering": answering}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
