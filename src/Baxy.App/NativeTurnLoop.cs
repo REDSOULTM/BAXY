@@ -109,6 +109,9 @@ internal sealed class NativeTurnLoop
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
     internal static readonly TimeSpan ProposalLifetime = TimeSpan.FromMinutes(10);
 
+    /// <summary>How long a call the engine never answered keeps its invocation for an identical retry, at most.</summary>
+    internal static readonly TimeSpan UncertainLifetime = TimeSpan.FromMinutes(2);
+
     private readonly Host _host;
     // 2026-10-22, review of the App: one clock for whether a waiting call is still waiting and how it ended.
     private readonly TimeProvider _time;
@@ -145,6 +148,12 @@ internal sealed class NativeTurnLoop
     private bool _leftBehind;
     // The call DropLeftBehind dropped, until the person's next words (TakeWaitingCall) or another line of BAXY's.
     private string? _droppedOperation;
+    // Calls the engine never answered (engine_no_answer: they may have run), still unresolved in the registry so the
+    // same call made again is the same invocation (UncertainLifetime, and the person's turn after theirs).
+    private readonly List<Uncertain> _uncertain = [];
+    private long _personTurns;
+
+    private sealed record Uncertain(PreparedOperation Prepared, DateTimeOffset UntilUtc, long Turn);
 
     internal NativeTurnLoop(Host host, TimeProvider? time = null)
     {
@@ -205,6 +214,7 @@ internal sealed class NativeTurnLoop
         CancellationToken cancellationToken)
     {
         _personAt = arrivedAt;
+        long turn = ++_personTurns;
         if (!answering)
         {
             _egress.NewTurn();
@@ -222,6 +232,7 @@ internal sealed class NativeTurnLoop
             _notice.Close();
             DropUnasked();
             DropLeftBehind();
+            ResolveUncertain(endedTurn: turn);
         }
     }
 
@@ -336,14 +347,46 @@ internal sealed class NativeTurnLoop
         }
     }
 
-    /// <summary>A new session: nothing pending survives it.</summary>
-    internal void Reset()
+    /// <summary>
+    /// A new session: nothing pending survives it. <paramref name="engineRestarted"/>: the same session goes on with the
+    /// engine started again (its journal is the same), and a call it never answered keeps its invocation.
+    /// </summary>
+    internal void Reset(bool engineRestarted = false)
     {
         _leftBehind = false;
         _droppedOperation = null;
         DropPending();
         _egress.Reset();
         _said.Clear();
+        if (!engineRestarted)
+        {
+            ResolveUncertain(endedTurn: null, all: true);
+        }
+    }
+
+    // Auditoría de la App (2026-10-23; owner: a call run twice is worse than a replay): a call the engine never answered
+    // was resolved at once, so the model's retry was a new invocation and ran again, maybe for the second time. It keeps
+    // its invocation while the same session goes on, for UncertainLifetime and until the end of the person's turn after
+    // the one it timed out in: the same call made again then reaches the kernel as the same invocation, whose journal
+    // replays what it did or, with an attempt that may have run, asks the person first (reconciliationRequired: «un
+    // intento anterior pudo haber corrido»). After that it is resolved, and the same request later is a new call.
+    private void KeepUncertain(PreparedOperation prepared)
+    {
+        _uncertain.RemoveAll(entry => ReferenceEquals(entry.Prepared, prepared));
+        _uncertain.Add(new Uncertain(prepared, _time.GetUtcNow() + UncertainLifetime, _personTurns));
+    }
+
+    private void ResolveUncertain(long? endedTurn, bool all = false)
+    {
+        DateTimeOffset now = _time.GetUtcNow();
+        foreach (Uncertain entry in _uncertain.ToArray())
+        {
+            if (all || entry.UntilUtc <= now || (endedTurn is { } ended && entry.Turn < ended))
+            {
+                _uncertain.Remove(entry);
+                _host.Registry()?.MarkResolved(entry.Prepared);
+            }
+        }
     }
 
     private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken,
@@ -522,6 +565,7 @@ internal sealed class NativeTurnLoop
             said = ruling.Note;
         }
 
+        ResolveUncertain(endedTurn: null);
         PreparedOperation prepared;
         try
         {
@@ -781,7 +825,7 @@ internal sealed class NativeTurnLoop
         CoreProcessClient? core = _host.Core();
         if (core is not { IsReady: true })
         {
-            _host.Registry()?.MarkResolved(pending.Prepared);
+            Release(pending.Prepared);
             return Record(pending.Prepared.OperationName, pendingArguments, started,
                 Observation("failed", "engine_unavailable", about: pending.Prepared.OperationName));
         }
@@ -824,7 +868,7 @@ internal sealed class NativeTurnLoop
         Resolved(approve ? "approved" : "declined");
         if (!approve)
         {
-            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+            Release(proposal);
             return Record(proposal.OperationName, arguments, started,
                 Observation("cancelled", "declined_by_person", about: proposal.OperationName));
         }
@@ -832,7 +876,7 @@ internal sealed class NativeTurnLoop
         CoreProcessClient? core = _host.Core();
         if (core is not { IsReady: true })
         {
-            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+            Release(proposal);
             return Record(proposal.OperationName, arguments, started,
                 Observation("failed", "engine_unavailable", about: proposal.OperationName));
         }
@@ -872,7 +916,15 @@ internal sealed class NativeTurnLoop
         catch (Exception exception) when (exception is TimeoutException or System.IO.IOException
             or InvalidOperationException)
         {
-            Resolve(prepared, memory);
+            if (memory)
+            {
+                Resolve(prepared, memory);
+            }
+            else
+            {
+                KeepUncertain(prepared);
+            }
+
             return Record(operation, arguments, started,
                 Observation("failed", "engine_no_answer", about: answered ? operation : null, effectUncertain: true),
                 sent: true);
@@ -986,10 +1038,22 @@ internal sealed class NativeTurnLoop
         return new JsonObject();
     }
 
+    // A call that ends without the kernel answering for it now (dropped, declined, the engine down): resolved, unless an
+    // attempt of it was never answered (KeepUncertain), whose invocation the same call made again still needs.
+    private void Release(PreparedOperation prepared)
+    {
+        if (!MemoryOperationProtector.IsMemoryOperation(prepared.OperationName)
+            && !_uncertain.Exists(entry => ReferenceEquals(entry.Prepared, prepared)))
+        {
+            _host.Registry()?.MarkResolved(prepared);
+        }
+    }
+
     private void Resolve(PreparedOperation prepared, bool memory)
     {
         if (!memory)
         {
+            _uncertain.RemoveAll(entry => ReferenceEquals(entry.Prepared, prepared));
             _host.Registry()?.MarkResolved(prepared);
         }
     }
@@ -1027,16 +1091,13 @@ internal sealed class NativeTurnLoop
         if (_proposal is { } proposal)
         {
             _proposal = null;
-            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+            Release(proposal);
         }
 
         if (_pending is { } pending)
         {
             _pending = null;
-            if (!MemoryOperationProtector.IsMemoryOperation(pending.Prepared.OperationName))
-            {
-                _host.Registry()?.MarkResolved(pending.Prepared);
-            }
+            Release(pending.Prepared);
         }
     }
 

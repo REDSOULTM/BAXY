@@ -379,7 +379,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         SetStartupFailure(null);
         IsReady = false;
         StatusDescription = "Comprobando BAXY";
-        _loop.Reset();
+        // An engine started again (recovering) is the same session: a call it never answered keeps its invocation.
+        _loop.Reset(engineRestarted: recovering);
 
         if (_coreClient is not null)
         {
@@ -1432,7 +1433,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task HandleStartupFailureAsync(CoreProcessClient client)
     {
-        _loop.Reset();
+        _loop.Reset(engineRestarted: true);
         DetachCoreDisconnectedHandler(client);
         await client.DisposeAsync();
         if (ReferenceEquals(_coreClient, client))
@@ -1482,7 +1483,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
 
                 owner.IsReady = false;
-                owner._loop.Reset();
+                owner._loop.Reset(engineRestarted: true);
                 owner.SetStartupFailure("core_disconnected");
                 owner.RecoverCoreWhenIdle();
             },

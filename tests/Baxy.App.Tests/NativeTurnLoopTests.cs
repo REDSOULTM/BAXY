@@ -263,6 +263,103 @@ public sealed class NativeTurnLoopTests
         });
     }
 
+    // Auditoría de la App (2026-10-23; owner: a call run twice is worse than a replay): a call the engine never
+    // answered keeps its invocation through the person's next turn and UncertainLifetime, so the same call made again
+    // is the same invocation for the kernel's journal; after that, the same request is a new call.
+    [Test]
+    public async Task ACallTheEngineNeverAnsweredKeepsItsInvocationForAnIdenticalRetryWithinItsWindow()
+    {
+        using var fake = new FakeMind();
+        fake.Script(CallsThenSays("system.time", new JsonObject()));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var clock = new ManualClock();
+        var registry = new RetryableOperationRegistry();
+        var steps = new List<NativeTurnStep>();
+        NativeTurnLoop loop = UncertainLoop(mind, registry, steps, clock);
+
+        await loop.RunAsync("¿qué hora es?", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That((string?)JsonNode.Parse(steps[^1].Observation)?["error"], Is.EqualTo("engine_no_answer"));
+        PreparedOperation first = Unresolved(registry).Single();
+
+        // The retry in the next turn: the same invocation, whose window starts again with this attempt.
+        await loop.RunAsync("inténtalo de nuevo", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(Unresolved(registry), Is.EqualTo(new[] { first }));
+
+        // A different call is its own invocation.
+        Assert.That(registry.GetOrAdd(new RoutedOperation("system.time", new JsonObject { ["place"] = "Lima" })),
+            Is.Not.SameAs(first));
+
+        // The person's turn after it ends with no call: the window closes, and the same request is a new call.
+        fake.Script(Says("Listo."));
+        await loop.RunAsync("gracias", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(Unresolved(registry).Where(p => p.OperationName == "system.time" && !p.Arguments.TryGetProperty("place", out _)),
+            Is.Empty);
+        Assert.That(registry.GetOrAdd(new RoutedOperation("system.time", new JsonObject())).InvocationId,
+            Is.Not.EqualTo(first.InvocationId));
+    }
+
+    [Test]
+    public async Task ACallTheEngineNeverAnsweredIsANewCallAfterItsTimeOrInANewSession()
+    {
+        using var fake = new FakeMind();
+        fake.Script(CallsThenSays("system.time", new JsonObject()));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var clock = new ManualClock();
+        var registry = new RetryableOperationRegistry();
+        var steps = new List<NativeTurnStep>();
+        NativeTurnLoop loop = UncertainLoop(mind, registry, steps, clock);
+
+        await loop.RunAsync("¿qué hora es?", Stopwatch.GetTimestamp(), CancellationToken.None);
+        PreparedOperation first = Unresolved(registry).Single();
+        clock.Now += NativeTurnLoop.UncertainLifetime + TimeSpan.FromSeconds(1);
+        await loop.RunAsync("¿y ahora?", Stopwatch.GetTimestamp(), CancellationToken.None);
+        PreparedOperation second = Unresolved(registry).Single();
+        Assert.That(second.InvocationId, Is.Not.EqualTo(first.InvocationId));
+
+        // The engine started again is the same session; a new one is not.
+        loop.Reset(engineRestarted: true);
+        Assert.That(Unresolved(registry), Is.EqualTo(new[] { second }));
+        loop.Reset();
+        Assert.That(Unresolved(registry), Is.Empty);
+    }
+
+    private static JsonObject CallsThenSays(string operation, JsonObject arguments) => new()
+    {
+        ["reply"] = new JsonObject
+        {
+            ["turn.decide"] = new JsonObject
+            {
+                ["type"] = "turn.result", ["kind"] = "action", ["operation"] = operation, ["arguments"] = arguments,
+            },
+            ["turn.continue"] = new JsonObject
+            {
+                ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "El motor no respondió.",
+            },
+        },
+    };
+
+    // An engine said ready whose every call fails in transport (ReadyCore): engine_no_answer.
+    private static NativeTurnLoop UncertainLoop(MindSidecarClient mind, RetryableOperationRegistry registry,
+        List<NativeTurnStep> steps, TimeProvider clock)
+    {
+        CoreProcessClient core = ReadyCore();
+        return new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+        }, clock);
+    }
+
+    private static PreparedOperation[] Unresolved(RetryableOperationRegistry registry) =>
+        [.. ((Dictionary<string, PreparedOperation>)typeof(RetryableOperationRegistry)
+            .GetField("_operations", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(registry)!).Values];
+
     // Auditoría de la App (2026-10-23): told to answer in words (here, the engine is down), a mind that still calls does
     // not get that call run; before, each call ran, came back final again, and the turn never ended.
     [Test]
