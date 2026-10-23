@@ -43,12 +43,22 @@ class _Recognizer:
         self.decoded.set()
 
 
+class _Vad:
+    """Silero hears speech in every sample: here the levels decide (voice.Vad itself: test_voice_vad.py)."""
+
+    def reset(self) -> None:
+        pass
+
+    def marks(self, block) -> np.ndarray:
+        return np.ones(len(block), bool)
+
+
 def _hearing(monkeypatch: pytest.MonkeyPatch, written: list[dict]) -> tuple[Voice, _Recognizer]:
     """A direct request whose live caption is being decoded."""
     recognizer = _Recognizer()
 
     def load(self: Voice) -> None:
-        self._recognizer, self._input = recognizer, True
+        self._recognizer, self._input, self._vad = recognizer, True, _Vad()
         self._loaded.set()
 
     monkeypatch.setattr(voice, "Speech", _Speech)
@@ -132,6 +142,7 @@ def test_a_repeated_wake_request_gets_its_live_caption_again(monkeypatch: pytest
 
     def load(self: Voice) -> None:
         self._recognizer, self._input, self._detector = _InstantRecognizer(), True, _Wake([0.1, 4.0])
+        self._vad = _Vad()
         self._loaded.set()
 
     monkeypatch.setattr(voice, "Speech", _Speech)
@@ -158,7 +169,7 @@ def test_a_microphone_that_sends_nothing_is_opened_again(monkeypatch: pytest.Mon
     opened: list[_Microphone] = []
 
     def load(self: Voice) -> None:
-        self._recognizer, self._input = _InstantRecognizer(), True
+        self._recognizer, self._input, self._vad = _InstantRecognizer(), True, _Vad()
         self._loaded.set()
 
     def open_(self: Voice) -> None:
@@ -183,7 +194,7 @@ def test_a_microphone_that_cannot_be_opened_again_turns_the_ear_off_and_says_so(
     opened: list[_Microphone] = []
 
     def load(self: Voice) -> None:
-        self._recognizer, self._input = _InstantRecognizer(), True
+        self._recognizer, self._input, self._vad = _InstantRecognizer(), True, _Vad()
         self._loaded.set()
 
     def open_(self: Voice) -> None:

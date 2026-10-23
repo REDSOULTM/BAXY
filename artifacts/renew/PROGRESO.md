@@ -3197,3 +3197,17 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   descartada**: System One decide la herramienta, no el appId, y su compuerta es la confianza del nombre de la
   herramienta (0,99 en E014: no ve el error); sin fallos de appId en decision no hay qué medir. Pendiente: A/B del NB
   (E014 ×N con ONLY, e2e entera; decision2 sólo ve (b) con un catálogo recapturado con la ayuda).
+- 18:xx (23-10) **w9-ruido (PC, sin correr el producto)**: el fin de la orden con ruido de fondo. `voice.py` decide
+  que un bloque es voz si es fuerte (`VOICE_RMS`) **y** Silero VAD v6 (el `silero_vad.onnx` del runtime, por
+  sherpa-onnx, CPU: 0,4 ms por bloque de 100 ms, +15 MiB junto a Ultra) oyó habla en él; la alimentación WAV marca el
+  fin de voz igual. En modo wake, con el cuarto ruidoso (4 de 5 bloques antes de la llamada sobre `VOICE_RMS`), la cola
+  de «Baxy» es 0,8 s (Silero la sostiene hasta 0,7 s tras el disparo a 5 dB). Elegido por medida frente a un piso
+  adaptativo (k × percentil bajo del RMS): ése cortaba 36-60 órdenes en una pausa a 5 dB o dejaba algunas en `MAX_S`.
+  `medir_anticipada.py` ahora oye el ruido de verdad (20/10/5 dB a lo largo de todo lo oído) en lugar de cortar el
+  gemelo limpio. 683 locuciones sintéticas, modo directo, espera 0,2: limpio idéntico antes/después en las 683 (cierra
+  0,9 s tras la voz, 0 cortes, WER 11,46 %, anticipada 86,5 %); 20 dB igual o antes (anticipada 84,0 → 83,3 %: 5
+  órdenes cierran 0,7 s antes y su anticipada cambia); 10 dB: cerradas 0 → 100 %, 10,3 → 1,2 s p50 (1,3 p90), WER
+  22,3 → 21,2 % (muestra de 98), anticipada 1 → 81,8 %; 5 dB: 0 → 100 %, 1,2/1,3 s, WER 29,1 → 28,8 %, anticipada
+  0 → 74,1 %; ningún corte prematuro. Wake (50 «Baxi» + orden, OneCore): limpio idéntico; 10 y 5 dB cierran todas a
+  1,2-1,3 s (antes ninguna), WER 10,2 → 9,8 y 15,4 → 10,9 %. Ruido solo: Ultra no transcribe nada, antes ni ahora.
+  Pendiente: el cuarto real con la voz del dueño y el ruido que es voz (tele), ver APLAZADOS.

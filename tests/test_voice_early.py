@@ -43,6 +43,16 @@ class _Recognizer:
         stream.result = SimpleNamespace(text=" abre Steam", tokens=[], timestamps=[])
 
 
+class _Vad:
+    """Silero hears speech in every sample: here the levels decide (voice.Vad itself: test_voice_vad.py)."""
+
+    def reset(self) -> None:
+        pass
+
+    def marks(self, block) -> np.ndarray:
+        return np.ones(len(block), bool)
+
+
 class _Wake:
     """Fires «Baxy» at the first block it hears."""
 
@@ -66,7 +76,7 @@ def _voice(monkeypatch: pytest.MonkeyPatch, early_s: float, mode: str = "direct"
     woke: list = []
 
     def load(self: Voice) -> None:
-        self._recognizer, self._input = recognizer, True
+        self._recognizer, self._input, self._vad = recognizer, True, _Vad()
         self._detector = _Wake()
         self._loaded.set()
 

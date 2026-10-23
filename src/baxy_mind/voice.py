@@ -2,9 +2,10 @@
 speaking (Supertonic, voice_output.py).
 
 Only the connection: what the person says after «Baxy» reaches the App as voice.transcript, the same as a typed
-message. The segmentation is WakewordBaxy/probar_baxy.py's, measured there with the owner's voice; the recognizer is
-TranscripcionBaxy's winner with its configuration. While BAXY speaks the microphone is not heard, as in Definitivo,
-so its own voice («Hola, soy BAXY») never wakes it or enters a request.
+message. The segmentation is WakewordBaxy/probar_baxy.py's, measured there with the owner's voice, with Silero VAD
+telling voice from steady noise (Vad); the recognizer is TranscripcionBaxy's winner with its configuration. While BAXY
+speaks the microphone is not heard, as in Definitivo, so its own voice («Hola, soy BAXY») never wakes it or enters a
+request.
 
 Paths (per PC): BAXY_RENEW_WAKE_DIR (the baxy-wake-k4 package), BAXY_RENEW_STT_DIR (parakeet-ultra-sherpa-int8-oli),
 BAXY_RENEW_MIC (an input device index; otherwise Windows' default microphone of the moment, through the MME
@@ -14,6 +15,7 @@ in its place, in real time (voice_feed.py, scripts/voice/hablar.py).
 from __future__ import annotations
 
 import copy
+import importlib.resources
 import importlib.util
 import json
 import os
@@ -36,8 +38,13 @@ RATE = 16000
 BLOCK = 1600            # 100 ms
 BEFORE_S = 2.0          # audio before the trigger that goes into the transcription
 VOICE_RMS = 0.012       # voice threshold of TranscripcionBaxy/probar_ultra.py
+SPEECH_P = 0.5          # Silero's own speech threshold (0.3 and 0.7 closed the same requests within 0.1 s)
+VAD_STEP = 512          # Silero's window at 16 kHz (32 ms); sherpa-onnx gives it the 64 samples before as context
 END_SILENCE_S = 0.9     # silence that closes the request
 WORD_TAIL_S = 0.4       # voice in the first 0.4 s after the trigger is the end of «Baxy», not the request
+# The same where the room is loud by itself (Voice._noisy): loudness no longer trims Silero's hold of the word, which
+# reached 0.5 s past the trigger at 10 dB and 0.7 s at 5 dB (0.2 s in a quiet room; 50 «Baxi» + request, OneCore).
+NOISY_TAIL_S = 0.8
 CALL_LEAD_S = 0.25      # a word that began this long before the trigger is the call (or came before it)
 NO_COMMAND_S = 4.0      # after the trigger, time for the request to start
 DIRECT_WAIT_S = 6.0     # direct mode (microphone button): time for the request to start
@@ -102,6 +109,57 @@ class StaggeredWake:
         return heard
 
 
+class Vad:
+    """Which samples were heard as speech: Silero VAD v6 (silero_vad.onnx of the runtime's silero_vad package) run by
+    sherpa-onnx on CPU, one window at a time as the audio comes: 0.4 ms of one core per 100 ms block, 15 MiB of private
+    memory beside Ultra.
+
+    A block is voice when it is loud (VOICE_RMS) and Silero heard speech in it (voiced). Loudness alone never heard the
+    silence under steady noise: with pink noise at 10 dB SNR the floor is above VOICE_RMS in 99.6 % of the synthetic set,
+    so every request ran to MAX_S (12 s), transcribing the noise too. Measured on its 683 utterances in direct mode
+    (scripts/voice/medir_anticipada.py, early_s 0.2, 2026-10-23): in the clean set every request closes as before, the
+    same transcripts and early transcripts; at 10 and 5 dB all close, 1.2 s p50 and 1.3 s p90 after the voice (before:
+    none, at 10.3 s), none inside it, with the early transcript the request's own in 81.8 and 74.1 %; at 20 dB 19 close
+    sooner than before (stray loud noise blocks no longer count), none later. In wake mode («Baxi» + request, 50,
+    NOISY_TAIL_S) the same: clean as before, at 10 and 5 dB all close 1.2-1.3 s after the voice (before: none). Silero
+    alone closes the clean ones 0.3 s later. An adaptive floor (k × a low percentile of the RMS heard) closed them at 10 dB with k 2 but cut 36-60 at 5 dB
+    in a pause, and with k 1.5 left some to MAX_S: a direct request has no noise heard before it to learn the floor."""
+
+    def __init__(self, sherpa_onnx: Any) -> None:
+        model = importlib.resources.files("silero_vad") / "data" / "silero_vad.onnx"
+        self._model = sherpa_onnx.VadModel.create(sherpa_onnx.VadModelConfig(
+            silero_vad=sherpa_onnx.SileroVadModelConfig(model=str(model), threshold=SPEECH_P, min_silence_duration=0.05,
+                                                        min_speech_duration=0.05, window_size=VAD_STEP),
+            sample_rate=RATE, num_threads=1, provider="cpu"))
+        self._size = self._model.window_size()  # VAD_STEP and its context
+        self.reset()
+
+    def reset(self) -> None:
+        self._model.reset()
+        self._pending = np.zeros(self._size - VAD_STEP, np.float32)  # silence as the first window's context
+
+    def marks(self, block: np.ndarray) -> np.ndarray:
+        """One per sample of ``block``: True at the last sample of each window heard as speech, so a window counts for
+        the block in which it was heard whole."""
+        behind = len(self._pending) - (self._size - VAD_STEP)  # samples of the blocks before not yet in a window
+        self._pending = np.concatenate([self._pending, block])
+        marks = np.zeros(len(block), bool)
+        at = 0
+        while len(self._pending) - at >= self._size:
+            if self._model.is_speech(self._pending[at:at + self._size]):
+                marks[at + VAD_STEP - 1 - behind] = True
+            at += VAD_STEP
+        self._pending = self._pending[at:]
+        return marks
+
+
+def voiced(audio: np.ndarray, marks: np.ndarray) -> np.ndarray:
+    """Which BLOCKs of ``audio`` are voice: loud and heard as speech (``marks``: Vad.marks of the same samples)."""
+    n = len(audio) // BLOCK * BLOCK
+    loud = np.sqrt((audio[:n].reshape(-1, BLOCK) ** 2).mean(axis=1)) >= VOICE_RMS
+    return loud & marks[:n].reshape(-1, BLOCK).any(axis=1)
+
+
 class Voice:
     """Listens on its own thread; the mind's request loop only starts, stops and reads it."""
 
@@ -121,6 +179,7 @@ class Voice:
         self._loaded = threading.Event()
         self._lock = threading.Lock()
         self._detector: Any = None
+        self._vad: Vad | None = None
         self._recognizer: Any = None
         self._hotwords = ""             # the stream hotwords of the names the recognizer was built with
         self._names: list[str] | None = None
@@ -193,7 +252,8 @@ class Voice:
     def _load(self) -> None:
         try:
             import sherpa_onnx
-            self._hear_from()
+            self._vad = Vad(sherpa_onnx)
+            self._hear_from(lambda: Vad(sherpa_onnx))
             wake = Path(os.environ.get("BAXY_RENEW_WAKE_DIR", ""))
             if (wake / "config.json").is_file():
                 spec = importlib.util.spec_from_file_location("baxy_wake_k4", wake / "baxy_wake_runtime.py")
@@ -220,10 +280,12 @@ class Voice:
                 sys.stderr.flush()
             self._loaded.set()
 
-    def _hear_from(self) -> None:
-        """The input: the feed BAXY_RENEW_VOICE_FEED names (then the microphone is never opened), or the microphone."""
+    def _hear_from(self, vad: Callable[[], Vad]) -> None:
+        """The input: the feed BAXY_RENEW_VOICE_FEED names (then the microphone is never opened), or the microphone.
+        The feed tells where each file's voice ended as the voice hears it, with a fresh ``vad()`` for each file."""
         try:
-            self._wav_feed = voice_feed.from_env(RATE, BLOCK, VOICE_RMS, self._quiet, lambda: self._answered)
+            self._wav_feed = voice_feed.from_env(RATE, BLOCK, lambda audio: voiced(audio, vad().marks(audio)),
+                                                 self._quiet, lambda: self._answered)
         except Exception as error:  # noqa: BLE001 - a feed that cannot be heard is told as the missing input
             self.failure = f"voice feed: {error!r}"
             return
@@ -319,6 +381,7 @@ class Voice:
         self._heard += 1                # a transcription of what was heard before is not told
         self._early_back()
         self._audio = np.zeros(0, np.float32)
+        self._speech = np.zeros(0, bool)  # Vad.marks of self._audio
         self._first = 0                 # absolute index of self._audio[0]
         self._total = 0                 # samples heard since the mode started
         self._start: float | None = 0.0 if self._mode == "direct" else None  # the request window's opening
@@ -327,6 +390,8 @@ class Voice:
         self._partial = ""
         if self._detector is not None:
             self._detector.reset()
+        if self._vad is not None:
+            self._vad.reset()
 
     # --- listening ------------------------------------------------------------------------------------------------
 
@@ -356,10 +421,11 @@ class Voice:
 
     def _feed(self, block: np.ndarray) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
         self._audio = np.concatenate([self._audio, block])
+        self._speech = np.concatenate([self._speech, self._vad.marks(block)])
         self._total += len(block)
         if len(self._audio) > KEEP_S * RATE:
             cut = len(self._audio) - int(KEEP_S * RATE)
-            self._audio, self._first = self._audio[cut:], self._first + cut
+            self._audio, self._speech, self._first = self._audio[cut:], self._speech[cut:], self._first + cut
         if self._mode == "wake":
             # The detector keeps hearing during the request too, as in probar_baxy.py.
             detections = self._detector.accept(block)
@@ -393,19 +459,27 @@ class Voice:
 
         return self._segment(begin, now), start - begin if wake else None, then
 
+    def _at(self, s: float) -> int:
+        return max(0, int(s * RATE) - self._first)
+
     def _segment(self, start_s: float, stop_s: float) -> np.ndarray:
-        a = max(0, int(start_s * RATE) - self._first)
-        b = max(a, int(stop_s * RATE) - self._first)
-        return self._audio[a:b]
+        a = self._at(start_s)
+        return self._audio[a:max(a, self._at(stop_s))]
 
     def _voice_end(self, start: float) -> float | None:
         """When the last block of voice of the request ended (the end of «Baxy» left out), or None before any."""
-        after = self._segment(start, self._total / RATE)
-        frames = after[: len(after) // BLOCK * BLOCK].reshape(-1, BLOCK)
-        voiced = np.flatnonzero(np.sqrt((frames ** 2).mean(axis=1)) >= VOICE_RMS) if len(frames) else []
-        tail = WORD_TAIL_S if self._mode == "wake" else 0.0
-        voiced = [i for i in voiced if i * BLOCK / RATE >= tail]
-        return start + (voiced[-1] + 1) * BLOCK / RATE if voiced else None
+        a = self._at(start)
+        blocks = np.flatnonzero(voiced(self._audio[a:], self._speech[a:]))
+        tail = (NOISY_TAIL_S if self._noisy(a) else WORD_TAIL_S) if self._mode == "wake" else 0.0
+        blocks = [i for i in blocks if i * BLOCK / RATE >= tail]
+        return start + (blocks[-1] + 1) * BLOCK / RATE if blocks else None
+
+    def _noisy(self, a: int) -> bool:
+        """Four in five blocks heard before the call (up to 1 s before the request opens at ``a``) are loud: the noise
+        alone is above VOICE_RMS."""
+        before = self._audio[:max(0, a - RATE)]
+        before = before[len(before) % BLOCK:].reshape(-1, BLOCK)
+        return len(before) > 0 and float(np.percentile(np.sqrt((before ** 2).mean(axis=1)), 20)) >= VOICE_RMS
 
     def _quiet(self) -> bool:
         """For the feed: BAXY is silent and no request is hearing voice (one waiting for its words is quiet)."""

@@ -46,6 +46,16 @@ class _Recognizer:
         stream.result = SimpleNamespace(text=word, tokens=[word], timestamps=[99.0])  # after any call
 
 
+class _Vad:
+    """Silero hears speech in every sample: here the levels decide (voice.Vad itself: test_voice_vad.py)."""
+
+    def reset(self) -> None:
+        pass
+
+    def marks(self, block) -> np.ndarray:
+        return np.ones(len(block), bool)
+
+
 def _wav(path: Path, voice_s: float, alternate: bool = False, rate: int = RATE) -> Path:
     n = int(voice_s * rate)
     said = np.full(n, 0.1, np.float32)
@@ -71,8 +81,8 @@ def _voice(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, spec: str, answer: b
     monkeypatch.setattr(voice, "Speech", _Speech)
 
     def load(self: Voice) -> None:
-        self._recognizer = _Recognizer()
-        self._hear_from()
+        self._recognizer, self._vad = _Recognizer(), _Vad()
+        self._hear_from(_Vad)
         self._loaded.set()
 
     monkeypatch.setattr(Voice, "_load", load)
@@ -194,4 +204,5 @@ def test_a_feed_that_cannot_be_heard_is_told_and_no_microphone_is_opened(
 
 def test_without_the_setting_there_is_no_feed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("BAXY_RENEW_VOICE_FEED", raising=False)
-    assert voice_feed.from_env(RATE, BLOCK, 0.012, lambda: True, lambda: 0) is None
+    assert voice_feed.from_env(RATE, BLOCK, lambda audio: np.ones(len(audio) // BLOCK, bool), lambda: True,
+                               lambda: 0) is None
