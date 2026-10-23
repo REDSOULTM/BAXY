@@ -301,3 +301,36 @@ public sealed class PowerShellScriptWorkerTests
         }
     }
 }
+
+/// <summary>
+/// Renew al máximo (rendimiento): the Spotify script's discovery looked every 300 ms and its search page, detail and
+/// playback waits every 500 ms, so each saw what it waited for up to that late. They look every 100 ms, with the same
+/// horizons (12.5 s, 12/20 s, 12 s, 15 s) and the same conditions.
+/// </summary>
+[TestFixture]
+public sealed class SpotifyPollIntervalTests
+{
+    [Test]
+    public void EveryWaitOfTheScriptLooksEvery100MsWithinItsOwnHorizon()
+    {
+        string script = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "SpotifyDesktopAutomation.ps1"));
+        string[] loops = Regex.Matches(script, @"while\(\(Wait-BaxyPoll \$(\w+) ([^)]+)\)\)")
+            .Select(match => match.Groups[1].Value + " " + match.Groups[2].Value)
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(loops, Is.EqualTo(new[]
+            {
+                "foregroundDeadline 25", "searchDeadline $pollMs", "searchPageDeadline $pollMs",
+                "detailDeadline $pollMs", "deadline $pollMs",
+            }));
+            Assert.That(script, Does.Contain("\n$pollMs=100"));
+            Assert.That(script, Does.Contain("$searchDeadline=(Get-Date).AddMilliseconds(12500)"));
+            Assert.That(script, Does.Contain("$searchPageDeadline=$searchedAt.AddSeconds(12)"));
+            Assert.That(script, Does.Contain("$searchPageDeadline=$searchedAt.AddSeconds(20)"));
+            Assert.That(script, Does.Contain("$detailDeadline=(Get-Date).AddSeconds(12)"));
+            Assert.That(script, Does.Contain("$deadline=(Get-Date).AddSeconds(15)"));
+        });
+    }
+}
