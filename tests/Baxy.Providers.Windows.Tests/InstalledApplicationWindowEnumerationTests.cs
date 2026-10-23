@@ -101,6 +101,96 @@ public sealed class InstalledApplicationWindowEnumerationTests
         }
     }
 
+    // Renew al máximo (rendimiento): one poll of a packaged application looks at every process's main window (each one
+    // an EnumWindows of its own through MainWindowHandle, about 300 a poll); the main windows are now read in one pass.
+    [Test]
+    public void OnePollReadsEveryProcesssMainWindowInOnePass()
+    {
+        var entry = new InstalledApplicationEntry("Perf fixture", "Baxy.PerfFixture_0000000000000!App");
+        int passes = 0;
+
+        List<InstalledApplicationObservation> observations = WindowsInstalledApplicationPlatform.Inventory(
+            entry, strongIdentityOnly: false, () =>
+            {
+                passes++;
+                return WindowsInstalledApplicationPlatform.MainWindowsByProcess();
+            }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observations, Is.Empty);
+            Assert.That(passes, Is.EqualTo(1), $"one pass for {Process.GetProcesses().Length} processes");
+        });
+    }
+
+    // Renew al máximo (rendimiento): the one pass gives each process the window MainWindowHandle gives it, on the real
+    // desktop: the test process's own (an owned window and a hidden one above its unowned visible one are never its main
+    // window) and every process running now. A window born or gone between the two reads may differ; it is read again.
+    [Test]
+    public void TheOnePassGivesEveryProcessTheWindowMainWindowHandleGivesIt()
+    {
+        var owned = new List<nint>();
+        try
+        {
+            nint main = Create(0, visible: true);
+            _ = Create(main, visible: true);
+            _ = Create(0, visible: false);
+            using (Process current = Process.GetCurrentProcess())
+            {
+                Assert.That(WindowsInstalledApplicationPlatform.MainWindowsByProcess()
+                    .GetValueOrDefault(unchecked((uint)current.Id)), Is.EqualTo(main));
+                Assert.That(current.MainWindowHandle, Is.EqualTo(main));
+            }
+
+            var differing = new List<string>();
+            int compared = 0;
+            int withWindow = 0;
+            for (int round = 0; round < 3; round++)
+            {
+                differing.Clear();
+                Dictionary<uint, nint> first = WindowsInstalledApplicationPlatform.MainWindowsByProcess();
+                Process[] processes = Process.GetProcesses();
+                var dotnet = new Dictionary<int, nint>();
+                foreach (Process process in processes)
+                {
+                    using (process)
+                        dotnet[process.Id] = process.MainWindowHandle;
+                }
+
+                Dictionary<uint, nint> second = WindowsInstalledApplicationPlatform.MainWindowsByProcess();
+                compared = dotnet.Count;
+                withWindow = dotnet.Count(static item => item.Value != 0);
+                foreach ((int id, nint window) in dotnet)
+                {
+                    nint before = first.GetValueOrDefault(unchecked((uint)id));
+                    nint after = second.GetValueOrDefault(unchecked((uint)id));
+                    if (window != before && (before == after || window != after))
+                        differing.Add($"{id}: MainWindowHandle {window}, one pass {before}/{after}");
+                }
+
+                if (differing.Count == 0)
+                    break;
+            }
+
+            TestContext.Out.WriteLine($"compared {compared} processes, {withWindow} with a main window");
+            Assert.That(differing, Is.Empty);
+        }
+        finally
+        {
+            for (int index = owned.Count - 1; index >= 0; index--)
+                _ = DestroyWindow(owned[index]);
+        }
+
+        nint Create(nint owner, bool visible)
+        {
+            nint handle = CreateWindowEx(0x08000000, "STATIC", "Main window fixture",
+                visible ? 0x90000000u : 0x80000000u, -31000, -31000, 120, 80, owner, 0, 0, 0);
+            Assert.That(handle, Is.Not.EqualTo(nint.Zero), $"CreateWindowEx failed: {Marshal.GetLastPInvokeError()}");
+            owned.Add(handle);
+            return handle;
+        }
+    }
+
     // r27u (tandas v3b1 y r23q, t2-c04 t5 «ya quedo, cierra configuracion porfa»): window.resolve of Configuración gave
     // only SystemSettings' 71×41 «Host de ventanas emergentes» (owned); app.close closed it, the Settings frame stayed
     // and the reply said it was closed. Fake windows: handles and who owns them.

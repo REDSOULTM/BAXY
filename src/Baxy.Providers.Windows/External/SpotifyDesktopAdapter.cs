@@ -5,12 +5,13 @@ using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
 
-internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
+internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDisposable
 {
     private readonly IExternalProcessRunner _runner;
     private readonly string _scriptPath;
     private readonly Func<nint> _clientWindow;
     private readonly TimeProvider _time;
+    private readonly bool _ownsRunner;
 
     private const string ClientProcess = "Spotify";
 
@@ -39,11 +40,27 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
         ((long)Math.Max(1, (budget - DeadlineMargin).TotalMilliseconds)).ToString(CultureInfo.InvariantCulture);
 
     internal SpotifyDesktopAdapter()
-        : this(new ExternalProcessRunner(), Path.Combine(
-            AppContext.BaseDirectory, "SpotifyDesktopAutomation.ps1"),
-            clientWindow: ClientMainWindow)
+        : this(Path.Combine(AppContext.BaseDirectory, "SpotifyDesktopAutomation.ps1"))
+    {
+    }
+
+    // Renew al máximo (rendimiento): the script runs in one persistent PowerShell (PowerShellScriptWorker), so a call
+    // after the first pays neither the PowerShell start nor its Add-Types (about half a second of each call).
+    private SpotifyDesktopAdapter(string scriptPath)
+        : this(new PowerShellScriptWorker(scriptPath), scriptPath, clientWindow: ClientMainWindow)
     {
         InputLease = ForegroundLease.Shared;
+        _ownsRunner = true;
+    }
+
+    /// <summary>What runs the script (the tests check the product's is the persistent worker).</summary>
+    internal IExternalProcessRunner ScriptRunner => _runner;
+
+    /// <summary>Ends the script worker this adapter started (never a runner a test handed it).</summary>
+    public void Dispose()
+    {
+        if (_ownsRunner && _runner is IDisposable runner)
+            runner.Dispose();
     }
 
     /// <summary>

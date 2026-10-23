@@ -56,7 +56,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         // waiting for it (its own wait for Raw Input happens there), so the first look of a mission already knows the
         // window the person works in. Started lazily at that look, it knew nothing that came before.
         _ = Task.Run(() => WindowsUserInputPause.Shared);
-        var desktopInteraction = new WindowsDesktopInteractionAdapter(visibleControls);
+        // Renew al máximo (rendimiento): filesystem.folder.open's and the Calculator's scripts run in this worker, already
+        // started by the prewarm, instead of a PowerShell started cold for each call.
+        var desktopInteraction = new WindowsDesktopInteractionAdapter(visibleControls) { Scripts = uia };
         // A search burst (goal v3 point 0, fix 3) types its destination as input.text.type does, bound to the window.
         visibleControls.TypeInWindow = (window, text, token) => desktopInteraction.InvokeAsync(
             "input.text.type",
@@ -90,7 +92,10 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsGameInstallationAdapter(),
             new WindowsDeviceControlAdapter(
                 root,
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY")),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY"))
+            {
+                Scripts = uia,
+            },
             new WindowsDisplayModeAdapter(),
             new WingetPackageAdapter(),
             new ShellCommandAdapter(),

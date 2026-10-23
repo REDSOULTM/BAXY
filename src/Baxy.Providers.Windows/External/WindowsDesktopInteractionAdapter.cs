@@ -56,6 +56,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// </summary>
     internal IForegroundLease? ChordLease { get; init; }
 
+    /// <summary>
+    /// Renew al máximo (rendimiento): the persistent UI Automation worker filesystem.folder.open's script runs in
+    /// (<see cref="UiaWorkerScript"/>, its arguments by position); null starts a PowerShell for it, as before (the test
+    /// seams' fake runners).
+    /// </summary>
+    internal IUiaWorker? Scripts { get; init; }
+
     internal WindowsDesktopInteractionAdapter(
         IExternalProcessRunner runner,
         string folderScript,
@@ -169,6 +176,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         if (!File.Exists(script))
             return ExternalJson.Failure(operation, "desktop_interaction_script_missing");
         var command = new List<string> { "-NoProfile", "-NonInteractive", "-STA", "-File", script };
+        // The folder script's parameters by position (Folder, Subdirectory), as the worker's runspace takes them.
+        var positional = new List<string>();
         try
         {
             if (operation == "clipboard.copy")
@@ -178,6 +187,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             else if (operation is "filesystem.folder.open" or "filesystem.file.open.latest")
             {
                 command.Add(ExternalJson.RequiredString(arguments, "folder"));
+                positional.Add(command[^1]);
                 if (operation == "filesystem.folder.open"
                     && arguments.TryGetProperty("subdirectory", out JsonElement subdirectory)
                     && subdirectory.ValueKind == JsonValueKind.String
@@ -185,6 +195,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 {
                     command.Add("-Subdirectory");
                     command.Add(subdirectory.GetString()!);
+                    positional.Add(command[^1]);
                 }
             }
             else if (operation == "input.keyboard.layout")
@@ -223,9 +234,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             {
                 effectBoundary.Cross(cancellationToken);
             }
+            // Renew al máximo (rendimiento): the folder's script runs in the worker, already started, with the same
+            // budget; the PowerShell started cold for it cost a few hundred ms of every opening.
             (ExternalProcessResult? watched, bool interrupted) = await LeasedInput.WatchHelperAsync(
                 burst,
-                run => _runner.RunAsync("powershell.exe", command, TimeSpan.FromSeconds(15), run),
+                run => operation == "filesystem.folder.open" && Scripts is { } worker
+                    ? UiaWorkerScript.RunAsync(
+                        worker, File.ReadAllText(script), positional, TimeSpan.FromSeconds(15), run)
+                    : _runner.RunAsync("powershell.exe", command, TimeSpan.FromSeconds(15), run),
                 cancellationToken).ConfigureAwait(false);
             if (interrupted || watched is not { } process)
                 return effectBoundary.Failure(operation, LeasedInput.Interrupted, true);

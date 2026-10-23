@@ -127,6 +127,9 @@ function InvokeElement([Windows.Automation.AutomationElement]$element){
     }
     throw 'spotify_element_not_actionable'
 }
+# Renew al máximo (rendimiento): the discovery, search page, detail and playback waits looked every 300-500 ms, so
+# each found what it waited for up to that late; they look every 100 ms now, with the same horizons and conditions.
+$pollMs=100
 function Wait-BaxyPoll([DateTime]$Deadline,[int]$IntervalMilliseconds){
     if($hardEnd -lt $Deadline){$Deadline=$hardEnd}
     $remaining=$Deadline-(Get-Date)
@@ -422,7 +425,7 @@ try {
             } catch {}
         }
         if($null -ne $search -and (Test-BaxySpotifyContentExposed $coldStart $playableSeen)){break}
-    } while((Wait-BaxyPoll $searchDeadline 300))
+    } while((Wait-BaxyPoll $searchDeadline $pollMs))
     if($null -eq $process){throw 'spotify_window_missing'}
     if($null -eq $search){throw 'spotify_search_box_missing'}
     if(-not (Confirm-BaxySpotifyForeground $process.MainWindowHandle)){throw 'spotify_foreground_not_verified'}
@@ -501,7 +504,7 @@ try {
                 Add-BaxySpotifyMark 'researched'
             }
         }
-    } while((Wait-BaxyPoll $searchPageDeadline 500))
+    } while((Wait-BaxyPoll $searchPageDeadline $pollMs))
     if(-not $searchPageReady -and $null -ne $searchObservationError){throw $searchObservationError}
     if($null -eq $playCandidate){
         if($null -eq $candidate){
@@ -539,7 +542,7 @@ try {
                     $detailObservationError=$_
                 }
                 if($null -ne $playCandidate){break}
-            } while((Wait-BaxyPoll $detailDeadline 500))
+            } while((Wait-BaxyPoll $detailDeadline $pollMs))
             if($null -eq $playCandidate -and $null -ne $detailObservationError){throw $detailObservationError}
         }
     }
@@ -618,7 +621,7 @@ try {
             $playObservationError=$_
         }
         if($verified -or $pressIgnored){break}
-    } while((Wait-BaxyPoll $deadline 500))
+    } while((Wait-BaxyPoll $deadline $pollMs))
     if(-not $verified -and $null -ne $playObservationError){throw $playObservationError}
     $failure=if($verified){$null}elseif($resumedOnly){'spotify_query_result_not_confirmed'}else{'spotify_'+$stage+'_not_verified'}
     $observedTitle=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle

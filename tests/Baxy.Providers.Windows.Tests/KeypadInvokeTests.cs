@@ -128,6 +128,59 @@ public sealed class KeypadInvokeTests
         });
     }
 
+    // Renew al máximo (rendimiento): the display after the last press was read once after a fixed 300 ms. It is read
+    // every 50 ms within the same 300 ms and taken at the second identical read that shows the last operand; a display
+    // that never shows it is read at 300 ms, as before, for the caller's check to refuse.
+    [Test]
+    public void TheResultIsTakenWhenTheDisplayShowsItWithinTheSameBudget()
+    {
+        string answer = Run("""
+            function Timed($reads,$keys){
+              $count=@{n=0}
+              $read={ $at=[Math]::Min($count.n,$reads.Count-1); $count.n++; $reads[$at] }
+              $clock=[Diagnostics.Stopwatch]::StartNew()
+              $got=Wait-ShownResult $read $keys 300 50
+              return @($got.value,$count.n,$clock.ElapsedMilliseconds)
+            }
+            $shown=@{name='Se muestra 42';expr='6 × 7=';value='42'}
+            $settled=Timed @($shown) '6*7'
+            $wrong=Timed @(@{name='Se muestra 48';expr='6 × 8=';value='48'}) '6*7'
+            $late=Timed @(@{name='Se muestra 7';expr='6 ×';value='7'},$shown) '6*7'
+            $bare=Timed @(@{name='Se muestra 6';expr='';value='6'},@{name='Se muestra 42';expr='';value='42'}) '6*7'
+            [Console]::Out.Write((@($settled,$wrong,$late,$bare) | ForEach-Object { $_ -join ' ' }) -join ',')
+            """);
+
+        string[][] runs = answer.Split(',').Select(run => run.Split(' ')).ToArray();
+        Assert.Multiple(() =>
+        {
+            // Shown at once: taken at the second read, well before the 300 ms the fixed wait took.
+            Assert.That(runs[0][0], Is.EqualTo("42"));
+            Assert.That(runs[0][1], Is.EqualTo("2"));
+            Assert.That(long.Parse(runs[0][2], System.Globalization.CultureInfo.InvariantCulture), Is.LessThan(250));
+            // Counter-case: a display that never shows the last operand is read until the 300 ms, and that read goes
+            // to the caller's check (which refuses it), as before.
+            Assert.That(runs[1][0], Is.EqualTo("48"));
+            Assert.That(long.Parse(runs[1][2], System.Globalization.CultureInfo.InvariantCulture), Is.GreaterThanOrEqualTo(300));
+            // Counter-case: the expression not yet shown is waited for.
+            Assert.That(runs[2][0], Is.EqualTo("42"));
+            Assert.That(runs[2][1], Is.EqualTo("3"));
+            // Counter-case: without the expression line a first number is not taken until it reads the same twice.
+            Assert.That(runs[3][0], Is.EqualTo("42"));
+            Assert.That(runs[3][1], Is.EqualTo("3"));
+        });
+    }
+
+    [Test]
+    public void TheDisplayAfterThePressesIsPolledNotWaitedForWhole()
+    {
+        string script = WindowsDeviceControlAdapter.CalculatorScript;
+        Assert.Multiple(() =>
+        {
+            Assert.That(script, Does.Not.Contain("Start-Sleep -Milliseconds 300"));
+            Assert.That(script, Does.Contain("Wait-ShownResult $read $keys 300 50"));
+        });
+    }
+
     private static string Quoted(IEnumerable<string> names) =>
         string.Join(",", names.Select(name => "'" + name.Replace("'", "''", StringComparison.Ordinal) + "'"));
 
