@@ -673,6 +673,64 @@ public sealed class FileInvocationJournalRotationTests
             Throws.InstanceOf<JournalIntegrityException>());
     }
 
+    // Auditoría del núcleo 2026-10-23: retention by age. A completion older than the age kept leaves the live segment
+    // at the next open and, its segment sealed longer ago than that, leaves the disk; its id is retired first, so a
+    // retry is refused, never executed. Younger ones stay where they were.
+    [Test]
+    public async Task ACompletionOlderThanTheAgeKeptLeavesAndItsRetryIsRefused()
+    {
+        OperationRequest request = CreateRequest();
+        var handler = new CountingHandler();
+        await using (FileInvocationJournal journal = await OpenRotatingAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            _ = await engine.ExecuteAsync(request, CancellationToken.None);
+        }
+
+        OperationResponse young;
+        await using (FileInvocationJournal journal = await OpenAgedAsync(TimeSpan.FromDays(29)))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            young = await engine.ExecuteAsync(
+                request with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        }
+
+        bool archivedWhileYoung = File.Exists(Archive(1));
+        OperationResponse old;
+        await using (FileInvocationJournal journal = await OpenAgedAsync(TimeSpan.FromDays(31)))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            old = await engine.ExecuteAsync(
+                request with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(young.Replayed, Is.True);
+            Assert.That(archivedWhileYoung, Is.False);
+            Assert.That(old.ErrorCode, Is.EqualTo("idempotency_conflict"));
+            Assert.That(File.Exists(Archive(1)), Is.False);
+            Assert.That(File.ReadAllText(_journalPath, Encoding.UTF8), Does.Not.Contain(request.InvocationId));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    private ValueTask<FileInvocationJournal> OpenAgedAsync(TimeSpan ahead) =>
+        FileInvocationJournal.OpenWithRotationForTestingAsync(
+            _journalPath,
+            new JournalHmacAuthenticator(_authenticationKey),
+            MaximumJournalBytes,
+            CompletionReservationBytes,
+            RotationThresholdBytes,
+            retainedArchiveSegments: 2,
+            time: new AheadTime(ahead));
+
+    // The clock this many days ahead: what the journal wrote now reads as that old.
+    private sealed class AheadTime(TimeSpan ahead) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => base.GetUtcNow() + ahead;
+    }
+
     [Test]
     public async Task ArchivedSegmentsWithoutTheirManifestAreDetected()
     {

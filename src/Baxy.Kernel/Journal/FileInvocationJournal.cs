@@ -30,6 +30,12 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     // it is refused, never executed again.
     private const long DefaultRotationThresholdBytes = DefaultMaximumJournalBytes / 4 * 3;
     private const int DefaultRetainedArchiveSegments = 2;
+
+    // Auditoría del núcleo 2026-10-23: retention by age too, not only by size. A live segment whose oldest completion
+    // is older than this rotates when the journal opens, and an archived segment sealed longer ago than this leaves
+    // (its completions retired first, as the size retention does): a light user's responses no longer stay for years.
+    // A record is kept at most about twice this long.
+    internal static readonly TimeSpan DefaultMaximumRecordAge = TimeSpan.FromDays(30);
     private const string RotationCandidateSuffix = ".rotating";
     private const string ManifestSuffix = ".segments";
     private const string RetiredSuffix = ".retired";
@@ -85,6 +91,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     private readonly int _completionReservationBytes;
     private readonly long? _rotationThresholdBytes;
     private readonly int _retainedArchiveSegments;
+    private readonly TimeSpan _maximumRecordAge;
+    private readonly TimeProvider _time;
     private readonly Action<JournalCommitStage>? _crashHook;
     private readonly Action<string>? _diagnostics;
     private JournalSegmentManifest? _manifest;
@@ -102,7 +110,9 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         long? rotationThresholdBytes,
         int retainedArchiveSegments,
         Action<JournalCommitStage>? crashHook,
-        Action<string>? diagnostics)
+        Action<string>? diagnostics,
+        TimeSpan maximumRecordAge,
+        TimeProvider time)
     {
         _path = path;
         _anchorPath = string.Concat(path, ".anchor");
@@ -115,6 +125,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         _completionReservationBytes = completionReservationBytes;
         _rotationThresholdBytes = rotationThresholdBytes;
         _retainedArchiveSegments = retainedArchiveSegments;
+        _maximumRecordAge = maximumRecordAge;
+        _time = time;
         _crashHook = crashHook;
         _diagnostics = diagnostics;
     }
@@ -150,6 +162,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             DefaultRetainedArchiveSegments,
             crashHook: null,
             diagnostics,
+            DefaultMaximumRecordAge,
+            TimeProvider.System,
             cancellationToken).ConfigureAwait(false);
 
     /// <summary>
@@ -173,6 +187,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             DefaultRetainedArchiveSegments,
             crashHook,
             diagnostics: null,
+            DefaultMaximumRecordAge,
+            TimeProvider.System,
             cancellationToken).ConfigureAwait(false);
 
     internal static async ValueTask<FileInvocationJournal> OpenWithRotationForTestingAsync(
@@ -184,6 +200,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         int retainedArchiveSegments,
         Action<JournalCommitStage>? crashHook = null,
         Action<string>? diagnostics = null,
+        TimeSpan? maximumRecordAge = null,
+        TimeProvider? time = null,
         CancellationToken cancellationToken = default) =>
         await OpenCoreAsync(
             journalPath,
@@ -194,6 +212,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             retainedArchiveSegments,
             crashHook,
             diagnostics,
+            maximumRecordAge ?? DefaultMaximumRecordAge,
+            time ?? TimeProvider.System,
             cancellationToken).ConfigureAwait(false);
 
     private static async ValueTask<FileInvocationJournal> OpenCoreAsync(
@@ -205,6 +225,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         int retainedArchiveSegments,
         Action<JournalCommitStage>? crashHook,
         Action<string>? diagnostics,
+        TimeSpan maximumRecordAge,
+        TimeProvider time,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(authenticator);
@@ -254,7 +276,9 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                 rotationThresholdBytes,
                 retainedArchiveSegments,
                 crashHook,
-                diagnostics);
+                diagnostics,
+                maximumRecordAge,
+                time);
             ownershipTransferred = true;
             try
             {
@@ -889,7 +913,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         LoadManifest();
         await LoadArchivedSegmentsAsync(cancellationToken).ConfigureAwait(false);
         TryEnforceArchiveRetention();
-        if (ShouldRotate(pendingBytes: 0))
+        if (ShouldRotate(pendingBytes: 0) || LiveHoldsAnExpiredCompletion())
         {
             await TryRotateAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -2550,10 +2574,18 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             return;
         }
 
-        if (manifest.Segments.Length > _retainedArchiveSegments)
+        // Newest first: the kept ones are a prefix, so each still links to the next older kept one.
+        int keep = 0;
+        while (keep < manifest.Segments.Length && keep < _retainedArchiveSegments
+            && !ArchiveExpired(manifest.Segments[keep]))
         {
-            JournalArchiveLink[] kept = manifest.Segments[.._retainedArchiveSegments];
-            long[] pruned = manifest.Segments[_retainedArchiveSegments..]
+            keep++;
+        }
+
+        if (keep < manifest.Segments.Length)
+        {
+            JournalArchiveLink[] kept = manifest.Segments[..keep];
+            long[] pruned = manifest.Segments[keep..]
                 .Select(static link => link.Segment)
                 .ToArray();
             List<string> retiredIds = _archived
@@ -2657,6 +2689,17 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             // Retried on the next open or rotation.
         }
     }
+
+    // Retention by age: the live segment holds a completion older than the age kept (only with rotation on).
+    private bool LiveHoldsAnExpiredCompletion() =>
+        _rotationThresholdBytes is not null
+        && _retainedStates.Values.Any(state => _completed.ContainsKey(state.InvocationId)
+            && state.TimestampUtc < _time.GetUtcNow() - _maximumRecordAge);
+
+    // Retention by age: an archived segment sealed longer ago than the age kept (its file is never written again).
+    private bool ArchiveExpired(JournalArchiveLink link) =>
+        File.GetLastWriteTimeUtc(PreparePath(SegmentPath(_path, link.Segment)))
+            < (_time.GetUtcNow() - _maximumRecordAge).UtcDateTime;
 
     private bool ShouldRotate(int pendingBytes) =>
         _rotationThresholdBytes is { } threshold
@@ -3262,6 +3305,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                 _retainedArchiveSegments,
                 crashHook: null,
                 diagnostics: null,
+                _maximumRecordAge,
+                _time,
                 cancellationToken)
             .ConfigureAwait(false);
         if (candidate._started.Count != _started.Count
