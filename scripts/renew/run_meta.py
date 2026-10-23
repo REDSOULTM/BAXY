@@ -128,3 +128,40 @@ def confirmation_mode(environ: dict[str, str] | None = None) -> str:
 
 def machine() -> str:
     return os.environ.get("COMPUTERNAME") or socket.gethostname()
+
+
+S1_DEFAULTS = {"BAXY_S1_DOUBT": "0.4", "BAXY_S1_VETO": "0.6", "BAXY_S1_CORRECT": "1"}
+
+
+def system_one_setting(environ: dict[str, str] | None = None) -> dict[str, Any]:
+    """System One as scripts/run_renew.cmd starts the product for a bench: with the switch file
+    %LOCALAPPDATA%\\BAXY\\renew\\system_one.off (scripts\\system_one.cmd off, the owner's) the launcher sets nothing and
+    only what the bench's own environment carries counts; without it, every BAXY_S1_* not given takes the launcher's
+    default (its GGUF is per machine: «default of run_renew.cmd»). The owner's switch decided whether an e2e arm ran
+    with System One."""
+    source = os.environ if environ is None else environ
+    off_file = (Path(source.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "system_one.off").exists()
+    given = {key: source[key] for key in (*S1_DEFAULTS, "BAXY_S1_GGUF", "BAXY_S1_THREADS") if source.get(key)}
+    setting = dict(given) if off_file else {**S1_DEFAULTS, "BAXY_S1_GGUF": "default of run_renew.cmd", **given}
+    return {"off_file": off_file, "on": bool(setting.get("BAXY_S1_GGUF")), "setting": setting}
+
+
+def product_record(root: str | Path, run_dir: str | Path, started: float, environ: dict[str, str] | None = None,
+                   ) -> dict[str, Any]:
+    """What a bench that drives the real product (run_renew.cmd through the conductor) ran: the checkout, the mind's
+    source, the seed, System One (as the launcher decides it, and whether its server really started: its log was
+    written after `started`, a time.time()), the catalog the App sent (the run's mente\\catalog.configure.json) and
+    every BAXY_* switch."""
+    source = os.environ if environ is None else environ
+    root = Path(root)
+    mind = Path(source.get("BAXY_MIND_PYTHONPATH") or root / "src") / "baxy_mind"
+    s1_log = Path(source.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "system-one.log"
+    try:
+        s1_started = s1_log.stat().st_mtime >= started
+    except OSError:
+        s1_started = False
+    return {"machine": machine(), "root": str(root), "git": git_state(root), "mind_sha256": tree_sha256(mind),
+            "seed": source.get("BAXY_RENEW_SEED") or "0 (default)",
+            "system_one": {**system_one_setting(source), "server_started": s1_started},
+            "catalog": fingerprint(Path(run_dir) / "mente" / "catalog.configure.json"),
+            "env": baxy_env(source)}

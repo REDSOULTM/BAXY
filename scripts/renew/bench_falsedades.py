@@ -26,8 +26,9 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from bench_e2e import (BANKS, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
+from bench_e2e import (BANKS, ROOT, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
                        run_ps, run_setup, run_turn, session_locked, wait_silence)
+import run_meta  # noqa: E402
 
 JUDGE_GGUF = os.environ.get("BAXY_RENEW_JUDGE_GGUF", r"F:\BAXYeval\models\Qwen3.6-35B-A3B-MTP-UD-IQ3_XXS.gguf")
 LLAMA_SERVER = os.environ.get("BAXY_MIND_LLAMA_SERVER", r"F:\BAXYeval\llama\llama-server.exe")
@@ -65,11 +66,15 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
     if void:
         raise BenchVoid(void)
     profile = Path(os.environ["LOCALAPPDATA"]) / "BAXY" / f"bench-{run_dir.name}-{int(time.time())}"
+    launched = time.time()
     conductor = Conductor(run_dir, profile)
     ready = conductor.events.wait(lambda e: e["type"] in {"runtime", "terminal"}, 300)
     if not ready or not ready.get("mindReady"):
         conductor.close()
         raise SystemExit(f"conductor not ready: {ready}")
+    # What this replica ran (audit w8-medir), kept beside its transcripts for a later --judge-only.
+    (run_dir / "run.json").write_text(json.dumps(run_meta.product_record(ROOT, run_dir, launched), ensure_ascii=False,
+                                                 indent=1), encoding="utf-8")
     env = dict(os.environ)
     transcripts = []
     for case in cases:
@@ -276,8 +281,13 @@ def judge_transcripts(transcripts: list[dict]) -> list[dict]:
     return rows
 
 
-def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict], rows: list[dict]) -> dict:
+def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict], rows: list[dict],
+                run_dir: Path | None = None) -> dict:
     false_lines = [r for r in rows if r.get("falsedad")]
+    try:
+        record = json.loads((run_dir / "run.json").read_text(encoding="utf-8")) if run_dir else None
+    except (OSError, ValueError):
+        record = None
     # A verdict the judge did not give in readable form is not an honest line: it is a line not judged.
     unjudged = [r for r in rows if "unparsed" in r]
     return {"label": label, "cases": cases, "seed": seed, "conversations": len(transcripts), "lines": len(rows),
@@ -297,7 +307,7 @@ def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict
                                        if turn.get("failure")}),
             "turnos_sin_linea": sorted({t["id"] for t in transcripts for turn in t.get("turns") or []
                                         if not any(str(b).strip() for b in turn.get("baxy") or [])}),
-            **profile_summary(transcripts)}
+            **profile_summary(transcripts), "run": record}
 
 
 def replicas_summary(label: str, summaries: list[dict]) -> dict:
@@ -321,7 +331,9 @@ def replicas_summary(label: str, summaries: list[dict]) -> dict:
             "lineas": sum(s["lines"] for s in summaries),
             "lineas_sin_juzgar": sum(s["lineas_sin_juzgar"] for s in summaries),
             **{key: tagged(key) for key in ("lineas_a_revisar", "setup_failed", "turnos_fallidos",
-                                            "profile_quarantined", "profile_review")}}
+                                            "profile_quarantined", "profile_review")},
+            # Audit w8-medir: a replica that changed the owner's files left a different world to the ones after it.
+            "replicas_contaminadas": [f"s{s['seed']}" for s in summaries if s.get("contaminated")]}
 
 
 def main() -> None:
@@ -372,7 +384,7 @@ def main() -> None:
     judged = judge([conversations[label] for label, _ in replicas], run_dirs[replicas[0][0]])
     summaries = []
     for (label, seed), rows in zip(replicas, judged):
-        summary = run_summary(label, args.cases, seed, conversations[label], rows)
+        summary = run_summary(label, args.cases, seed, conversations[label], rows, run_dirs[label])
         summaries.append(summary)
         with (run_dirs[label] / "results.jsonl").open("w", encoding="utf-8") as out:
             out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")

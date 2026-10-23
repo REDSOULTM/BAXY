@@ -26,6 +26,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import run_meta  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
 
@@ -88,9 +91,23 @@ def profile_summary(rows: list[dict]) -> dict:
     """Across the cases of a run: what was moved to the quarantine and what a person must review, «id: path»."""
     def listed(*kinds):
         return [f"{row['id']}: {path}" for row in rows for kind in kinds for path in (row.get("profile") or {}).get(kind) or []]
-    return {"profile_quarantined": listed("removed"),
-            "profile_review": listed("changed", "missing", "new_kept", "left"),
-            "target_windows_left": [row["id"] for row in rows if (row.get("profile") or {}).get("target_windows_left")]}
+    review = listed("changed", "missing", "new_kept", "left")
+    return {"profile_quarantined": listed("removed"), "profile_review": review,
+            "target_windows_left": [row["id"] for row in rows if (row.get("profile") or {}).get("target_windows_left")],
+            # Audit w8-medir: what the cases changed, removed or left outside the sandbox and the bench did not undo is
+            # there for the next case and the next configuration (holdout v4: tareas_hoy.txt, config.ini, q4/notes.txt
+            # in the notebook's home, F007 and F036). A contaminated run says so; restore by hand before the next arm.
+            "contaminated": bool(review)}
+
+
+# A case that never ran its turns is not the product's failure (CIERRE_PLAN: «un caso con setup_fallido es VOID»).
+NOT_SCORED = ("setup_fallido", "void", "sesion_bloqueada")
+
+
+def scored(rows: list[dict]) -> dict:
+    """The run's score over the cases that ran: ok and n leave out the cases that never ran (n keeps every case)."""
+    ran = [row for row in rows if row.get("status") not in NOT_SCORED]
+    return {"n_scored": len(ran), "accuracy_scored": round(sum(r["ok"] for r in ran) / max(1, len(ran)), 4)}
 
 
 class Isolation:
@@ -472,12 +489,14 @@ def main() -> None:
         print(f"VOID: {void}\nClose those windows (or run on a machine the owner is not using) and start again.",
               flush=True)
         sys.exit(VOID_EXIT)
+    launched = time.time()
     conductor = Conductor(run_dir, profile)
     ready = conductor.events.wait(lambda e: e["type"] in {"runtime", "terminal"}, 300)
     if not ready or not ready.get("mindReady"):
         print(json.dumps({"error": "conductor_not_ready", "event": ready}), flush=True)
         conductor.close()
         sys.exit(2)
+    record = run_meta.product_record(ROOT, run_dir, launched)  # after configure: the catalog is in the run
     env_base = dict(os.environ)
     rows = []
     stopped_before = None
@@ -522,7 +541,8 @@ def main() -> None:
     every_p50 = statistics.median(every) if every else None
     summary = {"label": args.label, "cases": args.cases, "ok": sum(r["ok"] for r in rows), "n": len(rows),
                "stopped_before": stopped_before,
-               "accuracy": round(sum(r["ok"] for r in rows) / max(1, len(rows)), 4), "areas": by_area,
+               "accuracy": round(sum(r["ok"] for r in rows) / max(1, len(rows)), 4), **scored(rows),
+               "areas": by_area,
                # The turn's first sound (the notice's when it came first) and its response's, each with the turns that
                # sounded later than 3 s.
                "first_audio_p50_ms": statistics.median(audio) if audio else None,
@@ -535,12 +555,18 @@ def main() -> None:
                "setup_failed": [r["id"] for r in rows if r["status"] == "setup_fallido"],
                # w6-banco: a VOID run is not a score; the files cases left outside the sandbox (moved to each case's
                # profile-quarantine) and the owner's files a case changed or removed (reported, never touched).
-               "void": void, **profile_summary(rows)}
+               "void": void, **profile_summary(rows), "run": record}
     with (run_dir / "results.jsonl").open("w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
         for row in rows:
             out.write(json.dumps(row, ensure_ascii=False) + "\n")
     print(json.dumps(summary, ensure_ascii=False))
+    if summary["contaminated"]:
+        print(f"WARNING: the cases changed files outside the sandbox the bench did not undo (profile_review, "
+              f"{len(summary['profile_review'])}): put them back before the next configuration runs", flush=True)
+    if record["system_one"]["on"] != record["system_one"]["server_started"]:
+        print(f"WARNING: System One was {'on' if record['system_one']['on'] else 'off'} for the launcher but its server "
+              f"{'did' if record['system_one']['server_started'] else 'did not'} start", flush=True)
     if void:
         sys.exit(VOID_EXIT)
 

@@ -170,3 +170,41 @@ def test_the_benchs_product_writes_its_mind_trace_in_the_run(tmp_path, monkeypat
     conductor = bench_e2e.Conductor(tmp_path, tmp_path / "perfil")
     assert started["env"]["BAXY_RENEW_TRACE_DIR"] == str(tmp_path / "mente") == str(conductor.mind_dir)
     started["stdout"].close()
+
+
+def test_system_one_of_an_e2e_arm_is_what_the_launcher_and_the_owners_switch_decide(tmp_path) -> None:
+    local = tmp_path / "local"
+    (local / "BAXY" / "renew").mkdir(parents=True)
+    on = run_meta.system_one_setting({"LOCALAPPDATA": str(local)})
+    assert on["on"] and not on["off_file"] and on["setting"]["BAXY_S1_VETO"] == "0.6"
+    (local / "BAXY" / "renew" / "system_one.off").write_text("", encoding="utf-8")
+    off = run_meta.system_one_setting({"LOCALAPPDATA": str(local)})
+    assert off == {"off_file": True, "on": False, "setting": {}}
+    # With the owner's switch off, only what the bench itself carries turns it on.
+    given = run_meta.system_one_setting({"LOCALAPPDATA": str(local), "BAXY_S1_GGUF": "laya.gguf"})
+    assert given["on"] and given["setting"] == {"BAXY_S1_GGUF": "laya.gguf"}
+
+
+def test_a_product_run_records_its_catalog_seed_and_whether_system_one_started(tmp_path) -> None:
+    import time
+    local, run = tmp_path / "local", tmp_path / "run"
+    (local / "BAXY" / "renew").mkdir(parents=True)
+    (run / "mente").mkdir(parents=True)
+    (run / "mente" / "catalog.configure.json").write_text("{}", encoding="utf-8")
+    started = time.time() - 5
+    (local / "BAXY" / "renew" / "system-one.log").write_text("", encoding="utf-8")
+    record = run_meta.product_record(tmp_path, run, started, {"LOCALAPPDATA": str(local), "BAXY_RENEW_SEED": "1"})
+    assert record["seed"] == "1" and record["catalog"]["sha256"] == run_meta.sha256_file(run / "mente" / "catalog.configure.json")
+    assert record["system_one"]["on"] and record["system_one"]["server_started"]
+    later = run_meta.product_record(tmp_path, run, time.time() + 60, {"LOCALAPPDATA": str(local)})
+    assert later["seed"] == "0 (default)" and not later["system_one"]["server_started"]
+
+
+def test_an_e2e_score_leaves_out_cases_that_never_ran_and_says_when_the_owners_files_changed() -> None:
+    import bench_e2e
+    rows = [{"id": "E1", "ok": True, "status": "ok", "profile": {"changed": [r"C:\Users\x\config.ini"]}},
+            {"id": "E2", "ok": False, "status": "setup_fallido"}, {"id": "E3", "ok": False, "status": "fallo"}]
+    assert bench_e2e.scored(rows) == {"n_scored": 2, "accuracy_scored": 0.5}
+    summary = bench_e2e.profile_summary(rows)
+    assert summary["contaminated"] and summary["profile_review"] == [r"E1: C:\Users\x\config.ini"]
+    assert not bench_e2e.profile_summary(rows[1:])["contaminated"]
