@@ -123,6 +123,46 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Renew al máximo (w8): a replace whose new version could not take the name once the previous one was in the bin
+    // deleted the new text; it is kept beside the name and the failure says where both are.
+    [Test]
+    public void AReplaceThatCannotTakeTheNameAfterTheBinKeepsTheNewText()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var bin = new RetakenNameBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        FilesystemMutationResult first = provider.WriteText("dato.txt", "uno", null);
+
+        FilesystemProviderException? failure = Assert.Throws<FilesystemProviderException>(
+            () => provider.WriteText("dato.txt", "dos", first.Sha256));
+
+        string kept = Path.Combine(sandbox, failure!.Result!.Value.GetProperty("newTextFile").GetString()!);
+        Assert.Multiple(() =>
+        {
+            Assert.That(failure.Code, Is.EqualTo("write_not_completed_previous_recycled"));
+            Assert.That(failure.EffectMayHaveOccurred, Is.True);
+            Assert.That(File.ReadAllText(kept), Is.EqualTo("dos"));
+            Assert.That(File.ReadAllText(bin.Recycled.Single()), Is.EqualTo("uno"));
+        });
+    }
+
+    // A bin that takes the file, after which something else takes its name (a folder here, a sync client in use).
+    private sealed class RetakenNameBin(string folder) : IRecycleBin
+    {
+        internal List<string> Recycled { get; } = [];
+
+        public bool Recycle(string path)
+        {
+            Directory.CreateDirectory(folder);
+            string destination = Path.Combine(folder, Guid.NewGuid().ToString("N"));
+            File.Move(path, destination);
+            Recycled.Add(destination);
+            Directory.CreateDirectory(path);
+            return true;
+        }
+    }
+
     [Test]
     public void AReplaceTheBinCannotTakeChangesNothing()
     {

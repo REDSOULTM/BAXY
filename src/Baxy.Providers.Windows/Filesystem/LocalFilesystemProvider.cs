@@ -189,7 +189,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
             string temporary = Path.Combine(
                 Path.GetDirectoryName(path)!, ".baxy-write-" + Guid.NewGuid().ToString("N") + ".tmp");
-            bool recycled = false;
+            bool recycled = false, keepNewText = false;
             try
             {
                 using (var stream = new FileStream(
@@ -211,7 +211,17 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                     // place, and when the bin cannot take it nothing is replaced.
                     if (!_recycleBin.Recycle(path)) throw Error("previous_version_not_recycled");
                     recycled = true;
-                    File.Move(temporary, path);
+                    try
+                    {
+                        File.Move(temporary, path);
+                    }
+                    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+                    {
+                        // Renew al máximo (w8): the previous version was in the bin and the new text, deleted with
+                        // the temporary file, was lost with a bare filesystem_io_failed. The new text stays, named.
+                        keepNewText = true;
+                        throw NewTextKept(temporary, root);
+                    }
                 }
                 else
                 {
@@ -220,7 +230,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             }
             finally
             {
-                if (File.Exists(temporary)) File.Delete(temporary);
+                if (!keepNewText && File.Exists(temporary)) File.Delete(temporary);
             }
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
@@ -606,6 +616,23 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         && value.All(static character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
     private static string Hex(byte[] value) => Convert.ToHexStringLower(value);
     private static FilesystemProviderException Error(string code) => new(code);
+
+    // The previous version went to the Recycle Bin and the new one could not take its place: both are kept and named.
+    private static FilesystemProviderException NewTextKept(string temporary, string root) =>
+        new("write_not_completed_previous_recycled")
+        {
+            EffectMayHaveOccurred = true,
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("previousVersionRecycled", true);
+                writer.WriteString("newTextFile", Path.GetRelativePath(root, temporary));
+                writer.WriteString("next", "the previous version is in the Recycle Bin and the new text is in newTextFile "
+                    + "beside it; another program may hold the name now; tell the person both places");
+                writer.WriteEndObject();
+            }),
+        };
 
     // A failure once the file was already written, moved or copied: the change may be on disk.
     private static FilesystemProviderException AfterEffect(string code) => new(code) { EffectMayHaveOccurred = true };
