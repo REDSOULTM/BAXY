@@ -4245,6 +4245,44 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w8): Outlook keeps an event's times to the minute: a create with seconds is refused before
+    // anything runs; and an event saved whose read-back differs is named by the failure, so it is not made twice.
+    [Test]
+    public async Task ACalendarCreateWithSecondsIsRefusedAndAMismatchNamesTheEventMade()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        const string mismatch = "{\"ok\":false,\"effectObserved\":true,\"error\":\"outlook_calendar_postread_mismatch\"," +
+            "\"entryId\":\"private-entry\",\"title\":\"Dentista\",\"startUtc\":\"2026-07-17T18:00:00.0000000Z\"," +
+            "\"endUtc\":\"2026-07-17T19:00:00.0000000Z\"}";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(mismatch);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt seconds = await adapter.InvokeAsync(
+            "calendar.event.create",
+            Json("""{"startUtc":"2026-07-17T18:00:30Z","endUtc":"2026-07-17T19:00:00Z","title":"Dentista"}"""),
+            CancellationToken.None);
+        bool ranForSeconds = runner.LastArguments.Length > 0;
+        ExternalCapabilityReceipt made = await adapter.InvokeAsync(
+            "calendar.event.create",
+            Json("""{"startUtc":"2026-07-17T18:00:00Z","endUtc":"2026-07-17T19:00:00Z","title":"Dentista"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ranForSeconds, Is.False);
+            Assert.That(seconds.ErrorCode, Is.EqualTo("calendar_time_not_whole_minute"));
+            Assert.That(seconds.Result?.GetProperty("argument").GetString(), Is.EqualTo("startUtc"));
+            Assert.That(seconds.EffectObserved || seconds.EffectMayHaveOccurred, Is.False);
+            Assert.That(made.ErrorCode, Is.EqualTo("outlook_calendar_postread_mismatch"));
+            Assert.That(made.EffectObserved, Is.True);
+            Assert.That(made.Result?.GetProperty("eventId").GetString(), Does.StartWith("event_"));
+            Assert.That(made.Result?.GetProperty("startUtc").GetString(), Is.EqualTo("2026-07-17T18:00:00.0000000Z"));
+            Assert.That(made.Result?.GetRawText(), Does.Not.Contain("private-entry"));
+            Assert.That(made.Result?.GetProperty("next").GetString(), Does.Contain("second event"));
+        });
+    }
+
     [Test]
     public async Task EmailSendGoesToTheFreeAddressAndIsVerifiedInSentItems()
     {

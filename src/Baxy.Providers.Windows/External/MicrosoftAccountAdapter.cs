@@ -48,7 +48,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             $entry=[string]$appointment.EntryID
             $verified=$session.GetItemFromID($entry)
             $ok=([string]$verified.Subject -ceq [string]$input.title) -and (([DateTime]$verified.Start).ToUniversalTime() -eq $start) -and (([DateTime]$verified.End).ToUniversalTime() -eq $end)
-            if(-not $ok){[pscustomobject]@{ok=$false;effectObserved=$true;error='outlook_calendar_postread_mismatch'}|ConvertTo-Json -Compress;exit 2}
+            if(-not $ok){[pscustomobject]@{ok=$false;effectObserved=$true;error='outlook_calendar_postread_mismatch';entryId=$entry;title=[string]$verified.Subject;startUtc=([DateTime]$verified.Start).ToUniversalTime().ToString('O');endUtc=([DateTime]$verified.End).ToUniversalTime().ToString('O')}|ConvertTo-Json -Compress;exit 2}
             [pscustomobject]@{ok=$true;effectObserved=$true;entryId=$entry;title=[string]$verified.Subject;startUtc=([DateTime]$verified.Start).ToUniversalTime().ToString('O');endUtc=([DateTime]$verified.End).ToUniversalTime().ToString('O')}|ConvertTo-Json -Depth 4 -Compress
           }
         } catch {
@@ -496,6 +496,14 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             return CalendarRefusal(operation, "calendar_range_invalid", create, "endUtc",
                 "endUtc is not after startUtc");
         }
+        // Renew al máximo (w8): Outlook keeps an appointment's times to the minute, so a create with seconds was saved,
+        // failed its own post-read (outlook_calendar_postread_mismatch, with no event id) and a retry made a second one.
+        if (create && (start.Ticks % TimeSpan.TicksPerMinute != 0 || end.Ticks % TimeSpan.TicksPerMinute != 0))
+        {
+            return CalendarRefusal(operation, "calendar_time_not_whole_minute", create,
+                start.Ticks % TimeSpan.TicksPerMinute != 0 ? "startUtc" : "endUtc",
+                "Outlook keeps an event's times to the minute; write them with :00 seconds");
+        }
         if (end - start > TimeSpan.FromDays(366))
         {
             return CalendarRefusal(operation, "calendar_range_invalid", create, "endUtc",
@@ -522,8 +530,31 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             && observed.ValueKind == JsonValueKind.True;
         if (!IsOk(response.RootElement))
         {
-            return effectBoundary.Failure(
+            ExternalCapabilityReceipt failed = effectBoundary.Failure(
                 operation, ErrorCode(response.RootElement, "outlook_calendar_operation_failed"), effect);
+            // Renew al máximo (w8): an event saved whose read-back differs from what was asked exists: the failure
+            // names it (its id and the times read), so it is not created a second time.
+            return create && effect && response.RootElement.TryGetProperty("entryId", out JsonElement saved)
+                && saved.ValueKind == JsonValueKind.String
+                    ? failed with
+                    {
+                        Result = ExternalJson.Create(writer =>
+                        {
+                            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                            writer.WriteString("eventId", Opaque("event", saved.GetString() ?? string.Empty));
+                            foreach (string name in (string[])["title", "startUtc", "endUtc"])
+                            {
+                                if (response.RootElement.TryGetProperty(name, out JsonElement value)
+                                    && value.ValueKind == JsonValueKind.String)
+                                    writer.WriteString(name, value.GetString());
+                            }
+                            if (ModelAids.On(ModelAids.CalendarTimeNext))
+                                writer.WriteString("next", "an event was created with the title and times read here, "
+                                    + "which differ from those asked; creating it again makes a second event");
+                            writer.WriteEndObject();
+                        }),
+                    }
+                    : failed;
         }
         JsonElement result = create
             ? CalendarCreated(response.RootElement)
