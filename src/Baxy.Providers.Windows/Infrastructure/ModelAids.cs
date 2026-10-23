@@ -92,6 +92,15 @@ public static class ModelAids
     /// </summary>
     public const string RepeatedUnchangedNext = "repeated_unchanged_next";
 
+    /// <summary>Renew al máximo (w5): a network.ping with no reply says it does not tell a site or the internet is down.</summary>
+    public const string PingScope = "ping_scope";
+
+    /// <summary>Renew al máximo (w5): a display.mode.set shown but not saved says a restart shows the saved mode again.</summary>
+    public const string DisplayRestart = "display_restart";
+
+    /// <summary>Renew al máximo (w5): a Bluetooth device or Wi-Fi profile id no list of this session gave says which list gives one.</summary>
+    public const string IdentityRelist = "identity_relist";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

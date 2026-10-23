@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Network;
 using NUnit.Framework;
 
@@ -223,6 +226,37 @@ public sealed class WindowsNetworkStatusProviderTests
         {
             Assert.That(result, Is.EqualTo(expected));
             Assert.That(ping.Host, Is.EqualTo("nodo"));
+        });
+    }
+
+    // Renew al máximo (w5): one echo with no reply was answered «google no responde, está caído»; with the aid ping_scope
+    // the result says what it does not tell and where internet is read; a reply needs no word; BAXY_AYUDAS=none, facts.
+    [TestCase("all", "timedout", "example.com sent no reply to one echo within 2 s (timedout); many hosts and firewalls "
+        + "never answer ping, so this alone does not say example.com or the internet is down; network_status says whether "
+        + "this PC has internet")]
+    [TestCase("all", "name_resolution_failed", "the name example.com was not resolved to an address, so nothing was sent; "
+        + "network_status says whether this PC has internet")]
+    [TestCase("all", "success", null)]
+    [TestCase("none", "timedout", null)]
+    public async Task APingWithNoReplySaysWhatItDoesNotTell(string aids, string status, string? next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        bool reachable = status == "success";
+        var handler = new NetworkPingHandler(new WindowsNetworkDiagnosticProvider(
+            new FakeDnsProbe(new DnsStatusSnapshot(0, [])),
+            new FakePingProbe(new NetworkPingSnapshot("example.com", reachable, status, reachable ? 12 : null, null))));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation",
+                JsonDocument.Parse("""{"host":"example.com"}""").RootElement.Clone()),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(outcome.Result!.Value.GetProperty("reachable").GetBoolean(), Is.EqualTo(reachable));
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out JsonElement written) ? written.GetString() : null,
+                Is.EqualTo(next));
         });
     }
 

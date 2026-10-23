@@ -195,6 +195,30 @@ public sealed class DisplayModeAdapterTests
         });
     }
 
+    // Renew al máximo (w5): a mode shown and not saved was told «done» as if kept; with the aid display_restart the
+    // result says a restart shows the saved mode again and how this one is kept. With BAXY_AYUDAS=none, the facts alone.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AModeShownButNotSavedSaysARestartShowsTheSavedOne(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var display = new FakeDisplay(Now, Modes);
+
+        ExternalCapabilityReceipt shown = await Invoke(display, new { refreshHz = 60 });
+        ExternalCapabilityReceipt kept = await Invoke(display, new { refreshHz = 60 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shown.Result!.Value.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("1920x1080 at 60 Hz is shown now and not saved: the next restart "
+                    + "or sign-in shows the mode Windows has saved; display_mode_set with this same mode again keeps it"));
+            }
+            Assert.That(kept.Result!.Value.TryGetProperty("next", out _), Is.False, "a saved mode needs no word");
+        });
+    }
+
     [Test]
     public async Task AModeShownAndAlreadySavedIsNeitherAppliedNorSaved()
     {

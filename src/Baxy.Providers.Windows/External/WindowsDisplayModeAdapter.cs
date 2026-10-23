@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -364,6 +365,13 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             // Whether a restart keeps the final mode; absent when the mode Windows has saved could not be read.
             if (savedForRestart is { } saved)
                 writer.WriteBoolean("savedForRestart", saved);
+            // Renew al máximo (w5): «listo, cambié la resolución» read as kept; a restart shows the saved mode again.
+            if (savedForRestart == false && ModelAids.On(ModelAids.DisplayRestart))
+            {
+                writer.WriteString("next", $"{final.Width}x{final.Height} at {final.RefreshHz} Hz is shown now and not saved: "
+                    + "the next restart or sign-in shows the mode Windows has saved; display_mode_set with this same mode "
+                    + "again keeps it");
+            }
             writer.WriteString("authority", "windows_display_settings_readback");
             writer.WriteEndObject();
         });

@@ -5073,6 +5073,36 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w5): an id no list of this Core gave (an older session's, or made up) was a bare «expired»; with
+    // the aid identity_relist it says nothing was done and which list gives the ids. BAXY_AYUDAS=none: the code alone.
+    [TestCase("all", "bluetooth.device.pair", """{"deviceId":"bluetooth_0000"}""", "bluetooth_identity_expired",
+        "this deviceId is not one bluetooth_device_list gave since BAXY started, and nothing was paired; "
+        + "bluetooth_device_list gives the ids to use")]
+    [TestCase("all", "wifi.connect", """{"profileId":"wifi_0000"}""", "wifi_profile_identity_expired",
+        "this profileId is not one wifi_profile_list gave since BAXY started, and nothing was connected; "
+        + "wifi_profile_list gives the ids to use")]
+    [TestCase("none", "bluetooth.device.pair", """{"deviceId":"bluetooth_0000"}""", "bluetooth_identity_expired", null)]
+    public async Task AnIdNoListGaveSaysNothingWasDoneAndWhichListGivesOne(
+        string aids, string operation, string arguments, string code, string? next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner("{}");
+        var adapter = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(runner.LastArguments, Is.Empty, "nothing was run");
+            Assert.That(receipt.Result is { } result && result.TryGetProperty("next", out JsonElement written)
+                ? written.GetString() : null, Is.EqualTo(next));
+        });
+    }
+
     [Test]
     public async Task PeripheralInventoryIncludesConnectedUsbWithOpaqueIdentity()
     {

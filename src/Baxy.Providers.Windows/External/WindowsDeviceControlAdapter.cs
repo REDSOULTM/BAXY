@@ -447,7 +447,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     {
         string id = ExternalJson.RequiredString(arguments, "deviceId");
         if (!_bluetooth.TryGetValue(id, out string? nativeId))
-            return ExternalJson.Failure(operation, "bluetooth_identity_expired");
+            return IdentityUnknown(operation, "bluetooth_identity_expired", "deviceId", "paired", "bluetooth_device_list");
         DeviceInformation item = await DeviceInformation.CreateFromIdAsync(nativeId);
         if (item.Pairing.IsPaired)
             return ExternalJson.Switched(operation, BluetoothPairResult(id, item.Name), effectObserved: false);
@@ -461,6 +461,20 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return effectBoundary.Failure(operation, "bluetooth_pairing_not_verified", true);
         return ExternalJson.Success(operation, BluetoothPairResult(id, after.Name), true);
     }
+
+    // Renew al máximo (w5): an id no list of this Core gave (an older session's, or one made up) was a bare «expired»; with
+    // the aid identity_relist it says nothing was done and which list gives the ids.
+    private static ExternalCapabilityReceipt IdentityUnknown(
+        string operation, string code, string argument, string done, string list) =>
+        ModelAids.On(ModelAids.IdentityRelist)
+            ? new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("next", $"this {argument} is not one {list} gave since BAXY started, and nothing was {done}; "
+                    + $"{list} gives the ids to use");
+                writer.WriteEndObject();
+            }), code)
+            : ExternalJson.Failure(operation, code);
 
     private static JsonElement BluetoothPairResult(string id, string name) => ExternalJson.Create(writer =>
     {
@@ -1903,7 +1917,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string id = ExternalJson.RequiredString(arguments, "profileId");
         if (!_wifi.TryGetValue(id, out string? profile))
         {
-            return ExternalJson.Failure(operation, "wifi_profile_identity_expired");
+            return IdentityUnknown(operation, "wifi_profile_identity_expired", "profileId", "connected", "wifi_profile_list");
         }
 
         return await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token);

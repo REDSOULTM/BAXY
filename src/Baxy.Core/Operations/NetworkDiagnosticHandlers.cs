@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Net;
 using System.Text.Json;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Network;
 
 namespace Baxy.Core.Operations;
@@ -84,11 +85,20 @@ internal sealed class NetworkPingHandler(INetworkDiagnosticProvider provider) : 
             {
                 writer.WriteNull("address");
             }
+            // Renew al máximo (w5): one echo with no reply was told as the host (or the internet) being down; many hosts
+            // and firewalls never answer ping, and whether this PC has internet is network_status's to say.
+            if (!snapshot.Reachable && ModelAids.On(ModelAids.PingScope))
+                writer.WriteString("next", PingNext(snapshot));
             writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
         return OperationOutcome.Success(document.RootElement.Clone());
     }
+
+    internal static string PingNext(NetworkPingSnapshot snapshot) => snapshot.Status == "name_resolution_failed"
+        ? $"the name {snapshot.Host} was not resolved to an address, so nothing was sent; network_status says whether this PC has internet"
+        : $"{snapshot.Host} sent no reply to one echo within 2 s ({snapshot.Status}); many hosts and firewalls never answer ping, "
+            + $"so this alone does not say {snapshot.Host} or the internet is down; network_status says whether this PC has internet";
 
     private static bool TryReadHost(JsonElement arguments, out string? host)
     {
