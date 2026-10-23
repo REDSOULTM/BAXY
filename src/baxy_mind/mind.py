@@ -1699,9 +1699,14 @@ class Mind:
         if doubt is None:
             return None
         if call["wire"] == CONFIRM["function"]["name"]:
+            # Auditoría de la mente (w8, 2026-10-23): only a «sí» that would approve something is held. With nothing
+            # waiting (none, or its question ended unanswered) the call never reaches the App (_result: nothing_pending,
+            # or the ended call to make again, which the kernel asks again), and holding it there turned that result
+            # into a question that dropped nothing and asked again at every unsure «sí».
             floor = CONFIRM_FLOOR if os.environ.get("BAXY_CONFIRM_FLOOR") is None else _threshold("BAXY_CONFIRM_FLOOR")
             return (DOUBT_NOTE.format(call=call["wire"])
-                    if call["arguments"].get("approve") is True and doubt["confidence"] < floor else None)
+                    if turn.get("pending") and call["arguments"].get("approve") is True
+                    and doubt["confidence"] < floor else None)
         # Al máximo, System One 2: layer 0 never holds a low_reversible call; its error is undone and the kernel verifies
         # it. On 26 runs of decision2 with System One (2026-10-22) it held 23, 22 of them right without System One (P040
         # ×7, P085 ×15) and none useful; read_only it holds still (24 useful against 5 harmful), and anything riskier.
