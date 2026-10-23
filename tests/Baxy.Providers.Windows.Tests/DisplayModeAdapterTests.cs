@@ -41,6 +41,7 @@ public sealed class DisplayModeAdapterTests
             Assert.That(receipt.Result?.GetProperty("final").GetProperty("refreshHz").GetUInt32(), Is.EqualTo(60u));
             Assert.That(receipt.Result?.GetProperty("changed").GetBoolean(), Is.True);
             Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("windows_display_settings_readback"));
+            Assert.That(receipt.Result?.GetProperty("monitor").GetString(), Is.EqualTo("primary"));
         });
     }
 
@@ -114,6 +115,44 @@ public sealed class DisplayModeAdapterTests
             Assert.That(display.Applied, Is.EqualTo(new[] { new DisplayModeValue(1920, 1080, 60, 32) }));
             Assert.That(display.Saves, Is.Empty);
             Assert.That(display.Saved("\\\\.\\DISPLAY1"), Is.EqualTo(Now));
+        });
+    }
+
+    // Renew al máximo (w8): Windows says DISP_CHANGE_SUCCESSFUL and the screen still reads the old mode: the change may
+    // land later, so the receipt does not say nothing happened, and it keeps the mode read.
+    [Test]
+    public async Task ASuccessWindowsDoesNotShowYetMayHaveHappened()
+    {
+        var display = new FakeDisplay(Now, Modes) { AppliesNow = false };
+
+        ExternalCapabilityReceipt receipt = await Invoke(display, new { refreshHz = 60 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("display_mode_not_verified"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("stateAfter").GetProperty("shown").GetProperty("refreshHz").GetUInt32(),
+                Is.EqualTo(144u));
+        });
+    }
+
+    // Renew al máximo (w8): a mode not listed says what is listed, so the model can offer it.
+    [Test]
+    public async Task AModeNotListedSaysTheRatesOrResolutionsListed()
+    {
+        ExternalCapabilityReceipt rate = await Invoke(new FakeDisplay(Now, Modes), new { refreshHz = 59 });
+        ExternalCapabilityReceipt size = await Invoke(new FakeDisplay(Now, Modes), new { width = 1024, height = 768 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(rate.ErrorCode, Is.EqualTo("display_mode_not_listed"));
+            Assert.That(rate.EffectMayHaveOccurred, Is.False);
+            Assert.That(rate.Result?.GetProperty("listedRefreshHz").EnumerateArray().Select(static hz => hz.GetUInt32()),
+                Is.EqualTo(new uint[] { 144, 120, 60 }));
+            Assert.That(size.ErrorCode, Is.EqualTo("display_mode_not_listed"));
+            Assert.That(size.Result?.GetProperty("listedResolutions").EnumerateArray().Select(static r => r.GetString()),
+                Is.EqualTo(new[] { "1920x1080", "1600x900", "1280x720" }));
         });
     }
 
