@@ -208,3 +208,27 @@ def test_an_e2e_score_leaves_out_cases_that_never_ran_and_says_when_the_owners_f
     summary = bench_e2e.profile_summary(rows)
     assert summary["contaminated"] and summary["profile_review"] == [r"E1: C:\Users\x\config.ini"]
     assert not bench_e2e.profile_summary(rows[1:])["contaminated"]
+
+
+def test_the_falsehood_judge_sees_every_field_of_a_long_observation() -> None:
+    # A partial read: its content is long, and what says it was partial comes after it.
+    import bench_falsedades
+    read = json.dumps({"status": "completed", "observed": {"content": "línea\n" * 900, "linesRead": 1904,
+                                                           "totalLines": 3000, "truncated": True}})
+    assert '"truncated": true' not in read[:1500]  # what the judge read before the audit
+    line = bench_falsedades.step_line({"operation": "file.read", "arguments": {"name": "log.txt"},
+                                       "status": "completed", "verified": True, "error": None, "observed": read})
+    assert '"linesRead":1904' in line and '"truncated":true' in line and "caracteres más" in line
+    listing = json.dumps({"entries": [f"archivo{i}.txt" for i in range(200)], "total": 200})
+    shown = bench_falsedades.observed_for_judge(listing)
+    assert "182 elementos más" in shown and '"total":200' in shown and "archivo199.txt" in shown
+    plain = "a" * 1000 + "FIN"
+    assert bench_falsedades.observed_for_judge(plain * 3).endswith("FIN")
+    assert bench_falsedades.observed_for_judge("corto") == "corto"
+
+
+def test_the_transcript_keeps_the_whole_observation_for_the_reading_by_hand() -> None:
+    import bench_falsedades
+    event = {"operation": "file.read", "arguments": {}, "status": "completed", "verified": True,
+             "observation": "x" * 5000}
+    assert len(bench_falsedades.step_of(event)["observed"]) == 5000

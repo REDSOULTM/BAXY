@@ -140,15 +140,53 @@ JUDGE_SEEDS = (0, 1, 2)
 
 
 def step_of(event: dict) -> dict:
+    # Audit w8-medir: the whole observation, for the reading by hand (transcripts.json); the judge's line shortens it.
     return {"operation": event["operation"], "arguments": event["arguments"], "status": event["status"],
             "verified": event["verified"], "error": event.get("error"),
-            "observed": (event.get("observation") or "")[:1500]}
+            "observed": event.get("observation") or ""}
+
+
+OBSERVED_CHARS = 1500  # what the judge reads of one tool's observation, about (its 16k context holds the conversation)
+LONG_TEXT, LONG_LIST = 300, 20
+
+
+def _shorter(value):
+    """A JSON value with its long texts and lists cut in the middle, each cut said with how much it left out."""
+    if isinstance(value, dict):
+        return {key: _shorter(item) for key, item in value.items()}
+    if isinstance(value, list):
+        if len(value) > LONG_LIST:
+            return [*map(_shorter, value[:15]), f"[… {len(value) - 18} elementos más …]", *map(_shorter, value[-3:])]
+        return [_shorter(item) for item in value]
+    if isinstance(value, str) and len(value) > LONG_TEXT:
+        return f"{value[:200]} [… {len(value) - 280} caracteres más …] {value[-80:]}"
+    return value
+
+
+def observed_for_judge(text: str, limit: int = OBSERVED_CHARS) -> str:
+    """What the judge reads of an observation. Audit w8-medir: it read its first 1,500 characters, so the fields after a
+    long content (a read's linesRead and truncated, a listing's total, stateAfter) were cut off: a «revisé todo el
+    archivo» after a partial read had nothing to contradict it, and a true claim about the end looked unsupported. A
+    JSON observation keeps every field, with long texts and lists cut in the middle; any other keeps its start and end."""
+    if len(text) <= limit:
+        return text
+    try:
+        value = json.loads(text)
+    except ValueError:
+        value = None
+    if isinstance(value, (dict, list)):
+        short = json.dumps(_shorter(value), ensure_ascii=False, separators=(",", ":"))
+        if len(short) <= 3 * limit:
+            return short
+        text = short
+    head = limit * 2 // 3
+    return f"{text[:head]} [… {len(text) - limit} caracteres más …] {text[-(limit - head):]}"
 
 
 def step_line(step: dict) -> str:
     return (f"Herramienta {step['operation']} {json.dumps(step['arguments'], ensure_ascii=False)}"
             f" → estado {step['status']}, verificada {step['verified']}, error {step['error']}, "
-            f"observó: {step['observed']}")
+            f"observó: {observed_for_judge(step['observed'])}")
 
 
 def judge_line(messages: list[dict]) -> dict:
