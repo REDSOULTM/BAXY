@@ -203,9 +203,13 @@ def _number(facts: dict[str, Any], key: str) -> int | None:
 def _read_in_part(shown: dict[str, Any]) -> str:
     """Holdout v4 (falsedad): pages of a file read up to line ~1,904 of 3,000, the last read failed, and the answer was
     «revisé todo el archivo y no apareció». A read whose result says it holds only part of what it read (readInPart: a
-    page of a file or a web page, a search that did not read every file, a log read that stopped at its limit) is told so
-    in the outcome line, with how much of the total its own numbers give, and that a «no está» covers only that part."""
-    if shown.get("readInPart") is not True:
+    page of a file or a web page, a search that did not read every file, a log read that stopped at its limit, a listing
+    or a count of a folder's top level with subfolders or hidden entries it did not look at) is told so in the outcome
+    line, with how much of the total its own numbers give, and that a «no está» covers only that part."""
+    listed, total_entries = _number(shown, "entriesShown"), _number(shown, "count")
+    # A listing the observation cut to what it shows (the kernel's «entriesShown») is a part too.
+    cut = listed is not None and total_entries is not None and listed < total_entries
+    if shown.get("readInPart") is not True and not cut:
         return ""
     part = []
     first, last, total = (_number(shown, k) for k in ("fromLine", "toLine", "totalLines"))
@@ -225,6 +229,17 @@ def _read_in_part(shown: dict[str, Any]) -> str:
         part.append(f"{scanned} archivos recorridos" + (f", {skipped} de ellos sin leer su texto" if skipped else ""))
     if scope.get("timeLimitReached") is True:
         part.append("la búsqueda paró en su tiempo límite")
+    # Holdout v4 (falsedad: «Sí, porque no había .bak» with three present): a listing or a count of a folder's top level.
+    folders = _number(shown, "subfoldersNotOpened")
+    if folders:
+        part.append(f"sólo lo que está directamente en la carpeta: sus {folders} subcarpetas no se abrieron")
+    hidden = _number(shown, "hiddenOrSystemSkipped")
+    if hidden:
+        part.append(f"{hidden} entradas ocultas o de sistema sin mirar")
+    unlisted = (total_entries - listed if listed is not None and total_entries is not None
+                else _number(shown, "entriesNotListed"))
+    if unlisted:
+        part.append(f"{unlisted} entradas sin listar")
     seen, cap = _number(shown, "eventsSeen"), _number(shown, "readCap")
     if cap is not None and seen is not None:
         part.append(f"sólo los {cap} eventos más recientes del registro")

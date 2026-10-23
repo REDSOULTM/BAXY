@@ -233,6 +233,11 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(counted.Result?.GetProperty("filesInFolder").GetInt32(), Is.EqualTo(3));
             Assert.That(counted.Result?.GetProperty("folderName").GetString(), Is.EqualTo("proyecto"));
             Assert.That(counted.Result?.GetProperty("source").GetString(), Is.EqualTo("explorer_foreground"));
+            // Holdout v4 (falsedad, «no había .bak» with them in a subfolder): d.py in «sub» is not counted, and the
+            // count says its subfolder was not opened.
+            Assert.That(counted.Result?.GetProperty("subfoldersNotOpened").GetInt32(), Is.EqualTo(1));
+            Assert.That(counted.Result?.GetProperty("readInPart").GetBoolean(), Is.True);
+            Assert.That(named.Result?.TryGetProperty("readInPart", out _), Is.False);
             Assert.That(counted.Result?.GetRawText(), Does.Not.Contain(temporary.Path.Replace("\\", "\\\\")));
             Assert.That(none.ErrorCode, Is.EqualTo("no_explorer_in_front"));
             Assert.That(named.Verified, Is.True, named.ErrorCode);

@@ -296,6 +296,11 @@ public sealed class KnownFileToolsTests
             Assert.That(listed.Result?.GetProperty("entries").EnumerateArray()
                     .Select(entry => entry.GetProperty("kind").GetString() + ":" + entry.GetProperty("name").GetString()),
                 Is.EqualTo(new[] { "folder:proyectos", "file:presupuesto 2026.xlsx" }));
+            // Holdout v4 (falsedad, «no había .bak» with them in a subfolder): the listing is of the top level, its
+            // folder was not opened, and it says so.
+            Assert.That(listed.Result?.GetProperty("depth").GetString(), Is.EqualTo("top_level"));
+            Assert.That(listed.Result?.GetProperty("subfoldersNotOpened").GetInt32(), Is.EqualTo(1));
+            Assert.That(listed.Result?.GetProperty("readInPart").GetBoolean(), Is.True);
             Assert.That(named.Result?.GetProperty("files").EnumerateArray()
                     .Select(file => file.GetProperty("folder").GetString() + ":" + file.GetProperty("name").GetString()),
                 Is.EqualTo(new[] { "desktop:presupuesto 2026.xlsx", "documents:Presupuesto viejo.txt" }));

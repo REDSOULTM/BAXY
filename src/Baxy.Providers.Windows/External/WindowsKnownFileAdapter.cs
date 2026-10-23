@@ -313,9 +313,11 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
         };
         List<(KnownEntry Entry, bool IsFolder, long Size, DateTime ModifiedUtc)> entries = [];
+        int hiddenOrSystem = 0;
         foreach ((string label, string root) in roots)
         {
             if (!Directory.Exists(root)) continue;
+            hiddenOrSystem += HiddenOrSystemEntries(root);
             foreach (string path in Directory.EnumerateFileSystemEntries(root, "*", options))
             {
                 if (BaxyPrivateArea.Holds(_privateRoots, path)) continue;
@@ -367,10 +369,40 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteNumber("resultLimit", limit);
             writer.WriteBoolean("resultsMayBeTruncated", entries.Count > shown.Length);
             writer.WriteBoolean("hiddenAndSystemSkipped", true);
+            // Holdout v4 (falsedad: «Sí, porque no había .bak» with three .bak files present): a listing is of the top
+            // level only; what it did not look at is said beside what it listed, so a «no hay» is told only of that: the
+            // folders it lists were not opened, the hidden and system entries were left out, and the entries past
+            // those listed here are not in it (readInPart when any of these is so).
+            writer.WriteString("depth", "top_level");
+            writer.WriteNumber("subfoldersNotOpened", folderCount);
+            writer.WriteNumber("hiddenOrSystemSkipped", hiddenOrSystem);
+            if (entries.Count > shown.Length) writer.WriteNumber("entriesNotListed", entries.Count - shown.Length);
+            if (folderCount > 0 || hiddenOrSystem > 0 || entries.Count > shown.Length)
+                writer.WriteBoolean("readInPart", true);
             writer.WriteString("authority", "windows_known_folder_toplevel_postread");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // The hidden and system entries directly in a folder, which a listing of it leaves out (desktop.ini among them).
+    internal static int HiddenOrSystemEntries(string folder)
+    {
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = false,
+            IgnoreInaccessible = true,
+            AttributesToSkip = 0,
+        };
+        try
+        {
+            return new DirectoryInfo(folder).EnumerateFileSystemInfos("*", options)
+                .Count(entry => (entry.Attributes & (FileAttributes.Hidden | FileAttributes.System)) != 0);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return 0;
+        }
     }
 
     private enum ContentScan

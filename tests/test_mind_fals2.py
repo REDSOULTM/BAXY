@@ -38,3 +38,24 @@ def test_a_web_page_a_search_and_a_log_read_in_part_say_how_much() -> None:
         json.dumps(search), read=True)
     assert "leído en parte: sólo los 80 eventos más recientes del registro, no llegó al final" in _outcome(
         json.dumps(log), read=True)
+
+
+def test_a_listing_of_a_folders_top_level_says_what_it_did_not_open() -> None:
+    # The holdout's «Sí, porque no había .bak» with three .bak files present: a top-level listing whose subfolders,
+    # hidden entries and entries past those shown were not looked at.
+    listing = {**READ, "observed": {"mode": "list", "count": 50, "entriesShown": 20, "depth": "top_level",
+                                    "subfoldersNotOpened": 3, "hiddenOrSystemSkipped": 1, "entriesNotListed": 0,
+                                    "readInPart": True, "entries": []}}
+    told = _outcome(json.dumps(listing), read=True)
+    assert ("leído en parte: sólo lo que está directamente en la carpeta: sus 3 subcarpetas no se abrieron, "
+            "1 entradas ocultas o de sistema sin mirar, 30 entradas sin listar;") in told
+    assert told.endswith("un «no está» vale sólo para lo leído")
+    flat = {**READ, "observed": {"mode": "list", "count": 4, "depth": "top_level", "subfoldersNotOpened": 0,
+                                 "hiddenOrSystemSkipped": 0, "entries": []}}
+    assert "en parte" not in _outcome(json.dumps(flat), read=True)
+
+
+def test_a_listing_the_observation_cut_is_a_part_even_without_the_providers_flag() -> None:
+    cut = {**READ, "observed": {"mode": "list", "count": 25, "entriesShown": 20, "subfoldersNotOpened": 0,
+                                "hiddenOrSystemSkipped": 0, "entries": []}}
+    assert "leído en parte: 5 entradas sin listar;" in _outcome(json.dumps(cut), read=True)
