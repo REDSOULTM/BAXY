@@ -112,18 +112,43 @@ def test_falsedades_cleans_up_after_a_failed_setup(tmp_path, monkeypatch):
 
     def run_ps(path, env, timeout):
         ran.append(Path(path).name)
-        return (1, "setup roto") if Path(path).name == "setup.ps1" else (0, "")
+        # The isolation prelude (w6-banco) passed; the case's own setup lines failed after it.
+        return (1, "BENCH-READY\nsetup roto") if Path(path).name == "setup.ps1" else (0, "BENCH-READY")
 
+    for module in (bench_falsedades, bench_e2e):  # the isolation runs its scripts from bench_e2e
+        monkeypatch.setattr(module, "ps_file", lambda path, lines: None)
+        monkeypatch.setattr(module, "run_ps", run_ps)
     monkeypatch.setattr(bench_falsedades, "Conductor", FakeConductor)
-    monkeypatch.setattr(bench_falsedades, "ps_file", lambda path, lines: None)
-    monkeypatch.setattr(bench_falsedades, "run_ps", run_ps)
     monkeypatch.setattr(bench_falsedades, "session_locked", lambda: False)
     monkeypatch.setattr(bench_falsedades, "run_turn", lambda *a: pytest.fail("a case whose setup failed has no turns"))
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
     case = {"id": "F001", "setup": ["exit 1"], "cleanup": ["Remove-Item x"], "turns": [{"text": "abre el bloc"}]}
     transcripts = bench_falsedades.run_conversations([case], tmp_path)
-    assert ran == ["setup.ps1", "cleanup.ps1"]
+    assert ran == ["precondition.ps1", "setup.ps1", "cleanup.ps1", "isolation_after.ps1"]
     assert transcripts[0]["status"] == "setup_fallido"
+
+
+def test_falsedades_is_void_and_runs_no_cleanup_when_a_foreign_window_appears(tmp_path, monkeypatch):
+    # w6-banco: the owner's Notepad opened between cases; the case's cleanup must not run (its state is not this run's).
+    import bench_falsedades
+    ran = []
+
+    def run_ps(path, env, timeout):
+        ran.append(Path(path).name)
+        if Path(path).name == "setup.ps1":
+            return 1, "BENCH-VOID foreign window: Notepad pid=7 hwnd=70 title='x'"
+        return 0, "BENCH-READY"
+
+    for module in (bench_falsedades, bench_e2e):
+        monkeypatch.setattr(module, "ps_file", lambda path, lines: None)
+        monkeypatch.setattr(module, "run_ps", run_ps)
+    monkeypatch.setattr(bench_falsedades, "Conductor", FakeConductor)
+    monkeypatch.setattr(bench_falsedades, "session_locked", lambda: False)
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    case = {"id": "F001", "setup": [], "cleanup": ["Restore-BenchState -Name F001"], "turns": [{"text": "hola"}]}
+    with pytest.raises(bench_falsedades.BenchVoid, match="before F001: BENCH-VOID"):
+        bench_falsedades.run_conversations([case], tmp_path)
+    assert ran == ["precondition.ps1", "setup.ps1"]
 
 
 # R12.7: measure_resources, with doubles of the product's processes and nvidia-smi. While a turn runs, Qwen's

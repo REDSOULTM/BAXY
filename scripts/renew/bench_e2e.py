@@ -10,11 +10,16 @@ counts, it is sound: the goal's «3 s en silencio»); first_response_audio_ms is
 notice's utterance is of the bank's kind "progress" (the conductor marks it notice). A turn whose response never
 sounded is listed in turns_unanswered (case#turn) and counts as the slowest in first_response_audio_p50_all_turns_ms,
 beside the median of the turns that sounded (first_response_audio_p50_ms).
+Isolation from the owner (Isolation, with lib/bench.ps1): the run is VOID (exit 3, results.jsonl says why) when a window
+of a target app the bench did not open exists, before it starts or before any case; around each case the profile is
+snapshot, and the files the case created outside the sandbox are moved to <case>/profile-quarantine (the owner's own
+files are only reported: summary profile_review). The owner's saved Notepad tabs are set aside and put back.
 """
 import argparse
 import json
 import os
 import re
+import shutil
 import statistics
 import subprocess
 import sys
@@ -37,6 +42,136 @@ def run_ps(path: Path, env: dict, timeout: float) -> tuple[int, str]:
         return done.returncode, (done.stdout or "") + ("\n" + done.stderr if done.stderr.strip() else "")
     except subprocess.TimeoutExpired:
         return 124, "timeout"
+
+
+# Isolation from the owner (w6-banco, 2026-10-23): the PC e2e of 2026-10-22 typed into the owner's own unsaved Notepad
+# tab (an app.open of Notepad reused the owner's window) and benches left files in the owner's home. The bench library
+# (<banks>/e2e/lib/bench.ps1, «isolation» section) does the work; the runner calls it around every case, whatever the
+# case's own snippets do, so a sealed bank is covered without opening it.
+LIB = BANKS / "e2e" / "lib" / "bench.ps1"
+VOID_EXIT = 3
+
+
+def void_reason(code: int, out: str) -> str | None:
+    """None when the precondition passed (BENCH-READY), else why the bench is VOID: the foreign windows, or the check
+    itself failing (a bench that cannot tell whose windows are open does not start)."""
+    lines = [line.strip() for line in out.splitlines() if line.strip().startswith("BENCH-VOID")]
+    if lines:
+        return "; ".join(lines)
+    if code == 0 and "BENCH-READY" in out:
+        return None
+    return f"precondition_failed (exit {code}): {out.strip()[-300:]}"
+
+
+def target_windows(out: str) -> set[int]:
+    return {int(line.split()[1]) for line in out.splitlines()
+            if line.startswith("TARGET-WINDOW ") and len(line.split()) > 1 and line.split()[1].isdigit()}
+
+
+PROFILE_MARKS = {"PROFILE-REMOVED-DIR": "removed_dirs", "PROFILE-REMOVED": "removed", "PROFILE-LEFT": "left",
+                 "PROFILE-NEW-KEPT": "new_kept", "PROFILE-CHANGED": "changed", "PROFILE-MISSING": "missing"}
+
+
+def profile_report(out: str) -> dict:
+    """What Restore-BenchProfile did, by kind: removed (moved to the quarantine) and removed_dirs were the case's;
+    new_kept, changed and missing are reported for review and were never touched; left could not be moved."""
+    report = {key: [] for key in PROFILE_MARKS.values()}
+    for line in out.splitlines():
+        mark, _, path = line.strip().partition(" ")
+        if mark in PROFILE_MARKS:
+            report[PROFILE_MARKS[mark]].append(path)
+    report["restored"] = "PROFILE-RESTORED" in out
+    return report
+
+
+def profile_summary(rows: list[dict]) -> dict:
+    """Across the cases of a run: what was moved to the quarantine and what a person must review, «id: path»."""
+    def listed(*kinds):
+        return [f"{row['id']}: {path}" for row in rows for kind in kinds for path in (row.get("profile") or {}).get(kind) or []]
+    return {"profile_quarantined": listed("removed"),
+            "profile_review": listed("changed", "missing", "new_kept", "left"),
+            "target_windows_left": [row["id"] for row in rows if (row.get("profile") or {}).get("target_windows_left")]}
+
+
+class Isolation:
+    """The precondition before the bench and before each case (no target-app window the bench did not open), and the
+    profile snapshot around each case (files the case created outside the sandbox go to the case's quarantine)."""
+
+    def __init__(self, run_dir: Path) -> None:
+        self.run_dir = run_dir
+        self.owned: set[int] = set()  # target windows this run's cases opened and left open
+        self.before: set[int] = set()
+
+    def env(self, base: dict) -> dict:
+        return {**base, "BAXY_BENCH_OWNED_HWNDS": ",".join(str(h) for h in sorted(self.owned))}
+
+    def check(self) -> str | None:
+        """Before the conductor starts: None, or why the bench is VOID."""
+        script = self.run_dir / "precondition.ps1"
+        ps_file(script, [f". '{LIB}'", "Assert-BenchPrecondition"])
+        return void_reason(*run_ps(script, self.env(dict(os.environ)), 120))
+
+    def prelude(self, case_id: str) -> list[str]:
+        """Lines run before the case's own setup, in the same script."""
+        return [f". '{LIB}'", "Assert-BenchPrecondition", "Show-TargetWindows", f"Save-BenchProfile -Name '{case_id}'"]
+
+    def started(self, setup_out: str) -> None:
+        self.before = target_windows(setup_out)
+
+    def after(self, case_id: str, case_dir: Path) -> dict:
+        """After the case's cleanup: the profile restored, and the target windows the case left open (they are the
+        bench's, so the next precondition lets them be)."""
+        script = case_dir / "isolation_after.ps1"
+        quarantine = case_dir / "profile-quarantine"
+        ps_file(script, [f". '{LIB}'", f"Restore-BenchProfile -Name '{case_id}' -Quarantine '{quarantine}'",
+                         "Show-TargetWindows"])
+        _, out = run_ps(script, dict(os.environ), 300)
+        left_open = target_windows(out) - self.before - self.owned
+        self.owned |= left_open
+        return {**profile_report(out), "target_windows_left": sorted(left_open)}
+
+
+NOTEPAD_TABS = Path(os.environ.get("LOCALAPPDATA", "")) / "Packages" / "Microsoft.WindowsNotepad_8wekyb3d8bbwe" / \
+    "LocalState" / "TabState"
+
+
+def notepad_running() -> bool:
+    import psutil
+    return any((p.info["name"] or "").lower() == "notepad.exe" for p in psutil.process_iter(["name"]))
+
+
+def set_aside_notepad_tabs(backup: Path, tabs: Path = NOTEPAD_TABS) -> int:
+    """The Notepad restores its saved tabs: text a previous run typed would pass a later case (practice p13 E012), and
+    an app.open of Notepad would bring back the owner's unsaved tabs for a case to type into. Before a bench, with no
+    Notepad open, the saved tabs are moved to the run (never deleted) and put back by put_back_notepad_tabs."""
+    if notepad_running() or not tabs.is_dir():
+        return 0
+    moved = 0
+    for saved in tabs.iterdir():
+        if saved.is_file():
+            backup.mkdir(parents=True, exist_ok=True)
+            try:
+                shutil.move(str(saved), str(backup / saved.name))
+                moved += 1
+            except OSError:
+                pass
+    return moved
+
+
+def put_back_notepad_tabs(backup: Path, bench_tabs: Path, tabs: Path = NOTEPAD_TABS) -> list[str]:
+    """After the bench: the tabs the bench's Notepads left are moved to bench_tabs, the owner's go back. With a Notepad
+    still open nothing moves (it rewrites its tab files); the names left in the backup are returned."""
+    if not backup.is_dir():
+        return []
+    if notepad_running() or not tabs.is_dir():
+        return sorted(p.name for p in backup.iterdir())
+    for left in tabs.iterdir():
+        if left.is_file():
+            bench_tabs.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(left), str(bench_tabs / left.name))
+    for saved in backup.iterdir():
+        shutil.move(str(saved), str(tabs / saved.name))
+    return sorted(p.name for p in backup.iterdir())
 
 
 class Events:
@@ -72,23 +207,11 @@ class Events:
         return None
 
 
-def clear_notepad_tabs() -> None:
-    """The Notepad restores its saved tabs: text a previous run typed would pass a later case (practice p13 E012). With
-    the owner's leave (2026-10-16) they are cleared before a bench, only while no Notepad is open."""
-    import psutil
-    if any((p.info["name"] or "").lower() == "notepad.exe" for p in psutil.process_iter(["name"])):
-        return
-    tabs = Path(os.environ["LOCALAPPDATA"]) / "Packages" / "Microsoft.WindowsNotepad_8wekyb3d8bbwe" / "LocalState" / "TabState"
-    for saved in tabs.glob("*") if tabs.is_dir() else []:
-        try:
-            saved.unlink()
-        except OSError:
-            pass
-
-
 class Conductor:
     def __init__(self, run_dir: Path, profile: Path) -> None:
-        clear_notepad_tabs()
+        self.tabs_backup, self.bench_tabs = run_dir / "notepad-tabstate-owner", run_dir / "notepad-tabstate-bench"
+        if set_aside_notepad_tabs(self.tabs_backup):
+            print(f"Notepad tabs set aside in {self.tabs_backup} (put back when the bench closes)", flush=True)
         self.commands = run_dir / "commands"
         self.commands.mkdir(parents=True, exist_ok=True)
         self.sequence = 0
@@ -123,6 +246,10 @@ class Conductor:
                         child.kill()
                     except psutil.Error:
                         pass
+        left = put_back_notepad_tabs(self.tabs_backup, self.bench_tabs)
+        if left:
+            print(f"Notepad was open: the owner's tabs stay in {self.tabs_backup} ({len(left)}); move them back to "
+                  f"{NOTEPAD_TABS} with Notepad closed", flush=True)
 
 
 def _dones(conductor: Conductor) -> list[int]:
@@ -201,19 +328,34 @@ def utterances(every: list, turn_from: list, replies: list) -> list:
     return speech
 
 
-def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict) -> dict:
+def run_setup(case: dict, case_dir: Path, env: dict, isolation: Isolation) -> tuple[int, str, str | None]:
+    """The case's setup after the isolation prelude, in one script: (exit code, output, why the bench is VOID or None).
+    A VOID setup stopped before the case's own lines: neither its cleanup nor the profile restore may run (its state
+    file would be an older run's)."""
+    setup = case_dir / "setup.ps1"
+    ps_file(setup, isolation.prelude(case["id"]) + (case.get("setup") or []))
+    code, out = run_ps(setup, isolation.env(env), 300)
+    void = None if "BENCH-READY" in out else void_reason(code, out)
+    if void is None:
+        isolation.started(out)
+    return code, out, void
+
+
+def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict, isolation: Isolation) -> dict:
     lib_env = dict(env_base)
     started = time.monotonic()
     budget = float(case.get("timeout_s") or 90)
-    setup = case_dir / "setup.ps1"
-    ps_file(setup, case.get("setup") or [])
-    code, out = run_ps(setup, lib_env, 300)
+    code, out, void = run_setup(case, case_dir, lib_env, isolation)
+    if void:
+        return {"id": case["id"], "area": case.get("area"), "kind": case.get("kind"), "ok": False, "status": "void",
+                "detail": void}
     if code != 0:
         result = {"id": case["id"], "area": case.get("area"), "kind": case.get("kind"), "ok": False,
                   "status": "setup_fallido", "detail": out[-800:]}
         cleanup = case_dir / "cleanup.ps1"
         ps_file(cleanup, case.get("cleanup") or [])
         run_ps(cleanup, lib_env, 300)
+        result["profile"] = isolation.after(case["id"], case_dir)
         return result
 
     run_turn(conductor, {"session": "new"}, 30)
@@ -279,6 +421,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
     ps_file(cleanup, case.get("cleanup") or [])
     _, cleanup_out = run_ps(cleanup, lib_env, 300)
     leftovers = [line for line in cleanup_out.splitlines() if line.startswith("LEFTOVER")]
+    profile = isolation.after(case["id"], case_dir)
     ok = bool(oracles) and all(o["ok"] for o in oracles) and spoken_ok  # a case with no oracle checks nothing
     first_audio, first_response_audio, unanswered = [], [], []
     for number in range(1, len(turn_from) + 1):
@@ -294,7 +437,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict)
             "status": "ok" if ok else "fallo", "spoken_ok": spoken_ok, "oracles": oracles, "replies": replies,
             "first_audio_ms": first_audio, "first_response_audio_ms": first_response_audio,
             "turns": len(turn_from), "turns_unanswered": unanswered,
-            "notices": sum(s["kind"] == "progress" for s in speech), "leftovers": leftovers,
+            "notices": sum(s["kind"] == "progress" for s in speech), "leftovers": leftovers, "profile": profile,
             "steps": [{"op": e["operation"], "status": e["status"], "verified": e["verified"]}
                       for events in turn_events for e in events if e["type"] == "step"],
             "seconds": round(time.monotonic() - started, 1)}
@@ -315,6 +458,16 @@ def main() -> None:
     # A profile of its own, empty at the start of the run (notes, memory and todo list are disposable); on C: because
     # the private store needs NTFS permissions.
     profile = Path(os.environ["LOCALAPPDATA"]) / "BAXY" / f"bench-{args.label}-{int(time.time())}"
+    isolation = Isolation(run_dir)
+    void = isolation.check()
+    if void:
+        # Nothing ran: the run is VOID, never a score (w6-banco).
+        summary = {"label": args.label, "cases": args.cases, "void": void, "ok": 0, "n": len(cases)}
+        (run_dir / "results.jsonl").write_text(json.dumps({"summary": summary}, ensure_ascii=False) + "\n",
+                                               encoding="utf-8")
+        print(f"VOID: {void}\nClose those windows (or run on a machine the owner is not using) and start again.",
+              flush=True)
+        sys.exit(VOID_EXIT)
     conductor = Conductor(run_dir, profile)
     ready = conductor.events.wait(lambda e: e["type"] in {"runtime", "terminal"}, 300)
     if not ready or not ready.get("mindReady"):
@@ -336,10 +489,19 @@ def main() -> None:
             break
         case_dir = run_dir / case["id"]
         case_dir.mkdir(exist_ok=True)
-        row = judge_case(case, conductor, case_dir, env_base)
+        row = judge_case(case, conductor, case_dir, env_base, isolation)
+        if row["status"] == "void":
+            # A window the bench did not open appeared: nothing more runs, and the cases left count as VOID.
+            void, stopped_before = row["detail"], case["id"]
+            print(f"VOID before {case['id']}: {void}", flush=True)
+            rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
+                      "status": "void", "oracles": [], "replies": [], "steps": []} for left in cases[index:]]
+            break
         rows.append(row)
+        removed = (row.get("profile") or {}).get("removed") or []
         print(f"{row['id']} {row['area']:<12} {'ok ' if row['ok'] else 'BAD'} {row['status']} {row.get('seconds')}s "
-              f"{[o['ok'] for o in row.get('oracles', [])]} voz={row.get('spoken_ok')}", flush=True)
+              f"{[o['ok'] for o in row.get('oracles', [])]} voz={row.get('spoken_ok')}"
+              + (f" fuera del sandbox: {len(removed)} a cuarentena" if removed else ""), flush=True)
     conductor.close()
     by_area: dict[str, list[int]] = {}
     for row in rows:
@@ -366,12 +528,17 @@ def main() -> None:
                "turns_sounded": len(audio),
                "turns": turns, "turns_unanswered": unanswered,
                "first_response_audio_p50_all_turns_ms": None if every_p50 in (None, float("inf")) else every_p50,
-               "setup_failed": [r["id"] for r in rows if r["status"] == "setup_fallido"]}
+               "setup_failed": [r["id"] for r in rows if r["status"] == "setup_fallido"],
+               # w6-banco: a VOID run is not a score; the files cases left outside the sandbox (moved to each case's
+               # profile-quarantine) and the owner's files a case changed or removed (reported, never touched).
+               "void": void, **profile_summary(rows)}
     with (run_dir / "results.jsonl").open("w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
         for row in rows:
             out.write(json.dumps(row, ensure_ascii=False) + "\n")
     print(json.dumps(summary, ensure_ascii=False))
+    if void:
+        sys.exit(VOID_EXIT)
 
 
 if __name__ == "__main__":
