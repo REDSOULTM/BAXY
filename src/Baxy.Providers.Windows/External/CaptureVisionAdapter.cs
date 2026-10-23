@@ -181,7 +181,9 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         return Convert.ToHexStringLower(digest);
     }
 
-    private static async ValueTask<ExternalCapabilityReceipt> ReadTesseractOcrAsync(
+    // Renew al máximo (w8): each way the Tesseract fallback fails has its own code and says what to do. Every one was
+    // windows_ocr_language_not_available, so a Tesseract that started and failed was told as a missing language pack.
+    internal static async ValueTask<ExternalCapabilityReceipt> ReadTesseractOcrAsync(
         string operation,
         string captureId,
         string path,
@@ -189,10 +191,16 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         CancellationToken cancellationToken)
     {
         string? executable = FindTesseract();
-        string? tessdata = FindTessdata(executable, requestedLanguage, out string language);
-        if (executable is null || tessdata is null)
+        if (executable is null)
         {
-            return ExternalJson.Failure(operation, "windows_ocr_language_not_available");
+            return OcrFailure(operation, "ocr_engine_not_available", "Windows has no OCR for this language and "
+                + "Tesseract is not installed, so this capture cannot be read as text here; vision_describe can describe it");
+        }
+        string? tessdata = FindTessdata(executable, requestedLanguage, out string language);
+        if (tessdata is null)
+        {
+            return OcrFailure(operation, "windows_ocr_language_not_available", "neither Windows OCR nor Tesseract has "
+                + "this language; without «language» it reads Spanish and English");
         }
 
         using var process = new Process
@@ -221,7 +229,7 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         {
             if (!process.Start())
             {
-                return ExternalJson.Failure(operation, "windows_ocr_language_not_available");
+                return TesseractFailed(operation, null);
             }
             HelperProcessJob.Assign(process);
             Task<string> stdout = ReadBoundedAsync(
@@ -237,7 +245,7 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
             _ = await stderr.ConfigureAwait(false);
             if (process.ExitCode != 0)
             {
-                return ExternalJson.Failure(operation, "windows_ocr_language_not_available");
+                return TesseractFailed(operation, process.ExitCode);
             }
 
             text = text.Trim();
@@ -260,13 +268,19 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
             });
             return ExternalJson.Success(operation, result, effectObserved: false);
         }
+        catch (InvalidDataException)
+        {
+            // ReadBoundedAsync: more text than the bounded envelope.
+            TryKill(process);
+            return OcrFailure(operation, "ocr_text_too_large", "the capture holds more text than one OCR read takes; "
+                + "capture a smaller part, such as the active window");
+        }
         catch (Exception exception) when (exception is IOException
             or InvalidOperationException
-            or System.ComponentModel.Win32Exception
-            or InvalidDataException)
+            or System.ComponentModel.Win32Exception)
         {
             TryKill(process);
-            return ExternalJson.Failure(operation, "windows_ocr_language_not_available");
+            return TesseractFailed(operation, null);
         }
         catch (OperationCanceledException)
         {
@@ -274,6 +288,20 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
             throw;
         }
     }
+
+    private static ExternalCapabilityReceipt TesseractFailed(string operation, int? exitCode) =>
+        OcrFailure(operation, "tesseract_ocr_failed", "Tesseract is installed but failed on this capture; nothing was "
+            + "read from it; trying again or vision_describe may work", exitCode);
+
+    private static ExternalCapabilityReceipt OcrFailure(string operation, string code, string next, int? exitCode = null) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            if (exitCode is { } exit) writer.WriteNumber("exitCode", exit);
+            writer.WriteString("next", next);
+            writer.WriteEndObject();
+        }), code);
 
     internal static string? FindTesseract()
     {
