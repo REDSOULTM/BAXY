@@ -3048,3 +3048,15 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   quedó como se pidió») y after (7.1: «la ventana no cambió» / «su after es la ventana de después»); en el texto de
   cada resultado, no en el prefijo. pytest 298. Pendiente: e2e del NB. **w4-core** (agente): stateAfter en los fallos
   de ventanas y audio del Core, allClosed de cerrar todo, título sólo de dígitos en GameStore.
+- 21:1x **Disco C: del PC lleno** (0 bytes ~20:50 y otra vez ~21:18): el pagefile creció a 24,9 GB con la presión de RAM
+  (apps del dueño + builds + bench + agente). La s1 de decision2 de int2 dio 9 errores HTTP del servidor (inválida) y su
+  repetición murió en P197. Se borraron ~30 worktrees míos ya fusionados (ramas en hub); el slot de los bancos va a
+  F:\BAXYeval\renew_v4\slots (BAXY_VISION_SLOT_DIR en d2run_cat.sh). Regla: en el PC, un trabajo pesado a la vez.
+- 21:30 **int3 = 15c48a05a**: int2 + nb-prevuelo2 9b0eb9ba5 (guarda 1: app.open de una herramienta del sistema pide el
+  sí; guarda 2: el botón afirmativo de un diálogo de reemplazar/eliminar pide el sí; pista de E014) + w4-mind + w4-core
+  (agente: stateAfter en fallos de ventanas y audio, allClosed con ProtectedKept, título de sólo dígitos en GameStore).
+  E014: la traza del NB muestra que es Qwen mismo quien escribe «Configuración del sistema» en unas corridas y
+  «Configuración» en otras (0,99); System One no interviene.
+- 22:0x **decision2 ×3 de int3**: 231 / 229 / 230 = 230,0 frente a int 229,0: Δ +1,0, IC95 [−1,67; +3,67], McNemar p 1,
+  pass^3 222 → 226; 0 errores. **int4 = 97a9ff5a2** = int3 + nb-prevuelo2 3a619d0a8 (aislamiento de pruebas; rechazo de
+  lugar antes del sí). Pendiente del NB sobre int3/int4: Providers entero, E014 ×4, e2e, falsedades, recursos, sesión larga.
