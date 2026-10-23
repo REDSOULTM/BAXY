@@ -2,7 +2,8 @@
 
 System One, layer 0 (scripts/renew/system_one): on the 1,839 labelled real requests, this confidence told right decisions
 from wrong ones with AUROC 0.902, and below 0.5 it held 145 of 309 wrong decisions while 1.9 % of the right ones fell
-there; on decision2, AUROC 0.818. Only read and traced here: nothing decides on it yet.
+there; on decision2, AUROC 0.818. Only read here; the mind decides on it (Mind._held): layer 0 (BAXY_S1_DOUBT), the
+decision model's layer 2 (BAXY_S1_VETO) and the floor of a «sí» (CONFIRM_FLOOR).
 """
 from __future__ import annotations
 

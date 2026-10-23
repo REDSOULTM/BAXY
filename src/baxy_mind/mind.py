@@ -1443,7 +1443,7 @@ class Mind:
         loop of calls ended with (a failure keeps its code) and from the results the mind wrote for calls that never got
         one. Empty for a turn with no words of the person (a heartbeat's own)."""
         said = next((str(m.get("content") or "") for m in messages if m["role"] == "user"
-                     and not str(m.get("content") or "").startswith(("[", BEAT_MARK))), "")
+                     and not str(m.get("content") or "").startswith("[")), "")  # a note, the clock or BEAT_MARK
         said = " ".join(said.split())
         if not said:
             return ""

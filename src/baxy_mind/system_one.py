@@ -3,7 +3,8 @@
 It answers one typed question — which of Qwen's own candidates the person asked for — with calibrated probabilities, in
 one pass (llama-server's /v1/systemone). Phase 0 (scripts/renew/system_one, 2026-10-21): tuned laya-multilingual 322M,
 on the 152 held-out real requests, 94.1 % against Qwen's 92.1 %; when Qwen doubted (< 0.6) and Laya disagreed, asking
-instead held 6 of 9 wrong actions with no extra question. 576 MiB of RAM, ~140 ms per question on a laptop CPU.
+instead held 6 of 9 wrong actions with no extra question. 576 MiB of RAM; with no GPU device at all (-dev none, al
+máximo 3.1) ~690 ms p50 per question on the notebook's CPU (~140 ms while the CUDA build still offloaded it).
 
 The question is written here, once: training (build_kev_data.py) and serving read the same words.
 """
