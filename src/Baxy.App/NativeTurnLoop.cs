@@ -100,6 +100,9 @@ internal sealed class NativeTurnLoop
 
         /// <summary>The chat forgot everything memory held (memory.forget, scope all): the kept conversations go too.</summary>
         internal Action? ForgotEverything { get; init; }
+
+        /// <summary>Where each of the person's known folders is, by its label (SaidFolders; tests point it elsewhere).</summary>
+        internal Func<string, string?>? PersonFolder { get; init; }
     }
 
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
@@ -110,6 +113,7 @@ internal sealed class NativeTurnLoop
     private readonly TimeProvider _time;
     private readonly SilenceNotice _notice;
     private readonly NetworkEgress _egress = new();
+    private readonly SaidFolders _said;
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
@@ -142,6 +146,7 @@ internal sealed class NativeTurnLoop
         _host = host ?? throw new ArgumentNullException(nameof(host));
         _time = time ?? TimeProvider.System;
         _notice = new SilenceNotice(_time);
+        _said = new SaidFolders(host.PersonFolder);
     }
 
     /// <summary>A risky call waits for the person's Sí or No (the kernel's challenge or a heartbeat's proposal).</summary>
@@ -162,6 +167,7 @@ internal sealed class NativeTurnLoop
         }
 
         _egress.Heard(text);
+        _said.Heard(text);
         await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken),
             cancellationToken);
     }
@@ -291,6 +297,7 @@ internal sealed class NativeTurnLoop
 
         _beat = true;
         _egress.NewTurn();
+        _said.Clear();
         _turnStarted = Stopwatch.GetTimestamp();
         try
         {
@@ -312,6 +319,7 @@ internal sealed class NativeTurnLoop
         _droppedOperation = null;
         DropPending();
         _egress.Reset();
+        _said.Clear();
     }
 
     private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken,
@@ -459,6 +467,20 @@ internal sealed class NativeTurnLoop
             return Record(operation, arguments, started, Observation("rejected", refusal));
         }
 
+        // Renew al máximo (w6, rutas): a file call that leaves out the folder the person named in this turn is routed
+        // into it when it only reads, or refused before anything runs with the call that names it (SaidFolders).
+        string? said = null;
+        if (_said.Rule(operation, descriptor, arguments) is { } ruling)
+        {
+            if (ruling.Refusal is { } leftOut)
+            {
+                return Record(operation, arguments, started, leftOut.ToJsonString(SaidFolders.AsWritten));
+            }
+
+            arguments = ruling.Arguments;
+            said = ruling.Note;
+        }
+
         PreparedOperation prepared;
         try
         {
@@ -530,7 +552,7 @@ internal sealed class NativeTurnLoop
         }
 
         return await SendAsync(core, prepared, arguments, confirmationToken: null, answered: false, started,
-                cancellationToken)
+                cancellationToken, said)
             ;
     }
 
@@ -578,6 +600,24 @@ internal sealed class NativeTurnLoop
 
         using System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString());
         return descriptor.Effects.Any(effect => effect.Applies(given.RootElement));
+    }
+
+    // Where the call acted, beside the folder the person named (SaidFolders).
+    private static string WithSaidFolder(string observation, string said)
+    {
+        try
+        {
+            if (JsonNode.Parse(observation) is JsonObject facts)
+            {
+                facts["saidFolder"] = said;
+                return facts.ToJsonString(SaidFolders.AsWritten);
+            }
+        }
+        catch (System.Text.Json.JsonException)
+        {
+        }
+
+        return observation + "\n(" + said + ")";
     }
 
     // The turn ends on a call that waits for the person's «sí»: the last result says that call has not run, so the
@@ -750,7 +790,8 @@ internal sealed class NativeTurnLoop
         string? confirmationToken,
         bool answered,
         long started,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? said = null)
     {
         string operation = prepared.OperationName;
         bool memory = MemoryOperationProtector.IsMemoryOperation(operation);
@@ -782,6 +823,11 @@ internal sealed class NativeTurnLoop
                 ["next"] = AskThePersonAbout(operation),
             }, "arguments", operation, arguments);
             asked["effectStarted"] = challenge.ReconciliationRequired;
+            if (said is not null)
+            {
+                asked["saidFolder"] = said;
+            }
+
             return Record(operation, arguments, started, asked.ToJsonString(), response, sent: challenge.ReconciliationRequired);
         }
 
@@ -789,6 +835,11 @@ internal sealed class NativeTurnLoop
         string body = memory
             ? MemoryObservation(prepared, response)
             : OperationResponseProjection.Create(response, operation).Message;
+        if (said is not null)
+        {
+            body = WithSaidFolder(body, said);
+        }
+
         if (memory && response.Status == OperationStatuses.Completed
             && operation is not ("memory.recall" or "memory.list" or "memory.status" or "memory.export"))
         {

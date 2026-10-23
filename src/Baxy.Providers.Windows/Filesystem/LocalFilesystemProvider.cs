@@ -294,54 +294,19 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         return (_root, relativePath);
     }
 
-    // The person's known folders by the names a person gives them, in Spanish and English, folded (lower case, no
-    // accents). The catalog's folder takes desktop, documents and downloads; pictures, music and videos are only told.
-    private static readonly Dictionary<string, string> KnownFolderNames = new(StringComparer.Ordinal)
-    {
-        ["desktop"] = "desktop",
-        ["escritorio"] = "desktop",
-        ["documents"] = "documents",
-        ["documentos"] = "documents",
-        ["mis documentos"] = "documents",
-        ["downloads"] = "downloads",
-        ["descargas"] = "downloads",
-        ["pictures"] = "pictures",
-        ["imagenes"] = "pictures",
-        ["mis imagenes"] = "pictures",
-        ["music"] = "music",
-        ["musica"] = "music",
-        ["mi musica"] = "music",
-        ["videos"] = "videos",
-        ["mis videos"] = "videos",
-    };
+    // The person's known folders by the names a person gives them (PersonFolders.Names). The catalog's folder takes
+    // desktop, documents and downloads; pictures, music and videos are only told.
+    private static IReadOnlyDictionary<string, string> KnownFolderNames => PersonFolders.Names;
 
-    private static string Fold(string value)
-    {
-        var builder = new StringBuilder(value.Length);
-        foreach (char character in value.Trim().Normalize(NormalizationForm.FormD))
-        {
-            if (CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
-                builder.Append(char.ToLowerInvariant(character));
-        }
-
-        return builder.ToString();
-    }
+    private static string Fold(string value) => PersonFolders.Fold(value);
 
     private static bool Inside(string full, string root) =>
         full.StartsWith(root.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar,
             StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Where each known folder of the person's is (tests point them away from the real profile).</summary>
-    internal Func<string, string> KnownFolderPath { get; init; } = static folder => folder switch
-    {
-        "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
-        "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "downloads" => Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path(),
-        "pictures" => Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-        "music" => Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
-        "videos" => Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
-        _ => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-    };
+    internal Func<string, string> KnownFolderPath { get; init; } = static folder =>
+        PersonFolders.Path(folder) ?? PersonFolders.Path("home")!;
 
     /// <summary>BAXY's own state (<see cref="BaxyPrivateArea"/>); tests point it at a temporary folder.</summary>
     internal IReadOnlyList<string> PrivateRoots { get; init; } = BaxyPrivateArea.DefaultRoots();
