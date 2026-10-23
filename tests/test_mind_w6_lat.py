@@ -132,3 +132,36 @@ def test_only_top_level_booleans_are_written_as_text() -> None:
     assert shown[1]["tool_calls"][1] is messages[1]["tool_calls"][1]  # nothing to write otherwise: as it was
     assert shown[0] is messages[0] and shown[2] is messages[2]
     assert json.loads(messages[1]["tool_calls"][0]["function"]["arguments"]) == nested  # the input is not changed
+
+
+# The KV cache's types (w6-lat 5): an option for an A/B, never the default.
+@pytest.mark.parametrize("setting,types", [("", ("q8_0", "q8_0")), ("q4_0", ("q4_0", "q4_0")),
+                                           (" Q8_0 , q4_0 ", ("q8_0", "q4_0"))])
+def test_the_kv_cache_is_q8_0_unless_baxy_renew_kv_says_otherwise(tmp_path: pathlib.Path, monkeypatch, setting: str,
+                                                                    types: tuple[str, str]) -> None:
+    from baxy_mind import llm_server
+    launched: list[list[str]] = []
+
+    class Process:
+        def __init__(self, command, **kwargs) -> None:
+            launched.append(command)
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setenv("BAXY_RENEW_KV", setting)
+    monkeypatch.setattr(llm_server.subprocess, "Popen", Process)
+    monkeypatch.setattr(llm_server.threading, "Thread", lambda **kwargs: type("T", (), {"start": lambda self: None})())
+    server = llm_server.LlmServer("model.gguf", "llama-server.exe")
+    server.start()
+    command = launched[0]
+    assert (command[command.index("-ctk") + 1], command[command.index("-ctv") + 1]) == types
+    # The types are among the server's settings, and so in the kept prefix's key (prefix_key): another type, another
+    # prefix, never a state of the other types restored.
+    assert "-ctk" in server._settings and types[0] in server._settings
+
+
+@pytest.mark.parametrize("setting", ["q3_k", "q8_0,q4_0,f16", "turbo"])
+def test_a_kv_type_llama_server_does_not_take_fails_the_start_with_its_cause(monkeypatch, setting: str) -> None:
+    from baxy_mind import llm_server
+    monkeypatch.setenv("BAXY_RENEW_KV", setting)
+    with pytest.raises(RuntimeError, match="BAXY_RENEW_KV"):
+        llm_server.LlmServer("model.gguf", "llama-server.exe")
