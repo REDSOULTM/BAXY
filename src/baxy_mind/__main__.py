@@ -139,6 +139,7 @@ def main() -> int:
             try:
                 if kind == "catalog.configure":
                     count = mind.configure(message)
+                    voice.hear_names(mind.names)  # the ear's hotwords: what the model is shown is what it may hear
                     # Ready means ready: the model is loaded and the catalog prefix is cached before the App is told so
                     # (a first turn sent earlier waited behind the warm-up and timed out, 2026-10-15).
                     try:
