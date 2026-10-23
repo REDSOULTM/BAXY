@@ -219,11 +219,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             if (sent.ErrorCode == WindowsDesktopMessagingAutomation.ComposerHasPersonDraft)
                 return StoppedAtPersonDraft("message.send", sent);
-            return Failure(
-                "message.send",
-                sent.ErrorCode ?? "message_delivery_not_verified",
-                sent.EffectObserved,
-                sent.EffectMayHaveOccurred);
+            return SendNotVerified("message.send", sent, resolved.Shown);
         }
 
         return Success(
@@ -308,11 +304,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             if (sent.ErrorCode == WindowsDesktopMessagingAutomation.ComposerHasPersonDraft)
                 return StoppedAtPersonDraft("message.send.test", sent);
-            return Failure(
-                "message.send.test",
-                sent.ErrorCode ?? "message_delivery_not_verified",
-                sent.EffectObserved,
-                sent.EffectMayHaveOccurred);
+            return SendNotVerified("message.send.test", sent, resolved.Shown);
         }
 
         return Success(
@@ -419,6 +411,51 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
 
     private static ExternalCapabilityReceipt Success(string operation, JsonElement result) =>
         new(operation, true, true, result, null);
+
+    // Renew al máximo (w8): a send that failed after Enter came back with no result (the code and effectObserved only):
+    // nothing said Enter was pressed, so «not verified» read as «not sent» and a model sent it again (twice in the chat).
+    // It says Enter was pressed, that the message may be in the chat, what was read there and whether the chat still
+    // named the recipient; every other failure is as before.
+    private static ExternalCapabilityReceipt SendNotVerified(
+        string operation,
+        DesktopMessageObservation sent,
+        string displayName)
+    {
+        ExternalCapabilityReceipt failure = Failure(
+            operation,
+            sent.ErrorCode ?? "message_delivery_not_verified",
+            sent.EffectObserved,
+            sent.EffectMayHaveOccurred || sent.EnterPressed);
+        if (!sent.EnterPressed)
+        {
+            return failure;
+        }
+
+        return failure with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("messageWritten", true);
+                writer.WriteBoolean("enterPressed", true);
+                writer.WriteString("sent", "unknown");
+                writer.WriteString("displayName", displayName);
+                if (!string.IsNullOrWhiteSpace(sent.Read))
+                    writer.WriteString("deliveryRead", sent.Read);
+                if (sent.RecipientStillShown is { } shown)
+                    writer.WriteBoolean("recipientStillShown", shown);
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.MessageTextNext))
+                {
+                    writer.WriteString("next", "Enter was pressed in the chat of " + displayName
+                        + ", so the message may already be there; sending it again may send it twice: say it may "
+                        + "have been sent and let the person look at the chat");
+                }
+
+                writer.WriteEndObject();
+            }),
+        };
+    }
 
     private static ExternalCapabilityReceipt Failure(
         string operation,
@@ -635,6 +672,12 @@ internal sealed record DesktopMessageObservation(
 {
     // Keys reached the composer without positive evidence of what they left (EffectObserved stays false).
     internal bool EffectMayHaveOccurred { get; init; }
+
+    // Renew al máximo (w8): Enter was pressed in the chat; a failure after it is a message that may be there.
+    internal bool EnterPressed { get; init; }
+
+    // After Enter: whether the chat's header still named the recipient (null: not read).
+    internal bool? RecipientStillShown { get; init; }
 
     // Ronda B: the typed text was not seen in the composer and what was typed here is cleared (it was empty before,
     // C5); the keys reached it, and a part of the text may remain, so the failure says an effect may have occurred.
@@ -1263,7 +1306,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         catch (Exception failure) when (failure is IOException or InvalidOperationException or ExternalException
             or OperationCanceledException)
         {
-            return new(false, true, string.Empty, "message_delivery_not_verified");
+            return new(false, true, string.Empty, "message_delivery_not_verified") { EnterPressed = true };
         }
     }
 
@@ -1328,7 +1371,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             afterHash,
             delivered ? null : "message_delivery_not_verified",
             deliveryRead.Trim(),
-            match);
+            match) { EnterPressed = true, RecipientStillShown = stillTarget };
     }
 
     public async ValueTask<DesktopMessageObservation> DraftAsync(

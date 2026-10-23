@@ -401,6 +401,66 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // Renew al máximo (w8): a send that failed after Enter says Enter was pressed and the message may be in the chat,
+    // with what was read there; before, its result was null and «not verified» read as «not sent».
+    [TestCase("message.send", """{"channel":"whatsapp","recipient":"Letras","text":"Hola"}""")]
+    [TestCase("message.send.test", """{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}""")]
+    public async Task ASendNotVerifiedAfterEnterSaysTheMessageMayBeInTheChat(string operation, string arguments)
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            new DesktopMessageObservation(false, true, "hash", "message_delivery_not_verified", "Hol", null)
+            {
+                EnterPressed = true,
+                RecipientStillShown = true,
+            });
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt;
+            using (Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all"))
+            {
+                receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.True);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
+                Assert.That(receipt.Result, Is.Not.Null);
+                Assert.That(receipt.Result!.Value.GetProperty("enterPressed").GetBoolean(), Is.True);
+                Assert.That(receipt.Result.Value.GetProperty("sent").GetString(), Is.EqualTo("unknown"));
+                Assert.That(receipt.Result.Value.GetProperty("deliveryRead").GetString(), Is.EqualTo("Hol"));
+                Assert.That(receipt.Result.Value.GetProperty("recipientStillShown").GetBoolean(), Is.True);
+                Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.Contain("may send it twice"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // The flows that press Enter mark it on the observation they return.
+    [Test]
+    public void EveryReadBackAfterEnterSaysEnterWasPressed()
+    {
+        string source = AdapterSource();
+        int readBack = source.IndexOf("internal static async ValueTask<DesktopMessageObservation> SentReadBackAsync(", StringComparison.Ordinal);
+        int after = source.IndexOf("private static async ValueTask<DesktopMessageObservation> ReadBackAfterEnterAsync(", StringComparison.Ordinal);
+        int afterEnd = source.IndexOf("\n    }\n", Math.Max(after, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(readBack, Is.GreaterThan(0));
+            Assert.That(after, Is.GreaterThan(0));
+            Assert.That(source[readBack..after], Does.Contain("EnterPressed = true"));
+            Assert.That(source[after..afterEnd], Does.Contain("EnterPressed = true"));
+        });
+    }
+
     // Ronda B: a draft typed and not seen in the composer is cleared; the keys reached it, so the send and the draft
     // both say an effect may have occurred (never a clean failure, never an observed effect).
     [TestCase("message.send.test", """{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}""")]
