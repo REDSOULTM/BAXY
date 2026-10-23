@@ -418,7 +418,6 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "turn.confirm", ["approve"] = approve, ["label"] = label },
             cancellationToken);
 
-    /// <summary>A new conversation: the model forgets the session's turns.</summary>
     /// <summary>The session's conversation as the mind holds it (calls and results included), or null.</summary>
     public async Task<JsonArray?> SessionExportAsync(CancellationToken cancellationToken)
     {
@@ -463,6 +462,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         return reply is not null && (string?)reply["type"] == "voice.released";
     }
 
+    /// <summary>A new conversation: the model forgets the session's turns.</summary>
     public async Task<bool> NewSessionAsync(CancellationToken cancellationToken)
     {
         JsonObject? reply = await RequestAsync(

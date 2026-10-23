@@ -90,8 +90,8 @@ public sealed class NativeTurnLoopTests
         Assert.That(steps.Select(static step => (step.Operation, step.Status, step.Sent)),
             Is.EqualTo(new[] { ("web.fetch", "needs_confirmation", false) }));
         Assert.That((string?)JsonNode.Parse(steps[0].Observation)?["cause"], Is.EqualTo("host_not_from_session"));
-        Assert.That(asked.Select(static call => (call.Operation, call.Proposal)),
-            Is.EqualTo(new[] { ("web.fetch", false) }));
+        Assert.That(asked.Select(static call => (call.Operation, call.Proposal, call.Cause)),
+            Is.EqualTo(new[] { ("web.fetch", false, (string?)"host_not_from_session") }));
         Assert.That(loop.HasPendingConfirmation, Is.True);
     }
 
@@ -142,6 +142,265 @@ public sealed class NativeTurnLoopTests
             Assert.That((string?)observed?["error"], Is.EqualTo("nothing_pending"));
             Assert.That((string?)observed?["reason"], Is.EqualTo(NativeTurnLoop.NothingPendingReason));
             Assert.That((string?)observed?["reason"], Does.Contain("this call did nothing"));
+        });
+    }
+
+    // Auditoría de la App (2026-10-23): what the App writes itself reached the model as \u escapes («Pokémon»),
+    // the held call's arguments included; the provider's text and SaidFolders' already went as written.
+    [Test]
+    public async Task AHeldCallReachesTheModelAsItWasWritten()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = "game.launch",
+                    ["arguments"] = new JsonObject { ["appId"] = "1", ["title"] = "Pokémon «Rojo»" },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "clarify",
+                    ["question"] = "¿Abro ese juego?",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+        });
+
+        await loop.RunAsync("abre un juego", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        string observation = (string)fake.Requests("turn.continue").Single()["observation"]!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(observation, Does.Contain("\"title\":\"Pokémon «Rojo»\""));
+            Assert.That(observation, Does.Not.Contain("\\u"));
+            Assert.That((string?)JsonNode.Parse(observation)?["cause"], Is.EqualTo("game_title_not_said"));
+        });
+    }
+
+    // Auditoría de la App (2026-10-23): the owner's switches are read again when the call is approved; one switched off
+    // while it waited does not run it, by the button as by voice.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task AnApprovalAfterTheOwnerSwitchedTheCallOffDoesNotRunIt(bool button)
+    {
+        using var fake = new FakeMind();
+        fake.Script(HeldFetch());
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        var steps = new List<NativeTurnStep>();
+        var outcomes = new List<string>();
+        string? switchedOff = null;
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+            ConfirmationResolved = outcomes.Add,
+            Refuse = (operation, _) => operation == "web.fetch" ? switchedOff : null,
+        });
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(loop.HasPendingConfirmation, Is.True);
+
+        switchedOff = "web_disabled_by_owner";
+        var approval = new JsonObject
+        {
+            ["type"] = "turn.result",
+            ["kind"] = "action",
+            ["operation"] = "confirmation.answer",
+            ["arguments"] = new JsonObject { ["approve"] = true },
+        };
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                [button ? "turn.confirm" : "turn.decide"] = approval,
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "La búsqueda web está apagada.",
+                },
+            },
+        });
+        if (button)
+        {
+            await loop.AnswerConfirmationAsync(true, "Sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        }
+        else
+        {
+            await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        }
+
+        NativeTurnStep last = steps[^1];
+        Assert.Multiple(() =>
+        {
+            Assert.That((last.Operation, last.Status, last.Sent), Is.EqualTo(("web.fetch", "rejected", false)));
+            Assert.That((string?)JsonNode.Parse(last.Observation)?["error"], Is.EqualTo("web_disabled_by_owner"));
+            Assert.That(loop.HasPendingConfirmation, Is.False);
+            Assert.That(outcomes, Is.EqualTo(new[] { "dropped" }));
+        });
+    }
+
+    // Auditoría de la App (2026-10-23; owner: a call run twice is worse than a replay): a call the engine never
+    // answered keeps its invocation through the person's next turn and UncertainLifetime, so the same call made again
+    // is the same invocation for the kernel's journal; after that, the same request is a new call.
+    [Test]
+    public async Task ACallTheEngineNeverAnsweredKeepsItsInvocationForAnIdenticalRetryWithinItsWindow()
+    {
+        using var fake = new FakeMind();
+        fake.Script(CallsThenSays("system.time", new JsonObject()));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var clock = new ManualClock();
+        var registry = new RetryableOperationRegistry();
+        var steps = new List<NativeTurnStep>();
+        NativeTurnLoop loop = UncertainLoop(mind, registry, steps, clock);
+
+        await loop.RunAsync("¿qué hora es?", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That((string?)JsonNode.Parse(steps[^1].Observation)?["error"], Is.EqualTo("engine_no_answer"));
+        PreparedOperation first = Unresolved(registry).Single();
+
+        // The retry in the next turn: the same invocation, whose window starts again with this attempt.
+        await loop.RunAsync("inténtalo de nuevo", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(Unresolved(registry), Is.EqualTo(new[] { first }));
+
+        // A different call is its own invocation.
+        Assert.That(registry.GetOrAdd(new RoutedOperation("system.time", new JsonObject { ["place"] = "Lima" })),
+            Is.Not.SameAs(first));
+
+        // The person's turn after it ends with no call: the window closes, and the same request is a new call.
+        fake.Script(Says("Listo."));
+        await loop.RunAsync("gracias", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(Unresolved(registry).Where(p => p.OperationName == "system.time" && !p.Arguments.TryGetProperty("place", out _)),
+            Is.Empty);
+        Assert.That(registry.GetOrAdd(new RoutedOperation("system.time", new JsonObject())).InvocationId,
+            Is.Not.EqualTo(first.InvocationId));
+    }
+
+    [Test]
+    public async Task ACallTheEngineNeverAnsweredIsANewCallAfterItsTimeOrInANewSession()
+    {
+        using var fake = new FakeMind();
+        fake.Script(CallsThenSays("system.time", new JsonObject()));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var clock = new ManualClock();
+        var registry = new RetryableOperationRegistry();
+        var steps = new List<NativeTurnStep>();
+        NativeTurnLoop loop = UncertainLoop(mind, registry, steps, clock);
+
+        await loop.RunAsync("¿qué hora es?", Stopwatch.GetTimestamp(), CancellationToken.None);
+        PreparedOperation first = Unresolved(registry).Single();
+        clock.Now += NativeTurnLoop.UncertainLifetime + TimeSpan.FromSeconds(1);
+        await loop.RunAsync("¿y ahora?", Stopwatch.GetTimestamp(), CancellationToken.None);
+        PreparedOperation second = Unresolved(registry).Single();
+        Assert.That(second.InvocationId, Is.Not.EqualTo(first.InvocationId));
+
+        // The engine started again is the same session; a new one is not.
+        loop.Reset(engineRestarted: true);
+        Assert.That(Unresolved(registry), Is.EqualTo(new[] { second }));
+        loop.Reset();
+        Assert.That(Unresolved(registry), Is.Empty);
+    }
+
+    private static JsonObject CallsThenSays(string operation, JsonObject arguments) => new()
+    {
+        ["reply"] = new JsonObject
+        {
+            ["turn.decide"] = new JsonObject
+            {
+                ["type"] = "turn.result", ["kind"] = "action", ["operation"] = operation, ["arguments"] = arguments,
+            },
+            ["turn.continue"] = new JsonObject
+            {
+                ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "El motor no respondió.",
+            },
+        },
+    };
+
+    // An engine said ready whose every call fails in transport (ReadyCore): engine_no_answer.
+    private static NativeTurnLoop UncertainLoop(MindSidecarClient mind, RetryableOperationRegistry registry,
+        List<NativeTurnStep> steps, TimeProvider clock)
+    {
+        CoreProcessClient core = ReadyCore();
+        return new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+        }, clock);
+    }
+
+    private static PreparedOperation[] Unresolved(RetryableOperationRegistry registry) =>
+        [.. ((Dictionary<string, PreparedOperation>)typeof(RetryableOperationRegistry)
+            .GetField("_operations", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(registry)!).Values];
+
+    // Auditoría de la App (2026-10-23): told to answer in words (here, the engine is down), a mind that still calls does
+    // not get that call run; before, each call ran, came back final again, and the turn never ended.
+    [Test]
+    public async Task ACallAfterTheMindWasToldToAnswerInWordsDoesNotRun()
+    {
+        using var fake = new FakeMind();
+        var call = new JsonObject
+        {
+            ["type"] = "turn.result",
+            ["kind"] = "action",
+            ["operation"] = "system.time",
+            ["arguments"] = new JsonObject(),
+        };
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject { ["turn.decide"] = call, ["turn.continue"] = call.DeepClone() },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var steps = new List<NativeTurnStep>();
+        var failures = new List<string>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = static () => null,
+            Mind = () => mind,
+            Registry = static () => null,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = failures.Add,
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+        });
+
+        await loop.RunAsync("¿qué hora es?", Stopwatch.GetTimestamp(), CancellationToken.None)
+            .WaitAsync(TimeSpan.FromSeconds(30));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(steps.Select(static step => step.Operation), Is.EqualTo(new[] { "system.time" }));
+            Assert.That(failures, Is.EqualTo(new[] { "decision_unavailable_after_call" }));
+            Assert.That(fake.Requests("turn.continue").Select(static request => (bool?)request["final"]),
+                Is.EqualTo(new bool?[] { true }));
         });
     }
 

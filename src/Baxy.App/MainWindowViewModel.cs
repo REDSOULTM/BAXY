@@ -150,7 +150,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 },
                 Refuse = Settings.Refusal,
                 MemoryChanged = () => MemoryChanged?.Invoke(),
-                ForgotEverything = () => EverythingForgotten?.Invoke(),
+                ForgotEverything = () =>
+                {
+                    ClearConversationLog();
+                    EverythingForgotten?.Invoke();
+                },
             });
     }
 
@@ -375,7 +379,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         SetStartupFailure(null);
         IsReady = false;
         StatusDescription = "Comprobando BAXY";
-        _loop.Reset();
+        // An engine started again (recovering) is the same session: a call it never answered keeps its invocation.
+        _loop.Reset(engineRestarted: recovering);
 
         if (_coreClient is not null)
         {
@@ -694,10 +699,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.TurnCancelled);
         }
-        catch (Exception exception) when (exception is IOException or InvalidDataException
-            or InvalidOperationException or JsonException or UnauthorizedAccessException
-            or ProtectedPayloadException or TimeoutException)
+        catch (Exception exception)
         {
+            // Auditoría de la App (2026-10-23): any other type (a NullReference, a KeyNotFound, a cancellation that was
+            // not the turn's) left the turn through the view's async void handler and ended BAXY; every failure ends
+            // the turn as what it is, a failed turn, traced, and recorded with what nothing else caught.
+            if (exception is not (IOException or InvalidDataException or InvalidOperationException or JsonException
+                or UnauthorizedAccessException or ProtectedPayloadException or TimeoutException))
+            {
+                UnhandledFailures.Record("turn", exception);
+            }
+
             LastTurnFailure = "turn_failed";
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.TurnError,
                 $"{exception.GetType().Name}.{exception.TargetSite?.Name ?? "unknown"}".ToLowerInvariant());
@@ -1436,7 +1448,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task HandleStartupFailureAsync(CoreProcessClient client)
     {
-        _loop.Reset();
+        _loop.Reset(engineRestarted: true);
         DetachCoreDisconnectedHandler(client);
         await client.DisposeAsync();
         if (ReferenceEquals(_coreClient, client))
@@ -1486,7 +1498,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
 
                 owner.IsReady = false;
-                owner._loop.Reset();
+                owner._loop.Reset(engineRestarted: true);
                 owner.SetStartupFailure("core_disconnected");
                 owner.RecoverCoreWhenIdle();
             },
@@ -1581,6 +1593,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 : mind.VoiceSpeakAsync(body, TimeSpan.FromSeconds(5), CancellationToken.None);
         }
     }
+
+    /// <summary>Memory forgot everything, or every conversation was deleted: the private log of the conversation goes
+    /// too (<see cref="ConversationLog.Clear"/>).</summary>
+    internal void ClearConversationLog() => _conversationLog?.Clear();
 
     /// <summary>FT/proveedores goal (review of the App): what BAXY is saying stops (a new conversation, the voice muted
     /// in the settings); before, only the person's own message stopped it.</summary>

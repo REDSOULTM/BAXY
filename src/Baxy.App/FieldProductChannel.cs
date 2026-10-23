@@ -148,14 +148,20 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
                 // 2026-10-22, review of the App: the answer names the card pressed («card»); a late press on an ended
                 // card no longer answers the next one. A press while a turn runs is refused, never taken and lost.
-                string? card = (string?)ParseBody(body)?["card"];
-                if (card is not null && _pendingCard?.Id != card)
+                // Auditoría de la App (2026-10-23): the view never sent «card», so any answer took whichever card
+                // waited (Enter on one that had just ended approved the next); an answer that names none is refused.
+                if ((string?)ParseBody(body)?["card"] is not { Length: > 0 } card)
+                {
+                    return Error("card_required", 400);
+                }
+
+                if (_pendingCard is not { } pending || pending.Id != card)
                 {
                     return Error("card_not_pending", 409);
                 }
 
-                if (!await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation,
-                        card is null ? null : _pendingCard?.Asked).ConfigureAwait(true))
+                if (!await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation, pending.Asked)
+                        .ConfigureAwait(true))
                 {
                     return Error(_viewModel.HasPendingConfirmation ? "turn_in_progress" : "nothing_pending", 409);
                 }
@@ -249,6 +255,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             // The panel's «olvidar todo» (DELETE /memory, scope all) takes the kept conversations with it.
             if (method == "DELETE" && route == "/memory" && memory.Status == 200)
             {
+                _viewModel.ClearConversationLog();
                 OnEverythingForgotten();
             }
 
@@ -366,7 +373,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         } : null;
         string id = _transcript.NextId("k");
         JsonObject card = FieldStepProjection.Card(id, asked.Proposal ? "proposal" : "confirm",
-            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, asked.EffectStarted);
+            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, asked.EffectStarted, asked.Cause);
         _pendingCard = (id, asked);
         Publish(ItemEvent(_transcript.Card(card)));
     }
@@ -631,6 +638,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         int deleted = _sessions.DeleteAll();
+        _viewModel.ClearConversationLog();
         StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
         await _viewModel.ForgetMindTraceAsync(_lifetimeCancellation).ConfigureAwait(true);
         return Json(new JsonObject { ["ok"] = true, ["deleted"] = deleted });

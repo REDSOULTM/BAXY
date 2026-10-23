@@ -22,14 +22,15 @@ internal sealed record NativeTurnStep(
 
 /// <summary>A call waiting for the person's Sí or No, as its question is published (the view's card).
 /// <paramref name="EffectStarted"/>: the kernel asks again for a call whose earlier attempt may have happened
-/// (reconciliationRequired).</summary>
+/// (reconciliationRequired). <paramref name="Cause"/>: why the person's own turn held it (NetworkEgress's code).</summary>
 internal sealed record NativeTurnConfirmation(
     string Operation,
     JsonObject Arguments,
     string Risk,
     DateTimeOffset ExpiresUtc,
     bool Proposal,
-    bool EffectStarted = false);
+    bool EffectStarted = false,
+    string? Cause = null);
 
 /// <summary>
 /// BAXY Renew's harness: the native tool loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop). The
@@ -108,6 +109,9 @@ internal sealed class NativeTurnLoop
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
     internal static readonly TimeSpan ProposalLifetime = TimeSpan.FromMinutes(10);
 
+    /// <summary>How long a call the engine never answered keeps its invocation for an identical retry, at most.</summary>
+    internal static readonly TimeSpan UncertainLifetime = TimeSpan.FromMinutes(2);
+
     private readonly Host _host;
     // 2026-10-22, review of the App: one clock for whether a waiting call is still waiting and how it ended.
     private readonly TimeProvider _time;
@@ -117,8 +121,12 @@ internal sealed class NativeTurnLoop
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
-    // A call held in a heartbeat is its proposal; one held in the person's turn (NetworkEgress) asks as a confirmation.
+    // A call held in a heartbeat is its proposal; one held in the person's turn (NetworkEgress) asks as a confirmation,
+    // and its card says why (_proposalCause).
     private bool _proposalByBeat;
+    private string? _proposalCause;
+    // Where the waiting call acts beside the folder the person named (SaidFolders), for its result once approved.
+    private string? _waitingSaid;
     private bool _beat;
     // The person's answer is the person's: it answers only a call whose question was published before their words or
     // their press arrived (ConfirmationAsk.Answers: _askedAt before _personAt, both Stopwatch timestamps;
@@ -140,6 +148,12 @@ internal sealed class NativeTurnLoop
     private bool _leftBehind;
     // The call DropLeftBehind dropped, until the person's next words (TakeWaitingCall) or another line of BAXY's.
     private string? _droppedOperation;
+    // Calls the engine never answered (engine_no_answer: they may have run), still unresolved in the registry so the
+    // same call made again is the same invocation (UncertainLifetime, and the person's turn after theirs).
+    private readonly List<Uncertain> _uncertain = [];
+    private long _personTurns;
+
+    private sealed record Uncertain(PreparedOperation Prepared, DateTimeOffset UntilUtc, long Turn);
 
     internal NativeTurnLoop(Host host, TimeProvider? time = null)
     {
@@ -166,10 +180,23 @@ internal sealed class NativeTurnLoop
             return;
         }
 
+        // Auditoría de la App (2026-10-23): words that answer the waiting call (asked before they arrived) keep the context
+        // of the turn that asked it, as a press on Sí or No does: the folders it named and what memory read in it. A
+        // spoken «sí» replaced them, so the calls after the approved one were ruled by «sí» alone while the button's
+        // were ruled by the turn that asked.
+        bool answering = WaitingPrepared() is not null && ConfirmationAsk.Answers(_askedAt, arrivedAt);
         _egress.Heard(text);
-        _said.Heard(text);
-        await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken),
-            cancellationToken);
+        if (answering)
+        {
+            _said.Answered(text);
+        }
+        else
+        {
+            _said.Heard(text);
+        }
+
+        await PersonTurnAsync(mind, arrivedAt, answering,
+            () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken), cancellationToken);
     }
 
     // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
@@ -178,14 +205,21 @@ internal sealed class NativeTurnLoop
     // (asked after the turn started: its question comes next), even when it is the same invocation the person said «sí»
     // to and the kernel asks again; a call left waiting before the turn started, by an earlier turn or by a heartbeat it
     // waited for, does not hold it back. A heartbeat says none: nobody asked and nobody waits for it.
+    // answering: the turn answers the waiting call, and what memory read in the turn that asked it still counts.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
         long arrivedAt,
+        bool answering,
         Func<Task<MindStep?>> decide,
         CancellationToken cancellationToken)
     {
         _personAt = arrivedAt;
-        _egress.NewTurn();
+        long turn = ++_personTurns;
+        if (!answering)
+        {
+            _egress.NewTurn();
+        }
+
         long started = Stopwatch.GetTimestamp();
         _turnStarted = started;
         _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedAt < started, _host.Notice);
@@ -198,6 +232,7 @@ internal sealed class NativeTurnLoop
             _notice.Close();
             DropUnasked();
             DropLeftBehind();
+            ResolveUncertain(endedTurn: turn);
         }
     }
 
@@ -270,8 +305,8 @@ internal sealed class NativeTurnLoop
         }
 
         _droppedOperation = null;
-        await PersonTurnAsync(mind, arrivedAt, () => mind.ConfirmAsync(approve, label, cancellationToken),
-            cancellationToken);
+        await PersonTurnAsync(mind, arrivedAt, answering: true,
+            () => mind.ConfirmAsync(approve, label, cancellationToken), cancellationToken);
     }
 
     /// <summary>
@@ -312,20 +347,57 @@ internal sealed class NativeTurnLoop
         }
     }
 
-    /// <summary>A new session: nothing pending survives it.</summary>
-    internal void Reset()
+    /// <summary>
+    /// A new session: nothing pending survives it. <paramref name="engineRestarted"/>: the same session goes on with the
+    /// engine started again (its journal is the same), and a call it never answered keeps its invocation.
+    /// </summary>
+    internal void Reset(bool engineRestarted = false)
     {
         _leftBehind = false;
         _droppedOperation = null;
         DropPending();
         _egress.Reset();
         _said.Clear();
+        if (!engineRestarted)
+        {
+            ResolveUncertain(endedTurn: null, all: true);
+        }
+    }
+
+    // Auditoría de la App (2026-10-23; owner: a call run twice is worse than a replay): a call the engine never answered
+    // was resolved at once, so the model's retry was a new invocation and ran again, maybe for the second time. It keeps
+    // its invocation while the same session goes on, for UncertainLifetime and until the end of the person's turn after
+    // the one it timed out in: the same call made again then reaches the kernel as the same invocation, whose journal
+    // replays what it did or, with an attempt that may have run, asks the person first (reconciliationRequired: «un
+    // intento anterior pudo haber corrido»). After that it is resolved, and the same request later is a new call.
+    private void KeepUncertain(PreparedOperation prepared)
+    {
+        _uncertain.RemoveAll(entry => ReferenceEquals(entry.Prepared, prepared));
+        _uncertain.Add(new Uncertain(prepared, _time.GetUtcNow() + UncertainLifetime, _personTurns));
+    }
+
+    private void ResolveUncertain(long? endedTurn, bool all = false)
+    {
+        DateTimeOffset now = _time.GetUtcNow();
+        foreach (Uncertain entry in _uncertain.ToArray())
+        {
+            if (all || entry.UntilUtc <= now || (endedTurn is { } ended && entry.Turn < ended))
+            {
+                _uncertain.Remove(entry);
+                _host.Registry()?.MarkResolved(entry.Prepared);
+            }
+        }
     }
 
     private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken,
         CancellationToken interrupted = default)
     {
         var closing = new TurnClosing();
+        // The mind was told to answer in words (the moves or the time spent, the engine down, a call waiting for the
+        // person): a call it still returns does not run. Auditoría de la App (2026-10-23): only the mind's logit bias held
+        // the budget, and a call after it ran, each one final again, with no end (engine down: engine_unavailable for
+        // ever; a call waiting: dropped by the next).
+        bool answerInWords = false;
         for (int calls = 1; ; calls++)
         {
             switch (step)
@@ -360,6 +432,17 @@ internal sealed class NativeTurnLoop
                 return;
             }
 
+            if (answerInWords)
+            {
+                ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.call_after_final", "");
+                if (!_beat)
+                {
+                    _host.Fail("decision_unavailable_after_call");
+                }
+
+                return;
+            }
+
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             _egress.Observed(step.Operation!, observation);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
@@ -374,6 +457,7 @@ internal sealed class NativeTurnLoop
                 observation = Waiting(observation, waiting.OperationName);
             }
 
+            answerInWords = final;
             step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }
@@ -420,7 +504,7 @@ internal sealed class NativeTurnLoop
         bool held = ReferenceEquals(prepared, _proposal);
         return new NativeTurnConfirmation(prepared.OperationName, PrivateArguments(prepared), descriptor.Risk,
             held ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, held && _proposalByBeat,
-            EffectStarted: !held && _pending!.ReconciliationRequired);
+            EffectStarted: !held && _pending!.ReconciliationRequired, Cause: held ? _proposalCause : null);
     }
 
     private void Resolved(string outcome)
@@ -481,6 +565,7 @@ internal sealed class NativeTurnLoop
             said = ruling.Note;
         }
 
+        ResolveUncertain(endedTurn: null);
         PreparedOperation prepared;
         try
         {
@@ -538,6 +623,8 @@ internal sealed class NativeTurnLoop
             // call is held for the person's «sí», untouched, and the model words the question.
             _proposal = prepared;
             _proposalByBeat = _beat;
+            _proposalCause = egress;
+            _waitingSaid = said;
             _proposalExpiresUtc = _time.GetUtcNow() + ProposalLifetime;
             _askedAt = ConfirmationAsk.Unpublished;
             var held = new JsonObject { ["status"] = "needs_confirmation" };
@@ -548,7 +635,7 @@ internal sealed class NativeTurnLoop
 
             held["next"] = AskThePersonAbout(operation);
             return Record(operation, arguments, started, WithArguments(held, "arguments", operation, arguments)
-                .ToJsonString());
+                .ToJsonString(SaidFolders.AsWritten));
         }
 
         return await SendAsync(core, prepared, arguments, confirmationToken: null, answered: false, started,
@@ -630,7 +717,7 @@ internal sealed class NativeTurnLoop
             if (JsonNode.Parse(observation) is JsonObject facts)
             {
                 facts["waiting"] = note;
-                return facts.ToJsonString();
+                return facts.ToJsonString(SaidFolders.AsWritten);
             }
         }
         catch (System.Text.Json.JsonException)
@@ -694,7 +781,7 @@ internal sealed class NativeTurnLoop
                 ["status"] = "rejected",
                 ["error"] = "only_the_person_answers",
                 ["next"] = AskThePerson,
-            }.ToJsonString());
+            }.ToJsonString(SaidFolders.AsWritten));
         }
 
         if (_proposal is { } proposal && _proposalExpiresUtc > _time.GetUtcNow())
@@ -720,6 +807,12 @@ internal sealed class NativeTurnLoop
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);
+        if (approve && RefusedAtApproval(pending.Prepared, pendingArguments, started) is { } refused)
+        {
+            return refused;
+        }
+
+        string? said = _waitingSaid;
         Resolved(approve ? "approved" : "declined");
         if (!approve)
         {
@@ -732,14 +825,28 @@ internal sealed class NativeTurnLoop
         CoreProcessClient? core = _host.Core();
         if (core is not { IsReady: true })
         {
-            _host.Registry()?.MarkResolved(pending.Prepared);
+            Release(pending.Prepared);
             return Record(pending.Prepared.OperationName, pendingArguments, started,
                 Observation("failed", "engine_unavailable", about: pending.Prepared.OperationName));
         }
 
         return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, answered: true, started,
-                cancellationToken)
-            ;
+            cancellationToken, said);
+    }
+
+    // Auditoría de la App (2026-10-23): the owner's switches (Settings) are read when the call is approved too, by voice
+    // or by the button: one switched off while the call waited no longer ran it. The call is dropped, and the model
+    // reads why, as when it is refused before it is held.
+    private string? RefusedAtApproval(PreparedOperation prepared, JsonObject arguments, long started)
+    {
+        if (_host.Refuse?.Invoke(prepared.OperationName, arguments) is not { } refusal)
+        {
+            return null;
+        }
+
+        DropPending();
+        return Record(prepared.OperationName, arguments, started,
+            Observation("rejected", refusal, about: prepared.OperationName));
     }
 
     // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
@@ -751,11 +858,17 @@ internal sealed class NativeTurnLoop
         CancellationToken cancellationToken)
     {
         JsonObject arguments = PrivateArguments(proposal);
+        if (approve && RefusedAtApproval(proposal, arguments, started) is { } refused)
+        {
+            return refused;
+        }
+
+        string? said = _waitingSaid;
         _proposal = null;
         Resolved(approve ? "approved" : "declined");
         if (!approve)
         {
-            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+            Release(proposal);
             return Record(proposal.OperationName, arguments, started,
                 Observation("cancelled", "declined_by_person", about: proposal.OperationName));
         }
@@ -763,19 +876,18 @@ internal sealed class NativeTurnLoop
         CoreProcessClient? core = _host.Core();
         if (core is not { IsReady: true })
         {
-            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+            Release(proposal);
             return Record(proposal.OperationName, arguments, started,
                 Observation("failed", "engine_unavailable", about: proposal.OperationName));
         }
 
         string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, answered: true,
-            started, cancellationToken);
+            started, cancellationToken, said);
         if (_pending is { } challenge && ReferenceEquals(challenge.Prepared, proposal))
         {
             _pending = null;
             observation = await SendAsync(core, proposal, arguments, challenge.Token, answered: true, started,
-                    cancellationToken)
-                ;
+                cancellationToken, said);
         }
 
         return observation;
@@ -804,7 +916,15 @@ internal sealed class NativeTurnLoop
         catch (Exception exception) when (exception is TimeoutException or System.IO.IOException
             or InvalidOperationException)
         {
-            Resolve(prepared, memory);
+            if (memory)
+            {
+                Resolve(prepared, memory);
+            }
+            else
+            {
+                KeepUncertain(prepared);
+            }
+
             return Record(operation, arguments, started,
                 Observation("failed", "engine_no_answer", about: answered ? operation : null, effectUncertain: true),
                 sent: true);
@@ -816,6 +936,7 @@ internal sealed class NativeTurnLoop
             // The kernel asks for the person's «sí» for this exact invocation: the model asks; the answer comes back
             // as confirm_pending, and only then is this same invocation sent again with the token.
             _pending = challenge;
+            _waitingSaid = said;
             _askedAt = ConfirmationAsk.Unpublished;
             JsonObject asked = WithArguments(new JsonObject
             {
@@ -828,7 +949,8 @@ internal sealed class NativeTurnLoop
                 asked["saidFolder"] = said;
             }
 
-            return Record(operation, arguments, started, asked.ToJsonString(), response, sent: challenge.ReconciliationRequired);
+            return Record(operation, arguments, started, asked.ToJsonString(SaidFolders.AsWritten), response,
+                sent: challenge.ReconciliationRequired);
         }
 
         Resolve(prepared, memory);
@@ -916,10 +1038,22 @@ internal sealed class NativeTurnLoop
         return new JsonObject();
     }
 
+    // A call that ends without the kernel answering for it now (dropped, declined, the engine down): resolved, unless an
+    // attempt of it was never answered (KeepUncertain), whose invocation the same call made again still needs.
+    private void Release(PreparedOperation prepared)
+    {
+        if (!MemoryOperationProtector.IsMemoryOperation(prepared.OperationName)
+            && !_uncertain.Exists(entry => ReferenceEquals(entry.Prepared, prepared)))
+        {
+            _host.Registry()?.MarkResolved(prepared);
+        }
+    }
+
     private void Resolve(PreparedOperation prepared, bool memory)
     {
         if (!memory)
         {
+            _uncertain.RemoveAll(entry => ReferenceEquals(entry.Prepared, prepared));
             _host.Registry()?.MarkResolved(prepared);
         }
     }
@@ -953,19 +1087,17 @@ internal sealed class NativeTurnLoop
         // what drops it comes later (their next words, a new session); it read as «dropped», another end.
         bool expired = (_pending is not null || _proposal is not null) && WaitingPrepared() is null;
         Resolved(expired ? "expired" : "dropped");
+        _waitingSaid = null;
         if (_proposal is { } proposal)
         {
             _proposal = null;
-            Resolve(proposal, MemoryOperationProtector.IsMemoryOperation(proposal.OperationName));
+            Release(proposal);
         }
 
         if (_pending is { } pending)
         {
             _pending = null;
-            if (!MemoryOperationProtector.IsMemoryOperation(pending.Prepared.OperationName))
-            {
-                _host.Registry()?.MarkResolved(pending.Prepared);
-            }
+            Release(pending.Prepared);
         }
     }
 
@@ -1007,6 +1139,9 @@ internal sealed class NativeTurnLoop
         }
     }
 
+    // Every result the App writes itself goes as SaidFolders.AsWritten writes it, accents and «» as they are (auditoría
+    // de la App, 2026-10-23: a held call's arguments, which the model reads back, and a waiting result rewritten here
+    // reached it as ó escapes, where the provider's own text and the replayed note did not).
     // What BAXY itself says of a call it did not send or whose answer it could not read, with one header: how it ended
     // (status), its code and, only when they hold, that it may have happened and that a completion is unverified
     // (verification none, OperationVisibleFacts' table).
@@ -1041,6 +1176,6 @@ internal sealed class NativeTurnLoop
             facts[key] = value?.DeepClone();
         }
 
-        return facts.ToJsonString();
+        return facts.ToJsonString(SaidFolders.AsWritten);
     }
 }

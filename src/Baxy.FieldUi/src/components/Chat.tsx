@@ -107,7 +107,8 @@ interface ChatProps {
   title: string;
   meta: string;
   busy: boolean;
-  onAnswer: (approve: boolean) => void;
+  /** the person's Sí or No on the card it names */
+  onAnswer: (approve: boolean, card: string) => void;
   onCollapse: () => void;
   onNew: () => void;
 }
@@ -154,7 +155,7 @@ function ChatView({ items, title, meta, busy, onAnswer, onCollapse, onNew }: Cha
         {items.map((h) => {
           if (h.who === 'you') return <div key={h.id} className="bx-c4-you">{h.text}</div>;
           if (h.who === 'sys') return <div key={h.id} className="bx-c4-sys">{h.text}</div>;
-          if (h.who === 'card') return <Card key={h.id} c={h} onYes={() => onAnswer(true)} onNo={() => onAnswer(false)} />;
+          if (h.who === 'card') return <Card key={h.id} c={h} onYes={() => onAnswer(true, h.id)} onNo={() => onAnswer(false, h.id)} />;
           return (
             <div key={h.id} className="bx-c4-baxy">
               {h.text ? <div className="tx">{h.text}</div> : null}

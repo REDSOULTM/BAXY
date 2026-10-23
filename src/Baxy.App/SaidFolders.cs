@@ -37,7 +37,8 @@ internal sealed class SaidFolders
 {
     internal const string LeftOut = "said_folder_left_out";
 
-    /// <summary>JSON as the model reads it: accents and «» as they are, never as \u escapes.</summary>
+    /// <summary>JSON as the model reads it: accents and «» as they are, never as \u escapes (every result the App writes
+    /// itself, NativeTurnLoop).</summary>
     internal static readonly JsonSerializerOptions AsWritten = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
     // Where a folder named only by its name is looked for (its top level).
@@ -89,6 +90,16 @@ internal sealed class SaidFolders
         _words = words ?? string.Empty;
         _places = null;
         _told.Clear();
+    }
+
+    /// <summary>
+    /// The person's words answer the call that waits for their «sí»: the folders of the turn that asked it still hold,
+    /// with any these words add, as when they press Sí (auditoría de la App, 2026-10-23).
+    /// </summary>
+    internal void Answered(string words)
+    {
+        _words = _words.Length == 0 ? words ?? string.Empty : _words + "\n" + words;
+        _places = null;
     }
 
     /// <summary>A heartbeat or a new session: no words of the person's hold.</summary>
