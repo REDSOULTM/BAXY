@@ -988,6 +988,7 @@ internal sealed class WindowsVisibleControlAdapter
                     Limit = before.Limit,
                     Wanted = before.Wanted,
                     Tail = before.Tail,
+                    Application = before.Application,
                 };
                 _viewsRead++;
             }
@@ -1339,6 +1340,8 @@ internal sealed class WindowsVisibleControlAdapter
             _screenChangedUtc = DateTime.UtcNow;
         }
 
+        receipt = RepeatedUnchanged(receipt, arguments);
+
         // Renew al máximo (7.1): a completed click carries the view of its window after it, which becomes the last view.
         if (receipt.Verified && receipt.ErrorCode is null && receipt.EffectObserved && _actedWindow != 0
             && !EffectElsewhere(receipt.Result)
@@ -1346,6 +1349,85 @@ internal sealed class WindowsVisibleControlAdapter
             receipt = WithAfter(receipt, after);
 
         return receipt;
+    }
+
+    // Holdout v4 (en vivo: «abre la biblioteca de Steam» opened Steam without app_open's place and pressed «Biblioteca» 7
+    // times, each visible_button_postread_unchanged, 50 s): the same click (its label, index, control, manner and window)
+    // seen unchanged again right after the last one says how many times in a row (unchangedInARow), and from the second,
+    // as a fact, that the click changed nothing that many times and, when the application of the window (the one the
+    // look named, else its process) has places of its own (ApplicationPlaces), that app_open with place opens them
+    // without pressing. Any other result of a click starts the count again.
+    private string? _unchangedClick;
+    private int _unchangedInARow;
+
+    private ExternalCapabilityReceipt RepeatedUnchanged(ExternalCapabilityReceipt receipt, JsonElement arguments)
+    {
+        if (receipt.ErrorCode != "visible_button_postread_unchanged")
+        {
+            _unchangedClick = null;
+            _unchangedInARow = 0;
+            return receipt;
+        }
+
+        string click = ClickIdentity(arguments, _actedWindow);
+        _unchangedInARow = click == _unchangedClick ? _unchangedInARow + 1 : 1;
+        _unchangedClick = click;
+        if (_unchangedInARow < 2)
+            return receipt;
+        string? application;
+        lock (_viewLock)
+        {
+            application = _lastView is { } view && (view.Hwnd == _actedWindow || _actedWindow == 0)
+                ? view.Application : null;
+        }
+
+        application ??= _actedWindow != 0 ? VisibleControlSurface.ViewProcess(_actedWindow).ProcessName : null;
+        string label = arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("label", out JsonElement named)
+            && named.ValueKind == JsonValueKind.String ? named.GetString()!.Trim() : string.Empty;
+        int times = _unchangedInARow;
+        // A result that already says what comes next (alreadySelected) is left as it is: a key written twice would void
+        // the observation, and the same call's comparisons (mind.py _result_key, TurnClosing) leave out only the count
+        // and the «next» it brings.
+        if (receipt.Result is { ValueKind: JsonValueKind.Object } result && result.TryGetProperty("next", out _))
+            return receipt;
+        return receipt with
+        {
+            Result = ExternalJson.Extended(receipt.Result, writer =>
+            {
+                writer.WriteNumber("unchangedInARow", times);
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.RepeatedUnchangedNext))
+                    writer.WriteString("next", RepeatedUnchangedNext(label, times, application));
+            }),
+        };
+    }
+
+    // The click as the model asked for it: the same label, index, control, manner and window (the one acted on when the
+    // call named none).
+    internal static string ClickIdentity(JsonElement arguments, nint actedWindow)
+    {
+        string Part(string name) => arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty(name, out JsonElement value) && value.ValueKind != JsonValueKind.Null
+                ? value.ToString().Trim().ToLowerInvariant() : string.Empty;
+        string window = Part("window");
+        return string.Join(" | ", Part("label"), Part("index"), Part("controlId"), Part("manner"), Part("choose"),
+            Part("search"), window.Length > 0 ? window : actedWindow.ToString(System.Globalization.CultureInfo.InvariantCulture));
+    }
+
+    internal static string RepeatedUnchangedNext(string label, int times, string? application)
+    {
+        string said = $"this click on «{label}» changed nothing {times} times in a row: each time the window looked the "
+            + "same after it as before it";
+        IReadOnlyList<(string Place, string? Takes)> places = ApplicationPlaces.PlacesOf(application);
+        if (places.Count == 0)
+            return said;
+        string squeezed = new([.. label.ToLowerInvariant().Where(char.IsLetterOrDigit)]);
+        IEnumerable<(string Place, string? Takes)> ordered = places
+            .OrderBy(place => place.Place == squeezed ? 0 : 1)
+            .ThenBy(place => place.Place, StringComparer.Ordinal);
+        string listed = string.Join(", ", ordered.Select(place => place.Takes is null
+            ? $"\"{place.Place}\"" : $"\"{place.Place}\" (placeValue: the {place.Takes})"));
+        return said + $"; {application} opens straight at its places without pressing: app_open with appId "
+            + $"\"{application}\" and place {listed}";
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ClickAsync(
@@ -2358,6 +2440,7 @@ internal sealed class WindowsVisibleControlAdapter
                     Limit = limit,
                     Wanted = wanted,
                     Tail = tail,
+                    Application = application,
                 };
                 _viewsRead++;
             }
@@ -4011,6 +4094,10 @@ internal sealed class WindowsVisibleControlAdapter
         internal IReadOnlyList<string> Wanted { get; init; } = [];
 
         internal bool Tail { get; init; }
+
+        // Holdout v4 (en vivo, the Steam library): the application the look named, whose places a repeated unchanged
+        // click is told with.
+        internal string? Application { get; init; }
     }
 
     private readonly record struct ViewResult(ExternalCapabilityReceipt Receipt, IReadOnlyList<string> Names);

@@ -314,10 +314,9 @@ def places_note(application: str) -> str:
     """Aid «app_places_next» (uso real 2026-10-20: seven clicks in Steam's and Epic's web-drawn windows, whose own
     addresses app_open already opens): after a click or a look there fails or is unsure, the places the application
     opens straight at, as a fact; the model chooses. Empty for an application with none."""
-    places = APP_PLACES.get(_fold(application))
-    if not places:
+    listed = _places_listed(application)
+    if not listed:
         return ""
-    listed = ", ".join(f"{p} (placeValue: {v})" if v else p for p, v in sorted(places.items()))
     return (f"\n[Ayuda: {application} también se abre directo en sus lugares, sin pulsar: app_open con appId "
             f"«{application}» y place {listed}.]")
 
@@ -349,7 +348,12 @@ def field_note(observation: str, args: str | None) -> str:
     return note.format(label=label.strip())
 
 
+# Measured history (PLAN_GENERAL C2, cf29f2510): told at the third, its risk «sondeos legítimos»: a look repeated at a
+# window still loading is a probe that completes each time (al máximo 7.7 compares the content too). Holdout v4 (en
+# vivo: «Biblioteca» pressed 7 times in Steam, each visible_button_postread_unchanged, 50 s): a call that failed or
+# stayed unsure the same way twice is told at the second; a completed one keeps the third, so a probe stays as measured.
 SAME_CALL_TOLD = 3
+SAME_CALL_FAILED_TOLD = 2
 # Auditoría de falsedades: «ya se hizo» is the call's, never its effect's (a click that failed three times read «ya se
 # hizo»): the call was made, and its result is said beside it.
 SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se llamó {times} veces en este turno con los mismos argumentos y el mismo "
@@ -359,14 +363,43 @@ SAME_CALL_OPTIONS = ("; otra vez igual dará lo mismo. Opciones: otra herramient
 # Review 2026-10-22: in a turn the App closes, the fact alone (it offered another tool beside «no admite más
 # herramientas»).
 SAME_CALL_CLOSED = "."
+# Holdout v4 (the Steam library): a click repeated in an application of the turn that has places says them among the
+# options, from the data (app_places.v1.json), as places_note does.
+SAME_CALL_PLACES = (" {application} también se abre directo en sus lugares, sin pulsar: app_open con appId "
+                    "«{application}» y place {listed}.")
+
+
+def same_call_places(application: str | None) -> str:
+    """The places of the turn's application for a repeated click's options; empty for none."""
+    listed = _places_listed(application)
+    return SAME_CALL_PLACES.format(application=application, listed=listed) if listed else ""
+
+
+def _places_listed(application: str | None) -> str:
+    """The places of an application with what each takes, sorted; empty for none."""
+    places = APP_PLACES.get(_fold(application)) if application else None
+    return ", ".join(f"{p} (placeValue: {v})" if v else p for p, v in sorted(places.items())) if places else ""
+
+
+# The provider's count of the same click seen unchanged in a row (WindowsVisibleControlAdapter.RepeatedUnchanged).
+REPEAT_KEY = "unchangedInARow"
 
 
 def _result_key(observation: str) -> str:
     """Al máximo 7.7: the same result is the same content (three looks at a window still loading, each with another view,
-    were told «el mismo resultado»), without how long the call took («…Ms»), as the App's TurnClosing compares it."""
+    were told «el mismo resultado»), without how long the call took («…Ms»), as the App's TurnClosing compares it.
+    Holdout v4: nor a click's own count of its repeats (unchangedInARow) and the «next» that count brings, which differ
+    on each repeat of the same unchanged click."""
+    def only_repeat(node: Any) -> bool:
+        return isinstance(node, dict) and REPEAT_KEY in node and set(node) <= {REPEAT_KEY, "next"}
+
     def untimed(node: Any) -> Any:
         if isinstance(node, dict):
-            return {k: untimed(v) for k, v in node.items() if not k.endswith("Ms")}
+            repeat = REPEAT_KEY in node
+            # A result that holds nothing but the count is the same as the first one, which had none.
+            return {k: untimed(v) for k, v in node.items()
+                    if not k.endswith("Ms") and k != REPEAT_KEY and not (repeat and k == "next")
+                    and not only_repeat(v)}
         return [untimed(v) for v in node] if isinstance(node, list) else node
     try:
         content = json.dumps(untimed(json.loads(observation)), ensure_ascii=False)
@@ -1375,16 +1408,18 @@ class Mind:
                 note += field
                 aids["field_focused_next"] = field.strip()
         # Aid «same_call_next» (PLAN_GENERAL C2; uso real: the same click 5-7 times, a reload and a typing in turn): a
-        # call made a third time in this turn with the same arguments and the same result (its content, _result_key),
+        # call made again in this turn with the same arguments and the same result (its content, _result_key),
         # whatever came between, is told as a fact with its options, once per turn (a loop of a look and a click repeats
-        # both).
+        # both): a second time when it failed or stayed unsure, a third when it completed (SAME_CALL_FAILED_TOLD).
         seen = turn.setdefault("calls_seen", {})
         key = json.dumps([calling, turn.get("calling_args"), _result_key(observation)], ensure_ascii=False)
         seen[key] = seen.get(key, 0) + 1
-        if seen[key] == SAME_CALL_TOLD and not turn.get("same_told") and _aid_on("same_call_next"):
+        told_at = SAME_CALL_TOLD if outcome.startswith(COMPLETED_OUTCOMES) else SAME_CALL_FAILED_TOLD
+        if seen[key] == told_at and not turn.get("same_told") and _aid_on("same_call_next"):
             turn["same_told"] = True
-            repeated = SAME_CALL_NOTE.format(call=calling, times=SAME_CALL_TOLD, outcome=outcome,
-                                             options=SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS)
+            options = SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS + (
+                same_call_places(turn.get("app_named")) if calling == "input_visible_click" else "")
+            repeated = SAME_CALL_NOTE.format(call=calling, times=told_at, outcome=outcome, options=options)
             note += repeated
             aids["same_call_next"] = repeated.strip()
         # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long

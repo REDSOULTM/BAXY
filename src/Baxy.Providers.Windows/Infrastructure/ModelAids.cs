@@ -74,6 +74,12 @@ public static class ModelAids
     /// </summary>
     public const string WindowIdSpent = "window_id_spent";
 
+    /// <summary>
+    /// Holdout v4 (en vivo: «Biblioteca» pressed 7 times in Steam, each visible_button_postread_unchanged, 50 s): the
+    /// same click seen unchanged a second time in a row says so, and the places its application opens straight at.
+    /// </summary>
+    public const string RepeatedUnchangedNext = "repeated_unchanged_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
