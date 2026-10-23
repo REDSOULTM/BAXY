@@ -378,6 +378,41 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (E027): found nowhere in the folders walked, the result says nothing else was searched and which
+    // configured folder searches more (the answer was «no lo encontré en ninguna carpeta de tu PC»); with
+    // BAXY_AYUDAS=none, the folders walked alone.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AFileFoundNowhereSaysNothingElseWasSearched(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string desktop = Path.Combine(home, "desktop");
+        Directory.CreateDirectory(Path.Combine(home, "BAXY-bench"));
+        Directory.CreateDirectory(desktop);
+        await File.WriteAllTextAsync(Path.Combine(home, "BAXY-bench", "viejo.txt"), "x");
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]>
+        {
+            ["desktop"] = [desktop],
+            ["home"] = [home],
+        }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
+
+        ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"viejo.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(missing.Result!.Value.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("viejo.txt is not in desktop, subfolders included; nothing else "
+                    + "on the PC was searched; folder \"home\" searches more"));
+            }
+        });
+    }
+
     // BAXY Renew (notebook): a name found nowhere says the folders walked; found twice, the places, as file.read
     // gives them; neither sends anything to the bin.
     [Test]

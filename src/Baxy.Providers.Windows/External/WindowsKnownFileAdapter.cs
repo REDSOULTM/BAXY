@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text;
 using Baxy.Providers.Windows.Filesystem;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -498,15 +499,20 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         // gives them, so the next call can name the right one.
         if (matches.Length == 0)
         {
+            string[] searched = [.. roots.Where(item => Directory.Exists(item.Root))
+                .Select(item => item.Label).Distinct(StringComparer.Ordinal)];
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1);
                 writer.WriteStartArray("searchedFolders");
-                foreach (string label in roots.Where(item => Directory.Exists(item.Root))
-                    .Select(item => item.Label).Distinct(StringComparer.Ordinal))
+                foreach (string label in searched)
                     writer.WriteStringValue(label);
                 writer.WriteEndArray();
                 WriteWalkScope(writer);
+                // Renew al máximo (E027): «all_known» walked desktop, documents and downloads, the file was in a folder
+                // of home, and the answer was «no lo encontré en ninguna carpeta de tu PC». Said where it was not.
+                if (ModelAids.On(ModelAids.SearchScope))
+                    writer.WriteString("next", NotFoundScope(fileName, searched));
                 writer.WriteEndObject();
             }), "known_file_not_found");
         }
@@ -875,6 +881,16 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             }), code);
         }
         return CandidatesRefusal(operation, code, candidates);
+    }
+
+    // Only the folders walked are known not to hold it; a configured folder left out can be searched by its name.
+    private string NotFoundScope(string fileName, string[] searched)
+    {
+        string[] others = [.. _configuredRoots.Keys.Where(key => !searched.Contains(key, StringComparer.Ordinal))];
+        string where = searched.Length == 0 ? "no folder" : string.Join(", ", searched);
+        return $"{fileName} is not in {where}, subfolders included; nothing else on the PC was searched"
+            + (others.Length == 0 ? string.Empty
+                : $"; folder {string.Join(" or ", others.Select(key => $"\"{key}\""))} searches more");
     }
 
     // Ronda final 41 (regla 3): at most this many candidates are given, and a list cut there says so

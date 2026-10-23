@@ -56,6 +56,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (auditoría de flujos, P215): a package.uninstall candidate that is a game names game_uninstall_named.</summary>
     public const string GameUninstall = "game_uninstall";
 
+    /// <summary>Renew al máximo (E027): a known file found nowhere says nothing beyond the folders walked was searched.</summary>
+    public const string SearchScope = "search_scope";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
