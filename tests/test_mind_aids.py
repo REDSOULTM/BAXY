@@ -309,3 +309,20 @@ def test_a_read_in_a_turn_is_told_by_the_risk_the_app_sent(tmp_path: Path) -> No
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert tool.endswith("[En este turno: window_application_status → lectura: sólo miró, sin abrir, cerrar ni "
                          "cambiar nada; lo que vio está arriba]")
+
+
+def test_the_apps_said_folder_refusal_is_traced_and_reaches_the_model_as_it_came(tmp_path: Path, monkeypatch) -> None:
+    # Renew al máximo (w6, rutas): the App refused a write that left out the folder the person named (SaidFolders.cs);
+    # the trace keeps it as the aid said_folder, and the model reads the result untouched.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    refused = json.dumps({"status": "rejected", "error": "said_folder_left_out", "saidFolders": ["C:/perfil/obra"],
+                          "next": "nothing ran: call file_write again with relativePath \"obra/lista.txt\""},
+                         ensure_ascii=False)
+    mind, server = _mind(tmp_path, [_call("file_write", {"relativePath": "lista.txt", "text": "x", "folder": "home"}),
+                                    _say("Lo guardo en obra.")])
+    mind.decide(1, "guarda lista.txt en la carpeta obra")
+    mind.continue_turn(2, refused)
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert tool.startswith(refused + "\n")
+    aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
+    assert aid["aids"] == {"said_folder": {"saidFolders": ["C:/perfil/obra"], "next": json.loads(refused)["next"]}}

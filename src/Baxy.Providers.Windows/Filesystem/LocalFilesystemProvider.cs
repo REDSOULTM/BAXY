@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO.Enumeration;
 using System.Security.Cryptography;
 using System.Text;
 using Baxy.Providers.Windows.External;
@@ -148,6 +150,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
             if (Directory.Exists(path)) throw Error("destination_is_directory");
             bool exists = File.Exists(path);
+            // Renew al máximo (w5, E024): «añade a notas.txt, en la carpeta BAXY-bench» came with the subfolder
+            // left out, and the append made a new home\notas.txt beside the person's. An append presupposes the file:
+            // missing here and found below the same folder, nothing is written and the places are told.
+            if (append && !exists && SameNameBelow(root, path) is { Length: > 0 } elsewhere)
+                throw AppendTargetElsewhere(path, elsewhere);
             byte[] previous = [];
             if (exists && append)
             {
@@ -287,54 +294,19 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         return (_root, relativePath);
     }
 
-    // The person's known folders by the names a person gives them, in Spanish and English, folded (lower case, no
-    // accents). The catalog's folder takes desktop, documents and downloads; pictures, music and videos are only told.
-    private static readonly Dictionary<string, string> KnownFolderNames = new(StringComparer.Ordinal)
-    {
-        ["desktop"] = "desktop",
-        ["escritorio"] = "desktop",
-        ["documents"] = "documents",
-        ["documentos"] = "documents",
-        ["mis documentos"] = "documents",
-        ["downloads"] = "downloads",
-        ["descargas"] = "downloads",
-        ["pictures"] = "pictures",
-        ["imagenes"] = "pictures",
-        ["mis imagenes"] = "pictures",
-        ["music"] = "music",
-        ["musica"] = "music",
-        ["mi musica"] = "music",
-        ["videos"] = "videos",
-        ["mis videos"] = "videos",
-    };
+    // The person's known folders by the names a person gives them (PersonFolders.Names). The catalog's folder takes
+    // desktop, documents and downloads; pictures, music and videos are only told.
+    private static IReadOnlyDictionary<string, string> KnownFolderNames => PersonFolders.Names;
 
-    private static string Fold(string value)
-    {
-        var builder = new StringBuilder(value.Length);
-        foreach (char character in value.Trim().Normalize(NormalizationForm.FormD))
-        {
-            if (CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
-                builder.Append(char.ToLowerInvariant(character));
-        }
-
-        return builder.ToString();
-    }
+    private static string Fold(string value) => PersonFolders.Fold(value);
 
     private static bool Inside(string full, string root) =>
         full.StartsWith(root.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar,
             StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Where each known folder of the person's is (tests point them away from the real profile).</summary>
-    internal Func<string, string> KnownFolderPath { get; init; } = static folder => folder switch
-    {
-        "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
-        "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "downloads" => Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path(),
-        "pictures" => Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
-        "music" => Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
-        "videos" => Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
-        _ => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-    };
+    internal Func<string, string> KnownFolderPath { get; init; } = static folder =>
+        PersonFolders.Path(folder) ?? PersonFolders.Path("home")!;
 
     /// <summary>BAXY's own state (<see cref="BaxyPrivateArea"/>); tests point it at a temporary folder.</summary>
     internal IReadOnlyList<string> PrivateRoots { get; init; } = BaxyPrivateArea.DefaultRoots();
@@ -671,6 +643,71 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 {
                     writer.WriteString("currentSha256", currentSha256);
                     writer.WriteNumber("size", size);
+                }
+                writer.WriteEndObject();
+            }),
+        };
+
+    // Renew al máximo (w5, E024): how far an append to a missing file looks for one of that name below its folder.
+    private const int SameNameDepth = 6;
+    private const int SameNameShown = 5;
+    private static readonly TimeSpan SameNameBudget = TimeSpan.FromSeconds(1);
+
+    // Files named like the leaf of path below root (hidden, system and linked folders left out, BAXY's backups too),
+    // the shallowest first; a walk past its budget gives what it found so far, and none found claims nothing.
+    private string[] SameNameBelow(string root, string path)
+    {
+        string name = Path.GetFileName(path);
+        if (name.Length == 0 || name.IndexOfAny(['*', '?']) >= 0) return [];
+        long started = Stopwatch.GetTimestamp();
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            MaxRecursionDepth = SameNameDepth,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.ReparsePoint,
+            IgnoreInaccessible = true,
+        };
+        var found = new List<string>();
+        try
+        {
+            var walk = new FileSystemEnumerable<string>(root,
+                (ref FileSystemEntry entry) => entry.ToFullPath(), options)
+            {
+                ShouldIncludePredicate = (ref FileSystemEntry entry) =>
+                    !entry.IsDirectory && entry.FileName.Equals(name, StringComparison.OrdinalIgnoreCase),
+                ShouldRecursePredicate = (ref FileSystemEntry _) => Stopwatch.GetElapsedTime(started) < SameNameBudget,
+            };
+            foreach (string file in walk)
+            {
+                if (IsReserved(file) || string.Equals(file, path, StringComparison.OrdinalIgnoreCase)) continue;
+                found.Add(Path.GetRelativePath(root, file).Replace(Path.DirectorySeparatorChar, '/'));
+                if (found.Count == SameNameShown) break;
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { }
+
+        return [.. found.OrderBy(static item => item.Count(character => character == '/'))
+            .ThenBy(static item => item, StringComparer.OrdinalIgnoreCase)];
+    }
+
+    private static FilesystemProviderException AppendTargetElsewhere(string path, string[] elsewhere) =>
+        new("append_target_missing")
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("exists", false);
+                writer.WriteString("fullPath", Path.GetFullPath(path));
+                writer.WriteBoolean("append", true);
+                writer.WriteStartArray("sameNameIn");
+                foreach (string item in elsewhere) writer.WriteStringValue(item);
+                writer.WriteEndArray();
+                if (ModelAids.On(ModelAids.AppendElsewhere))
+                {
+                    string name = Path.GetFileName(path);
+                    writer.WriteString("next", $"nothing was written: {name} is not in {Path.GetDirectoryName(Path.GetFullPath(path))}; "
+                        + $"a file of that name is in {string.Join(" and ", elsewhere)}, and file_write with that "
+                        + $"relativePath and the same folder appends to it; without append, a new {name} is made here");
                 }
                 writer.WriteEndObject();
             }),

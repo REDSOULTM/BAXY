@@ -333,21 +333,30 @@ def _aids_seen(observation: str) -> dict[str, Any]:
         facts = json.loads(observation)
     except json.JSONDecodeError:
         return {}
-    if not isinstance(facts, dict) or not isinstance(facts.get("observed"), dict):
+    if not isinstance(facts, dict):
         return {}
+    # Renew al máximo (w6, rutas): the App's said_folder (SaidFolders.cs) refused a call that left out the folder the
+    # person named, or says where a call routed there (or written again as before) acted.
+    said = ({"said_folder": {k: facts[k] for k in ("saidFolders", "next", "saidFolder") if k in facts}}
+            if facts.get("error") == "said_folder_left_out" or "saidFolder" in facts else {})
+    if not isinstance(facts.get("observed"), dict):
+        return said
     observed = facts["observed"]
 
     def picked(*names: str) -> dict[str, Any]:
         return {name: observed[name] for name in names if name in observed}
 
-    seen: dict[str, Any] = {}
+    seen: dict[str, Any] = dict(said)
     if facts.get("error") == "calculator_window_not_found" and "next" in observed:
         seen["calculator_next"] = picked("next")
     if observed.get("setting") == "accessible_mode" and picked("scope", "notAvailableYet"):
         seen["accessible_scope"] = picked("scope", "notAvailableYet")
     if observed.get("placeRequested") and "next" in observed:
         seen["place_unverified"] = picked("next")
-    if observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
+    if observed.get("folder") == "baxy_work" and "entries" in observed:
+        # Renew al máximo (w5, E020): a look at the working folder (filesystem_list, filesystem_search).
+        seen["work_folder_scope"] = picked("folder", "next")
+    elif observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
         seen["work_folder"] = picked("folder", "sameNameInHome", "next")
     return seen
 

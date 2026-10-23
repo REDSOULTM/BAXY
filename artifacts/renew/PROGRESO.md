@@ -3156,3 +3156,14 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   del ruido. **Goal cerrado**: criterios de término cumplidos (MAXIMO.md, arreglos con pruebas, palancas con cifra o
   retiradas, suites verdes en las dos máquinas sobre 452854a18, recursos ≤ 4 GB / 4 GB, holdout v4 una vez en tres
   configuraciones, renew-maximo en hub, INFORME_MAXIMO.md, mensaje al dueño, prueba en vivo en el PC).
+- 11:xx (23-10) **w6-rutas (PC, sin correr el producto)**: la carpeta que la persona nombra es el lugar de las llamadas de
+  archivos, por construcción. Fusionado nb-w5-e2e (e5b6ff46b append_elsewhere, 0fd3d564f work_folder_scope; la nota
+  said_path_next de la mente se retira: la sustituye la App). `SaidFolders` (App, ayuda said_folder): las carpetas que
+  nombran las palabras del turno (ruta completa; nombre de carpeta conocida; nombre de una carpeta del primer nivel de
+  home, Escritorio, Documentos o Descargas, solo o como inicio de ruta relativa) son el lugar; una llamada de archivos
+  fuera de ellas se lleva a la carpeta si sólo lee (saidFolder en el resultado) o se rechaza antes de cualquier efecto
+  (said_folder_left_out, next con la llamada que la nombra); la misma llamada repetida igual corre y dice que actuó
+  fuera. Los recibos de file.find/read/edit/trash dicen la subcarpeta mirada («home/X»), el listado listed/topLevelOnly,
+  y el no encontrado de file.read/edit dónde se buscó. Pendiente: medir en el PC la e2e de práctica (E006, E017, E019,
+  E020, E024, E027, E030) y las falsedades; ojo E030: la sobrescritura ahora cae en el archivo correcto y file.write no
+  pide confirmación (decisión 8), así que su oráculo UNCHANGED puede pasar a fallo.

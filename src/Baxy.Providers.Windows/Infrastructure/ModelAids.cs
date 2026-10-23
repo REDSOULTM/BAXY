@@ -74,6 +74,18 @@ public static class ModelAids
     /// </summary>
     public const string WindowIdSpent = "window_id_spent";
 
+    /// <summary>Renew al máximo (w5, E024): an append refused for a missing file says where one of that name is.</summary>
+    public const string AppendElsewhere = "append_elsewhere";
+
+    /// <summary>Renew al máximo (w5, E020): a look at BAXY's working folder says it is BAXY's, and one that found nothing that the person's folders were not looked at.</summary>
+    public const string WorkFolderScope = "work_folder_scope";
+
+    /// <summary>
+    /// Renew al máximo (w6, rutas): a file call that leaves out the folder the person named in this turn is routed there
+    /// (a read) or refused before any effect with the call that names it (anything else) (Baxy.App.SaidFolders).
+    /// </summary>
+    public const string SaidFolder = "said_folder";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

@@ -260,8 +260,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteString("order", order);
             writer.WriteStartObject("searchScope");
             writer.WriteStartArray("folders");
-            foreach (string label in searched.Select(root => root.Label).Distinct(StringComparer.Ordinal))
-                writer.WriteStringValue(label);
+            foreach (string place in PlacesLooked(searched))
+                writer.WriteStringValue(place);
             writer.WriteEndArray();
             writer.WriteNumber("maxRecursionDepth", 12);
             writer.WriteNumber("timeLimitSeconds", WalkTimeLimit.TotalSeconds);
@@ -357,6 +357,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             }
             writer.WriteEndArray();
             writer.WriteNumber("shownCount", shown.Length);
+            // Renew al máximo (w6, rutas): which folder was listed, and that its subfolders were not walked.
+            writer.WriteStartArray("listed");
+            foreach (string place in PlacesLooked(roots))
+                writer.WriteStringValue(place);
+            writer.WriteEndArray();
+            writer.WriteBoolean("topLevelOnly", true);
             writer.WriteString("order", order);
             writer.WriteNumber("resultLimit", limit);
             writer.WriteBoolean("resultsMayBeTruncated", entries.Count > shown.Length);
@@ -504,8 +510,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         // gives them, so the next call can name the right one.
         if (matches.Length == 0)
         {
-            string[] searched = [.. roots.Where(item => Directory.Exists(item.Root))
-                .Select(item => item.Label).Distinct(StringComparer.Ordinal)];
+            string[] searched = PlacesLooked(roots);
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -944,14 +949,21 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string code = matches.Count > 1 ? "known_file_ambiguous" : "known_file_not_found";
         if (candidates.Length == 0)
         {
-            string[] searched = [.. roots.Where(item => Directory.Exists(item.Root))
-                .Select(item => item.Label).Distinct(StringComparer.Ordinal)];
+            string[] searched = PlacesLooked(roots);
+            bool walked = !fullPath && parts.Length == 1;
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                // Renew al máximo (w6, rutas): where it was looked for, as file.find and the delete say it; a path is
+                // looked up only at its place (walked false).
+                writer.WriteStartArray("searchedFolders");
+                foreach (string place in searched)
+                    writer.WriteStringValue(place);
+                writer.WriteEndArray();
+                writer.WriteBoolean("walked", walked);
                 WriteWalkScope(writer, stopped);
-                if (stopped && ModelAids.On(ModelAids.SearchScope))
-                    writer.WriteString("next", StoppedWalkScope(stem, searched));
+                if (ModelAids.On(ModelAids.SearchScope) && (stopped || walked))
+                    writer.WriteString("next", stopped ? StoppedWalkScope(stem, searched) : NotFoundScope(stem, searched));
                 writer.WriteEndObject();
             }), code);
         }
@@ -1015,6 +1027,24 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // The path of a file relative to the known folder it is in (never the absolute path), whatever subdirectory the
     // search started from.
+    // Renew al máximo (w6, rutas): where a call looked, as the model names it: the known folder, or the subfolder of it
+    // the call named («home/proyecto»), never the absolute path. The searched folders said only «home» of a search
+    // limited to home's proyecto, and «X is not in home, subfolders included» was read as the whole home searched.
+    private string PlaceOf((string Label, string Root) looked)
+    {
+        string path = Path.GetFullPath(looked.Root).TrimEnd(Path.DirectorySeparatorChar);
+        foreach (string folderRoot in _configuredRoots.TryGetValue(looked.Label, out string[]? roots) ? roots : [])
+        {
+            string root = Path.GetFullPath(folderRoot).TrimEnd(Path.DirectorySeparatorChar);
+            if (path.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                return looked.Label + "/" + Path.GetRelativePath(root, path).Replace(Path.DirectorySeparatorChar, '/');
+        }
+        return looked.Label;
+    }
+
+    private string[] PlacesLooked(IEnumerable<(string Label, string Root)> roots) =>
+        [.. roots.Where(item => Directory.Exists(item.Root)).Select(PlaceOf).Distinct(StringComparer.Ordinal)];
+
     private string RelativeToFolder(KnownEntry entry)
     {
         if (_configuredRoots.TryGetValue(entry.Label, out string[]? folderRoots))
