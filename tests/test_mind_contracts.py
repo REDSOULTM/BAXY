@@ -97,6 +97,8 @@ def test_a_confirmation_with_nothing_pending_is_not_sent(tmp_path: Path) -> None
     assert result["operation"] is None and result["reply"] == "No, todavía no lo hice."
     told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
     assert told and json.loads(told[-1])["error"] == "nothing_pending"
+    # F010 (int3): «nothing waiting» was read as «already done»; the result says this call did nothing.
+    assert "this call did nothing" in json.loads(told[-1])["reason"]
 
 
 def test_the_doubt_never_holds_a_continuation_step(tmp_path: Path, monkeypatch) -> None:

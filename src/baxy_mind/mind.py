@@ -510,8 +510,12 @@ CONFIRM_OPERATION = "confirmation.answer"
 # Renew al máximo (F005 of the notebook's falsehood bench, 2026-10-22): «¿ya lo subiste?» was answered with
 # confirm_pending approve:true and nothing waiting for a «sí»; with a confirmation pending it would have approved what
 # nobody approved. Without one, the call never reaches the App: its result says so and the model answers in words.
+# F010 (int3, 2026-10-22): «nothing waiting» read as «already done» («la borré sin pedirte permiso» after a delete that
+# had failed); the result says this call did nothing and that only earlier results tell what was done.
 NOTHING_PENDING = json.dumps({"status": "failed", "error": "nothing_pending",
-                              "reason": "no action is waiting for the person's confirmation"})
+                              "reason": "no action is waiting for the person's confirmation, and this call did nothing; "
+                                        "whether anything was done is only what the earlier results of this "
+                                        "conversation say"})
 CONFIRM = {
     "type": "function",
     "function": {
