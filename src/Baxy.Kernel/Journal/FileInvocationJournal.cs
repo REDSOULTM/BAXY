@@ -712,7 +712,12 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                 cancellationToken)
             .ConfigureAwait(false);
         DeleteStaleRotationCandidate();
-        LoadManifest(liveInitialized);
+        if (liveInitialized)
+        {
+            await ResetRotationStateAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        LoadManifest();
         await LoadArchivedSegmentsAsync(cancellationToken).ConfigureAwait(false);
         TryEnforceArchiveRetention();
         if (ShouldRotate(pendingBytes: 0))
@@ -1811,32 +1816,85 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     }
 
     /// <summary>
+    /// A live segment created just now (its anchor was absent) means the journal was reset: the earlier rotation state
+    /// is set aside, never deleted, and segment numbering continues above every file left on disk. Auditoría del núcleo
+    /// 2026-10-23: it used to be set aside unread, so moving two files away forgot every invocation the archived
+    /// segments completed and every retired id, and a retry of one ran again. Now the earlier manifest is authenticated
+    /// first, and every id it retired and every invocation its retained segments completed (each segment authenticated
+    /// end to end) is carried into the new retired-id file: a retry of one is refused, never executed. Archived state
+    /// that nothing authenticated vouches for (segments or a retired file without their manifest, a manifest that fails
+    /// authentication or holds an unfinished rotation, a listed segment missing) fails the open closed.
+    /// </summary>
+    private async ValueTask ResetRotationStateAsync(CancellationToken cancellationToken)
+    {
+        _ = PreparePath(_manifestPath);
+        _ = PreparePath(_retiredPath);
+        SortedSet<long> onDisk = ArchivedSegmentNumbersOnDisk(_path, string.Empty);
+        var carried = new HashSet<string>(StringComparer.Ordinal);
+        if (File.Exists(_manifestPath))
+        {
+            JournalSegmentManifest earlier = ReadManifestFile(_manifestPath, _authenticator);
+            if (!string.Equals(earlier.Phase, JournalManifestPhases.Committed, StringComparison.Ordinal))
+            {
+                throw new JournalIntegrityException(
+                    "A reset journal's earlier segment manifest holds an unfinished rotation.");
+            }
+
+            LoadRetired(earlier.Retired);
+            carried.UnionWith(_retired);
+            _retired.Clear();
+            foreach (JournalArchiveLink link in earlier.Segments)
+            {
+                string segmentPath = PreparePath(SegmentPath(_path, link.Segment));
+                if (!File.Exists(segmentPath))
+                {
+                    throw new JournalIntegrityException(
+                        "A reset journal's earlier manifest lists an archived segment that is missing.");
+                }
+
+                SegmentScan scan = await IndexOrScanSegmentAsync(segmentPath, link, cancellationToken)
+                    .ConfigureAwait(false);
+                foreach (string invocationId in scan.Completed.Keys)
+                {
+                    carried.Add(RetiredKey(invocationId));
+                }
+            }
+        }
+        else if (onDisk.Count > 0 || File.Exists(_retiredPath))
+        {
+            throw new JournalIntegrityException(
+                "A reset journal lies beside archived state without its authenticated manifest.");
+        }
+
+        string stamp = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
+        SetAside(_manifestPath, stamp);
+        SetAside(_retiredPath, stamp);
+        if (onDisk.Count == 0 && carried.Count == 0)
+        {
+            return;
+        }
+
+        JournalSegmentManifest manifest = EmptyManifest(_authenticator, floor: onDisk.Count > 0 ? onDisk.Max : 0);
+        JournalRetiredState retired = AppendRetired(
+            manifest.Retired,
+            [.. carried.Order(StringComparer.Ordinal)]);
+        WriteManifest(manifest with { Retired = retired });
+    }
+
+    /// <summary>
     /// Reads the authenticated segment manifest and the retired ids it vouches for.
     /// Every archived segment file numbered above the manifest's floor must be one
     /// the manifest lists (retained or pruned), so a deleted or replayed manifest is
-    /// detected. A live segment created just now (its anchor was absent) means the
-    /// journal was reset: the earlier rotation state is set aside, never deleted,
-    /// and segment numbering continues above every file left on disk.
+    /// detected.
     /// </summary>
-    private void LoadManifest(bool liveInitialized)
+    private void LoadManifest()
     {
         _ = PreparePath(_manifestPath);
         _ = PreparePath(_retiredPath);
         _retired.Clear();
         SortedSet<long> onDisk = ArchivedSegmentNumbersOnDisk(_path, string.Empty);
         JournalSegmentManifest? manifest = null;
-        if (liveInitialized)
-        {
-            string stamp = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
-            SetAside(_manifestPath, stamp);
-            SetAside(_retiredPath, stamp);
-            if (onDisk.Count > 0)
-            {
-                manifest = EmptyManifest(_authenticator, floor: onDisk.Max);
-                WriteManifest(manifest);
-            }
-        }
-        else if (File.Exists(_manifestPath))
+        if (File.Exists(_manifestPath))
         {
             manifest = ReadManifestFile(_manifestPath, _authenticator);
             if (!string.Equals(manifest.Phase, JournalManifestPhases.Committed, StringComparison.Ordinal))

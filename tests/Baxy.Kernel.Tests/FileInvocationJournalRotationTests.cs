@@ -600,6 +600,78 @@ public sealed class FileInvocationJournalRotationTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: a reset (the live journal and its anchor moved away) authenticates the earlier
+    // manifest before setting it aside and carries every id it retired and every invocation its retained segments
+    // completed: a retry of one is refused, never executed again.
+    [Test]
+    public async Task AResetJournalStillRefusesWhatTheArchivesCompletedAndRetired()
+    {
+        OperationRequest retiredEarly = CreateRequest();
+        OperationRequest archivedLate = CreateRequest();
+        var handler = new CountingHandler();
+        await using (FileInvocationJournal journal = await OpenRotatingAsync(retainedArchiveSegments: 1))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            _ = await engine.ExecuteAsync(retiredEarly, CancellationToken.None);
+            await ExecuteUntilAsync(engine, () => File.Exists(Archive(2)));
+            _ = await engine.ExecuteAsync(archivedLate, CancellationToken.None);
+            await ExecuteUntilAsync(engine, () => File.Exists(Archive(3)));
+        }
+
+        string movedAway = Path.Combine(_root, "moved");
+        Directory.CreateDirectory(movedAway);
+        File.Move(_journalPath, Path.Combine(movedAway, "missions.jsonl"));
+        File.Move(LiveAnchor, Path.Combine(movedAway, "missions.jsonl.anchor"));
+
+        var afterReset = new CountingHandler();
+        await using FileInvocationJournal reset = await OpenRotatingAsync(retainedArchiveSegments: 1);
+        using var resetEngine = new MissionEngine(new OperationRegistry([afterReset]), reset);
+        OperationResponse early = await resetEngine.ExecuteAsync(
+            retiredEarly with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        OperationResponse late = await resetEngine.ExecuteAsync(
+            archivedLate with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        OperationResponse fresh = await resetEngine.ExecuteAsync(CreateRequest(), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(early.ErrorCode, Is.EqualTo("idempotency_conflict"));
+            Assert.That(late.ErrorCode, Is.EqualTo("idempotency_conflict"));
+            Assert.That(fresh.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(afterReset.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Archived state nothing authenticated vouches for fails a reset closed: segments without their manifest, or a
+    // manifest that does not authenticate.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AResetBesideUnvouchedArchivedStateFailsClosed(bool tamper)
+    {
+        await using (FileInvocationJournal journal = await OpenRotatingAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([new CountingHandler()]), journal))
+        {
+            await ExecuteUntilAsync(engine, () => File.Exists(Archive(1)));
+        }
+
+        File.Delete(_journalPath);
+        File.Delete(LiveAnchor);
+        if (tamper)
+        {
+            byte[] manifest = File.ReadAllBytes(Manifest);
+            int tag = System.Text.Encoding.UTF8.GetString(manifest).LastIndexOf("\"tag\":\"", StringComparison.Ordinal) + 7;
+            manifest[tag] = manifest[tag] == (byte)'0' ? (byte)'1' : (byte)'0';
+            File.WriteAllBytes(Manifest, manifest);
+        }
+        else
+        {
+            File.Delete(Manifest);
+        }
+
+        Assert.That(
+            async () => await OpenRotatingAsync(),
+            Throws.InstanceOf<JournalIntegrityException>());
+    }
+
     [Test]
     public async Task ArchivedSegmentsWithoutTheirManifestAreDetected()
     {
