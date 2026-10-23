@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import threading
 import time
 import unicodedata
@@ -297,33 +298,64 @@ def field_note(observation: str, args: str | None) -> str:
 
 # Aid «said_path_next» (Renew al máximo w5, E006): «crea un archivo compras.txt en C:\Users\usuario\BAXY-bench …» was
 # written as relativePath «compras.txt» in home at 0.93-0.95 every run, and the file went to C:\Users\usuario\compras.txt.
-# A full path the person said whose last part the call does not name is told before anything runs, once per turn, and
-# the model writes the call again; the person's home itself is the folder home, and a known folder its folder.
+# The same with a folder only named (E024 «en la carpeta BAXY-bench», E027, E020, E030): 63 of the 108 wrong calls of the
+# day's e2e and falsedades were such arguments, at a confidence System One never doubts. A full path the person said,
+# or a word of theirs that is the name of a folder in their home (or in its Desktop, Documents or Downloads), that a
+# call about files or folders does not name is told before anything runs, once per turn, and the model decides again;
+# the person's home itself is the folder home, and a known folder its folder. The mind only looks whether such a folder
+# exists: nothing is chosen for the model, and a call that is not about that place is repeated as it was.
 _SAID_PATH = re.compile(r"(?<!\w)[A-Za-z]:\\[^\s\"'«»<>|?*,;]*")
+_SAID_WORD = re.compile(r"[^\s\"'«»<>|?*,;:¿¡!()\\/]{3,}")
 _PATH_ARGUMENT = re.compile(r"path|folder|directory|file", re.IGNORECASE)
 _FOLDER_WORDS = {"escritorio": "desktop", "documentos": "documents", "descargas": "downloads"}
-SAID_PATH_NOTE = ("[Nota interna, no la escribió la persona: la persona dijo la ruta «{path}» y la llamada {call} que "
-                  "ibas a hacer no la nombra (falta «{part}»), así que no se ejecutó. Vuelve a llamarla con esa ruta "
-                  "entera en sus argumentos.]")
+SAID_PATH_NOTE = ("[Nota interna, no la escribió la persona: la persona {said} y la llamada {call} que ibas a hacer no la "
+                  "nombra (falta «{part}»), así que no se ejecutó. Si ese es el lugar de esta llamada, vuelve a llamarla "
+                  "con esa ruta entera en sus argumentos; si no, repítela igual.]")
+SAID_PATH = "dijo la ruta «{path}»"
+SAID_FOLDER = "nombró «{part}», que es la carpeta {path},"
 
 
-def said_path_left_out(text: Any, arguments: Any) -> tuple[str, str] | None:
-    """The first full path in the person's words whose last part a call about files or folders leaves out, and that
-    part; None when the call names it, takes no path, or the path is the person's home folder itself."""
+def said_path_left_out(text: Any, arguments: Any) -> tuple[str, str, str] | None:
+    """What the person said of the first place a call about files or folders leaves out (SAID_PATH or SAID_FOLDER), its
+    full path and its last part; None when the call names every place said, takes no path, or the place is the person's
+    home folder itself. A place is a full path in their words, or a word that names a folder in their home or in its
+    Desktop, Documents or Downloads (only looked at, never opened)."""
     if not isinstance(arguments, dict) or not any(_PATH_ARGUMENT.search(str(key)) for key in arguments):
         return None
     written = _fold(json.dumps(arguments, ensure_ascii=False).replace("\\\\", "\\"))
-    home = _fold(str(Path.home())).rstrip("\\")
-    for match in _SAID_PATH.finditer(str(text or "")):
+
+    def named(part: str) -> bool:
+        folded = _fold(part)
+        return folded in written or _FOLDER_WORDS.get(folded, "\0") in written
+
+    home = Path.home()
+    text = str(text or "")
+    for match in _SAID_PATH.finditer(text):
         path = match.group(0).rstrip("\\/.:")
         parts = [part for part in re.split(r"[\\/]+", path) if part]
-        if len(parts) < 2 or _fold(path) == home:
+        if len(parts) >= 2 and _fold(path) != _fold(str(home)).rstrip("\\") and not named(parts[-1]):
+            return SAID_PATH, path, parts[-1]
+    roots = [home, *(home / name for name in ("Desktop", "Documents", "Downloads"))]
+    for match in _SAID_WORD.finditer(_SAID_PATH.sub(" ", text)):
+        word = match.group(0).rstrip(".")
+        if len(word) < 3 or named(word):
             continue
-        last = _fold(parts[-1])
-        if last in written or _FOLDER_WORDS.get(last, "\0") in written:
-            continue
-        return path, parts[-1]
+        for root in roots:
+            if _person_folder(root / word):
+                return SAID_FOLDER, str(root / word), word
     return None
+
+
+_NOT_THE_PERSONS = 0x2 | 0x4 | 0x400  # hidden, system, reparse point: Windows' own links («Reciente», «Plantillas»)
+
+
+def _person_folder(path: Path) -> bool:
+    """Whether path is a folder of the person's: one that exists and that Windows does not hide, keep or link."""
+    try:
+        info = path.stat(follow_symlinks=False)
+    except (OSError, ValueError):
+        return False
+    return stat.S_ISDIR(info.st_mode) and not getattr(info, "st_file_attributes", 0) & _NOT_THE_PERSONS
 
 
 SAME_CALL_TOLD = 3
@@ -1486,7 +1518,8 @@ class Mind:
             # Renew al máximo (w5, E006): the call that left out the place the person said never runs nor enters the
             # conversation; the model reads what it left out and decides again (its doubt is read then, as always).
             turn["path_told"] = True
-            said = SAID_PATH_NOTE.format(path=left_out[0], part=left_out[1], call=calls[0]["wire"])
+            how, path, part = left_out
+            said = SAID_PATH_NOTE.format(said=how.format(path=path, part=part), part=part, call=calls[0]["wire"])
             conv.append({"role": "user", "content": said})
             private = bool(turn.get("private"))
             self._log(stage, started, reply, text=None if private else turn["text"], kind="said_path_note",

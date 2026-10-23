@@ -1,5 +1,6 @@
 """The model aids of the mind (goal «ayudas al modelo», 2026-10-19): what they add to a result, that the trace keeps them
 in a row apart from the model's decision, and that BAXY_AYUDAS=none gives back the mind as it was before them."""
+import ctypes
 import json
 from pathlib import Path
 
@@ -340,9 +341,49 @@ def test_a_call_that_leaves_out_the_folder_of_a_path_the_person_said_is_written_
         note = server.bodies[1]["messages"][-1]
         assert note == {"role": "user", "content": (
             r"[Nota interna, no la escribió la persona: la persona dijo la ruta «C:\Users\ana\BAXY-bench» y la "
-            "llamada file_write que ibas a hacer no la nombra (falta «BAXY-bench»), así que no se ejecutó. Vuelve a "
-            "llamarla con esa ruta entera en sus argumentos.]")}
+            "llamada file_write que ibas a hacer no la nombra (falta «BAXY-bench»), así que no se ejecutó. Si ese es el "
+            "lugar de esta llamada, vuelve a llamarla con esa ruta entera en sus argumentos; si no, repítela igual.]")}
         # The call it nearly made never enters the conversation; its row says what it left out.
         assert not [m for m in server.bodies[1]["messages"] if m.get("tool_calls")]
         row = [r for r in _trace(mind) if r.get("kind") == "said_path_note"][0]
         assert row["arguments"] == first and row["aids"] == {"said_path_next": note["content"]}
+
+
+APPEND = {"relativePath": "notas.txt", "text": "revisar el router", "folder": "home", "append": True}
+
+
+@pytest.mark.parametrize("said,call,first,told", [
+    ("añade al final de notas.txt, en la carpeta BAXY-bench, la línea 'revisar el router'", "file_write", APPEND, True),
+    ("borra viejo.txt de BAXY-bench", "filesystem_known_trash_named", {"fileName": "viejo.txt", "folder": "all_known"},
+     True),
+    ("guarda la idea en proyectos, en el escritorio", "file_write",
+     {"relativePath": "idea.txt", "text": "x", "folder": "desktop"}, True),
+    # Contracases: the folder is in the call; no folder of the person's is named; a call that takes no path.
+    ("añade al final de notas.txt, en la carpeta BAXY-bench, la línea 'revisar el router'", "file_write",
+     {**APPEND, "relativePath": "BAXY-bench/notas.txt"}, False),
+    ("añade al final de notas.txt la línea 'revisar el router'", "file_write", APPEND, False),
+    ("pon la lista de BAXY-bench en spotify", "app_open", {"appId": "Spotify"}, False),
+    # A folder Windows hides or links («Reciente», «Plantillas» in a Spanish profile) is not one the person names.
+    ("guarda notas.txt en lo reciente", "file_write", {"relativePath": "notas.txt", "text": "x", "folder": "home"}, False),
+])
+def test_a_call_that_leaves_out_a_folder_of_the_person_they_named_is_written_again_once(
+        tmp_path: Path, monkeypatch, said: str, call: str, first: dict, told: bool) -> None:
+    # Renew al máximo (w5, E024, E027, E020, E030): «en la carpeta BAXY-bench», «de BAXY-bench» left out of the call at
+    # 0.74-0.96 (63 of the day's 108 wrong calls were such arguments). A word that names a folder in the person's home
+    # (or its Desktop, Documents or Downloads) is a place said, as a full path is.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    home = tmp_path / "home"
+    (home / "BAXY-bench").mkdir(parents=True)
+    (home / "Desktop" / "Proyectos").mkdir(parents=True)
+    (home / "Reciente").mkdir()
+    ctypes.windll.kernel32.SetFileAttributesW(str(home / "Reciente"), 0x10 | 0x2)  # a hidden folder
+    monkeypatch.setenv("USERPROFILE", str(home))
+    mind, server = _mind(tmp_path, [_call(call, first), _call(call, first)])
+    assert mind.decide(1, said)["arguments"] == first
+    assert len(server.bodies) == (2 if told else 1)
+    if told:
+        note = server.bodies[1]["messages"][-1]["content"]
+        folder = home / "Desktop" / "proyectos" if "proyectos" in said else home / "BAXY-bench"
+        part = folder.name
+        assert note.startswith(f"[Nota interna, no la escribió la persona: la persona nombró «{part}», que es la carpeta "
+                               f"{folder}, y la llamada {call} que ibas a hacer no la nombra (falta «{part}»)")
