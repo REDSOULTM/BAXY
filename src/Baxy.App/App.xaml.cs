@@ -27,6 +27,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        UnhandledFailures.Attach(this);
         ShellTraceSink.Record(
             ShellTraceScopes.Startup,
             "process",

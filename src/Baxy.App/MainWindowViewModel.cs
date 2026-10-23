@@ -683,10 +683,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.TurnCancelled);
         }
-        catch (Exception exception) when (exception is IOException or InvalidDataException
-            or InvalidOperationException or JsonException or UnauthorizedAccessException
-            or ProtectedPayloadException or TimeoutException)
+        catch (Exception exception)
         {
+            // Auditoría de la App (2026-10-23): any other type (a NullReference, a KeyNotFound, a cancellation that was
+            // not the turn's) left the turn through the view's async void handler and ended BAXY; every failure ends
+            // the turn as what it is, a failed turn, traced, and recorded with what nothing else caught.
+            if (exception is not (IOException or InvalidDataException or InvalidOperationException or JsonException
+                or UnauthorizedAccessException or ProtectedPayloadException or TimeoutException))
+            {
+                UnhandledFailures.Record("turn", exception);
+            }
+
             LastTurnFailure = "turn_failed";
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.TurnError,
                 $"{exception.GetType().Name}.{exception.TargetSite?.Name ?? "unknown"}".ToLowerInvariant());
