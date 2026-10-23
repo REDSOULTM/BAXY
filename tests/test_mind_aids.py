@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.mind import Mind
+from baxy_mind.mind import Mind, field_note
 
 from test_mind_final import _call, _mind, _say
 
@@ -173,7 +173,18 @@ def test_a_click_whose_label_left_the_screen_tells_the_field_may_have_the_cursor
     assert len(notes) == told
     if told:
         assert "input_text_type" in notes[0]
+        assert "no se comprobó si un campo tiene el cursor" in notes[0]
         assert [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]["aids"]["field_focused_next"].startswith("[Ayuda")
+
+
+@pytest.mark.parametrize("focused,says", [(True, "dio el foco del teclado a un campo de texto"),
+                                          (None, "no se comprobó si un campo tiene el cursor")])
+def test_the_field_note_tells_the_focus_only_as_the_click_result_shows_it(focused: bool | None, says: str) -> None:
+    # Renew al máximo (w5): «el campo tiene ahora el cursor» was told with nothing in the result checking it.
+    observed = {"ok": True, "labelStillOnScreen": False} | ({} if focused is None else {"focused": focused})
+    note = field_note(json.dumps({"status": "completed", "observed": observed}), json.dumps({"label": "Buscar"}))
+    assert says in note and "«Buscar»" in note
+    assert "tiene ahora el cursor" not in note
 
 
 def test_the_applications_with_places_are_named_from_the_data(tmp_path: Path) -> None:

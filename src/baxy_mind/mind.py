@@ -246,14 +246,20 @@ def places_note(application: str) -> str:
             f"«{application}» y place {listed}.]")
 
 
-FIELD_NOTE = ("\n[Ayuda: tras el clic ya no se ve «{label}»: si era la indicación de un campo (buscar, escribir), el "
-              "campo tiene ahora el cursor y lo siguiente es escribir en él con input_text_type, no pulsarlo otra vez.]")
+# Renew al máximo (w5): the note said «el campo tiene ahora el cursor» with nothing in the result checking it; the focus
+# is told only when the result reports it (a field made the text's destination with the keyboard's focus on it).
+FIELD_NOTE = ("\n[Ayuda: tras el clic ya no se ve «{label}» y el resultado dice que el clic dio el foco del teclado a un "
+              "campo de texto: lo siguiente que se escriba con input_text_type va ahí, sin pulsarlo otra vez.]")
+FIELD_NOTE_UNCHECKED = ("\n[Ayuda: tras el clic ya no se ve «{label}»; el resultado no dice dónde quedó el foco del "
+                        "teclado: no se comprobó si un campo tiene el cursor. input_text_type escribe donde esté el foco "
+                        "de la ventana.]")
 
 
 def field_note(observation: str, args: str | None) -> str:
     """Aid «field_focused_next» (uso real 2026-10-21, e2e del notebook: Steam's «Buscar en la tienda» pressed four times
     and «no pude escribir» told without typing): a completed click whose label is no longer on screen, as its own
-    result says, is told as the fact it may be: a field's hint that left because the field has the cursor."""
+    result says, is told with what the result shows of the focus: a text field with the keyboard's focus when it says
+    so («focused»), otherwise that the focus was not checked."""
     try:
         facts, called = json.loads(observation), json.loads(args or "{}")
     except json.JSONDecodeError:
@@ -263,7 +269,8 @@ def field_note(observation: str, args: str | None) -> str:
     if (not isinstance(observed, dict) or facts.get("status") != "completed"
             or observed.get("labelStillOnScreen") is not False or not isinstance(label, str) or not label.strip()):
         return ""
-    return FIELD_NOTE.format(label=label.strip())
+    note = FIELD_NOTE if observed.get("focused") is True else FIELD_NOTE_UNCHECKED
+    return note.format(label=label.strip())
 
 
 SAME_CALL_TOLD = 3

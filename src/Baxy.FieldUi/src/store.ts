@@ -1,14 +1,25 @@
 import { useEffect, useReducer } from 'react';
 import { lipPush } from './lip';
 import type {
-  AgentStatus, BootPieces, ChatItem, Fam, HostState, NetEntry, ServerEvent, Step, Surfaces, VoiceStatus,
+  AgentStatus, BootPieces, ChatItem, Fam, HostState, NetEntry, ServerEvent, Step, StepStatus, Surfaces, VoiceStatus,
 } from './types';
 
 /** the path the face's network walks this turn: the families of the calls in the order the model made them. */
 export interface Journey {
   turn: string;
   path: string[];
+  /** the family of a call that failed (a red ✕). */
   fail: Fam | null;
+  /** the family of a call that may have run, unconfirmed (the doubtful «?»); a failure of the same family shows instead. */
+  maybe: Fam | null;
+}
+
+/** a call's end on this turn's walk: «fail» marks its family with the ✕, «maybe» with the doubtful «?», others nothing. */
+export function journeyAtEnd(journey: Journey | null, status: StepStatus, fam: Fam): Journey | null {
+  if (!journey) return journey;
+  if (status === 'fail') return { ...journey, fail: fam };
+  if (status === 'maybe') return { ...journey, maybe: fam };
+  return journey;
 }
 
 export type Mood = 'happy' | 'sad' | 'curious' | null;
@@ -119,10 +130,9 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
         const same = s.journey && s.journey.turn === ev.turn;
         const path = same ? s.journey!.path : ['mente'];
         const next = path[path.length - 1] === ev.fam ? path : [...path, ev.fam];
-        return { ...s, running: ev.label + '…', journey: { turn: ev.turn, path: next, fail: same ? s.journey!.fail : null } };
+        return { ...s, running: ev.label + '…', journey: { turn: ev.turn, path: next, fail: same ? s.journey!.fail : null, maybe: same ? s.journey!.maybe : null } };
       }
-      const journey = s.journey && ev.status === 'fail' ? { ...s.journey, fail: ev.fam } : s.journey;
-      return { ...s, journey, running: null };
+      return { ...s, journey: journeyAtEnd(s.journey, ev.status, ev.fam), running: null };
     }
     case 'net':
       return { ...s, net: { what: ev.what, at: Date.now() }, netLog: [...s.netLog, { what: ev.what, ts: ev.ts }].slice(-200) };

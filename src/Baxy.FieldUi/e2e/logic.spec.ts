@@ -92,3 +92,15 @@ test('lip-sync: la boca sigue a la voz que suena, cruza pausas cortas y se cierr
   expect([0, 0.1, 0.2, 0.4, 0.55, 0.7, 0.95].map(mouthLevel)).toEqual([0, 0, 1, 2, 3, 4, 5]);
   lipReset();
 });
+
+test('la red marca aparte una llamada que puede haber corrido («?») de una que falló (✕)', async () => {
+  // Renew al máximo (w5): a «maybe» step marked nothing on the network; only «fail» had its ✕.
+  const { journeyAtEnd } = await import('../src/store');
+  const walk = { turn: 't1', path: ['mente', 'apps', 'ventanas'], fail: null, maybe: null };
+  const doubtful = journeyAtEnd(walk, 'maybe', 'ventanas');
+  expect(doubtful).toEqual({ ...walk, maybe: 'ventanas' });
+  expect(journeyAtEnd(doubtful, 'fail', 'apps')).toEqual({ ...walk, maybe: 'ventanas', fail: 'apps' });
+  expect(journeyAtEnd(walk, 'ok', 'apps')).toBe(walk);
+  expect(journeyAtEnd(walk, 'skip', 'apps')).toBe(walk);
+  expect(journeyAtEnd(null, 'maybe', 'apps')).toBeNull();
+});
