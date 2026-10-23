@@ -3108,3 +3108,18 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   tres casos y BAXY escribió en él: «lista: pilas, cables» ×2 (int6 s0, int8 s0) y «hola desde BAXY» ×1 (int8 s1). Nada
   se guardó a disco; no se toca su documento a ciegas (hace falta su sí en el diálogo de control del escritorio). Se le
   avisa para quitarlas con Ctrl+H. Regla desde ahora: ningún banco que actúa en el PC con su Bloc de notas abierto.
+- 02:5x-03:4x (23-10) **HOLDOUT v4, DECISIÓN (720 casos, 3 semillas por configuración, juez común del HEAD final;
+  los jueces propios dan lo mismo)**. PC semillas 0-1, NB semilla 2; 0 errores de servidor en las 9 corridas.
+
+  | Configuración | Aciertos s0 / s1 / s2 | Media | Acciones equivocadas (media) | p50 |
+  |---|---|---|---|---|
+  | `s1off` (86991ca9d, S1 apagado) | 633 / 628 / 636 | 632,33 | 62,0 | 0,84 s |
+  | `s1on` (86991ca9d, S1 encendido) | 637 / 628 / 634 | 633,00 | 48,7 | 0,84 s |
+  | `maximo` (452854a18) | 636 / 634 / 639 | 636,33 | 45,7 | 0,86 s |
+
+  Primaria (pareado, 720 ítems): `maximo` frente a `s1on` +3,33, IC95 [−4,33; +11,0], McNemar p 0,83, pass^3 610 → 618;
+  `s1on` frente a `s1off` +0,67, IC95 [−5,33; +7,0], p 0,80. Ninguna significativa (Holm). Secundaria pre-registrada,
+  acciones equivocadas ejecutadas por mayoría: `s1on` frente a `s1off` 62 → 48 (17 quitadas, 3 nuevas, McNemar p 0,0026);
+  `maximo` frente a `s1off` 62 → 45 (20 / 3, p 0,0005); `maximo` frente a `s1on` 48 → 45 (11 / 8, p 0,65).
+  Lectura: el mismo acierto con ~27 % menos acciones equivocadas, casi todo de System One; el resto del goal (seguridad,
+  honestidad, velocidad) no lo mide este banco.
