@@ -143,6 +143,18 @@ ALREADY_OPEN = "; ya estaba abierta antes de esta llamada"
 SAME_WINDOW = "; la ventana no cambió"
 AFTER_VIEW = "; su after es la ventana de después"
 REREAD = {True: "; releído después: quedó como se pidió", False: "; releído después: no quedó como se pidió"}
+# What _read_in_part says after the part a read held, in full.
+PART_TAIL = "; lo demás no se leyó: un «no está» vale sólo para lo leído"
+# Aid «facts_once» (w7-breve, 2026-10-23): on the holdout v4 turn.continue wrote more after a tool (predicted p50 399 →
+# 487 ms). A facts line of several calls said the same long wording once per call (E022: «lectura: sólo miró, sin
+# abrir, cerrar ni cambiar nada; lo que vio está arriba» seven times), and the answer after it retold the pages; without
+# the line it was 16 tokens, with it 37. Each wording is said in full the first time it comes in the line; a later call
+# that ended the same way says it in its first words, which still name what happened (only looked, sent without
+# looking, already so). Every call keeps its own entry, code, place and part read: only the explanation is not repeated.
+SAID_AGAIN = {OUTPUT_READ: "lectura: sólo miró",
+              VERIFICATION["delivered_only"]: "enviado sin verificar",
+              VERIFICATION["unchanged"]: "ya estaba así antes de esta llamada",
+              PART_TAIL: ""}
 
 
 def _outcome(observation: str, read: bool = False) -> str:
@@ -265,7 +277,28 @@ def _read_in_part(shown: dict[str, Any]) -> str:
     if shown.get("endReached") is False:
         part.append("no llegó al final")
     detail = (": " + ", ".join(part)) if part else ""
-    return f"; leído en parte{detail}; lo demás no se leyó: un «no está» vale sólo para lo leído"
+    return f"; leído en parte{detail}{PART_TAIL}"
+
+
+def _said_once(done: list[str]) -> list[str]:
+    """Aid «facts_once» (SAID_AGAIN): the turn's calls as the facts line lists them, each long wording in full only the
+    first time; a later entry that ended the same way keeps its call, its count, its code and the rest of its outcome."""
+    seen: set[str] = set()
+    told = []
+    for entry in done:
+        head, arrow, outcome = entry.partition(" → ")
+        if arrow:
+            for full, again in SAID_AGAIN.items():
+                if full == PART_TAIL:
+                    if full in outcome:
+                        outcome = outcome.replace(full, again) if full in seen else outcome
+                        seen.add(full)
+                elif outcome.startswith(full):
+                    outcome = again + outcome[len(full):] if full in seen else outcome
+                    seen.add(full)
+            entry = head + arrow + outcome
+        told.append(entry)
+    return told
 
 
 def _deduplicated(observation: str, outcome: str) -> str:
@@ -1682,8 +1715,9 @@ class Mind:
         shown, made = self._shorten(told, compact) if _aid_on("short_refs") else (told, {})
         if made:
             aids["short_refs"] = sorted(made) if turn.get("private") else made
+        line = _said_once(done) if _aid_on("facts_once") else done
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
-                     "content": shown + "\n[En este turno: " + "; ".join(done) + "]" + note})
+                     "content": shown + "\n[En este turno: " + "; ".join(line) + "]" + note})
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
