@@ -1849,6 +1849,33 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     private static List<InstalledApplicationObservation> Inventory(
         InstalledApplicationEntry entry,
         bool strongIdentityOnly,
+        CancellationToken cancellationToken) =>
+        Inventory(entry, strongIdentityOnly, MainWindowsByProcess, cancellationToken);
+
+    // Renew al máximo (rendimiento): the main window of every process, read in one pass over the top-level windows. Each
+    // process's MainWindowHandle was one such pass of its own (an EnumWindows per process: about 300 per inventory of a
+    // packaged application, one inventory every 100 ms while an opening is verified); this pass applies the same rule
+    // (.NET's MainWindowFinder): the first window in Z order of the process that no window owns (GW_OWNER) and that is
+    // visible.
+    internal static Dictionary<uint, nint> MainWindowsByProcess()
+    {
+        var found = new Dictionary<uint, nint>();
+        EnumWindowsProc callback = (window, _) =>
+        {
+            GetWindowThreadProcessId(window, out uint process);
+            if (!found.ContainsKey(process) && GetWindow(window, 4) == 0 && IsWindowVisible(window))
+                found[process] = window;
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return found;
+    }
+
+    internal static List<InstalledApplicationObservation> Inventory(
+        InstalledApplicationEntry entry,
+        bool strongIdentityOnly,
+        Func<Dictionary<uint, nint>> readMainWindows,
         CancellationToken cancellationToken)
     {
         bool packaged = entry.AppUserModelId.Contains('!');
@@ -1868,6 +1895,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
         Dictionary<uint, nint>? hostedFrames = null;
+        // Renew al máximo (rendimiento): read once, the first time a process's main window is asked for.
+        Dictionary<uint, nint>? mainWindows = null;
         // The processes running the launched image's name, and who started whom: a helper they started may draw the
         // application's windows (steamwebhelper.exe under steam.exe); its ancestor's image is verified below.
         HashSet<uint> launchers = packaged ? [] : [.. processes
@@ -1899,7 +1928,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         ? VisibleTopLevelWindows(process.Id, requireComplete: false, windowClass)
                         : null;
                     nint window = ownedWindows is null
-                        ? process.MainWindowHandle : ownedWindows.FirstOrDefault();
+                        ? (mainWindows ??= readMainWindows()).GetValueOrDefault(unchecked((uint)process.Id))
+                        : ownedWindows.FirstOrDefault();
                     // Computer use (CU1959, measured on Configuración): a packaged
                     // app suspended in the background keeps a «visible» CoreWindow
                     // that DWM cloaks; nobody sees it, so it is not a running window
