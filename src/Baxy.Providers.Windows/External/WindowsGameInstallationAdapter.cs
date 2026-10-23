@@ -250,21 +250,9 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
     // «Portal 2» (BAXY Renew audit 2026-10-15).
     private static bool TitleMatches(string candidate, string requested) => candidate == requested;
 
-    private static string Fold(string value)
-    {
-        string normalized = value.Normalize(NormalizationForm.FormD);
-        var builder = new StringBuilder(normalized.Length);
-        foreach (char character in normalized)
-        {
-            if (CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.NonSpacingMark)
-                continue;
-            builder.Append(char.IsLetterOrDigit(character)
-                ? char.ToLowerInvariant(character)
-                : ' ');
-        }
-        return string.Join(' ', builder.ToString().Split(
-            ' ', StringSplitOptions.RemoveEmptyEntries));
-    }
+    // Renew al máximo (w8): the same fold as Steam's own titles (SteamLocalAdapter.FoldTitle: an apostrophe joins its
+    // word, a word's final «s» is left aside), so both stores match a title as it is said.
+    private static string Fold(string value) => SteamLocalAdapter.FoldTitle(value);
 
     private static string OpaqueId(string provider, string identity) => provider + "_"
         + Convert.ToHexStringLower(SHA256.HashData(

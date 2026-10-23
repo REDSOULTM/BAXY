@@ -21,6 +21,16 @@ public sealed class SteamLocalAdapterTests
     private const ulong Paused = 2 | 512 | 1024;
     private const ulong Stopped = 2 | 1024;
 
+    // Renew al máximo (w8): a title with an apostrophe is matched as it is said («assassins creed origins», «Sid Meier
+    // Civilization VI»), the typographic one and the ™/® marks included; a title of other words still is not.
+    [TestCase("Assassin's Creed Origins", "assassins creed origins", true)]
+    [TestCase("Tom Clancy’s Rainbow Six® Siege", "tom clancys rainbow six siege", true)]
+    [TestCase("Sid Meier's Civilization® VI", "Sid Meier's Civilization VI", true)]
+    [TestCase("Sid Meier's Civilization VI", "Sid Meier Civilization VI", true)]
+    [TestCase("Assassin's Creed Origins", "assassins creed odyssey", false)]
+    public void ATitleWithAnApostropheFoldsAsItIsSaid(string title, string said, bool same) =>
+        Assert.That(SteamLocalAdapter.FoldTitle(title) == SteamLocalAdapter.FoldTitle(said), Is.EqualTo(same));
+
     // Renew al máximo (B-APP-4): only a running flag says «downloading»; a download in pause, or one with bytes and no
     // running flag, is «paused», in its status and in the catalog.
     [Test]
