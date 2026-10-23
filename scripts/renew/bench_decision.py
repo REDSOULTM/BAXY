@@ -104,6 +104,13 @@ def judge(expect, result, arguments):
     raise ValueError(expect)
 
 
+def decide(mind, case):
+    """The model's decision for a case, with the confirmation the case says is waiting for the person's «sí» (a case of
+    the family confirmacion_pendiente carries `pending` {operation, arguments}, as the App sends it with the words;
+    holdout v5: without it confirm_pending read nothing_pending and those cases could never pass)."""
+    return mind.decide(case["id"], case["text"], pending=case.get("pending"))
+
+
 def gpu_used_mib():
     out = subprocess.run(["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
                          capture_output=True, text=True, timeout=20).stdout.strip().splitlines()
@@ -167,7 +174,7 @@ def main():
         started = time.monotonic()
         try:
             mind.new_session(case.get("history") or [])
-            result = mind.decide(case["id"], case["text"])
+            result = decide(mind, case)
             error = None
         except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
             result, error = {"kind": "error"}, repr(exc)[:200]

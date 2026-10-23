@@ -64,3 +64,19 @@ def test_an_any_case_checks_the_arguments_of_each_option() -> None:
 def test_an_any_case_whose_options_were_all_retired_is_not_counted() -> None:
     expect = {"kind": "any", "options": [{"kind": "call", "op": "routine.list"}, {"kind": "call_any", "ops": ["routine.read"]}]}
     assert judge(expect, {"kind": "action", "operation": "routine.list"}, {}) is None
+
+
+def test_a_case_with_a_pending_confirmation_reaches_the_mind_with_it() -> None:
+    from bench_decision import decide
+    seen = {}
+
+    class Mind:
+        def decide(self, request_id, text, pending=None):
+            seen.update(id=request_id, text=text, pending=pending)
+            return {"kind": "action"}
+
+    pending = {"operation": "file.trash", "arguments": {"fileName": "a.txt"}}
+    decide(Mind(), {"id": "X1", "text": "dale", "pending": pending})
+    assert seen == {"id": "X1", "text": "dale", "pending": pending}
+    decide(Mind(), {"id": "X2", "text": "abre paint"})
+    assert seen["pending"] is None
