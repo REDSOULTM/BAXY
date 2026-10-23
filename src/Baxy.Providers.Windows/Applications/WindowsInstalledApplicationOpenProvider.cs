@@ -23,6 +23,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // is still to come is waited on for up to 30 s before it is declared
     // unverified, the way a person waits for a heavy program to appear.
     private const int VerificationAttempts = 300;
+    // Renew al máximo (velocidad, E014 in pc-lote: 30-32 s each, verification_failed): a packaged application whose
+    // frame Windows shows with nothing of it inside (VisibleControlSurface.ShowsEmptyFrame) after this long is not
+    // filling it: a splash is filled within it (Configuración opened verified in 1.5-3.8 s on this PC, place included).
+    // In polls: the ObservationDelay ones that make it, for a platform whose delay takes no time.
+    internal static readonly TimeSpan EmptyFrameGrace = TimeSpan.FromSeconds(10);
+    private const int EmptyFrameGraceAttempts = 100;
     private static readonly TimeSpan ObservationDelay = TimeSpan.FromMilliseconds(100);
     private static readonly TimeSpan CatalogLifetime = TimeSpan.FromMinutes(5);
     // M89 (DEV-D v3r D-w11-t5 «¿Me abres el Spotify?»): app.open started and never completed; the shell gave up
@@ -273,6 +279,20 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
             if (candidate is null)
             {
+                // Renew al máximo (velocidad): the application's frame shown empty past the grace is the frame of a
+                // process that ended (forced to), which nothing fills: the opening ends here, unverified as at 30 s, and
+                // says what it saw (emptyFrame), instead of waiting out the rest of the budget.
+                if ((verification.Elapsed >= EmptyFrameGrace || attempt >= EmptyFrameGraceAttempts)
+                    && _platform.ShowsEmptyFrame(entry))
+                {
+                    return Failure(
+                        request,
+                        entry.Name,
+                        ApplicationOpenErrorCodes.VerificationFailed,
+                        launchIssued: !reused,
+                        reusedExisting: reused) with { EmptyFrame = true };
+                }
+
                 if (attempt < VerificationAttempts)
                 {
                     await _platform.DelayAsync(ObservationDelay, cancellationToken)
@@ -1392,6 +1412,10 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // or not; none for a packaged application (suspended in the background by Windows itself) or the shell's entry.
     IReadOnlyList<int> RunningProcesses(InstalledApplicationEntry entry) => [];
 
+    // Renew al máximo (velocidad): Windows shows a frame of this packaged application with nothing of it inside
+    // (VisibleControlSurface.ShowsEmptyFrame); false for a classic application.
+    bool ShowsEmptyFrame(InstalledApplicationEntry entry) => false;
+
     bool Activate(InstalledApplicationEntry entry);
 
     // forControl: the application starts with the person's own rights (ApplicationOpenRequest.ForControl).
@@ -1577,6 +1601,9 @@ internal static class InstalledApplicationResolver
 
 internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledApplicationPlatform
 {
+    public bool ShowsEmptyFrame(InstalledApplicationEntry entry) =>
+        entry.AppUserModelId.Contains('!') && External.VisibleControlSurface.ShowsEmptyFrame(entry.AppUserModelId);
+
     private static readonly Encoding StrictUtf8 =
         new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
     private const string CatalogScript = """

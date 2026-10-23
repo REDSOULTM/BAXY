@@ -96,7 +96,9 @@ public record ApplicationOpenResult(
     // the activation, and their keyboard stayed where it was.
     bool ShownWithoutFocus = false,
     // Auditoría D1: no installed application is called so; the closest installed names, none of them opened.
-    IReadOnlyList<string>? Candidates = null);
+    IReadOnlyList<string>? Candidates = null,
+    // Renew al máximo (velocidad): unverified because Windows shows the application's frame with nothing of it inside.
+    bool EmptyFrame = false);
 
 public interface IApplicationOpenProvider
 {
