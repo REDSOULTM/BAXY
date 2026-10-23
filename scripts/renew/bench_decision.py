@@ -2,8 +2,8 @@
 
 usage: py -3.12 -X utf8 scripts/renew/bench_decision.py <label> --cases FILE [--temp 0.2]
        [--gguf PATH] [--server-args "..."] [--catalog FILE] [--ctx 40960]
-Cases: list of {id, family, history?, text, expect{kind: call|call_any|ask|text, op?, ops?, args?}} (see README of the
-banks). Writes <banks>/runs/<label>.jsonl: a summary line (accuracy, decision p50/p90, VRAM and RAM of llama-server and
+Cases: list of {id, family, history?, text, expect{kind: call|call_any|ask|text|any, op?, ops?, args?, options?}} (see
+README of the banks; «any» lists the expectations a case accepts). Writes <banks>/runs/<label>.jsonl: a summary line (accuracy, decision p50/p90, VRAM and RAM of llama-server and
 of this process acting as the mind) and one row per case.
 """
 import argparse
@@ -64,6 +64,11 @@ def arg_ok(want, got):
 
 def judge(expect, result, arguments):
     kind = result.get("kind")
+    if expect["kind"] == "any":
+        # decision3 (README of practica): a case with more than one defensible answer lists them as options of any kind;
+        # it is met by any of them, and left out only when every option names a retired operation.
+        verdicts = [judge(option, result, arguments) for option in expect["options"]]
+        return None if all(v is None for v in verdicts) else any(bool(v) for v in verdicts)
     if expect["kind"] == "call":
         op, args, fixed = current(expect["op"], expect.get("args"))
         if op is None:  # retired with no replacement: not counted
@@ -97,6 +102,13 @@ def judge(expect, result, arguments):
         return (all(re.search(spec, said) for spec in ([must] if isinstance(must, str) else must))
                 and not any(re.search(spec, said) for spec in ([must_not] if isinstance(must_not, str) else must_not)))
     raise ValueError(expect)
+
+
+def decide(mind, case):
+    """The model's decision for a case, with the confirmation the case says is waiting for the person's «sí» (a case of
+    the family confirmacion_pendiente carries `pending` {operation, arguments}, as the App sends it with the words;
+    holdout v5: without it confirm_pending read nothing_pending and those cases could never pass)."""
+    return mind.decide(case["id"], case["text"], pending=case.get("pending"))
 
 
 def gpu_used_mib():
@@ -162,7 +174,7 @@ def main():
         started = time.monotonic()
         try:
             mind.new_session(case.get("history") or [])
-            result = mind.decide(case["id"], case["text"])
+            result = decide(mind, case)
             error = None
         except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
             result, error = {"kind": "error"}, repr(exc)[:200]
