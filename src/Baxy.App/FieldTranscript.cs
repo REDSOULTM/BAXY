@@ -135,6 +135,20 @@ internal sealed class FieldTranscript
         return Clone(card);
     }
 
+    /// <summary>The card <paramref name="id"/>, still pending, was also sent as a Windows notification.</summary>
+    internal JsonObject? Notified(string id)
+    {
+        JsonObject? card = _items.LastOrDefault(i => (string?)i["who"] == "card" && (string?)i["id"] == id
+            && (string?)i["status"] == "pending");
+        if (card is null)
+        {
+            return null;
+        }
+
+        card["notified"] = true;
+        return Clone(card);
+    }
+
     internal string NextId(string prefix) =>
         prefix + Interlocked.Increment(ref _sequence).ToString(CultureInfo.InvariantCulture) + "-"
         + Guid.NewGuid().ToString("N")[..6];

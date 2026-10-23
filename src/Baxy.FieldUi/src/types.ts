@@ -42,6 +42,8 @@ export interface Confirmation {
   expires: number;
   /** the kernel asks again for a call whose earlier attempt may already have happened. */
   effectStarted?: boolean;
+  /** the host also sent it as a Windows notification (the person was not to be spoken to). */
+  notified?: boolean;
   status: CardStatus;
   via?: string | null;
 }

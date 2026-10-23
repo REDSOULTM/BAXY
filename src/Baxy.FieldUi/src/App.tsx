@@ -432,7 +432,7 @@ export default function App() {
     : mood && (state === 'idle' || state === 'speaking') ? mood
       : s.activity === 'game' ? 'sleep'
         : ({ standby: 'sleep', booting: 'sleep', idle: 'neutral', listening: 'listen', thinking: 'think', speaking: 'neutral', confirm: pendingCard?.risk ? 'serious' : 'curious' } as Record<string, string>)[state] ?? 'neutral';
-  const waiting = pendingCard ? (s.activity === 'game' && pendingCard.kind === 'proposal' ? 'Propuesta enviada como notificación de Windows' : 'Esperando tu ok en la conversación') : null;
+  const waiting = pendingCard ? (pendingCard.notified ? 'Propuesta enviada como notificación de Windows' : 'Esperando tu ok en la conversación') : null;
 
   // the conversation's own count: its requests and the calls of this session that went out to the internet
   const nReq = s.items.filter((x) => x.who === 'you').length;

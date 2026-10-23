@@ -67,6 +67,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.StepCompleted += OnStepCompleted;
         _viewModel.ConfirmationAsked += OnConfirmationAsked;
         _viewModel.ConfirmationResolved += OnConfirmationResolved;
+        _viewModel.ProposalNotificationRequested += OnProposalNotified;
         _viewModel.VoicePartial += OnVoicePartial;
         _viewModel.VoiceLip += OnVoiceLip;
         _viewModel.VoiceWake += OnVoiceWake;
@@ -381,6 +382,17 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             _ => "dropped",
         };
         if (_transcript.Resolve(status, null) is { } card)
+        {
+            Publish(ItemEvent(card));
+        }
+    }
+
+    // The proposal on the card went to Windows as a notification (the person should not be spoken to): the card says
+    // so from this fact, never from the activity the view reads later.
+    private void OnProposalNotified(string question, string why, NativeTurnConfirmation asked)
+    {
+        if (_pendingCard is { } pending && ReferenceEquals(pending.Asked, asked)
+            && _transcript.Notified(pending.Id) is { } card)
         {
             Publish(ItemEvent(card));
         }
@@ -1117,6 +1129,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.StepCompleted -= OnStepCompleted;
         _viewModel.ConfirmationAsked -= OnConfirmationAsked;
         _viewModel.ConfirmationResolved -= OnConfirmationResolved;
+        _viewModel.ProposalNotificationRequested -= OnProposalNotified;
         _viewModel.VoicePartial -= OnVoicePartial;
         _viewModel.VoiceLip -= OnVoiceLip;
         _viewModel.VoiceWake -= OnVoiceWake;
