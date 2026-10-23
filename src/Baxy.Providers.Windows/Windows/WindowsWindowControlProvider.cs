@@ -754,25 +754,64 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         string side,
         CancellationToken cancellationToken)
     {
+        var target = new SnapTarget();
+        WindowActionResult result;
         try
         {
-            return await PlaceOnHalfAsync(windowId, side, cancellationToken).ConfigureAwait(false);
+            result = await PlaceOnHalfAsync(windowId, side, target, cancellationToken).ConfigureAwait(false);
         }
-        catch (WindowIdentityChangedException)
+        catch (WindowIdentityChangedException changed)
         {
+            // Auditoría del Core (w8): the window gone (or hidden) meanwhile is the state after, as the other actions say.
             return new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.WindowIdentityChanged, EffectMayHaveOccurred: true);
+                false, false, null, WindowControlErrorCodes.WindowIdentityChanged, EffectMayHaveOccurred: true,
+                StateAfter: target.Identity is null ? null : GoneAfter(changed, requestedStateReached: false));
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException or ArgumentException)
         {
-            return new WindowActionResult(
+            result = new WindowActionResult(
                 false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
+        }
+
+        // Auditoría del Core (w8), as 8.3 for the other window actions: an ambiguous failure (the placement reached the
+        // window and did not read back) carries the window as one read found it after, with whether it is on the half.
+        return result is { Succeeded: false, EffectMayHaveOccurred: true, StateAfter: null }
+            && target.Identity is { } identity
+                ? result with { StateAfter = SnapStateAfter(identity, target.Expected) }
+                : result;
+    }
+
+    // The window a placement on a half was sent to, and the half it was asked to take, once known.
+    private sealed class SnapTarget
+    {
+        internal WindowIdentity? Identity { get; set; }
+
+        internal WindowBounds? Expected { get; set; }
+    }
+
+    // One read of the window after an ambiguous placement: on the half asked when it is a normal window at those bounds.
+    private WindowStateAfter? SnapStateAfter(WindowIdentity identity, WindowBounds? expected)
+    {
+        try
+        {
+            WindowSnapshot after = _platform.Observe(identity);
+            return PresentAfter(after, requestedStateReached: expected is not null
+                && string.Equals(after.State, "normal", StringComparison.Ordinal) && after.Bounds == expected);
+        }
+        catch (WindowIdentityChangedException changed)
+        {
+            return GoneAfter(changed, requestedStateReached: false);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            return null;
         }
     }
 
     private async ValueTask<WindowActionResult> PlaceOnHalfAsync(
         string windowId,
         string side,
+        SnapTarget target,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -811,6 +850,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 false, false, null, WindowControlErrorCodes.InventoryFailed);
         }
 
+        target.Identity = before.Identity;
         // Ronda final: a normal window already on that half, read before, is the state reached (changed:false).
         int alreadyHalf = workArea.Width / 2;
         var alreadyExpected = new WindowBounds(
@@ -852,6 +892,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             workArea.Y,
             left ? half : workArea.Width - half,
             workArea.Height);
+        target.Expected = expected;
         cancellationToken.ThrowIfCancellationRequested();
         if (!_platform.SetBounds(before.Identity, expected))
         {

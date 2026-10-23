@@ -514,8 +514,9 @@ internal sealed class WindowSnapHandler(IWindowControlProvider provider) : IOper
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Unchanged(WindowControlResultJson.Serialize(
                 result.Window, side, result.LargerThanRequested), result.AlreadyReached))
-            : WindowControlResultJson.SpentWindowId(result.ErrorCode ?? string.Empty) ?? OperationOutcome.Failure(
-                result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
+            // Auditoría del Core (w8): with the window as read after an ambiguous placement, as the other actions.
+            : WindowControlResultJson.Failure(
+                result.ErrorCode ?? "window_bounds_failed", result.EffectMayHaveOccurred, result.StateAfter);
     }
 }
 

@@ -596,6 +596,47 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Auditoría del Core (w8): a snap Windows took and the window did not failed with nothing of the window, while move,
+    // resize and the state actions said the window read after; now it says it too, with whether it is on the half.
+    [Test]
+    public async Task ASnapTheWindowDidNotTakeCarriesTheWindowReadAfter()
+    {
+        var platform = new FakePlatform { SetBoundsIgnored = true, WorkAreaBounds = new WindowBounds(0, 0, 1536, 816) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new WindowSnapHandler(provider), new { windowId, side = "left" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That(state.GetProperty("present").GetBoolean(), Is.True);
+            Assert.That(state.GetProperty("state").GetString(), Is.EqualTo("normal"));
+            Assert.That(state.GetProperty("width").GetInt32(), Is.Not.EqualTo(768));
+            Assert.That(state.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state.GetProperty("authority").GetString(), Is.EqualTo("windows_window_identity_postread"));
+        });
+    }
+
+    // Contracase: a snap refused before anything reached the window says no state after.
+    [Test]
+    public async Task ASnapRefusedBeforeAnyEffectCarriesNoStateAfter()
+    {
+        var platform = new FakePlatform { SetBoundsAccepted = false, WorkAreaBounds = new WindowBounds(0, 0, 1536, 816) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SnapAsync(windowId, "left", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.EffectMayHaveOccurred, Is.False);
+            Assert.That(result.StateAfter, Is.Null);
+        });
+    }
+
     // Renew al máximo (auditoría de flujos): Windows brings a window minimized from maximized back maximized
     // (WPF_RESTORETOMAXIMIZED): «restaura el chrome» then failed verification, and «ponlo a la izquierda» said the window
     // takes no size (window_size_not_taken). The restore is asked once more and the window ends at its normal size.
