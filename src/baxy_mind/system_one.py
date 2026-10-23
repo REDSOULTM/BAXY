@@ -101,7 +101,9 @@ class SystemOne:
             return None
         started = time.monotonic()
         # The order of the options moves the answer («cierra el spotify»: close the app 0.52 listed second, 0.94 first;
-        # 2026-10-21): asked in both orders, the probabilities averaged.
+        # 2026-10-21): asked in both orders, the probabilities averaged. One after the other: both at once on two slots
+        # (-np 2) took the same time with the same answers (w6-lat, scripts/renew/system_one/medir_ordenes.py: the CPU
+        # pass is the cost), and an encoder has no prompt prefix to keep between the two.
         totals: dict[str, float] = {}
         try:
             for order in (list(options), list(reversed(options))):
