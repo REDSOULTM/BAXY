@@ -3060,3 +3060,11 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
 - 22:0x **decision2 ×3 de int3**: 231 / 229 / 230 = 230,0 frente a int 229,0: Δ +1,0, IC95 [−1,67; +3,67], McNemar p 1,
   pass^3 222 → 226; 0 errores. **int4 = 97a9ff5a2** = int3 + nb-prevuelo2 3a619d0a8 (aislamiento de pruebas; rechazo de
   lugar antes del sí). Pendiente del NB sobre int3/int4: Providers entero, E014 ×4, e2e, falsedades, recursos, sesión larga.
+- 22:1x **decision2 ×3 de int4 con su catálogo** (catalog-int4, place de 7.4): 229 / 229 / 230 = 229,33 frente a int
+  229,0 (Δ +0,33, IC95 [−2,67; +3,33], pass^3 222 → 226). NB: Providers entero sobre int4 2743/2743. **int5 = 49c8fee31**:
+  + nb-voz c8f0dd646 (el conductor rotulaba el aviso «Un momento.» como la respuesta del caso: falla del banco, no del
+  producto; 47 carreras en 21 corridas del 22-10) + nb-perf hasta 198236a5e (velocidad; fuera 6f03230b4 por riesgo).
+  NB e2e int3 frente a la base, rotulado corregido: 26,0 → 25,0 (bajan E014, E024 inestable, E027 «no está en tu PC»
+  tras buscar sólo en tres carpetas). **int6 = b84547ed5**: + nb-e027 (search_scope: el no encontrado dice dónde buscó).
+- 22:4x **Suites del PC sobre int6 b84547ed5**: Kernel 678, Contracts 74, App 75, Setup 477, pytest 298. Falta el NB
+  (Providers entero, E014 ×4, falsedades, recursos, sesión larga) sobre int6.
