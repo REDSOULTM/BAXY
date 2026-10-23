@@ -662,6 +662,12 @@ internal sealed record DesktopRecipientObservation(
 }
 
 // Read and Match (C4): the text read where the message was looked for, and «exact» or «tolerant» (TextMatch).
+// Renew al máximo (w8): an OCR read: its passes joined (Text, what every other reader takes) and each pass alone.
+internal sealed record OcrText(string Text, IReadOnlyList<string> Passes)
+{
+    public static implicit operator string(OcrText read) => read.Text;
+}
+
 internal sealed record DesktopMessageObservation(
     bool Verified,
     bool EffectObserved,
@@ -1319,7 +1325,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     {
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
         byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
-        string afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
+        OcrText afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
         string afterHash = Convert.ToHexStringLower(SHA256.HashData(after));
         bool changed = !CryptographicOperations.FixedTimeEquals(
             SHA256.HashData(beforeSend),
@@ -1329,7 +1335,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // applies here too; the band changed and the header still names the
         // destination, which no other chat's text can satisfy at once. C4: the
         // receipt says the text read and whether it matched exactly or tolerantly.
-        string deliveryRead = afterText;
+        string deliveryRead = afterText.Text;
         string? match = TextMatch(afterText, text);
         if (match is null)
         {
@@ -1343,11 +1349,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             {
                 byte[] wider = CaptureRegion(
                     recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel, bandWidth);
-                string widerText = await ReadTextAsync(wider, cancellationToken).ConfigureAwait(false);
+                OcrText widerText = await ReadTextAsync(wider, cancellationToken).ConfigureAwait(false);
                 match = TextMatch(widerText, text);
                 if (match is not null)
                 {
-                    deliveryRead = widerText;
+                    deliveryRead = widerText.Text;
                     afterHash = Convert.ToHexStringLower(SHA256.HashData(wider));
                     break;
                 }
@@ -1497,10 +1503,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 && (read is null || ContentChanged(read, bitmap)))
             {
                 read = bitmap;
-                string observed = await ReadTextAsync(bitmap, cancellationToken).ConfigureAwait(false);
+                OcrText observed = await ReadTextAsync(bitmap, cancellationToken).ConfigureAwait(false);
                 if (TextMatch(observed, text) is { } match)
                 {
-                    return new(bitmap, true, observed.Trim(), match);
+                    return new(bitmap, true, observed.Text.Trim(), match);
                 }
             }
 
@@ -1772,6 +1778,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     internal static string? TextMatch(string observed, string expected) =>
         ContainsPhrase(observed, expected) ? "exact" : DeliveryMatches(observed, expected) ? "tolerant" : null;
 
+    // Renew al máximo (w8): a read joins its OCR passes, and the joined text could show the phrase across two passes
+    // («hola» read twice made «hola hola» exact). «exact» is now one pass showing it whole; the tolerant match still pools
+    // the passes as before (it already held whenever the joined phrase did), so what verifies is unchanged.
+    internal static string? TextMatch(OcrText observed, string expected) =>
+        observed.Passes.Any(pass => ContainsPhrase(pass, expected)) ? "exact"
+            : DeliveryMatches(observed.Text, expected) ? "tolerant" : null;
+
     internal static bool DeliveryMatches(string observed, string target)
     {
         if (SpacelessMatches(observed, target))
@@ -1865,14 +1878,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return edits <= 1;
     }
 
-    private static async ValueTask<string> ReadTextAsync(
+    private static async ValueTask<OcrText> ReadTextAsync(
         byte[] bitmap,
         CancellationToken cancellationToken)
     {
         string? executable = FindTesseract();
         if (executable is null)
         {
-            return string.Empty;
+            return new OcrText(string.Empty, []);
         }
 
         // A dark theme draws light text on a dark background, which Tesseract
@@ -1900,7 +1913,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         string text = string.Join('\n', readings);
-        return text;
+        return new OcrText(text, readings);
     }
 
     private static byte[] Upscale2xNearest(byte[] bitmap)

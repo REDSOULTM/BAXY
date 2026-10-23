@@ -144,6 +144,15 @@ public sealed class DesktopMessagingAdapterTests
     public void ADeliveryReadSaysHowItMatched(string observed, string expected, string? match) =>
         Assert.That(WindowsDesktopMessagingAutomation.TextMatch(observed, expected), Is.EqualTo(match));
 
+    // Renew al máximo (w8): «exact» is one OCR pass showing the phrase whole, never a phrase made of two passes joined;
+    // what the joined passes show is still the tolerant match, so what verifies is unchanged.
+    [TestCase(new[] { "hola" , "hola" }, "hola hola", "tolerant")]
+    [TestCase(new[] { "hola hola", "" }, "hola hola", "exact")]
+    [TestCase(new[] { "nada", "otra" }, "hola", null)]
+    public void AnExactMatchIsOnePassShowingTheWholePhrase(string[] passes, string expected, string? match) =>
+        Assert.That(WindowsDesktopMessagingAutomation.TextMatch(new OcrText(string.Join('\n', passes), passes), expected),
+            Is.EqualTo(match));
+
     // C5: the send and the draft read the composer before typing and never clear it first; the read (a select-all
     // whose picture shows text) deletes nothing and stops on the person's draft.
     [TestCase("SendInBurstAsync(")]
