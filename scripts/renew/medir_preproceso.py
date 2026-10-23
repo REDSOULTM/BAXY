@@ -1,9 +1,11 @@
-"""What llama-server spends on each chat request before it reads a token, split into its parts (GPU measurement).
+"""What llama-server spends on each chat request before it reads a token, split into its parts.
 
 usage: py -3.12 -X utf8 scripts/renew/medir_preproceso.py [--n 15] [--gguf PATH] [--server PATH] [--catalog FILE]
-Starts Qwen's llama-server as the product does (the kept prefix is restored from disk when it is the same), configures
-the product's catalog and sends the same decision again and again, cached: each request then reads ~4 tokens and
-writes one, so what is left of its wall time is the server's own work around it and the transport. Per request:
+       py -3.12 -X utf8 scripts/renew/medir_preproceso.py --cpu http://127.0.0.1:PORT [--n 8] [--catalog FILE]
+GPU (default): starts Qwen's llama-server as the product does (the kept prefix is restored from disk when it is the
+same), configures the product's catalog and sends the same decision again and again, cached: each request then reads
+~4 tokens and writes one, so what is left of its wall time is the server's own work around it and the transport. Per
+request:
 - chat: the decision's body to /v1/chat/completions, max_tokens 1, minus the server's prompt_ms and predicted_ms
   (JSON, chat template with the ~180 tools, tokenizing ~44k tokens, the tool-call grammar, the answer);
 - template: the same body to /apply-template (JSON and the chat template alone);
@@ -14,13 +16,33 @@ chat − completion − template ≈ the grammar and the chat's own parsing. Wri
 Al máximo W5: the trace's turn.decide rows show ~140 ms of every decision outside prompt_ms + predicted_ms (decision2
 2026-10-22, p50 136-142 ms; llama-server.log: ~140 ms between one request's release and the next one's slot): this says
 which part a change to the server (cached template, tokens or grammar for the same tools) would save.
+
+--cpu (w6-lat, 2026-10-23): the same parts on a running CPU llama-server with a small context and no GPU (-ngl 0 -dev
+none -c 8192), so it runs while the GPU is the person's. The ~44k-token prompt does not fit there, and the server
+refuses it with HTTP 400 once it has templated it, tokenized it and (chat) built its grammar: the time to that refusal
+is the work before the first token. Parts: chat (tools, grammar) and chat_none (tool_choice none: no grammar) to the
+refusal, template, tokenize, completion_text (the rendered prompt as text: tokenizing) and completion_ids (the same
+prompt as token ids: JSON only), the last two to the refusal as well.
+Measured 2026-10-23 (b11609, BAXY-Qwen3.5-4B-ft-c2e1, -t 4, the PC in use; prompt ~169.5k characters, ~44.3k tokens;
+body 178 KB; three runs, p50 of 8-15): chat 134-148 ms, chat_none 97-117, template 49-62, tokenize 72-83 (its reply
+carries the 44k ids), completion_text 50-68, completion_ids 11-13. So of the ~140 ms: template ~50-60, tokenizing
+~45-55, grammar ~20-38 (chat − chat_none), the rest JSON. A prompt sent as the prefix's token ids (kept once per
+session) and the new text would cost ~11-13 ms + the tail, ~120 ms less per request (decide and continue: ~240 ms per
+turn with a tool). Not done in the mind: only
+/v1/chat/completions builds the tool-call grammar (lazy, triggered at <tool_call>) and parses the call into the model's
+own arguments, and b11609 exposes neither, so /completion would not be the same request (under the grammar a boolean
+is written «true»; without it the model writes «True»). It needs the server to keep the tools' rendered and tokenized
+prefix between requests (a llama.cpp change), or a chat request that takes token ids.
 """
 import argparse
 import json
 import os
 import statistics
 import sys
+import tempfile
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -37,6 +59,70 @@ def _inside(reply: dict) -> float:
     return float(timings.get("prompt_ms") or 0) + float(timings.get("predicted_ms") or 0)
 
 
+def _decision_body(catalog: Path) -> dict:
+    """The body of the product's decision for «abre la calculadora» on this catalog, as Mind.decide sends it."""
+    from baxy_mind.mind import Mind  # noqa: E402
+
+    class _Taken(Exception):
+        pass
+
+    class _Capture:
+        context = 53248
+
+        def __init__(self) -> None:
+            self.bodies: list[dict] = []
+
+        def chat(self, body: dict, **_) -> dict:
+            self.bodies.append(json.loads(json.dumps(body)))
+            raise _Taken
+
+    capture = _Capture()
+    with tempfile.TemporaryDirectory() as scratch:  # configure keeps the catalog beside the trace
+        mind = Mind(capture, Path(scratch) / "trace.jsonl")  # type: ignore[arg-type]
+        mind.configure(json.loads(catalog.read_text(encoding="utf-8")))
+        mind.new_session()
+        try:
+            mind.decide(1, "abre la calculadora")
+        except _Taken:
+            pass
+    return capture.bodies[0]
+
+
+def _cpu(url: str, catalog: Path, n: int) -> int:
+    def post(path: str, body: object) -> tuple[float, dict, int]:
+        request = urllib.request.Request(url + path, data=json.dumps(body).encode("utf-8"),
+                                         headers={"Content-Type": "application/json"})
+        started = time.perf_counter()
+        try:
+            with urllib.request.urlopen(request, timeout=120) as reply:
+                answer, code = json.loads(reply.read()), reply.status
+        except urllib.error.HTTPError as error:
+            answer, code = json.loads(error.read() or b"{}"), error.code
+        return (time.perf_counter() - started) * 1000, answer, code
+
+    body = {**_decision_body(catalog), "max_tokens": 1, "cache_prompt": True, "id_slot": 0}
+    for key in ("logprobs", "top_logprobs"):
+        body.pop(key, None)
+    template = {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")}
+    prompt = post("/apply-template", template)[1]["prompt"]
+    tokens = post("/tokenize", {"content": prompt, "parse_special": True})[1]["tokens"]
+    parts = {
+        "chat": lambda: post("/v1/chat/completions", body),
+        "chat_none": lambda: post("/v1/chat/completions", {**body, "tool_choice": "none"}),
+        "template": lambda: post("/apply-template", template),
+        "tokenize": lambda: post("/tokenize", {"content": prompt, "parse_special": True}),
+        "completion_text": lambda: post("/completion", {"prompt": prompt, "n_predict": 1, "cache_prompt": True}),
+        "completion_ids": lambda: post("/completion", {"prompt": tokens, "n_predict": 1, "cache_prompt": True}),
+    }
+    print(f"prompt: {len(prompt)} characters, {len(tokens)} tokens; {n} requests each")
+    for name, call in parts.items():
+        runs = [call() for _ in range(n)]
+        refused = sum(1 for _, _, code in runs if code == 400)
+        print(f"{name:<16} {statistics.median(ms for ms, _, _ in runs):7.1f} ms (p50)"
+              + (f"  refused for the context {refused}/{n}" if refused else ""))
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--n", type=int, default=15)
@@ -44,8 +130,11 @@ def main() -> int:
     parser.add_argument("--server", default=os.environ.get("BAXY_MIND_LLAMA_SERVER", ""))
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew"
                                                  / "catalog.configure.json"))
+    parser.add_argument("--cpu", default="", help="the URL of a running CPU llama-server")
     args = parser.parse_args()
     sys.path.insert(0, str(ROOT / "src"))
+    if args.cpu:
+        return _cpu(args.cpu.rstrip("/"), Path(args.catalog), args.n)
     from baxy_mind.llm_server import LlmServer  # noqa: E402
     from baxy_mind.mind import Mind  # noqa: E402
 
