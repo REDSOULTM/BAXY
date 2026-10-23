@@ -92,6 +92,9 @@ public static class ModelAids
     /// </summary>
     public const string RepeatedUnchangedNext = "repeated_unchanged_next";
 
+    /// <summary>Renew al máximo (w5): a schedule.alarms cancel that canceled nothing says so and what it looked among.</summary>
+    public const string CancelScope = "cancel_scope";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

@@ -371,6 +371,81 @@ public sealed class NativeScheduledNotificationTests
         });
     }
 
+    // Renew al máximo (w5): a cancel with no kind and no time looked only among reminders, so the one alarm pending
+    // was «nothing pending» (a done call the model reads as «la cancelé») and kept ringing. It is canceled now.
+    [Test]
+    public async Task ACancelWithNoKindCancelsTheOneAlarmPending()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(2))}}","kind":"alarm","title":"Despertar"}"""),
+            CancellationToken.None);
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("kind").GetString(), Is.EqualTo("alarm"));
+            Assert.That(outcome.Result!.Value.GetProperty("canceled").GetBoolean(), Is.True);
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (w5): with an alarm and a reminder pending and no kind, nothing is canceled before the person's
+    // words name one: the failure carries both, and (aid cancel_scope) says nothing was canceled.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task ACancelWithNoKindAndBothKindsPendingCancelsNothingAndListsThem(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        foreach (string kind in new[] { "alarm", "reminder" })
+        {
+            await adapter.InvokeAsync(
+                "schedule.alarms",
+                Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(2))}}","kind":"{{kind}}","title":"{{kind}}"}"""),
+                CancellationToken.None);
+        }
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("notification_kind_ambiguous"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("pending").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.EqualTo(hint));
+            Assert.That(scheduler.Tasks, Has.Count.EqualTo(2));
+        });
+    }
+
+    // Renew al máximo (w5): a cancel that found nothing pending says, as a sentence (aid cancel_scope), that nothing
+    // was canceled and which kind was not looked at; «canceled:false» on a done call was read as «la cancelé».
+    [TestCase("""{"action":"cancel","kind":"alarm"}""", "nothing was canceled: no alarm set by BAXY is pending; reminders were not looked at")]
+    [TestCase("""{"action":"cancel"}""", "nothing was canceled: no alarm or reminder set by BAXY is pending")]
+    public async Task ACancelWithNothingPendingSaysNothingWasCanceled(string arguments, string next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, new FakeTaskScheduler());
+
+        OperationOutcome outcome = await Handle(adapter, arguments);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("pendingFound").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(next));
+        });
+    }
+
     private static ValueTask<OperationOutcome> Handle(WindowsScheduledNotificationAdapter adapter, string arguments) =>
         new ExternalCapabilityHandler("schedule.alarms", new AdapterProvider(adapter)).ExecuteAsync(
             new OperationInvocation("request", "mission", "invocation", Json(arguments)), CancellationToken.None);

@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -75,7 +76,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         try
         {
             if (action == "cancel")
-                return await CancelAsync(operation, kind, effectBoundary, cancellationToken).ConfigureAwait(false);
+                return namedKind is null
+                    ? await CancelUnnamedAsync(operation, effectBoundary, cancellationToken).ConfigureAwait(false)
+                    : await CancelAsync(operation, kind, effectBoundary, cancellationToken).ConfigureAwait(false);
             return TryDue(arguments, at, DateTimeOffset.Now, out DateTimeOffset due)
                 ? await ScheduleAsync(operation, kind, arguments, due, effectBoundary, cancellationToken)
                     .ConfigureAwait(false)
@@ -340,21 +343,71 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         // AGENDA1435 «listá los timers»: the scheduled BAXY tasks (alarms and
         // reminders) with the title kept in each ring script and the next run.
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
+        (List<PendingNotification>? items, int staleTasks, string? error) =
+            await ReadPendingAsync(cancellationToken).ConfigureAwait(false);
+        if (items is null)
+        {
+            return ExternalJson.Failure(operation, error == "scheduler_unavailable"
+                ? "notification_scheduler_unavailable"
+                : "notification_list_" + error);
+        }
+        var shown = items.OrderBy(item => item.NextRunUtc ?? "~", StringComparer.Ordinal).Take(limit).ToArray();
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteNumber("count", items.Count);
+            writer.WriteStartArray("notifications");
+            foreach (var item in shown) WritePending(writer, item);
+            writer.WriteEndArray();
+            writer.WriteNumber("staleTaskCount", staleTasks);
+            writer.WriteNumber("resultLimit", limit);
+            writer.WriteBoolean("resultsMayBeTruncated", items.Count > shown.Length);
+            writer.WriteString("authority", "windows_task_scheduler_notification_list_postread");
+            writer.WriteEndObject();
+        });
+        // A read reached by reading, as the diagnosis above.
+        return ExternalJson.Switched(operation, result, effectObserved: false);
+    }
+
+    private sealed record PendingNotification(string Kind, string? Title, string? NextRunUtc, string State);
+
+    private static void WritePending(Utf8JsonWriter writer, PendingNotification item)
+    {
+        writer.WriteStartObject();
+        writer.WriteString("kind", item.Kind);
+        if (item.Title is not null) writer.WriteString("title", item.Title);
+        if (item.NextRunUtc is not null)
+        {
+            writer.WriteString("nextRunUtc", item.NextRunUtc);
+            if (DateTimeOffset.TryParse(item.NextRunUtc, System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset next))
+                writer.WriteString("nextRunLocal", next.ToLocalTime().ToString(
+                    "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
+        }
+        writer.WriteString("state", item.State);
+        writer.WriteEndObject();
+    }
+
+    // The alarms and reminders of this data root still to ring, as the scheduler reads them back; null with the cause
+    // («process_failed», «postread_failed», «scheduler_unavailable») when it was not read.
+    private async ValueTask<(List<PendingNotification>? Items, int Stale, string? Error)> ReadPendingAsync(
+        CancellationToken cancellationToken)
+    {
         ExternalProcessResult process = await _backend.RunAsync(
             new ScheduledNotificationRequest("diagnose", "reminder") { AlarmRoot = _alarmRoot },
             cancellationToken).ConfigureAwait(false);
         string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
             .LastOrDefault();
         if (process.ExitCode != 0 || line is null)
-            return ExternalJson.Failure(operation, "notification_list_process_failed");
+            return (null, 0, "process_failed");
         using JsonDocument document = JsonDocument.Parse(line);
         JsonElement source = document.RootElement;
         if (!source.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
-            return ExternalJson.Failure(operation, "notification_list_postread_failed");
+            return (null, 0, "postread_failed");
         // A scheduler that did not answer was not read: there is no list, not an empty one.
         if (!SchedulerAnswered(source))
-            return ExternalJson.Failure(operation, "notification_scheduler_unavailable");
-        List<(string Kind, string? Title, string? NextRunUtc, string State)> items = [];
+            return (null, 0, "scheduler_unavailable");
+        List<PendingNotification> items = [];
         int staleTasks = 0;
         DateTimeOffset now = DateTimeOffset.UtcNow;
         if (source.TryGetProperty("tasks", out JsonElement tasks) && tasks.ValueKind == JsonValueKind.Array)
@@ -383,44 +436,14 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                     staleTasks++;
                     continue;
                 }
-                items.Add((
+                items.Add(new PendingNotification(
                     identity.Groups[1].Value == "Alarm" ? "alarm" : "reminder",
                     ReadRingTitle(Path.Combine(_alarmRoot, taskName + ".ps1")),
                     nextRun,
                     state));
             }
         }
-        var shown = items.OrderBy(item => item.NextRunUtc ?? "~", StringComparer.Ordinal).Take(limit).ToArray();
-        JsonElement result = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteNumber("count", items.Count);
-            writer.WriteStartArray("notifications");
-            foreach (var item in shown)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("kind", item.Kind);
-                if (item.Title is not null) writer.WriteString("title", item.Title);
-                if (item.NextRunUtc is not null)
-                {
-                    writer.WriteString("nextRunUtc", item.NextRunUtc);
-                    if (DateTimeOffset.TryParse(item.NextRunUtc, System.Globalization.CultureInfo.InvariantCulture,
-                            System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset next))
-                        writer.WriteString("nextRunLocal", next.ToLocalTime().ToString(
-                            "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
-                }
-                writer.WriteString("state", item.State);
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
-            writer.WriteNumber("staleTaskCount", staleTasks);
-            writer.WriteNumber("resultLimit", limit);
-            writer.WriteBoolean("resultsMayBeTruncated", items.Count > shown.Length);
-            writer.WriteString("authority", "windows_task_scheduler_notification_list_postread");
-            writer.WriteEndObject();
-        });
-        // A read reached by reading, as the diagnosis above.
-        return ExternalJson.Switched(operation, result, effectObserved: false);
+        return (items, staleTasks, null);
     }
 
     private static string? ReadRingTitle(string path)
@@ -504,8 +527,73 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             // M80 (DEV-D v3m D-w18-t5): the latest is the last one this data root set that is still pending.
             new ScheduledNotificationRequest("cancel", kind) { AlarmRoot = _alarmRoot },
             cancellationToken).ConfigureAwait(false);
-        return Parse(operation, process, expectedTaskName: null, effectBoundary,
+        ExternalCapabilityReceipt canceled = Parse(operation, process, expectedTaskName: null, effectBoundary,
             writer => writer.WriteString("kind", kind));
+        // Renew al máximo (w5): «canceled:false» on a done call reads as «la cancelé»; it says nothing was, and that
+        // only this kind was looked at.
+        return canceled is { Verified: true, Result: { } read } && ModelAids.On(ModelAids.CancelScope)
+            && read.TryGetProperty("pendingFound", out JsonElement pending) && pending.ValueKind == JsonValueKind.False
+                ? canceled with
+                {
+                    Result = ExternalJson.Extended(read, writer => writer.WriteString("next",
+                        $"nothing was canceled: no {kind} set by BAXY is pending; "
+                        + $"{(kind == "alarm" ? "reminders" : "alarms")} were not looked at")),
+                }
+                : canceled;
+    }
+
+    // Renew al máximo (w5): a cancel with no kind and no time looked only among reminders (the default kind), so
+    // «cancela la alarma» written without kind found «nothing pending» while the alarm still rang (or canceled a
+    // reminder instead). The pending ones of both kinds are read first (no effect): one kind pending is canceled as
+    // that kind; none is said as none of either; both is ambiguous, with what is pending, and nothing is canceled.
+    private async ValueTask<ExternalCapabilityReceipt> CancelUnnamedAsync(
+        string operation,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        (List<PendingNotification>? items, _, string? error) =
+            await ReadPendingAsync(cancellationToken).ConfigureAwait(false);
+        if (items is null)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, error == "scheduler_unavailable"
+                ? "notification_scheduler_unavailable"
+                : "notification_pending_read_failed");
+        }
+
+        string[] kinds = [.. items.Select(item => item.Kind).Distinct(StringComparer.Ordinal)];
+        if (kinds.Length == 1)
+            return await CancelAsync(operation, kinds[0], effectBoundary, cancellationToken).ConfigureAwait(false);
+        bool aid = ModelAids.On(ModelAids.CancelScope);
+        if (kinds.Length == 0)
+        {
+            return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteBoolean("canceled", false);
+                writer.WriteBoolean("pendingFound", false);
+                if (aid)
+                    writer.WriteString("next", "nothing was canceled: no alarm or reminder set by BAXY is pending");
+                writer.WriteString("authority", "windows_task_scheduler_notification_list_postread");
+                writer.WriteEndObject();
+            }), effectObserved: false);
+        }
+
+        return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteNumber("pendingCount", items.Count);
+            writer.WriteStartArray("pending");
+            foreach (PendingNotification item in items
+                .OrderBy(item => item.NextRunUtc ?? "~", StringComparer.Ordinal).Take(10))
+                WritePending(writer, item);
+            writer.WriteEndArray();
+            if (aid)
+            {
+                writer.WriteString("next", "nothing was canceled: alarms and reminders set by BAXY are pending; "
+                    + "kind, or at with its time, names the one to cancel");
+            }
+            writer.WriteEndObject();
+        }), "notification_kind_ambiguous");
     }
 
     private static ExternalCapabilityReceipt Parse(
