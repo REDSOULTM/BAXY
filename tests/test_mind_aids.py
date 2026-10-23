@@ -332,6 +332,24 @@ def test_a_read_in_a_turn_is_told_by_the_risk_the_app_sent(tmp_path: Path) -> No
                          "cambiar nada; lo que vio está arriba]")
 
 
+def test_the_apps_place_owner_is_traced_and_reaches_the_model_as_it_came(tmp_path: Path, monkeypatch) -> None:
+    # Renew al máximo (w7, apps): the App opened «Configuración» at sound instead of «Configuración del sistema»
+    # (SaidApplication.cs); the trace keeps it as the aid place_owner, and the model reads the result untouched.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    note = ("the person did not name Configuración del sistema, and sound is a place of Configuración alone: this call "
+            "opened Configuración at sound instead of Configuración del sistema, as it was written")
+    opened = json.dumps({"status": "completed", "observed": {"appId": "Configuración"}, "placeOwner": note},
+                        ensure_ascii=False)
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Configuración del sistema", "place": "sound"}),
+                                    _say("Abrí Configuración en Sonido.")])
+    mind.decide(1, "abre la configuración de sonido")
+    mind.continue_turn(2, opened)
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert note in tool
+    aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
+    assert aid["aids"] == {"place_owner": note}
+
+
 def test_the_apps_said_folder_refusal_is_traced_and_reaches_the_model_as_it_came(tmp_path: Path, monkeypatch) -> None:
     # Renew al máximo (w6, rutas): the App refused a write that left out the folder the person named (SaidFolders.cs);
     # the trace keeps it as the aid said_folder, and the model reads the result untouched.

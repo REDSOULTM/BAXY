@@ -1262,6 +1262,38 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (w7, apps; aid system_tools_unlisted): E014 read «Configuración del sistema» (msconfig) from the
+    // installed list for «la configuración de sonido». The tools that configure Windows itself, by the guard's rule, are
+    // not listed to the model; the opening still finds them by name, and with the aid off the list is as before.
+    [TestCase("all", false)]
+    [TestCase("none", true)]
+    public void TheInstalledListLeavesOutTheToolsThatConfigureWindows(string aids, bool listed)
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Configuración del sistema", @"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\msconfig.exe",
+                @"C:\WINDOWS\system32\msconfig.exe"),
+            new("Servicios", @"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\services.msc", @"C:\WINDOWS\system32\services.msc"),
+            new("Seguridad de Windows", "Microsoft.SecHealthUI_8wekyb3d8bbwe!SecHealthUI"),
+            new("Configuración", "windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"),
+            new("Bloc de notas", "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App"),
+        ];
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+
+        InstalledApplicationCatalogSnapshot snapshot = WindowsInstalledApplicationOpenProvider.CreateCatalogSnapshot(catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(snapshot.Names, Is.SupersetOf(new[] { "Bloc de notas", "Configuración" }));
+            Assert.That(snapshot.Names.Intersect(["Configuración del sistema", "Servicios", "Seguridad de Windows"]).Count(),
+                Is.EqualTo(listed ? 3 : 0));
+            Assert.That(InstalledApplicationResolver.Resolve("Configuración del sistema", catalog).Entry?.Name,
+                Is.EqualTo("Configuración del sistema"));
+            Assert.That(catalog.Where(WindowsInstalledApplicationOpenProvider.OpensSystemTool).Select(static e => e.Name),
+                Is.EqualTo(new[] { "Configuración del sistema", "Servicios", "Seguridad de Windows" }));
+        });
+    }
+
     [Test]
     public async Task CatalogSnapshotFailsClosedWhenStartInventoryCannotBeRead()
     {

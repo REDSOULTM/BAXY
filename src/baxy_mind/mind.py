@@ -470,6 +470,10 @@ def _aids_seen(observation: str) -> dict[str, Any]:
     # person named, or says where a call routed there (or written again as before) acted.
     said = ({"said_folder": {k: facts[k] for k in ("saidFolders", "next", "saidFolder") if k in facts}}
             if facts.get("error") == "said_folder_left_out" or "saidFolder" in facts else {})
+    # Renew al máximo (w7, apps): the App's place_owner (SaidApplication.cs) opened the application of the place asked for
+    # instead of the one the model wrote.
+    if isinstance(facts.get("placeOwner"), str):
+        said["place_owner"] = facts["placeOwner"]
     if not isinstance(facts.get("observed"), dict):
         return said
     observed = facts["observed"]

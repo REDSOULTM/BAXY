@@ -114,6 +114,7 @@ internal sealed class NativeTurnLoop
     private readonly SilenceNotice _notice;
     private readonly NetworkEgress _egress = new();
     private readonly SaidFolders _said;
+    private readonly SaidApplication _saidApp = new();
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
@@ -168,6 +169,7 @@ internal sealed class NativeTurnLoop
 
         _egress.Heard(text);
         _said.Heard(text);
+        _saidApp.Heard(text);
         await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken),
             cancellationToken);
     }
@@ -298,6 +300,7 @@ internal sealed class NativeTurnLoop
         _beat = true;
         _egress.NewTurn();
         _said.Clear();
+        _saidApp.Clear();
         _turnStarted = Stopwatch.GetTimestamp();
         try
         {
@@ -320,6 +323,7 @@ internal sealed class NativeTurnLoop
         DropPending();
         _egress.Reset();
         _said.Clear();
+        _saidApp.Clear();
     }
 
     private async Task DriveAsync(MindSidecarClient mind, MindStep? step, CancellationToken cancellationToken,
@@ -469,7 +473,7 @@ internal sealed class NativeTurnLoop
 
         // Renew al máximo (w6, rutas): a file call that leaves out the folder the person named in this turn is routed
         // into it when it only reads, or refused before anything runs with the call that names it (SaidFolders).
-        string? said = null;
+        (string Key, string Note)? said = null;
         if (_said.Rule(operation, descriptor, arguments) is { } ruling)
         {
             if (ruling.Refusal is { } leftOut)
@@ -478,7 +482,14 @@ internal sealed class NativeTurnLoop
             }
 
             arguments = ruling.Arguments;
-            said = ruling.Note;
+            said = ruling.Note is { } note ? ("saidFolder", note) : null;
+        }
+        // Renew al máximo (w7, apps): an app.open of an application the person did not name, at a place only another
+        // one has, opens that one there (SaidApplication).
+        else if (_saidApp.Rule(operation, arguments) is { } owner)
+        {
+            arguments = owner.Arguments;
+            said = (SaidApplication.NoteKey, owner.Note);
         }
 
         PreparedOperation prepared;
@@ -602,14 +613,15 @@ internal sealed class NativeTurnLoop
         return descriptor.Effects.Any(effect => effect.Applies(given.RootElement));
     }
 
-    // Where the call acted, beside the folder the person named (SaidFolders).
-    private static string WithSaidFolder(string observation, string said)
+    // Where the call acted, beside the folder the person named (SaidFolders) or the application of its place
+    // (SaidApplication).
+    private static string WithSaid(string observation, string key, string said)
     {
         try
         {
             if (JsonNode.Parse(observation) is JsonObject facts)
             {
-                facts["saidFolder"] = said;
+                facts[key] = said;
                 return facts.ToJsonString(SaidFolders.AsWritten);
             }
         }
@@ -791,7 +803,7 @@ internal sealed class NativeTurnLoop
         bool answered,
         long started,
         CancellationToken cancellationToken,
-        string? said = null)
+        (string Key, string Note)? said = null)
     {
         string operation = prepared.OperationName;
         bool memory = MemoryOperationProtector.IsMemoryOperation(operation);
@@ -823,9 +835,9 @@ internal sealed class NativeTurnLoop
                 ["next"] = AskThePersonAbout(operation),
             }, "arguments", operation, arguments);
             asked["effectStarted"] = challenge.ReconciliationRequired;
-            if (said is not null)
+            if (said is { } told)
             {
-                asked["saidFolder"] = said;
+                asked[told.Key] = told.Note;
             }
 
             return Record(operation, arguments, started, asked.ToJsonString(), response, sent: challenge.ReconciliationRequired);
@@ -835,9 +847,9 @@ internal sealed class NativeTurnLoop
         string body = memory
             ? MemoryObservation(prepared, response)
             : OperationResponseProjection.Create(response, operation).Message;
-        if (said is not null)
+        if (said is { } fact)
         {
-            body = WithSaidFolder(body, said);
+            body = WithSaid(body, fact.Key, fact.Note);
         }
 
         if (memory && response.Status == OperationStatuses.Completed

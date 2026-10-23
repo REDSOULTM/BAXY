@@ -3167,3 +3167,20 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   y el no encontrado de file.read/edit dónde se buscó. Pendiente: medir en el PC la e2e de práctica (E006, E017, E019,
   E020, E024, E027, E030) y las falsedades; ojo E030: la sobrescritura ahora cae en el archivo correcto y file.write no
   pide confirmación (decisión 8), así que su oráculo UNCHANGED puede pasar a fallo.
+- 12:1x (23-10) **w7-apps (PC, sin correr el producto)**: nombres vecinos en la lista de app_open. Evidencia: E014 en las
+  37 e2e de práctica del PC eligió mal la app en 9 (todas del 15-10, p1-p9): «Configuración del sistema» con place sound
+  en p4-p7 (34 llamadas: 15 invalid_arguments del esquema de entonces, 19 place_not_of_application; p5 y p6 acabaron
+  abriendo msconfig sin lugar), msconfig sin lugar en p3 y p8, «Configuración de Monitor en DisplayFusion» en p1, p2 y
+  p9; las 28 desde p10 eligen «Configuración» + sound. NB int3: s0 msconfig + sound (rechazado), s1 msconfig abierto.
+  decision2/3 (todas las max-*-d2): ningún fallo de appId de app_open (el único fallo con app_open es P031, otro caso).
+  Hecho, cada uno con su interruptor: **(a) place_owner** (`SaidApplication`, App): un app.open de una app que las
+  palabras del turno no nombran, en un lugar que no tiene y que sólo otra app tiene, abre esa otra en el lugar antes de
+  ejecutar (placeOwner en el resultado, con cómo se abre la escrita); cubre p4-p7 y NB s0. **(b)
+  system_tools_unlisted** (proveedor, al hacer el snapshot del catálogo): las herramientas que configuran Windows, por
+  la regla de las guardas (OpensSystemTool = SystemToolLaunch/paquete), no entran en la lista que lee el modelo;
+  app.open las sigue abriendo por nombre. Cubre p3-p8 y NB s0/s1; cambia el prefijo una vez (estable): en este PC ~17
+  nombres (Configuración del sistema, Servicios, Editor del Registro, Programador de tareas, Firewall, Administrador de
+  tareas…), y salen también de las palabras clave del oído. DisplayFusion (p1, p2, p9) no lo cubre ninguna. **(c)
+  descartada**: System One decide la herramienta, no el appId, y su compuerta es la confianza del nombre de la
+  herramienta (0,99 en E014: no ve el error); sin fallos de appId en decision no hay qué medir. Pendiente: A/B del NB
+  (E014 ×N con ONLY, e2e entera; decision2 sólo ve (b) con un catálogo recapturado con la ayuda).
