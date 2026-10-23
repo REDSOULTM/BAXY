@@ -32,7 +32,8 @@ set "BAXY_MIND_LLAMA_PORT=8077"
 set "BAXY_VISION_ENDPOINT=http://127.0.0.1:8077/v1/chat/completions"
 set "BAXY_VISION_MODEL=baxy"
 set "BAXY_VISION_SLOT=0"
-set "BAXY_VISION_SLOT_DIR=%LOCALAPPDATA%\BAXY\renew\slots"
+rem Un banco guarda el slot en otro disco definiendo antes la variable (el C: del PC se lleno el 2026-10-22).
+if not defined BAXY_VISION_SLOT_DIR set "BAXY_VISION_SLOT_DIR=%LOCALAPPDATA%\BAXY\renew\slots"
 :run
 rem System One (rama pc-system-one): la duda de Qwen (capa 0) y Laya como freno o corrector (capa 2). Encendido si no
 rem existe el interruptor %LOCALAPPDATA%\BAXY\renew\system_one.off (scripts\system_one.cmd on ^| off ^| estado). Umbrales medidos en
