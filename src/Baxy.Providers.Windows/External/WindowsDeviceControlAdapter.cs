@@ -257,6 +257,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     /// </summary>
     internal IForegroundLease? KeysLease { get; init; }
 
+    /// <summary>
+    /// Renew al máximo (rendimiento): the persistent UI Automation worker the Calculator's script runs in
+    /// (<see cref="UiaWorkerScript"/>); null runs it in its own PowerShell, as before (the test seams' fake runners).
+    /// </summary>
+    internal IUiaWorker? Scripts { get; init; }
+
     internal WindowsDeviceControlAdapter(
         string scanRoot,
         string documentsRoot,
@@ -839,6 +845,21 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           $digits=($shown -replace '[^0-9]','')
           return ($last.Length -gt 0 -and $digits.EndsWith($last))
         }
+        # Renew al máximo (rendimiento): the display after the last press was read once, after a fixed 300 ms. It is now
+        # read every 50 ms within the same 300 ms and taken as soon as it shows the expression's last operand
+        # (Test-ShowsLastOperand) twice in a row unchanged; otherwise the read at 300 ms is taken, as before, and the
+        # caller's check decides on it.
+        function Wait-ShownResult([scriptblock]$read,[string]$keys,[int]$budget,[int]$interval){
+          $clock=[Diagnostics.Stopwatch]::StartNew();$last=$null
+          while($true){
+            $now=& $read
+            if($null -ne $last -and $now.name -eq $last.name -and $now.expr -eq $last.expr -and $now.value -eq $last.value -and (Test-ShowsLastOperand $now.expr $now.value $keys)){ return $now }
+            $left=$budget-$clock.ElapsedMilliseconds
+            if($left -le 0){ return $now }
+            $last=$now
+            Start-Sleep -Milliseconds ([Math]::Max(1,[Math]::Min($interval,$left)))
+          }
+        }
 
         """;
 
@@ -878,11 +899,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         if(-not (Test-ShowsZero $cleared)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';clearedDisplay=$cleared}|ConvertTo-Json -Compress;exit 8}
         $pressed=0
         foreach($at in $plan){ if(-not (Invoke-KeypadButton $buttons[$at])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=$pressed}|ConvertTo-Json -Compress;exit 7}; $pressed++; Start-Sleep -Milliseconds 30 }
-        Start-Sleep -Milliseconds 300
         $exprCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorExpression')
-        $shown=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$exprCond)
-        $name=[string]$display.Current.Name;$exprName=if($shown){[string]$shown.Current.Name}else{''}
-        $value=Read-DisplayValue
+        $read={ $shown=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$exprCond); @{name=[string]$display.Current.Name;expr=$(if($shown){[string]$shown.Current.Name}else{''});value=(Read-DisplayValue)} }
+        $settled=Wait-ShownResult $read $keys 300 50
+        $name=$settled.name;$exprName=$settled.expr;$value=$settled.value
         if(-not (Test-ShowsLastOperand $exprName $value $keys)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';displayName=$name;expressionName=$exprName}|ConvertTo-Json -Compress;exit 8}
         [pscustomobject]@{ok=$true;typed=$keys;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value}|ConvertTo-Json -Compress
         """;
@@ -929,8 +949,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // not waited for, and their typing in their own window does not stop the expression half pressed (v3 point 0:
         // waiting for the pause is only for an act that has no other way than real input).
         effectBoundary.Cross(token);
-        ExternalProcessResult process = await RunPowerShellAsync(
-            CalculatorScript, [Encode(normalized), Encode(KeypadKeys.Value)], token).ConfigureAwait(false);
+        // Renew al máximo (rendimiento): with the product's UI Automation worker the script runs there, already
+        // loaded, not in a PowerShell started cold for it (the same script, arguments and budget).
+        ExternalProcessResult process = Scripts is { } worker
+            ? await UiaWorkerScript.RunAsync(
+                worker, CalculatorScript, [Encode(normalized), Encode(KeypadKeys.Value)], TimeSpan.FromSeconds(60), token)
+                .ConfigureAwait(false)
+            : await RunPowerShellAsync(
+                CalculatorScript, [Encode(normalized), Encode(KeypadKeys.Value)], token).ConfigureAwait(false);
 
         using JsonDocument document = ParseLastJson(process.Output);
         JsonElement root = document.RootElement;

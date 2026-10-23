@@ -73,9 +73,11 @@ try {
     $effect=$true
     $deadline=(Get-Date).AddSeconds(8)
     $verified=$false
+    # Renew al maximo (rendimiento): the shell's windows are read every 100 ms (they were every 250 ms), within the
+    # same 8 s and for the same window more than before.
     do {
         if((Count-Showing) -gt $before){$verified=$true;break}
-    } while((Wait-BaxyPoll $deadline 250))
+    } while((Wait-BaxyPoll $deadline 100))
     [pscustomobject]@{version=1;ok=$verified;effectObserved=$effect;folder=$Folder;subdirectory=$Subdirectory;verifiedPathName=[IO.Path]::GetFileName($path);authority='windows_shell_location_postread';error=$(if($verified){$null}else{'known_folder_window_not_verified'})}|ConvertTo-Json -Compress
     if(-not $verified){exit 2}
 } catch {
