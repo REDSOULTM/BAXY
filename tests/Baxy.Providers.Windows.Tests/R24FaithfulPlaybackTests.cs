@@ -38,11 +38,39 @@ public sealed class R24FaithfulPlaybackTests
             Assert.That(result.GetProperty("query").GetString(), Is.EqualTo("los bunkers"));
             Assert.That(result.GetProperty("title").GetString(), Is.EqualTo("Fother Muckers - Nada en este Mundo"));
             Assert.That(result.GetProperty("selectedControl").GetString(), Is.EqualTo("Reproducir Fother Muckers"));
+            Assert.That(result.GetProperty("beforeNowPlaying").GetString(), Is.EqualTo("aruarian dance de nujabes"));
             Assert.That(result.GetProperty("observedNowPlaying").GetString(),
                 Is.EqualTo("nada en este mundo de fother muckers"));
             Assert.That(result.GetProperty("playbackEvidence").GetString(), Is.EqualTo("now_playing_changed"));
             Assert.That(result.TryGetProperty("matchesQuery", out _), Is.False);
             Assert.That(result.TryGetProperty("alreadyPlaying", out _), Is.False);
+        });
+    }
+
+    // Auditoría de falsedades (F014, nb-t2-C-fals-s0): «pon música de Queen» pressed «Reproducir Bohemian Rhapsody»,
+    // another song played (now_playing_changed, queryMatched false) and BAXY told «ya estaba reproduciendo…, así que no
+    // cambié nada». The line before the press travels with the change: null when it showed nothing.
+    [TestCase("", JsonValueKind.Null)]
+    [TestCase("crazy little thing called love de queen", JsonValueKind.String)]
+    public async Task AChangedPlaybackCarriesWhatShowedBeforeThePress(string before, JsonValueKind kind)
+    {
+        var adapter = new SpotifyDesktopAdapter(new Runner(
+            "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Red Hot Chili Peppers - Around the World\","
+            + "\"selectedControl\":\"Reproducir Bohemian Rhapsody\",\"beforeNowPlaying\":\"" + before + "\","
+            + "\"observedNowPlaying\":\"around the world de red hot chili peppers\","
+            + "\"playbackEvidence\":\"now_playing_changed\",\"presses\":1,\"processId\":42}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query", Json("""{"provider":"spotify","query":"Queen"}"""), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(result.GetProperty("beforeNowPlaying").ValueKind, Is.EqualTo(kind));
+            if (kind == JsonValueKind.String)
+                Assert.That(result.GetProperty("beforeNowPlaying").GetString(), Is.EqualTo(before));
+            Assert.That(result.GetProperty("queryMatched").GetBoolean(), Is.False);
         });
     }
 
