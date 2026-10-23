@@ -905,6 +905,9 @@ class Mind:
         # A person's turn or a heartbeat reached the model in this process: the slot holds more than the prefix, and
         # the warm-up no longer keeps it on disk (al máximo V1).
         self._turned = False
+        # Al máximo, palanca 2 (early.py): while a decision is made early, its trace rows are held here (the thread that
+        # makes it, and its rows) and written only if it is used; the voice thread's rows are written as always.
+        self._holding: tuple[int, list[dict[str, Any]]] | None = None
 
     # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
     def _shorten(self, observation: str, compact: bool = False) -> tuple[str, dict[str, str]]:
@@ -1094,15 +1097,20 @@ class Mind:
         # last «[En este turno: …]» the model saw was the previous turn's, and lines of turns without calls were false
         # 24 % of the time against 6 % (falsedades p5-p8); decision2 on the notebook gained by that mechanism (P041
         # stopped inventing, P049 stopped looking up the clock): 227/230 vs 226. Al máximo 8.1: and the session's calls.
-        now = _dt.datetime.now().astimezone()
-        offset = now.strftime("%z")
         ran = str(self._ran_count or "ninguna")
         if self._ran:
             last = "" if len(self._ran) == self._ran_count else f", las {len(self._ran)} últimas"
             ran += f"{last} ({' / '.join(self._ran)})"
-        return (f"{CLOCK_MARK} {now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
+        return (f"{CLOCK_MARK} {self._clock_time()}; "
                 "los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna herramienta en este "
                 f"turno; llamadas a herramientas en esta sesión: {ran}]")
+
+    @staticmethod
+    def _clock_time() -> str:
+        """The clock's time, to the minute: the only part of a turn's prompt the time changes (early.py compares it)."""
+        now = _dt.datetime.now().astimezone()
+        offset = now.strftime("%z")
+        return f"{now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}"
 
     # ---- turn ----------------------------------------------------------------------------------------------
     # One conversation for the whole session (native loop): every tool call the model made, every verified result that
@@ -1273,21 +1281,28 @@ class Mind:
             self.conversation.extend([{"role": "user", "content": BEAT_MARK}, *acted])
         self._trim()
 
-    def prefill(self) -> bool:
+    def prefill(self, clock: bool = False) -> bool:
         """Al máximo W5 (PREFILL_MARK): with no turn open, the conversation is read into the slot as the next request
         will show it; whether it was. The template is asked for the conversation with a request after it (a user
         message, as the clock of the next turn or a confirmation's label is), and its text is cut where that request
         begins: what comes before it is the start of the next prompt to the character, and it ends in «<|im_end|>\\n»
         before «<|im_start|>», so it is tokenized there as in the whole prompt. Nothing is read while a call waits for
         its result, while the model's question (ask_user) waits for the person's words (they come as its result, and
-        the turn's messages keep their form), during a heartbeat, or with nothing to read."""
+        the turn's messages keep their form), during a heartbeat, or with nothing to read.
+
+        ``clock`` (al máximo, palanca 5, early.py: «Baxy» was heard): the next turn's clock is read too, as a turn with
+        no call waiting for the person's «sí» begins, so the GPU is awake and the slot holds all but the person's words
+        when they come. The prompt does not change: a clock of another minute, or with a call waiting, is read by the
+        decision itself from where they differ. BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
         turn = self._turn or {}
-        if (os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0" or not self.conversation or self._beat is not None
+        if ((not clock and os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0")
+                or (not self.conversation and not clock) or self._beat is not None
                 or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
             return False
         started = time.perf_counter()
+        after = [{"role": "user", "content": self._clock()}] if clock else []
         body = {"messages": [{"role": "system", "content": self._system()}, *self._history(self.conversation),
-                             {"role": "user", "content": PREFILL_MARK}],
+                             *after, {"role": "user", "content": PREFILL_MARK}],
                 "tools": self.tools, "chat_template_kwargs": {"enable_thinking": False}}
         try:
             rendered = self.server.template(body)
@@ -1299,7 +1314,7 @@ class Mind:
         except Exception as error:  # noqa: BLE001 - the next decision reads it itself, as it did before
             self._log("warm.history", started, None, failure=type(error).__name__)
             return False
-        self._log("warm.history", started, reply, messages=len(self.conversation))
+        self._log("warm.history", started, reply, messages=len(self.conversation), **({"clock": True} if clock else {}))
         return True
 
     def _ran_add(self, calling: Any, outcome: str) -> None:
@@ -1933,6 +1948,13 @@ class Mind:
         if self._judged is not None and stage.startswith("turn."):
             # Only a turn's own row carries the decision model's answer: the voice thread logs here too (voice.speak).
             row["system_one"], self._judged = self._judged, None
+        self._write_row(row)
+
+    def _write_row(self, row: dict[str, Any]) -> None:
+        holding = self._holding
+        if holding is not None and holding[0] == threading.get_ident():
+            holding[1].append(row)  # a decision made early: written only if it is used (early.py)
+            return
         try:
             with self._log_lock, self.trace.open("a", encoding="utf-8") as out:
                 out.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")

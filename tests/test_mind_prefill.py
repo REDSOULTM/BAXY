@@ -276,7 +276,7 @@ def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a
             pass
 
     class FakeVoice:
-        def __init__(self, *args) -> None:
+        def __init__(self, *args, **kwargs) -> None:
             self.speech = FakeSpeech()
 
         def stop(self) -> None:

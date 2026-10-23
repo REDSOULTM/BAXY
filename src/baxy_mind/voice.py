@@ -94,8 +94,18 @@ class Voice:
     """Listens on its own thread; the mind's request loop only starts, stops and reads it."""
 
     def __init__(self, write: Callable[[dict[str, Any]], None],
-                 on_spoken: Callable[[float, float, bool], None] = lambda *_spoken: None) -> None:
+                 on_spoken: Callable[[float, float, bool], None] = lambda *_spoken: None,
+                 on_early: Callable[[int, str | None], None] | None = None, early_s: float = 0.0,
+                 on_wake: Callable[[], None] | None = None) -> None:
         self._write = write
+        # Al máximo, palancas 2 y 5 (early.py): what was said, told to the mind once the person has been silent
+        # ``early_s`` (an early transcript, numbered; None takes it back when they go on), and «Baxy» heard. Neither
+        # reaches the App: the request still ends after END_SILENCE_S with its own transcript, as before.
+        self._on_early = on_early if early_s > 0 else None
+        self._early_s = early_s
+        self._on_wake = on_wake
+        self._early_seq = 0
+        self._early_at: float | None = None   # the end of the voice the last early transcript heard
         self._loaded = threading.Event()
         self._lock = threading.Lock()
         self._detector: Any = None
@@ -154,6 +164,7 @@ class Voice:
         with self._lock:
             self._mode = self._resume = "off"
             self._heard += 1
+            self._early_back()
             self._close()
         self._state()
 
@@ -256,6 +267,7 @@ class Voice:
 
     def _reset(self) -> None:
         self._heard += 1                # a transcription of what was heard before is not told
+        self._early_back()
         self._audio = np.zeros(0, np.float32)
         self._first = 0                 # absolute index of self._audio[0]
         self._total = 0                 # samples heard since the mode started
@@ -300,19 +312,21 @@ class Voice:
             if self._start is None and detections:
                 self._start = detections[0].time_s
                 self._event("wake_detected")
+                if self._on_wake is not None:
+                    self._on_wake()
         start = self._start
         if start is not None and self._over(start):
             return self._finish(start)
         if start is not None:
-            return self._live(start)
+            return self._early(start) or self._live(start)
         return None
 
     def _live(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
         """Live captions: the request heard so far, decoded again every PARTIAL_S with the same recognizer and the same
         cut of the call as the final transcript; only a changed text is sent, and it starts nothing."""
         now = self._total / RATE
-        if now - self._partial_at < PARTIAL_S or now - start < WORD_TAIL_S + PARTIAL_S:
-            return None
+        if now - self._partial_at < PARTIAL_S or now - start < WORD_TAIL_S + PARTIAL_S or self._early_at is not None:
+            return None  # an early transcript is the caption of the silence after it
         self._partial_at = now
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
@@ -329,23 +343,66 @@ class Voice:
         b = max(a, int(stop_s * RATE) - self._first)
         return self._audio[a:b]
 
+    def _voice_end(self, start: float) -> float | None:
+        """When the last block of voice of the request ended (the end of «Baxy» left out), or None before any."""
+        after = self._segment(start, self._total / RATE)
+        frames = after[: len(after) // BLOCK * BLOCK].reshape(-1, BLOCK)
+        voiced = np.flatnonzero(np.sqrt((frames ** 2).mean(axis=1)) >= VOICE_RMS) if len(frames) else []
+        tail = WORD_TAIL_S if self._mode == "wake" else 0.0
+        voiced = [i for i in voiced if i * BLOCK / RATE >= tail]
+        return start + (voiced[-1] + 1) * BLOCK / RATE if voiced else None
+
     def _over(self, start: float) -> bool:
         if self._released:
             return True
         now = self._total / RATE
         if now - start >= MAX_S:
             return True
-        after = self._segment(start, now)
-        frames = after[: len(after) // BLOCK * BLOCK].reshape(-1, BLOCK)
-        voiced = np.flatnonzero(np.sqrt((frames ** 2).mean(axis=1)) >= VOICE_RMS) if len(frames) else []
-        tail = WORD_TAIL_S if self._mode == "wake" else 0.0
-        voiced = [i for i in voiced if i * BLOCK / RATE >= tail]
-        if not voiced:
+        end = self._voice_end(start)
+        if end is None:
             return now - start >= (NO_COMMAND_S if self._mode == "wake" else DIRECT_WAIT_S)
-        return now - (start + (voiced[-1] + 1) * BLOCK / RATE) >= END_SILENCE_S
+        return now - end >= END_SILENCE_S
+
+    def _early(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
+        """Palanca 2 (early.py): ``early_s`` into the silence that may end the request, what was said is decoded with
+        the same recognizer and cut as the final transcript, and told to the mind (and as the caption). If the person
+        goes on, it is taken back; the request ends as always, with a transcript of its own."""
+        if self._on_early is None or self._released:
+            return None
+        end = self._voice_end(start)
+        if end is None:
+            return None
+        if self._early_at is not None:
+            if end <= self._early_at:
+                return None
+            self._early_back()  # the person went on after it
+        now = self._total / RATE
+        if now - end < self._early_s - 1e-6:  # times are sums of 0.1 s blocks
+            return None
+        self._early_at, self._early_seq = end, self._early_seq + 1
+        seq = self._early_seq
+        wake = self._mode == "wake"
+        begin = max(0.0, start - BEFORE_S) if wake else 0.0
+
+        def then(text: str) -> None:
+            if text and text != self._partial:
+                self._partial = text
+                self._write({"type": "voice.event", "event": "partial", "mode": self._mode, "text": text})
+            if text and self._on_early is not None and self._early_seq == seq and self._early_at == end:
+                self._on_early(seq, text)
+
+        return self._segment(begin, now), start - begin if wake else None, then
+
+    def _early_back(self) -> None:
+        """The last early transcript no longer stands for the request (the person went on, or what was heard is
+        dropped)."""
+        if getattr(self, "_early_at", None) is not None and self._on_early is not None:
+            self._on_early(self._early_seq, None)
+        self._early_at = None
 
     def _finish(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]]:
         self._start = None
+        self._early_at = None  # the request's own transcript says whether the early one stands (early.py)
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
         self._event("transcribing")
