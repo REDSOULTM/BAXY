@@ -117,7 +117,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='scan_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
     // Auditoría final (regla 3): a netsh that failed or printed no profile header is a list not read, never an empty one.
-    private const string WifiProfilesScript = """
+    internal const string WifiProfilesScript = """
         $text=@(netsh wlan show profiles);$code=$LASTEXITCODE
         if($code -ne 0 -or -not (($text -join "`n") -match '(?im)^\s*(?:Profiles on interface|Perfiles en la interfaz)')){[pscustomobject]@{ok=$false}|ConvertTo-Json -Compress;exit 0}
         $profiles=@();foreach($line in $text){if($line -match '^\s*(?:All User Profile|Perfil de todos los usuarios)\s*:\s*(.+?)\s*$'){$profiles+=@($Matches[1])}}
@@ -125,7 +125,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         """;
     // Auditoría final (regla 3): a netsh that failed or printed no interface header is a status not read, never
     // «disconnected».
-    private const string WifiStatusScript = """
+    internal const string WifiStatusScript = """
         $text=@(netsh wlan show interfaces);$code=$LASTEXITCODE
         if($code -ne 0 -or -not (($text -join "`n") -match '(?i)(?:hay|there (?:is|are))\s+\d+\s+interfa')){[pscustomobject]@{ok=$false}|ConvertTo-Json -Compress;exit 0}
         $connected=$false;$profile=''
@@ -1860,7 +1860,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
     private async ValueTask<string[]?> ReadWifiProfilesAsync(CancellationToken token)
     {
-        ExternalProcessResult process = await RunPowerShellAsync(WifiProfilesScript, [], token);
+        ExternalProcessResult process = await RunQuickScriptAsync(WifiProfilesScript, [], token);
         using JsonDocument source = ParseLastJson(process.Output);
         if (source.RootElement.ValueKind != JsonValueKind.Object || !Bool(source.RootElement, "ok"))
         {
@@ -2093,7 +2093,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return effectBoundary.Failure(operation, "wifi_connect_dispatch_rejected");
         }
 
-        for (int observation = 0; observation <= 30; observation++)
+        (int pauses, TimeSpan pause) = WifiPolling(TimeSpan.FromMilliseconds(500), 30);
+        for (int observation = 0; observation <= pauses; observation++)
         {
             using JsonDocument status = await WifiStatusAsync(token);
             if (Bool(status.RootElement, "connected")
@@ -2105,9 +2106,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 return ExternalJson.Success(operation, WifiResult(id, true, place), true);
             }
 
-            if (observation < 30)
+            if (observation < pauses)
             {
-                await _delay(TimeSpan.FromMilliseconds(500), token);
+                await _delay(pause, token);
             }
         }
 
@@ -2138,7 +2139,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return effectBoundary.Failure(operation, "wifi_disconnect_dispatch_rejected");
         }
 
-        for (int observation = 0; observation <= 20; observation++)
+        (int pauses, TimeSpan pause) = WifiPolling(TimeSpan.FromMilliseconds(300), 20);
+        for (int observation = 0; observation <= pauses; observation++)
         {
             using JsonDocument status = await WifiStatusAsync(token);
             if (!Bool(status.RootElement, "connected"))
@@ -2149,14 +2151,24 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     true);
             }
 
-            if (observation < 20)
+            if (observation < pauses)
             {
-                await _delay(TimeSpan.FromMilliseconds(300), token);
+                await _delay(pause, token);
             }
         }
 
         return ExternalJson.Failure(operation, "wifi_disconnect_not_verified", true);
     }
+
+    // Renew al máximo (w5): with the worker a status read costs a netsh run, not a PowerShell started cold (400-700 ms),
+    // so the connection is looked at every 100 ms within the same horizon (15 s to connect, 6 s to disconnect); without
+    // it (the test seams) as before.
+    private (int Pauses, TimeSpan Pause) WifiPolling(TimeSpan coldPause, int coldPauses) =>
+        Scripts is null
+            ? (coldPauses, coldPause)
+            : ((int)(coldPause * coldPauses / WifiPollPause), WifiPollPause);
+
+    internal static readonly TimeSpan WifiPollPause = TimeSpan.FromMilliseconds(100);
 
     private static ValueTask DelayAsync(
         TimeSpan delay,
@@ -2206,7 +2218,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string operation,
         CancellationToken token)
     {
-        ExternalProcessResult process = await RunPowerShellAsync(WifiScanScript, [], token);
+        ExternalProcessResult process = await RunQuickScriptAsync(WifiScanScript, [], token);
         using JsonDocument document = ParseLastJson(process.Output);
         JsonElement root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object)
@@ -2564,7 +2576,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     private async ValueTask<JsonDocument> WifiStatusAsync(
         CancellationToken token)
     {
-        ExternalProcessResult process = await RunPowerShellAsync(
+        ExternalProcessResult process = await RunQuickScriptAsync(
             WifiStatusScript,
             [],
             token);
@@ -2583,9 +2595,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         CancellationToken token) =>
         _runner.RunPowerShellAsync(script, arguments, TimeSpan.FromSeconds(60), token);
 
-    // Renew al máximo (w5): a short read or set of WMI (the brightness) runs in the product's UI Automation worker, already
-    // started, with the same script, arguments and budget; a PowerShell started cold for it cost 400-700 ms on the
-    // notebook against 10-20 ms for the read itself. Without the worker (the test seams) it runs as before.
+    // Renew al máximo (w5): a short read or set of WMI (the brightness) or of netsh (the Wi-Fi's state, saved profiles and
+    // networks in sight) runs in the product's UI Automation worker, already started, with the same script, arguments
+    // and budget; a PowerShell started cold for it cost 400-700 ms on the notebook against 10-20 ms for a WMI read.
+    // Without the worker (the test seams) it runs as before.
     private ValueTask<ExternalProcessResult> RunQuickScriptAsync(
         string script,
         IReadOnlyList<string> arguments,
