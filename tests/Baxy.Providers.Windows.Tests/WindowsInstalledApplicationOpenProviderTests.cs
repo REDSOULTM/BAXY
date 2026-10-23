@@ -1499,6 +1499,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         platform.Titles[73] = "*lista pan: Bloc de notas";
         platform.Titles[78] = "*prueba 123: Bloc de notas";
         platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        platform.MainWindows.Add(78);
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
@@ -1533,6 +1534,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         platform.Titles[73] = "*lista pan: Bloc de notas";
         platform.Titles[78] = "*prueba 123: Bloc de notas";
         platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        platform.MainWindows.Add(78);
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
@@ -1583,6 +1585,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         platform.Titles[73] = "*lista pan: Bloc de notas";
         platform.Titles[78] = title;
         platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        platform.MainWindows.Add(78);
         return platform;
     }
 
@@ -1593,6 +1596,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
     [TestCase("no tab strip", "*prueba 123: Bloc de notas", 1)]
     [TestCase("start screen", "Bloc de notas", 0)]
     [TestCase("no document title", "Inicio", 0)]
+    [TestCase("splash", "Abriendo - Bloc de notas", 0)]
     public async Task OnlyAWindowWithATabStripIsScanned(string what, string title, int probes)
     {
         FakePlatform platform = RestoredNotepad(new FakePlatform(Catalog)
@@ -1605,6 +1609,10 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             FieldsAfterStrip = NewTab,
             FieldsAfterNewDocument = NewTab,
         }, title);
+        // Renew al máximo (nuevo4, measured live): a cold Word settled on its «Abriendo - Word» splash, the only window yet,
+        // titled as a document; a window that is no main window is never read.
+        if (what == "splash")
+            platform.MainWindows.Remove(78);
         var provider = new WindowsInstalledApplicationOpenProvider(platform);
 
         _ = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);

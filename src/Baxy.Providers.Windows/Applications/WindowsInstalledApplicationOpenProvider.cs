@@ -1045,8 +1045,10 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         // ended new_document_not_created 10 of 10 after 8 s. A toggle that takes Ctrl+N gets no key: the tab strip's add
         // button makes the new tab or, with none, no New command is known and nothing is sent.
         // Renew al máximo (nuevo4): only a window titled as a document (never a start or welcome screen, nor a splash the
-        // settle of 654ace67c passed by) is read, and only through its tab strip (TabStripCommandAsync).
-        TabStripCommand strip = IsDocument(window) && NamesADocument(Bare(titleBefore), names)
+        // settle of 654ace67c passed by) is read, and only through its tab strip (TabStripCommandAsync). Measured live: a
+        // cold Word settled on its «Abriendo - Word» splash (MsoSplash, the only window yet), titled as a document; only
+        // a main window (IsMainWindow: never a splash) is read.
+        TabStripCommand strip = IsDocument(window) && _platform.IsMainWindow(window) && NamesADocument(Bare(titleBefore), names)
             ? await TabStripCommandAsync(window, cancellationToken).ConfigureAwait(false)
             : TabStripCommand.ShortcutIsNew;
         if (strip == TabStripCommand.NoNewCommand)
