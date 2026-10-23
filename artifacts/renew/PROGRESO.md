@@ -3123,3 +3123,12 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   `maximo` frente a `s1off` 62 → 45 (20 / 3, p 0,0005); `maximo` frente a `s1on` 48 → 45 (11 / 8, p 0,65).
   Lectura: el mismo acierto con ~27 % menos acciones equivocadas, casi todo de System One; el resto del goal (seguridad,
   honestidad, velocidad) no lo mide este banco.
+- 03:4x-04:0x (23-10) **Prueba en vivo en el PC** (HEAD final, dueño dormido, en silencio; estado guardado antes y
+  restaurado después: volumen 30, sin silencio, la ventana de Spotify cerrada; Get-BenchChanges vacío). 13 pedidos, todo
+  verificado y dicho con verdad: calculadora abrir/cerrar; volumen +10 → «quedó en 40» y −10 → «quedó en 30»; Spotify
+  «Reproduje Queen - Bohemian Rhapsody» y «Pausé…»; Steam «Tienes 36 juegos… la lista se cortó en 20, así que hay más»;
+  clima «Mañana en Santiago hay llovizna, con máximo de 18…»; Paint abrir, maximizar, minimizar, cerrar. **Fallo**:
+  «abre la biblioteca de Steam» abrió Steam sin el lugar `library` y pulsó «Biblioteca» 7 veces con
+  visible_button_postread_unchanged (50 s) antes de decir, con verdad, «no pude entrar a la Biblioteca». Límite a contar:
+  el 4B no usa el lugar de app_open aquí y la ayuda de llamada repetida no lo frenó. La primera pasada no guardó
+  eventos (faltó --capture) y se repitió.

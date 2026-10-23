@@ -26,19 +26,32 @@
 
 | Qué | Antes (`pc-system-one`) | Después (`renew-maximo` final) | Dónde se midió |
 |---|---|---|---|
-| Decisión, holdout v4 (720) | *pendiente* | *pendiente* | holdout, PC + NB |
+| Decisión, holdout v4 (720, 3 semillas) | 632,3 sin S1 · 633,0 con S1 | **636,3** (+3,3, no significativo) | holdout, PC + NB |
+| Acciones equivocadas, holdout v4 | 62 sin S1 · 48,7 con S1 | **45,7** (−27 %, McNemar p 0,0005) | holdout, PC + NB |
 | E2E, holdout v4 (72) | *pendiente* | *pendiente* | holdout, NB |
 | Falsedades, holdout v4 (36) | *pendiente* | *pendiente* | holdout, NB |
-| decision2 de práctica (268) | 233 con S1 (231 sin S1) | 229,3 con S1 (pass^3 226) | PC, 3 semillas |
+| decision2 de práctica (268) | 233 con S1 (231 sin S1) | 231,7 con S1 (int8; nada empeora) | PC, 3 semillas |
 | Calentamiento al arrancar | 17,2 s | 0,8 s | PC |
 | Primera palabra de la voz | ~1,6 s | ~0,65 s | PC (voz D) |
 | VRAM con System One | 4 091 MiB | 3 990 MiB | NB, pico en turnos |
 | RAM del producto | ~2,7 GB | ~2,6-2,7 GB | NB |
-| Suites | Kernel 603, pytest 85 | Kernel 678, Contracts 74, App 75, Setup 477, pytest 298, Providers 2 768 | PC + NB |
+| Suites (mismo commit 452854a18) | Kernel 603, pytest 85 | Kernel 693, Contracts 74, App 111, Setup 477, pytest 346, Providers 2 808 | PC + NB |
 
 ## Lo que se nota
 
-*(se completa tras la prueba en vivo en el PC)*
+Prueba en vivo en tu PC (versión final, de madrugada, en silencio y con todo restaurado al terminar):
+
+- «abre la calculadora» → «Abrí la Calculadora y quedó al frente»; «ciérrala» → «Cerré la Calculadora».
+- «sube el volumen 10» → «Subí el volumen en 10, quedó en 40»; «baja el volumen 10» → «… quedó en 30».
+- «pon Bohemian Rhapsody de Queen en Spotify» → sonó y lo dijo; «pausa la música» → «Pausé Queen - Bohemian Rhapsody».
+- «¿qué juegos tengo instalados en Steam?» → «Tienes 36 juegos en Steam, pero la lista se cortó en 20, así que hay más».
+- «busca en internet el clima de mañana en Santiago» → «Mañana en Santiago hay llovizna, con máximo de 18…».
+- Paint: abrir, maximizar, minimizar y cerrar, cada uno verificado.
+- Lo que falló: «abre la biblioteca de Steam» → abrió Steam pero no entró a la Biblioteca (pulsó el botón 7 veces, 50 s)
+  y lo dijo con verdad: «no pude entrar a la Biblioteca: el botón no respondió».
+
+Además: arranca en menos de un segundo de calentamiento, empieza a hablar antes, y cuando algo no se comprobó lo dice
+(«enviado sin comprobar», «ya estaba así», «no se buscó en el resto del PC») en vez de afirmarlo.
 
 ## Límites honestos
 
