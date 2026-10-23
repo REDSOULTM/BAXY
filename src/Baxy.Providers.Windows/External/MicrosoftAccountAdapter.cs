@@ -82,6 +82,15 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           $body=[string]$verified.Body;$bodyLength=$body.Length;if($body.Length -gt 6000){$body=$body.Substring(0,6000)}
           $subject=[string]$verified.Subject
           $received=([DateTime]$verified.ReceivedTime).ToUniversalTime()
+          # Renew al máximo (w8): the reply goes only to the mail the person's yes named (expectedMessageId, the opaque id
+          # email.latest.read gave, computed as the adapter's Opaque); a newer mail is said and nothing is sent.
+          $sha=[Security.Cryptography.SHA256]::Create()
+          $messageId='email_'+(-join ($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($entryId))|ForEach-Object {$_.ToString('x2')})).Substring(0,24)
+          $expected=[string]$input.expectedMessageId
+          if($input.action -eq 'reply' -and $expected.Length -gt 0 -and $messageId -cne $expected) {
+            [pscustomobject]@{ok=$false;effectObserved=$false;error='email_latest_changed';entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O')}|ConvertTo-Json -Compress
+            exit 2
+          }
           if($input.action -eq 'read') {
             [pscustomobject]@{ok=$true;effectObserved=$false;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;bodyLength=$bodyLength}|ConvertTo-Json -Depth 4 -Compress
             exit 0
@@ -199,10 +208,14 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         if (_requireOutlookProfileProbe && !HasClassicOutlookProfile())
             return ExternalJson.Failure(operation, "outlook_profile_not_configured");
         string? text = reply ? ExternalJson.RequiredString(arguments, "text") : null;
+        string? expected = null;
+        if (reply && !TryExpectedMessageId(arguments, out expected))
+            return ExpectedMessageIdInvalid(operation);
         string input = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteString("action", reply ? "reply" : "read");
             if (text is not null) writer.WriteString("text", text);
+            if (expected is not null) writer.WriteString("expectedMessageId", expected);
             writer.WriteEndObject();
         }).GetRawText();
         if (reply)
@@ -214,11 +227,134 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         using JsonDocument response = ParseProcessJson(process);
         bool effect = response.RootElement.TryGetProperty("effectObserved", out JsonElement observed)
             && observed.ValueKind == JsonValueKind.True;
+        // Renew al máximo (w8): the script refused before Reply() because the newest mail is not the one named; nothing
+        // was sent, and the result names the mail that is newest now.
+        if (reply && !effect && ErrorCode(response.RootElement, string.Empty) == LatestChanged)
+            return LatestMailRefusal(operation, response.RootElement, expected);
         if (!IsOk(response.RootElement))
             return effectBoundary.Failure(operation, ErrorCode(response.RootElement, "outlook_mail_operation_failed"), effect);
         JsonElement result = EmailResult(response.RootElement, reply, text);
         return ExternalJson.Success(operation, result, effect);
     }
+
+    private const string LatestChanged = "email_latest_changed";
+    private const string MessageIdRequired = "email_reply_message_id_required";
+
+    private static readonly System.Text.RegularExpressions.Regex MessageIdShape = new(
+        "^email_[0-9a-f]{24}$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // Renew al máximo (w8): before the person is asked to send a reply, the reply is bound to one mail. Without
+    // expectedMessageId the «sí» named only {text}, and a mail that arrived between the yes and the run got the reply
+    // (another person). A reply that names no mail, or names one that is no longer the newest, fails here with the mail
+    // that is newest now (its messageId, sender, subject and time), so the yes asked next names it; the run compares
+    // again in the script, before Reply(). Read only: the read is email.latest.read's own.
+    public async ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        if (operation != "email.latest.reply")
+            return null;
+        if (!TryExpectedMessageId(arguments, out string? expected))
+            return ExpectedMessageIdInvalid(operation);
+        ExternalCapabilityReceipt read;
+        try
+        {
+            read = await MailAsync("email.latest.read", default, false, new ExternalEffectBoundary(), cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or InvalidDataException or JsonException or TimeoutException or KeyNotFoundException
+            or InvalidOperationException)
+        {
+            read = ExternalJson.FailureBeforeEffect("email.latest.read", "outlook_mail_operation_failed");
+        }
+
+        if (!read.Verified || read.Result is not { } latest)
+        {
+            // The newest mail could not be read: with a mail named, the run reads and compares again; with none, no yes
+            // is asked for a reply bound to no mail, and the read's own failure says why.
+            return expected is not null
+                ? null
+                : new ExternalCapabilityReceipt(operation, false, false, MessageIdNext(null, null),
+                    read.ErrorCode ?? MessageIdRequired);
+        }
+
+        string? now = latest.GetProperty("messageId").GetString();
+        if (expected is not null && string.Equals(now, expected, StringComparison.Ordinal))
+            return null;
+        return new ExternalCapabilityReceipt(operation, false, false, MessageIdNext(latest, expected),
+            expected is null ? MessageIdRequired : LatestChanged);
+    }
+
+    // Absent or null: no mail named (the run replies to the newest, as before; only Bypass runs it without a yes).
+    private static bool TryExpectedMessageId(JsonElement arguments, out string? expected)
+    {
+        expected = null;
+        if (arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("expectedMessageId", out JsonElement value)
+            || value.ValueKind == JsonValueKind.Null)
+            return true;
+        if (value.ValueKind != JsonValueKind.String || !MessageIdShape.IsMatch(value.GetString() ?? string.Empty))
+            return false;
+        expected = value.GetString();
+        return true;
+    }
+
+    private static ExternalCapabilityReceipt ExpectedMessageIdInvalid(string operation) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("argument", "expectedMessageId");
+            if (ModelAids.On(ModelAids.ReplyMessageIdNext))
+            {
+                writer.WriteString("next",
+                    "nothing was sent: expectedMessageId is the messageId email.latest.read gave (email_ and 24 hex digits)");
+            }
+            writer.WriteEndObject();
+        }), "email_message_id_invalid");
+
+    private static ExternalCapabilityReceipt LatestMailRefusal(string operation, JsonElement root, string? expected) =>
+        new(operation, false, false, MessageIdNext(ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteString("messageId", Opaque("email", root.GetProperty("entryId").GetString() ?? string.Empty));
+            writer.WriteString("sender", root.GetProperty("sender").GetString());
+            writer.WriteString("subject", root.GetProperty("subject").GetString());
+            writer.WriteString("receivedUtc", root.GetProperty("receivedUtc").GetString());
+            writer.WriteEndObject();
+        }), expected), LatestChanged);
+
+    // The mail that is newest now (null: it could not be read) and, with aid reply_message_id_next, what to do next.
+    private static JsonElement MessageIdNext(JsonElement? latest, string? expected) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject(); writer.WriteNumber("version", 1);
+        string? now = null;
+        if (latest is { ValueKind: JsonValueKind.Object } mail)
+        {
+            writer.WriteStartObject("latest");
+            foreach (string name in LatestFacts)
+            {
+                if (mail.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String)
+                    writer.WriteString(name, value.GetString());
+            }
+            writer.WriteEndObject();
+            now = mail.TryGetProperty("messageId", out JsonElement id) ? id.GetString() : null;
+        }
+        if (expected is not null) writer.WriteString("expectedMessageId", expected);
+        if (ModelAids.On(ModelAids.ReplyMessageIdNext))
+        {
+            writer.WriteString("next", "nothing was sent: " + (expected is null
+                ? "a reply names the mail it answers"
+                : "the newest mail is no longer the one named")
+                + (now is null
+                    ? "; email.latest.read gives its messageId"
+                    : "; to answer the mail in latest, call email.latest.reply again with expectedMessageId " + now));
+        }
+        writer.WriteEndObject();
+    });
+
+    private static readonly string[] LatestFacts = ["messageId", "sender", "subject", "receivedUtc"];
 
     // Fase 7 (D4): a mail to a free address from the owner's classic Outlook profile,
     // verified by the copy in Sent Items (recipient, text, time). The address is

@@ -4454,6 +4454,114 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w8): the reply is bound to the mail its yes named. The script compares the newest mail's opaque
+    // id with expectedMessageId before Reply(); a newer mail sends nothing, and the receipt says so with no uncertainty.
+    [Test]
+    public async Task AReplyNamingAMailThatIsNoLongerTheNewestSendsNothingAndNamesTheNewest()
+    {
+        string named = OpaqueMail("inbox-entry-read-before");
+        const string output = "{\"ok\":false,\"effectObserved\":false,\"error\":\"email_latest_changed\"," +
+            "\"entryId\":\"inbox-entry-arrived-after\",\"subject\":\"Otro asunto\"," +
+            "\"sender\":\"other@example.test\",\"receivedUtc\":\"2026-07-17T10:05:00Z\"}";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(output);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt;
+        using (ModelAids.Use("all"))
+        {
+            receipt = await adapter.InvokeAsync(
+                "email.latest.reply",
+                Json("{\"text\":\"ok\",\"expectedMessageId\":\"" + named + "\"}"),
+                CancellationToken.None);
+        }
+
+        string script = runner.LastArguments.Single(argument => argument.Contains(".Reply()", StringComparison.Ordinal));
+        using JsonDocument input = JsonDocument.Parse(
+            Encoding.UTF8.GetString(Convert.FromBase64String(runner.LastArguments[^1])));
+        Assert.Multiple(() =>
+        {
+            Assert.That(input.RootElement.GetProperty("expectedMessageId").GetString(), Is.EqualTo(named));
+            Assert.That(script.IndexOf("email_latest_changed", StringComparison.Ordinal),
+                Is.LessThan(script.IndexOf(".Reply()", StringComparison.Ordinal)));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("email_latest_changed"));
+            JsonElement latest = receipt.Result!.Value.GetProperty("latest");
+            Assert.That(latest.GetProperty("messageId").GetString(), Is.EqualTo(OpaqueMail("inbox-entry-arrived-after")));
+            Assert.That(latest.GetProperty("sender").GetString(), Is.EqualTo("other@example.test"));
+            Assert.That(receipt.Result.Value.GetProperty("expectedMessageId").GetString(), Is.EqualTo(named));
+            Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.StartWith("nothing was sent"));
+            Assert.That(receipt.Result.Value.GetRawText(), Does.Not.Contain("inbox-entry-arrived-after"));
+        });
+    }
+
+    // Renew al máximo (w8): before the yes, a reply that names no mail, or one that is not the newest, fails with the
+    // newest mail's id; the one that names the newest goes on to ask.
+    [TestCase(null, "email_reply_message_id_required")]
+    [TestCase("inbox-entry-old", "email_latest_changed")]
+    [TestCase("inbox-entry-newest", null)]
+    public async Task AReplyIsBoundToTheNewestMailBeforeThePersonIsAsked(string? namedEntry, string? failure)
+    {
+        const string read = "{\"ok\":true,\"effectObserved\":false," +
+            "\"entryId\":\"inbox-entry-newest\",\"subject\":\"Informe\"," +
+            "\"sender\":\"sender@example.test\",\"receivedUtc\":\"2026-07-17T10:00:00Z\"," +
+            "\"body\":\"Contenido privado\",\"bodyLength\":17}";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(read);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+        string arguments = namedEntry is null
+            ? "{\"text\":\"ok\"}"
+            : "{\"text\":\"ok\",\"expectedMessageId\":\"" + OpaqueMail(namedEntry) + "\"}";
+
+        ExternalCapabilityReceipt? found = await ((IExternalOperationAdapter)adapter).PreflightAsync(
+            "email.latest.reply", Json(arguments), CancellationToken.None);
+
+        using JsonDocument input = JsonDocument.Parse(
+            Encoding.UTF8.GetString(Convert.FromBase64String(runner.LastArguments[^1])));
+        Assert.Multiple(() =>
+        {
+            Assert.That(input.RootElement.GetProperty("action").GetString(), Is.EqualTo("read"));
+            if (failure is null)
+            {
+                Assert.That(found, Is.Null);
+                return;
+            }
+
+            Assert.That(found, Is.Not.Null);
+            Assert.That(found!.ErrorCode, Is.EqualTo(failure));
+            Assert.That(found.Verified || found.EffectObserved || found.EffectMayHaveOccurred, Is.False);
+            Assert.That(found.Result!.Value.GetProperty("latest").GetProperty("messageId").GetString(),
+                Is.EqualTo(OpaqueMail("inbox-entry-newest")));
+            Assert.That(found.Result.Value.GetRawText(), Does.Not.Contain("Contenido privado"));
+        });
+    }
+
+    [Test]
+    public async Task AReplyWhoseExpectedMessageIdIsNotAMessageIdRunsNothing()
+    {
+        using TemporaryDirectory temporary = new();
+        var runner = new ThrowingProcessRunner(new InvalidOperationException("must not run"));
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "email.latest.reply",
+            Json("""{"text":"ok","expectedMessageId":"the last one"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(runner.Calls, Is.Zero);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("email_message_id_invalid"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result!.Value.GetProperty("argument").GetString(), Is.EqualTo("expectedMessageId"));
+        });
+    }
+
+    private static string OpaqueMail(string entryId) => "email_"
+        + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(entryId)))[..24];
+
     [Test]
     public async Task MissingLocalYouTubeDependenciesFailBeforeTheEffectBoundary()
     {

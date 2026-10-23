@@ -104,6 +104,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5): a calendar time or range refused says which argument, why, and that nothing ran.</summary>
     public const string CalendarTimeNext = "calendar_time_next";
 
+    /// <summary>Renew al máximo (w8): an email.latest.reply refused for its mail (none named, or not the newest now) says which mail to name.</summary>
+    public const string ReplyMessageIdNext = "reply_message_id_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

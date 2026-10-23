@@ -447,10 +447,17 @@ public static class ProductCatalog
             "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 6.000 caracteres se corta (bodyTruncated)."),
         Descriptor(
             "email.latest.reply",
-            Schema([String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true)], ["text"]),
+            // Renew al máximo (w8): expectedMessageId (the messageId email.latest.read gave) binds the reply, and the
+            // person's yes, to one mail; one that is no longer the newest sends nothing (MicrosoftAccountAdapter).
+            Schema(
+                [
+                    String("expectedMessageId", types: NullableString, maximumUtf8Bytes: 64),
+                    String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true),
+                ],
+                ["text"]),
             OperationRisks.ExternalCommunication,
             "email.latest.reply.outlook.sent.postread.v1",
-            "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; el resultado trae el cuerpo del correo respondido, cortado a 6.000 caracteres (bodyTruncated)."),
+            "Responde al mensaje mas reciente de Outlook (el de expectedMessageId, el messageId que dio email.latest.read; si ya no es el más nuevo no envía nada y dice cuál lo es) y verifica la copia enviada por contenido y hora; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; el resultado trae el cuerpo del correo respondido, cortado a 6.000 caracteres (bodyTruncated)."),
         // Fase 7 (D4, 2026-09-20): correo a una dirección libre desde el perfil clásico de
         // Outlook del dueño, confirmado en modo normal; la copia en Elementos enviados
         // (destinatario, texto, hora) es la prueba. Sin Outlook clásico se dice el límite.
