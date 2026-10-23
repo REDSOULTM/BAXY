@@ -79,21 +79,14 @@ internal static class ProductConductorHost
 
         await using var viewModel = new MainWindowViewModel();
         long turnStartedMs = 0;
-        long? speechStartedMs = null;
-        long? responseSpeechStartedMs = null;
-        string lastSaid = string.Empty;
-        // The voice says in order what it queued, and each utterance that reaches its first sound gives one start and
-        // one end: the first start after the notice was queued is the notice's (it was queued before the response). The
-        // voice's events name no utterance, so a notice it drops before its first sound (the synthesis or the device
-        // failing on that phrase) leaves no event at all, and the response's start that follows is read as the notice's; telling
-        // them apart takes the voice saying which utterance starts.
-        string? noticeAwaitingSound = null;
-        (string Text, bool Notice) utterance = (string.Empty, false);
+        // Renew al máximo: the voice says which utterance is the notice (VoiceSounded); the order of the notice's
+        // acceptance and the voice's start did not (ConductorUtterances).
+        var utterances = new ConductorUtterances();
         viewModel.MessageAdded += message =>
         {
             if (!message.IsUser)
             {
-                lastSaid = message.Body;
+                utterances.Published(message.Body);
             }
 
             Emit(new JsonObject
@@ -105,16 +98,12 @@ internal static class ProductConductorHost
             ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
             });
         };
-        viewModel.NoticeQueued += notice =>
+        viewModel.NoticeQueued += notice => Emit(new JsonObject
         {
-            noticeAwaitingSound = notice;
-            Emit(new JsonObject
-            {
-                ["type"] = "notice.queued",
-                ["text"] = notice,
-                ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
-            });
-        };
+            ["type"] = "notice.queued",
+            ["text"] = notice,
+            ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
+        });
         viewModel.StepCompleted += step => Emit(new JsonObject
         {
             ["type"] = "step",
@@ -128,32 +117,33 @@ internal static class ProductConductorHost
             // What the model read back: the benches audit every claim against it and the journal.
             ["observation"] = step.Observation,
         });
+        // Each utterance's start (its first sound, with the line it says: the notice, or the last one BAXY published)
+        // and its end.
+        viewModel.VoiceSounded += notice =>
+        {
+            long since = clock.ElapsedMilliseconds - turnStartedMs;
+            (string text, bool isNotice) = utterances.Sounded(since, notice);
+            Emit(new JsonObject
+            {
+                ["type"] = "speech.start",
+                ["text"] = text,
+                ["notice"] = isNotice,
+                ["since_turn_ms"] = since,
+            });
+        };
         viewModel.PropertyChanged += (_, change) =>
         {
-            if (change.PropertyName != nameof(MainWindowViewModel.IsVoiceSpeaking))
+            if (change.PropertyName != nameof(MainWindowViewModel.IsVoiceSpeaking) || viewModel.IsVoiceSpeaking)
             {
                 return;
             }
 
-            long since = clock.ElapsedMilliseconds - turnStartedMs;
-            if (viewModel.IsVoiceSpeaking)
-            {
-                speechStartedMs ??= since;
-                utterance = noticeAwaitingSound is { } notice ? (notice, true) : (lastSaid, false);
-                noticeAwaitingSound = null;
-                if (!utterance.Notice)
-                {
-                    responseSpeechStartedMs ??= since;
-                }
-            }
-
-            // Each utterance's start and end, with the line it says: the notice, or the last one BAXY published.
             Emit(new JsonObject
             {
-                ["type"] = viewModel.IsVoiceSpeaking ? "speech.start" : "speech.end",
-                ["text"] = utterance.Text,
-                ["notice"] = utterance.Notice,
-                ["since_turn_ms"] = since,
+                ["type"] = "speech.end",
+                ["text"] = utterances.Current.Text,
+                ["notice"] = utterances.Current.Notice,
+                ["since_turn_ms"] = clock.ElapsedMilliseconds - turnStartedMs,
             });
         };
 
@@ -194,9 +184,7 @@ internal static class ProductConductorHost
                 {
                     // A heartbeat with a given moment (the scenes' context), spoken per the person's activity.
                     turnStartedMs = clock.ElapsedMilliseconds;
-                    speechStartedMs = null;
-                    responseSpeechStartedMs = null;
-                    noticeAwaitingSound = null;
+                    utterances.TurnStarted();
                     Emit(new JsonObject { ["type"] = "beat.start", ["moment"] = beatMoment.DeepClone() });
                     await viewModel.RunBeatAsync(
                             (JsonObject)beatMoment.DeepClone(),
@@ -220,9 +208,7 @@ internal static class ProductConductorHost
                 }
 
                 turnStartedMs = clock.ElapsedMilliseconds;
-                speechStartedMs = null;
-                responseSpeechStartedMs = null;
-                noticeAwaitingSound = null;
+                utterances.TurnStarted();
                 Emit(new JsonObject { ["type"] = "turn.start", ["index"] = index, ["input"] = turn.DeepClone() });
                 using var turnTimeout = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
                 turnTimeout.CancelAfter(parsed.TurnTimeout);
@@ -249,8 +235,8 @@ internal static class ProductConductorHost
 
                 long endedMs = clock.ElapsedMilliseconds - turnStartedMs;
                 var speechDeadline = Stopwatch.StartNew();
-                while (viewModel.CanSpeak && responseSpeechStartedMs is null && speechDeadline.Elapsed < SpeechWait
-                    && !lifetime.IsCancellationRequested)
+                while (viewModel.CanSpeak && utterances.ResponseSpeechStartedMs is null
+                    && speechDeadline.Elapsed < SpeechWait && !lifetime.IsCancellationRequested)
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(25), lifetime.Token).ConfigureAwait(true);
                 }
@@ -261,8 +247,8 @@ internal static class ProductConductorHost
                     ["index"] = index,
                     ["ms"] = endedMs,
                     // The turn's first sound, the notice's when it was said first; and its response's first sound.
-                    ["speech_start_ms"] = speechStartedMs,
-                    ["response_speech_start_ms"] = responseSpeechStartedMs,
+                    ["speech_start_ms"] = utterances.SpeechStartedMs,
+                    ["response_speech_start_ms"] = utterances.ResponseSpeechStartedMs,
                     ["timedOut"] = turnTimeout.IsCancellationRequested && !lifetime.IsCancellationRequested,
                     ["failure"] = viewModel.LastTurnFailure,
                     ["pendingConfirmation"] = viewModel.HasPendingConfirmation,

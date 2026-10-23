@@ -60,6 +60,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isListening;
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
+    private string? _noticeAsked; // the notice's phrase last asked of the voice (VoiceSounded names it)
     private bool _isMicAvailable;
     private string _statusDescription = "Preparando BAXY";
     private bool _isReady;
@@ -231,6 +232,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// after what the voice already holds, or not at all if the voice drops it. It is not a message.
     /// </summary>
     internal event Action<string>? NoticeQueued;
+
+    /// <summary>
+    /// Renew al máximo: an utterance's first sound, as the voice tells it: the notice's phrase when the voice says it is
+    /// the notice, null when it is an answer. The conductor names what is said from it; the order of
+    /// <see cref="NoticeQueued"/> and <see cref="IsVoiceSpeaking"/> does not tell it (the notice sounds before its
+    /// acceptance arrives).
+    /// </summary>
+    internal event Action<string?>? VoiceSounded;
 
     public ObservableCollection<ConversationMessage> Messages { get; }
 
@@ -1091,9 +1100,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     case "lip":
                         VoiceLip?.Invoke(voiceEvent);
                         break;
-                    case "sound" when !notice:
-                        // Al máximo 9.2b: the turn's notice counts until its line is heard, not until it is shown.
-                        _loop.AnswerSounded();
+                    case "sound":
+                        if (!notice)
+                        {
+                            // Al máximo 9.2b: the turn's notice counts until its line is heard, not until it is shown.
+                            _loop.AnswerSounded();
+                        }
+
+                        VoiceSounded?.Invoke(notice ? _noticeAsked ?? string.Empty : null);
                         break;
                     case "transcribing":
                         VoiceFailure = null;
@@ -1563,6 +1577,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task SpeakNoticeAsync(MindSidecarClient mind, string notice)
     {
+        _noticeAsked = notice; // set before asking: it may sound before the acceptance arrives
         if (await mind.VoiceSpeakAsync(notice, TimeSpan.FromSeconds(5), CancellationToken.None))
         {
             ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "notice.queued");
