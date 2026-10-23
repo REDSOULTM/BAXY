@@ -2,9 +2,8 @@
 
 The voice (chosen by the owner by ear, 2026-10-17) is a blend of three of Supertonic's male styles built by
 scripts/voice/make_baxy_voice.py into BAXY_RENEW_TTS_DIR, beside the model and baxy-voice.json, the rest of the recipe:
-flow-matching steps, speed, a fixed seed (the same sentence always sounds the same), the silence after each sentence,
-and «shift», a fraction of a semitone that makes the voice a little smaller (pitch and formants together: the engine
-speaks that much slower and the take is resampled that much shorter, so the tempo stays). The text is first turned into
+flow-matching steps, speed, a fixed seed (the same sentence always sounds the same) and «shift», a fraction of a
+semitone that makes the voice a little smaller (pitch and formants together: the engine speaks that much slower and the take is resampled that much shorter, so the tempo stays). The text is first turned into
 what is said (speech_text.py: numbers, dates, English names); every sentence is brought to the same loudness, since the
 engine's level varies with the sentence.
 
@@ -98,12 +97,14 @@ def _trim(audio: np.ndarray, rate: int) -> np.ndarray:
     return audio[start:end]
 
 
-def _default_follower(sd) -> int | None:
-    """The MME sound mapper (WAVE_MAPPER, which PortAudio lists first among MME outputs), or PortAudio's default."""
+def default_follower(sd, kind: str = "output") -> int | None:
+    """The MME sound mapper (WAVE_MAPPER, which PortAudio lists first among MME outputs, and among MME inputs for the
+    microphone), or PortAudio's default. PortAudio's own default is the device that was Windows' default when it
+    started, for the microphone too (on the PC: «Micrófono (3- USB PnP Audio Dev», not the mapper, 2026-10-23)."""
     for api in sd.query_hostapis():
         if api["name"] == "MME":
-            outputs = [index for index in api["devices"] if sd.query_devices(index)["max_output_channels"] > 0]
-            return outputs[0] if outputs else None
+            found = [index for index in api["devices"] if sd.query_devices(index)[f"max_{kind}_channels"] > 0]
+            return found[0] if found else None
     return None
 
 
@@ -241,8 +242,13 @@ class Speech:
         if not done and len(pieces) < 2:
             return False  # the first sentence is not closed yet
         if not done and len(units[0].split()) <= 3:
-            return False  # a reply that starts with a word or two is one take with what follows: wait for its end
-        first = self._takes(units, text)[0] if done else units[0]
+            # a reply that starts with a word or two is one take with the sentence after them: wait for that one
+            # to close too (with BAXY_RENEW_TTS_JOIN_ALL, for the reply's end)
+            if len(pieces) < 3 or os.environ.get("BAXY_RENEW_TTS_JOIN_ALL", "").strip() == "1":
+                return False
+            first = f"{units[0]} {units[1]}"
+        else:
+            first = self._takes(units, text)[0] if done else units[0]
         with self._posting:
             if first not in self._foreseen:
                 generation = self._generation
@@ -363,7 +369,7 @@ class Speech:
             # Windows' default when it started (2026-10-17: the owner changed the default and heard nothing); the MME
             # sound mapper sends each stream to the default of the moment.
             self._stream = sd.OutputStream(samplerate=self.rate, channels=1, dtype="float32", latency="low",
-                                           device=_default_follower(sd))
+                                           device=default_follower(sd))
             self._stream.start()
         self._stream_until = time.monotonic() + HOLD_S
         return self._stream
@@ -433,13 +439,19 @@ class Speech:
 
     @staticmethod
     def _takes(sentences: list[str], text: str) -> list[str]:
-        """What is synthesized, one take each. A reply that starts with a word or two («Listo.», «Hecho.») is one call:
-        the very short utterance is Supertonic's weak spot (issue #30). Any other first sentence is synthesized alone,
-        so it sounds sooner: joining every reply of up to 120 characters (84 % of them) cost 1 595 ms to the first
-        audio against 989 ms for the first sentence alone (p50 of 16 two-sentence replies, 10 steps, PC CPU, renew al
-        máximo 9.3, 2026-10-22)."""
+        """What is synthesized, one take each. A reply that starts with a word or two («Listo.», «Hecho.») says them
+        in one call with the sentence after them: the very short utterance is Supertonic's weak spot (issue #30). Any
+        other first sentence is synthesized alone, so it sounds sooner: joining every reply of up to 120 characters
+        (84 % of them) cost 1 595 ms to the first audio against 989 ms for the first sentence alone (p50 of 16
+        two-sentence replies, 10 steps, PC CPU, renew al máximo 9.3, 2026-10-22). The short opener was joined with the
+        whole reply, so a reply of three or four sentences waited for all of them: its first take 3 059 ms against
+        1 686 ms with only the next sentence (p50 of 8 such replies, voice D, 6 steps, PC CPU, 2026-10-23); the
+        sentences after the second are takes of their own, with BAXY's pause, as in any other reply.
+        BAXY_RENEW_TTS_JOIN_ALL=1 joins the whole reply again."""
         if len(sentences) > 1 and len(sentences[0].split()) <= 3:
-            return [spoken(text)]
+            if os.environ.get("BAXY_RENEW_TTS_JOIN_ALL", "").strip() == "1":
+                return [spoken(text)]
+            return [f"{sentences[0]} {sentences[1]}", *sentences[2:]]
         return sentences
 
     def _synthesize(self, text: str, pause: bool = True) -> np.ndarray:

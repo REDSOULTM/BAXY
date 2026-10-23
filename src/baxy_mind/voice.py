@@ -7,10 +7,12 @@ TranscripcionBaxy's winner with its configuration. While BAXY speaks the microph
 so its own voice («Hola, soy BAXY») never wakes it or enters a request.
 
 Paths (per PC): BAXY_RENEW_WAKE_DIR (the baxy-wake-k4 package), BAXY_RENEW_STT_DIR (parakeet-ultra-sherpa-int8-oli),
-BAXY_RENEW_MIC (an input device index; the default microphone otherwise).
+BAXY_RENEW_MIC (an input device index; otherwise Windows' default microphone of the moment, through the MME
+sound mapper, as the voice's output).
 """
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import os
@@ -22,7 +24,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from . import stt_hotwords
-from .voice_output import Speech
+from .voice_output import Speech, default_follower
 
 for _var in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ.setdefault(_var, "1")
@@ -40,6 +42,9 @@ NO_COMMAND_S = 4.0      # after the trigger, time for the request to start
 DIRECT_WAIT_S = 6.0     # direct mode (microphone button): time for the request to start
 MAX_S = 12.0
 KEEP_S = 30.0
+# An open microphone sends a block every 100 ms, BAXY speaking or not; one that sends nothing this long (unplugged, its
+# driver gone) is opened again on the default microphone of the moment, and a failed opening turns the ear off, told.
+STALL_S = 3.0
 PARTIAL_S = 0.8         # while a request is heard, what was said so far is decoded again this often (live captions)
 WAKE_COPIES = 4         # staggered copies (StaggeredWake): 0.28 s p50 after the word, 0.46 s at most (1 copy: 1.18, 1.36)
 NAMES_WAIT_S = 30.0     # the recognizer waits this long for catalog.configure's names (they come before voice.start)
@@ -63,10 +68,16 @@ class StaggeredWake:
     """The k4 detector heard «Baxy» only when its encoder finished a 1.28 s chunk: 1.18 s p50 (1.36 s at most) after the
     word ended (owner, 2026-10-20: «suena después y ya perdí lo que le iba a decir»). Several copies, each a fraction of
     a chunk behind the one before, finish a chunk that much more often; each is the same detector on the same audio, and
-    a firing of any of them counts once (the package's own re-arm, 2 s). Times are the audio's own, as the package's."""
+    a firing of any of them counts once (the package's own re-arm, 2 s). Times are the audio's own, as the package's.
+
+    Only the first copy is built: the others are shallow copies of it, so all of them run the same ONNX sessions (an
+    encoder session holds no audio, its state goes in and out with each chunk) and each has its own state from reset().
+    Four own sessions held 845 MiB of the mind's private memory, shared ones 254 MiB, with the same firings at the same
+    times (CPU probe on synthetic requests, renew al máximo, 2026-10-23)."""
 
     def __init__(self, make: Callable[[], Any], copies: int, rearm_s: float) -> None:
-        self._copies = [make() for _ in range(copies)]
+        first = make()
+        self._copies = [first] + [copy.copy(first) for _ in range(copies - 1)]
         chunk_s = self._copies[0].shift * 0.01   # fbank frames of 10 ms
         self._lead = [k * chunk_s / copies for k in range(copies)]
         self._rearm_s = rearm_s
@@ -231,7 +242,10 @@ class Voice:
 
     def _device(self) -> int | None:
         value = os.environ.get("BAXY_RENEW_MIC", "")
-        return int(value) if value.strip().isdigit() else None
+        if value.strip().isdigit():
+            return int(value)
+        import sounddevice as sd
+        return default_follower(sd, "input")
 
     # --- microphone -----------------------------------------------------------------------------------------------
 
@@ -246,6 +260,24 @@ class Voice:
         self._stream = sd.InputStream(device=self._device(), samplerate=RATE, channels=1, dtype="float32",
                                       blocksize=BLOCK, callback=callback)
         self._stream.start()
+
+    def _revive(self) -> None:
+        """No block for STALL_S from an open microphone: it is opened again (STALL_S)."""
+        with self._lock:
+            if self._stream is None or self._mode == "off":
+                return
+            sys.stderr.write("baxy_mind_renew_voice: the microphone sent nothing; opening it again\n")
+            sys.stderr.flush()
+            self._close()
+            self._reset()
+            try:
+                self._open()
+                return
+            except Exception as error:  # noqa: BLE001 - no microphone now: the ear is off, and the App is told so
+                self.failure = f"microphone: {error!r}"
+                self._mode = self._resume = "off"
+        self._event("error")
+        self._state()
 
     def _close(self) -> None:
         if self._stream is not None:
@@ -272,7 +304,11 @@ class Voice:
         """Ultra decodes outside the lock (up to MAX_S of audio, and every PARTIAL_S in a request): a release, a stop,
         a start or BAXY starting to speak never wait for it, and what they leave behind is not told."""
         while True:
-            block = self._blocks.get()
+            try:
+                block = self._blocks.get(timeout=STALL_S)
+            except queue.Empty:
+                self._revive()
+                continue
             try:
                 with self._lock:
                     heard = self._heard
@@ -299,6 +335,7 @@ class Voice:
             detections = self._detector.accept(block)
             if self._start is None and detections:
                 self._start = detections[0].time_s
+                self._partial = ""  # a new request's live caption is told even when it repeats the last one
                 self._event("wake_detected")
         start = self._start
         if start is not None and self._over(start):
@@ -342,7 +379,8 @@ class Voice:
         voiced = [i for i in voiced if i * BLOCK / RATE >= tail]
         if not voiced:
             return now - start >= (NO_COMMAND_S if self._mode == "wake" else DIRECT_WAIT_S)
-        return now - (start + (voiced[-1] + 1) * BLOCK / RATE) >= END_SILENCE_S
+        # 1e-6: in direct mode 2.4 - 1.5 is 0.8999…, and 48 of 120 requests waited one block (100 ms) more
+        return now - (start + (voiced[-1] + 1) * BLOCK / RATE) >= END_SILENCE_S - 1e-6
 
     def _finish(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]]:
         self._start = None

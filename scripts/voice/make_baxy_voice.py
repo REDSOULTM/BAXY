@@ -25,8 +25,7 @@ RECIPE = {
     "speed": 1.0,     # sherpa's 1.0 is the demo's «0.95x»: calm, not slow
     "shift": 0.5,     # semitones up, pitch and formants together: the small robot, barely
     "seed": 7,        # fixed noise: the same sentence always sounds the same
-    "gap_s": 0.2,     # silence after each sentence
-}
+}                     # (the pause after each sentence is voice_output.py's GAP_S: no «gap_s» here, nothing read it)
 
 
 def read_styles(path: Path) -> tuple[np.ndarray, np.ndarray]:

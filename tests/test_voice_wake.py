@@ -42,7 +42,7 @@ def test_copies_are_primed_a_fraction_of_a_chunk_apart_and_told_in_the_audios_ti
         return made[-1]
 
     wake = StaggeredWake(make, 2, rearm_s=2.0)
-    assert [d.samples for d in made] == [0, int(0.64 * RATE)]
+    assert [d.samples for d in wake._copies] == [0, int(0.64 * RATE)]
     heard = []
     for _ in range(40):
         heard += wake.accept(np.zeros(1600, np.float32))
@@ -56,4 +56,14 @@ def test_reset_primes_the_copies_again() -> None:
     wake = StaggeredWake(lambda: made.append(FakeDetector(at=5.0)) or made[-1], 4, rearm_s=2.0)
     wake.accept(np.zeros(1600, np.float32))
     wake.reset()
-    assert [d.samples for d in made] == [0, int(0.32 * RATE), int(0.64 * RATE), int(0.96 * RATE)]
+    assert [d.samples for d in wake._copies] == [0, int(0.32 * RATE), int(0.64 * RATE), int(0.96 * RATE)]
+
+
+def test_one_detector_is_built_and_the_copies_share_its_sessions_with_their_own_state() -> None:
+    made: list[FakeDetector] = []
+    wake = StaggeredWake(lambda: made.append(FakeDetector(at=5.0)) or made[-1], 4, rearm_s=2.0)
+    assert len(made) == 1  # the model sessions are loaded once, not once per copy
+    assert len({id(d) for d in wake._copies}) == 4
+    assert all(d.at is made[0].at for d in wake._copies)  # what reset() does not make again is shared
+    wake._copies[1].samples += 1
+    assert wake._copies[2].samples == int(0.64 * RATE)  # each copy's state is its own

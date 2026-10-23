@@ -366,6 +366,21 @@ def test_a_reply_that_starts_with_a_word_or_two_is_foreseen_whole_once_it_ends(
     assert played == ["Listo. Spotify está abierto."] and len(synthesized) == 1
 
 
+def test_a_short_opener_is_foreseen_with_the_next_sentence_once_that_one_closes(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    synthesized: list[str] = []
+    played: list[str] = []
+    speech = _voice(tmp_path, monkeypatch, synthesized, played)
+    assert not speech.foresee("Listo. Spotify está abierto", False)
+    assert speech.foresee("Listo. Spotify está abierto. ", False)  # the opener and the next sentence: one take
+    _until(lambda: synthesized)
+    assert synthesized == ["Listo. Spotify está abierto."] and played == []
+    assert speech.speak("Listo. Spotify está abierto. ¿Quieres que suba el volumen?")
+    _until(lambda: len(played) == 2)
+    assert played == ["Listo. Spotify está abierto.", "¿Quieres que suba el volumen?"]
+    assert len(synthesized) == 2  # the foreseen take was used, not synthesized again
+
+
 def test_a_foreseen_sentence_whose_answer_turned_into_a_call_is_dropped_and_never_sounds(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     synthesized: list[str] = []
