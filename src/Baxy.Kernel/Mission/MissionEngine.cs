@@ -343,8 +343,11 @@ public sealed class MissionEngine : IDisposable
         {
             found = await preflight.PreflightAsync(arguments, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is InvalidOperationException
-            or ArgumentException or JsonException or KeyNotFoundException)
+        // Auditoría del núcleo 2026-10-23: any read that fails keeps the declared risk, not only the four kinds listed
+        // before: an IOException or a Win32Exception of a window read escaped the engine before any terminal state and
+        // ended the core. Only the caller's own cancellation goes on as one.
+        catch (Exception exception) when (exception is not OperationCanceledException
+            || !cancellationToken.IsCancellationRequested)
         {
             return InvocationPreflightResult.Proceed;
         }
