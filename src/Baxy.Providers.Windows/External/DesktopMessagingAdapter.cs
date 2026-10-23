@@ -101,7 +101,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
         if ((WithControlCharacters("message.draft", text, TextHasControlCharacters)
-                ?? WithControlCharacters("message.draft", recipient, RecipientHasControlCharacters)) is { } refused)
+                ?? WithControlCharacters("message.draft", recipient, RecipientHasControlCharacters)
+                ?? WithoutReadableText("message.draft", text)) is { } refused)
         {
             return refused;
         }
@@ -178,7 +179,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
         if ((WithControlCharacters("message.send", text, TextHasControlCharacters)
-                ?? WithControlCharacters("message.send", recipient, RecipientHasControlCharacters)) is { } refused)
+                ?? WithControlCharacters("message.send", recipient, RecipientHasControlCharacters)
+                ?? WithoutReadableText("message.send", text)) is { } refused)
         {
             return refused;
         }
@@ -265,7 +267,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
 
         // The owner's test destination is the name typed into the chat search.
         if ((WithControlCharacters("message.send.test", text, TextHasControlCharacters)
-                ?? WithControlCharacters("message.send.test", forced, RecipientHasControlCharacters)) is { } refused)
+                ?? WithControlCharacters("message.send.test", forced, RecipientHasControlCharacters)
+                ?? WithoutReadableText("message.send.test", text)) is { } refused)
         {
             return refused;
         }
@@ -470,6 +473,39 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     // result.
     private const string TextHasControlCharacters = "message_text_has_control_characters";
     private const string RecipientHasControlCharacters = "message_recipient_has_control_characters";
+
+    internal const string TextNotVerifiable = "message_text_not_verifiable";
+
+    // Renew al máximo (w8): the composer and the sent bubble are verified by OCR on letters and digits only (Fold), so a
+    // text with neither («👍», «?!») could never be verified: it was typed, cleared and reported as a draft not verified
+    // that may have had an effect. It is refused before the client is opened or anything typed.
+    private static ExternalCapabilityReceipt? WithoutReadableText(string operation, string text)
+    {
+        if (WindowsDesktopMessagingAutomation.Fold(text).Length > 0)
+        {
+            return null;
+        }
+
+        return new(
+            operation,
+            false,
+            false,
+            ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("messageWritten", false);
+                writer.WriteBoolean("sent", false);
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.MessageTextNext))
+                {
+                    writer.WriteString("next", "nothing was written: what is written in a chat is verified by reading its "
+                        + "letters and digits, and this text has none; a text with at least one word can be sent");
+                }
+
+                writer.WriteEndObject();
+            }),
+            TextNotVerifiable);
+    }
 
     private static ExternalCapabilityReceipt? WithControlCharacters(string operation, string text, string errorCode)
     {

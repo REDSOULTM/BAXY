@@ -594,6 +594,44 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // Renew al máximo (w8): a text with no letter or digit cannot be verified in the chat (the OCR reads only those): it
+    // is refused before the client is opened or anything typed, never typed and cleared as a draft not verified.
+    [TestCase("message.draft", "recipient", "👍")]
+    [TestCase("message.send", "recipient", "?!")]
+    [TestCase("message.send.test", "requestedRecipient", "🙂 🎉")]
+    public async Task AMessageWithNoLetterOrDigitIsRefusedBeforeAnythingIsOpened(
+        string operation, string recipientField, string text)
+    {
+        string arguments = JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["channel"] = "whatsapp",
+            [recipientField] = "Letras",
+            ["text"] = text,
+        });
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            DesktopMessageObservation.DraftNotVerified());
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(automation.Calls, Is.Zero);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_text_not_verifiable"));
+                Assert.That(receipt.EffectObserved || receipt.EffectMayHaveOccurred, Is.False);
+                Assert.That(receipt.Result?.GetProperty("messageWritten").GetBoolean(), Is.False);
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
     // Renew al máximo (auditoría de flujos): a line break or a tab typed into a chat is a key of its own (WM_CHAR 13 is
     // what Enter types, and whether a client sends on it cannot be read), as input.text.type already rules: a message
     // with a control character is refused before the client is opened or anything typed, and says which it held.

@@ -107,6 +107,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (w8): an email.latest.reply refused for its mail (none named, or not the newest now) says which mail to name.</summary>
     public const string ReplyMessageIdNext = "reply_message_id_next";
 
+    /// <summary>Renew al máximo (w8): a chat message refused or left unverified says what was written and what to do next.</summary>
+    public const string MessageTextNext = "message_text_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
