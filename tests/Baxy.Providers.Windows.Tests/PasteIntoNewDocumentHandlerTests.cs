@@ -60,7 +60,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
     {
         var paste = new RecordingPaste(OperationOutcome.Failure("clipboard_empty"));
         var handler = new PasteIntoNewDocumentHandler(paste,
-            (_, _) => ValueTask.FromResult(OperationOutcome.Success(Element("{}"))));
+            (_, _) => ValueTask.FromResult(OperationOutcome.Success(Element("""{"windowHandle":4242}"""))));
 
         OperationOutcome outcome = await handler.ExecuteAsync(
             Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
@@ -71,7 +71,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
             Assert.That(outcome.ErrorCode, Is.EqualTo("clipboard_empty"));
             Assert.That(outcome.EffectMayHaveOccurred, Is.True);
             Assert.That(outcome.Result!.Value.GetProperty("applicationOpened").GetString(), Is.EqualTo("Bloc de notas"));
-            Assert.That(paste.Arguments, Is.EqualTo(new[] { "{}" }));
+            Assert.That(paste.Arguments, Is.EqualTo(new[] { """{"window":4242}""" }));
         });
     }
 
