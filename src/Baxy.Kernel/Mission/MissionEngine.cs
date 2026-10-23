@@ -216,6 +216,18 @@ public sealed class MissionEngine : IDisposable
                     "A retryable outcome must be unverified, unsuccessful, and contain an error code.");
             }
 
+            // Auditoría del núcleo 2026-10-23 (estados terminales honestos): a handler that says it succeeded but could
+            // not verify it did act. It ends failed, never completed, and its effect may stand, as a private operation's
+            // already does (PrivateOperationBoundary): «failed» alone read as «nothing happened» and invited a repeat.
+            if (outcome is { Succeeded: true, Verified: false, EffectMayHaveOccurred: false })
+            {
+                outcome = OperationOutcome.Failure(
+                    outcome.ErrorCode ?? "verification_failed",
+                    outcome.Result,
+                    effectMayHaveOccurred: true,
+                    causeCode: outcome.CauseCode);
+            }
+
             OperationResponse response = ToResponse(request, outcome);
             if (outcome.Retryable)
             {

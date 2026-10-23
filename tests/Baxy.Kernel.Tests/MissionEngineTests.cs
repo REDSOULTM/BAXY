@@ -329,6 +329,35 @@ public sealed class MissionEngineTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: a success the handler could not verify did act, so it ends failed with its effect
+    // possibly standing, in the response and in the facts the model reads, and its replay says the same.
+    [Test]
+    public async Task AnUnverifiedSuccessEndsFailedWithItsEffectPossiblyStanding()
+    {
+        var handler = new UnverifiedSuccessHandler();
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = CreateRequest("{}");
+
+        OperationResponse first = await engine.ExecuteAsync(request, CancellationToken.None);
+        OperationResponse replay = await engine.ExecuteAsync(
+            request with { RequestId = Guid.NewGuid().ToString("D") },
+            CancellationToken.None);
+
+        using JsonDocument facts = JsonDocument.Parse(first.Message);
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(first.Verified, Is.False);
+            Assert.That(first.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(first.EffectMayHaveOccurred, Is.True);
+            Assert.That(facts.RootElement.GetProperty("effectUncertain").GetBoolean(), Is.True);
+            Assert.That(replay.Replayed, Is.True);
+            Assert.That(replay.EffectMayHaveOccurred, Is.True);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
     // D3 2026-09-20: External asks only for message/email operations; note.create as
     // Irreversible keeps the confirmation-before-effect check.
     [TestCase(OperationRisk.Irreversible, "confirmation_required")]
@@ -368,6 +397,23 @@ public sealed class MissionEngineTests
             cancellationToken.ThrowIfCancellationRequested();
             ExecutionCount++;
             return ValueTask.FromResult(OperationOutcome.Success(invocation.Arguments));
+        }
+    }
+
+    private sealed class UnverifiedSuccessHandler : IOperationHandler
+    {
+        public int ExecutionCount { get; private set; }
+
+        public OperationDefinition Definition { get; } =
+            new("note.create", OperationRisk.Reversible, "Create a local note.");
+
+        public ValueTask<OperationOutcome> ExecuteAsync(
+            OperationInvocation invocation,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ExecutionCount++;
+            return ValueTask.FromResult(new OperationOutcome(true, false, null, null));
         }
     }
 
