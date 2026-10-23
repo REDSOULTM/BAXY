@@ -88,3 +88,47 @@ def test_a_shortened_address_keeps_the_result_compact_with_the_dedup_on(tmp_path
         mind.continue_turn(2, page)
         tool = _results(server)[-1]
         assert tool.startswith(expected + "\n[En este turno: ")
+
+
+# Aid «calls_as_written» (w6-lat): the call's booleans as the model wrote them, so the request after it starts with what
+# the slot holds (the prompt and the call as written) and reads only the result.
+@pytest.mark.parametrize("setting", ["all", "calls_as_written", "none", "result_dedup"])
+def test_the_request_after_a_call_starts_with_the_call_as_the_model_wrote_it(tmp_path: pathlib.Path, monkeypatch,
+                                                                             setting: str) -> None:
+    from test_mind_prefill import _call as _slot_call
+    from test_mind_prefill import _mind as _slot_mind
+    from test_mind_prefill import _say as _slot_say
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, server = _slot_mind(tmp_path, [_slot_call("app_open", {"appId": "Paint", "foreground": True}),
+                                         _slot_say("Abrí Paint.")], monkeypatch)
+    mind.decide(1, "abre paint")
+    held = server.slot  # the decision's prompt and the call as the model wrote it («foreground» true)
+    assert "<parameter=foreground>\ntrue\n</parameter>" in held
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "readback",
+                                      "observed": {"appId": "Paint"}}))
+    after = server.prompts[-1]
+    if setting in ("all", "calls_as_written"):
+        assert after.startswith(held)
+        assert server.read[-1] == len(after) - len(held)  # only the result and what follows it
+    else:  # as before: from the value the template rewrote on, read again
+        assert not after.startswith(held) and "<parameter=foreground>\nTrue\n</parameter>" in after
+        assert server.read[-1] > len(after) - len(held)
+    # The conversation keeps the call as it was: only the request is written so.
+    call = next(m for m in mind.export_session() if m.get("tool_calls"))["tool_calls"][0]
+    assert json.loads(call["function"]["arguments"]) == {"appId": "Paint", "foreground": True}
+
+
+def test_only_top_level_booleans_are_written_as_text() -> None:
+    from baxy_mind.mind import _as_written
+    nested = {"appId": "Paint", "n": 3, "x": 0.5, "items": [True], "options": {"on": False}, "foreground": False}
+    messages = [{"role": "user", "content": "true"},
+                {"role": "assistant", "content": "", "tool_calls": [
+                    {"id": "a", "type": "function", "function": {"name": "app_open", "arguments": json.dumps(nested)}},
+                    {"id": "b", "type": "function", "function": {"name": "ask_user",
+                                                                  "arguments": json.dumps({"question": "¿cuál?"})}}]},
+                {"role": "tool", "tool_call_id": "a", "content": '{"ok":true}'}]
+    shown = _as_written(messages)
+    assert json.loads(shown[1]["tool_calls"][0]["function"]["arguments"]) == {**nested, "foreground": "false"}
+    assert shown[1]["tool_calls"][1] is messages[1]["tool_calls"][1]  # nothing to write otherwise: as it was
+    assert shown[0] is messages[0] and shown[2] is messages[2]
+    assert json.loads(messages[1]["tool_calls"][0]["function"]["arguments"]) == nested  # the input is not changed

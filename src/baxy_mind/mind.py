@@ -718,6 +718,37 @@ def _model_schema(schema: Any, constants: dict[str, Any] | None = None) -> Any:
     return out
 
 
+def _as_written(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Aid «calls_as_written» (w6-lat, 2026-10-23): the conversation's calls with each boolean argument as the model
+    writes it. Under the call grammar llama-server makes from the tools' schemas the model writes «true» / «false»
+    (JSON), and Qwen3.5's template writes a call's top-level value with Jinja's «| string», «True» / «False»: the request
+    after a call stopped matching what the slot held at that value, and the hybrid model went back to its checkpoint 4
+    tokens before the decision's end and re-read those tokens, the call and the result (CPU probe, b11609, ft c2e1:
+    audio_mute {state: true} 54 → 23 tokens, app_open {foreground: true} 65 → 23; 52 of 278 calls of the practice e2e
+    have one). Given as the text «true» / «false», the template writes it as it came; objects and lists it already writes
+    with tojson, strings and numbers as given. Only the request changes: the conversation keeps its calls as they were."""
+    written: list[dict[str, Any]] = []
+    for message in messages:
+        calls = message.get("tool_calls") if message.get("role") == "assistant" else None
+        if not calls:
+            written.append(message)
+            continue
+        told = []
+        for call in calls:
+            function = call.get("function") or {}
+            try:
+                arguments = json.loads(function.get("arguments") or "{}")
+            except (json.JSONDecodeError, TypeError):
+                arguments = None
+            if not isinstance(arguments, dict) or not any(isinstance(v, bool) for v in arguments.values()):
+                told.append(call)
+                continue
+            arguments = {k: ("true" if v else "false") if isinstance(v, bool) else v for k, v in arguments.items()}
+            told.append({**call, "function": {**function, "arguments": json.dumps(arguments, ensure_ascii=False)}})
+        written.append({**message, "tool_calls": told})
+    return written
+
+
 # Palanca P2.6: Start menu entries no one opens as an application, by the shape of their (folded) name, never by an
 # application's name: an uninstaller («Uninstall X», «Desinstalar X»; «X Uninstaller» is an application), help, a
 # manual, documentation or a license, release notes, and a web page. They leave app_open's list of installed
@@ -931,6 +962,12 @@ class Mind:
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
         return BEAT_SYSTEM if beat else SYSTEM
+
+    @staticmethod
+    def _history(conv: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """The conversation as a request sends it: every request and the prefill render it alike (aid
+        «calls_as_written»), or the prefill's text would not be the next prompt's start."""
+        return _as_written(conv) if _aid_on("calls_as_written") else conv
 
     @staticmethod
     def _waits(pending: dict[str, Any] | None) -> bool:
@@ -1153,7 +1190,7 @@ class Mind:
                 or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
             return False
         started = time.perf_counter()
-        body = {"messages": [{"role": "system", "content": self._system()}, *self.conversation,
+        body = {"messages": [{"role": "system", "content": self._system()}, *self._history(self.conversation),
                              {"role": "user", "content": PREFILL_MARK}],
                 "tools": self.tools, "chat_template_kwargs": {"enable_thinking": False}}
         try:
@@ -1443,7 +1480,7 @@ class Mind:
         started = time.perf_counter()
         self._turned = True
         conv = turn["conv"]
-        messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
+        messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *self._history(conv)]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
                 "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
