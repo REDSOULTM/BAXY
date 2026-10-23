@@ -431,12 +431,28 @@ TRIM_TURNS_TO = 0.4
 # («nunca me lo dijiste» about a turn no longer shown).
 TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "
            "no lo sabes]")
+# Renew al máximo (w5): a cut turn left nothing of what the person asked or of how its calls ended (a failed delete was
+# known only while it was among the clock's last calls). The note of the cut keeps one line per cut turn, the newest
+# that fit GIST_CHARS: the person's words and its calls as their turn's facts said them. The note is rewritten only
+# when turns are cut, which re-reads the history anyway.
+TRIMMED_GIST = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran enteros; de "
+                "{k} de ellos queda sólo lo que pidió la persona y cómo terminó cada llamada:{lines}\nLo demás que pasó "
+                "en ellos no lo sabes]")
+GIST_LINE = "\n- "
+GIST_CHARS = 1200
+GIST_WORDS = 100
+GIST_NO_CALLS = "sin llamadas"
+GIST_NOT_RUN = "no se ejecutó"
 # Al máximo 1.1 (2026-10-22): before a cut, the oldest results lose their bodies; their calls and the line of their
 # turn's facts (continue_turn writes it last) stay. A turn of 5+ calls held 3.6k tokens (p50): about three turns were
 # left. The ids a body carried (windows, controls) are gone with it, and the model is told so (regla 10: look again).
 TURN_FACTS = "\n[En este turno: "
 COMPACTED = ("[Resultado omitido para que quepa la conversación: los ids de ventanas y controles que traía ya no "
              "valen; si lo necesitas, míralo de nuevo]")
+# Renew al máximo (w5): what a kept facts line says of the body it no longer has («su resultado está arriba» after the
+# result was left out read as a value the model could still quote), said as it is once the body is gone.
+COMPACTED_FACTS = {"su resultado está arriba": "su resultado se omitió",
+                   "su after es la ventana de después": "su after se omitió"}
 
 # Review 16: the person's own text, when it alone does not fit (decide), keeps its start and the cut is said where the
 # model reads it; never cut below this many characters.
@@ -1029,11 +1045,68 @@ class Mind:
 
     def _drop(self, end: int, turns: int) -> None:
         """Take out the oldest `turns`, up to the first kept turn's clock (`end`): an earlier note of what was cut goes
-        with them, and the new one says how many are gone. In place: an open turn's conversation is this same list (the
-        notebook's review of 1.1/1.2, 2026-10-22)."""
+        with them, and the new one says how many are gone and, for the newest of them that fit, what the person asked
+        and how each call ended (w5). In place: an open turn's conversation is this same list (the notebook's review of
+        1.1/1.2, 2026-10-22)."""
+        cut = self.conversation[:end]
+        lines = []
+        earlier = str(cut[0].get("content") or "") if cut else ""
+        if earlier.startswith(TRIMMED[:TRIMMED.index(":")]):
+            lines = earlier.split(GIST_LINE)[1:]
+            lines[-1:] = [lines[-1].split("\n")[0]] if lines else []
+            cut = cut[1:]
+            # A kept session starts its count again (load_session): the earlier note's own count is not lost.
+            told = re.match(r"\D*(\d+)", earlier)
+            self.trimmed_turns = max(self.trimmed_turns, int(told.group(1)) if told else 0)
+        starts = [i for i, m in enumerate(cut)
+                  if i and m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
+        bounds = [0, *starts, len(cut)]
+        lines += [self._gist(cut[a:b]) for a, b in zip(bounds, bounds[1:]) if a < b]
+        lines = [line for line in lines if line]
+        kept: list[str] = []
+        for line in reversed(lines):
+            if sum(len(k) for k in kept) + len(line) > GIST_CHARS:
+                break
+            kept.insert(0, line)
         del self.conversation[:end]
         self.trimmed_turns += turns
-        self.conversation.insert(0, {"role": "user", "content": TRIMMED.format(n=self.trimmed_turns)})
+        note = (TRIMMED_GIST.format(n=self.trimmed_turns, k=len(kept), lines="".join(GIST_LINE + k for k in kept))
+                if kept else TRIMMED.format(n=self.trimmed_turns))
+        self.conversation.insert(0, {"role": "user", "content": note})
+
+    @staticmethod
+    def _gist(messages: list[dict[str, Any]]) -> str:
+        """One cut turn in a line (w5): the person's words, clipped, and how its calls ended, from the facts line each
+        loop of calls ended with (a failure keeps its code) and from the results the mind wrote for calls that never got
+        one. Empty for a turn with no words of the person (a heartbeat's own)."""
+        said = next((str(m.get("content") or "") for m in messages if m["role"] == "user"
+                     and not str(m.get("content") or "").startswith(("[", BEAT_MARK))), "")
+        said = " ".join(said.split())
+        if not said:
+            return ""
+        if len(said) > GIST_WORDS:
+            said = said[:GIST_WORDS].rstrip() + "…"
+        names = {c.get("id"): str((c.get("function") or {}).get("name") or "?")
+                 for m in messages for c in m.get("tool_calls") or []}
+        calls: list[str] = []
+        facts, unrun = "", []
+        # A loop of calls (the turn's, or a confirmation's) ends at a message of the person or the mind; its last facts
+        # line lists all of its calls, each earlier one a part of it.
+        for message in [*messages, {"role": "user"}]:
+            content = str(message.get("content") or "")
+            at = content.rfind(TURN_FACTS)
+            if message["role"] == "tool" and at >= 0:
+                facts = content[at + len(TURN_FACTS):].split("\n")[0].removesuffix("]")
+                for told, omitted in COMPACTED_FACTS.items():  # its body is gone with the turn
+                    facts = facts.replace(told, omitted)
+            elif message["role"] == "tool" and content in {NO_RESULT, NOT_RUN, NOT_RUN_AFTER}:
+                ended = NO_RESULT_RAN if content == NO_RESULT else GIST_NOT_RUN
+                unrun.append(f"{names.get(message.get('tool_call_id'), '?')} → {ended}")
+            elif message["role"] == "user":
+                calls += [facts] if facts else []
+                calls += unrun
+                facts, unrun = "", []
+        return f"«{said}» → " + ("; ".join(calls) if calls else GIST_NO_CALLS)
 
     @staticmethod
     def _compact(messages: list[dict[str, Any]]) -> bool:
@@ -1044,7 +1117,10 @@ class Mind:
             content = str(message.get("content") or "")
             at = content.rfind(TURN_FACTS)
             if message["role"] == "tool" and at > len(COMPACTED):
-                message["content"] = COMPACTED + content[at:]
+                kept = content[at:]
+                for told, omitted in COMPACTED_FACTS.items():  # w5: the facts no longer point at a body
+                    kept = kept.replace(told, omitted)
+                message["content"] = COMPACTED + kept
                 compacted = True
         return compacted
 
