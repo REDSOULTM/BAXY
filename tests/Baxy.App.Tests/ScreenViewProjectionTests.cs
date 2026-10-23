@@ -96,6 +96,30 @@ public sealed class ScreenViewProjectionTests
         });
     }
 
+    // Renew al máximo (w8, falsedades F019): Steam's library with no control, its words read by OCR: «FAVORITOS (324)»
+    // was told «tienes 324 juegos» and «no hay botón de Biblioteca» with «BIBLIOTECA» in the text. The view says how
+    // such a window is read. Counter-cases: a window with its controls, and one whose text was not read, say nothing.
+    [Test]
+    public void AWindowDrawnWithoutControlsSaysItsTextIsTheScreensWordsAndPressedByLabel()
+    {
+        const string drawn =
+            "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+            "\"window\":{\"title\":\"Steam\",\"process\":\"steamwebhelper\",\"hwnd\":77,\"foreground\":true}," +
+            "\"controls\":[],\"controlCount\":0," +
+            "\"text\":{\"T\":[\"TIENDA BIBLIOTECA\",\"FAVORITOS (324)\"]},\"textAuthority\":\"windows_media_ocr_lines\"}";
+        string withControls = Steam.Replace(
+            "\"textAuthority\":\"not_read\"",
+            "\"text\":{\"T\":[\"Comunidad\"]},\"textAuthority\":\"windows_media_ocr_lines\"");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(View(drawn), Does.Contain("(esta ventana no da sus controles: su «Texto» se leyó de la pantalla tal cual"));
+            Assert.That(View(drawn), Does.Contain("que algo no salga en «Controles» no significa que no esté)"));
+            Assert.That(View(withControls), Does.Not.Contain("no da sus controles"));
+            Assert.That(View(drawn.Replace("windows_media_ocr_lines", "unavailable")), Does.Not.Contain("no da sus controles"));
+        });
+    }
+
     private static string View(string lookJson)
     {
         using JsonDocument look = JsonDocument.Parse(lookJson);

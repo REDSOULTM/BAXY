@@ -284,10 +284,14 @@ internal sealed class ForegroundLease : IForegroundLease
     public ValueTask<IInputBurst> AcquireForFlowAsync(nint window, CancellationToken cancellationToken) =>
         AcquireAsync(window, typedFlow: true, cancellationToken);
 
+    // Renew al máximo (w8): a window that no longer exists is said so (input_window_not_found, as the text path says
+    // it), never «not in front»: that code, for a window gone, left the reply to guess the cause.
+    internal const string WindowGone = "input_window_not_found";
+
     public async ValueTask<string?> TakeForMissionAsync(nint window, CancellationToken cancellationToken)
     {
         if (window == 0 || !_desktop.IsAlive(window))
-            return "input_window_not_in_front";
+            return WindowGone;
         if (_desktop.Holds(window))
         {
             lock (_missionGate)
@@ -428,7 +432,7 @@ internal sealed class ForegroundLease : IForegroundLease
         if (!paused)
             return Burst.Refused("input_user_not_paused", waited);
         if (window == 0 || !_desktop.IsAlive(window))
-            return Burst.Refused("input_window_not_in_front", waited);
+            return Burst.Refused(WindowGone, waited);
         long began = _clock.NowMs;
         var saved = new Saved(
             _desktop.Foreground(),

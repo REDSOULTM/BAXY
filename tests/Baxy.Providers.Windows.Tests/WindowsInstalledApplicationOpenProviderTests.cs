@@ -1478,6 +1478,346 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (nuevo2): Windows 11's Notepad in Spanish (11.2607) takes Ctrl+N as «Negrita (Ctrl+N)»; with its
+    // restored tab holding text, Ctrl+N bolded it, nothing new was shown, and «abre un Bloc de notas nuevo» ended
+    // new_document_not_created 10 of 10 after 8 s. A toggle that takes Ctrl+N gets no key: the tab strip's add button
+    // makes the tab, read back by UI Automation (one tab more, the selected one new, its document empty) or, read as
+    // added only, by its new empty text field.
+    [TestCase("NewEmptyTabShown")]
+    [TestCase("TabAdded")]
+    public async Task ANewTabComesFromTheStripWhenCtrlNIsAFormat(string strip)
+    {
+        TabStripCommand answer = Enum.Parse<TabStripCommand>(strip);
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripAnswer = answer,
+            FieldsAfterStrip = [new(500, Shown: false, Empty: false), new(501, Shown: true, Empty: true)],
+        };
+        platform.Titles[73] = "*lista pan: Bloc de notas";
+        platform.Titles[78] = "*prueba 123: Bloc de notas";
+        platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        platform.MainWindows.Add(78);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(78));
+            Assert.That(platform.StripAsked, Is.EqualTo(new[] { 78L }), "only the launched window, never the person's");
+            Assert.That(platform.NewDocumentIssued, Is.Empty, "no Ctrl+N: it would bold the shown tab");
+            Assert.That(
+                platform.DelaysAfterNewDocument.Aggregate(TimeSpan.Zero, static (sum, delay) => sum + delay),
+                Is.LessThan(TimeSpan.FromMilliseconds(500)),
+                "seen at once, never the whole budget");
+        });
+    }
+
+    // Counter-cases, honest: a toggle takes Ctrl+N and no tab strip button adds a tab (no New command known: nothing sent,
+    // ended at once), or the button was invoked and nothing new is seen (the whole budget, then no new document).
+    [TestCase("NoNewCommand")]
+    [TestCase("TabAdded")]
+    public async Task NoNewTabSeenFromTheStripIsNoNewDocument(string strip)
+    {
+        TabStripCommand answer = Enum.Parse<TabStripCommand>(strip);
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripAnswer = answer,
+        };
+        platform.Titles[73] = "*lista pan: Bloc de notas";
+        platform.Titles[78] = "*prueba 123: Bloc de notas";
+        platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        platform.MainWindows.Add(78);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(platform.NewDocumentIssued, Is.Empty, "no Ctrl+N");
+            Assert.That(
+                platform.DelaysAfterNewDocument.Aggregate(TimeSpan.Zero, static (sum, delay) => sum + delay),
+                answer == TabStripCommand.NoNewCommand
+                    ? Is.EqualTo(TimeSpan.Zero)
+                    : Is.GreaterThanOrEqualTo(WindowsInstalledApplicationOpenProvider.NewDocumentBudget));
+        });
+    }
+
+    // The worker's answer: only its own words choose the route; anything else is Ctrl+N, as before.
+    [TestCase("{\"outcome\":\"shortcut\"}", "ShortcutIsNew")]
+    [TestCase("{\"outcome\":\"none\"}", "NoNewCommand")]
+    [TestCase("{\"outcome\":\"added\",\"newEmpty\":true}", "NewEmptyTabShown")]
+    [TestCase("{\"outcome\":\"added\",\"newEmpty\":false}", "TabAdded")]
+    [TestCase("{\"outcome\":\"added\"}", "TabAdded")]
+    [TestCase("", "ShortcutIsNew")]
+    [TestCase("[1]", "ShortcutIsNew")]
+    [TestCase("not json", "ShortcutIsNew")]
+    [TestCase("{\"outcome\":\"add\"}", "AddButtonShown")]
+    [TestCase("{\"outcome\":\"ADD\"}", "ShortcutIsNew")]
+    public void TheStripAnswerIsReadStrictly(string line, string expected) =>
+        Assert.That(WindowsInstalledApplicationPlatform.ReadTabStripAnswer(line), Is.EqualTo(Enum.Parse<TabStripCommand>(expected)));
+
+    // Renew al máximo (nuevo4): only the worker's own «strip: true» tells a tab strip shown.
+    [TestCase("{\"strip\":true}", true)]
+    [TestCase("{\"strip\":false}", false)]
+    [TestCase("{\"strip\":\"true\"}", false)]
+    [TestCase("{}", false)]
+    [TestCase("", false)]
+    [TestCase("not json", false)]
+    public void TheStripProbeIsReadStrictly(string line, bool shown) =>
+        Assert.That(WindowsInstalledApplicationPlatform.ReadTabStripShown(line), Is.EqualTo(shown));
+
+    private static readonly TextFieldObservation[] NewTab = [new(500, Shown: false, Empty: false), new(501, Shown: true, Empty: true)];
+
+    // Renew al máximo (nuevo4): a new Bloc de notas launched beside the person's «*lista pan», its restored tab holding text
+    // and titled «title»; Ctrl+N, when sent, shows a new tab by its new empty text field (the behavior before the strip).
+    private static FakePlatform RestoredNotepad(FakePlatform platform, string title = "*prueba 123: Bloc de notas")
+    {
+        platform.Titles[73] = "*lista pan: Bloc de notas";
+        platform.Titles[78] = title;
+        platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        platform.MainWindows.Add(78);
+        return platform;
+    }
+
+    // Renew al máximo (nuevo4): before, every «un X nuevo» of any application scanned every toggle of its window by UI
+    // Automation (up to 10 s, about 4 s on the first). Now only a window titled as a document (never a start or welcome
+    // screen) is asked whether it shows a tab strip (a Tab with a TabItem), and only one that does is scanned; any other
+    // gets Ctrl+N as before. The worker is started with the launch, not when the strip is read.
+    [TestCase("no tab strip", "*prueba 123: Bloc de notas", 1)]
+    [TestCase("start screen", "Bloc de notas", 0)]
+    [TestCase("no document title", "Inicio", 0)]
+    [TestCase("splash", "Abriendo - Bloc de notas", 0)]
+    public async Task OnlyAWindowWithATabStripIsScanned(string what, string title, int probes)
+    {
+        FakePlatform platform = RestoredNotepad(new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripShown = what != "no tab strip",
+            StripAnswer = TabStripCommand.NewEmptyTabShown,
+            FieldsAfterStrip = NewTab,
+            FieldsAfterNewDocument = NewTab,
+        }, title);
+        // Renew al máximo (nuevo4, measured live): a cold Word settled on its «Abriendo - Word» splash, the only window yet,
+        // titled as a document; a window that is no main window is never read.
+        if (what == "splash")
+            platform.MainWindows.Remove(78);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        _ = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.StripProbed, Has.Count.EqualTo(probes), what);
+            Assert.That(platform.StripAsked, Is.Empty, "no toggle scanned");
+            Assert.That(platform.StripPressed, Is.Empty);
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 78L }), "Ctrl+N, as before");
+            Assert.That(platform.StripWarmed, Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (nuevo4): any failure of the reads (a worker that could not start or answer in time, or one that throws
+    // anything: before, only a TimeoutException was caught and any other ended the opening with it) is Ctrl+N as before;
+    // nothing was pressed.
+    [TestCase("probe", "InvalidOperation")]
+    [TestCase("scan", "InvalidOperation")]
+    [TestCase("scan", "Timeout")]
+    [TestCase("scan", "Win32")]
+    [TestCase("scan", "Json")]
+    public async Task AFailedReadOfTheTabStripIsCtrlNAsBefore(string step, string failure)
+    {
+        Exception thrown = failure switch
+        {
+            "InvalidOperation" => new InvalidOperationException("the worker broke"),
+            "Timeout" => new TimeoutException("no answer"),
+            "Win32" => new System.ComponentModel.Win32Exception(5),
+            _ => new System.Text.Json.JsonException("not one line"),
+        };
+        FakePlatform platform = RestoredNotepad(new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripAnswer = TabStripCommand.NewEmptyTabShown,
+            FieldsAfterStrip = NewTab,
+            FieldsAfterNewDocument = NewTab,
+            StripFails = (step, thrown),
+        });
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True, "Ctrl+N's tab, as before");
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 78L }));
+            Assert.That(platform.StripPressed, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (nuevo4): once the add button may have been pressed, no key goes on top of it (Ctrl+N would bold the
+    // new tab, or make a second one): a press that failed is told by the looks, a new empty field telling the tab that came
+    // and nothing telling none (no new document, honestly).
+    [TestCase("press", false)]
+    [TestCase("pressed", true)]
+    public async Task AFailedPressSendsNoKeyAndIsToldByTheLooks(string step, bool made)
+    {
+        FakePlatform platform = RestoredNotepad(new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripAnswer = TabStripCommand.NewEmptyTabShown,
+            FieldsAfterStrip = NewTab,
+            FieldsAfterNewDocument = NewTab,
+            StripFails = (step, new InvalidOperationException("the worker broke")),
+        });
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.EqualTo(made));
+            if (!made)
+                Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(platform.StripPressed, Is.EqualTo(new[] { 78L }));
+            Assert.That(platform.NewDocumentIssued, Is.Empty, "no Ctrl+N on top of a press");
+        });
+    }
+
+    // Renew al máximo (nuevo4): the tab strip's reads and press take TabStripBudget (1.5 s) in all, a cold worker's start
+    // included (the first «nuevo» took about 4 s before). A step past what is left is left there and Ctrl+N goes as before;
+    // the add button is pressed only with time left to read the new tab back.
+    [TestCase(4000, 0, 0, false)]
+    [TestCase(900, 900, 0, false)]
+    [TestCase(500, 700, 0, false)]
+    [TestCase(200, 300, 300, true)]
+    public async Task TheTabStripTakesItsBudgetAtMost(int probeMs, int scanMs, int pressMs, bool pressed)
+    {
+        var clock = new ManualTime(new DateTimeOffset(2026, 10, 23, 12, 0, 0, TimeSpan.Zero));
+        FakePlatform platform = RestoredNotepad(new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripAnswer = TabStripCommand.NewEmptyTabShown,
+            FieldsAfterStrip = NewTab,
+            FieldsAfterNewDocument = NewTab,
+            Clock = clock,
+        });
+        platform.StripCosts["probe"] = TimeSpan.FromMilliseconds(probeMs);
+        platform.StripCosts["scan"] = TimeSpan.FromMilliseconds(scanMs);
+        platform.StripCosts["press"] = TimeSpan.FromMilliseconds(pressMs);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform, TimeSpan.FromMinutes(1), clock);
+        DateTimeOffset start = clock.Now;
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        TimeSpan budget = TimeSpan.FromMilliseconds(1500);
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.StripSpent, Is.LessThanOrEqualTo(budget), "the UI Automation part in all");
+            Assert.That(clock.Now - start, Is.LessThanOrEqualTo(budget));
+            Assert.That(platform.StripWithin, Has.All.LessThanOrEqualTo(budget));
+            Assert.That(platform.StripPressed, Has.Count.EqualTo(pressed ? 1 : 0));
+            Assert.That(platform.NewDocumentIssued, pressed ? Is.Empty : Is.EqualTo(new[] { 78L }));
+            Assert.That(result.NewDocument, Is.True);
+        });
+    }
+
+    // Renew al máximo (nuevo4): a start or welcome screen is never a document, nor where the add button is pressed. A
+    // colon names a document only with the application after it («Sin título: Bloc de notas»); with the application first
+    // («Bloc de notas: Inicio») or a title of its own («Bienvenido»), the window is no document, even born empty (before,
+    // any «: » was one: its strip was pressed and its new field taken for a new tab; an empty welcome was a new document).
+    [TestCase("Bloc de notas: Inicio")]
+    [TestCase("Bienvenido")]
+    public async Task AWelcomeScreenIsNeverTakenForADocument(string title)
+    {
+        FakePlatform platform = RestoredNotepad(new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            StripAnswer = TabStripCommand.NewEmptyTabShown,
+            FieldsAfterStrip = NewTab,
+            FieldsAfterNewDocument = NewTab,
+        }, title);
+        platform.Empty.Add(78);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(platform.StripProbed, Is.Empty);
+            Assert.That(platform.StripAsked, Is.Empty);
+            Assert.That(platform.StripPressed, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (nuevo4), with the settle of 654ace67c: a splash quiet before the main window shows is never read nor
+    // pressed; the main window, once born and titled as a document, makes the new tab from its strip.
+    [Test]
+    public async Task TheAddButtonIsPressedOnlyOnTheSettledMainWindowNeverOnASplash()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
+            FrontFollowsRequest = true,
+            WindowEvents = new FakeWindowEvents(),
+            LateBorn = Observation(foreground: false) with { WindowHandle = 75 },
+            LateBornAtRead = 2,
+            StripAnswer = TabStripCommand.NewEmptyTabShown,
+        };
+        platform.Titles[73] = "Abriendo: Steam";
+        platform.Titles[75] = "Sin título: Steam";
+        platform.MainWindows.Add(73);
+        platform.MainWindows.Add(75);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(75));
+            Assert.That(platform.StripAsked, Is.EqualTo(new[] { 75L }), "never the splash");
+            Assert.That(platform.StripPressed, Is.EqualTo(new[] { 75L }));
+            Assert.That(platform.NewDocumentIssued, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (nuevo4): «: » read as « - » is, the document first and the application after it, never by an
+    // application's name written here: the application's own names come with the opening.
+    [TestCase("Sin título: Bloc de notas", true)]
+    [TestCase("lista pan: Bloc de notas", true)]
+    [TestCase("Sin título: bloc de notas", true)]
+    [TestCase("Sin título - Paint", true)]
+    [TestCase("Nueva pestaña — Steam", true)]
+    [TestCase("Bloc de notas", false)]
+    [TestCase("Bloc de notas: Inicio", false)]
+    [TestCase("Configuración: Sistema", false)]
+    [TestCase("Bienvenido", false)]
+    [TestCase(": Bloc de notas", false)]
+    [TestCase("Sin título: ", false)]
+    public void AColonNamesADocumentOnlyWithTheApplicationAfterIt(string title, bool document) =>
+        Assert.That(WindowsInstalledApplicationOpenProvider.NamesADocument(title, ["Bloc de notas", ""]), Is.EqualTo(document));
+
     // BAXY Renew cu (C18): the launched window still on its start screen (titled only by the application's name) once the
     // New command made nothing (Office in Spanish takes Ctrl+N as bold) gets Esc once, which leaves a blank document.
     [Test]
@@ -1708,6 +2048,27 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(result.NewDocument, Is.True);
             Assert.That(result.WindowHandle, Is.EqualTo(77));
             Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 75L }));
+        });
+    }
+
+    // Renew al máximo (w8): in w6-settle a cold Steam showed «Iniciar sesión en Steam» while the command waited, and it
+    // was told the new document. A window born after the command whose title names no document (no « - », no «: » before
+    // the application's name) and does not repeat the commanded window's is no new document. Counter-case: a title that
+    // names one is (ColdStartNewDocumentIsTheWindowBornAfterTheCommand).
+    [TestCase("Iniciar sesión en Steam")]
+    [TestCase("Steam: Iniciar sesión")]
+    [TestCase("Actualizando Steam")]
+    public async Task ColdStartSignInOrWelcomeWindowIsNoNewDocument(string madeTitle)
+    {
+        var platform = ColdStart(madeTitle);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
         });
     }
 
@@ -2256,6 +2617,82 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             }
 
             return ValueTask.FromResult(true);
+        }
+
+        // Renew al máximo (nuevo2, nuevo4): the window's tab strip as UI Automation reads it before the New command:
+        // whether one is shown, what its toggles and add button tell (StripAnswer: ShortcutIsNew, NoNewCommand, or the
+        // tab a press of its add button makes, TabAdded or NewEmptyTabShown), the windows each step was asked of (probe,
+        // scan, press), the text fields a press leaves (a new tab), a step that fails («pressed»: after the tab was made),
+        // and what each step costs on the test's clock (a step over the budget it was given is left at that budget).
+        public bool StripShown { get; init; } = true;
+
+        public TabStripCommand StripAnswer { get; init; } = TabStripCommand.ShortcutIsNew;
+
+        public IReadOnlyList<TextFieldObservation>? FieldsAfterStrip { get; init; }
+
+        public List<long> StripProbed { get; } = [];
+
+        public List<long> StripAsked { get; } = [];
+
+        public List<long> StripPressed { get; } = [];
+
+        public int StripWarmed { get; private set; }
+
+        public (string Step, Exception Failure)? StripFails { get; init; }
+
+        public ManualTime? Clock { get; init; }
+
+        public Dictionary<string, TimeSpan> StripCosts { get; } = [];
+
+        public List<TimeSpan> StripWithin { get; } = [];
+
+        public TimeSpan StripSpent { get; private set; }
+
+        public void PrewarmTabStrip() => StripWarmed++;
+
+        private void Spend(string step, TimeSpan within)
+        {
+            StripWithin.Add(within);
+            TimeSpan cost = StripCosts.GetValueOrDefault(step);
+            TimeSpan spent = cost > within ? within : cost;
+            StripSpent += spent;
+            if (Clock is { } clock)
+                clock.Now += spent;
+            if (cost > within)
+                throw new TimeoutException($"the {step} took longer than its budget");
+            if (StripFails is { } fails && fails.Step == step)
+                throw fails.Failure;
+        }
+
+        public ValueTask<bool> ShowsTabStripAsync(long windowHandle, TimeSpan within, CancellationToken cancellationToken)
+        {
+            StripProbed.Add(windowHandle);
+            Spend("probe", within);
+            return ValueTask.FromResult(StripShown);
+        }
+
+        public ValueTask<TabStripCommand> ReadTabStripCommandAsync(
+            long windowHandle,
+            TimeSpan within,
+            CancellationToken cancellationToken)
+        {
+            StripAsked.Add(windowHandle);
+            Spend("scan", within);
+            return ValueTask.FromResult(StripAnswer is TabStripCommand.TabAdded or TabStripCommand.NewEmptyTabShown
+                ? TabStripCommand.AddButtonShown
+                : StripAnswer);
+        }
+
+        public ValueTask<TabStripCommand> NewTabFromStripAsync(long windowHandle, TimeSpan within, CancellationToken cancellationToken)
+        {
+            StripPressed.Add(windowHandle);
+            Spend("press", within);
+            _newDocumentIssued = true;
+            if (FieldsAfterStrip is { } fields)
+                Fields[windowHandle] = fields;
+            if (StripFails is { Step: "pressed" } failed)
+                throw failed.Failure;
+            return ValueTask.FromResult(StripAnswer);
         }
 
         // Ronda 20 P4 (v3-01): a window the start shows after the one the opening verified (the main window after a

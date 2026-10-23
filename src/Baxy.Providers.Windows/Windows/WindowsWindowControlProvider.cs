@@ -1735,6 +1735,22 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         return new WindowEnumeration(result, observedCount, complete);
     }
 
+    /// <summary>
+    /// Renew al máximo (w8): a window holds the front when it is the foreground window or owns it (its «Guardar como»,
+    /// a modal of its own). SetForegroundWindow on a window with such a dialog activates the dialog, and window.focus,
+    /// held to the exact handle, polled 2 s and failed verification_failed with the window in front under its dialog.
+    /// </summary>
+    internal static bool HoldsTheFront(nint window, nint foreground, Func<nint, nint> ownerOf)
+    {
+        for (int depth = 0; foreground != 0 && depth < 8; depth++, foreground = ownerOf(foreground))
+        {
+            if (foreground == window)
+                return true;
+        }
+
+        return false;
+    }
+
     public WindowSnapshot Observe(WindowIdentity identity)
     {
         if (!IsWindow(identity.Handle))
@@ -1774,7 +1790,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         return new WindowSnapshot(
             identity,
             state,
-            GetForegroundWindow() == identity.Handle,
+            HoldsTheFront(identity.Handle, GetForegroundWindow(), static window => GetWindow(window, OwnerWindow)),
             new WindowBounds(
                 rectangle.Left,
                 rectangle.Top,
