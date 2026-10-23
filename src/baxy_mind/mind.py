@@ -969,6 +969,9 @@ class Mind:
         self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                                     if isinstance(e, dict) and e.get("name")})
         tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
+        # Auditoría de la mente (w8): the constants of this catalog only; one a tool had in an earlier catalog was still
+        # added to its calls.
+        constants_of: dict[str, dict[str, Any]] = {}
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
@@ -988,7 +991,7 @@ class Mind:
             constants: dict[str, Any] = {}
             schema = _model_schema(raw if isinstance(raw, dict) else {}, constants)
             if constants:
-                self.constants[name] = constants
+                constants_of[name] = constants
             schema["type"] = "object"
             schema.setdefault("properties", {})
             # What one argument means, where the model fills it (a folder named by the person went missing from the
@@ -1003,6 +1006,7 @@ class Mind:
             risk[wire] = str(cap.get("risk") or "")
             effects[wire] = [str(e) for e in cap.get("effects") or []]
         self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
+        self.constants = constants_of
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
             self._log("configure.aid", time.perf_counter(), None, aids=aids)

@@ -138,3 +138,16 @@ def test_a_conversation_read_ahead_into_the_slot_is_never_kept_on_disk_as_the_pr
     assert mind.prefill() is True
     mind.warm()
     assert server.saved == []
+
+
+def test_a_new_catalog_drops_the_constants_of_the_one_before(tmp_path) -> None:
+    from test_mind_final import _call, _mind
+    mind, _ = _mind(tmp_path, [_call("memory_save", {"value": "azul"})])
+    schema = {"type": "object", "properties": {"value": {"type": "string"}, "scope": {"const": "person"}},
+              "required": ["value", "scope"]}
+    mind.configure({"capabilities": [{"name": "memory.save", "description": "Save", "argumentsSchema": schema}]})
+    assert mind.constants == {"memory.save": {"scope": "person"}}
+    del schema["properties"]["scope"]
+    schema["required"] = ["value"]
+    mind.configure({"capabilities": [{"name": "memory.save", "description": "Save", "argumentsSchema": schema}]})
+    assert mind.decide(1, "recuerda que me gusta el azul")["arguments"] == {"value": "azul"}
