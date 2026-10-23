@@ -884,6 +884,7 @@ class Mind:
             # Its server exiting and starting again is said in this trace (system_one.exited, system_one.restarted).
             system_one.on_event = lambda stage, **fields: self._log(stage, time.perf_counter(), None, **fields)
         self._judged: dict[str, Any] | None = None
+        self._unread: list[dict[str, str]] = []  # the last decision's rivals whose names could not be read (P4)
         self.tools: list[dict[str, Any]] = []
         self.names: list[str] = []  # the installed applications and games of the last catalog.configure
         self.wire_to_op: dict[str, str] = {}
@@ -1783,6 +1784,8 @@ class Mind:
         options = self._candidates(call["wire"], doubt, body)
         judged = self.system_one.choose(turn["text"], self._said(), options)
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
+        if self._unread:
+            self._judged["rivals_unread"] = self._unread
         if not judged or judged["choice"] == call["wire"]:
             return None
         corrected = self._corrected(judged["choice"], body, call["wire"])
@@ -1839,12 +1842,20 @@ class Mind:
                 or (effects and not shared) or (risk in CONFIRMED_RISKS and (
                     self.wire_to_op.get(wire) in UNCONFIRMED_OPERATIONS or _bypass())):
             return None
+        # Auditoría de la mente (w8, P4): why a fill did not become the call, in the trace row beside the decision
+        # model's answer (system_one.fill): failed (and its error), none (no call written), other (another tool's call)
+        # or unfounded (_founded); a correction never tried (off, or the tool not correctable) writes none.
+        why = self._judged if self._judged is not None else {}
         try:
             filled = self.server.fill_call(body, wire)
-        except Exception:  # noqa: BLE001 - a fill that failed falls back to asking
+        except Exception as error:  # noqa: BLE001 - a fill that failed falls back to asking
+            why["fill"] = {"failed": type(error).__name__}
             return None
-        if not filled or filled.get("name") != wire or not self._founded(wire, filled["arguments"], body["messages"],
-                                                                         every=shared):
+        if not filled or filled.get("name") != wire:
+            why["fill"] = "none" if not filled else {"other": str(filled.get("name"))}
+            return None
+        if not self._founded(wire, filled["arguments"], body["messages"], every=shared):
+            why["fill"] = "unfounded"
             return None
         return {"id": self._new_id("s1"), "wire": wire, "arguments": filled["arguments"]}
 
@@ -1914,6 +1925,7 @@ class Mind:
         # B-MED-3 (2026-10-22): the rule of its training (qwen_signals.py, rollouts): the chosen tool and the next three
         # tokens of the weakest one, each of p ≥ 0.01 (served, the chosen token took a place and a rival needed 0.02).
         names = [chosen]
+        self._unread = []  # w8, P4: the rivals left out because their names could not be read, for the trace
         prompt: str | None = None  # the decision's prompt, rendered once for all of its rivals (al máximo V3)
         for token, p in doubt.get("rivals") or []:
             if p < 0.01 or len(names) >= 4:
@@ -1923,7 +1935,8 @@ class Mind:
                 if ">" not in written[written.find("<function="):]:
                     prompt = prompt if prompt is not None else self.server.template(body)
                     written += self.server.complete_name(prompt, written)
-            except Exception:  # noqa: BLE001 - a rival that cannot be read is left out
+            except Exception as error:  # noqa: BLE001 - a rival that cannot be read is left out
+                self._unread.append({"token": token, "failed": type(error).__name__})
                 continue
             at = written.find("<function=")
             names.append(written[at + len("<function="):].split(">")[0].strip() if at >= 0 else "")

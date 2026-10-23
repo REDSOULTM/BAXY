@@ -362,3 +362,44 @@ def test_a_decision_model_that_keeps_exiting_is_left_off_and_the_trace_says_so(t
     laya.close()
     assert len(launched) == 1 and not laya.ready
     assert [(r["stage"], r["exit_code"], r["restart"]) for r in _rows_of(mind)] == [("system_one.exited", 1, None)]
+
+
+@pytest.mark.parametrize("filled, why", [
+    (None, "none"),
+    ({"name": "system_power", "arguments": {}, "timings": {}}, {"other": "system_power"}),
+    ({"name": "app_close", "arguments": {"appId": "Inventada"}, "timings": {}}, "unfounded"),
+    (TimeoutError("budget"), {"failed": "TimeoutError"})])
+def test_why_a_correction_did_not_run_is_in_the_trace(tmp_path, monkeypatch, filled, why) -> None:
+    # P4 of the audit: a fill that failed, wrote nothing or another tool, or held a value nobody said, all read as
+    # «not corrected» in the trace, with nothing apart for each.
+    from test_mind_doubt_policy import _correcting
+    from test_mind_aids import _trace
+    mind, server, _ = _correcting(tmp_path, monkeypatch, "low_reversible", filled)
+    close = next(t["function"] for t in mind.tools if t["function"]["name"] == "app_close")
+    close["parameters"] = {"type": "object", "properties": {"appId": {"type": "string"}}, "required": ["appId"]}
+    if isinstance(filled, Exception):
+        server.fill_call = lambda body, wire: (_ for _ in ()).throw(filled)
+    assert mind.decide(1, "ahora ciérralo")["operation"] is None
+    rows = [r for r in _trace(mind) if "system_one" in r]
+    assert rows[0]["system_one"]["fill"] == why and "corrected" not in rows[0]["system_one"]
+
+
+def test_a_correction_that_ran_or_was_never_tried_writes_no_fill_field(tmp_path, monkeypatch) -> None:
+    from test_mind_doubt_policy import _correcting
+    from test_mind_aids import _trace
+    mind, _, _ = _correcting(tmp_path, monkeypatch, "low_reversible",
+                             {"name": "app_close", "arguments": {"appId": "Spotify"}, "timings": {}})
+    monkeypatch.setenv("BAXY_S1_CORRECT", "")
+    mind.decide(1, "ahora ciérralo")
+    assert "fill" not in [r for r in _trace(mind) if "system_one" in r][0]["system_one"]
+
+
+def test_a_rival_whose_name_could_not_be_read_is_in_the_trace(tmp_path, monkeypatch) -> None:
+    from test_mind_doubt_policy import _layer2, _rival_call
+    from test_mind_aids import _trace
+    mind, server, one = _layer2(tmp_path, monkeypatch, "system_power", [_rival_call(0.5)])
+    server.complete_name = lambda prompt, written: (_ for _ in ()).throw(TimeoutError("budget"))
+    assert mind.decide(1, "apaga el pc")["operation"] == "system.power"
+    judged = [r for r in _trace(mind) if "system_one" in r][0]["system_one"]
+    assert judged["rivals_unread"] == [{"token": "app", "failed": "TimeoutError"}]
+    assert "app_close" not in one.asked[0]["options"]
