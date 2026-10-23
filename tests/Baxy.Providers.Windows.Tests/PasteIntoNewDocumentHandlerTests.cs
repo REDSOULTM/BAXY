@@ -53,6 +53,28 @@ public sealed class PasteIntoNewDocumentHandlerTests
         });
     }
 
+    // Renew al máximo (w5): a paste refused after the application was opened (an empty clipboard, refused before any key)
+    // keeps its code and says the application was opened, an effect that did occur; it read as «nothing happened».
+    [Test]
+    public async Task APasteThatFailsAfterTheOpeningSaysTheApplicationWasOpened()
+    {
+        var paste = new RecordingPaste(OperationOutcome.Failure("clipboard_empty"));
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => ValueTask.FromResult(OperationOutcome.Success(Element("{}"))));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("clipboard_empty"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(outcome.Result!.Value.GetProperty("applicationOpened").GetString(), Is.EqualTo("Bloc de notas"));
+            Assert.That(paste.Arguments, Is.EqualTo(new[] { "{}" }));
+        });
+    }
+
     // BAXY Renew cu (C18 variante): Word already running takes the new document and the paste through its object model;
     // nothing is opened nor pasted by the window. Its failure is the answer, said as it is.
     [TestCase(true, null)]
@@ -118,7 +140,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
     private static OperationInvocation Invocation(string arguments) =>
         new("request", "mission", "invocation", Element(arguments));
 
-    private sealed class RecordingPaste : IOperationHandler
+    private sealed class RecordingPaste(OperationOutcome? answer = null) : IOperationHandler
     {
         internal List<string> Arguments { get; } = [];
 
@@ -127,7 +149,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
         public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
         {
             Arguments.Add(invocation.Arguments.GetRawText());
-            return ValueTask.FromResult(OperationOutcome.Success(Element("""{"pasted":true}""")));
+            return ValueTask.FromResult(answer ?? OperationOutcome.Success(Element("""{"pasted":true}""")));
         }
     }
 }

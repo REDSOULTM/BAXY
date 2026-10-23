@@ -67,9 +67,42 @@ internal sealed class PasteIntoNewDocumentHandler(
         }
 
         using JsonDocument empty = JsonDocument.Parse("{}");
-        return await _paste.ExecuteAsync(
+        OperationOutcome pasted = await _paste.ExecuteAsync(
             new OperationInvocation(
                 invocation.RequestId, invocation.MissionId, invocation.InvocationId, empty.RootElement.Clone()),
             cancellationToken).ConfigureAwait(false);
+        if (pasted.Succeeded)
+            return pasted;
+
+        // Renew al máximo (w5): the application was opened before the paste failed (an empty clipboard is refused before
+        // any key): the failure says so, with an effect that did occur, never «nothing happened» with a new window open.
+        return OperationOutcome.Failure(
+            pasted.ErrorCode ?? "paste_not_verified",
+            result: Opened(pasted.Result, application),
+            effectMayHaveOccurred: true,
+            causeCode: pasted.CauseCode);
+    }
+
+    private static JsonElement Opened(JsonElement? result, string application)
+    {
+        var buffer = new System.Buffers.ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            if (result is { ValueKind: JsonValueKind.Object } read)
+            {
+                foreach (JsonProperty property in read.EnumerateObject())
+                {
+                    if (property.Name != "applicationOpened")
+                        property.WriteTo(writer);
+                }
+            }
+
+            writer.WriteString("applicationOpened", application);
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 }
