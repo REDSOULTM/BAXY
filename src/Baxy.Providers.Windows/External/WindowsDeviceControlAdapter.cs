@@ -142,7 +142,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         function Write-BaxyBrightnessAbsent{[pscustomobject]@{ok=$false;effectObserved=$false;error='brightness_not_supported'}|ConvertTo-Json -Compress}
 
         """;
-    private const string BrightnessScript = BrightnessInstances + """
+    // Renew al máximo (w5): a set is read back every 100 ms until every monitor shows the level, for 1.5 s at most. One
+    // read after a fixed 300 ms called a panel still fading towards it a failure, and made one that got there wait.
+    internal const string BrightnessScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$value=[byte]$args[0];$effect=$false
         try {$methods=@(Get-BaxyBrightness WmiMonitorBrightnessMethods);$current=@(Get-BaxyBrightness WmiMonitorBrightness)
           if($methods.Count -eq 0 -or $current.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
@@ -150,12 +152,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           if($baseline.Count -gt 0 -and @($baseline|Where-Object {$_ -ne $value}).Count -eq 0){
             [pscustomobject]@{ok=$true;effectObserved=$false;changed=$false;baselineValues=$baseline;values=$baseline}|ConvertTo-Json -Compress;exit 0
           }
-          foreach($method in $methods){Invoke-CimMethod -InputObject $method -MethodName WmiSetBrightness -Arguments @{Timeout=1;Brightness=$value}|Out-Null};$effect=$true;Start-Sleep -Milliseconds 300
-          $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness|ForEach-Object {[int]$_.CurrentBrightness})
-          [pscustomobject]@{ok=($after.Count -gt 0 -and @($after|Where-Object {$_ -ne $value}).Count -eq 0);effectObserved=$true;changed=$true;baselineValues=$baseline;values=$after}|ConvertTo-Json -Compress
+          foreach($method in $methods){Invoke-CimMethod -InputObject $method -MethodName WmiSetBrightness -Arguments @{Timeout=1;Brightness=$value}|Out-Null};$effect=$true
+          $deadline=(Get-Date).AddMilliseconds(1500)
+          do{Start-Sleep -Milliseconds 100
+            $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness|ForEach-Object {[int]$_.CurrentBrightness})
+            $reached=($after.Count -gt 0 -and @($after|Where-Object {$_ -ne $value}).Count -eq 0)}while(-not $reached -and (Get-Date) -lt $deadline)
+          [pscustomobject]@{ok=$reached;effectObserved=$true;changed=$true;baselineValues=$baseline;values=$after}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
-    private const string BrightnessAdjustScript = BrightnessInstances + """
+    internal const string BrightnessAdjustScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$delta=[int]$args[0];$effect=$false
         try {
           $methods=@(Get-BaxyBrightness WmiMonitorBrightnessMethods)
@@ -169,14 +174,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             if($null -eq $method){throw 'brightness_method_not_found'}
             Invoke-CimMethod -InputObject $method -MethodName WmiSetBrightness -Arguments @{Timeout=1;Brightness=[byte]$target}|Out-Null
           }
-          $effect=$true;Start-Sleep -Milliseconds 300
-          $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness)
-          $values=@();$ok=$after.Count -eq $current.Count
-          foreach($item in $after){$value=[int]$item.CurrentBrightness;$values+=@($value);if(-not $expected.ContainsKey([string]$item.InstanceName) -or $expected[[string]$item.InstanceName] -ne $value){$ok=$false}}
+          $effect=$true;$deadline=(Get-Date).AddMilliseconds(1500)
+          do{Start-Sleep -Milliseconds 100
+            $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness)
+            $values=@();$ok=$after.Count -eq $current.Count
+            foreach($item in $after){$value=[int]$item.CurrentBrightness;$values+=@($value);if(-not $expected.ContainsKey([string]$item.InstanceName) -or $expected[[string]$item.InstanceName] -ne $value){$ok=$false}}
+          }while(-not $ok -and (Get-Date) -lt $deadline)
           [pscustomobject]@{ok=$ok;effectObserved=$effect;baselineValues=$baseline;values=$values}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_adjust_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
-    private const string BrightnessStatusScript = BrightnessInstances + """
+    internal const string BrightnessStatusScript = BrightnessInstances + """
         $ErrorActionPreference='Stop'
         try {
           function Read-BaxyBrightness {
@@ -2356,7 +2363,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         }
 
         effectBoundary.Cross(token);
-        ExternalProcessResult process = await RunPowerShellAsync(
+        ExternalProcessResult process = await RunQuickScriptAsync(
             BrightnessScript,
             [value.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             token);
@@ -2421,7 +2428,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
         int delta = direction == "up" ? amount : -amount;
         effectBoundary.Cross(token);
-        ExternalProcessResult process = await RunPowerShellAsync(
+        ExternalProcessResult process = await RunQuickScriptAsync(
             BrightnessAdjustScript,
             [delta.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             token);
@@ -2467,7 +2474,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return await AirplaneModeStatusAsync(operation).ConfigureAwait(false);
         if (setting != "brightness")
             return ExternalJson.Failure(operation, "brightness_status_invalid");
-        ExternalProcessResult process = await RunPowerShellAsync(
+        ExternalProcessResult process = await RunQuickScriptAsync(
             BrightnessStatusScript, [], token);
         using JsonDocument response = ParseLastJson(process.Output);
         if (String(response.RootElement, "error") == BrightnessNotSupported)
@@ -2561,6 +2568,17 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         IReadOnlyList<string> arguments,
         CancellationToken token) =>
         _runner.RunPowerShellAsync(script, arguments, TimeSpan.FromSeconds(60), token);
+
+    // Renew al máximo (w5): a short read or set of WMI (the brightness) runs in the product's UI Automation worker, already
+    // started, with the same script, arguments and budget; a PowerShell started cold for it cost 400-700 ms on the
+    // notebook against 10-20 ms for the read itself. Without the worker (the test seams) it runs as before.
+    private ValueTask<ExternalProcessResult> RunQuickScriptAsync(
+        string script,
+        IReadOnlyList<string> arguments,
+        CancellationToken token) =>
+        Scripts is { } worker
+            ? UiaWorkerScript.RunAsync(worker, script, arguments, TimeSpan.FromSeconds(60), token)
+            : RunPowerShellAsync(script, arguments, token);
 
     private static JsonElement WifiResult(string? id, bool connected, string? place = null) =>
         ExternalJson.Create(writer =>
