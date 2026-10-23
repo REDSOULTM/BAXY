@@ -11,8 +11,10 @@ namespace Baxy.App;
 /// <summary>
 /// How the view presents a call the model made (design v4: the step chips, the face's families, the Sí/No card and
 /// «Qué puedo hacer»). The words are presentation data (Assets/operation-labels.v1.json, one per catalog operation);
-/// the status is the call's own outcome, never improved: <c>ok</c> only for a call completed and verified by its
-/// provider, <c>maybe</c> for one that may have run, <c>fail</c> for a failure and <c>skip</c> for one that did not run.
+/// the status is the call's own outcome, never improved: <c>ok</c> only for a call completed whose effect was read back,
+/// <c>same</c> for one that found the asked state already there, <c>sent</c> for one delivered without reading its
+/// effect, <c>read</c> for a read whose output is its result, <c>maybe</c> for one that may have run or whose completion
+/// could not be verified, <c>fail</c> for a failure and <c>skip</c> for one that did not run.
 /// What the provider observed is shown as its facts, as they came.
 /// </summary>
 internal static class FieldStepProjection
@@ -53,6 +55,16 @@ internal static class FieldStepProjection
     {
         "status", "verified", "version", "authority", "next", "effectStarted", "error", "operation", "argumentsGiven",
         "arguments", "argumentProblems", "detail", "waiting", "effectUncertain", "replayed",
+        OperationVisibleFacts.VerificationKey,
+    };
+
+    // How a completed call was verified (OperationVisibleFacts' table), as the chip's status and its first words.
+    private static readonly Dictionary<string, (string Status, string Said)> Verifications = new(StringComparer.Ordinal)
+    {
+        [OperationVisibleFacts.VerificationReadback] = ("ok", "Verificado"),
+        [OperationVisibleFacts.VerificationUnchanged] = ("same", "Ya estaba así"),
+        [OperationVisibleFacts.VerificationDeliveredOnly] = ("sent", "Enviado, sin comprobar"),
+        [OperationVisibleFacts.VerificationOutputOnly] = ("read", "Leído"),
     };
 
     // The codes BAXY itself writes when a call did not reach its provider, said in one line.
@@ -135,18 +147,39 @@ internal static class FieldStepProjection
             ["fam"] = Family(step.Operation),
         };
 
-        if (raw == OperationStatuses.Completed && step.Verified && !uncertain)
+        // A completed call is shown as it was verified (OperationVisibleFacts' typed «verification»): only a read-back
+        // effect is «Verificado»; an asked state already in place, an input delivered without reading its effect and a
+        // read's output are said as such, and a completion without that fact (none, or none written) is not verified.
+        string? verification = facts?[OperationVisibleFacts.VerificationKey] is JsonValue v
+            && v.TryGetValue(out string? said) ? said : null;
+        if (raw == OperationStatuses.Completed
+            && (facts?["replayed"] is not null || facts?["observed"] is JsonObject { } kept && kept["replayed"] is not null))
         {
-            view["status"] = "ok";
-            string observed = Facts(facts);
-            view["obs"] = observed.Length == 0 ? "Verificado por el proveedor" : "Verificado · " + observed;
+            // The journal's recorded result of this same call made earlier (OperationResponseProjection.Replay; a
+            // memory call's, inside what it observed): it did not run again now, so nothing is said done now.
+            view["status"] = "skip";
+            view["reason"] = "No se repitió: ya había corrido antes";
         }
-        else if (raw == OperationStatuses.Completed || uncertain || raw == OperationStatuses.Pending || raw == "unknown")
+        else if (raw == OperationStatuses.Completed && step.Verified && !uncertain
+            && Verifications.TryGetValue(verification ?? string.Empty, out (string Status, string Said) shown))
+        {
+            view["status"] = shown.Status;
+            string observed = Facts(facts);
+            view["obs"] = observed.Length == 0 ? shown.Said : shown.Said + " · " + observed;
+        }
+        else if (raw == OperationStatuses.Completed || uncertain || raw == "unknown")
         {
             view["status"] = "maybe";
             view["reason"] = uncertain || raw != OperationStatuses.Completed
                 ? Reason(code, "No se pudo confirmar si se hizo")
                 : "Terminó, pero no se pudo verificar";
+        }
+        else if (raw == OperationStatuses.Pending)
+        {
+            // A retryable outcome whose effect did not happen (the engine says effectUncertain when it may have): it
+            // did not complete and can be tried again, never «may have run».
+            view["status"] = "fail";
+            view["reason"] = Reason(code, "No se completó, se puede reintentar");
         }
         else if (raw is OperationStatuses.Rejected or "cancelled")
         {
@@ -167,9 +200,10 @@ internal static class FieldStepProjection
         return view;
     }
 
-    /// <summary>The Sí/No card of a call waiting for the person (design: {risk, title, target, expires}).</summary>
+    /// <summary>The Sí/No card of a call waiting for the person (design: {risk, title, target, expires}), and whether
+    /// an earlier attempt of it may already have happened (the kernel asks again: <paramref name="effectStarted"/>).</summary>
     internal static JsonObject Card(string id, string kind, string operation, JsonObject arguments, string risk,
-        DateTimeOffset expiresUtc, string? context) => new()
+        DateTimeOffset expiresUtc, string? context, bool effectStarted = false) => new()
     {
         ["who"] = "card",
         ["id"] = id,
@@ -180,6 +214,7 @@ internal static class FieldStepProjection
         ["target"] = Target(arguments),
         ["context"] = context,
         ["expires"] = expiresUtc.ToUnixTimeMilliseconds(),
+        ["effectStarted"] = effectStarted,
         ["status"] = "pending",
     };
 

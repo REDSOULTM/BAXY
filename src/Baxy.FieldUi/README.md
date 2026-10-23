@@ -23,7 +23,7 @@ La vista nunca afirma que algo se hizo si no se ejecutó y verificó. Todo lo qu
 | Lo que se ve | De dónde sale |
 |---|---|
 | Conversación, chips de paso y tarjetas Sí/No | `FieldTranscript` (el host la guarda; el evento `item` cambia un elemento, `transcript` la manda entera) |
-| Estado de cada paso | `FieldStepProjection`: `ok` sólo si el proveedor completó **y** verificó; `maybe`, `fail`, `skip` con su motivo |
+| Estado de cada paso | `FieldStepProjection`, por la `verification` tipada del resultado: `ok` («Verificado») sólo si el efecto se releyó; `same` («Ya estaba así»), `sent` («Enviado, sin comprobar»), `read` («Leído»); `maybe`, `fail`, `skip` con su motivo |
 | Título del paso y del catálogo | `Baxy.App/Assets/operation-labels.v1.json`, una entrada por operación del catálogo (se comprueba al arrancar) |
 | «Salió a internet» y su registro | el efecto `network` del catálogo (`OperationEffects.Network`) de una llamada que llegó a su proveedor |
 | Métricas del riel | `FieldTelemetrySampler`: CPU, GPU, temperatura (D3DKMT) y memoria de la mente y su llama-server; `—` si no se pudo leer |

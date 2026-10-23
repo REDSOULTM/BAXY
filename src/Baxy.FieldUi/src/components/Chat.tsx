@@ -8,6 +8,9 @@ import type { ChatItem, Confirmation, Fam, Step, StepStatus } from '../types';
 const ST: Record<StepStatus, { ic: string | null; label: string }> = {
   run: { ic: null, label: 'en curso' },
   ok: { ic: '✓', label: 'verificado' },
+  same: { ic: '=', label: 'ya estaba así' },
+  sent: { ic: '↗', label: 'enviado, sin comprobar' },
+  read: { ic: '✓', label: 'leído' },
   fail: { ic: '✕', label: 'falló' },
   skip: { ic: '–', label: 'no se ejecutó' },
   maybe: { ic: '?', label: 'puede haber corrido' },
@@ -41,7 +44,7 @@ function Steps({ steps }: { steps: Step[] }) {
       {o ? (
         <div className={'bx-obs st-' + o.status}>
           <div className="h"><span>{ST[o.status].label}</span><span className="fam">{FAM_LABEL[o.fam]}</span></div>
-          <div className="t">{o.status === 'ok' ? o.obs : o.reason || o.obs || 'En curso…'}</div>
+          <div className="t">{o.obs || o.reason || 'En curso…'}</div>
           {o.net ? <div className="net"><Globe s={10} /> salió a internet · {o.net}</div> : null}
         </div>
       ) : null}
@@ -66,11 +69,15 @@ export function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; o
   // the kernel's token is dead past its time even before the host says so: the card never offers a Sí that cannot run.
   const status = live && left <= 0 ? 'expired' : c.status;
   const pend = status === 'pending';
+  // nothing was done by this card unless an earlier attempt of the same call may already have run (then it only did
+  // not run again)
+  const none = c.effectStarted ? 'no se repitió' : 'no se hizo nada';
   return (
     <div className={'bx-card k-' + c.kind + ' s-' + status}>
       <div className="hd">
         <span className="tag">{c.kind === 'proposal' ? 'Propuesta' : 'Necesito tu ok'}</span>
         {c.risk ? <span className="risk">{c.risk}</span> : null}
+        {c.effectStarted ? <span className="risk">un intento anterior pudo haber corrido</span> : null}
         {c.context ? <span className="ctx">{c.context}</span> : null}
       </div>
       <div className="ti">{c.title}</div>
@@ -86,9 +93,9 @@ export function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; o
       ) : (
         <div className="res">
           {status === 'yes' ? '✓ Aceptado' + (c.via ? ' ' + c.via : '')
-            : status === 'no' ? '✕ Rechazado' + (c.via ? ' ' + c.via : '')
-              : status === 'dropped' ? 'Ya no está pendiente · pediste otra cosa'
-                : 'Venció sin respuesta · no se hizo nada'}
+            : status === 'no' ? '✕ Rechazado' + (c.via ? ' ' + c.via : '') + (c.effectStarted ? ' · ' + none : '')
+              : status === 'dropped' ? 'Ya no está pendiente · ' + none
+                : 'Venció sin respuesta · ' + none}
         </div>
       )}
     </div>

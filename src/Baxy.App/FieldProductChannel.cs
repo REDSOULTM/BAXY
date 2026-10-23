@@ -67,6 +67,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.StepCompleted += OnStepCompleted;
         _viewModel.ConfirmationAsked += OnConfirmationAsked;
         _viewModel.ConfirmationResolved += OnConfirmationResolved;
+        _viewModel.ProposalNotificationRequested += OnProposalNotified;
         _viewModel.VoicePartial += OnVoicePartial;
         _viewModel.VoiceLip += OnVoiceLip;
         _viewModel.VoiceWake += OnVoiceWake;
@@ -328,15 +329,24 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             });
         }
 
-        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4). «hecho» only for
-        // a call that completed and was verified (2026-10-22, review of the App: one that reached its provider and
-        // failed was said done too).
-        if (step is { Status: OperationStatuses.Completed, Verified: true }
+        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4), as its step ended
+        // (2026-10-22, review of the App: one that reached its provider and failed was said done too). «hecho» only for
+        // an effect read back; a state already there, an input delivered unread or one that may have run say so.
+        string? bypassed = (string?)view["status"] switch
+        {
+            "ok" => "hecho sin preguntar",
+            "same" => "sin preguntar, ya estaba así",
+            "sent" => "enviado sin preguntar, sin comprobar",
+            "read" => "leído sin preguntar",
+            "maybe" when step.Sent => "sin preguntar, puede haber corrido",
+            _ => null,
+        };
+        if (bypassed is not null
             && ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
             && FieldStepProjection.NormalModeAsks(step.Operation, step.Arguments))
         {
             string title = FieldStepProjection.Label(step.Operation, step.Arguments);
-            Publish(ItemEvent(_transcript.System("Bypass · hecho sin preguntar: " + char.ToLowerInvariant(title[0]) + title[1..])));
+            Publish(ItemEvent(_transcript.System("Bypass · " + bypassed + ": " + char.ToLowerInvariant(title[0]) + title[1..])));
         }
 
         if (step.Operation == "schedule.alarms" && step.Sent)
@@ -356,7 +366,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         } : null;
         string id = _transcript.NextId("k");
         JsonObject card = FieldStepProjection.Card(id, asked.Proposal ? "proposal" : "confirm",
-            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context);
+            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, asked.EffectStarted);
         _pendingCard = (id, asked);
         Publish(ItemEvent(_transcript.Card(card)));
     }
@@ -372,6 +382,17 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             _ => "dropped",
         };
         if (_transcript.Resolve(status, null) is { } card)
+        {
+            Publish(ItemEvent(card));
+        }
+    }
+
+    // The proposal on the card went to Windows as a notification (the person should not be spoken to): the card says
+    // so from this fact, never from the activity the view reads later.
+    private void OnProposalNotified(string question, string why, NativeTurnConfirmation asked)
+    {
+        if (_pendingCard is { } pending && ReferenceEquals(pending.Asked, asked)
+            && _transcript.Notified(pending.Id) is { } card)
         {
             Publish(ItemEvent(card));
         }
@@ -1108,6 +1129,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.StepCompleted -= OnStepCompleted;
         _viewModel.ConfirmationAsked -= OnConfirmationAsked;
         _viewModel.ConfirmationResolved -= OnConfirmationResolved;
+        _viewModel.ProposalNotificationRequested -= OnProposalNotified;
         _viewModel.VoicePartial -= OnVoicePartial;
         _viewModel.VoiceLip -= OnVoiceLip;
         _viewModel.VoiceWake -= OnVoiceWake;

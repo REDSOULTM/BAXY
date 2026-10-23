@@ -20,13 +20,16 @@ internal sealed record NativeTurnStep(
     string Id = "",
     bool Sent = false);
 
-/// <summary>A call waiting for the person's Sí or No, as its question is published (the view's card).</summary>
+/// <summary>A call waiting for the person's Sí or No, as its question is published (the view's card).
+/// <paramref name="EffectStarted"/>: the kernel asks again for a call whose earlier attempt may have happened
+/// (reconciliationRequired).</summary>
 internal sealed record NativeTurnConfirmation(
     string Operation,
     JsonObject Arguments,
     string Risk,
     DateTimeOffset ExpiresUtc,
-    bool Proposal);
+    bool Proposal,
+    bool EffectStarted = false);
 
 /// <summary>
 /// BAXY Renew's harness: the native tool loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop). The
@@ -408,7 +411,8 @@ internal sealed class NativeTurnLoop
 
         bool held = ReferenceEquals(prepared, _proposal);
         return new NativeTurnConfirmation(prepared.OperationName, PrivateArguments(prepared), descriptor.Risk,
-            held ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, held && _proposalByBeat);
+            held ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, held && _proposalByBeat,
+            EffectStarted: !held && _pending!.ReconciliationRequired);
     }
 
     private void Resolved(string outcome)

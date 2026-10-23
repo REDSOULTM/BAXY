@@ -11,7 +11,16 @@ namespace Baxy.App.Presentation;
 /// </summary>
 internal sealed partial class TrayMenu : Window
 {
-    internal sealed record State(bool Listening, bool MicAvailable, bool Powered, bool Ready);
+    /// <param name="Failed">BAXY could not start (its engine or its mind): never shown as still starting.</param>
+    internal sealed record State(bool Listening, bool MicAvailable, bool Powered, bool Ready, bool Failed = false);
+
+    /// <summary>What the menu's first line says BAXY is doing, from the state it was opened with.</summary>
+    internal static string StateLabel(State state) =>
+        !state.Ready ? (state.Failed ? "No disponible" : "Arrancando")
+        : !state.Powered ? "En reposo"
+        : state.Listening ? "Activo · responde a «BAXY»"
+        : state.MicAvailable ? "Activo · micrófono en pausa"
+        : "Activo · sin micrófono";
 
     private readonly Action _open;
     private readonly Action _listen;
@@ -32,12 +41,9 @@ internal sealed partial class TrayMenu : Window
         ListenRow.Tag = state.Listening ? "" : "";
         ListenRow.IsEnabled = state.MicAvailable && state.Powered;
         PowerRow.Content = state.Powered ? "Poner en reposo" : "Activar";
-        StateText.Text = !state.Ready ? "Arrancando"
-            : !state.Powered ? "En reposo"
-            : state.Listening ? "Activo · responde a «BAXY»"
-            : state.MicAvailable ? "Activo · micrófono en pausa"
-            : "Activo · sin micrófono";
-        StateDot.Fill = new SolidColorBrush(!state.Ready ? Color.FromRgb(0xE8, 0xC9, 0x8E)
+        StateText.Text = StateLabel(state);
+        StateDot.Fill = new SolidColorBrush(!state.Ready && state.Failed ? Color.FromRgb(0xFF, 0x66, 0x77)
+            : !state.Ready ? Color.FromRgb(0xE8, 0xC9, 0x8E)
             : state.Powered ? Color.FromRgb(0x7F, 0xD1, 0xA8) : Color.FromRgb(0x5B, 0x65, 0x80));
         // Losing the focus closes it, as a menu does; closing from anywhere (here, a row, a new menu) marks it first, so
         // the deactivation that closing itself causes never closes it twice.
