@@ -170,18 +170,12 @@ internal sealed class WindowActionHandler(string operation, WindowControlAction 
     {
         string windowId = invocation.Arguments.GetProperty("windowId").GetString()!;
         WindowActionResult result = await provider.ExecuteAsync(windowId, action, cancellationToken).ConfigureAwait(false);
-        if (result.Succeeded && result.Verified && result.Window is not null && result.AlreadyReached)
-        {
-            // Ronda final: already as asked, nothing sent: the model reads changed:false.
-            var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(
-                WindowControlResultJson.Serialize(result.Window).GetRawText())!;
-            unchanged["changed"] = false;
-            using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
-            return OperationOutcome.Success(document.RootElement.Clone());
-        }
-
+        // Ronda final: already as asked, nothing sent: the model reads changed:false. Auditoría del Core (w8): with the
+        // same next as window_move, window_resize and window_snap (WindowControlResultJson.Unchanged), which a focus, a
+        // maximize, a minimize or a restore already as asked lacked: the C13 reading of a bare changed:false as «no pude».
         return result.Succeeded && result.Verified && result.Window is not null
-            ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window))
+            ? OperationOutcome.Success(WindowControlResultJson.Unchanged(
+                WindowControlResultJson.Serialize(result.Window), result.AlreadyReached))
             : WindowControlResultJson.Failure(
                 result.ErrorCode ?? "window_action_failed", result.EffectMayHaveOccurred, result.StateAfter);
     }

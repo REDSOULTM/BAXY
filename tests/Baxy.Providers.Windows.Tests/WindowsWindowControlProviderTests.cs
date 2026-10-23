@@ -389,6 +389,51 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Auditoría del Core (w8): a maximize, minimize or restore already as asked said a bare changed:false (read as «no
+    // pude», C13), while a move, a resize or a snap said the next too; now every window action says it.
+    [TestCase(WindowControlAction.Maximize, "maximized")]
+    [TestCase(WindowControlAction.Minimize, "minimized")]
+    [TestCase(WindowControlAction.Restore, "normal")]
+    public async Task AWindowActionAlreadyAsAskedSaysThisCallChangedNothing(WindowControlAction action, string state)
+    {
+        var platform = new FakePlatform();
+        platform.SetInitialState(state);
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(
+            new WindowActionHandler("window." + action.ToString().ToLowerInvariant(), action, provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("changed").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(WindowControlResultJson.UnchangedNext));
+            Assert.That(outcome.Result!.Value.GetProperty("window").GetProperty("state").GetString(), Is.EqualTo(state));
+            Assert.That(platform.ExecuteCalls, Is.Zero);
+        });
+    }
+
+    // Contracase: an action that changed the window says neither.
+    [Test]
+    public async Task AWindowActionThatChangedTheWindowSaysNoUnchangedNext()
+    {
+        var platform = new FakePlatform();
+        platform.SetInitialState("normal");
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(
+            new WindowActionHandler("window.maximize", WindowControlAction.Maximize, provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.TryGetProperty("changed", out _), Is.False);
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
     // Auditoría de falsedades: a window already where it was asked to go is told as its state before the call, never as
     // «done» by this call («¿ya lo moviste?»).
     [Test]
