@@ -37,7 +37,8 @@ internal sealed record NativeTurnConfirmation(
 /// <para>
 /// A risky call the kernel challenges waits for the person: the model asks, and the answer comes back as the
 /// <c>confirm_pending</c> call (by voice or text the model reads the answer; the Sí and No buttons are that call
-/// directly). The kernel's token is bound to the exact invocation it challenged; anything else the person asks drops it.
+/// directly). The kernel's token is bound to the exact invocation it challenged; anything else the person asks drops it,
+/// and so does a line of a later turn that is not its question: the person's words answer only BAXY's last question.
 /// </para>
 /// <para>
 /// The heartbeat (owner, 2026-10-15) runs the same loop in a turn nobody asked for: a call that is not harmless and
@@ -126,6 +127,10 @@ internal sealed class NativeTurnLoop
     private string _stepId = string.Empty;
     private long _stepSequence;
     private bool _asking;
+    // Auditoría de confirmaciones (2026-10-23): a line of a later turn was published while the call waited, so its
+    // question is no longer the last thing BAXY asked. «Vale, no lo cierro. ¿Guardo algo primero?» left app.close waiting,
+    // and the «sí» to the new question reached the model with that call as what the person's words answer.
+    private bool _leftBehind;
 
     internal NativeTurnLoop(Host host, TimeProvider? time = null)
     {
@@ -181,6 +186,7 @@ internal sealed class NativeTurnLoop
         {
             _notice.Close();
             DropUnasked();
+            DropLeftBehind();
         }
     }
 
@@ -271,6 +277,7 @@ internal sealed class NativeTurnLoop
     /// <summary>A new session: nothing pending survives it.</summary>
     internal void Reset()
     {
+        _leftBehind = false;
         DropPending();
         _egress.Reset();
     }
@@ -340,6 +347,9 @@ internal sealed class NativeTurnLoop
         {
             if (!ConfirmationAsk.Asks(HasPendingConfirmation, _askedAt, _turnStarted))
             {
+                // A call asked in an earlier turn still waits: this line is not its question, and from now on it is no
+                // longer what the person's next words or its card answer (dropped when this turn ends).
+                _leftBehind |= HasPendingConfirmation;
                 _host.Publish(text, route);
                 return;
             }
@@ -821,6 +831,18 @@ internal sealed class NativeTurnLoop
     {
         if (_askedAt == ConfirmationAsk.Unpublished)
         {
+            DropPending();
+        }
+    }
+
+    // The person's turn published a line after the question of a call that still waits (Publish): the call is dropped,
+    // never left for words that answer that line. Saying it again is the model's: it calls the tool again, and the kernel
+    // asks again for that exact invocation.
+    private void DropLeftBehind()
+    {
+        if (_leftBehind)
+        {
+            _leftBehind = false;
             DropPending();
         }
     }
