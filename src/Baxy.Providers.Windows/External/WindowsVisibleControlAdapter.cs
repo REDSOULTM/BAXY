@@ -978,12 +978,15 @@ internal sealed class WindowsVisibleControlAdapter
             List<ViewControl> controls = ParseControls(root);
             List<ViewControl> disabled = ParseControls(root, "disabled");
             string title = ReadString(root, "window");
+            bool afterCut = root.TryGetProperty("controlCount", out JsonElement total) && total.ValueKind == JsonValueKind.Number
+                && total.TryGetInt32(out int counted) && counted > controls.Count;
             lock (_viewLock)
             {
                 if (!ReferenceEquals(_lastView, before))
                     return null;
                 _lastView = new LastView(window, controls)
                 {
+                    Cut = afterCut,
                     TreeTitle = title,
                     Limit = before.Limit,
                     Wanted = before.Wanted,
@@ -993,7 +996,7 @@ internal sealed class WindowsVisibleControlAdapter
                 _viewsRead++;
             }
 
-            return ViewDifference(before.Controls, before.TreeTitle, controls, disabled, title);
+            return ViewDifference(before.Controls, before.TreeTitle, controls, disabled, title, cut: before.Cut || afterCut);
         }
     }
 
@@ -1003,6 +1006,9 @@ internal sealed class WindowsVisibleControlAdapter
     /// «gone» (no longer listed; «disabled» when the window now lists it disabled) and «moved» (the same control at
     /// another index), each with its index in the new view; «title» when the window's name changed. At most
     /// <paramref name="cap"/> entries, in that order, and «omitted» the rest; «same» when nothing differs.
+    /// Renew al máximo (w8): with either view cut at its cap (<paramref name="cut"/>: the window had more controls than
+    /// it listed), a control not listed after is not «gone» (a click that adds three pushes three others past the cap)
+    /// and nothing unlisted is known the same: no «gone», «sameListed» in place of «same», and «cut».
     /// </summary>
     internal static JsonElement ViewDifference(
         IReadOnlyList<ViewControl> before,
@@ -1010,7 +1016,8 @@ internal sealed class WindowsVisibleControlAdapter
         IReadOnlyList<ViewControl> after,
         IReadOnlyList<ViewControl> disabledAfter,
         string afterTitle,
-        int cap = AfterViewCap)
+        int cap = AfterViewCap,
+        bool cut = false)
     {
         var matched = new ViewControl?[after.Count];
         var used = new HashSet<ViewControl>(ReferenceEqualityComparer.Instance);
@@ -1049,7 +1056,7 @@ internal sealed class WindowsVisibleControlAdapter
                 moved.Add($"[{now.Index}] {now.Kind} «{now.Name}» was [{was.Index}]");
         }
 
-        List<string> gone = [.. before.Where(was => !used.Contains(was)).Select(was =>
+        List<string> gone = cut ? [] : [.. before.Where(was => !used.Contains(was)).Select(was =>
             $"{was.Kind} «{was.Name}»"
             + (disabledAfter.Any(off => off.Kind == was.Kind && off.Name == was.Name) ? " disabled" : string.Empty))];
         bool titled = beforeTitle.Length > 0 && afterTitle.Length > 0 && beforeTitle != afterTitle;
@@ -1059,7 +1066,9 @@ internal sealed class WindowsVisibleControlAdapter
             writer.WriteStartObject();
             if (!titled && changed.Count + appeared.Count + gone.Count + moved.Count == 0)
             {
-                writer.WriteBoolean("same", true);
+                writer.WriteBoolean(cut ? "sameListed" : "same", true);
+                if (cut)
+                    writer.WriteBoolean("cut", true);
                 writer.WriteEndObject();
                 return;
             }
@@ -1073,6 +1082,8 @@ internal sealed class WindowsVisibleControlAdapter
             int omitted = changed.Count + appeared.Count + gone.Count + moved.Count - (cap - room);
             if (omitted > 0)
                 writer.WriteNumber("omitted", omitted);
+            if (cut)
+                writer.WriteBoolean("cut", true);
             writer.WriteEndObject();
 
             void WriteList(string name, List<string> entries)
@@ -2436,6 +2447,7 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 _lastView = new LastView(hwnd, controls)
                 {
+                    Cut = counted > controls.Count,
                     TreeTitle = treeTitle,
                     Limit = limit,
                     Wanted = wanted,
@@ -4088,6 +4100,9 @@ internal sealed class WindowsVisibleControlAdapter
         // Renew al máximo (7.1): how the look read the window (its limit, words and cut), so the read after an act reads
         // it the same way and numbers it alike, and the window's name in its tree, which that read compares.
         internal string TreeTitle { get; init; } = string.Empty;
+
+        // Renew al máximo (w8): the window had more controls than this view listed (its cap).
+        internal bool Cut { get; init; }
 
         internal int Limit { get; init; } = 60;
 
