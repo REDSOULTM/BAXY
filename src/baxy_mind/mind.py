@@ -196,7 +196,19 @@ def _outcome(observation: str, read: bool = False) -> str:
         code = f" ({error})" if isinstance(error, str) and error else ""
         return told + code + where + before + seen + _read_in_part(shown)
     error = facts.get("error") or facts.get("cause")
-    return (f"falló ({error})" if error else "falló") + reread
+    return (f"falló ({error})" if error else "falló") + reread + _looked_elsewhere(shown)
+
+
+# Renew al máximo (w8): file_open of a path that was not there looked only at that path (searchedElsewhere false), and the
+# answer was «no está ahí ni en ningún otro lugar que revisé». What a not-found looked at is told in the outcome line.
+NOT_SEARCHED_ELSEWHERE = "; sólo se miró la ruta nombrada: no se buscó en ningún otro lugar"
+SEARCH_CUT = "; la búsqueda en otros lugares no se completó: lo no visto puede estar ahí"
+
+
+def _looked_elsewhere(shown: dict[str, Any]) -> str:
+    if shown.get("searchedElsewhere") is False:
+        return NOT_SEARCHED_ELSEWHERE
+    return SEARCH_CUT if shown.get("searchComplete") is False else ""
 
 
 def _number(facts: dict[str, Any], key: str) -> int | None:
