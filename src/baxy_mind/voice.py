@@ -7,7 +7,8 @@ TranscripcionBaxy's winner with its configuration. While BAXY speaks the microph
 so its own voice («Hola, soy BAXY») never wakes it or enters a request.
 
 Paths (per PC): BAXY_RENEW_WAKE_DIR (the baxy-wake-k4 package), BAXY_RENEW_STT_DIR (parakeet-ultra-sherpa-int8-oli),
-BAXY_RENEW_MIC (an input device index; the default microphone otherwise).
+BAXY_RENEW_MIC (an input device index; the default microphone otherwise). Benches: BAXY_RENEW_VOICE_FEED hears WAV files
+in its place, in real time (voice_feed.py, scripts/voice/hablar.py).
 """
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ import threading
 from pathlib import Path
 from typing import Any, Callable
 
-from . import stt_hotwords
+from . import stt_hotwords, voice_feed
 from .voice_output import Speech
 
 for _var in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -114,6 +115,8 @@ class Voice:
         self._names: list[str] | None = None
         self._named = threading.Event()
         self._input = False
+        self._wav_feed: voice_feed.Feed | None = None  # WAV files heard instead of the microphone (benches)
+        self._answered = 0              # answers that began to sound (not notices): the feed waits for them
         self.failure = ""
         self._mode = "off"
         self._resume = "off"            # the mode a direct request returns to
@@ -179,12 +182,7 @@ class Voice:
     def _load(self) -> None:
         try:
             import sherpa_onnx
-            import sounddevice as sd
-            try:
-                sd.query_devices(self._device(), kind="input")
-                self._input = True
-            except Exception as error:  # noqa: BLE001
-                self.failure = f"microphone: {error!r}"
+            self._hear_from()
             wake = Path(os.environ.get("BAXY_RENEW_WAKE_DIR", ""))
             if (wake / "config.json").is_file():
                 spec = importlib.util.spec_from_file_location("baxy_wake_k4", wake / "baxy_wake_runtime.py")
@@ -210,6 +208,23 @@ class Voice:
                 sys.stderr.write(f"baxy_mind_renew_voice: {self.failure}\n")
                 sys.stderr.flush()
             self._loaded.set()
+
+    def _hear_from(self) -> None:
+        """The input: the feed BAXY_RENEW_VOICE_FEED names (then the microphone is never opened), or the microphone."""
+        try:
+            self._wav_feed = voice_feed.from_env(RATE, BLOCK, VOICE_RMS, self._quiet, lambda: self._answered)
+        except Exception as error:  # noqa: BLE001 - a feed that cannot be heard is told as the missing input
+            self.failure = f"voice feed: {error!r}"
+            return
+        if self._wav_feed is not None:
+            self._input = True
+            return
+        import sounddevice as sd
+        try:
+            sd.query_devices(self._device(), kind="input")
+            self._input = True
+        except Exception as error:  # noqa: BLE001
+            self.failure = f"microphone: {error!r}"
 
     def hear_names(self, names: list[str]) -> None:
         """The installed applications and games the model is shown (catalog.configure, which the App sends before any
@@ -249,13 +264,16 @@ class Voice:
     def _open(self) -> None:
         if self._stream is not None:
             return
-        import sounddevice as sd
 
         def callback(indata, _frames, _when, _status) -> None:
             self._blocks.put(np.array(indata[:, 0], dtype=np.float32, copy=True))  # the buffer is only valid here
 
-        self._stream = sd.InputStream(device=self._device(), samplerate=RATE, channels=1, dtype="float32",
-                                      blocksize=BLOCK, callback=callback)
+        if self._wav_feed is not None:
+            self._stream = self._wav_feed.open(callback)
+        else:
+            import sounddevice as sd
+            self._stream = sd.InputStream(device=self._device(), samplerate=RATE, channels=1, dtype="float32",
+                                          blocksize=BLOCK, callback=callback)
         self._stream.start()
 
     def _close(self) -> None:
@@ -351,6 +369,11 @@ class Voice:
         tail = WORD_TAIL_S if self._mode == "wake" else 0.0
         voiced = [i for i in voiced if i * BLOCK / RATE >= tail]
         return start + (voiced[-1] + 1) * BLOCK / RATE if voiced else None
+
+    def _quiet(self) -> bool:
+        """For the feed: BAXY is silent and no request is hearing voice (one waiting for its words is quiet)."""
+        with self._lock:
+            return not self.speech.speaking and (self._start is None or self._voice_end(self._start) is None)
 
     def _over(self, start: float) -> bool:
         if self._released:
@@ -454,6 +477,8 @@ class Voice:
         """An utterance's first sound: the App's notice of a silent turn counts until its answer is heard (al máximo
         9.2b), so it is told whether this one is the notice."""
         self._write({"type": "voice.event", "event": "sound", "mode": self._mode, "notice": notice})
+        if not notice:
+            self._answered += 1
         self._on_spoken(queued, sounded, notice)
 
     def _lip(self, lip: dict[str, Any]) -> None:
