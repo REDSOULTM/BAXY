@@ -111,7 +111,7 @@ def converse(conductor: Conductor, case: dict) -> list[dict]:
     turns = []
     for number, turn in enumerate(case.get("turns") or [], start=1):
         if number > 1:
-            wait_silence(conductor, 30)
+            wait_silence(conductor)
         events = run_turn(conductor, {"text": turn["text"]}, 180)
         end = next((e for e in events if e["type"] == "turn.end"), {})
         reply = turn.get("reply_if_confirmation")
@@ -132,7 +132,7 @@ def converse(conductor: Conductor, case: dict) -> list[dict]:
                         for e in events if e["type"] == "step"
                         or (e["type"] == "message" and e["speaker"] in ("person", "baxy"))],
         })
-    wait_silence(conductor, 30)
+    wait_silence(conductor)
     return turns
 
 

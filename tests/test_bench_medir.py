@@ -232,3 +232,12 @@ def test_the_transcript_keeps_the_whole_observation_for_the_reading_by_hand() ->
     event = {"operation": "file.read", "arguments": {}, "status": "completed", "verified": True,
              "observation": "x" * 5000}
     assert len(bench_falsedades.step_of(event)["observed"]) == 5000
+
+
+def test_a_long_answer_is_waited_for_until_it_ends(monkeypatch) -> None:
+    import bench_e2e
+    waited = []
+    events = SimpleNamespace(all=[{"type": "speech.start"}], poll=lambda: [],
+                             wait=lambda predicate, timeout: waited.append(timeout))
+    bench_e2e.wait_silence(SimpleNamespace(events=events))
+    assert waited == [bench_e2e.SILENCE_S] and bench_e2e.SILENCE_S >= 120

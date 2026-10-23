@@ -294,7 +294,13 @@ def run_turn(conductor: Conductor, command: dict, timeout: float) -> list[dict]:
     return events
 
 
-def wait_silence(conductor: Conductor, timeout: float) -> None:
+# Audit w8-medir: how long an answer may go on sounding before the next turn or the oracles. It was 30 s; at a usual
+# speaking rate (about 14 characters a second) an answer past ~400 characters was still sounding, so the next turn cut
+# it (its speech «cancelled») or the oracles read it unfinished, and must_speak failed an answer said whole.
+SILENCE_S = 120.0
+
+
+def wait_silence(conductor: Conductor, timeout: float = SILENCE_S) -> None:
     """Until the last utterance that started has ended (or nothing is sounding)."""
     conductor.events.poll()
     last_start = max((i for i, e in enumerate(conductor.events.all) if e["type"] == "speech.start"), default=None)
@@ -384,7 +390,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict,
     turns = case.get("turns") or []
     for number, turn in enumerate(turns, start=1):
         if number > 1 and turn.get("barge_in_after_ms") is None:
-            wait_silence(conductor, 30)
+            wait_silence(conductor)
         turn_from.append(len(conductor.events.all))
         if turn.get("barge_in_after_ms") is not None:
             # Sent N ms after the previous answer started to sound (not its notice); the previous turn must have sounded.
@@ -413,7 +419,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict,
         turn_events.append(events)
 
     # Let the last answer finish sounding before the voice rule and the oracles read the world.
-    wait_silence(conductor, 30)
+    wait_silence(conductor)
     conductor.events.poll()
 
     speech = utterances(conductor.events.all, turn_from, replies)
