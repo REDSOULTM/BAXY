@@ -86,6 +86,8 @@ def test_closing_the_voice_never_closes_the_output_while_it_is_written(
     ("Listo, Spotify está abierto. ¿Quieres que suba el volumen?", 2),  # a short reply: its first sentence sounds sooner
     ("Listo. Spotify está abierto y sonando.", 1),                      # a word or two first: one call (issue #30)
     ("Spotify está abierto y sonando.", 1),
+    # a word or two first, then more sentences: the opener goes with the next one only, and the rest are their own
+    ("Listo. Spotify está abierto y sonando. La canción es de Queen. Quedan dos minutos.", 3),
 ])
 def test_a_first_sentence_of_more_than_a_few_words_is_synthesized_alone(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch, reply: str, takes: int) -> None:
@@ -97,3 +99,10 @@ def test_a_first_sentence_of_more_than_a_few_words_is_synthesized_alone(
     speech = Speech(lambda speaking: None, lambda queued, sounded, notice: None)
     list(speech._sentences(reply))
     assert len(synthesized) == takes
+
+
+def test_joining_the_whole_reply_after_a_short_opener_stays_behind_its_switch(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("BAXY_RENEW_TTS_JOIN_ALL", "1")
+    test_a_first_sentence_of_more_than_a_few_words_is_synthesized_alone(
+        tmp_path, monkeypatch, "Listo. Spotify está abierto y sonando. La canción es de Queen.", 1)
