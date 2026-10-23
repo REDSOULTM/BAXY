@@ -76,6 +76,26 @@ public sealed class ScreenViewProjectionTests
             "[6] Button «Buscar»\n"));
     }
 
+    // BAXY Renew al máximo (F019, E015): Steam's library read only by OCR («Página principal» is the library's own
+    // home) was told «la página principal de Steam» or «la tienda». The place the reader said is in sight comes right
+    // after the window, with the text that tells it; a look that said none says no line.
+    [Test]
+    public void ThePlaceInSightIsSaidRightAfterTheWindow()
+    {
+        string drawn = Steam.Replace(
+            "\"controls\":[",
+            "\"place\":{\"application\":\"Steam\",\"name\":\"library\",\"shown\":\"Página principal\"},\"controls\":[");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(View(drawn), Does.StartWith(
+                "Ventana «Steam» (steamwebhelper, window 77), al frente\n" +
+                "Lugar a la vista: library de Steam (sólo ahí sale «Página principal»)\n" +
+                "Seleccionados o activados: "));
+            Assert.That(View(Steam), Does.Not.Contain("Lugar a la vista"));
+        });
+    }
+
     private static string View(string lookJson)
     {
         using JsonDocument look = JsonDocument.Parse(lookJson);

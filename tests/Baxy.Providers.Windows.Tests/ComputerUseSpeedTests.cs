@@ -1163,6 +1163,9 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
     // Called with the characters typed so far, before each one.
     internal Action<int>? EachCharacter { get; init; }
 
+    // Called with each character once it was sent (keepGoing let it go), in order.
+    internal Action<char>? EachSent { get; init; }
+
     private bool _typed;
 
     // The window in front from now on, when something moved it (null: Front, as typing left it).
@@ -1194,6 +1197,7 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
             }
             if (!keepGoing())
                 break;
+            EachSent?.Invoke(text[typed]);
             typed++;
         }
 

@@ -7,7 +7,8 @@ namespace Baxy.App;
 /// <summary>
 /// How the model reads a look at an application window (<c>input.visible.controls</c>): one line per control with the
 /// index it clicks by, its kind, name, zone of the window (when the reader gave it) and state, after one line with the
-/// controls the reader marked as selected or on, then the text on screen grouped top, middle and bottom in reading
+/// place of the application the reader said is in sight and one with the controls the reader marked as selected or on,
+/// then the text on screen grouped top, middle and bottom in reading
 /// order. The reader's own bookkeeping is left out: version, ok, elapsedMs, authority, the name of the text's reader
 /// (textAuthority; only its absence or its cut is said), and of the window its processId, its family of processes and the
 /// process of the window covering it. The model acts by index or label, and a 4B reads a short text view far better
@@ -114,6 +115,15 @@ internal static class ScreenViewProjection
             {
                 text.Append("Foco: ").Append(Control(focused)).Append('\n');
             }
+        }
+
+        // BAXY Renew al máximo (F019, E015: Steam's library home, «Página principal», told «la página principal de
+        // Steam» or «la tienda»): the place of the application the reader said is in sight, by the text only it shows.
+        if (view["place"] is JsonObject place)
+        {
+            text.Append("Lugar a la vista: ").Append((string?)place["name"]).Append(" de ")
+                .Append((string?)place["application"]).Append(" (sólo ahí sale «").Append((string?)place["shown"])
+                .Append("»)\n");
         }
 
         // BAXY Renew al máximo P8.4 (sonda F019: «quedó en la tienda» with the library's tab selected): what the reader
