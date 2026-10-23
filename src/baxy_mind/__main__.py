@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 
 from . import protocol
+from .early import Anticipation, early_silence, wake_warm
 from .llm_server import LlmServer
 from .mind import Mind
 from .system_one import SystemOne
@@ -78,7 +79,24 @@ def main() -> int:
                   sound_at=(_dt.datetime.now() + _dt.timedelta(seconds=sounded - time.perf_counter()))
                   .isoformat(timespec="milliseconds"))
 
-    voice = Voice(protocol.write_message, spoken)  # loads beside the model; turns never wait for it
+    # The reader answers voice.speak, voice.cancel and voice.status as they arrive, so they never wait for an inference
+    # (the App's notice at 2 s of silence and a barge-in's cancel reached the voice only after the model finished, round
+    # 2 of nb-aviso); every other request keeps its order on this loop, as ("request", when it arrived, the message).
+    # None ends it (the App closed stdin); an int is the exit code (a protocol violation, or the pipe failing). The voice
+    # puts its own items here too (al máximo, palancas 2 y 5, early.py): ("early", n, text), ("cancel", n), ("wake",).
+    pending: queue.Queue[tuple | int | None] = queue.Queue()
+    anticipation = Anticipation(mind, warm=wake_warm())
+    early_s = early_silence()
+
+    def early(seq: int, text: str | None) -> None:
+        if text is None:
+            anticipation.cancel(seq)  # stops a decision being made now; the loop puts back one already made
+            pending.put(("cancel", seq))
+        else:
+            pending.put(("early", seq, text))
+
+    voice = Voice(protocol.write_message, spoken, on_early=early if early_s else None, early_s=early_s or 0.0,
+                  on_wake=(lambda: pending.put(("wake",))) if anticipation.warm else None)  # loads beside the model
     mind.foresee = voice.speech.foresee  # the last answer's first sentence is synthesized while it is written
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL,
@@ -87,12 +105,6 @@ def main() -> int:
                      "session.new", "session.export", "session.load", "trace.forget",
                      "voice.start", "voice.stop", "voice.release", "voice.status", "voice.speak", "voice.cancel"],
     })
-    # The reader answers voice.speak, voice.cancel and voice.status as they arrive, so they never wait for an inference
-    # (the App's notice at 2 s of silence and a barge-in's cancel reached the voice only after the model finished, round
-    # 2 of nb-aviso); every other request keeps its order on this loop. None ends it (the App closed stdin); an int is
-    # the exit code (a protocol violation, or the pipe failing).
-    pending: queue.Queue[dict | int | None] = queue.Queue()
-
     def read() -> None:
         try:
             while True:
@@ -128,7 +140,7 @@ def main() -> int:
                     voice.release()
                     protocol.write_message({"type": "voice.released", "id": message.get("id")})
                 else:
-                    pending.put(message)
+                    pending.put(("request", time.perf_counter(), message))
         except Exception as error:  # noqa: BLE001 - the pipe failed: the loop ends instead of waiting forever
             sys.stderr.write(f"baxy_mind_renew_failure:reader:{error!r}\n")
             sys.stderr.flush()
@@ -137,16 +149,38 @@ def main() -> int:
     threading.Thread(target=read, name="mind-reader", daemon=True).start()
     try:
         while True:
-            message = pending.get()
-            if isinstance(message, int):
-                return message
-            if message is None:
+            try:
+                item = pending.get(timeout=anticipation.patience())
+            except queue.Empty:
+                anticipation.expire()  # an early decision nobody asked for is put back
+                continue
+            if isinstance(item, int):
+                return item
+            if item is None:
                 break
+            if item[0] != "request":
+                # The voice's own items, between requests, on their own budget.
+                server.deadline = time.monotonic() + LlmServer.REQUEST_SECONDS
+                try:
+                    if item[0] == "early":
+                        anticipation.speculate(item[1], item[2])
+                    elif item[0] == "cancel":
+                        anticipation.drop("cancelled", item[1])
+                    elif item[0] == "wake":
+                        anticipation.wake()
+                except Exception as error:  # noqa: BLE001 - the requests decide as always
+                    sys.stderr.write(f"baxy_mind_renew_failure:{item[0]}:{error!r}\n")
+                    sys.stderr.flush()
+                continue
+            _, arrived, message = item
             request_id, kind = message.get("id"), str(message.get("type"))
             # Review 2026-10-22: a request's calls to the model share one budget under the App's 30 s, except the
             # warm-up and a kept session's load (LlmServer.REQUEST_SECONDS).
             server.deadline = (None if kind in ("catalog.configure", "session.load")
                                else time.monotonic() + LlmServer.REQUEST_SECONDS)
+            # Al máximo, palanca 2: a decision made early is this request's reply when it is the one it would make;
+            # any other request (a voice request aside) finds the mind as it was before it.
+            held = anticipation.settle(kind, message, arrived) if kind not in ("voice.start", "voice.stop") else None
             try:
                 if kind == "catalog.configure":
                     count = mind.configure(message)
@@ -167,8 +201,8 @@ def main() -> int:
                                             "notice": mind.notice})
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
-                    protocol.write_message(mind.decide(request_id, str(message.get("text") or ""),
-                                                       message.get("pendingConfirmation")))
+                    protocol.write_message(held or anticipation.decide(request_id, str(message.get("text") or ""),
+                                                                       message.get("pendingConfirmation")))
                 elif kind == "turn.continue":
                     # After a tool the answer may come long after the output closed (HOLD_S 20 s; file.find 11-14 s,
                     # web.fetch up to 160 s): it opens again (0.38 s on the PC) while the model writes it.
@@ -205,6 +239,8 @@ def main() -> int:
                     mode = str(message.get("mode") or "direct")
                     if voice.start(mode):
                         protocol.write_message({"type": "voice.started", "id": request_id, "mode": mode})
+                        if mode == "direct":
+                            anticipation.wake()  # palanca 5: the button opened a request, as «Baxy» does
                     else:
                         protocol.write_message(protocol.error_reply(request_id, "voice_unavailable",
                                                                     voice.failure or "voice_unavailable"))

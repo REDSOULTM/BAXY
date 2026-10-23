@@ -59,7 +59,7 @@ def test_the_output_opens_for_every_answer_of_a_person_s_turn(
             pass
 
     class FakeVoice:
-        def __init__(self, *args) -> None:
+        def __init__(self, *args, **kwargs) -> None:
             self.speech = FakeSpeech()
 
         def stop(self) -> None:

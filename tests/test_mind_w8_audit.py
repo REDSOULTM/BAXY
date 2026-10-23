@@ -241,7 +241,7 @@ def test_forgetting_everything_takes_the_trace_and_its_archive(tmp_path, monkeyp
             pass
 
     class Voice:
-        def __init__(self, *args) -> None:
+        def __init__(self, *args, **kwargs) -> None:
             self.speech = Speech()
 
         def stop(self) -> None:

@@ -58,6 +58,10 @@ class LlmServer:
         # state a vision question sets aside (BAXY_VISION_SLOT_DIR, the same folder).
         self.slot_dir = _slot_dir()
         self._settings: list[str] = []  # the server's arguments but its address, set by start (part of the prefix key)
+        # Al máximo, palancas 2 y 5 (early.py): the text the last prefill left in the slot, while no other call of this
+        # mind has used the slot since; None otherwise. A prefill of that same text is not sent again: with the slot
+        # already holding all of it, a hybrid model must go back to a checkpoint to read its last token again.
+        self.resident: str | None = None
 
     @property
     def name(self) -> str:
@@ -145,6 +149,7 @@ class LlmServer:
         """One chat completion on the one slot, whose prefix stays cached between turns. With ``on_text`` it streams
         (_stream) and returns the same reply, unless it asks for token probabilities (below)."""
         self.wait_ready(self._within(timeout))
+        self.resident = None
         # The doubt (doubt.read) reads every token's logprobs. Streamed, b11609 sends a token's logprobs only on a
         # chunk whose parse adds a difference (server-task.cpp:1136-1145; the first token's always, with the role):
         # the tokens of «<tool_call>», «<function=» and a name being parsed, and text the partial parser holds back,
@@ -257,6 +262,7 @@ class LlmServer:
     def complete_name(self, prompt: str, written: str, timeout: float = 10.0) -> str:
         """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:
         the chat's own prompt (template) plus that text, stopped at the name's end."""
+        self.resident = None
         reply = self._post("/completion", {"prompt": prompt + written, "n_predict": 24, "temperature": 0.0,
                                            "stop": [">", "\n"], "cache_prompt": True, "id_slot": 0}, timeout)
         return str(reply.get("content", ""))
@@ -265,10 +271,16 @@ class LlmServer:
         """``prompt`` (a chat's own text, as /apply-template renders it) read into the slot with nothing written: one
         token to predict, sampled and never decoded, so the slot then holds exactly the prompt's tokens (the warm-up's
         max_tokens 1 left n_tokens equal to its prompt's, llama-server.log). Tokenized as the chat's own prompt is
-        (special tokens parsed, no BOS for this model)."""
+        (special tokens parsed, no BOS for this model). The text the slot already holds (``resident``) is not sent
+        again: its reply then has no timings and says ``resident``."""
         self.wait_ready(self._within(timeout))
-        return self._post("/completion", {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True,
-                                          "id_slot": 0}, timeout)
+        if prompt == self.resident:
+            return {"resident": True}
+        self.resident = None
+        reply = self._post("/completion", {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True,
+                                           "id_slot": 0}, timeout)
+        self.resident = prompt
+        return reply
 
     def fill_call(self, body: dict[str, Any], wire: str, timeout: float = 30.0) -> dict[str, Any] | None:
         """The model's arguments for one tool another layer chose (System One, piece A): the same chat, with the call
@@ -284,6 +296,7 @@ class LlmServer:
                    "messages": messages, "tool_choice": "required", "parallel_tool_calls": False,
                    "continue_final_message": True, "add_generation_prompt": False, "max_tokens": 300,
                    "temperature": 0.0, "id_slot": 0, "cache_prompt": True}
+        self.resident = None
         reply = self._post("/v1/chat/completions", request, timeout)
         calls = (reply.get("choices") or [{}])[0].get("message", {}).get("tool_calls") or []
         if not calls:
@@ -343,6 +356,7 @@ class LlmServer:
             return None
         if not isinstance(facts, dict) or not state.is_file():
             return None
+        self.resident = None
         try:
             reply = self._post("/slots/0?action=restore", {"filename": state.name}, 120)
         except (OSError, ValueError, http.client.HTTPException):
