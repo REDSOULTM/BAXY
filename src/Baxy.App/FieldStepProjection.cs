@@ -205,15 +205,17 @@ internal static class FieldStepProjection
     }
 
     /// <summary>The Sí/No card of a call waiting for the person (design: {risk, title, target, expires}), and whether
-    /// an earlier attempt of it may already have happened (the kernel asks again: <paramref name="effectStarted"/>).</summary>
+    /// an earlier attempt of it may already have happened (the kernel asks again: <paramref name="effectStarted"/>).
+    /// <paramref name="cause"/>: why the person's turn held it (NetworkEgress), said before its risk.</summary>
     internal static JsonObject Card(string id, string kind, string operation, JsonObject arguments, string risk,
-        DateTimeOffset expiresUtc, string? context, bool effectStarted = false) => new()
+        DateTimeOffset expiresUtc, string? context, bool effectStarted = false, string? cause = null) => new()
     {
         ["who"] = "card",
         ["id"] = id,
         ["ts"] = DateTimeOffset.Now.ToString("HH:mm", CultureInfo.InvariantCulture),
         ["kind"] = kind,
-        ["risk"] = RiskLabel(operation, risk, arguments),
+        ["risk"] = string.Join(" · ", new[] { CauseLabel(cause), RiskLabel(operation, risk, arguments) }
+            .Where(static label => label is not null)) is { Length: > 0 } said ? said : null,
         ["title"] = Title(operation),
         ["target"] = Target(arguments),
         ["context"] = context,
@@ -316,6 +318,16 @@ internal static class FieldStepProjection
         OperationRisks.PrivacySensitive => "toca datos privados",
         _ when operation == "shell.command.run" => "cambia el sistema",
         _ when operation is "input.visible.click" or "input.key.press" && Target(arguments).Length > 0 => "sale al mundo o no se deshace",
+        _ => null,
+    };
+
+    // Auditoría de la App (2026-10-23): a call the person's turn held (a read of a page, a game) has no risk of its own
+    // to show, and its card said nothing of why it asked; the cause NetworkEgress gave the model is said.
+    private static string? CauseLabel(string? cause) => cause switch
+    {
+        "host_not_from_session" => "va a un sitio que nadie dio",
+        "sends_remembered_value" => "envía un dato de tu memoria",
+        "game_title_not_said" => "un juego que no nombraste",
         _ => null,
     };
 

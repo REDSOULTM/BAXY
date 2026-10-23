@@ -207,6 +207,20 @@ public sealed class FieldStepProjectionTests
         });
     }
 
+    // Auditoría de la App: a read of a page held by the person's own turn has no risk label; its card says why it asks.
+    [TestCase("host_not_from_session", "web.fetch", "va a un sitio que nadie dio")]
+    [TestCase("sends_remembered_value", "web.search", "envía un dato de tu memoria")]
+    [TestCase("game_title_not_said", "game.launch", "un juego que no nombraste")]
+    [TestCase(null, "web.fetch", null)]
+    public void TheCardOfACallThePersonsTurnHeldSaysWhy(string? cause, string operation, string? said)
+    {
+        Assert.That(ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor), Is.True);
+        JsonObject card = FieldStepProjection.Card("k1", "confirm", operation, new JsonObject(), descriptor!.Risk,
+            DateTimeOffset.UtcNow.AddMinutes(2), context: null, cause: cause);
+
+        Assert.That((string?)card["risk"], Is.EqualTo(said));
+    }
+
     internal static JsonObject Finished(string status, bool verified, JsonObject facts, string? errorCode = null)
     {
         var step = new NativeTurnStep(Operation, new JsonObject(), status, verified, errorCode, 5, facts.ToJsonString(), "c1",

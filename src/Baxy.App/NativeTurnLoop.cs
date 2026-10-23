@@ -22,14 +22,15 @@ internal sealed record NativeTurnStep(
 
 /// <summary>A call waiting for the person's Sí or No, as its question is published (the view's card).
 /// <paramref name="EffectStarted"/>: the kernel asks again for a call whose earlier attempt may have happened
-/// (reconciliationRequired).</summary>
+/// (reconciliationRequired). <paramref name="Cause"/>: why the person's own turn held it (NetworkEgress's code).</summary>
 internal sealed record NativeTurnConfirmation(
     string Operation,
     JsonObject Arguments,
     string Risk,
     DateTimeOffset ExpiresUtc,
     bool Proposal,
-    bool EffectStarted = false);
+    bool EffectStarted = false,
+    string? Cause = null);
 
 /// <summary>
 /// BAXY Renew's harness: the native tool loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop). The
@@ -117,8 +118,10 @@ internal sealed class NativeTurnLoop
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
-    // A call held in a heartbeat is its proposal; one held in the person's turn (NetworkEgress) asks as a confirmation.
+    // A call held in a heartbeat is its proposal; one held in the person's turn (NetworkEgress) asks as a confirmation,
+    // and its card says why (_proposalCause).
     private bool _proposalByBeat;
+    private string? _proposalCause;
     private bool _beat;
     // The person's answer is the person's: it answers only a call whose question was published before their words or
     // their press arrived (ConfirmationAsk.Answers: _askedAt before _personAt, both Stopwatch timestamps;
@@ -420,7 +423,7 @@ internal sealed class NativeTurnLoop
         bool held = ReferenceEquals(prepared, _proposal);
         return new NativeTurnConfirmation(prepared.OperationName, PrivateArguments(prepared), descriptor.Risk,
             held ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, held && _proposalByBeat,
-            EffectStarted: !held && _pending!.ReconciliationRequired);
+            EffectStarted: !held && _pending!.ReconciliationRequired, Cause: held ? _proposalCause : null);
     }
 
     private void Resolved(string outcome)
@@ -538,6 +541,7 @@ internal sealed class NativeTurnLoop
             // call is held for the person's «sí», untouched, and the model words the question.
             _proposal = prepared;
             _proposalByBeat = _beat;
+            _proposalCause = egress;
             _proposalExpiresUtc = _time.GetUtcNow() + ProposalLifetime;
             _askedAt = ConfirmationAsk.Unpublished;
             var held = new JsonObject { ["status"] = "needs_confirmation" };

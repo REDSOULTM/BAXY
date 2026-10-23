@@ -90,8 +90,8 @@ public sealed class NativeTurnLoopTests
         Assert.That(steps.Select(static step => (step.Operation, step.Status, step.Sent)),
             Is.EqualTo(new[] { ("web.fetch", "needs_confirmation", false) }));
         Assert.That((string?)JsonNode.Parse(steps[0].Observation)?["cause"], Is.EqualTo("host_not_from_session"));
-        Assert.That(asked.Select(static call => (call.Operation, call.Proposal)),
-            Is.EqualTo(new[] { ("web.fetch", false) }));
+        Assert.That(asked.Select(static call => (call.Operation, call.Proposal, call.Cause)),
+            Is.EqualTo(new[] { ("web.fetch", false, (string?)"host_not_from_session") }));
         Assert.That(loop.HasPendingConfirmation, Is.True);
     }
 
