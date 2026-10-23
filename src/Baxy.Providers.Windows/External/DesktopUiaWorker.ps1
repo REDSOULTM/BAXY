@@ -1310,19 +1310,25 @@ function Test-NameHolds([string]$name,[string[]]$aliases){
 # Choche' sin preguntar). Un control cuyo nombre pide la palabra de la persona (sale al mundo, llega a alguien o no se
 # deshace) cuando ninguna etiqueta la pide no se pulsa: se responde con su nombre, para que el paso lo nombre y RiskPolicy
 # pregunte. Patron y pista de atajo de RiskPolicy (peticion 'asks': AsksPattern, FoldHint); plegado como su Fold.
-function Get-AskFolded([string]$text,[string]$hint){
-  $form=$text.Normalize([Text.NormalizationForm]::FormD).ToLowerInvariant()
+# Auditoria del nucleo 2026-10-23: por compatibilidad (FormKD) y con las letras parecidas leidas como la latina que imitan
+# (RiskPolicy.Confusables, pares en la peticion 'asks'), como su Fold.
+function Get-AskFolded([string]$text,[string]$hint,[string]$confusables=''){
+  $form=$text.Normalize([Text.NormalizationForm]::FormKD).ToLowerInvariant()
   $kept=New-Object System.Text.StringBuilder
   foreach($ch in $form.ToCharArray()){
     $category=[Globalization.CharUnicodeInfo]::GetUnicodeCategory($ch)
-    if($category -ne [Globalization.UnicodeCategory]::NonSpacingMark -and $category -ne [Globalization.UnicodeCategory]::Format){ [void]$kept.Append($ch) }
+    if($category -ne [Globalization.UnicodeCategory]::NonSpacingMark -and $category -ne [Globalization.UnicodeCategory]::Format){
+      $latin=$ch
+      for($pair=0;$pair+1 -lt $confusables.Length;$pair+=2){ if($confusables[$pair] -ceq $ch){ $latin=$confusables[$pair+1]; break } }
+      [void]$kept.Append($latin)
+    }
   }
   $folded=$kept.ToString().Split([char[]]@(),[StringSplitOptions]::RemoveEmptyEntries) -join ' '
   return ([regex]::Replace($folded,$hint,'',[Text.RegularExpressions.RegexOptions]::CultureInvariant)).Trim()
 }
 function Test-Asks([string]$text,$asks){
   if([string]::IsNullOrWhiteSpace($text)){ return $false }
-  return [regex]::IsMatch((Get-AskFolded $text ([string]$asks.hint)),[string]$asks.pattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)
+  return [regex]::IsMatch((Get-AskFolded $text ([string]$asks.hint) ([string]$asks.confusables)),[string]$asks.pattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)
 }
 # Revision de V (H2, H3): lo que recibe la pulsacion. Su nombre crudo (Format-Name lo recorta a 80: un canal de voz de
 # nombre largo perdia 'Canal de voz' en el recorte) y su nombre mostrado; y, si no se pulsa por si mismo (sin Invoke,

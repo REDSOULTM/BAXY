@@ -3872,6 +3872,7 @@ internal sealed class WindowsVisibleControlAdapter
     {
         ["pattern"] = RiskPolicy.AsksPattern,
         ["hint"] = RiskPolicy.FoldHint,
+        ["confusables"] = RiskPolicy.Confusables,
     };
 
     private static bool ShouldKeep(ExternalCapabilityReceipt receipt) =>
