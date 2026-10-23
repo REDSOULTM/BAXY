@@ -231,3 +231,28 @@ def test_the_answer_to_a_doubt_question_goes_to_layer_2(tmp_path, monkeypatch) -
     assert mind.decide(2, "eso")["operation"] is None
     assert len(one.asked) == 1  # the answer: the decision model reads it, and it asks (with its other option)
     assert "app_close" in server.bodies[-1]["messages"][-1]["content"]
+
+
+@pytest.mark.parametrize("approve,p_name,held", [(True, 0.78, True), (True, 0.999, False), (False, 0.78, False)])
+def test_a_yes_the_model_is_not_sure_of_is_held_and_asked(tmp_path, monkeypatch, approve, p_name, held) -> None:
+    # Confirmaciones 2026-10-23: «sí pero el otro» approved a pending trash at 0.77-0.79; plain yeses were ≥ 0.998.
+    monkeypatch.delenv("BAXY_S1_DOUBT", raising=False)
+    monkeypatch.delenv("BAXY_CONFIRM_FLOOR", raising=False)
+    reply = _call("confirm_pending", {"approve": approve}, p_name)
+    reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", 1.0)  # the call itself is sure, as on the model
+    mind, server = _mind(tmp_path, [reply, _say("¿Cuál archivo quieres que mande a la papelera?")])
+    pending = {"operation": "filesystem.known.trash.named", "arguments": {"fileName": "notas.txt"}}
+    result = mind.decide(1, "sí pero el otro", pending)
+    if held:
+        assert result["kind"] == "conversation" and result["operation"] is None
+        assert "confirm_pending" in server.bodies[1]["messages"][-1]["content"]
+    else:
+        assert result["kind"] == "action" and result["operation"] == "confirmation.answer"
+        assert result["arguments"]["approve"] is approve
+
+
+def test_the_confirm_floor_can_be_turned_off(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_CONFIRM_FLOOR", "0")
+    mind, _ = _mind(tmp_path, [_call("confirm_pending", {"approve": True}, 0.5)])
+    result = mind.decide(1, "sí", {"operation": "app.close", "arguments": {"appId": "Paint"}})
+    assert result["operation"] == "confirmation.answer"

@@ -452,6 +452,12 @@ CUT_TEXT_FLOOR = 500
 # instead of 10 of 1,530 right ones (phase 0, 2026-10-21).
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
               "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
+# Renew al máximo (confirmaciones, 2026-10-23): a «sí» the model is not sure is one. On the real model (29 answers to a
+# pending trash of notas.txt, 3 seeds, int7) every plain yes («sí», «dale», «ya po», «okey», «go ahead», «zí») confirmed at
+# ≥ 0.998 and «sí pero el otro» at 0.77-0.79, which would have trashed the file the person had just said was not the
+# one; under this floor an approve:true is held and the model asks, so nothing runs on it. «sí no» confirmed at 0.99:
+# no confidence tells it apart (a limit, said so in the report). BAXY_CONFIRM_FLOOR sets it; 0 turns it off.
+CONFIRM_FLOOR = 0.95
 # Layer 2 (system_one.py): the model doubted and the decision model read the request otherwise.
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
                     "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
@@ -1380,15 +1386,17 @@ class Mind:
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
-        runs. Asking and confirming are never held: they
-        already put the person in the loop."""
-        if not self._doubted(stage, turn, final):
-            return None
-        if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
+        runs. Asking is never held: it already puts the person in the loop; confirming only when it approves under
+        CONFIRM_FLOOR, whatever System One's own thresholds."""
+        if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
             return None
         doubt = read_doubt(reply)
         if doubt is None:
             return None
+        if call["wire"] == CONFIRM["function"]["name"]:
+            floor = CONFIRM_FLOOR if os.environ.get("BAXY_CONFIRM_FLOOR") is None else _threshold("BAXY_CONFIRM_FLOOR")
+            return (DOUBT_NOTE.format(call=call["wire"])
+                    if call["arguments"].get("approve") is True and doubt["confidence"] < floor else None)
         # Al máximo, System One 2: layer 0 never holds a low_reversible call; its error is undone and the kernel verifies
         # it. On 26 runs of decision2 with System One (2026-10-22) it held 23, 22 of them right without System One (P040
         # ×7, P085 ×15) and none useful; read_only it holds still (24 useful against 5 harmful), and anything riskier.
