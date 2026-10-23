@@ -283,6 +283,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 walk.Reached || (content is null ? hits.Count > limit : hits.Count >= limit || scanLimitReached));
             writer.WriteBoolean("exhaustive", false);
             writer.WriteEndObject();
+            // Holdout v4 (falsedad, a partial read told as a whole one): a search that did not look at everything under
+            // its folders (the walk's time limit, the scan's file limit, the limit of hits it stops at, files it could not
+            // read as text) says so at its top, so a «no está» is told only of what was read.
+            bool skippedFiles = skippedTooLarge + skippedNotText + skippedUnreadable > 0;
+            if (walk.Reached || (content is not null && (scanLimitReached || hits.Count >= limit || skippedFiles)))
+                writer.WriteBoolean("readInPart", true);
             writer.WriteString("authority", content is null
                 ? "windows_known_folders_name_search_postread"
                 : "windows_known_folders_text_content_search_postread");
@@ -571,7 +577,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (TextFileEncoding.LooksBinary(bytes)) return ExternalJson.Failure(operation, "known_file_not_text");
         string full = TextFileEncoding.Decode(bytes);
         return ExternalJson.Success(operation, ReadResult(
-            file, "text", full.Length, LineCount(full), offset, Page(full, offset, maximumCharacters),
+            file, "text", full.Length, LineCount(full), offset, LinesBefore(full, offset),
+            Page(full, offset, maximumCharacters),
             writer =>
             {
                 writer.WriteNumber("bytes", bytes.Length);
@@ -661,7 +668,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         int textPages = IntOf(root, "textPages");
         int unreadPages = IntOf(root, "unreadPages");
         return ExternalJson.Success(operation, ReadResult(
-            file, "pdf", characters, totalLines, offset, text,
+            file, "pdf", characters, totalLines, offset, IntOf(root, "linesBefore"), text,
             writer =>
             {
                 writer.WriteNumber("pages", pages);
@@ -677,18 +684,24 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // What a read says before the text itself, so a cut observation still shows how much there is and where to go on:
     // the lines of the whole text and of the page returned, counted here (the 4B miscounted them, e2e p6 E018).
+    // Holdout v4 (falsedad): after pages up to line ~1,904 of 3,000 and a last read that failed, the answer was «revisé
+    // todo el archivo y no apareció». Which lines of the whole this page holds (fromLine, toLine), whether it reaches the
+    // end of the text (endReached), and, when it is not the whole text, readInPart: a text not in this page was not
+    // looked for in the rest (the mind's outcome line says «leído en parte» from it).
     private static JsonElement ReadResult(
         KnownEntry file,
         string kind,
         int characters,
         int totalLines,
         int offset,
+        int linesBefore,
         string text,
         Action<Utf8JsonWriter> kindFacts,
         string fileSha256,
         string authority) => ExternalJson.Create(writer =>
     {
         bool hasMore = offset + text.Length < characters;
+        int lines = LineCount(text);
         writer.WriteStartObject(); writer.WriteNumber("version", 1);
         writer.WriteString("kind", kind);
         writer.WriteString("reviewLabel", Path.GetFileName(file.Path));
@@ -696,10 +709,17 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         writer.WriteNumber("characters", characters);
         writer.WriteNumber("totalLines", totalLines);
         writer.WriteNumber("offset", offset);
-        writer.WriteNumber("lines", LineCount(text));
+        writer.WriteNumber("lines", lines);
+        if (lines > 0)
+        {
+            writer.WriteNumber("fromLine", linesBefore + 1);
+            writer.WriteNumber("toLine", linesBefore + lines);
+        }
         writer.WriteNumber("returnedCharacters", text.Length);
         writer.WriteBoolean("hasMore", hasMore);
         if (hasMore) writer.WriteNumber("nextOffset", offset + text.Length);
+        writer.WriteBoolean("endReached", !hasMore);
+        if (offset > 0 || hasMore) writer.WriteBoolean("readInPart", true);
         kindFacts(writer);
         writer.WriteString("fileSha256", fileSha256);
         writer.WriteString("text", text);
@@ -718,6 +738,18 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 lines++;
         }
         return text.Length > 0 && text[^1] is not ('\n' or '\r') ? lines + 1 : lines;
+    }
+
+    // The lines a text ends before offset (as LineCount counts their breaks): the page from offset starts on the next.
+    internal static int LinesBefore(string text, int offset)
+    {
+        int end = Math.Min(offset, text.Length), lines = 0;
+        for (int index = 0; index < end; index++)
+        {
+            if (text[index] == '\n' || (text[index] == '\r' && (index + 1 == text.Length || text[index + 1] != '\n')))
+                lines++;
+        }
+        return lines;
     }
 
     private static string Page(string full, int offset, int maximumCharacters)
@@ -1080,6 +1112,7 @@ def main() -> int:
             "unreadPages": unread,
             "characters": len(full),
             "lines": len(full.splitlines()),
+            "linesBefore": full.count("\n", 0, offset),
             "encrypted": encrypted,
             "text": full[offset:offset + maximum],
         }, ensure_ascii=False))

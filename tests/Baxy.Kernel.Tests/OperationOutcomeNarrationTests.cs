@@ -184,6 +184,43 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
+    // Holdout v4 (falsedad, «revisé todo el archivo» after part of it): a page the message cuts ends on the line its shown
+    // text reaches, is never the last one, and is read in part.
+    [Test]
+    public void ACutPageEndsOnTheLineItsShownTextReachesAndIsReadInPart()
+    {
+        string page = string.Concat(Enumerable.Range(0, 1_500).Select(static index => $"línea {index:D4}\n"));
+        JsonElement result = JsonSerializer.SerializeToElement(new
+        {
+            characters = page.Length,
+            totalLines = 1_500,
+            offset = 0,
+            lines = 1_500,
+            fromLine = 1,
+            toLine = 1_500,
+            returnedCharacters = page.Length,
+            hasMore = false,
+            endReached = true,
+            text = page,
+        });
+
+        using JsonDocument message = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("file.read", OperationOutcome.Success(result)));
+        JsonElement observed = message.RootElement.GetProperty("observed");
+        string shown = observed.GetProperty("text").GetString()!;
+        int shownLines = shown[..^1].Count(static character => character == '\n')
+            + (shown[..^1].EndsWith('\n') ? 0 : 1);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shown, Does.EndWith("…"));
+            Assert.That(observed.GetProperty("toLine").GetInt32(), Is.EqualTo(shownLines));
+            Assert.That(observed.GetProperty("toLine").GetInt32(), Is.LessThan(1_500));
+            Assert.That(observed.GetProperty("endReached").GetBoolean(), Is.False);
+            Assert.That(observed.GetProperty("readInPart").GetBoolean(), Is.True);
+        });
+    }
+
     // Round 1 (2026-10-15): a cut page keeps as much text as the message holds, not the first step's 2,000 characters.
     [Test]
     public void ACutPageKeepsAsMuchTextAsTheMessageHolds()

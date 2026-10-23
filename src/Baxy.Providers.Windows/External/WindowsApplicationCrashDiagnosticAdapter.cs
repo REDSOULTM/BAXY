@@ -58,11 +58,14 @@ internal sealed class WindowsApplicationCrashDiagnosticAdapter : IExternalOperat
           Start-Sleep -Milliseconds 120
           $second=@(Read-BaxyCrashEvents)
           $firstIds=@{};foreach($item in $first){$firstIds[[string]$item.recordId]=$true}
-          $stable=@($second|Where-Object {$firstIds.ContainsKey([string]$_.recordId)}|Select-Object -First $limit)
+          $both=@($second|Where-Object {$firstIds.ContainsKey([string]$_.recordId)})
+          $stable=@($both|Select-Object -First $limit)
           [pscustomobject]@{
             ok=$true
             firstObservationCount=$first.Count
             secondObservationCount=$second.Count
+            stableCount=$both.Count
+            readCap=[Math]::Min(200,$limit*4)
             events=$stable
           }|ConvertTo-Json -Depth 5 -Compress
         } catch {
@@ -78,6 +81,10 @@ internal sealed class WindowsApplicationCrashDiagnosticAdapter : IExternalOperat
 
     internal WindowsApplicationCrashDiagnosticAdapter(IExternalProcessRunner runner) =>
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
+
+    private static int IntOrZero(JsonElement root, string name) =>
+        root.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.Number
+        && value.TryGetInt32(out int number) ? number : 0;
 
     public bool CanHandle(string operation) =>
         operation == "system.application.crash.diagnose";
@@ -119,6 +126,18 @@ internal sealed class WindowsApplicationCrashDiagnosticAdapter : IExternalOperat
                     response.RootElement.GetProperty("firstObservationCount").GetInt32());
                 writer.WriteNumber("secondObservationCount",
                     response.RootElement.GetProperty("secondObservationCount").GetInt32());
+                // Holdout v4 (falsedad, a partial read told as a whole one): the log is read newest first up to readCap
+                // crash events of the window; when the read stopped there, older ones of the same hours were not read,
+                // and a crash not among those read may be among them (readInPart). eventsShown of eventsSeen: the
+                // events listed here of those both reads saw.
+                int first = response.RootElement.GetProperty("firstObservationCount").GetInt32();
+                int cap = IntOrZero(response.RootElement, "readCap");
+                int seen = IntOrZero(response.RootElement, "stableCount");
+                writer.WriteNumber("readCap", cap);
+                writer.WriteNumber("eventsSeen", seen);
+                writer.WriteNumber("eventsShown", events.ValueKind == JsonValueKind.Array ? events.GetArrayLength() : 0);
+                writer.WriteBoolean("endReached", cap == 0 || first < cap);
+                if (cap > 0 && first >= cap) writer.WriteBoolean("readInPart", true);
                 writer.WritePropertyName("events");
                 events.WriteTo(writer);
                 writer.WriteString("authority", "windows_application_eventlog_recordid_secondread");

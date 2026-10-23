@@ -599,7 +599,11 @@ public sealed class KnownFileToolsTests
             Assert.That(scope.GetProperty("filesScanned").GetInt32(), Is.EqualTo(4));
             Assert.That(scope.GetProperty("skippedNotText").GetInt32(), Is.EqualTo(1));
             Assert.That(scope.GetProperty("skippedTooLarge").GetInt32(), Is.EqualTo(1));
+            // Holdout v4 (falsedad): two files were not read as text, so the search read only part of the folder.
+            Assert.That(found.Result?.GetProperty("readInPart").GetBoolean(), Is.True);
             Assert.That(narrowed.Result?.GetProperty("count").GetInt32(), Is.Zero);
+            // Every *.md file was read as text: nothing read in part.
+            Assert.That(narrowed.Result?.TryGetProperty("readInPart", out _), Is.False);
         });
     }
 

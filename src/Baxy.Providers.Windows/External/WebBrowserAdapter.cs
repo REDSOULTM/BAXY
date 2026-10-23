@@ -347,6 +347,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteBoolean("hasMore", hasMore);
             if (hasMore)
                 writer.WriteNumber("nextOffset", start + text.Length);
+            // Holdout v4 (falsedad, a partial read told as a whole one): whether this page reaches the end of the page's
+            // text, and readInPart when it is not all of it (or the body itself was cut).
+            writer.WriteBoolean("endReached", !hasMore && !read.Truncated);
+            if (start > 0 || hasMore || read.Truncated) writer.WriteBoolean("readInPart", true);
             writer.WriteString("authority", "public_http_get_html_text");
             writer.WriteString("text", text);
             writer.WriteEndObject();

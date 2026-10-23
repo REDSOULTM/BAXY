@@ -190,9 +190,48 @@ def _outcome(observation: str, read: bool = False) -> str:
         # The App's own completed result it could not read (result_unreadable) keeps its code.
         error = facts.get("error")
         code = f" ({error})" if isinstance(error, str) and error else ""
-        return told + code + where + before + seen
+        return told + code + where + before + seen + _read_in_part(shown)
     error = facts.get("error") or facts.get("cause")
     return (f"falló ({error})" if error else "falló") + reread
+
+
+def _number(facts: dict[str, Any], key: str) -> int | None:
+    value = facts.get(key)
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+
+def _read_in_part(shown: dict[str, Any]) -> str:
+    """Holdout v4 (falsedad): pages of a file read up to line ~1,904 of 3,000, the last read failed, and the answer was
+    «revisé todo el archivo y no apareció». A read whose result says it holds only part of what it read (readInPart: a
+    page of a file or a web page, a search that did not read every file, a log read that stopped at its limit) is told so
+    in the outcome line, with how much of the total its own numbers give, and that a «no está» covers only that part."""
+    if shown.get("readInPart") is not True:
+        return ""
+    part = []
+    first, last, total = (_number(shown, k) for k in ("fromLine", "toLine", "totalLines"))
+    offset, returned = _number(shown, "offset"), _number(shown, "returnedCharacters")
+    characters = _number(shown, "characters")
+    characters = characters if characters is not None else _number(shown, "totalCharacters")
+    if first is not None and last is not None and total is not None:
+        part.append(f"líneas {first}–{last} de {total}")
+    elif offset is not None and characters is not None:
+        upto = offset + returned if returned is not None else _number(shown, "nextOffset")
+        if upto is not None:
+            part.append(f"caracteres {min(offset + 1, upto)}–{upto} de {characters}")
+    scope = shown.get("searchScope") if isinstance(shown.get("searchScope"), dict) else {}
+    scanned = _number(scope, "filesScanned")
+    if scanned is not None:
+        skipped = sum(_number(scope, k) or 0 for k in ("skippedTooLarge", "skippedNotText", "skippedUnreadable"))
+        part.append(f"{scanned} archivos recorridos" + (f", {skipped} de ellos sin leer su texto" if skipped else ""))
+    if scope.get("timeLimitReached") is True:
+        part.append("la búsqueda paró en su tiempo límite")
+    seen, cap = _number(shown, "eventsSeen"), _number(shown, "readCap")
+    if cap is not None and seen is not None:
+        part.append(f"sólo los {cap} eventos más recientes del registro")
+    if shown.get("endReached") is False:
+        part.append("no llegó al final")
+    detail = (": " + ", ".join(part)) if part else ""
+    return f"; leído en parte{detail}; lo demás no se leyó: un «no está» vale sólo para lo leído"
 
 
 def _aid_on(aid: str) -> bool:

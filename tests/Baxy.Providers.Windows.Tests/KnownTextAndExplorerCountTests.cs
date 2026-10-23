@@ -88,6 +88,11 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(receipt.Result?.GetProperty("characters").GetInt32(), Is.EqualTo(content.Length));
             Assert.That(receipt.Result?.GetProperty("hasMore").GetBoolean(), Is.False);
             Assert.That(receipt.Result?.TryGetProperty("nextOffset", out _), Is.False);
+            // The whole text in one read: lines 1-4, the end reached, nothing read in part.
+            Assert.That(receipt.Result?.GetProperty("fromLine").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("toLine").GetInt32(), Is.EqualTo(4));
+            Assert.That(receipt.Result?.GetProperty("endReached").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.TryGetProperty("readInPart", out _), Is.False);
             Assert.That(receipt.Result?.GetProperty("reviewLabel").GetString(), Is.EqualTo("ROADMAP.md"));
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("gemma4_agent"));
             Assert.That(whole.Verified, Is.True, whole.ErrorCode);
@@ -136,6 +141,15 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(pages.Select(page => page.GetProperty("characters").GetInt32()), Has.All.EqualTo(content.Length));
             Assert.That(pages[1].GetProperty("offset").GetInt32(), Is.EqualTo(1000));
             Assert.That(pages[0].GetProperty("returnedCharacters").GetInt32(), Is.EqualTo(1000));
+            // Holdout v4 (falsedad): each page says which lines of the 120 it holds, whether it reaches the end, and
+            // that it is a part; a page cut inside line 46 ends on it and the next one starts on it.
+            Assert.That(pages.Select(page => page.GetProperty("readInPart").GetBoolean()), Has.All.True);
+            Assert.That(pages[0].GetProperty("fromLine").GetInt32(), Is.EqualTo(1));
+            Assert.That(pages[0].GetProperty("toLine").GetInt32(), Is.EqualTo(1000 / 22 + 1));
+            Assert.That(pages[1].GetProperty("fromLine").GetInt32(), Is.EqualTo(pages[0].GetProperty("toLine").GetInt32()));
+            Assert.That(pages[^1].GetProperty("toLine").GetInt32(), Is.EqualTo(120));
+            Assert.That(pages[0].GetProperty("endReached").GetBoolean(), Is.False);
+            Assert.That(pages[^1].GetProperty("endReached").GetBoolean(), Is.True);
             Assert.That(past.Verified, Is.True, past.ErrorCode);
             Assert.That(past.Result?.GetProperty("text").GetString(), Is.Empty);
             Assert.That(past.Result?.GetProperty("hasMore").GetBoolean(), Is.False);

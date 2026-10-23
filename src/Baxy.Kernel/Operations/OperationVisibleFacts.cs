@@ -546,6 +546,20 @@ public static class OperationVisibleFacts
 
                     // The provider's line count was of its whole page.
                     projected.Remove("lines");
+                    // Holdout v4 (falsedad, a partial read told as a whole one): the page shown ends before the
+                    // provider's did, so it ends on the line its shown text reaches, never the file's end.
+                    if (obj["fromLine"] is JsonValue from && from.TryGetValue(out int fromLine)
+                        && obj.ContainsKey("toLine"))
+                    {
+                        projected["toLine"] = fromLine + Math.Max(0, LineCount(shown[..shownCharacters]) - 1);
+                    }
+
+                    if (obj.ContainsKey("endReached"))
+                    {
+                        projected["endReached"] = false;
+                    }
+
+                    projected["readInPart"] = true;
                 }
 
                 return projected;
@@ -596,6 +610,20 @@ public static class OperationVisibleFacts
         }
 
         return string.Concat(value.AsSpan(0, keep).TrimEnd(), "…");
+    }
+
+    // The lines of a text as the file reader counts them (WindowsKnownFileAdapter.LineCount): each break ends one, and a
+    // last line without a break counts too.
+    private static int LineCount(string text)
+    {
+        int lines = 0;
+        for (int index = 0; index < text.Length; index++)
+        {
+            if (text[index] == '\n' || (text[index] == '\r' && (index + 1 == text.Length || text[index + 1] != '\n')))
+                lines++;
+        }
+
+        return text.Length > 0 && text[^1] is not ('\n' or '\r') ? lines + 1 : lines;
     }
 
     // Held back from the model is only what is a secret or the kernel's own
