@@ -139,6 +139,42 @@ def decide(mind, case):
     return mind.decide(case["id"], case["text"], pending=case.get("pending"))
 
 
+class CountedSystemOne:
+    """System One as the mind calls it (choose), counting the times it was asked and the times no answer came back: its
+    server down, an order slower than choose's timeout (2 s each), or an answer not of its shape. The mind then goes on
+    as Qwen decided, so a run «with System One» silently measured part of its cases without it (audit w8-medir)."""
+
+    def __init__(self, inner) -> None:
+        self.inner = inner
+        self.asked = self.unanswered = 0
+        self.case: str | None = None  # this case's: None, «answered» or «unanswered»
+
+    def choose(self, text, history, options, *more, **named):
+        answer = self.inner.choose(text, history, options, *more, **named)
+        if len(options) >= 2:
+            self.asked += 1
+            self.unanswered += answer is None
+            self.case = "unanswered" if answer is None or self.case == "unanswered" else "answered"
+        return answer
+
+    def __getattr__(self, name):
+        return getattr(self.inner, name)
+
+
+def wait_system_one(system_one, timeout: float = 300.0, poll: float = 0.25) -> None:
+    """Until System One's server answers its health check. A server that died or never came up stops the run: the
+    first cases ran without it (nothing waited for it: the product's turns do not, by design) and a crash under the
+    RAM of a busy PC left the whole run without it, still labelled «with System One»."""
+    deadline = time.monotonic() + timeout
+    while not system_one.ready:
+        process = getattr(system_one, "_process", None)
+        if process is not None and process.poll() is not None:
+            raise SystemExit(f"System One's server exited ({process.returncode}): see system-one.log; nothing was measured")
+        if time.monotonic() > deadline:
+            raise SystemExit(f"System One's server was not up after {timeout:.0f} s; nothing was measured")
+        time.sleep(poll)
+
+
 def gpu_used_mib():
     out = subprocess.run(["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
                          capture_output=True, text=True, timeout=20).stdout.strip().splitlines()
@@ -210,6 +246,7 @@ def main():
         system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
                                int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
         system_one.start()
+        system_one = CountedSystemOne(system_one)
     mind = Mind(server, trace, system_one)
     catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
     enums = enums_of(catalog)
@@ -218,10 +255,14 @@ def main():
     t0 = time.monotonic()
     mind.warm()
     warm_s = time.monotonic() - t0
+    if system_one is not None:
+        wait_system_one(system_one)
     cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))
     rows, by_family = [], {}
     for case in cases:
         started = time.monotonic()
+        if system_one is not None:
+            system_one.case = None
         try:
             mind.new_session(case.get("history") or [])
             result = decide(mind, case)
@@ -240,12 +281,18 @@ def main():
         rows.append({"id": case["id"], "family": case.get("family"), "ok": ok, "excluded": excluded,
                      "latency_s": round(latency, 3),
                      "kind": result.get("kind"), "operation": result.get("operation"), "arguments": arguments,
-                     "reply": result.get("reply") or result.get("question"), "error": error})
+                     "reply": result.get("reply") or result.get("question"), "error": error,
+                     "system_one": system_one.case if system_one is not None else None})
         print(f"{case['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
               flush=True)
     measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
     server.close()
+    s1 = None
     if system_one is not None:
+        # Asked, and not answered (the cases go on as Qwen decided): a run with many unanswered is not «with S1».
+        s1 = {"asked": system_one.asked, "unanswered": system_one.unanswered, "up_at_end": system_one.ready,
+              "unanswered_ids": [r["id"] for r in rows if r["system_one"] == "unanswered"],
+              "threads": int(os.environ.get("BAXY_S1_THREADS", "4") or 4)}
         system_one.close()
     latencies = [r["latency_s"] for r in rows]
     counted = [r for r in rows if not r["excluded"]]
@@ -257,7 +304,7 @@ def main():
                "errors": sum(1 for r in rows if r["error"]), "error_ids": [r["id"] for r in rows if r["error"]],
                "p50": round(statistics.median(latencies), 3),
                "p90": round(statistics.quantiles(latencies, n=10)[8], 3) if len(latencies) > 2 else None,
-               "warm_s": round(warm_s, 1), "families": by_family, "resources": measured,
+               "warm_s": round(warm_s, 1), "families": by_family, "resources": measured, "system_one": s1,
                "run": run_record(args, server, mind)}
     with open(runs / f"{args.label}.jsonl", "w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")

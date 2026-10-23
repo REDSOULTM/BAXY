@@ -83,3 +83,36 @@ def test_a_decision_run_says_what_it_measured(tmp_path, monkeypatch) -> None:
     assert record["confirmation_mode"] == "normal"
     assert record["env"] == {"BAXY_DATA_DIR": str(tmp_path / "datos"), "BAXY_S1_DOUBT": "0.4",
                              "BAXY_S1_GGUF": str(laya)}
+
+
+class FakeLaya:
+    """System One's server: answers, or not (down, slower than choose's timeout)."""
+
+    def __init__(self, answers, ready=True, exit_code=None):
+        self.answers, self.ready = list(answers), ready
+        self._process = SimpleNamespace(poll=lambda: exit_code, returncode=exit_code)
+
+    def choose(self, text, history, options, timeout=2.0):
+        return self.answers.pop(0)
+
+
+def test_system_one_counts_what_it_was_asked_and_what_never_came_back() -> None:
+    import bench_decision
+    laya = bench_decision.CountedSystemOne(FakeLaya([{"choice": "a"}, None, None]))
+    two = {"a": "abrir", "b": "cerrar"}
+    assert laya.choose("abre", [], two) == {"choice": "a"} and laya.case == "answered"
+    laya.case = None
+    assert laya.choose("cierra", [], two) is None and laya.case == "unanswered"
+    assert laya.choose("cierra", [], {"a": "solo una"}) is None  # one option: the mind does not ask (not counted)
+    assert (laya.asked, laya.unanswered, laya.ready) == (2, 1, True)
+
+
+def test_a_run_with_system_one_waits_for_it_and_stops_when_it_died() -> None:
+    import pytest
+
+    import bench_decision
+    bench_decision.wait_system_one(FakeLaya([], ready=True), timeout=1)
+    with pytest.raises(SystemExit, match="exited"):
+        bench_decision.wait_system_one(FakeLaya([], ready=False, exit_code=3), timeout=1, poll=0.01)
+    with pytest.raises(SystemExit, match="not up"):
+        bench_decision.wait_system_one(FakeLaya([], ready=False), timeout=0.05, poll=0.01)
