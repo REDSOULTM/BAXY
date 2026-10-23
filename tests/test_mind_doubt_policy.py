@@ -75,6 +75,8 @@ def test_a_sure_action_or_layer_0_off_runs_as_before(tmp_path, monkeypatch, thre
 
 
 class FakeSystemOne:
+    ready = True
+
     def __init__(self, choice) -> None:
         self.choice = choice
         self.asked: list[dict] = []

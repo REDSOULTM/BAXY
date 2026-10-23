@@ -96,3 +96,14 @@ def test_a_fill_does_not_ask_for_the_decisions_token_probabilities() -> None:
     assert server.fill_call(decision, "app_close")["arguments"] == {"appId": "Spotify"}
     assert not {"logprobs", "top_logprobs"} & set(sent[0])
     assert sent[0]["temperature"] == 0.0 and sent[0]["seed"] == 0 and sent[0]["tool_choice"] == "required"
+
+
+def test_a_decision_model_not_up_costs_the_doubtful_turn_no_rival_names(tmp_path, monkeypatch) -> None:
+    # Laya still loading, or its server gone: choose() answers None, but the options were made first, completing each
+    # rival's name on the slot (template + complete_name) for nothing.
+    from test_mind_doubt_policy import _layer2, _rival_call
+    mind, server, one = _layer2(tmp_path, monkeypatch, "app_close", [_rival_call(0.5)])
+    one.ready = False
+    server.template = lambda body: pytest.fail("rendered for a decision model that is not up")
+    assert mind.decide(1, "apaga el pc")["operation"] == "system.power"
+    assert one.asked == []

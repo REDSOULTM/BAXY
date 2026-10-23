@@ -1743,7 +1743,9 @@ class Mind:
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
                 and self.risk.get(call["wire"]) != "low_reversible":
             return DOUBT_NOTE.format(call=call["wire"])
-        if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
+        # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
+        # options are not made: each rival's name was completed on the slot for it (template + complete_name).
+        if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
             return None
         options = self._candidates(call["wire"], doubt, body)
         judged = self.system_one.choose(turn["text"], self._said(), options)
