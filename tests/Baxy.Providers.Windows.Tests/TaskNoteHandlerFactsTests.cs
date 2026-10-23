@@ -46,6 +46,33 @@ public sealed class TaskNoteHandlerFactsTests
         });
     }
 
+    // Renew al máximo (w8): «10/11/2026» was read month first (11 October, where a Spanish speaker means 10 November)
+    // and stored without a word; only the ISO shape is read, and the refusal says which field and why.
+    [TestCase("10/11/2026", false)]
+    [TestCase("2026-11-10", true)]
+    [TestCase("2026-11-10T08:00:00-03:00", true)]
+    public async Task ATaskDueIsReadOnlyInTheIsoShape(string due, bool accepted)
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        var store = new LocalTaskStore(Path.Combine(temporary.Path, "tasks"));
+
+        OperationOutcome outcome = await new CreateTaskHandler(store).ExecuteAsync(
+            Invocation($$"""{"title":"Pagar la luz","due":"{{due}}"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.EqualTo(accepted), outcome.ErrorCode);
+            if (accepted)
+                return;
+            Assert.That(outcome.ErrorCode, Is.EqualTo("invalid_task"));
+            Assert.That(outcome.Result!.Value.GetProperty("problem").GetString(), Is.EqualTo("due must be an ISO date-time."));
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Does.StartWith("nothing was written"));
+            Assert.That(store.List(TaskListStatus.All, includeDeleted: true, limit: 10).MatchCount, Is.Zero);
+        });
+    }
+
     // An id no task has says where it was looked (deleted ones included) and where the ids are.
     [Test]
     public async Task AnUnknownTaskIdSaysNoTaskHasIt()

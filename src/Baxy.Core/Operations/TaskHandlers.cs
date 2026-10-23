@@ -41,9 +41,11 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
         {
             return ValueTask.FromResult(OperationOutcome.InvalidArguments(Definition, invocation.Arguments));
         }
-        catch (LocalTaskValidationException)
+        // Renew al máximo (w8): «invalid_task» came bare; it says which field and why (the store's own words, which
+        // name a field and never carry its value), and that nothing was written.
+        catch (LocalTaskValidationException exception)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("invalid_task"));
+            return ValueTask.FromResult(OperationOutcome.Failure("invalid_task", Problem(exception.Message)));
         }
         catch (Exception exception) when (exception is LocalTaskNotFoundException or NoteNotFoundException)
         {
@@ -83,6 +85,18 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
     }
 
     protected abstract OperationOutcome Execute(OperationInvocation invocation);
+
+    private static JsonElement Problem(string problem)
+    {
+        var facts = new JsonObject { ["problem"] = problem };
+        if (ModelAids.On(ModelAids.TaskStateNext))
+        {
+            facts["next"] = "nothing was written: " + problem;
+        }
+
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
+    }
 
     // Renew al máximo (w5): «task_not_found» and «task_version_conflict» came bare, and a task.complete retried after it
     // was done (its version moved) read as a failure. Both say what the store holds under that taskId now, deleted
