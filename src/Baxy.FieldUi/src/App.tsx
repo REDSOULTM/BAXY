@@ -166,13 +166,21 @@ export default function App() {
   }, []);
 
   // ---- the view's state: the host's, plus starting, resting and a card waiting ----
-  const pendingCard = useMemo(() => {
+  const listedCard = useMemo(() => {
     for (let i = s.items.length - 1; i >= 0; i--) {
       const it = s.items[i];
       if (it.who === 'card' && it.status === 'pending') return it;
     }
     return null;
   }, [s.items]);
+  // a card past its time waits for nobody, even before the host says so (the card itself shows it expired): BAXY is not
+  // «Esperando tu ok» and Enter / Esc answer nothing
+  useEffect(() => {
+    if (!listedCard) return;
+    const id = finish('cardGone', listedCard.id, Math.max(0, listedCard.expires - Date.now()));
+    return () => window.clearTimeout(id);
+  }, [listedCard, finish]);
+  const pendingCard = listedCard && done.cardGone !== listedCard.id ? listedCard : null;
   const voiceError = s.voiceErrorAt !== null && done.voiceError !== s.voiceErrorAt ? FAILURE.voice_error : null;
   const booting = !!s.boot && !s.boot.model && !s.boot.failed;
   // «Hablando» is while BAXY's voice sounds (lip.ts, from the mind's own timeline): the host's speaking state starts
