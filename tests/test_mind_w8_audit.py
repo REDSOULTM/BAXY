@@ -81,3 +81,18 @@ def test_a_kept_session_with_every_call_answered_loads_as_it_was_kept(tmp_path) 
     relaunched, _ = _mind(tmp_path, [])
     relaunched.load_session(kept)
     assert relaunched.conversation == [m for m in kept if m.get("role") in {"user", "assistant", "tool"}]
+
+
+def test_a_fill_does_not_ask_for_the_decisions_token_probabilities() -> None:
+    # «corrige» fills with the decision's body, which asks for logprobs and top_logprobs 10 (doubt.read): the server
+    # sorted the vocabulary at every argument token of the fill for probabilities nothing reads.
+    from baxy_mind.llm_server import LlmServer
+    server = LlmServer("model.gguf", "llama-server.exe")
+    sent: list = []
+    server._post = lambda path, body, timeout: sent.append(body) or {"choices": [{"message": {"tool_calls": [
+        {"function": {"name": "app_close", "arguments": '{"appId": "Spotify"}'}}]}}]}
+    decision = {"messages": [{"role": "user", "content": "ciérralo"}], "tools": [], "logprobs": True,
+                "top_logprobs": 10, "seed": 0, "temperature": 0.2}
+    assert server.fill_call(decision, "app_close")["arguments"] == {"appId": "Spotify"}
+    assert not {"logprobs", "top_logprobs"} & set(sent[0])
+    assert sent[0]["temperature"] == 0.0 and sent[0]["seed"] == 0 and sent[0]["tool_choice"] == "required"
