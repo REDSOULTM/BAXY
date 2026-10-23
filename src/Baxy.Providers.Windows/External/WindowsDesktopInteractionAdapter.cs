@@ -102,6 +102,35 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         }
     }
 
+    /// <summary>The kind of window a key lands on (K-2 refinada), for a declared text field's Enter.</summary>
+    internal IKeyWindowReader KeyWindows { get; init; } = new KeyWindowReader();
+
+    // Auditoría del núcleo 2026-10-23 (DeclaredTextFieldPress): a key press that declares a text field is read before it
+    // goes unasked; nothing else this adapter does is.
+    public bool PreflightMayRaise(string operation, JsonElement arguments) =>
+        DeclaredTextFieldPress.Applies(operation, arguments);
+
+    public async ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        if (!DeclaredTextFieldPress.Applies(operation, arguments))
+            return null;
+        nint window = NamedWindow(arguments);
+        FocusRead? focus = null;
+        if (_fields is not null)
+        {
+            using JsonDocument? answer = await _fields.FocusKindAsync(window, cancellationToken).ConfigureAwait(false);
+            focus = DeclaredTextFieldPress.Read(answer);
+        }
+
+        KeyWindowKind kind = KeyWindows.KindOf(window == 0 ? null : window);
+        return DeclaredTextFieldPress.NeedsYes(arguments, focus, kind)
+            ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
+            : null;
+    }
+
     public bool CanHandle(string operation) => operation is
         "clipboard.copy" or
         "clipboard.paste" or

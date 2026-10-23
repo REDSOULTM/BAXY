@@ -4021,6 +4021,19 @@ internal sealed class WindowsVisibleControlAdapter
             WorkerClickBudget,
             cancellationToken);
 
+    /// <summary>Auditoría del núcleo 2026-10-23: what holds the keyboard's focus and whether it lies inside
+    /// <paramref name="window"/> (0: the one in front), read by UI Automation (the worker's «focuskind»: nothing pressed,
+    /// focused or brought up); null when the worker did not answer.</summary>
+    public ValueTask<JsonDocument?> FocusKindAsync(nint window, CancellationToken cancellationToken) =>
+        _worker.SendAsync(
+            new JsonObject
+            {
+                ["cmd"] = "focuskind",
+                ["hwnd"] = window,
+            }.ToJsonString(),
+            WorkerClickBudget,
+            cancellationToken);
+
     /// <summary>Brings the element named <paramref name="label"/> into view in <paramref name="window"/> through UI
     /// Automation (the worker's «reveal»); null when the worker did not answer.</summary>
     internal ValueTask<JsonDocument?> RevealAsync(
