@@ -2510,6 +2510,20 @@
         "when": "2026-10-23 01:30-02:15",
         "what": "e2e de práctica en el PC escribió en el Bloc de notas del dueño (pestaña sin guardar): «lista: pilas, cables» ×2 y «hola desde BAXY» ×1; nada guardado a disco; se le avisa para quitarlas; regla: ningún banco que actúa con su Bloc de notas abierto"
       }
-    ]
+    ],
+    "holdout_v5": {
+      "sellado": "2026-10-23 (e2e+falsedades)",
+      "autores": "dos subagentes aislados del PC",
+      "ruta": "F:/BAXYeval/renew_v5/holdout",
+      "clave": "C:/Users/usuario/BAXY-coord/holdout-v5-clave.txt",
+      "e2e_falsedades.7z": "a3f201b8a861e5c622aca425d422033a4a8e9435e0167eb92715f5220e84c2ca",
+      "e2e.json": "f01a8ab151fdc0b3d6cfec0e2d54a6488210bd94a72a85caf60e60c4af30511b",
+      "falsedades.json": "1abc7ece560e450612faa1c0cdecae5e93ef3ad0bcc106e6931f3f509e58f678",
+      "canario_e2e_falsedades": "ebf4d1d3-2e6e-46c9-a310-c6c9a47339cd",
+      "casos": {
+        "e2e": 76,
+        "falsedades": 36
+      }
+    }
   }
 }
