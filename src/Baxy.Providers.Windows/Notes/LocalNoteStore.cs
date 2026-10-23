@@ -561,7 +561,8 @@ public sealed class LocalNoteStore : INoteStore
         throw new NoteTitleAmbiguousException(scope, candidates);
     }
 
-    private static string CreateContentPreview(string content)
+    /// <summary>The bounded preview an ambiguity candidate shows of a note's content (also read before a yes).</summary>
+    public static string CreateContentPreview(string content)
     {
         var preview = new StringBuilder(Math.Min(content.Length, MaximumContentPreviewUtf8Bytes));
         int utf8Bytes = 0;

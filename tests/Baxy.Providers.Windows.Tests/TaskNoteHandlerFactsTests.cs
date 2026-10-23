@@ -2,6 +2,7 @@ using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Infrastructure;
+using Baxy.Providers.Windows.Notes;
 using Baxy.Providers.Windows.Tasks;
 using NUnit.Framework;
 
@@ -92,6 +93,82 @@ public sealed class TaskNoteHandlerFactsTests
                 Is.EqualTo("nothing was changed: reviewLabel must be the task's exact title, \"Comprar pan\""));
             Assert.That(right, Is.SameAs(InvocationPreflightResult.Proceed));
             Assert.That(store.Read(created.Id).Deleted, Is.False);
+        });
+    }
+
+    // A note.read by the title of a note in the trash was a bare note_not_found («no existe»); it names the one in the
+    // trash and where it was looked, and (aid note_not_found_next) how it comes back.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task ANoteReadByTheTitleOfATrashedNoteSaysItIsInTheTrash(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var store = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        NoteRecord note = store.Create("Lista de compras", "pan");
+        store.Trash(note.Id);
+
+        OperationOutcome outcome = await new ReadNoteHandler(store).ExecuteAsync(
+            Invocation("""{"title":"lista de compras"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("note_not_found"));
+            Assert.That(outcome.Result!.Value.GetProperty("searched").GetString(), Is.EqualTo("active notes"));
+            Assert.That(outcome.Result!.Value.GetProperty("inTrash")[0].GetProperty("noteId").GetString(),
+                Is.EqualTo(note.Id.ToString("D")));
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo(
+                    "a note titled \"lista de compras\" is in the trash; note.restore brings it back"));
+            }
+        });
+    }
+
+    // A title written a little differently names the notes whose titles come close.
+    [Test]
+    public async Task ANoteTitleNotFoundNamesTheTitlesCloseToIt()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        var store = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        store.Create("Compras del súper", "pan");
+        store.Create("Ideas", "x");
+
+        OperationOutcome outcome = await new ReadNoteHandler(store).ExecuteAsync(
+            Invocation("""{"title":"compras"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("note_not_found"));
+            Assert.That(outcome.Result!.Value.GetProperty("similarTitles").GetArrayLength(), Is.EqualTo(1));
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(
+                "no note is titled \"compras\" exactly among active notes; titles close to it: \"Compras del súper\"; "
+                + "note.search finds notes by the words they contain"));
+        });
+    }
+
+    // A note.trash (it asks the person's yes) of a title no note has failed only after the yes; it fails before asking,
+    // and one note of that title goes on to ask.
+    [Test]
+    public async Task ANoteTrashOfATitleNoNoteHasFailsBeforeTheYes()
+    {
+        using TemporaryDirectory temporary = new();
+        var store = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        store.Create("Ideas", "x");
+        var handler = new TrashNoteHandler(store);
+
+        InvocationPreflightResult missing = await Preflight(handler, Json("""{"title":"Recetas"}"""), CancellationToken.None);
+        InvocationPreflightResult present = await Preflight(handler, Json("""{"title":"ideas"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing.Failure?.ErrorCode, Is.EqualTo("note_not_found"));
+            Assert.That(missing.Failure?.EffectMayHaveOccurred, Is.False);
+            Assert.That(missing.Failure?.Result?.GetProperty("searched").GetString(),
+                Is.EqualTo("active and trashed notes"));
+            Assert.That(present, Is.SameAs(InvocationPreflightResult.Proceed));
         });
     }
 
