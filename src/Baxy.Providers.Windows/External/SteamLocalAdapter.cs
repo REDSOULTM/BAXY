@@ -786,8 +786,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteNumber("bytesTotal", game?.BytesToDownload ?? 0);
             if (game is not null && game.BytesToDownload > 0)
             {
-                writer.WriteNumber("progressPercent", Math.Clamp(
-                    game.BytesDownloaded * 100d / game.BytesToDownload, 0d, 100d));
+                double progress = Math.Clamp(game.BytesDownloaded * 100d / game.BytesToDownload, 0d, 100d);
+                writer.WriteNumber("progressPercent", progress);
+                // Holdout v4 (falsedad, «69 %» for 0.69 %): the readings with their unit (ReadingUnits).
+                writer.WriteString("progress", Infrastructure.ReadingUnits.Percent(progress));
+                writer.WriteString("downloaded", Infrastructure.ReadingUnits.Size(game.BytesDownloaded));
+                writer.WriteString("total", Infrastructure.ReadingUnits.Size(game.BytesToDownload));
             }
             else writer.WriteNull("progressPercent");
             writer.WriteString("authority", game is null
