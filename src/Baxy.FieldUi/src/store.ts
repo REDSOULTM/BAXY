@@ -69,8 +69,9 @@ const MAX_ITEMS = 150;
 /** the mood a reply leaves on the face, from what its calls really did. */
 function moodOf(steps: Step[]): Mood {
   if (steps.some((s) => s.status === 'fail')) return 'sad';
-  if (steps.some((s) => s.status === 'maybe')) return 'curious';
-  if (steps.some((s) => s.status === 'ok')) return 'happy';
+  // sent without reading its effect is not known done: it reads as a doubt, like one that may have run
+  if (steps.some((s) => s.status === 'maybe' || s.status === 'sent')) return 'curious';
+  if (steps.some((s) => s.status === 'ok' || s.status === 'same' || s.status === 'read')) return 'happy';
   return null;
 }
 

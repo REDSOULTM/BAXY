@@ -8,6 +8,9 @@ import type { ChatItem, Confirmation, Fam, Step, StepStatus } from '../types';
 const ST: Record<StepStatus, { ic: string | null; label: string }> = {
   run: { ic: null, label: 'en curso' },
   ok: { ic: '✓', label: 'verificado' },
+  same: { ic: '=', label: 'ya estaba así' },
+  sent: { ic: '↗', label: 'enviado, sin comprobar' },
+  read: { ic: '✓', label: 'leído' },
   fail: { ic: '✕', label: 'falló' },
   skip: { ic: '–', label: 'no se ejecutó' },
   maybe: { ic: '?', label: 'puede haber corrido' },
@@ -41,7 +44,7 @@ function Steps({ steps }: { steps: Step[] }) {
       {o ? (
         <div className={'bx-obs st-' + o.status}>
           <div className="h"><span>{ST[o.status].label}</span><span className="fam">{FAM_LABEL[o.fam]}</span></div>
-          <div className="t">{o.status === 'ok' ? o.obs : o.reason || o.obs || 'En curso…'}</div>
+          <div className="t">{o.obs || o.reason || 'En curso…'}</div>
           {o.net ? <div className="net"><Globe s={10} /> salió a internet · {o.net}</div> : null}
         </div>
       ) : null}

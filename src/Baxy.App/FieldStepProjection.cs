@@ -11,8 +11,10 @@ namespace Baxy.App;
 /// <summary>
 /// How the view presents a call the model made (design v4: the step chips, the face's families, the Sí/No card and
 /// «Qué puedo hacer»). The words are presentation data (Assets/operation-labels.v1.json, one per catalog operation);
-/// the status is the call's own outcome, never improved: <c>ok</c> only for a call completed and verified by its
-/// provider, <c>maybe</c> for one that may have run, <c>fail</c> for a failure and <c>skip</c> for one that did not run.
+/// the status is the call's own outcome, never improved: <c>ok</c> only for a call completed whose effect was read back,
+/// <c>same</c> for one that found the asked state already there, <c>sent</c> for one delivered without reading its
+/// effect, <c>read</c> for a read whose output is its result, <c>maybe</c> for one that may have run or whose completion
+/// could not be verified, <c>fail</c> for a failure and <c>skip</c> for one that did not run.
 /// What the provider observed is shown as its facts, as they came.
 /// </summary>
 internal static class FieldStepProjection
@@ -53,6 +55,16 @@ internal static class FieldStepProjection
     {
         "status", "verified", "version", "authority", "next", "effectStarted", "error", "operation", "argumentsGiven",
         "arguments", "argumentProblems", "detail", "waiting", "effectUncertain", "replayed",
+        OperationVisibleFacts.VerificationKey,
+    };
+
+    // How a completed call was verified (OperationVisibleFacts' table), as the chip's status and its first words.
+    private static readonly Dictionary<string, (string Status, string Said)> Verifications = new(StringComparer.Ordinal)
+    {
+        [OperationVisibleFacts.VerificationReadback] = ("ok", "Verificado"),
+        [OperationVisibleFacts.VerificationUnchanged] = ("same", "Ya estaba así"),
+        [OperationVisibleFacts.VerificationDeliveredOnly] = ("sent", "Enviado, sin comprobar"),
+        [OperationVisibleFacts.VerificationOutputOnly] = ("read", "Leído"),
     };
 
     // The codes BAXY itself writes when a call did not reach its provider, said in one line.
@@ -135,11 +147,17 @@ internal static class FieldStepProjection
             ["fam"] = Family(step.Operation),
         };
 
-        if (raw == OperationStatuses.Completed && step.Verified && !uncertain)
+        // A completed call is shown as it was verified (OperationVisibleFacts' typed «verification»): only a read-back
+        // effect is «Verificado»; an asked state already in place, an input delivered without reading its effect and a
+        // read's output are said as such, and a completion without that fact (none, or none written) is not verified.
+        string? verification = facts?[OperationVisibleFacts.VerificationKey] is JsonValue v
+            && v.TryGetValue(out string? said) ? said : null;
+        if (raw == OperationStatuses.Completed && step.Verified && !uncertain
+            && Verifications.TryGetValue(verification ?? string.Empty, out (string Status, string Said) shown))
         {
-            view["status"] = "ok";
+            view["status"] = shown.Status;
             string observed = Facts(facts);
-            view["obs"] = observed.Length == 0 ? "Verificado por el proveedor" : "Verificado · " + observed;
+            view["obs"] = observed.Length == 0 ? shown.Said : shown.Said + " · " + observed;
         }
         else if (raw == OperationStatuses.Completed || uncertain || raw == OperationStatuses.Pending || raw == "unknown")
         {

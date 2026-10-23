@@ -1,0 +1,126 @@
+using System.Text.Json.Nodes;
+using Baxy.App;
+using Baxy.Contracts;
+using Baxy.Kernel.Operations;
+using NUnit.Framework;
+
+namespace Baxy.App.Tests;
+
+/// <summary>
+/// The step chip the view shows for a call (FieldStepProjection.Finished): its status and first words follow the typed
+/// facts of the call's result, never more than they say. «Verificado» is only for an effect read back.
+/// </summary>
+[TestFixture]
+public sealed class FieldStepProjectionTests
+{
+    private const string Operation = "app.open";
+
+    [TestCase(OperationVisibleFacts.VerificationReadback, "ok", "Verificado")]
+    [TestCase(OperationVisibleFacts.VerificationUnchanged, "same", "Ya estaba así")]
+    [TestCase(OperationVisibleFacts.VerificationDeliveredOnly, "sent", "Enviado, sin comprobar")]
+    [TestCase(OperationVisibleFacts.VerificationOutputOnly, "read", "Leído")]
+    public void ACompletedCallIsShownAsItWasVerified(string verification, string status, string said)
+    {
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true,
+            new JsonObject { ["status"] = "completed", ["verification"] = verification });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)view["status"], Is.EqualTo(status));
+            Assert.That((string?)view["obs"], Is.EqualTo(said));
+        });
+    }
+
+    [Test]
+    public void TheObservedFactsFollowTheVerificationAndNeverRepeatIt()
+    {
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true, new JsonObject
+        {
+            ["status"] = "completed",
+            ["verification"] = OperationVisibleFacts.VerificationUnchanged,
+            ["level"] = 40,
+        });
+
+        Assert.That((string?)view["obs"], Is.EqualTo("Ya estaba así · level: 40"));
+    }
+
+    [TestCase(OperationVisibleFacts.VerificationNone)]
+    [TestCase(null)]
+    public void ACompletionWithoutAVerificationIsNotSaidVerified(string? verification)
+    {
+        var facts = new JsonObject { ["status"] = "completed", ["error"] = "result_unreadable" };
+        if (verification is not null)
+        {
+            facts["verification"] = verification;
+        }
+
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true, facts);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)view["status"], Is.EqualTo("maybe"));
+            Assert.That((string?)view["reason"], Is.EqualTo("Terminó, pero no se pudo verificar"));
+            Assert.That(view["obs"], Is.Null);
+        });
+    }
+
+    [Test]
+    public void AVerifiedCompletionWhoseEffectIsUncertainMayHaveRun()
+    {
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true, new JsonObject
+        {
+            ["status"] = "completed",
+            ["verification"] = OperationVisibleFacts.VerificationReadback,
+            ["effectUncertain"] = true,
+        });
+
+        Assert.That((string?)view["status"], Is.EqualTo("maybe"));
+    }
+
+    [Test]
+    public void AFailureWhoseEffectMayHaveHappenedIsNotAFailureNorDone()
+    {
+        JsonObject view = Finished(OperationStatuses.Failed, verified: false, new JsonObject
+        {
+            ["status"] = "failed",
+            ["error"] = "engine_no_answer",
+            ["effectUncertain"] = true,
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)view["status"], Is.EqualTo("maybe"));
+            Assert.That((string?)view["reason"], Is.EqualTo("El motor no respondió a tiempo: puede haber corrido"));
+        });
+    }
+
+    [TestCase("cancelled", "declined_by_person", "skip", "No se ejecutó: dijiste que no")]
+    [TestCase(OperationStatuses.Rejected, "unknown_operation", "skip", "No se ejecutó: esa acción no existe")]
+    [TestCase(OperationStatuses.Failed, "provider_failed", "fail", "Falló · provider_failed")]
+    public void ACallThatDidNotCompleteSaysHowItEnded(string status, string error, string shown, string reason)
+    {
+        JsonObject view = Finished(status, verified: false, new JsonObject { ["status"] = status, ["error"] = error });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)view["status"], Is.EqualTo(shown));
+            Assert.That((string?)view["reason"], Is.EqualTo(reason));
+        });
+    }
+
+    [Test]
+    public void ACallWaitingForThePersonIsNotAStep()
+    {
+        var step = new NativeTurnStep(Operation, new JsonObject(), OperationStatuses.Completed, false, null, 5,
+            new JsonObject { ["status"] = "needs_confirmation" }.ToJsonString(), "c1");
+
+        Assert.That(FieldStepProjection.Finished("c1", step, net: null), Is.Null);
+    }
+
+    internal static JsonObject Finished(string status, bool verified, JsonObject facts, string? errorCode = null)
+    {
+        var step = new NativeTurnStep(Operation, new JsonObject(), status, verified, errorCode, 5, facts.ToJsonString(), "c1",
+            Sent: true);
+        return FieldStepProjection.Finished("c1", step, net: null)!;
+    }
+}
