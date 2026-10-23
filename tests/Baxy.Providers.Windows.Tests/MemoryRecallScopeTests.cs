@@ -92,6 +92,23 @@ public sealed class MemoryRecallScopeTests
         });
     }
 
+    // Renew al máximo (w8): the expectedValue of a sensitive record is compared with its real value (the store's), never
+    // with the redacted one the handler reads: the right one corrects it, a wrong one still conflicts.
+    [TestCase("Calle Uno 1", true)]
+    [TestCase("Calle Tres 3", false)]
+    public async Task ACorrectOfASensitiveRecordComparesItsRealValue(string expectedValue, bool corrects)
+    {
+        using var temporary = new Temporary();
+        temporary.Remember("mi direccion", "Calle Uno 1", MemorySensitivity.Sensitive);
+        OperationOutcome outcome = await temporary.RunAsync("memory.correct", new JsonObject
+        {
+            ["version"] = 1, ["selector"] = "mi direccion", ["value"] = "Calle Dos 2", ["retention"] = "persistent",
+            ["expectedValue"] = expectedValue,
+        });
+        Assert.That(outcome.Succeeded ? null : outcome.ErrorCode,
+            corrects ? Is.Null : Is.EqualTo("memory_conflict"));
+    }
+
     private sealed class Temporary : IDisposable
     {
         private readonly string _path = Path.Combine(Path.GetTempPath(), "baxy-memory-recall-" + Guid.NewGuid().ToString("N"));
@@ -111,6 +128,18 @@ public sealed class MemoryRecallScopeTests
         {
             _store.Configure(new MemoryConfigureRequest("enable-1", Enabled: true));
             _store.Save(new MemorySaveRequest("save-1", selector, selector, value, Sensitivity: sensitivity));
+        }
+
+        internal async Task<OperationOutcome> RunAsync(string operation, JsonObject payload)
+        {
+            IOperationHandler handler = MemoryHandlers.Create(_store, _codec)
+                .Single(candidate => candidate.Definition.Name == operation);
+            string mission = Guid.NewGuid().ToString("D");
+            string invocation = Guid.NewGuid().ToString("D");
+            JsonElement sealedArguments = _codec.SealArguments(operation, mission, invocation,
+                Guid.NewGuid().ToString("D"), payload);
+            return await handler.ExecuteAsync(
+                new OperationInvocation("r1", mission, invocation, sealedArguments), CancellationToken.None);
         }
 
         internal async Task<JsonObject> RunOpenedAsync(string operation, JsonObject payload)
