@@ -12,7 +12,7 @@ internal sealed class NetworkStatusHandler(INetworkStatusProvider provider) : IO
     public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
     {
         NetworkStatusSnapshot? snapshot = await provider.ReadVerifiedAsync(cancellationToken).ConfigureAwait(false);
-        if (snapshot is null) return OperationOutcome.Failure("verification_failed");
+        if (snapshot is null) return OperationOutcome.Failure(NetworkStableRead.ChangedDuringRead);
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {

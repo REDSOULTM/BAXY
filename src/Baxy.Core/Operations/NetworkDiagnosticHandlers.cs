@@ -19,7 +19,7 @@ internal sealed class DnsStatusHandler(INetworkDiagnosticProvider provider) : IO
             cancellationToken).ConfigureAwait(false);
         if (snapshot is null)
         {
-            return OperationOutcome.Failure("verification_failed");
+            return OperationOutcome.Failure(NetworkStableRead.ChangedDuringRead);
         }
 
         var buffer = new ArrayBufferWriter<byte>();
