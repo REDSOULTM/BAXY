@@ -101,6 +101,58 @@ def test_a_confirmation_with_nothing_pending_is_not_sent(tmp_path: Path) -> None
     assert "this call did nothing" in json.loads(told[-1])["reason"]
 
 
+# Auditoría de confirmaciones (2026-10-23): the answer to the model's own question reads what waits now, as the App says
+# with those words (mutation: the turn keeps the pending flag it began with).
+def test_an_answer_to_a_question_never_approves_a_confirmation_that_no_longer_waits(tmp_path: Path) -> None:
+    pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
+    mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Cuál otro?"}),
+                                    _call("confirm_pending", {"approve": True}), _say("No hay nada esperando tu sí.")])
+    assert mind.decide(1, "sí, pero el otro", pending=pending)["kind"] == "clarify"
+    result = mind.decide(2, "el informe", pending=None)
+    assert result["operation"] is None and result["reply"] == "No hay nada esperando tu sí."
+    told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert told[0] == "el informe" and json.loads(told[-1])["error"] == "nothing_pending"
+
+
+def test_an_answer_to_a_question_can_answer_a_confirmation_asked_since(tmp_path: Path) -> None:
+    pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
+    mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Cuál borro?"}),
+                                    _call("confirm_pending", {"approve": True})])
+    assert mind.decide(1, "borra eso")["kind"] == "clarify"
+    result = mind.decide(2, "sí", pending=pending)
+    assert result["operation"] == "confirmation.answer" and result["arguments"] == {"approve": True}
+    answer = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][0]
+    assert answer.startswith("sí\n[Espera el sí de la persona: file_delete") and "confirm_pending" in answer
+
+
+# A question that ended unanswered (the App says how with the next words) is told once as what it is, and the model may
+# call the tool again, which the kernel asks again (mutation: ended read as nothing_pending, or final at once).
+@pytest.mark.parametrize("how, error", [("dropped", "confirmation_dropped"), ("expired", "confirmation_expired")])
+def test_a_si_to_a_question_that_ended_reads_how_it_ended_and_may_ask_again(tmp_path: Path, how: str,
+                                                                           error: str) -> None:
+    ended = {"operation": "app.close", "ended": how}
+    mind, server = _mind(tmp_path, [_call("confirm_pending", {"approve": True}), _call("app_close", {"windowId": 7})])
+    mind.wire_to_op["app_close"] = "app.close"
+    result = mind.decide(1, "sí", pending=ended)
+    assert "[Espera el sí" not in server.bodies[0]["messages"][-2]["content"]
+    assert result["operation"] == "app.close" and "tool_choice" not in server.bodies[-1]
+    told = json.loads([m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1])
+    assert told["error"] == error and told["operation"] == "app.close" and "effectUncertain" not in told
+    assert "app_close did not run" in told["reason"] and "call app_close again" in told["next"]
+
+
+def test_an_ended_question_is_told_once_and_then_nothing_waits(tmp_path: Path) -> None:
+    ended = {"operation": "file.delete", "ended": "expired", "effectUncertain": True}
+    mind, server = _mind(tmp_path, [_call("confirm_pending", {"approve": True}),
+                                    _call("confirm_pending", {"approve": True}), _say("Esa pregunta ya venció.")])
+    result = mind.decide(1, "sí", pending=ended)
+    assert result["operation"] is None and result["reply"] == "Esa pregunta ya venció."
+    told = [json.loads(m["content"]) for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert told[0]["error"] == "confirmation_expired" and told[0]["effectUncertain"] is True
+    assert "may have started" in told[0]["reason"]
+    assert told[1]["error"] == "nothing_pending" and server.bodies[-1]["tool_choice"] == "none"
+
+
 def test_the_doubt_never_holds_a_continuation_step(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.9")
     mind, _ = _doubt_mind(tmp_path, [_sure("app_open", {"appId": "Paint"}, 0.95), _sure("app_close", {}, 0.2)])

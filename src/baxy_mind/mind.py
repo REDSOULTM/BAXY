@@ -550,6 +550,26 @@ NOTHING_PENDING = json.dumps({"status": "failed", "error": "nothing_pending",
                               "reason": "no action is waiting for the person's confirmation, and this call did nothing; "
                                         "whether anything was done is only what the earlier results of this "
                                         "conversation say"})
+# Auditoría de confirmaciones (2026-10-23): a question that ended unanswered (its time ran out, or a later line of
+# BAXY's left it behind) is not «nothing was asked» (audit 2026-10-15, App 3, lost since F005): the App says which call
+# it was with the person's next words, and their «sí» reads how it ended and that asking again is calling it again.
+ENDED = {"expired": ("confirmation_expired", "the time to answer ran out"),
+         "dropped": ("confirmation_dropped", "something else was said after the question, so it no longer stood")}
+
+
+def ended_result(ended: dict[str, Any]) -> str:
+    """What confirm_pending reads when the call the person may think they answer ended without an answer."""
+    error, reason = ENDED.get(str(ended.get("ended")), ENDED["dropped"])
+    wire = str(ended["operation"]).replace(".", "_")
+    # A call the kernel challenged again after it had started (reconciliationRequired) may have had its effect.
+    uncertain = ended.get("effectUncertain") is True
+    told: dict[str, Any] = {"status": "failed", "error": error, "operation": ended["operation"]}
+    if uncertain:
+        told["effectUncertain"] = True
+    told["reason"] = f"{reason}: {wire} {'may have started before it was asked' if uncertain else 'did not run'}"
+    told["next"] = f"to do it now, call {wire} again: the person will be asked again"
+    return json.dumps(told)
+
 CONFIRM = {
     "type": "function",
     "function": {
@@ -825,10 +845,20 @@ class Mind:
         return BEAT_SYSTEM if beat else SYSTEM
 
     @staticmethod
+    def _waits(pending: dict[str, Any] | None) -> bool:
+        """Whether the App says a call waits for the person's «sí» with these words."""
+        return bool(isinstance(pending, dict) and pending.get("operation") and not pending.get("ended"))
+
+    @staticmethod
+    def _ended(pending: dict[str, Any] | None) -> dict[str, Any] | None:
+        """The call whose question ended unanswered just before these words, as the App says it, or None."""
+        return pending if isinstance(pending, dict) and pending.get("operation") and pending.get("ended") else None
+
+    @staticmethod
     def _pending_note(pending: dict[str, Any] | None) -> str:
         """The call the kernel holds for the person's yes, when one is: after «sí» the model called that tool again
         instead of answering it (e2e practice E021, 3 of 3), and the kernel only asked again."""
-        if not isinstance(pending, dict) or not pending.get("operation"):
+        if not isinstance(pending, dict) or not pending.get("operation") or pending.get("ended"):
             return ""
         wire = str(pending["operation"]).replace(".", "_")
         arguments = pending.get("arguments")
@@ -903,17 +933,23 @@ class Mind:
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
             # the steps already run stay in the conversation and are never run again. A new request instead of an
             # answer reaches the model the same way, and the model reads it as what it is.
+            # Renew al máximo (auditoría de confirmaciones, 2026-10-23): what waits for the person's «sí» is what the App
+            # says with these words, not what waited when the turn began: a confirmation dropped or expired since then
+            # was approved with the answer to the question (the old file, after «sí pero el otro» → «¿cuál?» → «el
+            # informe»), and one asked since then got nothing_pending.
             asked, after, said = turn.pop("asked"), turn.pop("after_asked", []), turn["text"]
-            answer = {"role": "tool", "tool_call_id": asked, "content": text}
+            was = {"pending": turn.get("pending"), "ended": turn.get("ended")}
+            answer = {"role": "tool", "tool_call_id": asked, "content": text + self._pending_note(pending)}
             turn["conv"].append(answer)
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
-            turn["text"], turn["answering"] = text, True
+            turn["text"], turn["answering"], turn["pending"] = text, True, self._waits(pending)
+            turn["ended"] = self._ended(pending)
             try:
                 return self._next(request_id, "turn.decide", turn)
             except Exception:
                 self._take_back(turn["conv"], answer)
-                turn.update(asked=asked, after_asked=after, text=said)
+                turn.update(asked=asked, after_asked=after, text=said, **was)
                 raise
         self._close_open_calls()
         answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
@@ -931,8 +967,7 @@ class Mind:
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
-                          "pending": bool(isinstance(pending, dict) and pending.get("operation")),
-                          "answering": answering}
+                          "pending": self._waits(pending), "ended": self._ended(pending), "answering": answering}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -1391,7 +1426,7 @@ class Mind:
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
         if not judged or judged["choice"] == call["wire"]:
             return None
-        corrected = self._corrected(judged["choice"], body)
+        corrected = self._corrected(judged["choice"], body, call["wire"])
         if corrected is not None:
             self._judged["corrected"] = True
             return corrected
@@ -1427,24 +1462,35 @@ class Mind:
                         said.append({"role": "assistant", "content": question})
         return said
 
-    def _corrected(self, wire: str, body: dict[str, Any]) -> dict[str, Any] | None:
+    def _corrected(self, wire: str, body: dict[str, Any], chosen: str = "") -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
         is off, the tool's risk is not in CORRECTABLE_RISKS (or is one of CONFIRMED_RISKS the kernel would not confirm
-        now), it has an effect of the catalog, or the model did not write that tool's call."""
+        now), it has an effect of the catalog the model's own call (`chosen`) did not have, or the model did not write
+        that tool's call."""
         risk = self.risk.get(wire)
+        effects = set(self.effects.get(wire) or [])
+        # Al máximo, System One 4 (decision2 P169, a weekly forecast asked in English, 14 of 14 runs of int0-int4): Qwen
+        # chose web_search, Laya weather_current at 0.9, and 5.1 turned the correction into a question because
+        # weather_current sends out of the PC — as web_search, the model's own call, already did. A tool that only reads
+        # and whose effects the chosen call already has lands nowhere the model had not chosen to go; what it sends is
+        # only what the conversation showed (every argument founded, the optional ones too). Keys, clicks and commands
+        # (low_reversible and up) still never come from «corrige» (shell_command_run has the same network effect).
+        shared = bool(effects) and risk == "read_only" and effects <= set(self.effects.get(chosen) or [])
         if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or risk not in CORRECTABLE_RISKS \
-                or self.effects.get(wire) or (risk in CONFIRMED_RISKS and (
+                or (effects and not shared) or (risk in CONFIRMED_RISKS and (
                     self.wire_to_op.get(wire) in UNCONFIRMED_OPERATIONS or _bypass())):
             return None
         try:
             filled = self.server.fill_call(body, wire)
         except Exception:  # noqa: BLE001 - a fill that failed falls back to asking
             return None
-        if not filled or filled.get("name") != wire or not self._founded(wire, filled["arguments"], body["messages"]):
+        if not filled or filled.get("name") != wire or not self._founded(wire, filled["arguments"], body["messages"],
+                                                                         every=shared):
             return None
         return {"id": self._new_id("s1"), "wire": wire, "arguments": filled["arguments"]}
 
-    def _founded(self, wire: str, arguments: dict[str, Any], messages: list[dict[str, Any]]) -> bool:
+    def _founded(self, wire: str, arguments: dict[str, Any], messages: list[dict[str, Any]],
+                 every: bool = False) -> bool:
         """Whether a filled call holds every required argument of its tool and each text or number among them appears
         in what the conversation showed: the person's words or a tool's result (folded, as a whole word). B-MED-1 of the
         notebook (2026-10-22): Laya chose window_snap where Qwen chose window_resolve, and fill_call wrote windowId «1»,
@@ -1454,10 +1500,13 @@ class Mind:
         listed to the model in app_open and game_launch, or that game's appId («Worms W.M.D» for «el Worms»), and a file
         name whose name and extension were both said («contrato.pdf» for «el PDF contrato»: Qwen writes it so). Practice
         P203 (26 runs with System One, 2026-10-22): Laya chose file_read at 0.91 in 7 and «corrige» asked every time.
-        Ids (windowId, reminderId…) and any other text still have to appear in the conversation or in a result."""
+        Ids (windowId, reminderId…) and any other text still have to appear in the conversation or in a result.
+        With `every`, the optional arguments it wrote are held to the same rule (one left empty is not written)."""
         tool = next((t["function"] for t in self.tools if t["function"]["name"] == wire), {})
         required = (tool.get("parameters") or {}).get("required") or []
         properties = (tool.get("parameters") or {}).get("properties") or {}
+        optional = [name for name in arguments if name not in required
+                    and arguments[name] is not None and arguments[name] != ""] if every else []
         seen = _fold(" ".join(str(m.get("content") or "") for m in messages
                               if m.get("role") == "tool" or (m.get("role") == "user"
                                                              and not str(m.get("content") or "").startswith("["))))
@@ -1465,7 +1514,7 @@ class Mind:
         def said(text: str) -> bool:
             return bool(text) and re.search(rf"(?<!\w){re.escape(text)}(?!\w)", seen) is not None
 
-        for name in required:
+        for name in [*required, *optional]:
             value = arguments.get(name)
             if value is None or value == "":
                 return False
@@ -1546,13 +1595,18 @@ class Mind:
                     return self._next(request_id, stage, turn, final=True)
                 result.update(reply=content)
         elif call is not None and call["wire"] == CONFIRM["function"]["name"] and not turn.get("pending"):
+            # A question that ended unanswered just before these words is told once, as what it is, and the model may
+            # call that tool again (the kernel asks again for that exact invocation) or answer in words.
+            ended = turn.pop("ended", None)
+            told = ended_result(ended) if ended else NOTHING_PENDING
             for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
                 turn["conv"].append({"role": "tool", "tool_call_id": call_id,
-                                     "content": NOTHING_PENDING if call_id == call["id"] else NOT_RUN})
+                                     "content": told if call_id == call["id"] else NOT_RUN})
             turn["queue"], turn["awaiting"] = [], None
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
-                      kind="nothing_pending", operation=None, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True)
+                      kind="confirmation_ended" if ended else "nothing_pending",
+                      operation=ended["operation"] if ended else None, arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=not ended)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))

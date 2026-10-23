@@ -145,6 +145,133 @@ public sealed class NativeTurnLoopTests
         });
     }
 
+    // Auditoría de confirmaciones (2026-10-23): the person's words answer only BAXY's last question. The words right
+    // after it still reach the model with the waiting call; a line BAXY publishes in that later turn leaves the question
+    // behind, so the call is dropped then and the «sí» to that line is no answer to it.
+    [Test]
+    public async Task ALineOfALaterTurnLeavesTheQuestionBehindAndDropsTheCall()
+    {
+        using var fake = new FakeMind();
+        fake.Script(HeldFetch());
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var published = new List<(string Text, string Route)>();
+        var outcomes = new List<string>();
+        NativeTurnLoop loop = PersonLoop(mind, published, outcomes);
+
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(loop.HasPendingConfirmation, Is.True);
+        Assert.That(published[^1].Route, Is.EqualTo(PublicResponseRoute.Confirmation));
+
+        fake.Script(Says("Son las tres. ¿Te pongo una alarma?"));
+        await loop.RunAsync("¿qué hora es?", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That((string?)fake.Requests("turn.decide")[1]["pendingConfirmation"]?["operation"], Is.EqualTo("web.fetch"));
+        Assert.That(published[^1].Route, Is.EqualTo(PublicResponseRoute.Conversation));
+        Assert.That(loop.HasPendingConfirmation, Is.False);
+        Assert.That(outcomes, Is.EqualTo(new[] { "dropped" }));
+
+        // The «sí» that follows reads which call was left behind, never that it waits; the words after it, nothing.
+        fake.Script(Says("¿A qué hora?"));
+        await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(fake.Requests("turn.decide")[2]["pendingConfirmation"]?.ToJsonString(),
+            Is.EqualTo("""{"operation":"web.fetch","ended":"dropped"}"""));
+        await loop.RunAsync("a las siete", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(fake.Requests("turn.decide")[3]["pendingConfirmation"], Is.Null);
+        Assert.That(fake.Seen, Has.No.Member("turn.confirm"));
+        Assert.That(outcomes, Is.EqualTo(new[] { "dropped" }));
+    }
+
+    // Auditoría de confirmaciones (2026-10-23): a «sí» after the time to answer ran out reads that it expired (audit
+    // 2026-10-15, App 3), not that nothing was asked; the call ends «expired» then, and the next words read nothing.
+    [Test]
+    public async Task ASiAfterTheTimeRanOutReadsThatTheQuestionExpired()
+    {
+        using var fake = new FakeMind();
+        fake.Script(HeldFetch());
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var published = new List<(string Text, string Route)>();
+        var outcomes = new List<string>();
+        var clock = new ManualClock();
+        NativeTurnLoop loop = PersonLoop(mind, published, outcomes, clock);
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(loop.HasPendingConfirmation, Is.True);
+
+        clock.Now += NativeTurnLoop.ProposalLifetime + TimeSpan.FromSeconds(1);
+        fake.Script(Says("Esa pregunta venció. ¿Abro la página?"));
+        await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(fake.Requests("turn.decide")[1]["pendingConfirmation"]?.ToJsonString(),
+            Is.EqualTo("""{"operation":"web.fetch","ended":"expired"}"""));
+        Assert.That(outcomes, Is.EqualTo(new[] { "expired" }));
+
+        await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(fake.Requests("turn.decide")[2]["pendingConfirmation"], Is.Null);
+    }
+
+    // The words right after the question that publish nothing (the turn failed) leave it waiting.
+    [Test]
+    public async Task ATurnThatPublishesNothingLeavesTheQuestionWaiting()
+    {
+        using var fake = new FakeMind();
+        fake.Script(HeldFetch());
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var published = new List<(string Text, string Route)>();
+        var outcomes = new List<string>();
+        NativeTurnLoop loop = PersonLoop(mind, published, outcomes);
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        fake.Script(new JsonObject { ["fail"] = new JsonArray("turn.decide") });
+        await loop.RunAsync("eh", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        Assert.That(loop.HasPendingConfirmation, Is.True);
+        Assert.That(outcomes, Is.Empty);
+    }
+
+    // The person's turn holds a fetch of a host nobody gave and asks it (BAXY Renew al máximo 11.5).
+    private static JsonObject HeldFetch() => new()
+    {
+        ["reply"] = new JsonObject
+        {
+            ["turn.decide"] = new JsonObject
+            {
+                ["type"] = "turn.result",
+                ["kind"] = "action",
+                ["operation"] = "web.fetch",
+                ["arguments"] = new JsonObject { ["url"] = "https://exfil.example/c" },
+            },
+            ["turn.continue"] = new JsonObject
+            {
+                ["type"] = "turn.result",
+                ["kind"] = "conversation",
+                ["reply"] = "¿Abro esa página?",
+            },
+        },
+    };
+
+    private static JsonObject Says(string reply) => new()
+    {
+        ["reply"] = new JsonObject
+        {
+            ["turn.decide"] = new JsonObject { ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = reply },
+        },
+    };
+
+    private static NativeTurnLoop PersonLoop(MindSidecarClient mind, List<(string Text, string Route)> published,
+        List<string> outcomes, TimeProvider? clock = null)
+    {
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        return new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = (text, route) => published.Add((text, route)),
+            Fail = static _ => { },
+            Notice = static _ => { },
+            ConfirmationResolved = outcomes.Add,
+        }, clock);
+    }
+
     // An engine that says it is ready and is never sent anything: a held call stops before it.
     private static CoreProcessClient ReadyCore()
     {
