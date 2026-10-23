@@ -2458,10 +2458,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
-            return effectBoundary.Failure(
-                operation,
-                "brightness_postread_failed",
-                effect);
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "brightness_postread_failed", effect),
+                BrightnessStateAfter(response.RootElement, value));
         }
 
         // Ronda 22 (r18 t4-c04 t2: the same level asked again took 10.2 s against 3.6 s the first time): a set whose
@@ -2523,10 +2522,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
-            return effectBoundary.Failure(
-                operation,
-                "brightness_adjustment_postread_failed",
-                effect);
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "brightness_adjustment_postread_failed", effect),
+                BrightnessStateAfter(response.RootElement, requested: null));
         }
 
         JsonElement result = ExternalJson.Create(writer =>
@@ -2549,6 +2547,31 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effect);
+    }
+
+    // Renew al máximo (w8): a set or step whose read-back did not show the level within 1.5 s said only «postread
+    // failed»; the levels the last read saw (and the ones before) go with it as stateAfter, never as a success.
+    private static JsonElement? BrightnessStateAfter(JsonElement response, int? requested)
+    {
+        if (!response.TryGetProperty("values", out JsonElement values) || values.ValueKind != JsonValueKind.Array
+            || values.GetArrayLength() == 0)
+            return null;
+        return ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WritePropertyName("values");
+            values.WriteTo(writer);
+            if (response.TryGetProperty("baselineValues", out JsonElement baseline) && baseline.ValueKind == JsonValueKind.Array)
+            {
+                writer.WritePropertyName("baselineValues");
+                baseline.WriteTo(writer);
+            }
+            if (requested is int level)
+                writer.WriteNumber("requestedLevel", level);
+            writer.WriteBoolean("requestedStateReached", false);
+            writer.WriteString("authority", "wmi_monitor_brightness_postread");
+            writer.WriteEndObject();
+        });
     }
 
     private async ValueTask<ExternalCapabilityReceipt> SettingStatusAsync(

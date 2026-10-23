@@ -2837,6 +2837,10 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("brightness_postread_failed"));
             Assert.That(receipt.StateAlreadyReached, Is.False);
+            // Renew al máximo (w8): the level the last read saw goes with the failure.
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("stateAfter").GetProperty("values")[0].GetInt32(), Is.EqualTo(30));
+            Assert.That(receipt.Result?.GetProperty("stateAfter").GetProperty("requestedLevel").GetInt32(), Is.EqualTo(40));
         });
     }
 
