@@ -284,6 +284,30 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // Renew al máximo (w8): a connection cut in the middle of the body escaped the adapter (told as a provider failure
+    // that may have had an effect), and a 404 was the same code as an unreachable server; each says what it was.
+    [Test]
+    public async Task ADownloadCutOrRefusedByTheServerSaysWhichAndSavesNothing()
+    {
+        var cut = Adapter((_, _) => Task.FromException<(byte[], string)>(new IOException("connection reset")));
+        var missing = Adapter((_, _) => Task.FromException<(byte[], string)>(
+            new HttpRequestException("not found", null, System.Net.HttpStatusCode.NotFound)));
+        JsonElement asked = JsonSerializer.SerializeToElement(new { url = "https://example.org/a.pdf", folder = "desktop" });
+
+        ExternalCapabilityReceipt interrupted = await cut.InvokeAsync("web.download", asked, CancellationToken.None);
+        ExternalCapabilityReceipt notFound = await missing.InvokeAsync("web.download", asked, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(interrupted.ErrorCode, Is.EqualTo("download_source_unavailable"));
+            Assert.That(interrupted.EffectMayHaveOccurred, Is.False);
+            Assert.That(interrupted.Result!.Value.GetProperty("next").GetString(), Does.Contain("nothing was saved"));
+            Assert.That(notFound.ErrorCode, Is.EqualTo("download_http_status"));
+            Assert.That(notFound.Result!.Value.GetProperty("statusCode").GetInt32(), Is.EqualTo(404));
+            Assert.That(Directory.GetFiles(_root), Is.Empty);
+        });
+    }
+
     // Only an address is downloaded: a query used to scrape an image search engine's results page (BAXY Renew audit
     // 2026-10-15, O1); without an address nothing is asked of the network.
     [Test]
