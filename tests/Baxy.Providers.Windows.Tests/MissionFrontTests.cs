@@ -164,6 +164,51 @@ public sealed class MissionFrontTests
         });
     }
 
+    // Renew al máximo (w8): Windows drops the keys BAXY sends to a window run as administrator (UIPI) and SendInput still
+    // counts them as taken: a key or a text into such a window came back verified with nothing done. It is refused before
+    // anything is sent, no front taken, with what to do; with the aids off, the bare code.
+    [TestCase("input.key.press", """{"key":"enter","window":18016}""", "all")]
+    [TestCase("input.text.type", """{"text":"hola"}""", "all")]
+    [TestCase("clipboard.paste", "{}", "none")]
+    public async Task AKeyboardActOnAWindowRunAsAdministratorIsNeverSent(string operation, string arguments, string aids)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter(operation, lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease)
+        {
+            ElevatedActOf = (_, _) => WindowsVisibleControlAdapter.WindowElevated,
+        };
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("window_elevated"));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(adapter.Calls, Is.Zero);
+            Assert.That(lease.Taken, Is.Empty);
+            Assert.That(receipt.Result?.TryGetProperty("next", out JsonElement next) == true
+                && next.GetString()!.StartsWith("nothing was sent: the window it would go to runs as administrator",
+                    StringComparison.Ordinal), Is.EqualTo(aids == "all"));
+        });
+    }
+
+    // Which acts the rule takes and what it says: the keyboard, wheel and clipboard acts on a window above BAXY; never a
+    // click (it keeps its own refusal), a look, a window of BAXY's level, or no window.
+    [TestCase("input.key.press", 7L, true, true, "window_elevated")]
+    [TestCase("input.scroll", 7L, true, null, "window_elevation_unread")]
+    [TestCase("input.select.all", 7L, true, true, "window_elevated")]
+    [TestCase("input.text.type", 7L, false, false, null)]
+    [TestCase("input.visible.click", 7L, true, true, null)]
+    [TestCase("input.visible.controls", 7L, true, true, null)]
+    [TestCase("input.key.press", 0L, true, true, null)]
+    public void OnlyAKeyboardActOnAWindowAboveBaxyIsTakenForElevated(
+        string operation, long target, bool above, bool? elevated, string? code) =>
+        Assert.That(WindowsExternalCapabilityProvider.ElevatedActCode(
+            operation, (nint)target, static _ => 4242, _ => above, _ => elevated), Is.EqualTo(code));
+
     // Contracases: a look (it reads its windows, «windows», and brings nothing up), an opening, and an act outside a
     // mission (no «window»: the window in front, the person's own order) never ask for the front.
     [TestCase("input.visible.controls", """{"windows":[18016]}""")]

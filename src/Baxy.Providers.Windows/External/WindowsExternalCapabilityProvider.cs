@@ -16,6 +16,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     // FT/proveedores goal (live W1, 2026-10-19): the program of the window an act was refused for; the refusal named
     // none, and the model told «la ventana de Word está protegida» when a terminal was in front. Null in the test seams.
     private Func<string, JsonElement, string?>? _refusedProcess;
+    private Func<string, JsonElement, string?>? _elevatedAct;
     private readonly IOpenedApplicationKeyboard? _openedKeyboard;
     private int _disposed;
 
@@ -39,6 +40,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             OpenedApplicationKeyboard.Product)
     {
         _refusedProcess = RefusedProcess;
+        _elevatedAct = static (operation, arguments) => ElevatedActCode(operation, ActTarget(operation, arguments),
+            static window => unchecked((int)VisibleControlSurface.ProcessOf(window)), VisibleControlSurface.RunsAboveUs,
+            VisibleControlSurface.Elevated);
     }
 
     private static IExternalOperationAdapter[] CreateDefaultAdapters(string dataRoot)
@@ -248,6 +252,33 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         set => _refusedProcess = value;
     }
 
+    // A test seam's way to say a keyboard act's window runs above BAXY (the product's reads its process token).
+    internal Func<string, JsonElement, string?>? ElevatedActOf
+    {
+        set => _elevatedAct = value;
+    }
+
+    /// <summary>
+    /// Renew al máximo (w8): Windows drops the keys, the wheel and the messages BAXY sends to a window of a process that
+    /// runs as administrator (UIPI) while SendInput still counts every event as taken, so a key or a text into it came
+    /// back verified with nothing done. Only the click refused it (WindowsVisibleControlAdapter, «window_elevated»); every
+    /// keyboard, wheel and clipboard act is refused the same way, before anything is sent: «window_elevated», or
+    /// «window_elevation_unread» when the process's token could not be read. The click keeps its own refusal.
+    /// </summary>
+    internal static string? ElevatedActCode(
+        string operation, nint target, Func<nint, int> processOf, Func<int, bool> runsAboveUs, Func<int, bool?> elevated)
+    {
+        if (target == 0 || operation is not ("input.key.press" or "input.text.type" or "input.scroll"
+            or "input.select.all" or "clipboard.copy" or "clipboard.paste" or "input.keyboard.layout"))
+            return null;
+        int processId = processOf(target);
+        if (processId <= 0 || !runsAboveUs(processId))
+            return null;
+        return elevated(processId) is null
+            ? WindowsVisibleControlAdapter.WindowElevationUnread
+            : WindowsVisibleControlAdapter.WindowElevated;
+    }
+
     private static bool ActOnProtectedWindow(string operation, JsonElement arguments) =>
         ActTarget(operation, arguments) is var target and not 0 && VisibleControlSurface.ActRefused(target);
 
@@ -415,6 +446,26 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
 
                     writer.WriteEndObject();
                 }), "protected_window");
+        }
+
+        if (_elevatedAct?.Invoke(operation, arguments) is { } elevatedCode)
+        {
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.ElevatedNext))
+                {
+                    writer.WriteString("next", elevatedCode == WindowsVisibleControlAdapter.WindowElevated
+                        ? "nothing was sent: the window it would go to runs as administrator, and Windows blocks the "
+                            + "keys BAXY sends there; the person can do it in that window, or open that application "
+                            + "again without administrator rights"
+                        : "nothing was sent: whether the window it would go to runs as administrator could not be read, "
+                            + "and Windows may block the keys BAXY sends there; the person can do it in that window");
+                }
+
+                writer.WriteEndObject();
+            }), elevatedCode);
         }
         // The owner's decision of 2026-10-10 («no molestar», simple form): an act of a mission is done with the mission's
         // window in front, brought after the person's pause; the lease gives the front back at the person's first input

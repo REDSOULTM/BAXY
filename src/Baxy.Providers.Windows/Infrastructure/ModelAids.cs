@@ -98,6 +98,9 @@ public static class ModelAids
     /// </summary>
     public const string DrawnTextNext = "drawn_text_next";
 
+    /// <summary>Renew al máximo (w8): a keyboard act refused for a window run as administrator says nothing was sent and why.</summary>
+    public const string ElevatedNext = "elevated_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
