@@ -108,6 +108,8 @@ public sealed class SaidFoldersTests
         {
             Assert.That(next, Does.Contain("call file_write again with relativePath \"banco-local/apuntes.txt\";"));
             Assert.That(next, Does.Not.Contain("folder \"desktop\""));
+            Assert.That(next, Does.Contain("If " + Path.Combine(_home, "banco-local")
+                + " (apuntes.txt is there) is the place of this call"));
             Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
             {
                 ["relativePath"] = "banco-local/apuntes.txt",

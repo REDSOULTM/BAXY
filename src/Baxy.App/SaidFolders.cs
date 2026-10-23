@@ -206,8 +206,11 @@ internal sealed class SaidFolders
         string next;
         if (options.Any(option => option.Arguments is not null))
         {
+            // Of two folders of that name, the one that holds the file is said by its path and what it holds.
+            string which = places.Count == 1 ? "that folder"
+                : targets.Count == 1 ? targets[0].Path + Holding(targets[0], reach.Leaf) : "one of them";
             next = $"nothing ran: the person named {named} and this call would act in {where}, outside it. If "
-                + $"{(targets.Count == 1 ? "that folder" : "one of them")} is the place of this call, call {wire} again with "
+                + $"{which} is the place of this call, call {wire} again with "
                 + string.Join(", or ", options.Where(option => option.Arguments is not null).Select(option =>
                     Changes(arguments, option.Arguments!) + (targets.Count == 1 ? string.Empty
                         : $" for {option.Place.Path}{Holding(option.Place, reach.Leaf)}")))
