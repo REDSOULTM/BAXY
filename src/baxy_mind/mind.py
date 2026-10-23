@@ -638,6 +638,13 @@ COMPACTED_FACTS = {"su resultado está arriba": "su resultado se omitió",
 assert all(k in label for k, label in (("su resultado está arriba", VERIFICATION["output_only"]),
                                          ("lo que vio está arriba", OUTPUT_READ)))
 
+
+def _omitted(facts: str) -> str:
+    """Facts of calls whose results lost their bodies, said as they are now (COMPACTED_FACTS)."""
+    for told, omitted in COMPACTED_FACTS.items():
+        facts = facts.replace(told, omitted)
+    return facts
+
 # Review 16: the person's own text, when it alone does not fit (decide), keeps its start and the cut is said where the
 # model reads it; never cut below this many characters.
 CUT_TEXT = "\n[Texto recortado para que quepa el turno: {n} caracteres más de lo que escribió la persona ya no se muestran]"
@@ -899,6 +906,7 @@ class Mind:
         # correction) count up for the whole session: from the conversation's length they repeated once it was trimmed.
         self._ids = 0
         self._ran: list[str] = []  # the session's last calls as «tool → how it ended» (8.1), and how many ran in all
+        self._ran_ids: list[str | None] = []  # the id of each of those calls (None: not known), for the clock
         self._ran_count = 0
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
@@ -1103,7 +1111,7 @@ class Mind:
         ran = str(self._ran_count or "ninguna")
         if self._ran:
             last = "" if len(self._ran) == self._ran_count else f", las {len(self._ran)} últimas"
-            ran += f"{last} ({' / '.join(self._ran)})"
+            ran += f"{last} ({' / '.join(self._ran_told())})"
         return (f"{CLOCK_MARK} {now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
                 "los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna herramienta en este "
                 f"turno; llamadas a herramientas en esta sesión: {ran}]")
@@ -1119,7 +1127,7 @@ class Mind:
         self._turn = self._beat = None
         self.trimmed_turns = 0
         self._refs, self._ref_of, self._ids = {}, {}, 0
-        self._ran, self._ran_count = [], 0
+        self._ran, self._ran_ids, self._ran_count = [], [], 0
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
@@ -1129,7 +1137,7 @@ class Mind:
         2026-10-22: the short references and the ids, or after a relaunch ref:r1 stood for another address; al máximo
         8.1: the session's calls); the App keeps the array as it is."""
         state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids, "ran": self._ran,
-                 "ran_count": self._ran_count}
+                 "ran_ids": self._ran_ids, "ran_count": self._ran_count}
         return json.loads(json.dumps([*self.conversation, state], ensure_ascii=False))
 
     def load_session(self, conversation: list[Any]) -> None:
@@ -1144,6 +1152,9 @@ class Mind:
                                                         and m.get("role") in {"user", "assistant", "tool"}])
         if isinstance(state.get("ran_count"), int) and isinstance(state.get("ran"), list):
             self._ran, self._ran_count = [str(entry) for entry in state["ran"]][-SESSION_CALLS:], state["ran_count"]
+            ids = state.get("ran_ids")
+            self._ran_ids = ([i if isinstance(i, str) else None for i in ids][-SESSION_CALLS:]
+                             if isinstance(ids, list) and len(ids) == len(state["ran"]) else [None] * len(self._ran))
             for wire in unanswered:
                 self._ran_add(wire, NO_RESULT_RAN)
         else:
@@ -1214,6 +1225,8 @@ class Mind:
         self.conversation.append(request)
         try:
             self._trim()
+            if _aid_on("clock_omitted"):
+                clock["content"] = self._clock() + self._pending_note(pending)  # the bodies as the trim left them
             # Review 2026-10-22: a text that alone does not fit beside the prefix (a pasted log) failed the turn whole
             # and wordless, as only earlier turns can be trimmed: it keeps its start, halved until it fits, and the cut
             # is said where the model reads it.
@@ -1339,10 +1352,22 @@ class Mind:
         self._log("warm.history", started, reply, messages=len(self.conversation))
         return True
 
-    def _ran_add(self, calling: Any, outcome: str) -> None:
+    def _ran_add(self, calling: Any, outcome: str, call_id: str | None = None) -> None:
         """One call of the session and how it ended, for the clock (8.1)."""
         wire = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else str(calling or "?").replace(".", "_")
         self._ran, self._ran_count = [*self._ran, f"{wire} → {outcome}"][-SESSION_CALLS:], self._ran_count + 1
+        self._ran_ids = [*self._ran_ids, call_id][-SESSION_CALLS:]
+
+    def _ran_told(self) -> list[str]:
+        """The clock's calls of the session (8.1). Aid «clock_omitted» (auditoría de la mente, w8, 2026-10-23): one whose
+        result lost its body (1.1, or its turn was cut) is told as the kept facts lines tell it (COMPACTED_FACTS: «lo
+        que vio se omitió»), not «lo que vio está arriba» beside those lines saying it was left out."""
+        if not _aid_on("clock_omitted"):
+            return self._ran
+        bodies = {m.get("tool_call_id") for m in self.conversation
+                  if m.get("role") == "tool" and not str(m.get("content") or "").startswith(COMPACTED)}
+        return [entry if call_id is None or call_id in bodies else _omitted(entry)
+                for entry, call_id in zip(self._ran, self._ran_ids)]
 
     def _close_open_calls(self) -> None:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
@@ -1434,9 +1459,8 @@ class Mind:
             content = str(message.get("content") or "")
             at = content.rfind(TURN_FACTS)
             if message["role"] == "tool" and at >= 0:
-                facts = content[at + len(TURN_FACTS):].split("\n")[0].removesuffix("]")
-                for told, omitted in COMPACTED_FACTS.items():  # its body is gone with the turn
-                    facts = facts.replace(told, omitted)
+                # Its body is gone with the turn.
+                facts = _omitted(content[at + len(TURN_FACTS):].split("\n")[0].removesuffix("]"))
             elif message["role"] == "tool" and content in {NO_RESULT, NOT_RUN, NOT_RUN_AFTER}:
                 ended = NO_RESULT_RAN if content == NO_RESULT else GIST_NOT_RUN
                 unrun.append(f"{names.get(message.get('tool_call_id'), '?')} → {ended}")
@@ -1455,10 +1479,7 @@ class Mind:
             content = str(message.get("content") or "")
             at = content.rfind(TURN_FACTS)
             if message["role"] == "tool" and at > len(COMPACTED):
-                kept = content[at:]
-                for told, omitted in COMPACTED_FACTS.items():  # w5: the facts no longer point at a body
-                    kept = kept.replace(told, omitted)
-                message["content"] = COMPACTED + kept
+                message["content"] = COMPACTED + _omitted(content[at:])  # w5: the facts no longer point at a body
                 compacted = True
         return compacted
 
@@ -1515,7 +1536,7 @@ class Mind:
         else:
             turn["repeats"] = 1
             done.append(entry)
-        self._ran_add(turn.get("calling"), outcome)
+        self._ran_add(turn.get("calling"), outcome, turn["awaiting"])
         aids = _aids_seen(observation)
         named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
         # Uso real: a look at another window (the browser's) came between the opening and the failures; the application

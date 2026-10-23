@@ -169,3 +169,41 @@ def test_a_result_that_tells_the_places_does_not_list_them_twice(tmp_path, monke
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert "input_visible_click ya se llamó 2 veces en este turno" in last
     assert last.count("también se abre directo en sus lugares") == 1
+
+
+def _clock_of(server) -> str:
+    return next(m["content"] for m in reversed(server.bodies[-1]["messages"])
+                if str(m["content"]).startswith("[Reloj:"))
+
+
+@pytest.mark.parametrize("setting, told", [("", "lo que vio se omitió"), ("none", "lo que vio está arriba")])
+def test_the_clock_says_a_call_whose_body_was_cut_away_was_left_out(tmp_path, monkeypatch, setting, told) -> None:
+    # Aid «clock_omitted»: the clock's calls of the session (8.1) said «lo que vio está arriba» for a read whose result
+    # the trim had taken away, beside the kept facts lines saying «lo que vio se omitió».
+    from baxy_mind import mind as mind_module
+    from test_mind_final import _call, _mind, _say
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    monkeypatch.setattr(mind_module, "HISTORY_TURNS", 2)
+    mind, server = _mind(tmp_path, [_call("file_read", {"path": "notas.txt"}), _say("Dice hola."), _say("Bien."),
+                                    _say("Decía hola.")])
+    mind.risk = {"file_read": "read_only"}
+    mind.decide(1, "lee notas.txt")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "output_only", "text": "hola"}))
+    mind.decide(3, "gracias")
+    mind.decide(4, "¿qué decía?")
+    assert mind.trimmed_turns == 2
+    assert f"file_read → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; {told}" in _clock_of(server)
+
+
+def test_the_clock_keeps_its_words_for_a_body_still_in_the_conversation(tmp_path, monkeypatch) -> None:
+    from test_mind_final import _call, _mind, _say
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("file_read", {"path": "notas.txt"}), _say("Dice hola."), _say("Hola.")])
+    mind.risk = {"file_read": "read_only"}
+    mind.decide(1, "lee notas.txt")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "output_only", "text": "hola"}))
+    kept = mind.export_session()
+    mind.load_session(kept)
+    mind.decide(3, "¿qué decía?")
+    assert "file_read → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba" in _clock_of(
+        server)
