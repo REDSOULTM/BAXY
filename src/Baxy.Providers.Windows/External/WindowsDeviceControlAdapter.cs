@@ -483,11 +483,57 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         writer.WriteString("authority", "windows_device_pairing_postread"); writer.WriteEndObject();
     });
 
+    /// <summary>Renew al máximo (w8): the radios this adapter switches and reads (the WinRT Radio API; a fake in tests).</summary>
+    internal IRadioSet Radios { get; init; } = WindowsRadioSet.Instance;
+
+    // Renew al máximo (w8): a switched radio was read once, right after SetStateAsync returned, so one still settling
+    // was told «postread failed» though it got there a moment later. The radios are now read every 100 ms until they
+    // show the asked state, for 2 s at most, and a failure keeps the last read as stateAfter.
+    internal static readonly TimeSpan RadioPollPause = TimeSpan.FromMilliseconds(100);
+
+    internal static readonly TimeSpan RadioPollHorizon = TimeSpan.FromSeconds(2);
+
+    private async ValueTask<(IRadioHandle[] Observed, bool Reached)> ReadRadiosUntilAsync(
+        Func<IRadioHandle, bool> kind,
+        Func<IRadioHandle[], bool> reached,
+        CancellationToken token)
+    {
+        int polls = (int)(RadioPollHorizon / RadioPollPause);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        for (int poll = 0; ; poll++)
+        {
+            IRadioHandle[] observed = (await Radios.ListAsync()).Where(kind).ToArray();
+            if (reached(observed))
+                return (observed, true);
+            if (poll >= polls || clock.Elapsed >= RadioPollHorizon)
+                return (observed, false);
+            await _delay(RadioPollPause, token);
+        }
+    }
+
+    private static JsonElement RadioStateAfter(IRadioHandle[] observed) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteStartArray("radios");
+        foreach (IRadioHandle radio in observed)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("kind", radio.Kind.ToString());
+            writer.WriteString("name", radio.Name);
+            writer.WriteString("state", radio.State.ToString());
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+        writer.WriteBoolean("requestedStateReached", false);
+        writer.WriteString("authority", "windows_radio_api_reread");
+        writer.WriteEndObject();
+    });
+
     // NETWORK1737 «qué redes wifi hay» → «sí, prendelo»: the Wi-Fi radio is
     // switched through the same official Radio API as Bluetooth, with the
     // person's confirmation, and the state is read back; a read-only status
     // answers «¿el wifi está prendido?» without touching it.
-    private static async ValueTask<ExternalCapabilityReceipt> WifiRadioSetAsync(
+    private async ValueTask<ExternalCapabilityReceipt> WifiRadioSetAsync(
         string operation,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary,
@@ -499,12 +545,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "wifi_radio_state_invalid");
         }
         bool requested = stateElement.GetBoolean();
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
         {
             return ExternalJson.Failure(operation, "wifi_radio_access_denied");
         }
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => radio.Kind == RadioKind.WiFi)
             .ToArray();
         if (radios.Length == 0)
@@ -515,13 +561,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // FT/proveedores goal (review of receipts): a radio disabled by its switch or driver (RadioState.Disabled) is
         // off: turning it off changes nothing and is not told «may have happened»; turning on radios that are all
         // disabled is said before anything is touched.
-        bool Reached(Radio radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
+        bool Reached(IRadioHandle radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
         if (requested && radios.All(radio => radio.State == RadioState.Disabled))
         {
             return ExternalJson.FailureBeforeEffect(operation, "wifi_radio_disabled");
         }
         bool effectObserved = false;
-        foreach (Radio radio in radios)
+        foreach (IRadioHandle radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (Reached(radio))
@@ -536,12 +582,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 return effectBoundary.Failure(operation, "wifi_radio_change_rejected", effectObserved);
             }
         }
-        Radio[] observed = (await Radio.GetRadiosAsync())
-            .Where(radio => radio.Kind == RadioKind.WiFi)
-            .ToArray();
-        if (observed.Length == 0 || !observed.All(Reached))
+        (IRadioHandle[] observed, bool reached) = await ReadRadiosUntilAsync(
+            radio => radio.Kind == RadioKind.WiFi, read => read.Length > 0 && read.All(Reached), cancellationToken);
+        if (!reached)
         {
-            return effectBoundary.Failure(operation, "wifi_radio_postread_failed", effectObserved);
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "wifi_radio_postread_failed", effectObserved), RadioStateAfter(observed));
         }
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -562,7 +608,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // apagadas. Un driver que restaure enciende las que estaban encendidas.
     private static readonly RadioKind[] AirplaneRadioKinds = [RadioKind.WiFi, RadioKind.Bluetooth, RadioKind.MobileBroadband];
 
-    private static async ValueTask<ExternalCapabilityReceipt> AirplaneModeSetAsync(
+    private async ValueTask<ExternalCapabilityReceipt> AirplaneModeSetAsync(
         string operation,
         int value,
         ExternalEffectBoundary effectBoundary,
@@ -570,10 +616,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     {
         if (value is not (0 or 1))
             return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_value_invalid");
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
             return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radio_access_denied");
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
             .ToArray();
         if (radios.Length == 0)
@@ -592,7 +638,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 operation, value == 1 ? "airplane_radios_already_all_off" : "airplane_radios_already_on");
         }
         bool effectObserved = false;
-        foreach (Radio radio in radios)
+        foreach (IRadioHandle radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (radio.State == desired || radio.State == RadioState.Disabled)
@@ -604,13 +650,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 return effectBoundary.Failure(operation, "airplane_mode_change_rejected", effectObserved);
         }
 
-        Radio[] observed = (await Radio.GetRadiosAsync())
-            .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
-            .ToArray();
+        (IRadioHandle[] observed, bool reached) = await ReadRadiosUntilAsync(
+            radio => AirplaneRadioKinds.Contains(radio.Kind),
+            read => read.Length > 0 && (value == 1
+                ? read.All(radio => radio.State != RadioState.On)
+                : read.All(radio => radio.State is RadioState.On or RadioState.Disabled)),
+            cancellationToken);
         bool allOff = observed.All(radio => radio.State != RadioState.On);
-        bool reached = value == 1 ? allOff : observed.All(radio => radio.State is RadioState.On or RadioState.Disabled);
         if (!reached)
-            return effectBoundary.Failure(operation, "airplane_mode_postread_failed", effectObserved);
+        {
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "airplane_mode_postread_failed", effectObserved),
+                RadioStateAfter(observed));
+        }
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -621,7 +673,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteBoolean("allRadiosOff", allOff);
             writer.WriteBoolean("changed", effectObserved);
             writer.WriteStartArray("radios");
-            foreach (Radio radio in observed)
+            foreach (IRadioHandle radio in observed)
             {
                 writer.WriteStartObject();
                 writer.WriteString("kind", radio.Kind.ToString());
@@ -639,12 +691,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved);
     }
 
-    private static async ValueTask<ExternalCapabilityReceipt> AirplaneModeStatusAsync(string operation)
+    private async ValueTask<ExternalCapabilityReceipt> AirplaneModeStatusAsync(string operation)
     {
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
             return ExternalJson.Failure(operation, "airplane_mode_radio_access_denied");
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
             .ToArray();
         if (radios.Length == 0)
@@ -657,7 +709,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteBoolean("allRadiosOff", radios.All(radio => radio.State != RadioState.On));
             writer.WriteNumber("radioCount", radios.Length);
             writer.WriteStartArray("radios");
-            foreach (Radio radio in radios)
+            foreach (IRadioHandle radio in radios)
             {
                 writer.WriteStartObject();
                 writer.WriteString("kind", radio.Kind.ToString());
@@ -673,14 +725,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    private static async ValueTask<ExternalCapabilityReceipt> WifiRadioStatusAsync(string operation)
+    private async ValueTask<ExternalCapabilityReceipt> WifiRadioStatusAsync(string operation)
     {
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
         {
             return ExternalJson.Failure(operation, "wifi_radio_access_denied");
         }
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => radio.Kind == RadioKind.WiFi)
             .ToArray();
         if (radios.Length == 0)
@@ -700,7 +752,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioSetAsync(
+    private async ValueTask<ExternalCapabilityReceipt> BluetoothRadioSetAsync(
         string operation,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary,
@@ -712,12 +764,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "bluetooth_radio_state_invalid");
         }
         bool requested = stateElement.GetBoolean();
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
         {
             return ExternalJson.Failure(operation, "bluetooth_radio_access_denied");
         }
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => radio.Kind == RadioKind.Bluetooth)
             .ToArray();
         if (radios.Length == 0)
@@ -728,13 +780,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // FT/proveedores goal (review of receipts): a radio disabled by its switch or driver (RadioState.Disabled) is
         // off: turning it off changes nothing and is not told «may have happened»; turning on radios that are all
         // disabled is said before anything is touched.
-        bool Reached(Radio radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
+        bool Reached(IRadioHandle radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
         if (requested && radios.All(radio => radio.State == RadioState.Disabled))
         {
             return ExternalJson.FailureBeforeEffect(operation, "bluetooth_radio_disabled");
         }
         bool effectObserved = false;
-        foreach (Radio radio in radios)
+        foreach (IRadioHandle radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (Reached(radio))
@@ -752,15 +804,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     effectObserved);
             }
         }
-        Radio[] observed = (await Radio.GetRadiosAsync())
-            .Where(radio => radio.Kind == RadioKind.Bluetooth)
-            .ToArray();
-        if (observed.Length == 0 || !observed.All(Reached))
+        (IRadioHandle[] observed, bool reached) = await ReadRadiosUntilAsync(
+            radio => radio.Kind == RadioKind.Bluetooth, read => read.Length > 0 && read.All(Reached), cancellationToken);
+        if (!reached)
         {
-            return effectBoundary.Failure(
-                operation,
-                "bluetooth_radio_postread_failed",
-                effectObserved);
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "bluetooth_radio_postread_failed", effectObserved),
+                RadioStateAfter(observed));
         }
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -778,14 +828,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: the radio
     // state was only observable as the post-read of a change; a read-only
     // read answers the question without touching the radio.
-    private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioStatusAsync(string operation)
+    private async ValueTask<ExternalCapabilityReceipt> BluetoothRadioStatusAsync(string operation)
     {
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
         {
             return ExternalJson.Failure(operation, "bluetooth_radio_access_denied");
         }
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => radio.Kind == RadioKind.Bluetooth)
             .ToArray();
         if (radios.Length == 0)
