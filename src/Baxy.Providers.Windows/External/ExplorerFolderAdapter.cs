@@ -133,6 +133,8 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             return ExternalJson.FailureBeforeEffect(operation, "explorer_folder_unavailable");
         int count;
         int total;
+        int subfolders;
+        int hiddenOrSystem;
         try
         {
             // Auditoría final (regla 3): the files the person sees there; a OneDrive file kept only in the cloud is a
@@ -146,6 +148,12 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             string[] files = Directory.EnumerateFiles(folder, "*", options).ToArray();
             total = files.Length;
             count = files.Count(file => string.Equals(Path.GetExtension(file), extension, StringComparison.OrdinalIgnoreCase));
+            subfolders = Directory.EnumerateDirectories(folder, "*", options).Count();
+            hiddenOrSystem = new DirectoryInfo(folder).EnumerateFiles("*", new EnumerationOptions
+                {
+                    IgnoreInaccessible = true, RecurseSubdirectories = false, AttributesToSkip = 0,
+                })
+                .Count(file => (file.Attributes & (FileAttributes.Hidden | FileAttributes.System)) != 0);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
@@ -164,6 +172,14 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             writer.WriteString("extension", extension);
             writer.WriteNumber("count", count);
             writer.WriteNumber("filesInFolder", total);
+            // Holdout v4 (falsedad: «Sí, porque no había .bak» with three .bak files present): the count is of the
+            // files directly in the folder; what it did not look at is said beside it, so a «no hay» is told only of
+            // that: its subfolders were not opened and its hidden and system files were not counted (readInPart when
+            // there are any).
+            writer.WriteString("depth", "top_level");
+            writer.WriteNumber("subfoldersNotOpened", subfolders);
+            writer.WriteNumber("hiddenOrSystemSkipped", hiddenOrSystem);
+            if (subfolders > 0 || hiddenOrSystem > 0) writer.WriteBoolean("readInPart", true);
             writer.WriteString("authority", "explorer_foreground_folder_toplevel_count");
             writer.WriteEndObject();
         });

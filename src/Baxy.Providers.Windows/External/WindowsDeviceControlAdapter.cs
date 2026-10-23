@@ -1244,6 +1244,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 writer.WriteString("format", format);
                 writer.WriteNumber("freeGiB", free);
                 writer.WriteNumber("totalGiB", total);
+                // Holdout v4 (falsedad, units): the sizes written with their unit (ReadingUnits).
+                writer.WriteString("free", Infrastructure.ReadingUnits.Size(free * 1024d * 1024d * 1024d));
+                writer.WriteString("total", Infrastructure.ReadingUnits.Size(total * 1024d * 1024d * 1024d));
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
@@ -2230,7 +2233,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 writer.WriteString("ssid", string.IsNullOrWhiteSpace(ssid) ? "(oculta)" : ssid);
                 writer.WriteBoolean("hidden", string.IsNullOrWhiteSpace(ssid));
                 writer.WriteString("authentication", authentication);
-                if (signal is int value) writer.WriteNumber("signalPercent", value); else writer.WriteNull("signalPercent");
+                if (signal is int value)
+                {
+                    writer.WriteNumber("signalPercent", value);
+                    writer.WriteString("signal", Infrastructure.ReadingUnits.Percent(value));
+                }
+                else writer.WriteNull("signalPercent");
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();

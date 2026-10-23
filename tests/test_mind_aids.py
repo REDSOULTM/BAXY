@@ -124,8 +124,9 @@ def test_a_long_address_reaches_the_model_as_a_short_reference_and_goes_back_who
     assert fetched["arguments"]["url"] == LONG
 
 
-def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: Path, monkeypatch) -> None:
-    # PLAN_GENERAL C2 (uso real: the same click 5-7 times with a look between each).
+def test_the_same_failed_call_a_second_time_is_told_once(tmp_path: Path, monkeypatch) -> None:
+    # PLAN_GENERAL C2 (uso real: the same click 5-7 times with a look between each); holdout v4 (en vivo, «Biblioteca»
+    # 7 times in Steam): a failure is told at the second, a completed call (the looks between) still at the third.
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     missed = json.dumps({"status": "failed", "error": "visible_button_not_found"})
     looked = json.dumps({"status": "completed", "observed": {"ok": True}})
@@ -135,9 +136,29 @@ def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: 
     for index, result in enumerate([missed, looked, missed, looked, missed, looked, missed]):
         mind.continue_turn(2 + index, result)
     tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
-    told = [i for i, t in enumerate(tools) if "ya se llamó 3 veces" in t]
-    assert told == [4]
-    assert "input_visible_click ya se llamó 3 veces en este turno" in tools[4]
+    told = [i for i, t in enumerate(tools) if "ya se llamó" in t]
+    assert told == [2]
+    assert "input_visible_click ya se llamó 2 veces en este turno" in tools[2]
+    assert "app_open" not in tools[2]
+
+
+def test_a_click_repeated_unchanged_in_an_application_with_places_names_them(tmp_path: Path, monkeypatch) -> None:
+    # Holdout v4 (en vivo): «abre la biblioteca de Steam» opened Steam without a place and pressed «Biblioteca» 7 times.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    unchanged = json.dumps({"status": "failed", "error": "visible_button_postread_unchanged"})
+    # The provider's own count from the second (WindowsVisibleControlAdapter.RepeatedUnchanged) is no other result.
+    again = json.dumps({"status": "failed", "error": "visible_button_postread_unchanged",
+                        "observed": {"unchangedInARow": 2, "next": "this click on «Biblioteca» changed nothing 2 times"}})
+    opened = json.dumps({"status": "completed", "verification": "readback", "observed": {"applicationName": "Steam"}})
+    click = _call("input_visible_click", {"label": "Biblioteca"})
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Steam"}), click, click, _say("No cambió.")])
+    mind.decide(1, "abre la biblioteca de steam")
+    for index, result in enumerate([opened, unchanged, again]):
+        mind.continue_turn(2 + index, result)
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert "input_visible_click ya se llamó 2 veces en este turno" in last
+    assert "Steam también se abre directo en sus lugares, sin pulsar: app_open con appId «Steam» y place " in last
+    assert "library" in last.split("ya se llamó 2 veces")[1]
 
 
 @pytest.mark.parametrize("views,told", [(["Cargando…", "Biblioteca", "Biblioteca · Tienda"], False),

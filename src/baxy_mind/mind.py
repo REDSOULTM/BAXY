@@ -190,9 +190,63 @@ def _outcome(observation: str, read: bool = False) -> str:
         # The App's own completed result it could not read (result_unreadable) keeps its code.
         error = facts.get("error")
         code = f" ({error})" if isinstance(error, str) and error else ""
-        return told + code + where + before + seen
+        return told + code + where + before + seen + _read_in_part(shown)
     error = facts.get("error") or facts.get("cause")
     return (f"falló ({error})" if error else "falló") + reread
+
+
+def _number(facts: dict[str, Any], key: str) -> int | None:
+    value = facts.get(key)
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+
+def _read_in_part(shown: dict[str, Any]) -> str:
+    """Holdout v4 (falsedad): pages of a file read up to line ~1,904 of 3,000, the last read failed, and the answer was
+    «revisé todo el archivo y no apareció». A read whose result says it holds only part of what it read (readInPart: a
+    page of a file or a web page, a search that did not read every file, a log read that stopped at its limit, a listing
+    or a count of a folder's top level with subfolders or hidden entries it did not look at) is told so in the outcome
+    line, with how much of the total its own numbers give, and that a «no está» covers only that part."""
+    listed, total_entries = _number(shown, "entriesShown"), _number(shown, "count")
+    # A listing the observation cut to what it shows (the kernel's «entriesShown») is a part too.
+    cut = listed is not None and total_entries is not None and listed < total_entries
+    if shown.get("readInPart") is not True and not cut:
+        return ""
+    part = []
+    first, last, total = (_number(shown, k) for k in ("fromLine", "toLine", "totalLines"))
+    offset, returned = _number(shown, "offset"), _number(shown, "returnedCharacters")
+    characters = _number(shown, "characters")
+    characters = characters if characters is not None else _number(shown, "totalCharacters")
+    if first is not None and last is not None and total is not None:
+        part.append(f"líneas {first}–{last} de {total}")
+    elif offset is not None and characters is not None:
+        upto = offset + returned if returned is not None else _number(shown, "nextOffset")
+        if upto is not None:
+            part.append(f"caracteres {min(offset + 1, upto)}–{upto} de {characters}")
+    scope = shown.get("searchScope") if isinstance(shown.get("searchScope"), dict) else {}
+    scanned = _number(scope, "filesScanned")
+    if scanned is not None:
+        skipped = sum(_number(scope, k) or 0 for k in ("skippedTooLarge", "skippedNotText", "skippedUnreadable"))
+        part.append(f"{scanned} archivos recorridos" + (f", {skipped} de ellos sin leer su texto" if skipped else ""))
+    if scope.get("timeLimitReached") is True:
+        part.append("la búsqueda paró en su tiempo límite")
+    # Holdout v4 (falsedad: «Sí, porque no había .bak» with three present): a listing or a count of a folder's top level.
+    folders = _number(shown, "subfoldersNotOpened")
+    if folders:
+        part.append(f"sólo lo que está directamente en la carpeta: sus {folders} subcarpetas no se abrieron")
+    hidden = _number(shown, "hiddenOrSystemSkipped")
+    if hidden:
+        part.append(f"{hidden} entradas ocultas o de sistema sin mirar")
+    unlisted = (total_entries - listed if listed is not None and total_entries is not None
+                else _number(shown, "entriesNotListed"))
+    if unlisted:
+        part.append(f"{unlisted} entradas sin listar")
+    seen, cap = _number(shown, "eventsSeen"), _number(shown, "readCap")
+    if cap is not None and seen is not None:
+        part.append(f"sólo los {cap} eventos más recientes del registro")
+    if shown.get("endReached") is False:
+        part.append("no llegó al final")
+    detail = (": " + ", ".join(part)) if part else ""
+    return f"; leído en parte{detail}; lo demás no se leyó: un «no está» vale sólo para lo leído"
 
 
 def _aid_on(aid: str) -> bool:
@@ -260,10 +314,9 @@ def places_note(application: str) -> str:
     """Aid «app_places_next» (uso real 2026-10-20: seven clicks in Steam's and Epic's web-drawn windows, whose own
     addresses app_open already opens): after a click or a look there fails or is unsure, the places the application
     opens straight at, as a fact; the model chooses. Empty for an application with none."""
-    places = APP_PLACES.get(_fold(application))
-    if not places:
+    listed = _places_listed(application)
+    if not listed:
         return ""
-    listed = ", ".join(f"{p} (placeValue: {v})" if v else p for p, v in sorted(places.items()))
     return (f"\n[Ayuda: {application} también se abre directo en sus lugares, sin pulsar: app_open con appId "
             f"«{application}» y place {listed}.]")
 
@@ -295,7 +348,12 @@ def field_note(observation: str, args: str | None) -> str:
     return note.format(label=label.strip())
 
 
+# Measured history (PLAN_GENERAL C2, cf29f2510): told at the third, its risk «sondeos legítimos»: a look repeated at a
+# window still loading is a probe that completes each time (al máximo 7.7 compares the content too). Holdout v4 (en
+# vivo: «Biblioteca» pressed 7 times in Steam, each visible_button_postread_unchanged, 50 s): a call that failed or
+# stayed unsure the same way twice is told at the second; a completed one keeps the third, so a probe stays as measured.
 SAME_CALL_TOLD = 3
+SAME_CALL_FAILED_TOLD = 2
 # Auditoría de falsedades: «ya se hizo» is the call's, never its effect's (a click that failed three times read «ya se
 # hizo»): the call was made, and its result is said beside it.
 SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se llamó {times} veces en este turno con los mismos argumentos y el mismo "
@@ -305,14 +363,43 @@ SAME_CALL_OPTIONS = ("; otra vez igual dará lo mismo. Opciones: otra herramient
 # Review 2026-10-22: in a turn the App closes, the fact alone (it offered another tool beside «no admite más
 # herramientas»).
 SAME_CALL_CLOSED = "."
+# Holdout v4 (the Steam library): a click repeated in an application of the turn that has places says them among the
+# options, from the data (app_places.v1.json), as places_note does.
+SAME_CALL_PLACES = (" {application} también se abre directo en sus lugares, sin pulsar: app_open con appId "
+                    "«{application}» y place {listed}.")
+
+
+def same_call_places(application: str | None) -> str:
+    """The places of the turn's application for a repeated click's options; empty for none."""
+    listed = _places_listed(application)
+    return SAME_CALL_PLACES.format(application=application, listed=listed) if listed else ""
+
+
+def _places_listed(application: str | None) -> str:
+    """The places of an application with what each takes, sorted; empty for none."""
+    places = APP_PLACES.get(_fold(application)) if application else None
+    return ", ".join(f"{p} (placeValue: {v})" if v else p for p, v in sorted(places.items())) if places else ""
+
+
+# The provider's count of the same click seen unchanged in a row (WindowsVisibleControlAdapter.RepeatedUnchanged).
+REPEAT_KEY = "unchangedInARow"
 
 
 def _result_key(observation: str) -> str:
     """Al máximo 7.7: the same result is the same content (three looks at a window still loading, each with another view,
-    were told «el mismo resultado»), without how long the call took («…Ms»), as the App's TurnClosing compares it."""
+    were told «el mismo resultado»), without how long the call took («…Ms»), as the App's TurnClosing compares it.
+    Holdout v4: nor a click's own count of its repeats (unchangedInARow) and the «next» that count brings, which differ
+    on each repeat of the same unchanged click."""
+    def only_repeat(node: Any) -> bool:
+        return isinstance(node, dict) and REPEAT_KEY in node and set(node) <= {REPEAT_KEY, "next"}
+
     def untimed(node: Any) -> Any:
         if isinstance(node, dict):
-            return {k: untimed(v) for k, v in node.items() if not k.endswith("Ms")}
+            repeat = REPEAT_KEY in node
+            # A result that holds nothing but the count is the same as the first one, which had none.
+            return {k: untimed(v) for k, v in node.items()
+                    if not k.endswith("Ms") and k != REPEAT_KEY and not (repeat and k == "next")
+                    and not only_repeat(v)}
         return [untimed(v) for v in node] if isinstance(node, list) else node
     try:
         content = json.dumps(untimed(json.loads(observation)), ensure_ascii=False)
@@ -1330,16 +1417,18 @@ class Mind:
                 note += field
                 aids["field_focused_next"] = field.strip()
         # Aid «same_call_next» (PLAN_GENERAL C2; uso real: the same click 5-7 times, a reload and a typing in turn): a
-        # call made a third time in this turn with the same arguments and the same result (its content, _result_key),
+        # call made again in this turn with the same arguments and the same result (its content, _result_key),
         # whatever came between, is told as a fact with its options, once per turn (a loop of a look and a click repeats
-        # both).
+        # both): a second time when it failed or stayed unsure, a third when it completed (SAME_CALL_FAILED_TOLD).
         seen = turn.setdefault("calls_seen", {})
         key = json.dumps([calling, turn.get("calling_args"), _result_key(observation)], ensure_ascii=False)
         seen[key] = seen.get(key, 0) + 1
-        if seen[key] == SAME_CALL_TOLD and not turn.get("same_told") and _aid_on("same_call_next"):
+        told_at = SAME_CALL_TOLD if outcome.startswith(COMPLETED_OUTCOMES) else SAME_CALL_FAILED_TOLD
+        if seen[key] == told_at and not turn.get("same_told") and _aid_on("same_call_next"):
             turn["same_told"] = True
-            repeated = SAME_CALL_NOTE.format(call=calling, times=SAME_CALL_TOLD, outcome=outcome,
-                                             options=SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS)
+            options = SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS + (
+                same_call_places(turn.get("app_named")) if calling == "input_visible_click" else "")
+            repeated = SAME_CALL_NOTE.format(call=calling, times=told_at, outcome=outcome, options=options)
             note += repeated
             aids["same_call_next"] = repeated.strip()
         # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long

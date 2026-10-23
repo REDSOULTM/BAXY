@@ -68,13 +68,22 @@ internal sealed class TurnClosing
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content)));
     }
 
+    // Holdout v4 (the Steam library, «Biblioteca» 7 times): nor is a click's own count of its repeats
+    // (unchangedInARow, WindowsVisibleControlAdapter) and the «next» that count brings, which differ on each repeat of
+    // the same unchanged click; the mind compares the same way.
+    private const string RepeatKey = "unchangedInARow";
+
     private static void WithoutTimes(JsonNode node)
     {
         if (node is JsonObject facts)
         {
+            bool repeat = facts.ContainsKey(RepeatKey);
             foreach (string key in facts.Select(static pair => pair.Key).ToArray())
             {
-                if (key.EndsWith("Ms", StringComparison.Ordinal))
+                // A result that holds nothing but the count is the same as the first one, which had none.
+                if (key.EndsWith("Ms", StringComparison.Ordinal) || key == RepeatKey || (repeat && key == "next")
+                    || (facts[key] is JsonObject inner && inner.ContainsKey(RepeatKey)
+                        && inner.All(static pair => pair.Key is RepeatKey or "next")))
                 {
                     facts.Remove(key);
                 }

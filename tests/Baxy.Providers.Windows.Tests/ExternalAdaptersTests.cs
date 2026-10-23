@@ -381,6 +381,34 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Holdout v4 (falsedad, a partial read told as a whole one): a log read that stopped at its limit of events says it
+    // read only the newest ones of those hours; one that read all of them reached the end.
+    [Test]
+    public async Task ACrashLogReadThatStoppedAtItsLimitIsReadInPart()
+    {
+        const string stopped = """
+            {"ok":true,"firstObservationCount":80,"secondObservationCount":80,"stableCount":80,"readCap":80,"events":[{"recordId":1,"eventId":1000}]}
+            """;
+        const string whole = """
+            {"ok":true,"firstObservationCount":3,"secondObservationCount":3,"stableCount":3,"readCap":80,"events":[{"recordId":1,"eventId":1000}]}
+            """;
+
+        ExternalCapabilityReceipt cut = await new WindowsApplicationCrashDiagnosticAdapter(new StubProcessRunner(stopped))
+            .InvokeAsync("system.application.crash.diagnose", Json("""{"hours":24,"limit":20}"""), CancellationToken.None);
+        ExternalCapabilityReceipt all = await new WindowsApplicationCrashDiagnosticAdapter(new StubProcessRunner(whole))
+            .InvokeAsync("system.application.crash.diagnose", Json("""{"hours":24,"limit":20}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(cut.Result?.GetProperty("readInPart").GetBoolean(), Is.True);
+            Assert.That(cut.Result?.GetProperty("endReached").GetBoolean(), Is.False);
+            Assert.That(cut.Result?.GetProperty("eventsSeen").GetInt32(), Is.EqualTo(80));
+            Assert.That(cut.Result?.GetProperty("eventsShown").GetInt32(), Is.EqualTo(1));
+            Assert.That(all.Result?.TryGetProperty("readInPart", out _), Is.False);
+            Assert.That(all.Result?.GetProperty("endReached").GetBoolean(), Is.True);
+        });
+    }
+
     [Test]
     public async Task ExactNamedProcessTerminationRejectsPathsBeforeTakingAnEffect()
     {
