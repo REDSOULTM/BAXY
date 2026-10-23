@@ -3151,3 +3151,8 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
 - 07:3x (23-10) Juez 35B de las falsedades del holdout: ~1 h por configuración en el PC (s1off casi terminado a las
   07:35); el veredicto pre-registrado principal es la lectura a mano (arriba). El mensaje final al dueño sale ahora; las
   cifras del juez se añaden al informe cuando terminen.
+- 10:0x (23-10) **Juez 35B de las falsedades del holdout** (36 conversaciones, una réplica): `s1off` 6, `s1on` 4,
+  `maximo` 3 (líneas a revisar 11, 15, 11; 0 sin juzgar). La lectura a mano dio 4, 5, 6: sentidos opuestos, las dos dentro
+  del ruido. **Goal cerrado**: criterios de término cumplidos (MAXIMO.md, arreglos con pruebas, palancas con cifra o
+  retiradas, suites verdes en las dos máquinas sobre 452854a18, recursos ≤ 4 GB / 4 GB, holdout v4 una vez en tres
+  configuraciones, renew-maximo en hub, INFORME_MAXIMO.md, mensaje al dueño, prueba en vivo en el PC).

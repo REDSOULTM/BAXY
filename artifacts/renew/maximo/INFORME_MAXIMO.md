@@ -21,8 +21,9 @@
    (no significativo), y 45 acciones equivocadas contra 62 sin System One (−27 %, p 0,0005).
 6. **Más tareas reales cumplidas** (holdout, 72 tareas × 2 semillas): 47 contra 43 (+4, ninguna empeora; no llega a
    significativo, p 0,125). A cambio, tras usar una herramienta empieza a hablar ~0,9 s más tarde (lee y dice más).
-7. **Falsedades del holdout: no bajaron** (6 claras contra 5, una réplica: dentro del ruido). Lo que queda viene sobre
-   todo de buscar en la carpeta equivocada; eso es del modelo.
+7. **Falsedades del holdout: sin cambio demostrable.** Leídas a mano, 6 claras contra 5; el juez 35B dice 3 contra 4 (una
+   réplica: las dos lecturas van en sentidos opuestos y quedan dentro del ruido). Lo que queda viene sobre todo de buscar
+   en la carpeta equivocada; eso es del modelo.
 8. **Dentro de los límites**: tarjeta gráfica 3 986 MiB (≤ 4 096) y RAM del producto 2 697 MiB (≤ 4 GB), con voz,
    reconocimiento de nombres y System One encendidos.
 
@@ -34,7 +35,8 @@
 | Acciones equivocadas, holdout v4 | 62 sin S1 · 48,7 con S1 | **45,7** (−27 %, McNemar p 0,0005) | holdout, PC + NB |
 | E2E, holdout v4 (72, 2 semillas) | 43,0 con S1 (43 sin S1, 1 semilla) | **47,0** (+4,0, IC95 −0,5..+9,0, p 0,125) | holdout, NB |
 | Primera respuesta en e2e (p50) | 3,3-3,4 s | 4,3 s (+0,9 s en turnos con herramienta) | holdout, NB |
-| Falsedades claras, holdout v4 (36, 1 réplica) | 4 sin S1 · 5 con S1 | 6 (dentro del ruido ±2) | holdout, NB, a mano |
+| Falsedades claras, holdout v4 (36, 1 réplica), a mano | 4 sin S1 · 5 con S1 | 6 (dentro del ruido ±2) | holdout, NB |
+| Falsedades, mismo holdout, juez 35B | 6 sin S1 · 4 con S1 | 3 | holdout, PC |
 | decision2 de práctica (268) | 233 con S1 (231 sin S1) | 231,7 con S1 (int8; nada empeora) | PC, 3 semillas |
 | Calentamiento al arrancar | 17,2 s | 0,8 s | PC |
 | Primera palabra de la voz | ~1,6 s | ~0,65 s | PC (voz D) |
