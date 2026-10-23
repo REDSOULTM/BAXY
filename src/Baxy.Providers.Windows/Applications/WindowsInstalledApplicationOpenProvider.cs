@@ -957,6 +957,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
 
         IReadOnlyList<InstalledApplicationObservation> before;
+        IReadOnlyList<TextFieldObservation> fieldsBefore;
         string titleBefore;
         bool titleTells;
         HashSet<string> bareTitles;
@@ -986,6 +987,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             titleTells = string.Equals(titleFirst, titleBefore, StringComparison.Ordinal);
             // What was there is read right before the command (P4): a window born before it is never its document.
             before = _platform.Inventory(entry);
+            // Renew al máximo (rendimiento): and the window's text fields, to see a new tab whose title repeats.
+            fieldsBefore = _platform.TextFields(window);
         }
         catch (Exception exception) when (exception is ApplicationInventoryException
             or InvalidDataException
@@ -1079,6 +1082,17 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     .FirstOrDefault();
                 if (made is null && titleTells && TitleShowsAnotherDocument(titleBefore, _platform.WindowTitle(window))
                     && IsDocument(window))
+                {
+                    made = current.FirstOrDefault(item => item.WindowHandle == window && item.ProcessId == process && item.Visible);
+                }
+
+                // Renew al máximo (rendimiento): Windows 11's Notepad gives its new tab the title the launched one had
+                // («Sin título - Bloc de notas»), so the title tells nothing and every «un Bloc de notas nuevo» waited
+                // the whole budget. A text field born after the command, shown and empty, in place of a field shown
+                // before (the document in view replaced by a new empty one), with no dialog, tells it as soon as it is
+                // there. Without that (no fields, or one field for every document), the looks go on as before.
+                if (made is null && dialogs.Count == 0 && IsDocument(window)
+                    && ShowsANewEmptyField(fieldsBefore, _platform.TextFields(window)))
                 {
                     made = current.FirstOrDefault(item => item.WindowHandle == window && item.ProcessId == process && item.Visible);
                 }
@@ -1238,6 +1252,17 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         return now.Length > 0 && !string.Equals(Document(before), Document(now), StringComparison.Ordinal);
     }
 
+    // Renew al máximo (rendimiento): the window shows a new empty document in place of the one it showed: a field shown
+    // before the command is no longer shown (or is gone), and a field that was not there before is shown and empty.
+    internal static bool ShowsANewEmptyField(IReadOnlyList<TextFieldObservation> before, IReadOnlyList<TextFieldObservation> now)
+    {
+        bool left = before.Any(earlier => earlier.Shown
+            && !now.Any(field => field.Handle == earlier.Handle && field.Shown));
+        bool born = now.Any(field => field.Shown && field.Empty
+            && !before.Any(earlier => earlier.Handle == field.Handle));
+        return left && born;
+    }
+
     // Whether «window» is the opened application's: its window, or a window of its process or of the same program.
     private bool IsOpened(InstalledApplicationObservation opened, long window) =>
         window == opened.WindowHandle || _platform.SameApplication(opened.ProcessId, _platform.WindowProcessId(window));
@@ -1392,6 +1417,10 @@ internal sealed record InstalledApplicationObservation(
     string? ProcessName = null,
     bool HostedByTerminal = false);
 
+// Renew al máximo (rendimiento): one text field of a window (an Edit or RichEdit child), whether it is shown, and
+// whether it holds no text (asked only of a shown field; a hidden one is never said empty).
+internal readonly record struct TextFieldObservation(long Handle, bool Shown, bool Empty);
+
 internal interface IInstalledApplicationPlatform : IOpeningFront
 {
     ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
@@ -1450,6 +1479,10 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // BAXY Renew cu (C18): whether the window holds text fields (its Edit or RichEdit children) and every one of them is
     // empty; false when it has none or one holds text or does not answer.
     bool HoldsNoText(long windowHandle) => false;
+
+    // Renew al máximo (rendimiento): the window's text fields (its Edit or RichEdit children), each shown or not and,
+    // when shown, empty or not; none when it has none or they cannot be read.
+    IReadOnlyList<TextFieldObservation> TextFields(long windowHandle) => [];
 
     // Whether another window owns this one (a dialog of the application).
     bool IsOwnedWindow(long windowHandle) => false;
@@ -2531,6 +2564,26 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         _ = EnumChildWindows(checked((nint)windowHandle), callback, nint.Zero);
         GC.KeepAlive(callback);
         return fields > 0 && !holdsText;
+    }
+
+    // Renew al máximo (rendimiento): the same text fields as HoldsNoText, each with whether Windows shows it (it and
+    // its parents visible) and, only when shown, whether it answered an empty length (WM_GETTEXTLENGTH, 500 ms at most).
+    public IReadOnlyList<TextFieldObservation> TextFields(long windowHandle)
+    {
+        var fields = new List<TextFieldObservation>();
+        EnumWindowsProc callback = (child, _) =>
+        {
+            if (!ReadClassName(child).Contains("Edit", StringComparison.OrdinalIgnoreCase))
+                return true;
+            bool shown = IsWindowVisible(child);
+            bool empty = shown && SendMessageTimeout(child, 0x000E, 0, 0, 0x0002, 500, out nint length) != 0
+                && length == 0;
+            fields.Add(new TextFieldObservation(child, shown, empty));
+            return true;
+        };
+        _ = EnumChildWindows(checked((nint)windowHandle), callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return fields;
     }
 
     public unsafe string WindowTitle(long windowHandle)

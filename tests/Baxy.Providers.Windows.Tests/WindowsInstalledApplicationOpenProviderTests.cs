@@ -1397,6 +1397,87 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (rendimiento): Windows 11's Notepad gives the new tab the title the launched one had, so «abre un
+    // Bloc de notas nuevo» waited the whole budget (p50 8.5 s) and, with the shown tab holding text, ended as no new
+    // document. The new tab's own text field, shown and empty in place of the one shown before, tells it on the first look.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ANewTabWhoseTitleRepeatsIsSeenByItsNewEmptyField(bool shownTabEmpty)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            TitleAfterNewDocument = "Sin título - Bloc de notas",
+            FieldsAfterNewDocument = [new(500, Shown: false, Empty: false), new(501, Shown: true, Empty: true)],
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        platform.Titles[78] = "Sin título - Bloc de notas";
+        platform.Fields[78] = [new(500, Shown: true, Empty: shownTabEmpty)];
+        if (shownTabEmpty)
+            platform.Empty.Add(78);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(78));
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 78L }));
+            Assert.That(
+                platform.DelaysAfterNewDocument.Aggregate(TimeSpan.Zero, static (sum, delay) => sum + delay),
+                Is.LessThan(TimeSpan.FromMilliseconds(500)),
+                "seen on the first look, never the whole budget");
+        });
+    }
+
+    // Counter-cases: a new empty field beside the document still shown (a search box), a new field that holds text, the
+    // shown field hidden with no new one (one field for every document), or a dialog the command raised: no new document
+    // is told by the fields, and the opening ends as before (the whole budget, then no new document).
+    [TestCase("beside")]
+    [TestCase("holds text")]
+    [TestCase("no new field")]
+    [TestCase("dialog")]
+    public async Task FieldsThatShowNoNewEmptyDocumentTellNone(string what)
+    {
+        TextFieldObservation[] after = what switch
+        {
+            "beside" => [new(500, Shown: true, Empty: false), new(501, Shown: true, Empty: true)],
+            "holds text" => [new(500, Shown: false, Empty: false), new(501, Shown: true, Empty: false)],
+            "no new field" => [new(500, Shown: false, Empty: false)],
+            _ => [new(500, Shown: false, Empty: false), new(501, Shown: true, Empty: true)],
+        };
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [Observation(foreground: false)],
+            LaunchedWindow = Launched(),
+            FrontFollowsRequest = true,
+            TitleAfterNewDocument = "Sin título - Bloc de notas",
+            FieldsAfterNewDocument = after,
+            WindowAfterNewDocument = what == "dialog" ? Observation(foreground: true) with { WindowHandle = 76 } : null,
+            Owned = [76],
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        platform.Titles[78] = "Sin título - Bloc de notas";
+        platform.Fields[78] = [new(500, Shown: true, Empty: false)];
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            if (what != "dialog")
+                Assert.That(
+                    platform.DelaysAfterNewDocument.Aggregate(TimeSpan.Zero, static (sum, delay) => sum + delay),
+                    Is.GreaterThanOrEqualTo(WindowsInstalledApplicationOpenProvider.NewDocumentBudget),
+                    "the whole budget, as before");
+        });
+    }
+
     // BAXY Renew cu (C18): the launched window still on its start screen (titled only by the application's name) once the
     // New command made nothing (Office in Spanish takes Ctrl+N as bold) gets Esc once, which leaves a blank document.
     [Test]
@@ -1934,6 +2015,14 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         public bool HoldsNoText(long windowHandle) => Empty.Contains(windowHandle);
 
+        // Renew al máximo (rendimiento): each window's text fields, and the ones the New command leaves (a new tab).
+        public Dictionary<long, IReadOnlyList<TextFieldObservation>> Fields { get; } = [];
+
+        public IReadOnlyList<TextFieldObservation>? FieldsAfterNewDocument { get; init; }
+
+        public IReadOnlyList<TextFieldObservation> TextFields(long windowHandle) =>
+            Fields.TryGetValue(windowHandle, out IReadOnlyList<TextFieldObservation>? fields) ? fields : [];
+
         // What the New command shows: the window's new title (a new tab), a new window, or nothing.
         public string? TitleAfterNewDocument { get; init; }
 
@@ -1973,6 +2062,11 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             if (WindowAfterNewDocument is { } window)
             {
                 Observations = [.. Observations, window];
+            }
+
+            if (FieldsAfterNewDocument is { } fields)
+            {
+                Fields[windowHandle] = fields;
             }
 
             return ValueTask.FromResult(true);
@@ -2165,10 +2259,20 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             }
         }
 
+        // Renew al máximo (rendimiento): the waits asked before the New command was sent.
+        public List<TimeSpan> DelaysBeforeNewDocument { get; } = [];
+
+        // Renew al máximo (rendimiento): the waits asked once the New command was sent (the looks for its document).
+        public List<TimeSpan> DelaysAfterNewDocument { get; } = [];
+
         public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             DelayCalls++;
+            if (!_newDocumentIssued)
+                DelaysBeforeNewDocument.Add(delay);
+            else
+                DelaysAfterNewDocument.Add(delay);
             if (FocusRequiresDelay && _requestedForegroundHandle is long windowHandle)
             {
                 MarkForeground(windowHandle);
