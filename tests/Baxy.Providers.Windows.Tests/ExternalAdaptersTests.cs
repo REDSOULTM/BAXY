@@ -2349,6 +2349,24 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w5): clipboard.copy looks for the copy every 50 ms for 1 s, as input.key.press ctrl_c does (one
+    // look after a fixed 120 ms failed a slower application's copy), and a Ctrl+C accepted in the same window that left
+    // the clipboard as it was is said as clipboard_not_changed, not as an input not verified.
+    [Test]
+    public void TheCopyIsLookedForOftenAndACopyOfNothingIsSaidSo()
+    {
+        string script = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "DesktopKeyPress.ps1"));
+        int copyWait = script.IndexOf("$deadline=(Get-Date).AddMilliseconds(1000)", StringComparison.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(copyWait, Is.GreaterThan(0));
+            Assert.That(script, Does.Contain("do{Start-Sleep -Milliseconds 50}while($verified -and ([BaxyKeyInput]::GetClipboardSequenceNumber() -eq $clipboardSequenceBefore"));
+            Assert.That(script, Does.Contain("} else { Start-Sleep -Milliseconds 120 }"), "the fixed wait is only for the other acts");
+            Assert.That(script, Does.Contain("{'clipboard_not_changed'}else{'input_effect_not_verified'}"));
+        });
+    }
+
     [Test]
     public async Task ClipboardCopyRequiresStableFocusAcceptedChordAndSequenceChange()
     {
