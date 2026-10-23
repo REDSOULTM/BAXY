@@ -184,6 +184,39 @@ public sealed class NativeScheduledNotificationTests
         });
     }
 
+    // Renew al máximo (w8): a schedule that fails before its Register (the ring script gone, the due time passed
+    // meanwhile) changed nothing and says so with its cause, never a bare process failure read as «may have changed».
+    [TestCase("ring_script_missing", 1)]
+    [TestCase("due_time_not_future", -1)]
+    public async Task AScheduleThatFailsBeforeRegisteringSaysNothingChanged(string cause, int hours)
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        string ring = Path.Combine(temporary.Path, "ring.ps1");
+        if (cause != "ring_script_missing")
+            File.WriteAllText(ring, "# ring");
+        var backend = new NativeScheduledNotificationBackend(scheduler);
+
+        ExternalProcessResult result = await backend.RunAsync(
+            new ScheduledNotificationRequest("schedule", "alarm")
+            {
+                TaskName = TaskName("Alarm", 'a'),
+                DueUtc = DateTimeOffset.UtcNow.AddHours(hours).ToString("O"),
+                RingScriptPath = ring,
+            },
+            CancellationToken.None);
+
+        using JsonDocument line = JsonDocument.Parse(result.Output);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ExitCode, Is.Zero);
+            Assert.That(line.RootElement.GetProperty("ok").GetBoolean(), Is.False);
+            Assert.That(line.RootElement.GetProperty("effectBoundaryCrossed").GetBoolean(), Is.False);
+            Assert.That(line.RootElement.GetProperty("error").GetString(), Is.EqualTo(cause));
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
     // Auditoría final 2: the diagnosis reads what each ring wrote, not only how many rang.
     [Test]
     public async Task DiagnosisReadsWhatEachRingWrote()

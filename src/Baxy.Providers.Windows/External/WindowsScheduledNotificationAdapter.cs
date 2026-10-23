@@ -617,12 +617,20 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                     "effectBoundaryCrossed", out JsonElement crossedValue)
                 || crossedValue.ValueKind != JsonValueKind.False;
             if (!crossed)
+            {
+                // Renew al máximo (w8): a due time that passed while it was being scheduled is the same refusal as
+                // one that had passed before (notification_schedule_invalid), and nothing was scheduled.
+                string? cause = source.TryGetProperty("error", out JsonElement causeValue)
+                    && causeValue.ValueKind == JsonValueKind.String ? causeValue.GetString() : null;
                 return ExternalJson.FailureBeforeEffect(
                     operation,
-                    source.TryGetProperty("error", out JsonElement cause) && cause.ValueKind == JsonValueKind.String
-                        && cause.GetString() == "task_scheduler_unavailable"
-                        ? "notification_scheduler_unavailable"
-                        : "notification_scheduler_precondition_changed");
+                    cause switch
+                    {
+                        "task_scheduler_unavailable" => "notification_scheduler_unavailable",
+                        "due_time_not_future" => "notification_schedule_invalid",
+                        _ => "notification_scheduler_precondition_changed",
+                    });
+            }
             return effectBoundary.Failure(
                 operation, "notification_scheduler_postread_failed", effect);
         }
