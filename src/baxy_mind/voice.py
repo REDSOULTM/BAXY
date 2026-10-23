@@ -16,10 +16,12 @@ import json
 import os
 import queue
 import sys
+import tempfile
 import threading
 from pathlib import Path
 from typing import Any, Callable
 
+from . import stt_hotwords
 from .voice_output import Speech
 
 for _var in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -40,6 +42,21 @@ MAX_S = 12.0
 KEEP_S = 30.0
 PARTIAL_S = 0.8         # while a request is heard, what was said so far is decoded again this often (live captions)
 WAKE_COPIES = 4         # staggered copies (StaggeredWake): 0.28 s p50 after the word, 0.46 s at most (1 copy: 1.18, 1.36)
+NAMES_WAIT_S = 30.0     # the recognizer waits this long for catalog.configure's names (they come before voice.start)
+HOTWORDS_PATHS = 4      # beam width when the names are hotwords
+# Score per token of the names (scripts/voice/medir_hotwords.py, 1366 synthetic utterances, 2026-10-23): installed names
+# heard 562 → 744 of 1012 (greedy → 1.5; 752 at 2, 767 at 3), WER 18.97 → 13.43 %, sentences without a name 2.96 →
+# 3.41 % (spellings: «wifi» → «Wi-Fi»), names not installed 62 → 49 of 100, no name inserted, no empty result, decode
+# p50 220 → 195 ms. 1.5 keeps almost all of the gain and costs less to the names not installed than 2 or 3.
+HOTWORDS_SCORE = 1.5
+
+
+def hotwords_score() -> float:
+    """The score per token of the names as hotwords (BAXY_RENEW_STT_HOTWORDS); 0 is the greedy recognizer alone."""
+    try:
+        return max(0.0, float(os.environ.get("BAXY_RENEW_STT_HOTWORDS", HOTWORDS_SCORE)))
+    except ValueError:
+        return HOTWORDS_SCORE
 
 
 class StaggeredWake:
@@ -77,12 +94,15 @@ class Voice:
     """Listens on its own thread; the mind's request loop only starts, stops and reads it."""
 
     def __init__(self, write: Callable[[dict[str, Any]], None],
-                 on_spoken: Callable[[float, float], None] = lambda _queued, _sounded: None) -> None:
+                 on_spoken: Callable[[float, float, bool], None] = lambda *_spoken: None) -> None:
         self._write = write
         self._loaded = threading.Event()
         self._lock = threading.Lock()
         self._detector: Any = None
         self._recognizer: Any = None
+        self._hotwords = ""             # the stream hotwords of the names the recognizer was built with
+        self._names: list[str] | None = None
+        self._named = threading.Event()
         self._input = False
         self.failure = ""
         self._mode = "off"
@@ -91,7 +111,8 @@ class Voice:
         self._blocks: queue.Queue[np.ndarray] = queue.Queue()
         self._heard = 0                 # moved on by every reset and stop
         self._reset()
-        self.speech = Speech(self._speaking, on_spoken, self._lip)
+        self._on_spoken = on_spoken
+        self.speech = Speech(self._speaking, self._sounding, self._lip)
         threading.Thread(target=self._load, name="voice-load", daemon=True).start()
         threading.Thread(target=self._listen, name="voice", daemon=True).start()
 
@@ -153,15 +174,6 @@ class Voice:
                 self._input = True
             except Exception as error:  # noqa: BLE001
                 self.failure = f"microphone: {error!r}"
-            stt = Path(os.environ.get("BAXY_RENEW_STT_DIR", ""))
-            if (stt / "tokens.txt").is_file():
-                self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
-                    encoder=str(stt / "encoder.int8.onnx"), decoder=str(stt / "decoder.int8.onnx"),
-                    joiner=str(stt / "joiner.int8.onnx"), tokens=str(stt / "tokens.txt"),
-                    num_threads=4, model_type="nemo_transducer", decoding_method="greedy_search",
-                    feature_dim=128, provider="cpu")
-            else:
-                self.failure = "BAXY_RENEW_STT_DIR has no recognizer"
             wake = Path(os.environ.get("BAXY_RENEW_WAKE_DIR", ""))
             if (wake / "config.json").is_file():
                 spec = importlib.util.spec_from_file_location("baxy_wake_k4", wake / "baxy_wake_runtime.py")
@@ -175,6 +187,11 @@ class Voice:
                     debounce_s=config["debounce_s"], threads=1), WAKE_COPIES, float(config["debounce_s"]))
             else:
                 self.failure = self.failure or "BAXY_RENEW_WAKE_DIR has no wake word"
+            stt = Path(os.environ.get("BAXY_RENEW_STT_DIR", ""))
+            if (stt / "tokens.txt").is_file():
+                self._recognize(sherpa_onnx, stt)
+            else:
+                self.failure = "BAXY_RENEW_STT_DIR has no recognizer"
         except Exception as error:  # noqa: BLE001 - voice is optional: the mind serves turns without it
             self.failure = repr(error)
         finally:
@@ -182,6 +199,35 @@ class Voice:
                 sys.stderr.write(f"baxy_mind_renew_voice: {self.failure}\n")
                 sys.stderr.flush()
             self._loaded.set()
+
+    def hear_names(self, names: list[str]) -> None:
+        """The installed applications and games the model is shown (catalog.configure, which the App sends before any
+        voice.start): the recognizer waits for them and is built with them as hotwords. The App configures once per
+        mind; names that come after the recognizer was built are not heard as hotwords."""
+        if not self._named.is_set():
+            self._names = [str(name) for name in names]
+            self._named.set()
+
+    def _recognize(self, sherpa_onnx: Any, stt: Path) -> None:
+        """Parakeet Ultra, greedy as TranscripcionBaxy chose it; with the names as hotwords, its beam search with them
+        (stt_hotwords.py; measured in scripts/voice/medir_hotwords.py)."""
+        files = dict(encoder=str(stt / "encoder.int8.onnx"), decoder=str(stt / "decoder.int8.onnx"),
+                     joiner=str(stt / "joiner.int8.onnx"), tokens=str(stt / "tokens.txt"), num_threads=4,
+                     model_type="nemo_transducer", feature_dim=128, provider="cpu")
+        score = hotwords_score()
+        forms: list[str] = []
+        if score > 0 and self._named.wait(NAMES_WAIT_S) and self._names:
+            forms, vocab = stt_hotwords.compile_hotwords(self._names, (stt / "tokens.txt").read_text(encoding="utf-8"))
+        if not forms:
+            self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(**files, decoding_method="greedy_search")
+            return
+        with tempfile.TemporaryDirectory(prefix="baxy-stt-") as folder:
+            path = Path(folder) / "bpe.vocab"  # sherpa reads it by path, once, while it builds the recognizer
+            path.write_text(vocab, encoding="utf-8")
+            self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
+                **files, decoding_method="modified_beam_search", max_active_paths=HOTWORDS_PATHS, modeling_unit="bpe",
+                bpe_vocab=str(path))
+        self._hotwords = stt_hotwords.stream_hotwords(forms, score)
 
     def _device(self) -> int | None:
         value = os.environ.get("BAXY_RENEW_MIC", "")
@@ -323,7 +369,7 @@ class Voice:
         if peak < 0.008:
             return ""
         audio = audio * min(8.0, 0.45 / peak)  # the gain of probar_ultra.preparar
-        stream = self._recognizer.create_stream()
+        stream = self._recognizer.create_stream(self._hotwords) if self._hotwords else self._recognizer.create_stream()
         stream.accept_waveform(RATE, np.ascontiguousarray(audio, dtype=np.float32))
         self._recognizer.decode_stream(stream)
         result = stream.result
@@ -346,6 +392,12 @@ class Voice:
 
     def _event(self, name: str) -> None:
         self._write({"type": "voice.event", "event": name, "mode": self._mode})
+
+    def _sounding(self, queued: float, sounded: float, notice: bool) -> None:
+        """An utterance's first sound: the App's notice of a silent turn counts until its answer is heard (al máximo
+        9.2b), so it is told whether this one is the notice."""
+        self._write({"type": "voice.event", "event": "sound", "mode": self._mode, "notice": notice})
+        self._on_spoken(queued, sounded, notice)
 
     def _lip(self, lip: dict[str, Any]) -> None:
         self._write({"type": "voice.event", "event": "lip", "mode": self._mode, **lip})

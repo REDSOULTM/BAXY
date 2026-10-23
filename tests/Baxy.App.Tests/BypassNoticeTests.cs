@@ -8,34 +8,46 @@ using NUnit.Framework;
 namespace Baxy.App.Tests;
 
 /// <summary>
-/// The conversation's «Bypass · hecho sin preguntar» line (FieldProductChannel.OnStepCompleted): it says that a call
-/// normal mode would have asked about was done, so it appears only for one that completed and was verified.
+/// The conversation's «Bypass · … sin preguntar» line (FieldProductChannel.OnStepCompleted): it says that a call
+/// normal mode would have asked about ran without asking, as its step ended: «hecho» only for an effect read back.
 /// </summary>
 [TestFixture]
 public sealed class BypassNoticeTests
 {
     private const string Operation = "system.recyclebin.empty";
 
-    [TestCase(OperationStatuses.Failed, false)]
-    [TestCase(OperationStatuses.Completed, false)]
-    public async Task ACallThatWasNotDoneAndVerifiedIsNotSaidDone(string status, bool verified)
+    [Test]
+    public async Task AFailedCallIsNotSaid()
     {
-        IReadOnlyList<JsonObject> lines = await LinesAfterAsync(Step(status, verified));
+        IReadOnlyList<JsonObject> lines = await LinesAfterAsync(Step(OperationStatuses.Failed, verified: false, "{}"));
 
         Assert.That(lines.Select(static l => (string?)l["text"]), Has.None.StartsWith("Bypass"));
     }
 
-    [Test]
-    public async Task ACallDoneAndVerifiedIsSaidDoneWithoutAsking()
+    [TestCase(false, "{}")]
+    [TestCase(true, "{\"verification\":\"none\"}")]
+    public async Task ACompletionThatWasNotVerifiedIsNotSaidDone(bool verified, string observation)
     {
-        IReadOnlyList<JsonObject> lines = await LinesAfterAsync(Step(OperationStatuses.Completed, verified: true));
+        IReadOnlyList<JsonObject> lines = await LinesAfterAsync(Step(OperationStatuses.Completed, verified, observation));
 
-        Assert.That(lines.Select(static l => (string?)l["text"]), Has.One.StartsWith("Bypass · hecho sin preguntar: "));
+        Assert.That(lines.Select(static l => (string?)l["text"]),
+            Has.One.StartsWith("Bypass · sin preguntar, puede haber corrido: "));
     }
 
-    private static NativeTurnStep Step(string status, bool verified) =>
+    [TestCase("readback", "Bypass · hecho sin preguntar: ")]
+    [TestCase("unchanged", "Bypass · sin preguntar, ya estaba así: ")]
+    [TestCase("delivered_only", "Bypass · enviado sin preguntar, sin comprobar: ")]
+    public async Task ACompletedCallIsSaidAsItWasVerified(string verification, string said)
+    {
+        IReadOnlyList<JsonObject> lines = await LinesAfterAsync(Step(OperationStatuses.Completed, verified: true,
+            "{\"status\":\"completed\",\"verification\":\"" + verification + "\"}"));
+
+        Assert.That(lines.Select(static l => (string?)l["text"]), Has.One.StartsWith(said));
+    }
+
+    private static NativeTurnStep Step(string status, bool verified, string observation) =>
         new(Operation, new JsonObject(), status, verified, status == OperationStatuses.Failed ? "provider_failed" : null,
-            12, "{}", "c1", Sent: true);
+            12, observation, "c1", Sent: true);
 
     // The shell's lines the view got after the call ended in bypass mode, as the turn loop reports it.
     private static async Task<IReadOnlyList<JsonObject>> LinesAfterAsync(NativeTurnStep step)

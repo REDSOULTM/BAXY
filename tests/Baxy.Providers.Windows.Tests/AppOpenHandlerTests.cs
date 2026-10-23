@@ -1,5 +1,9 @@
+using System.Security.Cryptography;
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Applications;
 using Baxy.Providers.Windows.External;
@@ -32,6 +36,36 @@ public sealed class AppOpenHandlerTests
             Assert.That(outcome.Result!.Value.GetProperty("place").GetString(), Is.EqualTo("library"));
             Assert.That(outcome.Result!.Value.GetProperty("placeIn").EnumerateArray().Select(name => name.GetString()),
                 Does.Contain("Steam"));
+            Assert.That(provider.Calls, Is.Zero);
+        });
+    }
+
+    // Renew al máximo (E014, int2 s1): refused «Configuración del sistema» with place sound, the model took placeIn
+    // («Configuración») for a value of place, then opened msconfig with no place. With the aid app_places, the refusal
+    // says which application the place is of and the opening that reaches it; with BAXY_AYUDAS=none, the facts alone.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task APlaceOfAnotherApplicationSaysTheOpeningThatReachesIt(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        var provider = new VerifiedOpening(@"C:\WINDOWS\system32\msconfig.exe");
+
+        OperationOutcome outcome = await Handler(provider).ExecuteAsync(
+            Invocation("""{"appId":"Configuración del sistema","place":"sound"}"""), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_of_application"));
+            Assert.That(result.GetProperty("placeIn").EnumerateArray().Select(name => name.GetString()),
+                Is.EqualTo(new[] { "Configuración" }));
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("nothing was opened. app_open with appId \"Configuración\" "
+                    + "and place \"sound\" opens sound, a place of Configuración, not of Configuración del sistema"));
+            }
+
             Assert.That(provider.Calls, Is.Zero);
         });
     }
@@ -258,8 +292,8 @@ public sealed class AppOpenHandlerTests
     // verified, or a launch Windows did not take. Only the facts of the provider's receipt; with BAXY_AYUDAS=none, or
     // another aid alone, it is the result it was.
     [TestCase("all", "verification_failed", true, false, true,
-        "Bloc de notas was started and no window of it was verified; window_application_status can tell whether one "
-        + "shows now, before saying it opened or not")]
+        "a launch of Bloc de notas was issued and no window of it was verified; window_application_status can tell "
+        + "whether one shows now, before saying it opened or not")]
     [TestCase("open_recovery", "verification_failed", false, false, true,
         "no window of Bloc de notas was verified; window_application_status can tell whether one shows now, before "
         + "saying it opened or not")]
@@ -293,6 +327,32 @@ public sealed class AppOpenHandlerTests
                 ? running.GetBoolean() : (bool?)null, Is.EqualTo(facts && reused ? true : null));
             Assert.That(result?.TryGetProperty("next", out JsonElement said) == true ? said.GetString() : null,
                 Is.EqualTo(next));
+        });
+    }
+
+    // Renew al máximo (velocidad, E014): an opening that ended on its application's frame shown empty says so, as a fact
+    // with the aids on or off, and the hint says what was seen instead of a window, never that it opened.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnOpeningEndedOnAnEmptyFrameSaysWhatItSaw(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+
+        OperationOutcome outcome = await Handler(new FailedOpening("verification_failed", true, false, emptyFrame: true))
+            .ExecuteAsync(Invocation("""{"appId":"Configuración","place":"sound"}"""), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(result.GetProperty("emptyFrame").GetBoolean(), Is.True);
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("Windows shows a window frame of Configuración with nothing of "
+                    + "Configuración inside it (its program does not draw there); no window of it was verified"));
+            }
         });
     }
 
@@ -370,6 +430,45 @@ public sealed class AppOpenHandlerTests
             Assert.That(unknown.Result!.Value.GetProperty("title").GetString(), Is.EqualTo("Juego Que No Existe"));
             Assert.That(titles.Asked, Is.EqualTo(new[] { "steam:Juego Que No Existe" }));
             Assert.That(opened, Is.EqualTo(new[] { "steam://store/367520" }), "a title nothing bears opens nothing");
+        });
+    }
+
+    // Renew al máximo: game.store.page's title «1942» was taken as a store number (steam://store/1942, another game
+    // or none). A title said as such is searched as a title whatever its characters; app.open's own digits stay a
+    // number.
+    [Test]
+    public async Task AGamePageTitleOfDigitsIsSearchedAsATitle()
+    {
+        var opened = new List<string>();
+        var titles = new FoundTitles(new GameTitle("1234560", "1942"));
+        var page = new GameStoreHandler("game.store.page", "game", "title", SteamHandler(opened, titles).ExecuteAsync);
+
+        OperationOutcome outcome = await page.ExecuteAsync(Invocation("""{"title":"1942"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(titles.Asked, Is.EqualTo(new[] { "steam:1942" }));
+            Assert.That(opened, Is.EqualTo(new[] { "steam://store/1234560" }));
+            JsonElement game = outcome.Result!.Value.GetProperty("placeGame");
+            Assert.That(game.GetProperty("name").GetString(), Is.EqualTo("1942"));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): a title search that got no answer (no network) opens nothing and says so,
+    // never that no game bears the title.
+    [Test]
+    public async Task AGameTitleSearchWithNoAnswerIsSaidAsSuch()
+    {
+        var opened = new List<string>();
+        OperationOutcome outcome = await SteamHandler(opened, new FailedTitles()).ExecuteAsync(
+            Invocation("""{"appId":"Steam","place":"game","placeValue":"Hades"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("game_title_search_failed"));
+            Assert.That(outcome.Result!.Value.GetProperty("title").GetString(), Is.EqualTo("Hades"));
+            Assert.That(opened, Is.Empty);
         });
     }
 
@@ -467,20 +566,24 @@ public sealed class AppOpenHandlerTests
     // BAXY Renew cu (C03 en frío): Steam started by this opening shows its sign-in first and the place handed then was
     // lost. The data says it starts behind its sign-in: once its window settles the place goes again, and the receipt
     // names that window. Contracases: already running, or an application the data does not mark, waits for nothing.
-    [TestCase("Steam", "library", false, 2, 999)]
-    [TestCase("Steam", "library", true, 1, 777)]
-    [TestCase("Configuración", "display", false, 1, 777)]
+    // Renew al máximo (auditoría de flujos): Steam in the notification area shows a window new to the opening from a
+    // process that was already running: no sign-in to wait for (it waited the whole 30 s for its window to go away).
+    [TestCase("Steam", "library", false, true, 2, 999)]
+    [TestCase("Steam", "library", true, false, 1, 777)]
+    [TestCase("Steam", "library", false, false, 1, 777)]
+    [TestCase("Configuración", "display", false, true, 1, 777)]
     public async Task AnApplicationStartedBehindItsSignInGetsItsPlaceAgainOnceItsWindowSettles(
-        string app, string place, bool running, int handed, long window)
+        string app, string place, bool running, bool startedNow, int handed, long window)
     {
         var opened = new List<string>();
         int waited = 0;
         var handler = new AppOpenHandler(
-            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", running),
+            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", running,
+                startedNow ? DateTime.UtcNow.Ticks : 638900000000000000),
             new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RecordedPlace(opened),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
-            settle: (_, _, _) => { waited++; return 999; });
+            settle: (_, _, _) => { waited++; return ValueTask.FromResult(999L); });
 
         OperationOutcome outcome = await handler.ExecuteAsync(
             Invocation($$"""{"appId":"{{app}}","place":"{{place}}"}"""), CancellationToken.None);
@@ -491,6 +594,35 @@ public sealed class AppOpenHandlerTests
             Assert.That(opened, Has.Count.EqualTo(handed));
             Assert.That(waited, Is.EqualTo(handed - 1));
             Assert.That(outcome.Result!.Value.GetProperty("windowHandle").GetInt64(), Is.EqualTo(window));
+        });
+    }
+
+    // Al máximo, flujos: the wait for that window (up to 30 s) held a thread asleep inside app.open, under the engine's
+    // one execution at a time; it is awaited, and the opening answers once it settles.
+    [Test]
+    public async Task TheWaitForTheSignInWindowHoldsNoThread()
+    {
+        var opened = new List<string>();
+        var settled = new TaskCompletionSource<long>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var handler = new AppOpenHandler(
+            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", false, DateTime.UtcNow.Ticks),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+            new RecordedPlace(opened),
+            frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
+            settle: (_, _, _) => new ValueTask<long>(settled.Task));
+
+        ValueTask<OperationOutcome> opening = handler.ExecuteAsync(
+            Invocation("""{"appId":"Steam","place":"library"}"""), CancellationToken.None);
+        bool answeredBeforeTheWindowSettled = opening.IsCompleted;
+        settled.SetResult(999);
+        OperationOutcome outcome = await opening;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(answeredBeforeTheWindowSettled, Is.False);
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(opened, Has.Count.EqualTo(2));
+            Assert.That(outcome.Result!.Value.GetProperty("windowHandle").GetInt64(), Is.EqualTo(999));
         });
     }
 
@@ -510,6 +642,164 @@ public sealed class AppOpenHandlerTests
             Asked.Add($"{catalog}:{title}");
             return ValueTask.FromResult(found);
         }
+    }
+
+    private sealed class FailedTitles : IGameTitles
+    {
+        public ValueTask<GameTitle?> FindAsync(string catalog, string title, CancellationToken cancellationToken) =>
+            throw new GameTitleSearchFailedException(new HttpRequestException("simulated offline store"));
+    }
+
+    // Renew al máximo (guarda msconfig): E014 «abre la configuración de sonido» asked app.open for «Configuración del
+    // sistema», which is msconfig, and it opened elevated without asking (the incidente del 2026-10-15 disabled 256
+    // services from that window). An opening whose name resolves to a tool that configures Windows itself (the system
+    // tools no click acts on) waits for the person's yes, bound to that invocation, and launches nothing before it;
+    // Windows' Settings app and Notepad open straight. Through the engine, with the provider's own catalog resolution.
+    [TestCase("Configuración del sistema", true)]
+    [TestCase("Servicios", true)]
+    [TestCase("Configuración", false)]
+    [TestCase("Bloc de notas", false)]
+    public async Task OpeningASystemToolWaitsForTheYesAndLaunchesNothing(string appId, bool asks)
+    {
+        var platform = new SystemToolsPlatform();
+
+        OperationResponse response = await OpenThroughEngine(platform, appId, confirm: false);
+
+        Assert.Multiple(() =>
+        {
+            if (asks)
+            {
+                Assert.That(response.Status, Is.EqualTo(OperationStatuses.Pending));
+                Assert.That(response.ErrorCode, Is.EqualTo("confirmation_required"));
+                Assert.That(platform.Activated, Is.Empty, "nothing is launched before the yes");
+            }
+            else
+            {
+                Assert.That(response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+                Assert.That(platform.Activated, Is.EqualTo(new[] { appId }));
+            }
+        });
+    }
+
+    // The yes given to that same invocation launches it.
+    [Test]
+    public async Task ASystemToolOpensOnTheYesToThatInvocation()
+    {
+        var platform = new SystemToolsPlatform();
+
+        OperationResponse response = await OpenThroughEngine(platform, "Configuración del sistema", confirm: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+            Assert.That(platform.Activated, Is.EqualTo(new[] { "Configuración del sistema" }));
+        });
+    }
+
+    // E014 (int3 s1): a system tool asked for at a place it does not have is refused by the opening, launching nothing,
+    // with no yes asked first (the person was asked to open msconfig at «sonido» and the opening then failed).
+    [Test]
+    public async Task ASystemToolAtAPlaceItDoesNotHaveIsRefusedWithoutAsking()
+    {
+        var platform = new SystemToolsPlatform();
+
+        OperationResponse response = await OpenThroughEngine(
+            platform, "Configuración del sistema", confirm: false, place: "sound");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.EqualTo("place_not_of_application"));
+            Assert.That(platform.Activated, Is.Empty);
+        });
+    }
+
+    // The rule is the one clicks are refused by (SystemToolProcesses, the applets of lote 4 c): the program a shortcut
+    // runs, a console of the MMC host, an applet by its .cpl or run by rundll32. Contracasos: the Sound applet the person
+    // asks for, Notepad, a document.
+    [TestCase(@"C:\WINDOWS\system32\msconfig.exe", null, true)]
+    [TestCase(@"C:\WINDOWS\regedit.exe", null, true)]
+    [TestCase(@"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\taskschd.msc", null, true)]
+    [TestCase(@"C:\WINDOWS\system32\compmgmt.msc", null, true)]
+    [TestCase(@"C:\WINDOWS\system32\firewall.cpl", null, true)]
+    [TestCase(@"C:\WINDOWS\system32\rundll32.exe", "shell32.dll,Control_RunDLL ncpa.cpl", true)]
+    [TestCase(@"C:\WINDOWS\system32\rundll32.exe", "shell32.dll,Control_RunDLL mmsys.cpl", false)]
+    [TestCase(@"C:\WINDOWS\system32\notepad.exe", null, false)]
+    [TestCase(@"C:\Users\persona\Documents\msconfig.txt", null, false)]
+    [TestCase(null, null, false)]
+    public void ALaunchIsASystemToolByTheRuleClicksAreRefusedBy(string? target, string? arguments, bool expected) =>
+        Assert.That(VisibleControlSurface.SystemToolLaunch(target, arguments), Is.EqualTo(expected));
+
+    private static async Task<OperationResponse> OpenThroughEngine(
+        SystemToolsPlatform platform, string appId, bool confirm, string? place = null)
+    {
+        AppOpenHandler handler = Handler(new WindowsInstalledApplicationOpenProvider(platform));
+        string root = Path.Combine(Path.GetTempPath(), "baxy-system-tool-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+                Path.Combine(root, "journal.jsonl"),
+                new JournalHmacAuthenticator(RandomNumberGenerator.GetBytes(JournalHmacAuthenticator.KeyLength)));
+            using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+            var request = new OperationRequest(
+                ProtocolTypes.OperationRequest,
+                Guid.NewGuid().ToString("D"),
+                Guid.NewGuid().ToString("D"),
+                Guid.NewGuid().ToString("D"),
+                "app.open",
+                place is null
+                    ? JsonSerializer.SerializeToElement(new { appId })
+                    : JsonSerializer.SerializeToElement(new { appId, place }));
+            OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
+            if (confirm && response.ErrorCode == "confirmation_required")
+            {
+                response = await engine.ExecuteAsync(
+                    request with { ConfirmationToken = response.Result!.Value.GetProperty("token").GetString() },
+                    CancellationToken.None);
+            }
+
+            return response;
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// The Start catalog as Windows lists it: msconfig and the Services console by the shortcuts of Windows' tools, the
+    /// Settings app and Notepad as packaged applications. An activation is recorded and refused (nothing runs).
+    /// </summary>
+    private sealed class SystemToolsPlatform : IInstalledApplicationPlatform
+    {
+        private static readonly InstalledApplicationEntry[] Catalog =
+        [
+            new("Configuración del sistema", @"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\msconfig.exe",
+                @"C:\WINDOWS\system32\msconfig.exe"),
+            new("Servicios", @"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\services.msc",
+                @"C:\WINDOWS\system32\services.msc"),
+            new("Configuración", "windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel"),
+            new("Bloc de notas", "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App"),
+        ];
+
+        public List<string> Activated { get; } = [];
+
+        public ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(CancellationToken cancellationToken) =>
+            ValueTask.FromResult<IReadOnlyList<InstalledApplicationEntry>>(Catalog);
+
+        public IReadOnlyList<InstalledApplicationObservation> Inventory(InstalledApplicationEntry entry) => [];
+
+        public bool Activate(InstalledApplicationEntry entry)
+        {
+            Activated.Add(entry.Name);
+            return false;
+        }
+
+        public void RequestForeground(long windowHandle)
+        {
+        }
+
+        public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) => ValueTask.CompletedTask;
     }
 
     private sealed class RecordedPlace(List<string> opened) : IApplicationPlaceOpener
@@ -549,7 +839,8 @@ public sealed class AppOpenHandlerTests
 
     /// <summary>An opening that failed with a code, as the provider's receipt tells it.</summary>
     private sealed class FailedOpening(
-        string code, bool launchIssued, bool reused, IReadOnlyList<string>? candidates = null) : IApplicationOpenProvider
+        string code, bool launchIssued, bool reused, IReadOnlyList<string>? candidates = null, bool emptyFrame = false)
+        : IApplicationOpenProvider
     {
         public ValueTask<ApplicationOpenResult> OpenAsync(
             ApplicationOpenRequest request,
@@ -561,12 +852,13 @@ public sealed class AppOpenHandlerTests
                 WindowHandle: null, code);
             return ValueTask.FromResult(new ApplicationOpenResult(
                 Succeeded: launchIssued || reused, Verified: false, request.ApplicationId, AlreadyRunning: reused,
-                ProcessId: null, WindowHandle: null, code, receipt, Candidates: candidates));
+                ProcessId: null, WindowHandle: null, code, receipt, Candidates: candidates, EmptyFrame: emptyFrame));
         }
     }
 
     /// <summary>A window of a program already running, verified for the opening asked.</summary>
-    private sealed class VerifiedOpening(string executablePath, bool running = true) : IApplicationOpenProvider
+    private sealed class VerifiedOpening(
+        string executablePath, bool running = true, long created = 638900000000000000) : IApplicationOpenProvider
     {
         internal int Calls { get; private set; }
 
@@ -577,7 +869,7 @@ public sealed class AppOpenHandlerTests
             Calls++;
             var receipt = new ApplicationLaunchReceipt(
                 request.InvocationId, request.ApplicationId, LaunchIssued: !running, ReusedExisting: running,
-                ProcessId: 4242, ProcessCreationTimeUtcTicks: 638900000000000000, executablePath,
+                ProcessId: 4242, ProcessCreationTimeUtcTicks: created, executablePath,
                 PackageFamilyName: null, PackageFullName: null, WindowHandle: 777, ErrorCode: null);
             return ValueTask.FromResult(new ApplicationOpenResult(
                 Succeeded: true, Verified: true, request.ApplicationId, AlreadyRunning: running,

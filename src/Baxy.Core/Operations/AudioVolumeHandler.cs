@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Text.Json;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Audio;
@@ -22,7 +23,7 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
                 "level",
                 JsonValueKind.Number))
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         AudioVolumeArguments arguments;
@@ -35,12 +36,12 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
         }
         catch (JsonException)
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         if (arguments.Level is < 0 or > 100)
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         AudioControlReceipt receipt = await _provider.SetVolumeAsync(
@@ -81,9 +82,6 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
         JsonElement serialized = AudioControlEvidence.SerializeVerified(receipt);
         return OperationOutcome.Success(serialized);
     }
-
-    private static OperationOutcome InvalidArguments() =>
-        OperationOutcome.Failure("invalid_arguments");
 }
 
 internal static class AudioControlEvidence
@@ -209,7 +207,33 @@ internal static class AudioControlEvidence
                 causeCode: errorCode)
             : OperationOutcome.Failure(
                 errorCode,
+                result: StateAfter(receipt),
                 effectMayHaveOccurred: effectMayHaveOccurred);
+    }
+
+    // Renew al máximo: a set the provider could not verify still read the endpoint after it; that final reading was
+    // dropped, so the mind only heard «could not» without the level and mute it left. It travels beside the failure
+    // as stateAfter, never as a success; any other failure, or one with no final reading, stays bare.
+    private static JsonElement? StateAfter(AudioControlReceipt receipt)
+    {
+        if (receipt.ErrorCode != AudioControlErrorCodes.VerificationFailed || receipt.Final is not { } final)
+        {
+            return null;
+        }
+
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteStartObject("stateAfter");
+            writer.WriteNumber("level", final.VolumePercent);
+            writer.WriteBoolean("muted", final.Muted);
+            writer.WriteEndObject();
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 
     internal static bool MatchesIndependentStatus(

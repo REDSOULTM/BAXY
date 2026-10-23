@@ -25,6 +25,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly SemaphoreSlim _turnGate = new(1, 1);
     private bool _beatActive;
     private bool _beatSpeaks;
+    // The heartbeat running now stops before its next call when the person's words arrive (al máximo, flujos): they
+    // waited for all its calls.
+    private CancellationTokenSource? _beatInterrupt;
+    // A call of the person's turn running now reached its provider (what it opened was asked for).
+    private bool _personActed;
     private readonly ConversationLog? _conversationLog = ConversationLog.CreateDefault();
     private RetryableOperationRegistry? _retryableOperations;
     private MemoryOperationProtector? _memoryProtector;
@@ -55,6 +60,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _isListening;
     private bool _isWakeListening;
     private bool _isVoiceSpeaking;
+    private string? _noticeAsked; // the notice's phrase last asked of the voice (VoiceSounded names it)
     private bool _isMicAvailable;
     private string _statusDescription = "Preparando BAXY";
     private bool _isReady;
@@ -121,7 +127,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         _ = SpeakNoticeAsync(mind, notice);
                     }
                 },
-                StepCompleted = step => StepCompleted?.Invoke(step),
+                StepCompleted = step =>
+                {
+                    _personActed |= step.Sent && !_beatActive;
+                    StepCompleted?.Invoke(step);
+                },
                 StepStarted = (id, operation, arguments) => StepStarted?.Invoke(id, operation, arguments),
                 ConfirmationAsked = asked =>
                 {
@@ -140,6 +150,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 },
                 Refuse = Settings.Refusal,
                 MemoryChanged = () => MemoryChanged?.Invoke(),
+                ForgotEverything = () => EverythingForgotten?.Invoke(),
             });
     }
 
@@ -207,6 +218,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>The chat changed what the memory holds (the interface reads its count again).</summary>
     internal event Action? MemoryChanged;
 
+    /// <summary>The chat forgot everything memory held (the kept conversations go too).</summary>
+    internal event Action? EverythingForgotten;
+
+    /// <summary>A turn of the person's ended; true when a call in it reached its provider (the heartbeat's pace).</summary>
+    internal event Action<bool>? PersonTurnEnded;
+
     /// <summary>A heartbeat's words for a person who is playing, in a call, watching or away: shown, not spoken.</summary>
     internal event Action<string>? NotificationRequested;
 
@@ -215,6 +232,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// after what the voice already holds, or not at all if the voice drops it. It is not a message.
     /// </summary>
     internal event Action<string>? NoticeQueued;
+
+    /// <summary>
+    /// Renew al máximo: an utterance's first sound, as the voice tells it: the notice's phrase when the voice says it is
+    /// the notice, null when it is an answer. The conductor names what is said from it; the order of
+    /// <see cref="NoticeQueued"/> and <see cref="IsVoiceSpeaking"/> does not tell it (the notice sounds before its
+    /// acceptance arrives).
+    /// </summary>
+    internal event Action<string?>? VoiceSounded;
 
     public ObservableCollection<ConversationMessage> Messages { get; }
 
@@ -447,6 +472,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string text = MissionInputContract.ValidateAndTrim(input);
         // Secrets the person typed never enter the transcript, the conversation log or the voice.
         string visible = SensitiveText.Contains(text) ? SensitiveText.Hidden : text;
+        _beatInterrupt?.Cancel();
         await RunTurnAsync(visible, () => _loop.RunAsync(text, arrivedAt, cancellationToken), cancellationToken);
     }
 
@@ -593,12 +619,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _beatActive = true;
         _beatSpeaks = speak;
         _beatActivity = (string?)moment["owner_activity"] ?? string.Empty;
+        // Not disposed: the person's words may cancel it from another thread as the beat ends; it holds no timer.
+        _beatInterrupt = new CancellationTokenSource();
         try
         {
-            await _loop.RunBeatAsync(moment, cancellationToken);
+            await _loop.RunBeatAsync(moment, cancellationToken, _beatInterrupt.Token);
         }
         finally
         {
+            _beatInterrupt = null;
             _beatActive = false;
             _turnGate.Release();
             OnPropertyChanged(nameof(HasPendingConfirmation));
@@ -638,6 +667,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.QueueWaitEnd);
         AddMessageCore("Tú", visibleUserText, isUser: true);
         _turnExecutionActive = true;
+        _personActed = false;
         LastTurnFailure = null;
         IsBusy = true;
         StatusDescription = "understanding";
@@ -662,6 +692,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.ResponseFinal);
             _turnExecutionActive = false;
             IsBusy = false;
+            PersonTurnEnded?.Invoke(_personActed);
             OnPropertyChanged(nameof(HasPendingConfirmation));
             if (_coreRecoveryPending)
             {
@@ -1031,6 +1062,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string eventName = (string?)voiceEvent["event"] ?? string.Empty;
         string mode = (string?)voiceEvent["mode"] ?? string.Empty;
         bool? speaking = (bool?)voiceEvent["speaking"];
+        bool notice = (bool?)voiceEvent["notice"] ?? false;
         string? partial = (string?)voiceEvent["text"];
         _uiContext.Post(
             _ =>
@@ -1067,6 +1099,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         break;
                     case "lip":
                         VoiceLip?.Invoke(voiceEvent);
+                        break;
+                    case "sound":
+                        if (!notice)
+                        {
+                            // Al máximo 9.2b: the turn's notice counts until its line is heard, not until it is shown.
+                            _loop.AnswerSounded();
+                        }
+
+                        VoiceSounded?.Invoke(notice ? _noticeAsked ?? string.Empty : null);
                         break;
                     case "transcribing":
                         VoiceFailure = null;
@@ -1536,6 +1577,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task SpeakNoticeAsync(MindSidecarClient mind, string notice)
     {
+        _noticeAsked = notice; // set before asking: it may sound before the acceptance arrives
         if (await mind.VoiceSpeakAsync(notice, TimeSpan.FromSeconds(5), CancellationToken.None))
         {
             ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "notice.queued");

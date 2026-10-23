@@ -10,9 +10,20 @@ engine's level varies with the sentence.
 
 An answer sounds sentence by sentence: the first plays as soon as it is synthesized and the next is synthesized while
 it sounds; a loaded voice starts synthesizing an answer the moment it is given, while what is ahead of it still sounds.
-The turn's notice («Un momento.», said when a turn has been silent for 2.5 s) is dropped if an answer was given before
-it began to sound: said then, it came right before the answer and held it back (owner, 2026-10-20: the notice cut in
-on what BAXY was about to say; answers waited up to 4.8 s behind it). Opening the output takes 0.38 s on the PC (its USB interface, under MME, DirectSound and WASAPI alike), so it
+An answer is even seen as the model writes it (foresee, al máximo 9.4), or as soon as it is in when it came whole (the
+decision whose doubt is read, al máximo V2): its first sentence is synthesized then and kept, and the answer given later
+uses that take; a call written after it drops the take; nothing sounds before the App
+publishes the answer.
+The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote at warm-up, which the mind
+gives the voice with its catalog.ready (set_notice; al máximo 9.2a: it was «Un momento.», fixed in the code). It is
+synthesized as soon as the voice has it and said from that audio only: a notice never takes the one synthesis an answer
+needs (owner, 2026-10-20: an answer waited 3.6 s behind a notice synthesized like any sentence). It is dropped if an
+answer was given after it and before it began to sound: said then, it came right before the answer and held it back
+(owner, 2026-10-20: the notice cut in on what BAXY was about to say; answers waited up to 4.8 s behind it). An answer
+given before it that is still being synthesized does not drop it: the App asks for the notice until the answer is heard
+(al máximo 9.2b; an answer published at 2.4 s that sounded at 3.9 s left more than 3 s without a signal), so the notice
+sounds from its audio while that synthesis runs, and never once an answer has begun to sound. The first sound of each
+utterance is told (on_spoken), and whether it was the notice, so the App knows when the answer is heard. Opening the output takes 0.38 s on the PC (its USB interface, under MME, DirectSound and WASAPI alike), so it
 opens when a turn starts, while the model thinks (prepare), and closes after HOLD_S without sound, so the voice still
 follows the default output.
 """
@@ -27,14 +38,14 @@ import sys
 import threading
 import time
 from collections.abc import Iterator
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor, wait
+from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
 from typing import Callable
 
 import numpy as np
 
-from .mind import NOTICE
 from .speech_text import spoken
 
 MAX_CHARS = 8192
@@ -96,22 +107,57 @@ def _default_follower(sd) -> int | None:
     return None
 
 
+class _Sentences:
+    """An answer's audio, sentence by sentence (Speech._sentences), and its first sentence's synthesis."""
+
+    def __init__(self, first: Future, audio: Iterator[np.ndarray]) -> None:
+        self.first = first
+        self._audio = audio
+
+    def __iter__(self) -> "_Sentences":
+        return self
+
+    def __next__(self) -> np.ndarray:
+        return next(self._audio)
+
+
+@dataclass
+class _Notice:
+    """A notice asked for: said only while no answer was given after it nor began to sound since it was asked."""
+    generation: int
+    answers: int
+    sounded: int
+    audio: np.ndarray
+    queued: float
+    said: bool = False
+
+
 class Speech:
     """speak() and cancel() only post to the speech thread, which owns the voice and the audio output."""
 
-    def __init__(self, on_state: Callable[[bool], None], on_spoken: Callable[[float, float], None],
+    def __init__(self, on_state: Callable[[bool], None], on_spoken: Callable[[float, float, bool], None],
                  on_lip: Callable[[dict], None] = lambda _lip: None) -> None:
         self._on_state = on_state            # speaking started (True) or ended (False)
-        self._on_spoken = on_spoken          # (queued at, first sound at), monotonic seconds
+        self._on_spoken = on_spoken          # (queued at, first sound at, a notice), perf_counter seconds (the trace's clock)
         self._on_lip = on_lip                # a take's loudness and when it sounds, or when the sound was cut
-        # (generation, text or None to open the output, queued at, for a notice the answers given before it, its audio
-        # when its synthesis already started), or None to end the speech thread (close)
-        self._queue: queue.Queue[tuple[int, str | None, float, int | None, Iterator[np.ndarray] | None] | None] = \
+        # (generation, text or None to open the output, queued at, a notice, its audio when its synthesis already
+        # started), or None to end the speech thread (close)
+        self._queue: queue.Queue[tuple[int, str | None, float, _Notice | None, Iterator[np.ndarray] | None] | None] = \
             queue.Queue(maxsize=16)
-        self._posting = threading.Lock()     # speak() (the reader) and prepare() (the request loop) share the queue
+        # speak() (the reader) and prepare() (the request loop) share the queue; reentrant, since a notice whose
+        # synthesis is already done keeps its audio from inside set_notice (add_done_callback runs it at once)
+        self._posting = threading.RLock()
         self._generation = 0                 # cancel() moves it on; older utterances are dropped
         self._answers = 0                    # answers given so far: a notice with an answer after it is not said
-        self._notice_audio: np.ndarray | None = None  # the notice, synthesized once at load, with no pause after it
+        self._sounded = 0                    # answers that began to sound: a notice is not said after its answer
+        self._answer_sounding = False        # an answer sounds now: a notice asked meanwhile is refused
+        self._early: _Notice | None = None   # the last notice asked: said while an answer's first sentence is synthesized
+        # Al máximo 9.4: first sentences synthesized while the model still wrote their answer (foresee), by the text
+        # synthesized, with the generation they were asked in; an answer whose first sentence is one of them uses it.
+        self._foreseen: dict[str, tuple[int, Future]] = {}
+        self._notice_text = ""               # the mind's notice phrase (set_notice), said only as a notice
+        self._notice_audio: np.ndarray | None = None  # its audio, synthesized once, with no pause after it
+        self._loaded = False                 # Supertonic is loaded: a notice given from now on is synthesized at once
         self._ready = threading.Event()
         self.failure = ""
         self.speaking = False
@@ -150,29 +196,91 @@ class Speech:
             # A refused answer leaves nothing behind: not counted (it would drop a notice) and not synthesized.
             if self._queue.full():
                 return False
-            if not notice:
-                self._answers += 1
+            if notice:
+                # Only the mind's phrase, from its audio: ready at once and nothing to synthesize, it never holds the
+                # synthesis an answer given now needs. With no audio yet (the voice still loads) it is not said, nor
+                # while an answer sounds (it would follow it).
+                if text != self._notice_text or self._notice_audio is None or self._answer_sounding:
+                    return False
+                self._early = _Notice(self._generation, self._answers, self._sounded, self._notice_audio,
+                                      time.perf_counter())
+                self._queue.put_nowait((self._generation, text, self._early.queued, self._early, None))
+                return True
+            self._answers += 1
             audio = None
-            if notice and text == NOTICE and self._notice_audio is not None:
-                # Ready at once and nothing to synthesize: it never holds the synthesis an answer given now needs
-                # (owner, 2026-10-20: an answer waited 3.6 s behind «Un momento», then being synthesized like any
-                # sentence).
-                audio = iter([self._notice_audio])
-            elif self.ready:
+            if self.ready:
                 try:
                     audio = self._sentences(text)
                 except Exception:  # noqa: BLE001 - the speech thread synthesizes it then, and says what failed
                     audio = None
-            self._queue.put_nowait((self._generation, text, time.monotonic(), self._answers if notice else None,
-                                    audio))
+            self._queue.put_nowait((self._generation, text, time.perf_counter(), None, audio))
         return True
+
+    def foresee(self, text: str | None, done: bool) -> bool:
+        """An answer as the model writes it (al máximo 9.4): once its first sentence is closed (or the answer is done),
+        that sentence is synthesized now, the same take _sentences would make, and kept; nothing sounds until the App
+        publishes the answer and asks for it (speak). None: the model went on to call a tool, and what was foreseen is
+        dropped. True once there is nothing more to look at."""
+        if text is None:
+            with self._posting:
+                for _generation, future in self._foreseen.values():
+                    future.cancel()  # not synthesized if it had not started: it never holds an answer's synthesis
+                self._foreseen.clear()
+            return True
+        raw = text
+        text = " ".join(raw.split())[:MAX_CHARS]
+        if not self.ready:
+            return True
+        if not text:
+            return done
+        # A sentence is closed by the space after its stop, which the text so far may end with.
+        pieces = _SENTENCE_END.split(spoken(text) + (" " if raw[-1:].isspace() else ""))
+        units = [piece for piece in pieces if piece.strip()]
+        if not units:
+            return done
+        if not done and len(pieces) < 2:
+            return False  # the first sentence is not closed yet
+        if not done and len(units[0].split()) <= 3:
+            return False  # a reply that starts with a word or two is one take with what follows: wait for its end
+        first = self._takes(units, text)[0] if done else units[0]
+        with self._posting:
+            if first not in self._foreseen:
+                generation = self._generation
+                future = self._synthesis.submit(
+                    lambda: self._synthesize(first) if generation == self._generation else np.zeros(0, np.float32))
+                self._foreseen[first] = (generation, future)
+                while len(self._foreseen) > 4:
+                    self._foreseen.pop(next(iter(self._foreseen)))
+        return True
+
+    def set_notice(self, text: str) -> None:
+        """The mind's notice phrase (its catalog.ready): synthesized now, or as soon as the voice has loaded; empty, no
+        notice is said."""
+        text = " ".join(str(text or "").split())[:MAX_CHARS]
+        with self._posting:
+            self._notice_text, self._notice_audio = text, None
+            if text and self._loaded and not self.failure:
+                self._synthesize_notice(text)
+
+    def _synthesize_notice(self, text: str) -> None:
+        """Called under _posting. Kept only while it is still the mind's phrase."""
+        def keep(done) -> None:
+            if done.exception() is None:
+                with self._posting:
+                    if self._notice_text == text:
+                        self._notice_audio = done.result()
+            else:
+                sys.stderr.write(f"baxy_mind_renew_speech: notice: {done.exception()!r}\n")
+                sys.stderr.flush()
+
+        self._synthesis.submit(self._synthesize, text, False).add_done_callback(keep)
 
     def prepare(self) -> None:
         """A turn started: open the output now, so its answer does not wait for the device."""
         if self.ready:
             with self._posting:
                 if not self._queue.full():
-                    self._queue.put_nowait((self._generation, None, time.monotonic(), None, None))
+                    self._queue.put_nowait((self._generation, None, time.perf_counter(), None, None))
 
     def cancel(self) -> None:
         self._generation += 1
@@ -194,6 +302,10 @@ class Speech:
     def _run(self) -> None:
         try:
             self._start()
+            with self._posting:
+                self._loaded = True
+                if self._notice_text:
+                    self._synthesize_notice(self._notice_text)
         except Exception as error:  # noqa: BLE001 - without a voice BAXY still answers on screen
             self.failure = repr(error)
             sys.stderr.write(f"baxy_mind_renew_speech: {self.failure}\n")
@@ -214,18 +326,34 @@ class Speech:
             try:
                 if text is None:
                     self._open_stream()
-                elif generation == self._generation and notice in (None, self._answers):
+                elif notice is not None:
+                    self._say_notice(notice)
+                elif generation == self._generation:
                     sentences = audio if audio is not None else self._sentences(text)
-                    if notice is not None:
-                        first = next(sentences, None)  # an answer given while the notice was synthesized drops it too
-                        if first is None or notice != self._answers or generation != self._generation:
-                            continue
-                        sentences = itertools.chain([first], sentences)
+                    self._await_first(sentences, generation)
                     self._play(sentences, generation, queued)
             except Exception as error:  # noqa: BLE001 - one failed phrase never ends the voice
                 self._close_stream()
                 sys.stderr.write(f"baxy_mind_renew_speech: {error!r}\n")
                 sys.stderr.flush()
+
+    def _say_notice(self, notice: _Notice) -> None:
+        with self._posting:
+            due = (not notice.said and notice.generation == self._generation and notice.answers == self._answers
+                   and notice.sounded == self._sounded)
+            notice.said = True
+        if due:
+            self._play(iter([notice.audio]), notice.generation, notice.queued, True)
+
+    def _await_first(self, sentences: Iterator[np.ndarray], generation: int) -> None:
+        """While an answer's first sentence is synthesized, a notice asked meanwhile sounds (from its own audio)."""
+        first = getattr(sentences, "first", None)
+        while first is not None and not first.done() and generation == self._generation:
+            notice = self._early
+            if notice is not None and not notice.said:
+                self._say_notice(notice)
+            else:
+                wait([first], timeout=0.02)
 
     def _open_stream(self):
         import sounddevice as sd
@@ -264,20 +392,13 @@ class Speech:
             num_threads=THREADS, provider="cpu")))
         self.rate = int(self._tts.sample_rate)
         self._shift = Fraction(2 ** (float(self._voice.get("shift", 0)) / 12)).limit_denominator(100)
-        # Loads the voice now, so the first answer does not wait for it, and keeps the notice ready to sound.
-        self._notice_audio = self._synthesize(NOTICE, pause=False)
+        # Loads the voice now, so the first answer does not wait for it.
+        self._synthesize("Hola.", pause=False)
 
-    def _sentences(self, text: str) -> Iterator[np.ndarray]:
+    def _sentences(self, text: str) -> _Sentences:
         """Each sentence's audio in order: the first is already being synthesized (while the output opens), and each
         next one is synthesized while the previous one sounds."""
-        said = spoken(text)
-        sentences = [sentence for sentence in _SENTENCE_END.split(said) if sentence.strip()]
-        # A reply that starts with a word or two («Listo.», «Hecho.») is one call: the very short utterance is
-        # Supertonic's weak spot (issue #30). Any other first sentence is synthesized alone, so it sounds sooner: joining
-        # every reply of up to 120 characters (84 % of them) cost 1 595 ms to the first audio against 989 ms for the first
-        # sentence alone (p50 of 16 two-sentence replies, 10 steps, PC CPU, renew al máximo 9.3, 2026-10-22).
-        if len(sentences) > 1 and len(sentences[0].split()) <= 3:
-            sentences = [said]
+        sentences = self._takes(self._units(text), text)
         generation = self._generation
 
         def synthesize(sentence: str) -> np.ndarray:
@@ -286,7 +407,12 @@ class Speech:
             # 2026-10-20).
             return self._synthesize(sentence) if generation == self._generation else np.zeros(0, np.float32)
 
-        first = self._synthesis.submit(synthesize, sentences[0])
+        with self._posting:
+            foreseen = self._foreseen.pop(sentences[0], None)
+        if foreseen is not None and foreseen[0] == generation:
+            first = foreseen[1]
+        else:
+            first = self._synthesis.submit(synthesize, sentences[0])
 
         def audio() -> Iterator[np.ndarray]:
             pending = first
@@ -298,7 +424,23 @@ class Speech:
                 yield ready
             yield pending.result()
 
-        return audio()
+        return _Sentences(first, audio())
+
+    @staticmethod
+    def _units(text: str) -> list[str]:
+        """The sentences of what is said."""
+        return [sentence for sentence in _SENTENCE_END.split(spoken(text)) if sentence.strip()]
+
+    @staticmethod
+    def _takes(sentences: list[str], text: str) -> list[str]:
+        """What is synthesized, one take each. A reply that starts with a word or two («Listo.», «Hecho.») is one call:
+        the very short utterance is Supertonic's weak spot (issue #30). Any other first sentence is synthesized alone,
+        so it sounds sooner: joining every reply of up to 120 characters (84 % of them) cost 1 595 ms to the first
+        audio against 989 ms for the first sentence alone (p50 of 16 two-sentence replies, 10 steps, PC CPU, renew al
+        máximo 9.3, 2026-10-22)."""
+        if len(sentences) > 1 and len(sentences[0].split()) <= 3:
+            return [spoken(text)]
+        return sentences
 
     def _synthesize(self, text: str, pause: bool = True) -> np.ndarray:
         import sherpa_onnx
@@ -328,18 +470,22 @@ class Speech:
         gap = np.zeros(int(self.rate * (GAP_QUESTION_S if text.rstrip().endswith("?") else GAP_S)), dtype=np.float32)
         return np.concatenate([audio, gap])
 
-    def _play(self, sentences: Iterator[np.ndarray], generation: int, queued: float) -> None:
+    def _play(self, sentences: Iterator[np.ndarray], generation: int, queued: float, notice: bool = False) -> None:
         stream = self._open_stream()
         audio = next(sentences, None)  # none when it was cancelled before its first sentence was synthesized
         if audio is None or generation != self._generation:
             return
         block = int(self.rate * BLOCK_S)
+        if not notice:
+            with self._posting:
+                self._sounded += 1
+                self._answer_sounding = True
         self.speaking = True
         self._on_state(True)
         heard_until = 0.0  # wall clock (s) when what was written so far ends sounding
         try:
             # The first block sounds once the device's output latency has passed.
-            self._on_spoken(queued, time.monotonic() + stream.latency)
+            self._on_spoken(queued, time.perf_counter() + stream.latency, notice)
             for audio in itertools.chain([audio], sentences):
                 # A take written right after the last one sounds right after it; one that waited for its synthesis
                 # (the output ran dry) sounds once the device's latency has passed.
@@ -363,6 +509,7 @@ class Speech:
             while time.monotonic() < ends and generation == self._generation and self._queue.empty():
                 time.sleep(0.05)
         finally:
+            self._answer_sounding = False
             self.speaking = False
             self._on_state(False)
 

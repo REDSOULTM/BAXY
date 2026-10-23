@@ -1,0 +1,299 @@
+"""BAXY Renew al máximo W5 (mind.PREFILL_MARK): once a turn has ended, its conversation is read into the slot as the
+next request will show it, so the next decision reads only its own words. The model's prompt does not change: every
+body it gets is the same, byte for byte, with and without the read ahead.
+
+The double renders prompts with the model's own chat template (tests/fixtures/qwen35_chat_template.jinja, as the
+GGUF BAXY-Qwen3.5-4B-ft-c2e1 carries it) and keeps the slot as llama-server does: a request keeps the cached text up to
+where its prompt differs and reads the rest, and what the model wrote stays after the prompt as it was generated."""
+import json
+import os
+import urllib.error
+from pathlib import Path
+
+import pytest
+from jinja2.sandbox import ImmutableSandboxedEnvironment
+
+from baxy_mind.mind import CLOCK_MARK, PREFILL_MARK, Mind
+
+TEMPLATE = (Path(__file__).parent / "fixtures" / "qwen35_chat_template.jinja").read_text(encoding="utf-8")
+TOOLS = [
+    {"type": "function", "function": {"name": "app_open", "description": "Open an application.", "parameters": {
+        "type": "object", "properties": {"appId": {"type": "string"}, "foreground": {"type": "boolean"}},
+        "required": ["appId"]}}},
+    {"type": "function", "function": {"name": "ask_user", "description": "Ask the person.", "parameters": {
+        "type": "object", "properties": {"question": {"type": "string"}}, "required": ["question"]}}},
+]
+
+
+def _raise(message: str) -> None:
+    raise ValueError(message)
+
+
+class SlotServer:
+    """llama-server's double: the chat template, one slot and what each request had to read again (in characters)."""
+
+    context = 53248
+
+    def __init__(self, replies: list) -> None:
+        environment = ImmutableSandboxedEnvironment(trim_blocks=True, lstrip_blocks=True)
+        environment.filters["tojson"] = lambda value, **_: json.dumps(value, ensure_ascii=False)
+        environment.globals["raise_exception"] = _raise
+        self._template = environment.from_string(TEMPLATE)
+        self.replies = replies
+        self.bodies: list[dict] = []
+        self.prompts: list[str] = []
+        self.prefilled: list[str] = []
+        self.templates = 0
+        self.read: list[int] = []
+        self.slot = ""
+        self.fail_prefill: Exception | None = None
+
+    def render(self, body: dict) -> str:
+        # As llama-server hands them to the template: a call's arguments as an object.
+        messages = [{**m, "tool_calls": [{**c, "function": {**c["function"],
+                                                           "arguments": json.loads(c["function"]["arguments"])}}
+                                         for c in m["tool_calls"]]} if m.get("tool_calls") else m
+                    for m in body["messages"]]
+        return self._template.render(messages=messages, tools=body.get("tools"), add_generation_prompt=True,
+                                     enable_thinking=False)
+
+    def _read(self, prompt: str) -> None:
+        kept = len(os.path.commonprefix([self.slot, prompt]))
+        self.read.append(len(prompt) - kept)
+        self.slot = prompt
+
+    def chat(self, body: dict, **_) -> dict:
+        self.bodies.append(json.loads(json.dumps(body)))
+        prompt = self.render(body)
+        self.prompts.append(prompt)
+        self._read(prompt)
+        reply = self.replies.pop(0)
+        message = reply["choices"][0]["message"]
+        written = message.get("content") or ""
+        for call in message.get("tool_calls") or []:
+            arguments = json.loads(call["function"]["arguments"])
+            written += f"<tool_call>\n<function={call['function']['name']}>\n" + "".join(
+                f"<parameter={k}>\n{v if isinstance(v, str) else json.dumps(v)}\n</parameter>\n"
+                for k, v in arguments.items()) + "</function>\n</tool_call>"
+        self.slot += written  # what the model wrote, as it wrote it, after the generation prompt
+        return reply
+
+    def template(self, body: dict, timeout: float = 10.0) -> str:
+        self.templates += 1
+        return self.render(body)
+
+    def prefill(self, prompt: str, timeout: float = 60.0) -> dict:
+        if self.fail_prefill is not None:
+            raise self.fail_prefill
+        self.prefilled.append(prompt)
+        before = len(self.read)
+        self._read(prompt)
+        return {"timings": {"prompt_n": self.read[before], "prompt_ms": 1.0, "predicted_n": 1, "predicted_ms": 0.0}}
+
+    def tokenize(self, text: str) -> list[int]:
+        return [0] * (len(text) // 4)
+
+
+def _call(name: str, arguments: dict) -> dict:
+    return {"choices": [{"message": {"content": "", "tool_calls": [
+        {"id": "c1", "type": "function", "function": {"name": name, "arguments": json.dumps(arguments)}}]}}]}
+
+
+def _say(text: str) -> dict:
+    return {"choices": [{"message": {"content": text}}]}
+
+
+def _mind(tmp_path: Path, replies: list, monkeypatch: pytest.MonkeyPatch) -> tuple[Mind, SlotServer]:
+    # A clock that does not move, so two runs of the same conversation send the same text.
+    monkeypatch.setattr(Mind, "_clock", lambda self: f"{CLOCK_MARK} jueves 22/10/2026 18:30 hora local]")
+    server = SlotServer(replies)
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    mind = Mind(server, tmp_path / "turns.jsonl")  # type: ignore[arg-type]
+    mind.tools = json.loads(json.dumps(TOOLS))
+    mind.call_tokens = [248058]
+    return mind, server
+
+
+def _two_turns(mind: Mind, prefill: bool) -> None:
+    mind.decide(1, "abre paint")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "readback", "observed": {
+        "appId": "Paint", "foreground": True}}))
+    if prefill:
+        assert mind.prefill() is True
+    mind.decide(3, "¿ya lo abriste?")
+
+
+def _replies() -> list:
+    return [_call("app_open", {"appId": "Paint", "foreground": True}), _say("Abrí Paint."), _say("Sí, Paint está abierto.")]
+
+
+def test_the_next_decision_reads_only_its_own_words_and_gets_the_same_prompt(tmp_path: Path,
+                                                                            monkeypatch: pytest.MonkeyPatch) -> None:
+    ahead, server = _mind(tmp_path / "a", _replies(), monkeypatch)
+    _two_turns(ahead, prefill=True)
+    plain, before = _mind(tmp_path / "b", _replies(), monkeypatch)
+    _two_turns(plain, prefill=False)
+
+    # The model gets the same bodies, and so the same prompts, with the read ahead and without it.
+    assert server.bodies == before.bodies and server.prompts == before.prompts
+    following = server.prompts[-1]
+    # What was read ahead is the start of the next prompt to the character, and ends where the new turn begins.
+    read_ahead = server.prefilled[0]
+    assert following.startswith(read_ahead) and following[len(read_ahead):].startswith(f"<|im_start|>user\n{CLOCK_MARK}")
+    assert read_ahead.endswith("<|im_end|>\n") and PREFILL_MARK not in read_ahead
+    # Without it the decision read the whole previous turn again: from its first assistant message, whose empty
+    # <think></think> the slot holds and the new prompt no longer writes.
+    kept, again = following[:len(following) - before.read[-1]], following[len(following) - before.read[-1]:]
+    # (characters: «<think>» in the slot and «<tool_call>» in the prompt share their first two)
+    assert kept.endswith(f"{CLOCK_MARK} jueves 22/10/2026 18:30 hora local]<|im_end|>\n<|im_start|>user\nabre paint"
+                         "<|im_end|>\n<|im_start|>assistant\n<t")
+    assert "<function=app_open>" in again and "Abrí Paint." in again
+    assert "<think>\n\n</think>\n\n<tool_call>" in before.prompts[1]
+    assert "<think>\n\n</think>\n\n<tool_call>" not in following
+    # With it, the decision reads only its own turn; the same work was done before it, while BAXY spoke.
+    assert server.read[-1] == len(following) - len(read_ahead)
+    assert server.read[-1] < before.read[-1] and server.read[-2] + server.read[-1] == before.read[-1]
+    row = [json.loads(line) for line in (tmp_path / "a" / "turns.jsonl").read_text(encoding="utf-8").splitlines()
+           if '"warm.history"' in line][0]
+    assert row["prompt_n"] == server.read[-2] and "text" not in row and "content" not in row
+
+
+def test_a_confirmation_pressed_after_it_reads_on_from_what_was_read_ahead(tmp_path: Path,
+                                                                          monkeypatch: pytest.MonkeyPatch) -> None:
+    # The label of a Sí/No is a request of the person's too: the history before it has the same form.
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Paint"}), _say("¿Lo abro?"), _say("Abrí Paint.")],
+                         monkeypatch)
+    mind.decide(1, "abre paint")
+    mind.continue_turn(2, json.dumps({"status": "needs_confirmation"}), final=True)
+    assert mind.prefill() is True
+    mind.confirm(3, True, "Sí")
+    mind.continue_turn(4, json.dumps({"status": "completed", "verification": "readback"}))
+    assert server.prompts[-1].startswith(server.prefilled[0])
+
+
+def test_nothing_is_read_ahead_while_a_turn_waits_or_with_nothing_to_read(tmp_path: Path,
+                                                                          monkeypatch: pytest.MonkeyPatch) -> None:
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Paint"}), _call("ask_user", {"question": "¿Cuál?"})],
+                         monkeypatch)
+    assert mind.prefill() is False  # an empty conversation
+    mind.decide(1, "abre paint")
+    assert mind.prefill() is False  # its call waits for the App's result
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "readback"}))
+    assert mind.prefill() is False  # the model asked: the person's words come as that question's result
+    mind._turn, mind._beat = None, {"conv": [], "queue": []}
+    assert mind.prefill() is False  # a heartbeat is open
+    mind._beat = None
+    monkeypatch.setenv("BAXY_RENEW_PREFILL", "0")
+    assert mind.prefill() is False
+    assert server.templates == 0 and server.prefilled == []
+
+
+def test_a_read_ahead_that_fails_leaves_the_conversation_as_it_was(tmp_path: Path,
+                                                                  monkeypatch: pytest.MonkeyPatch) -> None:
+    mind, server = _mind(tmp_path, [_say("Hola."), _say("Bien.")], monkeypatch)
+    mind.decide(1, "hola")
+    kept = json.dumps(mind.conversation, ensure_ascii=False)
+    server.fail_prefill = urllib.error.URLError("refused")
+    assert mind.prefill() is False
+    assert json.dumps(mind.conversation, ensure_ascii=False) == kept
+    assert mind.decide(2, "¿cómo estás?")["reply"] == "Bien."
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [r["failure"] for r in rows if r["stage"] == "warm.history"] == ["URLError"]
+
+
+def test_the_server_reads_the_text_into_its_one_slot_and_writes_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
+    from baxy_mind.llm_server import LlmServer
+    server = LlmServer("model.gguf", "llama-server.exe")
+    server._ready.set()
+    posted: list[tuple[str, dict]] = []
+    monkeypatch.setattr(server, "_post", lambda path, body, timeout: posted.append((path, body)) or {"timings": {}})
+    server.prefill("<|im_start|>system\nX<|im_end|>\n")
+    assert posted == [("/completion", {"prompt": "<|im_start|>system\nX<|im_end|>\n", "n_predict": 1,
+                                       "temperature": 0.0, "cache_prompt": True, "id_slot": 0})]
+
+
+def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a_load(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from baxy_mind import __main__ as sidecar
+    events: list[str] = []
+    incoming = [{"type": "turn.decide", "id": 1, "text": "hola"}, {"type": "session.new", "id": 2},
+                {"type": "turn.continue", "id": 3, "observation": "{}"}, {"type": "session.load", "id": 4,
+                                                                         "conversation": []},
+                {"type": "turn.beat.end", "id": 5}, {"type": "turn.confirm", "id": 6, "approve": True, "label": "Sí"},
+                None]
+
+    class FakeServer:
+        REQUEST_SECONDS = 24.0
+        name = "model.gguf"
+        deadline = None
+
+        def __init__(self, *args, **kwargs) -> None:
+            pass
+
+        def start(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class FakeMind:
+        notice = ""
+        foresee = None
+
+        def __init__(self, *args) -> None:
+            pass
+
+        def decide(self, request_id, text, pending):
+            return {"type": "turn.result", "id": request_id}
+
+        def continue_turn(self, request_id, observation, final, beat):
+            return {"type": "turn.result", "id": request_id}
+
+        def confirm(self, request_id, approve, label):
+            return {"type": "turn.result", "id": request_id}
+
+        def new_session(self) -> None:
+            pass
+
+        def load_session(self, conversation) -> None:
+            pass
+
+        def end_beat(self) -> None:
+            pass
+
+        def prefill(self) -> bool:
+            events.append("prefill")
+            return True
+
+    class FakeSpeech:
+        def foresee(self, text, done):
+            return True
+
+        def prepare(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class FakeVoice:
+        def __init__(self, *args) -> None:
+            self.speech = FakeSpeech()
+
+        def stop(self) -> None:
+            pass
+
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "model.gguf")
+    monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", "llama-server.exe")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    monkeypatch.setattr(sidecar, "LlmServer", FakeServer)
+    monkeypatch.setattr(sidecar, "Mind", FakeMind)
+    monkeypatch.setattr(sidecar, "Voice", FakeVoice)
+    monkeypatch.setattr(sidecar.protocol, "read_message", lambda: incoming.pop(0))
+    monkeypatch.setattr(sidecar.protocol, "write_message",
+                        lambda message: events.append(str(message.get("type"))
+                                                      + (f":{message['id']}" if "id" in message else "")))
+    assert sidecar.main() == 0
+    assert [e for e in events if e != "hello"] == [
+        "turn.result:1", "prefill", "session.ready:2", "turn.result:3", "prefill", "session.ready:4", "prefill",
+        "turn.beat.ended:5", "prefill", "turn.result:6"]

@@ -62,10 +62,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.MessageAdded += OnMessageAdded;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         _viewModel.MemoryChanged += OnMemoryChanged;
+        _viewModel.EverythingForgotten += OnEverythingForgotten;
         _viewModel.StepStarted += OnStepStarted;
         _viewModel.StepCompleted += OnStepCompleted;
         _viewModel.ConfirmationAsked += OnConfirmationAsked;
         _viewModel.ConfirmationResolved += OnConfirmationResolved;
+        _viewModel.ProposalNotificationRequested += OnProposalNotified;
         _viewModel.VoicePartial += OnVoicePartial;
         _viewModel.VoiceLip += OnVoiceLip;
         _viewModel.VoiceWake += OnVoiceWake;
@@ -180,6 +182,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return await LoadSessionAsync((string?)ParseBody(body)?["id"] ?? string.Empty).ConfigureAwait(true);
             case ("POST", "/sessions/rename"):
                 return RenameSession(ParseBody(body));
+            case ("DELETE", "/sessions"):
+                return await DeleteSessionsAsync(ParseBody(body)).ConfigureAwait(true);
             case ("GET", "/catalog"):
                 return Json(FieldStepProjection.Catalog());
             case ("GET", "/triggers"):
@@ -242,6 +246,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 Publish(SurfacesEvent());
             }
 
+            // The panel's «olvidar todo» (DELETE /memory, scope all) takes the kept conversations with it.
+            if (method == "DELETE" && route == "/memory" && memory.Status == 200)
+            {
+                OnEverythingForgotten();
+            }
+
             return memory;
         }
 
@@ -292,7 +302,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private void OnStepCompleted(NativeTurnStep step)
     {
         // What left the PC: a call that reaches the internet and got to its provider (the kernel let it through).
-        string? net = step.Sent && NativeTurnLoop.ReachesTheNetwork(step.Operation, step.Arguments)
+        string? net = step.Sent && NativeTurnLoop.Has(step.Operation, step.Arguments, OperationEffects.Network)
             ? FieldStepProjection.NetWhat(step.Operation, step.Arguments)
             : null;
         JsonObject? view = FieldStepProjection.Finished(step.Id, step, net);
@@ -319,15 +329,24 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             });
         }
 
-        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4). «hecho» only for
-        // a call that completed and was verified (2026-10-22, review of the App: one that reached its provider and
-        // failed was said done too).
-        if (step is { Status: OperationStatuses.Completed, Verified: true }
+        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4), as its step ended
+        // (2026-10-22, review of the App: one that reached its provider and failed was said done too). «hecho» only for
+        // an effect read back; a state already there, an input delivered unread or one that may have run say so.
+        string? bypassed = (string?)view["status"] switch
+        {
+            "ok" => "hecho sin preguntar",
+            "same" => "sin preguntar, ya estaba así",
+            "sent" => "enviado sin preguntar, sin comprobar",
+            "read" => "leído sin preguntar",
+            "maybe" when step.Sent => "sin preguntar, puede haber corrido",
+            _ => null,
+        };
+        if (bypassed is not null
             && ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
             && FieldStepProjection.NormalModeAsks(step.Operation, step.Arguments))
         {
             string title = FieldStepProjection.Label(step.Operation, step.Arguments);
-            Publish(ItemEvent(_transcript.System("Bypass · hecho sin preguntar: " + char.ToLowerInvariant(title[0]) + title[1..])));
+            Publish(ItemEvent(_transcript.System("Bypass · " + bypassed + ": " + char.ToLowerInvariant(title[0]) + title[1..])));
         }
 
         if (step.Operation == "schedule.alarms" && step.Sent)
@@ -347,7 +366,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         } : null;
         string id = _transcript.NextId("k");
         JsonObject card = FieldStepProjection.Card(id, asked.Proposal ? "proposal" : "confirm",
-            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context);
+            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, asked.EffectStarted);
         _pendingCard = (id, asked);
         Publish(ItemEvent(_transcript.Card(card)));
     }
@@ -363,6 +382,17 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             _ => "dropped",
         };
         if (_transcript.Resolve(status, null) is { } card)
+        {
+            Publish(ItemEvent(card));
+        }
+    }
+
+    // The proposal on the card went to Windows as a notification (the person should not be spoken to): the card says
+    // so from this fact, never from the activity the view reads later.
+    private void OnProposalNotified(string question, string why, NativeTurnConfirmation asked)
+    {
+        if (_pendingCard is { } pending && ReferenceEquals(pending.Asked, asked)
+            && _transcript.Notified(pending.Id) is { } card)
         {
             Publish(ItemEvent(card));
         }
@@ -579,6 +609,38 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         return _sessions.Rename(id, title) ? Json(new JsonObject { ["ok"] = true }) : Error("session_not_found", 404);
+    }
+
+    // BAXY Renew al máximo 11.4 (identity: «se puede ver, editar y borrar entera»): every conversation goes, the one
+    // shown included, which the mind leaves for a new one first, never kept. Only by its own request, as the memory's.
+    private async Task<FieldHttpResponse> DeleteSessionsAsync(JsonObject? payload)
+    {
+        if ((string?)payload?["scope"] != "all")
+        {
+            return Error("invalid_scope", 400);
+        }
+
+        if (_viewModel.IsBusy)
+        {
+            return Error("turn_in_progress", 409);
+        }
+
+        if (!await _viewModel.StartNewUiSessionAsync(_lifetimeCancellation).ConfigureAwait(true))
+        {
+            return Error(_viewModel.IsBusy ? "turn_in_progress" : "session_not_started", 409);
+        }
+
+        int deleted = _sessions.DeleteAll();
+        StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
+        return Json(new JsonObject { ["ok"] = true, ["deleted"] = deleted });
+    }
+
+    // Memory forgot everything (the chat's memory.forget or the panel's): the kept conversations, which hold what memory
+    // calls read, go too; the one shown stays on screen and is kept again as it goes on.
+    private void OnEverythingForgotten()
+    {
+        _sessions.DeleteAll(keep: _sessionId);
+        Publish(SurfacesEvent());
     }
 
     private static string NewSessionId() => Guid.NewGuid().ToString("N")[..12];
@@ -1007,7 +1069,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         string? raw = Environment.GetEnvironmentVariable("BAXY_RENEW_CTX");
         return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value) && value > 0
             ? value
-            : 49152;
+            : 53248;
     }
 
     // A reading the PC did not give (no GPU counter, no temperature, no model process) travels as null; the view
@@ -1062,10 +1124,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.MessageAdded -= OnMessageAdded;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         _viewModel.MemoryChanged -= OnMemoryChanged;
+        _viewModel.EverythingForgotten -= OnEverythingForgotten;
         _viewModel.StepStarted -= OnStepStarted;
         _viewModel.StepCompleted -= OnStepCompleted;
         _viewModel.ConfirmationAsked -= OnConfirmationAsked;
         _viewModel.ConfirmationResolved -= OnConfirmationResolved;
+        _viewModel.ProposalNotificationRequested -= OnProposalNotified;
         _viewModel.VoicePartial -= OnVoicePartial;
         _viewModel.VoiceLip -= OnVoiceLip;
         _viewModel.VoiceWake -= OnVoiceWake;

@@ -4,9 +4,10 @@ using NUnit.Framework;
 namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
-/// Auditoría final G1/G2: «cerrame todo» asks every desktop window but BAXY's own to close, an editor or a terminal
-/// included (no application is spared by its name in code); a window that asks to save stays and is said to remain;
-/// only a window BAXY's request reached counts as closed, and one that ended without being asked is already gone.
+/// Auditoría final G1/G2: «cerrame todo» asks every desktop window but BAXY's own to close (no application is spared
+/// by a list of its own); a window that asks to save stays and is said to remain; only a window BAXY's request reached
+/// counts as closed, and one that ended without being asked is already gone. Renew al máximo (lote 4, d): the windows
+/// no act reaches (a terminal, a console, an editor, a system tool) are kept too, and said so.
 /// </summary>
 [TestFixture]
 public sealed class CloseAllTests
@@ -15,8 +16,8 @@ public sealed class CloseAllTests
     public async Task OnlyWindowsBaxyAskedCountAsClosedAndOnlyBaxysOwnAreKept()
     {
         var platform = new DesktopPlatform(
-            new("Code", Answer.Close),
-            new("WindowsTerminal", Answer.Close),
+            new("Spotify", Answer.Close),
+            new("Discord", Answer.Close),
             new("Baxy", Answer.Close),
             new("notepad", Answer.AsksToSave),
             new("vanished", Answer.RefusedButGone));
@@ -30,11 +31,45 @@ public sealed class CloseAllTests
             Assert.That(result.Found, Is.EqualTo(5));
             Assert.That(result.Kept, Is.EqualTo(1));
             Assert.That(result.KeptProcesses, Is.EqualTo(new[] { "Baxy" }));
-            Assert.That(result.Closed, Is.EqualTo(2), "Code and the terminal were asked and closed");
+            Assert.That(result.Closed, Is.EqualTo(2), "Spotify and Discord were asked and closed");
+            Assert.That(result.ProtectedKept, Is.Zero);
             Assert.That(result.AlreadyGone, Is.EqualTo(1), "the window whose request Windows refused was not BAXY's");
             Assert.That(result.Remaining, Is.EqualTo(1));
             Assert.That(result.RemainingProcesses, Is.EqualTo(new[] { "notepad" }));
             Assert.That(platform.Asked, Does.Not.Contain("Baxy"));
+        });
+    }
+
+    // Renew al máximo (lote 4, d): a console's close ends what runs in it without asking (Windows ends the processes
+    // attached to it), and an editor or a terminal is where the developer's agent lives: «cerrame todo» leaves every
+    // window an act would not reach (VisibleControlSurface.ProtectedFrom: a terminal, a console, an editor, a system
+    // configuration tool) open, and says how many and which, as it says BAXY's own.
+    [Test]
+    public async Task TheProtectedWindowsAreLeftOpenAndSaidSo()
+    {
+        var platform = new DesktopPlatform(
+            new("WindowsTerminal", Answer.Close),
+            new("cmd", Answer.Close),
+            new("powershell", Answer.Close),
+            new("Code", Answer.Close),
+            new("msconfig", Answer.Close),
+            new("notepad", Answer.Close),
+            new("Baxy", Answer.Close));
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowCloseAllResult result = await provider.CloseAllAsync(CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.Asked, Is.EqualTo(new[] { "notepad" }), "no close reached a protected window");
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Found, Is.EqualTo(7));
+            Assert.That(result.Closed, Is.EqualTo(1));
+            Assert.That(result.Remaining, Is.Zero);
+            Assert.That(result.Kept, Is.EqualTo(6));
+            Assert.That(result.KeptProcesses, Is.EqualTo(new[] { "Baxy", "cmd", "Code", "msconfig", "powershell", "WindowsTerminal" }));
+            Assert.That(result.ProtectedKept, Is.EqualTo(5), "BAXY's own is kept, not protected");
+            Assert.That(result.ProtectedProcesses, Is.EqualTo(new[] { "cmd", "Code", "msconfig", "powershell", "WindowsTerminal" }));
         });
     }
 

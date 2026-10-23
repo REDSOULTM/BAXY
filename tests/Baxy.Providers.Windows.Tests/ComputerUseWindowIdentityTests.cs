@@ -435,6 +435,70 @@ public sealed class ComputerUseWindowIdentityTests
         Assert.That(VisibleControlSurface.ProtectedFrom(process, application, described), Is.EqualTo(protectedFrom));
     }
 
+    // Renew al máximo (lote 4, c): the Control Panel applets that configure Windows itself run inside processes the
+    // person also uses (rundll32 hosts every applet, explorer every folder), so no process name protects them. The
+    // applet rundll32 runs is told by its command line (Control_RunDLL <file>.cpl); the Network Connections folder and
+    // the firewall's page by an explorer window titled with the name Windows itself gives them (read from its registry,
+    // here described). The Sound applet the person asks for stays open to acts. Only described windows.
+    private const string RunApplet = "\"C:\\WINDOWS\\system32\\rundll32.exe\" C:\\WINDOWS\\system32\\shell32.dll,Control_RunDLL ";
+    private static readonly string[] Places = ["Conexiones de red", "Firewall de Windows Defender"];
+
+    [TestCase("rundll32", "#32770", "Propiedades del sistema", RunApplet + "\"C:\\WINDOWS\\system32\\sysdm.cpl\",", true)]
+    [TestCase("rundll32.exe", "#32770", "Propiedades del sistema", RunApplet + "sysdm.cpl,,3", true)]
+    [TestCase("rundll32", "#32770", "Conexiones de red", RunApplet + "C:\\WINDOWS\\system32\\NCPA.CPL", true)]
+    [TestCase("rundll32", "#32770", "", RunApplet + "\"C:\\Windows\\System32\\Firewall.cpl\"", true)]
+    [TestCase("explorer", "CabinetWClass", "Conexiones de red", null, true)]
+    [TestCase("explorer", "CabinetWClass", "Conexiones de red - Explorador de archivos", null, true)]
+    [TestCase("explorer", "CabinetWClass", "Firewall de Windows Defender", null, true)]
+    [TestCase("explorer.exe", "CabinetWClass", "firewall de windows defender", null, true)]
+    // The contracases: the Sound applet the person asks for, the mouse's, an applet not told, a folder of the person's,
+    // a document named like the folder, a window of explorer that is no folder window.
+    [TestCase("rundll32", "#32770", "Sonido", RunApplet + "\"C:\\WINDOWS\\system32\\mmsys.cpl\",", false)]
+    [TestCase("rundll32", "#32770", "Propiedades: Mouse", RunApplet + "main.cpl", false)]
+    [TestCase("rundll32", "#32770", "Propiedades del sistema", null, false)]
+    [TestCase("explorer", "CabinetWClass", "Documentos - Explorador de archivos", null, false)]
+    [TestCase("explorer", "CabinetWClass", "Mis conexiones de red viejas", null, false)]
+    [TestCase("Notepad", "Notepad", "Conexiones de red - Bloc de notas", null, false)]
+    [TestCase("explorer", "Shell_TrayWnd", "Conexiones de red", null, false)]
+    public void AControlPanelAppletThatConfiguresWindowsIsASystemTool(
+        string process, string className, string title, string? commandLine, bool systemTool)
+    {
+        Assert.That(VisibleControlSurface.SystemToolWindow(process, className, title, commandLine, Places), Is.EqualTo(systemTool));
+    }
+
+    // A dialog an applet opens (an adapter's properties, owned by the Network Connections folder) is the applet's.
+    [Test]
+    public void ADialogOwnedByASystemToolWindowIsOneToo()
+    {
+        const nint folder = 10, properties = 20, protocol = 30, other = 40;
+        var owners = new Dictionary<nint, nint> { [properties] = folder, [protocol] = properties };
+        bool Chain(nint root) => VisibleControlSurface.SystemToolChain(
+            root, window => owners.GetValueOrDefault(window), window => window == folder);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Chain(folder), Is.True);
+            Assert.That(Chain(properties), Is.True);
+            Assert.That(Chain(protocol), Is.True);
+            Assert.That(Chain(other), Is.False);
+            Assert.That(Chain(0), Is.False);
+        });
+    }
+
+    // The names come from this Windows (the registry's localized names of the two shell folders): nothing is opened.
+    [Test]
+    public void TheSystemPlacesAreNamedByWindowsItself()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.SystemPlaces.Count(place => !string.IsNullOrWhiteSpace(place)), Is.GreaterThanOrEqualTo(2));
+            // The command line an applet is told by, read as for rundll32: this test's own process.
+            Assert.That(VisibleControlSurface.CommandLineOf(Environment.ProcessId),
+                Does.Contain(Path.GetFileNameWithoutExtension(Environment.ProcessPath)).IgnoreCase);
+            Assert.That(VisibleControlSurface.CommandLineOf(0), Is.Null);
+        });
+    }
+
     // Renew al máximo (B-CU-2): BAXY's chat is Baxy.exe's window, not the Core's (the Core shows none). With the chat in
     // front, a look or an act without a window named takes the person's window right below it, never BAXY's own; the
     // person's window in front stays the one. Only described windows: nothing on the desktop is read.

@@ -136,6 +136,11 @@ public static class OperationVisibleFacts
             payload["effectUncertain"] = true;
         }
 
+        if (outcome.ArgumentProblems.Count > 0)
+        {
+            payload["argumentProblems"] = ArgumentProblemsJson(outcome.ArgumentProblems);
+        }
+
         JsonNode? sanitized = null;
         if (!outcome.ProtectedPrivateResult
             && outcome.Result is { } result
@@ -250,12 +255,39 @@ public static class OperationVisibleFacts
         return payload.ToJsonString(JsonOptions);
     }
 
-    /// <summary>The arguments a call got wrong as the model reads them: one object per argument, name and problem.</summary>
+    /// <summary>
+    /// The arguments a call got wrong as the model reads them: one object per argument, name and problem, and the
+    /// fields that correct it when known (<c>nearest</c>, <c>allowed</c>, <c>accepted</c>, <c>oneOf</c>).
+    /// </summary>
     public static JsonArray ArgumentProblemsJson(IReadOnlyList<ArgumentProblem> problems) =>
-        new([.. problems.Select(static problem => (JsonNode?)new JsonObject
+        new([.. problems.Select(static problem =>
         {
-            ["argument"] = problem.Name,
-            ["problem"] = problem.Problem,
+            var item = new JsonObject
+            {
+                ["argument"] = problem.Name,
+                ["problem"] = problem.Problem,
+            };
+            if (problem.Nearest is { } nearest)
+            {
+                item["nearest"] = nearest;
+            }
+
+            if (problem.Allowed is { } allowed)
+            {
+                item["allowed"] = new JsonArray([.. allowed.Select(static value => (JsonNode?)value)]);
+            }
+
+            if (problem.Accepted is { } accepted)
+            {
+                item["accepted"] = new JsonArray([.. accepted.Select(static name => (JsonNode?)name)]);
+            }
+
+            if (problem.OneOf is { } oneOf)
+            {
+                item["oneOf"] = new JsonArray([.. oneOf.Select(static name => (JsonNode?)name)]);
+            }
+
+            return (JsonNode?)item;
         })]);
 
     /// <summary>

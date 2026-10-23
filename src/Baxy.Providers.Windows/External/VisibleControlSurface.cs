@@ -760,6 +760,18 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
+    /// K-2 refinada: a window where Enter may run what was typed: a terminal, a console, or an editor or IDE that hosts
+    /// one (the protected processes above, by the same exact names).
+    /// </summary>
+    internal static bool RunsWhatIsTyped(string? processName)
+    {
+        string process = (processName ?? string.Empty).Trim();
+        if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            process = process[..^4];
+        return ProtectedProcesses.Contains(process);
+    }
+
+    /// <summary>
     /// A developer's or BAXY's own process that the request did not name: <paramref name="application"/> is neither
     /// its process name nor its executable's <paramref name="description"/>, folded. BAXY's own and the system's
     /// configuration tools (<see cref="SystemTool"/>) are always protected.
@@ -805,7 +817,8 @@ internal static partial class VisibleControlSurface
         // Ronda final 21: a system configuration tool is refused even on a handle a named look once opened to acts, and
         // judged by the process a view names too (a packaged app's, as Windows Security's SecHealthUI, hosted in the
         // ApplicationFrameHost frame whose own process is the frame's).
-        return SystemTool(process) || SystemTool(ViewProcess(root).ProcessName)
+        // Renew al máximo (lote 4, c): and a Control Panel applet that configures Windows, inside rundll32 or explorer.
+        return SystemTool(process) || SystemTool(ViewProcess(root).ProcessName) || SystemToolWindow(root)
             || (ProtectedFrom(process, null) && !NamedProtectedRoots.ContainsKey(root));
     }
 
@@ -912,25 +925,6 @@ internal static partial class VisibleControlSurface
         }
 
         return builder.ToString();
-    }
-
-    /// <summary>
-    /// The visible ApplicationFrameHost frame that hosts this process (a packaged app such as the Calculator, the
-    /// Clock or Settings draws inside a frame of another process and has no top-level window of its own); 0 when
-    /// none shows it. A cloaked frame (a suspended app) is not on screen.
-    /// </summary>
-    internal static nint FrameHosting(uint processId)
-    {
-        nint frame = 0;
-        EnumWindowsProc callback = (window, outerParameter) =>
-        {
-            if (!IsVisibleFrame(window) || !FrameHosts(window, owner => owner == processId))
-                return true;
-            frame = window;
-            return false;
-        };
-        _ = EnumWindows(callback, nint.Zero);
-        return frame;
     }
 
     /// <summary>

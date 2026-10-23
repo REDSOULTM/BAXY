@@ -1,7 +1,14 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Baxy.Contracts;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
+using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
@@ -253,6 +260,141 @@ public sealed class ComputerUsePressedNameTests
         int end = script.IndexOf("\nfunction ", start + 10, StringComparison.Ordinal);
         return script[start..(end < 0 ? script.Length : end)];
     }
+
+    // Renew al máximo (guarda diálogo destructivo): falsedades F013, the model pressed «Sí» in «Confirmar Guardar como:
+    // prueba.txt ya existe. ¿Quieres reemplazarlo?» and the file was written over unasked: the policy judged only the
+    // label. Through the engine with Core's handler and the provider, on the view of that dialog (an owned window): «Sí»
+    // waits for the person's yes and reaches nothing; «No» goes straight (the test's gate refuses every act that goes,
+    // so nothing is pressed either way).
+    [TestCase("Sí", true)]
+    [TestCase("No", false)]
+    public void TheYesOfADialogThatReplacesAFileAsksAndItsNoGoesStraight(string label, bool asks)
+    {
+        (OperationResponse response, int acted, IReadOnlyList<string> commands) = ClickInDialog(
+            "Confirmar Guardar como",
+            [("Text", "prueba.txt ya existe. ¿Quieres reemplazarlo?"), ("Button", "Sí"), ("Button", "No")],
+            label);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(commands.Any(command => command.Contains("\"cmd\":\"click\"", StringComparison.Ordinal)), Is.False);
+            if (asks)
+            {
+                Assert.That(response.ErrorCode, Is.EqualTo("confirmation_required"));
+                Assert.That(acted, Is.Zero, "nothing goes before the yes");
+            }
+            else
+            {
+                Assert.That(response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+                Assert.That(acted, Is.EqualTo(1));
+            }
+        });
+    }
+
+    // The person's yes, given to that same click, lets it go.
+    [Test]
+    public void TheYesGivenToThatClickLetsItGo()
+    {
+        (OperationResponse response, int acted, _) = ClickInDialog(
+            "Confirmar Guardar como",
+            [("Text", "prueba.txt ya existe. ¿Quieres reemplazarlo?"), ("Button", "Sí"), ("Button", "No")],
+            "Sí",
+            confirm: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+            Assert.That(acted, Is.EqualTo(1));
+        });
+    }
+
+    // Contracasos: saving destroys nothing. «Guardar» under «¿Guardar los cambios?», and «Sí» under «¿Quieres guardar
+    // los cambios?», go straight.
+    [TestCase("Guardar", "¿Guardar los cambios en Sin título?", "Guardar", "No guardar")]
+    [TestCase("Sí", "¿Quieres guardar los cambios?", "Sí", "No")]
+    public void TheAnswerOfADialogThatSavesGoesStraight(string label, string question, string first, string second)
+    {
+        (OperationResponse response, int acted, _) = ClickInDialog(
+            "Bloc de notas", [("Text", question), ("Button", first), ("Button", second), ("Button", "Cancelar")], label);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+            Assert.That(acted, Is.EqualTo(1));
+        });
+    }
+
+    // The view of a dialog owned by another window, taken by the adapter as a look takes it, then the click through the
+    // engine. Synchronous: the windows are made and destroyed by this thread, which answers their messages meanwhile.
+    private static (OperationResponse Response, int Acted, IReadOnlyList<string> Commands) ClickInDialog(
+        string title, (string Kind, string Name)[] shown, string label, bool confirm = false)
+    {
+        nint owner = CreateWindowEx(0x08000080, "STATIC", "BAXY dialog fixture owner", 0x90000000u, -31000, -31000, 400, 300, 0, 0, 0, 0);
+        nint dialog = CreateWindowEx(0x08000080, "STATIC", title, 0x90000000u, -31000, -31000, 300, 120, owner, 0, 0, 0);
+        Assert.That(owner != 0 && dialog != 0, Is.True, $"CreateWindowEx failed: {Marshal.GetLastPInvokeError()}");
+        try
+        {
+            string controls = string.Join(",", shown.Select((control, k) =>
+                "{\"kind\":\"" + control.Kind + "\",\"name\":" + JsonSerializer.Serialize(control.Name) + ",\"id\":\"9." + k
+                + "\",\"state\":\"\",\"value\":null,\"rect\":{\"x\":10,\"y\":" + (10 + 30 * k) + ",\"w\":80,\"h\":24},\"repeated\":0}"));
+            var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
+                "{\"ok\":true,\"error\":\"\",\"hwnd\":" + (long)dialog + ",\"window\":" + JsonSerializer.Serialize(title)
+                + ",\"controls\":[" + controls + "],\"controlCount\":" + shown.Length + ",\"focused\":null}");
+            var adapter = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _) => ValueTask.FromResult(dialog));
+            _ = ComputerUseSpeedTests.Pumped(() => adapter.InvokeAsync(
+                "input.visible.controls", JsonDocument.Parse("""{"application":"el diálogo"}""").RootElement.Clone(),
+                CancellationToken.None).AsTask());
+            int acted = 0;
+            using var provider = new WindowsExternalCapabilityProvider(
+                [adapter], actRefused: (_, _) => { acted++; return true; });
+            var handler = new ExternalCapabilityHandler("input.visible.click", provider);
+            OperationResponse response = ComputerUseSpeedTests.Pumped(() => ClickThroughEngine(handler, label, confirm));
+            return (response, acted, worker.Commands);
+        }
+        finally
+        {
+            _ = DestroyWindow(dialog);
+            _ = DestroyWindow(owner);
+        }
+    }
+
+    private static async Task<OperationResponse> ClickThroughEngine(IOperationHandler handler, string label, bool confirm)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-dialog-yes-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+                Path.Combine(root, "journal.jsonl"),
+                new JournalHmacAuthenticator(RandomNumberGenerator.GetBytes(JournalHmacAuthenticator.KeyLength)));
+            using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+            var request = new OperationRequest(
+                ProtocolTypes.OperationRequest,
+                Guid.NewGuid().ToString("D"),
+                Guid.NewGuid().ToString("D"),
+                Guid.NewGuid().ToString("D"),
+                "input.visible.click",
+                JsonSerializer.SerializeToElement(new { label }));
+            OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
+            return confirm && response.ErrorCode == "confirmation_required"
+                ? await engine.ExecuteAsync(
+                    request with { ConfirmationToken = response.Result!.Value.GetProperty("token").GetString() },
+                    CancellationToken.None)
+                : response;
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [DllImport("user32.dll", EntryPoint = "CreateWindowExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+    private static extern nint CreateWindowEx(uint extendedStyle, string className, string title, uint style, int x, int y,
+        int width, int height, nint parent, nint menu, nint instance, nint parameter);
+
+    [DllImport("user32.dll", ExactSpelling = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool DestroyWindow(nint window);
 
     private static string WorkerPath()
     {

@@ -29,7 +29,12 @@ internal sealed class WindowResolveHandler(
             || (hasApplication && (invocation.Arguments.TryGetProperty("byTitle", out _)
                 || invocation.Arguments.TryGetProperty("offset", out _))))
         {
-            return OperationOutcome.Failure(WindowControlErrorCodes.InvalidSelector);
+            // Al máximo, flujos (P252, 22 of 27 runs: «pon esta ventana a la izquierda» → window.resolve {}): with no
+            // selector, the person's window in front (BAXY's own left out) is window_active's, as a fact.
+            return !hasApplication && !hasProcess
+                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.SelectorNext)
+                ? OperationOutcome.Failure(WindowControlErrorCodes.InvalidSelector, NoSelector())
+                : OperationOutcome.Failure(WindowControlErrorCodes.InvalidSelector);
         }
         int limit = invocation.Arguments.TryGetProperty("limit", out JsonElement value) ? value.GetInt32() : 20;
         int offset = invocation.Arguments.TryGetProperty("offset", out JsonElement offsetValue) ? offsetValue.GetInt32() : 0;
@@ -57,6 +62,21 @@ internal sealed class WindowResolveHandler(
             && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WindowCandidates)
             ? OperationOutcome.Failure(code, Candidates(_desktop(), _browser()))
             : OperationOutcome.Failure(code);
+    }
+
+    private static JsonElement NoSelector()
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("next", "window_resolve takes exactly one selector, applicationName or process; the window "
+                + "the person has in front (BAXY's own left out) and its windowId are given by window_active");
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 
     // The processes of web browsers, by their executables (identity of the program, never what the person said).
@@ -162,12 +182,12 @@ internal sealed class WindowActionHandler(string operation, WindowControlAction 
 
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window))
-            : OperationOutcome.Failure(
-                result.ErrorCode ?? "window_action_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
+            : WindowControlResultJson.Failure(
+                result.ErrorCode ?? "window_action_failed", result.EffectMayHaveOccurred, result.StateAfter);
     }
 }
 
-internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperationHandler, IInvocationRiskAssessor
+internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperationHandler, IInvocationPreflight
 {
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("app.close");
 
@@ -175,13 +195,38 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
     // no document of the person (data: documentless_applications.v1.json) closes as a low reversible act; any other
     // window, or one the provider cannot place, keeps work_loss and asks. v3 r22 uso real: the provider also counts
     // an application whose content lives in the person's account and a window BAXY launched and never wrote into.
-    public OperationRisk? AssessInvocationRisk(JsonElement arguments) =>
-        arguments.ValueKind == JsonValueKind.Object
-        && arguments.TryGetProperty("windowId", out JsonElement windowId)
-        && windowId.ValueKind == JsonValueKind.String
-        && provider.HoldsNoDocument(windowId.GetString()!)
-            ? OperationRisk.Reversible
-            : null;
+    // Al máximo, flujos: an application asked for by its name that has no window to close (app_not_running) is that
+    // failure before any yes; one all of whose windows hold no document closes as one such window does («cierra
+    // discord» asked every time), and one window with a document, or one the provider cannot place, keeps the yes.
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object)
+            return InvocationPreflightResult.Proceed;
+        if (arguments.TryGetProperty("windowId", out JsonElement windowId) && windowId.ValueKind == JsonValueKind.String)
+        {
+            return provider.HoldsNoDocument(windowId.GetString()!)
+                ? InvocationPreflightResult.Lowered(OperationRisk.Reversible)
+                : InvocationPreflightResult.Proceed;
+        }
+
+        if (!arguments.TryGetProperty("appId", out JsonElement appId) || appId.ValueKind != JsonValueKind.String
+            || !ApplicationIds.IsValidRequest(appId.GetString()!))
+            return InvocationPreflightResult.Proceed;
+        ApplicationWindows found = await ApplicationWindowCloser.ResolveAsync(provider, appId.GetString()!, cancellationToken)
+            .ConfigureAwait(false);
+        if (found.ErrorCode is { } missing)
+        {
+            return InvocationPreflightResult.Fails(found.Background.Count == 0
+                ? OperationOutcome.Failure(missing)
+                : OperationOutcome.Failure(missing, ApplicationReceipt(appId.GetString()!,
+                    new ApplicationWindowsClosed(missing, 0, found.Background, [], false, 0, 0))));
+        }
+        return found.Windows.All(window => provider.HoldsNoDocument(window.WindowId))
+            ? InvocationPreflightResult.Lowered(OperationRisk.Reversible)
+            : InvocationPreflightResult.Proceed;
+    }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
     {
@@ -195,7 +240,7 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             && appValue.ValueKind == JsonValueKind.String;
         if (byWindow == byApplication)
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, arguments, ArgumentProblem.ExactlyOneOf("appId", "windowId"));
         }
 
         if (byApplication)
@@ -216,8 +261,8 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
 
         if (!result.Succeeded || !result.Verified || result.ProcessId is null)
         {
-            return OperationOutcome.Failure(
-                result.ErrorCode ?? "app_close_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
+            return WindowControlResultJson.Failure(
+                result.ErrorCode ?? "app_close_failed", result.EffectMayHaveOccurred, result.StateAfter);
         }
 
         // Auditoría D7: «closed» only for a window that went away after BAXY's close; one already gone, or hidden instead
@@ -238,7 +283,8 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             .ConfigureAwait(false);
         if (closing.ErrorCode is { } stopped)
         {
-            return closing.Frames == 0
+            // Renew al máximo (auditoría de flujos): with no window, the processes running in the background are said.
+            return closing.Frames == 0 && closing.ProcessIds.Count == 0
                 ? OperationOutcome.Failure(stopped)
                 : OperationOutcome.Failure(stopped, ApplicationReceipt(appId, closing),
                     effectMayHaveOccurred: closing.EffectMayHaveOccurred);
@@ -420,8 +466,11 @@ internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : I
             if (result.Unread > 0) writer.WriteNumber("unreadWindows", result.Unread);
             // Ronda final 11 (regla 3): windows Windows hides (another desktop) were not closed: no «all».
             if (result.Cloaked > 0) writer.WriteNumber("cloakedWindows", result.Cloaked);
+            // Renew al máximo: a protected window (a terminal, an editor, a system tool) is never asked to close and
+            // stays open, yet allClosed said true beside it. BAXY's own windows are not counted among the protected.
             if (result.Unread == 0 && result.Cloaked == 0)
-                writer.WriteBoolean("allClosed", result.Remaining == 0 && result.Hidden == 0);
+                writer.WriteBoolean(
+                    "allClosed", result.Remaining == 0 && result.Hidden == 0 && result.ProtectedKept == 0);
             writer.WriteString("authority", "win32_desktop_windows_close_postread");
             writer.WriteEndObject();
         }
@@ -451,8 +500,8 @@ internal sealed class WindowBoundsHandler(string operation, IWindowControlProvid
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Unchanged(
                 WindowControlResultJson.Serialize(result.Window), result.AlreadyReached))
-            : OperationOutcome.Failure(
-                result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
+            : WindowControlResultJson.Failure(
+                result.ErrorCode ?? "window_bounds_failed", result.EffectMayHaveOccurred, result.StateAfter);
     }
 }
 
@@ -471,7 +520,7 @@ internal sealed class WindowSnapHandler(IWindowControlProvider provider) : IOper
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Unchanged(WindowControlResultJson.Serialize(
                 result.Window, side, result.LargerThanRequested), result.AlreadyReached))
-            : OperationOutcome.Failure(
+            : WindowControlResultJson.SpentWindowId(result.ErrorCode ?? string.Empty) ?? OperationOutcome.Failure(
                 result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
     }
 }
@@ -559,6 +608,9 @@ internal static class WindowControlResultJson
         return document.RootElement.Clone();
     }
 
+    internal const string UnchangedNext = "it already was so before this call: it is as asked, and this call changed "
+        + "nothing";
+
     // Ronda final: the window already was as asked and nothing was sent: the model reads changed:false.
     public static JsonElement Unchanged(JsonElement result, bool alreadyReached)
     {
@@ -567,9 +619,68 @@ internal static class WindowControlResultJson
         var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(result.GetRawText())!;
         unchanged["changed"] = false;
         // BAXY Renew cu (C13 en el PC): «changed false» was read as a failure («Word no se pudo poner a la derecha»).
-        unchanged["next"] = "it already was so: done, nothing needed to change";
+        // Auditoría de falsedades: «done» is the answer to «¿ya lo hiciste?» as something this call did; it is the
+        // window's state from before the call, already the one asked.
+        unchanged["next"] = UnchangedNext;
         using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
         return document.RootElement.Clone();
+    }
+
+    // Auditoría de falsedades (F001, nb-t2-C s0): a windowId is used up by the window action it is given to (the action
+    // gives back a new one) and ends after 5 minutes. A window.focus with the id of an earlier focus failed
+    // invalid_or_expired_window_id with Steam still open, and BAXY told «la ventana se cerró». The failure says what
+    // the code means and that the window itself was neither touched nor read; the code stays.
+    internal const string SpentWindowIdNext = "nothing was done to the window: this windowId cannot be used again (each "
+        + "window action uses up the windowId it is given and gives back a new one, and any windowId ends after 5 "
+        + "minutes); the window itself was not looked at, so whether it is still open is not known: window_resolve "
+        + "gives its windowId now if it is";
+
+    public static OperationOutcome? SpentWindowId(string errorCode)
+    {
+        if (errorCode != WindowControlErrorCodes.InvalidOrExpiredWindowId
+            || !Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WindowIdSpent))
+            return null;
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("next", SpentWindowIdNext);
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return OperationOutcome.Failure(errorCode, document.RootElement.Clone());
+    }
+
+    // Renew al máximo (8.3): an ambiguous failure (the act reached the window and its verification did not hold)
+    // carries the window as the provider's one read found it after, so the mind can say how it stayed instead of a
+    // bare «could not». Still a failure with its code and uncertainty; without that read, the bare failure.
+    public static OperationOutcome Failure(string errorCode, bool effectMayHaveOccurred, WindowStateAfter? stateAfter)
+    {
+        if (SpentWindowId(errorCode) is { } spent)
+            return spent;
+        if (!effectMayHaveOccurred || stateAfter is null)
+            return OperationOutcome.Failure(errorCode, effectMayHaveOccurred: effectMayHaveOccurred);
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteStartObject("stateAfter");
+            writer.WriteBoolean("present", stateAfter.Present);
+            writer.WriteBoolean("hidden", stateAfter.Hidden);
+            // A window gone, or hidden, has no state nor bounds read: only what the read gave is said.
+            if (stateAfter.State is not null) writer.WriteString("state", stateAfter.State);
+            if (stateAfter.Foreground is bool foreground) writer.WriteBoolean("foreground", foreground);
+            if (stateAfter.X is int x) writer.WriteNumber("x", x);
+            if (stateAfter.Y is int y) writer.WriteNumber("y", y);
+            if (stateAfter.Width is int width) writer.WriteNumber("width", width);
+            if (stateAfter.Height is int height) writer.WriteNumber("height", height);
+            writer.WriteBoolean("requestedStateReached", stateAfter.RequestedStateReached);
+            writer.WriteString("authority", stateAfter.Authority);
+            writer.WriteEndObject();
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return OperationOutcome.Failure(errorCode, document.RootElement.Clone(), effectMayHaveOccurred: true);
     }
 
     public static JsonElement Serialize(WindowCandidate window)
@@ -607,6 +718,8 @@ internal static class WindowControlResultJson
             writer.WriteNumber("zOrder", zOrder);
         if (window.Topmost)
             writer.WriteBoolean("topmost", true);
+        if (window.OpenedByBaxy is bool opened)
+            writer.WriteBoolean("openedByBaxy", opened);
         if (window.WorkAreaWidth is int workWidth && window.WorkAreaHeight is int workHeight)
         {
             writer.WriteNumber("workAreaWidth", workWidth);

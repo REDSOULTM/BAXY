@@ -81,6 +81,92 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, archivos): a subdirectory reached through a link part way («AppData\Local\
+    // Application Data» is Windows' own junction back to AppData\Local) is refused like one that is itself a link; only
+    // the last part was checked, so BAXY's area was listed and its confirmation-mode edited to bypass through it.
+    [Test]
+    public async Task ASubdirectoryThroughALinkPartWayIsRefused()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string local = Path.Combine(home, "AppData", "Local");
+        string privateArea = Path.Combine(local, "BAXY");
+        string mode = Path.Combine(privateArea, "1", "confirmation-mode");
+        Directory.CreateDirectory(Path.GetDirectoryName(mode)!);
+        await File.WriteAllTextAsync(mode, "normal");
+        _ = Baxy.Tests.NtfsTestJunction.Create(Path.Combine(local, "Application Data"), local);
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin,
+            [privateArea]);
+
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find", Json(
+            """{"folder":"home","subdirectory":"AppData/Local/Application Data/BAXY/1"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"home","subdirectory":"AppData/Local/Application Data/BAXY/1","fileName":"confirmation-mode","oldText":"normal","newText":"bypass"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.ErrorCode, Is.EqualTo("known_subdirectory_reparse_point"));
+            Assert.That(edited.ErrorCode, Is.EqualTo("known_subdirectory_reparse_point"));
+            Assert.That(File.ReadAllText(mode), Is.EqualTo("normal"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, archivos): «¿qué hay en C:\Users\ana\Documents?» with the folder's own full
+    // path as subdirectory is the folder itself; it was refused as known_path_outside_folder, a path outside it.
+    [Test]
+    public async Task TheKnownFolderItselfNamedByItsFullPathIsTheFolder()
+    {
+        using TemporaryDirectory temporary = new();
+        string documents = Path.Combine(temporary.Path, "Documentos");
+        Directory.CreateDirectory(documents);
+        await File.WriteAllTextAsync(Path.Combine(documents, "informe.txt"), "hola");
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["documents"] = [documents] },
+            new FolderRecycleBin(Path.Combine(temporary.Path, "bin")), []);
+
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find", Json(JsonSerializer.Serialize(
+            new { folder = "documents", subdirectory = documents + Path.DirectorySeparatorChar })), CancellationToken.None);
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(JsonSerializer.Serialize(
+            new { folder = "documents", subdirectory = documents, fileName = "informe.txt" })), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed.Verified, Is.True, listed.ErrorCode);
+            Assert.That(listed.Result?.GetProperty("entries")[0].GetProperty("name").GetString(), Is.EqualTo("informe.txt"));
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("hola"));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, archivos): a folder that holds BAXY's own area («Local» under AppData) is not
+    // sent to the Recycle Bin by name: B-SYS-1 refused the area itself, and the folder around it took it all the same.
+    [Test]
+    public async Task AFolderHoldingBaxysOwnStateIsNotTrashed()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string privateArea = Path.Combine(home, "AppData", "Local", "BAXY");
+        string mode = Path.Combine(privateArea, "1", "confirmation-mode");
+        Directory.CreateDirectory(Path.GetDirectoryName(mode)!);
+        await File.WriteAllTextAsync(mode, "normal");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin,
+            [privateArea]);
+
+        ExternalCapabilityReceipt trashed = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"home","subdirectory":"AppData","fileName":"Local"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(trashed.ErrorCode, Is.EqualTo("path_reserved"));
+            Assert.That(trashed.EffectObserved, Is.False);
+            Assert.That(File.ReadAllText(mode), Is.EqualTo("normal"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];
@@ -109,6 +195,58 @@ public sealed class KnownFileToolsTests
             catch (IOException) { }
             catch (UnauthorizedAccessException) { }
         }
+    }
+
+    // BAXY Renew al máximo W5 (velocidad): a bare name found nowhere is walked once, keeping the files with its stem on
+    // the way; the candidates are the ones the second walk gave, in its order, cut where it cut them. Found more than
+    // CandidatesShown times, the walk stops where the name's own walk stopped.
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(7)]
+    public async Task ANameFoundNowhereOrTooOftenGivesTheCandidatesOfTheWalksItReplaces(int exact)
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, _) = Folders(temporary);
+        for (int i = 0; i < 8; i++)
+        {
+            string folder = Path.Combine(i % 2 == 0 ? desktop : documents, $"sub{i}");
+            Directory.CreateDirectory(folder);
+            await File.WriteAllTextAsync(Path.Combine(folder, i % 3 == 0 ? "informe.docx" : "informe.pdf"), "x");
+            if (i < exact)
+                await File.WriteAllTextAsync(Path.Combine(folder, "informe"), "y");
+        }
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"all_known","fileName":"informe"}"""), CancellationToken.None);
+
+        // The walks it replaces: the name's own, then (none found) the stem's, each the first six in walk order.
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true, IgnoreInaccessible = true, AttributesToSkip = FileAttributes.ReparsePoint,
+            MaxRecursionDepth = 12,
+        };
+        (string Folder, string Path)[] walk = [.. new[] { ("desktop", desktop), ("documents", documents) }
+            .SelectMany(root => Directory.EnumerateFiles(root.Item2, "*", options)
+                .Select(file => (root.Item1, Path.GetRelativePath(root.Item2, file))))];
+        (string, string)[] named = [.. walk.Where(item => Path.GetFileName(item.Path) == "informe").Take(6)];
+        (string, string)[] stems = [.. walk.Where(item => Path.GetFileNameWithoutExtension(item.Path) == "informe").Take(6)];
+        (string, string)[] expected = named.Length > 1 ? named : stems;
+        if (exact == 1)
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("y"));
+            return;
+        }
+
+        JsonElement[] candidates = [.. read.Result!.Value.GetProperty("candidates").EnumerateArray()];
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.ErrorCode, Is.EqualTo(exact > 1 ? "known_file_ambiguous" : "known_file_not_found"));
+            Assert.That(candidates.Select(item => (item.GetProperty("folder").GetString()!,
+                item.GetProperty("relativePath").GetString()!)), Is.EqualTo(expected.Take(5)));
+            Assert.That(read.Result!.Value.TryGetProperty("candidatesTruncated", out JsonElement cut) && cut.GetBoolean(),
+                Is.EqualTo(expected.Length > 5));
+        });
     }
 
     private static (WindowsKnownFileAdapter Adapter, string Desktop, string Documents, FolderRecycleBin Bin) Folders(
@@ -292,6 +430,41 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (E027): found nowhere in the folders walked, the result says nothing else was searched and which
+    // configured folder searches more (the answer was «no lo encontré en ninguna carpeta de tu PC»); with
+    // BAXY_AYUDAS=none, the folders walked alone.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AFileFoundNowhereSaysNothingElseWasSearched(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string desktop = Path.Combine(home, "desktop");
+        Directory.CreateDirectory(Path.Combine(home, "BAXY-bench"));
+        Directory.CreateDirectory(desktop);
+        await File.WriteAllTextAsync(Path.Combine(home, "BAXY-bench", "viejo.txt"), "x");
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]>
+        {
+            ["desktop"] = [desktop],
+            ["home"] = [home],
+        }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
+
+        ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"viejo.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(missing.Result!.Value.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("viejo.txt is not in desktop, subfolders included; nothing else "
+                    + "on the PC was searched; folder \"home\" searches more"));
+            }
+        });
+    }
+
     // BAXY Renew (notebook): a name found nowhere says the folders walked; found twice, the places, as file.read
     // gives them; neither sends anything to the bin.
     [Test]
@@ -324,6 +497,35 @@ public sealed class KnownFileToolsTests
                     ("documents", Path.Combine("viejas", "notas.txt"), "notas.txt"),
                 }));
             Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
+    // Al máximo, flujos («¿Borro viejo.txt?» → «sí» → «no existe»): the name is looked up before the person is asked;
+    // none or several is that refusal now (with its places), one leaves the call to ask; the read trashes nothing.
+    [Test]
+    public async Task TheReadBeforeTheYesRefusesANameThatIsNotThereOnce()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, FolderRecycleBin bin) = Folders(temporary);
+        await File.WriteAllTextAsync(Path.Combine(desktop, "notas.txt"), "x");
+        await File.WriteAllTextAsync(Path.Combine(documents, "notas.txt"), "x");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "viejo.txt"), "x");
+
+        ExternalCapabilityReceipt? missing = await adapter.PreflightAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"nada.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt? ambiguous = await adapter.PreflightAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"notas.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt? one = await adapter.PreflightAsync(
+            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"viejo.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing?.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(ambiguous?.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+            Assert.That(ambiguous?.Result?.GetProperty("candidates").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(one, Is.Null);
+            Assert.That(bin.Recycled, Is.Empty);
+            Assert.That(File.Exists(Path.Combine(desktop, "viejo.txt")), Is.True);
         });
     }
 
@@ -553,6 +755,207 @@ public sealed class KnownFileToolsTests
             Assert.That(Directory.GetFiles(otherDocuments), Is.EqualTo(new[] { kept }));
             Assert.That(encoding.ErrorCode, Is.EqualTo("known_text_encoding_unsupported"));
             Assert.That(File.ReadAllBytes(Path.Combine(documents, "ansi.txt")), Is.EqualTo(ansi));
+        });
+    }
+
+    // Renew al máximo (velocidad): a clock that stands still for the first files a walk looks at and then jumps past
+    // its time limit, so a test stops the walk where it wants.
+    private static Func<DateTime> StopAfter(int files)
+    {
+        DateTime start = new(2026, 10, 23, 12, 0, 0, DateTimeKind.Utc);
+        int calls = 0;
+        // The first call sets the deadline; each file looked at asks once more.
+        return () => calls++ <= files ? start : start.AddHours(1);
+    }
+
+    private static WindowsKnownFileAdapter Home(string home, Func<DateTime>? utcNow = null) =>
+        new(new Dictionary<string, string[]> { ["home"] = [home] },
+            new FolderRecycleBin(Path.Combine(Path.GetDirectoryName(home)!, "bin"), true), utcNow: utcNow);
+
+    // e2e pc-lote (notas.txt in home): file.read walked the whole profile with no limit (12-83 s) to refuse two copies
+    // seen at once. With file.find's limit the walk stops, and what it says is only what it walked.
+    [Test]
+    public async Task ABareNameFoundOnceBeforeTheLimitIsReadAsTheOneSeenNotTheOnlyOne()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "sub"));
+        await File.WriteAllTextAsync(Path.Combine(home, "notas.txt"), "arriba");
+        await File.WriteAllTextAsync(Path.Combine(home, "sub", "notas.txt"), "abajo");
+
+        ExternalCapabilityReceipt stopped = await Home(home, StopAfter(1)).InvokeAsync(
+            "file.read", Json("""{"folder":"home","fileName":"notas.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt whole = await Home(home).InvokeAsync(
+            "file.read", Json("""{"folder":"home","fileName":"notas.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stopped.ErrorCode, Is.Null);
+            JsonElement result = stopped.Result!.Value;
+            Assert.That(result.GetProperty("text").GetString(), Is.EqualTo("arriba"));
+            Assert.That(result.GetProperty("relativePath").GetString(), Is.EqualTo("notas.txt"));
+            Assert.That(result.GetProperty("onlyFileOfThatName").GetBoolean(), Is.False);
+            Assert.That(result.GetProperty("searchScope").GetProperty("timeLimitReached").GetBoolean(), Is.True);
+            Assert.That(result.GetProperty("searchScope").GetProperty("timeLimitSeconds").GetDouble(), Is.EqualTo(8));
+            Assert.That(whole.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+            Assert.That(whole.Result!.Value.TryGetProperty("searchScope", out _), Is.False);
+        });
+    }
+
+    // A whole walk says what it said before: a read of the one file of that name carries no walk facts.
+    [Test]
+    public async Task AWholeWalkReadsAsBefore()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "sub"));
+        await File.WriteAllTextAsync(Path.Combine(home, "sub", "registro.log"), "evento 1");
+
+        ExternalCapabilityReceipt read = await Home(home).InvokeAsync(
+            "file.read", Json("""{"folder":"home","fileName":"registro.log"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.ErrorCode, Is.Null);
+            Assert.That(read.Result!.Value.GetProperty("text").GetString(), Is.EqualTo("evento 1"));
+            Assert.That(read.Result!.Value.TryGetProperty("relativePath", out _), Is.False);
+            Assert.That(read.Result!.Value.TryGetProperty("onlyFileOfThatName", out _), Is.False);
+            Assert.That(read.Result!.Value.TryGetProperty("searchScope", out _), Is.False);
+        });
+    }
+
+    // Two seen before the limit are ambiguous (that much is proven), and the places are the ones seen so far.
+    [Test]
+    public async Task TwoSeenBeforeTheLimitAreAmbiguousAndSaySoFar()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        foreach (string folder in new[] { "a", "b", Path.Combine("c", "d") })
+        {
+            Directory.CreateDirectory(Path.Combine(home, folder));
+            await File.WriteAllTextAsync(Path.Combine(home, folder, "notas.txt"), folder);
+        }
+
+        ExternalCapabilityReceipt stopped = await Home(home, StopAfter(2)).InvokeAsync(
+            "file.read", Json("""{"folder":"home","fileName":"notas.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stopped.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+            JsonElement result = stopped.Result!.Value;
+            Assert.That(result.GetProperty("candidates").EnumerateArray()
+                    .Select(item => item.GetProperty("relativePath").GetString()),
+                Is.EqualTo(new[] { Path.Combine("a", "notas.txt"), Path.Combine("b", "notas.txt") }));
+            Assert.That(result.GetProperty("searchScope").GetProperty("timeLimitReached").GetBoolean(), Is.True);
+        });
+    }
+
+    // None in what was walked is never «not there»: the walk stopped, and the rest of the folder was not searched.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task NoneBeforeTheLimitSaysTheRestWasNotSearched(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "lejos"));
+        await File.WriteAllTextAsync(Path.Combine(home, "otro.txt"), "x");
+        await File.WriteAllTextAsync(Path.Combine(home, "lejos", "notas.txt"), "x");
+
+        ExternalCapabilityReceipt stopped = await Home(home, StopAfter(1)).InvokeAsync(
+            "file.read", Json("""{"folder":"home","fileName":"notas.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt nowhere = await Home(home).InvokeAsync(
+            "file.read", Json("""{"folder":"home","fileName":"nada.txt"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stopped.ErrorCode, Is.EqualTo("known_file_not_found"));
+            JsonElement result = stopped.Result!.Value;
+            Assert.That(result.GetProperty("searchScope").GetProperty("timeLimitReached").GetBoolean(), Is.True);
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("the search of home stopped at its 8 s limit: notas.txt is not "
+                    + "in the part walked, and the rest was not searched; a subdirectory or the relativePath file_find "
+                    + "gives looks only there"));
+            }
+            Assert.That(nowhere.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(nowhere.Result!.Value.GetProperty("searchScope").TryGetProperty("timeLimitReached", out _),
+                Is.False);
+            Assert.That(nowhere.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
+    // A name that is nowhere gives its stems from the same walk (it walked twice: once for the name, once for them).
+    [Test]
+    public async Task TheStemsOfANameThatIsNowhereComeFromTheSameWalk()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "sub"));
+        await File.WriteAllTextAsync(Path.Combine(home, "sub", "notas.md"), "x");
+        int calls = 0;
+        DateTime start = DateTime.UtcNow;
+
+        ExternalCapabilityReceipt missing = await Home(home, () => { calls++; return start; }).InvokeAsync(
+            "file.read", Json("""{"folder":"home","fileName":"notas"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(missing.Result!.Value.GetProperty("candidates").EnumerateArray()
+                .Select(item => item.GetProperty("relativePath").GetString()), Is.EqualTo(new[]
+                {
+                    Path.Combine("sub", "notas.md"),
+                }));
+            // One deadline and one look at the one file: a single walk.
+            Assert.That(calls, Is.EqualTo(2));
+        });
+    }
+
+    // An edit of the one seen before the limit writes nothing: a deeper copy that was not walked may be the one meant.
+    // It names the one seen, says the walk stopped and (aid search_scope) how to edit it; its path edits it.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnEditOfTheOneSeenBeforeTheLimitChangesNothingAndNamesIt(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "sub"));
+        await File.WriteAllTextAsync(Path.Combine(home, "notas.txt"), "lunes");
+        await File.WriteAllTextAsync(Path.Combine(home, "sub", "notas.txt"), "lunes");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true);
+        var adapter = new WindowsKnownFileAdapter(
+            new Dictionary<string, string[]> { ["home"] = [home] }, bin, utcNow: StopAfter(1));
+
+        ExternalCapabilityReceipt refused = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"home","fileName":"notas.txt","oldText":"lunes","newText":"martes"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt byPath = await Home(home, StopAfter(0)).InvokeAsync("file.edit", Json(
+            """{"folder":"home","fileName":"sub/notas.txt","oldText":"lunes","newText":"martes"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused.ErrorCode, Is.EqualTo("known_file_search_incomplete"));
+            Assert.That(refused.EffectObserved, Is.False);
+            Assert.That(refused.EffectMayHaveOccurred, Is.False);
+            JsonElement result = refused.Result!.Value;
+            Assert.That(result.GetProperty("relativePath").GetString(), Is.EqualTo("notas.txt"));
+            Assert.That(result.GetProperty("changed").GetBoolean(), Is.False);
+            Assert.That(result.GetProperty("searchScope").GetProperty("timeLimitReached").GetBoolean(), Is.True);
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("nothing was changed: the search of home stopped at its 8 s "
+                    + "limit after finding notas.txt, and the rest of the folder was not searched, so another file of "
+                    + "that name may be there; naming the subdirectory or the path (fileName \"notas.txt\") edits that one"));
+            }
+            Assert.That(File.ReadAllText(Path.Combine(home, "notas.txt")), Is.EqualTo("lunes"), "nothing was written");
+            Assert.That(bin.Recycled, Is.Empty, "nothing went to the bin");
+            // Named by its place, the file is looked up there with no walk: the edit goes ahead.
+            Assert.That(byPath.ErrorCode, Is.Null);
+            Assert.That(File.ReadAllText(Path.Combine(home, "sub", "notas.txt")), Is.EqualTo("martes"));
         });
     }
 }

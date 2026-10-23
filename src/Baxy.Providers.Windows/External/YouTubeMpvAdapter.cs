@@ -62,6 +62,11 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
     // Renew al máximo (B-APP-1): whether a system media session plays now; a test gives its own answer.
     internal Func<CancellationToken, ValueTask<bool>> SystemSessionPlays { get; init; } = SystemSessionPlaysAsync;
 
+    // Renew al máximo (auditoría de flujos): the system media sessions its status names besides itself; a test gives
+    // its own.
+    internal Func<CancellationToken, ValueTask<IReadOnlyList<UserMediaSession>>> SystemSessions { get; init; } =
+        static async cancellationToken => await MediaSessionCalls.ReadAsync(cancellationToken).ConfigureAwait(false);
+
     private static async ValueTask<bool> SystemSessionPlaysAsync(CancellationToken cancellationToken) =>
         (await MediaSessionCalls.ReadAsync(cancellationToken).ConfigureAwait(false))
             .Any(static session => session.PlaybackStatus == "playing");
@@ -420,7 +425,18 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             // Renew al máximo (B-APP-1): left paused while a system session plays, it is not what is playing.
             if (paused.Value && await SystemSessionPlays(cancellationToken).ConfigureAwait(false))
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_paused");
-            return ExternalJson.Success(operation, LocalResult(paused.Value ? "paused" : "playing"),
+            // Renew al máximo (auditoría de flujos): the system's sessions are named too, as the system's status names
+            // its others (6.1), so a session to control by sourceApp has its id; an unread list is no list.
+            IReadOnlyList<UserMediaSession> others = [];
+            try
+            {
+                others = await SystemSessions(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+            }
+
+            return ExternalJson.Success(operation, LocalResult(paused.Value ? "paused" : "playing", others),
                 effectObserved: false);
         }
         finally
@@ -461,8 +477,6 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         {
             if (!HasActivePlayer)
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_inactive");
-            if (action is "next" or "previous")
-                return ExternalJson.FailureBeforeEffect(operation, "local_player_action_unsupported");
             bool? current;
             try
             {
@@ -477,6 +491,15 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             // request means («pausa la música» said «already paused» and the person's music played on): the next answers.
             if (!named && current == true && await SystemSessionPlays(cancellationToken).ConfigureAwait(false))
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_paused");
+            // Renew al máximo (auditoría de flujos): a skip is not this player's; the refusal says what it plays (a read:
+            // nothing is sent), so a later «no session» never tells the person nothing plays while it does.
+            if (action is "next" or "previous")
+            {
+                return current is { } skipPaused
+                    ? new ExternalCapabilityReceipt(operation, EffectObserved: false, Verified: false,
+                        LocalResult(skipPaused ? "paused" : "playing"), "local_player_action_unsupported")
+                    : ExternalJson.FailureBeforeEffect(operation, "local_player_ipc_unavailable");
+            }
             if (action == "stop")
             {
                 Process player = _activePlayer!;
@@ -527,7 +550,59 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
-    private JsonElement LocalResult(string playbackStatus) => ExternalJson.Create(json =>
+    /// <summary>
+    /// Renew al máximo (auditoría de flujos): pauses this player while it plays, before another playback (ronda 19 does
+    /// so for the system's sessions BAXY left playing, which never include this one), and says what it paused: its
+    /// sourceAppUserModelId and title. Null when nothing was playing here or the pause was not read back.
+    /// </summary>
+    internal async ValueTask<(string Source, string Title)?> PauseForAnotherPlaybackAsync(
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            if (!HasActivePlayer
+                || await ReadPauseAsync(cancellationToken).ConfigureAwait(false) != false
+                || await SetPauseAsync(true, cancellationToken).ConfigureAwait(false) != true)
+            {
+                return null;
+            }
+
+            return (SourceAppUserModelId, _activeTitle ?? _activeQuery ?? string.Empty);
+        }
+        catch (Exception exception) when (exception is IOException or JsonException
+            or InvalidOperationException or TimeoutException)
+        {
+            // Nothing read back as paused: the new playback goes on.
+            return null;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <summary>Plays again what <see cref="PauseForAnotherPlaybackAsync"/> paused, and says whether it reads playing.</summary>
+    internal async ValueTask<bool> ResumeAfterAnotherPlaybackAsync(CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            return HasActivePlayer && await SetPauseAsync(false, cancellationToken).ConfigureAwait(false) == false;
+        }
+        catch (Exception exception) when (exception is IOException or JsonException
+            or InvalidOperationException or TimeoutException)
+        {
+            return false;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    private JsonElement LocalResult(string playbackStatus, IReadOnlyList<UserMediaSession>? others = null) =>
+        ExternalJson.Create(json =>
     {
         json.WriteStartObject(); json.WriteNumber("version", 1);
         json.WriteString("provider", "youtube");
@@ -536,6 +611,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         json.WriteBoolean("titleObserved", _activeTitle is not null);
         if (_activeQuery is not null) json.WriteString("query", _activeQuery);
         json.WriteString("playbackStatus", playbackStatus);
+        if (others is not null) WindowsMediaSessionAdapter.WriteOtherSessions(json, others);
         json.WriteString("authority", "local_youtube_player");
         json.WriteEndObject();
     });

@@ -26,13 +26,17 @@ internal sealed record ListNotesArguments(
 // BAXY Renew cu (C18 variante): a paste into a new document of Word or Excel already running, read back in that document.
 internal sealed record PastedIntoOffice(int Version, string AppId, string Document, int Characters, bool NewDocument);
 
+// PlaceValueAsSaid (Renew al máximo): the value is the person's words (a game store act's title or query), never a
+// catalog number, even when it is only digits («1942»). Only GameStoreHandler sets it; app.open's schema does not
+// declare it, so the model never sends it.
 internal sealed record OpenApplicationArguments(
     [property: JsonRequired] string AppId,
     bool? Foreground = null,
     bool? ForControl = null,
     bool? NewDocument = null,
     string? Place = null,
-    string? PlaceValue = null);
+    string? PlaceValue = null,
+    bool? PlaceValueAsSaid = null);
 
 // WindowsActivation: Windows activated the opened application by itself (a packaged app, or one that ignores the
 // request to show without activating) and the front was handed back at once to the window that had it (v3 point 0).
@@ -54,7 +58,7 @@ internal sealed record OpenApplicationResult(
     // reads whether it arrived; a look at the window does.
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool PlaceRequested = false,
     // EffectReadBack (revisión 2026-10-22, C-5): false with a place, aids on or off: the opening is verified, whether
-    // the place shows is not (the mind's outcome reads it as «completado sin verificar»). Absent without a place.
+    // the place shows is not (the mind's outcome reads it as «enviado sin verificar»). Absent without a place.
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? EffectReadBack = null,
     // Next (pc-ayudas, aid place_unverified): with a place, that it was only asked for and how to look; F019 said
     // «abrí Steam en la biblioteca» from placeRequested alone (continuation probe: 3/3 without it, 0/3 with it, the

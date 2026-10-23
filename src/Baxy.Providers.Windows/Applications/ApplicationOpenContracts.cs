@@ -2,8 +2,6 @@ namespace Baxy.Providers.Windows.Applications;
 
 public static class ApplicationIds
 {
-    public const string Calculator = "windows.calculator";
-
     public static bool IsValidRequest(string id)
     {
         if (string.IsNullOrWhiteSpace(id) || id.Length > 256)
@@ -98,13 +96,23 @@ public record ApplicationOpenResult(
     // the activation, and their keyboard stayed where it was.
     bool ShownWithoutFocus = false,
     // Auditoría D1: no installed application is called so; the closest installed names, none of them opened.
-    IReadOnlyList<string>? Candidates = null);
+    IReadOnlyList<string>? Candidates = null,
+    // Renew al máximo (velocidad): unverified because Windows shows the application's frame with nothing of it inside.
+    bool EmptyFrame = false);
 
 public interface IApplicationOpenProvider
 {
     ValueTask<ApplicationOpenResult> OpenAsync(
         ApplicationOpenRequest request,
         CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Renew al máximo (guarda msconfig): read only, nothing launched. Whether the application this name resolves to is
+    /// a tool that configures Windows itself, by the same rule no click acts on such a tool; false when it resolves to
+    /// none or the provider cannot tell (the opening then fails or runs as always).
+    /// </summary>
+    ValueTask<bool> OpensSystemToolAsync(string applicationId, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(false);
 }
 
 // Candidates: not installed under that name, the installed names closest to it, as app.open says them (auditoría D1).
@@ -124,7 +132,10 @@ public sealed record ApplicationWindowStatusResult(
     bool HasVisibleWindow,
     int VisibleWindowCount,
     bool Verified,
-    string? ErrorCode);
+    string? ErrorCode,
+    // BAXY Renew al máximo, F002: who each visible window is (its handle, process id and process creation time), so
+    // whether BAXY launched it is told beside the count (LaunchProvenance).
+    IReadOnlyList<(long WindowHandle, int ProcessId, long ProcessCreationTimeUtcTicks)>? VisibleWindows = null);
 
 public interface IApplicationInventoryProvider
 {
@@ -146,17 +157,4 @@ public interface IApplicationCatalogProvider
 {
     ValueTask<InstalledApplicationCatalogSnapshot> GetCatalogSnapshotAsync(
         CancellationToken cancellationToken);
-}
-
-public sealed class ApplicationOpenProviderRouter(
-    IApplicationOpenProvider calculator,
-    IApplicationOpenProvider installedApplication) : IApplicationOpenProvider
-{
-    public ValueTask<ApplicationOpenResult> OpenAsync(
-        ApplicationOpenRequest request,
-        CancellationToken cancellationToken) => request.ApplicationId switch
-        {
-            ApplicationIds.Calculator => calculator.OpenAsync(request, cancellationToken),
-            _ => installedApplication.OpenAsync(request, cancellationToken),
-        };
 }

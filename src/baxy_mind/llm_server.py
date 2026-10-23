@@ -1,6 +1,8 @@
-"""The local model server: one llama-server process owned by the mind, one slot, its prompt prefix kept in cache."""
+"""The local model server: one llama-server process owned by the mind, one slot, its prompt prefix kept in cache and on disk."""
 from __future__ import annotations
 
+import hashlib
+import http.client
 import json
 import os
 import socket
@@ -9,7 +11,19 @@ import threading
 import time
 import urllib.request
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
+
+
+class _StreamBroken(Exception):
+    """A streamed chat ended with an error after its first token, or its stream could not be read."""
+
+
+def _tell(on_text: Callable[[str | None, bool], bool], text: str | None, done: bool) -> bool:
+    """What the model has written so far to the voice's look-ahead, which never fails the answer."""
+    try:
+        return bool(on_text(text, done))
+    except Exception:  # noqa: BLE001 - a failing look-ahead is dropped
+        return True
 
 
 class LlmServer:
@@ -37,6 +51,10 @@ class LlmServer:
         self._ready = threading.Event()
         self._failure: str | None = None
         self.deadline: float | None = None
+        # Where the server writes a slot's state (--slot-save-path): the prompt prefix kept between starts (V1) and the
+        # state a vision question sets aside (BAXY_VISION_SLOT_DIR, the same folder).
+        self.slot_dir = _slot_dir()
+        self._settings: list[str] = []  # the server's arguments but its address, set by start (part of the prefix key)
 
     @property
     def name(self) -> str:
@@ -44,8 +62,7 @@ class LlmServer:
 
     def start(self) -> None:
         vision = _vision_args()
-        command = [
-            self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port),
+        self._settings = [
             "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
             "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
@@ -62,11 +79,13 @@ class LlmServer:
             # (every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM, decision2 d6 vs d6b, 2026-10-15). Watch
             # «erasing old context checkpoint» with n_tokens ≈ the prefix in llama-server.log: it should stay at 0.
             "-cram", "0", "-ctxcp", "10",
-        ] + vision + self.extra_args
-        # A state a vision question set aside and never put back holds the person's conversation: none is kept.
-        if held := os.environ.get("BAXY_VISION_SLOT_DIR", "").strip():
-            for stale in Path(held).glob("*.bin"):
-                stale.unlink(missing_ok=True)
+        ] + vision + ["--slot-save-path", str(self.slot_dir)] + self.extra_args
+        command = [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), *self._settings]
+        # A state a vision question set aside and never put back holds the person's conversation: none is kept. The
+        # kept prefix (PREFIX) is not one of them: it is saved before any turn (Mind.warm).
+        self.slot_dir.mkdir(parents=True, exist_ok=True)
+        for stale in self.slot_dir.glob("*.bin"):
+            stale.unlink(missing_ok=True)
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         log = open(log_dir / self.log_name, "w", encoding="utf-8")
@@ -119,9 +138,23 @@ class LlmServer:
             raise TimeoutError("the request's time budget is spent")
         return min(timeout, left)
 
-    def chat(self, body: dict[str, Any], *, timeout: float = 120.0) -> dict[str, Any]:
-        """One chat completion on the one slot, whose prefix stays cached between turns."""
+    def chat(self, body: dict[str, Any], *, timeout: float = 120.0,
+             on_text: Callable[[str | None, bool], bool] | None = None) -> dict[str, Any]:
+        """One chat completion on the one slot, whose prefix stays cached between turns. With ``on_text`` it streams
+        (_stream) and returns the same reply, unless it asks for token probabilities (below)."""
         self.wait_ready(self._within(timeout))
+        # The doubt (doubt.read) reads every token's logprobs. Streamed, b11609 sends a token's logprobs only on a
+        # chunk whose parse adds a difference (server-task.cpp:1136-1145; the first token's always, with the role):
+        # the tokens of «<tool_call>», «<function=» and a name being parsed, and text the partial parser holds back,
+        # add none, and their probabilities are never sent. A call that asks for them is not streamed.
+        if on_text is not None and not body.get("logprobs"):
+            try:
+                return self._stream(body, timeout, on_text)
+            except _StreamBroken:
+                # A stream can fail where the same request does not: compute_diffs throws when a partial parse saw a
+                # call the final parse does not (common/chat.cpp:255-267; a malformed call the non-streamed reply
+                # returns as text). Asked again without streaming, on the same budget: the same answer (fixed seed).
+                _tell(on_text, None, True)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
             data=json.dumps({**body, "id_slot": 0, "cache_prompt": True}).encode("utf-8"),
@@ -130,15 +163,110 @@ class LlmServer:
         with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
             return json.loads(reply.read())
 
-    def complete_name(self, body: dict[str, Any], written: str, timeout: float = 10.0) -> str:
-        """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:
-        the chat's own prompt (/apply-template) plus that text, stopped at the name's end."""
+    def _stream(self, body: dict[str, Any], timeout: float,
+                on_text: Callable[[str | None, bool], bool]) -> dict[str, Any]:
+        """Al máximo 9.4 (2026-10-22): the chat streamed (SSE) and its reply built as the non-streamed one is
+        (common_chat_msg::to_json_oaicompat, common/chat.cpp:156-235; to_json_oaicompat_chat, server-task.cpp:410-452):
+        choices[0] with finish_reason, index and the message (role, content, reasoning_content, tool_calls), usage and
+        timings. While the answer is words, its text so far goes to ``on_text`` after each delta (and once more, done,
+        at the end) until it returns True; once a call starts (or the words are a call written as text), ``on_text``
+        gets None, done: what it foresaw is dropped.
+
+        At b11609 streaming only changes how the result is sent: sampling is the same (server-context.cpp:2020,
+        send_partial_response after the same add_token), the final message is parsed from the same accumulated text
+        (common_chat_session feed/finish, common/chat.cpp:1740-1759; server-task.h:408-410), and the deltas are its
+        successive differences (compute_diffs, common/chat.cpp:236-299; server_chat_msg_diff_to_json_oaicompat,
+        server-chat.cpp:621-649): content and arguments as suffixes (string_diff, chat.cpp:58-71), a call's id and name
+        whole whenever they change (a name that grows comes whole again). The last chunk carries the timings and, with
+        include_usage, the usage (server-task.cpp:454-509). An error before the first token still comes as an HTTP
+        error (a context overflow's 400, server-context.cpp:4902-4914); one later is _StreamBroken."""
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{self.port}/v1/chat/completions",
+            data=json.dumps({**body, "stream": True, "stream_options": {"include_usage": True}, "id_slot": 0,
+                             "cache_prompt": True}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        content, reasoning = "", ""
+        calls: dict[int, dict[str, Any]] = {}
+        head: dict[str, Any] = {}
+        finish: Any = None
+        index = 0
+        telling = True
+        with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
+            try:
+                for raw in reply:
+                    line = raw.decode("utf-8").strip()
+                    if not line.startswith("data:"):
+                        continue
+                    data = line[5:].strip()
+                    if data == "[DONE]":
+                        break
+                    chunk = json.loads(data)
+                    if "error" in chunk:
+                        raise _StreamBroken(str(chunk["error"]))
+                    head.update({key: chunk[key] for key in ("created", "id", "model", "system_fingerprint", "usage",
+                                                             "timings") if key in chunk})
+                    for choice in chunk.get("choices") or []:
+                        index = choice.get("index", index)
+                        finish = choice.get("finish_reason") or finish
+                        delta = choice.get("delta") or {}
+                        reasoning += delta.get("reasoning_content") or ""
+                        for call in delta.get("tool_calls") or []:
+                            held = calls.setdefault(int(call.get("index") or 0),
+                                                    {"type": "function", "function": {"name": "", "arguments": ""}})
+                            function = call.get("function") or {}
+                            if call.get("id"):
+                                held["id"] = call["id"]
+                            if function.get("name"):
+                                held["function"]["name"] = function["name"]
+                            held["function"]["arguments"] += function.get("arguments") or ""
+                            if telling:
+                                _tell(on_text, None, True)  # a call: what was foreseen is dropped, nothing more told
+                                telling = False
+                        if delta.get("content"):
+                            content += delta["content"]
+                            if telling and ("<tool_call>" in content or "<function=" in content):
+                                _tell(on_text, None, True)  # a call written as text: dropped as well
+                                telling = False
+                            elif telling:
+                                telling = not _tell(on_text, content, False)
+                    self._within(timeout)  # the request's budget holds while the answer is written
+            except (ValueError, http.client.HTTPException, ConnectionError) as error:
+                raise _StreamBroken(repr(error)) from error
+        if telling:
+            _tell(on_text, content, True)
+        message: dict[str, Any] = {"role": "assistant", "content": content}
+        if reasoning:
+            message["reasoning_content"] = reasoning
+        if calls:
+            message["tool_calls"] = [calls[key] for key in sorted(calls)]
+        return {"choices": [{"finish_reason": finish or "length", "index": index, "message": message}],
+                **{key: head[key] for key in ("created", "id", "model", "system_fingerprint") if key in head},
+                "object": "chat.completion", **{key: head[key] for key in ("usage", "timings") if key in head}}
+
+    def template(self, body: dict[str, Any], timeout: float = 10.0) -> str:
+        """The chat's own prompt as the server renders it (/apply-template). Al máximo V3 (2026-10-22): once per
+        decision, for all of its rivals (complete_name); each rival rendered the whole prompt again (decisions with
+        System One took 1.5-2.75 s against 1.1-1.4 s)."""
         self.wait_ready(self._within(timeout))
-        prompt = self._post("/apply-template", {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")},
-                            timeout)["prompt"]
+        return self._post("/apply-template", {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")},
+                          timeout)["prompt"]
+
+    def complete_name(self, prompt: str, written: str, timeout: float = 10.0) -> str:
+        """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:
+        the chat's own prompt (template) plus that text, stopped at the name's end."""
         reply = self._post("/completion", {"prompt": prompt + written, "n_predict": 24, "temperature": 0.0,
                                            "stop": [">", "\n"], "cache_prompt": True, "id_slot": 0}, timeout)
         return str(reply.get("content", ""))
+
+    def prefill(self, prompt: str, timeout: float = 60.0) -> dict[str, Any]:
+        """``prompt`` (a chat's own text, as /apply-template renders it) read into the slot with nothing written: one
+        token to predict, sampled and never decoded, so the slot then holds exactly the prompt's tokens (the warm-up's
+        max_tokens 1 left n_tokens equal to its prompt's, llama-server.log). Tokenized as the chat's own prompt is
+        (special tokens parsed, no BOS for this model)."""
+        self.wait_ready(self._within(timeout))
+        return self._post("/completion", {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True,
+                                          "id_slot": 0}, timeout)
 
     def fill_call(self, body: dict[str, Any], wire: str, timeout: float = 30.0) -> dict[str, Any] | None:
         """The model's arguments for one tool another layer chose (System One, piece A): the same chat, with the call
@@ -180,6 +308,59 @@ class LlmServer:
         with urllib.request.urlopen(request, timeout=self._within(30)) as reply:
             return list(json.loads(reply.read())["tokens"])
 
+    # ---- the prompt prefix kept between starts (al máximo V1) -------------------------------------------------------
+    # Every start re-read the tools and the system prompt (~44,600 tokens, 18.3 s in llama-server.log) and the App was
+    # ready at ~22-23 s. The slot's state after the warm-up is saved with the server's own slot save (the vision's:
+    # 42,910 tokens restored in 0.74 s) under a key of everything that makes that state; the next start restores it.
+
+    def prefix_key(self, warm: Any) -> str:
+        """The key of the slot's state after the warm-up: the requests that make it (``warm``: the tools, the installed
+        applications among them, and the system prompt), the server's arguments but its address (context, KV cache
+        types, projector…), the GGUF and the server binary (size and time: hashing 2.7 GB costs what is saved) and the
+        server's build as it tells it."""
+        self.wait_ready(self._within(600))
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/props", timeout=self._within(10)) as reply:
+                build = str(json.loads(reply.read()).get("build_info") or "")
+        except (OSError, ValueError, http.client.HTTPException):
+            build = ""
+        identity = {"settings": self._settings, "gguf": _stamp(self.gguf), "server": _stamp(self.server),
+                    "build": build, "warm": warm}
+        return hashlib.sha256(json.dumps(identity, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:32]
+
+    def restore_prefix(self, key: str) -> dict[str, Any] | None:
+        """The slot back to the state saved under ``key``, and the facts kept beside it; None when there is none or the
+        server could not restore it (the warm-up then runs as always)."""
+        state = self.slot_dir / f"{PREFIX}{key}.slot"
+        try:
+            facts = json.loads(state.with_suffix(".json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        if not isinstance(facts, dict) or not state.is_file():
+            return None
+        try:
+            reply = self._post("/slots/0?action=restore", {"filename": state.name}, 120)
+        except (OSError, ValueError, http.client.HTTPException):
+            return None
+        return facts if int(reply.get("n_restored") or 0) > 0 else None
+
+    def save_prefix(self, key: str, facts: dict[str, Any]) -> bool:
+        """The slot's state saved under ``key`` with ``facts`` beside it; every other key's state is removed. Only the
+        prefix may be in the slot: Mind.warm saves it before any turn."""
+        state = self.slot_dir / f"{PREFIX}{key}.slot"
+        kept = state.with_suffix(".json")
+        kept.unlink(missing_ok=True)  # the facts are written last: a state cut halfway is never restored
+        try:
+            saved = int(self._post("/slots/0?action=save", {"filename": state.name}, 120).get("n_saved") or 0) > 0
+        except (OSError, ValueError, http.client.HTTPException):
+            saved = False
+        if saved:
+            kept.write_text(json.dumps(facts, ensure_ascii=False), encoding="utf-8")
+        for stale in self.slot_dir.glob(f"{PREFIX}*"):
+            if not saved or stale.name not in (state.name, kept.name):
+                stale.unlink(missing_ok=True)
+        return saved
+
     def close(self) -> None:
         if self._process is not None and self._process.poll() is None:
             self._process.terminate()
@@ -189,20 +370,37 @@ class LlmServer:
                 self._process.kill()
 
 
+# The kept prefix's files in the slot folder: its state (.slot, never *.bin: start() removes those) and its facts (.json).
+PREFIX = "baxy_prefix_"
+
+
 def _vision_args() -> list[str]:
     """PLAN_GENERAL A5 (measured 2026-10-21): the model's own projector, on the CPU (no VRAM; ~0.7 GB of RAM), so the
-    click's last stage can ask this server where a control is on a window without an accessible tree; and where the
-    one slot's state is set aside meanwhile (BAXY_VISION_SLOT_DIR). A question on the slot evicted the conversation,
+    click's last stage can ask this server where a control is on a window without an accessible tree; the one slot's
+    state is set aside meanwhile in the slot folder (_slot_dir). A question on the slot evicted the conversation,
     whose state (2 GB) the RAM prompt cache refused, and the next decision re-read it for 25 s; a second slot on a
     unified KV cache lost it too with this hybrid model (21 s). Saved and restored around the question: 1.35 s and
     0.74 s for 42,910 tokens, then 17 tokens re-read."""
     projector = os.environ.get("BAXY_MIND_MMPROJ", "").strip()
     if not projector or not Path(projector).is_file():
         return []
+    return ["--mmproj", projector, "--no-mmproj-offload"]
+
+
+def _slot_dir() -> Path:
+    """The server's --slot-save-path: BAXY_VISION_SLOT_DIR, where the App's vision sets the slot's state aside, or the
+    same folder run_renew.cmd gives it when the vision is off."""
     held = os.environ.get("BAXY_VISION_SLOT_DIR", "").strip()
-    if held:
-        Path(held).mkdir(parents=True, exist_ok=True)
-    return ["--mmproj", projector, "--no-mmproj-offload"] + (["--slot-save-path", held] if held else [])
+    return Path(held) if held else Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "slots"
+
+
+def _stamp(path: str) -> list[int] | None:
+    """A file's size and modification time, or None when it is not there."""
+    try:
+        status = os.stat(path)
+    except OSError:
+        return None
+    return [status.st_size, status.st_mtime_ns]
 
 
 def _pinned_port() -> int | None:

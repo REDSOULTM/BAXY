@@ -71,6 +71,7 @@ internal sealed class PresenceHost : IDisposable
                 beating.Settings.QuietDuring,
                 activity => window.Dispatcher.BeginInvoke(() => beating.ReportActivity(activity)));
             _heartbeat.Start();
+            beating.PersonTurnEnded += acted => _heartbeat?.PersonTurnEnded(acted);
         }
 
     }
@@ -107,7 +108,9 @@ internal sealed class PresenceHost : IDisposable
             viewModel is { IsListening: true } or { IsWakeListening: true },
             viewModel?.IsMicAvailable == true,
             viewModel?.IsPowered != false,
-            viewModel is { IsReady: true, IsMindReady: true });
+            viewModel is { IsReady: true, IsMindReady: true },
+            // A start that failed (the engine's own failure, or the mind that did not start) is not «Arrancando».
+            viewModel is { IsMindReady: false, MindFailed: true } || viewModel is { IsReady: false, Failure: not null });
         _menu = new Presentation.TrayMenu(state, ShowMainWindow, ToggleListen, TogglePower, RequestExit);
         _menu.Closed += (_, _) => _menu = null;
         _menu.ShowAt(x, y);

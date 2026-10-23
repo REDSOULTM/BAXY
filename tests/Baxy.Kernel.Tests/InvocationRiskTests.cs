@@ -3,6 +3,7 @@ using Baxy.Contracts;
 using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 using NUnit.Framework;
 
 namespace Baxy.Kernel.Tests;
@@ -67,6 +68,196 @@ public sealed class InvocationRiskTests
         });
     }
 
+    // Al máximo, flujos («¿Borro viejo.txt?» → «sí» → «no existe»): a target that is not there is that failure now,
+    // with its candidates, and no yes is asked for what cannot run; a target there once asks as before.
+    [Test]
+    public async Task ATargetThatIsNotThereFailsWithoutAskingForAYes()
+    {
+        JsonElement candidates = JsonDocument.Parse("""{"candidates":["a/viejo.txt","b/viejo.txt"]}""").RootElement.Clone();
+        var handler = new AssessingHandler(
+            OperationRisk.Irreversible, documentless: null, OperationOutcome.Failure("known_file_ambiguous", candidates));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = Request("""{"windowId":"win_word"}""");
+
+        OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
+        OperationResponse replay = await engine.ExecuteAsync(request, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(response.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+            Assert.That(response.Result!.Value.GetProperty("candidates").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(response.EffectMayHaveOccurred, Is.False);
+            Assert.That(handler.ExecutionCount, Is.Zero);
+            // Terminal and journaled: the same invocation answers the same and reads nothing again.
+            Assert.That(replay.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+            Assert.That(handler.PreflightCount, Is.EqualTo(1));
+        });
+    }
+
+    // Contracaso: an invocation that started before and never completed may have had its effect (the file is gone because
+    // it was trashed): a «not found» now is not its end; it is reconciled with the person as before.
+    [Test]
+    public async Task AnInvocationStartedBeforeIsNotEndedByWhatIsMissingNow()
+    {
+        var handler = new AssessingHandler(
+            OperationRisk.Irreversible, documentless: null, OperationOutcome.Failure("known_file_not_found"));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = Request("""{"windowId":"win_word"}""");
+        await journal.RecordStartedAsync(request, RequestFingerprint.Compute(request), CancellationToken.None);
+
+        OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(response.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
+            Assert.That(handler.ExecutionCount, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task ATargetThereOnceStillAsksAndRunsOnTheYes()
+    {
+        var handler = new AssessingHandler(OperationRisk.Irreversible, documentless: "win_settings");
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = Request("""{"windowId":"win_word"}""");
+
+        OperationResponse asked = await engine.ExecuteAsync(request, CancellationToken.None);
+        string token = asked.Result!.Value.GetProperty("token").GetString()!;
+        OperationResponse confirmed = await engine.ExecuteAsync(
+            request with { ConfirmationToken = token }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task AnInvocationThatNeedsNoYesIsNotReadFirst()
+    {
+        var handler = new AssessingHandler(
+            OperationRisk.Reversible, documentless: null, OperationOutcome.Failure("known_file_not_found"));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse response = await engine.ExecuteAsync(
+            Request("""{"windowId":"win_word"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.PreflightCount, Is.Zero);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (guarda msconfig, guarda diálogo destructivo): an invocation whose declared risk goes without
+    // asking, and whose handler finds it riskier (an opening of msconfig, the «Sí» that replaces a file), waits for the
+    // yes bound to it, and runs on that yes.
+    [Test]
+    public async Task AnInvocationTheHandlerFindsRiskierAsksThoughItsDeclaredRiskWouldNot()
+    {
+        var handler = new RaisingHandler(InvocationPreflightResult.Raised(OperationRisk.Irreversible));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = Request("""{"windowId":"win_dialog"}""") with { Operation = "app.open" };
+
+        OperationResponse asked = await engine.ExecuteAsync(request, CancellationToken.None);
+        int executedBeforeTheYes = handler.ExecutionCount;
+        string token = asked.Result!.Value.GetProperty("token").GetString()!;
+        OperationResponse confirmed = await engine.ExecuteAsync(
+            request with { ConfirmationToken = token }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(executedBeforeTheYes, Is.Zero);
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Contracasos: a read that finds nothing riskier, or a failure, goes without asking and runs (a failure is never taken
+    // from this read); in Bypass the invocation is not read and goes as the rest of what is risky.
+    [Test]
+    public async Task ARaisingReadThatFindsNothingOrAFailureGoesWithoutAsking()
+    {
+        foreach (InvocationPreflightResult found in new[]
+        {
+            InvocationPreflightResult.Proceed,
+            InvocationPreflightResult.Fails(OperationOutcome.Failure("known_file_not_found")),
+        })
+        {
+            var handler = new RaisingHandler(found);
+            using var journal = new InMemoryInvocationJournal();
+            using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+            OperationResponse response = await engine.ExecuteAsync(
+                Request("""{"windowId":"win_dialog"}""") with { Operation = "app.open" }, CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+                Assert.That(handler.PreflightCount, Is.EqualTo(1));
+                Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+            });
+        }
+    }
+
+    [Test]
+    public async Task InBypassARaisingInvocationIsNotReadAndGoes()
+    {
+        var handler = new RaisingHandler(InvocationPreflightResult.Raised(OperationRisk.Irreversible));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([handler]),
+            journal,
+            new MissionEngineOptions { ConfirmationMode = static () => ConfirmationMode.Bypass });
+
+        OperationResponse response = await engine.ExecuteAsync(
+            Request("""{"windowId":"win_dialog"}""") with { Operation = "app.open" }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.PreflightCount, Is.Zero);
+        });
+    }
+
+    private sealed class RaisingHandler(InvocationPreflightResult found) : IOperationHandler, IInvocationPreflight
+    {
+        public int ExecutionCount { get; private set; }
+
+        public int PreflightCount { get; private set; }
+
+        public OperationDefinition Definition { get; } = new("app.open", OperationRisk.Reversible, "Open an application.");
+
+        public bool MayRaise(JsonElement arguments) => true;
+
+        public ValueTask<InvocationPreflightResult> PreflightAsync(
+            JsonElement arguments,
+            CancellationToken cancellationToken)
+        {
+            PreflightCount++;
+            return ValueTask.FromResult(found);
+        }
+
+        public ValueTask<OperationOutcome> ExecuteAsync(
+            OperationInvocation invocation,
+            CancellationToken cancellationToken)
+        {
+            ExecutionCount++;
+            return ValueTask.FromResult(OperationOutcome.Success(invocation.Arguments));
+        }
+    }
+
     private static OperationRequest Request(string json) => new(
         ProtocolTypes.OperationRequest,
         Guid.NewGuid().ToString("D"),
@@ -75,21 +266,33 @@ public sealed class InvocationRiskTests
         "app.close",
         JsonDocument.Parse(json).RootElement.Clone());
 
-    private sealed class AssessingHandler(OperationRisk risk, string? documentless)
-        : IOperationHandler, IInvocationRiskAssessor
+    private sealed class AssessingHandler(OperationRisk risk, string? documentless, OperationOutcome? missing = null)
+        : IOperationHandler, IInvocationPreflight
     {
         public int ExecutionCount { get; private set; }
 
+        public int PreflightCount { get; private set; }
+
         public OperationDefinition Definition { get; } = new("app.close", risk, "Close a resolved window.");
 
-        public OperationRisk? AssessInvocationRisk(JsonElement arguments)
+        public ValueTask<InvocationPreflightResult> PreflightAsync(
+            JsonElement arguments,
+            CancellationToken cancellationToken)
         {
+            PreflightCount++;
+            if (missing is not null)
+            {
+                return ValueTask.FromResult(InvocationPreflightResult.Fails(missing));
+            }
+
             if (documentless is null)
             {
                 throw new InvalidOperationException("the window cannot be placed");
             }
 
-            return arguments.GetProperty("windowId").GetString() == documentless ? OperationRisk.Reversible : null;
+            return ValueTask.FromResult(arguments.GetProperty("windowId").GetString() == documentless
+                ? InvocationPreflightResult.Lowered(OperationRisk.Reversible)
+                : InvocationPreflightResult.Proceed);
         }
 
         public ValueTask<OperationOutcome> ExecuteAsync(

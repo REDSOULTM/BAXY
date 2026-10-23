@@ -53,6 +53,29 @@ public sealed class WindowResolveCandidatesTests
         });
     }
 
+    // Al máximo, flujos (P252, 22 of 27 runs: «pon esta ventana a la izquierda» → window.resolve {}): with no selector
+    // the refusal says, as a fact, that the person's window in front (BAXY's own left out) is window_active's; with
+    // both selectors, or with the aid off, the code goes back alone. Nothing is read.
+    [TestCase("all", "{}", true)]
+    [TestCase("all", "{\"limit\":5}", true)]
+    [TestCase("all", "{\"applicationName\":\"Word\",\"process\":\"WINWORD\"}", false)]
+    [TestCase("none", "{}", false)]
+    public async Task NoSelectorSaysThePersonsWindowInFrontIsWindowActives(string aids, string json, bool told)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+
+        OperationOutcome outcome = await new WindowResolveHandler(
+                new FailingWindows("not_read"), () => Desktop, () => ("Opera GX", "opera"))
+            .ExecuteAsync(new OperationInvocation("r", "m", "i", JsonDocument.Parse(json).RootElement), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.InvalidSelector));
+            Assert.That(outcome.Result?.GetProperty("next").GetString(),
+                told ? Does.Contain("window_active") : Is.Null);
+        });
+    }
+
     private static ValueTask<OperationOutcome> Resolve(string code) =>
         new WindowResolveHandler(new FailingWindows(code), () => Desktop, () => ("Opera GX", "opera")).ExecuteAsync(
             new OperationInvocation("r", "m", "i", JsonDocument.Parse("{\"applicationName\":\"Microsoft Word\"}").RootElement),

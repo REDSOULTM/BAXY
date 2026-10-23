@@ -882,6 +882,14 @@ internal sealed class WindowsVisibleControlAdapter
     internal Func<nint, bool>? ActRefused { get; init; }
 
     /// <summary>
+    /// Renew al máximo (aislamiento de pruebas): the window in front a look or a click without a window named takes
+    /// (<see cref="VisibleControlSurface.ResolveForegroundAsync"/>, the product's). A test seam names its own, so the
+    /// desktop's real front (an elevated msconfig or Task Manager answered «window_elevated») never decides it.
+    /// </summary>
+    internal Func<CancellationToken, ValueTask<nint>> WindowInFront { get; init; } =
+        VisibleControlSurface.ResolveForegroundAsync;
+
+    /// <summary>
     /// Ronda final 22-24: whether a window is the opened application's (drawn or hosted by its process, or, when the
     /// opening launched it, by the family of processes its launch started, as a launcher's child): a click that names
     /// another process's window is not bound to the application just opened. Null (the test seams that name none)
@@ -908,6 +916,205 @@ internal sealed class WindowsVisibleControlAdapter
     /// <summary>The clock of a search burst's ceiling (fakes advance it in tests).</summary>
     internal ILeaseClock SearchClock { get; init; } = new SystemLeaseClock();
 
+    /// <summary>
+    /// Renew al máximo (7.1): whether a completed act reads its window again (<see cref="AfterActAsync"/>); the test
+    /// seams that name none read nothing after.
+    /// </summary>
+    internal bool ReadsAfterAct { get; init; }
+
+    // Renew al máximo (7.1): the read after an act walks the tree for at most AfterReadSeconds (the worker answers
+    // «partial» then) and is waited for AfterReadBudget; at most AfterViewCap entries of the difference are written.
+    internal const double AfterReadSeconds = 1.5;
+    private static readonly TimeSpan AfterReadBudget = TimeSpan.FromSeconds(3);
+    internal const int AfterViewCap = 20;
+
+    // The window the running click pressed in (by the tree, at a point or by the pointer); 0 before any press.
+    private nint _actedWindow;
+
+    /// <summary>
+    /// Renew al máximo (7.1): the window of the last view read again after a completed act, by the look's own request
+    /// (the worker's «view», with that look's limit, words and cut, so its numbering is a look's) and bounded in time.
+    /// It becomes the last view (an index of the view before that is no longer there is refused as after any look) and
+    /// its difference from that view is returned (<see cref="ViewDifference"/>). Nothing is pressed, brought up, shown
+    /// or captured. Null, with the last view left as it was, when the last view is of another window, a modal dialog
+    /// now disables the window (the effect is in the dialog), or the read does not answer, fails or is cut.
+    /// </summary>
+    public async ValueTask<JsonElement?> AfterActAsync(nint window, CancellationToken cancellationToken)
+    {
+        if (!ReadsAfterAct || window == 0)
+            return null;
+        LastView? before;
+        lock (_viewLock)
+        {
+            before = _lastView;
+        }
+
+        if (before is null || before.Hwnd != window || VisibleControlSurface.ModalSurface(window) != window)
+            return null;
+        JsonDocument? answer;
+        try
+        {
+            answer = await _worker.SendAsync(
+                    ViewCommand(window, before.Limit, before.Wanted, before.Tail, AfterReadSeconds),
+                    AfterReadBudget, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or JsonException or TimeoutException
+            or InvalidOperationException or OperationCanceledException)
+        {
+            return null;
+        }
+
+        if (answer is null)
+            return null;
+        using (answer)
+        {
+            JsonElement root = answer.RootElement;
+            // A walk cut by its deadline does not prove what it did not list is gone.
+            if (root.ValueKind != JsonValueKind.Object
+                || !root.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+                || (root.TryGetProperty("partial", out JsonElement partial) && partial.ValueKind == JsonValueKind.True))
+                return null;
+            List<ViewControl> controls = ParseControls(root);
+            List<ViewControl> disabled = ParseControls(root, "disabled");
+            string title = ReadString(root, "window");
+            lock (_viewLock)
+            {
+                if (!ReferenceEquals(_lastView, before))
+                    return null;
+                _lastView = new LastView(window, controls)
+                {
+                    TreeTitle = title,
+                    Limit = before.Limit,
+                    Wanted = before.Wanted,
+                    Tail = before.Tail,
+                };
+                _viewsRead++;
+            }
+
+            return ViewDifference(before.Controls, before.TreeTitle, controls, disabled, title);
+        }
+    }
+
+    /// <summary>
+    /// Renew al máximo (7.1): what a view of a window shows that the one before it did not, by control: «changed»
+    /// (the same control, by its identity or else its kind and name, with another name, state or value), «appeared»,
+    /// «gone» (no longer listed; «disabled» when the window now lists it disabled) and «moved» (the same control at
+    /// another index), each with its index in the new view; «title» when the window's name changed. At most
+    /// <paramref name="cap"/> entries, in that order, and «omitted» the rest; «same» when nothing differs.
+    /// </summary>
+    internal static JsonElement ViewDifference(
+        IReadOnlyList<ViewControl> before,
+        string beforeTitle,
+        IReadOnlyList<ViewControl> after,
+        IReadOnlyList<ViewControl> disabledAfter,
+        string afterTitle,
+        int cap = AfterViewCap)
+    {
+        var matched = new ViewControl?[after.Count];
+        var used = new HashSet<ViewControl>(ReferenceEqualityComparer.Instance);
+        for (int i = 0; i < after.Count; i++)
+        {
+            ViewControl now = after[i];
+            if (now.Id.Length > 0
+                && before.FirstOrDefault(was => was.Id == now.Id && !used.Contains(was)) is { } same)
+            {
+                matched[i] = same;
+                used.Add(same);
+            }
+        }
+
+        for (int i = 0; i < after.Count; i++)
+        {
+            ViewControl now = after[i];
+            if (matched[i] is null
+                && before.FirstOrDefault(was => !used.Contains(was) && was.Kind == now.Kind && was.Name == now.Name) is { } same)
+            {
+                matched[i] = same;
+                used.Add(same);
+            }
+        }
+
+        List<string> changed = [], appeared = [], moved = [];
+        for (int i = 0; i < after.Count; i++)
+        {
+            ViewControl now = after[i];
+            if (matched[i] is not { } was)
+                appeared.Add(Entry(now));
+            else if (was.Kind != now.Kind || was.Name != now.Name || was.State != now.State
+                || (was.Value ?? string.Empty) != (now.Value ?? string.Empty))
+                changed.Add(Entry(now));
+            else if (was.Index != now.Index)
+                moved.Add($"[{now.Index}] {now.Kind} «{now.Name}» was [{was.Index}]");
+        }
+
+        List<string> gone = [.. before.Where(was => !used.Contains(was)).Select(was =>
+            $"{was.Kind} «{was.Name}»"
+            + (disabledAfter.Any(off => off.Kind == was.Kind && off.Name == was.Name) ? " disabled" : string.Empty))];
+        bool titled = beforeTitle.Length > 0 && afterTitle.Length > 0 && beforeTitle != afterTitle;
+        int room = cap;
+        return ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            if (!titled && changed.Count + appeared.Count + gone.Count + moved.Count == 0)
+            {
+                writer.WriteBoolean("same", true);
+                writer.WriteEndObject();
+                return;
+            }
+
+            if (titled)
+                writer.WriteString("title", afterTitle);
+            WriteList("changed", changed);
+            WriteList("appeared", appeared);
+            WriteList("gone", gone);
+            WriteList("moved", moved);
+            int omitted = changed.Count + appeared.Count + gone.Count + moved.Count - (cap - room);
+            if (omitted > 0)
+                writer.WriteNumber("omitted", omitted);
+            writer.WriteEndObject();
+
+            void WriteList(string name, List<string> entries)
+            {
+                int shown = Math.Min(entries.Count, room);
+                if (shown == 0)
+                    return;
+                room -= shown;
+                writer.WriteStartArray(name);
+                foreach (string entry in entries.Take(shown))
+                    writer.WriteStringValue(entry);
+                writer.WriteEndArray();
+            }
+        });
+
+        static string Entry(ViewControl control) =>
+            $"[{control.Index}] {control.Kind} «{control.Name}»"
+            + (control.State.Length > 0 ? " " + control.State : string.Empty)
+            + (control.Value is { Length: > 0 } value
+                ? " = " + (value.Length > 60 ? value[..60] + "…" : value)
+                : string.Empty);
+    }
+
+    /// <summary>Renew al máximo (7.1): the receipt with the view after its act («after»), its own facts as they were.</summary>
+    internal static ExternalCapabilityReceipt WithAfter(ExternalCapabilityReceipt receipt, JsonElement after)
+    {
+        if (receipt.Result is not { ValueKind: JsonValueKind.Object } result)
+            return receipt;
+        JsonObject node = JsonNode.Parse(result.GetRawText())!.AsObject();
+        node["after"] = JsonNode.Parse(after.GetRawText());
+        using JsonDocument merged = JsonDocument.Parse(node.ToJsonString());
+        return receipt with { Result = merged.RootElement.Clone() };
+    }
+
+    // Renew al máximo (7.1): a click whose effect went to another window (a dialog it opened, a popup born, the list or
+    // menu its manner opened, a window of another process) is not read again: the window's own tree does not show it.
+    private static bool EffectElsewhere(JsonElement? result) =>
+        result is { ValueKind: JsonValueKind.Object } facts
+        && (facts.TryGetProperty("handedTo", out _)
+            || (facts.TryGetProperty("popupBorn", out JsonElement popup) && popup.ValueKind == JsonValueKind.True)
+            || (facts.TryGetProperty("dialogOpened", out JsonElement dialog) && dialog.ValueKind == JsonValueKind.True)
+            || (facts.TryGetProperty("opened", out JsonElement opened) && opened.ValueKind == JsonValueKind.True));
+
 
     // The tooltip stage asks the same worker for the controls without a name and for the tooltips shown (and, TZ-DC2,
     // the messaging clients' probe, WindowsExternalCapabilityProvider).
@@ -925,6 +1132,7 @@ internal sealed class WindowsVisibleControlAdapter
         ActRefused = VisibleControlSurface.ActRefused;
         WindowOfProcess = IsWindowOfOpened;
         BurstLease = ForegroundLease.Shared;
+        ReadsAfterAct = true;
     }
 
     /// <summary>The product's <see cref="WindowOfProcess"/> (FT/proveedores goal (E6): the keyboard's too,
@@ -971,6 +1179,94 @@ internal sealed class WindowsVisibleControlAdapter
     public bool CanHandle(string operation) =>
         operation is "input.visible.click" or "input.visible.controls";
 
+    // Renew al máximo (guarda diálogo destructivo): falsedades F013, «Sí» pressed in «Confirmar Guardar como: prueba.txt
+    // ya existe. ¿Quieres reemplazarlo?» wrote over the file unasked; the policy reads only the label. A click whose label
+    // is a dialog's yes (VisibleControlSurface.AffirmativeAnswer) is read before it goes: a «No» or a «Cancelar» never is.
+    public bool PreflightMayRaise(string operation, JsonElement arguments) =>
+        operation == "input.visible.click"
+        && arguments.ValueKind == JsonValueKind.Object
+        && !(arguments.TryGetProperty("search", out JsonElement search) && search.ValueKind == JsonValueKind.String
+            && search.GetString()!.Trim().Length > 0)
+        && arguments.TryGetProperty("label", out JsonElement label) && label.ValueKind == JsonValueKind.String
+        && VisibleControlSurface.AffirmativeAnswer(label.GetString());
+
+    /// <summary>
+    /// Renew al máximo (guarda diálogo destructivo): read only. The click's window (the one it names, or the last look's,
+    /// or the one in front), through the modal dialog that disables it, is a dialog whose own words ask about
+    /// replacing, overwriting, deleting, discarding, not saving or losing changes, and the label is that dialog's
+    /// affirmative button: the receipt says the call needs the person's yes (NeedsConfirmation). The dialog's words are
+    /// those of the last look when it was of that dialog, else of a read of it bounded in time (nothing pressed, brought
+    /// up or captured). Null when it is not so or cannot be read.
+    /// </summary>
+    public async ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!PreflightMayRaise(operation, arguments))
+            return null;
+        string label = arguments.GetProperty("label").GetString()!.Trim();
+        nint named = arguments.TryGetProperty("window", out JsonElement window) && window.ValueKind == JsonValueKind.Number
+            && window.TryGetInt64(out long handle) && handle > 0
+                ? (nint)handle
+                : 0;
+        LastView? view;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        nint target = named != 0 ? named
+            : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd
+            : VisibleControlSurface.FrontWindow();
+        nint dialog = target == 0 ? 0 : VisibleControlSurface.ModalSurface(target);
+        if (dialog == 0 || !VisibleControlSurface.IsDialogWindow(dialog))
+            return null;
+
+        IReadOnlyList<ViewControl> controls;
+        string title;
+        if (view is not null && view.Hwnd == dialog)
+        {
+            (controls, title) = (view.Controls, view.TreeTitle);
+        }
+        else
+        {
+            JsonDocument? answer;
+            try
+            {
+                answer = await _worker.SendAsync(
+                        ViewCommand(dialog, view?.Limit ?? 60, [], tail: false, AfterReadSeconds),
+                        AfterReadBudget, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or JsonException or TimeoutException
+                or InvalidOperationException)
+            {
+                return null;
+            }
+
+            if (answer is null)
+                return null;
+            using (answer)
+            {
+                if (!answer.RootElement.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
+                    return null;
+                (controls, title) = (ParseControls(answer.RootElement), ReadString(answer.RootElement, "window"));
+            }
+        }
+
+        if (title.Length == 0)
+            title = VisibleControlSurface.WindowTitle(dialog);
+        bool itsButton = controls.Any(control => control.Kind is not ("Text" or "Document") && SameLabel(label, control.Name));
+        IEnumerable<string?> said = controls.Where(static control => control.Kind is "Text" or "Document")
+            .Select(static control => (string?)control.Name)
+            .Append(title);
+        return itsButton && VisibleControlSurface.AsksToDestroy(said)
+            ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
+            : null;
+    }
+
     private long _clicks;
 
     /// <summary>Revision 3 of r24b (finding 3): the clicks this adapter has made (IViewedFields).</summary>
@@ -986,6 +1282,7 @@ internal sealed class WindowsVisibleControlAdapter
 
         ExternalCapabilityReceipt receipt;
         _pressedUnchanged = null;
+        _actedWindow = 0;
         // BAXY Renew cu (C11): the grid item a click names by its index, as the look called it («Encabezado de columna»).
         string? clickedType = null;
         if (arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("index", out JsonElement clickedIndex)
@@ -1041,6 +1338,12 @@ internal sealed class WindowsVisibleControlAdapter
         {
             _screenChangedUtc = DateTime.UtcNow;
         }
+
+        // Renew al máximo (7.1): a completed click carries the view of its window after it, which becomes the last view.
+        if (receipt.Verified && receipt.ErrorCode is null && receipt.EffectObserved && _actedWindow != 0
+            && !EffectElsewhere(receipt.Result)
+            && await AfterActAsync(_actedWindow, cancellationToken).ConfigureAwait(false) is { } after)
+            receipt = WithAfter(receipt, after);
 
         return receipt;
     }
@@ -1791,9 +2094,13 @@ internal sealed class WindowsVisibleControlAdapter
 
     /// <summary>The worker's «view» request; the words looked for go only when the look carries some (without them the
     /// view is the usual one).</summary>
-    internal static string ViewCommand(nint hwnd, int limit, IReadOnlyList<string>? wanted, bool tail = false)
+    internal static string ViewCommand(
+        nint hwnd, int limit, IReadOnlyList<string>? wanted, bool tail = false, double? seconds = null)
     {
         var command = new JsonObject { ["cmd"] = "view", ["hwnd"] = hwnd, ["limit"] = limit };
+        // Renew al máximo (7.1): the read after an act walks the tree within its own deadline.
+        if (seconds is double walk)
+            command["seconds"] = walk;
         if (tail)
         {
             // Encargo IMP3: the cut keeps the last entries of the tree (what the window drew last), not the first.
@@ -1842,7 +2149,7 @@ internal sealed class WindowsVisibleControlAdapter
                 return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop()), []);
             if (hwnd == 0)
             {
-                hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
+                hwnd = await WindowInFront(cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -1969,6 +2276,8 @@ internal sealed class WindowsVisibleControlAdapter
             // Pasada r15b (v3-27, v3-29): the actionables the window shows disabled (a «Copy» waiting for text), apart:
             // the mind knows they exist and wait for input; nothing presses them (no identity).
             List<ViewControl> disabled = ParseControls(root, "disabled");
+            // Renew al máximo (7.3): the window's box the worker read with the rectangles, for each control's zone.
+            Rect? windowBox = ReadRect(root, "box");
             // Whether the window held the front when its tree was read: only then can its keyboard focus be told.
             bool inFront = VisibleControlSurface.ForegroundIs(hwnd);
             int counted = root.TryGetProperty("controlCount", out JsonElement total)
@@ -1979,6 +2288,8 @@ internal sealed class WindowsVisibleControlAdapter
                 && named.ValueKind == JsonValueKind.String
                     ? named.GetString() ?? string.Empty
                     : string.Empty;
+            // Renew al máximo (7.1): the tree's own name of the window, which the read after an act compares.
+            string treeTitle = title;
             if (title.Length == 0)
                 title = VisibleControlSurface.WindowTitle(hwnd);
             // A packaged app's frame names the app it hosts, never the frame host every packaged app shares.
@@ -2033,9 +2344,21 @@ internal sealed class WindowsVisibleControlAdapter
             foreach (ViewControl control in controls)
                 names.Add(control.Name);
 
+            // BAXY Renew al máximo (F019, E015): Steam's library was told «la página principal» or «la tienda» in every
+            // practice run: its window is drawn without a tree, titled «Steam» on every page, and its tab strip read by
+            // OCR does not say which tab is chosen. Which of the named application's places the look shows is said as a
+            // fact, from what only that place shows (the data's «shows», ApplicationPlaces.PlaceShown).
+            ApplicationPlaces.ShownPlace? place = ApplicationPlaces.PlaceShown(application, names);
+
             lock (_viewLock)
             {
-                _lastView = new LastView(hwnd, controls);
+                _lastView = new LastView(hwnd, controls)
+                {
+                    TreeTitle = treeTitle,
+                    Limit = limit,
+                    Wanted = wanted,
+                    Tail = tail,
+                };
                 _viewsRead++;
             }
 
@@ -2062,12 +2385,14 @@ internal sealed class WindowsVisibleControlAdapter
                 // BAXY) that the request did not name, told by its process, never by its title. No act reaches such a
                 // window (protected_window, VisibleControlSurface.ActRefused); one this look named by its application
                 // may be acted on.
-                if (VisibleControlSurface.ProtectedFrom(processName, application,
+                // Renew al máximo (lote 4, c): a Control Panel applet that configures Windows (rundll32, explorer).
+                bool systemApplet = VisibleControlSurface.SystemToolWindow(windowRoot != 0 ? windowRoot : hwnd);
+                if (systemApplet || VisibleControlSurface.ProtectedFrom(processName, application,
                         () => VisibleControlSurface.ProcessDescription(unchecked((uint)ownerProcessId))))
                 {
                     writer.WriteBoolean("protected", true);
                     // Incidente del 2026-10-15: a system configuration tool, which no name opens to acts.
-                    if (VisibleControlSurface.SystemTool(processName))
+                    if (systemApplet || VisibleControlSurface.SystemTool(processName))
                         writer.WriteBoolean("systemTool", true);
                 }
                 else
@@ -2120,6 +2445,15 @@ internal sealed class WindowsVisibleControlAdapter
                 }
 
                 writer.WriteEndObject();
+                if (place is not null)
+                {
+                    writer.WriteStartObject("place");
+                    writer.WriteString("application", application);
+                    writer.WriteString("name", place.Place);
+                    writer.WriteString("shown", place.Shown);
+                    writer.WriteEndObject();
+                }
+
                 writer.WriteStartArray("controls");
                 foreach (ViewControl control in controls)
                 {
@@ -2140,6 +2474,9 @@ internal sealed class WindowsVisibleControlAdapter
                     // BAXY Renew cu (C11): what the grid itself says a DataItem is («Encabezado de fila», «Celda»).
                     if (control.ItemType.Length > 0)
                         writer.WriteString("itemType", control.ItemType);
+                    // Renew al máximo (7.3): where in the window it lies (two «Buscar», «the first result»).
+                    if (ControlZone(control.RectValue, windowBox) is { Length: > 0 } zone)
+                        writer.WriteString("zone", zone);
                     writer.WriteEndObject();
                 }
 
@@ -2295,12 +2632,7 @@ internal sealed class WindowsVisibleControlAdapter
             string name = ReadString(item, "name");
             if (name.Length == 0)
                 continue;
-            Rect? rect = null;
-            if (item.TryGetProperty("rect", out JsonElement box) && box.ValueKind == JsonValueKind.Object)
-            {
-                rect = new Rect(ReadInt(box, "x"), ReadInt(box, "y"), ReadInt(box, "w"), ReadInt(box, "h"));
-            }
-
+            Rect? rect = ReadRect(item, "rect");
             controls.Add(new ViewControl
             {
                 Index = controls.Count,
@@ -2327,6 +2659,11 @@ internal sealed class WindowsVisibleControlAdapter
             ? value.GetString() ?? string.Empty
             : string.Empty;
 
+    private static Rect? ReadRect(JsonElement item, string name) =>
+        item.TryGetProperty(name, out JsonElement box) && box.ValueKind == JsonValueKind.Object
+            ? new Rect(ReadInt(box, "x"), ReadInt(box, "y"), ReadInt(box, "w"), ReadInt(box, "h"))
+            : null;
+
     private static int ReadInt(JsonElement item, string name) =>
         item.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.Number
             && value.TryGetInt32(out int number)
@@ -2346,6 +2683,17 @@ internal sealed class WindowsVisibleControlAdapter
         string column = fx < 1.0 / 3 ? "L" : fx < 2.0 / 3 ? string.Empty : "R";
         string zone = row + column;
         return zone.Length == 0 ? "C" : zone;
+    }
+
+    // Renew al máximo (7.3): the zone of the window a control's centre lies in; none without its rectangle, without the
+    // window's box, or with its centre outside that box (never guessed).
+    internal static string ControlZone(Rect? control, Rect? window)
+    {
+        if (control is not { } rect || window is not { } box)
+            return string.Empty;
+        double x = rect.X + rect.W / 2.0;
+        double y = rect.Y + rect.H / 2.0;
+        return x < box.X || y < box.Y || x >= box.X + box.W || y >= box.Y + box.H ? string.Empty : Zone(x, y, box);
     }
 
     // ---------------------------------------------------------------- click
@@ -2388,7 +2736,7 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 // Read where it is: the worker no longer presses by coordinates (fable/cu-v3-clic), and the pointer
                 // takes the front itself inside a burst of the foreground lease (fable/cu-v3-pausa).
-                hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken).ConfigureAwait(false);
+                hwnd = await WindowInFront(cancellationToken).ConfigureAwait(false);
             }
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
@@ -2407,6 +2755,7 @@ internal sealed class WindowsVisibleControlAdapter
         if (Refuses(hwnd))
             return ExternalJson.FailureBeforeEffect(operation, "protected_window");
         _lookedWindow = hwnd;
+        _actedWindow = hwnd;
 
         return await PressUiaAsync(operation, label, controlId, hwnd, effectBoundary, cancellationToken, manner)
             .ConfigureAwait(false);
@@ -2443,6 +2792,7 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         _lookedWindow = window;
+        _actedWindow = window;
         return await new SearchBurst(lease, SearchClock, this)
             .RunAsync(operation, window, label, controlId, before, search, choose, cancellationToken)
             .ConfigureAwait(false);
@@ -2532,6 +2882,8 @@ internal sealed class WindowsVisibleControlAdapter
                 namedWindow == shownBy.Window ? [] : PopupsOf(shownBy.Window), (shownBy.NamesBefore as OpenerNames)?.Described))
             return null;
         _lookedWindow = shownBy.Window;
+        // Renew al máximo (7.1): the item's window is the one read again after the burst.
+        _actedWindow = namedWindow;
         return await new SearchBurst(reopenLease, SearchClock, this)
             .ReopenAsync(operation, shownBy.Window, shownBy.Label, shownBy.Id, label, cancellationToken,
                 shownIn: namedWindow == shownBy.Window ? 0 : namedWindow, openerManner: shownBy.Manner, itemManner: manner)
@@ -2879,6 +3231,7 @@ internal sealed class WindowsVisibleControlAdapter
         // Ronda final 21 (seguridad): neither by its way nor by the pointer.
         if (Refuses(window))
             return PointPressed.InProtectedWindow;
+        _actedWindow = window;
         var request = new JsonObject
         {
             ["cmd"] = "at",
@@ -2957,8 +3310,11 @@ internal sealed class WindowsVisibleControlAdapter
         int screenY,
         VisibleControlSurface.CapturedWindow? located,
         PointRelocator? relocate,
-        CancellationToken cancellationToken) =>
-        LocatedPointPress.PointerAsync(_pointer, window, screenX, screenY, located, relocate, cancellationToken);
+        CancellationToken cancellationToken)
+    {
+        _actedWindow = window;
+        return LocatedPointPress.PointerAsync(_pointer, window, screenX, screenY, located, relocate, cancellationToken);
+    }
 
     internal static PointPressed PointPressFrom(JsonElement root)
     {
@@ -3644,7 +4000,18 @@ internal sealed class WindowsVisibleControlAdapter
         internal int Repeated { get; set; }
     }
 
-    private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls);
+    private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls)
+    {
+        // Renew al máximo (7.1): how the look read the window (its limit, words and cut), so the read after an act reads
+        // it the same way and numbers it alike, and the window's name in its tree, which that read compares.
+        internal string TreeTitle { get; init; } = string.Empty;
+
+        internal int Limit { get; init; } = 60;
+
+        internal IReadOnlyList<string> Wanted { get; init; } = [];
+
+        internal bool Tail { get; init; }
+    }
 
     private readonly record struct ViewResult(ExternalCapabilityReceipt Receipt, IReadOnlyList<string> Names);
 }

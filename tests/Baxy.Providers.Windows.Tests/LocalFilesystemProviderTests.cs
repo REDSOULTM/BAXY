@@ -296,6 +296,33 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Al máximo, flujos: the refusal of a replace without the hash took a file.read and another file.write; it carries
+    // the version it saw (its hash and size), so the second call goes straight, its previous version to the bin.
+    [Test]
+    public async Task AVersionConflictCarriesTheVersionItSawSoTheSecondWriteGoesStraight()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        provider.WriteText("dato.txt", "uno", null);
+
+        OperationOutcome refused = await Handle(
+            provider, "file.write", """{"relativePath":"dato.txt","text":"dos"}""");
+        string seen = refused.Result!.Value.GetProperty("currentSha256").GetString()!;
+        OperationOutcome written = await Handle(
+            provider, "file.write", $$"""{"relativePath":"dato.txt","text":"dos","expectedSha256":"{{seen}}"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused.ErrorCode, Is.EqualTo("version_conflict"));
+            Assert.That(refused.Result!.Value.GetProperty("size").GetInt64(), Is.EqualTo(3));
+            Assert.That(written.Succeeded && written.Verified, Is.True, written.ErrorCode);
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "dato.txt")), Is.EqualTo("dos"));
+            Assert.That(bin.Recycled, Has.Count.EqualTo(1));
+        });
+    }
+
     // The list says which folder it read and whether its limit left entries out.
     [Test]
     public async Task AListSaysItsFolderAndWhetherTheLimitLeftEntriesOut()
@@ -673,6 +700,58 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(named.GetProperty("folder").GetString(), Is.EqualTo("home"));
             Assert.That(named.TryGetProperty("sameNameInHome", out _), Is.False);
             Assert.That(File.ReadAllText(Path.Combine(home, "proyecto", "notas.txt")), Is.EqualTo("cuatro"));
+        });
+    }
+
+    // Al máximo, flujos (P263, 26 of 27 runs: «crea la carpeta Proyectos en Documentos» → relativePath
+    // «Documentos/Proyectos» with no folder, made in BAXY's working folder): a first part that names one of the person's
+    // known folders the catalog's folder takes, in Spanish or English, is that folder, where Windows really keeps it
+    // (OneDrive's included), and the receipt's full path says so. A folder the catalog does not take («Imágenes») is
+    // only told beside the working folder, by its physical place, never by a «home\Imágenes» that does not exist.
+    [Test]
+    public async Task AFirstPartNamingAKnownFolderIsThatFolderWhereWindowsKeepsIt()
+    {
+        using TemporaryDirectory temporary = new();
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        string home = Path.Combine(temporary.Path, "home");
+        string documents = Path.Combine(temporary.Path, "OneDrive", "Documentos");
+        string pictures = Path.Combine(home, "Pictures");
+        string desktop = Path.Combine(temporary.Path, "OneDrive", "Escritorio");
+        foreach (string folder in new[] { home, documents, pictures, desktop })
+            Directory.CreateDirectory(folder);
+        var provider = new LocalFilesystemProvider(sandbox, bin)
+        {
+            KnownFolderPath = folder => folder switch
+            {
+                "home" => home,
+                "documents" => documents,
+                "pictures" => pictures,
+                "desktop" => desktop,
+                _ => Path.Combine(temporary.Path, "absent", folder),
+            },
+        };
+
+        FilesystemMutationResult made = provider.CreateDirectory("Documentos/Proyectos", null);
+        FilesystemMutationResult english = provider.WriteText(@"documents\Proyectos\notas.txt", "uno", null);
+        FilesystemMutationResult accented = provider.WriteText("ESCRITORIO/lista.txt", "dos", null);
+        JsonElement told = await WriteMessage(provider, """{"relativePath":"Imágenes/foto.txt","text":"tres"}""");
+        FilesystemMutationResult named = provider.WriteText("Documentos/nota.txt", "cuatro", null, "home");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(made.FullPath, Is.EqualTo(Path.Combine(documents, "Proyectos")));
+            Assert.That(Directory.Exists(Path.Combine(documents, "Proyectos")), Is.True);
+            Assert.That(english.FullPath, Is.EqualTo(Path.Combine(documents, "Proyectos", "notas.txt")));
+            Assert.That(english.InWorkFolder, Is.False);
+            Assert.That(accented.FullPath, Is.EqualTo(Path.Combine(desktop, "lista.txt")));
+            Assert.That(Directory.Exists(Path.Combine(sandbox, "Documentos")), Is.False);
+            Assert.That(Directory.Exists(Path.Combine(sandbox, "documents")), Is.False);
+            // Imágenes is not a folder the catalog takes: the working folder, with the person's Pictures told beside it.
+            Assert.That(told.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
+            Assert.That(told.GetProperty("sameNameInHome").GetString(), Is.EqualTo(pictures));
+            // A folder named in the call is that folder, as before.
+            Assert.That(named.FullPath, Is.EqualTo(Path.Combine(home, "Documentos", "nota.txt")));
         });
     }
 

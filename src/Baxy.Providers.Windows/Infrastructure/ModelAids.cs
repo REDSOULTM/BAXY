@@ -38,6 +38,9 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C13): a window.resolve by an application name that matched nothing lists the visible windows.</summary>
     public const string WindowCandidates = "window_candidates";
 
+    /// <summary>Al máximo, flujos (P252): a window.resolve with no selector says the person's window in front is window_active's.</summary>
+    public const string SelectorNext = "selector_next";
+
     /// <summary>BAXY Renew cu (C03): a click whose index names another control says so and how a read text is clicked.</summary>
     public const string IndexLabelNext = "index_label_next";
 
@@ -46,6 +49,30 @@ public static class ModelAids
 
     /// <summary>Renew al máximo (6.3): a failed app.open says whether its launch was issued and where to look next.</summary>
     public const string OpenRecovery = "open_recovery";
+
+    /// <summary>Renew al máximo (auditoría de flujos, P257): an app volume with no audio session names the apps that have one.</summary>
+    public const string AppVolumeCandidates = "app_volume_candidates";
+
+    /// <summary>Renew al máximo (auditoría de flujos, P215): a package.uninstall candidate that is a game names game_uninstall_named.</summary>
+    public const string GameUninstall = "game_uninstall";
+
+    /// <summary>Renew al máximo (E027): a known file found nowhere says nothing beyond the folders walked was searched.</summary>
+    public const string SearchScope = "search_scope";
+
+    /// <summary>Renew al máximo (F002): window.application.status says as a sentence whether BAXY opened the window.</summary>
+    public const string ProvenanceNext = "provenance_next";
+
+    /// <summary>Renew al máximo (w5, F004): a text typed with no window named says, as a sentence, the one window it went into.</summary>
+    public const string TypedTargetNext = "typed_target_next";
+
+    /// <summary>Renew al máximo (w5): an act stopped by the person's input says why it stopped and how the window is seen.</summary>
+    public const string InterruptedNext = "interrupted_next";
+
+    /// <summary>
+    /// Auditoría de falsedades (F001): an invalid_or_expired_window_id says the id is used up, nothing was done to the
+    /// window and nothing was read of it.
+    /// </summary>
+    public const string WindowIdSpent = "window_id_spent";
 
     private static readonly AsyncLocal<string?> Setting = new();
 

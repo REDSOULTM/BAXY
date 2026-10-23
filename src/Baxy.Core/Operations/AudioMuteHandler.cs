@@ -23,7 +23,7 @@ internal sealed class AudioMuteHandler(IAudioControlProvider provider) : IOperat
                 JsonValueKind.True,
                 JsonValueKind.False))
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         AudioMuteArguments arguments;
@@ -36,7 +36,7 @@ internal sealed class AudioMuteHandler(IAudioControlProvider provider) : IOperat
         }
         catch (JsonException)
         {
-            return InvalidArguments();
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         AudioControlReceipt receipt = await _provider.SetMuteAsync(
@@ -76,7 +76,4 @@ internal sealed class AudioMuteHandler(IAudioControlProvider provider) : IOperat
         JsonElement serialized = AudioControlEvidence.SerializeVerified(receipt);
         return OperationOutcome.Success(serialized);
     }
-
-    private static OperationOutcome InvalidArguments() =>
-        OperationOutcome.Failure("invalid_arguments");
 }

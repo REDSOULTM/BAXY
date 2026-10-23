@@ -4,7 +4,8 @@ As the real mind (src/baxy_mind/__main__.py), the reader answers voice.speak, vo
 voice.release as they arrive and every other request waits its turn on one loop. What it does is read from script.json
 in its folder at each request: "hold" {type: file} waits until that file exists, "delay" {type: seconds}, "fail" [type]
 answers an error, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
-reply. Every request's type is appended to seen.log, and each process writes its pid under pids/.
+reply. Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process writes
+its pid under pids/.
 """
 
 import json
@@ -36,9 +37,12 @@ def script() -> dict:
         return {}
 
 
-def seen(kind: str) -> None:
-    with _write_lock, open(os.path.join(HERE, "seen.log"), "a", encoding="utf-8") as file:
-        file.write(kind + "\n")
+def seen(message: dict) -> None:
+    with _write_lock:
+        with open(os.path.join(HERE, "seen.log"), "a", encoding="utf-8") as file:
+            file.write(str(message.get("type")) + "\n")
+        with open(os.path.join(HERE, "requests.jsonl"), "a", encoding="utf-8") as file:
+            file.write(json.dumps(message, ensure_ascii=False) + "\n")
 
 
 def answer(message: dict) -> None:
@@ -95,7 +99,7 @@ def main() -> None:
             if not line.strip():
                 continue
             message = json.loads(line)
-            seen(str(message.get("type")))
+            seen(message)
             if message.get("type") in READER:
                 answer(message)
             else:

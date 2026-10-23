@@ -23,6 +23,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // is still to come is waited on for up to 30 s before it is declared
     // unverified, the way a person waits for a heavy program to appear.
     private const int VerificationAttempts = 300;
+    // Renew al máximo (velocidad, E014 in pc-lote: 30-32 s each, verification_failed): a packaged application whose
+    // frame Windows shows with nothing of it inside (VisibleControlSurface.ShowsEmptyFrame) after this long is not
+    // filling it: a splash is filled within it (Configuración opened verified in 1.5-3.8 s on this PC, place included).
+    // In polls: the ObservationDelay ones that make it, for a platform whose delay takes no time.
+    internal static readonly TimeSpan EmptyFrameGrace = TimeSpan.FromSeconds(10);
+    private const int EmptyFrameGraceAttempts = 100;
     private static readonly TimeSpan ObservationDelay = TimeSpan.FromMilliseconds(100);
     private static readonly TimeSpan CatalogLifetime = TimeSpan.FromMinutes(5);
     // M89 (DEV-D v3r D-w11-t5 «¿Me abres el Spotify?»): app.open started and never completed; the shell gave up
@@ -273,6 +279,20 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
             if (candidate is null)
             {
+                // Renew al máximo (velocidad): the application's frame shown empty past the grace is the frame of a
+                // process that ended (forced to), which nothing fills: the opening ends here, unverified as at 30 s, and
+                // says what it saw (emptyFrame), instead of waiting out the rest of the budget.
+                if ((verification.Elapsed >= EmptyFrameGrace || attempt >= EmptyFrameGraceAttempts)
+                    && _platform.ShowsEmptyFrame(entry))
+                {
+                    return Failure(
+                        request,
+                        entry.Name,
+                        ApplicationOpenErrorCodes.VerificationFailed,
+                        launchIssued: !reused,
+                        reusedExisting: reused) with { EmptyFrame = true };
+                }
+
                 if (attempt < VerificationAttempts)
                 {
                     await _platform.DelayAsync(ObservationDelay, cancellationToken)
@@ -335,6 +355,33 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             ApplicationOpenErrorCodes.VerificationFailed,
             launchIssued: !reused,
             reusedExisting: reused);
+    }
+
+    // Renew al máximo (guarda msconfig): the catalog entry the opening would resolve, judged by the program its shortcut
+    // runs (VisibleControlSurface.SystemToolLaunch), or a packaged one by its package's own name (Windows Security's).
+    // A catalog that cannot be read tells nothing: the opening fails on it.
+    public async ValueTask<bool> OpensSystemToolAsync(string applicationId, CancellationToken cancellationToken)
+    {
+        if (!ApplicationIds.IsValidRequest(applicationId))
+        {
+            return false;
+        }
+
+        IReadOnlyList<InstalledApplicationEntry> catalog;
+        try
+        {
+            catalog = await ReadCatalogAsync(cancellationToken, applicationId).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return false;
+        }
+
+        return InstalledApplicationResolver.Resolve(applicationId, catalog).Entry is { } entry
+            && (entry.AppUserModelId.Contains('!')
+                ? External.VisibleControlSurface.SystemTool(InstalledApplicationResolver.PackageName(entry))
+                : External.VisibleControlSurface.SystemToolLaunch(entry.TargetPath, entry.TargetArguments)
+                    || External.VisibleControlSurface.SystemToolLaunch(entry.AppUserModelId, entry.TargetArguments));
     }
 
     public async ValueTask<ApplicationInstalledResult> IsInstalledAsync(
@@ -554,6 +601,29 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
     }
 
+    // Renew al máximo (auditoría de flujos): the processes of an installed application that run with no visible window
+    // (Steam in the notification area), told by the executable its windows are told by; empty when it resolves to none
+    // or its catalog cannot be read.
+    internal async ValueTask<IReadOnlyList<int>> ResolveBackgroundProcessesAsync(
+        string applicationName,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!ApplicationIds.IsValidRequest(applicationName))
+            return [];
+        try
+        {
+            IReadOnlyList<InstalledApplicationEntry> catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
+            return InstalledApplicationResolver.Resolve(applicationName, catalog).Entry is { } entry
+                ? _platform.RunningProcesses(entry)
+                : [];
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return [];
+        }
+    }
+
     public async ValueTask<ApplicationWindowStatusResult> GetWindowStatusAsync(
         string applicationName,
         CancellationToken cancellationToken)
@@ -608,16 +678,20 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        int visibleWindowCount = observations.Count(static observation =>
-            observation.Visible && observation.WindowHandle != 0);
+        (long, int, long)[] visibleWindows = observations
+            .Where(static observation => observation.Visible && observation.WindowHandle != 0)
+            .Select(static observation =>
+                (observation.WindowHandle, observation.ProcessId, observation.ProcessCreationTimeUtcTicks))
+            .ToArray();
         return new(
             applicationName,
             resolution.Entry.Name,
             Installed: true,
-            HasVisibleWindow: visibleWindowCount > 0,
-            VisibleWindowCount: visibleWindowCount,
+            HasVisibleWindow: visibleWindows.Length > 0,
+            VisibleWindowCount: visibleWindows.Length,
             Verified: true,
-            ErrorCode: null);
+            ErrorCode: null,
+            VisibleWindows: visibleWindows);
     }
 
     // resolving: the application an opening resolves on the catalog (app.open), null for any other read.
@@ -1334,6 +1408,14 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
         CancellationToken cancellationToken) =>
         throw new ApplicationInventoryException("Strong application window identity is unavailable.");
 
+    // Renew al máximo (auditoría de flujos): the running processes of a classic application's own executable, windows
+    // or not; none for a packaged application (suspended in the background by Windows itself) or the shell's entry.
+    IReadOnlyList<int> RunningProcesses(InstalledApplicationEntry entry) => [];
+
+    // Renew al máximo (velocidad): Windows shows a frame of this packaged application with nothing of it inside
+    // (VisibleControlSurface.ShowsEmptyFrame); false for a classic application.
+    bool ShowsEmptyFrame(InstalledApplicationEntry entry) => false;
+
     bool Activate(InstalledApplicationEntry entry);
 
     // forControl: the application starts with the person's own rights (ApplicationOpenRequest.ForControl).
@@ -1519,6 +1601,9 @@ internal static class InstalledApplicationResolver
 
 internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledApplicationPlatform
 {
+    public bool ShowsEmptyFrame(InstalledApplicationEntry entry) =>
+        entry.AppUserModelId.Contains('!') && External.VisibleControlSurface.ShowsEmptyFrame(entry.AppUserModelId);
+
     private static readonly Encoding StrictUtf8 =
         new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
     private const string CatalogScript = """
@@ -1755,6 +1840,28 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         CancellationToken cancellationToken) =>
         Inventory(entry, strongIdentityOnly: true, cancellationToken);
 
+    public IReadOnlyList<int> RunningProcesses(InstalledApplicationEntry entry)
+    {
+        if (entry.AppUserModelId.Contains('!')
+            || string.Equals(entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal)
+            || ExpectedExecutable(entry) is not { } expected)
+            return [];
+        Process[] processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(expected));
+        try
+        {
+            return [.. processes
+                .Where(process => ExecutableImagePath(process.Id) is { } image && Path.IsPathFullyQualified(image)
+                    && ExecutableIsLaunchedImage(Path.GetFullPath(image), expected))
+                .Select(static process => process.Id)
+                .Order()];
+        }
+        finally
+        {
+            foreach (Process process in processes)
+                process.Dispose();
+        }
+    }
+
     private static bool ProcessHasExited(Process process)
     {
         try
@@ -1773,6 +1880,33 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     private static List<InstalledApplicationObservation> Inventory(
         InstalledApplicationEntry entry,
         bool strongIdentityOnly,
+        CancellationToken cancellationToken) =>
+        Inventory(entry, strongIdentityOnly, MainWindowsByProcess, cancellationToken);
+
+    // Renew al máximo (rendimiento): the main window of every process, read in one pass over the top-level windows. Each
+    // process's MainWindowHandle was one such pass of its own (an EnumWindows per process: about 300 per inventory of a
+    // packaged application, one inventory every 100 ms while an opening is verified); this pass applies the same rule
+    // (.NET's MainWindowFinder): the first window in Z order of the process that no window owns (GW_OWNER) and that is
+    // visible.
+    internal static Dictionary<uint, nint> MainWindowsByProcess()
+    {
+        var found = new Dictionary<uint, nint>();
+        EnumWindowsProc callback = (window, _) =>
+        {
+            GetWindowThreadProcessId(window, out uint process);
+            if (!found.ContainsKey(process) && GetWindow(window, 4) == 0 && IsWindowVisible(window))
+                found[process] = window;
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return found;
+    }
+
+    internal static List<InstalledApplicationObservation> Inventory(
+        InstalledApplicationEntry entry,
+        bool strongIdentityOnly,
+        Func<Dictionary<uint, nint>> readMainWindows,
         CancellationToken cancellationToken)
     {
         bool packaged = entry.AppUserModelId.Contains('!');
@@ -1792,6 +1926,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
         Dictionary<uint, nint>? hostedFrames = null;
+        // Renew al máximo (rendimiento): read once, the first time a process's main window is asked for.
+        Dictionary<uint, nint>? mainWindows = null;
         // The processes running the launched image's name, and who started whom: a helper they started may draw the
         // application's windows (steamwebhelper.exe under steam.exe); its ancestor's image is verified below.
         HashSet<uint> launchers = packaged ? [] : [.. processes
@@ -1823,7 +1959,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         ? VisibleTopLevelWindows(process.Id, requireComplete: false, windowClass)
                         : null;
                     nint window = ownedWindows is null
-                        ? process.MainWindowHandle : ownedWindows.FirstOrDefault();
+                        ? (mainWindows ??= readMainWindows()).GetValueOrDefault(unchecked((uint)process.Id))
+                        : ownedWindows.FirstOrDefault();
                     // Computer use (CU1959, measured on Configuración): a packaged
                     // app suspended in the background keeps a «visible» CoreWindow
                     // that DWM cloaks; nobody sees it, so it is not a running window

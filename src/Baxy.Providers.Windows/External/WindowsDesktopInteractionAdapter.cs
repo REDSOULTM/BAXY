@@ -56,6 +56,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// </summary>
     internal IForegroundLease? ChordLease { get; init; }
 
+    /// <summary>
+    /// Renew al máximo (rendimiento): the persistent UI Automation worker filesystem.folder.open's script runs in
+    /// (<see cref="UiaWorkerScript"/>, its arguments by position); null starts a PowerShell for it, as before (the test
+    /// seams' fake runners).
+    /// </summary>
+    internal IUiaWorker? Scripts { get; init; }
+
     internal WindowsDesktopInteractionAdapter(
         IExternalProcessRunner runner,
         string folderScript,
@@ -112,13 +119,28 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         _focusOwed = TakeUnfocusedValue();
         try
         {
-            return await InvokeActAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            ExternalCapabilityReceipt receipt = await InvokeActAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            // Renew al máximo (7.1): a text or a key completed in a named window carries the view of that window after
+            // it (the visible controls' adapter reads it again; it becomes the last view); nothing when it was not read.
+            if (operation is "input.text.type" or "input.key.press" && _fields is not null
+                && receipt is { Verified: true, ErrorCode: null, EffectObserved: true }
+                && NamedWindow(arguments) is nint window and not 0
+                && await _fields.AfterActAsync(window, cancellationToken).ConfigureAwait(false) is { } after)
+                receipt = WindowsVisibleControlAdapter.WithAfter(receipt, after);
+            return receipt;
         }
         finally
         {
             _focusOwed = null;
         }
     }
+
+    // The window a step names («window»); 0 when it names none or not as a handle.
+    private static nint NamedWindow(JsonElement arguments) =>
+        arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("window", out JsonElement named)
+        && named.ValueKind == JsonValueKind.Number && named.TryGetInt64(out long handle) && handle > 0
+            ? (nint)handle
+            : 0;
 
     // Revision 3 of r24b (finding 3): the pending focus, taken by the act that asks for it; null when a click came in
     // between or a step's time went by.
@@ -154,6 +176,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         if (!File.Exists(script))
             return ExternalJson.Failure(operation, "desktop_interaction_script_missing");
         var command = new List<string> { "-NoProfile", "-NonInteractive", "-STA", "-File", script };
+        // The folder script's parameters by position (Folder, Subdirectory), as the worker's runspace takes them.
+        var positional = new List<string>();
         try
         {
             if (operation == "clipboard.copy")
@@ -163,6 +187,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             else if (operation is "filesystem.folder.open" or "filesystem.file.open.latest")
             {
                 command.Add(ExternalJson.RequiredString(arguments, "folder"));
+                positional.Add(command[^1]);
                 if (operation == "filesystem.folder.open"
                     && arguments.TryGetProperty("subdirectory", out JsonElement subdirectory)
                     && subdirectory.ValueKind == JsonValueKind.String
@@ -170,6 +195,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 {
                     command.Add("-Subdirectory");
                     command.Add(subdirectory.GetString()!);
+                    positional.Add(command[^1]);
                 }
             }
             else if (operation == "input.keyboard.layout")
@@ -208,9 +234,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             {
                 effectBoundary.Cross(cancellationToken);
             }
+            // Renew al máximo (rendimiento): the folder's script runs in the worker, already started, with the same
+            // budget; the PowerShell started cold for it cost a few hundred ms of every opening.
             (ExternalProcessResult? watched, bool interrupted) = await LeasedInput.WatchHelperAsync(
                 burst,
-                run => _runner.RunAsync("powershell.exe", command, TimeSpan.FromSeconds(15), run),
+                run => operation == "filesystem.folder.open" && Scripts is { } worker
+                    ? UiaWorkerScript.RunAsync(
+                        worker, File.ReadAllText(script), positional, TimeSpan.FromSeconds(15), run)
+                    : _runner.RunAsync("powershell.exe", command, TimeSpan.FromSeconds(15), run),
                 cancellationToken).ConfigureAwait(false);
             if (interrupted || watched is not { } process)
                 return effectBoundary.Failure(operation, LeasedInput.Interrupted, true);
@@ -321,6 +352,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
     // The characters a burst types when the person's input cannot be told apart from BAXY's (no Raw Input).
     internal const int BlindBurstCharacters = 8;
+
+    // BAXY Renew al máximo (E017): how long a typed character waits for the marked edit control to have taken the ones
+    // sent before it (polls of its length, apart): 300 ms at most, once; past it the rest go at the keyboard's pace.
+    private const int TakenPolls = 60;
+    private const int TakenPollMs = 5;
 
     /// <summary>
     /// A key or a text sent to the window in front by SendInput from this process: verified when Windows accepted
@@ -541,8 +577,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return outOfTime;
         }
 
+        // The characters KeepGoing let go (each call comes before one), for the field to be waited for (AwaitTaken).
+        int letGo = 0;
         bool KeepGoing()
         {
+            AwaitTaken(letGo);
             userActed |= bursts.Current is { UserActed: true };
             if (!userActed && OutOfTime())
                 return false;
@@ -550,6 +589,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 && !userActed
                 && (window != 0 ? _keyboard.Holds(window) : _keyboard.Foreground().ProcessId == before.ProcessId);
             interrupted |= !stays;
+            if (stays)
+                letGo++;
             return stays;
         }
 
@@ -569,6 +610,30 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         CaretText? caretBefore = readsBack && mark is null
             ? await CaretTextAsync(before, cancellationToken).ConfigureAwait(false)
             : null;
+        // BAXY Renew al máximo (e2e E017, pc-lote-A-s1: «lista: pilas, cables» typed into a busy Notepad landed as «lista
+        // ilas, cables», and the read-back rightly said not read back): an editor that reads each key when it gets to it
+        // loses or repeats the keys sent before it took the earlier ones (measured on Windows 11 Notepad, see
+        // WindowsDesktopKeyboard.TypeText), and a fixed pace is too fast for it while the machine is loaded. With a mark,
+        // each character after the first waits (bounded) until the marked control took the ones sent before it, and the
+        // read-back waits for the last; a control that does not take them within the bound (the keys went elsewhere, or
+        // it rewrites what it takes) leaves the rest at the keyboard's pace, as before.
+        bool pacedByField = mark is not null;
+        void AwaitTaken(int sent)
+        {
+            if (!pacedByField || sent <= 0 || mark is not { } marked)
+                return;
+            for (int poll = 0; !_delivery!.Took(marked, sent, text.Length); poll++)
+            {
+                if (poll >= TakenPolls)
+                {
+                    pacedByField = false;
+                    return;
+                }
+
+                Thread.Sleep(TakenPollMs);
+            }
+        }
+
         uint accepted = 0;
         string? focusAt = null;
         if (!typing)
@@ -613,6 +678,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 bool blindCut = false;
                 bool KeepTyping()
                 {
+                    AwaitTaken(start + sent);
                     if (bursts.Current is { UserActed: true })
                     {
                         personActed = true;
@@ -736,6 +802,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         }
         // Rule 3: Windows accepting every event proves the keys went in, not that the text reached the field meant. A text
         // with no window named is verified by its read-back alone.
+        AwaitTaken((int)(accepted / 2));
         bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text);
         // FT/proveedores goal (E2): the paragraph at the caret read again by UI Automation; a read that fails leaves
         // the text not read back, as before.
@@ -794,6 +861,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 writer.WriteNull("error");
             else
                 writer.WriteString("error", unread);
+            if (typing && (window == 0 || openedApplication)
+                && Infrastructure.ModelAids.On(Infrastructure.ModelAids.TypedTargetNext))
+                writer.WriteString("next", TypedInto(before.Title, sentToProcess, window == 0, readBack));
             writer.WriteEndObject();
         });
         // A text with no window named whose read-back did not find it: its keys went in, what they wrote is unknown.
@@ -808,6 +878,20 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             ? [.. entries.EnumerateArray().Where(entry => entry.ValueKind == JsonValueKind.String)
                 .Select(entry => entry.GetString()!)]
             : [];
+
+    // Renew al máximo (w5, F004): with sentTo «Calculadora» the reply still spoke of the Notepad the person named («no
+    // pude comprobar que escribiste hola en el Bloc de notas») and of a focus change never tried. The same fact as a
+    // sentence: the one window the text went into, and that nothing was opened or brought up for it.
+    internal static string TypedInto(string title, string process, bool front, bool readBack)
+    {
+        string named = string.IsNullOrWhiteSpace(title) ? process : $"{title} ({process})";
+        string where = front
+            ? $"the text went by the keyboard into the window in front, of {named}; no other application received it, "
+              + "and no application was opened or brought to the front for it"
+            : $"the text went by the keyboard into the window of {named}, the application just opened; no other "
+              + "application received it";
+        return readBack ? where : where + "; it was not read back there";
+    }
 
     // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad), by its title
     // and the program a view names it by, read before the first key.

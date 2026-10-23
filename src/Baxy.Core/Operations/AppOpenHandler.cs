@@ -13,13 +13,13 @@ internal sealed class AppOpenHandler(
     Func<nint, string?>? windowIdFor = null,
     Func<long, OpenedWindowFront>? frontOf = null,
     IGameTitles? games = null,
-    Func<long, string, CancellationToken, long>? settle = null)
-    : IOperationHandler
+    Func<long, string, CancellationToken, ValueTask<long>>? settle = null)
+    : IOperationHandler, IInvocationPreflight
 {
     // BAXY Renew cu (C03 en frío): how long an application started behind its sign-in may take to show its window.
     internal static readonly TimeSpan SignInBudget = TimeSpan.FromSeconds(30);
-    private readonly Func<long, string, CancellationToken, long> _settle =
-        settle ?? ((window, name, token) => ApplicationWindowSettle.WaitSettled(window, name, SignInBudget, token));
+    private readonly Func<long, string, CancellationToken, ValueTask<long>> _settle =
+        settle ?? ((window, name, token) => ApplicationWindowSettle.WaitSettledAsync(window, name, SignInBudget, token));
     private readonly IApplicationOpenProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
     private readonly LaunchProvenance _provenance = provenance ?? LaunchProvenance.Shared;
@@ -29,6 +29,36 @@ internal sealed class AppOpenHandler(
 
     public OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("app.open");
+
+    // Renew al máximo (guarda msconfig): E014 «abre la configuración de sonido» opened «Configuración del sistema»
+    // (msconfig) elevated without asking, the window where the incidente del 2026-10-15 disabled 256 services. An
+    // opening whose name resolves to a tool that configures Windows itself (the provider's rule, the one no click acts
+    // on) is this invocation's own risk: it asks in normal mode, bound to it. Read only; any other opening goes straight.
+    public bool MayRaise(JsonElement arguments) => true;
+
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        string? appId = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("appId", out JsonElement named)
+            && named.ValueKind == JsonValueKind.String
+                ? named.GetString()
+                : null;
+        // E014 (int3 s1): a place its application does not have is refused by the opening itself, launching nothing;
+        // asking the person first («¿Abro la Configuración del sistema en la sección de sonido?») asked for nothing.
+        if (appId is not null
+            && arguments.TryGetProperty("place", out JsonElement place) && place.ValueKind == JsonValueKind.String
+            && !ApplicationPlaces.PlacesOf(appId).Any(declared => declared.Place == place.GetString()))
+        {
+            return InvocationPreflightResult.Proceed;
+        }
+
+        return appId is not null && ApplicationIds.IsValidRequest(appId)
+            && await _provider.OpensSystemToolAsync(appId, cancellationToken).ConfigureAwait(false)
+                ? InvocationPreflightResult.Raised(OperationRisk.Irreversible)
+                : InvocationPreflightResult.Proceed;
+    }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(
         OperationInvocation invocation,
@@ -44,7 +74,7 @@ internal sealed class AppOpenHandler(
         }
         catch (JsonException)
         {
-            return OperationOutcome.Failure("invalid_arguments");
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
         if (!ApplicationIds.IsValidRequest(arguments.AppId))
@@ -58,15 +88,27 @@ internal sealed class AppOpenHandler(
         string? placeValue = arguments.PlaceValue;
         GameTitle? game = null;
         // BAXY Renew cu (C04): a game's page asked for by the game's title, as the person says it; its catalog turns it
-        // into the number the address takes, and the game found is named back with the opening.
+        // into the number the address takes, and the game found is named back with the opening. A value of digits
+        // alone is already that number, except a title said as such (game.store.page: «1942» is a game's name).
         if (ApplicationPlaces.GameCatalogOf(arguments.AppId, arguments.Place) is { } catalog
-            && !string.IsNullOrWhiteSpace(placeValue) && !placeValue.All(char.IsAsciiDigit))
+            && !string.IsNullOrWhiteSpace(placeValue)
+            && (arguments.PlaceValueAsSaid == true || !placeValue.All(char.IsAsciiDigit)))
         {
-            game = await _games.FindAsync(catalog, placeValue, cancellationToken).ConfigureAwait(false);
+            bool searchFailed = false;
+            try
+            {
+                game = await _games.FindAsync(catalog, placeValue, cancellationToken).ConfigureAwait(false);
+            }
+            catch (GameTitleSearchFailedException)
+            {
+                // Renew al máximo (auditoría de flujos): no answer (no network) is not a title nothing bears.
+                searchFailed = true;
+            }
+
             if (game is null)
             {
                 return OperationOutcome.Failure(
-                    "game_title_not_found",
+                    searchFailed ? "game_title_search_failed" : "game_title_not_found",
                     result: Facts(writer =>
                     {
                         writer.WriteString("appId", arguments.AppId);
@@ -90,7 +132,15 @@ internal sealed class AppOpenHandler(
                 // another application.
                 bool placeOfApplication = arguments.Place is null || ApplicationPlaces.PlacesOf(arguments.AppId)
                     .Any(declared => declared.Place == arguments.Place);
-                string? places = ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(arguments.AppId, arguments.AppId) : null;
+                // Renew al máximo (E014): a place of another application says the opening that reaches it (the model
+                // read placeIn as a value of place, then opened msconfig with no place), after the fact that nothing
+                // opened (int3 s1 told «Abrí Configuración» from a hint that began with «opens it»).
+                IReadOnlyList<string> owners = placeOfApplication ? [] : ApplicationPlaces.ApplicationsWith(arguments.Place);
+                string? places = !ModelAids.On(ModelAids.AppPlaces) ? null
+                    : owners.Count > 0
+                        ? $"nothing was opened. app_open with appId \"{owners[0]}\" and place \"{arguments.Place}\" "
+                            + $"opens {arguments.Place}, a place of {string.Join(" or ", owners)}, not of {arguments.AppId}"
+                        : PlacesNext(arguments.AppId, arguments.AppId);
                 return OperationOutcome.Failure(
                     placeOfApplication ? "place_value_not_taken" : "place_not_of_application",
                     result: Facts(writer =>
@@ -102,7 +152,8 @@ internal sealed class AppOpenHandler(
                         // The places of its application and what each takes, as a fact whether the aids are on or off.
                         if (placeOfApplication)
                             WritePlaces(writer, arguments.AppId);
-                        WriteNames(writer, "placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place));
+                        WriteNames(writer, "placeIn",
+                            placeOfApplication ? ApplicationPlaces.ApplicationsWith(arguments.Place) : owners);
                         if (places is not null) writer.WriteString("next", places);
                     }));
             }
@@ -130,7 +181,13 @@ internal sealed class AppOpenHandler(
                 errorCode,
                 result: ModelAids.On(ModelAids.OpenRecovery)
                     ? Facts(writer => WriteRecovery(writer, errorCode, arguments.AppId, providerResult))
-                    : Names("candidates", providerResult.Candidates),
+                    : providerResult.EmptyFrame
+                        ? Facts(writer =>
+                        {
+                            WriteNames(writer, "candidates", providerResult.Candidates);
+                            writer.WriteBoolean("emptyFrame", true);
+                        })
+                        : Names("candidates", providerResult.Candidates),
                 effectMayHaveOccurred: providerResult.Succeeded);
         }
 
@@ -181,9 +238,14 @@ internal sealed class AppOpenHandler(
         // BAXY Renew cu (C03 en frío): started by this opening behind its own sign-in, the place handed during it was
         // lost (the look showed «Iniciando sesión» and then the store); once its window settles the place goes again,
         // and the receipt names that window.
+        // Renew al máximo (auditoría de flujos): only a process this opening started is behind its sign-in; one already
+        // running (Steam in the notification area, showing a window new to the opening) waited 30 s for nothing.
         long openedWindow = providerResult.WindowHandle.GetValueOrDefault();
-        if (place is not null && !providerResult.AlreadyRunning && ApplicationPlaces.StartsBehindSignIn(arguments.AppId)
-            && _settle(openedWindow, providerResult.DisplayName, cancellationToken) is long settled and not 0)
+        if (place is not null && !providerResult.AlreadyRunning
+            && LaunchedByThisOpening(providerResult.Receipt.ProcessCreationTimeUtcTicks, openingStartedTicks)
+            && ApplicationPlaces.StartsBehindSignIn(arguments.AppId)
+            && await _settle(openedWindow, providerResult.DisplayName, cancellationToken).ConfigureAwait(false)
+                is long settled and not 0)
         {
             openedWindow = settled;
             place = _places.Open(placeAddress!, arguments.Foreground == true, settled) is { Opened: true } again
@@ -259,12 +321,20 @@ internal sealed class AppOpenHandler(
         writer.WriteBoolean("launchIssued", receipt.LaunchIssued);
         if (receipt.ReusedExisting)
             writer.WriteBoolean("alreadyRunning", true);
+        // Renew al máximo (velocidad): what the opening saw instead of a window of it: its frame, empty.
+        if (opening.EmptyFrame)
+            writer.WriteBoolean("emptyFrame", true);
         string name = string.IsNullOrWhiteSpace(opening.DisplayName) ? appId : opening.DisplayName;
         const string look = "window_application_status can tell whether one shows now, before saying it opened or not";
         string? next = errorCode switch
         {
+            "verification_failed" when opening.EmptyFrame =>
+                $"Windows shows a window frame of {name} with nothing of {name} inside it (its program does not draw "
+                    + "there); no window of it was verified",
+            // Auditoría de falsedades: «was started» read as «se abrió»; what the receipt knows is that the launch was
+            // issued (LaunchIssued), not that the application started.
             "verification_failed" or "inventory_failed" when receipt.LaunchIssued =>
-                $"{name} was started and no window of it was verified; {look}",
+                $"a launch of {name} was issued and no window of it was verified; {look}",
             "verification_failed" or "inventory_failed" when receipt.ReusedExisting =>
                 $"{name} was already running and no window of it was verified; {look}",
             "verification_failed" => $"no window of {name} was verified; {look}",

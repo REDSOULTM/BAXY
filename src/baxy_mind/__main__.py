@@ -11,9 +11,29 @@ from pathlib import Path
 
 from . import protocol
 from .llm_server import LlmServer
-from .mind import NOTICE, Mind
+from .mind import Mind
 from .system_one import SystemOne
 from .voice import Voice
+
+
+# BAXY Renew al máximo 11.6: the trace keeps every turn's rows (the person's words among them) on this PC, so it has a
+# cap: past it when the mind starts, it becomes turns.jsonl.1 (the one before is dropped) and a new one begins. It stays
+# in %LOCALAPPDATA%\BAXY\renew: catalog.configure.json is written beside it (mind.py) and the benches read it there.
+TRACE_LIMIT_BYTES = 50 * 1024 * 1024
+
+# Al máximo W5: the requests after which the conversation may be read ahead for the next one (Mind.prefill decides
+# whether a turn is left open): a turn's last answer, a heartbeat's end and a kept session's load.
+PREFILLED_AFTER = ("turn.decide", "turn.continue", "turn.beat.end", "session.load")
+
+
+def bounded_trace(trace: Path, limit: int = TRACE_LIMIT_BYTES) -> Path:
+    trace.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        if trace.stat().st_size > limit:
+            os.replace(trace, trace.with_name(trace.name + ".1"))
+    except FileNotFoundError:
+        pass  # the first start: nothing to cap
+    return trace
 
 
 def main() -> int:
@@ -23,8 +43,11 @@ def main() -> int:
         sys.stderr.write("baxy_mind_renew_failure: BAXY_MIND_LLM_GGUF and BAXY_MIND_LLAMA_SERVER are required\n")
         return 2
     try:
+        # Renew al máximo 1.5 (2026-10-22): 53,248 and not 49,152. With the ~43k-token prefix the history had ~2.5k
+        # tokens (about three turns); 4,096 more cost ~68 MiB of KV (8 full-attention layers × 4 KV heads × 256, q8_0),
+        # room left once Laya stopped using the GPU (3.1: 3,902 MiB with System One on).
         server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
-                           context=int(os.environ.get("BAXY_RENEW_CTX", "49152")))
+                           context=int(os.environ.get("BAXY_RENEW_CTX", "53248")))
     except RuntimeError as error:  # a pinned port in use (llm_server._pinned_port)
         sys.stderr.write(f"baxy_mind_renew_failure: {error}\n")
         return 2
@@ -35,17 +58,17 @@ def main() -> int:
         system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), server_path,
                                int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
         system_one.start()
-    trace = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl"
-    trace.parent.mkdir(parents=True, exist_ok=True)
+    trace = bounded_trace(Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl")
     mind = Mind(server, trace, system_one)
-    def spoken(queued: float, sounded: float) -> None:
+    def spoken(queued: float, sounded: float, notice: bool) -> None:
         # From the App's voice.speak to the first sound, and when it sounded (the turn's own rows say when its text
-        # reached the mind), so text-to-first-sound is read from this trace.
-        mind._log("voice.speak", queued, None, sound_ms=round((sounded - queued) * 1000),
-                  sound_at=(_dt.datetime.now() + _dt.timedelta(seconds=sounded - time.monotonic()))
+        # reached the mind), so text-to-first-sound is read from this trace; a notice's row says so.
+        mind._log("voice.speak", queued, None, sound_ms=round((sounded - queued) * 1000), notice=notice,
+                  sound_at=(_dt.datetime.now() + _dt.timedelta(seconds=sounded - time.perf_counter()))
                   .isoformat(timespec="milliseconds"))
 
     voice = Voice(protocol.write_message, spoken)  # loads beside the model; turns never wait for it
+    mind.foresee = voice.speech.foresee  # the last answer's first sentence is synthesized while it is written
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL,
         "models": {"llm": server.name},
@@ -76,11 +99,12 @@ def main() -> int:
                 kind = str(message.get("type"))
                 if kind == "voice.speak":
                     # FT/proveedores goal (review of E001's fix): an answer asked while the voice loads waits and
-                    # sounds once it is loaded, but the turn's «Un momento.» says the turn is under way: heard after
-                    # the answer is on screen it would say something false, so it is only taken from a loaded voice.
+                    # sounds once it is loaded, but the turn's notice says the turn is under way: heard after the
+                    # answer is on screen it would say something false, so it is only taken with its audio ready
+                    # (Speech.speak). The notice is the model's phrase sent with catalog.ready (al máximo 9.2a).
                     text = str(message.get("text") or "")
-                    accepted = (voice.speech.ready or text != NOTICE) and voice.speech.speak(text,
-                                                                                            notice=text == NOTICE)
+                    notice = mind.notice
+                    accepted = voice.speech.speak(text, notice=bool(notice) and text == notice)
                     protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
                                             "accepted": accepted})
                 elif kind == "voice.cancel":
@@ -115,6 +139,7 @@ def main() -> int:
             try:
                 if kind == "catalog.configure":
                     count = mind.configure(message)
+                    voice.hear_names(mind.names)  # the ear's hotwords: what the model is shown is what it may hear
                     # Ready means ready: the model is loaded and the catalog prefix is cached before the App is told so
                     # (a first turn sent earlier waited behind the warm-up and timed out, 2026-10-15).
                     try:
@@ -125,8 +150,10 @@ def main() -> int:
                         reply["startup"] = server.startup_failure()
                         protocol.write_message(reply)
                         continue
+                    # The notice the model wrote at warm-up (empty: none is said); the voice synthesizes it now.
+                    voice.speech.set_notice(mind.notice)
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count,
-                                            "notice": NOTICE})
+                                            "notice": mind.notice})
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
                     protocol.write_message(mind.decide(request_id, str(message.get("text") or ""),
@@ -171,6 +198,16 @@ def main() -> int:
                 sys.stderr.flush()
                 protocol.write_message(protocol.error_reply(request_id, "request_failed",
                                                             f"{surface}_runtime_failure"))
+            if kind in PREFILLED_AFTER:
+                # Al máximo W5: the reply is already out; with no turn left open, the conversation is read as the next
+                # request will show it (Mind.prefill), on a budget of its own, while BAXY speaks. A request that comes
+                # meanwhile waits for it, and then does not read it itself.
+                server.deadline = time.monotonic() + LlmServer.REQUEST_SECONDS
+                try:
+                    mind.prefill()
+                except Exception as error:  # noqa: BLE001 - the next request reads it itself
+                    sys.stderr.write(f"baxy_mind_renew_failure:prefill:{error!r}\n")
+                    sys.stderr.flush()
     finally:
         voice.stop()
         voice.speech.close()

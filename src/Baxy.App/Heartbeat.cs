@@ -7,13 +7,14 @@ namespace Baxy.App;
 /// <summary>
 /// BAXY's heartbeat (owner, 2026-10-15; OpenClaw's heartbeat): every five minutes and when something changes (an
 /// application opens, a file appears in Downloads, Windows' internet check changes, the battery runs low, the person
-/// leaves or comes back), the moment goes to the model, which decides by instinct. The five-minute look pauses while the person plays or the
-/// GPU is busy; a change still wakes it. <c>BAXY_RENEW_HEARTBEAT=0</c> turns it off.
+/// leaves or comes back; changes join, one beat every 30 s at most: <see cref="HeartbeatPace"/>), the moment goes to the
+/// model, which decides by instinct. The five-minute look pauses while the person plays or the
+/// GPU is busy; a change still wakes it. Off unless <c>BAXY_RENEW_HEARTBEAT=1</c> (owner, 2026-10-22).
 /// </summary>
 internal sealed class Heartbeat : IAsyncDisposable
 {
     private static readonly TimeSpan Watch = TimeSpan.FromSeconds(15);
-    private static readonly TimeSpan Tick = TimeSpan.FromMinutes(5);
+    private const string AppOpened = "app opened: ";
 
     private readonly Func<JsonObject, bool, Task> _beat;
     private readonly Func<bool> _canBeat;
@@ -28,10 +29,11 @@ internal sealed class Heartbeat : IAsyncDisposable
     private readonly FileSystemWatcher? _downloads;
     private readonly WindowsNetworkStatusProvider _network = new();
     private HashSet<string>? _windows;
+    private bool _personActed;
     private string? _connectivity;
     private int? _battery;
     private readonly AwayWatch _awayWatch = new();
-    private DateTimeOffset _lastBeat = DateTimeOffset.UtcNow;
+    private readonly HeartbeatPace _pace = new(TimeProvider.System);
     private Task _loop = Task.CompletedTask;
 
     /// <param name="beat">Runs one heartbeat with the moment; the flag says whether its words may be spoken.</param>
@@ -62,8 +64,9 @@ internal sealed class Heartbeat : IAsyncDisposable
         }
     }
 
+    // Owner, 2026-10-22: the heartbeat stays off (it adds little for the person); BAXY_RENEW_HEARTBEAT=1 turns it on.
     internal static bool Enabled =>
-        !string.Equals(Environment.GetEnvironmentVariable("BAXY_RENEW_HEARTBEAT"), "0", StringComparison.Ordinal);
+        string.Equals(Environment.GetEnvironmentVariable("BAXY_RENEW_HEARTBEAT"), "1", StringComparison.Ordinal);
 
     internal void Start()
     {
@@ -121,8 +124,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             changed = _events.Count > 0;
         }
 
-        bool due = DateTimeOffset.UtcNow - _lastBeat >= Tick;
-        if ((!changed && !due) || !_canBeat())
+        if (!_pace.Due(changed) || !_canBeat())
         {
             return;
         }
@@ -130,7 +132,7 @@ internal sealed class Heartbeat : IAsyncDisposable
         if (!changed && (activity == HeartbeatMoment.Playing || gpuBusy == true))
         {
             // The five-minute look pauses while the person plays or the GPU is busy; a change still wakes it.
-            _lastBeat = DateTimeOffset.UtcNow;
+            _pace.Beat();
             return;
         }
 
@@ -141,7 +143,7 @@ internal sealed class Heartbeat : IAsyncDisposable
             _events.Clear();
         }
 
-        _lastBeat = DateTimeOffset.UtcNow;
+        _pace.Beat();
         JsonObject moment;
         try
         {
@@ -168,20 +170,7 @@ internal sealed class Heartbeat : IAsyncDisposable
     // What changed since the last look, as the lines the model reads («app opened: …», «internet connectivity: …» …).
     private async Task NoteChangesAsync(CancellationToken cancellationToken)
     {
-        // Ronda final 30 (regla 3): only two lists both read say what opened in between.
-        HashSet<string>? windows = CurrentApplications();
-        if (windows is not null && _windows is not null)
-        {
-            foreach (string opened in windows.Except(_windows))
-            {
-                Note($"app opened: {opened}");
-            }
-        }
-
-        if (windows is not null)
-        {
-            _windows = windows;
-        }
+        NoteApplications(CurrentApplications());
         // Windows' own internet check, the signal network.status reads; a reading that changed between its two looks
         // is left for the next one.
         if ((await _network.ReadVerifiedAsync(cancellationToken).ConfigureAwait(false))?.Connectivity is { } connectivity)
@@ -215,6 +204,48 @@ internal sealed class Heartbeat : IAsyncDisposable
                 is { } presence)
         {
             Note(presence);
+        }
+    }
+
+    // Ronda final 30 (regla 3): only two lists both read say what opened in between. Al máximo, flujos: what opened
+    // while BAXY acted for the person (PersonTurnEnded) was asked for, and is no news: the beat it woke spoke of the
+    // application BAXY had just opened.
+    internal void NoteApplications(HashSet<string>? windows)
+    {
+        if (windows is null)
+        {
+            return;
+        }
+
+        lock (_gate)
+        {
+            if (_personActed)
+            {
+                _personActed = false;
+                _events.RemoveAll(static line => line.StartsWith(AppOpened, StringComparison.Ordinal));
+            }
+            else if (_windows is not null)
+            {
+                foreach (string opened in windows.Except(_windows))
+                {
+                    Note(AppOpened + opened);
+                }
+            }
+        }
+
+        _windows = windows;
+    }
+
+    /// <summary>A turn of the person's ended; <paramref name="acted"/>: a call in it reached its provider.</summary>
+    internal void PersonTurnEnded(bool acted)
+    {
+        _pace.PersonTurn();
+        if (acted)
+        {
+            lock (_gate)
+            {
+                _personActed = true;
+            }
         }
     }
 

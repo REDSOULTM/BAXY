@@ -35,6 +35,15 @@ internal sealed class SearchPageReader : IDisposable
         _ownsClient = true;
     }
 
+    // The connection of the clients that ask public services for the person's search, weather or place (the search
+    // sources, the place by this PC's address, the weather and a place's time zone). Renew al máximo (auditoría de
+    // flujos): no cookie is kept or sent back, so one search is never tied to the next by what a service set.
+    internal static SocketsHttpHandler StrangerHandler() => new()
+    {
+        UseCookies = false,
+        AutomaticDecompression = DecompressionMethods.All,
+    };
+
     // Tests answer from their own handler.
     internal SearchPageReader(HttpClient http)
     {
@@ -76,8 +85,12 @@ internal sealed class SearchPageReader : IDisposable
             MediaTypeHeaderValue? type = response.Content.Headers.ContentType;
             if (type?.MediaType is not ("text/html" or "application/xhtml+xml"))
                 return PageRead.Failed("web_fetch_not_html");
+            // Renew al máximo (auditoría de flujos): the client's timeout covers only the headers; the body gets as long
+            // again, so a page that trickles ends as one that took too long, not at the operation's own deadline.
+            using var bodyDeadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            bodyDeadline.CancelAfter(_http.Timeout);
             (byte[] body, bool truncated) = await WebBrowserAdapter.ReadBoundedBytesAsync(
-                response, MaximumBytes, cancellationToken).ConfigureAwait(false);
+                response, MaximumBytes, bodyDeadline.Token).ConfigureAwait(false);
             return new PageRead(current, Decode(body, type.CharSet), truncated, null);
         }
         return PageRead.Failed("web_fetch_too_many_redirects");
@@ -131,6 +144,10 @@ internal sealed class SearchPageReader : IDisposable
     internal static IPAddress? PublicEndpoint(IReadOnlyList<IPAddress> resolved) =>
         resolved.Count > 0 && resolved.All(IsPublicAddress) ? resolved[0] : null;
 
+    // The connection refused because the host resolves to an address that is not public (the cause of the
+    // HttpRequestException the client throws), told apart from a page that could not be reached.
+    internal sealed class AddressNotPublicException() : IOException("not a public address");
+
     internal static async ValueTask<Stream> ConnectToPublicAddressAsync(
         SocketsHttpConnectionContext context,
         CancellationToken cancellationToken)
@@ -138,7 +155,8 @@ internal sealed class SearchPageReader : IDisposable
         IPAddress[] resolved = await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, cancellationToken)
             .ConfigureAwait(false);
         IPAddress address = PublicEndpoint(resolved)
-            ?? throw new HttpRequestException("The page's host does not resolve to a public address.");
+            ?? throw new HttpRequestException(
+                "The page's host does not resolve to a public address.", new AddressNotPublicException());
         var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
         try
         {

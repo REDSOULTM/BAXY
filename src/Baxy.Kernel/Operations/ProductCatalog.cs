@@ -14,6 +14,9 @@ public static class ProductCatalog
         | OperationJsonType.Number
         | OperationJsonType.String;
 
+    // The session media.control's YouTube tab publishes (WindowsExternalCapabilityProvider.YouTubeTabMediaSource).
+    private const string YouTubeTabMediaSource = "BAXY YouTube (Edge)";
+
     private static readonly ProductOperationDescriptor[] Catalog =
     [
         Descriptor(
@@ -52,7 +55,18 @@ public static class ProductCatalog
                 ["appId"]),
             OperationRisks.LowReversible,
             "app.open.process.window.focus.v1",
-            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso y su ventana visible, y dice si quedó al frente; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos. También acepta windows.calculator."),
+            "Abre por nombre exacto una aplicación del catálogo Inicio del usuario y verifica su proceso y su ventana visible, y dice si quedó al frente; sin ese nombre exacto no abre nada y dice los nombres instalados más cercanos.",
+            // It reuses the window of an application that already runs and raises it (foreground), presses Ctrl+N in it
+            // (newDocument) or hands it a place's address, which the application opens in its window and raises
+            // (ApplicationPlaceOpener); without those three the window that runs is left as it is, or a new process
+            // starts and the front goes back where it was.
+            effects:
+            [
+                WindowInput(
+                    EffectCondition.IsTrue("foreground"),
+                    EffectCondition.IsTrue("newDocument"),
+                    EffectCondition.Named("place")),
+            ]),
         // Auditoría de los pedidos reales (2026-10-17): reiniciar una aplicación no tenía operación propia y la única que
         // decía «restart» era system.power, que va sin el sí de la persona.
         Descriptor(
@@ -194,13 +208,15 @@ public static class ProductCatalog
             Schema([String("deviceId", maximumUtf8Bytes: 256, nonWhitespace: true)], ["deviceId"]),
             OperationRisks.PrivacySensitive,
             "bluetooth.device.pair.hardware.postread.v1",
-            "Empareja un dispositivo resuelto mediante el diálogo y permisos oficiales del sistema."),
+            "Empareja un dispositivo resuelto mediante el diálogo y permisos oficiales del sistema.",
+            effects: [SystemChange()]),
         Descriptor(
             "bluetooth.radio.set",
             Schema([Boolean("state")], ["state"]),
             OperationRisks.LowReversible,
             "bluetooth.radio.set.windows.radio.postread.v1",
-            "Enciende o apaga las radios Bluetooth mediante la API oficial de Windows y verifica su estado final."),
+            "Enciende o apaga las radios Bluetooth mediante la API oficial de Windows y verifica su estado final.",
+            effects: [SystemChange()]),
         Descriptor(
             "bluetooth.radio.status",
             EmptySchema(),
@@ -214,13 +230,17 @@ public static class ProductCatalog
                     "scroll_up"])], ["action"]),
             OperationRisks.LowReversible,
             "browser.control.cdp.postread.v1",
-            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas salvo la última, que se deja porque cerrarla cerraría la ventana) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP; cerrar todas para a las 50 pestañas o a los 40 segundos y dice cuántas cerró (closedTabs)."),
+            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas salvo la última, que se deja porque cerrarla cerraría la ventana) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP; cerrar todas para a las 50 pestañas o a los 40 segundos y dice cuántas cerró (closedTabs).",
+            effects: [WindowInput()]),
         Descriptor(
             "browser.navigate",
             Schema([String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true)], ["url"]),
             OperationRisks.ExternalCommunication,
             "browser.navigate.cdp.url.postread.v1",
-            "Abre una URL exacta en el navegador predeterminado de la persona, con su perfil y sus sesiones, y verifica la llegada leyendo su barra de direcciones o el título de su ventana; sólo si no hay navegador predeterminado o no se puede lanzar, la abre en el navegador propio del producto por CDP y verifica la URL final."),
+            "Abre una URL exacta en el navegador predeterminado de la persona, con su perfil y sus sesiones, y verifica la llegada leyendo su barra de direcciones o el título de su ventana; sólo si no hay navegador predeterminado o no se puede lanzar, la abre en el navegador propio del producto por CDP y verifica la URL final.",
+            // Al máximo 11.5: the URL BAXY opens leaves the PC (NetworkEgress reads this fact; the heartbeat held it by
+            // its risk already).
+            effects: [Network()]),
         Descriptor(
             "browser.navigate.named",
             Schema(
@@ -231,7 +251,8 @@ public static class ProductCatalog
                 ["browser", "url"]),
             OperationRisks.ExternalCommunication,
             "browser.navigate.named.cdp.url.postread.v1",
-            "Navega el navegador Chromium indicado (Opera, Opera GX, Chrome, Edge o Brave) mediante un perfil CDP privado y verifica ejecutable y URL final."),
+            "Navega el navegador Chromium indicado (Opera, Opera GX, Chrome, Edge o Brave) mediante un perfil CDP privado y verifica ejecutable y URL final.",
+            effects: [Network()]),
         Descriptor(
             "browser.page.read",
             Schema([Integer("maximumCharacters", 256, 6_000)], []),
@@ -239,20 +260,26 @@ public static class ProductCatalog
             "browser.page.read.cdp.dom.snapshot.v1",
             "Lee el título, la URL y el texto visible de la página de delante del navegador predeterminado de la persona por UI Automation, sin modificarla y con el contenido acotado; si BAXY abrió la última página en otro navegador (uno nombrado), lee ésa por CDP; 6.000 caracteres como mucho (truncated).",
             // WEB1541: a read observes no effect; the receipt says so truthfully.
-            requiresObservedEffect: false),
+            requiresObservedEffect: false,
+            // Ronda final 15: it reads BAXY's own browser when its session is the one in use, and starts it in front when it
+            // is not running.
+            effects: [WindowInput()]),
         Descriptor(
             "browser.tabs.list",
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.PrivacySensitive,
             "browser.tabs.list.cdp.targets.snapshot.v1",
             "Enumera las pestañas de la ventana de delante del navegador predeterminado de la persona (20 por defecto, 50 como mucho), con su título y cuál está activa, leídas de su tira de pestañas por UI Automation; sin navegador predeterminado, las del navegador propio del producto por CDP; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí).",
-            requiresObservedEffect: false),
+            requiresObservedEffect: false,
+            // Ronda final 15: as browser.page.read.
+            effects: [WindowInput()]),
         Descriptor(
             "calculator.expression.evaluate",
             Schema([String("expression", maximumLength: 64, nonWhitespace: true)], ["expression"]),
             OperationRisks.LowReversible,
             "calculator.expression.evaluate.windows.calculator.uia.display.v1",
-            "Pulsa una expresión aritmética simple (números y + - * /) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora."),
+            "Pulsa una expresión aritmética simple (números y + - * /) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora.",
+            effects: [WindowInput()]),
         Descriptor(
             "calendar.event.create",
             Schema(
@@ -304,7 +331,8 @@ public static class ProductCatalog
             "Busca un canal o chat por nombre en el buscador rápido del cliente de escritorio (Discord: Ctrl+K), lee las coincidencias por UI Automation y cierra el buscador si Discord sigue al frente, sin unirse ni abrir nada; si el buscador queda o puede haber quedado abierto, o Discord queda a la vista, el resultado dice que hubo efecto.",
             // The locate is a post-read: it joins and opens nothing, so it verifies by its result
             // (the matches read from the switcher), not by an observed external mutation.
-            requiresObservedEffect: false),
+            requiresObservedEffect: false,
+            effects: [WindowInput()]),
         // BAXY Renew cu (C14): the person's own microphone inside the chat client, by its own mute button (Discord's
         // «Silenciar»), read back by UI Automation; Windows' microphone is audio.microphone.mute.
         Descriptor(
@@ -317,26 +345,30 @@ public static class ProductCatalog
                 ["client", "muted"]),
             OperationRisks.LowReversible,
             "client.microphone.set.discord.uia.toggle.postread.v1",
-            "Silencia o activa el micrófono propio de la persona dentro del cliente de escritorio (Discord: su botón «Silenciar») por UI Automation y relee su estado; no toca el micrófono de Windows ni une a ninguna llamada."),
+            "Silencia o activa el micrófono propio de la persona dentro del cliente de escritorio (Discord: su botón «Silenciar») por UI Automation y relee su estado; no toca el micrófono de Windows ni une a ninguna llamada.",
+            effects: [WindowInput()]),
         Descriptor(
             "clipboard.copy",
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "clipboard.copy.win32.foreground.sendinput.sequence.postread.v1",
-            "Copia la selección del control enfocado y verifica foco estable, aceptación completa de Ctrl+C y un cambio real del portapapeles."),
+            "Copia la selección del control enfocado y verifica foco estable, aceptación completa de Ctrl+C y un cambio real del portapapeles.",
+            effects: [WindowInput()]),
         Descriptor(
             "clipboard.paste",
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "clipboard.paste.win32.clipboard.foreground.sendinput.accepted.v1",
-            "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V."),
+            "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V.",
+            effects: [WindowInput()]),
         // BAXY Renew cu (C18): the clipboard pasted into a new document of the application named, opened first.
         Descriptor(
             "clipboard.paste.into",
             Schema([String("appId", maximumUtf8Bytes: 512, nonWhitespace: true)], ["appId"]),
             OperationRisks.PrivacySensitive,
             "clipboard.paste.into.app.open.document.paste.v1",
-            "Abre un documento nuevo de la aplicación nombrada (app.open al frente, con documento nuevo) y pega en él el contenido del portapapeles (clipboard.paste); si la aplicación no se abre no pega nada."),
+            "Abre un documento nuevo de la aplicación nombrada (app.open al frente, con documento nuevo) y pega en él el contenido del portapapeles (clipboard.paste); si la aplicación no se abre no pega nada.",
+            effects: [WindowInput()]),
         Descriptor(
             "clipboard.read.text",
             Schema([Integer("maxCharacters", 1, 6_000)], []),
@@ -377,7 +409,8 @@ public static class ProductCatalog
                 []),
             OperationRisks.LowReversible,
             "display.mode.set.win32.test.apply.readback.v1",
-            "Cambia el modo del monitor principal (resolución, frecuencia de refresco o ambas) a uno que su controlador lista: lo prueba con CDS_TEST, lo aplica, relee el modo y, si no es el pedido, vuelve al anterior y lo relee; con sólo la resolución mantiene la frecuencia si ese modo la lista, si no toma la más alta listada."),
+            "Cambia el modo del monitor principal (resolución, frecuencia de refresco o ambas) a uno que su controlador lista: lo prueba con CDS_TEST, lo aplica, relee el modo y, si no es el pedido, vuelve al anterior y lo relee; con sólo la resolución mantiene la frecuencia si ese modo la lista, si no toma la más alta listada.",
+            effects: [SystemChange()]),
         Descriptor(
             "display.status",
             EmptySchema(),
@@ -467,7 +500,7 @@ public static class ProductCatalog
                 ["fileName", "folder", "newText", "oldText"]),
             OperationRisks.LowReversible,
             "file.edit.windows.known.exact.replace.recycle.postread.v1",
-            "Reemplaza un texto exacto en un archivo de texto de hasta 4 MiB nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles."),
+            "Reemplaza un texto exacto en un archivo de texto de hasta 4 MiB nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles y 8 segundos, y si el plazo corta la búsqueda no cambia nada y dice el archivo que vio (known_file_search_incomplete), que se edita nombrando su ruta."),
         Descriptor(
             "file.find",
             Schema(
@@ -499,7 +532,11 @@ public static class ProductCatalog
                 ["folder", "name"]),
             OperationRisks.LowReversible,
             "file.open.shell.window.process.postread.v1",
-            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece. Un archivo que no está en esa carpeta no se abre: el recibo dice dónde se vio uno con ese nombre exacto; dónde se vio busca 4 niveles en escritorio, documentos, descargas e imágenes, 5 lugares y 3 segundos como mucho (searchComplete); sólo abre documentos, imágenes, audio, vídeo y zip o 7z."),
+            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece. Un archivo que no está en esa carpeta no se abre: el recibo dice dónde se vio uno con ese nombre exacto; dónde se vio busca 4 niveles en escritorio, documentos, descargas e imágenes, 5 lugares y 3 segundos como mucho (searchComplete); sólo abre documentos, imágenes, audio, vídeo y zip o 7z.",
+            // Ronda final 8: with an application named or foreground it raises a window, and without them the default
+            // application may be one that already runs and takes the file in the person's window, or a packaged app Windows
+            // activates by itself.
+            effects: [WindowInput()]),
         Descriptor(
             "file.read",
             Schema(
@@ -513,7 +550,9 @@ public static class ProductCatalog
                 ["fileName", "folder"]),
             OperationRisks.ReadOnly,
             "file.read.windows.known.text.pdf.paged.v1",
-            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR), hasta 4 MiB de texto o 64 MiB de PDF; dice qué tipo leyó, el largo total y si queda más; sin efecto; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles; la extracción de un PDF para a los 90 segundos."),
+            "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR), hasta 4 MiB de texto o 64 MiB de PDF; dice qué tipo leyó, el largo total y si queda más; sin efecto; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles y 8 segundos, y una búsqueda cortada por el plazo lo dice; la extracción de un PDF para a los 90 segundos.",
+            // Al máximo, flujos: PdfExtractionTimeout: a PDF's text is extracted for up to 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         Descriptor(
             "file.write",
             Schema(
@@ -569,7 +608,9 @@ public static class ProductCatalog
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
             OperationRisks.LowReversible,
             "filesystem.file.open.latest.windows.shell.process.postread.v1",
-            "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y lo da por abierto sólo con una ventana nueva (o del proceso lanzado) cuyo título lo nombra; si no, dice que no se pudo verificar; sólo mira el primer nivel de la carpeta, sin ocultos ni de sistema."),
+            "Abre el archivo seguro modificado mas recientemente de una carpeta conocida y lo da por abierto sólo con una ventana nueva (o del proceso lanzado) cuyo título lo nombra; si no, dice que no se pudo verificar; sólo mira el primer nivel de la carpeta, sin ocultos ni de sistema.",
+            // It opens as file.open does.
+            effects: [WindowInput()]),
         Descriptor(
             "filesystem.folder.open",
             Schema(
@@ -580,7 +621,9 @@ public static class ProductCatalog
                 ["folder"]),
             OperationRisks.LowReversible,
             "filesystem.folder.open.windows.shell.postread.v1",
-            "Abre una carpeta conocida de Windows, o una subcarpeta suya, y verifica la ventana de Explorer observada."),
+            "Abre una carpeta conocida de Windows, o una subcarpeta suya, y verifica la ventana de Explorer observada.",
+            // Ronda final 14: it starts or raises an Explorer window in front.
+            effects: [WindowInput()]),
         Descriptor(
             "filesystem.known.duplicates",
             Schema(
@@ -691,6 +734,7 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "game.entitlement.named.steam.librarycache.manifest.postread.v1",
             "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos; con Steam sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes); con Epic toma la primera entrada con ese título."),
+            // Whether a game is owned is read on the PC alone (Renew al máximo, B-APP-6): no network effect.
         Descriptor(
             "game.install.cancel",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
@@ -734,10 +778,21 @@ public static class ProductCatalog
             "Comprueba por nombre si un juego esta instalado mediante manifiestos de Steam y Epic y verifica que exista su directorio local."),
         Descriptor(
             "game.launch",
-            Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
+            // Renew al máximo (falsedades F001 y F016 del NB, 2026-10-22): el modelo lanzó el único juego instalado
+            // por «Doom Eternal» y por «Fortnite». El título que pidió la persona va con el AppID y el proveedor lo
+            // compara con el nombre del manifiesto antes de lanzar (game_title_required, game_title_mismatch).
+            Schema(
+                [
+                    String("appId", maximumLength: 16, nonWhitespace: true),
+                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["appId", "title"]),
             OperationRisks.LowReversible,
             "game.launch.steam.process.postread.v1",
-            "Inicia un AppID instalado en este PC y verifica la identidad del proceso lanzado."),
+            "Inicia un AppID instalado en este PC cuyo nombre es el juego que pidió la persona y verifica la identidad del proceso lanzado.",
+            // It clicks «Jugar» in the dialog Steam opens for the game's address (SteamLocalAdapter.LaunchAsync); what Steam
+            // publishes by itself (its «playing») is not the person's data leaving through BAXY (owner, 2026-10-16).
+            effects: [WindowInput()]),
         // BAXY Renew cu (C04 variante, C05): los lugares propios de la tienda de juegos como operaciones con nombre: su
         // búsqueda con lo que se busca y la página de un juego por su título. Son app.open con ese lugar, al frente.
         Descriptor(
@@ -745,13 +800,15 @@ public static class ProductCatalog
             Schema([String("title", maximumUtf8Bytes: 128, nonWhitespace: true)], ["title"]),
             OperationRisks.LowReversible,
             "game.store.page.app.open.place.v1",
-            "Abre en Steam, al frente, la página de la tienda del juego que lleva ese título (lo resuelve su búsqueda pública) y dice qué juego es; mirar la ventana dice si llegó."),
+            "Abre en Steam, al frente, la página de la tienda del juego que lleva ese título (lo resuelve su búsqueda pública) y dice qué juego es; mirar la ventana dice si llegó.",
+            effects: [WindowInput()]),
         Descriptor(
             "game.store.search",
             Schema([String("query", maximumUtf8Bytes: 128, nonWhitespace: true)], ["query"]),
             OperationRisks.LowReversible,
             "game.store.search.app.open.place.v1",
-            "Abre en Steam, al frente, la búsqueda de su tienda con lo que se busca (un título, un tema o un tipo de juego); mirar la ventana dice qué resultados muestra."),
+            "Abre en Steam, al frente, la búsqueda de su tienda con lo que se busca (un título, un tema o un tipo de juego); mirar la ventana dice qué resultados muestra.",
+            effects: [WindowInput()]),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
         // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
         // dirección del dato y el diálogo propio de Steam, ya no por su consola),
@@ -809,7 +866,9 @@ public static class ProductCatalog
                 // salvo que el paso declare que el teclado está en un campo de
                 // texto (text_field): fuera de uno borra lo seleccionado. Revisión
                 // 2026-10-22 (K-2): Enter o Espacio sin target ni onto no declaran
-                // dónde caen y preguntan; sobre text_field van directos.
+                // dónde caen y preguntan, salvo que el prevuelo del Core lea que la
+                // ventana destino no es de mensajería ni consola (K-2 refinada);
+                // sobre text_field van directos.
                 String("target", types: NullableString, values: ["message_composer", "text_field"]),
                 // La ventana mirada (el número que dio la vista): la tecla va sólo
                 // a ella; si no está delante y no se la puede traer, nada se envía.
@@ -817,13 +876,16 @@ public static class ProductCatalog
             ], ["key"]),
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
-            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío."),
+            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío.",
+            effects: [WindowInput()]),
         Descriptor(
             "input.keyboard.layout",
             Schema([String("language", values: ["spanish"])], ["language"]),
             OperationRisks.LowReversible,
             "input.keyboard.layout.win32.foreground.postread.v1",
-            "Activa el teclado español en la ventana enfocada y verifica el idioma de entrada de su hilo mediante Win32."),
+            "Activa el teclado español en la ventana enfocada y verifica el idioma de entrada de su hilo mediante Win32.",
+            // Audit 2026-10-15, App H1: it posts WM_INPUTLANGCHANGEREQUEST to the focused window.
+            effects: [WindowInput()]),
         Descriptor(
             "input.keyboard.open",
             EmptySchema(),
@@ -841,7 +903,8 @@ public static class ProductCatalog
             Schema([String("action", values: ["click", "move_center", "scroll_down"])], ["action"]),
             OperationRisks.LowReversible,
             "input.pointer.control.win32.postread.v1",
-            "Mueve el puntero al centro, hace clic en su posición actual o desplaza hacia abajo y verifica el recibo Win32."),
+            "Mueve el puntero al centro, hace clic en su posición actual o desplaza hacia abajo y verifica el recibo Win32.",
+            effects: [WindowInput()]),
         // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): desplaza la ventana
         // en primer plano por pasos de rueda y sólo cuenta el desplazamiento si la
         // superficie cambió; un panel ya al fondo no cambia y se dice.
@@ -866,13 +929,15 @@ public static class ProductCatalog
                 ["amount", "direction"]),
             OperationRisks.LowReversible,
             "input.scroll.win32.wheel.surface.postread.v1",
-            "Desplaza la ventana en primer plano, o el control de la última vista que nombra su índice, hacia arriba o hacia abajo la cantidad de pasos de rueda pedida y verifica que la superficie visible cambió; con label trae a la vista ese elemento de la ventana nombrada sin rueda ni puntero y verifica que se ve."),
+            "Desplaza la ventana en primer plano, o el control de la última vista que nombra su índice, hacia arriba o hacia abajo la cantidad de pasos de rueda pedida y verifica que la superficie visible cambió; con label trae a la vista ese elemento de la ventana nombrada sin rueda ni puntero y verifica que se ve.",
+            effects: [WindowInput()]),
         Descriptor(
             "input.select.all",
             EmptySchema(),
             OperationRisks.LowReversible,
             "input.select.all.focused.uia.postread.v1",
-            "Selecciona todo en el control enfocado de la ventana activa y verifica la seleccion mediante UI Automation."),
+            "Selecciona todo en el control enfocado de la ventana activa y verifica la seleccion mediante UI Automation.",
+            effects: [WindowInput()]),
         Descriptor(
             "input.text.type",
             Schema(
@@ -901,7 +966,8 @@ public static class ProductCatalog
                 ["text"]),
             OperationRisks.PrivacySensitive,
             "input.text.type.win32.sendinput.accepted.v1",
-            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput; como mucho 4.096 caracteres, sin saltos de línea ni tabuladores; si no, se rechaza y no se escribe nada."),
+            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput; como mucho 4.096 caracteres, sin saltos de línea ni tabuladores; si no, se rechaza y no se escribe nada.",
+            effects: [WindowInput()]),
         Descriptor(
             "input.visible.click",
             // El clic por el índice de la vista, o por la identidad que dio un clic, cuando la
@@ -939,7 +1005,8 @@ public static class ProductCatalog
                 ["label"]),
             OperationRisks.ExternalCommunication,
             "input.visible.click.windows.uia.invoke.postread.v2",
-            "Invoca un único control visible por etiqueta, o por el índice de la vista o la identidad que dio un clic, en la ventana nombrada o, sin ella, en la de la última mirada (con índice), en la aplicación recién abierta o en la de delante (UIA, luego OCR, luego el globo de ayuda, y visión sólo si está configurada), nunca en una ventana protegida, y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada."),
+            "Invoca un único control visible por etiqueta, o por el índice de la vista o la identidad que dio un clic, en la ventana nombrada o, sin ella, en la de la última mirada (con índice), en la aplicación recién abierta o en la de delante (UIA, luego OCR, luego el globo de ayuda, y visión sólo si está configurada), nunca en una ventana protegida, y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada.",
+            effects: [WindowInput()]),
         Descriptor(
             "input.visible.controls",
             // La vista compacta que lee el modelo (ScreenViewProjection): número, tipo,
@@ -972,7 +1039,10 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "input.visible.controls.windows.uia.snapshot.v2",
-            "Vista compacta de una ventana (la de la aplicación nombrada o la de delante): hasta sesenta controles visibles con número, tipo, etiqueta y estado, el texto leído por zonas cuando se pide (includeText) o la ventana no muestra controles, y si no se leyó o se cortó, el título y el proceso; no pulsa ni escribe nada (una ventana minimizada se muestra detrás de la de delante, sin activarla, y la vista lo dice)."),
+            "Vista compacta de una ventana (la de la aplicación nombrada o la de delante): hasta sesenta controles visibles con número, tipo, etiqueta y estado, el texto leído por zonas cuando se pide (includeText) o la ventana no muestra controles, y si no se leyó o se cortó, el título y el proceso; no pulsa ni escribe nada (una ventana minimizada se muestra detrás de la de delante, sin activarla, y la vista lo dice).",
+            // Ronda final 25: a look at an application by its name shows its window behind the person's when it is
+            // minimized (ShowBehind), and it stays shown.
+            effects: [WindowInput(EffectCondition.Named("application"))]),
         Descriptor(
             "media.control",
             Schema(
@@ -983,7 +1053,17 @@ public static class ProductCatalog
                 ["action"]),
             OperationRisks.LowReversible,
             "media.control.smtc.postread.v1",
-            "Controla una sesión SMTC seleccionada y verifica su estado posterior."),
+            "Controla una sesión SMTC seleccionada y verifica su estado posterior.",
+            // BAXY's own player (mpv, by its pipe), then the system's media controls (SMTC), then the YouTube tab of
+            // BAXY's browser, which CDP drives by a script run in the page as a user gesture, in a window that holds the
+            // person's session: unless sourceApp names another session, which that tab's adapter refuses before any
+            // effect (WebBrowserAdapter.ControlYouTubeTabAsync).
+            effects:
+            [
+                WindowInput(
+                    EffectCondition.Unnamed("sourceApp"),
+                    EffectCondition.Is("sourceApp", YouTubeTabMediaSource)),
+            ]),
         Descriptor(
             "media.play.exact",
             Schema(
@@ -994,7 +1074,9 @@ public static class ProductCatalog
                 ["provider", "title"]),
             OperationRisks.ExternalCommunication,
             "media.play.exact.session.postread.v1",
-            "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing."),
+            "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+            // Al máximo, flujos: SpotifyDesktopAdapter.CallBudget.
+            budget: TimeSpan.FromSeconds(85)),
         Descriptor(
             "media.play.query",
             Schema(
@@ -1005,7 +1087,9 @@ public static class ProductCatalog
                 ["provider", "query"]),
             OperationRisks.ExternalCommunication,
             "media.play.query.session.postread.v1",
-            "Busca en Spotify y reproduce el primer resultado de su propia búsqueda (o el titulado como la búsqueda, si Spotify muestra uno) y verifica now-playing."),
+            "Busca en Spotify y reproduce el primer resultado de su propia búsqueda (o el titulado como la búsqueda, si Spotify muestra uno) y verifica now-playing.",
+            // Al máximo, flujos: SpotifyDesktopAdapter.CallBudget.
+            budget: TimeSpan.FromSeconds(85)),
         Descriptor(
             "media.play.youtube",
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
@@ -1149,7 +1233,8 @@ public static class ProductCatalog
                 ["channel", "recipient", "text"]),
             OperationRisks.PrivacySensitive,
             "message.draft.client.composer.visible.postread.v1",
-            "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), deja el mensaje escrito en el cuadro de redacción, lo corrobora en pantalla y se detiene sin enviarlo: la persona lo envía; en WhatsApp, hasta 8 candidatos (candidateCount)."),
+            "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), deja el mensaje escrito en el cuadro de redacción, lo corrobora en pantalla y se detiene sin enviarlo: la persona lo envía; en WhatsApp, hasta 8 candidatos (candidateCount).",
+            effects: [WindowInput()]),
         // Uso real 2026-10-21 (decisión del dueño): «mándale un mensaje» se envía. El mismo envío verificado de
         // message.send.test, al destinatario nombrado; pide el sí en modo normal (RiskPolicy), no en Bypass.
         Descriptor(
@@ -1163,7 +1248,8 @@ public static class ProductCatalog
                 ["channel", "recipient", "text"]),
             OperationRisks.ExternalCommunication,
             "message.send.client.composer.send.ocr.postread.v1",
-            "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), escribe el mensaje, pulsa enviar y lee en el chat que salió; en modo normal pide antes el sí de la persona; en WhatsApp, hasta 8 candidatos (candidateCount) cuando el nombre no es exacto."),
+            "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), escribe el mensaje, pulsa enviar y lee en el chat que salió; en modo normal pide antes el sí de la persona; en WhatsApp, hasta 8 candidatos (candidateCount) cuando el nombre no es exacto.",
+            effects: [WindowInput()]),
         Descriptor(
             "message.send.test",
             Schema(
@@ -1175,7 +1261,9 @@ public static class ProductCatalog
                 ["channel", "requestedRecipient", "text"]),
             OperationRisks.ExternalCommunication,
             "message.send.test.forced.destination.ocr.postread.v1",
-            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al destino de prueba del dueño para ese canal (un chat de WhatsApp, un mensaje directo de Discord o su casilla de correo de pruebas, guardados en sus datos privados), nunca al destinatario nombrado; sin ese destino configurado no envía nada; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
+            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al destino de prueba del dueño para ese canal (un chat de WhatsApp, un mensaje directo de Discord o su casilla de correo de pruebas, guardados en sus datos privados), nunca al destinatario nombrado; sin ese destino configurado no envía nada; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado.",
+            // Al máximo, flujos: the mail is sent by a script given 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         Descriptor(
             "network.dns.status",
             EmptySchema(),
@@ -1197,7 +1285,8 @@ public static class ProductCatalog
                 ["host"]),
             OperationRisks.ReadOnly,
             "network.ping.icmp.reply.receipt.v1",
-            "Envía un único eco ICMP acotado a un host explícito e informa su recibo, latencia o fallo de resolución."),
+            "Envía un único eco ICMP acotado a un host explícito e informa su recibo, latencia o fallo de resolución.",
+            effects: [Network()]),
         Descriptor(
             "network.port.list",
             Schema([Integer("limit", 1, 100)], []),
@@ -1288,7 +1377,9 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "ocr.read.windows.capture.binding.v1",
             "Ejecuta OCR local sobre una captura identificada y un language pack disponible; sólo se guardan las 16 últimas capturas.",
-            requiresObservedEffect: false),
+            requiresObservedEffect: false,
+            // Al máximo, flujos: CaptureVisionAdapter: the local endpoint has 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         Descriptor(
             "office.document.create",
             Schema(
@@ -1324,7 +1415,8 @@ public static class ProductCatalog
                 ["app", "style"]),
             OperationRisks.LowReversible,
             "office.format.apply.com.postread.v1",
-            "Da un formato (negrita, cursiva, subrayado o una alineación) a lo que la persona tiene abierto en Word (su selección, su título o un párrafo por número) o en Excel (su selección, una fila, una columna o un rango, que deja elegido) por el modelo de objetos de la aplicación en marcha, y lo relee; no abre ninguna aplicación."),
+            "Da un formato (negrita, cursiva, subrayado o una alineación) a lo que la persona tiene abierto en Word (su selección, su título o un párrafo por número) o en Excel (su selección, una fila, una columna o un rango, que deja elegido) por el modelo de objetos de la aplicación en marcha, y lo relee; no abre ninguna aplicación.",
+            effects: [WindowInput()]),
         // BAXY Renew 2026-10-15: one call that resolves, installs and verifies, after the person's yes (installation
         // risk); it replaces the prepare/commit pair, which the 4B took for uninstalling.
         Descriptor(
@@ -1364,7 +1456,9 @@ public static class ProductCatalog
                 ["deviceId", "documentId"]),
             OperationRisks.PrivacySensitive,
             "peripheral.print.hardware.job.v1",
-            "Envía un documento identificado a una impresora resuelta y verifica el job."),
+            "Envía un documento identificado a una impresora resuelta y verifica el job.",
+            // The printer may be on the network.
+            effects: [Network()]),
         Descriptor(
             "peripheral.scan",
             Schema([String("deviceId", maximumLength: 128, nonWhitespace: true)], ["deviceId"]),
@@ -1400,7 +1494,9 @@ public static class ProductCatalog
             "shell.command.run.powershell.captured.output.v1",
             "Ejecuta un comando de consola en PowerShell sin perfil, en la carpeta conocida indicada (desktop, documents, downloads o una subcarpeta) o, sin carpeta, en una carpeta de trabajo propia y vacía del producto, con 60 segundos de plazo, y devuelve su código de salida y los primeros 8.192 caracteres de su salida (con más de un millón de caracteres se detiene y no devuelve nada); un código distinto de cero es un fallo con su salida y su error; lo que no sólo lee (escribe, borra, instala, envía o corre un programa) se confirma antes con el comando exacto.",
             // A command that only reads ran with no effect; one that may change something reports what ran.
-            requiresObservedEffect: false),
+            requiresObservedEffect: false,
+            // One that only reads still reaches \\host\share or another computer by name.
+            effects: [Network()]),
         Descriptor(
             "software.python.package.status",
             Schema([String("package")], ["package"]),
@@ -1528,7 +1624,14 @@ public static class ProductCatalog
                 ["setting", "value"]),
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
-            "Cambia un ajuste permitido (brillo; no molestar, por la página Notificaciones de Configuración, que queda abierta; o modo avión sobre todas las radios, por la API de radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura."),
+            "Cambia un ajuste permitido (brillo; no molestar, por la página Notificaciones de Configuración, que queda abierta; o modo avión sobre todas las radios, por la API de radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura.",
+            // do_not_disturb opens ms-settings:notifications (it takes the front) and presses its switch by UI
+            // Automation's Toggle (DoNotDisturbScript); airplane_mode goes through the radios API and reaches no window.
+            effects:
+            [
+                WindowInput(EffectCondition.Is("setting", "do_not_disturb")),
+                SystemChange(EffectCondition.Is("setting", "airplane_mode")),
+            ]),
         Descriptor(
             "system.settings.status",
             Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),
@@ -1558,7 +1661,9 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "system.status.windows.measurement.v1",
-            "Mide CPU, memoria, disco, batería, GPU y Windows; lee también el cortafuegos (sus perfiles, si están activos y los conectados ahora) y Windows Update (reinicio pendiente y actualizaciones por instalar según la última búsqueda de Windows, leída de su caché local: los títulos de las 10 primeras), sin modificar el equipo."),
+            "Mide CPU, memoria, disco, batería, GPU y Windows; lee también el cortafuegos (sus perfiles, si están activos y los conectados ahora) y Windows Update (reinicio pendiente y actualizaciones por instalar según la última búsqueda de Windows, leída de su caché local: los títulos de las 10 primeras), sin modificar el equipo.",
+            // Al máximo, flujos: WindowsSecurityStatusProvider: Windows Update is read for up to 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         Descriptor(
             "system.time",
             // Uso real tanda 4 «convertir nueve de la mañana huso horario a madrid»:
@@ -1569,7 +1674,9 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "system.time.clock.secondread.v1",
-            "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes; con un lugar o una zona horaria nombrados, también el desfase de esa zona en ese instante."),
+            "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes; con un lugar o una zona horaria nombrados, también el desfase de esa zona en ese instante.",
+            // A place's clock comes from Open-Meteo.
+            effects: [Network(EffectCondition.Named("place"))]),
         Descriptor(
             "task.complete",
             TaskCasSchema(),
@@ -1660,7 +1767,9 @@ public static class ProductCatalog
                 ["captureId"]),
             OperationRisks.PrivacySensitive,
             "vision.describe.provider.capture.binding.v1",
-            "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured; sólo se guardan las 16 últimas capturas."),
+            "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured; sólo se guardan las 16 últimas capturas.",
+            // Al máximo, flujos: CaptureVisionAdapter: the local endpoint has 90 s.
+            budget: TimeSpan.FromSeconds(90)),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
         // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:
         // geocodificación del lugar nombrado, o la ubicación de este PC por su IP) con
@@ -1682,7 +1791,8 @@ public static class ProductCatalog
                 []),
             OperationRisks.ReadOnly,
             "weather.current.openmeteo.read.v1",
-            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad que ese servicio deduce, cuando no se nombra ninguno); hasta 8 candidatos (candidateCount)."),
+            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad que ese servicio deduce, cuando no se nombra ninguno); hasta 8 candidatos (candidateCount).",
+            effects: [Network()]),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0077 «descarga la imagen de
         // portada de wikipedia.org y guardala en el escritorio», H0069; D11): bajar un
         // archivo o imagen de una dirección a una carpeta conocida, verificado por el
@@ -1698,7 +1808,8 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
-            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; se abandona si el servidor tarda más de 40 segundos en responder (cada redirección incluida); la descarga entera debe acabar en unos 100 segundos (lo que BAXY espera a una operación) o BAXY dice que falló (una que acabe justo después puede escribirse igual)."),
+            "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; se abandona si el servidor tarda más de 40 segundos en responder (cada redirección incluida); la descarga entera debe acabar en unos 100 segundos (lo que BAXY espera a una operación) o BAXY dice que falló (una que acabe justo después puede escribirse igual).",
+            effects: [Network()]),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
         // nada de la persona (SearchPageReader); lo que entra es información, no sale nada suyo.
@@ -1713,7 +1824,8 @@ public static class ProductCatalog
                 ["url"]),
             OperationRisks.ReadOnly,
             "web.fetch.public.http.text.v1",
-            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset); sólo páginas HTML, y de una página de más de 1,5 MB (1.500.000 bytes) sólo el principio; 3 redirecciones como mucho."),
+            "Lee una página web pública (http o https) como texto, sin cookies ni datos de la persona, y devuelve su título, la dirección final y el texto por páginas (offset); sólo páginas HTML, y de una página de más de 1,5 MB (1.500.000 bytes) sólo el principio; 3 redirecciones como mucho.",
+            effects: [Network()]),
         // BAXY Renew (2026-10-15): el modelo elige la fuente (source) y llena sus argumentos tipados; el proveedor
         // pregunta sólo a esa fuente y devuelve lo que ella devolvió. Lo que significa cada argumento lo dice la
         // descripción de la herramienta (tool_descriptions.en.v1.json).
@@ -1747,7 +1859,8 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "web.search.provider.results.v1",
-            "Busca en la fuente pública que elige el modelo (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; con nearby, añade la ciudad y el país de este PC a la consulta; 5 resultados por defecto."),
+            "Busca en la fuente pública que elige el modelo (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; con nearby, añade la ciudad y el país de este PC a la consulta; 5 resultados por defecto.",
+            effects: [Network()]),
         Descriptor(
             "wifi.connect",
             Schema([String("profileId", maximumLength: 128, nonWhitespace: true)], ["profileId"]),
@@ -1774,7 +1887,8 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "wifi.disconnect.wlan.postread.v1",
-            "Desconecta WLAN mediante API oficial y verifica ausencia de conexión."),
+            "Desconecta WLAN mediante API oficial y verifica ausencia de conexión.",
+            effects: [SystemChange()]),
         Descriptor(
             "wifi.ensure.connected",
             EmptySchema(),
@@ -1792,7 +1906,8 @@ public static class ProductCatalog
             Schema([Boolean("state")], ["state"]),
             OperationRisks.PrivacySensitive,
             "wifi.radio.set.windows.radio.postread.v1",
-            "Enciende o apaga la radio Wi-Fi mediante la API oficial de Windows y verifica su estado final."),
+            "Enciende o apaga la radio Wi-Fi mediante la API oficial de Windows y verifica su estado final.",
+            effects: [SystemChange()]),
         Descriptor(
             "wifi.radio.status",
             EmptySchema(),
@@ -1834,13 +1949,15 @@ public static class ProductCatalog
             WindowIdSchema(),
             OperationRisks.LowReversible,
             "window.focus.identity.foreground.v1",
-            "Enfoca una ventana resuelta previamente y verifica su identidad y foco; el windowId caduca a los 5 minutos."),
+            "Enfoca una ventana resuelta previamente y verifica su identidad y foco; el windowId caduca a los 5 minutos.",
+            effects: [WindowInput()]),
         Descriptor(
             "window.maximize",
             WindowIdSchema(),
             OperationRisks.LowReversible,
             "window.maximize.identity.state.v1",
-            "Maximiza una ventana resuelta previamente y verifica su identidad y estado; el windowId caduca a los 5 minutos."),
+            "Maximiza una ventana resuelta previamente y verifica su identidad y estado; el windowId caduca a los 5 minutos.",
+            effects: [WindowInput()]),
         Descriptor(
             "window.minimize",
             WindowIdSchema(),
@@ -1852,7 +1969,8 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.LowReversible,
             "window.minimize.all.desktop.postread.v1",
-            "Minimiza todas las ventanas visibles de este escritorio (salvo la propia; las de otro escritorio virtual no se tocan y se cuentan) y comprueba que quedaron minimizadas; no cierra nada."),
+            "Minimiza todas las ventanas visibles de este escritorio (salvo la propia; las de otro escritorio virtual no se tocan y se cuentan) y comprueba que quedaron minimizadas; no cierra nada.",
+            effects: [WindowInput()]),
         Descriptor(
             "window.move",
             Schema(
@@ -1864,7 +1982,8 @@ public static class ProductCatalog
                 ["windowId", "x", "y"]),
             OperationRisks.LowReversible,
             "window.move.identity.bounds.v1",
-            "Mueve una ventana resuelta a coordenadas de escritorio y verifica sus límites exactos."),
+            "Mueve una ventana resuelta a coordenadas de escritorio y verifica sus límites exactos.",
+            effects: [WindowInput()]),
         Descriptor(
             "window.resize",
             Schema(
@@ -1876,7 +1995,8 @@ public static class ProductCatalog
                 ["height", "width", "windowId"]),
             OperationRisks.LowReversible,
             "window.resize.identity.bounds.v1",
-            "Redimensiona una ventana resuelta y verifica ancho y alto exactos."),
+            "Redimensiona una ventana resuelta y verifica ancho y alto exactos.",
+            effects: [WindowInput()]),
         Descriptor(
             "window.resolve",
             Schema(
@@ -1907,7 +2027,8 @@ public static class ProductCatalog
                 ["side", "windowId"]),
             OperationRisks.LowReversible,
             "window.snap.identity.bounds.v1",
-            "Coloca una ventana resuelta en la mitad izquierda o derecha del área de trabajo de su monitor (la restaura antes si estaba maximizada o minimizada) y verifica sus límites exactos; el windowId caduca a los 5 minutos."),
+            "Coloca una ventana resuelta en la mitad izquierda o derecha del área de trabajo de su monitor (la restaura antes si estaba maximizada o minimizada) y verifica sus límites exactos; el windowId caduca a los 5 minutos.",
+            effects: [WindowInput()]),
     ];
 
     private static readonly IReadOnlyList<ProductOperationDescriptor> ReadOnlyCatalog =
@@ -1973,7 +2094,8 @@ public static class ProductCatalog
             schema.RootElement.Clone(),
             descriptor.Risk,
             descriptor.VerifierContractId,
-            descriptor.Description);
+            descriptor.Description,
+            descriptor.EffectKinds.Count == 0 ? null : descriptor.EffectKinds);
     }
 
     public static void ValidateAgainst(OperationRegistry registry)
@@ -2018,8 +2140,26 @@ public static class ProductCatalog
         string risk,
         string verifierContractId,
         string description,
-        bool? requiresObservedEffect = null) =>
-        new(name, schema, risk, verifierContractId, description, requiresObservedEffect);
+        bool? requiresObservedEffect = null,
+        IReadOnlyList<OperationEffect>? effects = null,
+        TimeSpan? budget = null) =>
+        new(name, schema, risk, verifierContractId, description, requiresObservedEffect, effects, budget);
+
+    // Al máximo 5.1: what each provider does, read from it (the App held these by name before).
+    private static OperationEffect WindowInput(params EffectCondition[] when) =>
+        when.Length == 0
+            ? OperationEffect.Always(OperationEffects.WindowInput)
+            : OperationEffect.With(OperationEffects.WindowInput, when);
+
+    private static OperationEffect Network(params EffectCondition[] when) =>
+        when.Length == 0
+            ? OperationEffect.Always(OperationEffects.Network)
+            : OperationEffect.With(OperationEffects.Network, when);
+
+    private static OperationEffect SystemChange(params EffectCondition[] when) =>
+        when.Length == 0
+            ? OperationEffect.Always(OperationEffects.System)
+            : OperationEffect.With(OperationEffects.System, when);
 
     private static OperationArgumentsSchema EmptySchema() => Schema([], []);
 

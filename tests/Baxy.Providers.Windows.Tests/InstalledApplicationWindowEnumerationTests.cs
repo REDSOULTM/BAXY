@@ -9,6 +9,50 @@ namespace Baxy.Providers.Windows.Tests;
 [NonParallelizable]
 public sealed class InstalledApplicationWindowEnumerationTests
 {
+    // Renew al máximo (auditoría de flujos): a window resolved by its application carries the executable the inventory
+    // read with the least access (a program running as administrator too); reading it back by the main module, which
+    // Windows refuses for such a program, failed every one. Here the read the inventory makes gives that path.
+    [Test]
+    public void AWindowIsReadBackByTheExecutableTheInventoryRead()
+    {
+        nint window = CreateWindowEx(0x08000000, "STATIC", "Image fixture", 0x90000000u, -31000, -31000, 120, 80, 0, 0, 0, 0);
+        Assert.That(window, Is.Not.EqualTo(nint.Zero));
+        try
+        {
+            using Process current = Process.GetCurrentProcess();
+            const string ReadByInventory = @"C:\Elevated Program\program.exe";
+            var platform = new Baxy.Providers.Windows.Windows.Win32WindowControlPlatform(
+                processId => processId == current.Id ? ReadByInventory : null);
+            var identity = new Baxy.Providers.Windows.Windows.WindowIdentity(
+                window, current.Id, current.StartTime.ToUniversalTime().Ticks, current.ProcessName,
+                DateTimeOffset.UtcNow, ReadByInventory);
+
+            Assert.That(platform.Observe(identity).Identity.Handle, Is.EqualTo(window));
+        }
+        finally
+        {
+            _ = DestroyWindow(window);
+        }
+    }
+
+    // Renew al máximo (auditoría de flujos): an application running with no window (Steam in the notification area) is
+    // read by its own executable: here the test process, which shows none; a packaged entry is never read this way.
+    [Test]
+    public void AnApplicationsRunningProcessesAreReadByItsExecutableWindowsOrNot()
+    {
+        using Process current = Process.GetCurrentProcess();
+        var entry = new InstalledApplicationEntry(
+            "Background fixture", current.ProcessName + ".exe", current.MainModule!.FileName);
+        var platform = new WindowsInstalledApplicationPlatform();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.RunningProcesses(entry), Does.Contain(current.Id));
+            Assert.That(platform.RunningProcesses(new InstalledApplicationEntry("Packaged", "Some.Package_x!App")),
+                Is.Empty);
+        });
+    }
+
     [Test]
     public void InventoryIncludesEveryVisibleWindowOfOneProcessAndExcludesHiddenWindows()
     {
@@ -52,6 +96,96 @@ public sealed class InstalledApplicationWindowEnumerationTests
                 -31000, -31000, width, height, 0, 0, 0, 0);
             Assert.That(handle, Is.Not.EqualTo(nint.Zero),
                 $"CreateWindowEx failed: {Marshal.GetLastPInvokeError()}");
+            owned.Add(handle);
+            return handle;
+        }
+    }
+
+    // Renew al máximo (rendimiento): one poll of a packaged application looks at every process's main window (each one
+    // an EnumWindows of its own through MainWindowHandle, about 300 a poll); the main windows are now read in one pass.
+    [Test]
+    public void OnePollReadsEveryProcesssMainWindowInOnePass()
+    {
+        var entry = new InstalledApplicationEntry("Perf fixture", "Baxy.PerfFixture_0000000000000!App");
+        int passes = 0;
+
+        List<InstalledApplicationObservation> observations = WindowsInstalledApplicationPlatform.Inventory(
+            entry, strongIdentityOnly: false, () =>
+            {
+                passes++;
+                return WindowsInstalledApplicationPlatform.MainWindowsByProcess();
+            }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observations, Is.Empty);
+            Assert.That(passes, Is.EqualTo(1), $"one pass for {Process.GetProcesses().Length} processes");
+        });
+    }
+
+    // Renew al máximo (rendimiento): the one pass gives each process the window MainWindowHandle gives it, on the real
+    // desktop: the test process's own (an owned window and a hidden one above its unowned visible one are never its main
+    // window) and every process running now. A window born or gone between the two reads may differ; it is read again.
+    [Test]
+    public void TheOnePassGivesEveryProcessTheWindowMainWindowHandleGivesIt()
+    {
+        var owned = new List<nint>();
+        try
+        {
+            nint main = Create(0, visible: true);
+            _ = Create(main, visible: true);
+            _ = Create(0, visible: false);
+            using (Process current = Process.GetCurrentProcess())
+            {
+                Assert.That(WindowsInstalledApplicationPlatform.MainWindowsByProcess()
+                    .GetValueOrDefault(unchecked((uint)current.Id)), Is.EqualTo(main));
+                Assert.That(current.MainWindowHandle, Is.EqualTo(main));
+            }
+
+            var differing = new List<string>();
+            int compared = 0;
+            int withWindow = 0;
+            for (int round = 0; round < 3; round++)
+            {
+                differing.Clear();
+                Dictionary<uint, nint> first = WindowsInstalledApplicationPlatform.MainWindowsByProcess();
+                Process[] processes = Process.GetProcesses();
+                var dotnet = new Dictionary<int, nint>();
+                foreach (Process process in processes)
+                {
+                    using (process)
+                        dotnet[process.Id] = process.MainWindowHandle;
+                }
+
+                Dictionary<uint, nint> second = WindowsInstalledApplicationPlatform.MainWindowsByProcess();
+                compared = dotnet.Count;
+                withWindow = dotnet.Count(static item => item.Value != 0);
+                foreach ((int id, nint window) in dotnet)
+                {
+                    nint before = first.GetValueOrDefault(unchecked((uint)id));
+                    nint after = second.GetValueOrDefault(unchecked((uint)id));
+                    if (window != before && (before == after || window != after))
+                        differing.Add($"{id}: MainWindowHandle {window}, one pass {before}/{after}");
+                }
+
+                if (differing.Count == 0)
+                    break;
+            }
+
+            TestContext.Out.WriteLine($"compared {compared} processes, {withWindow} with a main window");
+            Assert.That(differing, Is.Empty);
+        }
+        finally
+        {
+            for (int index = owned.Count - 1; index >= 0; index--)
+                _ = DestroyWindow(owned[index]);
+        }
+
+        nint Create(nint owner, bool visible)
+        {
+            nint handle = CreateWindowEx(0x08000000, "STATIC", "Main window fixture",
+                visible ? 0x90000000u : 0x80000000u, -31000, -31000, 120, 80, owner, 0, 0, 0);
+            Assert.That(handle, Is.Not.EqualTo(nint.Zero), $"CreateWindowEx failed: {Marshal.GetLastPInvokeError()}");
             owned.Add(handle);
             return handle;
         }

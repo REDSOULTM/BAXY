@@ -241,6 +241,25 @@ public sealed class WindowSnapMinimumSizeTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): a window closed while it was being placed (between its restore and its move)
+    // made the move's own read throw; the exception left the provider, and the core stopped («BAXY core stopped
+    // safely»). The placement ends with the window's change said, its effect possible.
+    [Test]
+    public async Task AWindowClosedWhileBeingPlacedEndsThePlacementNotTheCore()
+    {
+        var platform = new SnapPlatform(new WindowBounds(0, 0, 1536, 816)) { StartsMaximized = true, ClosesOnRestore = true };
+        var provider = new WindowsWindowControlProvider(platform);
+
+        WindowActionResult result = await SnapAsync(provider, "left");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowIdentityChanged));
+            Assert.That(result.EffectMayHaveOccurred, Is.True, "it was restored");
+        });
+    }
+
     [Test]
     public void AsWideAsTheWholeWorkAreaIsNoMinimum() =>
         Assert.That(WindowsWindowControlProvider.KeepsLargerMinimum(
@@ -276,6 +295,8 @@ public sealed class WindowSnapMinimumSizeTests
         public bool IgnoresMovesAfterRestore { get; init; }
         public List<WindowControlAction> Actions { get; } = [];
         public bool StartsFullScreen { get; init; }
+        public bool ClosesOnRestore { get; init; }
+        private bool _closed;
         public ushort LeavesFullScreenBy { get; init; }
         public List<ushort> Keys { get; } = [];
         private bool? _fullScreen;
@@ -321,6 +342,9 @@ public sealed class WindowSnapMinimumSizeTests
 
         public bool SetBounds(WindowIdentity identity, WindowBounds requested)
         {
+            // As the real platform: the act reads the window first, and one gone is a changed identity.
+            if (_closed)
+                throw new WindowIdentityChangedException();
             Moves.Add(requested);
             if (Full)
             {
@@ -357,6 +381,7 @@ public sealed class WindowSnapMinimumSizeTests
             Actions.Add(action);
             if (action == WindowControlAction.Restore)
             {
+                _closed = ClosesOnRestore;
                 _maximized = false;
                 _bounds = WindowSnapMinimumSizeTests.WorkArea;
             }

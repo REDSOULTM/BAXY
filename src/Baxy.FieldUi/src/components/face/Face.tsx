@@ -473,6 +473,15 @@ function FaceView(props: FaceProps) {
         ctx.beginPath(); ctx.moveTo(x - 4, y - 4); ctx.lineTo(x + 4, y + 4); ctx.moveTo(x + 4, y - 4); ctx.lineTo(x - 4, y + 4); ctx.stroke();
         ctx.globalCompositeOperation = ADD;
       }
+      // a family whose call may have run, unconfirmed, is marked apart with the doubtful «?» (the chips' --maybe colour)
+      if (journey && journey.maybe && journey.maybe !== journey.fail && trail > 0.02 && BXM.hub[journey.maybe] != null) {
+        const n = BXM.N[BXM.hub[journey.maybe]], x = X(n.x), y = Y(n.y), pu = 0.5 + 0.5 * Math.sin(T * 4), r = 9 + pu * 2;
+        const a = (0.9 * trail * vis).toFixed(3), c = light ? 'rgba(154,106,18,' + a + ')' : 'rgba(232,201,142,' + a + ')';
+        ctx.save(); ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = 2;
+        ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.stroke();
+        ctx.font = '700 11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', x, y + 0.5);
+        ctx.restore();
+      }
       // chest core (the «voz» node) beats with the state
       NOC();
       {

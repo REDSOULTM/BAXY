@@ -1,5 +1,9 @@
+using System.Security.Cryptography;
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
@@ -49,6 +53,7 @@ public sealed class AppCloseByApplicationTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo("invalid_arguments"));
+            Assert.That(outcome.ArgumentProblems.Single().OneOf, Is.EqualTo(new[] { "appId", "windowId" }));
             Assert.That(windows.Closed, Is.Empty);
         });
     }
@@ -68,6 +73,48 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos): «cierra Steam» with Steam only in the notification area, or with its window
+    // hidden by the close, said the application was not running (or closed): it runs, with no window, and is said so.
+    [Test]
+    public async Task AnApplicationRunningWithNoWindowIsSaidRunningInTheBackground()
+    {
+        var windows = new FakeWindows([]) { Background = [4242] };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Steam\"}"), CancellationToken.None);
+        // Said before the person is asked to confirm a close (IInvocationPreflight), with the same processes.
+        InvocationPreflightResult before = await new AppCloseHandler(windows).PreflightAsync(
+            JsonDocument.Parse("{\"appId\":\"Steam\"}").RootElement, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_running_in_background"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(4242));
+            Assert.That(windows.Closed, Is.Empty);
+            Assert.That(before.Failure?.ErrorCode, Is.EqualTo("app_running_in_background"));
+            Assert.That(before.Failure?.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(4242));
+        });
+    }
+
+    [Test]
+    public async Task AWindowThatOnlyHidesLeavesTheApplicationRunningInTheBackground()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "Steam")]) { Hides = "win_a" };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Steam\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False, "a hidden window is no closed application");
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_running_in_background"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True, "its window was hidden");
+            Assert.That(outcome.Result!.Value.GetProperty("hiddenWindows").GetInt32(), Is.EqualTo(1));
+            Assert.That(outcome.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(100));
+        });
+    }
+
     [Test]
     public async Task AWindowThatAsksToSaveStopsAndIsSaid()
     {
@@ -83,6 +130,68 @@ public sealed class AppCloseByApplicationTests
             Assert.That(outcome.EffectMayHaveOccurred, Is.False, "no window had closed yet");
             Assert.That(windows.Closed, Is.Empty);
         });
+    }
+
+    // Al máximo, flujos: an application asked for by its name with no window to close is that failure before any yes;
+    // one with its windows leaves the close to ask (and to resolve them again).
+    [Test]
+    public async Task AnApplicationNotRunningFailsBeforeTheYesAndOneRunningIsAsked()
+    {
+        var none = new AppCloseHandler(new FakeWindows([]));
+        var running = new FakeWindows([Frame("win_a", 100, "Sin título - Paint")]);
+
+        InvocationPreflightResult missing = await none.PreflightAsync(
+            JsonDocument.Parse("{\"appId\":\"Paint\"}").RootElement, CancellationToken.None);
+        InvocationPreflightResult there = await new AppCloseHandler(running).PreflightAsync(
+            JsonDocument.Parse("{\"appId\":\"Paint\"}").RootElement, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(missing.Failure?.ErrorCode, Is.EqualTo("app_not_running"));
+            Assert.That(missing.Failure?.EffectMayHaveOccurred, Is.False);
+            Assert.That(there.Failure, Is.Null);
+            Assert.That(there.Risk, Is.Null, "a window holding a document keeps work_loss");
+            Assert.That(running.Closed, Is.Empty);
+        });
+    }
+
+    // Al máximo, flujos («cierra discord» asked every time): app.close by the application's name lowers its risk as a
+    // close by a window does when every window it has holds no document of the person (the provider's rule, with the
+    // microphone's); one window with a document, or one it cannot place, keeps the yes. Fake windows: nothing closes
+    // for real.
+    [TestCase(new[] { "win_discord", "win_discord_2" }, false)]
+    [TestCase(new[] { "win_notepad" }, true)]
+    public async Task ByNameAnApplicationAllOfWhoseWindowsHoldNoDocumentClosesWithoutAsking(string[] ids, bool asks)
+    {
+        var windows = new FakeWindows([.. ids.Select((id, index) => Frame(id, 100 + index, id))])
+        {
+            Documentless = ["win_discord", "win_discord_2"],
+        };
+        string root = Path.Combine(Path.GetTempPath(), "baxy-app-close-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+                Path.Combine(root, "journal.jsonl"),
+                new JournalHmacAuthenticator(RandomNumberGenerator.GetBytes(JournalHmacAuthenticator.KeyLength)));
+            using var engine = new MissionEngine(new OperationRegistry([new AppCloseHandler(windows)]), journal);
+
+            OperationResponse response = await engine.ExecuteAsync(
+                new OperationRequest(
+                    ProtocolTypes.OperationRequest, Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"),
+                    Guid.NewGuid().ToString("D"), "app.close", JsonDocument.Parse("{\"appId\":\"Discord\"}").RootElement),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.ErrorCode, asks ? Is.EqualTo("confirmation_required") : Is.Null);
+                Assert.That(windows.Closed, asks ? Is.Empty : Is.EqualTo(ids));
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
     }
 
     // FT/proveedores goal (review of receipts): nine of ten windows minimized and one refused: the failure carries what
@@ -120,15 +229,32 @@ public sealed class AppCloseByApplicationTests
 
         internal string? Prompts { get; init; }
 
+        internal string[] Documentless { get; init; } = [];
+
+        public bool HoldsNoDocument(string windowId) => Documentless.Contains(windowId);
+
+        internal string? Hides { get; init; }
+
+        internal int[] Background { get; init; } = [];
+
         public ValueTask<WindowResolveResult> ResolveApplicationAsync(
             string applicationName, int limit, CancellationToken cancellationToken) =>
-            ValueTask.FromResult(new WindowResolveResult(true, true, windows, null));
+            ValueTask.FromResult(windows.Length == 0
+                ? new WindowResolveResult(false, false, [], WindowControlErrorCodes.WindowNotFound)
+                : new WindowResolveResult(true, true, windows, null));
+
+        public ValueTask<IReadOnlyList<int>> BackgroundProcessesAsync(
+            string applicationName, CancellationToken cancellationToken) =>
+            ValueTask.FromResult<IReadOnlyList<int>>(Background);
 
         public ValueTask<WindowCloseResult> CloseAsync(string windowId, CancellationToken cancellationToken)
         {
             WindowCandidate window = windows.Single(candidate => candidate.WindowId == windowId);
             if (windowId == Prompts)
                 return ValueTask.FromResult(new WindowCloseResult(true, true, window.ProcessId, null, ClosePrompted: true));
+            if (windowId == Hides)
+                return ValueTask.FromResult(new WindowCloseResult(
+                    true, true, window.ProcessId, null, Outcome: WindowCloseOutcomes.Hidden));
             Closed.Add(windowId);
             return ValueTask.FromResult(new WindowCloseResult(true, true, window.ProcessId, null, Title: window.Title));
         }

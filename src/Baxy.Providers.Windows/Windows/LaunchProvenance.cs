@@ -26,6 +26,7 @@ public sealed class LaunchProvenance
     private readonly List<Entry> _entries = [];
     private readonly Func<int, long?> _processCreationTicks;
     private readonly IPersonInputWitness _personInput;
+    private bool _forgotten;
 
     public LaunchProvenance()
         : this(ReadProcessCreationTicks, WindowsPersonInputWitness.Shared)
@@ -66,6 +67,7 @@ public sealed class LaunchProvenance
             if (_entries.Count >= MaximumEntries)
             {
                 _entries.RemoveAt(0);
+                _forgotten = true;
             }
 
             _entries.Add(new Entry(processId, processCreationTimeUtcTicks, Math.Max(0, windowHandle)));
@@ -122,6 +124,40 @@ public sealed class LaunchProvenance
         // the launch may have put their work there; not being able to tell keeps it asking.
         return launched
             && _personInput.ReachedSince(windowHandle, found.CreationTicks) == PersonInputVerdict.Untouched;
+    }
+
+    /// <summary>
+    /// BAXY Renew al máximo, F002 («¿abriste Spotify?» con un Spotify que la persona ya tenía abierto → «Sí, Spotify
+    /// tiene una ventana abierta», 9 de 9 corridas): whether a window (its handle, process id and process creation
+    /// time) is of what a verified opening of BAXY launched in this run, written into since or not. Its process is a
+    /// launched one (id and creation time), or it is the very window an opening verified while the launched process is
+    /// still the one launched (a frame drawn by another process). Null when that cannot be told: the window's process
+    /// creation time is unknown, or a launch was forgotten to keep the record bounded.
+    /// </summary>
+    public bool? Launched(long windowHandle, int processId, long processCreationTimeUtcTicks)
+    {
+        Entry[] entries;
+        bool forgotten;
+        lock (_gate)
+        {
+            entries = [.. _entries];
+            forgotten = _forgotten;
+        }
+
+        if (windowHandle > 0
+            && entries.LastOrDefault(entry => entry.WindowHandle == windowHandle) is { } verified
+            && ((verified.ProcessId == processId && verified.CreationTicks == processCreationTimeUtcTicks)
+                || _processCreationTicks(verified.ProcessId) == verified.CreationTicks))
+        {
+            return true;
+        }
+
+        if (entries.Any(entry => entry.ProcessId == processId && entry.CreationTicks == processCreationTimeUtcTicks))
+        {
+            return true;
+        }
+
+        return processId <= 0 || processCreationTimeUtcTicks <= 0 || forgotten ? null : false;
     }
 
     private static long? ReadProcessCreationTicks(int processId)

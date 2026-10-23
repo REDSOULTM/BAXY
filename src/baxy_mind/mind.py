@@ -27,10 +27,18 @@ from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 
-# What BAXY says once when a turn of the person's has said nothing for 2.5 s (SilenceNotice.After) and is still working (goal identity: a
-# notice that claims no result when the turn will go past 3 s in silence). The App times it; the words are the
-# persona's, so they live here with the prompt.
-NOTICE = "Un momento."
+# What BAXY says when a turn of the person's has said nothing for 2.5 s (SilenceNotice.After) and is still working,
+# and again every 10 s while it stays silent (goal identity: a notice that claims no result when the turn will go past
+# 3 s in silence). The App times it; the
+# words are the model's, written once at warm-up (Mind.warm): al máximo 9.2a (2026-10-22), a phrase fixed here broke
+# invariant 5 (cero respuestas visibles fijas). What is asked is an instruction, not a phrase; a phrase it does not
+# write usably (empty, more than NOTICE_MAX_CHARS or NOTICE_MAX_WORDS, more than one line, markup) leaves the notice
+# empty, and with no phrase the App says none (SilenceNotice.PhraseOf).
+NOTICE_ASK = ("[Esto no lo dice la persona. Cuando algo que te pidan tarde unos segundos, dirás en voz alta una frase muy "
+              "breve para que sepa que sigues en ello. Escribe sólo esa frase, de dos a cinco palabras, sin decir que "
+              "hiciste algo ni ningún resultado.]")
+NOTICE_MAX_CHARS = 40
+NOTICE_MAX_WORDS = 6
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
@@ -108,17 +116,30 @@ BEAT_MARK = "[Latido: nadie te habló; lo que sigue lo dijiste o hiciste por tu 
 
 
 # How a completed call was verified (the result's «verification»), in the words the model reads.
+# Auditoría de falsedades (w5-fals, 2026-10-22): «completado» is a word of something done, and the 4B told it as done
+# where nothing was: «¿abriste Spotify?» → a read of its windows («completado: lectura») → «Sí» in 9 of 9 runs of
+# pc-t2 (F002), and «¿ya cerraste el bloc de notas?» → «Sí» (F015). Only a call that changed something and was read
+# back says «completado»; the others say what happened: already so before the call, sent without looking after it, or
+# finished without a verification.
 VERIFICATION = {
     "readback": "completado y verificado",
-    "unchanged": "completado: ya estaba así, no cambió nada",
-    "delivered_only": "completado sin verificar: entregado, sin releer su efecto",
-    "output_only": "completado: lectura, su resultado está arriba",
-    "none": "completado sin verificar",
+    "unchanged": "ya estaba así antes de esta llamada: no hizo falta cambiar nada",
+    "delivered_only": "enviado sin verificar: no se volvió a mirar si hizo efecto",
+    "output_only": "completado: su resultado está arriba",
+    "none": "terminó sin verificar su efecto",
 }
+# An output_only call of a read risk (read_only, privacy_sensitive: the catalog's own risk, as the App sent it) only
+# looked; shell_command_run and client_channel_locate are output_only too and may change things, so they keep the line
+# above.
+READ_RISKS = ("read_only", "privacy_sensitive")
+OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba"
+# Every outcome of a completed call (the App runs the queued calls after one of these).
+COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ)
 
 
-def _outcome(observation: str) -> str:
-    """How a call ended, in the words the model reads: from the result's own status, verification and error."""
+def _outcome(observation: str, read: bool = False) -> str:
+    """How a call ended, in the words the model reads: from the result's own status, verification and error. ``read``:
+    the call's risk only reads (READ_RISKS)."""
     try:
         facts = json.loads(observation)
     except json.JSONDecodeError:
@@ -139,8 +160,15 @@ def _outcome(observation: str) -> str:
     if status != "completed" and shown.get("sent") is False and shown.get("messageWritten") is False:
         error = facts.get("error") or facts.get("cause")
         return "falló" + (f" ({error})" if error else "") + ": el mensaje no se escribió ni se envió"
+    # Al máximo 8.3 (notebook): an act that failed or stayed unsure but whose state was read again after it says whether
+    # what was asked holds now; the result's code and its uncertainty stay as they are.
+    after = shown.get("stateAfter")
+    reread = ""
+    if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool):
+        reread = ("; releído después: quedó como se pidió" if after["requestedStateReached"]
+                  else "; releído después: no quedó como se pidió")
     if status == "pending" or facts.get("effectUncertain"):
-        return "sin confirmar: pudo o no ocurrir"
+        return "sin confirmar: pudo o no ocurrir" + reread
     if status == "completed":
         # Al máximo 8.2: how it was verified is the result's own typed fact (OperationVisibleFacts' table in the kernel,
         # and the App's for memory and for a result it could not read); one without it is not taken as verified.
@@ -148,9 +176,23 @@ def _outcome(observation: str) -> str:
         # the model tells («lo creé en BAXY-bench» after a write that went to the home folder).
         where = shown.get("fullPath")
         where = f" en {where}" if isinstance(where, str) and where else ""
-        return VERIFICATION.get(str(facts.get("verification")), VERIFICATION["none"]) + where
+        # Al máximo 7.1 (notebook): an act in a window brings the window as it is after it; what it says is told.
+        view = shown.get("after")
+        seen = ("" if not isinstance(view, dict) or view.get("omitted")
+                else "; la ventana no cambió" if view.get("same") is True
+                else "; su after es la ventana de después")
+        verification = str(facts.get("verification"))
+        told = (OUTPUT_READ if read and verification == "output_only"
+                else VERIFICATION.get(verification, VERIFICATION["none"]))
+        # Auditoría de falsedades (F002): an application BAXY did not start (app_open's alreadyRunning) is said so,
+        # or «¿abriste X?» after opening one already open read «completado y verificado» as «Sí, lo abrí».
+        before = "; ya estaba abierta antes de esta llamada" if shown.get("alreadyRunning") is True else ""
+        # The App's own completed result it could not read (result_unreadable) keeps its code.
+        error = facts.get("error")
+        code = f" ({error})" if isinstance(error, str) and error else ""
+        return told + code + where + before + seen
     error = facts.get("error") or facts.get("cause")
-    return f"falló ({error})" if error else "falló"
+    return (f"falló ({error})" if error else "falló") + reread
 
 
 def _aid_on(aid: str) -> bool:
@@ -226,14 +268,20 @@ def places_note(application: str) -> str:
             f"«{application}» y place {listed}.]")
 
 
-FIELD_NOTE = ("\n[Ayuda: tras el clic ya no se ve «{label}»: si era la indicación de un campo (buscar, escribir), el "
-              "campo tiene ahora el cursor y lo siguiente es escribir en él con input_text_type, no pulsarlo otra vez.]")
+# Renew al máximo (w5): the note said «el campo tiene ahora el cursor» with nothing in the result checking it; the focus
+# is told only when the result reports it (a field made the text's destination with the keyboard's focus on it).
+FIELD_NOTE = ("\n[Ayuda: tras el clic ya no se ve «{label}» y el resultado dice que el clic dio el foco del teclado a un "
+              "campo de texto: lo siguiente que se escriba con input_text_type va ahí, sin pulsarlo otra vez.]")
+FIELD_NOTE_UNCHECKED = ("\n[Ayuda: tras el clic ya no se ve «{label}»; el resultado no dice dónde quedó el foco del "
+                        "teclado: no se comprobó si un campo tiene el cursor. input_text_type escribe donde esté el foco "
+                        "de la ventana.]")
 
 
 def field_note(observation: str, args: str | None) -> str:
     """Aid «field_focused_next» (uso real 2026-10-21, e2e del notebook: Steam's «Buscar en la tienda» pressed four times
     and «no pude escribir» told without typing): a completed click whose label is no longer on screen, as its own
-    result says, is told as the fact it may be: a field's hint that left because the field has the cursor."""
+    result says, is told with what the result shows of the focus: a text field with the keyboard's focus when it says
+    so («focused»), otherwise that the focus was not checked."""
     try:
         facts, called = json.loads(observation), json.loads(args or "{}")
     except json.JSONDecodeError:
@@ -243,11 +291,14 @@ def field_note(observation: str, args: str | None) -> str:
     if (not isinstance(observed, dict) or facts.get("status") != "completed"
             or observed.get("labelStillOnScreen") is not False or not isinstance(label, str) or not label.strip()):
         return ""
-    return FIELD_NOTE.format(label=label.strip())
+    note = FIELD_NOTE if observed.get("focused") is True else FIELD_NOTE_UNCHECKED
+    return note.format(label=label.strip())
 
 
 SAME_CALL_TOLD = 3
-SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se hizo {times} veces en este turno con los mismos argumentos y el mismo "
+# Auditoría de falsedades: «ya se hizo» is the call's, never its effect's (a click that failed three times read «ya se
+# hizo»): the call was made, and its result is said beside it.
+SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se llamó {times} veces en este turno con los mismos argumentos y el mismo "
                   "resultado ({outcome}){options}]")
 SAME_CALL_OPTIONS = ("; otra vez igual dará lo mismo. Opciones: otra herramienta, otros argumentos, o decir a la persona "
                      "lo que pasó.")
@@ -301,12 +352,52 @@ def _aids_seen(observation: str) -> dict[str, Any]:
     return seen
 
 
+_WEEKDAYS = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
+
+
+def _when(text: Any) -> _dt.datetime | None:
+    """A time the App wrote (ISO, with or without its offset; a reminder's «yyyy-MM-dd HH:mm» is local), or None."""
+    try:
+        return _dt.datetime.fromisoformat(str(text))
+    except ValueError:
+        return None
+
+
+def _span(minutes: int) -> str:
+    minutes = abs(minutes)
+    if minutes < 60:
+        return f"{minutes} min"
+    if minutes < 48 * 60:
+        return f"{minutes // 60} h" + (f" {minutes % 60} min" if minutes % 60 else "")
+    return f"{round(minutes / 1440)} días"
+
+
+def _relative(due: Any, now: _dt.datetime | None) -> str:
+    """Al máximo 10.4 (Test of Time): a reminder's time as its day and hour from the moment and how far it is («hoy
+    10:00, en 20 min»), facts the model reads instead of subtracting ISO stamps; as it came when either does not read."""
+    when = _when(due)
+    if now is None or when is None:
+        return str(due)
+    if when.tzinfo is None and now.tzinfo is not None:
+        when = when.replace(tzinfo=now.tzinfo)  # the App's local time, in the moment's zone
+    elif when.tzinfo is not None and now.tzinfo is not None:
+        when = when.astimezone(now.tzinfo)
+    days = (when.date() - now.date()).days
+    day = {0: "hoy", 1: "mañana", -1: "ayer"}.get(days, f"{_WEEKDAYS[when.weekday()]} {when:%d/%m}")
+    minutes = round((when.replace(tzinfo=None) - now.replace(tzinfo=None)).total_seconds() / 60)
+    far = "ahora" if minutes == 0 else f"en {_span(minutes)}" if minutes > 0 else f"hace {_span(minutes)}"
+    return f"{day} {when:%H:%M}, {far}"
+
+
 def beat_message(context: dict[str, Any]) -> str:
     """What the heartbeat sees, as lines the model reads: the moment, the screen, the PC, what changed, what BAXY
     remembers, the recent conversation and the reminders. Presentation only: every field the App observed is shown."""
     lines = []
     fg = context.get("foreground") or {}
-    lines.append(f"Momento: {context.get('weekday', '')} {context.get('now', '')} · la persona está: "
+    now = _when(context.get("now"))
+    # Al máximo 10.4: the moment as a day and a clock, not an ISO stamp (as it came when it does not read).
+    shown = f"{now:%d/%m/%Y %H:%M}" if now else context.get("now", "")
+    lines.append(f"Momento: {context.get('weekday', '')} {shown} · la persona está: "
                  f"{context.get('owner_activity', 'desconocido')}")
     if fg:
         lines.append(f"Al frente: {fg.get('title', '')} ({fg.get('process', '')})"
@@ -331,12 +422,24 @@ def beat_message(context: dict[str, Any]) -> str:
             for h in history))
     reminders = context.get("reminders") or []
     if reminders:
-        lines.append("Recordatorios: " + "; ".join(f"{r.get('text') or 'sin título'} ({r.get('due', '')})"
-                                                   for r in reminders))
+        # R10.3: one without a time (the App's «y 3 más sin listar») has no empty brackets.
+        lines.append("Recordatorios: " + "; ".join(
+            f"{r.get('text') or 'sin título'}" + (f" ({_relative(r['due'], now)})" if r.get("due") else "")
+            for r in reminders))
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
 
 CLOCK_MARK = "[Reloj:"
+# Al máximo W5 (2026-10-23): Qwen3.5's template opens the assistant messages after the last request with an empty
+# «<think></think>» block, as it opens the one being generated, and the earlier ones without it. So each new request
+# turns the previous turn's calls and answers into another text than the one the slot holds: llama-server keeps the
+# cache up to that turn's first assistant message and reads the rest again in turn.decide (falsehood bench of
+# 2026-10-22, llama-server.log: a «sí», a «no» or a «¿ya lo borraste?» read 102-348 tokens where their own are ~20-30,
+# 120-220 ms more; after a turn that looked at a window, its thousands of tokens of controls too). Once a turn has
+# ended, the mind reads its conversation as the next request will show it, while BAXY speaks: the next decision then
+# reads only its own words. The model's prompt is the same text; only when it is read changes. BAXY_RENEW_PREFILL=0
+# turns it off.
+PREFILL_MARK = "[BAXY: lo que diga la persona después]"
 # Al máximo 8.1 (F015: «¿ya lo cerraste?» → «Sí» with nothing run, 5 of the 10 falsehoods left, which no aid of the
 # result touched): the clock also says which calls ran in the session and how each ended, the last ones of a count of
 # the session's own (a cut history no longer shows them, and a «none» read from it would be false).
@@ -345,7 +448,8 @@ SESSION_CALLS = 8
 SESSION_STATE = "baxy.session"
 
 # The session's conversation keeps the last turns that fit both bounds; it is only ever cut at a turn's start (the
-# model is hybrid: its cache is reused from the front, so the middle of the prompt is never edited).
+# model is hybrid: its cache is reused from the front, so the middle of the prompt is edited only where a cut would
+# have moved its start anyway: the oldest results that lose their bodies, 1.1).
 HISTORY_TURNS = 8
 HISTORY_CHARS = 24000
 # Ronda final 44: the context also holds the tool prefix (about 42k of its 49,152 tokens with the descriptions of the
@@ -358,17 +462,44 @@ TURN_ROOM_TOKENS = 3584
 # after it: 28 % of turn.decide re-read over 500 tokens (p50 761 tokens / 701 ms, p90 2.5k / 1.6 s), and a session at
 # its bound cut one turn at every new one. Cut to 60 %, the next turns grow at its end until the bound again.
 TRIM_TO = 0.6
+# Renew al máximo (w5): a cut also takes the turns down to this share of HISTORY_TURNS (3 of 8), all of them without
+# their results' bodies, so the next cut comes six turns later. Each cut re-reads all that is left plus ~500 tokens of
+# the prefix (the slot's last checkpoint before the history). Estimated on the measured session's shapes (offline replay
+# with the model's chat template, not measured on the model): turn.decide re-reads −3 to −14 % against b84547ed5 on
+# that session, −21 % on random 30-turn sessions of its turns; 0.6 here, +1 % and −10 %.
+TRIM_TURNS_TO = 0.4
 # Ronda final 45 (regla 3): what is cut is said where the model reads, or it took what is left for the whole session
 # («nunca me lo dijiste» about a turn no longer shown).
 TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "
            "no lo sabes]")
+# Renew al máximo (w5): a cut turn left nothing of what the person asked or of how its calls ended (a failed delete was
+# known only while it was among the clock's last calls). The note of the cut keeps one line per cut turn, the newest
+# that fit GIST_CHARS: the person's words and its calls as their turn's facts said them. The note is rewritten only
+# when turns are cut, which re-reads the history anyway.
+TRIMMED_GIST = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran enteros; de "
+                "{k} de ellos queda sólo lo que pidió la persona y cómo terminó cada llamada:{lines}\nLo demás que pasó "
+                "en ellos no lo sabes]")
+GIST_LINE = "\n- "
+GIST_CHARS = 1200
+GIST_WORDS = 100
+GIST_NO_CALLS = "sin llamadas"
+GIST_NOT_RUN = "no se ejecutó"
+# Al máximo 1.1 (2026-10-22): before a cut, the oldest results lose their bodies; their calls and the line of their
+# turn's facts (continue_turn writes it last) stay. A turn of 5+ calls held 3.6k tokens (p50): about three turns were
+# left. The ids a body carried (windows, controls) are gone with it, and the model is told so (regla 10: look again).
+TURN_FACTS = "\n[En este turno: "
+COMPACTED = ("[Resultado omitido para que quepa la conversación: los ids de ventanas y controles que traía ya no "
+             "valen; si lo necesitas, míralo de nuevo]")
+# Renew al máximo (w5): what a kept facts line says of the body it no longer has («su resultado está arriba» after the
+# result was left out read as a value the model could still quote), said as it is once the body is gone.
+COMPACTED_FACTS = {"su resultado está arriba": "su resultado se omitió",
+                   "lo que vio está arriba": "lo que vio se omitió",
+                   "su after es la ventana de después": "su after se omitió"}
+assert all(k in label for k, label in (("su resultado está arriba", VERIFICATION["output_only"]),
+                                         ("lo que vio está arriba", OUTPUT_READ)))
 
-# FT/proveedores goal (e2e E022): the results of one turn's calls grow its prompt past the context (eight pages of 6,000
-# characters beside the prefix), and llama-server refuses it. Each earlier result of the turn then keeps its start, and
-# the cut is said where the model reads it.
-SHRUNK_CHARS = 1200
-SHRUNK = "\n[Resultado recortado para que quepa el turno: {n} caracteres más de este resultado ya no se muestran]"
-# The same for the person's own text when it alone does not fit (decide); never cut below this many characters.
+# Review 16: the person's own text, when it alone does not fit (decide), keeps its start and the cut is said where the
+# model reads it; never cut below this many characters.
 CUT_TEXT = "\n[Texto recortado para que quepa el turno: {n} caracteres más de lo que escribió la persona ya no se muestran]"
 CUT_TEXT_FLOOR = 500
 
@@ -377,6 +508,12 @@ CUT_TEXT_FLOOR = 500
 # instead of 10 of 1,530 right ones (phase 0, 2026-10-21).
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
               "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
+# Renew al máximo (confirmaciones, 2026-10-23): a «sí» the model is not sure is one. On the real model (29 answers to a
+# pending trash of notas.txt, 3 seeds, int7) every plain yes («sí», «dale», «ya po», «okey», «go ahead», «zí») confirmed at
+# ≥ 0.998 and «sí pero el otro» at 0.77-0.79, which would have trashed the file the person had just said was not the
+# one; under this floor an approve:true is held and the model asks, so nothing runs on it. «sí no» confirmed at 0.99:
+# no confidence tells it apart (a limit, said so in the report). BAXY_CONFIRM_FLOOR sets it; 0 turns it off.
+CONFIRM_FLOOR = 0.95
 # Layer 2 (system_one.py): the model doubted and the decision model read the request otherwise.
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
                     "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
@@ -388,8 +525,35 @@ DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
-# other risk still asks: the core authorizes, and a riskier tool is never put in the model's mouth.
-CORRECTABLE_RISKS = ("read_only", "low_reversible")
+# other risk still asks: the core authorizes, and a riskier tool it would run unasked is never put in the model's mouth
+# (below: what it confirms). Al máximo 5.1: nor
+# one with an effect of the catalog (keys, clicks or commands to a window that may be the person's; what the model wrote
+# sent out of the PC; a radio, a network, a pairing, airplane or display mode changed), whatever its risk: a call the
+# model did not choose never lands there. A catalog without the field (the measurement catalogs saved before it)
+# corrects by risk alone, as before.
+# Al máximo, System One 3: also the risks the kernel always confirms in normal mode (RiskPolicy.Evaluate: work_loss and
+# installation and recoverable_delete are Irreversible there), because its confirmation names the exact action and
+# replaces the vague question (P215 «desinstala el Worms»: Laya read game_uninstall_named at 0.91 and BAXY asked what to
+# do). Not external_communication: normal mode confirms only five of its operations. Not system.power, which normal mode
+# runs unasked, and none of them in Bypass, which runs them unasked too (only message.send asks there, and it has an
+# effect of the catalog); a mode that cannot be read counts as Bypass. With _founded and the effects rule, as for the rest.
+CONFIRMED_RISKS = ("work_loss", "installation", "recoverable_delete")
+CORRECTABLE_RISKS = ("read_only", "low_reversible", *CONFIRMED_RISKS)
+UNCONFIRMED_OPERATIONS = ("system.power",)
+
+
+def _bypass() -> bool:
+    """Whether the kernel's confirmation mode is Bypass, as ConfirmationModeStore reads it: the file «confirmation-mode»
+    of the data root (BAXY_DATA_DIR, or %LOCALAPPDATA%\\BAXY\\1), «bypass» or «all»; no file or another word is normal.
+    Read at each correction, as the engine reads it at each invocation: the switch can change between turns."""
+    root = os.environ.get("BAXY_DATA_DIR", "").strip() or str(Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "1")
+    try:
+        word = (Path(root) / "confirmation-mode").read_text(encoding="utf-8-sig").strip().lower()
+    except FileNotFoundError:
+        return False
+    except (OSError, UnicodeDecodeError):
+        return True  # unreadable: «corrige» puts no confirmed risk in the model's mouth
+    return word in ("bypass", "all")
 
 
 def _threshold(name: str) -> float:
@@ -418,8 +582,32 @@ CONFIRM_OPERATION = "confirmation.answer"
 # Renew al máximo (F005 of the notebook's falsehood bench, 2026-10-22): «¿ya lo subiste?» was answered with
 # confirm_pending approve:true and nothing waiting for a «sí»; with a confirmation pending it would have approved what
 # nobody approved. Without one, the call never reaches the App: its result says so and the model answers in words.
+# F010 (int3, 2026-10-22): «nothing waiting» read as «already done» («la borré sin pedirte permiso» after a delete that
+# had failed); the result says this call did nothing and that only earlier results tell what was done.
 NOTHING_PENDING = json.dumps({"status": "failed", "error": "nothing_pending",
-                              "reason": "no action is waiting for the person's confirmation"})
+                              "reason": "no action is waiting for the person's confirmation, and this call did nothing; "
+                                        "whether anything was done is only what the earlier results of this "
+                                        "conversation say"})
+# Auditoría de confirmaciones (2026-10-23): a question that ended unanswered (its time ran out, or a later line of
+# BAXY's left it behind) is not «nothing was asked» (audit 2026-10-15, App 3, lost since F005): the App says which call
+# it was with the person's next words, and their «sí» reads how it ended and that asking again is calling it again.
+ENDED = {"expired": ("confirmation_expired", "the time to answer ran out"),
+         "dropped": ("confirmation_dropped", "something else was said after the question, so it no longer stood")}
+
+
+def ended_result(ended: dict[str, Any]) -> str:
+    """What confirm_pending reads when the call the person may think they answer ended without an answer."""
+    error, reason = ENDED.get(str(ended.get("ended")), ENDED["dropped"])
+    wire = str(ended["operation"]).replace(".", "_")
+    # A call the kernel challenged again after it had started (reconciliationRequired) may have had its effect.
+    uncertain = ended.get("effectUncertain") is True
+    told: dict[str, Any] = {"status": "failed", "error": error, "operation": ended["operation"]}
+    if uncertain:
+        told["effectUncertain"] = True
+    told["reason"] = f"{reason}: {wire} {'may have started before it was asked' if uncertain else 'did not run'}"
+    told["next"] = f"to do it now, call {wire} again: the person will be asked again"
+    return json.dumps(told)
+
 CONFIRM = {
     "type": "function",
     "function": {
@@ -486,6 +674,17 @@ def _model_schema(schema: Any, constants: dict[str, Any] | None = None) -> Any:
     return out
 
 
+# Palanca P2.6: Start menu entries no one opens as an application, by the shape of their (folded) name, never by an
+# application's name: an uninstaller («Uninstall X», «Desinstalar X»; «X Uninstaller» is an application), help, a
+# manual, documentation or a license, release notes, and a web page. They leave app_open's list of installed
+# applications (67 of 600 names on the PC, ~1,7k characters of prefix); app_open still opens any of them by name.
+_NOT_AN_APP = re.compile(
+    r"\b(?:un-?install|desinstalar)(?!er)"
+    r"|\b(?:help|ayuda|manuals?|faq|readme|documentation|documentacion|dokumentation|user guide|release notes"
+    r"|what'?s new|que hay de nuevo|reference|website)\b"
+    r"|\b(?:on the|en la) web\b|\(online\)|^licen[cs]e\b|\blicen[cs]e agreement\b")
+
+
 def _env_float(name: str, default: float) -> float:
     try:
         return float(os.environ.get(name, default))
@@ -494,14 +693,21 @@ def _env_float(name: str, default: float) -> float:
 
 
 class Mind:
+    notice = ""  # the model's notice phrase, written at warm-up (NOTICE_ASK); empty before it or when unusable
+    # Al máximo 9.4: the voice's look-ahead (Speech.foresee), given the last answer's text as it is written; None: the
+    # last answer is not streamed.
+    foresee: Any = None
+
     def __init__(self, server: LlmServer, trace: Path, system_one: SystemOne | None = None) -> None:
         self.server = server
         self.trace = trace
         self.system_one = system_one  # layer 2: the decision model beside Qwen (None: off)
         self._judged: dict[str, Any] | None = None
         self.tools: list[dict[str, Any]] = []
+        self.names: list[str] = []  # the installed applications and games of the last catalog.configure
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
+        self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -525,6 +731,9 @@ class Mind:
         self._ran_count = 0
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
+        # A person's turn or a heartbeat reached the model in this process: the slot holds more than the prefix, and
+        # the warm-up no longer keeps it on disk (al máximo V1).
+        self._turned = False
 
     # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
     def _shorten(self, observation: str) -> tuple[str, dict[str, str]]:
@@ -578,14 +787,20 @@ class Mind:
                 json.dumps(message, ensure_ascii=False), encoding="utf-8")
         except OSError:
             pass
-        apps = [str(n) for n in ((message.get("applicationCatalog") or {}).get("names") or []) if str(n).strip()]
+        apps = [str(n) for n in ((message.get("applicationCatalog") or {}).get("names") or [])
+                if str(n).strip() and not _NOT_AN_APP.search(_fold(str(n)))]
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, risk = [ASK_USER, CONFIRM], {}, {}
+        # The same names, for the ear's hotwords (voice.hear_names): what the model is shown is what it may hear.
+        self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
+                                    if isinstance(e, dict) and e.get("name")})
+        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
+            # Renew al máximo: the places stay in app_open's description too (P2.6 left them only in `place`; e2e E014
+            # then opened msconfig for «abre la configuración de sonido», twice, on the notebook, 2026-10-22).
             description = (self.english.get(name) or str(cap.get("description") or "")).replace(
                 "{app_places}", APP_PLACES_TEXT)
             if name == "app.open" and apps:
@@ -613,32 +828,79 @@ class Mind:
             tools.append(tool)
             wire_to_op[wire] = name
             risk[wire] = str(cap.get("risk") or "")
-        self.tools, self.wire_to_op, self.risk = tools, wire_to_op, risk
+            effects[wire] = [str(e) for e in cap.get("effects") or []]
+        self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
-            self._log("configure.aid", time.monotonic(), None, aids=aids)
+            self._log("configure.aid", time.perf_counter(), None, aids=aids)
         return len(capabilities)
 
     def warm(self) -> None:
-        """Process the tools and the system prompt once, so every turn starts from a cached prefix."""
+        """Process the tools and the system prompt once, so every turn starts from a cached prefix. Al máximo V1
+        (2026-10-22): that state is kept on disk (LlmServer.save_prefix) with the notice and the prefix's tokens, and a
+        start whose tools, system prompt, model and server are the same restores it instead (18.3 s → under 1 s)."""
+        started = time.perf_counter()
         self.call_tokens = self.server.tokenize("<tool_call>")
         if len(self.call_tokens) != 1:
             raise RuntimeError(f"<tool_call> is not one token of this model: {self.call_tokens}")
-        reply = self.server.chat({"messages": [{"role": "system", "content": self._system()},
-                                                   {"role": "user", "content": "hola"}],
-                                  "tools": self.tools, "max_tokens": 1,
-                                  "chat_template_kwargs": {"enable_thinking": False}}, timeout=600)
+        warm = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": "hola"}],
+                "tools": self.tools, "max_tokens": 1, "chat_template_kwargs": {"enable_thinking": False}}
+        notice = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": NOTICE_ASK}],
+                  "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
+                  "logit_bias": [[token, False] for token in self.call_tokens],
+                  "chat_template_kwargs": {"enable_thinking": False}}
+        key = self.server.prefix_key([warm, notice])
+        held = self.server.restore_prefix(key)
+        if held is not None and isinstance(held.get("prefix_tokens"), int) and isinstance(held.get("notice"), str):
+            self.prefix_tokens, self.notice = held["prefix_tokens"], held["notice"]
+            self._log("warm.prefix", started, None, restored=True, content=self.notice or None)
+            return
+        reply = self.server.chat(warm, timeout=600)
         self.prefix_tokens = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
+        phrase = self._write_notice(notice)
+        self.notice = phrase or ""
+        # The file holds the slot: only the prefix (the tools, the system prompt, the notice's request and words) may be
+        # in it, never a person's conversation, so it is saved only before any turn of this process reached the model.
+        saved = phrase is not None and not self._turned and self.server.save_prefix(
+            key, {"prefix_tokens": self.prefix_tokens, "notice": self.notice})
+        self._log("warm.prefix", started, None, restored=False, saved=saved)
+
+    def _write_notice(self, body: dict[str, Any]) -> str | None:
+        """The notice in the model's own words (NOTICE_ASK), once, on the cached prefix: words only, as the last answer
+        of a turn, and greedy. Empty when it gave nothing usable: then BAXY says no notice; None when the call failed
+        (nor is the warm-up kept on disk then)."""
+        started = time.perf_counter()
+        try:
+            reply = self.server.chat(body, timeout=600)
+            written = str(reply["choices"][0]["message"].get("content") or "")
+        except Exception:  # noqa: BLE001 - without its words BAXY says no notice; the warm-up itself is done
+            self._log("warm.notice", started, None, content=None, written="")
+            return None
+        phrase = written.strip().strip("«»\"'“”").strip()
+        usable = bool(phrase) and "\n" not in phrase and "<" not in phrase and len(phrase) <= NOTICE_MAX_CHARS \
+            and len(phrase.split()) <= NOTICE_MAX_WORDS
+        self._log("warm.notice", started, reply, content=phrase if usable else None, written=written)
+        return phrase if usable else ""
 
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
         return BEAT_SYSTEM if beat else SYSTEM
 
     @staticmethod
+    def _waits(pending: dict[str, Any] | None) -> bool:
+        """Whether the App says a call waits for the person's «sí» with these words."""
+        return bool(isinstance(pending, dict) and pending.get("operation") and not pending.get("ended"))
+
+    @staticmethod
+    def _ended(pending: dict[str, Any] | None) -> dict[str, Any] | None:
+        """The call whose question ended unanswered just before these words, as the App says it, or None."""
+        return pending if isinstance(pending, dict) and pending.get("operation") and pending.get("ended") else None
+
+    @staticmethod
     def _pending_note(pending: dict[str, Any] | None) -> str:
         """The call the kernel holds for the person's yes, when one is: after «sí» the model called that tool again
         instead of answering it (e2e practice E021, 3 of 3), and the kernel only asked again."""
-        if not isinstance(pending, dict) or not pending.get("operation"):
+        if not isinstance(pending, dict) or not pending.get("operation") or pending.get("ended"):
             return ""
         wire = str(pending["operation"]).replace(".", "_")
         arguments = pending.get("arguments")
@@ -713,17 +975,23 @@ class Mind:
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
             # the steps already run stay in the conversation and are never run again. A new request instead of an
             # answer reaches the model the same way, and the model reads it as what it is.
+            # Renew al máximo (auditoría de confirmaciones, 2026-10-23): what waits for the person's «sí» is what the App
+            # says with these words, not what waited when the turn began: a confirmation dropped or expired since then
+            # was approved with the answer to the question (the old file, after «sí pero el otro» → «¿cuál?» → «el
+            # informe»), and one asked since then got nothing_pending.
             asked, after, said = turn.pop("asked"), turn.pop("after_asked", []), turn["text"]
-            answer = {"role": "tool", "tool_call_id": asked, "content": text}
+            was = {"pending": turn.get("pending"), "ended": turn.get("ended")}
+            answer = {"role": "tool", "tool_call_id": asked, "content": text + self._pending_note(pending)}
             turn["conv"].append(answer)
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
-            turn["text"], turn["answering"] = text, True
+            turn["text"], turn["answering"], turn["pending"] = text, True, self._waits(pending)
+            turn["ended"] = self._ended(pending)
             try:
                 return self._next(request_id, "turn.decide", turn)
             except Exception:
                 self._take_back(turn["conv"], answer)
-                turn.update(asked=asked, after_asked=after, text=said)
+                turn.update(asked=asked, after_asked=after, text=said, **was)
                 raise
         self._close_open_calls()
         answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
@@ -741,8 +1009,7 @@ class Mind:
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
-                          "pending": bool(isinstance(pending, dict) and pending.get("operation")),
-                          "answering": answering}
+                          "pending": self._waits(pending), "ended": self._ended(pending), "answering": answering}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -759,7 +1026,8 @@ class Mind:
         heartbeat session), says what is happening and whether to intervene, and only then acts, proposes or says
         something. Same tools (the cached prefix: the template puts them first) and a system text without the «¿ya lo
         hiciste?» sentence; what it did joins the person's conversation only if it intervened."""
-        started = time.monotonic()
+        started = time.perf_counter()
+        self._turned = True
         if self._beat is not None:
             # Review 2026-10-22: a heartbeat the App never ended is closed as end_beat closes it, never overwritten
             # with what BAXY said or did in it unsaid.
@@ -796,8 +1064,10 @@ class Mind:
             return {"type": "turn.result", "id": request_id, "kind": "silence", "operation": None, "arguments": None,
                     "question": "", "reply": ""}
         # The analysis stays as the model's own words, not as JSON: with its JSON before it, the model answered the
-        # second move in JSON again (practice scene P023).
-        conv.append({"role": "assistant", "content": str(decision.get("analisis") or "")})
+        # second move in JSON again (practice scene P023). Al máximo 10.3: the motives it found go before it, as words
+        # too: the move that acts read only the analysis (PALANCAS-nb 10.3, scenes P002 and P023).
+        motives = "; ".join(f"{m}: {decision.get(m) or ''}" for m in _MOTIVES)
+        conv.append({"role": "assistant", "content": f"{motives}. {decision.get('analisis') or ''}".rstrip()})
         conv.append({"role": "user", "content": BEAT_ACT})
         return self._next(request_id, "turn.beat", self._beat)
 
@@ -824,6 +1094,35 @@ class Mind:
             self.conversation.extend([{"role": "user", "content": BEAT_MARK}, *acted])
         self._trim()
 
+    def prefill(self) -> bool:
+        """Al máximo W5 (PREFILL_MARK): with no turn open, the conversation is read into the slot as the next request
+        will show it; whether it was. The template is asked for the conversation with a request after it (a user
+        message, as the clock of the next turn or a confirmation's label is), and its text is cut where that request
+        begins: what comes before it is the start of the next prompt to the character, and it ends in «<|im_end|>\\n»
+        before «<|im_start|>», so it is tokenized there as in the whole prompt. Nothing is read while a call waits for
+        its result, while the model's question (ask_user) waits for the person's words (they come as its result, and
+        the turn's messages keep their form), during a heartbeat, or with nothing to read."""
+        turn = self._turn or {}
+        if (os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0" or not self.conversation or self._beat is not None
+                or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
+            return False
+        started = time.perf_counter()
+        body = {"messages": [{"role": "system", "content": self._system()}, *self.conversation,
+                             {"role": "user", "content": PREFILL_MARK}],
+                "tools": self.tools, "chat_template_kwargs": {"enable_thinking": False}}
+        try:
+            rendered = self.server.template(body)
+            cut = rendered.rfind("<|im_start|>user\n" + PREFILL_MARK)
+            if cut <= 0 or not rendered[:cut].endswith("<|im_end|>\n"):
+                self._log("warm.history", started, None, failure="unrendered")
+                return False
+            reply = self.server.prefill(rendered[:cut])
+        except Exception as error:  # noqa: BLE001 - the next decision reads it itself, as it did before
+            self._log("warm.history", started, None, failure=type(error).__name__)
+            return False
+        self._log("warm.history", started, reply, messages=len(self.conversation))
+        return True
+
     def _ran_add(self, calling: Any, outcome: str) -> None:
         """One call of the session and how it ended, for the clock (8.1)."""
         wire = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else str(calling or "?").replace(".", "_")
@@ -845,19 +1144,107 @@ class Mind:
         self._turn = None
 
     def _trim(self) -> None:
-        """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result. Past it, the
-        oldest turns go until what is left fits TRIM_TO of every bound."""
+        """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result. While they
+        fit, nothing already sent changes (the model re-reads from the first changed message on). Past a bound, one
+        rewrite: the oldest turns go down to TRIM_TURNS_TO of the count, every kept closed turn loses its results'
+        bodies (1.1, in one block), and the oldest turns go until what is left fits TRIM_TO of every bound."""
+        # Renew al máximo (w5): 1.1 left out bodies only down to TRIM_TO of the characters and kept every turn, so the
+        # count bound came back a turn or two later and the whole history was re-read again (sesión larga, notebook
+        # 2026-10-22: turns 12 and 14 re-read 2,844 and 1,932 tokens, the base 747 and 333). One deep rewrite instead.
         turns = self._turn_sizes()
         if len(turns) <= 1 or self._fits(turns):
             return
-        dropped = 1
+        dropped = 0
+        while dropped < len(turns) - 1 and len(turns) - dropped > HISTORY_TURNS * TRIM_TURNS_TO:
+            dropped += 1
+        starts = [t[0] for t in turns[dropped:]]
+        if any([self._compact(self.conversation[start:end]) for start, end in zip(starts, starts[1:])]):
+            turns = self._turn_sizes()
         while dropped < len(turns) - 1 and not self._fits(turns[dropped:], TRIM_TO):
             dropped += 1
-        # Up to the first kept turn's clock: an earlier note of what was cut goes with the turns cut. In place: an open
-        # turn's conversation is this same list (the notebook's review of 1.1/1.2, 2026-10-22).
-        del self.conversation[:turns[dropped][0]]
-        self.trimmed_turns += dropped
-        self.conversation.insert(0, {"role": "user", "content": TRIMMED.format(n=self.trimmed_turns)})
+        if dropped:
+            self._drop(turns[dropped][0], dropped)
+
+    def _drop(self, end: int, turns: int) -> None:
+        """Take out the oldest `turns`, up to the first kept turn's clock (`end`): an earlier note of what was cut goes
+        with them, and the new one says how many are gone and, for the newest of them that fit, what the person asked
+        and how each call ended (w5). In place: an open turn's conversation is this same list (the notebook's review of
+        1.1/1.2, 2026-10-22)."""
+        cut = self.conversation[:end]
+        lines = []
+        earlier = str(cut[0].get("content") or "") if cut else ""
+        if earlier.startswith(TRIMMED[:TRIMMED.index(":")]):
+            lines = earlier.split(GIST_LINE)[1:]
+            lines[-1:] = [lines[-1].split("\n")[0]] if lines else []
+            cut = cut[1:]
+            # A kept session starts its count again (load_session): the earlier note's own count is not lost.
+            told = re.match(r"\D*(\d+)", earlier)
+            self.trimmed_turns = max(self.trimmed_turns, int(told.group(1)) if told else 0)
+        starts = [i for i, m in enumerate(cut)
+                  if i and m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
+        bounds = [0, *starts, len(cut)]
+        lines += [self._gist(cut[a:b]) for a, b in zip(bounds, bounds[1:]) if a < b]
+        lines = [line for line in lines if line]
+        kept: list[str] = []
+        for line in reversed(lines):
+            if sum(len(k) for k in kept) + len(line) > GIST_CHARS:
+                break
+            kept.insert(0, line)
+        del self.conversation[:end]
+        self.trimmed_turns += turns
+        note = (TRIMMED_GIST.format(n=self.trimmed_turns, k=len(kept), lines="".join(GIST_LINE + k for k in kept))
+                if kept else TRIMMED.format(n=self.trimmed_turns))
+        self.conversation.insert(0, {"role": "user", "content": note})
+
+    @staticmethod
+    def _gist(messages: list[dict[str, Any]]) -> str:
+        """One cut turn in a line (w5): the person's words, clipped, and how its calls ended, from the facts line each
+        loop of calls ended with (a failure keeps its code) and from the results the mind wrote for calls that never got
+        one. Empty for a turn with no words of the person (a heartbeat's own)."""
+        said = next((str(m.get("content") or "") for m in messages if m["role"] == "user"
+                     and not str(m.get("content") or "").startswith(("[", BEAT_MARK))), "")
+        said = " ".join(said.split())
+        if not said:
+            return ""
+        if len(said) > GIST_WORDS:
+            said = said[:GIST_WORDS].rstrip() + "…"
+        names = {c.get("id"): str((c.get("function") or {}).get("name") or "?")
+                 for m in messages for c in m.get("tool_calls") or []}
+        calls: list[str] = []
+        facts, unrun = "", []
+        # A loop of calls (the turn's, or a confirmation's) ends at a message of the person or the mind; its last facts
+        # line lists all of its calls, each earlier one a part of it.
+        for message in [*messages, {"role": "user"}]:
+            content = str(message.get("content") or "")
+            at = content.rfind(TURN_FACTS)
+            if message["role"] == "tool" and at >= 0:
+                facts = content[at + len(TURN_FACTS):].split("\n")[0].removesuffix("]")
+                for told, omitted in COMPACTED_FACTS.items():  # its body is gone with the turn
+                    facts = facts.replace(told, omitted)
+            elif message["role"] == "tool" and content in {NO_RESULT, NOT_RUN, NOT_RUN_AFTER}:
+                ended = NO_RESULT_RAN if content == NO_RESULT else GIST_NOT_RUN
+                unrun.append(f"{names.get(message.get('tool_call_id'), '?')} → {ended}")
+            elif message["role"] == "user":
+                calls += [facts] if facts else []
+                calls += unrun
+                facts, unrun = "", []
+        return f"«{said}» → " + ("; ".join(calls) if calls else GIST_NO_CALLS)
+
+    @staticmethod
+    def _compact(messages: list[dict[str, Any]]) -> bool:
+        """Each call's result among these messages (the ones that end with their turn's facts) keeps only those facts
+        after COMPACTED; the calls stay, so none loses its result. Whether any result changed."""
+        compacted = False
+        for message in messages:
+            content = str(message.get("content") or "")
+            at = content.rfind(TURN_FACTS)
+            if message["role"] == "tool" and at > len(COMPACTED):
+                kept = content[at:]
+                for told, omitted in COMPACTED_FACTS.items():  # w5: the facts no longer point at a body
+                    kept = kept.replace(told, omitted)
+                message["content"] = COMPACTED + kept
+                compacted = True
+        return compacted
 
     def _turn_sizes(self) -> list[tuple[int, int, int]]:
         """Each turn of the conversation as (its first message, characters, tokens); the first turn takes in what comes
@@ -902,7 +1289,7 @@ class Mind:
         done = turn.setdefault("done", [])
         calling = str(turn.get("calling", "?"))
         calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
-        outcome = _outcome(observation)
+        outcome = _outcome(observation, read=self.risk.get(calling) in READ_RISKS)
         entry, same = f"{calling} → {outcome}", turn.get("last_call")
         # Grouped only when the result is the same too: a click that worked and then failed are two facts (round 2).
         turn["last_call"] = (calling, turn.get("calling_args"), outcome)
@@ -921,7 +1308,7 @@ class Mind:
         if isinstance(application, str) and _fold(application) in APP_PLACES:
             turn["app_named"] = application
         note = ""
-        if (calling in {"input_visible_click", "input_visible_controls"} and not outcome.startswith("completado")
+        if (calling in {"input_visible_click", "input_visible_controls"} and not outcome.startswith(COMPLETED_OUTCOMES)
                 and turn.get("app_named") and not turn.get("places_told") and _aid_on("app_places_next")):
             note = places_note(turn["app_named"])
             if note:
@@ -956,7 +1343,7 @@ class Mind:
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
-            self._log("turn.aid", time.monotonic(), None, operation=turn.get("calling"),
+            self._log("turn.aid", time.perf_counter(), None, operation=turn.get("calling"),
                       aids=sorted(aids) if turn.get("private") else aids)
         if final:
             # The App closes the turn (its step budget spent, the engine down, or a confirmation waiting for the
@@ -964,9 +1351,9 @@ class Mind:
             # know.
             conv[-1]["content"] += ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo "
                                     "con lo que muestran los resultados.]")
-        completed = outcome.startswith("completado")
+        completed = outcome.startswith(COMPLETED_OUTCOMES)
         if turn["queue"] and not final and completed:
-            return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.monotonic(), "")
+            return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.perf_counter(), "")
         for call in turn["queue"]:
             conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN if final else NOT_RUN_AFTER})
         turn["queue"] = []
@@ -975,7 +1362,7 @@ class Mind:
     def confirm(self, request_id: Any, approve: bool, label: str) -> dict[str, Any]:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
-        started = time.monotonic()
+        started = time.perf_counter()
         self._close_open_calls()
         call_id = self._new_id("confirm")
         self.conversation.append({"role": "user", "content": label})
@@ -989,22 +1376,23 @@ class Mind:
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
                 "arguments": {"approve": approve}, "reply": "", "question": ""}
 
-    def _shrink_turn(self, conv: list[dict[str, Any]]) -> bool:
-        """Cut each result of the open turn but the newest to its start (SHRUNK_CHARS), saying so: whether any was."""
+    def _make_room(self, conv: list[dict[str, Any]]) -> bool:
+        """One step of room for an open turn past the context, whether there was one: the earlier turns' results leave
+        out their bodies, else the oldest earlier turn goes, else the open turn's results but the newest leave out
+        theirs. All in place: the person's open turn is this same conversation."""
         starts = [i for i, m in enumerate(conv)
                   if m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
-        results = [m for m in conv[(starts[-1] if starts else 0):] if m["role"] == "tool"]
-        cut = False
-        for message in results[:-1]:
-            content = str(message.get("content") or "")
-            if len(content) > SHRUNK_CHARS and SHRUNK.format(n="")[:20] not in content:
-                message["content"] = content[:SHRUNK_CHARS] + SHRUNK.format(n=len(content) - SHRUNK_CHARS)
-                cut = True
-        return cut
+        if conv is self.conversation and len(starts) > 1:
+            if not self._compact(conv[:starts[-1]]):
+                self._drop(starts[1], 1)
+            return True
+        results = [m for m in conv[(starts[-1] if starts else 0):]
+                   if m["role"] == "tool" and TURN_FACTS in str(m.get("content") or "")]
+        return self._compact(results[:-1])
 
-    def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False,
-              shrunk: bool = False) -> dict[str, Any]:
-        started = time.monotonic()
+    def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
+        started = time.perf_counter()
+        self._turned = True
         conv = turn["conv"]
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
@@ -1028,14 +1416,21 @@ class Mind:
             body["tool_choice"] = "none"
             body["logit_bias"] = [[token, False] for token in self.call_tokens]
         try:
-            reply = self.server.chat(body)
+            # Al máximo 9.4: a person's turn streams to the voice, which synthesizes an answer's first sentence while
+            # the rest is written (only while it is words; a call dropped what it foresaw); nothing sounds before the
+            # App publishes it. Not the decision whose doubt is read (_doubted): its token probabilities are not all
+            # sent when streamed (LlmServer.chat). Never a heartbeat.
+            streams = self.foresee is not None and not turn.get("beat") and not self._doubted(stage, turn, final)
+            reply = self.server.chat(body, on_text=self.foresee) if streams else self.server.chat(body)
         except urllib.error.HTTPError as error:
-            # llama-server refuses a prompt past its context with HTTP 400: within a turn that is its own results, so
-            # they are cut (said where the model reads) and the model answers in words from what is left, once.
-            if error.code != 400 or shrunk or not self._shrink_turn(conv):
+            # llama-server refuses a prompt past its context with HTTP 400. Al máximo 1.2 (2026-10-22): its earlier
+            # results were cut and the model answered in words at once (15 context_shrunk in the trace, each one ended
+            # its mission); now room is made a step at a time (_make_room, said where the model reads) and the turn goes
+            # on as it was. With no room left to make, the refusal reaches the App.
+            if error.code != 400 or not self._make_room(conv):
                 raise
             self._log(stage, started, None, kind="context_shrunk", operation=None, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True, shrunk=True)
+            return self._next(request_id, stage, turn, final=final)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
         calls = []
@@ -1068,7 +1463,7 @@ class Mind:
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
                       operation=doubted, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
+            return self._next(request_id, stage, turn, final=True)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
                 {"id": c["id"], "type": "function",
@@ -1081,13 +1476,21 @@ class Mind:
             # as BAXY's words. It is a failed call: the model answers in words, where a call cannot be written.
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="malformed_call",
                       operation=None, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
+            return self._next(request_id, stage, turn, final=True)
         if not content and not final and stage == "turn.continue" and not turn.get("beat"):
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
-            return self._next(request_id, stage, turn, final=True, shrunk=shrunk)
+            return self._next(request_id, stage, turn, final=True)
         if content:
             conv.append({"role": "assistant", "content": content})
+            if not streams and self.foresee is not None and not turn.get("beat"):
+                # Al máximo V2 (2026-10-22): words that came whole, not streamed (the decision whose doubt is read),
+                # never reached the voice's look-ahead (first sound p50 966 ms, p90 2,388): their first sentence is
+                # synthesized now, while the App publishes them; it still sounds only when the App asks (voice.speak).
+                try:
+                    self.foresee(content, True)
+                except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
+                    pass
         return self._result(request_id, turn, None, reply, stage, started, content)
 
     @staticmethod
@@ -1099,19 +1502,27 @@ class Mind:
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
-        model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED). Layer 2
+        model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
+        low_reversible. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
-        CORRECTABLE_RISKS, the model fills that tool and it runs instead. Asking and confirming are never held: they
-        already put the person in the loop."""
-        if not self._doubted(stage, turn, final):
-            return None
-        if call["wire"] in (ASK_USER["function"]["name"], CONFIRM["function"]["name"]):
+        CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
+        runs. Asking is never held: it already puts the person in the loop; confirming only when it approves under
+        CONFIRM_FLOOR, whatever System One's own thresholds."""
+        if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
             return None
         doubt = read_doubt(reply)
         if doubt is None:
             return None
-        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering"):
+        if call["wire"] == CONFIRM["function"]["name"]:
+            floor = CONFIRM_FLOOR if os.environ.get("BAXY_CONFIRM_FLOOR") is None else _threshold("BAXY_CONFIRM_FLOOR")
+            return (DOUBT_NOTE.format(call=call["wire"])
+                    if call["arguments"].get("approve") is True and doubt["confidence"] < floor else None)
+        # Al máximo, System One 2: layer 0 never holds a low_reversible call; its error is undone and the kernel verifies
+        # it. On 26 runs of decision2 with System One (2026-10-22) it held 23, 22 of them right without System One (P040
+        # ×7, P085 ×15) and none useful; read_only it holds still (24 useful against 5 harmful), and anything riskier.
+        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
+                and self.risk.get(call["wire"]) != "low_reversible":
             return DOUBT_NOTE.format(call=call["wire"])
         if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
             return None
@@ -1120,10 +1531,15 @@ class Mind:
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
         if not judged or judged["choice"] == call["wire"]:
             return None
-        corrected = self._corrected(judged["choice"], body)
+        corrected = self._corrected(judged["choice"], body, call["wire"])
         if corrected is not None:
             self._judged["corrected"] = True
             return corrected
+        if self.risk.get(call["wire"]) == "low_reversible":
+            # Al máximo, System One 2: nor does layer 2 turn a low_reversible call into a question; it only corrects it.
+            # On the same 26 runs it asked instead of 11, all right without System One (P112 ×4, P124 ×6, P113 ×1);
+            # its corrections of them were 6 useful (P257) against 2 harmful.
+            return None
         other = OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
 
@@ -1151,39 +1567,90 @@ class Mind:
                         said.append({"role": "assistant", "content": question})
         return said
 
-    def _corrected(self, wire: str, body: dict[str, Any]) -> dict[str, Any] | None:
+    def _corrected(self, wire: str, body: dict[str, Any], chosen: str = "") -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
-        is off, the tool's risk is not in CORRECTABLE_RISKS, or the model did not write that tool's call."""
-        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or self.risk.get(wire) not in CORRECTABLE_RISKS:
+        is off, the tool's risk is not in CORRECTABLE_RISKS (or is one of CONFIRMED_RISKS the kernel would not confirm
+        now), it has an effect of the catalog the model's own call (`chosen`) did not have, or the model did not write
+        that tool's call."""
+        risk = self.risk.get(wire)
+        effects = set(self.effects.get(wire) or [])
+        # Al máximo, System One 4 (decision2 P169, a weekly forecast asked in English, 14 of 14 runs of int0-int4): Qwen
+        # chose web_search, Laya weather_current at 0.9, and 5.1 turned the correction into a question because
+        # weather_current sends out of the PC — as web_search, the model's own call, already did. A tool that only reads
+        # and whose effects the chosen call already has lands nowhere the model had not chosen to go; what it sends is
+        # only what the conversation showed (every argument founded, the optional ones too). Keys, clicks and commands
+        # (low_reversible and up) still never come from «corrige» (shell_command_run has the same network effect).
+        shared = bool(effects) and risk == "read_only" and effects <= set(self.effects.get(chosen) or [])
+        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or risk not in CORRECTABLE_RISKS \
+                or (effects and not shared) or (risk in CONFIRMED_RISKS and (
+                    self.wire_to_op.get(wire) in UNCONFIRMED_OPERATIONS or _bypass())):
             return None
         try:
             filled = self.server.fill_call(body, wire)
         except Exception:  # noqa: BLE001 - a fill that failed falls back to asking
             return None
-        if not filled or filled.get("name") != wire or not self._founded(wire, filled["arguments"], body["messages"]):
+        if not filled or filled.get("name") != wire or not self._founded(wire, filled["arguments"], body["messages"],
+                                                                         every=shared):
             return None
         return {"id": self._new_id("s1"), "wire": wire, "arguments": filled["arguments"]}
 
-    def _founded(self, wire: str, arguments: dict[str, Any], messages: list[dict[str, Any]]) -> bool:
+    def _founded(self, wire: str, arguments: dict[str, Any], messages: list[dict[str, Any]],
+                 every: bool = False) -> bool:
         """Whether a filled call holds every required argument of its tool and each text or number among them appears
         in what the conversation showed: the person's words or a tool's result (folded, as a whole word). B-MED-1 of the
         notebook (2026-10-22): Laya chose window_snap where Qwen chose window_resolve, and fill_call wrote windowId «1»,
-        which no result had listed, and it ran; a web_download got a page of results as its url."""
+        which no result had listed, and it ran; a web_download got a page of results as its url.
+        Al máximo, System One 1: three kinds of value are the catalog's, not the person's words, and count as founded: a
+        code of the argument's own enum («downloads» for «Descargas», «pause», «left»), an application or game the mind
+        listed to the model in app_open and game_launch, or that game's appId («Worms W.M.D» for «el Worms»), and a file
+        name whose name and extension were both said («contrato.pdf» for «el PDF contrato»: Qwen writes it so). Practice
+        P203 (26 runs with System One, 2026-10-22): Laya chose file_read at 0.91 in 7 and «corrige» asked every time.
+        Ids (windowId, reminderId…) and any other text still have to appear in the conversation or in a result.
+        With `every`, the optional arguments it wrote are held to the same rule (one left empty is not written)."""
         tool = next((t["function"] for t in self.tools if t["function"]["name"] == wire), {})
         required = (tool.get("parameters") or {}).get("required") or []
+        properties = (tool.get("parameters") or {}).get("properties") or {}
+        optional = [name for name in arguments if name not in required
+                    and arguments[name] is not None and arguments[name] != ""] if every else []
         seen = _fold(" ".join(str(m.get("content") or "") for m in messages
                               if m.get("role") == "tool" or (m.get("role") == "user"
                                                              and not str(m.get("content") or "").startswith("["))))
-        for name in required:
+
+        def said(text: str) -> bool:
+            return bool(text) and re.search(rf"(?<!\w){re.escape(text)}(?!\w)", seen) is not None
+
+        for name in [*required, *optional]:
             value = arguments.get(name)
             if value is None or value == "":
                 return False
             if isinstance(value, bool) or not isinstance(value, (str, int, float)):
                 continue
+            prop = properties.get(name)
+            if isinstance(value, str) and ((isinstance(prop, dict) and value in (prop.get("enum") or []))
+                                           or self._listed(value)):
+                continue
             text = _fold(str(int(value) if isinstance(value, float) and value.is_integer() else value))
-            if not text or not re.search(rf"(?<!\w){re.escape(text)}(?!\w)", seen):
+            stem, dot, extension = text.rpartition(".")
+            if not said(text) and not (dot and re.fullmatch(r"[a-z0-9]{1,5}", extension) and said(stem)
+                                       and said(extension)):
                 return False
         return True
+
+    def _listed(self, value: str) -> bool:
+        """Whether a value is a whole entry of the lists configure put in the descriptions of app_open («Installed
+        applications (use one of these names as appId): A; B.») and game_launch («The person's installed games: Name
+        (appId N, provider); …»): an application's name, a game's name or a game's appId."""
+        folded = re.escape(_fold(value))
+        lists = {"app_open": ("installed applications (use one of these names as appid): ",
+                              rf"(?:^|; ){folded}(?=;|\.(?: |$))"),
+                 "game_launch": ("the person's installed games: ", rf"(?:^|; ){folded} \(appid |\(appid {folded}, ")}
+        for tool in self.tools:
+            marker, entry = lists.get(tool["function"]["name"], ("", ""))
+            description = _fold(str(tool["function"].get("description") or ""))
+            at = description.find(marker) if marker else -1
+            if at >= 0 and re.search(entry, description[at + len(marker):]):
+                return True
+        return False
 
     def _candidates(self, chosen: str, doubt: dict[str, Any], body: dict[str, Any]) -> dict[str, str]:
         """The model's own candidates as the decision model's options (as in its training, build_kev_data.py): the tool it
@@ -1193,12 +1660,15 @@ class Mind:
         # B-MED-3 (2026-10-22): the rule of its training (qwen_signals.py, rollouts): the chosen tool and the next three
         # tokens of the weakest one, each of p ≥ 0.01 (served, the chosen token took a place and a rival needed 0.02).
         names = [chosen]
+        prompt: str | None = None  # the decision's prompt, rendered once for all of its rivals (al máximo V3)
         for token, p in doubt.get("rivals") or []:
             if p < 0.01 or len(names) >= 4:
                 continue
             written = doubt.get("written", "") + token
             try:
-                written += self.server.complete_name(body, written) if ">" not in written[written.find("<function="):] else ""
+                if ">" not in written[written.find("<function="):]:
+                    prompt = prompt if prompt is not None else self.server.template(body)
+                    written += self.server.complete_name(prompt, written)
             except Exception:  # noqa: BLE001 - a rival that cannot be read is left out
                 continue
             at = written.find("<function=")
@@ -1230,13 +1700,18 @@ class Mind:
                     return self._next(request_id, stage, turn, final=True)
                 result.update(reply=content)
         elif call is not None and call["wire"] == CONFIRM["function"]["name"] and not turn.get("pending"):
+            # A question that ended unanswered just before these words is told once, as what it is, and the model may
+            # call that tool again (the kernel asks again for that exact invocation) or answer in words.
+            ended = turn.pop("ended", None)
+            told = ended_result(ended) if ended else NOTHING_PENDING
             for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
                 turn["conv"].append({"role": "tool", "tool_call_id": call_id,
-                                     "content": NOTHING_PENDING if call_id == call["id"] else NOT_RUN})
+                                     "content": told if call_id == call["id"] else NOT_RUN})
             turn["queue"], turn["awaiting"] = [], None
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
-                      kind="nothing_pending", operation=None, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True)
+                      kind="confirmation_ended" if ended else "nothing_pending",
+                      operation=ended["operation"] if ended else None, arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=not ended)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))
@@ -1261,8 +1736,10 @@ class Mind:
     # ---- trace ---------------------------------------------------------------------------------------------
     def _log(self, stage: str, started: float, reply: dict[str, Any] | None, **fields: Any) -> None:
         timings = (reply or {}).get("timings") or {}
+        # Every time of the trace is read on perf_counter (al máximo V4): on Windows, Python 3.12's monotonic clock
+        # moves in steps of ~15.6 ms, and every ms was a multiple of it. The voice's times (voice.speak) too.
         row = {"t": _dt.datetime.now().isoformat(timespec="milliseconds"), "stage": stage,
-               "ms": round((time.monotonic() - started) * 1000),
+               "ms": round((time.perf_counter() - started) * 1000),
                "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
         doubt = read_doubt(reply)

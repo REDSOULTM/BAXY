@@ -15,6 +15,8 @@ namespace Baxy.Kernel.Operations;
 /// application starts by an address of its own (install, uninstall, launch a game by its catalog number, «acts») with the
 /// names of the control of its own dialog that confirms them («confirm»), and the public search that turns a game's
 /// title into its catalog number («titles», only the title leaves the computer); no act is a place app.open takes.
+/// BAXY Renew al máximo (F019, E015): a place may declare what only it shows in the application's window («shows»), so a
+/// look at that window says which of its places is in sight (<see cref="PlaceShown(string?, IEnumerable{string?})"/>).
 /// </summary>
 public static class ApplicationPlaces
 {
@@ -23,6 +25,9 @@ public static class ApplicationPlaces
     // A value searched for, as the person said it; a game's identifier is a catalog number.
     private const int QueryMaximumUtf8Bytes = 128;
     private const int GameMaximumDigits = 16;
+
+    // The shortest text a place's «shows» may declare, squeezed (<see cref="Squeezed"/>): a shorter one is in too much.
+    private const int ShownMinimumCharacters = 6;
 
     private static readonly Lazy<IReadOnlyDictionary<string, Application>> Loaded = new(() =>
     {
@@ -178,6 +183,47 @@ public static class ApplicationPlaces
         };
     }
 
+    /// <summary>
+    /// BAXY Renew al máximo (F019, E015: Steam's library read as «la página principal» or «la tienda»): which place of
+    /// <paramref name="application"/> a look at its window shows, from what the look read in it (<paramref name="seen"/>:
+    /// its text lines and its controls' names). A place shows when a text its «shows» declares is in one of them, compared
+    /// squeezed (lower case, no accents, letters and digits only: an OCR that reads «https:,'/store_steampoweredcom/»
+    /// still holds «store.steampowered.com»). Null when the data declare nothing shown for the application, when none
+    /// shows, or when two places do (which one is in sight is then not known, and nothing is said).
+    /// </summary>
+    public static ShownPlace? PlaceShown(string? application, IEnumerable<string?> seen) =>
+        PlaceShown(Loaded.Value, application, seen);
+
+    internal static ShownPlace? PlaceShown(
+        IReadOnlyDictionary<string, Application> applications, string? application, IEnumerable<string?> seen)
+    {
+        if (application is null || !applications.TryGetValue(Fold(application), out Application? declared)
+            || declared.Shows.Count == 0)
+        {
+            return null;
+        }
+
+        string[] read = [.. seen.Select(line => Squeezed(line ?? string.Empty)).Where(line => line.Length > 0)];
+        ShownPlace? shown = null;
+        foreach ((string place, IReadOnlyList<string> texts) in declared.Shows.OrderBy(entry => entry.Key, StringComparer.Ordinal))
+        {
+            string? by = texts.FirstOrDefault(text => read.Any(line => line.Contains(Squeezed(text), StringComparison.Ordinal)));
+            if (by is null)
+            {
+                continue;
+            }
+
+            if (shown is not null)
+            {
+                return null;
+            }
+
+            shown = new ShownPlace(place, by);
+        }
+
+        return shown;
+    }
+
     private static Application? Catalogued(IReadOnlyDictionary<string, Application> applications, string? catalog) =>
         catalog is null ? null : applications.Values.FirstOrDefault(
             application => string.Equals(application.GameCatalog, catalog, StringComparison.Ordinal));
@@ -185,12 +231,15 @@ public static class ApplicationPlaces
     /// <summary>An act's address and the names of the control of the application's own dialog that confirms it.</summary>
     public sealed record GameAct(string Address, IReadOnlyList<string> Confirm);
 
+    /// <summary>The place a look shows and the text the data declare for it that the look read.</summary>
+    public sealed record ShownPlace(string Place, string Shown);
+
     /// <summary>A title search's address and the fields of its JSON answer: the list, and each item's number and name.</summary>
     public sealed record TitleSearch(string Address, string List, string Id, string Name);
 
     /// <summary>
     /// The application's entry: its schemes, its places (each with its address), and for a game catalog's application
-    /// the catalog's name, its acts and its title search.
+    /// the catalog's name, its acts and its title search; and what each place that declares it shows in its window.
     /// </summary>
     internal sealed record Application(
         IReadOnlyList<string> Schemes,
@@ -198,7 +247,11 @@ public static class ApplicationPlaces
         string? GameCatalog,
         IReadOnlyDictionary<string, GameAct> Acts,
         TitleSearch? Titles,
-        bool StartsBehindSignIn = false);
+        bool StartsBehindSignIn = false)
+    {
+        internal IReadOnlyDictionary<string, IReadOnlyList<string>> Shows { get; init; } =
+            new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
+    }
 
     /// <summary>
     /// The data's applications by folded name. Every address must open with one of its application's schemes and carry at
@@ -211,8 +264,21 @@ public static class ApplicationPlaces
         {
             string[] schemes = [.. entry.Value.GetProperty("schemes").EnumerateArray().Select(scheme => scheme.GetString()!)];
             var places = new Dictionary<string, string>(StringComparer.Ordinal);
+            var shows = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
             foreach (JsonProperty place in entry.Value.GetProperty("places").EnumerateObject())
             {
+                // What only this place shows: texts, none too short to tell a place by.
+                if (place.Value.TryGetProperty("shows", out JsonElement shown))
+                {
+                    string[] texts = [.. shown.EnumerateArray().Select(text => text.GetString() ?? string.Empty)];
+                    if (texts.Length == 0 || texts.Any(text => Squeezed(text).Length < ShownMinimumCharacters))
+                    {
+                        throw new InvalidDataException($"app_places: {entry.Name}/{place.Name}/shows");
+                    }
+
+                    shows[place.Name] = texts;
+                }
+
                 // A place named but without an address of its own (measured: no protocol reaches it) opens nothing.
                 if (!place.Value.TryGetProperty("address", out JsonElement declared))
                 {
@@ -235,7 +301,10 @@ public static class ApplicationPlaces
             bool signIn = entry.Value.TryGetProperty("startsBehindSignIn", out JsonElement behind)
                 && behind.ValueKind == JsonValueKind.True;
             applications[Fold(entry.Name)] = new Application(
-                schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog), signIn);
+                schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog), signIn)
+            {
+                Shows = shows,
+            };
         }
 
         return applications;
@@ -335,6 +404,22 @@ public static class ApplicationPlaces
             else
             {
                 pendingHyphen = true;
+            }
+        }
+
+        return builder.ToString();
+    }
+
+    // A text as a look's text is compared with a place's «shows»: lower case, no accents, letters and digits only (what
+    // OCR reads between words, and a dot of an address, is not compared).
+    private static string Squeezed(string text)
+    {
+        var builder = new StringBuilder(text.Length);
+        foreach (char character in text.Normalize(NormalizationForm.FormD).ToLowerInvariant())
+        {
+            if (char.IsLetterOrDigit(character))
+            {
+                builder.Append(character);
             }
         }
 

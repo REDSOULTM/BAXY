@@ -308,6 +308,230 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Renew al máximo (8.3): a minimize that never converged, and a focus refused after restoring a minimized window,
+    // failed with nothing of the window; the state one read found after is said, with whether it is the one asked.
+    [TestCase(WindowControlAction.Minimize, "normal", true, "normal")]
+    [TestCase(WindowControlAction.Focus, "minimized", false, "minimized")]
+    public async Task AnAmbiguousWindowActionSaysTheStateReadAfter(
+        WindowControlAction action, string initialState, bool accepted, string stateAfter)
+    {
+        var platform = new FakePlatform { ExecuteAccepted = accepted, ActionConvergenceDelayCount = accepted ? 1000 : 0 };
+        platform.SetInitialState(initialState);
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.ExecuteAsync(windowId, action, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.EffectMayHaveOccurred, Is.True);
+            Assert.That(result.StateAfter?.Present, Is.True);
+            Assert.That(result.StateAfter?.State, Is.EqualTo(stateAfter));
+            Assert.That(result.StateAfter?.Foreground, Is.False);
+            Assert.That(result.StateAfter?.RequestedStateReached, Is.False);
+        });
+    }
+
+    // Renew al máximo (8.3): a move Windows took and the window did not: the bounds read after are said.
+    [Test]
+    public async Task AMoveTheWindowDidNotTakeSaysTheBoundsReadAfter()
+    {
+        var platform = new FakePlatform { SetBoundsIgnored = true };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SetBoundsAsync(windowId, 20, 30, null, null, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(result.EffectMayHaveOccurred, Is.True);
+            Assert.That((result.StateAfter?.X, result.StateAfter?.Y), Is.EqualTo(((int?)0, (int?)0)));
+            Assert.That(result.StateAfter?.RequestedStateReached, Is.False);
+        });
+    }
+
+    // Renew al máximo (8.3): a close Windows took with the window still there says it is there, read once more; a
+    // window gone by that read is said gone, the failure kept.
+    [TestCase(false, true, false)]
+    [TestCase(true, false, true)]
+    public async Task ACloseWindowsTookSaysWhetherTheWindowIsStillThere(bool goneAtLastRead, bool present, bool reached)
+    {
+        static FakePlatform Stubborn() => new()
+        {
+            PrimaryCloseAccepted = true,
+            PrimaryCloseCloses = false,
+            SystemCloseAccepted = true,
+            SystemCloseCloses = false,
+        };
+        // How many reads a close of that window makes, counted on a twin: the window is gone at the last of them.
+        FakePlatform twin = Stubborn();
+        var twinProvider = new WindowsWindowControlProvider(twin);
+        string twinId = (await twinProvider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+        int readsBefore = twin.ObserveCalls;
+        _ = await twinProvider.CloseAsync(twinId, CancellationToken.None);
+        int closeReads = twin.ObserveCalls - readsBefore;
+
+        FakePlatform platform = Stubborn();
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+        platform.GoneAfterObservations = goneAtLastRead ? platform.ObserveCalls + closeReads : -1;
+
+        WindowCloseResult result = await provider.CloseAsync(windowId, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(result.EffectMayHaveOccurred, Is.True);
+            Assert.That(result.StateAfter?.Present, Is.EqualTo(present));
+            Assert.That(result.StateAfter?.RequestedStateReached, Is.EqualTo(reached));
+        });
+    }
+
+    // Auditoría de falsedades: a window already where it was asked to go is told as its state before the call, never as
+    // «done» by this call («¿ya lo moviste?»).
+    [Test]
+    public async Task AWindowAlreadyAsAskedSaysThisCallChangedNothing()
+    {
+        var platform = new FakePlatform();
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new WindowBoundsHandler("window.move", provider), new { windowId, x = 0, y = 0 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("changed").GetBoolean(), Is.False);
+            string next = outcome.Result!.Value.GetProperty("next").GetString()!;
+            Assert.That(next, Is.EqualTo(WindowControlResultJson.UnchangedNext));
+            Assert.That(next, Does.Not.Contain("done"));
+            Assert.That(platform.SetBoundsCalls, Is.Zero);
+        });
+    }
+
+    // Auditoría de falsedades (F001): a windowId used up by an earlier action says the window was neither touched nor
+    // read (BAXY told «la ventana se cerró» with Steam still open); the code stays, and with the aid off it is bare.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AUsedUpWindowIdSaysTheWindowWasNotTouchedNorRead(string aids, bool told)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var provider = new WindowsWindowControlProvider(new FakePlatform());
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+        var focus = new WindowActionHandler("window.focus", WindowControlAction.Focus, provider);
+
+        OperationOutcome first = await Run(focus, new { windowId });
+        OperationOutcome again = await Run(focus, new { windowId });
+        OperationOutcome snapped = await Run(new WindowSnapHandler(provider), new { windowId, side = "left" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Succeeded, Is.True, first.ErrorCode);
+            foreach (OperationOutcome spent in new[] { again, snapped })
+            {
+                Assert.That(spent.ErrorCode, Is.EqualTo(WindowControlErrorCodes.InvalidOrExpiredWindowId));
+                Assert.That(spent.EffectMayHaveOccurred, Is.False);
+                if (told)
+                    Assert.That(spent.Result!.Value.GetProperty("next").GetString(),
+                        Is.EqualTo(WindowControlResultJson.SpentWindowIdNext));
+                else
+                    Assert.That(spent.Result, Is.Null);
+            }
+        });
+    }
+
+    // Renew al máximo (8.3, Core): the handlers dropped the state read after an ambiguous failure, so the mind
+    // only heard «could not». The failure keeps its code and uncertainty and carries stateAfter; a maximize
+    // Windows refused changed nothing and says nothing more.
+    [TestCase(WindowControlAction.Minimize, true, "normal")]
+    [TestCase(WindowControlAction.Maximize, false, null)]
+    public async Task AWindowActionFailureCarriesTheStateReadAfter(
+        WindowControlAction action, bool accepted, string? stateAfter)
+    {
+        var platform = new FakePlatform
+        {
+            ExecuteAccepted = accepted,
+            ActionConvergenceDelayCount = accepted ? 1000 : 0,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None))
+            .Windows.Single().WindowId;
+
+        string operation = "window." + action.ToString().ToLowerInvariant();
+        OperationOutcome outcome = await Run(new WindowActionHandler(operation, action, provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(accepted));
+            if (stateAfter is null)
+            {
+                Assert.That(outcome.Result, Is.Null);
+                return;
+            }
+
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That(state.GetProperty("present").GetBoolean(), Is.True);
+            Assert.That(state.GetProperty("hidden").GetBoolean(), Is.False);
+            Assert.That(state.GetProperty("state").GetString(), Is.EqualTo(stateAfter));
+            Assert.That(state.GetProperty("foreground").GetBoolean(), Is.False);
+            Assert.That(state.GetProperty("width").GetInt32(), Is.EqualTo(640));
+            Assert.That(state.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state.GetProperty("authority").GetString(), Is.EqualTo("windows_window_identity_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3, Core): a move Windows took and the window did not keeps the bounds read after.
+    [Test]
+    public async Task AMoveFailureCarriesTheBoundsReadAfter()
+    {
+        var platform = new FakePlatform { SetBoundsIgnored = true };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None))
+            .Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(
+            new WindowBoundsHandler("window.move", provider), new { windowId, x = 20, y = 30 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That((state.GetProperty("x").GetInt32(), state.GetProperty("y").GetInt32()), Is.EqualTo((0, 0)));
+            Assert.That(state.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+        });
+    }
+
+    // Renew al máximo (8.3, Core): a close Windows took with the window still there says it is still there.
+    [Test]
+    public async Task ACloseFailureCarriesWhetherTheWindowIsStillThere()
+    {
+        var platform = new FakePlatform
+        {
+            PrimaryCloseAccepted = true,
+            PrimaryCloseCloses = false,
+            SystemCloseAccepted = true,
+            SystemCloseCloses = false,
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None))
+            .Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new AppCloseHandler(provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That(state.GetProperty("present").GetBoolean(), Is.True);
+            Assert.That(state.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+        });
+    }
+
     // A maximized window is restored before it is placed; a placement Windows then refused leaves it restored.
     [TestCase("maximized", true)]
     [TestCase("normal", false)]
@@ -324,6 +548,30 @@ public sealed class WindowsWindowControlProviderTests
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.ActionFailed));
             Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): Windows brings a window minimized from maximized back maximized
+    // (WPF_RESTORETOMAXIMIZED): «restaura el chrome» then failed verification, and «ponlo a la izquierda» said the window
+    // takes no size (window_size_not_taken). The restore is asked once more and the window ends at its normal size.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AWindowMinimizedFromMaximizedIsRestoredToItsNormalSize(bool snap)
+    {
+        var platform = new FakePlatform { RestoresToMaximized = true, WorkAreaBounds = new WindowBounds(0, 0, 1536, 816) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+        windowId = (await provider.ExecuteAsync(windowId, WindowControlAction.Maximize, CancellationToken.None)).Window!.WindowId;
+        windowId = (await provider.ExecuteAsync(windowId, WindowControlAction.Minimize, CancellationToken.None)).Window!.WindowId;
+
+        WindowActionResult result = snap
+            ? await provider.SnapAsync(windowId, "left", CancellationToken.None)
+            : await provider.ExecuteAsync(windowId, WindowControlAction.Restore, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded && result.Verified, Is.True, result.ErrorCode);
+            Assert.That(result.Window?.State, Is.EqualTo("normal"));
         });
     }
 
@@ -349,6 +597,33 @@ public sealed class WindowsWindowControlProviderTests
             Assert.That(outcome.Result!.Value.GetProperty("keptOpen").GetInt32(), Is.EqualTo(1));
             Assert.That(outcome.Result!.Value.GetProperty("keptProcesses")[0].GetString(), Is.EqualTo("Baxy"));
             Assert.That(outcome.Result!.Value.TryGetProperty("editorKeptOpen", out _), Is.False);
+        });
+    }
+
+    // Renew al máximo: a protected window (here a terminal) is never asked to close and stays open, yet the receipt
+    // said allClosed true beside it. BAXY's own window kept open still lets «all» stand.
+    [TestCase("WindowsTerminal", false)]
+    [TestCase("Baxy", true)]
+    public async Task CloseAllNeverSaysAllClosedWithAProtectedWindowOpen(string process, bool allClosed)
+    {
+        var platform = new FakePlatform
+        {
+            Desktop =
+            [
+                new WindowSnapshot(
+                    new WindowIdentity((nint)0x99, 7, 638_880_000_000_000_000, process, DateTimeOffset.UnixEpoch),
+                    "normal", true, new WindowBounds(0, 0, 400, 600)),
+            ],
+        };
+
+        var handler = new WindowCloseAllHandler(new WindowsWindowControlProvider(platform));
+        OperationOutcome outcome = await Run(handler, new { });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("remainingVisible").GetInt32(), Is.Zero);
+            Assert.That(outcome.Result!.Value.GetProperty("allClosed").GetBoolean(), Is.EqualTo(allClosed));
         });
     }
 
@@ -394,6 +669,14 @@ public sealed class WindowsWindowControlProviderTests
         public bool SystemCloseCloses { get; set; }
         public bool ExecuteAccepted { get; set; } = true;
         public bool SetBoundsAccepted { get; set; } = true;
+        // Renew al máximo (8.3): Windows takes the placement and the window keeps its bounds.
+        public bool SetBoundsIgnored { get; set; }
+        // Renew al máximo (8.3): the read from which the window is gone (-1: never), and the reads so far.
+        public int GoneAfterObservations { get; set; } = -1;
+        public int ObserveCalls { get; private set; }
+        // As Windows: a window minimized from maximized comes back maximized from its first restore.
+        public bool RestoresToMaximized { get; set; }
+        private bool _minimizedFromMaximized;
         public WindowBounds? WorkAreaBounds { get; set; }
         public IReadOnlyList<WindowSnapshot> Desktop { get; set; } = [];
         private WindowControlAction? _pendingAction;
@@ -429,6 +712,8 @@ public sealed class WindowsWindowControlProviderTests
 
         public WindowSnapshot Observe(WindowIdentity identity)
         {
+            if (++ObserveCalls >= GoneAfterObservations && GoneAfterObservations >= 0)
+                throw new WindowIdentityChangedException();
             if (Closed && CloseHides && (HiddenReads < 0 || _hiddenSeen++ < HiddenReads))
                 throw new WindowIdentityChangedException(hidden: true);
             if (IdentityChanged || Closed) throw new WindowIdentityChangedException();
@@ -463,6 +748,7 @@ public sealed class WindowsWindowControlProviderTests
                     _state = "normal";
                     break;
                 case WindowControlAction.Minimize:
+                    _minimizedFromMaximized = RestoresToMaximized && _state == "maximized";
                     _foreground = false;
                     _state = "minimized";
                     break;
@@ -470,7 +756,8 @@ public sealed class WindowsWindowControlProviderTests
                     _state = "maximized";
                     break;
                 case WindowControlAction.Restore:
-                    _state = "normal";
+                    _state = _state == "minimized" && _minimizedFromMaximized ? "maximized" : "normal";
+                    _minimizedFromMaximized = false;
                     break;
             }
         }
@@ -504,7 +791,8 @@ public sealed class WindowsWindowControlProviderTests
             _ = Observe(identity);
             if (!SetBoundsAccepted)
                 return false;
-            _bounds = bounds;
+            if (!SetBoundsIgnored)
+                _bounds = bounds;
             return true;
         }
 

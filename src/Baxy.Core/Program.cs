@@ -107,9 +107,6 @@ internal static class Program
         Task<InstalledApplicationCatalogSnapshot> catalogRead = installedApplicationProvider
             .GetCatalogSnapshotAsync(cancellationToken)
             .AsTask();
-        var routedApplicationOpenProvider = new ApplicationOpenProviderRouter(
-            new WindowsCalculatorOpenProvider(),
-            installedApplicationProvider);
         var audioControlProvider = new WindowsAudioControlProvider(
             Path.Combine(dataRoot, "audio", "control-state"));
         var systemStatusProvider = new WindowsSystemStatusProvider();
@@ -130,7 +127,7 @@ internal static class Program
         var networkIpProvider = new WindowsNetworkIpProvider();
         var networkPortProvider = new WindowsNetworkPortProvider();
         var identityProvider = new WindowsIdentityProvider();
-        var appOpenHandler = new AppOpenHandler(routedApplicationOpenProvider, windowIdFor: windowControlProvider.IssueFor);
+        var appOpenHandler = new AppOpenHandler(installedApplicationProvider,windowIdFor: windowControlProvider.IssueFor);
         IOperationHandler[] handlers =
         [
             new AppInstalledHandler(installedApplicationProvider),
@@ -154,7 +151,7 @@ internal static class Program
                 screenshotProvider, "capture.active.window", activeWindow: true),
             new ScreenshotCaptureHandler(screenshotProvider),
             .. FilesystemHandlers.Create(filesystemProvider),
-            .. ExternalCapabilityHandlers.Create(externalCapabilityProvider, dataRoot),
+            .. ExternalCapabilityHandlers.Create(externalCapabilityProvider, dataRoot, new KeyWindowReader()),
             .. MemoryHandlers.Create(
                 memoryStore,
                 memoryCodec,

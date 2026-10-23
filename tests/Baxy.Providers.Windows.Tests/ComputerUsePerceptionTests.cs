@@ -51,7 +51,7 @@ public sealed class ComputerUsePerceptionTests
             "{\"version\":2,\"ok\":true,\"effectObserved\":true," +
             "\"error\":\"\",\"name\":\"Aceptar\",\"controlIdentity\":\"1.2.3\"," +
             "\"absentOrDisabled\":true,\"authority\":\"windows_uia_or_win32_button_postread\"}");
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"aceptar"}"""), CancellationToken.None);
@@ -78,9 +78,9 @@ public sealed class ComputerUsePerceptionTests
             "\"controlIdentity\":\"1.2.4\",\"absentOrDisabled\":false,\"selected\":false,\"toggled\":true," +
             "\"surfaceChanged\":false,\"cascadeStage\":\"uia\"}");
 
-        ExternalCapabilityReceipt first = await new WindowsVisibleControlAdapter(selected, null, null).InvokeAsync(
+        ExternalCapabilityReceipt first = await new WindowsVisibleControlAdapter(selected, null, null) { WindowInFront = TestFront }.InvokeAsync(
             "input.visible.click", Json("""{"label":"Library"}"""), CancellationToken.None);
-        ExternalCapabilityReceipt second = await new WindowsVisibleControlAdapter(toggled, null, null).InvokeAsync(
+        ExternalCapabilityReceipt second = await new WindowsVisibleControlAdapter(toggled, null, null) { WindowInFront = TestFront }.InvokeAsync(
             "input.visible.click", Json("""{"label":"Modo avión"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -100,7 +100,7 @@ public sealed class ComputerUsePerceptionTests
             "\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":true,\"selected\":false,\"surfaceChanged\":false}");
         var ocr = new CountingLocator("ocr", hit: true);
         var vision = new CountingLocator("vision", hit: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"aceptar"}"""), CancellationToken.None);
@@ -121,7 +121,7 @@ public sealed class ComputerUsePerceptionTests
             "\"name\":\"\",\"controlIdentity\":\"\",\"absentOrDisabled\":false}");
         var ocr = new CountingLocator("ocr", hit: true);
         var vision = new CountingLocator("vision", hit: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Library"}"""), CancellationToken.None);
@@ -143,7 +143,7 @@ public sealed class ComputerUsePerceptionTests
             "\"name\":\"\",\"controlIdentity\":\"\",\"absentOrDisabled\":false}");
         var ocr = new CountingLocator("ocr", hit: false);
         var vision = new CountingLocator("vision", hit: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Library"}"""), CancellationToken.None);
@@ -205,7 +205,7 @@ public sealed class ComputerUsePerceptionTests
     public async Task AWorkerThatDoesNotAnswerLeavesAnHonestClickReceipt()
     {
         var worker = new ScriptedUiaWorker(answers: []);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Aceptar"}"""), CancellationToken.None);
@@ -336,6 +336,14 @@ public sealed class ComputerUsePerceptionTests
             Assert.That(pixels[4..7], Is.EqualTo(new byte[] { 0, 255, 0 }));
         });
     }
+
+    // Renew al máximo (aislamiento de pruebas): the window in front a click without a window named takes
+    // (WindowsVisibleControlAdapter.WindowInFront), a handle no window has. The desktop's real front decided these
+    // tests: with an elevated msconfig or Task Manager in front every such click answered «window_elevated».
+    internal const long NoWindowFront = 0x7FFF_0F5A;
+
+    internal static ValueTask<nint> TestFront(CancellationToken cancellationToken) =>
+        ValueTask.FromResult((nint)NoWindowFront);
 
     internal sealed class ScriptedUiaWorker : IUiaWorker
     {

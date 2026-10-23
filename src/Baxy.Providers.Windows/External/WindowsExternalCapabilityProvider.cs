@@ -56,7 +56,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         // waiting for it (its own wait for Raw Input happens there), so the first look of a mission already knows the
         // window the person works in. Started lazily at that look, it knew nothing that came before.
         _ = Task.Run(() => WindowsUserInputPause.Shared);
-        var desktopInteraction = new WindowsDesktopInteractionAdapter(visibleControls);
+        // Renew al máximo (rendimiento): filesystem.folder.open's and the Calculator's scripts run in this worker, already
+        // started by the prewarm, instead of a PowerShell started cold for each call.
+        var desktopInteraction = new WindowsDesktopInteractionAdapter(visibleControls) { Scripts = uia };
         // A search burst (goal v3 point 0, fix 3) types its destination as input.text.type does, bound to the window.
         visibleControls.TypeInWindow = (window, text, token) => desktopInteraction.InvokeAsync(
             "input.text.type",
@@ -90,7 +92,10 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsGameInstallationAdapter(),
             new WindowsDeviceControlAdapter(
                 root,
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY")),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY"))
+            {
+                Scripts = uia,
+            },
             new WindowsDisplayModeAdapter(),
             new WingetPackageAdapter(),
             new ShellCommandAdapter(),
@@ -362,6 +367,28 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         return await InvokeBoundAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
     }
 
+    // Al máximo, flujos: the read of the one adapter that claims the operation (with several, the dispatch decides
+    // among them, so nothing is read before).
+    public ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        IExternalOperationAdapter[] claiming = _adapters.Where(candidate => candidate.CanHandle(operation)).ToArray();
+        return claiming.Length == 1
+            ? claiming[0].PreflightAsync(operation, arguments, cancellationToken)
+            : ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+    }
+
+    // Renew al máximo (guarda diálogo destructivo): as the read, the one adapter that claims the operation says.
+    public bool PreflightMayRaise(string operation, JsonElement arguments)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        IExternalOperationAdapter[] claiming = _adapters.Where(candidate => candidate.CanHandle(operation)).ToArray();
+        return claiming.Length == 1 && claiming[0].PreflightMayRaise(operation, arguments);
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> InvokeBoundAsync(
         string operation,
         JsonElement arguments,
@@ -421,9 +448,31 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         CancellationToken cancellationToken)
     {
         StrongBox<bool> unanswered = MediaSessionCalls.Watch();
-        return MediaSessionCalls.Diagnosed(
-            await InvokeWatchedAsync(operation, arguments, cancellationToken).ConfigureAwait(false), unanswered);
+        return Interrupted(MediaSessionCalls.Diagnosed(
+            await InvokeWatchedAsync(operation, arguments, cancellationToken).ConfigureAwait(false), unanswered));
     }
+
+    /// <summary>
+    /// Renew al máximo (w5): an act stopped by the person's input reached the model as the bare code and the reply
+    /// told «la ventana se cerró»; the facts of the stop beside the code, which stays: why BAXY stopped, whether
+    /// anything was sent as the receipt says, and that whether the act landed was not looked at.
+    /// </summary>
+    internal static ExternalCapabilityReceipt Interrupted(ExternalCapabilityReceipt receipt) =>
+        receipt.ErrorCode != LeasedInput.Interrupted || !Infrastructure.ModelAids.On(Infrastructure.ModelAids.InterruptedNext)
+            ? receipt
+            : receipt with
+            {
+                Result = ExternalJson.Extended(receipt.Result, writer =>
+                {
+                    writer.WriteString("reason", "BAXY stopped because input that was not its own (the person's mouse "
+                        + "or keys) came during the act");
+                    writer.WriteString("next", receipt.EffectObserved || receipt.EffectMayHaveOccurred
+                        ? "part of the act may have been sent before the stop; whether it landed was not looked at: "
+                            + "looking at the window again (input_visible_controls) tells"
+                        : "nothing of the act was sent; the window was not looked at after the stop: looking at it "
+                            + "again (input_visible_controls) tells how it is");
+                }),
+            };
 
     private async ValueTask<ExternalCapabilityReceipt> InvokeWatchedAsync(
         string operation,
@@ -431,7 +480,22 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         CancellationToken cancellationToken)
     {
         IReadOnlyList<(string Source, string Title, bool Playing)>? sessionsBefore = null;
-        var paused = new List<(WindowsMediaSessionAdapter Media, (string Source, string Title) Session)>();
+        var paused = new List<PausedPlayback>();
+        if (IsPlayback(operation))
+        {
+            // Renew al máximo (auditoría de flujos): BAXY's own YouTube player is always BAXY's; playing, it is paused
+            // for any other playback as the sessions below are (its own next playback replaces it anyway), and played
+            // again by the same rule.
+            foreach (YouTubeMpvAdapter local in _adapters.OfType<YouTubeMpvAdapter>())
+            {
+                if (await local.PauseForAnotherPlaybackAsync(cancellationToken).ConfigureAwait(false) is { } own)
+                {
+                    paused.Add(new(() => local.ResumeAfterAnotherPlaybackAsync(CancellationToken.None), own.Source,
+                        own.Title));
+                }
+            }
+        }
+
         if (IsPlayback(operation)
             && _adapters.OfType<WindowsMediaSessionAdapter>().FirstOrDefault() is { } sessions)
         {
@@ -439,7 +503,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             {
                 if (await media.PauseAssistantPlaybackBeforeAsync(operation).ConfigureAwait(false) is { } session)
                 {
-                    paused.Add((media, session));
+                    paused.Add(new(() => media.ResumeAssistantPlaybackAsync(session), session.Source, session.Title));
                 }
             }
 
@@ -461,9 +525,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         catch (Exception)
         {
             // The new playback never answered: what BAXY paused for it plays again, best effort.
-            foreach ((WindowsMediaSessionAdapter media, (string Source, string Title) session) in paused)
+            foreach (PausedPlayback pause in paused)
             {
-                _ = await media.ResumeAssistantPlaybackAsync(session).ConfigureAwait(false);
+                _ = await pause.Resume().ConfigureAwait(false);
             }
 
             throw;
@@ -480,15 +544,14 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// </summary>
     private static async ValueTask<ExternalCapabilityReceipt> SettlePausedPlaybackAsync(
         ExternalCapabilityReceipt receipt,
-        IReadOnlyList<(WindowsMediaSessionAdapter Media, (string Source, string Title) Session)> paused)
+        IReadOnlyList<PausedPlayback> paused)
     {
         bool effectCrossed = receipt.Verified || receipt.EffectObserved || receipt.EffectMayHaveOccurred;
         var pauses = new List<AssistantPlaybackPause>();
-        foreach ((WindowsMediaSessionAdapter media, (string Source, string Title) session) in paused)
+        foreach (PausedPlayback pause in paused)
         {
-            bool resumed = !effectCrossed
-                && await media.ResumeAssistantPlaybackAsync(session).ConfigureAwait(false);
-            pauses.Add(new AssistantPlaybackPause(session.Source, session.Title, resumed));
+            bool resumed = !effectCrossed && await pause.Resume().ConfigureAwait(false);
+            pauses.Add(new AssistantPlaybackPause(pause.Source, pause.Title, resumed));
         }
 
         if (effectCrossed || pauses.All(pause => pause.Resumed))
@@ -511,6 +574,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         });
         return receipt with { EffectObserved = true, Result = result, AssistantPlaybackPauses = pauses };
     }
+
+    // What BAXY paused before a new playback: how to play it again and what it was (its source and title).
+    private sealed record PausedPlayback(Func<ValueTask<bool>> Resume, string Source, string Title);
 
     private async ValueTask<ExternalCapabilityReceipt> DispatchAsync(
         string operation,

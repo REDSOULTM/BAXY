@@ -395,7 +395,9 @@ public sealed class ProductOperationDescriptor
         string risk,
         string verifierContractId,
         string description,
-        bool? requiresObservedEffect = null)
+        bool? requiresObservedEffect = null,
+        IReadOnlyList<OperationEffect>? effects = null,
+        TimeSpan? budget = null)
     {
         if (!Baxy.Contracts.ContractValidator.IsOperationName(name))
         {
@@ -423,7 +425,23 @@ public sealed class ProductOperationDescriptor
         Risk = risk;
         VerifierContractId = verifierContractId;
         Description = description;
+        if (budget <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(budget), "An operation's budget is a positive time.");
+        }
+
         RequiresObservedEffect = requiresObservedEffect ?? (risk != Baxy.Contracts.OperationRisks.ReadOnly);
+        Effects = effects ?? [];
+        Budget = budget;
+        if (Effects.SelectMany(static effect => effect.When).Any(condition =>
+                !argumentsSchema.Properties.Any(property => property.Name == condition.Argument)))
+        {
+            throw new ArgumentException("An effect's condition names an argument the schema does not have.",
+                nameof(effects));
+        }
+
+        EffectKinds = Effects.Select(static effect => effect.Kind).Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal).ToArray();
     }
 
     public string Name { get; }
@@ -438,6 +456,22 @@ public sealed class ProductOperationDescriptor
 
     // Privacy risk and requiring an observed mutation are separate contract facts.
     public bool RequiresObservedEffect { get; }
+
+    /// <summary>Where its effect lands besides its risk (<see cref="Baxy.Contracts.OperationEffects"/>).</summary>
+    public IReadOnlyList<OperationEffect> Effects { get; }
+
+    /// <summary>The kinds of <see cref="Effects"/>, each once, in order: what the operation may do with some call.</summary>
+    public IReadOnlyList<string> EffectKinds { get; }
+
+    /// <summary>
+    /// How long its provider may take, declared only where it takes longer than an ordinary call (al máximo, flujos):
+    /// the App waits that long for its answer before its margin starts, instead of the same time for every call.
+    /// </summary>
+    public TimeSpan? Budget { get; }
+
+    /// <summary>Whether this call, with these arguments, has that effect.</summary>
+    public bool Has(string effect, JsonElement arguments) =>
+        Effects.Any(declared => declared.Kind == effect && declared.Applies(arguments));
 
     private static bool IsCanonicalContractId(string? value)
     {
@@ -480,11 +514,38 @@ public sealed class ProductOperationDescriptor
     }
 }
 
-/// <summary>An argument a call got wrong and what is wrong with it (<see cref="OperationArgumentValidator.Problems"/>).</summary>
-public sealed record ArgumentProblem(string Name, string Problem);
+/// <summary>
+/// An argument a call got wrong and what is wrong with it (<see cref="OperationArgumentValidator.Problems"/>), with what
+/// lets the model correct it in one turn (P5.3): the arguments the tool takes, the values the argument takes when they
+/// are few, and the one of them nearest to what was given when it is close enough to be the one meant.
+/// </summary>
+public sealed record ArgumentProblem(string Name, string Problem)
+{
+    /// <summary>The arguments the tool takes, for one it does not take.</summary>
+    public IReadOnlyList<string>? Accepted { get; init; }
+
+    /// <summary>The value the argument takes (or the argument the tool takes) nearest to the one given.</summary>
+    public string? Nearest { get; init; }
+
+    /// <summary>The values the argument takes, when they are <see cref="OperationArgumentValidator.AllowedShown"/> or fewer.</summary>
+    public IReadOnlyList<string>? Allowed { get; init; }
+
+    /// <summary>The arguments of which a call gives exactly one (<see cref="ExactlyOneOf"/>).</summary>
+    public IReadOnlyList<string>? OneOf { get; init; }
+
+    /// <summary>A required argument the call does not give.</summary>
+    public static ArgumentProblem Missing(string name) => new(name, "required and missing");
+
+    /// <summary>A call that gives none or more than one of arguments of which it gives exactly one.</summary>
+    public static ArgumentProblem ExactlyOneOf(params string[] names) =>
+        new(names[0], "exactly one of oneOf must be given") { OneOf = names };
+}
 
 public static class OperationArgumentValidator
 {
+    /// <summary>How many values of an argument a refusal lists (<see cref="ArgumentProblem.Allowed"/>).</summary>
+    public const int AllowedShown = 12;
+
     public static bool IsValid(JsonElement arguments, OperationArgumentsSchema schema)
     {
         ArgumentNullException.ThrowIfNull(schema);
@@ -517,7 +578,9 @@ public static class OperationArgumentValidator
     /// (audit 2026-10-15: «invalid_arguments» alone did not say which argument nor what it takes): one not declared,
     /// one given twice, one whose value the schema refuses (with what it expects), then each required one missing. In
     /// the order seen; never the value given, so a private argument stays private. Empty for arguments the schema
-    /// takes, and one problem for a non-object.
+    /// takes, and one problem for a non-object. P5.3: one the tool does not take carries the ones it does
+    /// (<see cref="ArgumentProblem.Accepted"/>), and a value outside an argument's values carries them when they are
+    /// few (<see cref="ArgumentProblem.Allowed"/>); either carries the nearest name or value when one is close enough.
     /// </summary>
     public static IReadOnlyList<ArgumentProblem> Problems(JsonElement arguments, OperationArgumentsSchema schema)
     {
@@ -529,35 +592,139 @@ public static class OperationArgumentValidator
             return problems;
         }
 
+        // A name already given is never the one suggested for another.
+        HashSet<string> given = arguments.EnumerateObject().Select(static property => property.Name)
+            .ToHashSet(StringComparer.Ordinal);
         var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (JsonProperty supplied in arguments.EnumerateObject())
         {
             OperationArgumentProperty? contract = schema.Properties.FirstOrDefault(property =>
                 string.Equals(property.Name, supplied.Name, StringComparison.Ordinal));
-            string? problem = !seen.Add(supplied.Name) ? "given twice"
-                : contract is null ? "not an argument of this tool"
-                : !IsValidValue(supplied.Value, contract) ? "expected " + Expected(contract)
-                : null;
+            ArgumentProblem? problem = !seen.Add(supplied.Name) ? new ArgumentProblem(supplied.Name, "given twice")
+                : contract is null ? new ArgumentProblem(supplied.Name, "not an argument of this tool")
+                {
+                    Accepted = [.. schema.Properties.Select(static property => property.Name)],
+                    Nearest = Nearest(supplied.Name, schema.Properties.Select(static property => property.Name)
+                        .Where(name => !given.Contains(name))),
+                }
+                : IsValidValue(supplied.Value, contract) ? null
+                : contract.AllowedValues.Count > 0 ? NotAllowed(supplied, contract)
+                : new ArgumentProblem(supplied.Name, "expected " + Expected(contract));
             if (problem is not null && problems.All(known => known.Name != supplied.Name))
             {
-                problems.Add(new ArgumentProblem(supplied.Name, problem));
+                problems.Add(problem);
             }
         }
 
         problems.AddRange(schema.Required.Where(name => !seen.Contains(name))
-            .Select(static name => new ArgumentProblem(name, "required and missing")));
+            .Select(ArgumentProblem.Missing));
         return problems;
     }
 
-    // What a declared argument takes, as its schema says it.
-    private static string Expected(OperationArgumentProperty contract)
-    {
-        if (contract.AllowedValues.Count > 0)
+    // A value outside an argument's values: the values when few, and the nearest to a text given.
+    private static ArgumentProblem NotAllowed(JsonProperty supplied, OperationArgumentProperty contract) =>
+        new(supplied.Name, contract.Types.HasFlag(OperationJsonType.Null)
+            ? "expected one of the allowed values or null"
+            : "expected one of the allowed values")
         {
-            return "one of: " + string.Join(", ", contract.AllowedValues)
-                + (contract.Types.HasFlag(OperationJsonType.Null) ? " (or null)" : string.Empty);
+            Allowed = contract.AllowedValues.Count <= AllowedShown ? contract.AllowedValues : null,
+            Nearest = supplied.Value.ValueKind == JsonValueKind.String
+                ? Nearest(supplied.Value.GetString()!, contract.AllowedValues)
+                : null,
+        };
+
+    /// <summary>
+    /// The candidate meant by <paramref name="given"/>, compared without case and without the separators «_», «-», «.»
+    /// and spaces («app_id» is «appId», «cpu memory» is «cpu_memory»): the one equal to it; else, for three characters
+    /// or more, the one it begins («batt» is «battery», «window» is «windowId»); else the nearest by edit distance,
+    /// when close enough to be the one meant: at most a third of the longer of the two (at least one edit) and fewer
+    /// edits than its length. Null when two are as near («gpu» begins «gpu_usage» and «gpu_identity»).
+    /// </summary>
+    private static string? Nearest(string given, IEnumerable<string> candidates)
+    {
+        string folded = Folded(given);
+        (string Name, string Folded)[] targets = [.. candidates.Select(static candidate => (candidate, Folded(candidate)))];
+        string[] equal = [.. targets.Where(target => target.Folded == folded).Select(static target => target.Name)];
+        if (equal.Length > 0)
+        {
+            return equal.Length == 1 ? equal[0] : null;
         }
 
+        string[] begun = folded.Length < 3
+            ? []
+            : [.. targets.Where(target => target.Folded.StartsWith(folded, StringComparison.Ordinal))
+                .Select(static target => target.Name)];
+        if (begun.Length > 0)
+        {
+            return begun.Length == 1 ? begun[0] : null;
+        }
+
+        string? nearest = null;
+        int nearestDistance = int.MaxValue;
+        int nearestLength = 0;
+        bool tied = false;
+        foreach ((string candidate, string target) in targets)
+        {
+            int distance = EditDistance(folded, target);
+            if (distance < nearestDistance)
+            {
+                (nearest, nearestDistance, nearestLength, tied) = (candidate, distance, target.Length, false);
+            }
+            else if (distance == nearestDistance)
+            {
+                tied = true;
+            }
+        }
+
+        int longer = Math.Max(folded.Length, nearestLength);
+        return nearest is not null && !tied && nearestDistance < longer
+            && nearestDistance <= Math.Max(1, (longer + 1) / 3)
+                ? nearest
+                : null;
+    }
+
+    private static string Folded(string value)
+    {
+        var folded = new StringBuilder(value.Length);
+        foreach (char character in value)
+        {
+            if (character is not ('_' or '-' or '.' or ' '))
+            {
+                folded.Append(char.ToLowerInvariant(character));
+            }
+        }
+
+        return folded.ToString();
+    }
+
+    // Levenshtein over two rows.
+    private static int EditDistance(string left, string right)
+    {
+        int[] previous = new int[right.Length + 1];
+        int[] current = new int[right.Length + 1];
+        for (int column = 0; column <= right.Length; column++)
+        {
+            previous[column] = column;
+        }
+
+        for (int row = 1; row <= left.Length; row++)
+        {
+            current[0] = row;
+            for (int column = 1; column <= right.Length; column++)
+            {
+                int substitution = previous[column - 1] + (left[row - 1] == right[column - 1] ? 0 : 1);
+                current[column] = Math.Min(substitution, Math.Min(previous[column], current[column - 1]) + 1);
+            }
+
+            (previous, current) = (current, previous);
+        }
+
+        return previous[right.Length];
+    }
+
+    // What a declared argument without a list of values takes, as its schema says it.
+    private static string Expected(OperationArgumentProperty contract)
+    {
         if (contract.ConstantBoolean is bool constant)
         {
             return constant ? "true" : "false";

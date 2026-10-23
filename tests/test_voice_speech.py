@@ -25,7 +25,7 @@ def test_an_answer_the_full_queue_refuses_is_neither_synthesized_nor_counted(
     monkeypatch.setattr(Speech, "_run", lambda self: self._ready.set())  # loaded, and nothing takes from the queue
     synthesized: list[str] = []
     monkeypatch.setattr(Speech, "_sentences", lambda self, text: synthesized.append(text) or iter([text]))
-    speech = Speech(lambda speaking: None, lambda queued, sounded: None)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, notice: None)
     while not speech._queue.full():
         speech.prepare()
     assert not speech.speak("x")
@@ -71,7 +71,7 @@ def test_closing_the_voice_never_closes_the_output_while_it_is_written(
     monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
     monkeypatch.setattr(Speech, "_start", lambda self: None)
     monkeypatch.setattr(Speech, "_sentences", lambda self, text: iter([np.full(self.rate * 2, 0.1, np.float32)]))
-    speech = Speech(lambda speaking: None, lambda queued, sounded: None)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, notice: None)
     deadline = time.monotonic() + 5
     while not speech.ready and time.monotonic() < deadline:
         time.sleep(0.01)
@@ -94,6 +94,6 @@ def test_a_first_sentence_of_more_than_a_few_words_is_synthesized_alone(
     synthesized: list[str] = []
     monkeypatch.setattr(Speech, "_synthesize",
                         lambda self, text, pause=True: synthesized.append(text) or np.zeros(1, np.float32))
-    speech = Speech(lambda speaking: None, lambda queued, sounded: None)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, notice: None)
     list(speech._sentences(reply))
     assert len(synthesized) == takes

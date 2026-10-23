@@ -205,6 +205,17 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // Renew al máximo (F001, F016): a launch carries the game the person asked for, so the provider can refuse an appId
+    // that is another game before anything starts.
+    [TestCase("{\"appId\":\"252950\"}", false)]
+    [TestCase("{\"appId\":\"252950\",\"title\":\"Rocket League\"}", true)]
+    public void AGameLaunchCarriesTheTitleThePersonAskedFor(string json, bool expected)
+    {
+        using JsonDocument arguments = JsonDocument.Parse(json);
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("game.launch").ArgumentsSchema;
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, schema), Is.EqualTo(expected));
+    }
+
     // Ronda 23 (índices de vista y esquema, t-menu-2 r21): a look numbers up to its cap, the goal's reserved room and
     // the body; the acts on a control of the look take all of it and nothing past it, and the look's own limit is the cap.
     [TestCase("input.visible.click", "index", "\"label\":\"Tamaño\"")]
@@ -246,11 +257,121 @@ public sealed class ProductCatalogTests
             Assert.That(problems.Select(static problem => problem.Name),
                 Is.EqualTo(new[] { "index", "manner", "labelz", "label" }));
             Assert.That(problems[0].Problem, Does.StartWith("expected an integer").And.Contain(" from "));
-            Assert.That(problems[1].Problem, Does.StartWith("expected one of: "));
+            Assert.That(problems[1].Problem, Is.EqualTo("expected one of the allowed values or null"));
+            Assert.That(problems[1].Allowed, Is.EqualTo(new[] { "double", "menu", "open" }));
             Assert.That(problems[2].Problem, Is.EqualTo("not an argument of this tool"));
+            Assert.That(problems[2].Nearest, Is.EqualTo("label"));
+            Assert.That(problems[2].Accepted, Is.EqualTo(schema.Properties.Select(static property => property.Name)));
             Assert.That(problems[3].Problem, Is.EqualTo("required and missing"));
             Assert.That(OperationArgumentValidator.Problems(right.RootElement, schema), Is.Empty);
             Assert.That(OperationArgumentValidator.IsValid(right.RootElement, schema), Is.True);
+        });
+    }
+
+    // P5.3: an argument the tool does not take is answered with the ones it takes and, when one is close enough to be
+    // the one meant, that one; never one far off, one as near as another, nor one already given.
+    [TestCase("app.close", "{\"app_id\":\"Paint\"}", "appId")]
+    [TestCase("app.close", "{\"window\":\"w1\"}", "windowId")]
+    [TestCase("app.close", "{\"windowid\":\"w1\"}", "windowId")]
+    [TestCase("audio.volume", "{\"level\":5,\"levle\":5}", null)]
+    [TestCase("audio.volume", "{\"volume\":50}", null)]
+    [TestCase("app.close", "{\"process\":\"paint\"}", null)]
+    public void AnArgumentTheToolDoesNotTakeSaysWhichItTakesAndTheNearest(
+        string operation, string arguments, string? nearest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired(operation).ArgumentsSchema;
+        using JsonDocument given = JsonDocument.Parse(arguments);
+
+        ArgumentProblem unknown = OperationArgumentValidator.Problems(given.RootElement, schema)
+            .Single(static problem => problem.Problem == "not an argument of this tool");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unknown.Nearest, Is.EqualTo(nearest));
+            Assert.That(unknown.Accepted, Is.EqualTo(schema.Properties.Select(static property => property.Name)));
+            Assert.That(unknown.Allowed, Is.Null);
+        });
+    }
+
+    // P5.3: a value outside an argument's values is answered with the nearest of them and, when they are few, all of
+    // them; a value of another type gets no nearest.
+    [TestCase("{\"scope\":\"cpu memory\"}", "cpu_memory")]
+    [TestCase("{\"scope\":\"Batery\"}", "battery")]
+    [TestCase("{\"scope\":\"batt\"}", "battery")]
+    [TestCase("{\"scope\":\"gpu\"}", null)]
+    [TestCase("{\"scope\":\"weather\"}", null)]
+    [TestCase("{\"scope\":7}", null)]
+    public void AValueOutsideTheEnumSaysTheNearestAndTheFewAllowed(string arguments, string? nearest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("system.status").ArgumentsSchema;
+        using JsonDocument given = JsonDocument.Parse(arguments);
+
+        ArgumentProblem problem = OperationArgumentValidator.Problems(given.RootElement, schema).Single();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(problem.Name, Is.EqualTo("scope"));
+            Assert.That(problem.Problem, Is.EqualTo("expected one of the allowed values"));
+            Assert.That(problem.Nearest, Is.EqualTo(nearest));
+            Assert.That(problem.Allowed, Is.EqualTo(schema.Properties.Single().AllowedValues));
+            Assert.That(problem.Allowed, Has.Count.LessThanOrEqualTo(OperationArgumentValidator.AllowedShown));
+            Assert.That(problem.Accepted, Is.Null);
+        });
+    }
+
+    // P5.3 counter-case: past twelve values the list is left to the tool's own schema; the nearest still goes back.
+    [TestCase("Page Down", "page_down")]
+    [TestCase("ctrl+c", "ctrl_c")]
+    [TestCase("ctrl", null)]
+    public void ManyAllowedValuesAreNotListedButTheNearestIs(string key, string? nearest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("input.key.press").ArgumentsSchema;
+        using JsonDocument given = JsonDocument.Parse(JsonSerializer.Serialize(new { key }));
+
+        ArgumentProblem problem = OperationArgumentValidator.Problems(given.RootElement, schema)
+            .Single(static candidate => candidate.Name == "key");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(schema.Properties.Single(static property => property.Name == "key").AllowedValues,
+                Has.Count.GreaterThan(OperationArgumentValidator.AllowedShown));
+            Assert.That(problem.Problem, Is.EqualTo("expected one of the allowed values"));
+            Assert.That(problem.Allowed, Is.Null);
+            Assert.That(problem.Nearest, Is.EqualTo(nearest));
+        });
+    }
+
+    // P5.3: the model reads those fields as data beside the argument and its problem, and only those it has.
+    [Test]
+    public void TheCorrectingFieldsReachTheModelAsStructuredData()
+    {
+        string message = OperationVisibleFacts.FromStatus(
+            "app.close",
+            OperationStatuses.Failed,
+            "invalid_arguments",
+            [
+                new ArgumentProblem("windowid", "not an argument of this tool")
+                {
+                    Accepted = ["appId", "windowId"],
+                    Nearest = "windowId",
+                },
+                new ArgumentProblem("scope", "expected one of the allowed values") { Allowed = ["cpu", "disk"] },
+                new ArgumentProblem("level", "required and missing"),
+            ]);
+
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement problems = facts.RootElement.GetProperty("argumentProblems");
+        Assert.Multiple(() =>
+        {
+            Assert.That(problems[0].GetProperty("nearest").GetString(), Is.EqualTo("windowId"));
+            Assert.That(problems[0].GetProperty("accepted").EnumerateArray().Select(static name => name.GetString()),
+                Is.EqualTo(new[] { "appId", "windowId" }));
+            Assert.That(problems[0].TryGetProperty("allowed", out _), Is.False);
+            Assert.That(problems[1].GetProperty("allowed").EnumerateArray().Select(static value => value.GetString()),
+                Is.EqualTo(new[] { "cpu", "disk" }));
+            Assert.That(problems[1].TryGetProperty("nearest", out _), Is.False);
+            Assert.That(problems[2].EnumerateObject().Select(static field => field.Name),
+                Is.EqualTo(new[] { "argument", "problem" }));
         });
     }
 
@@ -372,6 +493,28 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // Al máximo, flujos (audit of the daily flows, finding 2): the operations whose provider may take longer than an
+    // ordinary call say how long (the provider's own budget), and the App waits that long before its margin runs out.
+    [Test]
+    public void OnlyTheOperationsWhoseProviderTakesLongDeclareTheirBudget()
+    {
+        var expected = new Dictionary<string, TimeSpan>(StringComparer.Ordinal)
+        {
+            ["file.read"] = TimeSpan.FromSeconds(90),
+            ["media.play.exact"] = TimeSpan.FromSeconds(85),
+            ["media.play.query"] = TimeSpan.FromSeconds(85),
+            ["message.send.test"] = TimeSpan.FromSeconds(90),
+            ["ocr.read"] = TimeSpan.FromSeconds(90),
+            ["system.status"] = TimeSpan.FromSeconds(90),
+            ["vision.describe"] = TimeSpan.FromSeconds(90),
+        };
+
+        Assert.That(
+            ProductCatalog.ToolDescriptors.Where(static d => d.Budget is not null)
+                .ToDictionary(static d => d.Name, static d => d.Budget!.Value, StringComparer.Ordinal),
+            Is.EquivalentTo(expected));
+    }
+
     [Test]
     public void PublicToolProjectionCarriesTheExactSchemaRiskVerifierAndDescription()
     {
@@ -398,6 +541,7 @@ public sealed class ProductCatalogTests
                     Is.EqualTo(product.VerifierContractId),
                     product.Name);
                 Assert.That(tool.Description, Is.EqualTo(product.Description), product.Name);
+                Assert.That(tool.Effects ?? [], Is.EqualTo(product.EffectKinds), product.Name);
             });
         }
 
@@ -405,6 +549,37 @@ public sealed class ProductCatalogTests
             () => ProductCatalog.CreateToolDescriptor(
                 new OperationDefinition("note.create", OperationRisk.Reversible, "Not from the catalog.")),
             Throws.ArgumentException);
+    }
+
+    // Al máximo, B-APP-10 (00_IDENTIDAD: cero listas de apps, nada de código que nombre una app): app.open decía
+    // «También acepta windows.calculator», un alias con proveedor propio junto al camino genérico del catálogo Inicio.
+    // Ninguna descripción ofrece un identificador con puntos que no sea el nombre de una operación del catálogo.
+    [Test]
+    public void NoDescriptionOffersAnIdentifierThatIsNotAnOperation()
+    {
+        HashSet<string> operations = [.. ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)];
+        string[] aliases = [.. ProductCatalog.ToolDescriptors
+            .SelectMany(static descriptor => System.Text.RegularExpressions.Regex
+                .Matches(descriptor.Description, @"(?<![\w/\\])[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+(?!\w)")
+                .Select(match => (descriptor.Name, Identifier: match.Value)))
+            .Where(found => !operations.Contains(found.Identifier))
+            .Select(static found => $"{found.Name}: {found.Identifier}")];
+
+        Assert.That(aliases, Is.Empty);
+    }
+
+    // Al máximo 5.1: a conditional effect holds only with the arguments that make it happen.
+    [TestCase("app.open", "{\"appId\":\"Spotify\"}", false)]
+    [TestCase("app.open", "{\"appId\":\"Spotify\",\"foreground\":true}", true)]
+    [TestCase("system.settings.set", "{\"setting\":\"airplane_mode\",\"value\":1}", false)]
+    [TestCase("system.settings.set", "{\"setting\":\"do_not_disturb\",\"value\":1}", true)]
+    [TestCase("input.key.press", "{}", true)]
+    [TestCase("window.minimize", "{}", false)]
+    public void AWindowEffectIsReadWithTheCallsArguments(string operation, string arguments, bool expected)
+    {
+        using JsonDocument given = JsonDocument.Parse(arguments);
+        Assert.That(ProductCatalog.GetRequired(operation).Has(OperationEffects.WindowInput, given.RootElement),
+            Is.EqualTo(expected));
     }
 
     [Test]

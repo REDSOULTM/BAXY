@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
 using Baxy.Providers.Windows.External;
@@ -117,14 +118,90 @@ internal static class ExternalCapabilityHandlers
         "wifi.status",
     ];
 
-    public static IOperationHandler[] Create(IExternalCapabilityProvider provider, string? dataRoot = null) =>
+    /// <param name="keyWindows">The window a key press lands on (K-2 refinada); null (the test seams) reads none, and
+    /// every Enter or space that declares neither target nor onto keeps asking in normal mode.</param>
+    public static IOperationHandler[] Create(
+        IExternalCapabilityProvider provider,
+        string? dataRoot = null,
+        IKeyWindowReader? keyWindows = null) =>
         Operations.Select(operation =>
         {
-            IOperationHandler handler = new ExternalCapabilityHandler(operation, provider);
-            return operation == BaxySettingHandler.Operation
-                ? new BaxySettingHandler(handler, dataRoot)
-                : handler;
+            var external = new ExternalCapabilityHandler(operation, provider);
+            return operation switch
+            {
+                BaxySettingHandler.Operation => new BaxySettingHandler(external, dataRoot),
+                KeyPressHandler.Operation when keyWindows is not null => new KeyPressHandler(external, keyWindows),
+                _ => (IOperationHandler)external,
+            };
         }).ToArray();
+}
+
+/// <summary>
+/// Al máximo, K-2 refinada (2026-10-22): Enter or space that declares neither where the keyboard is (target) nor what it
+/// lands on (onto) asks in normal mode (RiskPolicy.PressesUndeclared), because message.draft leaves a message written in
+/// a chat and that Enter would send it. Asking for every such Enter also asked for each one in a search box or an
+/// address bar. Before the person is asked, this preflight reads the window the key would reach (the window argument,
+/// or the one the provider sends a key with no window to): neither a messaging client nor a console lowers the press
+/// to a reversible act and it goes without asking; one that is, or one that cannot be read, keeps the question. The
+/// windows are told by the providers' data (<see cref="IKeyWindowReader"/>).
+/// </summary>
+internal sealed class KeyPressHandler(ExternalCapabilityHandler keys, IKeyWindowReader windows)
+    : IOperationHandler, IInvocationPreflight
+{
+    internal const string Operation = "input.key.press";
+
+    public OperationDefinition Definition => keys.Definition;
+
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        InvocationPreflightResult found = await keys.PreflightAsync(arguments, cancellationToken).ConfigureAwait(false);
+        // Renew al máximo (guarda diálogo destructivo): a risk the provider raised is never lowered here.
+        if (found.Failure is not null
+            || found.Risk is not null
+            || !RiskPolicy.PressesUndeclared(Operation, arguments)
+            || !TryWindow(arguments, out long? window))
+        {
+            return found;
+        }
+
+        KeyWindowKind kind;
+        try
+        {
+            kind = windows.KindOf(window);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return found;
+        }
+
+        return kind == KeyWindowKind.Ordinary ? InvocationPreflightResult.Lowered(OperationRisk.Reversible) : found;
+    }
+
+    public bool MayRaise(JsonElement arguments) => keys.MayRaise(arguments);
+
+    public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken) =>
+        keys.ExecuteAsync(invocation, cancellationToken);
+
+    // No window (absent or null): the key goes where the provider sends it. A positive whole number: that window.
+    // Anything else cannot be placed.
+    private static bool TryWindow(JsonElement arguments, out long? window)
+    {
+        window = null;
+        if (!arguments.TryGetProperty("window", out JsonElement named) || named.ValueKind == JsonValueKind.Null)
+        {
+            return true;
+        }
+
+        if (named.ValueKind == JsonValueKind.Number && named.TryGetInt64(out long handle) && handle > 0)
+        {
+            window = handle;
+            return true;
+        }
+
+        return false;
+    }
 }
 
 /// <summary>
@@ -244,12 +321,14 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
 
 internal sealed class ExternalCapabilityHandler(
     string operation,
-    IExternalCapabilityProvider provider) : IOperationHandler
+    IExternalCapabilityProvider provider) : IOperationHandler, IInvocationPreflight
 {
     // v3 r22 uso real: the operations that only point at or move through what a window shows (a click on a control,
-    // a scroll, the list of visible controls) put nothing into it. Every other operation that is not read-only may
-    // have written into some window, and which one is not always known, so it marks every process BAXY launched as
-    // written (LaunchProvenance, fail-closed): their windows ask again before closing.
+    // a scroll, the list of visible controls) put nothing into it. Every other call that reaches a window (the
+    // catalog's typed effect window_input) may have written into it, and which one is not always known, so it marks
+    // every process BAXY launched as written (LaunchProvenance, fail-closed): their windows ask again before closing.
+    // Al máximo, flujos: a call that reaches no window (the volume, a radio) wrote into none («abre el bloc de notas»,
+    // «sube el volumen», «ciérralo» asked).
     // v3 r22 revisión: a pointing operation may still carry text it types into what it opens (a click's «search» is
     // typed into the box the click opened, SearchBurst.TypeAsync); with any such argument present and not empty it
     // writes as well.
@@ -266,7 +345,8 @@ internal sealed class ExternalCapabilityHandler(
 
     internal static bool MayWriteIntoAWindow(OperationDefinition definition, JsonElement arguments)
     {
-        if (definition.Risk == OperationRisk.ReadOnly)
+        if (definition.Risk == OperationRisk.ReadOnly
+            || definition.ProductDescriptor?.Has(OperationEffects.WindowInput, arguments) == false)
         {
             return false;
         }
@@ -297,6 +377,57 @@ internal sealed class ExternalCapabilityHandler(
         }
 
         return false;
+    }
+
+    // Al máximo, flujos: what the provider reads of the call's target before the person is asked (a name that is not
+    // there, or is there several times, with its candidates): that failure answers without a yes. A provider that
+    // cannot tell, or fails to read, leaves the call to ask and to run as always.
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        ExternalCapabilityReceipt? found;
+        try
+        {
+            found = await _provider.PreflightAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            return InvocationPreflightResult.Proceed;
+        }
+
+        // Renew al máximo (guarda diálogo destructivo): a call the provider found needs the person's yes (the «Sí» under
+        // «¿Quieres reemplazarlo?») asks, bound to it, as what cannot be undone.
+        if (found is { NeedsConfirmation: true, Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }
+            && string.Equals(found.Operation, operation, StringComparison.Ordinal))
+        {
+            return InvocationPreflightResult.Raised(OperationRisk.Irreversible);
+        }
+
+        return found is { Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }
+            && string.Equals(found.Operation, operation, StringComparison.Ordinal)
+            && !string.IsNullOrWhiteSpace(found.ErrorCode)
+                ? InvocationPreflightResult.Fails(OperationOutcome.Failure(found.ErrorCode, result: found.Result))
+                : InvocationPreflightResult.Proceed;
+    }
+
+    // Renew al máximo (guarda diálogo destructivo): only a call the provider says may need a yes is read when its
+    // declared risk goes without asking; a provider that fails to say keeps it as declared.
+    public bool MayRaise(JsonElement arguments)
+    {
+        try
+        {
+            return _provider.PreflightMayRaise(operation, arguments);
+        }
+        catch (Exception exception) when (exception is InvalidOperationException or ArgumentException
+            or JsonException or KeyNotFoundException or ObjectDisposedException)
+        {
+            return false;
+        }
     }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(

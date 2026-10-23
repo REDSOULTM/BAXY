@@ -16,6 +16,13 @@ public interface IGameTitles
 /// <summary>A game of a catalog: its number there and its name.</summary>
 public sealed record GameTitle(string Number, string Name);
 
+/// <summary>
+/// Renew al máximo (auditoría de flujos): the catalog's title search got no answer (no network, a timeout, an error
+/// status, a body not read): nothing is known of the title, never «no game bears it».
+/// </summary>
+public sealed class GameTitleSearchFailedException(Exception inner)
+    : Exception("The game catalog's title search got no answer.", inner);
+
 public sealed class CatalogGameTitles : IGameTitles
 {
     public async ValueTask<GameTitle?> FindAsync(string catalog, string title, CancellationToken cancellationToken)

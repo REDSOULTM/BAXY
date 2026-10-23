@@ -28,5 +28,6 @@
  "routine.restore": {"op": null},
  "routine.set.enabled": {"op": null},
  "message.send": {"op": null},
- "filesystem.trash.restore": {"op": null}
+ "filesystem.trash.restore": {"op": null},
+ "filesystem.sandbox.diff.named": {"op": "filesystem.sandbox.diff.named", "args": {"leftQuery": "leftFileName", "rightQuery": "rightFileName"}}
 }

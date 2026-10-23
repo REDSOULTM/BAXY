@@ -1,6 +1,10 @@
 using System.Buffers.Binary;
 using BaxyInputMark = Baxy.Providers.Windows.External.BaxyInputMark;
 using WindowsUserInputPause = Baxy.Providers.Windows.External.WindowsUserInputPause;
+using System.Text.Json;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Applications;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
 
@@ -335,6 +339,24 @@ public sealed class CloseWithoutAskingProvenanceTests
         Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
     }
 
+    // Al máximo, flujos: «abre el bloc de notas», «sube el volumen», «ciérralo» asked as if BAXY had written into it.
+    // Only a call the catalog says reaches a window (window_input) may have written into one.
+    [TestCase("audio.volume.adjust", """{"direction":"up","amount":10}""", false)]
+    [TestCase("system.settings.set", """{"setting":"airplane_mode","value":1}""", false)]
+    [TestCase("system.settings.set", """{"setting":"do_not_disturb","value":1}""", true)]
+    [TestCase("input.text.type", """{"text":"hola"}""", true)]
+    [TestCase("input.visible.click", """{"label":"Siete"}""", false)]
+    [TestCase("input.visible.click", """{"label":"Buscar","search":"Ron"}""", true)]
+    public void OnlyACallThatReachesAWindowMayHaveWrittenIntoIt(string operation, string arguments, bool writes)
+    {
+        using System.Text.Json.JsonDocument document = System.Text.Json.JsonDocument.Parse(arguments);
+
+        Assert.That(
+            Baxy.Core.Operations.ExternalCapabilityHandler.MayWriteIntoAWindow(
+                Baxy.Kernel.Operations.ProductCatalog.CreateDefinition(operation), document.RootElement),
+            Is.EqualTo(writes));
+    }
+
     [Test]
     public async Task AnApplicationLaunchedAfterTheWritingStaysUnwritten()
     {
@@ -458,6 +480,99 @@ public sealed class CloseWithoutAskingProvenanceTests
             Assert.That(result.Succeeded && result.Verified, Is.True);
             Assert.That(result.ClosePrompted, Is.False);
         });
+    }
+
+    // BAXY Renew al máximo, F002 (banco de falsedades, 9 de 9 corridas): «¿abriste Spotify?» with a Spotify the person
+    // already had open → «Sí, Spotify tiene una ventana abierta». The reads that tell which windows are open say
+    // whether BAXY launched each one in this run, as a fact: written into since or not, never one it did not launch.
+    [Test]
+    public async Task AWindowBaxyLaunchedIsSaidOpenedByBaxyEvenAfterWritingIntoIt()
+    {
+        var provenance = new LaunchProvenance(static _ => null, Watching());
+        provenance.NoteLaunched(500, 9_000, 321);
+        provenance.NoteWritten();
+        var provider = Provider(new WindowIdentity(
+            (nint)321, 500, 9_000, "Spotify", DateTimeOffset.UnixEpoch, @"C:\Apps\Spotify.exe"), provenance);
+
+        OperationOutcome outcome = await new WindowActiveHandler(provider).ExecuteAsync(Read(), CancellationToken.None);
+
+        Assert.That(outcome.Result!.Value.GetProperty("windows")[0].GetProperty("openedByBaxy").GetBoolean(), Is.True);
+    }
+
+    [Test]
+    public async Task AWindowThePersonAlreadyHadIsSaidNotOpenedByBaxy()
+    {
+        // BAXY launched another application in this run; the person's Spotify was open before the conversation.
+        var provenance = new LaunchProvenance(static _ => null, Watching());
+        provenance.NoteLaunched(600, 9_500, 654);
+        var provider = Provider(new WindowIdentity(
+            (nint)321, 500, 9_000, "Spotify", DateTimeOffset.UnixEpoch, @"C:\Apps\Spotify.exe"), provenance);
+
+        OperationOutcome outcome = await new WindowActiveHandler(provider).ExecuteAsync(Read(), CancellationToken.None);
+
+        Assert.That(outcome.Result!.Value.GetProperty("windows")[0].GetProperty("openedByBaxy").GetBoolean(), Is.False);
+    }
+
+    [Test]
+    public async Task TheApplicationStatusSaysWhetherBaxyOpenedIt()
+    {
+        var provenance = new LaunchProvenance(Alive(CalculatorProcess, CalculatorCreation), Watching());
+        // A packaged application: its window is the shared frame BAXY's opening verified, drawn by another process.
+        provenance.NoteLaunched(CalculatorProcess, CalculatorCreation, CalculatorFrame);
+        var launched = new ApplicationWindowStatusHandler(
+            new OneStatus((CalculatorFrame, 77, 7)), provenance);
+        var theirs = new ApplicationWindowStatusHandler(new OneStatus((321, 500, 9_000)), provenance);
+        var unreadable = new ApplicationWindowStatusHandler(new OneStatus((321, 500, 0)), provenance);
+
+        JsonElement opened = (await launched.ExecuteAsync(Read(), CancellationToken.None)).Result!.Value;
+        JsonElement notOpened = (await theirs.ExecuteAsync(Read(), CancellationToken.None)).Result!.Value;
+        JsonElement unknown = (await unreadable.ExecuteAsync(Read(), CancellationToken.None)).Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(opened.GetProperty("openedByBaxy").GetBoolean(), Is.True);
+            Assert.That(notOpened.GetProperty("openedByBaxy").GetBoolean(), Is.False);
+            Assert.That(notOpened.GetProperty("hasVisibleWindow").GetBoolean(), Is.True);
+            // A window whose process creation time could not be read is not said either way.
+            Assert.That(unknown.TryGetProperty("openedByBaxy", out _), Is.False);
+        });
+    }
+
+    // Renew al máximo (F002 en el notebook): «¿abriste Spotify?» over the person's own Spotify was still answered «Sí»
+    // with openedByBaxy false; with the aid provenance_next the status says it as a sentence, and with
+    // BAXY_AYUDAS=none the fact alone.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task TheApplicationStatusSaysInWordsThatBaxyDidNotOpenIt(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var provenance = new LaunchProvenance(Alive(CalculatorProcess, CalculatorCreation), Watching());
+        var theirs = new ApplicationWindowStatusHandler(new OneStatus((321, 500, 9_000)), provenance);
+
+        JsonElement notOpened = (await theirs.ExecuteAsync(Read(), CancellationToken.None)).Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(notOpened.GetProperty("openedByBaxy").GetBoolean(), Is.False);
+            Assert.That(notOpened.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+                Assert.That(next.GetString(), Does.EndWith("is open, but BAXY did not open it in this session: it was already open"));
+        });
+    }
+
+    private static OperationInvocation Read() =>
+        new("r", "m", "i", JsonDocument.Parse("{\"name\":\"Spotify\"}").RootElement);
+
+    // An application read as installed with one visible window of the given identity.
+    private sealed class OneStatus((long Handle, int ProcessId, long Creation) window) : IApplicationInventoryProvider
+    {
+        public ValueTask<ApplicationInstalledResult> IsInstalledAsync(
+            string applicationName, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public ValueTask<ApplicationWindowStatusResult> GetWindowStatusAsync(
+            string applicationName, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(new ApplicationWindowStatusResult(
+                applicationName, applicationName, true, true, 1, true, null, [window]));
     }
 
     private static WindowIdentity Discord() => new(

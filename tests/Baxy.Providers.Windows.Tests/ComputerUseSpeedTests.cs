@@ -505,7 +505,10 @@ public sealed class ComputerUseSpeedTests
             "\"name\":\"Library\",\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":false,\"selected\":false}",
             "{\"version\":2,\"ok\":true,\"effectObserved\":true,\"error\":\"\",\"name\":\"Library\"," +
             "\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":false,\"selected\":true,\"toggled\":false}");
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null)
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Library"}"""), CancellationToken.None);
@@ -526,7 +529,10 @@ public sealed class ComputerUseSpeedTests
             "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_pending\"," +
             "\"pending\":true,\"name\":\"Aceptar\",\"controlIdentity\":\"1.2.3\"}");
         worker.FallSilentAfter = 1;
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null)
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Aceptar"}"""), CancellationToken.None);
@@ -775,7 +781,8 @@ public sealed class ComputerUseSpeedTests
 
     // Renew al máximo (B-CU-1): an index of the last look, of window B, with the scroll naming window A is B's control,
     // never A's: refused before any effect, as input.text.type refuses it (B may be the person's window). Synchronous,
-    // so the windows are destroyed by the thread that made them.
+    // so the windows are destroyed by the thread that made them; while it waits for each call that thread answers the
+    // messages sent to its windows (reading a window's title sends WM_GETTEXT to its thread: blocked, it hung the run).
     [Test]
     public void AScrollByIndexOfAnotherWindowsViewIsRefusedBeforeAnyEffect()
     {
@@ -789,14 +796,14 @@ public sealed class ComputerUseSpeedTests
                 "{\"kind\":\"List\",\"name\":\"Canciones\",\"id\":\"7.1\",\"state\":\"\",\"value\":null," +
                 "\"rect\":{\"x\":10,\"y\":10,\"w\":200,\"h\":300},\"repeated\":0}],\"controlCount\":1,\"focused\":null}");
             var controls = new WindowsVisibleControlAdapter(worker, null, null, requestedWindow: (_, _) => ValueTask.FromResult(viewed));
-            _ = controls.InvokeAsync("input.visible.controls", Json("""{"application":"la lista"}"""), CancellationToken.None)
-                .AsTask().GetAwaiter().GetResult();
+            _ = Pumped(() => controls.InvokeAsync("input.visible.controls", Json("""{"application":"la lista"}"""),
+                CancellationToken.None).AsTask());
             int looked = worker.Commands.Count;
             var scroll = new WindowsScrollAdapter(controls);
 
-            ExternalCapabilityReceipt receipt = scroll.InvokeAsync(
-                    "input.scroll", Json("{\"direction\":\"down\",\"index\":0,\"window\":" + (long)named + "}"), CancellationToken.None)
-                .AsTask().GetAwaiter().GetResult();
+            ExternalCapabilityReceipt receipt = Pumped(() => scroll.InvokeAsync(
+                "input.scroll", Json("{\"direction\":\"down\",\"index\":0,\"window\":" + (long)named + "}"),
+                CancellationToken.None).AsTask());
 
             Assert.Multiple(() =>
             {
@@ -839,6 +846,45 @@ public sealed class ComputerUseSpeedTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
         });
     }
+
+    // A call run elsewhere while this thread answers what is sent to the windows it made, until the call ends.
+    internal static T Pumped<T>(Func<Task<T>> call)
+    {
+        Task<T> running = Task.Run(call);
+        while (!running.Wait(10))
+        {
+            while (PeekMessage(out PumpedMessage message, 0, 0, 0, 1))
+            {
+                _ = TranslateMessage(message);
+                _ = DispatchMessage(message);
+            }
+        }
+
+        return running.GetAwaiter().GetResult();
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PumpedMessage
+    {
+        public nint Window;
+        public uint Message;
+        public nint WParam;
+        public nint LParam;
+        public uint Time;
+        public int X;
+        public int Y;
+    }
+
+    [DllImport("user32.dll", EntryPoint = "PeekMessageW", ExactSpelling = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool PeekMessage(out PumpedMessage message, nint window, uint first, uint last, uint remove);
+
+    [DllImport("user32.dll", ExactSpelling = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool TranslateMessage(in PumpedMessage message);
+
+    [DllImport("user32.dll", EntryPoint = "DispatchMessageW", ExactSpelling = true)]
+    private static extern nint DispatchMessage(in PumpedMessage message);
 
     private static long GoneWindow()
     {
@@ -1117,6 +1163,9 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
     // Called with the characters typed so far, before each one.
     internal Action<int>? EachCharacter { get; init; }
 
+    // Called with each character once it was sent (keepGoing let it go), in order.
+    internal Action<char>? EachSent { get; init; }
+
     private bool _typed;
 
     // The window in front from now on, when something moved it (null: Front, as typing left it).
@@ -1148,6 +1197,7 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
             }
             if (!keepGoing())
                 break;
+            EachSent?.Invoke(text[typed]);
             typed++;
         }
 

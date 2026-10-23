@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO.Pipes;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -140,6 +141,61 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_postread_failed"));
+        });
+    }
+
+    // Renew al máximo (8.3): the post-read that still found the instance was dropped from the failure; it is the state
+    // after, with its authority, and the failure stays.
+    [Test]
+    public async Task ProcessTerminationWhosePostreadStillFindsItSaysItIsStillRunning()
+    {
+        var identity = new WindowsProcessIdentity(5151, 638900000000000001);
+        var platform = new StubProcessTerminationPlatform(
+            [[identity], [identity]], terminateResult: WindowsProcessTermination.NotTerminated);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_postread_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_process_original_identity_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3): the kill was sent and the post-read threw: one more read of the name says whether the
+    // instances asked to end are gone; one that fails too adds nothing.
+    [TestCase(false, 0, true)]
+    [TestCase(false, 1, false)]
+    [TestCase(true, -1, false)]
+    public async Task ProcessTerminationWhosePostreadThrewReadsOnceMore(bool rereadThrows, int stillRunning, bool reached)
+    {
+        var identity = new WindowsProcessIdentity(5151, 638900000000000001);
+        var platform = new FlakyProcessTerminationPlatform(identity, rereadThrows, stillRunning == 1);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.process.terminate.named", Json("""{"name":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("process_termination_failed"));
+            if (rereadThrows)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("stillRunningCount").GetInt32(), Is.EqualTo(stillRunning));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.EqualTo(reached));
         });
     }
 
@@ -1305,6 +1361,30 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, decision2): a name no manifest bears exactly names the closest ones read.
+    [Test]
+    public async Task ANameNoManifestBearsNamesTheClosestOnes()
+    {
+        using TemporaryDirectory temporary = new();
+        string steamApps = Path.Combine(temporary.Path, "steamapps");
+        Directory.CreateDirectory(Path.Combine(steamApps, "common", "WormsWMD"));
+        await File.WriteAllTextAsync(
+            Path.Combine(steamApps, "appmanifest_327030.acf"),
+            "\"AppState\" { \"appid\" \"327030\" \"name\" \"Worms W.M.D\" " +
+            "\"StateFlags\" \"4\" \"installdir\" \"WormsWMD\" }");
+        var adapter = new WindowsGameInstallationAdapter([steamApps], []);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"worms"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result?.GetProperty("state").GetString(),
+                Is.EqualTo("no_steam_or_epic_manifest_with_that_name"));
+            Assert.That(receipt.Result?.GetProperty("closestTitles")[0].GetString(), Is.EqualTo("Worms W.M.D"));
+        });
+    }
+
     [Test]
     public async Task RecycleBinEmptyRequiresZeroItemPostread()
     {
@@ -1323,6 +1403,73 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("afterCount").GetInt32(), Is.Zero);
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("windows_recycle_bin_empty_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3): an emptying whose receipt was lost (the process ended with nothing read) left the model not
+    // knowing whether the bin was emptied; one read of the bins after it says what is there, the failure kept.
+    [TestCase(0L, true)]
+    [TestCase(3L, false)]
+    public async Task RecycleBinEmptyWithItsReceiptLostSaysWhatTheBinHoldsAfter(long items, bool reached)
+    {
+        var adapter = new WindowsRecycleBinAdapter(
+            new ThrowingProcessRunner(new IOException("simulated receipt loss after process dispatch")), () => items);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("itemCount").GetInt64(), Is.EqualTo(items));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.EqualTo(reached));
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_recycle_bin_query_postread"));
+        });
+    }
+
+    // Renew al máximo (8.3): the script's own post-read found items still there; that count is the state after, never
+    // dropped, and no second read is made.
+    [Test]
+    public async Task RecycleBinEmptyWhosePostreadStillFoundItemsSaysHowMany()
+    {
+        int reads = 0;
+        var adapter = new WindowsRecycleBinAdapter(
+            new StubProcessRunner("{\"ok\":false,\"beforeCount\":3,\"afterCount\":2,\"effectObserved\":true}"),
+            () => { reads++; return 0; });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_postread_failed"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("itemCount").GetInt64(), Is.EqualTo(2));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_recycle_bin_empty_postread"));
+            Assert.That(reads, Is.Zero);
+        });
+    }
+
+    // Renew al máximo (8.3): a read of the bins that fails adds nothing: the ambiguous failure stays as it was.
+    [Test]
+    public async Task RecycleBinEmptyWhoseRereadFailsAddsNoState()
+    {
+        var adapter = new WindowsRecycleBinAdapter(
+            new ThrowingProcessRunner(new TimeoutException("simulated")), () => -1);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.recyclebin.empty", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("recycle_bin_empty_failed"));
+            Assert.That(receipt.Result, Is.Null);
         });
     }
 
@@ -1557,7 +1704,10 @@ public sealed class ExternalAdaptersTests
         var focus = new ScriptedFocus(launched: true, windowAfter: 0, drawnAfter: int.MaxValue);
         var ocr = new CountingLocator("ocr", hit: true);
         var adapter = new WindowsVisibleControlAdapter(
-            worker, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming)
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
 
         ExternalCapabilityReceipt pressed = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"buscar","controlId":"1.2.3"}"""),
@@ -1655,7 +1805,10 @@ public sealed class ExternalAdaptersTests
     {
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var ocr = new CountingLocator("ocr", hit: false);
-        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision: null);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision: null)
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1666,7 +1819,10 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
-            Assert.That(worker.Commands.Count, Is.InRange(2, 3));
+            // Looks every Interval (1.5 s) until SettledLabel (3 s) from the first: the third look lands on that edge,
+            // so a fourth one comes when the timer returns a few milliseconds short (int6 Providers whole, 2026-10-22:
+            // 4 under load, 3 alone). The bound that matters for M132 is the time, below.
+            Assert.That(worker.Commands.Count, Is.InRange(2, 4));
             Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(8)));
             Assert.That(VisibleClickTiming.Default.SettledLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(3)));
             Assert.That(VisibleClickTiming.Default.OpenedLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(10)));
@@ -1684,7 +1840,10 @@ public sealed class ExternalAdaptersTests
         int samples = 0;
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: (_, _) => { samples++; return ValueTask.FromResult<string?>("same"); });
+            surfaceHash: (_, _) => { samples++; return ValueTask.FromResult<string?>("same"); })
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1714,7 +1873,10 @@ public sealed class ExternalAdaptersTests
         int samples = 0;
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: (_, _) => ValueTask.FromResult<string?>("frame" + samples++));
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>("frame" + samples++))
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -1736,7 +1898,10 @@ public sealed class ExternalAdaptersTests
         var ocr = new CountingLocator("ocr", hit: false);
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: (_, _) => ValueTask.FromResult<string?>(null));
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>(null))
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -2379,6 +2544,90 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.ErrorCode, Is.EqualTo(expectedError));
             Assert.That(endpoint.ReadVolumeScalar(), Is.EqualTo(volume));
             Assert.That(endpoint.ReadMuted(), Is.EqualTo(muted));
+        });
+    }
+
+    // Renew al máximo (8.3): the output did not take the new level and the post-read that saw it was dropped; the level
+    // and mute read after are the state, the failure kept.
+    [Test]
+    public async Task VolumeAdjustWhosePostreadMismatchedSaysTheLevelReadAfter()
+    {
+        var endpoint = new StuckAudioEndpoint("output-private", 0.40f);
+        var adapter = new WindowsAudioAdjustmentAdapter(() => endpoint);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.volume.adjust", Json("""{"direction":"up","amount":10}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("volume_adjustment_postread_mismatch"));
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(40));
+            Assert.That(state?.GetProperty("muted").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_core_audio_output_endpoint_postread"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("output-private"));
+        });
+    }
+
+    // Renew al máximo (8.3): the level was set and its post-read threw; one more read of the same output says the level
+    // it has. Another output in its place (the default changed) is not that state, and adds nothing.
+    [TestCase("post-dispatch-failure", true)]
+    [TestCase("another-output", false)]
+    public async Task VolumeAdjustWhosePostreadThrewReadsTheSameOutputOnceMore(string rereadEndpoint, bool added)
+    {
+        var opened = new Queue<IWindowsAudioEndpoint>(
+        [
+            new PostDispatchFailingAudioEndpoint(),
+            new FakeAudioEndpoint(rereadEndpoint, muted: false, volume: 0.5f),
+        ]);
+        var adapter = new WindowsAudioAdjustmentAdapter(opened.Dequeue);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.volume.adjust", Json("""{"direction":"up","amount":10}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("audio_output_endpoint_unavailable"));
+            if (!added)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(50));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.True);
+        });
+    }
+
+    // Renew al máximo (8.3): an application's level read after a set that did not take is the state after.
+    [Test]
+    public async Task AppVolumeSetWhosePostreadMismatchedSaysTheLevelReadAfter()
+    {
+        var adapter = new WindowsAppVolumeSetAdapter((_, _, beforeEffect, _) =>
+        {
+            beforeEffect?.Invoke();
+            return new ApplicationSessionAdjustment("Spotify", 1, 30, 30, false, "endpoint-1", Changed: false);
+        });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.app.volume.set", Json("""{"app":"Spotify","level":60}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("volume_postread_mismatch"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            JsonElement? state = receipt.Result?.GetProperty("stateAfter");
+            Assert.That(state?.GetProperty("level").GetInt32(), Is.EqualTo(30));
+            Assert.That(state?.GetProperty("requestedLevel").GetInt32(), Is.EqualTo(60));
+            Assert.That(state?.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state?.GetProperty("authority").GetString(), Is.EqualTo("windows_core_audio_session_postread"));
         });
     }
 
@@ -3058,6 +3307,29 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): «farmacias cerca» without network is the search not answering
+    // (web_search_unavailable); it was web_search_place_unavailable, as if the PC's place were unknown.
+    [Test]
+    public async Task ASearchNearbyWithoutNetworkIsTheSearchNotAnswering()
+    {
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt web = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"farmacias","nearby":true}"""), CancellationToken.None);
+        ExternalCapabilityReceipt places = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"farmacias","source":"places","kind":"pharmacy","nearby":true}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(web.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(places.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(web.EffectMayHaveOccurred | places.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     // Without nearby nothing asks where this PC is; neither does a source nearby does not apply to (currency).
     [Test]
     public async Task ASearchWithoutNearbyNeverAsksWhereThisPcIs()
@@ -3643,6 +3915,161 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (auditoría de flujos, web): a page that does not answer in time, before its headers or in the
+    // middle of its body, is a page that took too long (web_fetch_timeout); the client's timeout escaped the adapter
+    // (external_provider_exception) and a body that trickled held the turn until the operation's own deadline.
+    [Test]
+    public async Task AWebFetchThatTakesTooLongSaysSo()
+    {
+        using TemporaryDirectory temporary = new();
+        using var silent = new HttpClient(new LambdaHttpHandler((_, _) =>
+            throw new TaskCanceledException("timeout", new TimeoutException())));
+        using var trickling = new HttpClient(new LambdaHttpHandler((_, _) =>
+        {
+            var content = new StreamContent(new StalledStream());
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = content });
+        }))
+        { Timeout = TimeSpan.FromMilliseconds(300) };
+        using WebBrowserAdapter beforeHeaders = SearchAdapter(temporary, silent);
+        using WebBrowserAdapter midBody = SearchAdapter(temporary, trickling);
+        using var turn = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        ExternalCapabilityReceipt headers = await beforeHeaders.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lenta.example.com/"}"""), turn.Token);
+        ExternalCapabilityReceipt body = await midBody.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lenta.example.com/"}"""), turn.Token);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(headers.ErrorCode, Is.EqualTo("web_fetch_timeout"));
+            Assert.That(body.ErrorCode, Is.EqualTo("web_fetch_timeout"));
+            Assert.That(turn.IsCancellationRequested, Is.False);
+            Assert.That(headers.EffectMayHaveOccurred | body.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, web): the client that asks the search sources (and the place by this PC's
+    // address), the weather and a place's time zone keeps no cookie: one jar lived as long as BAXY and sent back what
+    // each service set (Wikipedia's, Google's), so the person's searches went out tied to one another.
+    [Test]
+    public void ThePublicServicesClientKeepsNoCookie()
+    {
+        using SocketsHttpHandler handler = SearchPageReader.StrangerHandler();
+
+        Assert.That(handler.UseCookies, Is.False);
+    }
+
+    // Renew al máximo (auditoría de flujos, web): an address said without its scheme («es.wikipedia.org/wiki/Arroz», as
+    // the person dictates it and web.download takes it) is read over https; it was refused as not public.
+    [Test]
+    public async Task AWebFetchOfAnAddressWithoutSchemeReadsItOverHttps()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["es.wikipedia.org"] = new(HttpStatusCode.OK,
+                "<html><head><title>Arroz</title></head><body><p>El arroz es una semilla.</p></body></html>", "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"es.wikipedia.org/wiki/Arroz"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt local = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"192.168.1.10/admin"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("requestedUrl").GetString(), Is.EqualTo("https://es.wikipedia.org/wiki/Arroz"));
+            Assert.That(read.Result?.GetProperty("text").GetString(), Does.Contain("El arroz es una semilla."));
+            Assert.That(local.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "es.wikipedia.org" }));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, web): an address whose host does not exist (an invented URL), no network,
+    // and a host that resolves into the local network each say so; all three were web_adapter_unavailable, read as the
+    // web tool itself being broken.
+    [Test]
+    public async Task AWebFetchThatReachesNoPageSaysWhy()
+    {
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(new LambdaHttpHandler((request, _) => throw (request.RequestUri!.Host switch
+        {
+            "inventada.example.com" => new HttpRequestException(HttpRequestError.NameResolutionError, "no such host"),
+            "lan.example.com" => new HttpRequestException(
+                "connect refused", new SearchPageReader.AddressNotPublicException()),
+            _ => new HttpRequestException(HttpRequestError.ConnectionError, "no network"),
+        })));
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt invented = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://inventada.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt offline = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://recetas.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt lan = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lan.example.com/"}"""), CancellationToken.None);
+        // The same two causes as the production client's connection step raises them (no socket is opened).
+        using var unresolved = new HttpClient(new SocketsHttpHandler
+        {
+            ConnectCallback = (_, _) => throw new System.Net.Sockets.SocketException(
+                (int)System.Net.Sockets.SocketError.HostNotFound),
+        });
+        using var refused = new HttpClient(new SocketsHttpHandler
+        {
+            ConnectCallback = (_, _) => throw new HttpRequestException(
+                "connect refused", new SearchPageReader.AddressNotPublicException()),
+        });
+        using WebBrowserAdapter unresolvedAdapter = SearchAdapter(temporary, unresolved);
+        using WebBrowserAdapter refusedAdapter = SearchAdapter(temporary, refused);
+        ExternalCapabilityReceipt unresolvedRead = await unresolvedAdapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://inventada.example.com/"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt refusedRead = await refusedAdapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://lan.example.com/"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(invented.ErrorCode, Is.EqualTo("web_fetch_host_not_found"));
+            Assert.That(offline.ErrorCode, Is.EqualTo("web_fetch_unreachable"));
+            Assert.That(lan.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(unresolvedRead.ErrorCode, Is.EqualTo("web_fetch_host_not_found"));
+            Assert.That(refusedRead.ErrorCode, Is.EqualTo("web_fetch_address_not_public"));
+            Assert.That(invented.EffectMayHaveOccurred | offline.EffectMayHaveOccurred | lan.EffectMayHaveOccurred,
+                Is.False);
+        });
+    }
+
+    private sealed class LambdaHttpHandler(
+        Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> answer) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken) => answer(request, cancellationToken);
+    }
+
+    // A body whose bytes never come: each read waits until it is cancelled.
+    private sealed class StalledStream : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => 0; set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken).ConfigureAwait(false);
+            return 0;
+        }
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
+            ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
+
     private static HttpAnswer WikipediaAnswer(
         string language,
         params (string Title, string Extract, bool Disambiguation)[] pages)
@@ -3892,6 +4319,43 @@ public sealed class ExternalAdaptersTests
             Assert.That(tooHigh.ErrorCode, Is.EqualTo("volume_level_invalid"));
             Assert.That(noSession.Verified, Is.False);
             Assert.That(noSession.ErrorCode, Is.EqualTo("app_audio_session_not_found_on_default_output"));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos, P257: «deja el volumen en 20» chose audio.app.volume.set {app:"volumen"} in
+    // 7 of 27 runs): an application with no audio session failed with the bare code, so the next step had nothing to go
+    // on. The failure names the applications that do have one (few, short) and that the PC's own volume is another
+    // operation; a model aid, off with the others.
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "all", "audio_volume")]
+    [TestCase("audio.app.volume.adjust", """{"app":"volumen","amount":10,"direction":"down"}""", "all",
+        "audio_volume_adjust")]
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "none", null)]
+    public async Task AnAppWithNoAudioSessionNamesTheAppsThatHaveOne(
+        string operation, string arguments, string aids, string? systemOperation)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        string[] withAudio = ["Spotify", "chrome", "Discord", "mpv", "steam", "opera", "Teams", "zoom", "vlc", "obs64"];
+        IExternalOperationAdapter adapter = operation == "audio.app.volume.set"
+            ? new WindowsAppVolumeSetAdapter((_, _, _, _) => null, () => withAudio)
+            : new WindowsAppVolumeAdapter((_, _, _, _) => null, () => withAudio);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("app_audio_session_not_found_on_default_output"));
+            if (systemOperation is null)
+            {
+                Assert.That(receipt.Result, Is.Null);
+                return;
+            }
+
+            string[] named = receipt.Result!.Value.GetProperty("appsWithAudio").EnumerateArray()
+                .Select(item => item.GetString()!).ToArray();
+            Assert.That(named, Is.EqualTo(withAudio.Take(8).ToArray()));
+            Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.Contain(" is " + systemOperation + ","));
         });
     }
 
@@ -4305,8 +4769,155 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    // A player whose pause property reads true on every connection until stopped (a set is answered as done).
-    private static async Task ServePausedPlayerAsync(string pipeName, CancellationToken stop)
+    // Renew al máximo (auditoría de flujos): «siguiente» while BAXY's own YouTube player played alone ended in
+    // media_session_not_found («nothing is playing»): the player's refusal of a skip carried no state, so the system's
+    // «no session» replaced it. It now says the skip is not its own with what it plays, which the provider keeps.
+    [TestCase("next")]
+    [TestCase("previous")]
+    public async Task ASkipTheLocalPlayerCannotDoSaysWhatItPlays(string action)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePlayerAsync(pipeName, paused: false, stopPlayer.Token);
+        var session = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "media_session_not_found"));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(false),
+        };
+        using var provider = new WindowsExternalCapabilityProvider([local, session]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(
+                "media.control", Json($$"""{"action":"{{action}}"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            // The player stands for this test's own process: nothing stops it when the provider is disposed.
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("local_player_action_unsupported"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            Assert.That(receipt.Result?.GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo("BAXY YouTube (mpv)"));
+            // Another player may still be the one meant: it gets its chance.
+            Assert.That(session.Calls, Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): with BAXY's own YouTube player playing, media.status answered from it alone
+    // and named no other session (6.1 named them only from the system's read), so «pausa Spotify» had no id to name.
+    [Test]
+    public async Task TheLocalPlayersStatusNamesTheOtherSessionsToo()
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        Task player = ServePlayerAsync(pipeName, paused: false, stopPlayer.Token);
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null)
+        {
+            SystemSessionPlays = _ => ValueTask.FromResult(true),
+            SystemSessions = _ => ValueTask.FromResult<IReadOnlyList<UserMediaSession>>(
+                [new UserMediaSession("Spotify.exe", "Bailando Solo", "Los Bunkers", "playing")]),
+        };
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await local.InvokeAsync("media.status", Json("{}"), CancellationToken.None);
+        }
+        finally
+        {
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            Assert.That(receipt.Result?.TryGetProperty("otherSessions", out _), Is.True);
+            if (receipt.Result?.TryGetProperty("otherSessions", out JsonElement others) == true)
+            {
+                Assert.That(others.GetArrayLength(), Is.EqualTo(1));
+                Assert.That(others[0].GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo("Spotify.exe"));
+                Assert.That(others[0].GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
+            }
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): «pon lofi en youtube» (BAXY's own player) then «mejor pon a los Bunkers en
+    // Spotify» left both playing: ronda 19 pauses what BAXY left playing before a playback of another way, but only
+    // among the system's sessions, which never see that player. It is paused like them, and played again when the new
+    // playback fails before its effect.
+    [TestCase(true, true, false)]
+    [TestCase(false, false, true)]
+    public async Task BaxysOwnPlayerIsPausedForAnotherPlayback(bool played, bool pausedAfter, bool resumed)
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        using var stopPlayer = new CancellationTokenSource();
+        var state = new StrongBox<bool>(false);
+        Task player = ServeStatefulPlayerAsync(pipeName, state, stopPlayer.Token);
+        var client = new StubExternalAdapter(played
+            ? new ExternalCapabilityReceipt("media.play.query", true, true, Json("{}"), null)
+            : new ExternalCapabilityReceipt("media.play.query", false, false, null, "spotify_exact_result_not_found"));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null);
+        using var provider = new WindowsExternalCapabilityProvider([local, client]);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        FieldInfo activeTitle = typeof(YouTubeMpvAdapter).GetField("_activeTitle", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        activeTitle.SetValue(local, "Lofi para estudiar");
+        ExternalCapabilityReceipt receipt;
+        try
+        {
+            receipt = await provider.InvokeAsync(
+                "media.play.query", Json("""{"provider":"spotify","query":"los bunkers"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+            await stopPlayer.CancelAsync();
+            await player;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.EqualTo(played));
+            Assert.That(state.Value, Is.EqualTo(pausedAfter), "the player's pause property after the playback");
+            Assert.That(receipt.AssistantPlaybackPauses, Is.EqualTo(new[]
+            {
+                new AssistantPlaybackPause("BAXY YouTube (mpv)", "Lofi para estudiar", Resumed: resumed),
+            }));
+            Assert.That(receipt.EffectObserved, Is.EqualTo(played));
+        });
+    }
+
+    // A player whose pause property is <paramref name="paused"/>: read by get_property, changed by set_property.
+    private static async Task ServeStatefulPlayerAsync(string pipeName, StrongBox<bool> paused, CancellationToken stop)
     {
         try
         {
@@ -4321,7 +4932,54 @@ public sealed class ExternalAdaptersTests
                 try
                 {
                     while (await reader.ReadLineAsync(stop) is { } request)
-                        await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success","data":true}""");
+                    {
+                        using JsonDocument document = JsonDocument.Parse(request);
+                        JsonElement command = document.RootElement.GetProperty("command");
+                        if (command[0].GetString() == "set_property")
+                        {
+                            paused.Value = command[2].GetBoolean();
+                            await writer.WriteLineAsync($$"""{"request_id":{{RequestId(request)}},"error":"success"}""");
+                        }
+                        else
+                        {
+                            await writer.WriteLineAsync(
+                                $$"""{"request_id":{{RequestId(request)}},"error":"success","data":{{(paused.Value ? "true" : "false")}}}""");
+                        }
+                    }
+                }
+                catch (IOException)
+                {
+                    // The client closed its end: the next connection is served.
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    // A player whose pause property reads true on every connection until stopped (a set is answered as done).
+    private static Task ServePausedPlayerAsync(string pipeName, CancellationToken stop) =>
+        ServePlayerAsync(pipeName, paused: true, stop);
+
+    // A player whose pause property reads <paramref name="paused"/> on every connection until stopped.
+    private static async Task ServePlayerAsync(string pipeName, bool paused, CancellationToken stop)
+    {
+        try
+        {
+            while (true)
+            {
+                await using var pipe = new NamedPipeServerStream(
+                    pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                await pipe.WaitForConnectionAsync(stop);
+                var reader = new StreamReader(pipe, new UTF8Encoding(false), false, 4_096, leaveOpen: true);
+                var writer = new StreamWriter(pipe, new UTF8Encoding(false), 4_096, leaveOpen: true)
+                { AutoFlush = true };
+                try
+                {
+                    while (await reader.ReadLineAsync(stop) is { } request)
+                        await writer.WriteLineAsync(
+                            $$"""{"request_id":{{RequestId(request)}},"error":"success","data":{{(paused ? "true" : "false")}}}""");
                 }
                 catch (IOException)
                 {
@@ -4462,6 +5120,36 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.True);
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("spotify_windows_uia_postread"));
+        });
+    }
+
+    // Renew al máximo (auditoría de flujos): a search whose playback holds none of the words searched says so as a field
+    // of its own (queryMatched:false), never only in the titles; a playback that holds one carries no such field.
+    [TestCase("romeo santos propuesta indecente", "Propuesta Indecente - Spotify", false)]
+    [TestCase("los bunkers bailando solo", "Los Bunkers - Spotify", true)]
+    public async Task ASpotifySearchSaysWhenWhatPlaysHoldsNoneOfItsWords(
+        string nowPlaying, string windowTitle, bool matched)
+    {
+        var adapter = new SpotifyDesktopAdapter(new StubProcessRunner(JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            ["ok"] = true,
+            ["effectObserved"] = true,
+            ["title"] = windowTitle,
+            ["selectedControl"] = "Reproducir Los Bunkers",
+            ["observedNowPlaying"] = nowPlaying,
+            ["playbackEvidence"] = "now_playing_changed",
+            ["processId"] = 42,
+        })));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query", Json("""{"provider":"spotify","query":"otra de los Bunkers"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result!.Value.TryGetProperty("queryMatched", out JsonElement field), Is.EqualTo(!matched));
+            if (!matched)
+                Assert.That(field.ValueKind, Is.EqualTo(JsonValueKind.False));
         });
     }
 
@@ -4802,6 +5490,59 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_tab_not_found"));
         });
+    }
+
+    // Renew al máximo (auditoría de flujos): «siguiente canción» with nothing playing ended in
+    // youtube_tab_action_unsupported, though there was no tab: the tab's refusal of a skip replaced the system's
+    // «no session». With no tab of its own it stands aside for any action; with one, it says the skip is not its own
+    // with the state it read, and nothing is sent.
+    [TestCase(false, false, "youtube_tab_not_found", false, 0)]
+    [TestCase(true, false, "youtube_tab_not_found", false, 1)]
+    [TestCase(true, true, "youtube_tab_action_unsupported", true, 1)]
+    public async Task ASkipTheTabCannotDoSaysWhetherThereIsATab(
+        bool hasEndpoint, bool hasTab, string error, bool readState, int reads)
+    {
+        using TemporaryDirectory temporary = new();
+        var browser = new StubYouTubeTabSession(
+            temporary.Path,
+            hasTab
+                ? new CdpMediaControlResult(true, false, "status", "Lofi - YouTube",
+                    "https://www.youtube.com/watch?v=abc", "t1", "playing", string.Empty)
+                : null,
+            hasEndpoint);
+        using var http = new HttpClient();
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.control", Json("""{"action":"next"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(),
+                Is.EqualTo(readState ? "playing" : null));
+            Assert.That(browser.Calls, Is.EqualTo(reads));
+            Assert.That(browser.LastAction, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task ASkipWithNothingPlayingKeepsTheSystemSessionRead()
+    {
+        using TemporaryDirectory temporary = new();
+        var session = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, "media_session_not_found"));
+        var browser = new StubYouTubeTabSession(temporary.Path, result: null, hasEndpoint: false);
+        using var http = new HttpClient();
+        var tab = new WebBrowserAdapter(browser, http);
+        using var provider = new WindowsExternalCapabilityProvider([session, tab]);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "media.control", Json("""{"action":"next"}"""), CancellationToken.None);
+
+        Assert.That(receipt.ErrorCode, Is.EqualTo("media_session_not_found"));
     }
 
     // media.control's sourceApp names a player by the id media.status gave it, compared whole (BAXY Renew audit
@@ -5279,6 +6020,18 @@ public sealed class ExternalAdaptersTests
         public void Dispose() { }
     }
 
+    // Renew al máximo (8.3): an output that keeps its level whatever it is set to.
+    private sealed class StuckAudioEndpoint(string endpointId, float volume) : IWindowsAudioEndpoint
+    {
+        public string EndpointId { get; } = endpointId;
+        public string? ReadDisplayName() => "Test stuck endpoint";
+        public float ReadVolumeScalar() => volume;
+        public bool ReadMuted() => false;
+        public void SetVolumeScalar(float scalar, Guid eventContext) { }
+        public void SetMuted(bool value, Guid eventContext) { }
+        public void Dispose() { }
+    }
+
     private sealed class PostDispatchFailingAudioEndpoint : IWindowsAudioEndpoint
     {
         private bool _setCalled;
@@ -5346,6 +6099,25 @@ public sealed class ExternalAdaptersTests
             Terminated.Add(identity);
             return terminateResult;
         }
+    }
+
+    // Renew al máximo (8.3): the post-read after the kill throws; the read after it throws too, or finds the instance
+    // still there, or not.
+    private sealed class FlakyProcessTerminationPlatform(
+        WindowsProcessIdentity identity, bool rereadThrows, bool stillThere) : IWindowsProcessTerminationPlatform
+    {
+        private int _snapshots;
+
+        public IReadOnlyList<WindowsProcessIdentity> Snapshot(string processName) => ++_snapshots switch
+        {
+            1 => [identity],
+            2 => throw new InvalidOperationException("simulated post-read failure"),
+            _ when rereadThrows => throw new InvalidOperationException("simulated re-read failure"),
+            _ => stillThere ? [identity] : [],
+        };
+
+        public WindowsProcessTermination Terminate(string processName, WindowsProcessIdentity identity) =>
+            WindowsProcessTermination.KillSent;
     }
 
     private sealed class StubPowerTransitionPlatform(string authority, bool accepted, bool alreadyPending = false)

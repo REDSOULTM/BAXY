@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text;
 using Baxy.Providers.Windows.Filesystem;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -19,12 +20,17 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     internal WindowsKnownFileAdapter(
         IReadOnlyDictionary<string, string[]> configuredRoots,
         IRecycleBin? recycleBin = null,
-        IReadOnlyList<string>? privateRoots = null)
+        IReadOnlyList<string>? privateRoots = null,
+        Func<DateTime>? utcNow = null)
     {
         _configuredRoots = configuredRoots;
         _recycleBin = recycleBin ?? WindowsRecycleBin.Instance;
         _privateRoots = privateRoots ?? BaxyPrivateArea.DefaultRoots();
+        _utcNow = utcNow ?? (() => DateTime.UtcNow);
     }
+
+    // The clock a walk's time limit is measured with (a test stops a walk where it wants).
+    private readonly Func<DateTime> _utcNow;
 
     // BAXY's own state (BaxyPrivateArea): never read, edited, found or trashed as one of the person's files.
     private readonly IReadOnlyList<string> _privateRoots;
@@ -180,7 +186,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 100);
         List<(string Label, string Root)> searched = [];
-        var walk = new WalkBudget(DateTime.UtcNow + WalkTimeLimit);
+        var walk = new WalkBudget(_utcNow, WalkTimeLimit);
         IEnumerable<KnownEntry> named = Enumerate(roots, searched, walk);
         if (query is not null) named = named.Where(item => NameMatches(Path.GetFileName(item.Path), query));
         List<(KnownEntry File, int Line, string LineText)> hits = [];
@@ -414,43 +420,40 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             ? value.GetString()!.Trim()
             : null;
 
+    // Al máximo, flujos: the name looked up before the person is asked; a name that names no one target fails here.
+    public ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (operation != "filesystem.known.trash.named")
+            return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+        try
+        {
+            (string Label, string Root)[] roots = Roots(ExternalJson.RequiredString(arguments, "folder"));
+            if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectory))
+                roots = SubdirectoryRoots(roots, subdirectory.GetString()?.Trim()
+                    ?? throw new InvalidDataException("known_subdirectory_invalid"));
+            return ValueTask.FromResult(TrashTarget(operation, roots, arguments, out _));
+        }
+        catch (Exception exception) when (exception is InvalidDataException or IOException
+            or UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+        }
+    }
+
     private ExternalCapabilityReceipt Trash(
         string operation,
         IReadOnlyList<(string Label, string Root)> roots,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary)
     {
+        if (TrashTarget(operation, roots, arguments, out KnownEntry target) is { } refused)
+            return refused;
         string fileName = ExternalJson.RequiredString(arguments, "fileName").Trim();
-        if (fileName != Path.GetFileName(fileName)
-            || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
-            || fileName.Contains('*') || fileName.Contains('?'))
-            return ExternalJson.Failure(operation, "known_file_name_invalid");
-        // FILES1603 «Borra la carpeta CarterTest del escritorio»: a directory with
-        // that name in a known folder is trashed the same way, whole.
-        var matches = Enumerate(roots)
-            .Concat(EnumerateDirectories(roots))
-            .Where(item => string.Equals(
-                Path.GetFileName(item.Path), fileName, StringComparison.OrdinalIgnoreCase))
-            .Take(CandidatesShown + 1)
-            .ToArray();
-        // BAXY Renew (notebook): none says the known folders it walked; two or more, their places as file.read
-        // gives them, so the next call can name the right one.
-        if (matches.Length == 0)
-        {
-            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject(); writer.WriteNumber("version", 1);
-                writer.WriteStartArray("searchedFolders");
-                foreach (string label in roots.Where(item => Directory.Exists(item.Root))
-                    .Select(item => item.Label).Distinct(StringComparer.Ordinal))
-                    writer.WriteStringValue(label);
-                writer.WriteEndArray();
-                WriteWalkScope(writer);
-                writer.WriteEndObject();
-            }), "known_file_not_found");
-        }
-        if (matches.Length > 1) return CandidatesRefusal(operation, "known_file_ambiguous", matches);
-        (string label, _, string source) = matches[0];
+        (string label, _, string source) = target;
         bool isFolder = Directory.Exists(source);
         int entries = isFolder
             ? Directory.EnumerateFileSystemEntries(source, "*", SearchOption.AllDirectories).Count()
@@ -475,6 +478,58 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         return ExternalJson.Success(operation, result, effectObserved: true);
     }
 
+    // The one file or folder of that name in the known folders, or the refusal: an invalid name, none (with the folders
+    // walked) or several (with their places).
+    private ExternalCapabilityReceipt? TrashTarget(
+        string operation,
+        IReadOnlyList<(string Label, string Root)> roots,
+        JsonElement arguments,
+        out KnownEntry target)
+    {
+        target = default;
+        string fileName = ExternalJson.RequiredString(arguments, "fileName").Trim();
+        if (fileName != Path.GetFileName(fileName)
+            || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+            || fileName.Contains('*') || fileName.Contains('?'))
+            return ExternalJson.Failure(operation, "known_file_name_invalid");
+        // FILES1603 «Borra la carpeta CarterTest del escritorio»: a directory with
+        // that name in a known folder is trashed the same way, whole.
+        var matches = Enumerate(roots)
+            .Concat(EnumerateDirectories(roots))
+            .Where(item => string.Equals(
+                Path.GetFileName(item.Path), fileName, StringComparison.OrdinalIgnoreCase))
+            .Take(CandidatesShown + 1)
+            .ToArray();
+        // BAXY Renew (notebook): none says the known folders it walked; two or more, their places as file.read
+        // gives them, so the next call can name the right one.
+        if (matches.Length == 0)
+        {
+            string[] searched = [.. roots.Where(item => Directory.Exists(item.Root))
+                .Select(item => item.Label).Distinct(StringComparer.Ordinal)];
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteStartArray("searchedFolders");
+                foreach (string label in searched)
+                    writer.WriteStringValue(label);
+                writer.WriteEndArray();
+                WriteWalkScope(writer);
+                // Renew al máximo (E027): «all_known» walked desktop, documents and downloads, the file was in a folder
+                // of home, and the answer was «no lo encontré en ninguna carpeta de tu PC». Said where it was not.
+                if (ModelAids.On(ModelAids.SearchScope))
+                    writer.WriteString("next", NotFoundScope(fileName, searched));
+                writer.WriteEndObject();
+            }), "known_file_not_found");
+        }
+        if (matches.Length > 1) return CandidatesRefusal(operation, "known_file_ambiguous", matches);
+        // Renew al máximo (auditoría de flujos): a folder that holds BAXY's own area would take it to the bin with it.
+        if (Directory.Exists(matches[0].Path)
+            && _privateRoots.Any(root => BaxyPrivateArea.Holds([matches[0].Path], root)))
+            return ExternalJson.Failure(operation, "path_reserved");
+        target = matches[0];
+        return null;
+    }
+
     // file.read (BAXY Renew agent tools, 2026-10-15; before, document.text.read REOPEN1957 H0299 and
     // document.pdf.read PDF1689 H0666): the file named once in the known folders, by its name or by its path relative
     // to the folder (ambiguity refused, with the places). A text file is read in its own encoding (BOM honoured); a
@@ -492,13 +547,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         int offset = Math.Max(0, ExternalJson.OptionalInt(arguments, "offset", 0));
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", DefaultReadCharacters), 200, 200_000);
-        if (Locate(operation, roots, ExternalJson.RequiredString(arguments, "fileName"), out KnownEntry file)
+        if (Locate(operation, roots, ExternalJson.RequiredString(arguments, "fileName"), out KnownEntry file,
+                out bool walkStopped)
             is { } refused)
             return refused;
         var info = new FileInfo(file.Path);
+        Action<Utf8JsonWriter> seen = StoppedWalkFacts(file, walkStopped);
         return info.Extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase)
-            ? ReadPdf(operation, file, info, offset, maximumCharacters, cancellationToken)
-            : ReadText(operation, file, info, offset, maximumCharacters);
+            ? ReadPdf(operation, file, info, offset, maximumCharacters, seen, cancellationToken)
+            : ReadText(operation, file, info, offset, maximumCharacters, seen);
     }
 
     private static ExternalCapabilityReceipt ReadText(
@@ -506,7 +563,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         KnownEntry file,
         FileInfo info,
         int offset,
-        int maximumCharacters)
+        int maximumCharacters,
+        Action<Utf8JsonWriter> seen)
     {
         if (info.Length > MaximumTextBytes) return ExternalJson.Failure(operation, "known_text_too_large");
         byte[] bytes = File.ReadAllBytes(file.Path);
@@ -514,7 +572,11 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string full = TextFileEncoding.Decode(bytes);
         return ExternalJson.Success(operation, ReadResult(
             file, "text", full.Length, LineCount(full), offset, Page(full, offset, maximumCharacters),
-            writer => writer.WriteNumber("bytes", bytes.Length),
+            writer =>
+            {
+                writer.WriteNumber("bytes", bytes.Length);
+                seen(writer);
+            },
             Convert.ToHexStringLower(SHA256.HashData(bytes)), "windows_known_text_file_read"), effectObserved: false);
     }
 
@@ -524,6 +586,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         FileInfo info,
         int offset,
         int maximumCharacters,
+        Action<Utf8JsonWriter> seen,
         CancellationToken cancellationToken)
     {
         if (info.Length > MaximumPdfBytes) return ExternalJson.Failure(operation, "known_pdf_too_large");
@@ -607,6 +670,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 // said only when every page was read.
                 if (unreadPages > 0) writer.WriteNumber("unreadPages", unreadPages);
                 if (characters > 0 || unreadPages == 0) writer.WriteBoolean("hasText", characters > 0);
+                seen(writer);
             },
             Hash(info.FullName), "windows_known_pdf_pypdf_text_extraction"), effectObserved: false);
     }
@@ -684,9 +748,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (oldText.Length == 0) return ExternalJson.Failure(operation, "known_edit_old_text_empty");
         if (string.Equals(oldText, newText, StringComparison.Ordinal))
             return ExternalJson.Failure(operation, "known_edit_text_unchanged");
-        if (Locate(operation, roots, ExternalJson.RequiredString(arguments, "fileName"), out KnownEntry file)
+        if (Locate(operation, roots, ExternalJson.RequiredString(arguments, "fileName"), out KnownEntry file,
+                out bool walkStopped)
             is { } refused)
             return refused;
+        // Renew al máximo (velocidad): one file of that name seen before the walk's time limit is read as the one seen,
+        // but never written: a copy deeper in what was not walked may be the one the person meant. Nothing is changed;
+        // the one seen is named, so the next call can name it by its path.
+        if (walkStopped)
+            return SearchIncompleteRefusal(operation, file);
         if (new FileInfo(file.Path).Length > MaximumTextBytes)
             return ExternalJson.Failure(operation, "known_text_too_large");
         byte[] before = File.ReadAllBytes(file.Path);
@@ -757,6 +827,40 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         }), effectObserved: true);
     }
 
+    // The file a stopped walk found is the one seen in the part walked, not proven the only one of its name: a read says
+    // which one it is (relativePath) and how far the walk went. A whole walk adds nothing.
+    private Action<Utf8JsonWriter> StoppedWalkFacts(KnownEntry file, bool walkStopped)
+    {
+        if (!walkStopped) return _ => { };
+        string relativePath = RelativeToFolder(file);
+        return writer =>
+        {
+            writer.WriteString("relativePath", relativePath);
+            writer.WriteBoolean("onlyFileOfThatName", false);
+            WriteWalkScope(writer, walkStopped: true);
+        };
+    }
+
+    private ExternalCapabilityReceipt SearchIncompleteRefusal(string operation, KnownEntry file)
+    {
+        string relativePath = RelativeToFolder(file);
+        return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("name", Path.GetFileName(file.Path));
+            writer.WriteString("folder", file.Label);
+            writer.WriteString("relativePath", relativePath);
+            writer.WriteBoolean("changed", false);
+            WriteWalkScope(writer, walkStopped: true);
+            if (ModelAids.On(ModelAids.SearchScope))
+                writer.WriteString("next", $"nothing was changed: the search of {file.Label} stopped at its "
+                    + $"{WalkTimeLimit.TotalSeconds:0} s limit after finding {relativePath}, and the rest of the folder "
+                    + "was not searched, so another file of that name may be there; naming the subdirectory or the path "
+                    + $"(fileName \"{relativePath}\") edits that one");
+            writer.WriteEndObject();
+        }), "known_file_search_incomplete");
+    }
+
     private static int Occurrences(string text, string value)
     {
         int count = 0;
@@ -770,13 +874,21 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // relative to the known folder (as file.find gives it, without a subdirectory), or by its full path inside the
     // folder. Two or more are refused with their places; none, with the files whose name without its extension is the
     // one asked, so the next call can name the right one.
+    // Renew al máximo (velocidad): a bare name is looked for in one walk with file.find's time limit; under home the
+    // walk had none and took 12-83 s (twice over when the name was not there: once for it, once for its stem). When
+    // the limit stops the walk, whatever is said carries it (searchScope.timeLimitReached): none is «not in what was
+    // walked», several are the places seen so far, and the one found is read as the one seen in what was walked
+    // (onlyFileOfThatName false), never as the only one of that name; an edit of it is refused before any effect
+    // (known_file_search_incomplete).
     private ExternalCapabilityReceipt? Locate(
         string operation,
         IReadOnlyList<(string Label, string Root)> roots,
         string requested,
-        out KnownEntry located)
+        out KnownEntry located,
+        out bool walkStopped)
     {
         located = default;
+        walkStopped = false;
         string name = requested.Trim().Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         // A full path names that one file: it is looked up at its place, never by its name elsewhere under the folder
         // (BAXY Renew audit 2026-10-15: one directly in the folder became a bare name searched in its subfolders).
@@ -793,6 +905,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             || parts.Any(part => part is "" or "." or ".." || part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
             return ExternalJson.Failure(operation, "known_file_name_invalid");
         List<KnownEntry> matches = [];
+        List<KnownEntry> stems = [];
+        string stem = parts[^1];
         if (fullPath || parts.Length > 1)
         {
             foreach ((string label, string root) in roots)
@@ -804,33 +918,60 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         }
         else
         {
-            matches.AddRange(Enumerate(roots)
-                .Where(item => string.Equals(Path.GetFileName(item.Path), name, StringComparison.OrdinalIgnoreCase))
-                .Take(CandidatesShown + 1));
+            var walk = new WalkBudget(_utcNow, WalkTimeLimit);
+            foreach (KnownEntry item in Enumerate(roots, budget: walk))
+            {
+                string fileName = Path.GetFileName(item.Path);
+                if (string.Equals(fileName, name, StringComparison.OrdinalIgnoreCase))
+                {
+                    matches.Add(item);
+                    if (matches.Count > CandidatesShown) break;
+                }
+                // The stems are only said when the name itself is nowhere: gathered in the same walk, not a second one.
+                else if (matches.Count == 0 && stems.Count <= CandidatesShown && string.Equals(
+                    Path.GetFileNameWithoutExtension(fileName), stem, StringComparison.OrdinalIgnoreCase))
+                    stems.Add(item);
+            }
+            walkStopped = walk.Reached;
         }
         if (matches.Count == 1)
         {
             located = matches[0];
             return null;
         }
-        string stem = parts[^1];
-        KnownEntry[] candidates = matches.Count > 1
-            ? [.. matches]
-            : [.. Enumerate(roots)
-                .Where(item => string.Equals(
-                    Path.GetFileNameWithoutExtension(item.Path), stem, StringComparison.OrdinalIgnoreCase))
-                .Take(CandidatesShown + 1)];
+        bool stopped = walkStopped;
+        KnownEntry[] candidates = matches.Count > 1 ? [.. matches] : [.. stems];
         string code = matches.Count > 1 ? "known_file_ambiguous" : "known_file_not_found";
         if (candidates.Length == 0)
         {
+            string[] searched = [.. roots.Where(item => Directory.Exists(item.Root))
+                .Select(item => item.Label).Distinct(StringComparer.Ordinal)];
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1);
-                WriteWalkScope(writer);
+                WriteWalkScope(writer, stopped);
+                if (stopped && ModelAids.On(ModelAids.SearchScope))
+                    writer.WriteString("next", StoppedWalkScope(stem, searched));
                 writer.WriteEndObject();
             }), code);
         }
-        return CandidatesRefusal(operation, code, candidates);
+        return CandidatesRefusal(operation, code, candidates, stopped);
+    }
+
+    // A walk the time limit stopped knows only what it walked: the name is not in that part, and the rest is unknown.
+    private static string StoppedWalkScope(string fileName, string[] searched) =>
+        $"the search of {(searched.Length == 0 ? "the folder" : string.Join(", ", searched))} stopped at its "
+        + $"{WalkTimeLimit.TotalSeconds:0} s limit: {fileName} is not in the part walked, and the rest was not searched; "
+        + "a subdirectory or the relativePath file_find gives looks only there";
+
+    // Only the folders walked are known not to hold it; a configured folder left out can be searched by its name.
+    private string NotFoundScope(string fileName, string[] searched)
+    {
+        string[] others = [.. _configuredRoots.Keys.Where(key => !searched.Contains(key, StringComparer.Ordinal))];
+        string where = searched.Length == 0 ? "no folder" : string.Join(", ", searched);
+        return $"{fileName} is not in {where}, subfolders included; nothing else on the PC was searched"
+            + (others.Length == 0 ? string.Empty
+                : $"; folder {string.Join(" or ", others.Select(key => $"\"{key}\""))} searches more");
     }
 
     // Ronda final 41 (regla 3): at most this many candidates are given, and a list cut there says so
@@ -839,13 +980,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // A refusal with the places it saw: each one's name, known folder and path relative to that folder.
     private ExternalCapabilityReceipt CandidatesRefusal(
-        string operation, string code, IEnumerable<KnownEntry> candidates) =>
+        string operation, string code, IEnumerable<KnownEntry> candidates, bool walkStopped = false) =>
         new(operation, false, false, ExternalJson.Create(writer =>
         {
             KnownEntry[] all = [.. candidates];
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             if (all.Length > CandidatesShown)
                 writer.WriteBoolean("candidatesTruncated", true);
+            // The places seen before the time limit stopped the walk: there may be more of that name past it.
+            if (walkStopped) WriteWalkScope(writer, walkStopped: true);
             writer.WriteStartArray("candidates");
             foreach (KnownEntry candidate in all.Take(CandidatesShown))
             {
@@ -1034,10 +1177,16 @@ if __name__ == "__main__":
 
     // Ronda final 8 (regla 3): how far a walk of WalkOptions looks, so «not found» or «these are the duplicates» is
     // never read as a search of everything.
-    private static void WriteWalkScope(Utf8JsonWriter writer)
+    private static void WriteWalkScope(Utf8JsonWriter writer, bool walkStopped = false)
     {
         writer.WriteStartObject("searchScope");
         writer.WriteNumber("maxRecursionDepth", 12);
+        // Said only when the limit stopped it (as file.find says it): the receipts of a whole walk stay as they were.
+        if (walkStopped)
+        {
+            writer.WriteNumber("timeLimitSeconds", WalkTimeLimit.TotalSeconds);
+            writer.WriteBoolean("timeLimitReached", true);
+        }
         writer.WriteBoolean("ignoreInaccessible", true);
         writer.WriteBoolean("skipReparsePoints", true);
         writer.WriteBoolean("exhaustive", false);
@@ -1073,11 +1222,13 @@ if __name__ == "__main__":
     // the walk passed the core's 30 s and the App restarted it, losing the turn (BAXY Renew e2e p3, 2026-10-15).
     private static readonly TimeSpan WalkTimeLimit = TimeSpan.FromSeconds(8);
 
-    private sealed class WalkBudget(DateTime deadline)
+    private sealed class WalkBudget(Func<DateTime> utcNow, TimeSpan limit)
     {
-        internal DateTime Deadline { get; } = deadline;
+        private readonly DateTime _deadline = utcNow() + limit;
 
-        internal bool Reached { get; set; }
+        internal bool Reached { get; private set; }
+
+        internal bool Expired() => Reached = Reached || utcNow() >= _deadline;
     }
 
     private IEnumerable<KnownEntry> Enumerate(
@@ -1093,11 +1244,7 @@ if __name__ == "__main__":
             enumerationRoots?.Add((label, root));
             foreach (string file in Directory.EnumerateFiles(root, "*", WalkOptions(label)))
             {
-                if (budget is not null && DateTime.UtcNow >= budget.Deadline)
-                {
-                    budget.Reached = true;
-                    yield break;
-                }
+                if (budget is not null && budget.Expired()) yield break;
                 if (!BaxyPrivateArea.Holds(_privateRoots, file)) yield return new KnownEntry(label, root, file);
             }
         }
@@ -1129,6 +1276,12 @@ if __name__ == "__main__":
     {
         if (!string.IsNullOrWhiteSpace(subdirectory) && Path.IsPathFullyQualified(subdirectory))
         {
+            // Renew al máximo (auditoría de flujos): the known folder's own full path is that folder, not a path outside it.
+            string named = Path.GetFullPath(subdirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            (string Label, string Root)[] itself = [.. roots.Where(item => string.Equals(named,
+                Path.GetFullPath(item.Root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
+                StringComparison.OrdinalIgnoreCase))];
+            if (itself.Length > 0) return [itself[0]];
             (string Label, string Root)[] holding = [.. roots.Where(item => IsInside(item.Root, subdirectory))];
             if (holding.Length == 0) throw new InvalidDataException("known_path_outside_folder");
             roots = [holding[0]];
@@ -1148,8 +1301,9 @@ if __name__ == "__main__":
                     StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("known_subdirectory_invalid");
             if (BaxyPrivateArea.Holds(_privateRoots, candidate)) throw new InvalidDataException("path_reserved");
-            if (Directory.Exists(candidate)
-                && (File.GetAttributes(candidate) & FileAttributes.ReparsePoint) != 0)
+            // Renew al máximo (auditoría de flujos): every part of the way is checked, not only the last; through
+            // «AppData\Local\Application Data» (Windows' junction back to Local) BAXY's own area was edited.
+            if (Directory.Exists(candidate) && CrossesReparsePoint(root, candidate))
                 throw new InvalidDataException("known_subdirectory_reparse_point");
             return (item.Label, candidate);
         }).ToArray();

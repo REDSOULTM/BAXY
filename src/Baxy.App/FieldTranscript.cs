@@ -35,7 +35,15 @@ internal sealed class FieldTranscript
         {
             if (item is JsonObject value)
             {
-                _items.Add((JsonObject)value.DeepClone());
+                var kept = (JsonObject)value.DeepClone();
+                // A card kept pending (the session was saved while it waited) waits for nobody now: a new or opened
+                // session drops what was pending (NativeTurnLoop.Reset), so it is never shown with a live Sí / No.
+                if ((string?)kept["who"] == "card" && (string?)kept["status"] == "pending")
+                {
+                    kept["status"] = "dropped";
+                }
+
+                _items.Add(kept);
             }
         }
 
@@ -124,6 +132,20 @@ internal sealed class FieldTranscript
 
         card["status"] = status;
         card["via"] = via;
+        return Clone(card);
+    }
+
+    /// <summary>The card <paramref name="id"/>, still pending, was also sent as a Windows notification.</summary>
+    internal JsonObject? Notified(string id)
+    {
+        JsonObject? card = _items.LastOrDefault(i => (string?)i["who"] == "card" && (string?)i["id"] == id
+            && (string?)i["status"] == "pending");
+        if (card is null)
+        {
+            return null;
+        }
+
+        card["notified"] = true;
         return Clone(card);
     }
 

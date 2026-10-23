@@ -10,15 +10,17 @@ export type BaxyState = 'booting' | 'standby' | HostState | 'confirm';
 /** the tool families the face's network lights (FieldStepProjection.Family). */
 export type Fam = 'apps' | 'ventanas' | 'archivos' | 'web' | 'musica' | 'memoria' | 'alarmas';
 
-/** a call the model made: «ok» was executed and verified, «fail» failed, «skip» did not run, «maybe» may have run. */
-export type StepStatus = 'run' | 'ok' | 'fail' | 'skip' | 'maybe';
+/** a call the model made (FieldStepProjection): «ok» completed and its effect was read back, «same» found the asked
+ *  state already there, «sent» was delivered without reading its effect, «read» is a read whose output is the result,
+ *  «fail» failed, «skip» did not run, «maybe» may have run or completed without a verification. */
+export type StepStatus = 'run' | 'ok' | 'same' | 'sent' | 'read' | 'fail' | 'skip' | 'maybe';
 
 export interface Step {
   id: string;
   label: string;
   fam: Fam;
   status: StepStatus;
-  /** what the provider observed (required with ok). */
+  /** how it was verified and what the provider observed (required with ok, same, sent and read). */
   obs?: string;
   /** why it failed, did not run or may have run (required with fail, skip and maybe). */
   reason?: string;
@@ -38,6 +40,10 @@ export interface Confirmation {
   context?: string | null;
   /** when the kernel's token expires, ms since the epoch. */
   expires: number;
+  /** the kernel asks again for a call whose earlier attempt may already have happened. */
+  effectStarted?: boolean;
+  /** the host also sent it as a Windows notification (the person was not to be spoken to). */
+  notified?: boolean;
   status: CardStatus;
   via?: string | null;
 }

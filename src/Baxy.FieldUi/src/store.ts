@@ -1,14 +1,25 @@
 import { useEffect, useReducer } from 'react';
 import { lipPush } from './lip';
 import type {
-  AgentStatus, BootPieces, ChatItem, Fam, HostState, NetEntry, ServerEvent, Step, Surfaces, VoiceStatus,
+  AgentStatus, BootPieces, ChatItem, Fam, HostState, NetEntry, ServerEvent, Step, StepStatus, Surfaces, VoiceStatus,
 } from './types';
 
 /** the path the face's network walks this turn: the families of the calls in the order the model made them. */
 export interface Journey {
   turn: string;
   path: string[];
+  /** the family of a call that failed (a red ✕). */
   fail: Fam | null;
+  /** the family of a call that may have run, unconfirmed (the doubtful «?»); a failure of the same family shows instead. */
+  maybe: Fam | null;
+}
+
+/** a call's end on this turn's walk: «fail» marks its family with the ✕, «maybe» with the doubtful «?», others nothing. */
+export function journeyAtEnd(journey: Journey | null, status: StepStatus, fam: Fam): Journey | null {
+  if (!journey) return journey;
+  if (status === 'fail') return { ...journey, fail: fam };
+  if (status === 'maybe') return { ...journey, maybe: fam };
+  return journey;
 }
 
 export type Mood = 'happy' | 'sad' | 'curious' | null;
@@ -69,8 +80,9 @@ const MAX_ITEMS = 150;
 /** the mood a reply leaves on the face, from what its calls really did. */
 function moodOf(steps: Step[]): Mood {
   if (steps.some((s) => s.status === 'fail')) return 'sad';
-  if (steps.some((s) => s.status === 'maybe')) return 'curious';
-  if (steps.some((s) => s.status === 'ok')) return 'happy';
+  // sent without reading its effect is not known done: it reads as a doubt, like one that may have run
+  if (steps.some((s) => s.status === 'maybe' || s.status === 'sent')) return 'curious';
+  if (steps.some((s) => s.status === 'ok' || s.status === 'same' || s.status === 'read')) return 'happy';
   return null;
 }
 
@@ -118,10 +130,9 @@ function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; value: boo
         const same = s.journey && s.journey.turn === ev.turn;
         const path = same ? s.journey!.path : ['mente'];
         const next = path[path.length - 1] === ev.fam ? path : [...path, ev.fam];
-        return { ...s, running: ev.label + '…', journey: { turn: ev.turn, path: next, fail: same ? s.journey!.fail : null } };
+        return { ...s, running: ev.label + '…', journey: { turn: ev.turn, path: next, fail: same ? s.journey!.fail : null, maybe: same ? s.journey!.maybe : null } };
       }
-      const journey = s.journey && ev.status === 'fail' ? { ...s.journey, fail: ev.fam } : s.journey;
-      return { ...s, journey, running: null };
+      return { ...s, journey: journeyAtEnd(s.journey, ev.status, ev.fam), running: null };
     }
     case 'net':
       return { ...s, net: { what: ev.what, at: Date.now() }, netLog: [...s.netLog, { what: ev.what, ts: ev.ts }].slice(-200) };

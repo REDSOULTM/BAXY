@@ -114,7 +114,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
 
     public FilesystemMutationResult CreateDirectory(string relativePath, string? folder)
     {
-        string root = RootFor(folder, relativePath);
+        (string root, relativePath) = RootFor(folder, relativePath);
         lock (_gate)
         {
             string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
@@ -141,7 +141,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         string? folder = null,
         bool append = false)
     {
-        string root = RootFor(folder, relativePath);
+        (string root, relativePath) = RootFor(folder, relativePath);
         string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
         lock (_gate)
         {
@@ -173,7 +173,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             // BAXY Renew (notebook): a hash expected of a file that is not there is no other version of it.
             if (conflict)
                 throw WriteRefused(
-                    current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append);
+                    current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append,
+                    current, current is null ? 0 : append ? previous.Length : new FileInfo(path).Length);
 
             // A refused write leaves nothing behind: the folder of a new file is made only now.
             EnsureHandleRoom();
@@ -235,8 +236,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         {
             try
             {
-                string home = RootFor("home");
-                string candidate = Path.Combine(home, parts[0]);
+                // Al máximo, flujos: a known folder by the name a person gives it is where Windows keeps it («Imágenes»
+                // is Pictures, or OneDrive's), never a «home\Imágenes» that does not exist.
+                string candidate = KnownFolderNames.TryGetValue(Fold(parts[0]), out string? known)
+                    ? KnownFolderPath(known)
+                    : Path.Combine(RootFor("home"), parts[0]);
                 if (Directory.Exists(candidate) && !Inside(_root, candidate)
                     && !string.Equals(candidate, _root, StringComparison.OrdinalIgnoreCase))
                     sameName = candidate;
@@ -255,22 +259,65 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     // FT/proveedores goal (e2e E019): a full path with no folder is the place the person said, so it is read inside the
     // known folder it lies in, the working folder first. Refused as outside the working folder, the model retried
     // with folder home and the path cut to its last part («proyecto»), and the folder was made in the wrong place.
-    private string RootFor(string? folder, string relativePath)
+    // Al máximo, flujos (P263, 26 of 27 runs: «Documentos/Proyectos» with no folder was made in the working folder): a
+    // relative path whose first part names a known folder the catalog's folder takes is that folder, as folder would
+    // name it, with the rest of the path inside it.
+    private (string Root, string RelativePath) RootFor(string? folder, string relativePath)
     {
-        if (folder is not null || !Path.IsPathFullyQualified(relativePath ?? string.Empty)) return RootFor(folder);
+        if (folder is null && !Path.IsPathFullyQualified(relativePath ?? string.Empty)
+            && (relativePath ?? string.Empty).Split(['/', '\\'], 2) is [var first, var rest]
+            && !string.IsNullOrWhiteSpace(rest)
+            && KnownFolderNames.TryGetValue(Fold(first), out string? named)
+            && named is "desktop" or "documents" or "downloads")
+            return (RootFor(named), rest);
+        if (folder is not null || !Path.IsPathFullyQualified(relativePath ?? string.Empty))
+            return (RootFor(folder), relativePath!);
         // ResolveIn refuses it the same way; here it must not reach GetFullPath, which throws on it.
         if (relativePath!.Contains('\0')) throw Error("invalid_path");
         string full = Path.GetFullPath(relativePath);
-        if (Inside(full, _root)) return _root;
+        if (Inside(full, _root)) return (_root, relativePath);
         foreach (string known in (string[])["desktop", "documents", "downloads", "home"])
         {
             string root;
             try { root = RootFor(known); }
             catch (FilesystemProviderException) { continue; }
-            if (Inside(full, root)) return root;
+            if (Inside(full, root)) return (root, relativePath);
         }
 
-        return _root;
+        return (_root, relativePath);
+    }
+
+    // The person's known folders by the names a person gives them, in Spanish and English, folded (lower case, no
+    // accents). The catalog's folder takes desktop, documents and downloads; pictures, music and videos are only told.
+    private static readonly Dictionary<string, string> KnownFolderNames = new(StringComparer.Ordinal)
+    {
+        ["desktop"] = "desktop",
+        ["escritorio"] = "desktop",
+        ["documents"] = "documents",
+        ["documentos"] = "documents",
+        ["mis documentos"] = "documents",
+        ["downloads"] = "downloads",
+        ["descargas"] = "downloads",
+        ["pictures"] = "pictures",
+        ["imagenes"] = "pictures",
+        ["mis imagenes"] = "pictures",
+        ["music"] = "music",
+        ["musica"] = "music",
+        ["mi musica"] = "music",
+        ["videos"] = "videos",
+        ["mis videos"] = "videos",
+    };
+
+    private static string Fold(string value)
+    {
+        var builder = new StringBuilder(value.Length);
+        foreach (char character in value.Trim().Normalize(NormalizationForm.FormD))
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
+                builder.Append(char.ToLowerInvariant(character));
+        }
+
+        return builder.ToString();
     }
 
     private static bool Inside(string full, string root) =>
@@ -283,6 +330,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
         "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "downloads" => Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path(),
+        "pictures" => Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
+        "music" => Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
+        "videos" => Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
         _ => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
     };
 
@@ -604,8 +654,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 : null,
         };
 
-    // What a refused write saw: whether the file is there, where, and whether the call appended.
-    private static FilesystemProviderException WriteRefused(string code, string path, bool exists, bool append) =>
+    // What a refused write saw: whether the file is there, where, and whether the call appended. Al máximo, flujos: and
+    // the version of it the refusal was decided on (its SHA-256 and size), so a replace that came without the hash goes
+    // straight in a second call instead of a file.read first; its previous version still goes to the Recycle Bin.
+    private static FilesystemProviderException WriteRefused(
+        string code, string path, bool exists, bool append, string? currentSha256 = null, long size = 0) =>
         new(code)
         {
             Result = ExternalJson.Create(writer =>
@@ -614,6 +667,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 writer.WriteBoolean("exists", exists);
                 writer.WriteString("fullPath", Path.GetFullPath(path));
                 writer.WriteBoolean("append", append);
+                if (currentSha256 is not null)
+                {
+                    writer.WriteString("currentSha256", currentSha256);
+                    writer.WriteNumber("size", size);
+                }
                 writer.WriteEndObject();
             }),
         };

@@ -632,6 +632,55 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // Renew al máximo (w5, F004): with sentTo «Calculadora» the reply still said «no pude comprobar que escribiste hola en
+    // el Bloc de notas» and blamed a focus change never tried. With the aid typed_target_next the receipt says, as a
+    // sentence, the one window the text went into and that nothing was opened or brought up for it; with
+    // BAXY_AYUDAS=none only the facts, as before.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task ATextTypedWithNoWindowSaysTheOneApplicationItWentInto(string aids, bool told)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(0x5678, 3364, "Calculadora"),
+            FrontProcess = "CalculatorApp",
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, Notepad()).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        bool hasNext = receipt.Result!.Value.TryGetProperty("next", out JsonElement next);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(hasNext, Is.EqualTo(told));
+            if (told)
+            {
+                Assert.That(next.GetString(), Does.Contain("into the window in front, of Calculadora (CalculatorApp)"));
+                Assert.That(next.GetString(), Does.Contain("no other application received it"));
+                Assert.That(next.GetString(), Does.Contain("no application was opened or brought to the front"));
+                Assert.That(next.GetString(), Does.EndWith("it was not read back there"));
+            }
+        });
+    }
+
+    // The sentence for a text read back says no doubt, and one sent to the application just opened says so.
+    [Test]
+    public void TheTypedTargetSentenceFollowsTheReadBackAndTheOpening()
+    {
+        string read = WindowsDesktopInteractionAdapter.TypedInto("Sin título: Bloc de notas", "Notepad", true, true);
+        string opened = WindowsDesktopInteractionAdapter.TypedInto("", "Notepad", false, false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(read, Does.Contain("of Sin título: Bloc de notas (Notepad)"));
+            Assert.That(read, Does.Not.Contain("not read back"));
+            Assert.That(opened, Does.Contain("window of Notepad, the application just opened"));
+            Assert.That(opened, Does.Not.Contain("brought to the front"));
+            Assert.That(opened, Does.EndWith("it was not read back there"));
+        });
+    }
+
     // The same text with the Notepad in front: its edit control has the focus, and «hola» is read back there.
     [Test]
     public async Task ATextTypedWithNoWindowIsVerifiedWhenItIsReadBackInTheFocusedEditControl()
@@ -653,6 +702,65 @@ public sealed class TextDeliveryTests
             Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.True);
             Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("win32_sendinput_and_edit_text_reread"));
             Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("process").GetString(), Is.EqualTo("Notepad"));
+        });
+    }
+
+    // BAXY Renew al máximo (e2e E017, pc-lote-A-s1): «lista: pilas, cables» typed into a busy Notepad landed as «lista
+    // ilas, cables». The editor takes a key only when it gets to it (here: one each time its length is asked), and a
+    // key sent while the one before is still queued is lost. Each character waits for the editor to have taken the
+    // ones before it, and the read-back for the last: the text lands whole and is read back.
+    [Test]
+    public async Task ATextTypedIntoABusyEditorWaitsForEachKeyToBeTakenAndIsReadBack()
+    {
+        const string typed = "lista: pilas, cables";
+        FakeFieldMessages notepad = Notepad("hola desde BAXY");
+        var queued = new Queue<char>();
+        notepad.BeforeLength = field =>
+        {
+            if (queued.TryDequeue(out char key))
+                notepad.Content[field] += key;
+        };
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "*hola desde BAXY: Bloc de notas"),
+            FrontProcess = "Notepad",
+            EachSent = key =>
+            {
+                if (queued.Count == 0)
+                    queued.Enqueue(key);
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, notepad).InvokeAsync(
+            "input.text.type", Json($$"""{"text":"{{typed}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.True);
+            Assert.That(notepad.Content[Edit], Is.EqualTo("hola desde BAXY" + typed));
+        });
+    }
+
+    // A focused edit control that never takes the keys (they went elsewhere) is waited for once: the rest of the text
+    // goes at the keyboard's pace, whole, and it is not read back.
+    [Test]
+    public async Task AnEditControlThatDoesNotTakeTheKeysIsWaitedForOnlyOnce()
+    {
+        const string typed = "lista: pilas, cables";
+        FakeFieldMessages field = Notepad("otra cosa");
+        int lengthReads = 0;
+        field.BeforeLength = _ => lengthReads++;
+        var keyboard = new FakeDesktopKeyboard { Front = new DesktopForeground(4660, 4242, "Formulario") };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, field).InvokeAsync(
+            "input.text.type", Json($$"""{"text":"{{typed}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(keyboard.Texts, Is.EqualTo(new[] { typed }));
+            Assert.That(lengthReads, Is.LessThan(2 * 61), "one bounded wait, not one per character");
         });
     }
 
@@ -1116,7 +1224,14 @@ internal sealed class FakeFieldMessages : IFieldMessages
         return edits.Length == 1 ? edits[0] : 0;
     }
 
-    public int TextLength(nint hwnd) => Content.TryGetValue(hwnd, out string? text) ? text.Length : -1;
+    // Called before each WM_GETTEXTLENGTH is answered (a busy editor takes a key it had queued meanwhile).
+    internal Action<nint>? BeforeLength { get; set; }
+
+    public int TextLength(nint hwnd)
+    {
+        BeforeLength?.Invoke(hwnd);
+        return Content.TryGetValue(hwnd, out string? text) ? text.Length : -1;
+    }
 
     public string? Text(nint hwnd, int length) => Content.GetValueOrDefault(hwnd);
 

@@ -262,7 +262,7 @@ internal sealed class CoreProcessClient : IAsyncDisposable
 
             return await AwaitResponseWithReconciliationAsync(
                 pending.Completion.Task,
-                timeout,
+                ResponseBudget(operation.OperationName, timeout),
                 DefaultResponseReconciliationTimeout,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -607,7 +607,8 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                 || !string.Equals(
                     supplied.Description,
                     required.Description,
-                    StringComparison.Ordinal))
+                    StringComparison.Ordinal)
+                || !(supplied.Effects ?? []).SequenceEqual(required.Effects ?? [], StringComparer.Ordinal))
             {
                 return false;
             }
@@ -615,6 +616,17 @@ internal sealed class CoreProcessClient : IAsyncDisposable
 
         return true;
     }
+
+    /// <summary>
+    /// How long a call is waited for before the margin starts: the caller's time, or the catalog's budget for an
+    /// operation whose provider takes longer (al máximo, flujos: every call had 30 + 70 s, and a PDF or Spotify call near
+    /// its own 85-90 s budget took the engine down with it, mpv, window ids and provenance included).
+    /// </summary>
+    internal static TimeSpan ResponseBudget(string operation, TimeSpan timeout) =>
+        ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
+            && descriptor.Budget is { } budget && budget > timeout
+                ? budget
+                : timeout;
 
     internal TimeoutException DisconnectForResponseTimeout()
     {
@@ -649,10 +661,9 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                 && !cancellationToken.IsCancellationRequested)
             {
                 // Keep the exact request registered with the stdout pump.
-                // Providers can legitimately exceed the first-response budget;
-                // Spotify UIA, for example, can use about 80 s across one
-                // pre-effect retry. Its durable terminal response must win over
-                // a timeout while the overall 90 s client budget stays bounded.
+                // Providers can legitimately exceed the first-response budget
+                // (ResponseBudget); a durable terminal response must win over a
+                // timeout while the margin keeps the wait bounded.
             }
         }
 

@@ -49,10 +49,12 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
 
             string foldedTitle = Fold(title);
             var matches = new List<InstalledGame>();
+            // Renew al máximo (auditoría de flujos, decision2): every name read, for the closest ones when none matches.
+            var read = new List<string>();
             if (provider is "any" or "steam")
-                matches.AddRange(ReadSteamGames(foldedTitle));
+                matches.AddRange(ReadSteamGames(foldedTitle, read));
             if (provider is "any" or "epic")
-                matches.AddRange(ReadEpicGames(foldedTitle));
+                matches.AddRange(ReadEpicGames(foldedTitle, read));
 
             InstalledGame[] distinct = matches
                 .GroupBy(game => game.Provider + "\n" + game.Identity, StringComparer.Ordinal)
@@ -76,7 +78,10 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 else if (distinct.Length > 0)
                     writer.WriteString("state", "install_not_finished");
                 else
+                {
                     writer.WriteString("state", "no_steam_or_epic_manifest_with_that_name");
+                    SteamLocalAdapter.WriteClosest(writer, SteamLocalAdapter.ClosestTitles(title, read));
+                }
                 writer.WriteNumber("matchCount", distinct.Length);
                 writer.WriteStartArray("games");
                 foreach (InstalledGame game in distinct)
@@ -107,7 +112,7 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         }
     }
 
-    private IEnumerable<InstalledGame> ReadSteamGames(string foldedTitle)
+    private IEnumerable<InstalledGame> ReadSteamGames(string foldedTitle, List<string> read)
     {
         foreach (string steamAppsRoot in _steamAppsRoots.Where(Directory.Exists))
         {
@@ -119,10 +124,14 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 string installDirectory = AcfValue(content, "installdir");
                 string appId = AcfValue(content, "appid");
                 if (string.IsNullOrWhiteSpace(name)
-                    || !TitleMatches(Fold(name), foldedTitle)
                     || string.IsNullOrWhiteSpace(installDirectory)
                     || !Directory.Exists(Path.Combine(
                         steamAppsRoot, "common", installDirectory)))
+                {
+                    continue;
+                }
+                read.Add(name);
+                if (!TitleMatches(Fold(name), foldedTitle))
                 {
                     continue;
                 }
@@ -139,7 +148,7 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         }
     }
 
-    private IEnumerable<InstalledGame> ReadEpicGames(string foldedTitle)
+    private IEnumerable<InstalledGame> ReadEpicGames(string foldedTitle, List<string> read)
     {
         foreach (string manifestRoot in _epicManifestRoots.Where(Directory.Exists))
         {
@@ -153,9 +162,13 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 string identity = JsonString(root, "CatalogItemId");
                 if (identity.Length == 0) identity = JsonString(root, "AppName");
                 if (string.IsNullOrWhiteSpace(name)
-                    || !TitleMatches(Fold(name), foldedTitle)
                     || string.IsNullOrWhiteSpace(installLocation)
                     || !Directory.Exists(installLocation))
+                {
+                    continue;
+                }
+                read.Add(name);
+                if (!TitleMatches(Fold(name), foldedTitle))
                 {
                     continue;
                 }

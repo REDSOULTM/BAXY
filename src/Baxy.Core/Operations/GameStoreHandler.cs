@@ -32,7 +32,7 @@ internal sealed class GameStoreHandler(
             || given.GetString() is not { Length: > 0 } value
             || ApplicationPlaces.ApplicationOfCatalog(Catalog) is not { } application)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("invalid_arguments"));
+            return ValueTask.FromResult(OperationOutcome.InvalidArguments(Definition, invocation.Arguments));
         }
 
         return _open(
@@ -41,7 +41,11 @@ internal sealed class GameStoreHandler(
                 invocation.MissionId,
                 invocation.InvocationId + ":open",
                 JsonSerializer.SerializeToElement(
-                    new OpenApplicationArguments(application, Foreground: true, ForControl: true, Place: place, PlaceValue: value),
+                    // What was asked is the person's words, never a catalog number: a title of digits alone
+                    // («1942») is still searched as a title.
+                    new OpenApplicationArguments(
+                        application, Foreground: true, ForControl: true, Place: place, PlaceValue: value,
+                        PlaceValueAsSaid: true),
                     CoreJsonContext.Default.OpenApplicationArguments)),
             cancellationToken);
     }

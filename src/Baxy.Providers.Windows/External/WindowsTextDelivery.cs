@@ -87,6 +87,12 @@ internal interface IViewedFields
     ValueTask<System.Text.Json.JsonDocument?> CaretTextAsync(
         nint window, int processId, int maximum, CancellationToken cancellationToken) =>
         ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
+
+    /// <summary>Renew al máximo (7.1): the view of <paramref name="window"/> read again after a completed act, as the
+    /// difference from its last view (which it replaces); null when it was not read (no last view of that window, a
+    /// read that failed or ran out of time).</summary>
+    ValueTask<System.Text.Json.JsonElement?> AfterActAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<System.Text.Json.JsonElement?>(null);
 }
 
 internal readonly record struct WindowIdentity(nint Window, int ProcessId, long Created)
@@ -304,6 +310,16 @@ internal sealed class WindowsTextDelivery
     {
         int after = _messages.TextLength(mark.Field);
         return after == mark.Expected && Holds(mark.Field, text, after);
+    }
+
+    /// <summary>BAXY Renew al máximo (E017): whether the marked control has taken the first <paramref name="sent"/>
+    /// characters of a text of <paramref name="length"/> typed into it: its length reached what it had (minus the
+    /// selection the first one replaced) plus them. Only the length is read, and the control answers it with the keys it
+    /// already took, not with those still queued for it.</summary>
+    internal bool Took(TypedMark mark, int sent, int length)
+    {
+        int now = _messages.TextLength(mark.Field);
+        return now >= 0 && now >= mark.Expected - length + sent;
     }
 
     /// <summary>The characters of the paragraph at the caret a UI Automation re-read takes (twice the longest typed

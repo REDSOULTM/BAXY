@@ -108,14 +108,42 @@ public sealed class MissionEngine : IDisposable
                 || handler is null
                 || HasValidArguments(request, handler);
             PolicyDecision? policy = knownOperation && handler is not null && validArguments
-                ? RiskPolicy.Evaluate(
-                    InvocationRisk(handler, request.Arguments),
-                    _confirmationMode(),
-                    handler.Definition.Name,
-                    // Computer use (CONTRATO_VISTA_ACCION.md §2.1): the step's
-                    // exact arguments decide whether it reaches a person.
-                    request.Arguments)
+                ? Evaluate(handler, handler.Definition.Risk, request.Arguments)
                 : null;
+            // Al máximo, flujos: an invocation that would ask the person is read first (IInvocationPreflight): its own
+            // lower risk, or the failure it would end in before any effect, which is answered without asking for a yes.
+            // One that started before and was not completed is reconciled as it stands: its effect may have happened.
+            OperationOutcome? preflightFailure = null;
+            if (policy == PolicyDecision.RequireConfirmation && handler is IInvocationPreflight preflight)
+            {
+                InvocationPreflightResult found = await Preflight(preflight, request.Arguments, cancellationToken)
+                    .ConfigureAwait(false);
+                if (found.Failure is { } failure && startedFingerprint is null)
+                {
+                    preflightFailure = failure;
+                    policy = PolicyDecision.Allow;
+                }
+                else if (found.Risk is { } risk)
+                {
+                    policy = Evaluate(handler, risk, request.Arguments, landingRead: true);
+                }
+            }
+            // Renew al máximo (guarda msconfig, guarda diálogo destructivo): an invocation whose handler says it may be
+            // riskier than declared is read in normal mode though it would go without asking; only a higher risk it
+            // finds is taken (it then asks, bound to this invocation), never a failure. Bypass asks as RiskPolicy says.
+            else if (policy == PolicyDecision.Allow
+                && handler is IInvocationPreflight raising
+                && _confirmationMode() == ConfirmationMode.Normal
+                && raising.MayRaise(request.Arguments))
+            {
+                InvocationPreflightResult found = await Preflight(raising, request.Arguments, cancellationToken)
+                    .ConfigureAwait(false);
+                if (found.Risk is { } risk && risk > handler.Definition.Risk)
+                {
+                    policy = Evaluate(handler, risk, request.Arguments);
+                }
+            }
+
             ConfirmationBinding? grantedBinding = null;
             if (policy == PolicyDecision.RequireConfirmation)
             {
@@ -172,7 +200,7 @@ public sealed class MissionEngine : IDisposable
                 request.MissionId,
                 request.InvocationId,
                 request.Arguments);
-            OperationOutcome outcome = await handler
+            OperationOutcome outcome = preflightFailure ?? await handler
                 .ExecuteAsync(invocation, cancellationToken)
                 .ConfigureAwait(false);
             outcome = PrivateOperationBoundary.NormalizeOutcome(
@@ -275,25 +303,44 @@ public sealed class MissionEngine : IDisposable
         return response;
     }
 
-    // v3 r6 lectores: the risk of the exact invocation when its handler can tell (IInvocationRiskAssessor), else the
-    // declared one. A handler that fails to answer keeps the declared risk.
-    private static OperationRisk InvocationRisk(IOperationHandler handler, JsonElement arguments)
-    {
-        OperationRisk declared = handler.Definition.Risk;
-        if (handler is not IInvocationRiskAssessor assessor)
-        {
-            return declared;
-        }
+    // K-2 refinada: a risk the preflight lowered read where the invocation lands (landingRead).
+    private PolicyDecision Evaluate(
+        IOperationHandler handler,
+        OperationRisk risk,
+        JsonElement arguments,
+        bool landingRead = false) =>
+        RiskPolicy.Evaluate(
+            risk,
+            _confirmationMode(),
+            handler.Definition.Name,
+            // Computer use (CONTRATO_VISTA_ACCION.md §2.1): the step's
+            // exact arguments decide whether it reaches a person.
+            arguments,
+            landingRead);
 
+    // v3 r6 lectores: what the handler reads of the exact invocation. A handler that fails to answer keeps the declared
+    // risk, and only a terminal failure with nothing done is taken as the invocation's end (never a success, a retry or
+    // a failure after an effect).
+    private static async ValueTask<InvocationPreflightResult> Preflight(
+        IInvocationPreflight preflight,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        InvocationPreflightResult found;
         try
         {
-            return assessor.AssessInvocationRisk(arguments) ?? declared;
+            found = await preflight.PreflightAsync(arguments, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is InvalidOperationException
             or ArgumentException or JsonException or KeyNotFoundException)
         {
-            return declared;
+            return InvocationPreflightResult.Proceed;
         }
+
+        return found.Failure is { Succeeded: false, Verified: false, Retryable: false, EffectMayHaveOccurred: false }
+            or null
+            ? found
+            : InvocationPreflightResult.Proceed;
     }
 
     // Every string and property name decodes to text (no lone surrogate).

@@ -72,12 +72,15 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bx-chip.st-skip{border-style:dashed;color:var(--t-muted)}
 .bx-chip.st-skip .ic{color:var(--t-muted);border:1px solid var(--t-dim)}
 .bx-chip.st-maybe .ic{background:color-mix(in srgb,var(--maybe) 22%,transparent);color:var(--maybe)}
+.bx-chip.st-same .ic{color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 45%,transparent)}
+.bx-chip.st-sent .ic{color:var(--maybe);border:1px solid color-mix(in srgb,var(--maybe) 50%,transparent)}
+.bx-chip.st-read .ic{background:color-mix(in srgb,var(--t-second) 16%,transparent);color:var(--t-second)}
 .bx-chip.st-run .ic .spin{width:10px;height:10px}
 .bx-why{font-size:11.5px;color:var(--bad);line-height:1.4}
 .bx-why b{font-weight:500}
 .bx-obs{border:1px solid var(--hair);border-radius:3px;background:var(--bg-panel);padding:8px 10px;display:flex;flex-direction:column;gap:4px;animation:bxFade .2s ease both}
 .bx-obs .h{display:flex;justify-content:space-between;font:10px var(--mono);letter-spacing:.04em;color:var(--t-muted)}
-.bx-obs.st-ok .h span:first-child{color:var(--ok)}.bx-obs.st-fail .h span:first-child{color:var(--bad)}.bx-obs.st-maybe .h span:first-child{color:var(--maybe)}
+.bx-obs.st-ok .h span:first-child{color:var(--ok)}.bx-obs.st-fail .h span:first-child{color:var(--bad)}.bx-obs.st-maybe .h span:first-child{color:var(--maybe)}.bx-obs.st-same .h span:first-child{color:var(--ok)}.bx-obs.st-sent .h span:first-child{color:var(--maybe)}
 .bx-obs .t{font-size:12px;color:var(--t-bone);line-height:1.45;overflow-wrap:anywhere}
 .bx-obs .net{display:flex;align-items:center;gap:5px;font:10px var(--mono);color:var(--netc)}
 .bx-card{border:1px solid color-mix(in srgb,var(--carmine) 55%,var(--hair));border-radius:4px;background:var(--bg-panel);padding:10px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 0 0 3px color-mix(in srgb,var(--carmine) 7%,transparent);animation:bxFade .3s ease both}

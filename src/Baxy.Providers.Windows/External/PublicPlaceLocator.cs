@@ -38,8 +38,13 @@ internal sealed class PublicPlaceLocator
     internal PublicPlaceLocator(Func<string, CancellationToken, Task<string>> fetch) =>
         _fetch = fetch ?? throw new ArgumentNullException(nameof(fetch));
 
-    internal async Task<PublicPlace?> LocateAsync(CancellationToken cancellationToken)
+    // Where this PC is, or null; Unreachable when no service answered at all (no network), which is not a place unknown.
+    // Renew al máximo (auditoría de flujos): without network the weather here asked the person where they were.
+    internal readonly record struct Lookup(PublicPlace? Place, bool Unreachable);
+
+    internal async Task<Lookup> LocateAsync(CancellationToken cancellationToken)
     {
+        bool answered = false;
         foreach (string authority in LocationByIpAuthorities)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -47,6 +52,7 @@ internal sealed class PublicPlaceLocator
             try
             {
                 json = await _fetch(authority, cancellationToken).ConfigureAwait(false);
+                answered = true;
             }
             catch (HttpRequestException)
             {
@@ -70,13 +76,13 @@ internal sealed class PublicPlaceLocator
                 string? city = ReadString(root, "city");
                 if (latitude is null || longitude is null || string.IsNullOrWhiteSpace(city))
                     continue;
-                return new PublicPlace(
+                return new Lookup(new PublicPlace(
                     city,
                     ReadString(root, "region"),
                     ReadString(root, "country") ?? string.Empty,
                     latitude.Value,
                     longitude.Value,
-                    "public_ip_address");
+                    "public_ip_address"), false);
             }
             catch (JsonException)
             {
@@ -84,7 +90,7 @@ internal sealed class PublicPlaceLocator
             }
         }
 
-        return null;
+        return new Lookup(null, !answered);
     }
 
     private static string? ReadString(JsonElement element, string name) =>
