@@ -241,3 +241,19 @@ def test_a_long_answer_is_waited_for_until_it_ends(monkeypatch) -> None:
                              wait=lambda predicate, timeout: waited.append(timeout))
     bench_e2e.wait_silence(SimpleNamespace(events=events))
     assert waited == [bench_e2e.SILENCE_S] and bench_e2e.SILENCE_S >= 120
+
+
+def test_the_product_record_reads_what_qwens_server_loaded_from_its_log(tmp_path) -> None:
+    import time
+    model = tmp_path / "qwen.gguf"
+    model.write_bytes(b"q")
+    log = tmp_path / "llama-server.log"
+    log.write_text("\n".join([
+        "0.00.113.748 I srv  llama_server: initializing ...",
+        f"0.00.118.929 I srv    load_model: loading model '{model}'",
+        "0.04.723.368 I srv    load_model: loaded multimodal model, 'F:/m/mmproj-F16.gguf'",
+        "0.04.756.644 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 53248, kv_unified = 'false'"]),
+        encoding="utf-8")
+    facts = run_meta.llama_log_facts(log, time.time() - 5)
+    assert facts == {"gguf": str(model), "mmproj": "F:/m/mmproj-F16.gguf", "n_ctx_slot": 53248}
+    assert run_meta.llama_log_facts(log, time.time() + 60) is None  # an older run's log says nothing of this one

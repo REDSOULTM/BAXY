@@ -146,22 +146,47 @@ def system_one_setting(environ: dict[str, str] | None = None) -> dict[str, Any]:
     return {"off_file": off_file, "on": bool(setting.get("BAXY_S1_GGUF")), "setting": setting}
 
 
+def llama_log_facts(log: Path, started: float) -> dict[str, Any] | None:
+    """What Qwen's llama-server says it loaded, from the head of its log, when the log is this run's (written after
+    `started`): the GGUF, the projector and the slot's context. The log holds no text of the person."""
+    try:
+        if log.stat().st_mtime < started:
+            return None
+        with log.open(encoding="utf-8", errors="replace") as handle:
+            head = [next(handle, "") for _ in range(60)]
+    except OSError:
+        return None
+    facts: dict[str, Any] = {}
+    for line in head:
+        if "load_model: loading model '" in line:
+            facts["gguf"] = line.split("loading model '", 1)[1].rsplit("'", 1)[0]
+        elif "loaded multimodal model, '" in line:
+            facts["mmproj"] = line.split("multimodal model, '", 1)[1].rsplit("'", 1)[0]
+        elif "n_ctx_slot = " in line:
+            value = line.split("n_ctx_slot = ", 1)[1].split(",", 1)[0].strip()
+            facts["n_ctx_slot"] = int(value) if value.isdigit() else value
+    return facts
+
+
 def product_record(root: str | Path, run_dir: str | Path, started: float, environ: dict[str, str] | None = None,
                    ) -> dict[str, Any]:
     """What a bench that drives the real product (run_renew.cmd through the conductor) ran: the checkout, the mind's
-    source, the seed, System One (as the launcher decides it, and whether its server really started: its log was
-    written after `started`, a time.time()), the catalog the App sent (the run's mente\\catalog.configure.json) and
-    every BAXY_* switch."""
+    source, the seed, Qwen's GGUF (with its sha256), projector and context as its server's log says them, System One (as
+    the launcher decides it, and whether its server really started: its log was written after `started`, a
+    time.time()), the catalog the App sent (the run's mente\\catalog.configure.json) and every BAXY_* switch."""
     source = os.environ if environ is None else environ
     root = Path(root)
     mind = Path(source.get("BAXY_MIND_PYTHONPATH") or root / "src") / "baxy_mind"
-    s1_log = Path(source.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "system-one.log"
+    logs = Path(source.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
     try:
-        s1_started = s1_log.stat().st_mtime >= started
+        s1_started = (logs / "system-one.log").stat().st_mtime >= started
     except OSError:
         s1_started = False
+    qwen = llama_log_facts(logs / "llama-server.log", started)
+    if qwen and qwen.get("gguf"):
+        qwen["gguf"] = fingerprint(qwen["gguf"], _cache_path())
     return {"machine": machine(), "root": str(root), "git": git_state(root), "mind_sha256": tree_sha256(mind),
-            "seed": source.get("BAXY_RENEW_SEED") or "0 (default)",
+            "seed": source.get("BAXY_RENEW_SEED") or "0 (default)", "qwen": qwen,
             "system_one": {**system_one_setting(source), "server_started": s1_started},
             "catalog": fingerprint(Path(run_dir) / "mente" / "catalog.configure.json"),
             "env": baxy_env(source)}
