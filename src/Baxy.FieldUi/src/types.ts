@@ -40,6 +40,8 @@ export interface Confirmation {
   context?: string | null;
   /** when the kernel's token expires, ms since the epoch. */
   expires: number;
+  /** the kernel asks again for a call whose earlier attempt may already have happened. */
+  effectStarted?: boolean;
   status: CardStatus;
   via?: string | null;
 }

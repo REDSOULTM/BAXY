@@ -69,11 +69,15 @@ export function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; o
   // the kernel's token is dead past its time even before the host says so: the card never offers a Sí that cannot run.
   const status = live && left <= 0 ? 'expired' : c.status;
   const pend = status === 'pending';
+  // nothing was done by this card unless an earlier attempt of the same call may already have run (then it only did
+  // not run again)
+  const none = c.effectStarted ? 'no se repitió' : 'no se hizo nada';
   return (
     <div className={'bx-card k-' + c.kind + ' s-' + status}>
       <div className="hd">
         <span className="tag">{c.kind === 'proposal' ? 'Propuesta' : 'Necesito tu ok'}</span>
         {c.risk ? <span className="risk">{c.risk}</span> : null}
+        {c.effectStarted ? <span className="risk">un intento anterior pudo haber corrido</span> : null}
         {c.context ? <span className="ctx">{c.context}</span> : null}
       </div>
       <div className="ti">{c.title}</div>
@@ -89,9 +93,9 @@ export function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; o
       ) : (
         <div className="res">
           {status === 'yes' ? '✓ Aceptado' + (c.via ? ' ' + c.via : '')
-            : status === 'no' ? '✕ Rechazado' + (c.via ? ' ' + c.via : '')
-              : status === 'dropped' ? 'Ya no está pendiente · pediste otra cosa'
-                : 'Venció sin respuesta · no se hizo nada'}
+            : status === 'no' ? '✕ Rechazado' + (c.via ? ' ' + c.via : '') + (c.effectStarted ? ' · ' + none : '')
+              : status === 'dropped' ? 'Ya no está pendiente · ' + none
+                : 'Venció sin respuesta · ' + none}
         </div>
       )}
     </div>

@@ -95,6 +95,26 @@ public sealed class NativeTurnLoopTests
         Assert.That(loop.HasPendingConfirmation, Is.True);
     }
 
+    // The kernel asks again for a call whose earlier attempt may have happened (reconciliationRequired): its card says so.
+    [TestCase(true)]
+    [TestCase(false)]
+    public void AChallengeAfterAnAttemptThatMayHaveRunIsAskedAsSuch(bool reconciliationRequired)
+    {
+        const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+        var clock = new ManualClock();
+        NativeTurnLoop loop = Loop([], clock);
+        PreparedOperation prepared = new RetryableOperationRegistry().GetOrAdd(
+            new RoutedOperation("system.recyclebin.empty", new JsonObject()));
+        object pending = typeof(PendingOperationConfirmation)
+            .GetConstructor(Private, [typeof(PreparedOperation), typeof(string), typeof(DateTimeOffset), typeof(bool)])!
+            .Invoke([prepared, "token", clock.GetUtcNow().AddMinutes(2), reconciliationRequired]);
+        typeof(NativeTurnLoop).GetField("_pending", Private)!.SetValue(loop, pending);
+
+        var asked = (NativeTurnConfirmation?)typeof(NativeTurnLoop).GetMethod("Waiting", Private)!.Invoke(loop, null);
+
+        Assert.That(asked?.EffectStarted, Is.EqualTo(reconciliationRequired));
+    }
+
     // An engine that says it is ready and is never sent anything: a held call stops before it.
     private static CoreProcessClient ReadyCore()
     {

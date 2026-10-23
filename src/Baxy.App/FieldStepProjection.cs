@@ -192,9 +192,10 @@ internal static class FieldStepProjection
         return view;
     }
 
-    /// <summary>The Sí/No card of a call waiting for the person (design: {risk, title, target, expires}).</summary>
+    /// <summary>The Sí/No card of a call waiting for the person (design: {risk, title, target, expires}), and whether
+    /// an earlier attempt of it may already have happened (the kernel asks again: <paramref name="effectStarted"/>).</summary>
     internal static JsonObject Card(string id, string kind, string operation, JsonObject arguments, string risk,
-        DateTimeOffset expiresUtc, string? context) => new()
+        DateTimeOffset expiresUtc, string? context, bool effectStarted = false) => new()
     {
         ["who"] = "card",
         ["id"] = id,
@@ -205,6 +206,7 @@ internal static class FieldStepProjection
         ["target"] = Target(arguments),
         ["context"] = context,
         ["expires"] = expiresUtc.ToUnixTimeMilliseconds(),
+        ["effectStarted"] = effectStarted,
         ["status"] = "pending",
     };
 

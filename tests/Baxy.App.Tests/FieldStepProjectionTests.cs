@@ -139,6 +139,16 @@ public sealed class FieldStepProjectionTests
         Assert.That(FieldStepProjection.Finished("c1", step, net: null), Is.Null);
     }
 
+    [TestCase(true)]
+    [TestCase(false)]
+    public void TheCardSaysWhetherAnEarlierAttemptMayHaveRun(bool effectStarted)
+    {
+        JsonObject card = FieldStepProjection.Card("k1", "confirm", "system.recyclebin.empty", new JsonObject(),
+            "recoverable_delete", DateTimeOffset.UtcNow.AddMinutes(2), context: null, effectStarted);
+
+        Assert.That((bool?)card["effectStarted"], Is.EqualTo(effectStarted));
+    }
+
     internal static JsonObject Finished(string status, bool verified, JsonObject facts, string? errorCode = null)
     {
         var step = new NativeTurnStep(Operation, new JsonObject(), status, verified, errorCode, 5, facts.ToJsonString(), "c1",

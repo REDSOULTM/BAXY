@@ -365,7 +365,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         } : null;
         string id = _transcript.NextId("k");
         JsonObject card = FieldStepProjection.Card(id, asked.Proposal ? "proposal" : "confirm",
-            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context);
+            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, asked.EffectStarted);
         _pendingCard = (id, asked);
         Publish(ItemEvent(_transcript.Card(card)));
     }
