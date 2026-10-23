@@ -178,3 +178,36 @@ def test_a_normal_mode_file_corrects_like_no_file(tmp_path, monkeypatch, mode) -
                         {"title": "Worms W.M.D"})
     (tmp_path / "confirmation-mode").write_text(mode, encoding="utf-8")
     assert mind.decide(1, "desinstala el Worms")["operation"] == "game.uninstall.named"
+
+
+# ---- 4. «corrige» lands on a read with the effects the model's own call already had ---------------------------------
+def _network(name: str, risk: str, properties: dict, required: list) -> dict:
+    return {"name": name, "description": name, "risk": risk, "effects": ["network"],
+            "argumentsSchema": {"type": "object", "properties": properties, "required": required,
+                                "additionalProperties": False}}
+
+
+WEB_SEARCH = _network("web.search", "read_only", {"query": {"type": "string"}}, ["query"])
+WEATHER = _network("weather.current", "read_only", {"location": {"type": ["null", "string"]}}, [])
+SHELL = _network("shell.command.run", "low_reversible", {"command": {"type": "string"}}, ["command"])
+NETWORK = [WEB_SEARCH, WEATHER, SHELL, FILE_FIND]
+
+
+@pytest.mark.parametrize("doubted, choice, filled, text, operation", [
+    # P169: Qwen web_search, Laya weather_current at 0.9; both send out of the PC, and 5.1 asked in every seed.
+    ("web_search", "weather_current", {}, "forecast this week please", "weather.current"),
+    ("web_search", "weather_current", {"location": "Curicó"}, "el pronóstico de la semana en Curico",
+     "weather.current"),
+    ("web_search", "weather_current", {"location": "Santiago"}, "forecast this week please",
+     None),  # an optional value nobody said is never sent out of the PC
+    ("web_search", "shell_command_run", {"command": "weather"}, "forecast please", None),  # not a read
+    ("file_find", "weather_current", {}, "forecast please", None)])  # the model's call stayed in the PC
+def test_a_correction_to_a_read_with_the_effects_of_the_chosen_call_runs(tmp_path, monkeypatch, doubted, choice,
+                                                                          filled, text, operation) -> None:
+    mind, fills = _corrects(tmp_path, monkeypatch, NETWORK, doubted, choice, filled)
+    result = mind.decide(1, text)
+    assert result["operation"] == operation
+    if operation:
+        assert result["kind"] == "action" and result["arguments"] == filled
+    else:
+        assert fills in ([], [choice])
