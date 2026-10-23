@@ -28,7 +28,8 @@ _ABBREVIATIONS = {"Sr.": "señor", "Sra.": "señora", "Srta.": "señorita", "Dr.
                   "Nº": "número", "pág.": "página"}
 _UNIT_WORDS = {"km/h": "kilómetros por hora", "km": "kilómetros", "kg": "kilos", "cm": "centímetros",
                "mm": "milímetros", "GB": "gigas", "MB": "megas", "TB": "teras", "KB": "kilobytes", "Hz": "hercios",
-               "ms": "milisegundos", "°C": "grados", "ºC": "grados", "°": "grados", "º": "grados"}
+               "ms": "milisegundos", "°C": "grados", "ºC": "grados", "°": "grados", "º": "grados", "min": "minutos",
+               "seg": "segundos", "h": "horas"}
 _WORD = "A-Za-zÁÉÍÓÚÜÑáéíóúüñ"
 
 
@@ -90,13 +91,21 @@ _FEMININE_O = {"foto", "fotos", "moto", "motos", "mano", "manos", "radio", "radi
                "versiones", "aplicación", "aplicaciones", "opción", "opciones", "reunión", "reuniones"}
 
 
+# A word after a number that is not what it counts: the number keeps its own form, «el uno de noviembre», «del uno a
+# diez», «uno o dos», «veintiuno en total», «doscientos para ti» (not «un de», «una a», «doscientas para»).
+_NOT_COUNTED = {"a", "al", "de", "del", "en", "por", "para", "con", "sin", "y", "e", "o", "u", "ni", "que", "es", "son",
+                "era", "fue", "más", "menos", "entre", "hasta", "desde", "sobre", "tras", "según", "hacia", "contra",
+                "como", "pero", "si", "se", "lo", "la", "las", "los", "el", "le", "les", "ya", "no", "está", "están",
+                "hay", "queda", "quedan", "solo", "sólo"}
+
+
 def _number(digits: str, decimals: str | None, noun: str = "") -> str:
     words = cardinal(int(digits.replace(".", "")))
     if decimals:
         return f"{words} coma {' '.join(_UNITS[int(d)] for d in decimals) if decimals.startswith('0') else cardinal(int(decimals))}"
-    if not noun:
-        return words
     noun = noun.lower()
+    if not noun or noun in _NOT_COUNTED:
+        return words
     feminine = noun in _FEMININE_O or (noun.endswith(("a", "as")) and noun not in _MASCULINE_A)
     return _feminine(words) if feminine else _apocope(words)
 
@@ -144,7 +153,7 @@ def spoken(text: str) -> str:
     text = re.sub(r"\s*[—–]\s*", ", ", text.replace("…", "..."))
     # dates and times before numbers: 17/10/2026, 17/10, 10:30
     text = re.sub(r"\b(\d{1,2})/(\d{1,2})(?:/(\d{4}|\d{2}))?\b", _date, text)
-    text = re.sub(r"\b([01]?\d|2[0-3]):([0-5]\d)\b", _time, text)
+    text = re.sub(r"\b([01]?\d|2[0-3]):([0-5]\d)\b(?:\s?h\b)?", _time, text)  # «10:30 h» is said without its «h»
     # ordinals 1.º 2.ª (up to tenth; «°» is left to degrees)
     text = re.sub(r"\b(10|[1-9])\.?([ºª])(?!C)",
                   lambda m: _ORDINALS[int(m.group(1))][:-1] + ("a" if m.group(2) == "ª" else "o"), text)
@@ -156,7 +165,9 @@ def spoken(text: str) -> str:
     units = "|".join(re.escape(unit) for unit in sorted(_UNIT_WORDS, key=len, reverse=True))
     text = re.sub(rf"{number}\s?({units})(?![{_WORD}])", lambda m: _counted(m, _UNIT_WORDS[m.group(4)]), text)
     text = re.sub(rf"(?<![\d{_WORD}])-(?=\d)", "menos ", text)
+    # a letter written against the number is said after it: «4K» is «cuatro K», «1080p» «mil ochenta p»
     text = re.sub(rf"(?<![\d{_WORD}]){number}(?=(\s+[{_WORD}]+)?)",
-                  lambda m: _number(m.group(1), m.group(2) or m.group(3), (m.group(4) or "").strip()), text)
+                  lambda m: _number(m.group(1), m.group(2) or m.group(3), (m.group(4) or "").strip())
+                  + (" " if m.string[m.end():m.end() + 1].isalpha() else ""), text)
     pattern, said = _respellings()
     return pattern.sub(lambda m: said[m.group(0).lower()], text)
