@@ -186,7 +186,9 @@ internal sealed record ProcessListResult(
     string ObservationScope,
     int? LogicalProcessorCount,
     // Ronda final 8 (regla 3): false when the observation stopped before every process.
-    bool ObservationComplete);
+    bool ObservationComplete,
+    // Renew al máximo (w8): processes Windows did not let BAXY read (another user's, protected ones), not in the list.
+    int UnmeasuredProcessCount);
 
 internal sealed record SystemStatusCpuResult(
     double UsagePercent,

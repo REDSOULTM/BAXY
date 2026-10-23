@@ -25,16 +25,16 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
             ? new WindowsSystemStatusProbe().ReadLogicalProcessorCount()
             : null;
         Dictionary<ProcessIdentity, ProcessSample> first = Observe(
-            cancellationToken, out bool firstComplete);
+            cancellationToken, out bool firstComplete, out _);
         if (sort == ProcessStatusSort.Cpu)
         {
             await Task.Delay(WindowsSystemStatusProvider.DefaultCpuSamplingInterval,
                 cancellationToken).ConfigureAwait(false);
         }
         Dictionary<ProcessIdentity, ProcessSample> second = Observe(
-            cancellationToken, out bool secondComplete);
+            cancellationToken, out bool secondComplete, out int denied);
         return CreateSnapshot(first, second, sort, limit, logicalProcessorCount)
-            with { ObservationComplete = firstComplete && secondComplete };
+            with { ObservationComplete = firstComplete && secondComplete, UnmeasuredProcessCount = denied };
     }
 
     internal static ProcessStatusSnapshot CreateSnapshot(
@@ -94,8 +94,10 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
 
     private static Dictionary<ProcessIdentity, ProcessSample> Observe(
         CancellationToken cancellationToken,
-        out bool complete)
+        out bool complete,
+        out int denied)
     {
+        denied = 0;
         Process[] processes = Process.GetProcesses();
         complete = processes.Length <= MaximumObservedProcesses;
         try
@@ -106,7 +108,8 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
                 cancellationToken.ThrowIfCancellationRequested();
                 try
                 {
-                    process.Refresh();
+                    // Renew al máximo (w8): Process.GetProcesses already holds each process's fresh data; Refresh()
+                    // dropped it, so every process took another whole-system snapshot (2.3 s for 323 processes).
                     string name = process.ProcessName;
                     long created = process.StartTime.ToUniversalTime().Ticks;
                     var identity = new ProcessIdentity(process.Id, created, name);
@@ -118,12 +121,15 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
                         Math.Max(0, process.TotalProcessorTime.TotalSeconds));
                     result[identity] = new ProcessSample(entry, Stopwatch.GetTimestamp());
                 }
-                catch (Exception error) when (error is
-                    InvalidOperationException or NotSupportedException or
-                    System.ComponentModel.Win32Exception)
+                catch (System.ComponentModel.Win32Exception)
                 {
-                    // A process can exit or deny observation between enumeration
-                    // and measurement. It is omitted instead of guessed.
+                    // Renew al máximo (w8): a process that denies observation (another user's, a protected one: 142 of
+                    // 323 on the notebook) is omitted instead of guessed, and counted so the list says it left them out.
+                    denied++;
+                }
+                catch (Exception error) when (error is InvalidOperationException or NotSupportedException)
+                {
+                    // A process can exit between enumeration and measurement. It is omitted instead of guessed.
                 }
                 catch (OutOfMemoryException)
                 {
