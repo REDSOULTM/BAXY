@@ -2051,6 +2051,27 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (w8): in w6-settle a cold Steam showed «Iniciar sesión en Steam» while the command waited, and it
+    // was told the new document. A window born after the command whose title names no document (no « - », no «: » before
+    // the application's name) and does not repeat the commanded window's is no new document. Counter-case: a title that
+    // names one is (ColdStartNewDocumentIsTheWindowBornAfterTheCommand).
+    [TestCase("Iniciar sesión en Steam")]
+    [TestCase("Steam: Iniciar sesión")]
+    [TestCase("Actualizando Steam")]
+    public async Task ColdStartSignInOrWelcomeWindowIsNoNewDocument(string madeTitle)
+    {
+        var platform = ColdStart(madeTitle);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+        });
+    }
+
     // Counter-case: a window born after the command but titled as the bare application (another start screen) or as
     // the start window was is no document.
     [TestCase("PowerPoint")]

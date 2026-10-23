@@ -1014,6 +1014,16 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
         bool IsDocument(long handle) => !bareTitles.Contains(Bare(_platform.WindowTitle(handle)));
 
+        // Renew al máximo (w8): a window born after the command is the new document only when its title names one, or
+        // repeats the title of the window the command went to (another window of the same kind: «Windows PowerShell»).
+        // In w6-settle a cold Steam's «Iniciar sesión en Steam», born while the command waited, was told a new document.
+        bool IsNewDocument(long handle)
+        {
+            string title = Bare(_platform.WindowTitle(handle));
+            return !bareTitles.Contains(title)
+                && (NamesADocument(title, names) || string.Equals(title, Bare(titleBefore), StringComparison.Ordinal));
+        }
+
         // The window in front before the command (its burst hands the front back to it).
         long frontBeforeCommand = request.Foreground ? _platform.ForegroundWindow() : 0;
 
@@ -1130,7 +1140,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 dialogs = appeared.Where(item => _platform.IsOwnedWindow(item.WindowHandle)).Select(static item => item.WindowHandle).ToList();
                 // P4: a window titled with the application's bare name (its start screen) is no document either.
                 made = appeared
-                    .Where(item => !dialogs.Contains(item.WindowHandle) && IsDocument(item.WindowHandle))
+                    .Where(item => !dialogs.Contains(item.WindowHandle) && IsNewDocument(item.WindowHandle))
                     .OrderByDescending(static item => item.Foreground)
                     .FirstOrDefault();
                 if (made is null && titleTells && TitleShowsAnotherDocument(titleBefore, _platform.WindowTitle(window))
