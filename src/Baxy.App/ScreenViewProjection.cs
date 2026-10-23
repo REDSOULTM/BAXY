@@ -167,7 +167,7 @@ internal static class ScreenViewProjection
         {
             text.Append("(esta ventana no da sus controles: su «Texto» se leyó de la pantalla tal cual, y cada línea dice "
                 + "sólo lo que pone (un número junto a un nombre cuenta sólo lo de ese nombre); una línea de ahí se pulsa "
-                + "por su texto, como label, y que algo no salga en «Controles» no quiere decir que no esté)\n");
+                + "por su texto, como label, y que algo no salga en «Controles» no significa que no esté)\n");
         }
 
         if (view["disabled"] is JsonArray disabled && disabled.Count > 0)

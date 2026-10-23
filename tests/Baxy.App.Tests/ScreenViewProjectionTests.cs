@@ -114,7 +114,7 @@ public sealed class ScreenViewProjectionTests
         Assert.Multiple(() =>
         {
             Assert.That(View(drawn), Does.Contain("(esta ventana no da sus controles: su «Texto» se leyó de la pantalla tal cual"));
-            Assert.That(View(drawn), Does.Contain("que algo no salga en «Controles» no quiere decir que no esté)"));
+            Assert.That(View(drawn), Does.Contain("que algo no salga en «Controles» no significa que no esté)"));
             Assert.That(View(withControls), Does.Not.Contain("no da sus controles"));
             Assert.That(View(drawn.Replace("windows_media_ocr_lines", "unavailable")), Does.Not.Contain("no da sus controles"));
         });
