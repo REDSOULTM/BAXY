@@ -568,6 +568,29 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Renew al máximo (w8): an installed game's update in pause (Installed | UpdateStarted | UpdatePaused, 1540) is no
+    // active download: with nothing else, cancelling every download is already so, never steam_downloads_not_covered.
+    [Test]
+    public async Task CancelActiveTakesAPausedUpdateForNoActiveDownload()
+    {
+        var automation = new FakeSteamAutomation(onDispatch: null, onCancel: null);
+        var adapter = new SteamLocalAdapter(
+            () => [.. Catalog, new SteamLocalGame("367520", "Hollow Knight", "hk-sha", StateFlags: 4 | 1024 | 512)],
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.cancel.active", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.Null);
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.StateAlreadyReached, Is.True);
+            Assert.That(automation.CancelCount, Is.Zero);
+        });
+    }
+
     [Test]
     public async Task SnapshotFailureAfterAcceptedDispatchPreservesAmbiguousEffect()
     {

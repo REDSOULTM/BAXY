@@ -896,8 +896,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         // Ronda final 32 (regla 3): a download that wrote no bytes yet (a new install queued: UpdateRequired with
         // UpdateStarted, 1026) or an update of an installed game (UpdateStarted 1024, UpdateRunning 256, Downloading
         // 1048576) is not cancelled here: while one is in the manifests, «no active download left» is not said.
+        // Renew al máximo (w8): one in pause (UpdatePaused 512) is no active download: Steam keeps UpdateStarted on a
+        // paused update of an installed game, and «cancela las descargas» failed steam_downloads_not_covered forever.
         const ulong DownloadFlags = 1024UL | 256UL | 1048576UL;
-        if (after.Any(game => (game.StateFlags & DownloadFlags) != 0))
+        if (after.Any(game => (game.StateFlags & DownloadFlags) != 0 && (game.StateFlags & PausedFlag) == 0))
             return ExternalJson.Failure(operation, "steam_downloads_not_covered", active.Length > 0);
         return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
         {
