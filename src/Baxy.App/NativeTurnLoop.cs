@@ -122,6 +122,8 @@ internal sealed class NativeTurnLoop
     // and its card says why (_proposalCause).
     private bool _proposalByBeat;
     private string? _proposalCause;
+    // Where the waiting call acts beside the folder the person named (SaidFolders), for its result once approved.
+    private string? _waitingSaid;
     private bool _beat;
     // The person's answer is the person's: it answers only a call whose question was published before their words or
     // their press arrived (ConfirmationAsk.Answers: _askedAt before _personAt, both Stopwatch timestamps;
@@ -169,10 +171,23 @@ internal sealed class NativeTurnLoop
             return;
         }
 
+        // Auditoría de la App (2026-10-23): words that answer the waiting call (asked before they arrived) keep the context
+        // of the turn that asked it, as a press on Sí or No does: the folders it named and what memory read in it. A
+        // spoken «sí» replaced them, so the calls after the approved one were ruled by «sí» alone while the button's
+        // were ruled by the turn that asked.
+        bool answering = WaitingPrepared() is not null && ConfirmationAsk.Answers(_askedAt, arrivedAt);
         _egress.Heard(text);
-        _said.Heard(text);
-        await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken),
-            cancellationToken);
+        if (answering)
+        {
+            _said.Answered(text);
+        }
+        else
+        {
+            _said.Heard(text);
+        }
+
+        await PersonTurnAsync(mind, arrivedAt, answering,
+            () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken), cancellationToken);
     }
 
     // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
@@ -181,14 +196,20 @@ internal sealed class NativeTurnLoop
     // (asked after the turn started: its question comes next), even when it is the same invocation the person said «sí»
     // to and the kernel asks again; a call left waiting before the turn started, by an earlier turn or by a heartbeat it
     // waited for, does not hold it back. A heartbeat says none: nobody asked and nobody waits for it.
+    // answering: the turn answers the waiting call, and what memory read in the turn that asked it still counts.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
         long arrivedAt,
+        bool answering,
         Func<Task<MindStep?>> decide,
         CancellationToken cancellationToken)
     {
         _personAt = arrivedAt;
-        _egress.NewTurn();
+        if (!answering)
+        {
+            _egress.NewTurn();
+        }
+
         long started = Stopwatch.GetTimestamp();
         _turnStarted = started;
         _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedAt < started, _host.Notice);
@@ -273,8 +294,8 @@ internal sealed class NativeTurnLoop
         }
 
         _droppedOperation = null;
-        await PersonTurnAsync(mind, arrivedAt, () => mind.ConfirmAsync(approve, label, cancellationToken),
-            cancellationToken);
+        await PersonTurnAsync(mind, arrivedAt, answering: true,
+            () => mind.ConfirmAsync(approve, label, cancellationToken), cancellationToken);
     }
 
     /// <summary>
@@ -559,6 +580,7 @@ internal sealed class NativeTurnLoop
             _proposal = prepared;
             _proposalByBeat = _beat;
             _proposalCause = egress;
+            _waitingSaid = said;
             _proposalExpiresUtc = _time.GetUtcNow() + ProposalLifetime;
             _askedAt = ConfirmationAsk.Unpublished;
             var held = new JsonObject { ["status"] = "needs_confirmation" };
@@ -741,6 +763,12 @@ internal sealed class NativeTurnLoop
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);
+        if (approve && RefusedAtApproval(pending.Prepared, pendingArguments, started) is { } refused)
+        {
+            return refused;
+        }
+
+        string? said = _waitingSaid;
         Resolved(approve ? "approved" : "declined");
         if (!approve)
         {
@@ -759,8 +787,22 @@ internal sealed class NativeTurnLoop
         }
 
         return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, answered: true, started,
-                cancellationToken)
-            ;
+            cancellationToken, said);
+    }
+
+    // Auditoría de la App (2026-10-23): the owner's switches (Settings) are read when the call is approved too, by voice
+    // or by the button: one switched off while the call waited no longer ran it. The call is dropped, and the model
+    // reads why, as when it is refused before it is held.
+    private string? RefusedAtApproval(PreparedOperation prepared, JsonObject arguments, long started)
+    {
+        if (_host.Refuse?.Invoke(prepared.OperationName, arguments) is not { } refusal)
+        {
+            return null;
+        }
+
+        DropPending();
+        return Record(prepared.OperationName, arguments, started,
+            Observation("rejected", refusal, about: prepared.OperationName));
     }
 
     // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
@@ -772,6 +814,12 @@ internal sealed class NativeTurnLoop
         CancellationToken cancellationToken)
     {
         JsonObject arguments = PrivateArguments(proposal);
+        if (approve && RefusedAtApproval(proposal, arguments, started) is { } refused)
+        {
+            return refused;
+        }
+
+        string? said = _waitingSaid;
         _proposal = null;
         Resolved(approve ? "approved" : "declined");
         if (!approve)
@@ -790,13 +838,12 @@ internal sealed class NativeTurnLoop
         }
 
         string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, answered: true,
-            started, cancellationToken);
+            started, cancellationToken, said);
         if (_pending is { } challenge && ReferenceEquals(challenge.Prepared, proposal))
         {
             _pending = null;
             observation = await SendAsync(core, proposal, arguments, challenge.Token, answered: true, started,
-                    cancellationToken)
-                ;
+                cancellationToken, said);
         }
 
         return observation;
@@ -837,6 +884,7 @@ internal sealed class NativeTurnLoop
             // The kernel asks for the person's «sí» for this exact invocation: the model asks; the answer comes back
             // as confirm_pending, and only then is this same invocation sent again with the token.
             _pending = challenge;
+            _waitingSaid = said;
             _askedAt = ConfirmationAsk.Unpublished;
             JsonObject asked = WithArguments(new JsonObject
             {
@@ -975,6 +1023,7 @@ internal sealed class NativeTurnLoop
         // what drops it comes later (their next words, a new session); it read as «dropped», another end.
         bool expired = (_pending is not null || _proposal is not null) && WaitingPrepared() is null;
         Resolved(expired ? "expired" : "dropped");
+        _waitingSaid = null;
         if (_proposal is { } proposal)
         {
             _proposal = null;

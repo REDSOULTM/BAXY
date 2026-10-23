@@ -92,6 +92,16 @@ internal sealed class SaidFolders
         _told.Clear();
     }
 
+    /// <summary>
+    /// The person's words answer the call that waits for their «sí»: the folders of the turn that asked it still hold,
+    /// with any these words add, as when they press Sí (auditoría de la App, 2026-10-23).
+    /// </summary>
+    internal void Answered(string words)
+    {
+        _words = _words.Length == 0 ? words ?? string.Empty : _words + "\n" + words;
+        _places = null;
+    }
+
     /// <summary>A heartbeat or a new session: no words of the person's hold.</summary>
     internal void Clear() => Heard(string.Empty);
 

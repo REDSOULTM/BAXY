@@ -195,6 +195,74 @@ public sealed class NativeTurnLoopTests
         });
     }
 
+    // Auditoría de la App (2026-10-23): the owner's switches are read again when the call is approved; one switched off
+    // while it waited does not run it, by the button as by voice.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task AnApprovalAfterTheOwnerSwitchedTheCallOffDoesNotRunIt(bool button)
+    {
+        using var fake = new FakeMind();
+        fake.Script(HeldFetch());
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        var steps = new List<NativeTurnStep>();
+        var outcomes = new List<string>();
+        string? switchedOff = null;
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+            ConfirmationResolved = outcomes.Add,
+            Refuse = (operation, _) => operation == "web.fetch" ? switchedOff : null,
+        });
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(loop.HasPendingConfirmation, Is.True);
+
+        switchedOff = "web_disabled_by_owner";
+        var approval = new JsonObject
+        {
+            ["type"] = "turn.result",
+            ["kind"] = "action",
+            ["operation"] = "confirmation.answer",
+            ["arguments"] = new JsonObject { ["approve"] = true },
+        };
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                [button ? "turn.confirm" : "turn.decide"] = approval,
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "La búsqueda web está apagada.",
+                },
+            },
+        });
+        if (button)
+        {
+            await loop.AnswerConfirmationAsync(true, "Sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        }
+        else
+        {
+            await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        }
+
+        NativeTurnStep last = steps[^1];
+        Assert.Multiple(() =>
+        {
+            Assert.That((last.Operation, last.Status, last.Sent), Is.EqualTo(("web.fetch", "rejected", false)));
+            Assert.That((string?)JsonNode.Parse(last.Observation)?["error"], Is.EqualTo("web_disabled_by_owner"));
+            Assert.That(loop.HasPendingConfirmation, Is.False);
+            Assert.That(outcomes, Is.EqualTo(new[] { "dropped" }));
+        });
+    }
+
     // Auditoría de la App (2026-10-23): told to answer in words (here, the engine is down), a mind that still calls does
     // not get that call run; before, each call ran, came back final again, and the turn never ended.
     [Test]

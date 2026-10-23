@@ -375,6 +375,79 @@ public sealed class SaidFoldersTests
         });
     }
 
+    // Auditoría de la App (2026-10-23): a spoken «sí» to the waiting call keeps the folders of the turn that asked it, as
+    // the Sí button does; before, «sí» replaced them and the write after it went to the home folder unruled.
+    [Test]
+    public async Task ASpokenYesKeepsTheFoldersOfTheTurnThatAsked()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = "web.fetch",
+                    ["arguments"] = new JsonObject { ["url"] = "https://exfil.example/c" },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "¿Abro esa página?",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var core = new CoreProcessClient();
+        const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+        typeof(CoreProcessClient).GetField("_ready", Private)!.SetValue(core, true);
+        typeof(CoreProcessClient).GetField("_process", Private)!.SetValue(core, Process.GetCurrentProcess());
+        var steps = new List<NativeTurnStep>();
+        var registry = new RetryableOperationRegistry();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+            PersonFolder = Known,
+        });
+        await loop.RunAsync($@"lee la página que te dije y guarda lo que diga en {_home}\banco-local",
+            Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(loop.HasPendingConfirmation, Is.True);
+
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = "file.write",
+                    ["arguments"] = new JsonObject { ["relativePath"] = "pagina.txt", ["text"] = "x", ["folder"] = "home" },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result", ["kind"] = "clarify", ["question"] = "¿Lo guardo en banco-local?",
+                },
+            },
+        });
+        await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        NativeTurnStep write = steps[^1];
+        Assert.Multiple(() =>
+        {
+            Assert.That((write.Operation, write.Status, write.Sent), Is.EqualTo(("file.write", "rejected", false)));
+            Assert.That((string?)JsonNode.Parse(write.Observation)?["error"], Is.EqualTo(SaidFolders.LeftOut));
+        });
+    }
+
     private SaidFolders Heard(string words)
     {
         var said = new SaidFolders(Known);
