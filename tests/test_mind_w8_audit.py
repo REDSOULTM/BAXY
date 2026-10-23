@@ -403,3 +403,50 @@ def test_a_rival_whose_name_could_not_be_read_is_in_the_trace(tmp_path, monkeypa
     judged = [r for r in _trace(mind) if "system_one" in r][0]["system_one"]
     assert judged["rivals_unread"] == [{"token": "app", "failed": "TimeoutError"}]
     assert "app_close" not in one.asked[0]["options"]
+
+
+TRASHED = json.dumps({"status": "completed", "verification": "readback", "observed": {"fileName": "notas.txt"}})
+ASKS = json.dumps({"status": "needs_confirmation", "next": "ask the person"})
+
+
+@pytest.mark.parametrize("setting, told", [("", "confirm_pending (filesystem_known_trash_named) → completado"),
+                                           ("none", "confirm_pending → completado")])
+def test_an_answer_to_a_confirmation_says_which_call_it_answered(tmp_path, monkeypatch, setting, told) -> None:
+    # Aid «confirm_names_call» (P5): «confirm_pending → completado y verificado» said nothing of what was done once the
+    # turn that asked was cut; the App says which call waits with the person's words.
+    from test_mind_final import _call, _mind, _say
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, server = _mind(tmp_path, [_call("confirm_pending", {"approve": True}), _say("Listo, a la papelera."),
+                                    _say("Sí.")])
+    pending = {"operation": "filesystem.known.trash.named", "arguments": {"fileName": "notas.txt"}}
+    assert mind.decide(1, "sí", pending)["operation"] == "confirmation.answer"
+    mind.continue_turn(2, TRASHED)
+    facts = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert f"[En este turno: {told}" in facts
+    mind.decide(3, "¿ya la borraste?")
+    assert told in _clock_of(server)
+
+
+def test_a_press_answers_the_call_the_turn_before_asked(tmp_path, monkeypatch) -> None:
+    from test_mind_final import _call, _mind, _say
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("filesystem_known_trash_named", {"fileName": "notas.txt"}),
+                                    _say("¿La mando a la papelera?"), _say("Listo.")])
+    mind.wire_to_op = {"filesystem_known_trash_named": "filesystem.known.trash.named"}
+    mind.decide(1, "borra notas.txt")
+    mind.continue_turn(2, ASKS, final=True)
+    assert mind.confirm(3, True, "Sí")["operation"] == "confirmation.answer"
+    mind.continue_turn(4, TRASHED)
+    facts = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert "[En este turno: confirm_pending (filesystem_known_trash_named) → completado y verificado" in facts
+
+
+def test_a_press_with_no_question_just_before_it_names_no_call(tmp_path, monkeypatch) -> None:
+    from test_mind_final import _call, _mind, _say
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_say("Hola."), _say("Listo.")])
+    mind.decide(1, "hola")
+    mind.confirm(2, True, "Sí")
+    mind.continue_turn(3, TRASHED)
+    facts = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert "[En este turno: confirm_pending → completado y verificado" in facts

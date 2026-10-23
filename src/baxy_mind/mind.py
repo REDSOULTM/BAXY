@@ -115,6 +115,8 @@ BEAT_RULES = (
 BEAT_MARK = "[Latido: nadie te habló; lo que sigue lo dijiste o hiciste por tu cuenta]"
 
 
+# How a call the kernel holds for the person's «sí» ended, in the words the model reads.
+WAITS_FOR_YES = "no se ejecutó: espera el sí de la persona"
 # How a completed call was verified (the result's «verification»), in the words the model reads.
 # Auditoría de falsedades (w5-fals, 2026-10-22): «completado» is a word of something done, and the 4B told it as done
 # where nothing was: «¿abriste Spotify?» → a read of its windows («completado: lectura») → «Sí» in 9 of 9 runs of
@@ -156,7 +158,7 @@ def _outcome(observation: str, read: bool = False) -> str:
         return "respuesta de la misma llamada hecha antes: no se ejecutó de nuevo"
     status = str(facts.get("status") or "failed")
     if status == "needs_confirmation":
-        return "no se ejecutó: espera el sí de la persona"
+        return WAITS_FOR_YES
     if status == "cancelled":
         return "cancelado por la persona"
     # Uso real 2026-10-21 (e2e del notebook): a message stopped before it was written touched the client (an uncertain
@@ -1086,6 +1088,11 @@ class Mind:
         """Whether the App says a call waits for the person's «sí» with these words."""
         return bool(isinstance(pending, dict) and pending.get("operation") and not pending.get("ended"))
 
+    @classmethod
+    def _confirming(cls, pending: dict[str, Any] | None) -> str | None:
+        """The tool of the call that waits for the person's «sí» with these words, as the App says it, or None."""
+        return str(pending["operation"]).replace(".", "_") if cls._waits(pending) else None  # type: ignore[index]
+
     @staticmethod
     def _ended(pending: dict[str, Any] | None) -> dict[str, Any] | None:
         """The call whose question ended unanswered just before these words, as the App says it, or None."""
@@ -1214,6 +1221,7 @@ class Mind:
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
             turn["text"], turn["answering"], turn["pending"] = text, True, self._waits(pending)
+            turn["confirming"] = self._confirming(pending)
             turn["ended"] = self._ended(pending)
             try:
                 return self._next(request_id, "turn.decide", turn)
@@ -1239,7 +1247,8 @@ class Mind:
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
-                          "pending": self._waits(pending), "ended": self._ended(pending), "answering": answering}
+                          "pending": self._waits(pending), "ended": self._ended(pending), "answering": answering,
+                          "confirming": self._confirming(pending)}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -1531,16 +1540,22 @@ class Mind:
         calling = str(turn.get("calling", "?"))
         calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
         outcome = _outcome(observation, read=self.risk.get(calling) in READ_RISKS)
-        entry, same = f"{calling} → {outcome}", turn.get("last_call")
+        # Aid «confirm_names_call» (auditoría de la mente, w8, P5): an answer to a confirmation says which call it
+        # answered («confirm_pending (filesystem_known_trash_named) → …»), here and in the clock; once its turn is cut,
+        # «confirm_pending → completado y verificado» no longer said what was done. Only when the App said which call
+        # waited (with the person's words) or the press answered the call the turn before had just asked.
+        told = (f"{calling} ({turn['confirming']})" if calling == CONFIRM["function"]["name"] and turn.get("confirming")
+                and _aid_on("confirm_names_call") else calling)
+        entry, same = f"{told} → {outcome}", turn.get("last_call")
         # Grouped only when the result is the same too: a click that worked and then failed are two facts (round 2).
         turn["last_call"] = (calling, turn.get("calling_args"), outcome)
         if done and same == turn["last_call"]:
             turn["repeats"] = turn.get("repeats", 1) + 1
-            done[-1] = f"{calling} ×{turn['repeats']} con los mismos argumentos → {outcome}"
+            done[-1] = f"{told} ×{turn['repeats']} con los mismos argumentos → {outcome}"
         else:
             turn["repeats"] = 1
             done.append(entry)
-        self._ran_add(turn.get("calling"), outcome, turn["awaiting"])
+        self._ran_add(told, outcome, turn["awaiting"])
         aids = _aids_seen(observation)
         named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
         # Uso real: a look at another window (the browser's) came between the opening and the failures; the application
@@ -1611,6 +1626,9 @@ class Mind:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
         started = time.perf_counter()
+        # The press answers the card of the call the turn before had just asked (its last result waits for the «sí»).
+        asked = (self._turn or {}).get("last_call")
+        confirming = asked[0] if asked and asked[2] == WAITS_FOR_YES else None
         self._close_open_calls()
         call_id = self._new_id("confirm")
         self.conversation.append({"role": "user", "content": label})
@@ -1618,7 +1636,7 @@ class Mind:
             {"id": call_id, "type": "function",
              "function": {"name": CONFIRM["function"]["name"], "arguments": json.dumps({"approve": approve})}}]})
         self._turn = {"conv": self.conversation, "queue": [], "awaiting": call_id, "text": label,
-                      "calling": CONFIRM_OPERATION}
+                      "calling": CONFIRM_OPERATION, "confirming": confirming}
         self._log("turn.confirm", started, None, text=label, kind="action", operation=CONFIRM_OPERATION,
                   arguments={"approve": approve})
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
