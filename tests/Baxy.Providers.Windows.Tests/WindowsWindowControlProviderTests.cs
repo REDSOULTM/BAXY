@@ -389,6 +389,28 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Auditoría de falsedades: a window already where it was asked to go is told as its state before the call, never as
+    // «done» by this call («¿ya lo moviste?»).
+    [Test]
+    public async Task AWindowAlreadyAsAskedSaysThisCallChangedNothing()
+    {
+        var platform = new FakePlatform();
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new WindowBoundsHandler("window.move", provider), new { windowId, x = 0, y = 0 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("changed").GetBoolean(), Is.False);
+            string next = outcome.Result!.Value.GetProperty("next").GetString()!;
+            Assert.That(next, Is.EqualTo(WindowControlResultJson.UnchangedNext));
+            Assert.That(next, Does.Not.Contain("done"));
+            Assert.That(platform.SetBoundsCalls, Is.Zero);
+        });
+    }
+
     // Auditoría de falsedades (F001): a windowId used up by an earlier action says the window was neither touched nor
     // read (BAXY told «la ventana se cerró» with Steam still open); the code stays, and with the aid off it is bare.
     [TestCase("all", true)]

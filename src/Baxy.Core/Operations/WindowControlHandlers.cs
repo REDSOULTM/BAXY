@@ -608,6 +608,9 @@ internal static class WindowControlResultJson
         return document.RootElement.Clone();
     }
 
+    internal const string UnchangedNext = "it already was so before this call: it is as asked, and this call changed "
+        + "nothing";
+
     // Ronda final: the window already was as asked and nothing was sent: the model reads changed:false.
     public static JsonElement Unchanged(JsonElement result, bool alreadyReached)
     {
@@ -616,7 +619,9 @@ internal static class WindowControlResultJson
         var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(result.GetRawText())!;
         unchanged["changed"] = false;
         // BAXY Renew cu (C13 en el PC): «changed false» was read as a failure («Word no se pudo poner a la derecha»).
-        unchanged["next"] = "it already was so: done, nothing needed to change";
+        // Auditoría de falsedades: «done» is the answer to «¿ya lo hiciste?» as something this call did; it is the
+        // window's state from before the call, already the one asked.
+        unchanged["next"] = UnchangedNext;
         using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
         return document.RootElement.Clone();
     }
