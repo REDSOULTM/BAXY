@@ -3167,3 +3167,16 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   y el no encontrado de file.read/edit dónde se buscó. Pendiente: medir en el PC la e2e de práctica (E006, E017, E019,
   E020, E024, E027, E030) y las falsedades; ojo E030: la sobrescritura ahora cae en el archivo correcto y file.write no
   pide confirmación (decisión 8), así que su oráculo UNCHANGED puede pasar a fallo.
+- 16:xx (23-10) **w8-chequeo (palanca 3, PC, sin GPU)**: ayuda «answer_check» de la mente
+  (`src/baxy_mind/answer_check.py`, `Mind._check_answer`): antes de hablar, el final se lee contra los recibos del turno
+  y las llamadas de la sesión con reglas sobre campos tipados (not_completed, no_call, implied_yes, unread_state, place,
+  partial, number, folder, asked_folder, already). Si algo no cuadra, el modelo escribe una vez más, sin herramientas, con
+  una nota que sólo dice el hecho (CHECK_NOTE); la segunda respuesta se dice tal cual y la traza la guarda (`turn.check`,
+  round 1/2, kept). Offline sobre la práctica (`scripts/renew/maximo/chequeo_offline.py`, 2 675 líneas de falsedades
+  F001-F020 y e2e E001-E030; sin ho4/hv4/final ni holdout): de las 11 claras leídas a mano en pc-t2 marca 11, de sus 232
+  limpias 0, de sus 9 dudosas 2 (F013 ×6, la ruta literalmente cierta, queda fuera a propósito). Marca 127 líneas (4,7 %;
+  2,4 % en las corridas del código más nuevo), todas defendibles a mano: claras implied_yes 43 (F002/F015),
+  folder 22 (E006/E017/E019/E024), unread_state 3; lugar no comprobado (place) 44 (F019/E015/E014; en e2e el oráculo
+  vio la biblioteca en la mayoría); dudosas partial 7 y asked_folder 8. Coste: 0,3 ms p50 / 2 ms p99 por respuesta; una
+  regeneración (~0,5-0,7 s) sólo en las marcadas. Pendiente: A/B en el PC (falsedades ×3 semillas y e2e ×2, brazo sin la
+  ayuda = BAXY_AYUDAS con todas las ids menos answer_check).

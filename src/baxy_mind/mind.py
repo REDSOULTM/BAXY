@@ -20,6 +20,7 @@ import urllib.error
 from pathlib import Path
 from typing import Any
 
+from .answer_check import check as check_answer
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
@@ -657,6 +658,14 @@ CUT_TEXT_FLOOR = 500
 # instead of 10 of 1,530 right ones (phase 0, 2026-10-21).
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
               "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
+# Aid «answer_check» (al máximo, lever 3; answer_check.py): what the model reads when its final answer contradicts the
+# turn's results, before it is spoken. Only the facts and what to do with them, never words to say (invariant 5): the
+# model writes its answer again, once, with no tools. Offline on the stored practice transcripts it flagged the 11 clear
+# falsehoods of the hand-read pc-t2 runs and none of their 232 clean lines (scripts/renew/maximo/chequeo_offline.py).
+CHECK_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo y no cuadra con los resultados. "
+              "{facts} Escribe de nuevo tu respuesta a la persona contando sólo lo que muestran los resultados.]")
+CHECK_FACT = "Dice «{said}», pero {fact}."
+CHECK_FACTS = 3
 # Renew al máximo (confirmaciones, 2026-10-23): a «sí» the model is not sure is one. On the real model (29 answers to a
 # pending trash of notas.txt, 3 seeds, int7) every plain yes («sí», «dale», «ya po», «okey», «go ahead», «zí») confirmed at
 # ≥ 0.998 and «sí pero el otro» at 0.77-0.79, which would have trashed the file the person had just said was not the
@@ -914,6 +923,9 @@ class Mind:
         self._ran: list[str] = []  # the session's last calls as «tool → how it ended» (8.1), and how many ran in all
         self._ran_ids: list[str | None] = []  # the id of each of those calls (None: not known), for the clock
         self._ran_count = 0
+        # Aid «answer_check»: every call of the session as (operation, completed, read_only), for the check of the final
+        # answer; None when the session is not known whole (one kept before the aid).
+        self._calls: list[tuple[str, bool, bool]] | None = []
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
         # A person's turn or a heartbeat reached the model in this process: the slot holds more than the prefix, and
@@ -1096,6 +1108,12 @@ class Mind:
         """The tool of the call that waits for the person's «sí» with these words, as the App says it, or None."""
         return str(pending["operation"]).replace(".", "_") if cls._waits(pending) else None  # type: ignore[index]
 
+    @classmethod
+    def _pending_op(cls, pending: dict[str, Any] | None) -> str | None:
+        """The operation a «sí» with these words would confirm, as the App says it (aid «answer_check»: what a
+        confirm_pending call did)."""
+        return str(pending["operation"]) if cls._waits(pending) else None  # type: ignore[index]
+
     @staticmethod
     def _ended(pending: dict[str, Any] | None) -> dict[str, Any] | None:
         """The call whose question ended unanswered just before these words, as the App says it, or None."""
@@ -1147,6 +1165,7 @@ class Mind:
         self.trimmed_turns = 0
         self._refs, self._ref_of, self._ids = {}, {}, 0
         self._ran, self._ran_ids, self._ran_count = [], [], 0
+        self._calls = []
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
@@ -1157,6 +1176,8 @@ class Mind:
         8.1: the session's calls); the App keeps the array as it is."""
         state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids, "ran": self._ran,
                  "ran_ids": self._ran_ids, "ran_count": self._ran_count}
+        if self._calls is not None:
+            state["calls"] = [list(call) for call in self._calls]
         return json.loads(json.dumps([*self.conversation, state], ensure_ascii=False))
 
     def load_session(self, conversation: list[Any]) -> None:
@@ -1180,6 +1201,12 @@ class Mind:
             # Kept before 8.1: how many calls its conversation shows (their results are in it), never «none».
             self._ran_count = sum(1 for m in self.conversation for c in m.get("tool_calls") or []
                                   if c.get("function", {}).get("name") != ASK_USER["function"]["name"])
+        calls = state.get("calls")
+        # Kept before «answer_check» (or written otherwise): what ran in it is not known whole, and nothing is checked
+        # against the session's calls.
+        self._calls = ([(str(c[0]), c[1], c[2]) for c in calls] if isinstance(calls, list) and all(
+            isinstance(c, list) and len(c) == 3 and isinstance(c[1], bool) and isinstance(c[2], bool) for c in calls)
+            else None if any(m.get("tool_calls") for m in self.conversation) else [])
         self._trim()
 
     @staticmethod
@@ -1230,7 +1257,7 @@ class Mind:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
             turn["text"], turn["answering"], turn["pending"] = text, True, self._waits(pending)
             turn["confirming"] = self._confirming(pending)
-            turn["ended"] = self._ended(pending)
+            turn["ended"], turn["pending_op"] = self._ended(pending), self._pending_op(pending)
             try:
                 return self._next(request_id, "turn.decide", turn)
             except Exception:
@@ -1256,7 +1283,7 @@ class Mind:
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
                           "pending": self._waits(pending), "ended": self._ended(pending), "answering": answering,
-                          "confirming": self._confirming(pending)}
+                          "confirming": self._confirming(pending), "pending_op": self._pending_op(pending)}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -1397,6 +1424,29 @@ class Mind:
         return [entry if call_id is None or call_id in bodies else _omitted(entry)
                 for entry, call_id in zip(self._ran, self._ran_ids)]
 
+    def _receipt(self, turn: dict[str, Any], wire: str, observation: str, outcome: str) -> None:
+        """A call of the turn as the answer check reads it (aid «answer_check»), and in the session's calls. A
+        confirmation's own call stands for the operation it answered: the one its result names, else the one the App
+        said was waiting, else any (CONFIRM_OPERATION)."""
+        op = str(turn.get("calling") or "?")
+        if op == CONFIRM_OPERATION:
+            try:
+                named = json.loads(observation).get("operation")
+            except (json.JSONDecodeError, AttributeError):
+                named = None
+            op = str(named or turn.get("pending_op") or CONFIRM_OPERATION)
+        completed = outcome.startswith(COMPLETED_OUTCOMES)
+        read = self.risk.get(op.replace(".", "_")) == "read_only"
+        try:
+            arguments = json.loads(turn.get("calling_args") or "{}")
+        except json.JSONDecodeError:
+            arguments = {}
+        turn.setdefault("receipts", []).append({"op": op, "tool": wire, "arguments": arguments,
+                                                "observation": observation, "outcome": outcome,
+                                                "completed": completed, "read": read})
+        if self._calls is not None:
+            self._calls.append((op, completed, read))
+
     def _close_open_calls(self) -> None:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
         valid tool transcript and the model never reads an unanswered call as done."""
@@ -1404,6 +1454,9 @@ class Mind:
         if turn.get("awaiting"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
             self._ran_add(turn.get("calling"), NO_RESULT_RAN)
+            if self._calls is not None:  # it may have run: never a completed call of the session
+                op = str(turn.get("calling") or "?")
+                self._calls.append((op, False, self.risk.get(op.replace(".", "_")) == "read_only"))
         if turn.get("asked"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["asked"], "content": ASKED})
         pending = [c["id"] for c in turn.get("queue") or []]
@@ -1571,6 +1624,7 @@ class Mind:
             turn["repeats"] = 1
             done.append(entry)
         self._ran_add(told, outcome, turn["awaiting"])
+        self._receipt(turn, calling, observation, outcome)
         aids = _aids_seen(observation)
         named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
         # Uso real: a look at another window (the browser's) came between the opening and the failures; the application
@@ -1634,6 +1688,10 @@ class Mind:
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.perf_counter(), "")
         for call in turn["queue"]:
             conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN if final else NOT_RUN_AFTER})
+            turn.setdefault("receipts", []).append({
+                "op": self.wire_to_op.get(call["wire"], call["wire"]), "tool": call["wire"],
+                "arguments": call["arguments"], "observation": NOT_RUN, "outcome": GIST_NOT_RUN, "completed": False,
+                "read": self.risk.get(call["wire"]) == "read_only"})
         turn["queue"] = []
         return self._next(request_id, "turn.continue", turn, final=final)
 
@@ -1762,6 +1820,10 @@ class Mind:
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
             return self._next(request_id, stage, turn, final=True)
+        if content and not turn.get("beat") and _aid_on("answer_check"):
+            checked = self._check_answer(request_id, stage, turn, content, reply, started)
+            if checked is not None:
+                return checked
         if content:
             conv.append({"role": "assistant", "content": content})
             if not streams and self.foresee is not None and not turn.get("beat"):
@@ -1773,6 +1835,47 @@ class Mind:
                 except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
                     pass
         return self._result(request_id, turn, None, reply, stage, started, content)
+
+    def _check_answer(self, request_id: Any, stage: str, turn: dict[str, Any], content: str, reply: dict | None,
+                      started: float) -> dict[str, Any] | None:
+        """Aid «answer_check» (al máximo, lever 3): the final answer read against the turn's results before it is
+        spoken (answer_check.check). Contradicted, the model is asked once more, words only, with a note that says the
+        facts that contradict it; its second answer is the one spoken, whatever it says, and the trace keeps both
+        checks (turn.check). None: the answer stands as it is."""
+        findings = check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls)
+        private = bool(turn.get("private"))
+        shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
+        if turn.get("checked"):
+            # The second answer: spoken as it is, never asked again (no loop); the trace says whether it still
+            # contradicts.
+            self._log("turn.check", started, None, round=2, findings=shown, kept=bool(findings))
+            return None
+        if not findings:
+            return None
+        turn["checked"] = True
+        self._log("turn.check", started, None, round=1, findings=shown, content=None if private else content)
+        if self.foresee is not None:
+            try:
+                self.foresee(None, True)  # the first sentence the voice synthesized ahead is not the one spoken
+            except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
+                pass
+        note = {"role": "user", "content": CHECK_NOTE.format(facts=" ".join(
+            CHECK_FACT.format(said=f["said"], fact=f["fact"]) for f in findings[:CHECK_FACTS]))}
+        conv = turn["conv"]
+        conv.append(note)
+        try:
+            result = self._next(request_id, stage, turn, final=True)
+        finally:
+            # The note was for that one answer: the conversation keeps what was said, not the check.
+            for index in range(len(conv) - 1, -1, -1):
+                if conv[index] is note:
+                    del conv[index]
+                    break
+        if result.get("kind") == "conversation" and not result.get("reply"):
+            # Nothing written the second time: the first answer is spoken (the trace has it as contradicted).
+            conv.append({"role": "assistant", "content": content})
+            result["reply"] = content
+        return result
 
     @staticmethod
     def _doubted(stage: str, turn: dict[str, Any], final: bool) -> bool:

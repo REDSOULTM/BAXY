@@ -171,9 +171,10 @@ def test_a_request_that_differs_is_decided_as_always(tmp_path: Path, monkeypatch
                                                     change: str) -> None:
     pending = {"operation": "app.close", "arguments": {"appId": "Paint"}} if change == "pending" else None
     text = "¿ya lo cerraste?" if change == "text" else "¿ya lo abriste?"
-    control, plain = _mind(tmp_path / "control", _replies(_say("Sí.")), monkeypatch)
+    control, plain = _mind(tmp_path / "control", _replies(_say("No lo he mirado.")), monkeypatch)
     _before(control)
-    mind, server = _mind(tmp_path / "early", _replies(_say("Sí, Paint está abierto."), _say("Sí.")), monkeypatch)
+    mind, server = _mind(tmp_path / "early", _replies(_say("Todavía no lo miro."), _say("No lo he mirado.")),
+                         monkeypatch)
     _before(mind)
     anticipation = Anticipation(mind)
     assert anticipation.speculate(1, "¿ya lo abriste?") is True
