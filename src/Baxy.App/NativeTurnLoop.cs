@@ -329,6 +329,11 @@ internal sealed class NativeTurnLoop
         CancellationToken interrupted = default)
     {
         var closing = new TurnClosing();
+        // The mind was told to answer in words (the moves or the time spent, the engine down, a call waiting for the
+        // person): a call it still returns does not run. Auditoría de la App (2026-10-23): only the mind's logit bias held
+        // the budget, and a call after it ran, each one final again, with no end (engine down: engine_unavailable for
+        // ever; a call waiting: dropped by the next).
+        bool answerInWords = false;
         for (int calls = 1; ; calls++)
         {
             switch (step)
@@ -363,6 +368,17 @@ internal sealed class NativeTurnLoop
                 return;
             }
 
+            if (answerInWords)
+            {
+                ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.call_after_final", "");
+                if (!_beat)
+                {
+                    _host.Fail("decision_unavailable_after_call");
+                }
+
+                return;
+            }
+
             string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             _egress.Observed(step.Operation!, observation);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
@@ -377,6 +393,7 @@ internal sealed class NativeTurnLoop
                 observation = Waiting(observation, waiting.OperationName);
             }
 
+            answerInWords = final;
             step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }

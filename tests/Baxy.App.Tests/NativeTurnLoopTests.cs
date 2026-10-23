@@ -145,6 +145,50 @@ public sealed class NativeTurnLoopTests
         });
     }
 
+    // Auditoría de la App (2026-10-23): told to answer in words (here, the engine is down), a mind that still calls does
+    // not get that call run; before, each call ran, came back final again, and the turn never ended.
+    [Test]
+    public async Task ACallAfterTheMindWasToldToAnswerInWordsDoesNotRun()
+    {
+        using var fake = new FakeMind();
+        var call = new JsonObject
+        {
+            ["type"] = "turn.result",
+            ["kind"] = "action",
+            ["operation"] = "system.time",
+            ["arguments"] = new JsonObject(),
+        };
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject { ["turn.decide"] = call, ["turn.continue"] = call.DeepClone() },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var steps = new List<NativeTurnStep>();
+        var failures = new List<string>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = static () => null,
+            Mind = () => mind,
+            Registry = static () => null,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = failures.Add,
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+        });
+
+        await loop.RunAsync("¿qué hora es?", Stopwatch.GetTimestamp(), CancellationToken.None)
+            .WaitAsync(TimeSpan.FromSeconds(30));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(steps.Select(static step => step.Operation), Is.EqualTo(new[] { "system.time" }));
+            Assert.That(failures, Is.EqualTo(new[] { "decision_unavailable_after_call" }));
+            Assert.That(fake.Requests("turn.continue").Select(static request => (bool?)request["final"]),
+                Is.EqualTo(new bool?[] { true }));
+        });
+    }
+
     // Auditoría de confirmaciones (2026-10-23): the person's words answer only BAXY's last question. The words right
     // after it still reach the model with the waiting call; a line BAXY publishes in that later turn leaves the question
     // behind, so the call is dropped then and the «sí» to that line is no answer to it.
