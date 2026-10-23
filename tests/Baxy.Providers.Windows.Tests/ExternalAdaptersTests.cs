@@ -3181,6 +3181,47 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w8): a Wi-Fi status netsh did not give says why (the WLAN service stopped, or not read), never the
+    // adapter's generic failure; after a disconnection was sent, one unanswered look does not end the wait.
+    [Test]
+    public async Task AnUnreadWifiStatusSaysWhyAndOneUnansweredLookDoesNotEndTheWait()
+    {
+        using TemporaryDirectory temporary = new();
+        var stopped = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wlan_service_not_running\"}",
+        ]));
+        var unread = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wifi_status_not_read\"}",
+        ]));
+        var none = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wifi_radio_not_found\"}",
+        ]));
+        var delay = new RecordingDelay();
+        var disconnecting = new SequencedProcessRunner([
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Private WiFi\"}",
+            "",
+            "{\"ok\":false,\"error\":\"wifi_status_not_read\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
+        ]);
+        var disconnect = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, disconnecting, delay.DelayAsync);
+
+        ExternalCapabilityReceipt stoppedReceipt = await stopped.InvokeAsync("wifi.status", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt unreadReceipt = await unread.InvokeAsync("wifi.status", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt noneReceipt = await none.InvokeAsync("wifi.ensure.connected", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt disconnected = await disconnect.InvokeAsync("wifi.disconnect", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stoppedReceipt.ErrorCode, Is.EqualTo("wlan_service_not_running"));
+            Assert.That(stoppedReceipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(unreadReceipt.ErrorCode, Is.EqualTo("wifi_status_not_read"));
+            Assert.That(noneReceipt.ErrorCode, Is.EqualTo("wifi_radio_not_found"));
+            Assert.That(disconnected.Verified, Is.True, disconnected.ErrorCode);
+            Assert.That(disconnecting.Calls, Is.EqualTo(4));
+            Assert.That(delay.Calls, Is.EqualTo(1));
+        });
+    }
+
     [Test]
     [Explicit("Reads the actual Windows WLAN state twice without changing it.")]
     public async Task WifiStatusReadsActualWindowsStateTwice()

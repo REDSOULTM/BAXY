@@ -124,10 +124,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         [pscustomobject]@{ok=$true;profiles=$profiles}|ConvertTo-Json -Compress
         """;
     // Auditoría final (regla 3): a netsh that failed or printed no interface header is a status not read, never
-    // «disconnected».
+    // «disconnected». Renew al máximo (w8): the WLAN service stopped and a computer with no Wi-Fi adapter are said as
+    // such (wifi.scan's own codes; the notebook has none: «No hay ninguna interfaz inalámbrica en el sistema»), and
+    // any other unread status as wifi_status_not_read, not the adapter's generic failure.
     internal const string WifiStatusScript = """
-        $text=@(netsh wlan show interfaces);$code=$LASTEXITCODE
-        if($code -ne 0 -or -not (($text -join "`n") -match '(?i)(?:hay|there (?:is|are))\s+\d+\s+interfa')){[pscustomobject]@{ok=$false}|ConvertTo-Json -Compress;exit 0}
+        $text=@(netsh wlan show interfaces);$code=$LASTEXITCODE;$joined=($text -join "`n")
+        if($joined -match '(?i)is not running|no se está ejecutando|no está en ejecución'){[pscustomobject]@{ok=$false;error='wlan_service_not_running'}|ConvertTo-Json -Compress;exit 0}
+        if($joined -match '(?i)no hay ninguna interfaz|there is no wireless interface|no wireless interface'){[pscustomobject]@{ok=$false;error='wifi_radio_not_found'}|ConvertTo-Json -Compress;exit 0}
+        if($code -ne 0 -or -not ($joined -match '(?i)(?:hay|there (?:is|are))\s+\d+\s+interfa')){[pscustomobject]@{ok=$false;error='wifi_status_not_read'}|ConvertTo-Json -Compress;exit 0}
         $connected=$false;$profile=''
         foreach($line in $text){if($line -match '^\s*(?:State|Estado)\s*:\s*(connected|conectado)\s*$'){$connected=$true};if($line -match '^\s*(?:Profile|Perfil)\s*:\s*(.+?)\s*$'){$profile=$Matches[1]}}
         [pscustomobject]@{ok=$true;connected=$connected;profile=$profile}|ConvertTo-Json -Compress
@@ -390,6 +394,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         catch (TimeoutException) when (operation == "bluetooth.device.list")
         {
             return ExternalJson.Failure(operation, "bluetooth_winrt_inventory_timeout");
+        }
+        catch (WifiStatusUnreadException unread)
+        {
+            return effectBoundary.Failure(operation, unread.Code);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException or InvalidDataException or JsonException
@@ -2146,8 +2154,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         (int pauses, TimeSpan pause) = WifiPolling(TimeSpan.FromMilliseconds(500), 30);
         for (int observation = 0; observation <= pauses; observation++)
         {
-            using JsonDocument status = await WifiStatusAsync(token);
-            if (Bool(status.RootElement, "connected")
+            using JsonDocument? status = await TryWifiStatusAsync(token);
+            if (status is not null
+                && Bool(status.RootElement, "connected")
                 && string.Equals(
                     status.RootElement.GetProperty("profile").GetString(),
                     profile,
@@ -2192,8 +2201,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         (int pauses, TimeSpan pause) = WifiPolling(TimeSpan.FromMilliseconds(300), 20);
         for (int observation = 0; observation <= pauses; observation++)
         {
-            using JsonDocument status = await WifiStatusAsync(token);
-            if (!Bool(status.RootElement, "connected"))
+            using JsonDocument? status = await TryWifiStatusAsync(token);
+            if (status is not null && !Bool(status.RootElement, "connected"))
             {
                 return ExternalJson.Success(
                     operation,
@@ -2633,10 +2642,31 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         JsonDocument status = ParseLastJson(process.Output);
         if (status.RootElement.ValueKind != JsonValueKind.Object || !Bool(status.RootElement, "ok"))
         {
+            string code = status.RootElement.ValueKind == JsonValueKind.Object ? String(status.RootElement, "error") : "";
             status.Dispose();
-            throw new IOException("netsh wlan show interfaces was not read.");
+            throw new WifiStatusUnreadException(
+                code is "wlan_service_not_running" or "wifi_radio_not_found" ? code : "wifi_status_not_read");
         }
         return status;
+    }
+
+    // Renew al máximo (w8): after a connect or disconnect was sent, one status netsh did not answer ended the wait with
+    // the adapter's generic failure; it is now one look that saw nothing, and the wait goes on.
+    private async ValueTask<JsonDocument?> TryWifiStatusAsync(CancellationToken token)
+    {
+        try
+        {
+            return await WifiStatusAsync(token);
+        }
+        catch (WifiStatusUnreadException)
+        {
+            return null;
+        }
+    }
+
+    private sealed class WifiStatusUnreadException(string code) : IOException("netsh wlan show interfaces was not read.")
+    {
+        internal string Code { get; } = code;
     }
 
     private ValueTask<ExternalProcessResult> RunPowerShellAsync(
