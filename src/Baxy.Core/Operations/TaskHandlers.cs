@@ -52,6 +52,11 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
         {
             return ValueTask.FromResult(OperationOutcome.Failure("task_version_conflict"));
         }
+        // Auditoría del Core (w8): the invocation's key already made another task (note.create says the same).
+        catch (NoteConflictException)
+        {
+            return ValueTask.FromResult(OperationOutcome.Failure("idempotency_conflict"));
+        }
         catch (NoteValidationException)
         {
             return ValueTask.FromResult(OperationOutcome.Failure("invalid_task"));
@@ -181,7 +186,8 @@ internal sealed class CreateTaskHandler(ILocalTaskStore store) : TaskHandlerBase
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {
         TaskCreateArguments arguments = Parse(invocation.Arguments, CoreJsonContext.Default.TaskCreateArguments);
-        return VerifiedMutation(Store.Create(arguments.Title, arguments.Details ?? string.Empty, arguments.Due));
+        return VerifiedMutation(Store.Create(
+            arguments.Title, arguments.Details ?? string.Empty, arguments.Due, invocation.InvocationId));
     }
 }
 
