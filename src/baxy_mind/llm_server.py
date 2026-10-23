@@ -38,8 +38,11 @@ class LlmServer:
     REQUEST_SECONDS = 24.0
 
     def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int = 32768,
-                 extra_args: list[str] | None = None, log_name: str = "llama-server.log") -> None:
+                 extra_args: list[str] | None = None, log_name: str = "llama-server.log",
+                 kv: tuple[str, str] | None = None) -> None:
         self.gguf = gguf
+        # The KV cache's types (K, V): BAXY_RENEW_KV when not given (kv_types), q8_0 and q8_0 by default.
+        self.kv = kv or kv_types(os.environ.get("BAXY_RENEW_KV", ""))
         self.extra_args = list(extra_args or [])
         self.log_name = log_name
         self.server = server
@@ -64,7 +67,7 @@ class LlmServer:
         vision = _vision_args()
         self._settings = [
             "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
-            "-ctk", "q8_0", "-ctv", "q8_0", "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
+            "-ctk", self.kv[0], "-ctv", self.kv[1], "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
             # they reach the GPU (measured on the PC 2026-10-15: RAM 3237 → 1132 MiB, same VRAM 3905 MiB and speed).
             "--load-mode", "none",
@@ -372,6 +375,29 @@ class LlmServer:
 
 # The kept prefix's files in the slot folder: its state (.slot, never *.bin: start() removes those) and its facts (.json).
 PREFIX = "baxy_prefix_"
+
+# w6-lat (2026-10-23): the KV cache's types, an option for an A/B and never the default (q8_0 for K and V). BAXY_RENEW_KV
+# is one type for both («q4_0») or «K,V» («q8_0,q4_0»). Expected, not measured (no GPU run): Qwen3.5-4B keeps K and V in
+# its 8 full-attention layers of 32 (4 KV heads × 256), 17 KiB per token at q8_0 (llama_kv_cache: 136 MiB for 8,192
+# cells); at q4_0 ~9 KiB. With the ~44k tokens of a turn in the slot, each decoded token reads ~0.73 GiB of KV beside the
+# ~2.55 GiB of Q4_K_M weights: q4_0 for both reads ~0.35 GiB less (−11 % of the bytes; decode up to ~8-10 % faster where
+# it is bound by memory: predicted 487 ms → ~440-450 ms per turn.continue) and frees ~0.4 GiB of VRAM at 53,248 cells;
+# «q8_0,q4_0» half of that. Risk: K at 4 bits is the part that moves attention most (llama.cpp's perplexity reports: q8_0
+# close to f16, q4_0 K clearly worse than q4_0 V), on a 4B whose decisions were tuned at q8_0; the prompt may read no
+# faster (dequantized in the flash-attention kernel); a new type is a new prefix key (Mind.warm reads the prefix once
+# more, ~18 s, then keeps it). Needs decision2, falsedades and e2e A/B on the GPU before any default changes.
+KV_TYPES = ("f16", "q8_0", "q5_1", "q5_0", "q4_1", "q4_0")
+
+
+def kv_types(setting: str) -> tuple[str, str]:
+    """The KV cache's (K, V) types from BAXY_RENEW_KV's text: empty, q8_0 and q8_0; one type, both; «K,V», each. Any
+    other text fails the start with its cause (RuntimeError, as a pinned port in use)."""
+    parts = [part.strip().lower() for part in setting.split(",")] if setting.strip() else ["q8_0"]
+    if len(parts) == 1:
+        parts *= 2
+    if len(parts) != 2 or any(part not in KV_TYPES for part in parts):
+        raise RuntimeError(f"BAXY_RENEW_KV {setting!r}: one of {', '.join(KV_TYPES)}, or two of them as «K,V»")
+    return parts[0], parts[1]
 
 
 def _vision_args() -> list[str]:

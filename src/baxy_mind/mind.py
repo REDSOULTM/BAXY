@@ -135,6 +135,11 @@ READ_RISKS = ("read_only", "privacy_sensitive")
 OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba"
 # Every outcome of a completed call (the App runs the queued calls after one of these).
 COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ)
+# What the facts line adds of a result's own fields (_outcome), and what _deduplicated leaves out of it for that.
+ALREADY_OPEN = "; ya estaba abierta antes de esta llamada"
+SAME_WINDOW = "; la ventana no cambió"
+AFTER_VIEW = "; su after es la ventana de después"
+REREAD = {True: "; releído después: quedó como se pidió", False: "; releído después: no quedó como se pidió"}
 
 
 def _outcome(observation: str, read: bool = False) -> str:
@@ -165,8 +170,7 @@ def _outcome(observation: str, read: bool = False) -> str:
     after = shown.get("stateAfter")
     reread = ""
     if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool):
-        reread = ("; releído después: quedó como se pidió" if after["requestedStateReached"]
-                  else "; releído después: no quedó como se pidió")
+        reread = REREAD[after["requestedStateReached"]]
     if status == "pending" or facts.get("effectUncertain"):
         return "sin confirmar: pudo o no ocurrir" + reread
     if status == "completed":
@@ -179,14 +183,14 @@ def _outcome(observation: str, read: bool = False) -> str:
         # Al máximo 7.1 (notebook): an act in a window brings the window as it is after it; what it says is told.
         view = shown.get("after")
         seen = ("" if not isinstance(view, dict) or view.get("omitted")
-                else "; la ventana no cambió" if view.get("same") is True
-                else "; su after es la ventana de después")
+                else SAME_WINDOW if view.get("same") is True
+                else AFTER_VIEW)
         verification = str(facts.get("verification"))
         told = (OUTPUT_READ if read and verification == "output_only"
                 else VERIFICATION.get(verification, VERIFICATION["none"]))
         # Auditoría de falsedades (F002): an application BAXY did not start (app_open's alreadyRunning) is said so,
         # or «¿abriste X?» after opening one already open read «completado y verificado» as «Sí, lo abrí».
-        before = "; ya estaba abierta antes de esta llamada" if shown.get("alreadyRunning") is True else ""
+        before = ALREADY_OPEN if shown.get("alreadyRunning") is True else ""
         # The App's own completed result it could not read (result_unreadable) keeps its code.
         error = facts.get("error")
         code = f" ({error})" if isinstance(error, str) and error else ""
@@ -247,6 +251,46 @@ def _read_in_part(shown: dict[str, Any]) -> str:
         part.append("no llegó al final")
     detail = (": " + ", ".join(part)) if part else ""
     return f"; leído en parte{detail}; lo demás no se leyó: un «no está» vale sólo para lo leído"
+
+
+def _deduplicated(observation: str, outcome: str) -> str:
+    """Aid «result_dedup» (w6-lat, 2026-10-23): the result without the fields its facts line (``outcome``, _outcome's
+    words for it, written right after it) already says, so the model reads each fact once. On the holdout v4 the first
+    spoken answer after a tool went 3.4 → 4.3 s p50, turn.continue reading 124 → 156 tokens. Left out only where the line
+    says it: a completed call's status and verification («completado y verificado», «lectura: …»), its fullPath («en
+    C:\\…»), alreadyRunning true (ALREADY_OPEN), an after that is only {"same": true} (SAME_WINDOW) and stateAfter's
+    requestedStateReached (REREAD). The rest stays as it came, in the App's compact JSON; a result with none of them is
+    the App's own text."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return observation
+    if not isinstance(facts, dict):
+        return observation
+    shown = dict(facts)
+    if shown.get("status") == "completed" and outcome.startswith(COMPLETED_OUTCOMES):
+        shown.pop("status")
+        shown.pop("verification", None)
+    if isinstance(facts.get("observed"), dict):
+        observed = dict(facts["observed"])
+        where = observed.get("fullPath")
+        if isinstance(where, str) and where and f" en {where}" in outcome:
+            del observed["fullPath"]
+        if observed.get("alreadyRunning") is True and ALREADY_OPEN in outcome:
+            del observed["alreadyRunning"]
+        if observed.get("after") == {"same": True} and SAME_WINDOW in outcome:
+            del observed["after"]
+        after = observed.get("stateAfter")
+        if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool) \
+                and REREAD[after["requestedStateReached"]] in outcome:
+            observed["stateAfter"] = {k: v for k, v in after.items() if k != "requestedStateReached"}
+        if observed or not facts["observed"]:
+            shown["observed"] = observed
+        else:
+            del shown["observed"]  # all it held is in the line
+    if shown == facts:
+        return observation
+    return json.dumps(shown, ensure_ascii=False, separators=(",", ":"))
 
 
 def _aid_on(aid: str) -> bool:
@@ -770,6 +814,37 @@ def _model_schema(schema: Any, constants: dict[str, Any] | None = None) -> Any:
     return out
 
 
+def _as_written(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Aid «calls_as_written» (w6-lat, 2026-10-23): the conversation's calls with each boolean argument as the model
+    writes it. Under the call grammar llama-server makes from the tools' schemas the model writes «true» / «false»
+    (JSON), and Qwen3.5's template writes a call's top-level value with Jinja's «| string», «True» / «False»: the request
+    after a call stopped matching what the slot held at that value, and the hybrid model went back to its checkpoint 4
+    tokens before the decision's end and re-read those tokens, the call and the result (CPU probe, b11609, ft c2e1:
+    audio_mute {state: true} 54 → 23 tokens, app_open {foreground: true} 65 → 23; 52 of 278 calls of the practice e2e
+    have one). Given as the text «true» / «false», the template writes it as it came; objects and lists it already writes
+    with tojson, strings and numbers as given. Only the request changes: the conversation keeps its calls as they were."""
+    written: list[dict[str, Any]] = []
+    for message in messages:
+        calls = message.get("tool_calls") if message.get("role") == "assistant" else None
+        if not calls:
+            written.append(message)
+            continue
+        told = []
+        for call in calls:
+            function = call.get("function") or {}
+            try:
+                arguments = json.loads(function.get("arguments") or "{}")
+            except (json.JSONDecodeError, TypeError):
+                arguments = None
+            if not isinstance(arguments, dict) or not any(isinstance(v, bool) for v in arguments.values()):
+                told.append(call)
+                continue
+            arguments = {k: ("true" if v else "false") if isinstance(v, bool) else v for k, v in arguments.items()}
+            told.append({**call, "function": {**function, "arguments": json.dumps(arguments, ensure_ascii=False)}})
+        written.append({**message, "tool_calls": told})
+    return written
+
+
 # Palanca P2.6: Start menu entries no one opens as an application, by the shape of their (folded) name, never by an
 # application's name: an uninstaller («Uninstall X», «Desinstalar X»; «X Uninstaller» is an application), help, a
 # manual, documentation or a license, release notes, and a web page. They leave app_open's list of installed
@@ -832,9 +907,11 @@ class Mind:
         self._turned = False
 
     # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
-    def _shorten(self, observation: str) -> tuple[str, dict[str, str]]:
+    def _shorten(self, observation: str, compact: bool = False) -> tuple[str, dict[str, str]]:
         """The result with every address longer than LONG_REF_CHARS replaced by its short reference, and the
-        references made for it (a known address keeps its reference). Text that is not JSON goes as it came."""
+        references made for it (a known address keeps its reference). Text that is not JSON goes as it came.
+        ``compact`` (aid «result_dedup»): written as compact as the App writes it, not with a space after each comma and
+        colon (one token more per field)."""
         try:
             facts = json.loads(observation)
         except json.JSONDecodeError:
@@ -858,7 +935,7 @@ class Mind:
         shortened = walk(facts)
         if not made:
             return observation, {}
-        return json.dumps(shortened, ensure_ascii=False), made
+        return json.dumps(shortened, ensure_ascii=False, separators=(",", ":") if compact else None), made
 
     def _expand(self, value: Any) -> Any:
         """A call's arguments with every short reference the model wrote put back as the address it stands for."""
@@ -981,6 +1058,12 @@ class Mind:
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
         return BEAT_SYSTEM if beat else SYSTEM
+
+    @staticmethod
+    def _history(conv: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """The conversation as a request sends it: every request and the prefill render it alike (aid
+        «calls_as_written»), or the prefill's text would not be the next prompt's start."""
+        return _as_written(conv) if _aid_on("calls_as_written") else conv
 
     @staticmethod
     def _waits(pending: dict[str, Any] | None) -> bool:
@@ -1203,7 +1286,7 @@ class Mind:
                 or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
             return False
         started = time.perf_counter()
-        body = {"messages": [{"role": "system", "content": self._system()}, *self.conversation,
+        body = {"messages": [{"role": "system", "content": self._system()}, *self._history(self.conversation),
                              {"role": "user", "content": PREFILL_MARK}],
                 "tools": self.tools, "chat_template_kwargs": {"enable_thinking": False}}
         try:
@@ -1431,9 +1514,12 @@ class Mind:
             repeated = SAME_CALL_NOTE.format(call=calling, times=told_at, outcome=outcome, options=options)
             note += repeated
             aids["same_call_next"] = repeated.strip()
+        # Aid «result_dedup» (w6-lat): what the facts line below says of this result is not said in it again.
+        compact = _aid_on("result_dedup")
+        told = _deduplicated(observation, outcome) if compact else observation
         # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long
         # address in a result reaches the model as a short reference, and the mind puts the address back in its calls.
-        shown, made = self._shorten(observation) if _aid_on("short_refs") else (observation, {})
+        shown, made = self._shorten(told, compact) if _aid_on("short_refs") else (told, {})
         if made:
             aids["short_refs"] = sorted(made) if turn.get("private") else made
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
@@ -1492,7 +1578,7 @@ class Mind:
         started = time.perf_counter()
         self._turned = True
         conv = turn["conv"]
-        messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *conv]
+        messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *self._history(conv)]
         body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
                 "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
