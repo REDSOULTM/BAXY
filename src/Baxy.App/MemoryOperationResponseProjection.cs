@@ -512,10 +512,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        string safeValue = sensitivity is "sensitive" or "secret"
-            ? "[REDACTED]"
-            : value;
-        projected = new ProjectedRecord(label, safeValue);
+        bool sensitive = sensitivity is "sensitive" or "secret";
+        projected = new ProjectedRecord(label, sensitive ? "[REDACTED]" : value, sensitive);
         return true;
     }
 
@@ -539,8 +537,17 @@ internal sealed record MemoryOperationResponseProjection(string Message)
 
         var records = new JsonArray();
         int shown = 0;
+        int unnamed = 0;
         foreach (ProjectedRecord record in projected.Records.Take(MaximumProjectedRecords))
         {
+            // Renew al máximo (w9): a sensitive or secret record is named only by an exact recall that named it
+            // (exactMatch:true); a listing (list, recall all or of a kind, an exact miss) only counts it.
+            if (record.Sensitive && projected.ExactMatch != true)
+            {
+                unnamed++;
+                continue;
+            }
+
             string label = TruncateText(record.Label, 160, "…");
             string value = TruncateText(record.Value, 512, "…");
             records.Add(new JsonObject
@@ -555,19 +562,23 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             }
         }
 
-        string cause = shown == 0 ? "memory_view_unsafe" : "memory_records";
+        string cause = shown == 0 && unnamed == 0 ? "memory_view_unsafe" : "memory_records";
         JsonObject extra = new()
         {
             ["shown"] = shown,
             ["total"] = projected.TotalCount,
             ["records"] = records,
         };
+        if (unnamed > 0)
+        {
+            extra["sensitiveNotNamed"] = unnamed;
+        }
         if (projected.ExactMatch is bool exactMatch)
         {
             extra["exactMatch"] = exactMatch;
         }
 
-        return shown == 0
+        return shown == 0 && unnamed == 0
             ? TurnVisibleFacts.Failure(cause, extra)
             : CompletedFacts(operationName, cause, extra, responseReplayed);
     }
@@ -915,7 +926,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         return string.Concat(value.AsSpan(0, keep), suffix);
     }
 
-    private sealed record ProjectedRecord(string Label, string Value);
+    private sealed record ProjectedRecord(string Label, string Value, bool Sensitive);
 
     private sealed record ProjectedRecords(
         IReadOnlyList<ProjectedRecord> Records,

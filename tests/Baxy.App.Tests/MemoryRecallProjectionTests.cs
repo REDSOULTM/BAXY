@@ -136,6 +136,84 @@ public sealed class MemoryRecallProjectionTests
             Is.EqualTo("pizza\ncon piña"));
     }
 
+    // Renew al máximo (w9): recall and list showed the name of a sensitive record beside «[REDACTED]» («mi clave del
+    // banco»). A listing only counts it; an exact recall that named it may say its name, never its value.
+    [TestCase("memory.list", null)]
+    [TestCase("memory.recall", null)]
+    [TestCase("memory.recall", false)]
+    public void AListingCountsASensitiveRecordWithoutNamingIt(string operation, bool? exactMatch)
+    {
+        JsonObject payload = TwoRecords(exactMatch);
+
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted(operation,
+            JsonDocument.Parse(payload.ToJsonString()).RootElement.Clone(), out MemoryOperationResponseProjection? projection),
+            Is.True);
+        JsonObject observed = JsonNode.Parse(projection!.Message)!["observed"]!.AsObject();
+        Assert.Multiple(() =>
+        {
+            Assert.That(projection.Message, Does.Not.Contain("clave del banco"));
+            Assert.That((int?)observed["sensitiveNotNamed"], Is.EqualTo(1));
+            Assert.That((int?)observed["shown"], Is.EqualTo(1));
+            Assert.That((string?)observed["records"]![0]!["label"], Is.EqualTo("comida favorita"));
+        });
+    }
+
+    [Test]
+    public void AListingOfOnlySensitiveRecordsCountsThem()
+    {
+        JsonObject payload = TwoRecords(exactMatch: null);
+        payload["records"]!.AsArray().RemoveAt(0);
+        payload["count"] = 1;
+        payload["totalCount"] = 1;
+
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.list",
+            JsonDocument.Parse(payload.ToJsonString()).RootElement.Clone(), out MemoryOperationResponseProjection? projection),
+            Is.True);
+        JsonNode message = JsonNode.Parse(projection!.Message)!;
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)message["cause"], Is.EqualTo("memory_records"));
+            Assert.That((int?)message["observed"]!["sensitiveNotNamed"], Is.EqualTo(1));
+            Assert.That(projection.Message, Does.Not.Contain("clave del banco"));
+        });
+    }
+
+    [Test]
+    public void AnExactRecallOfASensitiveRecordNamesItButNotItsValue()
+    {
+        JsonObject payload = TwoRecords(exactMatch: true);
+        payload["records"]!.AsArray().RemoveAt(0);
+        payload["count"] = 1;
+        payload["totalCount"] = 1;
+
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.recall",
+            JsonDocument.Parse(payload.ToJsonString()).RootElement.Clone(), out MemoryOperationResponseProjection? projection),
+            Is.True);
+        JsonObject observed = JsonNode.Parse(projection!.Message)!["observed"]!.AsObject();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)observed["records"]![0]!["label"], Is.EqualTo("clave del banco"));
+            Assert.That((string?)observed["records"]![0]!["value"], Is.EqualTo("[REDACTED]"));
+            Assert.That(projection.Message, Does.Not.Contain("4417"));
+            Assert.That(observed.ContainsKey("sensitiveNotNamed"), Is.False);
+        });
+    }
+
+    private static JsonObject TwoRecords(bool? exactMatch)
+    {
+        JsonObject payload = JsonNode.Parse(Recall(exactMatch).GetRawText())!.AsObject();
+        JsonObject sensitive = payload["records"]![0]!.DeepClone().AsObject();
+        sensitive["recordId"] = Guid.NewGuid().ToString("D");
+        sensitive["selector"] = "CLAVE DEL BANCO";
+        sensitive["label"] = "clave del banco";
+        sensitive["value"] = "4417";
+        sensitive["sensitivity"] = "secret";
+        payload["records"]!.AsArray().Add(sensitive);
+        payload["count"] = 2;
+        payload["totalCount"] = 2;
+        return payload;
+    }
+
     private static JsonElement Recall(bool? exactMatch)
     {
         const string at = "2026-10-22T10:00:00+00:00";
