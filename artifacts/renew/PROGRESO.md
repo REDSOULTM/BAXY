@@ -3177,3 +3177,10 @@ el PC: la GPU del PC queda para él; los agentes del PC sólo escriben código y
   e2e ×3 y falsedades ×3 en el NB. En el PC: agentes w7-breve (respuestas más largas tras herramienta), w7-apps
   (apps de nombre parecido) y el parche de llama.cpp (permiso del dueño); prueba del oído con la voz del dueño lista en
   D:\BAXYWork\voz-dueno\PROBAR_MI_VOZ.cmd (las grabaciones no se suben).
+- 13:3x (23-10) **int9, e2e de práctica ×3 en el NB con el MISMO arnés** (bench_e2e de int9 y bench.ps1 nuevo en los dos;
+  0 void): int9 29 / 28 / 29 = **28,67** frente a renew-maximo 26 / 26 / 26 = 26,0; Δ +2,67; pass^3 28 frente a 24. Gana
+  E006 y E024 (rutas) en las tres semillas, más E027, E019 y E029 en alguna; pierde E030 en s1. Primera respuesta p50
+  4,48-4,57 s frente a 4,31-4,33 s (+0,2 s). La e2e vieja de renew-maximo con su propio arnés (25/30) no cuenta: los
+  restos de corridas viejas en el home del NB tumbaban E006/E024 sólo con el arnés sin aislamiento. NB Providers entero
+  sobre int9: 2 850/2 850. La sesión del PC se reinició a las ~13:45: se retomaron los agentes w7-breve y el parche de
+  llama.cpp.
