@@ -582,6 +582,29 @@ public sealed class ProductCatalogTests
             Is.EqualTo(expected));
     }
 
+    // Auditoría del núcleo 2026-10-23: what the model wrote that a search or an address takes out of the PC is the
+    // network effect (OperationEffects.Network: «a query, an address, a host, a place, a title»), which the App's brake
+    // on remembered values (NetworkEgress) reads; these went out unasked in normal mode without it.
+    [TestCase("media.play.query", "{\"provider\":\"spotify\",\"query\":\"x\"}")]
+    [TestCase("media.play.exact", "{\"provider\":\"spotify\",\"title\":\"x\"}")]
+    [TestCase("media.play.youtube", "{\"query\":\"x\"}")]
+    [TestCase("streaming.play.named", "{\"service\":\"netflix\",\"title\":\"x\"}")]
+    [TestCase("streaming.navigate", "{\"service\":\"netflix\",\"resourceUri\":\"https://www.netflix.com/title/1\"}")]
+    [TestCase("game.store.search", "{\"query\":\"x\"}")]
+    [TestCase("game.store.page", "{\"title\":\"x\"}")]
+    public void WhatASearchOrAnAddressTakesOutOfThePcIsTheNetworkEffect(string operation, string arguments)
+    {
+        using JsonDocument given = JsonDocument.Parse(arguments);
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(given.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(descriptor.Has(OperationEffects.Network, given.RootElement), Is.True);
+            Assert.That(RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal,
+                operation, given.RootElement), Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
     [Test]
     public void HistoricalCdpInspectionCapabilitiesArePrivateBoundedAndReadOnlyInEffect()
     {
