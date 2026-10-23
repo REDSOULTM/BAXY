@@ -158,6 +158,18 @@ internal static class ScreenViewProjection
             text.Append("(+").Append(count - controls.Count).Append(" más, sin listar por el tope)\n");
         }
 
+        // Renew al máximo (w8, falsedades F019): Steam's library read only by OCR, with no control or one, was told «hay
+        // 324 juegos» from «FAVORITOS (324)» and «no hay botón de Biblioteca» while «BIBLIOTECA» was in its text (and a
+        // click by that label pressed it). Such a window's text is what it shows: each line says only its own words, any
+        // line is pressed by its label, and a word missing from «Controles» is not missing from the window.
+        if (controls.Count <= 1 && (string?)view["textAuthority"] == "windows_media_ocr_lines"
+            && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.DrawnTextNext))
+        {
+            text.Append("(esta ventana no da sus controles: su «Texto» se leyó de la pantalla tal cual, y cada línea dice "
+                + "sólo lo que pone (un número junto a un nombre cuenta sólo lo de ese nombre); una línea de ahí se pulsa "
+                + "por su texto, como label, y que algo no salga en «Controles» no quiere decir que no esté)\n");
+        }
+
         if (view["disabled"] is JsonArray disabled && disabled.Count > 0)
         {
             text.Append("Desactivados: ").Append(string.Join(" | ", disabled.OfType<JsonObject>()
