@@ -110,6 +110,24 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5): a Bluetooth device or Wi-Fi profile id no list of this session gave says which list gives one.</summary>
     public const string IdentityRelist = "identity_relist";
 
+    /// <summary>Renew al máximo (w5): a schedule.alarms cancel that canceled nothing says so and what it looked among.</summary>
+    public const string CancelScope = "cancel_scope";
+
+    /// <summary>Renew al máximo (w5): a task not found or changed says what that taskId holds now and that nothing changed.</summary>
+    public const string TaskStateNext = "task_state_next";
+
+    /// <summary>Renew al máximo (w5): a note not found says where it was looked, the one in the trash, or titles close to it.</summary>
+    public const string NoteNotFoundNext = "note_not_found_next";
+
+    /// <summary>Renew al máximo (w5): a calendar time or range refused says which argument, why, and that nothing ran.</summary>
+    public const string CalendarTimeNext = "calendar_time_next";
+
+    /// <summary>Renew al máximo (w8): an email.latest.reply refused for its mail (none named, or not the newest now) says which mail to name.</summary>
+    public const string ReplyMessageIdNext = "reply_message_id_next";
+
+    /// <summary>Renew al máximo (w8): a chat message refused or left unverified says what was written and what to do next.</summary>
+    public const string MessageTextNext = "message_text_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

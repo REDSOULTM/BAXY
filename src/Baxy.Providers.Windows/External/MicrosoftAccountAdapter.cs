@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
+using Baxy.Providers.Windows.Infrastructure;
 using Microsoft.Win32;
 
 namespace Baxy.Providers.Windows.External;
@@ -47,7 +48,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             $entry=[string]$appointment.EntryID
             $verified=$session.GetItemFromID($entry)
             $ok=([string]$verified.Subject -ceq [string]$input.title) -and (([DateTime]$verified.Start).ToUniversalTime() -eq $start) -and (([DateTime]$verified.End).ToUniversalTime() -eq $end)
-            if(-not $ok){[pscustomobject]@{ok=$false;effectObserved=$true;error='outlook_calendar_postread_mismatch'}|ConvertTo-Json -Compress;exit 2}
+            if(-not $ok){[pscustomobject]@{ok=$false;effectObserved=$true;error='outlook_calendar_postread_mismatch';entryId=$entry;title=[string]$verified.Subject;startUtc=([DateTime]$verified.Start).ToUniversalTime().ToString('O');endUtc=([DateTime]$verified.End).ToUniversalTime().ToString('O')}|ConvertTo-Json -Compress;exit 2}
             [pscustomobject]@{ok=$true;effectObserved=$true;entryId=$entry;title=[string]$verified.Subject;startUtc=([DateTime]$verified.Start).ToUniversalTime().ToString('O');endUtc=([DateTime]$verified.End).ToUniversalTime().ToString('O')}|ConvertTo-Json -Depth 4 -Compress
           }
         } catch {
@@ -81,6 +82,15 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           $body=[string]$verified.Body;$bodyLength=$body.Length;if($body.Length -gt 6000){$body=$body.Substring(0,6000)}
           $subject=[string]$verified.Subject
           $received=([DateTime]$verified.ReceivedTime).ToUniversalTime()
+          # Renew al máximo (w8): the reply goes only to the mail the person's yes named (expectedMessageId, the opaque id
+          # email.latest.read gave, computed as the adapter's Opaque); a newer mail is said and nothing is sent.
+          $sha=[Security.Cryptography.SHA256]::Create()
+          $messageId='email_'+(-join ($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($entryId))|ForEach-Object {$_.ToString('x2')})).Substring(0,24)
+          $expected=[string]$input.expectedMessageId
+          if($input.action -eq 'reply' -and $expected.Length -gt 0 -and $messageId -cne $expected) {
+            [pscustomobject]@{ok=$false;effectObserved=$false;error='email_latest_changed';entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O')}|ConvertTo-Json -Compress
+            exit 2
+          }
           if($input.action -eq 'read') {
             [pscustomobject]@{ok=$true;effectObserved=$false;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;bodyLength=$bodyLength}|ConvertTo-Json -Depth 4 -Compress
             exit 0
@@ -198,10 +208,14 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         if (_requireOutlookProfileProbe && !HasClassicOutlookProfile())
             return ExternalJson.Failure(operation, "outlook_profile_not_configured");
         string? text = reply ? ExternalJson.RequiredString(arguments, "text") : null;
+        string? expected = null;
+        if (reply && !TryExpectedMessageId(arguments, out expected))
+            return ExpectedMessageIdInvalid(operation);
         string input = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteString("action", reply ? "reply" : "read");
             if (text is not null) writer.WriteString("text", text);
+            if (expected is not null) writer.WriteString("expectedMessageId", expected);
             writer.WriteEndObject();
         }).GetRawText();
         if (reply)
@@ -213,11 +227,134 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         using JsonDocument response = ParseProcessJson(process);
         bool effect = response.RootElement.TryGetProperty("effectObserved", out JsonElement observed)
             && observed.ValueKind == JsonValueKind.True;
+        // Renew al máximo (w8): the script refused before Reply() because the newest mail is not the one named; nothing
+        // was sent, and the result names the mail that is newest now.
+        if (reply && !effect && ErrorCode(response.RootElement, string.Empty) == LatestChanged)
+            return LatestMailRefusal(operation, response.RootElement, expected);
         if (!IsOk(response.RootElement))
             return effectBoundary.Failure(operation, ErrorCode(response.RootElement, "outlook_mail_operation_failed"), effect);
         JsonElement result = EmailResult(response.RootElement, reply, text);
         return ExternalJson.Success(operation, result, effect);
     }
+
+    private const string LatestChanged = "email_latest_changed";
+    private const string MessageIdRequired = "email_reply_message_id_required";
+
+    private static readonly System.Text.RegularExpressions.Regex MessageIdShape = new(
+        "^email_[0-9a-f]{24}$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // Renew al máximo (w8): before the person is asked to send a reply, the reply is bound to one mail. Without
+    // expectedMessageId the «sí» named only {text}, and a mail that arrived between the yes and the run got the reply
+    // (another person). A reply that names no mail, or names one that is no longer the newest, fails here with the mail
+    // that is newest now (its messageId, sender, subject and time), so the yes asked next names it; the run compares
+    // again in the script, before Reply(). Read only: the read is email.latest.read's own.
+    public async ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        if (operation != "email.latest.reply")
+            return null;
+        if (!TryExpectedMessageId(arguments, out string? expected))
+            return ExpectedMessageIdInvalid(operation);
+        ExternalCapabilityReceipt read;
+        try
+        {
+            read = await MailAsync("email.latest.read", default, false, new ExternalEffectBoundary(), cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or InvalidDataException or JsonException or TimeoutException or KeyNotFoundException
+            or InvalidOperationException)
+        {
+            read = ExternalJson.FailureBeforeEffect("email.latest.read", "outlook_mail_operation_failed");
+        }
+
+        if (!read.Verified || read.Result is not { } latest)
+        {
+            // The newest mail could not be read: with a mail named, the run reads and compares again; with none, no yes
+            // is asked for a reply bound to no mail, and the read's own failure says why.
+            return expected is not null
+                ? null
+                : new ExternalCapabilityReceipt(operation, false, false, MessageIdNext(null, null),
+                    read.ErrorCode ?? MessageIdRequired);
+        }
+
+        string? now = latest.GetProperty("messageId").GetString();
+        if (expected is not null && string.Equals(now, expected, StringComparison.Ordinal))
+            return null;
+        return new ExternalCapabilityReceipt(operation, false, false, MessageIdNext(latest, expected),
+            expected is null ? MessageIdRequired : LatestChanged);
+    }
+
+    // Absent or null: no mail named (the run replies to the newest, as before; only Bypass runs it without a yes).
+    private static bool TryExpectedMessageId(JsonElement arguments, out string? expected)
+    {
+        expected = null;
+        if (arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("expectedMessageId", out JsonElement value)
+            || value.ValueKind == JsonValueKind.Null)
+            return true;
+        if (value.ValueKind != JsonValueKind.String || !MessageIdShape.IsMatch(value.GetString() ?? string.Empty))
+            return false;
+        expected = value.GetString();
+        return true;
+    }
+
+    private static ExternalCapabilityReceipt ExpectedMessageIdInvalid(string operation) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("argument", "expectedMessageId");
+            if (ModelAids.On(ModelAids.ReplyMessageIdNext))
+            {
+                writer.WriteString("next",
+                    "nothing was sent: expectedMessageId is the messageId email.latest.read gave (email_ and 24 hex digits)");
+            }
+            writer.WriteEndObject();
+        }), "email_message_id_invalid");
+
+    private static ExternalCapabilityReceipt LatestMailRefusal(string operation, JsonElement root, string? expected) =>
+        new(operation, false, false, MessageIdNext(ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteString("messageId", Opaque("email", root.GetProperty("entryId").GetString() ?? string.Empty));
+            writer.WriteString("sender", root.GetProperty("sender").GetString());
+            writer.WriteString("subject", root.GetProperty("subject").GetString());
+            writer.WriteString("receivedUtc", root.GetProperty("receivedUtc").GetString());
+            writer.WriteEndObject();
+        }), expected), LatestChanged);
+
+    // The mail that is newest now (null: it could not be read) and, with aid reply_message_id_next, what to do next.
+    private static JsonElement MessageIdNext(JsonElement? latest, string? expected) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject(); writer.WriteNumber("version", 1);
+        string? now = null;
+        if (latest is { ValueKind: JsonValueKind.Object } mail)
+        {
+            writer.WriteStartObject("latest");
+            foreach (string name in LatestFacts)
+            {
+                if (mail.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String)
+                    writer.WriteString(name, value.GetString());
+            }
+            writer.WriteEndObject();
+            now = mail.TryGetProperty("messageId", out JsonElement id) ? id.GetString() : null;
+        }
+        if (expected is not null) writer.WriteString("expectedMessageId", expected);
+        if (ModelAids.On(ModelAids.ReplyMessageIdNext))
+        {
+            writer.WriteString("next", "nothing was sent: " + (expected is null
+                ? "a reply names the mail it answers"
+                : "the newest mail is no longer the one named")
+                + (now is null
+                    ? "; email.latest.read gives its messageId"
+                    : "; to answer the mail in latest, call email.latest.reply again with expectedMessageId " + now));
+        }
+        writer.WriteEndObject();
+    });
+
+    private static readonly string[] LatestFacts = ["messageId", "sender", "subject", "receivedUtc"];
 
     // Fase 7 (D4): a mail to a free address from the owner's classic Outlook profile,
     // verified by the copy in Sent Items (recipient, text, time). The address is
@@ -343,11 +480,34 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         {
             return ExternalJson.Failure(operation, "outlook_profile_not_configured");
         }
-        DateTimeOffset start = RequireUtc(arguments, "startUtc");
-        DateTimeOffset end = RequireUtc(arguments, "endUtc");
-        if (end <= start || end - start > TimeSpan.FromDays(366))
+        // Renew al máximo (w5): a time that is not an exact instant threw, and came back «microsoft_desktop_adapter_failed»,
+        // read as Outlook failing; a range the wrong way round was a bare code. Both say which argument and why, before
+        // anything ran. A time with its own offset is that instant, taken in UTC.
+        foreach (string name in (string[])["startUtc", "endUtc"])
         {
-            return ExternalJson.Failure(operation, "calendar_range_invalid");
+            if (!TryInstant(arguments, name, out _))
+                return CalendarRefusal(operation, "calendar_time_not_exact", create, name,
+                    $"{name} has no offset, so it names no exact time; write it in UTC with Z, like 2026-10-23T21:00:00Z");
+        }
+        TryInstant(arguments, "startUtc", out DateTimeOffset start);
+        TryInstant(arguments, "endUtc", out DateTimeOffset end);
+        if (end <= start)
+        {
+            return CalendarRefusal(operation, "calendar_range_invalid", create, "endUtc",
+                "endUtc is not after startUtc");
+        }
+        // Renew al máximo (w8): Outlook keeps an appointment's times to the minute, so a create with seconds was saved,
+        // failed its own post-read (outlook_calendar_postread_mismatch, with no event id) and a retry made a second one.
+        if (create && (start.Ticks % TimeSpan.TicksPerMinute != 0 || end.Ticks % TimeSpan.TicksPerMinute != 0))
+        {
+            return CalendarRefusal(operation, "calendar_time_not_whole_minute", create,
+                start.Ticks % TimeSpan.TicksPerMinute != 0 ? "startUtc" : "endUtc",
+                "Outlook keeps an event's times to the minute; write them with :00 seconds");
+        }
+        if (end - start > TimeSpan.FromDays(366))
+        {
+            return CalendarRefusal(operation, "calendar_range_invalid", create, "endUtc",
+                "the range is longer than 366 days; a shorter one, or several, is read");
         }
         string? title = create ? ExternalJson.RequiredString(arguments, "title") : null;
         string input = ExternalJson.Create(writer =>
@@ -370,8 +530,31 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             && observed.ValueKind == JsonValueKind.True;
         if (!IsOk(response.RootElement))
         {
-            return effectBoundary.Failure(
+            ExternalCapabilityReceipt failed = effectBoundary.Failure(
                 operation, ErrorCode(response.RootElement, "outlook_calendar_operation_failed"), effect);
+            // Renew al máximo (w8): an event saved whose read-back differs from what was asked exists: the failure
+            // names it (its id and the times read), so it is not created a second time.
+            return create && effect && response.RootElement.TryGetProperty("entryId", out JsonElement saved)
+                && saved.ValueKind == JsonValueKind.String
+                    ? failed with
+                    {
+                        Result = ExternalJson.Create(writer =>
+                        {
+                            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                            writer.WriteString("eventId", Opaque("event", saved.GetString() ?? string.Empty));
+                            foreach (string name in (string[])["title", "startUtc", "endUtc"])
+                            {
+                                if (response.RootElement.TryGetProperty(name, out JsonElement value)
+                                    && value.ValueKind == JsonValueKind.String)
+                                    writer.WriteString(name, value.GetString());
+                            }
+                            if (ModelAids.On(ModelAids.CalendarTimeNext))
+                                writer.WriteString("next", "an event was created with the title and times read here, "
+                                    + "which differ from those asked; creating it again makes a second event");
+                            writer.WriteEndObject();
+                        }),
+                    }
+                    : failed;
         }
         JsonElement result = create
             ? CalendarCreated(response.RootElement)
@@ -508,15 +691,35 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             ? code
             : fallback;
 
-    private static DateTimeOffset RequireUtc(JsonElement arguments, string name)
+    private static readonly System.Text.RegularExpressions.Regex ExplicitOffset = new(
+        @"(?:[Zz]|[+-][0-9]{2}:?[0-9]{2})$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // An exact instant: a date and time that carries its offset (Z, or +hh:mm), in UTC.
+    private static bool TryInstant(JsonElement arguments, string name, out DateTimeOffset instant)
     {
-        string value = ExternalJson.RequiredString(arguments, name);
-        if (!DateTimeOffset.TryParse(value, out DateTimeOffset parsed) || parsed.Offset != TimeSpan.Zero)
+        string value = ExternalJson.RequiredString(arguments, name).Trim();
+        instant = default;
+        if (!ExplicitOffset.IsMatch(value)
+            || !DateTimeOffset.TryParse(value, System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out DateTimeOffset parsed))
         {
-            throw new InvalidDataException($"{name} must be an exact UTC timestamp.");
+            return false;
         }
-        return parsed;
+        instant = parsed.ToUniversalTime();
+        return true;
     }
+
+    // A calendar call refused before anything ran: the argument, and (aid calendar_time_next) why, as a sentence.
+    private static ExternalCapabilityReceipt CalendarRefusal(
+        string operation, string code, bool create, string argument, string why) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("argument", argument);
+            if (ModelAids.On(ModelAids.CalendarTimeNext))
+                writer.WriteString("next", why + (create ? "; no event was created" : "; no event was read"));
+            writer.WriteEndObject();
+        }), code);
 
     private static JsonElement CalendarCreated(JsonElement root)
     {

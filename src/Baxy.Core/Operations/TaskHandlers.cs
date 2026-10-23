@@ -1,5 +1,7 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Notes;
 using Baxy.Providers.Windows.Tasks;
 
@@ -39,18 +41,22 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
         {
             return ValueTask.FromResult(OperationOutcome.InvalidArguments(Definition, invocation.Arguments));
         }
-        catch (LocalTaskValidationException)
+        // Renew al máximo (w8): «invalid_task» came bare; it says which field and why (the store's own words, which
+        // name a field and never carry its value), and that nothing was written.
+        catch (LocalTaskValidationException exception)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("invalid_task"));
+            return ValueTask.FromResult(OperationOutcome.Failure("invalid_task", Problem(exception.Message)));
         }
         catch (Exception exception) when (exception is LocalTaskNotFoundException or NoteNotFoundException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("task_not_found"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "task_not_found", StateFacts(invocation.Arguments, conflict: false)));
         }
         catch (Exception exception)
             when (exception is LocalTaskVersionConflictException or NoteSelectionStaleException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("task_version_conflict"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "task_version_conflict", StateFacts(invocation.Arguments, conflict: true)));
         }
         // Auditoría del Core (w8): the invocation's key already made another task (note.create says the same).
         catch (NoteConflictException)
@@ -92,6 +98,78 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
     }
 
     protected abstract OperationOutcome Execute(OperationInvocation invocation);
+
+    private static JsonElement Problem(string problem)
+    {
+        var facts = new JsonObject { ["problem"] = problem };
+        if (ModelAids.On(ModelAids.TaskStateNext))
+        {
+            facts["next"] = "nothing was written: " + problem;
+        }
+
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
+    }
+
+    // Renew al máximo (w5): «task_not_found» and «task_version_conflict» came bare, and a task.complete retried after it
+    // was done (its version moved) read as a failure. Both say what the store holds under that taskId now, deleted
+    // ones included, and nothing was changed (both refuse before any write); aid task_state_next says it as a sentence.
+    protected JsonElement? StateFacts(JsonElement arguments, bool conflict)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("taskId", out JsonElement given)
+            || given.ValueKind != JsonValueKind.String
+            || !Guid.TryParseExact(given.GetString(), "D", out Guid id)
+            || id == Guid.Empty)
+        {
+            return null;
+        }
+
+        LocalTaskRecord? current;
+        try
+        {
+            current = Store.Read(id, includeDeleted: true);
+        }
+        catch (LocalTaskNotFoundException)
+        {
+            current = null;
+        }
+        catch (Exception exception) when (exception is LocalTaskStoreException or NoteStoreException or IOException
+            or UnauthorizedAccessException)
+        {
+            return null;
+        }
+
+        var facts = new JsonObject { ["taskId"] = id.ToString("D") };
+        string next;
+        if (current is null)
+        {
+            facts["searched"] = "active and deleted tasks";
+            next = "nothing was changed: no task has this taskId, deleted ones included; task.search or task.list gives the ids";
+        }
+        else
+        {
+            facts["current"] = JsonSerializer.SerializeToNode(ToSummary(current), CoreJsonContext.Default.TaskSummaryResult);
+            string label = arguments.TryGetProperty("reviewLabel", out JsonElement review)
+                && review.ValueKind == JsonValueKind.String
+                    ? review.GetString()!.Normalize(System.Text.NormalizationForm.FormC).Trim()
+                    : current.Title;
+            string state = (current.Completed ? "completed" : "open") + (current.Deleted ? ", deleted" : string.Empty);
+            next = !conflict
+                ? $"nothing was changed: the task is deleted; task.restore with version {current.Version} brings it back first"
+                : !string.Equals(label, current.Title, StringComparison.Ordinal)
+                    ? $"nothing was changed: reviewLabel must be the task's exact title, \"{current.Title}\""
+                    : $"nothing was changed: the task is {state} at version {current.Version} now";
+        }
+
+        if (ModelAids.On(ModelAids.TaskStateNext))
+        {
+            facts["next"] = next;
+        }
+
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
+    }
 
     protected static T Parse<T>(
         JsonElement arguments,
@@ -215,9 +293,43 @@ internal sealed class ReopenTaskHandler(ILocalTaskStore store) : TaskHandlerBase
     }
 }
 
-internal sealed class DeleteTaskHandler(ILocalTaskStore store) : TaskHandlerBase(store)
+internal sealed class DeleteTaskHandler(ILocalTaskStore store) : TaskHandlerBase(store), IInvocationPreflight
 {
     public override OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("task.delete");
+
+    // Renew al máximo (w5): a task.delete asks the person's yes, and one whose task is not there, or not at that version
+    // and title, failed only after the yes. It is read first (no effect) and that failure answers without asking.
+    public ValueTask<InvocationPreflightResult> PreflightAsync(JsonElement arguments, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        try
+        {
+            TaskDeleteArguments parsed = Parse(arguments, CoreJsonContext.Default.TaskDeleteArguments);
+            Guid id = ParseId(parsed.TaskId);
+            LocalTaskRecord current;
+            try
+            {
+                current = Store.Read(id, includeDeleted: true);
+            }
+            catch (LocalTaskNotFoundException)
+            {
+                return ValueTask.FromResult(InvocationPreflightResult.Fails(
+                    OperationOutcome.Failure("task_not_found", StateFacts(arguments, conflict: false))));
+            }
+
+            string label = parsed.ReviewLabel.Normalize(System.Text.NormalizationForm.FormC).Trim();
+            return ValueTask.FromResult(current.Version != parsed.ExpectedVersion
+                || !string.Equals(current.Title, label, StringComparison.Ordinal)
+                    ? InvocationPreflightResult.Fails(
+                        OperationOutcome.Failure("task_version_conflict", StateFacts(arguments, conflict: true)))
+                    : InvocationPreflightResult.Proceed);
+        }
+        catch (Exception exception) when (exception is JsonException or LocalTaskStoreException or NoteStoreException
+            or IOException or UnauthorizedAccessException)
+        {
+            return ValueTask.FromResult(InvocationPreflightResult.Proceed);
+        }
+    }
 
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {

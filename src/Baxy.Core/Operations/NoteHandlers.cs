@@ -1,5 +1,7 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Notes;
 
 namespace Baxy.Core.Operations;
@@ -35,12 +37,14 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         {
             return ValueTask.FromResult(OperationOutcome.Failure(
                 "note_not_found",
+                IdNotFoundFacts(invocation.Arguments),
                 causeCode: "by_id"));
         }
-        catch (NoteTitleNotFoundException)
+        catch (NoteTitleNotFoundException missing)
         {
             return ValueTask.FromResult(OperationOutcome.Failure(
                 "note_not_found",
+                TitleNotFoundFacts(invocation.Arguments, missing.Scope),
                 causeCode: "by_title"));
         }
         catch (NoteTitleAmbiguousException exception)
@@ -85,6 +89,135 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
     }
 
     protected abstract OperationOutcome Execute(OperationInvocation invocation);
+
+    // Renew al máximo (w5): «note_not_found» came bare: a note.read by the title of a note in the trash, or by a title
+    // written a little differently, was «no existe». It says where it was looked, the note in the trash that has that
+    // id or title, or the notes whose titles come close; aid note_not_found_next says it as a sentence.
+    protected JsonElement? IdNotFoundFacts(JsonElement arguments)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("noteId", out JsonElement given)
+            || given.ValueKind != JsonValueKind.String
+            || !Guid.TryParseExact(given.GetString(), "D", out Guid id)
+            || id == Guid.Empty)
+        {
+            return null;
+        }
+
+        var facts = new JsonObject { ["noteId"] = id.ToString("D") };
+        string next;
+        try
+        {
+            NoteRecord trashed = Store.Read(id, includeTrashed: true);
+            facts["note"] = Summary(trashed);
+            next = trashed.IsTrashed
+                ? "the note is in the trash; note.restore brings it back"
+                : "the note is there now; read it again";
+        }
+        catch (NoteNotFoundException)
+        {
+            facts["searched"] = "active and trashed notes";
+            next = "no note has this noteId, trashed ones included; note.search or note.list gives the ids";
+        }
+        catch (Exception exception) when (exception is NoteStoreException or IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+
+        return Facts(facts, next);
+    }
+
+    protected JsonElement? TitleNotFoundFacts(JsonElement arguments, NoteListScope scope)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("title", out JsonElement given)
+            || given.ValueKind != JsonValueKind.String)
+        {
+            return null;
+        }
+
+        string title = given.GetString()!.Normalize(System.Text.NormalizationForm.FormC).Trim();
+        IReadOnlyList<NoteRecord> notes;
+        try
+        {
+            notes = Store.List(NoteListScope.All);
+        }
+        catch (Exception exception) when (exception is NoteStoreException or IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+
+        string searched = scope == NoteListScope.Active ? "active notes" : "active and trashed notes";
+        var facts = new JsonObject { ["title"] = title, ["searched"] = searched };
+        NoteRecord[] inTrash = scope == NoteListScope.Active
+            ? [.. notes.Where(note => note.IsTrashed
+                && string.Equals(note.Title, title, StringComparison.OrdinalIgnoreCase))]
+            : [];
+        string next;
+        if (inTrash.Length > 0)
+        {
+            facts["inTrash"] = new JsonArray([.. inTrash.Select(Summary)]);
+            next = $"a note titled \"{title}\" is in the trash; note.restore brings it back";
+        }
+        else
+        {
+            NoteRecord[] close = [.. notes.Where(note => TitlesClose(note.Title, title))
+                .OrderBy(note => note.IsTrashed).ThenByDescending(note => note.UpdatedAtUtc).Take(5)];
+            if (close.Length > 0)
+            {
+                facts["similarTitles"] = new JsonArray([.. close.Select(Summary)]);
+            }
+
+            next = $"no note is titled \"{title}\" exactly among {searched}"
+                + (close.Length == 0 ? string.Empty
+                    : "; titles close to it: " + string.Join(", ", close.Select(note => $"\"{note.Title}\"")))
+                + "; note.search finds notes by the words they contain";
+        }
+
+        return Facts(facts, next);
+    }
+
+    // Close: one title holds the other, or they share a word of four letters or more (case and accents aside).
+    private static bool TitlesClose(string stored, string asked)
+    {
+        string a = Folded(stored), b = Folded(asked);
+        if (a.Length == 0 || b.Length == 0) return false;
+        if (a.Contains(b, StringComparison.Ordinal) || b.Contains(a, StringComparison.Ordinal)) return true;
+        HashSet<string> words = [.. Words(a)];
+        return Words(b).Any(words.Contains);
+    }
+
+    private static IEnumerable<string> Words(string folded) =>
+        folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(word => word.Length >= 4);
+
+    private static string Folded(string text)
+    {
+        var folded = new System.Text.StringBuilder(text.Length);
+        foreach (char character in text.Normalize(System.Text.NormalizationForm.FormD))
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
+                == System.Globalization.UnicodeCategory.NonSpacingMark) continue;
+            folded.Append(char.IsLetterOrDigit(character) ? char.ToLowerInvariant(character) : ' ');
+        }
+
+        return folded.ToString().Trim();
+    }
+
+    private static JsonNode? Summary(NoteRecord note) => JsonSerializer.SerializeToNode(
+        ToSummary(new NoteSummaryRecord(
+            note.Id, note.Title, note.CreatedAtUtc, note.UpdatedAtUtc, note.TrashedAtUtc, note.Revision)),
+        CoreJsonContext.Default.NoteSummaryResult);
+
+    private static JsonElement Facts(JsonObject facts, string next)
+    {
+        if (ModelAids.On(ModelAids.NoteNotFoundNext))
+        {
+            facts["next"] = next;
+        }
+
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
+    }
 
     protected static T Parse<T>(
         JsonElement arguments,
@@ -231,7 +364,7 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
     protected static JsonElement Serialize(NoteResult result) =>
         JsonSerializer.SerializeToElement(result, CoreJsonContext.Default.NoteResult);
 
-    private static JsonElement SerializeAmbiguity(NoteTitleAmbiguousException exception)
+    protected static JsonElement SerializeAmbiguity(NoteTitleAmbiguousException exception)
     {
         NoteAmbiguityCandidateResult[] candidates = exception.Candidates
             .Select(static candidate => new NoteAmbiguityCandidateResult(
@@ -358,10 +491,63 @@ internal sealed class ListNotesHandler(INoteStore store) : NoteHandlerBase(store
     }
 }
 
-internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store)
+internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store), IInvocationPreflight
 {
     public override OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("note.trash");
+
+    // Renew al máximo (w5): a note.trash asks the person's yes, and one whose note is not there (or is there under that
+    // title more than once) failed only after the yes. The selection is read first (no effect) and that failure
+    // answers without asking; a selection by snapshot is left to the execution.
+    public ValueTask<InvocationPreflightResult> PreflightAsync(JsonElement arguments, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        try
+        {
+            NoteSelectorArguments selector = Parse(arguments, CoreJsonContext.Default.NoteSelectorArguments);
+            if (selector is { NoteId: null, Title: { } title })
+            {
+                string normalized = title.Normalize(System.Text.NormalizationForm.FormC).Trim();
+                NoteRecord[] named = [.. Store.List(NoteListScope.All)
+                    .Where(note => string.Equals(note.Title, normalized, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(static note => note.UpdatedAtUtc).ThenBy(static note => note.Id)];
+                if (named.Length == 0)
+                {
+                    return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
+                        "note_not_found", TitleNotFoundFacts(arguments, NoteListScope.All), causeCode: "by_title")));
+                }
+
+                if (named.Length > 1)
+                {
+                    return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
+                        "note_ambiguous",
+                        SerializeAmbiguity(new NoteTitleAmbiguousException(NoteListScope.All, [.. named.Select(
+                            static note => new NoteAmbiguityCandidate(
+                                note.Id, note.Title, LocalNoteStore.CreateContentPreview(note.Content),
+                                note.CreatedAtUtc, note.UpdatedAtUtc, note.Revision, note.IsTrashed))])))));
+                }
+            }
+            else if (selector is { Title: null, NoteId: { } noteId } && Guid.TryParseExact(noteId, "D", out Guid id))
+            {
+                try
+                {
+                    Store.Read(id, includeTrashed: true);
+                }
+                catch (NoteNotFoundException)
+                {
+                    return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
+                        "note_not_found", IdNotFoundFacts(arguments), causeCode: "by_id")));
+                }
+            }
+        }
+        catch (Exception exception) when (exception is JsonException or NoteStoreException or IOException
+            or UnauthorizedAccessException or ArgumentException)
+        {
+            // Not read: the call asks and runs as always.
+        }
+
+        return ValueTask.FromResult(InvocationPreflightResult.Proceed);
+    }
 
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {

@@ -8,13 +8,16 @@ internal sealed record MemoryConfigurationWireResult(
     bool Replayed,
     bool Changed);
 
+// Renew al máximo (w8): Sensitive (written only when true) says the record is sensitive or secret, so the App never says
+// its value back (a memory.correct of a sensitive record echoed the new value in clear to the model and the trace).
 internal sealed record MemoryMutationWireResult(
     int Version,
     string RecordId,
     int Revision,
     string Selector,
     bool Replayed,
-    bool Changed);
+    bool Changed,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool Sensitive = false);
 
 internal sealed record MemoryForgetWireResult(
     int Version,

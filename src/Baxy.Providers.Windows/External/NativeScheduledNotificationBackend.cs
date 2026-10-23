@@ -57,6 +57,23 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
             });
             return new ExternalProcessResult(0, line + Environment.NewLine, string.Empty);
         }
+        // Renew al máximo (w8): a schedule or a cancel that failed before its Register or Delete (a ring script missing,
+        // a due time that passed meanwhile, a task with no next run or gone while listed) changed nothing, and came back
+        // as a bare process failure the adapter reads as «may have changed». It says so, with its cause.
+        catch (Exception exception) when (!effect.Committed && request.Mode is "schedule" or "schedule-recurring"
+            or "cancel-exact" or "cancel")
+        {
+            string line = Json(writer =>
+            {
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("ok", false);
+                writer.WriteBoolean("effectObserved", false);
+                writer.WriteBoolean("effectBoundaryCrossed", false);
+                writer.WriteString("error", exception is ScheduleFailure ? exception.Message : "failed_before_effect");
+                writer.WriteString("detail", Describe(exception));
+            });
+            return new ExternalProcessResult(0, line + Environment.NewLine, string.Empty);
+        }
         catch (Exception exception)
         {
             return new ExternalProcessResult(1, string.Empty, Describe(exception));
