@@ -1,8 +1,8 @@
-# BAXY Renew al máximo: informe final (BORRADOR, 2026-10-22 noche)
+# BAXY Renew al máximo: informe final (2026-10-23)
 
-> Borrador escrito mientras corren las últimas medidas. Las cifras del holdout v4 se llenan una sola vez, al final,
-> sobre el HEAD congelado de `renew-maximo` (plan pre-registrado en `CIERRE_PLAN.md`). Todo lo que dice «práctica» se
-> midió en bancos de práctica, no en el holdout.
+> Versión final: `renew-maximo` 452854a18 (código = `fin` 371f4de72). El holdout v4 se abrió una sola vez sobre ella,
+> con el plan pre-registrado en `CIERRE_PLAN.md`. Todo lo que dice «práctica» se midió en bancos de práctica, no en el
+> holdout.
 
 ## En corto, para el dueño
 
@@ -17,10 +17,14 @@
    como «ya lo hice».
 4. **Más rápido.** El arranque pasa de 17,2 s a 0,8 s de calentamiento; la primera palabra hablada, de ~1,6 s a ~0,65 s
    (voz D); la calculadora, Spotify y abrir apps responden antes.
-5. **Mismo acierto al decidir** (práctica): decision2 se mantiene dentro del ruido (229-230 de 268) con más casos
-   estables en las tres semillas (222 → 226).
-6. **Dentro de los límites**: tarjeta gráfica 3 990 MiB (≤ 4 096) y RAM del producto ~2,7 GB (≤ 4 GB), con voz y
-   System One encendidos.
+5. **Menos acciones equivocadas, mismo acierto al decidir** (holdout, 720 casos × 3 semillas): 636 de 720 contra 633
+   (no significativo), y 45 acciones equivocadas contra 62 sin System One (−27 %, p 0,0005).
+6. **Más tareas reales cumplidas** (holdout, 72 tareas × 2 semillas): 47 contra 43 (+4, ninguna empeora; no llega a
+   significativo, p 0,125). A cambio, tras usar una herramienta empieza a hablar ~0,9 s más tarde (lee y dice más).
+7. **Falsedades del holdout: no bajaron** (6 claras contra 5, una réplica: dentro del ruido). Lo que queda viene sobre
+   todo de buscar en la carpeta equivocada; eso es del modelo.
+8. **Dentro de los límites**: tarjeta gráfica 3 986 MiB (≤ 4 096) y RAM del producto 2 697 MiB (≤ 4 GB), con voz,
+   reconocimiento de nombres y System One encendidos.
 
 ## Antes y después
 
@@ -28,8 +32,9 @@
 |---|---|---|---|
 | Decisión, holdout v4 (720, 3 semillas) | 632,3 sin S1 · 633,0 con S1 | **636,3** (+3,3, no significativo) | holdout, PC + NB |
 | Acciones equivocadas, holdout v4 | 62 sin S1 · 48,7 con S1 | **45,7** (−27 %, McNemar p 0,0005) | holdout, PC + NB |
-| E2E, holdout v4 (72) | *pendiente* | *pendiente* | holdout, NB |
-| Falsedades, holdout v4 (36) | *pendiente* | *pendiente* | holdout, NB |
+| E2E, holdout v4 (72, 2 semillas) | 43,0 con S1 (43 sin S1, 1 semilla) | **47,0** (+4,0, IC95 −0,5..+9,0, p 0,125) | holdout, NB |
+| Primera respuesta en e2e (p50) | 3,3-3,4 s | 4,3 s (+0,9 s en turnos con herramienta) | holdout, NB |
+| Falsedades claras, holdout v4 (36, 1 réplica) | 4 sin S1 · 5 con S1 | 6 (dentro del ruido ±2) | holdout, NB, a mano |
 | decision2 de práctica (268) | 233 con S1 (231 sin S1) | 231,7 con S1 (int8; nada empeora) | PC, 3 semillas |
 | Calentamiento al arrancar | 17,2 s | 0,8 s | PC |
 | Primera palabra de la voz | ~1,6 s | ~0,65 s | PC (voz D) |
@@ -59,6 +64,16 @@ Además: arranca en menos de un segundo de calentamiento, empieza a hablar antes
   hace daño (pide el sí o le dice cuál es la correcta), pero la elección misma sólo mejoraría reentrenando.
 - Leer pantallas complejas (la biblioteca de Steam) sigue siendo el punto débil de la honestidad.
 - Las ganancias de decisión de menos de 3 puntos no se pueden afirmar con estos bancos; se informan como «sin pérdida».
+- **Rutas dictadas**: el modelo usa la carpeta de trabajo o el sandbox cuando le pides algo en BAXY-bench u otra carpeta de
+  tu usuario. Deja «archivos» en 3 de 10 tareas en las tres configuraciones y explica casi todas las falsedades que quedan
+  («revisé todo el archivo», «no lo tenía», «lo agregué en BAXY-bench»). Sólo se arregla reentrenando (`BRIEF_FT_C3.md`).
+- **Más lento tras una herramienta**: +0,9 s hasta la primera palabra en turnos con herramientas, porque el resultado
+  trae más hechos (cómo quedó, qué no se comprobó) y la respuesta es algo más larga.
+- **«Sí no»** a una confirmación: en int8 se rechaza, pero en int7 se aprobaba; es frágil y depende del modelo.
+- **Biblioteca de Steam**: en vivo, «abre la biblioteca de Steam» no usó el lugar de app_open y pulsó «Biblioteca» 7 veces
+  (50 s) antes de decir, con verdad, que no pudo.
+- Lo medido del reconocimiento de nombres fue con voces sintéticas, no la tuya; si oye peor, `BAXY_RENEW_STT_HOTWORDS=0`
+  lo apaga.
 - Muchas palancas que tocaban el texto que el modelo aprendió empeoraron: se retiraron con su cifra (lista abajo).
 
 ## Cómo apagar System One
@@ -138,3 +153,10 @@ si ganaba algo sin empeorar otro banco; las que sólo cierran un agujero de segu
   lo usas).
 - E014 abrió msconfig dos veces en el notebook (sin cambios en el sistema); cerrado y arreglado con la guarda 1.
 - El disco C: del PC se llenó (archivo de paginación de 24,9 GB con la RAM al tope); se borraron sólo worktrees míos.
+- **Tu Bloc de notas**: durante la e2e de práctica del PC (01:30-02:15), BAXY escribió en tu pestaña sin guardar
+  «lista: pilas, cables» dos veces y «hola desde BAXY» una vez. Nada se guardó a disco; quítalas con Ctrl+H.
+- En el notebook quedaron restos de los bancos en tu carpeta de usuario (tareas_hoy.txt, config.ini, q4
+otes.txt,
+  compras.txt, notas.txt, lista.txt, prueba.txt, proyecto\): no los borré porque están fuera de los worktrees.
+- La e2e del holdout escribió fuera del banco en el notebook y esas escrituras persistieron entre configuraciones
+  (afecta a F007 y F036 de falsedades).
