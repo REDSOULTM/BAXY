@@ -4,7 +4,11 @@ usage: py -3.12 -X utf8 scripts/renew/bench_decision.py <label> --cases FILE [--
        [--gguf PATH] [--server-args "..."] [--catalog FILE] [--ctx 40960]
 Cases: list of {id, family, history?, text, expect{kind: call|call_any|ask|text|any, op?, ops?, args?, options?}} (see
 README of the banks; «any» lists the expectations a case accepts). Writes <banks>/runs/<label>.jsonl: a summary line (accuracy, decision p50/p90, VRAM and RAM of llama-server and
-of this process acting as the mind) and one row per case.
+of this process acting as the mind) and one row per case. The summary's «run» says what was measured (run_record): the
+mind's source, the catalog, the judge, the GGUF and the server with their sha256, KV, context, seed, temperature, System
+One and every BAXY_* switch; «errors» the cases the model server failed (a failure, but not the model's answer).
+The kernel's confirmation mode the mind reads (System One's «corrige») is the bench's own, normal, unless BAXY_DATA_DIR
+is given: it was the owner's file %LOCALAPPDATA%\\BAXY\\1\\confirmation-mode, different on each machine.
 """
 import argparse
 import json
@@ -18,6 +22,9 @@ import unicodedata
 from pathlib import Path
 
 import psutil
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import run_meta  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
@@ -154,6 +161,22 @@ def resources(server_pid, gpu_before):
             "mind": ram(os.getpid()), "gpu_before_mib": gpu_before, "gpu_after_mib": after}
 
 
+def run_record(args, server, mind, environ=None) -> dict:
+    """What this run measured with (run_meta): written into the summary, so a run says what it is without its script."""
+    cache = run_meta._cache_path()
+    src = Path(args.src)
+    return {"machine": run_meta.machine(), "src": str(src), "src_git": run_meta.git_state(src),
+            "mind_sha256": run_meta.tree_sha256(src / "baxy_mind"),
+            "judge_sha256": run_meta.sha256_file(Path(__file__)),
+            "equivalence_sha256": run_meta.sha256_file(EQUIVALENCE_FILE),
+            "catalog": run_meta.fingerprint(args.catalog, cache), "gguf": run_meta.fingerprint(args.gguf, cache),
+            "server": run_meta.fingerprint(args.server, cache), "server_args": args.server_args,
+            "kv": list(getattr(server, "kv", []) or []), "ctx": int(args.ctx),
+            "seed": getattr(mind, "seed", None), "temp": float(args.temp),
+            "s1_gguf": run_meta.fingerprint(os.environ.get("BAXY_S1_GGUF", "").strip() or None, cache),
+            "confirmation_mode": run_meta.confirmation_mode(environ), "env": run_meta.baxy_env(environ)}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
@@ -173,6 +196,10 @@ def main():
 
     runs = BANKS / "runs"
     runs.mkdir(parents=True, exist_ok=True)
+    # The confirmation mode «corrige» reads is the bench's (normal), never the owner's file on this machine.
+    os.environ.setdefault("BAXY_DATA_DIR", str(runs / f"{args.label}.datos"))
+    trace = runs / f"{args.label}.trace.jsonl"
+    trace.unlink(missing_ok=True)  # the mind appends: a label run again kept the trace of the run before
     gpu_before = gpu_used_mib()
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), extra_args=args.server_args.split(),
                        log_name=f"bench-{args.label}.log")
@@ -183,7 +210,7 @@ def main():
         system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
                                int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
         system_one.start()
-    mind = Mind(server, runs / f"{args.label}.trace.jsonl", system_one)
+    mind = Mind(server, trace, system_one)
     catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
     enums = enums_of(catalog)
     mind.configure(catalog)
@@ -226,9 +253,12 @@ def main():
                "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in counted),
                "n": len(counted), "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
                "excluded_retired": [r["id"] for r in rows if r["excluded"]],
+               # A case the model server failed (HTTP error, timeout) counts as wrong; a run with any is not clean.
+               "errors": sum(1 for r in rows if r["error"]), "error_ids": [r["id"] for r in rows if r["error"]],
                "p50": round(statistics.median(latencies), 3),
                "p90": round(statistics.quantiles(latencies, n=10)[8], 3) if len(latencies) > 2 else None,
-               "warm_s": round(warm_s, 1), "families": by_family, "resources": measured}
+               "warm_s": round(warm_s, 1), "families": by_family, "resources": measured,
+               "run": run_record(args, server, mind)}
     with open(runs / f"{args.label}.jsonl", "w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
         for row in rows:
