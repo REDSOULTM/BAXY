@@ -84,8 +84,10 @@ def test_a_correction_to_any_other_risk_asks_and_never_fills(tmp_path: Path, mon
 
 # e) The doubt never holds a confirmation, a continuation step or the heartbeat (mutation: a guard of _held removed).
 def test_the_doubt_never_holds_a_confirmation(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("BAXY_S1_DOUBT", "0.9")
-    mind, _ = _doubt_mind(tmp_path, [_sure("confirm_pending", {"approve": True}, 0.2)])
+    # System One's threshold never holds it; only a yes under CONFIRM_FLOOR is held (test_mind_doubt_policy.py).
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.99")
+    monkeypatch.delenv("BAXY_CONFIRM_FLOOR", raising=False)
+    mind, _ = _doubt_mind(tmp_path, [_sure("confirm_pending", {"approve": True}, 0.97)])
     pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
     assert mind.decide(1, "sí, dale", pending=pending)["operation"] == "confirmation.answer"
 
