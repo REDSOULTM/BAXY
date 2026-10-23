@@ -85,6 +85,49 @@ public sealed class FileInvocationJournalTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: what a response carries of the person (a clipboard's text, an OCR, an email's
+    // body, a console's output) is sealed on disk; only how it ended stays clear. A replay, after a reopen too, is the
+    // exact response.
+    [Test]
+    public async Task WhatAResponseCarriesOfThePersonIsSealedOnDiskAndReplaysWhole()
+    {
+        const string Secret = "contraseña del banco 4417-1234";
+        OperationRequest request = CreateRequest() with
+        {
+            Arguments = JsonSerializer.SerializeToElement(new { title = "Compras", content = Secret }),
+        };
+        var handler = new CountingHandler();
+        OperationResponse first;
+        await using (FileInvocationJournal journal = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            first = await engine.ExecuteAsync(request, CancellationToken.None);
+        }
+
+        string onDisk = Encoding.UTF8.GetString(await File.ReadAllBytesAsync(_journalPath));
+        OperationResponse replay;
+        await using (FileInvocationJournal reopened = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), reopened))
+        {
+            replay = await engine.ExecuteAsync(
+                request with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Message, Does.Contain("4417-1234"));
+            Assert.That(onDisk, Does.Not.Contain("4417-1234"));
+            Assert.That(onDisk, Does.Not.Contain("Compras"));
+            Assert.That(onDisk, Does.Contain("journal-aes-gcm"));
+            Assert.That(onDisk, Does.Contain("\"completed\""));
+            Assert.That(replay.Replayed, Is.True);
+            Assert.That(replay.Message, Is.EqualTo(first.Message));
+            Assert.That(JsonElement.DeepEquals(replay.Result!.Value, first.Result!.Value), Is.True);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
     // Auditoría del núcleo 2026-10-23: what an earlier Core left begun ends, authenticated, as abandoned (failed, its
     // effect possibly standing): a retry of it is that answer and runs nothing, the answer survives a reopen, and the
     // completion reservations it held are free again for new invocations.

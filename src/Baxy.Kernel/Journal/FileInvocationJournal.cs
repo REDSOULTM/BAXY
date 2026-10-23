@@ -58,6 +58,19 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     private readonly string _manifestPath;
     private readonly string _retiredPath;
     private readonly JournalHmacAuthenticator _authenticator;
+
+    // Auditoría del núcleo 2026-10-23: what a completed response carries of the person (its message, its result, its
+    // cause: a clipboard's text, an OCR, an email's body, a console's output) is sealed on disk with AES-GCM under a key
+    // derived from the journal's own key (which DPAPI protects), bound to the record's operation, mission, invocation
+    // and fingerprint. Its status, verification, error code and effect stay clear: they are what replay decides by.
+    // Memory operations are sealed by their own boundary already. Records written before stay readable as they are.
+    private const string SealKeyDomain = "baxy.journal.response.seal.v1";
+    private const string SealPurpose = "journal.response.v1";
+    private const string SealProtection = "journal-aes-gcm";
+    private const string SealedMessage = "{\"sealed\":true}";
+    private const int SealNonceBytes = 12;
+    private const int SealTagBytes = 16;
+    private readonly byte[] _sealKey;
     private FileStream _stream;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly Dictionary<string, CompletedInvocation> _completed =
@@ -97,6 +110,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         _retiredPath = string.Concat(path, RetiredSuffix);
         _stream = stream;
         _authenticator = authenticator;
+        _sealKey = Convert.FromHexString(authenticator.ComputeTag(SealKeyDomain, ReadOnlySpan<byte>.Empty));
         _maximumJournalBytes = maximumJournalBytes;
         _completionReservationBytes = completionReservationBytes;
         _rotationThresholdBytes = rotationThresholdBytes;
@@ -444,7 +458,11 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                     "Completion has no capacity reserved before effect execution.");
             }
 
-            var payload = CreatePayload(JournalPhases.Completed, request, requestFingerprint, response);
+            var payload = CreatePayload(
+                JournalPhases.Completed,
+                request,
+                requestFingerprint,
+                Seal(request.Operation, request.MissionId, request.InvocationId, requestFingerprint, response));
             payload = await AppendCompletedAsync(payload, cancellationToken).ConfigureAwait(false);
             _completed.Add(
                 request.InvocationId,
@@ -503,7 +521,11 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                     Result: null,
                     ErrorCode: AbandonedErrorCode,
                     EffectMayHaveOccurred: true);
-                var payload = CreatePayload(JournalPhases.Completed, request, started.RequestFingerprint, response);
+                var payload = CreatePayload(
+                    JournalPhases.Completed,
+                    request,
+                    started.RequestFingerprint,
+                    Seal(started.Operation, started.MissionId, started.InvocationId, started.RequestFingerprint, response));
                 payload = await AppendCompletedAsync(payload, cancellationToken).ConfigureAwait(false);
                 _completed.Add(invocationId, new CompletedInvocation(started.RequestFingerprint, response));
                 _retainedStates[invocationId] = payload;
@@ -517,6 +539,152 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             _gate.Release();
         }
     }
+
+    /// <summary>The response as it is written: what it carries of the person sealed, the rest clear.</summary>
+    private OperationResponse Seal(
+        string operation,
+        string missionId,
+        string invocationId,
+        string requestFingerprint,
+        OperationResponse response)
+    {
+        if (Mission.PrivateOperationBoundary.IsPrivateOperation(operation))
+        {
+            return response;
+        }
+
+        var plain = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(plain))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("message", response.Message);
+            writer.WritePropertyName("result");
+            if (response.Result is { } result)
+            {
+                result.WriteTo(writer);
+            }
+            else
+            {
+                writer.WriteNullValue();
+            }
+
+            writer.WriteString("causeCode", response.CauseCode);
+            writer.WriteEndObject();
+        }
+
+        byte[] sealedBytes = new byte[SealNonceBytes + plain.WrittenCount + SealTagBytes];
+        Span<byte> nonce = sealedBytes.AsSpan(0, SealNonceBytes);
+        RandomNumberGenerator.Fill(nonce);
+        using (var aes = new AesGcm(_sealKey, SealTagBytes))
+        {
+            aes.Encrypt(
+                nonce,
+                plain.WrittenSpan,
+                sealedBytes.AsSpan(SealNonceBytes, plain.WrittenCount),
+                sealedBytes.AsSpan(SealNonceBytes + plain.WrittenCount, SealTagBytes),
+                SealBinding(operation, missionId, invocationId, requestFingerprint));
+        }
+
+        CryptographicOperations.ZeroMemory(MemoryMarshalSpan(plain));
+        var envelope = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(envelope))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("protection", SealProtection);
+            writer.WriteString("purpose", SealPurpose);
+            writer.WriteString("ciphertext", Convert.ToBase64String(sealedBytes));
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument sealedResult = JsonDocument.Parse(envelope.WrittenMemory);
+        return response with
+        {
+            Message = SealedMessage,
+            Result = sealedResult.RootElement.Clone(),
+            CauseCode = null,
+        };
+    }
+
+    /// <summary>
+    /// The response a record holds, opened when it was sealed (<see cref="Seal"/>); one written before sealing existed
+    /// comes back as it is. A sealed one that does not open (another key, a changed binding) fails closed.
+    /// </summary>
+    private OperationResponse Unseal(JournalPayload payload)
+    {
+        OperationResponse response = payload.Response!;
+        if (response.Result is not { ValueKind: JsonValueKind.Object } envelope
+            || !string.Equals(response.Message, SealedMessage, StringComparison.Ordinal)
+            || !envelope.TryGetProperty("purpose", out JsonElement purpose)
+            || purpose.ValueKind != JsonValueKind.String
+            || !string.Equals(purpose.GetString(), SealPurpose, StringComparison.Ordinal))
+        {
+            return response;
+        }
+
+        byte[] sealedBytes;
+        try
+        {
+            sealedBytes = envelope.TryGetProperty("protection", out JsonElement protection)
+                && protection.ValueKind == JsonValueKind.String
+                && string.Equals(protection.GetString(), SealProtection, StringComparison.Ordinal)
+                && envelope.TryGetProperty("ciphertext", out JsonElement ciphertext)
+                && ciphertext.ValueKind == JsonValueKind.String
+                    ? Convert.FromBase64String(ciphertext.GetString()!)
+                    : throw new JournalIntegrityException("A sealed journal response is malformed.");
+        }
+        catch (FormatException)
+        {
+            throw new JournalIntegrityException("A sealed journal response is malformed.");
+        }
+
+        if (sealedBytes.Length < SealNonceBytes + SealTagBytes)
+        {
+            throw new JournalIntegrityException("A sealed journal response is malformed.");
+        }
+
+        int length = sealedBytes.Length - SealNonceBytes - SealTagBytes;
+        byte[] plain = new byte[length];
+        try
+        {
+            using (var aes = new AesGcm(_sealKey, SealTagBytes))
+            {
+                aes.Decrypt(
+                    sealedBytes.AsSpan(0, SealNonceBytes),
+                    sealedBytes.AsSpan(SealNonceBytes, length),
+                    sealedBytes.AsSpan(SealNonceBytes + length, SealTagBytes),
+                    plain,
+                    SealBinding(payload.Operation, payload.MissionId, payload.InvocationId, payload.RequestFingerprint));
+            }
+
+            using JsonDocument opened = JsonDocument.Parse(plain);
+            JsonElement root = opened.RootElement;
+            JsonElement result = root.GetProperty("result");
+            JsonElement cause = root.GetProperty("causeCode");
+            return response with
+            {
+                Message = root.GetProperty("message").GetString()!,
+                Result = result.ValueKind == JsonValueKind.Null ? null : result.Clone(),
+                CauseCode = cause.ValueKind == JsonValueKind.Null ? null : cause.GetString(),
+            };
+        }
+        catch (Exception exception) when (exception is CryptographicException or JsonException
+            or KeyNotFoundException or InvalidOperationException)
+        {
+            throw new JournalIntegrityException("A sealed journal response does not open with this journal's key.");
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(plain);
+        }
+    }
+
+    private static byte[] SealBinding(string operation, string missionId, string invocationId, string requestFingerprint) =>
+        System.Text.Encoding.UTF8.GetBytes(
+            string.Join('|', SealPurpose, operation, missionId, invocationId, requestFingerprint));
+
+    private static Span<byte> MemoryMarshalSpan(ArrayBufferWriter<byte> buffer) =>
+        System.Runtime.InteropServices.MemoryMarshal.AsMemory(buffer.WrittenMemory).Span;
 
     private static JsonElement EmptyArguments()
     {
@@ -539,6 +707,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         finally
         {
             _authenticator.Dispose();
+            CryptographicOperations.ZeroMemory(_sealKey);
             _gate.Dispose();
         }
     }
@@ -954,7 +1123,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             ValidateTerminalResponse(payload.Response);
             _completed.Add(
                 payload.InvocationId,
-                new CompletedInvocation(payload.RequestFingerprint, payload.Response));
+                new CompletedInvocation(payload.RequestFingerprint, Unseal(payload)));
             _retainedStates[payload.InvocationId] = payload;
         }
         else if (string.Equals(payload.Phase, JournalPhases.RetainedCompleted, StringComparison.Ordinal))
@@ -970,7 +1139,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             _started.Add(payload.InvocationId, payload.RequestFingerprint);
             _completed.Add(
                 payload.InvocationId,
-                new CompletedInvocation(payload.RequestFingerprint, payload.Response));
+                new CompletedInvocation(payload.RequestFingerprint, Unseal(payload)));
             _retainedStates.Add(payload.InvocationId, payload);
         }
         else
@@ -2778,7 +2947,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                     if (payload.Response is not null
                         && string.Equals(payload.InvocationId, targetInvocationId, StringComparison.Ordinal))
                     {
-                        target = new CompletedInvocation(payload.RequestFingerprint, payload.Response);
+                        target = new CompletedInvocation(payload.RequestFingerprint, Unseal(payload));
                     }
 
                     sequence = payload.Sequence;

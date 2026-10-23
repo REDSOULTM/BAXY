@@ -270,11 +270,12 @@ public sealed class FileInvocationJournalRotationTests
         {
             case "modified":
                 string text = File.ReadAllText(archive, Encoding.UTF8);
-                int index = text.IndexOf("pan", StringComparison.Ordinal);
+                // Auditoría del núcleo 2026-10-23: the content is sealed now; a clear field of the record is changed.
+                int index = text.IndexOf("note.create", StringComparison.Ordinal);
                 Assert.That(index, Is.GreaterThan(0));
                 File.WriteAllText(
                     archive,
-                    string.Concat(text.AsSpan(0, index), "pon", text.AsSpan(index + 3)),
+                    string.Concat(text.AsSpan(0, index), "note.creatx", text.AsSpan(index + 11)),
                     new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
                 break;
             case "truncated":
@@ -753,11 +754,12 @@ public sealed class FileInvocationJournalRotationTests
         string archive = Archive(1);
         DateTime written = File.GetLastWriteTimeUtc(archive);
         string text = File.ReadAllText(archive, Encoding.UTF8);
-        int at = text.IndexOf("pan", StringComparison.Ordinal);
+        // Auditoría del núcleo 2026-10-23: the content is sealed now; a clear field of the record is changed.
+        int at = text.IndexOf("note.create", StringComparison.Ordinal);
         Assert.That(at, Is.GreaterThan(0));
         File.WriteAllText(
             archive,
-            string.Concat(text.AsSpan(0, at), "pon", text.AsSpan(at + 3)),
+            string.Concat(text.AsSpan(0, at), "note.creatx", text.AsSpan(at + 11)),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         File.SetLastWriteTimeUtc(archive, written);
 
@@ -881,7 +883,8 @@ public sealed class FileInvocationJournalRotationTests
         await using FileInvocationJournal journal = await OpenRotatingAsync(diagnostics: diagnostics.Add);
         using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
         _ = await engine.ExecuteAsync(CreateRequest(), CancellationToken.None);
-        while (new FileInfo(_journalPath).Length <= RotationThresholdBytes - 512)
+        // Auditoría del núcleo 2026-10-23: a sealed completion is longer, so the margin is two invocations, not 512 bytes.
+        while (new FileInfo(_journalPath).Length <= RotationThresholdBytes - 2048)
         {
             _ = await engine.ExecuteAsync(CreateRequest(), CancellationToken.None);
         }
