@@ -107,3 +107,34 @@ def test_a_decision_model_not_up_costs_the_doubtful_turn_no_rival_names(tmp_path
     server.template = lambda body: pytest.fail("rendered for a decision model that is not up")
     assert mind.decide(1, "apaga el pc")["operation"] == "system.power"
     assert one.asked == []
+
+
+def test_a_conversation_read_ahead_into_the_slot_is_never_kept_on_disk_as_the_prefix(tmp_path, monkeypatch) -> None:
+    # Mind.warm keeps the slot on disk only before any person's conversation reached it (_turned); the prefill of a
+    # loaded session put one there without saying so.
+    from test_mind_prefill import SlotServer, _mind as _slot_mind
+    from test_mind_final import _say
+
+    class Server(SlotServer):
+        saved: list = []
+
+        def tokenize(self, text: str) -> list[int]:
+            return [248058] if text == "<tool_call>" else super().tokenize(text)
+
+        def prefix_key(self, warm) -> str:
+            return "key"
+
+        def restore_prefix(self, key: str) -> None:
+            return None
+
+        def save_prefix(self, key: str, facts: dict) -> bool:
+            self.saved.append(key)
+            return True
+
+    mind, _ = _slot_mind(tmp_path, [], monkeypatch)
+    mind.server = server = Server([{**_say("H"), "usage": {"prompt_tokens": 100}}, _say("Un momento.")])
+    mind.load_session([{"role": "user", "content": "[Reloj: jueves]"}, {"role": "user", "content": "hola"},
+                       {"role": "assistant", "content": "Hola."}])
+    assert mind.prefill() is True
+    mind.warm()
+    assert server.saved == []

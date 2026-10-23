@@ -1325,6 +1325,9 @@ class Mind:
             if cut <= 0 or not rendered[:cut].endswith("<|im_end|>\n"):
                 self._log("warm.history", started, None, failure="unrendered")
                 return False
+            # Auditoría de la mente (w8): the slot now holds the person's conversation (a kept session's, loaded before
+            # any turn), so the warm-up no longer keeps it on disk (Mind.warm), as after a turn.
+            self._turned = True
             reply = self.server.prefill(rendered[:cut])
         except Exception as error:  # noqa: BLE001 - the next decision reads it itself, as it did before
             self._log("warm.history", started, None, failure=type(error).__name__)
