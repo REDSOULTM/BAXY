@@ -87,8 +87,7 @@ class LlmServer:
         # A state a vision question set aside and never put back holds the person's conversation: none is kept. The
         # kept prefix (PREFIX) is not one of them: it is saved before any turn (Mind.warm).
         self.slot_dir.mkdir(parents=True, exist_ok=True)
-        for stale in self.slot_dir.glob("*.bin"):
-            stale.unlink(missing_ok=True)
+        self.forget_set_aside()
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         log = open(log_dir / self.log_name, "w", encoding="utf-8")
@@ -366,6 +365,19 @@ class LlmServer:
             if not saved or stale.name not in (state.name, kept.name):
                 stale.unlink(missing_ok=True)
         return saved
+
+    def forget_set_aside(self) -> bool:
+        """Every slot state a vision question set aside (*.bin, which holds the person's conversation) is removed; the
+        kept prefix (PREFIX, saved before any turn) stays. Whether none is left. At start, and when the person had BAXY
+        forget everything or deleted every conversation (trace.forget): a question under way then loses its state and
+        the next decision reads the conversation again."""
+        left = False
+        for stale in self.slot_dir.glob("*.bin"):
+            try:
+                stale.unlink(missing_ok=True)
+            except OSError:
+                left = True  # held by the server this moment
+        return not left
 
     def close(self) -> None:
         if self._process is not None and self._process.poll() is None:

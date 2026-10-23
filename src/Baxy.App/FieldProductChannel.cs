@@ -632,6 +632,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         int deleted = _sessions.DeleteAll();
         StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
+        await _viewModel.ForgetMindTraceAsync(_lifetimeCancellation).ConfigureAwait(true);
         return Json(new JsonObject { ["ok"] = true, ["deleted"] = deleted });
     }
 
@@ -640,6 +641,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private void OnEverythingForgotten()
     {
         _sessions.DeleteAll(keep: _sessionId);
+        _ = _viewModel.ForgetMindTraceAsync(_lifetimeCancellation);
         Publish(SurfacesEvent());
     }
 

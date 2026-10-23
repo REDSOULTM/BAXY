@@ -1985,6 +1985,24 @@ class Mind:
         return result
 
     # ---- trace ---------------------------------------------------------------------------------------------
+    def forget_trace(self) -> bool:
+        """Auditoría de la mente (w8, 2026-10-23): the person had BAXY forget everything («olvida todo») or deleted every
+        conversation, and the App deletes its own conversation log then; this trace kept their words, BAXY's answers and
+        the calls' arguments in clear text, and so did its archive (turns.jsonl.1, __main__.bounded_trace). Both go, the
+        way the voice's rows are written (one at a time); what comes after is traced again. Whether none is left (a file
+        another reader holds open is emptied instead; if not even that, it stays and the next forget takes it)."""
+        left = False
+        with self._log_lock:
+            for path in (self.trace, self.trace.with_name(self.trace.name + ".1")):
+                try:
+                    path.unlink(missing_ok=True)
+                except OSError:
+                    try:
+                        path.open("w", encoding="utf-8").close()
+                    except OSError:
+                        left = True
+        return not left
+
     def _log(self, stage: str, started: float, reply: dict[str, Any] | None, **fields: Any) -> None:
         timings = (reply or {}).get("timings") or {}
         # Every time of the trace is read on perf_counter (al máximo V4): on Windows, Python 3.12's monotonic clock

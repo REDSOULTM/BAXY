@@ -207,3 +207,72 @@ def test_the_clock_keeps_its_words_for_a_body_still_in_the_conversation(tmp_path
     mind.decide(3, "¿qué decía?")
     assert "file_read → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba" in _clock_of(
         server)
+
+
+def test_forgetting_everything_takes_the_trace_and_its_archive(tmp_path, monkeypatch) -> None:
+    # Privacy (App audit, 2026-10-23): after «olvida todo» or deleting every conversation the App deletes its own
+    # conversation log, and the mind's trace kept the person's words in clear text. trace.forget takes it, its archive
+    # (turns.jsonl.1) and the slot states a vision question set aside; the kept prefix stays.
+    from baxy_mind import __main__ as sidecar
+    from baxy_mind.mind import Mind
+    renew = tmp_path / "BAXY" / "renew"
+    (renew / "slots").mkdir(parents=True)
+    (renew / "turns.jsonl").write_text('{"text": "mi clave es pez"}\n', encoding="utf-8")
+    (renew / "turns.jsonl.1").write_text('{"text": "vivo en la calle falsa"}\n', encoding="utf-8")
+    (renew / "slots" / "baxy_vision_hold.bin").write_bytes(b"conversation")
+    (renew / "slots" / "baxy_prefix_key.slot").write_bytes(b"prefix")
+    sent: list[dict] = []
+    incoming = [{"type": "trace.forget", "id": 7}, None]
+
+    from baxy_mind.llm_server import LlmServer
+
+    class Server(LlmServer):
+        def start(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class Speech:
+        def foresee(self, text, done):
+            return True
+
+        def close(self) -> None:
+            pass
+
+    class Voice:
+        def __init__(self, *args) -> None:
+            self.speech = Speech()
+
+        def stop(self) -> None:
+            pass
+
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "model.gguf")
+    monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", "llama-server.exe")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.delenv("BAXY_VISION_SLOT_DIR", raising=False)
+    monkeypatch.delenv("BAXY_MIND_LLAMA_PORT", raising=False)
+    monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    monkeypatch.setattr(sidecar, "LlmServer", Server)
+    monkeypatch.setattr(sidecar, "Mind", Mind)
+    monkeypatch.setattr(sidecar, "Voice", Voice)
+    monkeypatch.setattr(sidecar.protocol, "read_message", lambda: incoming.pop(0))
+    monkeypatch.setattr(sidecar.protocol, "write_message", sent.append)
+    assert sidecar.main() == 0
+    assert "trace.forget" in sent[0]["requests"]
+    assert sent[-1] == {"type": "trace.forgotten", "id": 7, "cleared": True}
+    assert not (renew / "turns.jsonl.1").exists()
+    rows = [json.loads(line) for line in (renew / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [row["stage"] for row in rows] == ["trace.forget"] and rows[0]["cleared"] is True
+    assert sorted(p.name for p in (renew / "slots").iterdir()) == ["baxy_prefix_key.slot"]
+
+
+def test_a_trace_another_reader_holds_open_is_emptied(tmp_path, monkeypatch) -> None:
+    from pathlib import Path
+    from test_mind_final import _mind, _say
+    mind, _ = _mind(tmp_path, [_say("Hola.")])
+    mind.decide(1, "mi clave es pez")
+    assert "pez" in mind.trace.read_text(encoding="utf-8")
+    monkeypatch.setattr(Path, "unlink", lambda self, missing_ok=False: (_ for _ in ()).throw(PermissionError(self)))
+    assert mind.forget_trace() is True
+    assert mind.trace.read_text(encoding="utf-8") == ""

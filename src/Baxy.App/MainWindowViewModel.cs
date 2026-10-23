@@ -519,6 +519,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal async Task<System.Text.Json.Nodes.JsonArray?> ExportMindSessionAsync(CancellationToken cancellationToken) =>
         _mindClient is { IsReady: true } mind ? await mind.SessionExportAsync(cancellationToken) : null;
 
+    /// <summary>Auditoría de la mente (2026-10-23): memory forgot everything or every conversation was deleted, and the
+    /// mind's trace (%LOCALAPPDATA%\BAXY\renew\turns.jsonl) kept the person's words in clear text: it goes too, with
+    /// what the mind set aside (trace.forget). Whether the mind said none is left; a mind that is not up keeps it.</summary>
+    internal async Task<bool> ForgetMindTraceAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            return _mindClient is { IsReady: true } mind && await mind.TraceForgetAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+    }
+
     /// <summary>Opens a kept session: nothing pending survives, the mind gets its conversation back and the transcript
     /// the heartbeat reads is that session's words.</summary>
     internal async Task<bool> OpenSessionAsync(System.Text.Json.Nodes.JsonArray? mindConversation,

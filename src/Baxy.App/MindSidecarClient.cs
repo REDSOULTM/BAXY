@@ -441,6 +441,18 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         return reply is not null && (string?)reply["type"] == "session.ready";
     }
 
+    /// <summary>The person had BAXY forget everything or deleted every conversation: the mind's trace, its archive and
+    /// the slot states a vision question set aside go (trace.forget, src/baxy_mind). Whether the mind said none is left.
+    /// </summary>
+    public async Task<bool> TraceForgetAsync(CancellationToken cancellationToken)
+    {
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "trace.forget" },
+            TurnRequestTimeout,
+            cancellationToken).ConfigureAwait(false);
+        return reply is not null && (string?)reply["type"] == "trace.forgotten" && (bool?)reply["cleared"] == true;
+    }
+
     /// <summary>Push-to-talk let go: the direct request being heard ends now.</summary>
     public async Task<bool> VoiceReleaseAsync(TimeSpan timeout, CancellationToken cancellationToken)
     {
