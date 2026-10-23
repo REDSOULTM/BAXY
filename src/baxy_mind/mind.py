@@ -622,6 +622,7 @@ class Mind:
         self.system_one = system_one  # layer 2: the decision model beside Qwen (None: off)
         self._judged: dict[str, Any] | None = None
         self.tools: list[dict[str, Any]] = []
+        self.names: list[str] = []  # the installed applications and games of the last catalog.configure
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
         self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
@@ -709,6 +710,9 @@ class Mind:
         games = sorted({f'{e.get("name")} (appId {e.get("appId")}, {e.get("provider")})'
                         for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                         if isinstance(e, dict) and e.get("name")})
+        # The same names, for the ear's hotwords (voice.hear_names): what the model is shown is what it may hear.
+        self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
+                                    if isinstance(e, dict) and e.get("name")})
         tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
         aids: dict[str, Any] = {}
         for cap in capabilities:
