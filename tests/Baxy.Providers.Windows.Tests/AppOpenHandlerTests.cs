@@ -62,9 +62,8 @@ public sealed class AppOpenHandlerTests
             Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
             if (hint)
             {
-                Assert.That(next.GetString(), Is.EqualTo("app_open with appId \"Configuración\" and place \"sound\" "
-                    + "opens it: sound is a place of Configuración, not of Configuración del sistema, which opened with no "
-                    + "place does not show it"));
+                Assert.That(next.GetString(), Is.EqualTo("nothing was opened. app_open with appId \"Configuración\" "
+                    + "and place \"sound\" opens sound, a place of Configuración, not of Configuración del sistema"));
             }
 
             Assert.That(provider.Calls, Is.Zero);
@@ -649,6 +648,23 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // E014 (int3 s1): a system tool asked for at a place it does not have is refused by the opening, launching nothing,
+    // with no yes asked first (the person was asked to open msconfig at «sonido» and the opening then failed).
+    [Test]
+    public async Task ASystemToolAtAPlaceItDoesNotHaveIsRefusedWithoutAsking()
+    {
+        var platform = new SystemToolsPlatform();
+
+        OperationResponse response = await OpenThroughEngine(
+            platform, "Configuración del sistema", confirm: false, place: "sound");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.EqualTo("place_not_of_application"));
+            Assert.That(platform.Activated, Is.Empty);
+        });
+    }
+
     // The rule is the one clicks are refused by (SystemToolProcesses, the applets of lote 4 c): the program a shortcut
     // runs, a console of the MMC host, an applet by its .cpl or run by rundll32. Contracasos: the Sound applet the person
     // asks for, Notepad, a document.
@@ -665,7 +681,8 @@ public sealed class AppOpenHandlerTests
     public void ALaunchIsASystemToolByTheRuleClicksAreRefusedBy(string? target, string? arguments, bool expected) =>
         Assert.That(VisibleControlSurface.SystemToolLaunch(target, arguments), Is.EqualTo(expected));
 
-    private static async Task<OperationResponse> OpenThroughEngine(SystemToolsPlatform platform, string appId, bool confirm)
+    private static async Task<OperationResponse> OpenThroughEngine(
+        SystemToolsPlatform platform, string appId, bool confirm, string? place = null)
     {
         AppOpenHandler handler = Handler(new WindowsInstalledApplicationOpenProvider(platform));
         string root = Path.Combine(Path.GetTempPath(), "baxy-system-tool-" + Guid.NewGuid().ToString("N"));
@@ -682,7 +699,9 @@ public sealed class AppOpenHandlerTests
                 Guid.NewGuid().ToString("D"),
                 Guid.NewGuid().ToString("D"),
                 "app.open",
-                JsonSerializer.SerializeToElement(new { appId }));
+                place is null
+                    ? JsonSerializer.SerializeToElement(new { appId })
+                    : JsonSerializer.SerializeToElement(new { appId, place }));
             OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
             if (confirm && response.ErrorCode == "confirmation_required")
             {
