@@ -292,8 +292,8 @@ public sealed class AppOpenHandlerTests
     // verified, or a launch Windows did not take. Only the facts of the provider's receipt; with BAXY_AYUDAS=none, or
     // another aid alone, it is the result it was.
     [TestCase("all", "verification_failed", true, false, true,
-        "Bloc de notas was started and no window of it was verified; window_application_status can tell whether one "
-        + "shows now, before saying it opened or not")]
+        "a launch of Bloc de notas was issued and no window of it was verified; window_application_status can tell "
+        + "whether one shows now, before saying it opened or not")]
     [TestCase("open_recovery", "verification_failed", false, false, true,
         "no window of Bloc de notas was verified; window_application_status can tell whether one shows now, before "
         + "saying it opened or not")]

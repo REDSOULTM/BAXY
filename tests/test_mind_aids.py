@@ -135,9 +135,9 @@ def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: 
     for index, result in enumerate([missed, looked, missed, looked, missed, looked, missed]):
         mind.continue_turn(2 + index, result)
     tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
-    told = [i for i, t in enumerate(tools) if "ya se hizo 3 veces" in t]
+    told = [i for i, t in enumerate(tools) if "ya se llamó 3 veces" in t]
     assert told == [4]
-    assert "input_visible_click ya se hizo 3 veces en este turno" in tools[4]
+    assert "input_visible_click ya se llamó 3 veces en este turno" in tools[4]
 
 
 @pytest.mark.parametrize("views,told", [(["Cargando…", "Biblioteca", "Biblioteca · Tienda"], False),
@@ -153,7 +153,7 @@ def test_the_same_call_is_told_only_when_its_result_is_the_same_too(tmp_path: Pa
         mind.continue_turn(2 + index, json.dumps({"status": "completed", "view": f"window 1 Steam\n{view}",
                                                   "observed": {"elapsedMs": {"read": 300 + index}}}))
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
-    assert ("ya se hizo 3 veces en este turno" in last) is told
+    assert ("ya se llamó 3 veces en este turno" in last) is told
 
 
 @pytest.mark.parametrize("setting,still,told", [("all", False, 1), ("all", True, 0), ("all", None, 0), ("none", False, 0)])
@@ -233,11 +233,11 @@ def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None
 
 @pytest.mark.parametrize("verification,told", [
     ("readback", "completado y verificado"),
-    ("unchanged", "completado: ya estaba así, no cambió nada"),
-    ("delivered_only", "completado sin verificar: entregado, sin releer su efecto"),
-    ("output_only", "completado: lectura, su resultado está arriba"),
-    ("none", "completado sin verificar"),
-    (None, "completado sin verificar"),
+    ("unchanged", "ya estaba así antes de esta llamada: no hizo falta cambiar nada"),
+    ("delivered_only", "enviado sin verificar: no se volvió a mirar si hizo efecto"),
+    ("output_only", "completado: su resultado está arriba"),
+    ("none", "terminó sin verificar su efecto"),
+    (None, "terminó sin verificar su efecto"),
 ])
 def test_a_completed_call_is_told_by_its_typed_verification_alone(verification: str | None, told: str) -> None:
     # Al máximo 8.2: «ya estaba así» (changed:false) was told «completado y verificado», and a verified result whose
@@ -266,6 +266,46 @@ def test_an_act_in_a_window_tells_what_its_after_view_shows() -> None:
     from baxy_mind.mind import _outcome
     def told(after: dict) -> str:
         return _outcome(json.dumps({"status": "completed", "verification": "delivered_only", "observed": {"after": after}}))
-    assert told({"same": True}) == "completado sin verificar: entregado, sin releer su efecto; la ventana no cambió"
+    assert told({"same": True}) == "enviado sin verificar: no se volvió a mirar si hizo efecto; la ventana no cambió"
     assert told({"changed": [{"index": 3}]}).endswith("; su after es la ventana de después")
-    assert told({"changed": [], "omitted": 4}) == "completado sin verificar: entregado, sin releer su efecto"
+    assert told({"changed": [], "omitted": 4}) == "enviado sin verificar: no se volvió a mirar si hizo efecto"
+
+
+def test_a_read_says_it_only_looked_and_changed_nothing() -> None:
+    # Auditoría de falsedades (F002, 9 of 9 runs of pc-t2): «¿abriste Spotify?» → window_application_status, told
+    # «completado: lectura», answered «Sí, Spotify está abierto». A call of a read risk says it only looked; an
+    # output_only call that may change things (shell_command_run) does not.
+    from baxy_mind.mind import OUTPUT_READ, _outcome
+    read = json.dumps({"status": "completed", "verification": "output_only",
+                       "observed": {"displayName": "Spotify", "hasVisibleWindow": True}})
+    assert _outcome(read, read=True) == OUTPUT_READ
+    assert "sin abrir, cerrar ni cambiar nada" in OUTPUT_READ and "completado" not in OUTPUT_READ
+    assert _outcome(read) == "completado: su resultado está arriba"
+
+
+def test_an_application_already_running_is_told_as_not_opened_by_this_call() -> None:
+    # Auditoría de falsedades (F002): app_open of an application already open is not «lo abrí».
+    from baxy_mind.mind import _outcome
+    opened = {"status": "completed", "verification": "readback", "observed": {"appId": "Spotify", "alreadyRunning": True}}
+    assert _outcome(json.dumps(opened)) == "completado y verificado; ya estaba abierta antes de esta llamada"
+    opened["observed"]["alreadyRunning"] = False
+    assert _outcome(json.dumps(opened)) == "completado y verificado"
+
+
+def test_a_completed_result_the_app_could_not_read_keeps_its_code() -> None:
+    from baxy_mind.mind import _outcome
+    unread = json.dumps({"status": "completed", "verification": "none", "error": "result_unreadable"})
+    assert _outcome(unread) == "terminó sin verificar su efecto (result_unreadable)"
+
+
+def test_a_read_in_a_turn_is_told_by_the_risk_the_app_sent(tmp_path: Path) -> None:
+    # The risk comes from the catalog the App configured; the queued call after a read still runs (it completed).
+    mind, server = _mind(tmp_path, [_call("window_application_status", {"name": "Spotify"}), _say("No lo abrí yo.")])
+    mind.configure({"capabilities": [{"name": "window.application.status", "risk": "read_only",
+                                      "argumentsSchema": {"type": "object", "properties": {}}}]})
+    mind.decide(1, "¿abriste Spotify?")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "output_only",
+                                      "observed": {"hasVisibleWindow": True}}))
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert tool.endswith("[En este turno: window_application_status → lectura: sólo miró, sin abrir, cerrar ni "
+                         "cambiar nada; lo que vio está arriba]")

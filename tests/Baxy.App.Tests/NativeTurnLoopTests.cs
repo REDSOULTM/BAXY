@@ -95,6 +95,56 @@ public sealed class NativeTurnLoopTests
         Assert.That(loop.HasPendingConfirmation, Is.True);
     }
 
+    // Auditoría de falsedades (F010): an answer with nothing waiting says this call did nothing, never only the bare
+    // «nothing_pending» that the 4B read as «ya está hecho».
+    [Test]
+    public async Task AnAnswerWithNothingWaitingSaysThisCallDidNothing()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = "confirmation.answer",
+                    ["arguments"] = new JsonObject { ["approve"] = true },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "clarify",
+                    ["question"] = "¿Qué quieres que haga?",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var steps = new List<NativeTurnStep>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = static () => null,
+            Mind = () => mind,
+            Registry = static () => null,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+        });
+
+        await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        JsonNode? observed = JsonNode.Parse(steps.Single().Observation);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)observed?["error"], Is.EqualTo("nothing_pending"));
+            Assert.That((string?)observed?["reason"], Is.EqualTo(NativeTurnLoop.NothingPendingReason));
+            Assert.That((string?)observed?["reason"], Does.Contain("this call did nothing"));
+        });
+    }
+
     // Auditoría de confirmaciones (2026-10-23): the person's words answer only BAXY's last question. The words right
     // after it still reach the model with the waiting call; a line BAXY publishes in that later turn leaves the question
     // behind, so the call is dropped then and the «sí» to that line is no answer to it.

@@ -68,6 +68,12 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5): an act stopped by the person's input says why it stopped and how the window is seen.</summary>
     public const string InterruptedNext = "interrupted_next";
 
+    /// <summary>
+    /// Auditoría de falsedades (F001): an invalid_or_expired_window_id says the id is used up, nothing was done to the
+    /// window and nothing was read of it.
+    /// </summary>
+    public const string WindowIdSpent = "window_id_spent";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

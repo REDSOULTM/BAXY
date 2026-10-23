@@ -147,12 +147,12 @@ def test_a_reading_whose_body_is_left_out_no_longer_says_it_is_above(tmp_path: P
     assert "su resultado está arriba" in told[0] and "su after es la ventana de después" in told[1]
     session.say("otro pedido", _done())  # the cut: both kept, without their bodies
     results = [m["content"] for m in session.mind.conversation if m["role"] == "tool"]
-    assert results[0].endswith("[En este turno: app_open → completado: lectura, su resultado se omitió]")
+    assert results[0].endswith("[En este turno: app_open → completado: su resultado se omitió]")
     assert results[1].endswith("[En este turno: app_open → completado y verificado; su after se omitió]")
     for turn in range(HISTORY_TURNS):
         session.say(f"más {turn}", _done())
     note = session.mind.conversation[0]["content"]
-    assert "«¿a qué volumen está?» → app_open → completado: lectura, su resultado se omitió" in note
+    assert "«¿a qué volumen está?» → app_open → completado: su resultado se omitió" in note
     assert "está arriba" not in note and "es la ventana de después" not in note
 
 
@@ -176,3 +176,12 @@ def test_without_words_of_the_person_the_note_says_only_how_many_turns_went(tmp_
     mind.decide(1, "hola")
     assert mind.conversation[0]["content"].startswith("[Conversación recortada: los 1 turnos más antiguos de esta "
                                                       "sesión ya no se muestran; lo que pasó")
+
+
+def test_a_read_kept_without_its_body_says_what_it_saw_was_left_out() -> None:
+    # A read's line (w5-fals: «lectura: … lo que vio está arriba») said the body was above after the cut took it.
+    from baxy_mind.mind import COMPACTED_FACTS, OUTPUT_READ
+    line = OUTPUT_READ
+    for kept, gone in COMPACTED_FACTS.items():
+        line = line.replace(kept, gone)
+    assert "está arriba" not in line and line.endswith("lo que vio se omitió")

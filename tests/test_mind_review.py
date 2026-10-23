@@ -382,7 +382,7 @@ def test_the_same_call_aid_offers_more_tools_only_when_the_turn_admits_them(tmp_
     mind.continue_turn(3, missed)
     mind.continue_turn(4, missed, final=final)
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
-    assert "ya se hizo 3 veces en este turno" in last
+    assert "ya se llamó 3 veces en este turno" in last
     assert ("Opciones: otra herramienta" in last) is not final
 
 

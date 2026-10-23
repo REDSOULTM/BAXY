@@ -389,6 +389,59 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Auditoría de falsedades: a window already where it was asked to go is told as its state before the call, never as
+    // «done» by this call («¿ya lo moviste?»).
+    [Test]
+    public async Task AWindowAlreadyAsAskedSaysThisCallChangedNothing()
+    {
+        var platform = new FakePlatform();
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new WindowBoundsHandler("window.move", provider), new { windowId, x = 0, y = 0 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("changed").GetBoolean(), Is.False);
+            string next = outcome.Result!.Value.GetProperty("next").GetString()!;
+            Assert.That(next, Is.EqualTo(WindowControlResultJson.UnchangedNext));
+            Assert.That(next, Does.Not.Contain("done"));
+            Assert.That(platform.SetBoundsCalls, Is.Zero);
+        });
+    }
+
+    // Auditoría de falsedades (F001): a windowId used up by an earlier action says the window was neither touched nor
+    // read (BAXY told «la ventana se cerró» with Steam still open); the code stays, and with the aid off it is bare.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AUsedUpWindowIdSaysTheWindowWasNotTouchedNorRead(string aids, bool told)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var provider = new WindowsWindowControlProvider(new FakePlatform());
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+        var focus = new WindowActionHandler("window.focus", WindowControlAction.Focus, provider);
+
+        OperationOutcome first = await Run(focus, new { windowId });
+        OperationOutcome again = await Run(focus, new { windowId });
+        OperationOutcome snapped = await Run(new WindowSnapHandler(provider), new { windowId, side = "left" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Succeeded, Is.True, first.ErrorCode);
+            foreach (OperationOutcome spent in new[] { again, snapped })
+            {
+                Assert.That(spent.ErrorCode, Is.EqualTo(WindowControlErrorCodes.InvalidOrExpiredWindowId));
+                Assert.That(spent.EffectMayHaveOccurred, Is.False);
+                if (told)
+                    Assert.That(spent.Result!.Value.GetProperty("next").GetString(),
+                        Is.EqualTo(WindowControlResultJson.SpentWindowIdNext));
+                else
+                    Assert.That(spent.Result, Is.Null);
+            }
+        });
+    }
+
     // Renew al máximo (8.3, Core): the handlers dropped the state read after an ambiguous failure, so the mind
     // only heard «could not». The failure keeps its code and uncertainty and carries stateAfter; a maximize
     // Windows refused changed nothing and says nothing more.

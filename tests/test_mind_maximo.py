@@ -154,10 +154,10 @@ def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_
     assert ["míralo de nuevo" in r for r in results] == [True] * 2 + [False] * 2
     assert "ids" in results[0] and "w3" not in results[0]
     # 8.2: a result with no typed verification is «sin verificar»; the line of the turn's facts stays as it was.
-    assert "[En este turno: input_visible_controls → completado sin verificar]" in results[0]
+    assert "[En este turno: input_visible_controls → terminó sin verificar su efecto]" in results[0]
     assert "x" * 5000 in results[-1]
     # What the person asked in the turns cut, and how their calls ended, stay in the note of the cut.
-    assert "«pedido 0» → input_visible_controls → completado sin verificar" in mind.conversation[0]["content"]
+    assert "«pedido 0» → input_visible_controls → terminó sin verificar su efecto" in mind.conversation[0]["content"]
 
 
 def test_a_turn_past_the_context_makes_room_in_its_history_before_it_ends(tmp_path: Path) -> None:

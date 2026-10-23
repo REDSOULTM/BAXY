@@ -60,8 +60,8 @@ def test_a_turn_past_the_context_leaves_out_its_earlier_results_and_goes_on(tmp_
     last = server.bodies[-1]
     assert "tool_choice" not in last
     tools = [m["content"] for m in last["messages"] if m["role"] == "tool"]
-    # 8.2: a result with no typed verification is «completado sin verificar».
-    assert tools[0] == COMPACTED + "\n[En este turno: web_fetch → completado sin verificar]"
+    # 8.2: a result with no typed verification is «sin verificar».
+    assert tools[0] == COMPACTED + "\n[En este turno: web_fetch → terminó sin verificar su efecto]"
     assert "b" * 6000 in tools[1]
 
 
