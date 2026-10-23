@@ -3197,3 +3197,18 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   descartada**: System One decide la herramienta, no el appId, y su compuerta es la confianza del nombre de la
   herramienta (0,99 en E014: no ve el error); sin fallos de appId en decision no hay qué medir. Pendiente: A/B del NB
   (E014 ×N con ONLY, e2e entera; decision2 sólo ve (b) con un catálogo recapturado con la ayuda).
+- 17:xx (23-10) **w9-msg (PC, sin correr el producto; cierra los cinco puntos abiertos de la auditoría nb-w8-msg)**:
+  (1) privacidad de memoria: un listado (memory.list, recall de todo o de un tipo, el recall exacto sin acierto) ya no
+  nombra los registros sensibles o secretos, sólo los cuenta (`sensitiveNotNamed`); sólo un recall exacto que lo nombró
+  dice su etiqueta, con el valor en «[REDACTED]»; memory.export no cambia (4094836a7). (2) mensajería: la cabecera del
+  chat se lee otra vez justo antes del Enter, y si ya no nombra al destinatario no se pulsa ni se borra nada:
+  `message_recipient_changed_before_enter`, escrito y no enviado (c686a77e7). (3) note.trash: el «sí» se pide sólo para
+  una instantánea de la nota (noteId, expectedTitle, expectedRevision, expectedIsTrashed); sin ella falla antes con
+  `note_trash_snapshot_required` y la llamada que la nombra; una nota que cambió tras el «sí» no se tira
+  (`note_selection_stale` con la nota como está) (69157661e). (4) schedule.alarms cancel sin at: la única pendiente se
+  cancela por su identidad y el resultado la nombra (título, hora local); con varias no se cancela ninguna
+  (`notification_cancel_ambiguous`, con la lista); se retira el modo «cancel» del planificador (6495a7c9e). (5) correo y
+  calendario: PowerShell en frío medido en 308 ms p50; reutilizar el proceso exige soltar Outlook en cada llamada y no
+  se puede comprobar en este PC (el Outlook es del dueño): queda en APLAZADOS.md. Suites: Kernel 729, Contracts 74,
+  App 188, Setup 477, Providers 3066, pytest 617, todo verde. Coste: en modo normal, tirar una nota sin instantánea
+  cuesta un paso más del modelo. Pendiente: medir en vivo (NB) la tirada de notas y la cancelación de alarmas.

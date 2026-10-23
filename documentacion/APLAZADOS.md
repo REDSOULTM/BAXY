@@ -270,3 +270,13 @@ que el catálogo no tenga. Estado y hallazgos: `documentacion/NAVEGADOR_USUARIO.
   órdenes ruidosas medidas corrieron hasta `MAX_S` (12 s), sin decisión anticipada que valga
   (`scripts/voice/medir_anticipada.py --noise-faithful`). No bloquea la palanca (en limpio acierta 86,5 % a 0,2 s);
   un fin de voz con piso adaptativo o un VAD se mide aparte, con la voz del dueño.
+- **Renew al máximo, w9 (2026-10-23): correo y calendario siguen con un PowerShell por llamada.** Medido en el PC:
+  arrancar `powershell.exe -NoProfile -NonInteractive -Command` con un script trivial cuesta 308 ms p50 (298-320, 10
+  corridas). Reutilizar un proceso (`PowerShellScriptWorker`, como Spotify y las teclas) no entra: los tres scripts de
+  `MicrosoftAccountAdapter` (correo, envío, calendario) crean `Outlook.Application` y sueltan sus objetos COM al salir
+  el proceso. En un proceso vivo esas referencias quedan hasta que corre el GC, y mientras tanto Outlook no se cierra
+  cuando la persona cierra su ventana (queda en segundo plano con el perfil abierto). Haría falta soltar cada objeto
+  COM en cada llamada (`ReleaseComObject` y GC al final de cada ejecución) y comprobarlo contra Outlook de verdad,
+  que en este PC es el del dueño y no se toca. Ahorro posible: ~0,3 s sólo en los turnos de correo o calendario. Se
+  retoma con un Outlook de prueba (el notebook) y una prueba que cierre Outlook entre dos llamadas y mire que el
+  proceso termina.
