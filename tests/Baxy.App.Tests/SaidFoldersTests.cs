@@ -235,6 +235,23 @@ public sealed class SaidFoldersTests
         });
     }
 
+    // A copy from a folder whose name is also on the Desktop to the Desktop: the Desktop stays a place of its own.
+    [Test]
+    public void AKnownFolderNamedBesideANameItAlsoHoldsStaysAPlace()
+    {
+        SaidFolders said = Heard("copia apuntes.txt de banco-local al escritorio");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(said.Rule("file.write", Descriptor("file.write"),
+                new JsonObject { ["relativePath"] = "apuntes.txt", ["text"] = "uno", ["folder"] = "desktop" }), Is.Null);
+            Assert.That(said.Rule("file.read", Descriptor("file.read"), new JsonObject
+            {
+                ["fileName"] = "apuntes.txt", ["folder"] = "home", ["subdirectory"] = "banco-local",
+            }), Is.Null);
+        });
+    }
+
     [Test]
     public void AFullPathWithSpacesIsTheFolderItNames()
     {

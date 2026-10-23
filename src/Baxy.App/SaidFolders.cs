@@ -29,8 +29,8 @@ namespace Baxy.App;
 /// their home, Desktop, Documents or Downloads (its top level; hidden, system, read-only shell and linked folders
 /// left out), alone or as the first part of a relative path. A name found in several of them is the one in their home
 /// when their words say so («en mi carpeta de usuario»); otherwise all of them, and of those the ones that hold the
-/// file the call names. A folder that holds another one named is the way to it, not a place of its own. BAXY's own
-/// name is how the person speaks to it, never a folder they name.
+/// file the call names. A folder that holds another one named is the way to it, not a place of its own, unless that
+/// one is only one of several of its name. BAXY's own name is how the person speaks to it, never a folder they name.
 /// </para>
 /// </summary>
 internal sealed class SaidFolders
@@ -71,8 +71,11 @@ internal sealed class SaidFolders
     /// <param name="known">Where each known folder is, by its label (tests point them at a temporary folder).</param>
     internal SaidFolders(Func<string, string?>? known = null) => _known = known ?? PersonFolders.Path;
 
-    /// <summary>A folder the person named: its full path, and what they said of it.</summary>
-    internal sealed record Place(string Path, string Said);
+    /// <summary>
+    /// A folder the person named: its full path, what they said of it, and whether it is the only folder their words can
+    /// mean (false for a name found in several places).
+    /// </summary>
+    internal sealed record Place(string Path, string Said, bool Sure = true);
 
     /// <summary>
     /// What happens to a call: it runs with <paramref name="Arguments"/> (its own, or routed into the folder named) and
@@ -138,12 +141,12 @@ internal sealed class SaidFolders
                 string[] parts = Parts(match.Value.TrimEnd('.', ':', ')'));
                 if (parts.Length < 2)
                     continue;
-                IEnumerable<string> starts = PersonFolders.Names.TryGetValue(PersonFolders.Fold(parts[0]), out string? label)
-                    && Root(label) is { } known ? [known] : Named(Spoken(parts[0]));
+                string[] starts = PersonFolders.Names.TryGetValue(PersonFolders.Fold(parts[0]), out string? label)
+                    && Root(label) is { } known ? [known] : [.. Named(Spoken(parts[0]))];
                 foreach (string start in starts)
                 {
                     if (FolderOf(Path.Combine([start, .. parts[1..]])) is { } folder)
-                        found.Add(new(folder, match.Value.TrimEnd('.', ':', ')')));
+                        found.Add(new(folder, match.Value.TrimEnd('.', ':', ')'), starts.Length == 1));
                 }
             }
 
@@ -152,13 +155,19 @@ internal sealed class SaidFolders
             {
                 if (name.Count(char.IsLetter) >= 3 && name.Trim() != OwnName
                     && spoken.Contains(name, StringComparison.Ordinal))
-                    found.AddRange(Named(name).Select(folder => new Place(folder, Path.GetFileName(folder))));
+                {
+                    string[] named = [.. Named(name)];
+                    found.AddRange(named.Select(folder => new Place(folder, Path.GetFileName(folder), named.Length == 1)));
+                }
             }
         }
 
-        Place[] distinct = [.. found.GroupBy(place => place.Path, StringComparer.OrdinalIgnoreCase).Select(group => group.First())];
+        // A folder that holds another one named is the way to it, unless that one is only one of several of its name
+        // («de proyecto al escritorio» with a proyecto on the Desktop and another in the home folder).
+        Place[] distinct = [.. found.GroupBy(place => place.Path, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.OrderByDescending(place => place.Sure).First())];
         _places = [.. distinct.Where(place => !distinct.Any(other =>
-            !Same(other.Path, place.Path) && Within(other.Path, place.Path)))];
+            other.Sure && !Same(other.Path, place.Path) && Within(other.Path, place.Path)))];
         return _places;
     }
 
