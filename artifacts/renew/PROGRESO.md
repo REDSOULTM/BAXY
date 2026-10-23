@@ -3068,3 +3068,23 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   tras buscar sólo en tres carpetas). **int6 = b84547ed5**: + nb-e027 (search_scope: el no encontrado dice dónde buscó).
 - 22:4x **Suites del PC sobre int6 b84547ed5**: Kernel 678, Contracts 74, App 75, Setup 477, pytest 298. Falta el NB
   (Providers entero, E014 ×4, falsedades, recursos, sesión larga) sobre int6.
+- 23:5x-00:5x **Orden del dueño: cero tiempo muerto, agentes en las dos máquinas (única regla: no reentrenar).** PC:
+  w5-d2, w5-fals, w5-steam, w5-speed2, w5-grammar, w5-confirm, w5-tail, w5-ui, w5-stt; NB: nb-w5-e2e, -msg, -red, -mem,
+  -s1, -f004.
+  - **System One apagado sobre int6** (decision2 ×3): 229 / 230 / 230 = 229,67, acciones equivocadas 28 / 24 / 24
+    (≈25) frente a ≈15 encendido: S1 no sube aciertos en decision2 pero quita ~10 acciones equivocadas por corrida.
+  - **w5-d2**: «corrige» puede ir a una lectura con los mismos efectos (P169) + el juez lee los nombres nuevos de
+    diff.named (P212). s2 232 (int4 rejuzgado 231); s0/s1 se repiten (memoria).
+  - **w5-steam** (en int7): la mirada nombra la sección de la app por textos que sólo ella muestra (biblioteca/tienda de
+    Steam; F019/E015); el teclado espera a que un editor ocupado tome cada tecla (E017: «lista ilas»).
+  - **w5-speed2** (en int7): W5, lectura del historial por adelantado mientras BAXY habla (Qwen3.5 reescribe los
+    mensajes viejos al llegar un pedido nuevo y se releía el turno anterior); −120..220 ms esperados por turno de
+    seguimiento; BAXY_RENEW_PREFILL=0 lo apaga. Desglose: primera palabra p50 2,65 s en turnos de una herramienta.
+  - **w5-fals** (brazo aparte int7f): 7 textos de resultado que el 4B podía leer como «hecho» (lecturas, unchanged,
+    delivered_only, «ya se llamó», id de ventana gastado F001, «a launch was issued», beforeNowPlaying F014).
+  - **w5-grammar RETIRADA** (no entra código): llama-server b11609 no restringe los parámetros de tipo string, enum o
+    no (qwen3-coder.cpp:94-97); 77 enums sin restricción, pero sólo 1 de 804 decisiones lo rompió (P020); el arreglo
+    (re-preguntar el valor con gramática) cambió «nightlight» por brightness (acción válida pero equivocada) donde hoy el
+    núcleo rechaza y el modelo reintenta.
+  - **int7** = int6 + nb-f001 (F001: un juego que la persona no nombró espera su sí; con nb-f002 F002 3 → 0 falsas,
+    F010 y M132) + nb-w5-f004 + w5-steam + w5-speed2.
