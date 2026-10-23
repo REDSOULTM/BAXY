@@ -45,6 +45,15 @@ internal sealed class AppOpenHandler(
             && named.ValueKind == JsonValueKind.String
                 ? named.GetString()
                 : null;
+        // E014 (int3 s1): a place its application does not have is refused by the opening itself, launching nothing;
+        // asking the person first («¿Abro la Configuración del sistema en la sección de sonido?») asked for nothing.
+        if (appId is not null
+            && arguments.TryGetProperty("place", out JsonElement place) && place.ValueKind == JsonValueKind.String
+            && !ApplicationPlaces.PlacesOf(appId).Any(declared => declared.Place == place.GetString()))
+        {
+            return InvocationPreflightResult.Proceed;
+        }
+
         return appId is not null && ApplicationIds.IsValidRequest(appId)
             && await _provider.OpensSystemToolAsync(appId, cancellationToken).ConfigureAwait(false)
                 ? InvocationPreflightResult.Raised(OperationRisk.Irreversible)
@@ -124,13 +133,13 @@ internal sealed class AppOpenHandler(
                 bool placeOfApplication = arguments.Place is null || ApplicationPlaces.PlacesOf(arguments.AppId)
                     .Any(declared => declared.Place == arguments.Place);
                 // Renew al máximo (E014): a place of another application says the opening that reaches it (the model
-                // read placeIn as a value of place, then opened msconfig with no place).
+                // read placeIn as a value of place, then opened msconfig with no place), after the fact that nothing
+                // opened (int3 s1 told «Abrí Configuración» from a hint that began with «opens it»).
                 IReadOnlyList<string> owners = placeOfApplication ? [] : ApplicationPlaces.ApplicationsWith(arguments.Place);
                 string? places = !ModelAids.On(ModelAids.AppPlaces) ? null
                     : owners.Count > 0
-                        ? $"app_open with appId \"{owners[0]}\" and place \"{arguments.Place}\" opens it: "
-                            + $"{arguments.Place} is a place of {string.Join(" or ", owners)}, not of {arguments.AppId}, "
-                            + "which opened with no place does not show it"
+                        ? $"nothing was opened. app_open with appId \"{owners[0]}\" and place \"{arguments.Place}\" "
+                            + $"opens {arguments.Place}, a place of {string.Join(" or ", owners)}, not of {arguments.AppId}"
                         : PlacesNext(arguments.AppId, arguments.AppId);
                 return OperationOutcome.Failure(
                     placeOfApplication ? "place_value_not_taken" : "place_not_of_application",

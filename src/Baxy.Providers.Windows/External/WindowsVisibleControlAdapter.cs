@@ -882,6 +882,14 @@ internal sealed class WindowsVisibleControlAdapter
     internal Func<nint, bool>? ActRefused { get; init; }
 
     /// <summary>
+    /// Renew al máximo (aislamiento de pruebas): the window in front a look or a click without a window named takes
+    /// (<see cref="VisibleControlSurface.ResolveForegroundAsync"/>, the product's). A test seam names its own, so the
+    /// desktop's real front (an elevated msconfig or Task Manager answered «window_elevated») never decides it.
+    /// </summary>
+    internal Func<CancellationToken, ValueTask<nint>> WindowInFront { get; init; } =
+        VisibleControlSurface.ResolveForegroundAsync;
+
+    /// <summary>
     /// Ronda final 22-24: whether a window is the opened application's (drawn or hosted by its process, or, when the
     /// opening launched it, by the family of processes its launch started, as a launcher's child): a click that names
     /// another process's window is not bound to the application just opened. Null (the test seams that name none)
@@ -2141,7 +2149,7 @@ internal sealed class WindowsVisibleControlAdapter
                 return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop()), []);
             if (hwnd == 0)
             {
-                hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
+                hwnd = await WindowInFront(cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -2713,7 +2721,7 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 // Read where it is: the worker no longer presses by coordinates (fable/cu-v3-clic), and the pointer
                 // takes the front itself inside a burst of the foreground lease (fable/cu-v3-pausa).
-                hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken).ConfigureAwait(false);
+                hwnd = await WindowInFront(cancellationToken).ConfigureAwait(false);
             }
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
