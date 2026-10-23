@@ -3184,3 +3184,10 @@ el PC: la GPU del PC queda para él; los agentes del PC sólo escriben código y
   restos de corridas viejas en el home del NB tumbaban E006/E024 sólo con el arnés sin aislamiento. NB Providers entero
   sobre int9: 2 850/2 850. La sesión del PC se reinició a las ~13:45: se retomaron los agentes w7-breve y el parche de
   llama.cpp.
+
+### 2026-10-23 — int10 en hub (abf5721a3)
+- int10 = int9 + auditoría w8 del PC (medir, core, mente, app, voz, pronto, chequeo, kernel) + w6-lat (parche llama.cpp, opt-in) + w7-breve (facts_once) + w7-apps (place_owner, system_tools_unlisted) + nb-w8-arch/apps/sys/msg.
+- Suites PC: Kernel 729, Contracts 74, App 183, Setup 477, pytest 610, todo verde.
+- Cola del NB pedida por buzón: Providers entero; decision3 x3, e2e x3 y falsedades x3 frente a int9; recursos y sesión larga; A/B del servidor parcheado; ablación de ayudas nuevas si algo pierde.
+- Nota de w7-breve: en la reproducción en CPU, E006/E019 dijeron «en C:\Users\…\BAXY-bench» para ficheros escritos en la carpeta personal, en todos los brazos (no lo causa facts_once). Hay que mirarlo en las falsedades GPU de int10.
+- Pendiente para int10b: nb-w8-audio, w8-hablar (acierto de la decisión temprana y driver hablado), nb-nuevo4, nb-w5-open.
