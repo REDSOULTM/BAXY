@@ -98,12 +98,14 @@ def _trim(audio: np.ndarray, rate: int) -> np.ndarray:
     return audio[start:end]
 
 
-def _default_follower(sd) -> int | None:
-    """The MME sound mapper (WAVE_MAPPER, which PortAudio lists first among MME outputs), or PortAudio's default."""
+def default_follower(sd, kind: str = "output") -> int | None:
+    """The MME sound mapper (WAVE_MAPPER, which PortAudio lists first among MME outputs, and among MME inputs for the
+    microphone), or PortAudio's default. PortAudio's own default is the device that was Windows' default when it
+    started, for the microphone too (on the PC: «Micrófono (3- USB PnP Audio Dev», not the mapper, 2026-10-23)."""
     for api in sd.query_hostapis():
         if api["name"] == "MME":
-            outputs = [index for index in api["devices"] if sd.query_devices(index)["max_output_channels"] > 0]
-            return outputs[0] if outputs else None
+            found = [index for index in api["devices"] if sd.query_devices(index)[f"max_{kind}_channels"] > 0]
+            return found[0] if found else None
     return None
 
 
@@ -368,7 +370,7 @@ class Speech:
             # Windows' default when it started (2026-10-17: the owner changed the default and heard nothing); the MME
             # sound mapper sends each stream to the default of the moment.
             self._stream = sd.OutputStream(samplerate=self.rate, channels=1, dtype="float32", latency="low",
-                                           device=_default_follower(sd))
+                                           device=default_follower(sd))
             self._stream.start()
         self._stream_until = time.monotonic() + HOLD_S
         return self._stream
