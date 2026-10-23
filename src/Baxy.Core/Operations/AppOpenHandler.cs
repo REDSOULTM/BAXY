@@ -100,15 +100,7 @@ internal sealed class AppOpenHandler(
                 // another application.
                 bool placeOfApplication = arguments.Place is null || ApplicationPlaces.PlacesOf(arguments.AppId)
                     .Any(declared => declared.Place == arguments.Place);
-                // Renew al máximo (e2e E014, 2026-10-22): «sound» given to «Configuración del sistema» (msconfig) was
-                // retried without the place, and msconfig opened; when one application has that place, it is the next
-                // opening to make.
-                IReadOnlyList<string> owners = ApplicationPlaces.ApplicationsWith(arguments.Place);
-                string? places = !ModelAids.On(ModelAids.AppPlaces) ? null
-                    : !placeOfApplication && owners is [string owner]
-                        ? $"{arguments.Place} is a place of {owner}, not of {arguments.AppId}: app_open with appId "
-                            + $"{owner} and place {arguments.Place} opens it"
-                        : PlacesNext(arguments.AppId, arguments.AppId);
+                string? places = ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(arguments.AppId, arguments.AppId) : null;
                 return OperationOutcome.Failure(
                     placeOfApplication ? "place_value_not_taken" : "place_not_of_application",
                     result: Facts(writer =>
@@ -120,7 +112,7 @@ internal sealed class AppOpenHandler(
                         // The places of its application and what each takes, as a fact whether the aids are on or off.
                         if (placeOfApplication)
                             WritePlaces(writer, arguments.AppId);
-                        WriteNames(writer, "placeIn", owners);
+                        WriteNames(writer, "placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place));
                         if (places is not null) writer.WriteString("next", places);
                     }));
             }

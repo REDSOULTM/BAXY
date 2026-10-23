@@ -36,27 +36,6 @@ public sealed class AppOpenHandlerTests
         });
     }
 
-    // Renew al máximo (e2e E014): the one application with that place is named as the opening to make, so the retry is
-    // not the same application without its place (msconfig opened for «abre la configuración de sonido»).
-    [Test]
-    public async Task APlaceOfOneOtherApplicationNamesThatApplicationAsTheNextOpening()
-    {
-        var provider = new VerifiedOpening(@"C:\Windows\System32\msconfig.exe");
-        string owner = ApplicationPlaces.ApplicationsWith("sound").Single();
-
-        OperationOutcome outcome = await Handler(provider).ExecuteAsync(
-            Invocation("""{"appId":"Configuración del sistema","place":"sound"}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_of_application"));
-            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(
-                $"sound is a place of {owner}, not of Configuración del sistema: app_open with appId {owner} and "
-                + "place sound opens it"));
-            Assert.That(provider.Calls, Is.Zero);
-        });
-    }
-
     // The Calculator is launched by System32\calc.exe, and the window verified is CalculatorApp's: the opening names it
     // CalculatorApp, as the window in front would be named (foregroundHeldBy) and the keys sent to it (sentTo).
     [Test]
