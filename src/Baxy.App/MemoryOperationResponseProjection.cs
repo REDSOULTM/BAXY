@@ -485,7 +485,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 "value",
                 MaximumValueUtf8Bytes,
                 allowEmpty: false,
-                out string value)
+                out string value,
+                allowLineBreaks: true)
             || !TryGetEnumText(record, "kind", ["fact", "preference", "context", "rule"], out _)
             || !TryGetEnumText(record, "origin", ["explicit"], out _)
             || !TryGetEnumText(
@@ -693,12 +694,15 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         return true;
     }
 
+    // Renew al máximo (w8): a record's value may hold a line break or a tab, as the store keeps it; one such value made
+    // the whole recall or list page result_unreadable.
     private static bool TryGetBoundedText(
         JsonElement payload,
         string name,
         int maximumUtf8Bytes,
         bool allowEmpty,
-        out string value)
+        out string value,
+        bool allowLineBreaks = false)
     {
         value = string.Empty;
         if (!payload.TryGetProperty(name, out JsonElement element)
@@ -706,7 +710,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             || element.GetString() is not { } candidate
             || (!allowEmpty && candidate.Length == 0)
             || !candidate.IsNormalized(NormalizationForm.FormC)
-            || candidate.Any(static character => char.IsControl(character)))
+            || candidate.Any(character => char.IsControl(character)
+                && !(allowLineBreaks && character is '\r' or '\n' or '\t')))
         {
             return false;
         }

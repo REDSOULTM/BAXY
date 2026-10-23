@@ -148,6 +148,25 @@ public sealed class LocalMemoryExportWriterTests
             Throws.TypeOf<MemoryExportPublishedUnverifiedException>());
     }
 
+    // Renew al máximo (w8): the store keeps a value with a line break or a tab; the export takes it as kept (it was
+    // memory_export_unavailable for every export until that record was forgotten).
+    [Test]
+    public void AValueWithALineBreakIsExported()
+    {
+        using TemporaryDirectory temporary = new();
+        string invocationId = Guid.NewGuid().ToString("D");
+        var writer = new LocalMemoryExportWriter(temporary.Path);
+
+        MemoryExportResult result = writer.Export(
+            new MemoryExportRequest(invocationId, [Record() with { Value = "primera línea\nsegunda\tcolumna" }]));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.RecordCount, Is.EqualTo(1));
+            Assert.That(File.ReadAllText(result.Path), Does.Contain("primera l"));
+        });
+    }
+
     private static MemoryRecord Record()
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;

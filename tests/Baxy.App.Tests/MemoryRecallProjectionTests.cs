@@ -121,6 +121,21 @@ public sealed class MemoryRecallProjectionTests
         public byte[] Open(ReadOnlySpan<byte> envelope, string purpose) => throw new InvalidOperationException("opened");
     }
 
+    // Renew al máximo (w8): a value kept with a line break (the store allows it) is read back, never the whole page
+    // result_unreadable.
+    [Test]
+    public void ARecalledValueWithALineBreakIsRead()
+    {
+        JsonObject payload = JsonNode.Parse(Recall(exactMatch: true).GetRawText())!.AsObject();
+        payload["records"]![0]!["value"] = "pizza\ncon piña";
+
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.recall",
+            JsonDocument.Parse(payload.ToJsonString()).RootElement.Clone(), out MemoryOperationResponseProjection? projection),
+            Is.True);
+        Assert.That((string?)JsonNode.Parse(projection!.Message)!["observed"]!["records"]![0]!["value"],
+            Is.EqualTo("pizza\ncon piña"));
+    }
+
     private static JsonElement Recall(bool? exactMatch)
     {
         const string at = "2026-10-22T10:00:00+00:00";
