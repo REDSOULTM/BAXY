@@ -30,13 +30,15 @@ public sealed class LocalTaskStore : ILocalTaskStore
         _timeProvider = timeProvider ?? TimeProvider.System;
     }
 
-    public LocalTaskRecord Create(string title, string details, string? due)
+    public LocalTaskRecord Create(string title, string details, string? due, string? idempotencyKey = null)
     {
         string normalizedTitle = NormalizeText(title, nameof(title), MaximumTitleUtf8Bytes, false, false);
         string normalizedDetails = NormalizeText(details, nameof(details), MaximumDetailsUtf8Bytes, true, true);
         DateTimeOffset? dueUtc = ParseDue(due);
         var payload = new TaskPayload(normalizedDetails, dueUtc, false, null);
-        return ToTask(_documents.Create(normalizedTitle, Serialize(payload)));
+        // Auditoría del Core (w8): keyed by the invocation, as notes are: a task.create run again after the core ended
+        // mid-invocation (the journal had it started, not completed) finds the task it made instead of making a second.
+        return ToTask(_documents.Create(normalizedTitle, Serialize(payload), idempotencyKey));
     }
 
     public LocalTaskRecord Read(Guid id, bool includeDeleted = false) =>

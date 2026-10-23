@@ -24,17 +24,20 @@ internal sealed class AppRestartHandler : IOperationHandler
     private readonly Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> _open;
     private readonly Func<int, TimeSpan, CancellationToken, ValueTask<bool>> _exited;
     private readonly Func<int, bool> _sharedHost;
+    private readonly TimeProvider _time;
 
     internal AppRestartHandler(
         IWindowControlProvider windows,
         Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> open,
         Func<int, TimeSpan, CancellationToken, ValueTask<bool>>? exited = null,
-        Func<int, bool>? sharedHost = null)
+        Func<int, bool>? sharedHost = null,
+        TimeProvider? time = null)
     {
         _windows = windows ?? throw new ArgumentNullException(nameof(windows));
         _open = open ?? throw new ArgumentNullException(nameof(open));
         _exited = exited ?? ProcessExitedAsync;
         _sharedHost = sharedHost ?? IsApplicationFrameHost;
+        _time = time ?? TimeProvider.System;
     }
 
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("app.restart");
@@ -68,18 +71,28 @@ internal sealed class AppRestartHandler : IOperationHandler
         {
             // Nothing of the application to close (not running, or its windows not read): nothing happened. Otherwise
             // it stopped while closing (a dialog of its own, such as saving; a close that failed): said, never reopened.
+            // Auditoría del Core (w8): with no window but processes running in the background (Steam in the notification
+            // area), they are said, as app.close says them; nothing was closed.
             return closing.Frames == 0
-                ? OperationOutcome.Failure(stopped)
+                ? closing.ProcessIds.Count == 0
+                    ? OperationOutcome.Failure(stopped)
+                    : OperationOutcome.Failure(stopped, Receipt(appId, 0, [], stillRunning: [], reopened: null,
+                        backgroundProcesses: closing.ProcessIds))
                 : OperationOutcome.Failure(
                     stopped,
                     Receipt(appId, closedWindows, closedProcesses, stillRunning: [], reopened: null),
                     effectMayHaveOccurred: closing.EffectMayHaveOccurred);
         }
 
+        // Auditoría del Core (w8): one deadline for every closed process. Each waited ExitWait of its own, so an
+        // application with several processes that kept running waited ExitWait times their number before saying so.
         var stillRunning = new List<int>();
+        long waitStarted = _time.GetTimestamp();
         foreach (int processId in closedProcesses)
         {
-            if (!await _exited(processId, ExitWait, cancellationToken).ConfigureAwait(false))
+            TimeSpan left = ExitWait - _time.GetElapsedTime(waitStarted);
+            if (!await _exited(processId, left > TimeSpan.Zero ? left : TimeSpan.Zero, cancellationToken)
+                    .ConfigureAwait(false))
             {
                 stillRunning.Add(processId);
             }
@@ -106,9 +119,12 @@ internal sealed class AppRestartHandler : IOperationHandler
             cancellationToken).ConfigureAwait(false);
         if (!opened.Succeeded || !opened.Verified || opened.Result is not { ValueKind: JsonValueKind.Object } facts)
         {
+            // Auditoría del Core (w8): what the failed reopening observed (whether its launch was issued, the closest
+            // names, its next) went nowhere, so a reopening still starting was told as «no se reinició».
             return OperationOutcome.Failure(
                 opened.ErrorCode ?? "app_reopen_failed",
-                Receipt(appId, closedWindows, closedProcesses, stillRunning, reopened: null),
+                Receipt(appId, closedWindows, closedProcesses, stillRunning, reopened: null,
+                    failedReopening: opened.Succeeded ? null : opened.Result),
                 effectMayHaveOccurred: true,
                 causeCode: "app_reopen_failed");
         }
@@ -160,6 +176,9 @@ internal sealed class AppRestartHandler : IOperationHandler
             timeout.CancelAfter(wait);
             try
             {
+                // With the shared deadline spent, a process that already ended still counts as ended.
+                if (process.HasExited)
+                    return true;
                 await process.WaitForExitAsync(timeout.Token).ConfigureAwait(false);
                 return true;
             }
@@ -171,6 +190,12 @@ internal sealed class AppRestartHandler : IOperationHandler
             {
                 return true;
             }
+            // A process BAXY may not read (elevated) escaped the handler and ended the core; its end is not seen, so it
+            // is not counted as ended and nothing is reopened over it.
+            catch (System.ComponentModel.Win32Exception)
+            {
+                return false;
+            }
         }
     }
 
@@ -179,7 +204,9 @@ internal sealed class AppRestartHandler : IOperationHandler
         int closedWindows,
         IEnumerable<int> closedProcesses,
         List<int> stillRunning,
-        JsonElement? reopened)
+        JsonElement? reopened,
+        JsonElement? failedReopening = null,
+        IReadOnlyCollection<int>? backgroundProcesses = null)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
@@ -192,6 +219,15 @@ internal sealed class AppRestartHandler : IOperationHandler
             foreach (int id in closedProcesses)
                 writer.WriteNumberValue(id);
             writer.WriteEndArray();
+            // The processes running with no window, as app.close names them (processIds), never closed by BAXY.
+            if (backgroundProcesses is { Count: > 0 })
+            {
+                writer.WriteNumber("windows", 0);
+                writer.WriteStartArray("processIds");
+                foreach (int id in backgroundProcesses)
+                    writer.WriteNumberValue(id);
+                writer.WriteEndArray();
+            }
             if (stillRunning.Count > 0)
             {
                 writer.WriteStartArray("stillRunningProcessIds");
@@ -205,6 +241,13 @@ internal sealed class AppRestartHandler : IOperationHandler
             {
                 writer.WritePropertyName("opened");
                 opened.WriteTo(writer);
+            }
+
+            // The reopening's own failure facts (app.open's: launchIssued, candidates, next), never an opening.
+            if (failedReopening is { ValueKind: JsonValueKind.Object } failed)
+            {
+                writer.WritePropertyName("reopening");
+                failed.WriteTo(writer);
             }
 
             writer.WriteString("authority", "window_close_absence_process_exit_app_open");

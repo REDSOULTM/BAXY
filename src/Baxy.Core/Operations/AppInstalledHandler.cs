@@ -108,10 +108,13 @@ internal sealed class ApplicationWindowStatusHandler(
                     // está abierto»; the provenance is said as a sentence too.
                     if (ModelAids.On(ModelAids.ProvenanceNext))
                     {
+                        // Auditoría del Core (w8): «it was already open» said more than the provenance knows (the person
+                        // may have opened it during the session); only BAXY's own launches are known.
                         string shown = observed.DisplayName ?? observed.RequestedName;
                         writer.WriteString("next", opened
                             ? $"BAXY opened {shown} in this session"
-                            : $"{shown} is open, but BAXY did not open it in this session: it was already open");
+                            : $"{shown} is open, but BAXY did not open it in this session; who opened it, and when, is "
+                                + "not known");
                     }
                 }
             }

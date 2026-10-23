@@ -68,7 +68,7 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
                 > AudioControlEvidence.MaximumVolumeTolerance
             || baseline.Muted != final.Muted)
         {
-            return AudioControlEvidence.VerificationFailure(receipt);
+            return AudioControlEvidence.VerificationFailure(receipt, final);
         }
 
         AudioStatusReceipt observed = await _provider.GetStatusAsync(
@@ -76,7 +76,7 @@ internal sealed class AudioVolumeHandler(IAudioControlProvider provider) : IOper
             cancellationToken).ConfigureAwait(false);
         if (!AudioControlEvidence.MatchesIndependentStatus(receipt, observed))
         {
-            return AudioControlEvidence.VerificationFailure(receipt);
+            return AudioControlEvidence.VerificationFailure(receipt, AudioControlEvidence.ReadAfter(receipt, observed));
         }
 
         JsonElement serialized = AudioControlEvidence.SerializeVerified(receipt);
@@ -214,20 +214,32 @@ internal static class AudioControlEvidence
     // Renew al máximo: a set the provider could not verify still read the endpoint after it; that final reading was
     // dropped, so the mind only heard «could not» without the level and mute it left. It travels beside the failure
     // as stateAfter, never as a success; any other failure, or one with no final reading, stays bare.
-    private static JsonElement? StateAfter(AudioControlReceipt receipt)
-    {
-        if (receipt.ErrorCode != AudioControlErrorCodes.VerificationFailed || receipt.Final is not { } final)
-        {
-            return null;
-        }
+    private static JsonElement? StateAfter(AudioControlReceipt receipt) =>
+        receipt.ErrorCode == AudioControlErrorCodes.VerificationFailed && receipt.Final is { } final
+            ? StateAfter(receipt, final)
+            : null;
 
+    // Auditoría del Core (w8): the endpoint as read after a set that did not hold, in the shape of audio.volume.adjust's
+    // stateAfter (WindowsAudioAdjustmentAdapter.VolumeState) and with requestedStateReached, which the mind reads as
+    // «releído después: quedó / no quedó como se pidió»: the level within the post-read's tolerance and the mute as it
+    // was (a volume), or the mute asked and the level as it was (a mute).
+    private static JsonElement StateAfter(AudioControlReceipt receipt, AudioEndpointState after)
+    {
+        bool reached = receipt.RequestedLevel is int level
+            ? Math.Abs(after.VolumePercent - level) <= MaximumVolumeTolerance && receipt.Baseline?.Muted == after.Muted
+            : receipt.RequestedState is bool muted
+                && after.Muted == muted && receipt.Baseline?.VolumePercent == after.VolumePercent;
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
             writer.WriteStartObject();
             writer.WriteStartObject("stateAfter");
-            writer.WriteNumber("level", final.VolumePercent);
-            writer.WriteBoolean("muted", final.Muted);
+            writer.WriteNumber("level", after.VolumePercent);
+            writer.WriteBoolean("muted", after.Muted);
+            if (receipt.RequestedLevel is int requested)
+                writer.WriteNumber("requestedLevel", requested);
+            writer.WriteBoolean("requestedStateReached", reached);
+            writer.WriteString("authority", "windows_core_audio_output_endpoint_postread");
             writer.WriteEndObject();
             writer.WriteEndObject();
         }
@@ -235,6 +247,17 @@ internal static class AudioControlEvidence
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
         return document.RootElement.Clone();
     }
+
+    /// <summary>
+    /// The endpoint as last read after a set: the independent status read when it is a verified read of the same
+    /// endpoint, else the provider's own final reading.
+    /// </summary>
+    internal static AudioEndpointState? ReadAfter(AudioControlReceipt receipt, AudioStatusReceipt status) =>
+        status is { Verified: true, ErrorCode: null, State: { } state }
+        && string.Equals(status.TargetId, receipt.TargetId, StringComparison.Ordinal)
+        && string.Equals(status.EndpointIdHash, receipt.EndpointIdHash, StringComparison.Ordinal)
+            ? state
+            : receipt.Final;
 
     internal static bool MatchesIndependentStatus(
         AudioControlReceipt receipt,
@@ -253,9 +276,13 @@ internal static class AudioControlEvidence
             && observed.Muted == claimed.Muted;
     }
 
-    internal static OperationOutcome VerificationFailure(AudioControlReceipt? receipt) =>
+    // Auditoría del Core (w8): a verified set whose final reading, or the independent read after it, is not what was
+    // asked failed bare, while the provider's own unverified set carried its stateAfter; with a reading after, it
+    // goes beside the failure too.
+    internal static OperationOutcome VerificationFailure(AudioControlReceipt? receipt, AudioEndpointState? after = null) =>
         OperationOutcome.Failure(
             AudioControlErrorCodes.VerificationFailed,
+            result: receipt is not null && after is not null ? StateAfter(receipt, after) : null,
             effectMayHaveOccurred: receipt is not null && MayHaveChanged(receipt));
 
     private static bool IsValidState(AudioEndpointState state) =>

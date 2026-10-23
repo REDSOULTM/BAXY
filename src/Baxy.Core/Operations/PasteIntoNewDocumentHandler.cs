@@ -66,10 +66,28 @@ internal sealed class PasteIntoNewDocumentHandler(
                 causeCode: "paste_application_not_opened");
         }
 
-        using JsonDocument empty = JsonDocument.Parse("{}");
+        // Auditoría del Core (w8): the paste names the window the opening verified. With no window it went to whatever
+        // held the front, and the opening does not always leave its window there: asked in front while the person works
+        // in another window it is raised without their keyboard (ShownWithoutFocus), Windows may refuse the front, and
+        // the person may click elsewhere meanwhile; the clipboard then went into their own document or chat. Named, the
+        // mission's lease brings that window up after the person's pause, or nothing is sent (input_window_not_in_front).
+        if (opened.Result is not { ValueKind: JsonValueKind.Object } facts
+            || !facts.TryGetProperty("windowHandle", out JsonElement handle)
+            || handle.ValueKind != JsonValueKind.Number
+            || !handle.TryGetInt64(out long window)
+            || window <= 0)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                result: opened.Result,
+                effectMayHaveOccurred: true,
+                causeCode: "paste_window_unknown");
+        }
+
+        using JsonDocument target = JsonDocument.Parse($$"""{"window":{{window}}}""");
         return await _paste.ExecuteAsync(
             new OperationInvocation(
-                invocation.RequestId, invocation.MissionId, invocation.InvocationId, empty.RootElement.Clone()),
+                invocation.RequestId, invocation.MissionId, invocation.InvocationId, target.RootElement.Clone()),
             cancellationToken).ConfigureAwait(false);
     }
 }
