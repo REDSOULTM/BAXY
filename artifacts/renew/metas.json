@@ -2510,17 +2510,6 @@
         "when": "2026-10-23 01:30-02:15",
         "what": "e2e de práctica en el PC escribió en el Bloc de notas del dueño (pestaña sin guardar): «lista: pilas, cables» ×2 y «hola desde BAXY» ×1; nada guardado a disco; se le avisa para quitarlas; regla: ningún banco que actúa con su Bloc de notas abierto"
       }
-    ],
-    "incidents": [
-      {
-        "fecha": "2026-10-22 ~16:00",
-        "que": "subagente de la tanda 5 leyó campos de hora de 5 escenas de renew_v1/escenas/sealed.json y holdout_latido.json",
-        "efecto": "renew_v1/escenas/sealed.json ya no es holdout limpio; renew_v4 intacto"
-      },
-      {
-        "when": "2026-10-23 01:30-02:15",
-        "what": "e2e de práctica en el PC escribió en el Bloc de notas del dueño (pestaña sin guardar): «lista: pilas, cables» ×2 y «hola desde BAXY» ×1; nada guardado a disco; se le avisa para quitarlas; regla: ningún banco que actúa con su Bloc de notas abierto"
-      }
     ]
   }
 }
