@@ -79,9 +79,11 @@ internal sealed class AppOpenHandler(
         string? placeValue = arguments.PlaceValue;
         GameTitle? game = null;
         // BAXY Renew cu (C04): a game's page asked for by the game's title, as the person says it; its catalog turns it
-        // into the number the address takes, and the game found is named back with the opening.
+        // into the number the address takes, and the game found is named back with the opening. A value of digits
+        // alone is already that number, except a title said as such (game.store.page: «1942» is a game's name).
         if (ApplicationPlaces.GameCatalogOf(arguments.AppId, arguments.Place) is { } catalog
-            && !string.IsNullOrWhiteSpace(placeValue) && !placeValue.All(char.IsAsciiDigit))
+            && !string.IsNullOrWhiteSpace(placeValue)
+            && (arguments.PlaceValueAsSaid == true || !placeValue.All(char.IsAsciiDigit)))
         {
             bool searchFailed = false;
             try
