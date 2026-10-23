@@ -843,6 +843,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             || parts.Any(part => part is "" or "." or ".." || part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
             return ExternalJson.Failure(operation, "known_file_name_invalid");
         List<KnownEntry> matches = [];
+        string stem = parts[^1];
+        // BAXY Renew al máximo W5 (velocidad): a bare name found nowhere walked the folder twice, once for the name and
+        // once more for the files with that stem; one walk now keeps both, the first CandidatesShown + 1 of each in the
+        // same order, and stops where the name's own walk stopped. Under home a walk took 50-83 s (e2e pc-lote,
+        // 2026-10-20), so «not found» took twice that.
+        List<KnownEntry>? stems = null;
         if (fullPath || parts.Length > 1)
         {
             foreach ((string label, string root) in roots)
@@ -854,22 +860,34 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         }
         else
         {
-            matches.AddRange(Enumerate(roots)
-                .Where(item => string.Equals(Path.GetFileName(item.Path), name, StringComparison.OrdinalIgnoreCase))
-                .Take(CandidatesShown + 1));
+            stems = [];
+            foreach (KnownEntry item in Enumerate(roots))
+            {
+                if (string.Equals(Path.GetFileName(item.Path), name, StringComparison.OrdinalIgnoreCase))
+                {
+                    matches.Add(item);
+                    if (matches.Count == CandidatesShown + 1) break;
+                }
+                else if (stems.Count < CandidatesShown + 1 && string.Equals(
+                             Path.GetFileNameWithoutExtension(item.Path), stem, StringComparison.OrdinalIgnoreCase))
+                {
+                    stems.Add(item);
+                }
+            }
         }
         if (matches.Count == 1)
         {
             located = matches[0];
             return null;
         }
-        string stem = parts[^1];
         KnownEntry[] candidates = matches.Count > 1
             ? [.. matches]
-            : [.. Enumerate(roots)
-                .Where(item => string.Equals(
-                    Path.GetFileNameWithoutExtension(item.Path), stem, StringComparison.OrdinalIgnoreCase))
-                .Take(CandidatesShown + 1)];
+            : stems is not null
+                ? [.. stems]
+                : [.. Enumerate(roots)
+                    .Where(item => string.Equals(
+                        Path.GetFileNameWithoutExtension(item.Path), stem, StringComparison.OrdinalIgnoreCase))
+                    .Take(CandidatesShown + 1)];
         string code = matches.Count > 1 ? "known_file_ambiguous" : "known_file_not_found";
         if (candidates.Length == 0)
         {
