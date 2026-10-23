@@ -151,3 +151,21 @@ def test_a_new_catalog_drops_the_constants_of_the_one_before(tmp_path) -> None:
     schema["required"] = ["value"]
     mind.configure({"capabilities": [{"name": "memory.save", "description": "Save", "argumentsSchema": schema}]})
     assert mind.decide(1, "recuerda que me gusta el azul")["arguments"] == {"value": "azul"}
+
+
+def test_a_result_that_tells_the_places_does_not_list_them_twice(tmp_path, monkeypatch) -> None:
+    # app_places_next and same_call_next fired on the same result (a click failed, a look named Steam, the same click
+    # failed the same way): the places of Steam were listed twice in one message.
+    from test_mind_final import _call, _mind, _say
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    unchanged = json.dumps({"status": "failed", "error": "visible_button_postread_unchanged"})
+    looked = json.dumps({"status": "completed", "verification": "output_only", "view": "window 1 Steam\nBiblioteca"})
+    click = _call("input_visible_click", {"label": "Biblioteca"})
+    mind, server = _mind(tmp_path, [click, _call("input_visible_controls", {"application": "Steam"}), click,
+                                    _say("No cambió.")])
+    mind.decide(1, "entra a la biblioteca")
+    for index, result in enumerate([unchanged, looked, unchanged]):
+        mind.continue_turn(2 + index, result)
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert "input_visible_click ya se llamó 2 veces en este turno" in last
+    assert last.count("también se abre directo en sus lugares") == 1

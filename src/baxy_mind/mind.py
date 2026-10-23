@@ -1546,8 +1546,10 @@ class Mind:
         told_at = SAME_CALL_TOLD if outcome.startswith(COMPLETED_OUTCOMES) else SAME_CALL_FAILED_TOLD
         if seen[key] == told_at and not turn.get("same_told") and _aid_on("same_call_next"):
             turn["same_told"] = True
+            # Auditoría de la mente (w8): not the places again when app_places_next just told them in this result.
             options = SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS + (
-                same_call_places(turn.get("app_named")) if calling == "input_visible_click" else "")
+                same_call_places(turn.get("app_named"))
+                if calling == "input_visible_click" and "app_places_next" not in aids else "")
             repeated = SAME_CALL_NOTE.format(call=calling, times=told_at, outcome=outcome, options=options)
             note += repeated
             aids["same_call_next"] = repeated.strip()
