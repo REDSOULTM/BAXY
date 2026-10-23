@@ -420,6 +420,16 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         Unreadable,
     }
 
+    // Renew al máximo (w8): a log its program still writes is open for writing, and File.ReadAllBytes (FileShare.Read)
+    // could not open it: file.read said file_in_use and a search by content skipped it as unreadable. A read shares
+    // writing and deletion, as Notepad does, and takes the bytes the file had when it was opened.
+    internal static byte[] ReadShared(string path)
+    {
+        using FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        byte[] bytes = new byte[checked((int)stream.Length)];
+        return bytes[..stream.ReadAtLeast(bytes, bytes.Length, throwOnEndOfStream: false)];
+    }
+
     private static ContentScan FirstLineContaining(string path, string content, out int line, out string lineText)
     {
         line = 0;
@@ -432,7 +442,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             using (FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
                 head = head[..stream.ReadAtLeast(head, head.Length, throwOnEndOfStream: false)];
             if (TextFileEncoding.LooksBinary(head)) return ContentScan.NotText;
-            string text = TextFileEncoding.Decode(File.ReadAllBytes(path));
+            string text = TextFileEncoding.Decode(ReadShared(path));
             int index = text.IndexOf(content, StringComparison.OrdinalIgnoreCase);
             if (index < 0) return ContentScan.Absent;
             int start = text.LastIndexOf('\n', Math.Max(0, index - 1)) + 1;
@@ -610,7 +620,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         Action<Utf8JsonWriter> seen)
     {
         if (info.Length > MaximumTextBytes) return ExternalJson.Failure(operation, "known_text_too_large");
-        byte[] bytes = File.ReadAllBytes(file.Path);
+        byte[] bytes = ReadShared(file.Path);
         if (TextFileEncoding.LooksBinary(bytes)) return ExternalJson.Failure(operation, "known_file_not_text");
         string full = TextFileEncoding.Decode(bytes);
         return ExternalJson.Success(operation, ReadResult(
@@ -842,6 +852,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteString("folder", file.Label);
                 writer.WriteNumber("occurrences", occurrences);
                 writer.WriteBoolean("changed", false);
+                writer.WriteString("next", EditRefusalNext(occurrences, oldText, file.Path));
                 writer.WriteEndObject();
             }), occurrences == 0 ? "known_edit_text_not_found" : "known_edit_text_not_unique");
         }
@@ -898,6 +909,22 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // The file a stopped walk found is the one seen in the part walked, not proven the only one of its name: a read says
     // which one it is (relativePath) and how far the walk went. A whole walk adds nothing.
+    // Renew al máximo (w8, F015): oldText was the file's own name and the refusal only said «not found». What to do is
+    // said for any oldText the file does not hold as asked, and a name of the file given as oldText is named as that.
+    internal static string EditRefusalNext(int occurrences, string oldText, string path)
+    {
+        if (occurrences > 1)
+            return $"oldText appears {occurrences} times; nothing was changed; give a longer oldText that appears once, "
+                + "or replaceAll true to change every one";
+        string name = Path.GetFileName(path), stem = Path.GetFileNameWithoutExtension(path), asked = oldText.Trim();
+        string read = "nothing was changed; oldText must be the exact text inside the file, copied from file_read; "
+            + "file_write with the whole new content replaces all of it";
+        return asked.Equals(name, StringComparison.OrdinalIgnoreCase) || asked.Equals(stem, StringComparison.OrdinalIgnoreCase)
+            || asked.Equals(path, StringComparison.OrdinalIgnoreCase)
+            ? "oldText was the file's name, not text inside it; " + read
+            : "the file does not hold oldText exactly as given (spaces, line breaks and accents count); " + read;
+    }
+
     private Action<Utf8JsonWriter> StoppedWalkFacts(KnownEntry file, bool walkStopped)
     {
         if (!walkStopped) return _ => { };

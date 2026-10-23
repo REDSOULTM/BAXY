@@ -769,6 +769,60 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (w8): a log its program holds open for writing is read (and searched by content), not refused as
+    // file_in_use or skipped as unreadable.
+    [Test]
+    public async Task ALogStillOpenForWritingIsReadAndSearched()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, _) = Folders(temporary);
+        string path = Path.Combine(desktop, "servidor.log");
+        using var logger = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+        logger.Write(Encoding.UTF8.GetBytes("inicio\nerror: disco lleno\n"));
+        logger.Flush();
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"desktop","fileName":"servidor.log"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt found = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"desktop","content":"disco lleno"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("inicio\nerror: disco lleno\n"));
+            Assert.That(found.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (w8, F015): file.edit got the file's name as oldText and the refusal only said «not found»; it now
+    // says that oldText was the name and what to do, and any oldText the file does not hold as asked says what to do.
+    [Test]
+    public async Task AnEditGivenTheFileNameAsItsTextSaysSoAndWhatToDo()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, FolderRecycleBin bin) = Folders(temporary);
+        string path = Path.Combine(desktop, "notas.txt");
+        await File.WriteAllTextAsync(path, "Reunión el lunes\n");
+
+        ExternalCapabilityReceipt name = await adapter.InvokeAsync(
+            "file.edit", Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"notas.txt","newText":"x"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt other = await adapter.InvokeAsync(
+            "file.edit", Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"reunion","newText":"x"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(name.ErrorCode, Is.EqualTo("known_edit_text_not_found"));
+            Assert.That(name.Result?.GetProperty("next").GetString(),
+                Does.StartWith("oldText was the file's name").And.Contain("file_read"));
+            Assert.That(other.Result?.GetProperty("next").GetString(),
+                Does.StartWith("the file does not hold oldText exactly").And.Contain("file_read"));
+            Assert.That(File.ReadAllText(path), Is.EqualTo("Reunión el lunes\n"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     [Test]
     public async Task EditReplacesEveryOccurrenceWhenAskedAndChangesNothingWhenTheBinRefuses()
     {
