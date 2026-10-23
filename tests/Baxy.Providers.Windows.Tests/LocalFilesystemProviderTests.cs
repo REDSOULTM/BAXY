@@ -228,7 +228,7 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
-    // Renew al máximo (w5, E024): «añade al final de notas.txt, en la carpeta BAXY-bench» came as relativePath
+    // Renew al máximo (w5, E024): «añade a notas.txt, en la carpeta BAXY-bench» came as relativePath
     // «notas.txt» in home, the subfolder left out, and the append made a new home\notas.txt (int5 X s0/s1, int M s0).
     // An append presupposes the file: missing there and found below the same folder, nothing is written and the
     // places are told; with BAXY_AYUDAS=none, the facts without the sentence. Contracase: found nowhere, it is made.

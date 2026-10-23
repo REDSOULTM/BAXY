@@ -353,15 +353,15 @@ APPEND = {"relativePath": "notas.txt", "text": "revisar el router", "folder": "h
 
 
 @pytest.mark.parametrize("said,call,first,told", [
-    ("añade al final de notas.txt, en la carpeta BAXY-bench, la línea 'revisar el router'", "file_write", APPEND, True),
+    ("añade a notas.txt, en la carpeta BAXY-bench, la línea 'revisar el router'", "file_write", APPEND, True),
     ("borra viejo.txt de BAXY-bench", "filesystem_known_trash_named", {"fileName": "viejo.txt", "folder": "all_known"},
      True),
     ("guarda la idea en proyectos, en el escritorio", "file_write",
      {"relativePath": "idea.txt", "text": "x", "folder": "desktop"}, True),
     # Contracases: the folder is in the call; no folder of the person's is named; a call that takes no path.
-    ("añade al final de notas.txt, en la carpeta BAXY-bench, la línea 'revisar el router'", "file_write",
+    ("añade a notas.txt, en la carpeta BAXY-bench, la línea 'revisar el router'", "file_write",
      {**APPEND, "relativePath": "BAXY-bench/notas.txt"}, False),
-    ("añade al final de notas.txt la línea 'revisar el router'", "file_write", APPEND, False),
+    ("añade a notas.txt la línea 'revisar el router'", "file_write", APPEND, False),
     ("pon la lista de BAXY-bench en spotify", "app_open", {"appId": "Spotify"}, False),
     # A folder Windows hides or links («Reciente», «Plantillas» in a Spanish profile) is not one the person names.
     ("guarda notas.txt en lo reciente", "file_write", {"relativePath": "notas.txt", "text": "x", "folder": "home"}, False),

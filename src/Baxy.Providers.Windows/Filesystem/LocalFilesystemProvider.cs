@@ -150,7 +150,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
             if (Directory.Exists(path)) throw Error("destination_is_directory");
             bool exists = File.Exists(path);
-            // Renew al máximo (w5, E024): «añade al final de notas.txt, en la carpeta BAXY-bench» came with the subfolder
+            // Renew al máximo (w5, E024): «añade a notas.txt, en la carpeta BAXY-bench» came with the subfolder
             // left out, and the append made a new home\notas.txt beside the person's. An append presupposes the file:
             // missing here and found below the same folder, nothing is written and the places are told.
             if (append && !exists && SameNameBelow(root, path) is { Length: > 0 } elsewhere)
