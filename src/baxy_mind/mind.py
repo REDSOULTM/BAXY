@@ -289,7 +289,9 @@ def field_note(observation: str, args: str | None) -> str:
 
 
 SAME_CALL_TOLD = 3
-SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se hizo {times} veces en este turno con los mismos argumentos y el mismo "
+# Auditoría de falsedades: «ya se hizo» is the call's, never its effect's (a click that failed three times read «ya se
+# hizo»): the call was made, and its result is said beside it.
+SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se llamó {times} veces en este turno con los mismos argumentos y el mismo "
                   "resultado ({outcome}){options}]")
 SAME_CALL_OPTIONS = ("; otra vez igual dará lo mismo. Opciones: otra herramienta, otros argumentos, o decir a la persona "
                      "lo que pasó.")

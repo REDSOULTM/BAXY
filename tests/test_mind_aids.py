@@ -135,9 +135,9 @@ def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: 
     for index, result in enumerate([missed, looked, missed, looked, missed, looked, missed]):
         mind.continue_turn(2 + index, result)
     tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
-    told = [i for i, t in enumerate(tools) if "ya se hizo 3 veces" in t]
+    told = [i for i, t in enumerate(tools) if "ya se llamó 3 veces" in t]
     assert told == [4]
-    assert "input_visible_click ya se hizo 3 veces en este turno" in tools[4]
+    assert "input_visible_click ya se llamó 3 veces en este turno" in tools[4]
 
 
 @pytest.mark.parametrize("views,told", [(["Cargando…", "Biblioteca", "Biblioteca · Tienda"], False),
@@ -153,7 +153,7 @@ def test_the_same_call_is_told_only_when_its_result_is_the_same_too(tmp_path: Pa
         mind.continue_turn(2 + index, json.dumps({"status": "completed", "view": f"window 1 Steam\n{view}",
                                                   "observed": {"elapsedMs": {"read": 300 + index}}}))
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
-    assert ("ya se hizo 3 veces en este turno" in last) is told
+    assert ("ya se llamó 3 veces en este turno" in last) is told
 
 
 @pytest.mark.parametrize("setting,still,told", [("all", False, 1), ("all", True, 0), ("all", None, 0), ("none", False, 0)])
