@@ -861,28 +861,49 @@ public sealed class KnownFileToolsTests
         });
     }
 
-    // An edit of the one seen before the limit says the same: which file it changed and that the walk stopped.
-    [Test]
-    public async Task AnEditOfTheOneSeenBeforeTheLimitSaysWhichAndThatTheWalkStopped()
+    // An edit of the one seen before the limit writes nothing: a deeper copy that was not walked may be the one meant.
+    // It names the one seen, says the walk stopped and (aid search_scope) how to edit it; its path edits it.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnEditOfTheOneSeenBeforeTheLimitChangesNothingAndNamesIt(string aids, bool hint)
     {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
         using TemporaryDirectory temporary = new();
         string home = Path.Combine(temporary.Path, "home");
         Directory.CreateDirectory(Path.Combine(home, "sub"));
         await File.WriteAllTextAsync(Path.Combine(home, "notas.txt"), "lunes");
         await File.WriteAllTextAsync(Path.Combine(home, "sub", "notas.txt"), "lunes");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true);
+        var adapter = new WindowsKnownFileAdapter(
+            new Dictionary<string, string[]> { ["home"] = [home] }, bin, utcNow: StopAfter(1));
 
-        ExternalCapabilityReceipt edited = await Home(home, StopAfter(1)).InvokeAsync("file.edit", Json(
+        ExternalCapabilityReceipt refused = await adapter.InvokeAsync("file.edit", Json(
             """{"folder":"home","fileName":"notas.txt","oldText":"lunes","newText":"martes"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt byPath = await Home(home, StopAfter(0)).InvokeAsync("file.edit", Json(
+            """{"folder":"home","fileName":"sub/notas.txt","oldText":"lunes","newText":"martes"}"""),
+            CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(edited.ErrorCode, Is.Null);
-            JsonElement result = edited.Result!.Value;
+            Assert.That(refused.ErrorCode, Is.EqualTo("known_file_search_incomplete"));
+            Assert.That(refused.EffectObserved, Is.False);
+            Assert.That(refused.EffectMayHaveOccurred, Is.False);
+            JsonElement result = refused.Result!.Value;
             Assert.That(result.GetProperty("relativePath").GetString(), Is.EqualTo("notas.txt"));
-            Assert.That(result.GetProperty("onlyFileOfThatName").GetBoolean(), Is.False);
+            Assert.That(result.GetProperty("changed").GetBoolean(), Is.False);
             Assert.That(result.GetProperty("searchScope").GetProperty("timeLimitReached").GetBoolean(), Is.True);
-            Assert.That(File.ReadAllText(Path.Combine(home, "notas.txt")), Is.EqualTo("martes"));
-            Assert.That(File.ReadAllText(Path.Combine(home, "sub", "notas.txt")), Is.EqualTo("lunes"));
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("nothing was changed: the search of home stopped at its 8 s "
+                    + "limit after finding notas.txt, and the rest of the folder was not searched, so another file of "
+                    + "that name may be there; naming the subdirectory or the path (fileName \"notas.txt\") edits that one"));
+            }
+            Assert.That(File.ReadAllText(Path.Combine(home, "notas.txt")), Is.EqualTo("lunes"), "nothing was written");
+            Assert.That(bin.Recycled, Is.Empty, "nothing went to the bin");
+            // Named by its place, the file is looked up there with no walk: the edit goes ahead.
+            Assert.That(byPath.ErrorCode, Is.Null);
+            Assert.That(File.ReadAllText(Path.Combine(home, "sub", "notas.txt")), Is.EqualTo("martes"));
         });
     }
 }

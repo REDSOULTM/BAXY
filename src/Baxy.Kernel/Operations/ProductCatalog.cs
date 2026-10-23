@@ -500,7 +500,7 @@ public static class ProductCatalog
                 ["fileName", "folder", "newText", "oldText"]),
             OperationRisks.LowReversible,
             "file.edit.windows.known.exact.replace.recycle.postread.v1",
-            "Reemplaza un texto exacto en un archivo de texto de hasta 4 MiB nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles y 8 segundos, y una búsqueda cortada por el plazo lo dice."),
+            "Reemplaza un texto exacto en un archivo de texto de hasta 4 MiB nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles y 8 segundos, y si el plazo corta la búsqueda no cambia nada y dice el archivo que vio (known_file_search_incomplete), que se edita nombrando su ruta."),
         Descriptor(
             "file.find",
             Schema(

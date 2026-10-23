@@ -752,7 +752,11 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 out bool walkStopped)
             is { } refused)
             return refused;
-        Action<Utf8JsonWriter> seen = StoppedWalkFacts(file, walkStopped);
+        // Renew al máximo (velocidad): one file of that name seen before the walk's time limit is read as the one seen,
+        // but never written: a copy deeper in what was not walked may be the one the person meant. Nothing is changed;
+        // the one seen is named, so the next call can name it by its path.
+        if (walkStopped)
+            return SearchIncompleteRefusal(operation, file);
         if (new FileInfo(file.Path).Length > MaximumTextBytes)
             return ExternalJson.Failure(operation, "known_text_too_large");
         byte[] before = File.ReadAllBytes(file.Path);
@@ -769,7 +773,6 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteString("folder", file.Label);
                 writer.WriteNumber("occurrences", occurrences);
                 writer.WriteBoolean("changed", false);
-                seen(writer);
                 writer.WriteEndObject();
             }), occurrences == 0 ? "known_edit_text_not_found" : "known_edit_text_not_unique");
         }
@@ -819,14 +822,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteString("previousSha256", previousSha256);
             writer.WriteString("sha256", observedSha256);
             writer.WriteBoolean("previousVersionRecycled", true);
-            seen(writer);
             writer.WriteString("authority", "windows_known_text_edit_recycle_postread");
             writer.WriteEndObject();
         }), effectObserved: true);
     }
 
-    // The file a stopped walk found is the one seen in the part walked, not proven the only one of its name: which one
-    // it is (relativePath) and how far the walk went. A whole walk adds nothing.
+    // The file a stopped walk found is the one seen in the part walked, not proven the only one of its name: a read says
+    // which one it is (relativePath) and how far the walk went. A whole walk adds nothing.
     private Action<Utf8JsonWriter> StoppedWalkFacts(KnownEntry file, bool walkStopped)
     {
         if (!walkStopped) return _ => { };
@@ -837,6 +839,26 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteBoolean("onlyFileOfThatName", false);
             WriteWalkScope(writer, walkStopped: true);
         };
+    }
+
+    private ExternalCapabilityReceipt SearchIncompleteRefusal(string operation, KnownEntry file)
+    {
+        string relativePath = RelativeToFolder(file);
+        return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("name", Path.GetFileName(file.Path));
+            writer.WriteString("folder", file.Label);
+            writer.WriteString("relativePath", relativePath);
+            writer.WriteBoolean("changed", false);
+            WriteWalkScope(writer, walkStopped: true);
+            if (ModelAids.On(ModelAids.SearchScope))
+                writer.WriteString("next", $"nothing was changed: the search of {file.Label} stopped at its "
+                    + $"{WalkTimeLimit.TotalSeconds:0} s limit after finding {relativePath}, and the rest of the folder "
+                    + "was not searched, so another file of that name may be there; naming the subdirectory or the path "
+                    + $"(fileName \"{relativePath}\") edits that one");
+            writer.WriteEndObject();
+        }), "known_file_search_incomplete");
     }
 
     private static int Occurrences(string text, string value)
@@ -855,8 +877,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // Renew al máximo (velocidad): a bare name is looked for in one walk with file.find's time limit; under home the
     // walk had none and took 12-83 s (twice over when the name was not there: once for it, once for its stem). When
     // the limit stops the walk, whatever is said carries it (searchScope.timeLimitReached): none is «not in what was
-    // walked», several are the places seen so far, and the one found is read or edited as the one seen in what was
-    // walked (onlyFileOfThatName false), never as the only one of that name.
+    // walked», several are the places seen so far, and the one found is read as the one seen in what was walked
+    // (onlyFileOfThatName false), never as the only one of that name; an edit of it is refused before any effect
+    // (known_file_search_incomplete).
     private ExternalCapabilityReceipt? Locate(
         string operation,
         IReadOnlyList<(string Label, string Root)> roots,
