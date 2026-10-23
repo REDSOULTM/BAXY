@@ -46,12 +46,23 @@ internal sealed class WindowsTimeStatusVerifier(ITimeStatusProbe probe)
 
 internal interface ITimeStatusProbe { TimeStatusSnapshot Read(); }
 
-internal sealed class SystemTimeStatusProbe : ITimeStatusProbe
+// Renew al máximo (w8): TimeZoneInfo.Local is read once per process and kept; BAXY runs for days, so a zone changed
+// while it runs (by hand, or set automatically on a trip) kept the old offset. The zone is read afresh on each read.
+internal sealed class SystemTimeStatusProbe(Func<TimeZoneInfo> localZone) : ITimeStatusProbe
 {
+    public SystemTimeStatusProbe()
+        : this(static () =>
+        {
+            TimeZoneInfo.ClearCachedData();
+            return TimeZoneInfo.Local;
+        })
+    {
+    }
+
     public TimeStatusSnapshot Read()
     {
         DateTimeOffset utc = DateTimeOffset.UtcNow;
-        int offset = checked((int)TimeZoneInfo.Local.GetUtcOffset(utc).TotalMinutes);
+        int offset = checked((int)localZone().GetUtcOffset(utc).TotalMinutes);
         return new TimeStatusSnapshot(utc, offset);
     }
 }

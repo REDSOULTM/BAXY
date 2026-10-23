@@ -2951,6 +2951,10 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("brightness_postread_failed"));
             Assert.That(receipt.StateAlreadyReached, Is.False);
+            // Renew al máximo (w8): the level the last read saw goes with the failure.
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("stateAfter").GetProperty("values")[0].GetInt32(), Is.EqualTo(30));
+            Assert.That(receipt.Result?.GetProperty("stateAfter").GetProperty("requestedLevel").GetInt32(), Is.EqualTo(40));
         });
     }
 
@@ -3292,6 +3296,47 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("wifi_status_changed_during_read"));
             Assert.That(receipt.EffectObserved, Is.False);
+        });
+    }
+
+    // Renew al máximo (w8): a Wi-Fi status netsh did not give says why (the WLAN service stopped, or not read), never the
+    // adapter's generic failure; after a disconnection was sent, one unanswered look does not end the wait.
+    [Test]
+    public async Task AnUnreadWifiStatusSaysWhyAndOneUnansweredLookDoesNotEndTheWait()
+    {
+        using TemporaryDirectory temporary = new();
+        var stopped = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wlan_service_not_running\"}",
+        ]));
+        var unread = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wifi_status_not_read\"}",
+        ]));
+        var none = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wifi_radio_not_found\"}",
+        ]));
+        var delay = new RecordingDelay();
+        var disconnecting = new SequencedProcessRunner([
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Private WiFi\"}",
+            "",
+            "{\"ok\":false,\"error\":\"wifi_status_not_read\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
+        ]);
+        var disconnect = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, disconnecting, delay.DelayAsync);
+
+        ExternalCapabilityReceipt stoppedReceipt = await stopped.InvokeAsync("wifi.status", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt unreadReceipt = await unread.InvokeAsync("wifi.status", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt noneReceipt = await none.InvokeAsync("wifi.ensure.connected", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt disconnected = await disconnect.InvokeAsync("wifi.disconnect", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stoppedReceipt.ErrorCode, Is.EqualTo("wlan_service_not_running"));
+            Assert.That(stoppedReceipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(unreadReceipt.ErrorCode, Is.EqualTo("wifi_status_not_read"));
+            Assert.That(noneReceipt.ErrorCode, Is.EqualTo("wifi_radio_not_found"));
+            Assert.That(disconnected.Verified, Is.True, disconnected.ErrorCode);
+            Assert.That(disconnecting.Calls, Is.EqualTo(4));
+            Assert.That(delay.Calls, Is.EqualTo(1));
         });
     }
 
@@ -5184,6 +5229,36 @@ public sealed class ExternalAdaptersTests
             Assert.That(connected.Verified, Is.True);
             Assert.That(connected.EffectObserved, Is.True);
             Assert.That(runner.ConnectCalls, Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (w5): an id no list of this Core gave (an older session's, or made up) was a bare «expired»; with
+    // the aid identity_relist it says nothing was done and which list gives the ids. BAXY_AYUDAS=none: the code alone.
+    [TestCase("all", "bluetooth.device.pair", """{"deviceId":"bluetooth_0000"}""", "bluetooth_identity_expired",
+        "this deviceId is not one bluetooth_device_list gave since BAXY started, and nothing was paired; "
+        + "bluetooth_device_list gives the ids to use")]
+    [TestCase("all", "wifi.connect", """{"profileId":"wifi_0000"}""", "wifi_profile_identity_expired",
+        "this profileId is not one wifi_profile_list gave since BAXY started, and nothing was connected; "
+        + "wifi_profile_list gives the ids to use")]
+    [TestCase("none", "bluetooth.device.pair", """{"deviceId":"bluetooth_0000"}""", "bluetooth_identity_expired", null)]
+    public async Task AnIdNoListGaveSaysNothingWasDoneAndWhichListGivesOne(
+        string aids, string operation, string arguments, string code, string? next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner("{}");
+        var adapter = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(runner.LastArguments, Is.Empty, "nothing was run");
+            Assert.That(receipt.Result is { } result && result.TryGetProperty("next", out JsonElement written)
+                ? written.GetString() : null, Is.EqualTo(next));
         });
     }
 

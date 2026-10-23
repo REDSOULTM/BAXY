@@ -87,6 +87,119 @@ public sealed class HelperScriptWorkerTests
         AssertSame(fromWorker, fromProcess, "windows_device_adapter_failed");
     }
 
+    // Renew al máximo (w5): the brightness's set, step and read ran in a PowerShell started cold for each call (400-700 ms
+    // on the notebook against 10-20 ms for the WMI read itself); with the worker they run there, same script and level.
+    [TestCase("system.settings.set", """{"setting":"brightness","value":40}""", "40")]
+    [TestCase("system.settings.adjust", """{"setting":"brightness","direction":"down","amount":10}""", "-10")]
+    [TestCase("system.settings.status", """{"setting":"brightness"}""", null)]
+    public async Task TheBrightnessScriptsRunInTheWorkerWithoutStartingAPowerShell(
+        string operation, string arguments, string? level)
+    {
+        using var root = new Root();
+        var runner = new CountingRunner();
+        var worker = new AnsweringWorker(_ => Line(
+            """{"ok":true,"effectObserved":true,"changed":true,"baselineValues":[50],"values":[40],"monitors":[{"instanceName":"m","value":40}]}"""));
+        var adapter = new WindowsDeviceControlAdapter(root.Scans, root.Path, runner) { Scripts = worker };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        JsonObject command = worker.Commands.Single();
+        string expected = operation switch
+        {
+            "system.settings.set" => WindowsDeviceControlAdapter.BrightnessScript,
+            "system.settings.adjust" => WindowsDeviceControlAdapter.BrightnessAdjustScript,
+            _ => WindowsDeviceControlAdapter.BrightnessStatusScript,
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(runner.Calls, Is.Zero, "no PowerShell is started for the script");
+            Assert.That((string?)command["script"], Is.EqualTo(expected));
+            Assert.That(command["args"]!.AsArray().Select(node => (string?)node),
+                Is.EqualTo(level is null ? Array.Empty<string>() : new[] { level }));
+            Assert.That(receipt.Verified, Is.True);
+        });
+    }
+
+    // Renew al máximo (w5): a set or a step is read back every 100 ms within 1.5 s, never once after a fixed 300 ms (a
+    // panel still fading towards the level was told a failure).
+    [Test]
+    public void TheBrightnessIsReadBackOftenUntilItIsReached()
+    {
+        foreach (string script in new[]
+            { WindowsDeviceControlAdapter.BrightnessScript, WindowsDeviceControlAdapter.BrightnessAdjustScript })
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(script, Does.Not.Contain("Start-Sleep -Milliseconds 300"));
+                Assert.That(script, Does.Contain("$deadline=(Get-Date).AddMilliseconds(1500)"));
+                Assert.That(script, Does.Contain("do{Start-Sleep -Milliseconds 100"));
+                Assert.That(script, Does.Contain("-and (Get-Date) -lt $deadline)"));
+            });
+        }
+    }
+
+    // Renew al máximo (w5): a Wi-Fi connection was looked at by a PowerShell started cold every 500 ms (each look about a
+    // second); with the worker the status is read there and looked at every 100 ms within the same 15 s, and only the
+    // connection itself (netsh wlan connect) starts a process.
+    [Test]
+    public async Task TheWifiConnectionIsLookedAtInTheWorkerEvery100Ms()
+    {
+        using var root = new Root();
+        var runner = new CountingRunner();
+        int looks = 0;
+        var worker = new AnsweringWorker(command => (string?)command["script"] == WindowsDeviceControlAdapter.WifiProfilesScript
+            ? Line("""{"ok":true,"profiles":["Casa"]}""")
+            : ++looks <= 3
+                ? Line("""{"ok":true,"connected":false,"profile":""}""")
+                : Line("""{"ok":true,"connected":true,"profile":"Casa"}"""));
+        var pauses = new List<TimeSpan>();
+        var adapter = new WindowsDeviceControlAdapter(root.Scans, root.Path, runner, (pause, _) =>
+        {
+            pauses.Add(pause);
+            return ValueTask.CompletedTask;
+        }) { Scripts = worker };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "wifi.connect.named", Json("""{"profileName":"Casa"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(runner.Calls, Is.EqualTo(1), "only netsh wlan connect starts a process");
+            Assert.That(looks, Is.EqualTo(4), "one read before, three after until it is connected");
+            Assert.That(pauses, Is.EqualTo(Enumerable.Repeat(TimeSpan.FromMilliseconds(100), 2)));
+        });
+    }
+
+    [TestCase("wifi.connect.named", """{"profileName":"Casa"}""", "wifi_connect_not_verified", 150)]
+    [TestCase("wifi.disconnect", "{}", "wifi_disconnect_not_verified", 60)]
+    public async Task AWifiChangeNeverSeenKeepsItsHorizonAt100MsInTheWorker(
+        string operation, string arguments, string code, int expectedPauses)
+    {
+        using var root = new Root();
+        bool connecting = operation == "wifi.connect.named";
+        var worker = new AnsweringWorker(command => (string?)command["script"] == WindowsDeviceControlAdapter.WifiProfilesScript
+            ? Line("""{"ok":true,"profiles":["Casa"]}""")
+            : connecting
+                ? Line("""{"ok":true,"connected":false,"profile":""}""")
+                : Line("""{"ok":true,"connected":true,"profile":"Casa"}"""));
+        var pauses = new List<TimeSpan>();
+        var adapter = new WindowsDeviceControlAdapter(root.Scans, root.Path, new CountingRunner(), (pause, _) =>
+        {
+            pauses.Add(pause);
+            return ValueTask.CompletedTask;
+        }) { Scripts = worker };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(pauses, Has.Count.EqualTo(expectedPauses));
+            Assert.That(pauses, Has.All.EqualTo(TimeSpan.FromMilliseconds(100)));
+        });
+    }
+
     [Test]
     public async Task TheFolderScriptRunsInTheWorkerWithItsArgumentsByPosition()
     {

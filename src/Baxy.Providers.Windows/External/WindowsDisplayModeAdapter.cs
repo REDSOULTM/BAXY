@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -252,17 +253,19 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
         uint wantWidth = width ?? previous.Width;
         uint wantHeight = height ?? previous.Height;
         // Only modes of the color depth shown now: a listed mode at another depth is not what was asked.
-        List<DisplayModeValue> listed = _platform.Listed(device)
-            .Where(mode => mode.BitsPerPixel == previous.BitsPerPixel && mode.Width == wantWidth
-                && mode.Height == wantHeight)
+        List<DisplayModeValue> atDepth = _platform.Listed(device)
+            .Where(mode => mode.BitsPerPixel == previous.BitsPerPixel)
             .Distinct()
+            .ToList();
+        List<DisplayModeValue> listed = atDepth
+            .Where(mode => mode.Width == wantWidth && mode.Height == wantHeight)
             .ToList();
         string refreshChosen = "asked";
         DisplayModeValue target;
         if (refresh is { } hertz)
         {
             if (!listed.Any(mode => mode.RefreshHz == hertz))
-                return ExternalJson.FailureBeforeEffect(operation, "display_mode_not_listed");
+                return NotListed(operation, listed, atDepth);
             target = new(wantWidth, wantHeight, hertz, previous.BitsPerPixel);
         }
         else if (listed.Any(mode => mode.RefreshHz == previous.RefreshHz))
@@ -277,7 +280,7 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
         }
         else
         {
-            return ExternalJson.FailureBeforeEffect(operation, "display_mode_not_listed");
+            return NotListed(operation, listed, atDepth);
         }
 
         if (Same(previous, target))
@@ -297,8 +300,20 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
         // before and, the change being only dynamic, nothing was saved for a restart either.
         if (after is { } unchanged && Same(unchanged, previous))
         {
-            return ExternalJson.FailureBeforeEffect(
-                operation, applied != 0 ? "display_mode_not_applied" : "display_mode_not_verified");
+            // Renew al máximo (w8): Windows answered DISP_CHANGE_SUCCESSFUL and the screen read as before: the change
+            // may still land, so the receipt does not say nothing happened; it keeps the mode read as stateAfter.
+            return applied != 0
+                ? ExternalJson.FailureBeforeEffect(operation, "display_mode_not_applied")
+                : ExternalJson.WithStateAfter(
+                    ExternalJson.FailureAfterEffect(operation, "display_mode_not_verified"),
+                    ExternalJson.Create(writer =>
+                    {
+                        writer.WriteStartObject();
+                        Write(writer, "shown", unchanged);
+                        writer.WriteBoolean("requestedStateReached", false);
+                        writer.WriteString("authority", "windows_display_settings_readback");
+                        writer.WriteEndObject();
+                    }));
         }
 
         // Something else is shown (or nothing could be read): the previous mode goes back and is read again.
@@ -337,6 +352,36 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             : ExternalJson.FailureAfterEffect(operation, "display_mode_save_not_verified");
     }
 
+    // Renew al máximo (w8): «display_mode_not_listed» alone left the model nothing to offer (60 Hz asked, 59 listed); the
+    // refusal says the refresh rates listed for that resolution, or the resolutions listed when it has none.
+    private static ExternalCapabilityReceipt NotListed(
+        string operation, List<DisplayModeValue> atResolution, List<DisplayModeValue> atDepth) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteString("monitor", "primary");
+            if (atResolution.Count > 0)
+            {
+                writer.WriteStartArray("listedRefreshHz");
+                foreach (uint hertz in atResolution.Select(static mode => mode.RefreshHz).Distinct().OrderDescending())
+                    writer.WriteNumberValue(hertz);
+                writer.WriteEndArray();
+            }
+            else
+            {
+                writer.WriteStartArray("listedResolutions");
+                foreach (string resolution in atDepth
+                    .OrderByDescending(static mode => (ulong)mode.Width * mode.Height)
+                    .ThenByDescending(static mode => mode.Width)
+                    .Select(static mode => $"{mode.Width}x{mode.Height}")
+                    .Distinct()
+                    .Take(20))
+                    writer.WriteStringValue(resolution);
+                writer.WriteEndArray();
+            }
+            writer.WriteEndObject();
+        }), "display_mode_not_listed");
+
     private bool? SavedIs(string device, DisplayModeValue shown) =>
         _platform.Saved(device) is { } saved ? Same(saved, shown) : null;
 
@@ -357,6 +402,8 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
+            // Renew al máximo (w8): only the primary monitor is changed; the result says which one it was.
+            writer.WriteString("monitor", "primary");
             writer.WriteBoolean("changed", changed);
             Write(writer, "previous", previous);
             Write(writer, "final", final);
@@ -364,6 +411,13 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             // Whether a restart keeps the final mode; absent when the mode Windows has saved could not be read.
             if (savedForRestart is { } saved)
                 writer.WriteBoolean("savedForRestart", saved);
+            // Renew al máximo (w5): «listo, cambié la resolución» read as kept; a restart shows the saved mode again.
+            if (savedForRestart == false && ModelAids.On(ModelAids.DisplayRestart))
+            {
+                writer.WriteString("next", $"{final.Width}x{final.Height} at {final.RefreshHz} Hz is shown now and not saved: "
+                    + "the next restart or sign-in shows the mode Windows has saved; display_mode_set with this same mode "
+                    + "again keeps it");
+            }
             writer.WriteString("authority", "windows_display_settings_readback");
             writer.WriteEndObject();
         });

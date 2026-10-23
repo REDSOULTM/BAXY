@@ -31,6 +31,10 @@ public sealed class WindowsSystemStatusProvider : ISystemStatusProvider
         _cpuSamplingInterval = cpuSamplingInterval;
     }
 
+    // A probe that throws before its first await throws here, into the task, and is caught where the task is awaited.
+    private async Task<OperatingSystemReading> ReadOperatingSystemAsync(CancellationToken cancellationToken) =>
+        await _probe.ReadOperatingSystemAsync(cancellationToken).ConfigureAwait(false);
+
     public async ValueTask<SystemStatusSnapshot> GetStatusAsync(
         SystemStatusScope scope,
         CancellationToken cancellationToken)
@@ -45,6 +49,11 @@ public sealed class WindowsSystemStatusProvider : ISystemStatusProvider
         OperatingSystemStatus? operatingSystem = null;
         long? uptimeSeconds = null;
         var failures = new List<SystemStatusFailure>();
+        // Renew al máximo (w8): the operating system's identity (a PowerShell the first time) is read while the CPU is
+        // sampled (150 ms), not after it.
+        Task<OperatingSystemReading>? operatingSystemRead = scope.HasFlag(SystemStatusScope.OperatingSystem)
+            ? ReadOperatingSystemAsync(cancellationToken)
+            : null;
 
         if (scope.HasFlag(SystemStatusScope.Cpu))
         {
@@ -97,12 +106,12 @@ public sealed class WindowsSystemStatusProvider : ISystemStatusProvider
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        if (scope.HasFlag(SystemStatusScope.OperatingSystem))
+        if (operatingSystemRead is not null)
         {
             try
             {
                 operatingSystem = CreateOperatingSystemStatus(
-                    await _probe.ReadOperatingSystemAsync(cancellationToken).ConfigureAwait(false));
+                    await operatingSystemRead.ConfigureAwait(false));
                 if (operatingSystem is null)
                 {
                     failures.Add(Invalid(SystemStatusScope.OperatingSystem));

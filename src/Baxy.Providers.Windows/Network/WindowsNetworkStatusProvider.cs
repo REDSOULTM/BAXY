@@ -20,30 +20,26 @@ public interface INetworkStatusProvider
 public sealed class WindowsNetworkStatusProvider : INetworkStatusProvider
 {
     private readonly INetworkStatusProbe _probe;
-    private readonly WindowsNetworkStatusVerifier _verifier;
+    private readonly Func<TimeSpan, CancellationToken, Task> _delay;
 
     public WindowsNetworkStatusProvider() : this(new NetworkInformationStatusProbe()) { }
 
-    internal WindowsNetworkStatusProvider(INetworkStatusProbe probe)
+    internal WindowsNetworkStatusProvider(
+        INetworkStatusProbe probe, Func<TimeSpan, CancellationToken, Task>? delay = null)
     {
         _probe = probe ?? throw new ArgumentNullException(nameof(probe));
-        _verifier = new WindowsNetworkStatusVerifier(probe);
+        _delay = delay ?? NetworkStableRead.Delay;
     }
 
-    public ValueTask<NetworkStatusSnapshot?> ReadVerifiedAsync(CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        NetworkStatusSnapshot snapshot = _probe.Read();
-        cancellationToken.ThrowIfCancellationRequested();
-        return ValueTask.FromResult(_verifier.Verify(snapshot) ? snapshot : null);
-    }
+    // Renew al máximo (w5): two reads in a row that agree, a change read again (NetworkStableRead).
+    public ValueTask<NetworkStatusSnapshot?> ReadVerifiedAsync(CancellationToken cancellationToken) =>
+        NetworkStableRead.ReadAsync(_probe.Read, WindowsNetworkStatusVerifier.Same, _delay, cancellationToken);
 }
 
-internal sealed class WindowsNetworkStatusVerifier(INetworkStatusProbe probe)
+internal static class WindowsNetworkStatusVerifier
 {
-    public bool Verify(NetworkStatusSnapshot supplied)
+    public static bool Same(NetworkStatusSnapshot supplied, NetworkStatusSnapshot observed)
     {
-        NetworkStatusSnapshot observed = probe.Read();
         return supplied.Online == observed.Online
             && string.Equals(supplied.Connectivity, observed.Connectivity, StringComparison.Ordinal)
             && supplied.ConnectedInterfaceCount == observed.ConnectedInterfaceCount

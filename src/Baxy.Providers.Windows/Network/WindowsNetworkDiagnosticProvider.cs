@@ -29,6 +29,7 @@ public sealed class WindowsNetworkDiagnosticProvider : INetworkDiagnosticProvide
 {
     private readonly IDnsStatusProbe _dnsProbe;
     private readonly INetworkPingProbe _pingProbe;
+    private readonly Func<TimeSpan, CancellationToken, Task> _delay;
 
     public WindowsNetworkDiagnosticProvider()
         : this(new NetworkInterfaceDnsStatusProbe(), new IcmpNetworkPingProbe())
@@ -37,25 +38,23 @@ public sealed class WindowsNetworkDiagnosticProvider : INetworkDiagnosticProvide
 
     internal WindowsNetworkDiagnosticProvider(
         IDnsStatusProbe dnsProbe,
-        INetworkPingProbe pingProbe)
+        INetworkPingProbe pingProbe,
+        Func<TimeSpan, CancellationToken, Task>? delay = null)
     {
         _dnsProbe = dnsProbe ?? throw new ArgumentNullException(nameof(dnsProbe));
         _pingProbe = pingProbe ?? throw new ArgumentNullException(nameof(pingProbe));
+        _delay = delay ?? NetworkStableRead.Delay;
     }
 
+    // Renew al máximo (w5): two reads in a row that agree, a change read again (NetworkStableRead).
     public ValueTask<DnsStatusSnapshot?> ReadDnsStatusVerifiedAsync(
-        CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        DnsStatusSnapshot first = _dnsProbe.Read();
-        cancellationToken.ThrowIfCancellationRequested();
-        DnsStatusSnapshot second = _dnsProbe.Read();
-        bool verified = first.ActiveInterfaceCount == second.ActiveInterfaceCount
-            && first.ServerAddresses.SequenceEqual(
-                second.ServerAddresses,
-                StringComparer.Ordinal);
-        return ValueTask.FromResult<DnsStatusSnapshot?>(verified ? second : null);
-    }
+        CancellationToken cancellationToken) =>
+        NetworkStableRead.ReadAsync(
+            _dnsProbe.Read,
+            static (first, second) => first.ActiveInterfaceCount == second.ActiveInterfaceCount
+                && first.ServerAddresses.SequenceEqual(second.ServerAddresses, StringComparer.Ordinal),
+            _delay,
+            cancellationToken);
 
     public ValueTask<NetworkPingSnapshot> PingAsync(
         string host,
