@@ -373,6 +373,28 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Renew al máximo: game.store.page's title «1942» was taken as a store number (steam://store/1942, another game
+    // or none). A title said as such is searched as a title whatever its characters; app.open's own digits stay a
+    // number.
+    [Test]
+    public async Task AGamePageTitleOfDigitsIsSearchedAsATitle()
+    {
+        var opened = new List<string>();
+        var titles = new FoundTitles(new GameTitle("1234560", "1942"));
+        var page = new GameStoreHandler("game.store.page", "game", "title", SteamHandler(opened, titles).ExecuteAsync);
+
+        OperationOutcome outcome = await page.ExecuteAsync(Invocation("""{"title":"1942"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(titles.Asked, Is.EqualTo(new[] { "steam:1942" }));
+            Assert.That(opened, Is.EqualTo(new[] { "steam://store/1234560" }));
+            JsonElement game = outcome.Result!.Value.GetProperty("placeGame");
+            Assert.That(game.GetProperty("name").GetString(), Is.EqualTo("1942"));
+        });
+    }
+
     // Renew al máximo (auditoría de flujos): a title search that got no answer (no network) opens nothing and says so,
     // never that no game bears the title.
     [Test]
