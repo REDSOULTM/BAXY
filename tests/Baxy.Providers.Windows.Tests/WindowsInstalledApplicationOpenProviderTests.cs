@@ -1109,6 +1109,58 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Renew al máximo (velocidad, E014 in pc-lote: «abre la configuración de sonido» 30-32 s, verification_failed): the
+    // application's frame shown empty (its process forced to end left it, and nothing fills it) ends the opening once
+    // the grace is over, unverified as before and saying so, instead of the whole 30 s.
+    [Test]
+    public async Task AFrameShownEmptyPastTheGraceEndsTheOpeningUnverifiedAndSaysSo()
+    {
+        var platform = new FakePlatform(Catalog) { EmptyFrameShown = true };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Configuración"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.VerificationFailed));
+            Assert.That(result.EmptyFrame, Is.True);
+            Assert.That(result.Receipt.LaunchIssued, Is.True);
+            Assert.That(result.Succeeded, Is.True, "the launch was issued: its effect may have occurred");
+            Assert.That(platform.ActivateCalls, Is.EqualTo(1));
+            // 100 polls of 100 ms (the grace), not 300.
+            Assert.That(platform.DelayCalls, Is.EqualTo(100));
+        });
+    }
+
+    // Before the grace an empty frame is a splash still being filled: it is not even asked about; and a window of the
+    // application, once it shows, is the opening whatever any frame shows.
+    [Test]
+    public async Task AFrameIsNotJudgedBeforeTheGraceNorOverAWindowOfTheApplication()
+    {
+        InstalledApplicationObservation window = Observation(foreground: true);
+        var opened = new FakePlatform(Catalog) { EmptyFrameShown = true, ObservationAfterActivation = window };
+        var empty = new FakePlatform(Catalog) { EmptyFrameShown = false };
+
+        ApplicationOpenResult verified = await new WindowsInstalledApplicationOpenProvider(opened)
+            .OpenAsync(Request("Steam"), CancellationToken.None);
+        ApplicationOpenResult waited = await new WindowsInstalledApplicationOpenProvider(empty)
+            .OpenAsync(Request("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(verified.Verified, Is.True);
+            Assert.That(verified.EmptyFrame, Is.False);
+            Assert.That(opened.EmptyFrameAsked, Is.Zero);
+            Assert.That(waited.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.VerificationFailed));
+            Assert.That(waited.EmptyFrame, Is.False);
+            Assert.That(waited.Receipt.LaunchIssued, Is.True);
+            Assert.That(empty.DelayCalls, Is.EqualTo(300));
+            // Asked once per poll from the grace on (attempts 100 to 300).
+            Assert.That(empty.EmptyFrameAsked, Is.EqualTo(201));
+        });
+    }
+
     [Test]
     public async Task ActivationKeepsTheOriginalObservationTimeoutAfterTheImmediatePostread()
     {
@@ -1962,6 +2014,18 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         }
 
         public int ActivateCalls { get; private set; }
+
+        // Renew al máximo (velocidad): Windows shows a frame of the application with nothing of it inside, and how many
+        // times the opening asked.
+        public bool EmptyFrameShown { get; init; }
+
+        public int EmptyFrameAsked { get; private set; }
+
+        public bool ShowsEmptyFrame(InstalledApplicationEntry entry)
+        {
+            EmptyFrameAsked++;
+            return EmptyFrameShown;
+        }
 
         public int FocusCalls { get; private set; }
 

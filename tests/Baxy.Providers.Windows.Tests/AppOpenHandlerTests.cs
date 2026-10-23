@@ -330,6 +330,32 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Renew al máximo (velocidad, E014): an opening that ended on its application's frame shown empty says so, as a fact
+    // with the aids on or off, and the hint says what was seen instead of a window, never that it opened.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnOpeningEndedOnAnEmptyFrameSaysWhatItSaw(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+
+        OperationOutcome outcome = await Handler(new FailedOpening("verification_failed", true, false, emptyFrame: true))
+            .ExecuteAsync(Invocation("""{"appId":"Configuración","place":"sound"}"""), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(result.GetProperty("emptyFrame").GetBoolean(), Is.True);
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("Windows shows a window frame of Configuración with nothing of "
+                    + "Configuración inside it (its program does not draw there); no window of it was verified"));
+            }
+        });
+    }
+
     // Contracaso (6.3): the closest installed names of a name that matched none are said as before, with the aid or not.
     [TestCase("all")]
     [TestCase("none")]
@@ -813,7 +839,8 @@ public sealed class AppOpenHandlerTests
 
     /// <summary>An opening that failed with a code, as the provider's receipt tells it.</summary>
     private sealed class FailedOpening(
-        string code, bool launchIssued, bool reused, IReadOnlyList<string>? candidates = null) : IApplicationOpenProvider
+        string code, bool launchIssued, bool reused, IReadOnlyList<string>? candidates = null, bool emptyFrame = false)
+        : IApplicationOpenProvider
     {
         public ValueTask<ApplicationOpenResult> OpenAsync(
             ApplicationOpenRequest request,
@@ -825,7 +852,7 @@ public sealed class AppOpenHandlerTests
                 WindowHandle: null, code);
             return ValueTask.FromResult(new ApplicationOpenResult(
                 Succeeded: launchIssued || reused, Verified: false, request.ApplicationId, AlreadyRunning: reused,
-                ProcessId: null, WindowHandle: null, code, receipt, Candidates: candidates));
+                ProcessId: null, WindowHandle: null, code, receipt, Candidates: candidates, EmptyFrame: emptyFrame));
         }
     }
 

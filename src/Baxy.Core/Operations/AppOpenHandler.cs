@@ -181,7 +181,13 @@ internal sealed class AppOpenHandler(
                 errorCode,
                 result: ModelAids.On(ModelAids.OpenRecovery)
                     ? Facts(writer => WriteRecovery(writer, errorCode, arguments.AppId, providerResult))
-                    : Names("candidates", providerResult.Candidates),
+                    : providerResult.EmptyFrame
+                        ? Facts(writer =>
+                        {
+                            WriteNames(writer, "candidates", providerResult.Candidates);
+                            writer.WriteBoolean("emptyFrame", true);
+                        })
+                        : Names("candidates", providerResult.Candidates),
                 effectMayHaveOccurred: providerResult.Succeeded);
         }
 
@@ -315,10 +321,16 @@ internal sealed class AppOpenHandler(
         writer.WriteBoolean("launchIssued", receipt.LaunchIssued);
         if (receipt.ReusedExisting)
             writer.WriteBoolean("alreadyRunning", true);
+        // Renew al máximo (velocidad): what the opening saw instead of a window of it: its frame, empty.
+        if (opening.EmptyFrame)
+            writer.WriteBoolean("emptyFrame", true);
         string name = string.IsNullOrWhiteSpace(opening.DisplayName) ? appId : opening.DisplayName;
         const string look = "window_application_status can tell whether one shows now, before saying it opened or not";
         string? next = errorCode switch
         {
+            "verification_failed" when opening.EmptyFrame =>
+                $"Windows shows a window frame of {name} with nothing of {name} inside it (its program does not draw "
+                    + "there); no window of it was verified",
             "verification_failed" or "inventory_failed" when receipt.LaunchIssued =>
                 $"{name} was started and no window of it was verified; {look}",
             "verification_failed" or "inventory_failed" when receipt.ReusedExisting =>
