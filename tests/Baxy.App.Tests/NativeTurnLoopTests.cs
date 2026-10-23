@@ -119,10 +119,41 @@ public sealed class NativeTurnLoopTests
         Assert.That(loop.HasPendingConfirmation, Is.False);
         Assert.That(outcomes, Is.EqualTo(new[] { "dropped" }));
 
+        // The «sí» that follows reads which call was left behind, never that it waits; the words after it, nothing.
         fake.Script(Says("¿A qué hora?"));
         await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
-        Assert.That(fake.Requests("turn.decide")[2]["pendingConfirmation"], Is.Null);
+        Assert.That(fake.Requests("turn.decide")[2]["pendingConfirmation"]?.ToJsonString(),
+            Is.EqualTo("""{"operation":"web.fetch","ended":"dropped"}"""));
+        await loop.RunAsync("a las siete", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(fake.Requests("turn.decide")[3]["pendingConfirmation"], Is.Null);
         Assert.That(fake.Seen, Has.No.Member("turn.confirm"));
+        Assert.That(outcomes, Is.EqualTo(new[] { "dropped" }));
+    }
+
+    // Auditoría de confirmaciones (2026-10-23): a «sí» after the time to answer ran out reads that it expired (audit
+    // 2026-10-15, App 3), not that nothing was asked; the call ends «expired» then, and the next words read nothing.
+    [Test]
+    public async Task ASiAfterTheTimeRanOutReadsThatTheQuestionExpired()
+    {
+        using var fake = new FakeMind();
+        fake.Script(HeldFetch());
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var published = new List<(string Text, string Route)>();
+        var outcomes = new List<string>();
+        var clock = new ManualClock();
+        NativeTurnLoop loop = PersonLoop(mind, published, outcomes, clock);
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(loop.HasPendingConfirmation, Is.True);
+
+        clock.Now += NativeTurnLoop.ProposalLifetime + TimeSpan.FromSeconds(1);
+        fake.Script(Says("Esa pregunta venció. ¿Abro la página?"));
+        await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(fake.Requests("turn.decide")[1]["pendingConfirmation"]?.ToJsonString(),
+            Is.EqualTo("""{"operation":"web.fetch","ended":"expired"}"""));
+        Assert.That(outcomes, Is.EqualTo(new[] { "expired" }));
+
+        await loop.RunAsync("sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+        Assert.That(fake.Requests("turn.decide")[2]["pendingConfirmation"], Is.Null);
     }
 
     // The words right after the question that publish nothing (the turn failed) leave it waiting.

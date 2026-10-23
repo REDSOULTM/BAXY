@@ -131,6 +131,8 @@ internal sealed class NativeTurnLoop
     // question is no longer the last thing BAXY asked. «Vale, no lo cierro. ¿Guardo algo primero?» left app.close waiting,
     // and the «sí» to the new question reached the model with that call as what the person's words answer.
     private bool _leftBehind;
+    // The call DropLeftBehind dropped, until the person's next words (TakeWaitingCall) or another line of BAXY's.
+    private string? _droppedOperation;
 
     internal NativeTurnLoop(Host host, TimeProvider? time = null)
     {
@@ -157,7 +159,7 @@ internal sealed class NativeTurnLoop
         }
 
         _egress.Heard(text);
-        await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, WaitingCall(), cancellationToken),
+        await PersonTurnAsync(mind, arrivedAt, () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken),
             cancellationToken);
     }
 
@@ -194,10 +196,35 @@ internal sealed class NativeTurnLoop
     internal void AnswerSounded() => _notice.Sounded();
 
     // The call that waits for the person's «sí», as the mind reads it with their next words when it was asked before
-    // they arrived: its operation, and its arguments unless it is a memory call (their values stay sealed).
-    private JsonObject? WaitingCall()
+    // they arrived: its operation, and its arguments unless it is a memory call (their values stay sealed). When none
+    // waits, the call whose question ended unanswered just before these words, with how it ended (auditoría de
+    // confirmaciones, 2026-10-23: a «sí» after the time ran out read nothing_pending in the mind, never «expired»,
+    // audit 2026-10-15 App 3): its time ran out (it ends «expired» now), or a later line left it behind
+    // (DropLeftBehind). Either is told with the person's next words only.
+    private JsonObject? TakeWaitingCall()
     {
-        if (WaitingPrepared() is not { } prepared || !ConfirmationAsk.Answers(_askedAt, _personAt))
+        string? dropped = _droppedOperation;
+        _droppedOperation = null;
+        if (WaitingPrepared() is not { } prepared)
+        {
+            string? expired = _pending?.Prepared.OperationName ?? _proposal?.OperationName;
+            if (expired is not null && _askedAt != ConfirmationAsk.Unpublished
+                && ConfirmationAsk.Answers(_askedAt, _personAt))
+            {
+                var ended = new JsonObject { ["operation"] = expired, ["ended"] = "expired" };
+                if (_pending?.ReconciliationRequired == true)
+                {
+                    ended["effectUncertain"] = true;
+                }
+
+                DropPending();
+                return ended;
+            }
+
+            return dropped is null ? null : new JsonObject { ["operation"] = dropped, ["ended"] = "dropped" };
+        }
+
+        if (!ConfirmationAsk.Answers(_askedAt, _personAt))
         {
             return null;
         }
@@ -233,6 +260,7 @@ internal sealed class NativeTurnLoop
             return;
         }
 
+        _droppedOperation = null;
         await PersonTurnAsync(mind, arrivedAt, () => mind.ConfirmAsync(approve, label, cancellationToken),
             cancellationToken);
     }
@@ -278,6 +306,7 @@ internal sealed class NativeTurnLoop
     internal void Reset()
     {
         _leftBehind = false;
+        _droppedOperation = null;
         DropPending();
         _egress.Reset();
     }
@@ -350,6 +379,7 @@ internal sealed class NativeTurnLoop
                 // A call asked in an earlier turn still waits: this line is not its question, and from now on it is no
                 // longer what the person's next words or its card answer (dropped when this turn ends).
                 _leftBehind |= HasPendingConfirmation;
+                _droppedOperation = null;
                 _host.Publish(text, route);
                 return;
             }
@@ -623,12 +653,15 @@ internal sealed class NativeTurnLoop
         {
             // A call that waited and ran out of time is not «nothing was asked» (audit 2026-10-15, App 3): the model
             // says the question expired and can ask again.
+            // A challenge that started before it asked (reconciliationRequired) may have had its effect (auditoría
+            // ronda nb propia, 25).
             string? expired = _pending?.Prepared.OperationName ?? _proposal?.OperationName;
+            bool effectStarted = _pending?.ReconciliationRequired == true;
             Resolved("expired");
             DropPending();
             return Record(MindStep.ConfirmationAnswer, arguments, started, expired is null
                 ? Observation("failed", "nothing_pending")
-                : Observation("failed", "confirmation_expired", about: expired));
+                : Observation("failed", "confirmation_expired", about: expired, effectUncertain: effectStarted));
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);
@@ -843,6 +876,7 @@ internal sealed class NativeTurnLoop
         if (_leftBehind)
         {
             _leftBehind = false;
+            _droppedOperation = (_pending?.Prepared ?? _proposal)?.OperationName;
             DropPending();
         }
     }
