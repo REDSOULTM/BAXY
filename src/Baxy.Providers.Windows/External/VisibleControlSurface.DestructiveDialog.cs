@@ -16,7 +16,7 @@ internal static partial class VisibleControlSurface
     internal static bool IsDialogWindow(nint window) =>
         window != 0 && (string.Equals(ClassName(window), "#32770", StringComparison.Ordinal) || GetWindow(window, 4) != 0);
 
-    /// <summary>A button that says yes to what its dialog asks (Sí, Yes, Aceptar, OK, Reemplazar, Eliminar, No guardar…).</summary>
+    /// <summary>The affirmative answer of a dialog (Sí, Yes, Aceptar, OK, Reemplazar, Eliminar, No guardar…).</summary>
     internal static bool AffirmativeAnswer(string? label) => AffirmativeLabel().IsMatch(FoldTitle(label));
 
     /// <summary>
