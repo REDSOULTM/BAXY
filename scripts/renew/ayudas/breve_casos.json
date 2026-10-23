@@ -1,0 +1,220 @@
+[
+ {
+  "id": "S01",
+  "text": "abre paint y luego ciérralo",
+  "steps": [
+   {
+    "operation": "app.open",
+    "arguments": {
+     "appId": "Paint",
+     "foreground": true
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"readback\",\"observed\":{\"appId\":\"Paint\",\"displayName\":\"Paint\",\"alreadyRunning\":false,\"windowId\":\"win_1a2b\",\"processName\":\"mspaint\",\"foreground\":true}}"
+   },
+   {
+    "operation": "app.close",
+    "arguments": {
+     "appId": "Paint"
+    },
+    "observation": "{\"status\":\"failed\",\"error\":\"window_not_found\"}"
+   }
+  ]
+ },
+ {
+  "id": "S02",
+  "text": "escribe hola en el bloc de notas",
+  "steps": [
+   {
+    "operation": "app.open",
+    "arguments": {
+     "appId": "Bloc de notas",
+     "foreground": true
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"readback\",\"observed\":{\"appId\":\"Bloc de notas\",\"displayName\":\"Bloc de notas\",\"alreadyRunning\":true,\"windowId\":\"win_3c4d\",\"processName\":\"Notepad\",\"foreground\":true}}"
+   },
+   {
+    "operation": "input.text.type",
+    "arguments": {
+     "text": "hola"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"delivered_only\",\"observed\":{\"delivered\":true,\"characters\":4,\"target\":{\"windowId\":\"win_3c4d\",\"title\":\"Sin título: Bloc de notas\"}}}"
+   }
+  ]
+ },
+ {
+  "id": "S03",
+  "text": "¿aparece la palabra timeout en registro.log de BAXY-bench?",
+  "steps": [
+   {
+    "operation": "file.read",
+    "arguments": {
+     "folder": "home",
+     "relativePath": "BAXY-bench/registro.log"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"output_only\",\"observed\":{\"name\":\"registro.log\",\"fromLine\":1,\"toLine\":200,\"totalLines\":3000,\"readInPart\":true,\"text\":\"2026-10-20 10:00:01 inicio\\n2026-10-20 10:00:02 conexión lista\\n2026-10-20 10:00:05 petición 1 ok\"}}"
+   }
+  ]
+ },
+ {
+  "id": "S04",
+  "text": "marca comprar pilas como hecha",
+  "steps": [
+   {
+    "operation": "task.complete",
+    "arguments": {
+     "taskId": "t_1"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"unchanged\",\"observed\":{\"taskId\":\"t_1\",\"title\":\"comprar pilas\",\"completed\":true}}"
+   }
+  ]
+ },
+ {
+  "id": "S05",
+  "text": "minimiza el bloc de notas",
+  "steps": [
+   {
+    "operation": "window.minimize",
+    "arguments": {
+     "windowId": "win_3c4d"
+    },
+    "observation": "{\"status\":\"failed\",\"error\":\"window_state_not_verified\",\"observed\":{\"stateAfter\":{\"state\":\"minimized\",\"requestedStateReached\":true,\"authority\":\"win32\"}}}"
+   }
+  ]
+ },
+ {
+  "id": "S06",
+  "text": "abre steam en la biblioteca",
+  "steps": [
+   {
+    "operation": "app.open",
+    "arguments": {
+     "appId": "Steam",
+     "foreground": true,
+     "place": "library"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"delivered_only\",\"observed\":{\"appId\":\"Steam\",\"displayName\":\"Steam\",\"alreadyRunning\":false,\"placeRequested\":true,\"next\":\"Steam was asked to show its library; whether the library shows now was not checked: input_visible_controls can look before saying so\",\"windowId\":\"win_5e6f\",\"processName\":\"steamwebhelper\",\"foreground\":true}}"
+   }
+  ]
+ },
+ {
+  "id": "S07",
+  "text": "crea notas.txt en BAXY-bench con la palabra hola",
+  "steps": [
+   {
+    "operation": "file.write",
+    "arguments": {
+     "relativePath": "notas.txt",
+     "text": "hola"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"readback\",\"observed\":{\"version\":1,\"name\":\"notas.txt\",\"kind\":\"file\",\"size\":4,\"folder\":\"baxy_work\",\"fullPath\":\"C:\\\\Users\\\\ana\\\\AppData\\\\Local\\\\BAXY\\\\filesystem-sandbox\\\\notas.txt\",\"created\":true}}"
+   }
+  ]
+ },
+ {
+  "id": "S08",
+  "text": "sube el volumen a 50",
+  "steps": [
+   {
+    "operation": "audio.volume",
+    "arguments": {
+     "level": 50
+    },
+    "observation": "{\"status\":\"pending\",\"effectUncertain\":true,\"error\":\"audio_endpoint_busy\"}"
+   }
+  ]
+ },
+ {
+  "id": "S09",
+  "text": "¿hay algún .bak en mi escritorio?",
+  "steps": [
+   {
+    "operation": "filesystem.list",
+    "arguments": {
+     "folder": "desktop"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"output_only\",\"observed\":{\"folder\":\"desktop\",\"count\":14,\"entriesShown\":10,\"subfoldersNotOpened\":3,\"entries\":[{\"name\":\"foto.png\",\"kind\":\"file\"},{\"name\":\"notas.txt\",\"kind\":\"file\"},{\"name\":\"proyecto\",\"kind\":\"directory\"}]}}"
+   }
+  ]
+ },
+ {
+  "id": "S10",
+  "text": "pulsa guardar en el bloc de notas",
+  "steps": [
+   {
+    "operation": "input.visible.click",
+    "arguments": {
+     "windowId": "win_3c4d",
+     "label": "Guardar"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"delivered_only\",\"observed\":{\"clicked\":\"Guardar\",\"after\":{\"same\":true}}}"
+   }
+  ]
+ },
+ {
+  "id": "S11",
+  "text": "busca en estas tres páginas qué día abre la feria del libro",
+  "steps": [
+   {
+    "operation": "web.fetch",
+    "arguments": {
+     "url": "https://example.org/a"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"output_only\",\"observed\":{\"finalUrl\":\"https://example.org/a\",\"title\":\"a\",\"text\":\"La feria reúne a 300 editoriales.\"}}"
+   },
+   {
+    "operation": "web.fetch",
+    "arguments": {
+     "url": "https://example.org/b"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"output_only\",\"observed\":{\"finalUrl\":\"https://example.org/b\",\"title\":\"b\",\"text\":\"Entradas a la venta en la boletería.\"}}"
+   },
+   {
+    "operation": "web.fetch",
+    "arguments": {
+     "url": "https://example.org/c"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"output_only\",\"observed\":{\"finalUrl\":\"https://example.org/c\",\"title\":\"c\",\"text\":\"La feria abre el sábado 7 de noviembre a las 10:00.\"}}"
+   }
+  ]
+ },
+ {
+  "id": "S12",
+  "text": "¿hay algún .bak en el escritorio o en documentos?",
+  "steps": [
+   {
+    "operation": "filesystem.list",
+    "arguments": {
+     "folder": "desktop"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"output_only\",\"observed\":{\"folder\":\"desktop\",\"count\":14,\"entriesShown\":10,\"subfoldersNotOpened\":3,\"entries\":[{\"name\":\"foto.png\",\"kind\":\"file\"},{\"name\":\"notas.txt\",\"kind\":\"file\"}]}}"
+   },
+   {
+    "operation": "filesystem.list",
+    "arguments": {
+     "folder": "documents"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"output_only\",\"observed\":{\"folder\":\"documents\",\"count\":14,\"entriesShown\":10,\"subfoldersNotOpened\":3,\"entries\":[{\"name\":\"informe.docx\",\"kind\":\"file\"},{\"name\":\"tabla.xlsx\",\"kind\":\"file\"}]}}"
+   }
+  ]
+ },
+ {
+  "id": "S13",
+  "text": "escribe hola en el bloc de notas y luego chao en wordpad",
+  "steps": [
+   {
+    "operation": "input.text.type",
+    "arguments": {
+     "text": "hola"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"delivered_only\",\"observed\":{\"delivered\":true,\"characters\":5}}"
+   },
+   {
+    "operation": "input.text.type",
+    "arguments": {
+     "text": "chao"
+    },
+    "observation": "{\"status\":\"completed\",\"verification\":\"delivered_only\",\"observed\":{\"delivered\":true,\"characters\":5}}"
+   }
+  ]
+ }
+]
