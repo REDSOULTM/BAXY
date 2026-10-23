@@ -379,7 +379,8 @@ class Voice:
         voiced = [i for i in voiced if i * BLOCK / RATE >= tail]
         if not voiced:
             return now - start >= (NO_COMMAND_S if self._mode == "wake" else DIRECT_WAIT_S)
-        return now - (start + (voiced[-1] + 1) * BLOCK / RATE) >= END_SILENCE_S
+        # 1e-6: in direct mode 2.4 - 1.5 is 0.8999…, and 48 of 120 requests waited one block (100 ms) more
+        return now - (start + (voiced[-1] + 1) * BLOCK / RATE) >= END_SILENCE_S - 1e-6
 
     def _finish(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]]:
         self._start = None
