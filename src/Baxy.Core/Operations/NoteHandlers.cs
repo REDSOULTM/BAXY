@@ -61,13 +61,19 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         {
             return ValueTask.FromResult(OperationOutcome.Failure("note_capacity_reached"));
         }
-        catch (NoteCorruptionException) when (Definition.Risk == OperationRisk.ReadOnly)
+        // Auditoría del Core (w8): a corrupt note, or a store whose path became unsafe, met by an operation that changes
+        // something threw past this handler and ended the core (exit 70), as C-1 found for a failed write: one bad note
+        // file stopped every note.create (the idempotency look reads them all). It is this operation's failure, named;
+        // where in the change the store noticed is not known, so a change may have begun for one that changes.
+        catch (NoteCorruptionException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("note_integrity_failed"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "note_integrity_failed", effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
         }
-        catch (UnsafeNoteStorePathException) when (Definition.Risk == OperationRisk.ReadOnly)
+        catch (UnsafeNoteStorePathException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("unsafe_storage"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "unsafe_storage", effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
         }
         // Revisión 2026-10-22 (C-1): a write the disk or a guarded folder failed threw past this handler and ended the
         // core (exit 70); it is this operation's failure, and a change may have begun only for one that changes.

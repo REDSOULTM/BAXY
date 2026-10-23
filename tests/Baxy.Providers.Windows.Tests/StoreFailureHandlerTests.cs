@@ -70,6 +70,65 @@ public sealed class StoreFailureHandlerTests
         });
     }
 
+    // Auditoría del Core (w8): a corrupt store or an unsafe store path met by a change ended the core (exit 70); it is
+    // the operation's failure, named, and may have begun.
+    [Test]
+    public async Task ACorruptNoteMetByANoteCreateIsNamedAndMayHaveBegun()
+    {
+        OperationOutcome outcome = await new CreateNoteHandler(Throwing<INoteStore>(new NoteCorruptionException("bad note")))
+            .ExecuteAsync(Invocation("""{"title":"Compras","content":"pan"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("note_integrity_failed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    [Test]
+    public async Task AnUnsafeNoteStoreMetByANoteUpdateIsNamedAndMayHaveBegun()
+    {
+        OperationOutcome outcome = await new UpdateNoteHandler(Throwing<INoteStore>(new UnsafeNoteStorePathException("link")))
+            .ExecuteAsync(Invocation($$"""
+                {"noteId":"{{Guid.NewGuid():D}}","expectedTitle":"Compras","expectedRevision":1,"title":"Compras","content":"pan"}
+                """), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("unsafe_storage"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    [Test]
+    public async Task ATaskPayloadThatDoesNotReadBackMetByACompletionIsNamedAndMayHaveBegun()
+    {
+        OperationOutcome outcome = await new CompleteTaskHandler(
+                Throwing<ILocalTaskStore>(new LocalTaskStoreException("Authenticated task payload is invalid.")))
+            .ExecuteAsync(Invocation($$"""{"taskId":"{{Guid.NewGuid():D}}","expectedVersion":1}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("task_integrity_failed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    // Contracase: the same met by a read changed nothing; an unsafe store read no longer ends the core either.
+    [Test]
+    public async Task AnUnsafeTaskStoreMetByAListChangedNothing()
+    {
+        OperationOutcome outcome = await new ListTasksHandler(Throwing<ILocalTaskStore>(new UnsafeNoteStorePathException("link")))
+            .ExecuteAsync(Invocation("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("unsafe_storage"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     private static OperationInvocation Invocation(string arguments) =>
         new("request", "mission", "invocation", JsonDocument.Parse(arguments).RootElement.Clone());
 

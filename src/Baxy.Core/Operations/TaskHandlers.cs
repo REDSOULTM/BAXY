@@ -62,11 +62,19 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
         {
             return ValueTask.FromResult(OperationOutcome.Failure("task_capacity_reached"));
         }
-        catch (Exception exception)
-            when (Definition.Risk == OperationRisk.ReadOnly
-                && (exception is LocalTaskStoreException or NoteCorruptionException))
+        // Auditoría del Core (w8): a task whose stored payload does not read back (LocalTaskStoreException), a corrupt
+        // document or a store whose path became unsafe, met by task.complete, task.update or any other change, threw
+        // past this handler and ended the core (exit 70); the unsafe store did so even for a read. It is this
+        // operation's failure, named; a change may have begun only for an operation that changes something.
+        catch (Exception exception) when (exception is LocalTaskStoreException or NoteCorruptionException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("task_integrity_failed"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "task_integrity_failed", effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
+        }
+        catch (UnsafeNoteStorePathException)
+        {
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "unsafe_storage", effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
         }
         // Revisión 2026-10-22 (C-1): a disk or a guarded folder that fails a write ended the core too; it is this
         // operation's failure, named, and a change may have begun only for an operation that changes something
