@@ -265,3 +265,8 @@ que el catálogo no tenga. Estado y hallazgos: `documentacion/NAVEGADOR_USUARIO.
   1/3** (n6#2 con estado base limpio: «no vi en la pantalla un control con el que seguir» tras 3 pasos; n6#3 sobre el
   Word que dejó n6#2). Las dos corridas anteriores no valen (estado sucio: el Excel/Word del caso anterior seguía
   abierto). Se retoma sólo si la fase 1 mide n6 estable sin la rama y el caso que arregla lo pide.
+- **Al máximo, palanca 2 (2026-10-23): el fin de la orden con ruido.** `voice.py` cierra la orden por RMS fijo
+  (`VOICE_RMS` 0,012): con ruido rosa a 10 dB el piso queda por encima en el 99,6 % del set sintético y las 40
+  órdenes ruidosas medidas corrieron hasta `MAX_S` (12 s), sin decisión anticipada que valga
+  (`scripts/voice/medir_anticipada.py --noise-faithful`). No bloquea la palanca (en limpio acierta 86,5 % a 0,2 s);
+  un fin de voz con piso adaptativo o un VAD se mide aparte, con la voz del dueño.
