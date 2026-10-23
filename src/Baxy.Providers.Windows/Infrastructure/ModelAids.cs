@@ -95,6 +95,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5): a schedule.alarms cancel that canceled nothing says so and what it looked among.</summary>
     public const string CancelScope = "cancel_scope";
 
+    /// <summary>Renew al máximo (w5): a task not found or changed says what that taskId holds now and that nothing changed.</summary>
+    public const string TaskStateNext = "task_state_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
