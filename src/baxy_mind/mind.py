@@ -135,6 +135,11 @@ READ_RISKS = ("read_only", "privacy_sensitive")
 OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba"
 # Every outcome of a completed call (the App runs the queued calls after one of these).
 COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ)
+# What the facts line adds of a result's own fields (_outcome), and what _deduplicated leaves out of it for that.
+ALREADY_OPEN = "; ya estaba abierta antes de esta llamada"
+SAME_WINDOW = "; la ventana no cambió"
+AFTER_VIEW = "; su after es la ventana de después"
+REREAD = {True: "; releído después: quedó como se pidió", False: "; releído después: no quedó como se pidió"}
 
 
 def _outcome(observation: str, read: bool = False) -> str:
@@ -165,8 +170,7 @@ def _outcome(observation: str, read: bool = False) -> str:
     after = shown.get("stateAfter")
     reread = ""
     if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool):
-        reread = ("; releído después: quedó como se pidió" if after["requestedStateReached"]
-                  else "; releído después: no quedó como se pidió")
+        reread = REREAD[after["requestedStateReached"]]
     if status == "pending" or facts.get("effectUncertain"):
         return "sin confirmar: pudo o no ocurrir" + reread
     if status == "completed":
@@ -179,20 +183,60 @@ def _outcome(observation: str, read: bool = False) -> str:
         # Al máximo 7.1 (notebook): an act in a window brings the window as it is after it; what it says is told.
         view = shown.get("after")
         seen = ("" if not isinstance(view, dict) or view.get("omitted")
-                else "; la ventana no cambió" if view.get("same") is True
-                else "; su after es la ventana de después")
+                else SAME_WINDOW if view.get("same") is True
+                else AFTER_VIEW)
         verification = str(facts.get("verification"))
         told = (OUTPUT_READ if read and verification == "output_only"
                 else VERIFICATION.get(verification, VERIFICATION["none"]))
         # Auditoría de falsedades (F002): an application BAXY did not start (app_open's alreadyRunning) is said so,
         # or «¿abriste X?» after opening one already open read «completado y verificado» as «Sí, lo abrí».
-        before = "; ya estaba abierta antes de esta llamada" if shown.get("alreadyRunning") is True else ""
+        before = ALREADY_OPEN if shown.get("alreadyRunning") is True else ""
         # The App's own completed result it could not read (result_unreadable) keeps its code.
         error = facts.get("error")
         code = f" ({error})" if isinstance(error, str) and error else ""
         return told + code + where + before + seen
     error = facts.get("error") or facts.get("cause")
     return (f"falló ({error})" if error else "falló") + reread
+
+
+def _deduplicated(observation: str, outcome: str) -> str:
+    """Aid «result_dedup» (w6-lat, 2026-10-23): the result without the fields its facts line (``outcome``, _outcome's
+    words for it, written right after it) already says, so the model reads each fact once. On the holdout v4 the first
+    spoken answer after a tool went 3.4 → 4.3 s p50, turn.continue reading 124 → 156 tokens. Left out only where the line
+    says it: a completed call's status and verification («completado y verificado», «lectura: …»), its fullPath («en
+    C:\\…»), alreadyRunning true (ALREADY_OPEN), an after that is only {"same": true} (SAME_WINDOW) and stateAfter's
+    requestedStateReached (REREAD). The rest stays as it came, in the App's compact JSON; a result with none of them is
+    the App's own text."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return observation
+    if not isinstance(facts, dict):
+        return observation
+    shown = dict(facts)
+    if shown.get("status") == "completed" and outcome.startswith(COMPLETED_OUTCOMES):
+        shown.pop("status")
+        shown.pop("verification", None)
+    if isinstance(facts.get("observed"), dict):
+        observed = dict(facts["observed"])
+        where = observed.get("fullPath")
+        if isinstance(where, str) and where and f" en {where}" in outcome:
+            del observed["fullPath"]
+        if observed.get("alreadyRunning") is True and ALREADY_OPEN in outcome:
+            del observed["alreadyRunning"]
+        if observed.get("after") == {"same": True} and SAME_WINDOW in outcome:
+            del observed["after"]
+        after = observed.get("stateAfter")
+        if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool) \
+                and REREAD[after["requestedStateReached"]] in outcome:
+            observed["stateAfter"] = {k: v for k, v in after.items() if k != "requestedStateReached"}
+        if observed or not facts["observed"]:
+            shown["observed"] = observed
+        else:
+            del shown["observed"]  # all it held is in the line
+    if shown == facts:
+        return observation
+    return json.dumps(shown, ensure_ascii=False, separators=(",", ":"))
 
 
 def _aid_on(aid: str) -> bool:
@@ -736,9 +780,11 @@ class Mind:
         self._turned = False
 
     # ---- short references (PLAN_GENERAL C1) ----------------------------------------------------------------
-    def _shorten(self, observation: str) -> tuple[str, dict[str, str]]:
+    def _shorten(self, observation: str, compact: bool = False) -> tuple[str, dict[str, str]]:
         """The result with every address longer than LONG_REF_CHARS replaced by its short reference, and the
-        references made for it (a known address keeps its reference). Text that is not JSON goes as it came."""
+        references made for it (a known address keeps its reference). Text that is not JSON goes as it came.
+        ``compact`` (aid «result_dedup»): written as compact as the App writes it, not with a space after each comma and
+        colon (one token more per field)."""
         try:
             facts = json.loads(observation)
         except json.JSONDecodeError:
@@ -762,7 +808,7 @@ class Mind:
         shortened = walk(facts)
         if not made:
             return observation, {}
-        return json.dumps(shortened, ensure_ascii=False), made
+        return json.dumps(shortened, ensure_ascii=False, separators=(",", ":") if compact else None), made
 
     def _expand(self, value: Any) -> Any:
         """A call's arguments with every short reference the model wrote put back as the address it stands for."""
@@ -1333,9 +1379,12 @@ class Mind:
                                              options=SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS)
             note += repeated
             aids["same_call_next"] = repeated.strip()
+        # Aid «result_dedup» (w6-lat): what the facts line below says of this result is not said in it again.
+        compact = _aid_on("result_dedup")
+        told = _deduplicated(observation, outcome) if compact else observation
         # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long
         # address in a result reaches the model as a short reference, and the mind puts the address back in its calls.
-        shown, made = self._shorten(observation) if _aid_on("short_refs") else (observation, {})
+        shown, made = self._shorten(told, compact) if _aid_on("short_refs") else (told, {})
         if made:
             aids["short_refs"] = sorted(made) if turn.get("private") else made
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
