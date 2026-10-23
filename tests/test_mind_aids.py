@@ -282,6 +282,20 @@ def test_a_failed_act_read_again_after_it_tells_whether_what_was_asked_holds() -
     assert _outcome(json.dumps({"status": "failed", "error": "x", "observed": {}})) == "falló (x)"
 
 
+def test_a_not_found_tells_whether_other_places_were_searched() -> None:
+    # Renew al máximo (w8): «ni en ningún otro lugar que revisé» after a file_open whose result said searchedElsewhere false.
+    from baxy_mind.mind import _outcome
+    only_there = {"status": "failed", "error": "file_not_found",
+                  "observed": {"seenElsewhere": [], "searchedElsewhere": False}}
+    cut = {"status": "failed", "error": "file_not_found", "observed": {"seenElsewhere": [], "searchComplete": False}}
+    whole = {"status": "failed", "error": "file_not_found", "observed": {"seenElsewhere": [], "searchComplete": True}}
+    assert _outcome(json.dumps(only_there)) == (
+        "falló (file_not_found); sólo se miró la ruta nombrada: no se buscó en ningún otro lugar")
+    assert _outcome(json.dumps(cut)) == (
+        "falló (file_not_found); la búsqueda en otros lugares no se completó: lo no visto puede estar ahí")
+    assert _outcome(json.dumps(whole)) == "falló (file_not_found)"
+
+
 def test_an_act_in_a_window_tells_what_its_after_view_shows() -> None:
     # Al máximo 7.1 (notebook): the click's receipt brings the window after it; with entries omitted it is not whole.
     from baxy_mind.mind import _outcome

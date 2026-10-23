@@ -30,7 +30,7 @@ internal sealed class ScreenshotCaptureHandler(
         // the foreground). The provider never stores a partial image.
         catch (ScreenshotUnavailableException exception)
         {
-            return OperationOutcome.Failure(exception.Code);
+            return OperationOutcome.Failure(exception.Code, result: Next(exception.Code));
         }
         catch (Exception exception) when (
             exception is IOException or UnauthorizedAccessException or OverflowException)
@@ -94,6 +94,32 @@ internal sealed class ScreenshotCaptureHandler(
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
         return OperationOutcome.Success(document.RootElement.Clone());
+    }
+
+    // Renew al máximo (w8): what to do after a capture that could not be taken for a reason it knows; nothing was
+    // stored in any of them.
+    private static JsonElement? Next(string code)
+    {
+        string? next = code switch
+        {
+            "active_window_changed_during_capture" => "the window in front changed while it was being captured (another "
+                + "window took the front, or it moved or resized); nothing was stored; capture again once the window "
+                + "stays in front, or capture_screenshot takes the whole screen",
+            "active_window_not_visible" => "the window in front is outside the visible screen; nothing was stored; "
+                + "bring the window into view, or capture_screenshot takes the whole screen",
+            "capture_frame_black" => "the screen copy came back black (a protected window, a locked session or the "
+                + "secure desktop); nothing was stored",
+            _ => null,
+        };
+        if (next is null) return null;
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("next", next); writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 
     private static string? RequestedFolder(OperationInvocation? invocation) =>

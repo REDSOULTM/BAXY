@@ -694,6 +694,50 @@ public sealed class ExternalAdaptersTests
         }
     }
 
+    // Renew al máximo (w8): a Tesseract that starts and fails is told as that, with what to do, never as a missing
+    // Windows OCR language pack (windows_ocr_language_not_available, as every Tesseract failure was).
+    [Test]
+    [NonParallelizable]
+    public async Task ATesseractThatFailsIsToldAsItsOwnFailureWithWhatToDo()
+    {
+        using TemporaryDirectory temporary = new();
+        string tessdata = Path.Combine(temporary.Path, "tessdata");
+        Directory.CreateDirectory(tessdata);
+        File.WriteAllBytes(Path.Combine(tessdata, "eng.traineddata"), [1]);
+        File.WriteAllBytes(Path.Combine(tessdata, "spa.traineddata"), [1]);
+        string capture = Path.Combine(temporary.Path, "capture_" + new string('a', 32) + ".bmp");
+        File.WriteAllBytes(capture, new byte[64]);
+        // where.exe takes Tesseract's arguments as a bad search and exits with an error, as a broken Tesseract does.
+        string failing = Path.Combine(Environment.SystemDirectory, "where.exe");
+        string? previousExecutable = Environment.GetEnvironmentVariable("BAXY_TESSERACT_EXE");
+        string? previousTessdata = Environment.GetEnvironmentVariable("BAXY_TESSDATA_DIR");
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", failing);
+            Environment.SetEnvironmentVariable("BAXY_TESSDATA_DIR", tessdata);
+
+            ExternalCapabilityReceipt failed = await CaptureVisionAdapter.ReadTesseractOcrAsync(
+                "ocr.read", "capture_" + new string('a', 32), capture, null, CancellationToken.None);
+            ExternalCapabilityReceipt french = await CaptureVisionAdapter.ReadTesseractOcrAsync(
+                "ocr.read", "capture_" + new string('a', 32), capture, "fr-FR", CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(failed.ErrorCode, Is.EqualTo("tesseract_ocr_failed"));
+                Assert.That(failed.Verified, Is.False);
+                Assert.That(failed.Result!.Value.GetProperty("exitCode").GetInt32(), Is.Not.Zero);
+                Assert.That(failed.Result!.Value.GetProperty("next").GetString(), Does.Contain("vision_describe"));
+                Assert.That(french.ErrorCode, Is.EqualTo("windows_ocr_language_not_available"));
+                Assert.That(french.Result!.Value.GetProperty("next").GetString(), Does.Contain("Spanish and English"));
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", previousExecutable);
+            Environment.SetEnvironmentVariable("BAXY_TESSDATA_DIR", previousTessdata);
+        }
+    }
+
     [Test]
     [NonParallelizable]
     public async Task VisionBindsConfiguredProviderResponseToExactCaptureHash()
@@ -2346,6 +2390,24 @@ public sealed class ExternalAdaptersTests
                 { "foreground_window_missing", "sendinput_layout_invalid", "clipboard_empty", "on_screen_keyboard_missing" }));
             foreach (string cause in thrown)
                 Assert.That(list, Does.Contain("'" + cause + "'"));
+        });
+    }
+
+    // Renew al máximo (w5): clipboard.copy looks for the copy every 50 ms for 1 s, as input.key.press ctrl_c does (one
+    // look after a fixed 120 ms failed a slower application's copy), and a Ctrl+C accepted in the same window that left
+    // the clipboard as it was is said as clipboard_not_changed, not as an input not verified.
+    [Test]
+    public void TheCopyIsLookedForOftenAndACopyOfNothingIsSaidSo()
+    {
+        string script = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "DesktopKeyPress.ps1"));
+        int copyWait = script.IndexOf("$deadline=(Get-Date).AddMilliseconds(1000)", StringComparison.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(copyWait, Is.GreaterThan(0));
+            Assert.That(script, Does.Contain("do{Start-Sleep -Milliseconds 50}while($verified -and ([BaxyKeyInput]::GetClipboardSequenceNumber() -eq $clipboardSequenceBefore"));
+            Assert.That(script, Does.Contain("} else { Start-Sleep -Milliseconds 120 }"), "the fixed wait is only for the other acts");
+            Assert.That(script, Does.Contain("{'clipboard_not_changed'}else{'input_effect_not_verified'}"));
         });
     }
 

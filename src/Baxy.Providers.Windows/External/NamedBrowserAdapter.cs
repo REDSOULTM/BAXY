@@ -156,7 +156,7 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         _browsers.Clear();
     }
 
-    private static bool DestinationMatches(Uri requested, Uri observed)
+    internal static bool DestinationMatches(Uri requested, Uri observed)
     {
         if (string.Equals(requested.AbsoluteUri, observed.AbsoluteUri, StringComparison.Ordinal))
             return true;
@@ -164,12 +164,16 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         // (youtube.com → www.youtube.com/). Same scheme, the same host modulo a
         // leading "www.", no user info and the same path is the same destination;
         // any other host or path (a login page, a redirect elsewhere) is not.
+        // Renew al máximo (w8): nor is the same path with another query (youtube.com/watch?v=A that ended on ?v=B was
+        // told as arrived); every parameter asked for must be there with its value, as a navigation in the person's
+        // browser requires (UserBrowserSurface.ReachedTarget).
         static string BareHost(string host) =>
             host.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? host[4..] : host;
         return requested.Scheme == observed.Scheme
             && string.Equals(BareHost(requested.Host), BareHost(observed.Host), StringComparison.OrdinalIgnoreCase)
             && observed.UserInfo.Length == 0
-            && string.Equals(requested.AbsolutePath, observed.AbsolutePath, StringComparison.Ordinal);
+            && string.Equals(requested.AbsolutePath, observed.AbsolutePath, StringComparison.Ordinal)
+            && UserBrowserSurface.KeepsAskedQuery(requested, observed);
     }
 
     private static string? ResolveBrowser(string browser)

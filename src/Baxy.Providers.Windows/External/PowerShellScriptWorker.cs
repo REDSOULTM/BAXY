@@ -48,7 +48,7 @@ internal sealed class PowerShellScriptWorker : IExternalProcessRunner, IDisposab
             if($null -eq $line -or $line -eq 'exit'){break}
             $request=ConvertFrom-Json $line
             $named=@{}
-            foreach($property in @($request.named.PSObject.Properties)){$named[$property.Name]=[string]$property.Value}
+            foreach($property in @($request.named.PSObject.Properties)){$named[$property.Name]=$(if($property.Value -is [bool]){[switch]$property.Value}else{[string]$property.Value})}
             $positional=@(foreach($value in @($request.positional)){[string]$value})
             $lines=New-Object 'System.Collections.Generic.List[string]'
             $code=0
@@ -157,9 +157,14 @@ internal sealed class PowerShellScriptWorker : IExternalProcessRunner, IDisposab
                     continue;
                 }
 
-                // A switch (a name with no value after it) is not a run the worker binds the way -File does.
+                // Renew al máximo (w5): a name last, with no value after it, is a switch, bound present as -File binds it
+                // (the key script's -CopySelection and -PasteClipboard). It was a run of its own process.
                 if (ParameterName.IsMatch(argument))
-                    return null;
+                {
+                    writer.WriteBoolean(argument[1..], true);
+                    continue;
+                }
+
                 positional.Add(argument);
             }
 

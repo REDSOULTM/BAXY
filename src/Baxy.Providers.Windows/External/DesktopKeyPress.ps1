@@ -300,7 +300,12 @@ public static class BaxyKeyInput {
     }else{
         ($accepted -gt 0) -or ($openedProcessId -ne $null)
     })
-    Start-Sleep -Milliseconds 120
+    if($PSCmdlet.ParameterSetName -eq 'Copy'){
+        # Renew al maximo (w5): the copy is looked for every 50 ms for 1 s at most, as input.key.press ctrl_c looks for
+        # it. One look after a fixed 120 ms called an application slower to fill the clipboard a copy not verified.
+        $deadline=(Get-Date).AddMilliseconds(1000)
+        do{Start-Sleep -Milliseconds 50}while($verified -and ([BaxyKeyInput]::GetClipboardSequenceNumber() -eq $clipboardSequenceBefore -or [BaxyKeyInput]::CountClipboardFormats() -lt 1) -and (Get-Date) -lt $deadline)
+    } else { Start-Sleep -Milliseconds 120 }
     $after=[BaxyKeyInput]::GetForegroundWindow()
     [uint32]$afterProcess=0
     if($after -ne [IntPtr]::Zero){
@@ -344,7 +349,9 @@ public static class BaxyKeyInput {
         foregroundProcessIdAfter=$afterProcess
         foregroundTitleBefore=$beforeTitle
         authority=$authority
-        error=$(if($verified){$null}else{'input_effect_not_verified'})
+        # Renew al maximo (w5): Ctrl+C accepted in the same window and the clipboard as it was: nothing was copied
+        # (nothing selected, or a control that does not copy), said as input.key.press ctrl_c says it.
+        error=$(if($verified){$null}elseif($PSCmdlet.ParameterSetName -eq 'Copy' -and $accepted -eq $expected -and $after -eq $before -and $afterProcess -eq $beforeProcess -and $clipboardSequenceAfter -eq $clipboardSequenceBefore){'clipboard_not_changed'}else{'input_effect_not_verified'})
     } | ConvertTo-Json -Compress
     if(-not $verified){exit 2}
 } catch {

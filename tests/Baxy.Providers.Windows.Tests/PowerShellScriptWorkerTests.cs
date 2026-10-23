@@ -271,7 +271,64 @@ public sealed class PowerShellScriptWorkerTests
             Assert.That(worker.ToRequest("powershell.exe", Arguments(Path.Combine(_folder, "other.ps1"), "x", "exact")), Is.Null);
             Assert.That(worker.ToRequest("pwsh.exe", Arguments(script, "x", "exact")), Is.Null);
             Assert.That(worker.ToRequest("powershell.exe", ["-NoProfile", "-NonInteractive", "-File", script, "x"]), Is.Null);
-            Assert.That(worker.ToRequest("powershell.exe", ["-NoProfile", "-NonInteractive", "-STA", "-File", script, "-Switch"]), Is.Null);
+        });
+    }
+
+    // Renew al máximo (w5): the key script's copy and paste are a switch last (-CopySelection, -PasteClipboard). The worker
+    // took such a run for its own process, a powershell.exe and an Add-Type compiled for every copy and paste; it now
+    // binds the switch present as -File binds it, and the script answers the same from both.
+    private const string Switches = """
+        [CmdletBinding(DefaultParameterSetName='Pointer')]
+        param(
+            [Parameter(Mandatory=$true,ParameterSetName='Pointer')][ValidateSet('click','move_center')][string]$PointerAction,
+            [Parameter(Mandatory=$true,ParameterSetName='Paste')][switch]$PasteClipboard,
+            [Parameter(Mandatory=$true,ParameterSetName='Copy')][switch]$CopySelection
+        )
+        [pscustomobject]@{set=$PSCmdlet.ParameterSetName;copy=[bool]$CopySelection;paste=[bool]$PasteClipboard;pointer=$PointerAction}|ConvertTo-Json -Compress
+        """;
+
+    [TestCase("-CopySelection")]
+    [TestCase("-PasteClipboard")]
+    [TestCase("-PointerAction", "click")]
+    public async Task ASwitchLastIsBoundInTheWorkerAsTheFileBindsIt(params string[] named)
+    {
+        string script = Script("switches.ps1", Switches);
+        using var worker = new PowerShellScriptWorker(script);
+        string[] arguments = ["-NoProfile", "-NonInteractive", "-STA", "-File", script, .. named];
+
+        string? request = worker.ToRequest("powershell.exe", arguments);
+        ExternalProcessResult inWorker = await worker.RunAsync("powershell.exe", arguments, TimeSpan.FromSeconds(60), CancellationToken.None);
+        ExternalProcessResult alone = await new ExternalProcessRunner().RunAsync(
+            "powershell.exe", arguments, TimeSpan.FromSeconds(60), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(request, Is.Not.Null, "the run goes to the worker");
+            Assert.That(worker.Starts, Is.EqualTo(1));
+            Assert.That(inWorker.ExitCode, Is.Zero);
+            Assert.That(LastLine(inWorker), Is.EqualTo(LastLine(alone)));
+            Assert.That(LastLine(inWorker), Does.Contain(named[0] switch
+            {
+                "-CopySelection" => "\"set\":\"Copy\",\"copy\":true",
+                "-PasteClipboard" => "\"set\":\"Paste\",\"copy\":false,\"paste\":true",
+                _ => "\"set\":\"Pointer\"",
+            }));
+        });
+    }
+
+    // The product's key script goes to its persistent worker: copy and paste no longer start a PowerShell each.
+    [Test]
+    public void TheProductRunsTheKeyScriptInThePersistentWorker()
+    {
+        string script = Script("DesktopKeyPress.ps1", "'x'");
+        IExternalProcessRunner runner = WindowsDesktopInteractionAdapter.KeyScriptRunner(script);
+        using var disposable = runner as IDisposable;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(runner, Is.InstanceOf<PowerShellScriptWorker>());
+            Assert.That(((PowerShellScriptWorker)runner).ToRequest(
+                "powershell.exe", ["-NoProfile", "-NonInteractive", "-STA", "-File", script, "-CopySelection"]), Is.Not.Null);
         });
     }
 
