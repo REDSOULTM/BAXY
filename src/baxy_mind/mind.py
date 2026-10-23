@@ -880,6 +880,9 @@ class Mind:
         self.server = server
         self.trace = trace
         self.system_one = system_one  # layer 2: the decision model beside Qwen (None: off)
+        if system_one is not None:
+            # Its server exiting and starting again is said in this trace (system_one.exited, system_one.restarted).
+            system_one.on_event = lambda stage, **fields: self._log(stage, time.perf_counter(), None, **fields)
         self._judged: dict[str, Any] | None = None
         self.tools: list[dict[str, Any]] = []
         self.names: list[str] = []  # the installed applications and games of the last catalog.configure

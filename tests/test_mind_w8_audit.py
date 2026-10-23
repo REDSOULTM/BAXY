@@ -276,3 +276,89 @@ def test_a_trace_another_reader_holds_open_is_emptied(tmp_path, monkeypatch) -> 
     monkeypatch.setattr(Path, "unlink", lambda self, missing_ok=False: (_ for _ in ()).throw(PermissionError(self)))
     assert mind.forget_trace() is True
     assert mind.trace.read_text(encoding="utf-8") == ""
+
+
+class _Process:
+    """A llama-server that runs until told to exit (returncode)."""
+
+    def __init__(self) -> None:
+        self.returncode = None
+
+    def poll(self):
+        return self.returncode
+
+    def terminate(self) -> None:
+        self.returncode = 0
+
+    def wait(self, timeout=None):
+        return self.returncode
+
+
+def _laya(tmp_path, monkeypatch, restarts: int):
+    import time as _time
+    from baxy_mind import system_one as module
+    from baxy_mind.mind import Mind
+    from test_mind_final import FakeServer
+    launched: list[_Process] = []
+
+    def popen(*args, **kwargs):
+        launched.append(_Process())
+        return launched[-1]
+
+    class Healthy:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args) -> None:
+            pass
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setattr(module.subprocess, "Popen", popen)
+    monkeypatch.setattr(module.urllib.request, "urlopen", lambda *args, **kwargs: Healthy())
+    monkeypatch.setattr(module, "WATCH_SECONDS", 0.01)
+    monkeypatch.setattr(module, "RESTARTS", restarts)
+    real_wait = module.threading.Event.wait  # the pauses between starts, short
+    monkeypatch.setattr(module.threading.Event, "wait",
+                        lambda self, timeout=None: real_wait(self, min(timeout or 0.01, 0.01)))
+    laya = module.SystemOne("laya.gguf", "llama-server.exe")
+    mind = Mind(FakeServer([]), tmp_path / "turns.jsonl", laya)  # type: ignore[arg-type]
+    laya.start()
+    deadline = _time.monotonic() + 5
+    while not laya.ready and _time.monotonic() < deadline:
+        _time.sleep(0.01)
+    return laya, launched, mind
+
+
+def _rows_of(mind) -> list[dict]:
+    return [json.loads(line) for line in mind.trace.read_text(encoding="utf-8").splitlines()] \
+        if mind.trace.exists() else []
+
+
+def test_a_decision_model_whose_server_exits_is_started_again_and_the_trace_says_so(tmp_path, monkeypatch) -> None:
+    # P3 of the audit: Laya's server, once down, stayed down for the rest of the process, and nothing said so.
+    import time as _time
+    laya, launched, mind = _laya(tmp_path, monkeypatch, restarts=3)
+    assert laya.ready and len(launched) == 1
+    launched[0].returncode = 3221225477
+    deadline = _time.monotonic() + 5
+    while not (len(launched) == 2 and laya.ready) and _time.monotonic() < deadline:
+        _time.sleep(0.01)
+    laya.close()
+    assert len(launched) == 2 and laya.restarts == 1
+    rows = [(r["stage"], r.get("exit_code"), r.get("restart")) for r in _rows_of(mind)]
+    assert rows == [("system_one.exited", 3221225477, 1), ("system_one.restarted", None, 1)]
+
+
+def test_a_decision_model_that_keeps_exiting_is_left_off_and_the_trace_says_so(tmp_path, monkeypatch) -> None:
+    import time as _time
+    laya, launched, mind = _laya(tmp_path, monkeypatch, restarts=0)
+    launched[0].returncode = 1
+    deadline = _time.monotonic() + 5
+    while not _rows_of(mind) and _time.monotonic() < deadline:
+        _time.sleep(0.01)
+    _time.sleep(0.05)
+    laya.close()
+    assert len(launched) == 1 and not laya.ready
+    assert [(r["stage"], r["exit_code"], r["restart"]) for r in _rows_of(mind)] == [("system_one.exited", 1, None)]
