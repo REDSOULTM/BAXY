@@ -223,6 +223,9 @@ internal static class FilesystemResultJson
         if (result.FullPath is not null) writer.WriteString("fullPath", result.FullPath);
         if (result.SameNameInHome is not null) writer.WriteString("sameNameInHome", result.SameNameInHome);
         if (result.Created) writer.WriteBoolean("created", true);
+        // Renew al máximo (w8): a folder of the path this write made, so a subfolder named wrong is not told as the
+        // person's existing one.
+        if (result.FolderCreated is not null) writer.WriteString("folderCreated", result.FolderCreated);
         // E006/E024 (pc-ayudas, lever 3b): with a folder of that name in the person's home, the fact and the option, as
         // calculator_next: without it the model said «lo guardé en BAXY-bench» of the working folder (continuation probe,
         // 2 of 3 per seed; 0 with it). Only with the home folder seen: a generic hint made it name a folder that is not.

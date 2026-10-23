@@ -185,6 +185,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
 
             // A refused write leaves nothing behind: the folder of a new file is made only now.
             EnsureHandleRoom();
+            string? folderCreated = FirstMissingFolder(root, Path.GetDirectoryName(path)!);
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
             string temporary = Path.Combine(
@@ -235,7 +236,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
             return WhereWritten(
-                Mutation(path, root, reachedState: false, previousVersionRecycled: recycled) with { Created = !exists },
+                Mutation(path, root, reachedState: false, previousVersionRecycled: recycled) with
+                {
+                    Created = !exists,
+                    FolderCreated = folderCreated,
+                },
                 root, path);
         }
     }
@@ -616,6 +621,23 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         && value.All(static character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
     private static string Hex(byte[] value) => Convert.ToHexStringLower(value);
     private static FilesystemProviderException Error(string code) => new(code);
+
+    // The outermost folder of directory (inside root) that is not there yet, relative to root; null when all are.
+    internal static string? FirstMissingFolder(string root, string directory)
+    {
+        string? missing = null;
+        for (string? current = Path.GetFullPath(directory);
+             current is not null && IsStrictlyInside(root, current) && !Directory.Exists(current);
+             current = Path.GetDirectoryName(current))
+            missing = current;
+        return missing is null ? null : Path.GetRelativePath(root, missing);
+    }
+
+    private static bool IsStrictlyInside(string root, string path)
+    {
+        string relative = Path.GetRelativePath(Path.GetFullPath(root), path);
+        return relative != "." && !relative.StartsWith("..", StringComparison.Ordinal) && !Path.IsPathRooted(relative);
+    }
 
     // The previous version went to the Recycle Bin and the new one could not take its place: both are kept and named.
     private static FilesystemProviderException NewTextKept(string temporary, string root) =>

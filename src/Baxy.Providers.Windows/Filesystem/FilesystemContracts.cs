@@ -41,7 +41,10 @@ public sealed record FilesystemMutationResult(
     // E024 (pc-ayudas): a file.write that went to BAXY's own working folder (no folder, a relative path) says so, and
     // a folder of the person's home with the same first part of the path is a fact beside it, never a redirection.
     bool InWorkFolder = false,
-    string? SameNameInHome = null);
+    string? SameNameInHome = null,
+    // Renew al máximo (w8): the first folder of the path this write made (relative to the folder written in): a
+    // subfolder named wrong was made silently and the file told as written where the person said.
+    string? FolderCreated = null);
 
 public sealed record BackupReceipt(
     string BackupId,

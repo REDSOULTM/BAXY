@@ -123,6 +123,37 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Renew al máximo (w8): a subfolder named wrong was made silently and the file told as written; the folder the write
+    // made is said, and a write into folders already there says none.
+    [Test]
+    public async Task AWriteSaysTheFolderItMade()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, new KnownFileToolsTests.FolderRecycleBin(
+            Path.Combine(temporary.Path, "bin")));
+        Directory.CreateDirectory(Path.Combine(sandbox, "Proyectos"));
+
+        async Task<OperationOutcome> Write(string relativePath)
+        {
+            using JsonDocument arguments = JsonDocument.Parse(
+                JsonSerializer.Serialize(new { relativePath, text = "hola" }));
+            return await new FilesystemHandler("file.write", provider).ExecuteAsync(
+                new OperationInvocation("r", "m", "i", arguments.RootElement.Clone()), CancellationToken.None);
+        }
+
+        OperationOutcome made = await Write("Proyetos/2026/notas.txt");
+        OperationOutcome there = await Write("Proyectos/notas.txt");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(made.Succeeded, Is.True, made.ErrorCode);
+            Assert.That(made.Result!.Value.GetProperty("folderCreated").GetString(), Is.EqualTo("Proyetos"));
+            Assert.That(there.Succeeded, Is.True, there.ErrorCode);
+            Assert.That(there.Result!.Value.TryGetProperty("folderCreated", out _), Is.False);
+        });
+    }
+
     // Renew al máximo (w8): a replace whose new version could not take the name once the previous one was in the bin
     // deleted the new text; it is kept beside the name and the failure says where both are.
     [Test]
