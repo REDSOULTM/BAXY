@@ -150,7 +150,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 },
                 Refuse = Settings.Refusal,
                 MemoryChanged = () => MemoryChanged?.Invoke(),
-                ForgotEverything = () => EverythingForgotten?.Invoke(),
+                ForgotEverything = () =>
+                {
+                    ClearConversationLog();
+                    EverythingForgotten?.Invoke();
+                },
             });
     }
 
@@ -1566,6 +1570,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 : mind.VoiceSpeakAsync(body, TimeSpan.FromSeconds(5), CancellationToken.None);
         }
     }
+
+    /// <summary>Memory forgot everything, or every conversation was deleted: the private log of the conversation goes
+    /// too (<see cref="ConversationLog.Clear"/>).</summary>
+    internal void ClearConversationLog() => _conversationLog?.Clear();
 
     /// <summary>FT/proveedores goal (review of the App): what BAXY is saying stops (a new conversation, the voice muted
     /// in the settings); before, only the person's own message stopped it.</summary>

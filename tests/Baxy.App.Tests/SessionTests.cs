@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json.Nodes;
 using Baxy.App;
 using NUnit.Framework;
@@ -83,6 +84,7 @@ public sealed class SessionTests
         {
             var store = new FieldSessionStore(MemoryOperationProtector.ResolveDataRoot());
             Assert.That(store.Save(Kept("old1")) && store.Save(Kept("old2")), Is.True);
+            string log = WriteLog();
 
             Assert.That((await view.SendAsync("DELETE", "/sessions")).Status, Is.EqualTo(400));
             Assert.That(store.List(), Has.Count.EqualTo(2));
@@ -92,6 +94,7 @@ public sealed class SessionTests
             Assert.That(status, Is.EqualTo(200));
             Assert.That((int?)body["deleted"], Is.EqualTo(2));
             Assert.That(store.List(), Is.Empty);
+            Assert.That(File.Exists(log), Is.False, "the conversation log stayed in clear text");
             Assert.That(fake.Seen, Does.Contain("session.new"));
         }
     }
@@ -107,12 +110,28 @@ public sealed class SessionTests
         {
             var store = new FieldSessionStore(MemoryOperationProtector.ResolveDataRoot());
             Assert.That(store.Save(Kept("old1")), Is.True);
+            string log = WriteLog();
 
-            ((Action)typeof(MainWindowViewModel).GetField("EverythingForgotten",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(viewModel)!)();
+            // The chat's memory.forget of everything, as the loop tells it (NativeTurnLoop.Host.ForgotEverything).
+            const System.Reflection.BindingFlags Private =
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+            var loop = (NativeTurnLoop)typeof(MainWindowViewModel).GetField("_loop", Private)!.GetValue(viewModel)!;
+            ((NativeTurnLoop.Host)typeof(NativeTurnLoop).GetField("_host", Private)!.GetValue(loop)!).ForgotEverything!();
 
             Assert.That(store.List(), Is.Empty);
+            Assert.That(File.Exists(log), Is.False, "the conversation log stayed in clear text");
         }
+    }
+
+    // A line of the private conversation log where the view model keeps it (ConversationLog.CreateDefault).
+    private static string WriteLog()
+    {
+        string folder = Path.Combine(MemoryOperationProtector.ResolveDataRoot(), "conversation");
+        new ConversationLog(folder).Append(new ConversationMessage("BAXY", "Tu ciudad es Ñuñoa.", false,
+            DateTimeOffset.Now));
+        string log = Path.Combine(folder, "conversation.v1.jsonl");
+        Assert.That(File.Exists(log), Is.True);
+        return log;
     }
 
     private static FieldSessionStore.Session Kept(string id) => new(id, "Ayer", DateTimeOffset.UtcNow.AddDays(-1),

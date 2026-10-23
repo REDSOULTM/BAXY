@@ -249,6 +249,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             // The panel's «olvidar todo» (DELETE /memory, scope all) takes the kept conversations with it.
             if (method == "DELETE" && route == "/memory" && memory.Status == 200)
             {
+                _viewModel.ClearConversationLog();
                 OnEverythingForgotten();
             }
 
@@ -631,6 +632,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         int deleted = _sessions.DeleteAll();
+        _viewModel.ClearConversationLog();
         StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
         return Json(new JsonObject { ["ok"] = true, ["deleted"] = deleted });
     }
