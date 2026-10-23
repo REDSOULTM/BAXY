@@ -13,7 +13,6 @@ from pathlib import Path
 import pytest
 from jinja2.sandbox import ImmutableSandboxedEnvironment
 
-from baxy_mind import mind as mind_module
 from baxy_mind.mind import CLOCK_MARK, PREFILL_MARK, Mind
 
 TEMPLATE = (Path(__file__).parent / "fixtures" / "qwen35_chat_template.jinja").read_text(encoding="utf-8")
