@@ -59,6 +59,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (E027): a known file found nowhere says nothing beyond the folders walked was searched.</summary>
     public const string SearchScope = "search_scope";
 
+    /// <summary>Renew al máximo (w5, F004): a text typed with no window named says, as a sentence, the one window it went into.</summary>
+    public const string TypedTargetNext = "typed_target_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
