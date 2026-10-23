@@ -11,6 +11,7 @@ BAXY_RENEW_MIC (an input device index; the default microphone otherwise).
 """
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import os
@@ -63,10 +64,16 @@ class StaggeredWake:
     """The k4 detector heard «Baxy» only when its encoder finished a 1.28 s chunk: 1.18 s p50 (1.36 s at most) after the
     word ended (owner, 2026-10-20: «suena después y ya perdí lo que le iba a decir»). Several copies, each a fraction of
     a chunk behind the one before, finish a chunk that much more often; each is the same detector on the same audio, and
-    a firing of any of them counts once (the package's own re-arm, 2 s). Times are the audio's own, as the package's."""
+    a firing of any of them counts once (the package's own re-arm, 2 s). Times are the audio's own, as the package's.
+
+    Only the first copy is built: the others are shallow copies of it, so all of them run the same ONNX sessions (an
+    encoder session holds no audio, its state goes in and out with each chunk) and each has its own state from reset().
+    Four own sessions held 845 MiB of the mind's private memory, shared ones 254 MiB, with the same firings at the same
+    times (CPU probe on synthetic requests, renew al máximo, 2026-10-23)."""
 
     def __init__(self, make: Callable[[], Any], copies: int, rearm_s: float) -> None:
-        self._copies = [make() for _ in range(copies)]
+        first = make()
+        self._copies = [first] + [copy.copy(first) for _ in range(copies - 1)]
         chunk_s = self._copies[0].shift * 0.01   # fbank frames of 10 ms
         self._lead = [k * chunk_s / copies for k in range(copies)]
         self._rearm_s = rearm_s
