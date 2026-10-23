@@ -1704,7 +1704,10 @@ public sealed class ExternalAdaptersTests
         var focus = new ScriptedFocus(launched: true, windowAfter: 0, drawnAfter: int.MaxValue);
         var ocr = new CountingLocator("ocr", hit: true);
         var adapter = new WindowsVisibleControlAdapter(
-            worker, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming)
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
 
         ExternalCapabilityReceipt pressed = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"buscar","controlId":"1.2.3"}"""),
@@ -1802,7 +1805,10 @@ public sealed class ExternalAdaptersTests
     {
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var ocr = new CountingLocator("ocr", hit: false);
-        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision: null);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, vision: null)
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1831,7 +1837,10 @@ public sealed class ExternalAdaptersTests
         int samples = 0;
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: (_, _) => { samples++; return ValueTask.FromResult<string?>("same"); });
+            surfaceHash: (_, _) => { samples++; return ValueTask.FromResult<string?>("same"); })
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1861,7 +1870,10 @@ public sealed class ExternalAdaptersTests
         int samples = 0;
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: (_, _) => ValueTask.FromResult<string?>("frame" + samples++));
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>("frame" + samples++))
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -1883,7 +1895,10 @@ public sealed class ExternalAdaptersTests
         var ocr = new CountingLocator("ocr", hit: false);
         var adapter = new WindowsVisibleControlAdapter(
             worker, ocr, vision: null, timing: StillTiming,
-            surfaceHash: (_, _) => ValueTask.FromResult<string?>(null));
+            surfaceHash: (_, _) => ValueTask.FromResult<string?>(null))
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(

@@ -423,16 +423,17 @@ public sealed class ComputerUseClickMethodTests
             "\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":true,\"selected\":false,\"toggled\":false," +
             "\"surfaceChanged\":false,\"cascadeStage\":\"uia\",\"method\":\"" + method + "\"}");
         var pointer = new RecordingPointer(ready: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"aceptar"}"""), CancellationToken.None);
-        Assume.That(receipt.ErrorCode, Is.Not.EqualTo("active_window_not_found"), "a window is in front");
 
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True);
             Assert.That(receipt.Result?.GetProperty("method").GetString(), Is.EqualTo(method));
+            Assert.That(worker.Commands[0], Does.Contain("\"hwnd\":" + ComputerUsePerceptionTests.NoWindowFront),
+                "the test's front, never the desktop's");
             Assert.That(pointer.Prepared, Is.Zero, "a press without the mouse never asks for the pointer");
             Assert.That(pointer.Clicks, Is.Empty);
         });
@@ -452,11 +453,10 @@ public sealed class ComputerUseClickMethodTests
             "\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":false,\"selected\":false,\"toggled\":false," +
             "\"surfaceChanged\":false,\"cascadeStage\":\"uia\",\"method\":\"expand\",\"" + proof + "\":true}");
         var pointer = new RecordingPointer(ready: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"idioma"}"""), CancellationToken.None);
-        Assume.That(receipt.ErrorCode, Is.Not.EqualTo("active_window_not_found"), "a window is in front");
 
         Assert.Multiple(() =>
         {
@@ -525,11 +525,10 @@ public sealed class ComputerUseClickMethodTests
             "\"controlIdentity\":\"1.2.9\",\"absentOrDisabled\":false,\"selected\":false,\"toggled\":false," +
             "\"surfaceChanged\":false,\"cascadeStage\":\"uia\",\"method\":\"target\",\"targeted\":true,\"focused\":true}");
         var pointer = new RecordingPointer(ready: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"buscar"}"""), CancellationToken.None);
-        Assume.That(receipt.ErrorCode, Is.Not.EqualTo("active_window_not_found"), "a window is in front");
 
         Assert.Multiple(() =>
         {
@@ -618,11 +617,10 @@ public sealed class ComputerUseClickMethodTests
             "\"toggled\":false,\"surfaceChanged\":false,\"cascadeStage\":\"uia\",\"method\":\"expand\",\"opened\":true," +
             "\"manner\":\"open\"}");
         var pointer = new RecordingPointer(ready: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Nueva pestaña","controlId":"1.2.3","manner":"open"}"""), CancellationToken.None);
-        Assume.That(receipt.ErrorCode, Is.Not.EqualTo("active_window_not_found"), "a window is in front");
 
         Assert.Multiple(() =>
         {
@@ -695,11 +693,10 @@ public sealed class ComputerUseClickMethodTests
             "\"controlIdentity\":\"1.2.7\",\"absentOrDisabled\":false,\"selected\":true,\"toggled\":false," +
             "\"surfaceChanged\":false,\"cascadeStage\":\"uia\",\"method\":\"pointer\"}");
         var pointer = new RecordingPointer(ready: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"servidor"}"""), CancellationToken.None);
-        Assume.That(receipt.ErrorCode, Is.Not.EqualTo("active_window_not_found"), "a window is in front");
 
         Assert.Multiple(() =>
         {
@@ -722,11 +719,10 @@ public sealed class ComputerUseClickMethodTests
             "\"name\":\"Servidor\",\"kind\":\"ListItem\",\"controlIdentity\":\"1.2.7\",\"absentOrDisabled\":false," +
             "\"pending\":false,\"method\":\"pointer\",\"needsPointer\":true,\"point\":{\"x\":120,\"y\":340}}");
         var pointer = new RecordingPointer(ready: false);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"servidor"}"""), CancellationToken.None);
-        Assume.That(receipt.ErrorCode, Is.Not.EqualTo("active_window_not_found"), "a window is in front");
 
         Assert.Multiple(() =>
         {
@@ -786,7 +782,7 @@ public sealed class ComputerUseClickMethodTests
             ? new ComputerUsePerceptionTests.ScriptedUiaWorker(answers: [])
             : new ComputerUsePerceptionTests.ScriptedUiaWorker(answer);
         var pointer = new RecordingPointer(ready: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         LocatedPointPress.Outcome outcome = await LocatedPointPress.PressAsync(
             adapter, "input.visible.click", 0x1234, 10, 10, "Aceptar", CancellationToken.None);
@@ -808,7 +804,7 @@ public sealed class ComputerUseClickMethodTests
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
             "{\"version\":2,\"ok\":false,\"effectObserved\":false,\"error\":\"visible_point_no_pattern\"}");
         var pointer = new RecordingPointer(ready: false);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         LocatedPointPress.Outcome outcome = await LocatedPointPress.PressAsync(
             adapter, "input.visible.click", 0x1234, 10, 10, "Servidor", CancellationToken.None);
@@ -830,7 +826,7 @@ public sealed class ComputerUseClickMethodTests
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
             "{\"version\":2,\"ok\":false,\"effectObserved\":false,\"error\":\"visible_point_no_pattern\"}");
         var pointer = new RecordingPointer(ready: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         LocatedPointPress.Outcome outcome = await LocatedPointPress.PressAsync(
             adapter, "input.visible.click", 0x1234, 30, 40, "Servidor", CancellationToken.None);
@@ -851,7 +847,7 @@ public sealed class ComputerUseClickMethodTests
     {
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(Pending("Biblioteca", "invoke"));
         var pointer = new RecordingPointer(ready: true);
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer) { WindowInFront = TestFront };
 
         LocatedPointPress.Outcome outcome = await LocatedPointPress.PressAsync(
             adapter, "input.visible.click", 0x1234, 30, 40, "Biblioteca", CancellationToken.None);
@@ -1056,6 +1052,10 @@ public sealed class ComputerUseClickMethodTests
             _ = DestroyWindow(window);
         }
     }
+
+    // Renew al máximo (aislamiento de pruebas): a click without a window named acts on this front, never the desktop's.
+    private static ValueTask<nint> TestFront(CancellationToken cancellationToken) =>
+        ComputerUsePerceptionTests.TestFront(cancellationToken);
 
     private static readonly VisibleClickTiming Quick = VisibleClickTiming.Default with
     {

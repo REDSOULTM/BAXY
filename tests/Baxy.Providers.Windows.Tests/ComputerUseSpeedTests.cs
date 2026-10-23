@@ -505,7 +505,10 @@ public sealed class ComputerUseSpeedTests
             "\"name\":\"Library\",\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":false,\"selected\":false}",
             "{\"version\":2,\"ok\":true,\"effectObserved\":true,\"error\":\"\",\"name\":\"Library\"," +
             "\"controlIdentity\":\"1.2.3\",\"absentOrDisabled\":false,\"selected\":true,\"toggled\":false}");
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null)
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Library"}"""), CancellationToken.None);
@@ -526,7 +529,10 @@ public sealed class ComputerUseSpeedTests
             "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_pending\"," +
             "\"pending\":true,\"name\":\"Aceptar\",\"controlIdentity\":\"1.2.3\"}");
         worker.FallSilentAfter = 1;
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null)
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Aceptar"}"""), CancellationToken.None);
