@@ -399,6 +399,16 @@ def beat_message(context: dict[str, Any]) -> str:
 
 
 CLOCK_MARK = "[Reloj:"
+# Al máximo W5 (2026-10-23): Qwen3.5's template opens the assistant messages after the last request with an empty
+# «<think></think>» block, as it opens the one being generated, and the earlier ones without it. So each new request
+# turns the previous turn's calls and answers into another text than the one the slot holds: llama-server keeps the
+# cache up to that turn's first assistant message and reads the rest again in turn.decide (falsehood bench of
+# 2026-10-22, llama-server.log: a «sí», a «no» or a «¿ya lo borraste?» read 102-348 tokens where their own are ~20-30,
+# 120-220 ms more; after a turn that looked at a window, its thousands of tokens of controls too). Once a turn has
+# ended, the mind reads its conversation as the next request will show it, while BAXY speaks: the next decision then
+# reads only its own words. The model's prompt is the same text; only when it is read changes. BAXY_RENEW_PREFILL=0
+# turns it off.
+PREFILL_MARK = "[BAXY: lo que diga la persona después]"
 # Al máximo 8.1 (F015: «¿ya lo cerraste?» → «Sí» with nothing run, 5 of the 10 falsehoods left, which no aid of the
 # result touched): the clock also says which calls ran in the session and how each ended, the last ones of a count of
 # the session's own (a cut history no longer shows them, and a «none» read from it would be false).
@@ -982,6 +992,35 @@ class Mind:
         if acted:
             self.conversation.extend([{"role": "user", "content": BEAT_MARK}, *acted])
         self._trim()
+
+    def prefill(self) -> bool:
+        """Al máximo W5 (PREFILL_MARK): with no turn open, the conversation is read into the slot as the next request
+        will show it; whether it was. The template is asked for the conversation with a request after it (a user
+        message, as the clock of the next turn or a confirmation's label is), and its text is cut where that request
+        begins: what comes before it is the start of the next prompt to the character, and it ends in «<|im_end|>\\n»
+        before «<|im_start|>», so it is tokenized there as in the whole prompt. Nothing is read while a call waits for
+        its result, while the model's question (ask_user) waits for the person's words (they come as its result, and
+        the turn's messages keep their form), during a heartbeat, or with nothing to read."""
+        turn = self._turn or {}
+        if (os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0" or not self.conversation or self._beat is not None
+                or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
+            return False
+        started = time.perf_counter()
+        body = {"messages": [{"role": "system", "content": self._system()}, *self.conversation,
+                             {"role": "user", "content": PREFILL_MARK}],
+                "tools": self.tools, "chat_template_kwargs": {"enable_thinking": False}}
+        try:
+            rendered = self.server.template(body)
+            cut = rendered.rfind("<|im_start|>user\n" + PREFILL_MARK)
+            if cut <= 0 or not rendered[:cut].endswith("<|im_end|>\n"):
+                self._log("warm.history", started, None, failure="unrendered")
+                return False
+            reply = self.server.prefill(rendered[:cut])
+        except Exception as error:  # noqa: BLE001 - the next decision reads it itself, as it did before
+            self._log("warm.history", started, None, failure=type(error).__name__)
+            return False
+        self._log("warm.history", started, reply, messages=len(self.conversation))
+        return True
 
     def _ran_add(self, calling: Any, outcome: str) -> None:
         """One call of the session and how it ended, for the clock (8.1)."""

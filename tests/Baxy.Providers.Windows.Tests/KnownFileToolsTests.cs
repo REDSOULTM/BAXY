@@ -197,6 +197,58 @@ public sealed class KnownFileToolsTests
         }
     }
 
+    // BAXY Renew al máximo W5 (velocidad): a bare name found nowhere is walked once, keeping the files with its stem on
+    // the way; the candidates are the ones the second walk gave, in its order, cut where it cut them. Found more than
+    // CandidatesShown times, the walk stops where the name's own walk stopped.
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(7)]
+    public async Task ANameFoundNowhereOrTooOftenGivesTheCandidatesOfTheWalksItReplaces(int exact)
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, _) = Folders(temporary);
+        for (int i = 0; i < 8; i++)
+        {
+            string folder = Path.Combine(i % 2 == 0 ? desktop : documents, $"sub{i}");
+            Directory.CreateDirectory(folder);
+            await File.WriteAllTextAsync(Path.Combine(folder, i % 3 == 0 ? "informe.docx" : "informe.pdf"), "x");
+            if (i < exact)
+                await File.WriteAllTextAsync(Path.Combine(folder, "informe"), "y");
+        }
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"all_known","fileName":"informe"}"""), CancellationToken.None);
+
+        // The walks it replaces: the name's own, then (none found) the stem's, each the first six in walk order.
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true, IgnoreInaccessible = true, AttributesToSkip = FileAttributes.ReparsePoint,
+            MaxRecursionDepth = 12,
+        };
+        (string Folder, string Path)[] walk = [.. new[] { ("desktop", desktop), ("documents", documents) }
+            .SelectMany(root => Directory.EnumerateFiles(root.Item2, "*", options)
+                .Select(file => (root.Item1, Path.GetRelativePath(root.Item2, file))))];
+        (string, string)[] named = [.. walk.Where(item => Path.GetFileName(item.Path) == "informe").Take(6)];
+        (string, string)[] stems = [.. walk.Where(item => Path.GetFileNameWithoutExtension(item.Path) == "informe").Take(6)];
+        (string, string)[] expected = named.Length > 1 ? named : stems;
+        if (exact == 1)
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("y"));
+            return;
+        }
+
+        JsonElement[] candidates = [.. read.Result!.Value.GetProperty("candidates").EnumerateArray()];
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.ErrorCode, Is.EqualTo(exact > 1 ? "known_file_ambiguous" : "known_file_not_found"));
+            Assert.That(candidates.Select(item => (item.GetProperty("folder").GetString()!,
+                item.GetProperty("relativePath").GetString()!)), Is.EqualTo(expected.Take(5)));
+            Assert.That(read.Result!.Value.TryGetProperty("candidatesTruncated", out JsonElement cut) && cut.GetBoolean(),
+                Is.EqualTo(expected.Length > 5));
+        });
+    }
+
     private static (WindowsKnownFileAdapter Adapter, string Desktop, string Documents, FolderRecycleBin Bin) Folders(
         TemporaryDirectory temporary, bool binAccepts = true)
     {

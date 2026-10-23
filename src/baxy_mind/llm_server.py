@@ -259,6 +259,15 @@ class LlmServer:
                                            "stop": [">", "\n"], "cache_prompt": True, "id_slot": 0}, timeout)
         return str(reply.get("content", ""))
 
+    def prefill(self, prompt: str, timeout: float = 60.0) -> dict[str, Any]:
+        """``prompt`` (a chat's own text, as /apply-template renders it) read into the slot with nothing written: one
+        token to predict, sampled and never decoded, so the slot then holds exactly the prompt's tokens (the warm-up's
+        max_tokens 1 left n_tokens equal to its prompt's, llama-server.log). Tokenized as the chat's own prompt is
+        (special tokens parsed, no BOS for this model)."""
+        self.wait_ready(self._within(timeout))
+        return self._post("/completion", {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True,
+                                          "id_slot": 0}, timeout)
+
     def fill_call(self, body: dict[str, Any], wire: str, timeout: float = 30.0) -> dict[str, Any] | None:
         """The model's arguments for one tool another layer chose (System One, piece A): the same chat, with the call
         already started as the assistant's last message, so the prompt and its cached prefix stay the same and only the

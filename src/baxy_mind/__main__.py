@@ -21,6 +21,10 @@ from .voice import Voice
 # in %LOCALAPPDATA%\BAXY\renew: catalog.configure.json is written beside it (mind.py) and the benches read it there.
 TRACE_LIMIT_BYTES = 50 * 1024 * 1024
 
+# Al máximo W5: the requests after which the conversation may be read ahead for the next one (Mind.prefill decides
+# whether a turn is left open): a turn's last answer, a heartbeat's end and a kept session's load.
+PREFILLED_AFTER = ("turn.decide", "turn.continue", "turn.beat.end", "session.load")
+
 
 def bounded_trace(trace: Path, limit: int = TRACE_LIMIT_BYTES) -> Path:
     trace.parent.mkdir(parents=True, exist_ok=True)
@@ -193,6 +197,16 @@ def main() -> int:
                 sys.stderr.flush()
                 protocol.write_message(protocol.error_reply(request_id, "request_failed",
                                                             f"{surface}_runtime_failure"))
+            if kind in PREFILLED_AFTER:
+                # Al máximo W5: the reply is already out; with no turn left open, the conversation is read as the next
+                # request will show it (Mind.prefill), on a budget of its own, while BAXY speaks. A request that comes
+                # meanwhile waits for it, and then does not read it itself.
+                server.deadline = time.monotonic() + LlmServer.REQUEST_SECONDS
+                try:
+                    mind.prefill()
+                except Exception as error:  # noqa: BLE001 - the next request reads it itself
+                    sys.stderr.write(f"baxy_mind_renew_failure:prefill:{error!r}\n")
+                    sys.stderr.flush()
     finally:
         voice.stop()
         voice.speech.close()
