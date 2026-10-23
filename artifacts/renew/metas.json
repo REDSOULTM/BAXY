@@ -2512,7 +2512,7 @@
       }
     ],
     "holdout_v5": {
-      "sellado": "2026-10-23 (e2e+falsedades)",
+      "sellado": "2026-10-23 (decisión y e2e+falsedades)",
       "autores": "dos subagentes aislados del PC",
       "ruta": "F:/BAXYeval/renew_v5/holdout",
       "clave": "C:/Users/usuario/BAXY-coord/holdout-v5-clave.txt",
@@ -2522,8 +2522,12 @@
       "canario_e2e_falsedades": "ebf4d1d3-2e6e-46c9-a310-c6c9a47339cd",
       "casos": {
         "e2e": 76,
-        "falsedades": 36
-      }
+        "falsedades": 36,
+        "decision": 720
+      },
+      "decision.7z": "d7d2fcb81b78a7be4253a7eccf243766e6a162ec8440fa4bd91cff75fdc586a5",
+      "decision.json": "313d2778f74be99795b6e790af5b04f3ccb3674c02d7616033561815fccee585",
+      "canario_decision": "ae331636-53b8-4e54-84fe-a49986b78ade"
     }
   }
 }
