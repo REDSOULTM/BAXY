@@ -59,6 +59,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (E027): a known file found nowhere says nothing beyond the folders walked was searched.</summary>
     public const string SearchScope = "search_scope";
 
+    /// <summary>Renew al máximo (F002): window.application.status says as a sentence whether BAXY opened the window.</summary>
+    public const string ProvenanceNext = "provenance_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

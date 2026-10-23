@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Text.Json;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Applications;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Windows;
 
 namespace Baxy.Core.Operations;
@@ -101,7 +102,18 @@ internal sealed class ApplicationWindowStatusHandler(
                 // BAXY Renew al máximo, F002 («¿abriste Spotify?» sobre el Spotify que la persona ya tenía → «Sí»):
                 // whether BAXY launched one of its windows in this run; left out when that cannot be told.
                 if (OpenedByBaxy(observed.VisibleWindows) is bool opened)
+                {
                     writer.WriteBoolean("openedByBaxy", opened);
+                    // Renew al máximo (F002 en el notebook): with openedByBaxy false the answer was still «Sí, Spotify
+                    // está abierto»; the provenance is said as a sentence too.
+                    if (ModelAids.On(ModelAids.ProvenanceNext))
+                    {
+                        string shown = observed.DisplayName ?? observed.RequestedName;
+                        writer.WriteString("next", opened
+                            ? $"BAXY opened {shown} in this session"
+                            : $"{shown} is open, but BAXY did not open it in this session: it was already open");
+                    }
+                }
             }
             else writer.WriteBoolean("inStartCatalog", false);
             writer.WriteString("authority", "windows_start_catalog_and_visible_window_snapshot");

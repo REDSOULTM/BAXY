@@ -538,6 +538,28 @@ public sealed class CloseWithoutAskingProvenanceTests
         });
     }
 
+    // Renew al máximo (F002 en el notebook): «¿abriste Spotify?» over the person's own Spotify was still answered «Sí»
+    // with openedByBaxy false; with the aid provenance_next the status says it as a sentence, and with
+    // BAXY_AYUDAS=none the fact alone.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task TheApplicationStatusSaysInWordsThatBaxyDidNotOpenIt(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var provenance = new LaunchProvenance(Alive(CalculatorProcess, CalculatorCreation), Watching());
+        var theirs = new ApplicationWindowStatusHandler(new OneStatus((321, 500, 9_000)), provenance);
+
+        JsonElement notOpened = (await theirs.ExecuteAsync(Read(), CancellationToken.None)).Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(notOpened.GetProperty("openedByBaxy").GetBoolean(), Is.False);
+            Assert.That(notOpened.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+                Assert.That(next.GetString(), Does.EndWith("is open, but BAXY did not open it in this session: it was already open"));
+        });
+    }
+
     private static OperationInvocation Read() =>
         new("r", "m", "i", JsonDocument.Parse("{\"name\":\"Spotify\"}").RootElement);
 
