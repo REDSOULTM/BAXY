@@ -825,6 +825,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 writer.WriteNull("error");
             else
                 writer.WriteString("error", unread);
+            if (typing && (window == 0 || openedApplication)
+                && Infrastructure.ModelAids.On(Infrastructure.ModelAids.TypedTargetNext))
+                writer.WriteString("next", TypedInto(before.Title, sentToProcess, window == 0, readBack));
             writer.WriteEndObject();
         });
         // A text with no window named whose read-back did not find it: its keys went in, what they wrote is unknown.
@@ -839,6 +842,20 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             ? [.. entries.EnumerateArray().Where(entry => entry.ValueKind == JsonValueKind.String)
                 .Select(entry => entry.GetString()!)]
             : [];
+
+    // Renew al máximo (w5, F004): with sentTo «Calculadora» the reply still spoke of the Notepad the person named («no
+    // pude comprobar que escribiste hola en el Bloc de notas») and of a focus change never tried. The same fact as a
+    // sentence: the one window the text went into, and that nothing was opened or brought up for it.
+    internal static string TypedInto(string title, string process, bool front, bool readBack)
+    {
+        string named = string.IsNullOrWhiteSpace(title) ? process : $"{title} ({process})";
+        string where = front
+            ? $"the text went by the keyboard into the window in front, of {named}; no other application received it, "
+              + "and no application was opened or brought to the front for it"
+            : $"the text went by the keyboard into the window of {named}, the application just opened; no other "
+              + "application received it";
+        return readBack ? where : where + "; it was not read back there";
+    }
 
     // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad), by its title
     // and the program a view names it by, read before the first key.
