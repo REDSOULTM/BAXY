@@ -1496,7 +1496,7 @@ public static class ProductCatalog
                 ["action"]),
             OperationRisks.LowReversible,
             "schedule.windows.task.local.clock.postread.v1",
-            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, el de esa hora local o el último; al listar, las próximas 20 por hora como mucho (dice cuántas hay); y verifica la tarea en Windows."),
+            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, el de esa hora local o el único pendiente (con varios no cancela ninguno y dice cuáles hay); al listar, las próximas 20 por hora como mucho (dice cuántas hay); y verifica la tarea en Windows."),
         Descriptor(
             "shell.command.run",
             Schema(

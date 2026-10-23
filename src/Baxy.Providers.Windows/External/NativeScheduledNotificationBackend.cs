@@ -39,7 +39,6 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
                 "resolve-at" => ResolveAt(request),
                 "schedule" or "schedule-recurring" => Schedule(request, effect),
                 "cancel-exact" => CancelExact(request, effect),
-                "cancel" => CancelLatest(request, effect),
                 _ => throw new ScheduleFailure("invalid_mode"),
             };
             return new ExternalProcessResult(0, line + Environment.NewLine, string.Empty);
@@ -61,7 +60,7 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
         // a due time that passed meanwhile, a task with no next run or gone while listed) changed nothing, and came back
         // as a bare process failure the adapter reads as «may have changed». It says so, with its cause.
         catch (Exception exception) when (!effect.Committed && request.Mode is "schedule" or "schedule-recurring"
-            or "cancel-exact" or "cancel")
+            or "cancel-exact")
         {
             string line = Json(writer =>
             {
@@ -288,49 +287,6 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
             writer.WriteString("taskName", taskName);
             writer.WriteString("nextRunUtc", Utc(observedDue));
             writer.WriteString("authority", "windows_task_scheduler_exact_identity_absence_postread");
-        });
-    }
-
-    private string CancelLatest(ScheduledNotificationRequest request, EffectState effect)
-    {
-        string prefix = Is(request.Kind, "alarm") ? "BAXY-Alarm-" : "BAXY-Reminder-";
-        DateTimeOffset now = DateTimeOffset.Now;
-        using ITaskSchedulerSession session = host.Open();
-        // M80 (DEV-D v3m D-w18-t5): the latest is the pending notification of this BAXY whose ring
-        // script was written last (it is written just before the task is registered).
-        string? selected = session.TaskNames()
-            .Where(name => Like(name, prefix) && IsOwn(request.AlarmRoot, name))
-            .Where(name =>
-            {
-                ScheduledTaskSnapshot pending = session.Find(name) ?? throw new ScheduleFailure("task_vanished");
-                return pending.NextRunLocal is DateTime next && new DateTimeOffset(next) > now;
-            })
-            .OrderByDescending(name => string.IsNullOrEmpty(request.AlarmRoot)
-                ? DateTime.MinValue
-                : File.GetLastWriteTimeUtc(Path.Combine(request.AlarmRoot, name + ".ps1")))
-            .FirstOrDefault();
-        if (selected is null)
-        {
-            return Json(writer =>
-            {
-                writer.WriteNumber("version", 1);
-                writer.WriteBoolean("ok", true);
-                writer.WriteBoolean("effectObserved", false);
-                writer.WriteBoolean("canceled", false);
-                writer.WriteString("authority", "windows_task_scheduler_absence_postread");
-            });
-        }
-        effect.Committed = true;
-        session.Delete(selected);
-        bool stillPresent = session.Find(selected) is not null;
-        return Json(writer =>
-        {
-            writer.WriteNumber("version", 1);
-            writer.WriteBoolean("ok", !stillPresent);
-            writer.WriteBoolean("effectObserved", true);
-            writer.WriteBoolean("canceled", !stillPresent);
-            writer.WriteString("taskName", selected);
-            writer.WriteString("authority", "windows_task_scheduler_absence_postread");
         });
     }
 

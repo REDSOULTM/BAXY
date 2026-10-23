@@ -404,6 +404,67 @@ public sealed class NativeScheduledNotificationTests
         });
     }
 
+    // Renew al máximo (w9): a cancel by kind canceled the newest of that kind and the result named none of it. The one
+    // pending is canceled by its identity and named (title and local time), so the model can say which.
+    [Test]
+    public async Task ACancelByKindNamesTheOneItCanceled()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        DateTimeOffset due = DateTimeOffset.UtcNow.AddHours(2);
+        await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"alarm","title":"Despertar"}"""),
+            CancellationToken.None);
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","kind":"alarm"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("title").GetString(), Is.EqualTo("Despertar"));
+            Assert.That(outcome.Result!.Value.GetProperty("nextRunLocal").GetString(), Is.EqualTo(
+                due.ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)));
+            Assert.That(outcome.Result!.Value.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_task_scheduler_exact_identity_absence_postread"));
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (w9): with several of the kind pending, the newest was canceled in silence. None is canceled now:
+    // the failure lists them (title and local time each), and (aid cancel_scope) says at names the one.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task ACancelByKindWithSeveralPendingCancelsNoneAndListsThem(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        foreach ((int hours, string title) in new[] { (2, "Despertar"), (3, "Pastilla") })
+        {
+            await adapter.InvokeAsync(
+                "schedule.alarms",
+                Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(hours))}}","kind":"alarm","title":"{{title}}"}"""),
+                CancellationToken.None);
+        }
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","kind":"alarm"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("notification_cancel_ambiguous"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("pendingCount").GetInt32(), Is.EqualTo(2));
+            Assert.That(outcome.Result!.Value.GetProperty("pending")[0].GetProperty("title").GetString(),
+                Is.EqualTo("Despertar"));
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.EqualTo(hint));
+            Assert.That(scheduler.Tasks, Has.Count.EqualTo(2));
+        });
+    }
+
     // Renew al máximo (w5): a cancel with no kind and no time looked only among reminders, so the one alarm pending
     // was «nothing pending» (a done call the model reads as «la cancelé») and kept ringing. It is canceled now.
     [Test]
@@ -460,8 +521,8 @@ public sealed class NativeScheduledNotificationTests
     }
 
     // Renew al máximo (w5): a cancel that found nothing pending says, as a sentence (aid cancel_scope), that nothing
-    // was canceled and which kind was not looked at; «canceled:false» on a done call was read as «la cancelé».
-    [TestCase("""{"action":"cancel","kind":"alarm"}""", "nothing was canceled: no alarm set by BAXY is pending; reminders were not looked at")]
+    // was canceled; «canceled:false» on a done call was read as «la cancelé».
+    [TestCase("""{"action":"cancel","kind":"alarm"}""", "nothing was canceled: no alarm set by BAXY is pending")]
     [TestCase("""{"action":"cancel"}""", "nothing was canceled: no alarm or reminder set by BAXY is pending")]
     public async Task ACancelWithNothingPendingSaysNothingWasCanceled(string arguments, string next)
     {
