@@ -1819,7 +1819,10 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
-            Assert.That(worker.Commands.Count, Is.InRange(2, 3));
+            // Looks every Interval (1.5 s) until SettledLabel (3 s) from the first: the third look lands on that edge,
+            // so a fourth one comes when the timer returns a few milliseconds short (int6 Providers whole, 2026-10-22:
+            // 4 under load, 3 alone). The bound that matters for M132 is the time, below.
+            Assert.That(worker.Commands.Count, Is.InRange(2, 4));
             Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(8)));
             Assert.That(VisibleClickTiming.Default.SettledLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(3)));
             Assert.That(VisibleClickTiming.Default.OpenedLabel, Is.LessThanOrEqualTo(TimeSpan.FromSeconds(10)));
