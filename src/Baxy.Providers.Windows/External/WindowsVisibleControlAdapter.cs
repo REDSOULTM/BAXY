@@ -2344,6 +2344,12 @@ internal sealed class WindowsVisibleControlAdapter
             foreach (ViewControl control in controls)
                 names.Add(control.Name);
 
+            // BAXY Renew al máximo (F019, E015): Steam's library was told «la página principal» or «la tienda» in every
+            // practice run: its window is drawn without a tree, titled «Steam» on every page, and its tab strip read by
+            // OCR does not say which tab is chosen. Which of the named application's places the look shows is said as a
+            // fact, from what only that place shows (the data's «shows», ApplicationPlaces.PlaceShown).
+            ApplicationPlaces.ShownPlace? place = ApplicationPlaces.PlaceShown(application, names);
+
             lock (_viewLock)
             {
                 _lastView = new LastView(hwnd, controls)
@@ -2439,6 +2445,15 @@ internal sealed class WindowsVisibleControlAdapter
                 }
 
                 writer.WriteEndObject();
+                if (place is not null)
+                {
+                    writer.WriteStartObject("place");
+                    writer.WriteString("application", application);
+                    writer.WriteString("name", place.Place);
+                    writer.WriteString("shown", place.Shown);
+                    writer.WriteEndObject();
+                }
+
                 writer.WriteStartArray("controls");
                 foreach (ViewControl control in controls)
                 {

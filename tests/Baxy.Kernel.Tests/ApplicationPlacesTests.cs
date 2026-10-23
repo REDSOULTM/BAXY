@@ -82,6 +82,46 @@ public sealed class ApplicationPlacesTests
         Assert.Throws<InvalidDataException>(() => ApplicationPlaces.Read(document));
     }
 
+    // BAXY Renew al máximo (F019, E015): what a look read by OCR in Steam's window in the practice runs (the account's
+    // own lines left out). The library's home («Página principal», told «la página principal de Steam» by the model)
+    // and its filter are the library's; the address in the client's bar is the store's, in the store's front page, a
+    // game's page or its search (an OCR that broke the address's dots included); the sign-in, or nothing read, is no
+    // place; the texts of two places in one look say none.
+    [TestCase("Steam", "library", "Página principal",
+        "O Steam Ver Amigos Juegos Ayuda", "TIENDA BIBLIOTECA COMUNIDAD", "Página principal", "Novedades", "Hoy",
+        "Juegos y Software", "Agregar un producto", "Descargas completadas", "Amigos y chat")]
+    [TestCase("Steam", "library", "Instalado localmente",
+        "TIENDA | BIBLIOTECA", "Pagina  princ.", "Instalado localmente (34) v", "ORDENAR POR Tamaño en disco v")]
+    [TestCase("steam", "library", "Añadir estantería", "G) Añadir estanteria", "Jugados recientemente v")]
+    [TestCase("Steam", "store", "store.steampowered.com",
+        "TIENDA", "BIBLIOTECA COMUNIDAD", "https://store.steampowered.com/",
+        "Explorar v Recomendaciones v Categorías v Formas de jugar v", "Destacados y recomendados")]
+    [TestCase("Steam", "store", "store.steampowered.com",
+        "COMUNIDAD", "https:,'/store_steampoweredcom/app/782330/DOOM_EternaI/", "ORDENAR POR Relevancia")]
+    [TestCase("Steam", "community", "steamcommunity.com", "https://steamcommunity.com/", "Debates")]
+    [TestCase("Steam", null, null, "Steam", "Iniciar sesión", "Agregar un producto", "Amigos y chat")]
+    [TestCase("Steam", null, null)]
+    [TestCase("Steam", null, null, "Página principal", "https://store.steampowered.com/")]
+    [TestCase("Spotify", null, null, "Página principal", "Instalado localmente")]
+    [TestCase("Paint", null, null, "Página principal")]
+    [TestCase(null, null, null, "Página principal")]
+    public void ALookSaysThePlaceOnlyThatPlaceShows(
+        string? application, string? place, string? shown, params string[] seen)
+    {
+        ApplicationPlaces.ShownPlace? found = ApplicationPlaces.PlaceShown(application, seen);
+        Assert.That((found?.Place, found?.Shown), Is.EqualTo((place, shown)));
+    }
+
+    // What a place shows is text long enough to tell it by, never an empty list: refused whole.
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","shows":[]}}}}}""")]
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","shows":["Inicio"," . "]}}}}}""")]
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","shows":["Home!"]}}}}}""")]
+    public void AShownTextTooShortIsRefused(string json)
+    {
+        using JsonDocument document = JsonDocument.Parse(json);
+        Assert.Throws<InvalidDataException>(() => ApplicationPlaces.Read(document));
+    }
+
     // app.open takes a place only by a name the data declare: anything else is invalid arguments for the kernel, in
     // every confirmation mode (the schema is checked before the policy).
     [TestCase("""{"appId":"Steam"}""", true)]
