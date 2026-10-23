@@ -312,6 +312,16 @@ internal sealed class WindowsTextDelivery
         return after == mark.Expected && Holds(mark.Field, text, after);
     }
 
+    /// <summary>BAXY Renew al máximo (E017): whether the marked control has taken the first <paramref name="sent"/>
+    /// characters of a text of <paramref name="length"/> typed into it: its length reached what it had (minus the
+    /// selection the first one replaced) plus them. Only the length is read, and the control answers it with the keys it
+    /// already took, not with those still queued for it.</summary>
+    internal bool Took(TypedMark mark, int sent, int length)
+    {
+        int now = _messages.TextLength(mark.Field);
+        return now >= 0 && now >= mark.Expected - length + sent;
+    }
+
     /// <summary>The characters of the paragraph at the caret a UI Automation re-read takes (twice the longest typed
     /// text, so the longest one still fits beside a paragraph of its own length); a longer paragraph is read cut,
     /// and a cut read proves nothing (<see cref="CaretHolds"/>).</summary>
