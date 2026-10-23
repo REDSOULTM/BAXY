@@ -319,8 +319,10 @@ internal sealed class AppOpenHandler(
         const string look = "window_application_status can tell whether one shows now, before saying it opened or not";
         string? next = errorCode switch
         {
+            // Auditoría de falsedades: «was started» read as «se abrió»; what the receipt knows is that the launch was
+            // issued (LaunchIssued), not that the application started.
             "verification_failed" or "inventory_failed" when receipt.LaunchIssued =>
-                $"{name} was started and no window of it was verified; {look}",
+                $"a launch of {name} was issued and no window of it was verified; {look}",
             "verification_failed" or "inventory_failed" when receipt.ReusedExisting =>
                 $"{name} was already running and no window of it was verified; {look}",
             "verification_failed" => $"no window of {name} was verified; {look}",

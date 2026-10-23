@@ -520,7 +520,7 @@ internal sealed class WindowSnapHandler(IWindowControlProvider provider) : IOper
         return result.Succeeded && result.Verified && result.Window is not null
             ? OperationOutcome.Success(WindowControlResultJson.Unchanged(WindowControlResultJson.Serialize(
                 result.Window, side, result.LargerThanRequested), result.AlreadyReached))
-            : OperationOutcome.Failure(
+            : WindowControlResultJson.SpentWindowId(result.ErrorCode ?? string.Empty) ?? OperationOutcome.Failure(
                 result.ErrorCode ?? "window_bounds_failed", effectMayHaveOccurred: result.EffectMayHaveOccurred);
     }
 }
@@ -608,6 +608,9 @@ internal static class WindowControlResultJson
         return document.RootElement.Clone();
     }
 
+    internal const string UnchangedNext = "it already was so before this call: it is as asked, and this call changed "
+        + "nothing";
+
     // Ronda final: the window already was as asked and nothing was sent: the model reads changed:false.
     public static JsonElement Unchanged(JsonElement result, bool alreadyReached)
     {
@@ -616,9 +619,36 @@ internal static class WindowControlResultJson
         var unchanged = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(result.GetRawText())!;
         unchanged["changed"] = false;
         // BAXY Renew cu (C13 en el PC): «changed false» was read as a failure («Word no se pudo poner a la derecha»).
-        unchanged["next"] = "it already was so: done, nothing needed to change";
+        // Auditoría de falsedades: «done» is the answer to «¿ya lo hiciste?» as something this call did; it is the
+        // window's state from before the call, already the one asked.
+        unchanged["next"] = UnchangedNext;
         using JsonDocument document = JsonDocument.Parse(unchanged.ToJsonString());
         return document.RootElement.Clone();
+    }
+
+    // Auditoría de falsedades (F001, nb-t2-C s0): a windowId is used up by the window action it is given to (the action
+    // gives back a new one) and ends after 5 minutes. A window.focus with the id of an earlier focus failed
+    // invalid_or_expired_window_id with Steam still open, and BAXY told «la ventana se cerró». The failure says what
+    // the code means and that the window itself was neither touched nor read; the code stays.
+    internal const string SpentWindowIdNext = "nothing was done to the window: this windowId cannot be used again (each "
+        + "window action uses up the windowId it is given and gives back a new one, and any windowId ends after 5 "
+        + "minutes); the window itself was not looked at, so whether it is still open is not known: window_resolve "
+        + "gives its windowId now if it is";
+
+    public static OperationOutcome? SpentWindowId(string errorCode)
+    {
+        if (errorCode != WindowControlErrorCodes.InvalidOrExpiredWindowId
+            || !Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WindowIdSpent))
+            return null;
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("next", SpentWindowIdNext);
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return OperationOutcome.Failure(errorCode, document.RootElement.Clone());
     }
 
     // Renew al máximo (8.3): an ambiguous failure (the act reached the window and its verification did not hold)
@@ -626,6 +656,8 @@ internal static class WindowControlResultJson
     // bare «could not». Still a failure with its code and uncertainty; without that read, the bare failure.
     public static OperationOutcome Failure(string errorCode, bool effectMayHaveOccurred, WindowStateAfter? stateAfter)
     {
+        if (SpentWindowId(errorCode) is { } spent)
+            return spent;
         if (!effectMayHaveOccurred || stateAfter is null)
             return OperationOutcome.Failure(errorCode, effectMayHaveOccurred: effectMayHaveOccurred);
         var buffer = new ArrayBufferWriter<byte>();

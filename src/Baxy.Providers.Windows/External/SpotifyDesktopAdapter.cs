@@ -210,6 +210,7 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
                     // client's window title, the control it pressed, the now-playing line and, for a search, the
                     // observation that told the playback started. A field the script did not observe is left out,
                     // never filled with the requested title, and nothing says whether it is what was asked for.
+                    bool changedPlaying = StringField(response.RootElement, "playbackEvidence") == NowPlayingChanged;
                     foreach (string field in ObservedFields)
                     {
                         if (response.RootElement.TryGetProperty(field, out JsonElement value)
@@ -217,6 +218,14 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
                             && !string.IsNullOrWhiteSpace(value.GetString()))
                         {
                             writer.WriteString(field, value.GetString());
+                        }
+                        // Auditoría de falsedades (F014, nb-t2-C-fals-s0): «now_playing_changed» with a now-playing
+                        // that missed the query was told «ya estaba reproduciendo Around the World, así que no cambié
+                        // nada»; what showed before the press is the change's other half, null when the line showed
+                        // nothing.
+                        else if (field == "beforeNowPlaying" && changedPlaying)
+                        {
+                            writer.WriteNull(field);
                         }
                     }
                     if (alreadyPlaying) writer.WriteBoolean("alreadyPlaying", true);
@@ -289,9 +298,14 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
     }
 
     // What a verified playback's receipt carries from the script, each only when the script observed it: the window's
-    // title, the control pressed, the now-playing line (folded, as the script compares it) and, in query mode, the
-    // observation that told the press started playback (BAXY Renew audit 2026-10-15, S2, S5, S7).
-    private static readonly string[] ObservedFields = ["title", "selectedControl", "observedNowPlaying", "playbackEvidence"];
+    // title, the control pressed, the now-playing line before the press and after it (folded, as the script compares
+    // them) and, in query mode, the observation that told the press started playback (BAXY Renew audit 2026-10-15, S2,
+    // S5, S7; the line before, auditoría de falsedades F014).
+    private static readonly string[] ObservedFields =
+        ["title", "selectedControl", "beforeNowPlaying", "observedNowPlaying", "playbackEvidence"];
+
+    // The script's playbackEvidence when what plays is another than what showed before the press.
+    private const string NowPlayingChanged = "now_playing_changed";
 
     private static string StringField(JsonElement response, string name) =>
         response.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String

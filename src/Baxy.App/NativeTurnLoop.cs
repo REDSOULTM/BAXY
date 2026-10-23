@@ -556,6 +556,16 @@ internal sealed class NativeTurnLoop
         return observation + "\n(" + note + ")";
     }
 
+    // Auditoría de falsedades (F010): «nothing waiting» was read as «already done» («la borré sin pedirte permiso» after
+    // a delete that had failed). The mind's own NOTHING_PENDING says this call did nothing (hub/nb-f010); the App's,
+    // for a question that ended between the mind's turn and this answer, says the same, and an expired one that the
+    // call it asked about was not sent after the question (a challenge whose effect had started says so in its own
+    // earlier result, effectStarted).
+    internal const string NothingPendingReason = "no action is waiting for the person's confirmation, and this call did "
+        + "nothing; whether anything was done is only what the earlier results of this conversation say";
+    internal const string ExpiredReason = "the question ran out of time before this answer: this call did nothing, and "
+        + "the call it asked about was not sent after the question";
+
     // What the model reads with a call that waits for the person: who answers and how the answer comes back.
     private const string AskThePerson =
         "ask the person whether to do it; when they answer, call confirm_pending with their answer";
@@ -617,8 +627,9 @@ internal sealed class NativeTurnLoop
             Resolved("expired");
             DropPending();
             return Record(MindStep.ConfirmationAnswer, arguments, started, expired is null
-                ? Observation("failed", "nothing_pending")
-                : Observation("failed", "confirmation_expired", about: expired));
+                ? Observation("failed", "nothing_pending", new JsonObject { ["reason"] = NothingPendingReason })
+                : Observation("failed", "confirmation_expired", new JsonObject { ["reason"] = ExpiredReason },
+                    about: expired));
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);

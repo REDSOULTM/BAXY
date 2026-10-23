@@ -154,7 +154,7 @@ def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_
     assert ["míralo de nuevo" in r for r in results] == [True] * 4 + [False] * 3
     assert "ids" in results[0] and "w0" not in results[0]
     # 8.2: a result with no typed verification is «sin verificar»; the line of the turn's facts stays as it was.
-    assert "[En este turno: input_visible_controls → completado sin verificar]" in results[0]
+    assert "[En este turno: input_visible_controls → terminó sin verificar su efecto]" in results[0]
     assert "x" * 5000 in results[-1]
 
 

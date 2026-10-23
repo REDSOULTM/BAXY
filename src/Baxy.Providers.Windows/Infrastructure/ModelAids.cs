@@ -65,6 +65,12 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5, F004): a text typed with no window named says, as a sentence, the one window it went into.</summary>
     public const string TypedTargetNext = "typed_target_next";
 
+    /// <summary>
+    /// Auditoría de falsedades (F001): an invalid_or_expired_window_id says the id is used up, nothing was done to the
+    /// window and nothing was read of it.
+    /// </summary>
+    public const string WindowIdSpent = "window_id_spent";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

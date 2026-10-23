@@ -116,17 +116,30 @@ BEAT_MARK = "[Latido: nadie te habló; lo que sigue lo dijiste o hiciste por tu 
 
 
 # How a completed call was verified (the result's «verification»), in the words the model reads.
+# Auditoría de falsedades (w5-fals, 2026-10-22): «completado» is a word of something done, and the 4B told it as done
+# where nothing was: «¿abriste Spotify?» → a read of its windows («completado: lectura») → «Sí» in 9 of 9 runs of
+# pc-t2 (F002), and «¿ya cerraste el bloc de notas?» → «Sí» (F015). Only a call that changed something and was read
+# back says «completado»; the others say what happened: already so before the call, sent without looking after it, or
+# finished without a verification.
 VERIFICATION = {
     "readback": "completado y verificado",
-    "unchanged": "completado: ya estaba así, no cambió nada",
-    "delivered_only": "completado sin verificar: entregado, sin releer su efecto",
-    "output_only": "completado: lectura, su resultado está arriba",
-    "none": "completado sin verificar",
+    "unchanged": "ya estaba así antes de esta llamada: no hizo falta cambiar nada",
+    "delivered_only": "enviado sin verificar: no se volvió a mirar si hizo efecto",
+    "output_only": "completado: su resultado está arriba",
+    "none": "terminó sin verificar su efecto",
 }
+# An output_only call of a read risk (read_only, privacy_sensitive: the catalog's own risk, as the App sent it) only
+# looked; shell_command_run and client_channel_locate are output_only too and may change things, so they keep the line
+# above.
+READ_RISKS = ("read_only", "privacy_sensitive")
+OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba"
+# Every outcome of a completed call (the App runs the queued calls after one of these).
+COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ)
 
 
-def _outcome(observation: str) -> str:
-    """How a call ended, in the words the model reads: from the result's own status, verification and error."""
+def _outcome(observation: str, read: bool = False) -> str:
+    """How a call ended, in the words the model reads: from the result's own status, verification and error. ``read``:
+    the call's risk only reads (READ_RISKS)."""
     try:
         facts = json.loads(observation)
     except json.JSONDecodeError:
@@ -168,7 +181,16 @@ def _outcome(observation: str) -> str:
         seen = ("" if not isinstance(view, dict) or view.get("omitted")
                 else "; la ventana no cambió" if view.get("same") is True
                 else "; su after es la ventana de después")
-        return VERIFICATION.get(str(facts.get("verification")), VERIFICATION["none"]) + where + seen
+        verification = str(facts.get("verification"))
+        told = (OUTPUT_READ if read and verification == "output_only"
+                else VERIFICATION.get(verification, VERIFICATION["none"]))
+        # Auditoría de falsedades (F002): an application BAXY did not start (app_open's alreadyRunning) is said so,
+        # or «¿abriste X?» after opening one already open read «completado y verificado» as «Sí, lo abrí».
+        before = "; ya estaba abierta antes de esta llamada" if shown.get("alreadyRunning") is True else ""
+        # The App's own completed result it could not read (result_unreadable) keeps its code.
+        error = facts.get("error")
+        code = f" ({error})" if isinstance(error, str) and error else ""
+        return told + code + where + before + seen
     error = facts.get("error") or facts.get("cause")
     return (f"falló ({error})" if error else "falló") + reread
 
@@ -267,7 +289,9 @@ def field_note(observation: str, args: str | None) -> str:
 
 
 SAME_CALL_TOLD = 3
-SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se hizo {times} veces en este turno con los mismos argumentos y el mismo "
+# Auditoría de falsedades: «ya se hizo» is the call's, never its effect's (a click that failed three times read «ya se
+# hizo»): the call was made, and its result is said beside it.
+SAME_CALL_NOTE = ("\n[Ayuda: {call} ya se llamó {times} veces en este turno con los mismos argumentos y el mismo "
                   "resultado ({outcome}){options}]")
 SAME_CALL_OPTIONS = ("; otra vez igual dará lo mismo. Opciones: otra herramienta, otros argumentos, o decir a la persona "
                      "lo que pasó.")
@@ -1127,7 +1151,7 @@ class Mind:
         done = turn.setdefault("done", [])
         calling = str(turn.get("calling", "?"))
         calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
-        outcome = _outcome(observation)
+        outcome = _outcome(observation, read=self.risk.get(calling) in READ_RISKS)
         entry, same = f"{calling} → {outcome}", turn.get("last_call")
         # Grouped only when the result is the same too: a click that worked and then failed are two facts (round 2).
         turn["last_call"] = (calling, turn.get("calling_args"), outcome)
@@ -1146,7 +1170,7 @@ class Mind:
         if isinstance(application, str) and _fold(application) in APP_PLACES:
             turn["app_named"] = application
         note = ""
-        if (calling in {"input_visible_click", "input_visible_controls"} and not outcome.startswith("completado")
+        if (calling in {"input_visible_click", "input_visible_controls"} and not outcome.startswith(COMPLETED_OUTCOMES)
                 and turn.get("app_named") and not turn.get("places_told") and _aid_on("app_places_next")):
             note = places_note(turn["app_named"])
             if note:
@@ -1189,7 +1213,7 @@ class Mind:
             # know.
             conv[-1]["content"] += ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo "
                                     "con lo que muestran los resultados.]")
-        completed = outcome.startswith("completado")
+        completed = outcome.startswith(COMPLETED_OUTCOMES)
         if turn["queue"] and not final and completed:
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.perf_counter(), "")
         for call in turn["queue"]:
