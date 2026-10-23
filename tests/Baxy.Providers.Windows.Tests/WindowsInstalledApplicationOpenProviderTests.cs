@@ -1913,6 +1913,192 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         Assert.That(condition(), Is.True, "the condition never held");
     }
 
+    // Renew al máximo (w6-settle): the start's window events as a test scripts them: every wait answers quiet after
+    // «Quiet» or, with Quiet null, not quiet after the whole limit (events that never stop); a wait may cancel the
+    // opening first.
+    private sealed class FakeWindowEvents : IWindowEventWatch
+    {
+        public TimeSpan? Quiet { get; init; } = WindowsInstalledApplicationOpenProvider.StartEventQuiet;
+
+        public CancellationTokenSource? CancelsOnWait { get; init; }
+
+        public IReadOnlyCollection<int>? Family { get; set; }
+
+        public int Waits { get; private set; }
+
+        public bool Disposed { get; private set; }
+
+        public ValueTask<(bool Quiet, TimeSpan Waited)> QuietAsync(
+            TimeSpan quiet,
+            TimeSpan within,
+            CancellationToken cancellationToken)
+        {
+            Assert.That(Disposed, Is.False, "a wait on a watch already disposed");
+            CancelsOnWait?.Cancel();
+            cancellationToken.ThrowIfCancellationRequested();
+            Waits++;
+            return ValueTask.FromResult(Quiet is { } after ? (true, after) : (false, within));
+        }
+
+        public void Dispose() => Disposed = true;
+    }
+
+    private static int Waits(FakePlatform platform, TimeSpan delay) =>
+        platform.DelaysBeforeNewDocument.Count(asked => asked == delay);
+
+    // Renew al máximo (w6-settle): a cold start whose main window was born after the verified one ends its settle once
+    // the application's window events go quiet and one look confirms that main window: no 400 ms look, against two of
+    // them before (counter-case without events, as today).
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task AStartQuietAfterItsMainWindowSettlesOnTheEventsWithoutTheTwoLooks(bool watched)
+    {
+        FakePlatform platform = ColdStart(madeTitle: "Presentación1 - PowerPoint");
+        platform.MainWindows.Add(75);
+        var events = new FakeWindowEvents();
+        if (watched)
+            platform.WindowEvents = events;
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.NewDocument, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(77));
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 75L }), "the command goes to the main window");
+            Assert.That(Waits(platform, WindowsInstalledApplicationOpenProvider.StartSettleDelay), Is.EqualTo(watched ? 0 : 2));
+            Assert.That(events.Waits, Is.EqualTo(watched ? 1 : 0));
+            Assert.That(events.Disposed, Is.EqualTo(watched), "the watch ends with the settle");
+            if (watched)
+                Assert.That(events.Family, Does.Contain(4242), "the launched process is watched");
+        });
+    }
+
+    // The rejected shortening sent «Nuevo» to a splash: a splash that goes quiet while the main window is still to come
+    // (built hidden, shown later) is no settled start. With no window born after the verified one the looks go on as
+    // today, never asking the events; once the main window shows, the events end the settle on it.
+    [Test]
+    public async Task ASplashQuietBeforeTheMainWindowShowsIsNeverWhereTheCommandGoes()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
+            FrontFollowsRequest = true,
+            WindowEvents = new FakeWindowEvents(),
+            LateBorn = Observation(foreground: false) with { WindowHandle = 75 },
+            LateBornAtRead = 2,
+        };
+        platform.Titles[73] = "Abriendo - PowerPoint";
+        platform.Titles[75] = "PowerPoint";
+        platform.MainWindows.Add(73);
+        platform.MainWindows.Add(75);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        _ = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 75L }), "never the splash");
+            Assert.That(Waits(platform, WindowsInstalledApplicationOpenProvider.StartSettleDelay), Is.EqualTo(1),
+                "the splash alone is looked at as before");
+            Assert.That(platform.WindowEvents!.Waits, Is.EqualTo(1), "the events only once the main window was born");
+        });
+    }
+
+    // Counter-case: a start that shows no window besides the verified one (a main window or a splash, untold) keeps the
+    // two still looks 400 ms apart, as today, and no events are watched.
+    [Test]
+    public async Task AStartWithNoWindowBornAfterTheVerifiedOneKeepsTheTwoLooksAndWatchesNothing()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
+            FrontFollowsRequest = true,
+            WindowEvents = new FakeWindowEvents(),
+            WindowAfterNewDocument = Observation(foreground: true) with { WindowHandle = 77 },
+        };
+        platform.Titles[73] = "Sin título - Bloc de notas";
+        platform.Titles[77] = "Sin título - Bloc de notas";
+        platform.MainWindows.Add(73);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.WindowHandle, Is.EqualTo(77));
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 73L }));
+            Assert.That(Waits(platform, WindowsInstalledApplicationOpenProvider.StartSettleDelay), Is.EqualTo(2));
+            Assert.That(platform.WindowEvents.Family, Is.Null, "no watch was started");
+            Assert.That(platform.WindowEvents.Waits, Is.Zero);
+        });
+    }
+
+    // Counter-case: a window born after the verified one that is no main window (another splash) never ends the settle on
+    // the events: the looks keep their 400 ms (the rest of each wait) and two still ones end it, as today.
+    [Test]
+    public async Task ABornWindowThatIsNoMainWindowKeepsTheTwoStillLooks()
+    {
+        FakePlatform platform = ColdStart(madeTitle: "Presentación1 - PowerPoint");
+        platform.WindowEvents = new FakeWindowEvents();
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        _ = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        TimeSpan rest = WindowsInstalledApplicationOpenProvider.StartSettleDelay - WindowsInstalledApplicationOpenProvider.StartEventQuiet;
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.WindowEvents.Waits, Is.EqualTo(2));
+            Assert.That(Waits(platform, rest), Is.EqualTo(2), "each look still 400 ms after the one before");
+            Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 75L }));
+        });
+    }
+
+    // Events that never stop end nothing early: with the main window shown, two still looks end the settle as today; with
+    // a window born at every look, the settle ends on its 10 s budget (one wait per 400 ms look).
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task EventsThatNeverStopEndOnTheLooksOrOnTheBudget(bool bornAtEveryLook)
+    {
+        FakePlatform platform = ColdStart(madeTitle: "Presentación1 - PowerPoint");
+        platform.MainWindows.Add(75);
+        platform.WindowEvents = new FakeWindowEvents { Quiet = null };
+        platform.BornAtEveryRead = bornAtEveryLook;
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        _ = await provider.OpenAsync(NewDocument("Steam"), CancellationToken.None);
+
+        int budgetLooks = (int)(WindowsInstalledApplicationOpenProvider.StartSettleBudget / WindowsInstalledApplicationOpenProvider.StartSettleDelay);
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.WindowEvents.Waits, Is.EqualTo(bornAtEveryLook ? budgetLooks : 2));
+            Assert.That(platform.NewDocumentIssued, Has.Count.EqualTo(1));
+            Assert.That(platform.WindowEvents.Disposed, Is.True);
+        });
+    }
+
+    // A cancelled opening disposes the watch, its hooks removed on their own thread (WindowEventWatchTests).
+    [Test]
+    public void ACancelledSettleDisposesTheWatch()
+    {
+        using var cancel = new CancellationTokenSource();
+        FakePlatform platform = ColdStart(madeTitle: "Presentación1 - PowerPoint");
+        platform.MainWindows.Add(75);
+        platform.WindowEvents = new FakeWindowEvents { CancelsOnWait = cancel };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        Assert.CatchAsync<OperationCanceledException>(async () =>
+            await provider.OpenAsync(NewDocument("Steam"), cancel.Token));
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.WindowEvents.Disposed, Is.True);
+            Assert.That(platform.NewDocumentIssued, Is.Empty);
+        });
+    }
+
     private sealed class ManualTime(DateTimeOffset now) : TimeProvider
     {
         public DateTimeOffset Now { get; set; } = now;
@@ -2078,8 +2264,46 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         private bool _bornAfterStart;
 
+        // Renew al máximo (w6-settle): the start's window events (null: none can be watched), the windows that are
+        // main windows (never a splash), a window the start shows at this inventory read of its settle (the first read
+        // is 1), and whether every read of the settle shows one more window (a start that never stops).
+        public FakeWindowEvents? WindowEvents { get; set; }
+
+        public HashSet<long> MainWindows { get; } = [];
+
+        public InstalledApplicationObservation? LateBorn { get; set; }
+
+        public int LateBornAtRead { get; set; }
+
+        public bool BornAtEveryRead { get; set; }
+
+        private bool _settling;
+
+        private int _settleReads;
+
+        public IWindowEventWatch? WatchWindowEvents(IReadOnlyCollection<int> processes)
+        {
+            if (WindowEvents is { } events)
+                events.Family = processes;
+            return WindowEvents;
+        }
+
+        public bool IsMainWindow(long windowHandle) => MainWindows.Contains(windowHandle);
+
+        private void SettleRead()
+        {
+            if (!_settling || _newDocumentIssued)
+                return;
+            _settleReads++;
+            if (LateBorn is { } late && _settleReads == LateBornAtRead)
+                Observations = [.. Observations, late];
+            if (BornAtEveryRead)
+                Observations = [.. Observations, Observation(foreground: false) with { WindowHandle = 1000 + _settleReads }];
+        }
+
         public string WindowTitle(long windowHandle)
         {
+            _settling |= ActivateCalls > 0;
             if (!_bornAfterStart && BornAfterStart is { } born && ActivateCalls > 0)
             {
                 _bornAfterStart = true;
@@ -2198,6 +2422,7 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
                 throw InventoryFailure;
             if (WindowsGoneAfterFirstInventory && _inventoryReads++ > 0 && ActivateCalls == 0)
                 Observations = [];
+            SettleRead();
             return Observations;
         }
 
