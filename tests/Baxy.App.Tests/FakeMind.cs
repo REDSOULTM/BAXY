@@ -72,6 +72,24 @@ internal sealed class FakeMind : IDisposable
         }
     }
 
+    /// <summary>Every request of <paramref name="type"/> as the fake read it, in order.</summary>
+    internal IReadOnlyList<JsonObject> Requests(string type)
+    {
+        string log = Path.Combine(Folder, "requests.jsonl");
+        if (!File.Exists(log))
+        {
+            return [];
+        }
+
+        using var stream = new FileStream(log, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd().Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(static line => JsonNode.Parse(line) as JsonObject)
+            .Where(request => request is not null && (string?)request["type"] == type)
+            .Select(static request => request!)
+            .ToList();
+    }
+
     /// <summary>The fake's processes still running.</summary>
     internal IReadOnlyList<int> LiveProcesses
     {
