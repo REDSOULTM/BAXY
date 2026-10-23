@@ -13,7 +13,6 @@ import hashlib
 import json
 import os
 import re
-import stat
 import threading
 import time
 import unicodedata
@@ -296,68 +295,6 @@ def field_note(observation: str, args: str | None) -> str:
     return note.format(label=label.strip())
 
 
-# Aid «said_path_next» (Renew al máximo w5, E006): «crea un archivo compras.txt en C:\Users\usuario\BAXY-bench …» was
-# written as relativePath «compras.txt» in home at 0.93-0.95 every run, and the file went to C:\Users\usuario\compras.txt.
-# The same with a folder only named (E024 «en la carpeta BAXY-bench», E027, E020, E030): 63 of the 108 wrong calls of the
-# day's e2e and falsedades were such arguments, at a confidence System One never doubts. A full path the person said,
-# or a word of theirs that is the name of a folder in their home (or in its Desktop, Documents or Downloads), that a
-# call about files or folders does not name is told before anything runs, once per turn, and the model decides again;
-# the person's home itself is the folder home, and a known folder its folder. The mind only looks whether such a folder
-# exists: nothing is chosen for the model, and a call that is not about that place is repeated as it was.
-_SAID_PATH = re.compile(r"(?<!\w)[A-Za-z]:\\[^\s\"'«»<>|?*,;]*")
-_SAID_WORD = re.compile(r"[^\s\"'«»<>|?*,;:¿¡!()\\/]{3,}")
-_PATH_ARGUMENT = re.compile(r"path|folder|directory|file", re.IGNORECASE)
-_FOLDER_WORDS = {"escritorio": "desktop", "documentos": "documents", "descargas": "downloads"}
-SAID_PATH_NOTE = ("[Nota interna, no la escribió la persona: la persona {said} y la llamada {call} que ibas a hacer no la "
-                  "nombra (falta «{part}»), así que no se ejecutó. Si ese es el lugar de esta llamada, vuelve a llamarla "
-                  "con esa ruta entera en sus argumentos; si no, repítela igual.]")
-SAID_PATH = "dijo la ruta «{path}»"
-SAID_FOLDER = "nombró «{part}», que es la carpeta {path},"
-
-
-def said_path_left_out(text: Any, arguments: Any) -> tuple[str, str, str] | None:
-    """What the person said of the first place a call about files or folders leaves out (SAID_PATH or SAID_FOLDER), its
-    full path and its last part; None when the call names every place said, takes no path, or the place is the person's
-    home folder itself. A place is a full path in their words, or a word that names a folder in their home or in its
-    Desktop, Documents or Downloads (only looked at, never opened)."""
-    if not isinstance(arguments, dict) or not any(_PATH_ARGUMENT.search(str(key)) for key in arguments):
-        return None
-    written = _fold(json.dumps(arguments, ensure_ascii=False).replace("\\\\", "\\"))
-
-    def named(part: str) -> bool:
-        folded = _fold(part)
-        return folded in written or _FOLDER_WORDS.get(folded, "\0") in written
-
-    home = Path.home()
-    text = str(text or "")
-    for match in _SAID_PATH.finditer(text):
-        path = match.group(0).rstrip("\\/.:")
-        parts = [part for part in re.split(r"[\\/]+", path) if part]
-        if len(parts) >= 2 and _fold(path) != _fold(str(home)).rstrip("\\") and not named(parts[-1]):
-            return SAID_PATH, path, parts[-1]
-    roots = [home, *(home / name for name in ("Desktop", "Documents", "Downloads"))]
-    for match in _SAID_WORD.finditer(_SAID_PATH.sub(" ", text)):
-        word = match.group(0).rstrip(".")
-        if len(word) < 3 or named(word):
-            continue
-        for root in roots:
-            if _person_folder(root / word):
-                return SAID_FOLDER, str(root / word), word
-    return None
-
-
-_NOT_THE_PERSONS = 0x2 | 0x4 | 0x400  # hidden, system, reparse point: Windows' own links («Reciente», «Plantillas»)
-
-
-def _person_folder(path: Path) -> bool:
-    """Whether path is a folder of the person's: one that exists and that Windows does not hide, keep or link."""
-    try:
-        info = path.stat(follow_symlinks=False)
-    except (OSError, ValueError):
-        return False
-    return stat.S_ISDIR(info.st_mode) and not getattr(info, "st_file_attributes", 0) & _NOT_THE_PERSONS
-
-
 SAME_CALL_TOLD = 3
 # Auditoría de falsedades: «ya se hizo» is the call's, never its effect's (a click that failed three times read «ya se
 # hizo»): the call was made, and its result is said beside it.
@@ -396,14 +333,20 @@ def _aids_seen(observation: str) -> dict[str, Any]:
         facts = json.loads(observation)
     except json.JSONDecodeError:
         return {}
-    if not isinstance(facts, dict) or not isinstance(facts.get("observed"), dict):
+    if not isinstance(facts, dict):
         return {}
+    # Renew al máximo (w6, rutas): the App's said_folder (SaidFolders.cs) refused a call that left out the folder the
+    # person named, or says where a call routed there (or written again as before) acted.
+    said = ({"said_folder": {k: facts[k] for k in ("saidFolders", "next", "saidFolder") if k in facts}}
+            if facts.get("error") == "said_folder_left_out" or "saidFolder" in facts else {})
+    if not isinstance(facts.get("observed"), dict):
+        return said
     observed = facts["observed"]
 
     def picked(*names: str) -> dict[str, Any]:
         return {name: observed[name] for name in names if name in observed}
 
-    seen: dict[str, Any] = {}
+    seen: dict[str, Any] = dict(said)
     if facts.get("error") == "calculator_window_not_found" and "next" in observed:
         seen["calculator_next"] = picked("next")
     if observed.get("setting") == "accessible_mode" and picked("scope", "notAvailableYet"):
@@ -1511,22 +1454,6 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
-        left_out = (said_path_left_out(turn.get("text"), calls[0]["arguments"])
-                    if calls and self._doubted(stage, turn, final) and not turn.get("path_told")
-                    and _aid_on("said_path_next") else None)
-        if left_out:
-            # Renew al máximo (w5, E006): the call that left out the place the person said never runs nor enters the
-            # conversation; the model reads what it left out and decides again (its doubt is read then, as always).
-            turn["path_told"] = True
-            how, path, part = left_out
-            said = SAID_PATH_NOTE.format(said=how.format(path=path, part=part), part=part, call=calls[0]["wire"])
-            conv.append({"role": "user", "content": said})
-            private = bool(turn.get("private"))
-            self._log(stage, started, reply, text=None if private else turn["text"], kind="said_path_note",
-                      operation=self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"]),
-                      arguments=None if private else calls[0]["arguments"], content=None,
-                      aids={"said_path_next": said} if not private else ["said_path_next"])
-            return self._next(request_id, stage, turn)
         note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
         if isinstance(note, dict):
             # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
