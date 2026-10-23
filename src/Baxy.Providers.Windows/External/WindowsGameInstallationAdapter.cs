@@ -51,10 +51,13 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
             var matches = new List<InstalledGame>();
             // Renew al máximo (auditoría de flujos, decision2): every name read, for the closest ones when none matches.
             var read = new List<string>();
+            // Renew al máximo (w8): one manifest that could not be read (locked while its store rewrites it, a corrupt
+            // .item) failed game_installation_inventory_failed for every title, both stores; it is left aside and counted.
+            var unread = new List<string>();
             if (provider is "any" or "steam")
-                matches.AddRange(ReadSteamGames(foldedTitle, read));
+                matches.AddRange(ReadSteamGames(foldedTitle, read, unread));
             if (provider is "any" or "epic")
-                matches.AddRange(ReadEpicGames(foldedTitle, read));
+                matches.AddRange(ReadEpicGames(foldedTitle, read, unread));
 
             InstalledGame[] distinct = matches
                 .GroupBy(game => game.Provider + "\n" + game.Identity, StringComparer.Ordinal)
@@ -77,11 +80,16 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                     writer.WriteString("state", "install_state_not_read");
                 else if (distinct.Length > 0)
                     writer.WriteString("state", "install_not_finished");
+                // A manifest not read may be the game's: with one, no name found is not said.
+                else if (unread.Count > 0)
+                    writer.WriteString("state", "install_state_not_read");
                 else
                 {
                     writer.WriteString("state", "no_steam_or_epic_manifest_with_that_name");
                     SteamLocalAdapter.WriteClosest(writer, SteamLocalAdapter.ClosestTitles(title, read));
                 }
+                if (unread.Count > 0)
+                    writer.WriteNumber("manifestsUnread", unread.Count);
                 writer.WriteNumber("matchCount", distinct.Length);
                 writer.WriteStartArray("games");
                 foreach (InstalledGame game in distinct)
@@ -112,14 +120,29 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         }
     }
 
-    private IEnumerable<InstalledGame> ReadSteamGames(string foldedTitle, List<string> read)
+    // One manifest's text, or null (counted in «unread») when it cannot be read now.
+    private static string? ReadManifest(string manifest, List<string> unread)
+    {
+        try
+        {
+            return File.ReadAllText(manifest);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            unread.Add(manifest);
+            return null;
+        }
+    }
+
+    private IEnumerable<InstalledGame> ReadSteamGames(string foldedTitle, List<string> read, List<string> unread)
     {
         foreach (string steamAppsRoot in _steamAppsRoots.Where(Directory.Exists))
         {
             foreach (string manifest in Directory.EnumerateFiles(
                 steamAppsRoot, "appmanifest_*.acf", SearchOption.TopDirectoryOnly))
             {
-                string content = File.ReadAllText(manifest);
+                if (ReadManifest(manifest, unread) is not { } content)
+                    continue;
                 string name = AcfValue(content, "name");
                 string installDirectory = AcfValue(content, "installdir");
                 string appId = AcfValue(content, "appid");
@@ -148,15 +171,33 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         }
     }
 
-    private IEnumerable<InstalledGame> ReadEpicGames(string foldedTitle, List<string> read)
+    private IEnumerable<InstalledGame> ReadEpicGames(string foldedTitle, List<string> read, List<string> unread)
     {
         foreach (string manifestRoot in _epicManifestRoots.Where(Directory.Exists))
         {
             foreach (string manifest in Directory.EnumerateFiles(
                 manifestRoot, "*.item", SearchOption.TopDirectoryOnly))
             {
-                using JsonDocument document = JsonDocument.Parse(File.ReadAllText(manifest));
-                JsonElement root = document.RootElement;
+                JsonDocument document;
+                try
+                {
+                    if (ReadManifest(manifest, unread) is not { } text)
+                        continue;
+                    document = JsonDocument.Parse(text);
+                }
+                catch (JsonException)
+                {
+                    unread.Add(manifest);
+                    continue;
+                }
+
+                using JsonDocument parsed = document;
+                JsonElement root = parsed.RootElement;
+                if (root.ValueKind != JsonValueKind.Object)
+                {
+                    unread.Add(manifest);
+                    continue;
+                }
                 string name = JsonString(root, "DisplayName");
                 string installLocation = JsonString(root, "InstallLocation");
                 string identity = JsonString(root, "CatalogItemId");

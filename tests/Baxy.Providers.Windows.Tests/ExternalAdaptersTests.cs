@@ -1389,6 +1389,38 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w8): a corrupt Epic manifest (or one its store is rewriting) failed the whole check, Steam's
+    // games included. It is left aside and counted: the Steam game is still found; a name not found is not said absent.
+    [Test]
+    public async Task OneUnreadableManifestLeavesTheOthersRead()
+    {
+        using TemporaryDirectory temporary = new();
+        string steamApps = Path.Combine(temporary.Path, "steamapps");
+        string epicManifests = Path.Combine(temporary.Path, "epic");
+        Directory.CreateDirectory(Path.Combine(steamApps, "common", "Hollow Knight"));
+        Directory.CreateDirectory(epicManifests);
+        await File.WriteAllTextAsync(
+            Path.Combine(steamApps, "appmanifest_367520.acf"),
+            "\"AppState\" { \"appid\" \"367520\" \"name\" \"Hollow Knight\" " +
+            "\"StateFlags\" \"4\" \"installdir\" \"Hollow Knight\" }");
+        await File.WriteAllTextAsync(Path.Combine(epicManifests, "broken.item"), "{ \"DisplayName\": ");
+        var adapter = new WindowsGameInstallationAdapter([steamApps], [epicManifests]);
+
+        ExternalCapabilityReceipt found = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"Hollow Knight"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt other = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"Fall Guys"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.ErrorCode, Is.Null);
+            Assert.That(found.Result?.GetProperty("installed").GetBoolean(), Is.True);
+            Assert.That(found.Result?.GetProperty("manifestsUnread").GetInt32(), Is.EqualTo(1));
+            Assert.That(other.ErrorCode, Is.Null);
+            Assert.That(other.Result?.GetProperty("state").GetString(), Is.EqualTo("install_state_not_read"));
+        });
+    }
+
     // Renew al máximo (w8): «¿tengo instalado assassins creed origins?» against the manifest «Assassin's Creed Origins»:
     // the apostrophe folded to a space and the game was said not installed.
     [Test]
