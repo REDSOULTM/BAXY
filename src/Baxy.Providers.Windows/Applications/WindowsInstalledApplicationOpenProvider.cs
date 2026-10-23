@@ -47,6 +47,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // Ronda 20 P4 (v3-01): how far apart the windows of a cold start are looked at while they settle, and for how long.
     internal static readonly TimeSpan StartSettleDelay = TimeSpan.FromMilliseconds(400);
     internal static readonly TimeSpan StartSettleBudget = TimeSpan.FromSeconds(10);
+    // Renew al máximo (w6-settle): how long a start that already showed its main window goes without a window event of
+    // the application before one confirming look may end its settle.
+    internal static readonly TimeSpan StartEventQuiet = TimeSpan.FromMilliseconds(250);
 
     private readonly IInstalledApplicationPlatform _platform;
     private readonly TimeSpan _catalogReadBudget;
@@ -957,6 +960,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
 
         IReadOnlyList<InstalledApplicationObservation> before;
+        IReadOnlyList<TextFieldObservation> fieldsBefore;
         string titleBefore;
         bool titleTells;
         HashSet<string> bareTitles;
@@ -968,7 +972,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             // one has come for two looks. A title the start showed on another window (a splash), or the application's
             // bare name, is never a document; the settled main window's own title may be one (revisión 2 de P4).
             bareTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Bare(entry.Name), Bare(opened.DisplayName) };
-            (long? settled, IReadOnlyList<string> startTitles) = await SettleStartAsync(entry, window, theirs, cancellationToken)
+            (long? settled, IReadOnlyList<string> startTitles) = await SettleStartAsync(entry, window, process, theirs, cancellationToken)
                 .ConfigureAwait(false);
             if (settled is not long main)
             {
@@ -986,6 +990,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             titleTells = string.Equals(titleFirst, titleBefore, StringComparison.Ordinal);
             // What was there is read right before the command (P4): a window born before it is never its document.
             before = _platform.Inventory(entry);
+            // Renew al máximo (rendimiento): and the window's text fields, to see a new tab whose title repeats.
+            fieldsBefore = _platform.TextFields(window);
         }
         catch (Exception exception) when (exception is ApplicationInventoryException
             or InvalidDataException
@@ -1082,6 +1088,17 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 {
                     made = current.FirstOrDefault(item => item.WindowHandle == window && item.ProcessId == process && item.Visible);
                 }
+
+                // Renew al máximo (rendimiento): Windows 11's Notepad gives its new tab the title the launched one had
+                // («Sin título - Bloc de notas»), so the title tells nothing and every «un Bloc de notas nuevo» waited
+                // the whole budget. A text field born after the command, shown and empty, in place of a field shown
+                // before (the document in view replaced by a new empty one), with no dialog, tells it as soon as it is
+                // there. Without that (no fields, or one field for every document), the looks go on as before.
+                if (made is null && dialogs.Count == 0 && IsDocument(window)
+                    && ShowsANewEmptyField(fieldsBefore, _platform.TextFields(window)))
+                {
+                    made = current.FirstOrDefault(item => item.WindowHandle == window && item.ProcessId == process && item.Visible);
+                }
             }
             catch (Exception exception) when (exception is ApplicationInventoryException
                 or InvalidOperationException
@@ -1168,17 +1185,30 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // verified, else any shown; with the titles the start showed on its other windows (never the settled main
     // window's own title, which a new window of the command may repeat). A window the application had before the
     // launch («theirs», auditoría D6) is never one of the start's.
+    // Renew al máximo (w6-settle): two still looks cost at least 0.8 s per cold «un X nuevo». Once the start has shown a
+    // window after the verified one (the main window after a splash), the application's window events (created, shown,
+    // hidden, renamed) are watched: StartEventQuiet with none, then one confirming look that brings no new window and
+    // finds that last-born window still shown and a main window (IsMainWindow: never a splash), end the settle there.
+    // Anything else keeps the looks as they were: no window born after the verified one (it may be a splash while the
+    // main window is built hidden: an earlier shorter quiet sent «Nuevo» to a splash and was rejected), no events to
+    // watch, events that never stop (each look still StartSettleDelay apart), within StartSettleBudget.
     private async ValueTask<(long? Window, IReadOnlyList<string> Titles)> SettleStartAsync(
         InstalledApplicationEntry entry,
         long started,
+        int process,
         HashSet<long> theirs,
         CancellationToken cancellationToken)
     {
-        List<long> Shown() => _platform.Inventory(entry)
-            .Where(item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath)
-                && !theirs.Contains(item.WindowHandle) && !_platform.IsOwnedWindow(item.WindowHandle))
-            .Select(static item => item.WindowHandle)
-            .ToList();
+        // The processes the start's windows were seen in: the ones whose window events are watched.
+        var processes = new HashSet<int> { process };
+        List<long> Shown()
+        {
+            List<InstalledApplicationObservation> items = [.. _platform.Inventory(entry)
+                .Where(item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath)
+                    && !theirs.Contains(item.WindowHandle) && !_platform.IsOwnedWindow(item.WindowHandle))];
+            processes.UnionWith(items.Select(static item => item.ProcessId));
+            return [.. items.Select(static item => item.WindowHandle)];
+        }
 
         var titles = new List<string> { _platform.WindowTitle(started) };
         var seen = new HashSet<long> { started };
@@ -1191,19 +1221,64 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             }
         }
 
-        int still = 0;
-        Stopwatch clock = Stopwatch.StartNew();
-        for (int look = 0;
-            still < 2 && look * StartSettleDelay < StartSettleBudget && clock.Elapsed < StartSettleBudget;
-            look++)
+        // Watched only from the first window born after the verified one: before it, the events could end nothing.
+        IWindowEventWatch? events = null;
+        List<long>? confirmed = null;
+        try
         {
-            await _platform.DelayAsync(StartSettleDelay, cancellationToken).ConfigureAwait(false);
-            List<long> fresh = Shown().Where(seen.Add).ToList();
-            born.AddRange(fresh);
-            still = fresh.Count == 0 ? still + 1 : 0;
+            bool watching = false;
+            int still = 0;
+            Stopwatch clock = Stopwatch.StartNew();
+            for (int look = 0;
+                still < 2 && look * StartSettleDelay < StartSettleBudget && clock.Elapsed < StartSettleBudget;
+                look++)
+            {
+                if (!watching && born.Count > 0)
+                {
+                    watching = true;
+                    events = _platform.WatchWindowEvents(processes);
+                }
+
+                TimeSpan wait = StartSettleDelay;
+                int bornAtConfirm = 0;
+                if (events is not null)
+                {
+                    (bool quiet, TimeSpan waited) = await events
+                        .QuietAsync(StartEventQuiet, StartSettleDelay, cancellationToken).ConfigureAwait(false);
+                    wait = waited >= StartSettleDelay ? TimeSpan.Zero : StartSettleDelay - waited;
+                    if (quiet)
+                    {
+                        List<long> confirming = Shown();
+                        List<long> freshNow = confirming.Where(seen.Add).ToList();
+                        born.AddRange(freshNow);
+                        bornAtConfirm = freshNow.Count;
+                        if (freshNow.Count == 0 && born.LastOrDefault(confirming.Contains) is long newest && newest != 0
+                            && _platform.IsMainWindow(newest))
+                        {
+                            confirmed = confirming;
+                            break;
+                        }
+                    }
+                }
+
+                if (wait > TimeSpan.Zero)
+                {
+                    await _platform.DelayAsync(wait, cancellationToken).ConfigureAwait(false);
+                }
+
+                // A window the confirming look found born counts as born in this look: two still looks stay 400 ms apart.
+                List<long> fresh = Shown().Where(seen.Add).ToList();
+                born.AddRange(fresh);
+                still = fresh.Count + bornAtConfirm == 0 ? still + 1 : 0;
+            }
+        }
+        finally
+        {
+            // The watch's hooks go with the settle, a cancelled or failed one included.
+            events?.Dispose();
         }
 
-        List<long> shown = Shown();
+        List<long> shown = confirmed ?? Shown();
         long? chosen = born.LastOrDefault(shown.Contains) is long last && last != 0 ? last
             : shown.Contains(started) ? started
             : shown.Count > 0 ? shown[0]
@@ -1236,6 +1311,17 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     {
         static string Document(string title) => title.Replace("*", string.Empty, StringComparison.Ordinal).Trim();
         return now.Length > 0 && !string.Equals(Document(before), Document(now), StringComparison.Ordinal);
+    }
+
+    // Renew al máximo (rendimiento): the window shows a new empty document in place of the one it showed: a field shown
+    // before the command is no longer shown (or is gone), and a field that was not there before is shown and empty.
+    internal static bool ShowsANewEmptyField(IReadOnlyList<TextFieldObservation> before, IReadOnlyList<TextFieldObservation> now)
+    {
+        bool left = before.Any(earlier => earlier.Shown
+            && !now.Any(field => field.Handle == earlier.Handle && field.Shown));
+        bool born = now.Any(field => field.Shown && field.Empty
+            && !before.Any(earlier => earlier.Handle == field.Handle));
+        return left && born;
     }
 
     // Whether «window» is the opened application's: its window, or a window of its process or of the same program.
@@ -1392,6 +1478,10 @@ internal sealed record InstalledApplicationObservation(
     string? ProcessName = null,
     bool HostedByTerminal = false);
 
+// Renew al máximo (rendimiento): one text field of a window (an Edit or RichEdit child), whether it is shown, and
+// whether it holds no text (asked only of a shown field; a hidden one is never said empty).
+internal readonly record struct TextFieldObservation(long Handle, bool Shown, bool Empty);
+
 internal interface IInstalledApplicationPlatform : IOpeningFront
 {
     ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
@@ -1451,8 +1541,20 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // empty; false when it has none or one holds text or does not answer.
     bool HoldsNoText(long windowHandle) => false;
 
+    // Renew al máximo (rendimiento): the window's text fields (its Edit or RichEdit children), each shown or not and,
+    // when shown, empty or not; none when it has none or they cannot be read.
+    IReadOnlyList<TextFieldObservation> TextFields(long windowHandle) => [];
+
     // Whether another window owns this one (a dialog of the application).
     bool IsOwnedWindow(long windowHandle) => false;
+
+    // Renew al máximo (w6-settle): the window events of these processes and of the helpers and frames they show windows
+    // through (WindowEventWatch), from now until disposed; null when none can be watched (the settle then only looks).
+    IWindowEventWatch? WatchWindowEvents(IReadOnlyCollection<int> processes) => null;
+
+    // Renew al máximo (w6-settle): whether the window is one a person works in, not a splash: shown, uncloaked, owned by
+    // no other, no tool window, with a title bar or a frame that resizes and minimizes. False when it cannot be told.
+    bool IsMainWindow(long windowHandle) => false;
 
     // The window in front now, whether the person works in a window, and the opened one shown above theirs without
     // the activation: IOpeningFront (r20b palanca 4).
@@ -2509,6 +2611,21 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
 
     public bool IsOwnedWindow(long windowHandle) => GetWindow(checked((nint)windowHandle), 4) != 0;
 
+    public IWindowEventWatch? WatchWindowEvents(IReadOnlyCollection<int> processes) => WindowEventWatch.Start(processes);
+
+    // WS_CAPTION (0x00C00000, both bits), or WS_THICKFRAME (0x00040000) with WS_MINIMIZEBOX (0x00020000): a window a
+    // person moves, resizes or minimizes; a splash has neither. WS_EX_TOOLWINDOW (0x80) is never one.
+    public bool IsMainWindow(long windowHandle)
+    {
+        nint window = checked((nint)windowHandle);
+        if (window == 0 || !IsWindowVisible(window) || IsCloaked(window) || GetWindow(window, 4) != 0)
+            return false;
+        long style = GetWindowLongPtr(window, -16).ToInt64();
+        long extended = GetWindowLongPtr(window, -20).ToInt64();
+        return (extended & 0x80) == 0
+            && ((style & 0x00C00000) == 0x00C00000 || (style & 0x00060000) == 0x00060000);
+    }
+
     // BAXY Renew cu (C18): the window's text fields (children whose class is an Edit or a RichEdit), each asked its
     // length (WM_GETTEXTLENGTH, 500 ms at most, never a hung window's wait): true only with one at least and all empty.
     public bool HoldsNoText(long windowHandle)
@@ -2531,6 +2648,26 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         _ = EnumChildWindows(checked((nint)windowHandle), callback, nint.Zero);
         GC.KeepAlive(callback);
         return fields > 0 && !holdsText;
+    }
+
+    // Renew al máximo (rendimiento): the same text fields as HoldsNoText, each with whether Windows shows it (it and
+    // its parents visible) and, only when shown, whether it answered an empty length (WM_GETTEXTLENGTH, 500 ms at most).
+    public IReadOnlyList<TextFieldObservation> TextFields(long windowHandle)
+    {
+        var fields = new List<TextFieldObservation>();
+        EnumWindowsProc callback = (child, _) =>
+        {
+            if (!ReadClassName(child).Contains("Edit", StringComparison.OrdinalIgnoreCase))
+                return true;
+            bool shown = IsWindowVisible(child);
+            bool empty = shown && SendMessageTimeout(child, 0x000E, 0, 0, 0x0002, 500, out nint length) != 0
+                && length == 0;
+            fields.Add(new TextFieldObservation(child, shown, empty));
+            return true;
+        };
+        _ = EnumChildWindows(checked((nint)windowHandle), callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return fields;
     }
 
     public unsafe string WindowTitle(long windowHandle)
@@ -2651,6 +2788,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     // GW_OWNER (4): the window that owns this one, 0 for none.
     [LibraryImport("user32.dll")]
     private static partial nint GetWindow(nint window, uint command);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static partial nint GetWindowLongPtr(nint window, int index);
 
     [LibraryImport("user32.dll", EntryPoint = "SendMessageTimeoutW")]
     private static partial nint SendMessageTimeout(
