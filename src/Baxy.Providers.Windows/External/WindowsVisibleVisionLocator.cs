@@ -21,8 +21,16 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
     internal const int ImageWidth = 1280;
 
     private readonly HttpClient _http;
+    // The window the question is about, and the words written on it (a test gives its own: no desktop).
+    private readonly Func<CancellationToken, ValueTask<VisibleControlSurface.CapturedWindow?>> _capture;
+    private readonly Func<byte[], CancellationToken, ValueTask<IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>?>> _layout;
+    private readonly VisionAnswerMemory _memory;
 
-    internal WindowsVisibleVisionLocator(HttpClient? http = null)
+    internal WindowsVisibleVisionLocator(
+        HttpClient? http = null,
+        Func<CancellationToken, ValueTask<VisibleControlSurface.CapturedWindow?>>? capture = null,
+        Func<byte[], CancellationToken, ValueTask<IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>?>>? layout = null,
+        Func<DateTime>? utcNow = null)
     {
         // Ronda final 19: the capture goes only to the loopback endpoint named, never on through a redirect or a proxy.
         _http = http ?? new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false })
@@ -30,6 +38,9 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             // A projector on the CPU reads a 1280-wide image in about 8 s (PLAN_GENERAL A5).
             Timeout = TimeSpan.FromSeconds(30),
         };
+        _capture = capture ?? VisibleControlSurface.CaptureForegroundAsync;
+        _layout = layout ?? ((bmp, token) => WindowsVisibleOcrLocator.ReadLayoutAsync(bmp, 400, token));
+        _memory = new VisionAnswerMemory(utcNow);
     }
 
     /// <summary>
@@ -72,12 +83,15 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             return null;
         }
 
-        VisibleControlSurface.CapturedWindow? captured =
-            await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
-                .ConfigureAwait(false);
+        VisibleControlSurface.CapturedWindow? captured = await _capture(cancellationToken).ConfigureAwait(false);
         if (captured is null)
             return null;
         VisibleControlSurface.CapturedWindow before = captured.Value;
+        // Renew al máximo (velocidad, pc-t2 «Guardar como» asked three times in a row: 45, 21 and 21 s, each one
+        // vision_point_on_other_label): the same label on the same drawing of the same window was answered a moment ago
+        // without any press; the model is not asked again (temperature 0, the same image), and the answer is the same.
+        if (_memory.Recall(label, before, out string? recalled))
+            return recalled is null ? null : ExternalJson.FailureBeforeEffect(operation, recalled);
         bool pressedOnce = false;
         try
         {
@@ -87,59 +101,71 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             // another written label is not the control asked for: the model is asked once more, told which one it is not,
             // and a second such point presses nothing. An icon has no words under it and goes on.
             IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? layout =
-                await WindowsVisibleOcrLocator.ReadLayoutAsync(before.Bmp, 400, cancellationToken).ConfigureAwait(false);
+                await _layout(before.Bmp, cancellationToken).ConfigureAwait(false);
             int x = 0, y = 0;
             string? notThis = null;
-            for (int ask = 0; ; ask++)
+            // PLAN_GENERAL A5: the server's one slot holds the mind's conversation; its state is set aside before the
+            // question and put back before anything is pressed. Not set aside, nothing is asked (the next decision would
+            // re-read the whole conversation, 25 s measured). Renew al máximo (velocidad): set aside once for both
+            // questions, not once for each (a save and a restore of the whole conversation less on the second one).
+            string? held = LocalVisionEndpoint.SlotDirectory() is null ? null : await HoldSlotAsync(uri, cancellationToken)
+                .ConfigureAwait(false);
+            if (LocalVisionEndpoint.SlotDirectory() is not null && held is null)
+                return null;
+            try
             {
-                // PLAN_GENERAL A5: the server's one slot holds the mind's conversation; its state is set aside before the
-                // question and put back before anything is pressed. Not set aside, nothing is asked (the next decision
-                // would re-read the whole conversation, 25 s measured).
-                string? held = LocalVisionEndpoint.SlotDirectory() is null ? null : await HoldSlotAsync(uri, cancellationToken)
-                    .ConfigureAwait(false);
-                if (LocalVisionEndpoint.SlotDirectory() is not null && held is null)
-                    return null;
-                string answered;
-                try
+                for (int ask = 0; ; ask++)
                 {
-                    using var request = new HttpRequestMessage(HttpMethod.Post, uri)
+                    string answered;
                     {
-                        Content = new StringContent(
-                            VisionBody(model, Prompt(label, notThis), image),
-                            Encoding.UTF8,
-                            "application/json"),
-                    };
-                    LocalVisionEndpoint.Authorize(request);
-                    using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
-                        .ConfigureAwait(false);
-                    if (!response.IsSuccessStatusCode)
-                        return ExternalJson.Failure(operation, "vision_provider_request_failed");
-                    answered = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                }
-                finally
-                {
-                    if (held is not null)
-                        await PutSlotBackAsync(uri, held).ConfigureAwait(false);
-                }
+                        using var request = new HttpRequestMessage(HttpMethod.Post, uri)
+                        {
+                            Content = new StringContent(
+                                VisionBody(model, Prompt(label, notThis), image),
+                                Encoding.UTF8,
+                                "application/json"),
+                        };
+                        LocalVisionEndpoint.Authorize(request);
+                        using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
+                            .ConfigureAwait(false);
+                        if (!response.IsSuccessStatusCode)
+                            return ExternalJson.Failure(operation, "vision_provider_request_failed");
+                        answered = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    }
 
-                using JsonDocument document = JsonDocument.Parse(answered);
-                string? content = document.RootElement
-                    .GetProperty("choices")[0]
-                    .GetProperty("message")
-                    .GetProperty("content")
-                    .GetString();
-                if (string.IsNullOrWhiteSpace(content))
-                    return ExternalJson.Failure(operation, "vision_provider_response_invalid");
-                if (AnsweredCentre(content) is not { } centre)
-                    return null;
-                x = (int)Math.Round(centre.X / 1000 * before.Width);
-                y = (int)Math.Round(centre.Y / 1000 * before.Height);
-                if (OtherTextAt(layout, label, x, y) is not { } other)
-                    break;
-                if (ask >= 1)
-                    return ExternalJson.FailureBeforeEffect(operation, "vision_point_on_other_label");
-                notThis = other;
+                    using JsonDocument document = JsonDocument.Parse(answered);
+                    string? content = document.RootElement
+                        .GetProperty("choices")[0]
+                        .GetProperty("message")
+                        .GetProperty("content")
+                        .GetString();
+                    if (string.IsNullOrWhiteSpace(content))
+                        return ExternalJson.Failure(operation, "vision_provider_response_invalid");
+                    if (AnsweredCentre(content) is not { } centre)
+                    {
+                        _memory.Note(label, before, null);
+                        return null;
+                    }
+                    x = (int)Math.Round(centre.X / 1000 * before.Width);
+                    y = (int)Math.Round(centre.Y / 1000 * before.Height);
+                    if (OtherTextAt(layout, label, x, y) is not { } other)
+                        break;
+                    if (ask >= 1)
+                    {
+                        _memory.Note(label, before, "vision_point_on_other_label");
+                        return ExternalJson.FailureBeforeEffect(operation, "vision_point_on_other_label");
+                    }
+                    notThis = other;
+                }
             }
+            finally
+            {
+                if (held is not null)
+                    await PutSlotBackAsync(uri, held).ConfigureAwait(false);
+            }
+
+            // A point to press: what was answered before about this window no longer holds once anything is pressed.
+            _memory.Forget();
 
             int screenX = before.Left + x;
             int screenY = before.Top + y;
