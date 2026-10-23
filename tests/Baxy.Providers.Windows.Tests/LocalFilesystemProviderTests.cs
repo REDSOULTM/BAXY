@@ -279,6 +279,55 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Renew al máximo (w5, E020): «¿cuál es el archivo más grande dentro de BAXY-bench, en mi carpeta de usuario?» ran
+    // filesystem.list (int5 X s0: Qwen chose filesystem_search, System One corrected it to filesystem_list), whose
+    // result was an empty list and a path, and the answer was «no hay nada en mi carpeta de trabajo». A listing or a
+    // search of the working folder says it is BAXY's (folder baxy_work), and one that found nothing that the person's
+    // folders were not looked at; with BAXY_AYUDAS=none, neither.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnEmptyLookAtTheWorkingFolderSaysThePersonsFoldersWereNotLookedAt(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+
+        JsonElement empty = await Observed(provider, "filesystem.list", "{}");
+        JsonElement missing = await Observed(provider, "filesystem.search", """{"query":"informe"}""");
+        provider.WriteText("informe.txt", "uno", null);
+        JsonElement listed = await Observed(provider, "filesystem.list", "{}");
+        JsonElement found = await Observed(provider, "filesystem.search", """{"query":"informe"}""");
+
+        Assert.Multiple(() =>
+        {
+            foreach (JsonElement look in new[] { empty, missing, listed, found })
+            {
+                Assert.That(look.TryGetProperty("folder", out JsonElement folder), Is.EqualTo(hint));
+                if (hint) Assert.That(folder.GetString(), Is.EqualTo("baxy_work"));
+            }
+            Assert.That(empty.TryGetProperty("next", out JsonElement none), Is.EqualTo(hint));
+            Assert.That(missing.TryGetProperty("next", out JsonElement nothing), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(none.GetString(), Is.EqualTo("BAXY's own working folder holds nothing here; the person's "
+                    + "folders (their home and everything under it) were not looked at: file_find looks there"));
+                Assert.That(nothing.GetString(), Is.EqualTo("nothing named informe in BAXY's own working folder; the "
+                    + "person's folders (their home and everything under it) were not looked at: file_find looks there"));
+            }
+            Assert.That(listed.TryGetProperty("next", out _), Is.False);
+            Assert.That(found.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
+    private static async Task<JsonElement> Observed(IFilesystemProvider provider, string operation, string arguments)
+    {
+        OperationOutcome outcome = await Handle(provider, operation, arguments);
+        Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+        using JsonDocument message = JsonDocument.Parse(OperationVisibleFacts.FromOutcome(operation, outcome));
+        return message.RootElement.GetProperty("observed").Clone();
+    }
+
     // BAXY Renew (notebook): a hash expected of a file that is not there is said as that, not as another version;
     // the refusal says what it saw, and nothing is written.
     [TestCase("")]

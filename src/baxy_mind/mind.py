@@ -378,7 +378,10 @@ def _aids_seen(observation: str) -> dict[str, Any]:
         seen["accessible_scope"] = picked("scope", "notAvailableYet")
     if observed.get("placeRequested") and "next" in observed:
         seen["place_unverified"] = picked("next")
-    if observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
+    if observed.get("folder") == "baxy_work" and "entries" in observed:
+        # Renew al máximo (w5, E020): a look at the working folder (filesystem_list, filesystem_search).
+        seen["work_folder_scope"] = picked("folder", "next")
+    elif observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
         seen["work_folder"] = picked("folder", "sameNameInHome", "next")
     return seen
 
