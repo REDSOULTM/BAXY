@@ -3156,3 +3156,17 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   del ruido. **Goal cerrado**: criterios de término cumplidos (MAXIMO.md, arreglos con pruebas, palancas con cifra o
   retiradas, suites verdes en las dos máquinas sobre 452854a18, recursos ≤ 4 GB / 4 GB, holdout v4 una vez en tres
   configuraciones, renew-maximo en hub, INFORME_MAXIMO.md, mensaje al dueño, prueba en vivo en el PC).
+
+## Renew al máximo, fase 2 (2026-10-23, 10:4x): «cubre absolutamente todo» sin reentrenar
+
+Orden del dueño tras leer el cierre: cubrir todo lo que quedó abierto. Base: renew-maximo 616aaf100. El dueño usa BAXY en
+el PC: la GPU del PC queda para él; los agentes del PC sólo escriben código y pruebas unitarias, y el NB mide.
+- Agentes del PC: w6-rutas (la carpeta que la persona nombra gana; integra nb-w5-e2e), w6-fals2 (lecturas parciales,
+  unidades, .bak, bucle de clics → place), w6-lat (recuperar el +0,9 s tras herramienta), w6-settle (fin del arranque por
+  eventos de ventana + nb-perf-nuevo), w6-banco (decision3 con etiquetas corregidas, aislamiento de e2e frente a ventanas
+  y archivos del dueño, --seeds en falsedades).
+- NB: regresión de apertura de apps empaquetadas, recalibración de System One fuera de decision2, auditorías pendientes, y
+  todas las mediciones de int9 (decision3 ×3, e2e ×3, falsedades ×3).
+- Holdout v5: dos agentes aislados del PC lo escriben y sellan como el v4 (decisión 720 con ~60 casos de carpetas
+  nombradas; e2e 72 con 14 de archivos; falsedades 36 con los patrones nuevos). Clave en BAXY-coord\holdout-v5-clave.txt.
+- Pendiente del dueño: medir el reconocimiento de nombres con su voz (sólo con su permiso).
