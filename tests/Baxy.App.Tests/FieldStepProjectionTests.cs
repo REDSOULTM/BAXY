@@ -94,6 +94,33 @@ public sealed class FieldStepProjectionTests
         });
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void AResultReplayedFromTheJournalIsNotSaidDoneNow(bool memory)
+    {
+        var facts = new JsonObject
+        {
+            ["status"] = "completed",
+            ["verification"] = OperationVisibleFacts.VerificationReadback,
+        };
+        if (memory)
+        {
+            facts["observed"] = new JsonObject { ["saved"] = true, ["replayed"] = true };
+        }
+        else
+        {
+            facts["replayed"] = "this is the recorded result of the same call made earlier; it did not run again now";
+        }
+
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true, facts);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)view["status"], Is.EqualTo("skip"));
+            Assert.That((string?)view["reason"], Is.EqualTo("No se repitió: ya había corrido antes"));
+        });
+    }
+
     [Test]
     public void ARetryableCallWhoseEffectDidNotHappenDidNotComplete()
     {

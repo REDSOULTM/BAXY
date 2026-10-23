@@ -152,7 +152,15 @@ internal static class FieldStepProjection
         // read's output are said as such, and a completion without that fact (none, or none written) is not verified.
         string? verification = facts?[OperationVisibleFacts.VerificationKey] is JsonValue v
             && v.TryGetValue(out string? said) ? said : null;
-        if (raw == OperationStatuses.Completed && step.Verified && !uncertain
+        if (raw == OperationStatuses.Completed
+            && (facts?["replayed"] is not null || facts?["observed"] is JsonObject { } kept && kept["replayed"] is not null))
+        {
+            // The journal's recorded result of this same call made earlier (OperationResponseProjection.Replay; a
+            // memory call's, inside what it observed): it did not run again now, so nothing is said done now.
+            view["status"] = "skip";
+            view["reason"] = "No se repitió: ya había corrido antes";
+        }
+        else if (raw == OperationStatuses.Completed && step.Verified && !uncertain
             && Verifications.TryGetValue(verification ?? string.Empty, out (string Status, string Said) shown))
         {
             view["status"] = shown.Status;
