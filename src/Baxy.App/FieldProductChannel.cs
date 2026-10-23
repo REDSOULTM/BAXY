@@ -328,15 +328,24 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             });
         }
 
-        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4). «hecho» only for
-        // a call that completed and was verified (2026-10-22, review of the App: one that reached its provider and
-        // failed was said done too).
-        if (step is { Status: OperationStatuses.Completed, Verified: true }
+        // Bypass ran a call normal mode would have asked about: the conversation says so (design v4), as its step ended
+        // (2026-10-22, review of the App: one that reached its provider and failed was said done too). «hecho» only for
+        // an effect read back; a state already there, an input delivered unread or one that may have run say so.
+        string? bypassed = (string?)view["status"] switch
+        {
+            "ok" => "hecho sin preguntar",
+            "same" => "sin preguntar, ya estaba así",
+            "sent" => "enviado sin preguntar, sin comprobar",
+            "read" => "leído sin preguntar",
+            "maybe" when step.Sent => "sin preguntar, puede haber corrido",
+            _ => null,
+        };
+        if (bypassed is not null
             && ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
             && FieldStepProjection.NormalModeAsks(step.Operation, step.Arguments))
         {
             string title = FieldStepProjection.Label(step.Operation, step.Arguments);
-            Publish(ItemEvent(_transcript.System("Bypass · hecho sin preguntar: " + char.ToLowerInvariant(title[0]) + title[1..])));
+            Publish(ItemEvent(_transcript.System("Bypass · " + bypassed + ": " + char.ToLowerInvariant(title[0]) + title[1..])));
         }
 
         if (step.Operation == "schedule.alarms" && step.Sent)
