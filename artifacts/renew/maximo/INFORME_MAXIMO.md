@@ -155,8 +155,7 @@ si ganaba algo sin empeorar otro banco; las que sólo cierran un agujero de segu
 - El disco C: del PC se llenó (archivo de paginación de 24,9 GB con la RAM al tope); se borraron sólo worktrees míos.
 - **Tu Bloc de notas**: durante la e2e de práctica del PC (01:30-02:15), BAXY escribió en tu pestaña sin guardar
   «lista: pilas, cables» dos veces y «hola desde BAXY» una vez. Nada se guardó a disco; quítalas con Ctrl+H.
-- En el notebook quedaron restos de los bancos en tu carpeta de usuario (tareas_hoy.txt, config.ini, q4
-otes.txt,
+- En el notebook quedaron restos de los bancos en tu carpeta de usuario (tareas_hoy.txt, config.ini, q4\notes.txt,
   compras.txt, notas.txt, lista.txt, prueba.txt, proyecto\): no los borré porque están fuera de los worktrees.
 - La e2e del holdout escribió fuera del banco en el notebook y esas escrituras persistieron entre configuraciones
   (afecta a F007 y F036 de falsedades).
