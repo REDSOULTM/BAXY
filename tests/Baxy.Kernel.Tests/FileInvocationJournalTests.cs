@@ -387,16 +387,15 @@ public sealed class FileInvocationJournalTests
         await using (FileInvocationJournal reopened = await OpenJournalAsync())
         using (var engine = new MissionEngine(new OperationRegistry([recoveryHandler]), reopened))
         {
-            OperationResponse retry = await engine.ExecuteAsync(
-                request with { RequestId = retryRequestId },
-                CancellationToken.None);
+            // Auditoría del núcleo 2026-10-23: after a restart nothing says the pending run did nothing, so the retry
+            // asks (reconciliationRequired) and runs on the yes, as a new request.
+            (_, OperationResponse retry) = await UncertainStart.RetryAsync(engine, request with { RequestId = retryRequestId });
 
             Assert.Multiple(() =>
             {
                 Assert.That(retry.Status, Is.EqualTo(OperationStatuses.Completed));
                 Assert.That(retry.Verified, Is.True);
                 Assert.That(retry.Replayed, Is.False);
-                Assert.That(retry.RequestId, Is.EqualTo(retryRequestId));
                 Assert.That(recoveryHandler.ExecutionCount, Is.EqualTo(1));
             });
         }
@@ -424,9 +423,8 @@ public sealed class FileInvocationJournalTests
             };
 
             OperationResponse conflict = await engine.ExecuteAsync(conflicting, CancellationToken.None);
-            OperationResponse recovered = await engine.ExecuteAsync(
-                original with { RequestId = Guid.NewGuid().ToString("D") },
-                CancellationToken.None);
+            // Auditoría del núcleo 2026-10-23: a start that may have acted is retried on the person's yes.
+            (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, original);
 
             Assert.Multiple(() =>
             {
@@ -539,9 +537,8 @@ public sealed class FileInvocationJournalTests
             OperationResponse incompleteConflict = await engine.ExecuteAsync(
                 ChangeContent(incompleteRequest, "contenido conflictivo"),
                 CancellationToken.None);
-            OperationResponse recovered = await engine.ExecuteAsync(
-                incompleteRequest with { RequestId = Guid.NewGuid().ToString("D") },
-                CancellationToken.None);
+            // Auditoría del núcleo 2026-10-23: a start that may have acted is retried on the person's yes.
+            (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, incompleteRequest);
             OperationResponse triggerReplay = await engine.ExecuteAsync(
                 triggerRequest with { RequestId = Guid.NewGuid().ToString("D") },
                 CancellationToken.None);

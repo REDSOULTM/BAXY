@@ -130,9 +130,8 @@ public sealed class FileInvocationJournalRotationTests
             OperationResponse replay = await engine.ExecuteAsync(
                 early with { RequestId = Guid.NewGuid().ToString("D") },
                 CancellationToken.None);
-            OperationResponse recovered = await engine.ExecuteAsync(
-                incomplete with { RequestId = Guid.NewGuid().ToString("D") },
-                CancellationToken.None);
+            // Auditoría del núcleo 2026-10-23: a start that may have acted is retried on the person's yes.
+            (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, incomplete);
 
             Assert.Multiple(() =>
             {

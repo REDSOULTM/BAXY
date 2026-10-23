@@ -29,12 +29,13 @@ public sealed class Goal05TerminalStateTests
         CompletedInvocation? beforeRetry = await journal.FindCompletedAsync(
             request.InvocationId,
             CancellationToken.None);
-        OperationResponse recovered = await engine.ExecuteAsync(
-            request with { RequestId = NewId() },
-            CancellationToken.None);
+        // Auditoría del núcleo 2026-10-23: its effect may have happened (effectMayHaveOccurred), so the same invocation
+        // is retried only on the person's yes to reconcile it.
+        (OperationResponse asked, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, request);
 
         Assert.Multiple(() =>
         {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
             Assert.That(pending.Status, Is.EqualTo(OperationStatuses.Pending));
             Assert.That(pending.Verified, Is.False);
             Assert.That(pending.InvocationId, Is.EqualTo(request.InvocationId));

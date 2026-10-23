@@ -20,6 +20,14 @@ public sealed class MissionEngine : IDisposable
     private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
 
+    // Auditoría del núcleo 2026-10-23 (replay never re-executes without the person): the invocations whose last run ended
+    // retryable with nothing done (the provider said so), the only started ones a retry runs again unasked; and those
+    // whose uncertain start the person is being asked about, so the yes to that question is not revoked again. Both live
+    // under the execution gate, in memory only: after a restart every started invocation is uncertain.
+    private const int MaximumRememberedRetries = 1024;
+    private readonly HashSet<string> _safeRetries = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _reconciling = new(StringComparer.Ordinal);
+
     /// <summary>
     /// Único constructor. Lo obligatorio va por parámetro; lo opcional, en
     /// <see cref="MissionEngineOptions"/>, para que añadir una dependencia no
@@ -144,6 +152,25 @@ public sealed class MissionEngine : IDisposable
                 }
             }
 
+            // Auditoría del núcleo 2026-10-23: an invocation that started before and did not end (the handler threw, the core
+            // stopped, its last run may have acted) is not run again without the person, in either mode: its effect may
+            // stand. It asks, bound to it, with reconciliationRequired; a yes given before that run was for that run only.
+            // A retry after a run that said nothing was done goes on as the provider's own retry.
+            bool uncertainStart = startedFingerprint is not null
+                && knownOperation
+                && handler is not null
+                && validArguments
+                && preflightFailure is null
+                && !_safeRetries.Contains(request.InvocationId);
+            if (uncertainStart)
+            {
+                policy = PolicyDecision.RequireConfirmation;
+                if (_reconciling.Add(request.InvocationId))
+                {
+                    _confirmationAuthority.Revoke(ConfirmationBinding.Create(request, fingerprint));
+                }
+            }
+
             ConfirmationBinding? grantedBinding = null;
             if (policy == PolicyDecision.RequireConfirmation)
             {
@@ -200,6 +227,9 @@ public sealed class MissionEngine : IDisposable
                 request.MissionId,
                 request.InvocationId,
                 request.Arguments);
+            // This run spends what was known of the earlier one: only its own outcome can make a retry safe again.
+            _safeRetries.Remove(request.InvocationId);
+            _reconciling.Remove(request.InvocationId);
             OperationOutcome outcome = preflightFailure ?? await handler
                 .ExecuteAsync(invocation, cancellationToken)
                 .ConfigureAwait(false);
@@ -237,6 +267,16 @@ public sealed class MissionEngine : IDisposable
                 if (outcome.EffectMayHaveOccurred && grantedBinding is { } spent)
                 {
                     _confirmationAuthority.Revoke(spent);
+                }
+                else if (!outcome.EffectMayHaveOccurred && !uncertainStart)
+                {
+                    if (_safeRetries.Count >= MaximumRememberedRetries)
+                    {
+                        // Forgetting one only makes its retry ask.
+                        _safeRetries.Clear();
+                    }
+
+                    _safeRetries.Add(request.InvocationId);
                 }
 
                 return response;
@@ -325,6 +365,8 @@ public sealed class MissionEngine : IDisposable
             _confirmationAuthority.Revoke(binding);
         }
 
+        _safeRetries.Remove(request.InvocationId);
+        _reconciling.Remove(request.InvocationId);
         return response;
     }
 
