@@ -39,3 +39,16 @@ def test_a_row_with_an_error_is_a_failure_in_both_banks() -> None:
     row = {**ROWS[0], "error": "RuntimeError('server')"}
     result = rejudge([row], {c["id"]: c for c in OLD}, by_old)
     assert result["old"] == (0, 1) and result["new"] == (0, 1) and result["flips"] == []
+
+
+def test_a_rejudge_with_the_runs_catalog_holds_each_code_to_itself() -> None:
+    # Audit w8-medir: the same bank as old and new re-judges a run with today's judge; with the catalog, close is not
+    # close_all.
+    from bench_decision import enums_of
+    bank = [{"id": "H001", "expect": {"kind": "call", "op": "browser.control", "args": {"action": "close"}}}]
+    row = {"id": "H001", "kind": "action", "operation": "browser.control", "arguments": {"action": "close_all"}}
+    by_old, _ = mapping(bank, bank)
+    catalog = {"capabilities": [{"name": "browser.control", "argumentsSchema": {"properties": {
+        "action": {"enum": ["close", "close_all"]}}}}]}
+    assert rejudge([row], {"H001": bank[0]}, by_old)["new"] == (1, 1)
+    assert rejudge([row], {"H001": bank[0]}, by_old, enums_of(catalog))["new"] == (0, 1)

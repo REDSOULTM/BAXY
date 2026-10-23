@@ -47,7 +47,17 @@ def norm(value):
     return "".join(ch for ch in text if not unicodedata.combining(ch))
 
 
-def arg_ok(want, got):
+def enums_of(catalog: dict) -> dict[str, dict[str, set[str]]]:
+    """Each operation's arguments that take one code of a list (their schema's enum), normalized: op → arg → codes."""
+    found: dict[str, dict[str, set[str]]] = {}
+    for cap in catalog.get("capabilities") or []:
+        for name, schema in ((cap.get("argumentsSchema") or {}).get("properties") or {}).items():
+            if isinstance(schema, dict) and isinstance(schema.get("enum"), list):
+                found.setdefault(str(cap.get("name")), {})[name] = {norm(v).strip() for v in schema["enum"]}
+    return found
+
+
+def arg_ok(want, got, codes=None):
     if got is None:
         return False
     if isinstance(want, bool):
@@ -59,22 +69,32 @@ def arg_ok(want, got):
             return False
     if isinstance(want, str) and want.startswith("re:"):
         return re.search(want[3:], norm(got)) is not None
+    if codes and norm(want).strip() in codes:
+        # Audit w8-medir (2026-10-23): one code of the argument's list is that code, not any text that holds it. As a
+        # part of the text, «close» passed browser.control close_all, «space» backspace, «tab» alt_tab, «escape»
+        # ctrl_shift_escape (Task Manager), «memory» cpu_memory and os_memory, «game» gamemode (16 such pairs in
+        # catalog-final.json).
+        return norm(got).strip() == norm(want).strip()
     return norm(want) in norm(got)
 
 
-def judge(expect, result, arguments):
+def judge(expect, result, arguments, enums=None):
+    """True, False, or None (not counted). With `enums` (enums_of the run's catalog), an argument of a code list is
+    compared exactly; without it, as part of the text, as before the audit."""
     kind = result.get("kind")
+    enums = enums or {}
     if expect["kind"] == "any":
         # decision3 (README of practica): a case with more than one defensible answer lists them as options of any kind;
         # it is met by any of them, and left out only when every option names a retired operation.
-        verdicts = [judge(option, result, arguments) for option in expect["options"]]
+        verdicts = [judge(option, result, arguments, enums) for option in expect["options"]]
         return None if all(v is None for v in verdicts) else any(bool(v) for v in verdicts)
     if expect["kind"] == "call":
         op, args, fixed = current(expect["op"], expect.get("args"))
         if op is None:  # retired with no replacement: not counted
             return None
+        codes = enums.get(op) or {}
         return (kind == "action" and result.get("operation") == op
-                and all(arg_ok(v, (arguments or {}).get(k)) for k, v in {**args, **fixed}.items()))
+                and all(arg_ok(v, (arguments or {}).get(k), codes.get(k)) for k, v in {**args, **fixed}.items()))
     if expect["kind"] == "call_any":
         live = [current(candidate) for candidate in expect["ops"]]
         if all(op is None for op, _, _ in live):
@@ -82,8 +102,9 @@ def judge(expect, result, arguments):
         for op, _, fixed in live:
             if op is None:
                 continue
+            codes = enums.get(op) or {}
             if kind == "action" and result.get("operation") == op and all(
-                    arg_ok(v, (arguments or {}).get(k)) for k, v in fixed.items()):
+                    arg_ok(v, (arguments or {}).get(k), codes.get(k)) for k, v in fixed.items()):
                 return True
         return False
     if expect["kind"] == "ask":
@@ -163,7 +184,9 @@ def main():
                                int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
         system_one.start()
     mind = Mind(server, runs / f"{args.label}.trace.jsonl", system_one)
-    mind.configure(json.loads(Path(args.catalog).read_text(encoding="utf-8")))
+    catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
+    enums = enums_of(catalog)
+    mind.configure(catalog)
     server.wait_ready(600)
     t0 = time.monotonic()
     mind.warm()
@@ -180,7 +203,7 @@ def main():
             result, error = {"kind": "error"}, repr(exc)[:200]
         latency = time.monotonic() - started
         arguments = result.get("arguments") if result.get("operation") else None
-        verdict = judge(case["expect"], result, arguments)
+        verdict = judge(case["expect"], result, arguments, enums)
         excluded = verdict is None
         ok = error is None and bool(verdict)
         if not excluded:
