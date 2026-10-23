@@ -106,9 +106,12 @@ internal sealed class AppRestartHandler : IOperationHandler
             cancellationToken).ConfigureAwait(false);
         if (!opened.Succeeded || !opened.Verified || opened.Result is not { ValueKind: JsonValueKind.Object } facts)
         {
+            // Auditoría del Core (w8): what the failed reopening observed (whether its launch was issued, the closest
+            // names, its next) went nowhere, so a reopening still starting was told as «no se reinició».
             return OperationOutcome.Failure(
                 opened.ErrorCode ?? "app_reopen_failed",
-                Receipt(appId, closedWindows, closedProcesses, stillRunning, reopened: null),
+                Receipt(appId, closedWindows, closedProcesses, stillRunning, reopened: null,
+                    failedReopening: opened.Succeeded ? null : opened.Result),
                 effectMayHaveOccurred: true,
                 causeCode: "app_reopen_failed");
         }
@@ -179,7 +182,8 @@ internal sealed class AppRestartHandler : IOperationHandler
         int closedWindows,
         IEnumerable<int> closedProcesses,
         List<int> stillRunning,
-        JsonElement? reopened)
+        JsonElement? reopened,
+        JsonElement? failedReopening = null)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
@@ -205,6 +209,13 @@ internal sealed class AppRestartHandler : IOperationHandler
             {
                 writer.WritePropertyName("opened");
                 opened.WriteTo(writer);
+            }
+
+            // The reopening's own failure facts (app.open's: launchIssued, candidates, next), never an opening.
+            if (failedReopening is { ValueKind: JsonValueKind.Object } failed)
+            {
+                writer.WritePropertyName("reopening");
+                failed.WriteTo(writer);
             }
 
             writer.WriteString("authority", "window_close_absence_process_exit_app_open");

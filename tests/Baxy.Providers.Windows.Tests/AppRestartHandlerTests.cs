@@ -130,6 +130,54 @@ public sealed class AppRestartHandlerTests
         Assert.That(outcome.ErrorCode, Is.EqualTo("app_restart_not_verified"));
     }
 
+    // Auditoría del Core (w8): a reopening that failed said only its code; what it observed (a launch issued and no window
+    // verified yet) goes with the restart's failure as reopening, never as an opening.
+    [Test]
+    public async Task AFailedReopeningKeepsWhatTheOpeningObserved()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100)]);
+        var handler = new AppRestartHandler(
+            windows,
+            (_, _) => ValueTask.FromResult(OperationOutcome.Failure(
+                "verification_failed",
+                JsonSerializer.SerializeToElement(new { launchIssued = true, next = "a launch of Spotify was issued" }),
+                effectMayHaveOccurred: true)),
+            (_, _, _) => ValueTask.FromResult(true));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation(), CancellationToken.None);
+
+        JsonElement receipt = outcome.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(outcome.CauseCode, Is.EqualTo("app_reopen_failed"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.GetProperty("closedWindows").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.GetProperty("reopened").GetBoolean(), Is.False);
+            Assert.That(receipt.TryGetProperty("opened", out _), Is.False);
+            Assert.That(receipt.GetProperty("reopening").GetProperty("launchIssued").GetBoolean(), Is.True);
+        });
+    }
+
+    // Contracase: a reopening that failed with nothing observed adds nothing.
+    [Test]
+    public async Task AFailedReopeningWithNoFactsAddsNone()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100)]);
+        var handler = new AppRestartHandler(
+            windows,
+            (_, _) => ValueTask.FromResult(OperationOutcome.Failure("launch_failed")),
+            (_, _, _) => ValueTask.FromResult(true));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation(), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("launch_failed"));
+            Assert.That(outcome.Result!.Value.TryGetProperty("reopening", out _), Is.False);
+        });
+    }
+
     [Test]
     public async Task AnApplicationWithNoWindowIsNotRunningAndNothingHappens()
     {
