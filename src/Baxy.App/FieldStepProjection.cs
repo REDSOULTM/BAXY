@@ -159,12 +159,19 @@ internal static class FieldStepProjection
             string observed = Facts(facts);
             view["obs"] = observed.Length == 0 ? shown.Said : shown.Said + " · " + observed;
         }
-        else if (raw == OperationStatuses.Completed || uncertain || raw == OperationStatuses.Pending || raw == "unknown")
+        else if (raw == OperationStatuses.Completed || uncertain || raw == "unknown")
         {
             view["status"] = "maybe";
             view["reason"] = uncertain || raw != OperationStatuses.Completed
                 ? Reason(code, "No se pudo confirmar si se hizo")
                 : "Terminó, pero no se pudo verificar";
+        }
+        else if (raw == OperationStatuses.Pending)
+        {
+            // A retryable outcome whose effect did not happen (the engine says effectUncertain when it may have): it
+            // did not complete and can be tried again, never «may have run».
+            view["status"] = "fail";
+            view["reason"] = Reason(code, "No se completó, se puede reintentar");
         }
         else if (raw is OperationStatuses.Rejected or "cancelled")
         {

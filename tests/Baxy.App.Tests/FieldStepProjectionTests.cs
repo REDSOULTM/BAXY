@@ -94,6 +94,28 @@ public sealed class FieldStepProjectionTests
         });
     }
 
+    [Test]
+    public void ARetryableCallWhoseEffectDidNotHappenDidNotComplete()
+    {
+        JsonObject view = Finished(OperationStatuses.Pending, verified: false,
+            new JsonObject { ["status"] = "pending", ["error"] = "provider_busy" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)view["status"], Is.EqualTo("fail"));
+            Assert.That((string?)view["reason"], Is.EqualTo("No se completó, se puede reintentar · provider_busy"));
+        });
+    }
+
+    [Test]
+    public void ARetryableCallWhoseEffectMayHaveHappenedMayHaveRun()
+    {
+        JsonObject view = Finished(OperationStatuses.Pending, verified: false,
+            new JsonObject { ["status"] = "pending", ["error"] = "provider_busy", ["effectUncertain"] = true });
+
+        Assert.That((string?)view["status"], Is.EqualTo("maybe"));
+    }
+
     [TestCase("cancelled", "declined_by_person", "skip", "No se ejecutó: dijiste que no")]
     [TestCase(OperationStatuses.Rejected, "unknown_operation", "skip", "No se ejecutó: esa acción no existe")]
     [TestCase(OperationStatuses.Failed, "provider_failed", "fail", "Falló · provider_failed")]
