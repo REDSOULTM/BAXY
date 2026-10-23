@@ -1,12 +1,15 @@
 """Re-judge decision runs of one practice bank against a newer one, from the arguments each run stored.
 
 usage: py -3.12 -X utf8 scripts/renew/compare_banks.py RUN.jsonl... [--old decision2.json] [--new decision3.json] [--write]
+       [--catalog FILE]
 A run of bench_decision.py keeps, per case, the decision (kind, operation, arguments, reply): no model runs again. Each
 row is judged with today's judge (bench_decision.judge, catalog_equivalence) against the old bank and against the new
 one, where a relabelled case (new id, «relabel_of» the old one) takes its new expectation and a retired case (in the old
 bank, in neither form in the new one) is left out. Prints, per run, the score it wrote, the old bank re-judged and the
 new bank, with the cases whose verdict the new labels flip; --write keeps <run>.<new bank>.jsonl beside each run, its
-rows under the new ids. Run patterns are expanded (PowerShell does not expand them).
+rows under the new ids. Run patterns are expanded (PowerShell does not expand them). With --catalog (the runs' catalog), an
+argument of a code list is judged exactly (bench_decision.enums_of); the same bank as --old and --new re-judges runs
+with today's judge (holdout: one judge for every configuration).
 """
 import argparse
 import glob
@@ -15,7 +18,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from bench_decision import judge  # noqa: E402
+from bench_decision import enums_of, judge  # noqa: E402
 
 PRACTICE = Path(r"F:\BAXYeval\renew_v1\practica")
 
@@ -40,11 +43,11 @@ def mapping(old: list[dict], new: list[dict]) -> tuple[dict, list[str]]:
     return found, retired
 
 
-def verdict(case: dict, row: dict):
+def verdict(case: dict, row: dict, enums: dict | None = None):
     """True, False, or None when the case is not counted (an operation retired with nothing in its place)."""
     if row.get("error"):
         return False
-    return judge(case["expect"], row, row.get("arguments"))
+    return judge(case["expect"], row, row.get("arguments"), enums)
 
 
 def score(verdicts: list) -> tuple[int, int]:
@@ -52,15 +55,15 @@ def score(verdicts: list) -> tuple[int, int]:
     return sum(bool(v) for v in counted), len(counted)
 
 
-def rejudge(rows: list[dict], old_by_id: dict, new_by_old: dict) -> dict:
+def rejudge(rows: list[dict], old_by_id: dict, new_by_old: dict, enums: dict | None = None) -> dict:
     old_v, new_v, flips, rows_new, unknown = [], [], [], [], []
     for row in rows:
         old_case, new_case = old_by_id.get(row["id"]), new_by_old.get(row["id"])
         if old_case is None and new_case is None:
             unknown.append(row["id"])
             continue
-        before = verdict(old_case, row) if old_case is not None else None
-        after = verdict(new_case, row) if new_case is not None else None
+        before = verdict(old_case, row, enums) if old_case is not None else None
+        after = verdict(new_case, row, enums) if new_case is not None else None
         old_v.append(before)
         new_v.append(after)
         if new_case is not None:
@@ -78,7 +81,9 @@ def main() -> None:
     parser.add_argument("--old", default=str(PRACTICE / "decision2.json"))
     parser.add_argument("--new", default=str(PRACTICE / "decision3.json"))
     parser.add_argument("--write", action="store_true")
+    parser.add_argument("--catalog", default="", help="the runs' catalog: code-list arguments judged exactly")
     args = parser.parse_args()
+    enums = enums_of(json.loads(Path(args.catalog).read_text(encoding="utf-8"))) if args.catalog else None
     old, new = load_bank(Path(args.old)), load_bank(Path(args.new))
     old_by_id = {c["id"]: c for c in old}
     new_by_old, retired = mapping(old, new)
@@ -97,14 +102,14 @@ def main() -> None:
         if Path(str(summary.get("cases", ""))).name not in bank_names:
             print(f"{path.name}: a run of {summary.get('cases')}, skipped")
             continue
-        result = rejudge(rows, old_by_id, new_by_old)
+        result = rejudge(rows, old_by_id, new_by_old, enums)
         (ok_old, n_old), (ok_new, n_new) = result["old"], result["new"]
         print(f"{summary.get('label', path.stem):28} written {summary.get('ok')}/{summary.get('n')}  "
               f"{Path(args.old).stem} {ok_old}/{n_old}  {Path(args.new).stem} {ok_new}/{n_new}  "
               f"flips {' '.join(result['flips']) or '-'}" + (f"  unknown {result['unknown']}" if result["unknown"] else ""))
         if args.write:
             head = {**summary, "cases": args.new, "rejudged_from": str(path), "ok_written": summary.get("ok"),
-                    "n_written": summary.get("n"), "ok": ok_new, "n": n_new,
+                    "n_written": summary.get("n"), "ok": ok_new, "n": n_new, "judge_catalog": args.catalog or None,
                     "accuracy": round(ok_new / max(1, n_new), 4), "retired": retired,
                     "excluded_retired": [r["id"] for r in result["rows"] if r["excluded"]]}
             out = path.with_name(f"{path.stem}.{Path(args.new).stem}.jsonl")

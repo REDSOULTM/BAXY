@@ -26,6 +26,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import run_meta  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
 
@@ -88,9 +91,23 @@ def profile_summary(rows: list[dict]) -> dict:
     """Across the cases of a run: what was moved to the quarantine and what a person must review, «id: path»."""
     def listed(*kinds):
         return [f"{row['id']}: {path}" for row in rows for kind in kinds for path in (row.get("profile") or {}).get(kind) or []]
-    return {"profile_quarantined": listed("removed"),
-            "profile_review": listed("changed", "missing", "new_kept", "left"),
-            "target_windows_left": [row["id"] for row in rows if (row.get("profile") or {}).get("target_windows_left")]}
+    review = listed("changed", "missing", "new_kept", "left")
+    return {"profile_quarantined": listed("removed"), "profile_review": review,
+            "target_windows_left": [row["id"] for row in rows if (row.get("profile") or {}).get("target_windows_left")],
+            # Audit w8-medir: what the cases changed, removed or left outside the sandbox and the bench did not undo is
+            # there for the next case and the next configuration (holdout v4: tareas_hoy.txt, config.ini, q4/notes.txt
+            # in the notebook's home, F007 and F036). A contaminated run says so; restore by hand before the next arm.
+            "contaminated": bool(review)}
+
+
+# A case that never ran its turns is not the product's failure (CIERRE_PLAN: «un caso con setup_fallido es VOID»).
+NOT_SCORED = ("setup_fallido", "void", "sesion_bloqueada")
+
+
+def scored(rows: list[dict]) -> dict:
+    """The run's score over the cases that ran: ok and n leave out the cases that never ran (n keeps every case)."""
+    ran = [row for row in rows if row.get("status") not in NOT_SCORED]
+    return {"n_scored": len(ran), "accuracy_scored": round(sum(r["ok"] for r in ran) / max(1, len(ran)), 4)}
 
 
 class Isolation:
@@ -216,10 +233,14 @@ class Conductor:
         self.commands.mkdir(parents=True, exist_ok=True)
         self.sequence = 0
         self.events = Events(run_dir / "events.jsonl")
+        # The mind's trace and the catalog it was sent go to the run (audit w8-medir): in the owner's turns.jsonl they
+        # mixed bench turns with his real ones and, past its cap, rotated his out.
+        self.mind_dir = run_dir / "mente"
         self.process = subprocess.Popen(
             ["cmd", "/c", str(ROOT / "scripts" / "run_renew.cmd"), "--conductor", "--command-dir", str(self.commands),
              "--capture", str(run_dir), "--profile", str(profile), "--timeout-ms", "300000"],
-            cwd=str(ROOT), stdout=(run_dir / "console.txt").open("w", encoding="utf-8"), stderr=subprocess.STDOUT)
+            cwd=str(ROOT), stdout=(run_dir / "console.txt").open("w", encoding="utf-8"), stderr=subprocess.STDOUT,
+            env={**os.environ, "BAXY_RENEW_TRACE_DIR": str(self.mind_dir)})
 
     def send(self, command: dict) -> int:
         self.sequence += 1
@@ -273,7 +294,13 @@ def run_turn(conductor: Conductor, command: dict, timeout: float) -> list[dict]:
     return events
 
 
-def wait_silence(conductor: Conductor, timeout: float) -> None:
+# Audit w8-medir: how long an answer may go on sounding before the next turn or the oracles. It was 30 s; at a usual
+# speaking rate (about 14 characters a second) an answer past ~400 characters was still sounding, so the next turn cut
+# it (its speech «cancelled») or the oracles read it unfinished, and must_speak failed an answer said whole.
+SILENCE_S = 120.0
+
+
+def wait_silence(conductor: Conductor, timeout: float = SILENCE_S) -> None:
     """Until the last utterance that started has ended (or nothing is sounding)."""
     conductor.events.poll()
     last_start = max((i for i, e in enumerate(conductor.events.all) if e["type"] == "speech.start"), default=None)
@@ -363,7 +390,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict,
     turns = case.get("turns") or []
     for number, turn in enumerate(turns, start=1):
         if number > 1 and turn.get("barge_in_after_ms") is None:
-            wait_silence(conductor, 30)
+            wait_silence(conductor)
         turn_from.append(len(conductor.events.all))
         if turn.get("barge_in_after_ms") is not None:
             # Sent N ms after the previous answer started to sound (not its notice); the previous turn must have sounded.
@@ -392,7 +419,7 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict,
         turn_events.append(events)
 
     # Let the last answer finish sounding before the voice rule and the oracles read the world.
-    wait_silence(conductor, 30)
+    wait_silence(conductor)
     conductor.events.poll()
 
     speech = utterances(conductor.events.all, turn_from, replies)
@@ -468,12 +495,14 @@ def main() -> None:
         print(f"VOID: {void}\nClose those windows (or run on a machine the owner is not using) and start again.",
               flush=True)
         sys.exit(VOID_EXIT)
+    launched = time.time()
     conductor = Conductor(run_dir, profile)
     ready = conductor.events.wait(lambda e: e["type"] in {"runtime", "terminal"}, 300)
     if not ready or not ready.get("mindReady"):
         print(json.dumps({"error": "conductor_not_ready", "event": ready}), flush=True)
         conductor.close()
         sys.exit(2)
+    record = run_meta.product_record(ROOT, run_dir, launched)  # after configure: the catalog is in the run
     env_base = dict(os.environ)
     rows = []
     stopped_before = None
@@ -518,7 +547,8 @@ def main() -> None:
     every_p50 = statistics.median(every) if every else None
     summary = {"label": args.label, "cases": args.cases, "ok": sum(r["ok"] for r in rows), "n": len(rows),
                "stopped_before": stopped_before,
-               "accuracy": round(sum(r["ok"] for r in rows) / max(1, len(rows)), 4), "areas": by_area,
+               "accuracy": round(sum(r["ok"] for r in rows) / max(1, len(rows)), 4), **scored(rows),
+               "areas": by_area,
                # The turn's first sound (the notice's when it came first) and its response's, each with the turns that
                # sounded later than 3 s.
                "first_audio_p50_ms": statistics.median(audio) if audio else None,
@@ -531,12 +561,18 @@ def main() -> None:
                "setup_failed": [r["id"] for r in rows if r["status"] == "setup_fallido"],
                # w6-banco: a VOID run is not a score; the files cases left outside the sandbox (moved to each case's
                # profile-quarantine) and the owner's files a case changed or removed (reported, never touched).
-               "void": void, **profile_summary(rows)}
+               "void": void, **profile_summary(rows), "run": record}
     with (run_dir / "results.jsonl").open("w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
         for row in rows:
             out.write(json.dumps(row, ensure_ascii=False) + "\n")
     print(json.dumps(summary, ensure_ascii=False))
+    if summary["contaminated"]:
+        print(f"WARNING: the cases changed files outside the sandbox the bench did not undo (profile_review, "
+              f"{len(summary['profile_review'])}): put them back before the next configuration runs", flush=True)
+    if record["system_one"]["on"] != record["system_one"]["server_started"]:
+        print(f"WARNING: System One was {'on' if record['system_one']['on'] else 'off'} for the launcher but its server "
+              f"{'did' if record['system_one']['server_started'] else 'did not'} start", flush=True)
     if void:
         sys.exit(VOID_EXIT)
 

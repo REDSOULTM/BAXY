@@ -80,3 +80,51 @@ def test_a_case_with_a_pending_confirmation_reaches_the_mind_with_it() -> None:
     assert seen == {"id": "X1", "text": "dale", "pending": pending}
     decide(Mind(), {"id": "X2", "text": "abre paint"})
     assert seen["pending"] is None
+
+
+# Audit w8-medir (2026-10-23): an argument of a code list is that code. As part of the text, «close» passed close_all,
+# «space» backspace and «escape» ctrl_shift_escape; free text (a name, a path) is still met by the text that holds it.
+CATALOG = {"capabilities": [
+    {"name": "browser.control", "argumentsSchema": {"properties": {
+        "action": {"type": "string", "enum": ["close", "close_all", "new_tab"]}}}},
+    {"name": "input.key.press", "argumentsSchema": {"properties": {
+        "key": {"type": "string", "enum": ["space", "backspace", "escape", "ctrl_shift_escape"]}}}},
+    {"name": "app.open", "argumentsSchema": {"properties": {
+        "appId": {"type": "string"}, "place": {"type": "string", "enum": ["game", "gamemode"]}}}},
+]}
+
+
+def _call(op: str) -> dict:
+    return {"kind": "action", "operation": op}
+
+
+def test_a_code_of_the_arguments_list_must_be_that_code() -> None:
+    from bench_decision import enums_of
+    enums = enums_of(CATALOG)
+    close = {"kind": "call", "op": "browser.control", "args": {"action": "close"}}
+    assert judge(close, _call("browser.control"), {"action": "close_all"}, enums) is False
+    assert judge(close, _call("browser.control"), {"action": "Close "}, enums) is True
+    space = {"kind": "call", "op": "input.key.press", "args": {"key": "space"}}
+    assert judge(space, _call("input.key.press"), {"key": "backspace"}, enums) is False
+    escape = {"kind": "call", "op": "input.key.press", "args": {"key": "escape"}}
+    assert judge(escape, _call("input.key.press"), {"key": "ctrl_shift_escape"}, enums) is False
+    # Without the catalog the judge reads as before the audit (a run re-judged without --catalog).
+    assert judge(close, _call("browser.control"), {"action": "close_all"}) is True
+
+
+def test_free_text_and_a_value_outside_the_list_are_still_part_of_the_text() -> None:
+    from bench_decision import enums_of
+    enums = enums_of(CATALOG)
+    chrome = {"kind": "call", "op": "app.open", "args": {"appId": "chrome", "place": "re:^game$"}}
+    assert judge(chrome, _call("app.open"), {"appId": "Google Chrome", "place": "game"}, enums) is True
+    assert judge(chrome, _call("app.open"), {"appId": "Google Chrome", "place": "gamemode"}, enums) is False
+    # An expectation written for a code the list no longer has is read as text, as it was.
+    older = {"kind": "call", "op": "app.open", "args": {"place": "mode"}}
+    assert judge(older, _call("app.open"), {"place": "gamemode"}, enums) is True
+
+
+def test_an_any_case_hands_the_codes_to_each_option() -> None:
+    from bench_decision import enums_of
+    expect = {"kind": "any", "options": [{"kind": "call", "op": "browser.control", "args": {"action": "close"}},
+                                         {"kind": "ask"}]}
+    assert judge(expect, _call("browser.control"), {"action": "close_all"}, enums_of(CATALOG)) is False

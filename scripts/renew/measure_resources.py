@@ -9,6 +9,12 @@ RAM is each process's USS (memory it alone holds: llama-server's working set cou
 bytes count the VRAM WDDM commits). VRAM is the GPU's growth over the reading before the product started (WDDM reports
 no per-process VRAM). Both are sampled every second from the product ready to 5 s after its turns, and each keeps its
 peak. Qwen's llama-server and Laya's (System One, told apart by the GGUF of its command line) are separate roles.
+Audit w8-medir (2026-10-23): only this bench's product counts, its Baxy.exe (found by the conductor's command folder
+in its command line) and every process under it; any llama-server whose command line held «BAXYeval» counted before,
+so a bench or a judge running beside it on the same machine was added to the product. The launchers under it (cmd,
+py, conhost) are «otros», reported and not in the product's total. VRAM is still the GPU's growth (WDDM gives no
+per-process VRAM): the GPU is read again after the product closed, and a baseline that moved by more than
+VRAM_DRIFT_MIB says the attribution is doubtful (something else took or freed VRAM meanwhile).
 Writes <banks>/runs/<label>-recursos.json.
 """
 import json
@@ -26,6 +32,8 @@ from bench_e2e import BANKS, Conductor, run_turn, wait_silence  # noqa: E402
 
 TURNS = ["hola, ¿cómo estás?", "¿qué hora es?", "dime una frase corta para empezar bien el día"]
 SAMPLE_S = 1.0
+VRAM_DRIFT_MIB = 64
+SETTLE_S = 5.0  # after the product closed, before the GPU is read again
 
 
 def gpu_used_mib() -> int | None:
@@ -42,27 +50,40 @@ def gguf_of(arguments: list[str]) -> str:
     return ""
 
 
-def llama_role(arguments: list[str]) -> str | None:
+def llama_role(arguments: list[str]) -> str:
     """R12.7: Laya's server (System One, layam-*.gguf, wherever it lies) is «laya»; Qwen's stays «llama-server»."""
-    if Path(gguf_of(arguments)).name.lower().startswith("laya"):
-        return "laya"
-    return "llama-server" if "BAXYeval" in " ".join(arguments) else None
+    return "laya" if Path(gguf_of(arguments)).name.lower().startswith("laya") else "llama-server"
 
 
-def product_processes() -> dict[str, list[psutil.Process]]:
+def role_of(name: str, arguments: list[str]) -> str:
+    name, cmdline = name.lower(), " ".join(arguments)
+    return (llama_role(arguments) if name == "llama-server.exe"
+            else "mente" if name.startswith("python") and "baxy_mind" in cmdline
+            else "app" if name == "baxy.exe"
+            else "core" if name == "baxy-core.exe"
+            # Ronda final: the persistent UIA worker the core prewarms (UiaWorkerHost) is the product's too.
+            else "worker-uia" if name.startswith("powershell") and "DesktopUiaWorker" in cmdline
+            else "otros")
+
+
+def product_processes(commands: Path | str) -> dict[str, list[psutil.Process]]:
+    """This bench's product by role: its Baxy.exe (the conductor's command folder in its command line) and the processes
+    under it (core, mind, Qwen's and Laya's servers, the UIA worker; launchers as «otros»)."""
     found: dict[str, list[psutil.Process]] = {}
     for process in psutil.process_iter(["name", "cmdline"]):
-        name = (process.info["name"] or "").lower()
-        cmdline = " ".join(process.info["cmdline"] or [])
-        role = (llama_role(process.info["cmdline"] or []) if name == "llama-server.exe"
-                else "mente" if name.startswith("python") and "baxy_mind" in cmdline
-                else "app" if name == "baxy.exe"
-                else "core" if name == "baxy-core.exe"
-                # Ronda final: the persistent UIA worker the core prewarms (UiaWorkerHost) is the product's too.
-                else "worker-uia" if name.startswith("powershell") and "DesktopUiaWorker" in cmdline
-                else None)
-        if role:
-            found.setdefault(role, []).append(process)
+        if (process.info["name"] or "").lower() != "baxy.exe" or str(commands) not in " ".join(
+                process.info["cmdline"] or []):
+            continue
+        try:
+            tree = [process] + process.children(recursive=True)
+        except psutil.Error:
+            tree = [process]
+        for member in tree:
+            try:
+                role = role_of(member.name(), member.cmdline())
+            except psutil.Error:
+                continue
+            found.setdefault(role, []).append(member)
     return found
 
 
@@ -70,8 +91,9 @@ class Sampler(threading.Thread):
     """Every SAMPLE_S, the USS of each role and the GPU's memory, keeping each one's peak (R12.7: five samples after
     the turns missed the inference; a long session read llama-server's USS at 3.1 GB against 2.3 GB)."""
 
-    def __init__(self) -> None:
+    def __init__(self, commands: Path | str) -> None:
         super().__init__(daemon=True)
+        self.commands = commands
         self.done = threading.Event()
         self.peak: dict[str, int] = {}
         # Auditoría final: the peak is only of the samples nvidia-smi answered; none answered leaves the VRAM unmeasured.
@@ -87,7 +109,7 @@ class Sampler(threading.Thread):
         if reading is not None:
             self.gpu = max(self.gpu or 0, reading)
         now = {}
-        for role, processes in product_processes().items():
+        for role, processes in product_processes(self.commands).items():
             uss = 0
             for process in processes:
                 try:
@@ -96,7 +118,7 @@ class Sampler(threading.Thread):
                     pass
             now[role] = round(uss / 2**20)
             self.peak[role] = max(self.peak.get(role, 0), now[role])
-        self.total = max(self.total, sum(now.values()))
+        self.total = max(self.total, sum(v for role, v in now.items() if role != "otros"))
         self.samples += 1
 
     def run(self) -> None:
@@ -123,7 +145,7 @@ def measure(label: str, ear: bool) -> dict:
     if not ready or not ready.get("mindReady"):
         conductor.close()
         raise SystemExit(f"conductor not ready: {ready}")
-    sampler = Sampler()
+    sampler = Sampler(conductor.commands)
     sampler.start()
     try:
         time.sleep(20)  # the voice runtime finishes loading beside the model
@@ -134,14 +156,23 @@ def measure(label: str, ear: bool) -> dict:
     finally:
         sampler.stop()
         conductor.close()
+    time.sleep(SETTLE_S)
+    try:
+        after_close = gpu_used_mib()
+    except (OSError, subprocess.SubprocessError):
+        after_close = None
+    drift = after_close - before if after_close is not None and before is not None else None
     peak, gpu = sampler.peak, sampler.gpu
     # Laya's server is the mind's as well (it counted inside «llama-server» on the notebook before R12.7).
     harness = sum(peak.get(role, 0) for role in ("llama-server", "laya", "mente"))
     # Ronda final: the product as the conductor runs it as well (App, Core and the UIA worker beside the harness); the
     # window's WebView2 and the browser's own UIA worker do not run under the conductor and are not measured.
     return {"oido_cargado": ear, "vram_mib": (gpu - before) if gpu is not None and before is not None else None,
-            "uss_mib": peak, "arnes_ram_mib": harness, "producto_ram_mib": sum(peak.values()),
-            "gpu_before_mib": before, "gpu_peak_mib": gpu,
+            "uss_mib": peak, "arnes_ram_mib": harness,
+            "producto_ram_mib": sum(v for role, v in peak.items() if role != "otros"),
+            "gpu_before_mib": before, "gpu_peak_mib": gpu, "gpu_after_close_mib": after_close,
+            "vram_baseline_drift_mib": drift,
+            "vram_attribution": None if drift is None else "ok" if abs(drift) <= VRAM_DRIFT_MIB else "dudosa",
             # R12.7: the product's RAM in the sample where it was highest (the roles' peaks above may not coincide),
             # and how many samples there were.
             "producto_ram_pico_conjunto_mib": sampler.total, "muestras": sampler.samples}

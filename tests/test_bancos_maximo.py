@@ -162,9 +162,18 @@ MIND = ["py.exe", "-3.12", "-m", "baxy_mind"]
 
 
 class FakeProcess:
-    def __init__(self, state, name, cmdline, idle_mib, busy_mib):
+    def __init__(self, state, name, cmdline, idle_mib, busy_mib, children=()):
         self.info = {"name": name, "cmdline": cmdline}
-        self.state, self.idle, self.busy = state, idle_mib, busy_mib
+        self.state, self.idle, self.busy, self._children = state, idle_mib, busy_mib, list(children)
+
+    def name(self):
+        return self.info["name"]
+
+    def cmdline(self):
+        return self.info["cmdline"]
+
+    def children(self, recursive=False):
+        return list(self._children)
 
     def memory_full_info(self):
         from types import SimpleNamespace
@@ -178,16 +187,32 @@ def measured(tmp_path, monkeypatch):
 
     import measure_resources
     state = {"busy": False, "after": False, "reads": 0}
-    processes = [FakeProcess(state, "llama-server.exe", QWEN, 2300, 3100),
-                 FakeProcess(state, "llama-server.exe", LAYA, 340, 340),
-                 FakeProcess(state, "python.exe", MIND, 500, 520)]
+    commands = tmp_path / "runs" / "prueba-recursos-arnes" / "commands"
+    product = [FakeProcess(state, "llama-server.exe", QWEN, 2300, 3100),
+               FakeProcess(state, "llama-server.exe", LAYA, 340, 340),
+               FakeProcess(state, "python.exe", MIND, 500, 520),
+               FakeProcess(state, "conhost.exe", ["conhost.exe"], 7, 7)]
+    app = FakeProcess(state, "Baxy.exe", ["Baxy.exe", "--conductor", "--command-dir", str(commands)], 150, 150,
+                      children=product)
+    # Audit w8-medir: a judge or another bench's llama-server on the same machine is not this product's.
+    other = FakeProcess(state, "llama-server.exe", [r"F:\BAXYeval\llama\llama-server.exe", "-m",
+                                                    r"F:\BAXYeval\models\Qwen3.6-35B-A3B.gguf"], 9000, 9000)
+    processes = [app, other, *product]
 
     def process_iter(attrs=None):
         state["reads"] += 1
         return list(processes)
 
     def gpu_used_mib():
-        return 4000 if state["busy"] else 3500 if state["after"] else 1000
+        return 4000 if state["busy"] else 1000 if state.get("closed") else 3500 if state["after"] else 1000
+
+    class Conductor(FakeConductor):
+        def __init__(self, run_dir, profile):
+            super().__init__(run_dir, profile)
+            self.commands = run_dir / "commands"
+
+        def close(self):
+            state["closed"] = True
 
     def run_turn(conductor, command, timeout):
         # The turn lasts until the samples taken during it are two (or half a second without any).
@@ -198,7 +223,7 @@ def measured(tmp_path, monkeypatch):
         return []
 
     monkeypatch.setattr(measure_resources, "BANKS", tmp_path)
-    monkeypatch.setattr(measure_resources, "Conductor", FakeConductor)
+    monkeypatch.setattr(measure_resources, "Conductor", Conductor)
     monkeypatch.setattr(measure_resources, "run_turn", run_turn)
     monkeypatch.setattr(measure_resources, "wait_silence", lambda conductor, timeout: None)
     monkeypatch.setattr(measure_resources, "gpu_used_mib", gpu_used_mib)
@@ -221,4 +246,11 @@ def test_resources_keep_the_peak_of_the_turns(measured):
 
 def test_resources_count_laya_apart_and_in_the_total(measured):
     assert measured["uss_mib"]["laya"] == 340
-    assert measured["producto_ram_mib"] == 3100 + 340 + 520
+    assert measured["producto_ram_mib"] == 150 + 3100 + 340 + 520
+
+
+def test_resources_count_only_this_benchs_product_and_check_the_gpus_baseline(measured):
+    # The 35B judge's llama-server beside it (9000 MiB) is not the product's; the launcher is «otros», out of the total.
+    assert measured["uss_mib"]["otros"] == 7 and measured["uss_mib"]["app"] == 150
+    assert measured["gpu_after_close_mib"] == 1000 and measured["vram_baseline_drift_mib"] == 0
+    assert measured["vram_attribution"] == "ok"

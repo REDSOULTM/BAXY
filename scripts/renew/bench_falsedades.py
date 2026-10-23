@@ -26,8 +26,9 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from bench_e2e import (BANKS, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
+from bench_e2e import (BANKS, ROOT, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
                        run_ps, run_setup, run_turn, session_locked, wait_silence)
+import run_meta  # noqa: E402
 
 JUDGE_GGUF = os.environ.get("BAXY_RENEW_JUDGE_GGUF", r"F:\BAXYeval\models\Qwen3.6-35B-A3B-MTP-UD-IQ3_XXS.gguf")
 LLAMA_SERVER = os.environ.get("BAXY_MIND_LLAMA_SERVER", r"F:\BAXYeval\llama\llama-server.exe")
@@ -65,11 +66,15 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
     if void:
         raise BenchVoid(void)
     profile = Path(os.environ["LOCALAPPDATA"]) / "BAXY" / f"bench-{run_dir.name}-{int(time.time())}"
+    launched = time.time()
     conductor = Conductor(run_dir, profile)
     ready = conductor.events.wait(lambda e: e["type"] in {"runtime", "terminal"}, 300)
     if not ready or not ready.get("mindReady"):
         conductor.close()
         raise SystemExit(f"conductor not ready: {ready}")
+    # What this replica ran (audit w8-medir), kept beside its transcripts for a later --judge-only.
+    (run_dir / "run.json").write_text(json.dumps(run_meta.product_record(ROOT, run_dir, launched), ensure_ascii=False,
+                                                 indent=1), encoding="utf-8")
     env = dict(os.environ)
     transcripts = []
     for case in cases:
@@ -106,7 +111,7 @@ def converse(conductor: Conductor, case: dict) -> list[dict]:
     turns = []
     for number, turn in enumerate(case.get("turns") or [], start=1):
         if number > 1:
-            wait_silence(conductor, 30)
+            wait_silence(conductor)
         events = run_turn(conductor, {"text": turn["text"]}, 180)
         end = next((e for e in events if e["type"] == "turn.end"), {})
         reply = turn.get("reply_if_confirmation")
@@ -127,7 +132,7 @@ def converse(conductor: Conductor, case: dict) -> list[dict]:
                         for e in events if e["type"] == "step"
                         or (e["type"] == "message" and e["speaker"] in ("person", "baxy"))],
         })
-    wait_silence(conductor, 30)
+    wait_silence(conductor)
     return turns
 
 
@@ -135,15 +140,53 @@ JUDGE_SEEDS = (0, 1, 2)
 
 
 def step_of(event: dict) -> dict:
+    # Audit w8-medir: the whole observation, for the reading by hand (transcripts.json); the judge's line shortens it.
     return {"operation": event["operation"], "arguments": event["arguments"], "status": event["status"],
             "verified": event["verified"], "error": event.get("error"),
-            "observed": (event.get("observation") or "")[:1500]}
+            "observed": event.get("observation") or ""}
+
+
+OBSERVED_CHARS = 1500  # what the judge reads of one tool's observation, about (its 16k context holds the conversation)
+LONG_TEXT, LONG_LIST = 300, 20
+
+
+def _shorter(value):
+    """A JSON value with its long texts and lists cut in the middle, each cut said with how much it left out."""
+    if isinstance(value, dict):
+        return {key: _shorter(item) for key, item in value.items()}
+    if isinstance(value, list):
+        if len(value) > LONG_LIST:
+            return [*map(_shorter, value[:15]), f"[… {len(value) - 18} elementos más …]", *map(_shorter, value[-3:])]
+        return [_shorter(item) for item in value]
+    if isinstance(value, str) and len(value) > LONG_TEXT:
+        return f"{value[:200]} [… {len(value) - 280} caracteres más …] {value[-80:]}"
+    return value
+
+
+def observed_for_judge(text: str, limit: int = OBSERVED_CHARS) -> str:
+    """What the judge reads of an observation. Audit w8-medir: it read its first 1,500 characters, so the fields after a
+    long content (a read's linesRead and truncated, a listing's total, stateAfter) were cut off: a «revisé todo el
+    archivo» after a partial read had nothing to contradict it, and a true claim about the end looked unsupported. A
+    JSON observation keeps every field, with long texts and lists cut in the middle; any other keeps its start and end."""
+    if len(text) <= limit:
+        return text
+    try:
+        value = json.loads(text)
+    except ValueError:
+        value = None
+    if isinstance(value, (dict, list)):
+        short = json.dumps(_shorter(value), ensure_ascii=False, separators=(",", ":"))
+        if len(short) <= 3 * limit:
+            return short
+        text = short
+    head = limit * 2 // 3
+    return f"{text[:head]} [… {len(text) - limit} caracteres más …] {text[-(limit - head):]}"
 
 
 def step_line(step: dict) -> str:
     return (f"Herramienta {step['operation']} {json.dumps(step['arguments'], ensure_ascii=False)}"
             f" → estado {step['status']}, verificada {step['verified']}, error {step['error']}, "
-            f"observó: {step['observed']}")
+            f"observó: {observed_for_judge(step['observed'])}")
 
 
 def judge_line(messages: list[dict]) -> dict:
@@ -276,8 +319,13 @@ def judge_transcripts(transcripts: list[dict]) -> list[dict]:
     return rows
 
 
-def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict], rows: list[dict]) -> dict:
+def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict], rows: list[dict],
+                run_dir: Path | None = None) -> dict:
     false_lines = [r for r in rows if r.get("falsedad")]
+    try:
+        record = json.loads((run_dir / "run.json").read_text(encoding="utf-8")) if run_dir else None
+    except (OSError, ValueError):
+        record = None
     # A verdict the judge did not give in readable form is not an honest line: it is a line not judged.
     unjudged = [r for r in rows if "unparsed" in r]
     return {"label": label, "cases": cases, "seed": seed, "conversations": len(transcripts), "lines": len(rows),
@@ -297,7 +345,7 @@ def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict
                                        if turn.get("failure")}),
             "turnos_sin_linea": sorted({t["id"] for t in transcripts for turn in t.get("turns") or []
                                         if not any(str(b).strip() for b in turn.get("baxy") or [])}),
-            **profile_summary(transcripts)}
+            **profile_summary(transcripts), "run": record}
 
 
 def replicas_summary(label: str, summaries: list[dict]) -> dict:
@@ -321,7 +369,9 @@ def replicas_summary(label: str, summaries: list[dict]) -> dict:
             "lineas": sum(s["lines"] for s in summaries),
             "lineas_sin_juzgar": sum(s["lineas_sin_juzgar"] for s in summaries),
             **{key: tagged(key) for key in ("lineas_a_revisar", "setup_failed", "turnos_fallidos",
-                                            "profile_quarantined", "profile_review")}}
+                                            "profile_quarantined", "profile_review")},
+            # Audit w8-medir: a replica that changed the owner's files left a different world to the ones after it.
+            "replicas_contaminadas": [f"s{s['seed']}" for s in summaries if s.get("contaminated")]}
 
 
 def main() -> None:
@@ -372,7 +422,7 @@ def main() -> None:
     judged = judge([conversations[label] for label, _ in replicas], run_dirs[replicas[0][0]])
     summaries = []
     for (label, seed), rows in zip(replicas, judged):
-        summary = run_summary(label, args.cases, seed, conversations[label], rows)
+        summary = run_summary(label, args.cases, seed, conversations[label], rows, run_dirs[label])
         summaries.append(summary)
         with (run_dirs[label] / "results.jsonl").open("w", encoding="utf-8") as out:
             out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
