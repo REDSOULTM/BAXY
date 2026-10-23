@@ -87,8 +87,7 @@ class LlmServer:
         # A state a vision question set aside and never put back holds the person's conversation: none is kept. The
         # kept prefix (PREFIX) is not one of them: it is saved before any turn (Mind.warm).
         self.slot_dir.mkdir(parents=True, exist_ok=True)
-        for stale in self.slot_dir.glob("*.bin"):
-            stale.unlink(missing_ok=True)
+        self.forget_set_aside()
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         log = open(log_dir / self.log_name, "w", encoding="utf-8")
@@ -276,9 +275,12 @@ class LlmServer:
         already started as the assistant's last message, so the prompt and its cached prefix stay the same and only the
         arguments are written. tool_choice «required» keeps the call grammar active from that prefix on, inside this
         tool's own parameters (llama.cpp b11609: common/sampling.cpp, common/chat.cpp, common/parsers/qwen3-coder.cpp).
-        Returns the parsed call {"name", "arguments"} or None."""
+        Returns the parsed call {"name", "arguments"} or None. Auditoría de la mente (w8): not the decision's token
+        probabilities (logprobs, top_logprobs 10), which nothing reads of a fill; the server sorted the vocabulary at
+        every argument token for them (al máximo 9.5's cost, −20 to −100 ms expected); greedy, the same arguments."""
         messages = [*body["messages"], {"role": "assistant", "content": f"<tool_call>\n<function={wire}>\n"}]
-        request = {**{k: v for k, v in body.items() if k not in ("logit_bias", "tool_choice", "max_tokens")},
+        request = {**{k: v for k, v in body.items()
+                      if k not in ("logit_bias", "tool_choice", "max_tokens", "logprobs", "top_logprobs")},
                    "messages": messages, "tool_choice": "required", "parallel_tool_calls": False,
                    "continue_final_message": True, "add_generation_prompt": False, "max_tokens": 300,
                    "temperature": 0.0, "id_slot": 0, "cache_prompt": True}
@@ -363,6 +365,19 @@ class LlmServer:
             if not saved or stale.name not in (state.name, kept.name):
                 stale.unlink(missing_ok=True)
         return saved
+
+    def forget_set_aside(self) -> bool:
+        """Every slot state a vision question set aside (*.bin, which holds the person's conversation) is removed; the
+        kept prefix (PREFIX, saved before any turn) stays. Whether none is left. At start, and when the person had BAXY
+        forget everything or deleted every conversation (trace.forget): a question under way then loses its state and
+        the next decision reads the conversation again."""
+        left = False
+        for stale in self.slot_dir.glob("*.bin"):
+            try:
+                stale.unlink(missing_ok=True)
+            except OSError:
+                left = True  # held by the server this moment
+        return not left
 
     def close(self) -> None:
         if self._process is not None and self._process.poll() is None:

@@ -115,6 +115,8 @@ BEAT_RULES = (
 BEAT_MARK = "[Latido: nadie te habló; lo que sigue lo dijiste o hiciste por tu cuenta]"
 
 
+# How a call the kernel holds for the person's «sí» ended, in the words the model reads.
+WAITS_FOR_YES = "no se ejecutó: espera el sí de la persona"
 # How a completed call was verified (the result's «verification»), in the words the model reads.
 # Auditoría de falsedades (w5-fals, 2026-10-22): «completado» is a word of something done, and the 4B told it as done
 # where nothing was: «¿abriste Spotify?» → a read of its windows («completado: lectura») → «Sí» in 9 of 9 runs of
@@ -156,7 +158,7 @@ def _outcome(observation: str, read: bool = False) -> str:
         return "respuesta de la misma llamada hecha antes: no se ejecutó de nuevo"
     status = str(facts.get("status") or "failed")
     if status == "needs_confirmation":
-        return "no se ejecutó: espera el sí de la persona"
+        return WAITS_FOR_YES
     if status == "cancelled":
         return "cancelado por la persona"
     # Uso real 2026-10-21 (e2e del notebook): a message stopped before it was written touched the client (an uncertain
@@ -638,6 +640,13 @@ COMPACTED_FACTS = {"su resultado está arriba": "su resultado se omitió",
 assert all(k in label for k, label in (("su resultado está arriba", VERIFICATION["output_only"]),
                                          ("lo que vio está arriba", OUTPUT_READ)))
 
+
+def _omitted(facts: str) -> str:
+    """Facts of calls whose results lost their bodies, said as they are now (COMPACTED_FACTS)."""
+    for told, omitted in COMPACTED_FACTS.items():
+        facts = facts.replace(told, omitted)
+    return facts
+
 # Review 16: the person's own text, when it alone does not fit (decide), keeps its start and the cut is said where the
 # model reads it; never cut below this many characters.
 CUT_TEXT = "\n[Texto recortado para que quepa el turno: {n} caracteres más de lo que escribió la persona ya no se muestran]"
@@ -873,7 +882,11 @@ class Mind:
         self.server = server
         self.trace = trace
         self.system_one = system_one  # layer 2: the decision model beside Qwen (None: off)
+        if system_one is not None:
+            # Its server exiting and starting again is said in this trace (system_one.exited, system_one.restarted).
+            system_one.on_event = lambda stage, **fields: self._log(stage, time.perf_counter(), None, **fields)
         self._judged: dict[str, Any] | None = None
+        self._unread: list[dict[str, str]] = []  # the last decision's rivals whose names could not be read (P4)
         self.tools: list[dict[str, Any]] = []
         self.names: list[str] = []  # the installed applications and games of the last catalog.configure
         self.wire_to_op: dict[str, str] = {}
@@ -899,6 +912,7 @@ class Mind:
         # correction) count up for the whole session: from the conversation's length they repeated once it was trimmed.
         self._ids = 0
         self._ran: list[str] = []  # the session's last calls as «tool → how it ended» (8.1), and how many ran in all
+        self._ran_ids: list[str | None] = []  # the id of each of those calls (None: not known), for the clock
         self._ran_count = 0
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
@@ -969,6 +983,9 @@ class Mind:
         self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                                     if isinstance(e, dict) and e.get("name")})
         tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
+        # Auditoría de la mente (w8): the constants of this catalog only; one a tool had in an earlier catalog was still
+        # added to its calls.
+        constants_of: dict[str, dict[str, Any]] = {}
         aids: dict[str, Any] = {}
         for cap in capabilities:
             name = str(cap.get("name") or "")
@@ -988,7 +1005,7 @@ class Mind:
             constants: dict[str, Any] = {}
             schema = _model_schema(raw if isinstance(raw, dict) else {}, constants)
             if constants:
-                self.constants[name] = constants
+                constants_of[name] = constants
             schema["type"] = "object"
             schema.setdefault("properties", {})
             # What one argument means, where the model fills it (a folder named by the person went missing from the
@@ -1003,6 +1020,7 @@ class Mind:
             risk[wire] = str(cap.get("risk") or "")
             effects[wire] = [str(e) for e in cap.get("effects") or []]
         self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
+        self.constants = constants_of
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
             self._log("configure.aid", time.perf_counter(), None, aids=aids)
@@ -1070,6 +1088,11 @@ class Mind:
         """Whether the App says a call waits for the person's «sí» with these words."""
         return bool(isinstance(pending, dict) and pending.get("operation") and not pending.get("ended"))
 
+    @classmethod
+    def _confirming(cls, pending: dict[str, Any] | None) -> str | None:
+        """The tool of the call that waits for the person's «sí» with these words, as the App says it, or None."""
+        return str(pending["operation"]).replace(".", "_") if cls._waits(pending) else None  # type: ignore[index]
+
     @staticmethod
     def _ended(pending: dict[str, Any] | None) -> dict[str, Any] | None:
         """The call whose question ended unanswered just before these words, as the App says it, or None."""
@@ -1099,7 +1122,7 @@ class Mind:
         ran = str(self._ran_count or "ninguna")
         if self._ran:
             last = "" if len(self._ran) == self._ran_count else f", las {len(self._ran)} últimas"
-            ran += f"{last} ({' / '.join(self._ran)})"
+            ran += f"{last} ({' / '.join(self._ran_told())})"
         return (f"{CLOCK_MARK} {now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}; "
                 "los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna herramienta en este "
                 f"turno; llamadas a herramientas en esta sesión: {ran}]")
@@ -1115,7 +1138,7 @@ class Mind:
         self._turn = self._beat = None
         self.trimmed_turns = 0
         self._refs, self._ref_of, self._ids = {}, {}, 0
-        self._ran, self._ran_count = [], 0
+        self._ran, self._ran_ids, self._ran_count = [], [], 0
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
@@ -1125,7 +1148,7 @@ class Mind:
         2026-10-22: the short references and the ids, or after a relaunch ref:r1 stood for another address; al máximo
         8.1: the session's calls); the App keeps the array as it is."""
         state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids, "ran": self._ran,
-                 "ran_count": self._ran_count}
+                 "ran_ids": self._ran_ids, "ran_count": self._ran_count}
         return json.loads(json.dumps([*self.conversation, state], ensure_ascii=False))
 
     def load_session(self, conversation: list[Any]) -> None:
@@ -1136,15 +1159,48 @@ class Mind:
             self._refs = {str(ref): str(value) for ref, value in state["refs"].items()}
             self._ref_of = {value: ref for ref, value in self._refs.items()}
         self._ids = state["ids"] if isinstance(state.get("ids"), int) and state["ids"] > 0 else 0
-        self.conversation = [m for m in conversation if isinstance(m, dict)
-                             and m.get("role") in {"user", "assistant", "tool"}]
+        self.conversation, unanswered = self._answered([m for m in conversation if isinstance(m, dict)
+                                                        and m.get("role") in {"user", "assistant", "tool"}])
         if isinstance(state.get("ran_count"), int) and isinstance(state.get("ran"), list):
             self._ran, self._ran_count = [str(entry) for entry in state["ran"]][-SESSION_CALLS:], state["ran_count"]
+            ids = state.get("ran_ids")
+            self._ran_ids = ([i if isinstance(i, str) else None for i in ids][-SESSION_CALLS:]
+                             if isinstance(ids, list) and len(ids) == len(state["ran"]) else [None] * len(self._ran))
+            for wire in unanswered:
+                self._ran_add(wire, NO_RESULT_RAN)
         else:
             # Kept before 8.1: how many calls its conversation shows (their results are in it), never «none».
             self._ran_count = sum(1 for m in self.conversation for c in m.get("tool_calls") or []
                                   if c.get("function", {}).get("name") != ASK_USER["function"]["name"])
         self._trim()
+
+    @staticmethod
+    def _answered(conversation: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[str]]:
+        """A kept conversation where every call has its result, and the calls that may have run without one (their wire
+        names). Auditoría de la mente (w8, 2026-10-23): the App keeps a session between turns, and a turn may be left
+        open there (BAXY's question waiting for its answer, a call whose result never came); the open turn is not kept
+        with it, so loaded back its calls had no result and the model read them as still open. Each gets what
+        _close_open_calls writes: the first call of its message without one ASKED (a question) or NO_RESULT, the ones
+        after it NOT_RUN, right after the results its message has."""
+        answered = {m.get("tool_call_id") for m in conversation if m.get("role") == "tool"}
+        closed: list[dict[str, Any]] = []
+        missing: list[dict[str, Any]] = []
+        unanswered: list[str] = []
+        for message in [*conversation, None]:
+            if message is None or message.get("role") != "tool":
+                closed += missing
+                missing = []
+            if message is None:
+                break
+            closed.append(message)
+            lacking = [c for c in message.get("tool_calls") or [] if isinstance(c, dict) and c.get("id") not in answered]
+            for index, call in enumerate(lacking):
+                wire = str((call.get("function") or {}).get("name") or "?")
+                content = NOT_RUN if index else ASKED if wire == ASK_USER["function"]["name"] else NO_RESULT
+                if content == NO_RESULT:
+                    unanswered.append(wire)
+                missing.append({"role": "tool", "tool_call_id": call.get("id"), "content": content})
+        return closed, unanswered
 
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None) -> dict[str, Any]:
         # Review 2026-10-22: a decision that fails (the model server down, an error) takes back what it added, so the
@@ -1165,6 +1221,7 @@ class Mind:
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
             turn["text"], turn["answering"], turn["pending"] = text, True, self._waits(pending)
+            turn["confirming"] = self._confirming(pending)
             turn["ended"] = self._ended(pending)
             try:
                 return self._next(request_id, "turn.decide", turn)
@@ -1180,6 +1237,8 @@ class Mind:
         self.conversation.append(request)
         try:
             self._trim()
+            if _aid_on("clock_omitted"):
+                clock["content"] = self._clock() + self._pending_note(pending)  # the bodies as the trim left them
             # Review 2026-10-22: a text that alone does not fit beside the prefix (a pasted log) failed the turn whole
             # and wordless, as only earlier turns can be trimmed: it keeps its start, halved until it fits, and the cut
             # is said where the model reads it.
@@ -1188,7 +1247,8 @@ class Mind:
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
-                          "pending": self._waits(pending), "ended": self._ended(pending), "answering": answering}
+                          "pending": self._waits(pending), "ended": self._ended(pending), "answering": answering,
+                          "confirming": self._confirming(pending)}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -1295,6 +1355,9 @@ class Mind:
             if cut <= 0 or not rendered[:cut].endswith("<|im_end|>\n"):
                 self._log("warm.history", started, None, failure="unrendered")
                 return False
+            # Auditoría de la mente (w8): the slot now holds the person's conversation (a kept session's, loaded before
+            # any turn), so the warm-up no longer keeps it on disk (Mind.warm), as after a turn.
+            self._turned = True
             reply = self.server.prefill(rendered[:cut])
         except Exception as error:  # noqa: BLE001 - the next decision reads it itself, as it did before
             self._log("warm.history", started, None, failure=type(error).__name__)
@@ -1302,10 +1365,22 @@ class Mind:
         self._log("warm.history", started, reply, messages=len(self.conversation))
         return True
 
-    def _ran_add(self, calling: Any, outcome: str) -> None:
+    def _ran_add(self, calling: Any, outcome: str, call_id: str | None = None) -> None:
         """One call of the session and how it ended, for the clock (8.1)."""
         wire = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else str(calling or "?").replace(".", "_")
         self._ran, self._ran_count = [*self._ran, f"{wire} → {outcome}"][-SESSION_CALLS:], self._ran_count + 1
+        self._ran_ids = [*self._ran_ids, call_id][-SESSION_CALLS:]
+
+    def _ran_told(self) -> list[str]:
+        """The clock's calls of the session (8.1). Aid «clock_omitted» (auditoría de la mente, w8, 2026-10-23): one whose
+        result lost its body (1.1, or its turn was cut) is told as the kept facts lines tell it (COMPACTED_FACTS: «lo
+        que vio se omitió»), not «lo que vio está arriba» beside those lines saying it was left out."""
+        if not _aid_on("clock_omitted"):
+            return self._ran
+        bodies = {m.get("tool_call_id") for m in self.conversation
+                  if m.get("role") == "tool" and not str(m.get("content") or "").startswith(COMPACTED)}
+        return [entry if call_id is None or call_id in bodies else _omitted(entry)
+                for entry, call_id in zip(self._ran, self._ran_ids)]
 
     def _close_open_calls(self) -> None:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
@@ -1381,7 +1456,7 @@ class Mind:
         loop of calls ended with (a failure keeps its code) and from the results the mind wrote for calls that never got
         one. Empty for a turn with no words of the person (a heartbeat's own)."""
         said = next((str(m.get("content") or "") for m in messages if m["role"] == "user"
-                     and not str(m.get("content") or "").startswith(("[", BEAT_MARK))), "")
+                     and not str(m.get("content") or "").startswith("[")), "")  # a note, the clock or BEAT_MARK
         said = " ".join(said.split())
         if not said:
             return ""
@@ -1397,9 +1472,8 @@ class Mind:
             content = str(message.get("content") or "")
             at = content.rfind(TURN_FACTS)
             if message["role"] == "tool" and at >= 0:
-                facts = content[at + len(TURN_FACTS):].split("\n")[0].removesuffix("]")
-                for told, omitted in COMPACTED_FACTS.items():  # its body is gone with the turn
-                    facts = facts.replace(told, omitted)
+                # Its body is gone with the turn.
+                facts = _omitted(content[at + len(TURN_FACTS):].split("\n")[0].removesuffix("]"))
             elif message["role"] == "tool" and content in {NO_RESULT, NOT_RUN, NOT_RUN_AFTER}:
                 ended = NO_RESULT_RAN if content == NO_RESULT else GIST_NOT_RUN
                 unrun.append(f"{names.get(message.get('tool_call_id'), '?')} → {ended}")
@@ -1418,10 +1492,7 @@ class Mind:
             content = str(message.get("content") or "")
             at = content.rfind(TURN_FACTS)
             if message["role"] == "tool" and at > len(COMPACTED):
-                kept = content[at:]
-                for told, omitted in COMPACTED_FACTS.items():  # w5: the facts no longer point at a body
-                    kept = kept.replace(told, omitted)
-                message["content"] = COMPACTED + kept
+                message["content"] = COMPACTED + _omitted(content[at:])  # w5: the facts no longer point at a body
                 compacted = True
         return compacted
 
@@ -1469,16 +1540,22 @@ class Mind:
         calling = str(turn.get("calling", "?"))
         calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
         outcome = _outcome(observation, read=self.risk.get(calling) in READ_RISKS)
-        entry, same = f"{calling} → {outcome}", turn.get("last_call")
+        # Aid «confirm_names_call» (auditoría de la mente, w8, P5): an answer to a confirmation says which call it
+        # answered («confirm_pending (filesystem_known_trash_named) → …»), here and in the clock; once its turn is cut,
+        # «confirm_pending → completado y verificado» no longer said what was done. Only when the App said which call
+        # waited (with the person's words) or the press answered the call the turn before had just asked.
+        told = (f"{calling} ({turn['confirming']})" if calling == CONFIRM["function"]["name"] and turn.get("confirming")
+                and _aid_on("confirm_names_call") else calling)
+        entry, same = f"{told} → {outcome}", turn.get("last_call")
         # Grouped only when the result is the same too: a click that worked and then failed are two facts (round 2).
         turn["last_call"] = (calling, turn.get("calling_args"), outcome)
         if done and same == turn["last_call"]:
             turn["repeats"] = turn.get("repeats", 1) + 1
-            done[-1] = f"{calling} ×{turn['repeats']} con los mismos argumentos → {outcome}"
+            done[-1] = f"{told} ×{turn['repeats']} con los mismos argumentos → {outcome}"
         else:
             turn["repeats"] = 1
             done.append(entry)
-        self._ran_add(turn.get("calling"), outcome)
+        self._ran_add(told, outcome, turn["awaiting"])
         aids = _aids_seen(observation)
         named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
         # Uso real: a look at another window (the browser's) came between the opening and the failures; the application
@@ -1509,8 +1586,10 @@ class Mind:
         told_at = SAME_CALL_TOLD if outcome.startswith(COMPLETED_OUTCOMES) else SAME_CALL_FAILED_TOLD
         if seen[key] == told_at and not turn.get("same_told") and _aid_on("same_call_next"):
             turn["same_told"] = True
+            # Auditoría de la mente (w8): not the places again when app_places_next just told them in this result.
             options = SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS + (
-                same_call_places(turn.get("app_named")) if calling == "input_visible_click" else "")
+                same_call_places(turn.get("app_named"))
+                if calling == "input_visible_click" and "app_places_next" not in aids else "")
             repeated = SAME_CALL_NOTE.format(call=calling, times=told_at, outcome=outcome, options=options)
             note += repeated
             aids["same_call_next"] = repeated.strip()
@@ -1547,6 +1626,9 @@ class Mind:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
         started = time.perf_counter()
+        # The press answers the card of the call the turn before had just asked (its last result waits for the «sí»).
+        asked = (self._turn or {}).get("last_call")
+        confirming = asked[0] if asked and asked[2] == WAITS_FOR_YES else None
         self._close_open_calls()
         call_id = self._new_id("confirm")
         self.conversation.append({"role": "user", "content": label})
@@ -1554,7 +1636,7 @@ class Mind:
             {"id": call_id, "type": "function",
              "function": {"name": CONFIRM["function"]["name"], "arguments": json.dumps({"approve": approve})}}]})
         self._turn = {"conv": self.conversation, "queue": [], "awaiting": call_id, "text": label,
-                      "calling": CONFIRM_OPERATION}
+                      "calling": CONFIRM_OPERATION, "confirming": confirming}
         self._log("turn.confirm", started, None, text=label, kind="action", operation=CONFIRM_OPERATION,
                   arguments={"approve": approve})
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
@@ -1699,20 +1781,29 @@ class Mind:
         if doubt is None:
             return None
         if call["wire"] == CONFIRM["function"]["name"]:
+            # Auditoría de la mente (w8, 2026-10-23): only a «sí» that would approve something is held. With nothing
+            # waiting (none, or its question ended unanswered) the call never reaches the App (_result: nothing_pending,
+            # or the ended call to make again, which the kernel asks again), and holding it there turned that result
+            # into a question that dropped nothing and asked again at every unsure «sí».
             floor = CONFIRM_FLOOR if os.environ.get("BAXY_CONFIRM_FLOOR") is None else _threshold("BAXY_CONFIRM_FLOOR")
             return (DOUBT_NOTE.format(call=call["wire"])
-                    if call["arguments"].get("approve") is True and doubt["confidence"] < floor else None)
+                    if turn.get("pending") and call["arguments"].get("approve") is True
+                    and doubt["confidence"] < floor else None)
         # Al máximo, System One 2: layer 0 never holds a low_reversible call; its error is undone and the kernel verifies
         # it. On 26 runs of decision2 with System One (2026-10-22) it held 23, 22 of them right without System One (P040
         # ×7, P085 ×15) and none useful; read_only it holds still (24 useful against 5 harmful), and anything riskier.
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
                 and self.risk.get(call["wire"]) != "low_reversible":
             return DOUBT_NOTE.format(call=call["wire"])
-        if self.system_one is None or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
+        # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
+        # options are not made: each rival's name was completed on the slot for it (template + complete_name).
+        if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
             return None
         options = self._candidates(call["wire"], doubt, body)
         judged = self.system_one.choose(turn["text"], self._said(), options)
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
+        if self._unread:
+            self._judged["rivals_unread"] = self._unread
         if not judged or judged["choice"] == call["wire"]:
             return None
         corrected = self._corrected(judged["choice"], body, call["wire"])
@@ -1769,12 +1860,20 @@ class Mind:
                 or (effects and not shared) or (risk in CONFIRMED_RISKS and (
                     self.wire_to_op.get(wire) in UNCONFIRMED_OPERATIONS or _bypass())):
             return None
+        # Auditoría de la mente (w8, P4): why a fill did not become the call, in the trace row beside the decision
+        # model's answer (system_one.fill): failed (and its error), none (no call written), other (another tool's call)
+        # or unfounded (_founded); a correction never tried (off, or the tool not correctable) writes none.
+        why = self._judged if self._judged is not None else {}
         try:
             filled = self.server.fill_call(body, wire)
-        except Exception:  # noqa: BLE001 - a fill that failed falls back to asking
+        except Exception as error:  # noqa: BLE001 - a fill that failed falls back to asking
+            why["fill"] = {"failed": type(error).__name__}
             return None
-        if not filled or filled.get("name") != wire or not self._founded(wire, filled["arguments"], body["messages"],
-                                                                         every=shared):
+        if not filled or filled.get("name") != wire:
+            why["fill"] = "none" if not filled else {"other": str(filled.get("name"))}
+            return None
+        if not self._founded(wire, filled["arguments"], body["messages"], every=shared):
+            why["fill"] = "unfounded"
             return None
         return {"id": self._new_id("s1"), "wire": wire, "arguments": filled["arguments"]}
 
@@ -1844,6 +1943,7 @@ class Mind:
         # B-MED-3 (2026-10-22): the rule of its training (qwen_signals.py, rollouts): the chosen tool and the next three
         # tokens of the weakest one, each of p ≥ 0.01 (served, the chosen token took a place and a rival needed 0.02).
         names = [chosen]
+        self._unread = []  # w8, P4: the rivals left out because their names could not be read, for the trace
         prompt: str | None = None  # the decision's prompt, rendered once for all of its rivals (al máximo V3)
         for token, p in doubt.get("rivals") or []:
             if p < 0.01 or len(names) >= 4:
@@ -1853,7 +1953,8 @@ class Mind:
                 if ">" not in written[written.find("<function="):]:
                     prompt = prompt if prompt is not None else self.server.template(body)
                     written += self.server.complete_name(prompt, written)
-            except Exception:  # noqa: BLE001 - a rival that cannot be read is left out
+            except Exception as error:  # noqa: BLE001 - a rival that cannot be read is left out
+                self._unread.append({"token": token, "failed": type(error).__name__})
                 continue
             at = written.find("<function=")
             names.append(written[at + len("<function="):].split(">")[0].strip() if at >= 0 else "")
@@ -1918,6 +2019,24 @@ class Mind:
         return result
 
     # ---- trace ---------------------------------------------------------------------------------------------
+    def forget_trace(self) -> bool:
+        """Auditoría de la mente (w8, 2026-10-23): the person had BAXY forget everything («olvida todo») or deleted every
+        conversation, and the App deletes its own conversation log then; this trace kept their words, BAXY's answers and
+        the calls' arguments in clear text, and so did its archive (turns.jsonl.1, __main__.bounded_trace). Both go, the
+        way the voice's rows are written (one at a time); what comes after is traced again. Whether none is left (a file
+        another reader holds open is emptied instead; if not even that, it stays and the next forget takes it)."""
+        left = False
+        with self._log_lock:
+            for path in (self.trace, self.trace.with_name(self.trace.name + ".1")):
+                try:
+                    path.unlink(missing_ok=True)
+                except OSError:
+                    try:
+                        path.open("w", encoding="utf-8").close()
+                    except OSError:
+                        left = True
+        return not left
+
     def _log(self, stage: str, started: float, reply: dict[str, Any] | None, **fields: Any) -> None:
         timings = (reply or {}).get("timings") or {}
         # Every time of the trace is read on perf_counter (al máximo V4): on Windows, Python 3.12's monotonic clock

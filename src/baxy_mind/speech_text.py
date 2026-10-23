@@ -102,11 +102,14 @@ def _number(digits: str, decimals: str | None, noun: str = "") -> str:
 
 
 def _counted(match: re.Match, noun: str) -> str:
-    """A number with the noun it counts (money, units): one of it is singular, «un kilómetro», «un peso»."""
+    """A number with the noun it counts (money, units): one of it is singular, «un kilómetro», «un peso». A unit of
+    several words («kilómetros por hora») counts its first: «1 km/h» was «una kilómetros por hora», «21 km/h»
+    «veintiuna kilómetros por hora», by the gender of «hora»."""
     digits, decimals = match.group(1), match.group(2) or match.group(3)
+    head, space, rest = noun.partition(" ")
     if digits == "1" and not decimals:
-        noun = noun[:-2] if noun.endswith("res") else noun.removesuffix("s")
-    return f"{_number(digits, decimals, noun)} {noun}"
+        head = head[:-2] if head.endswith("res") else head.removesuffix("s")
+    return f"{_number(digits, decimals, head)} {head}{space}{rest}"
 
 
 def _time(match: re.Match) -> str:

@@ -23,6 +23,8 @@ def test_cardinal(n: int, words: str) -> None:
     ("El 17/10/2026.", "El diecisiete de octubre de dos mil veintiséis."),
     ("Son $1.990 y pesa 2,5 kg.", "Son mil novecientos noventa pesos y pesa dos coma cinco kilos."),
     ("Está a 1 km y hace 17 °C.", "Está a un kilómetro y hace diecisiete grados."),
+    # A unit of several words counts its first (w8): it was «una kilómetros por hora», «veintiuna kilómetros».
+    ("Va a 1 km/h y el viento a 21 km/h.", "Va a un kilómetro por hora y el viento a veintiún kilómetros por hora."),
     ("Tu 1.ª reunión con el Sr. Pérez.", "Tu primera reunión con el señor Pérez."),
     ("Abrí Steam y Spotify en Disney+.", "Abrí Estím y Espótifai en Dísni plus."),
     ("Hola, soy BAXY.", "Hola, soy Báksi."),

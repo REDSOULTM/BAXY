@@ -495,6 +495,8 @@ def test_laya_is_started_with_no_gpu_device(monkeypatch, tmp_path):
 
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
     monkeypatch.setattr(system_one.subprocess, "Popen", Started)
-    system_one.SystemOne("laya.gguf", "llama-server.exe").start()
+    laya = system_one.SystemOne("laya.gguf", "llama-server.exe")
+    laya.start()
+    laya.close()  # its watcher would start the exited double again, after this test
     args = started[0]
     assert args[args.index("-dev") + 1] == "none"

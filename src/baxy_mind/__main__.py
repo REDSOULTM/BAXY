@@ -84,7 +84,7 @@ def main() -> int:
         "type": "hello", "protocol": protocol.PROTOCOL,
         "models": {"llm": server.name},
         "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
-                     "session.new", "session.export", "session.load",
+                     "session.new", "session.export", "session.load", "trace.forget",
                      "voice.start", "voice.stop", "voice.release", "voice.status", "voice.speak", "voice.cancel"],
     })
     # The reader answers voice.speak, voice.cancel and voice.status as they arrive, so they never wait for an inference
@@ -190,6 +190,12 @@ def main() -> int:
                     conversation = message.get("conversation")
                     mind.load_session(conversation if isinstance(conversation, list) else [])
                     protocol.write_message({"type": "session.ready", "id": request_id})
+                elif kind == "trace.forget":
+                    # The person had BAXY forget everything or deleted every conversation (the App deletes its own
+                    # conversation log then): the trace and the slot states that hold their words go too.
+                    cleared = mind.forget_trace() & server.forget_set_aside()
+                    mind._log("trace.forget", time.perf_counter(), None, cleared=cleared)
+                    protocol.write_message({"type": "trace.forgotten", "id": request_id, "cleared": cleared})
                 elif kind == "voice.start":
                     mode = str(message.get("mode") or "direct")
                     if voice.start(mode):
