@@ -50,6 +50,38 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
+    /// Renew al máximo (guarda msconfig): a program an opening would run is a tool that configures Windows itself, by the
+    /// same rule its windows are never acted on: one of the system tools' executables (<see cref="SystemTool"/>), a
+    /// console of the MMC host (a .msc file, which runs in mmc), or one of those Control Panel applets, as its .cpl file or
+    /// run by rundll32 (<paramref name="arguments"/>, as <see cref="SystemToolWindow(string?, string?, string?, string?,
+    /// IReadOnlyCollection{string})"/> tells it). <paramref name="target"/> is a path or a shell identity ending in it.
+    /// </summary>
+    internal static bool SystemToolLaunch(string? target, string? arguments)
+    {
+        string file;
+        try
+        {
+            file = Path.GetFileName((target ?? string.Empty).Trim().Trim('"'));
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+
+        string extension = Path.GetExtension(file);
+        string name = Path.GetFileNameWithoutExtension(file);
+        if (string.Equals(extension, ".msc", StringComparison.OrdinalIgnoreCase))
+            return name.Length > 0;
+        if (string.Equals(extension, ".cpl", StringComparison.OrdinalIgnoreCase))
+            return SystemApplets.Contains(name);
+        if (!string.Equals(extension, ".exe", StringComparison.OrdinalIgnoreCase))
+            return false;
+        return SystemTool(name)
+            || (string.Equals(name, "rundll32", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(arguments)
+                && AppletRun().Matches(arguments).Any(applet => SystemApplets.Contains(applet.Groups["name"].Value)));
+    }
+
+    /// <summary>
     /// <paramref name="root"/> or a window that owns it is a system tool's (<paramref name="systemWindow"/>): a dialog
     /// an applet opens (an adapter's properties over Network Connections) is the applet's.
     /// </summary>

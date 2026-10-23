@@ -16,6 +16,14 @@ public interface IInvocationPreflight
     /// Read only: never an effect. The engine asks only when the declared risk would ask the person.
     /// </summary>
     ValueTask<InvocationPreflightResult> PreflightAsync(JsonElement arguments, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Renew al máximo (guarda msconfig, guarda diálogo destructivo): whether this invocation may be riskier than its
+    /// declared risk says (an opening that resolves to a tool configuring Windows, the «Sí» under «¿Quieres
+    /// reemplazarlo?»). In normal mode the engine then reads it even when the declared risk would not ask, and takes only
+    /// the higher risk it finds (<see cref="InvocationPreflightResult.Raised"/>). Pure: nothing is read here.
+    /// </summary>
+    bool MayRaise(JsonElement arguments) => false;
 }
 
 /// <summary>What a preflight found: a lower risk for this invocation, the failure it would end in, or neither.</summary>
@@ -31,6 +39,9 @@ public sealed record InvocationPreflightResult
 
     /// <summary>This invocation's own risk, below the declared one.</summary>
     public static InvocationPreflightResult Lowered(OperationRisk risk) => new(risk, null);
+
+    /// <summary>Renew al máximo: this invocation's own risk, above the declared one (read when MayRaise).</summary>
+    public static InvocationPreflightResult Raised(OperationRisk risk) => new(risk, null);
 
     /// <summary>
     /// The failure the execution would end in before any effect (a terminal failure with nothing done); anything else

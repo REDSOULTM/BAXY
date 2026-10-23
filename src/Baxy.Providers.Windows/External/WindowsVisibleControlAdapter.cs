@@ -1171,6 +1171,94 @@ internal sealed class WindowsVisibleControlAdapter
     public bool CanHandle(string operation) =>
         operation is "input.visible.click" or "input.visible.controls";
 
+    // Renew al máximo (guarda diálogo destructivo): falsedades F013, «Sí» pressed in «Confirmar Guardar como: prueba.txt
+    // ya existe. ¿Quieres reemplazarlo?» wrote over the file unasked; the policy reads only the label. A click whose label
+    // is a dialog's yes (VisibleControlSurface.AffirmativeAnswer) is read before it goes: a «No» or a «Cancelar» never is.
+    public bool PreflightMayRaise(string operation, JsonElement arguments) =>
+        operation == "input.visible.click"
+        && arguments.ValueKind == JsonValueKind.Object
+        && !(arguments.TryGetProperty("search", out JsonElement search) && search.ValueKind == JsonValueKind.String
+            && search.GetString()!.Trim().Length > 0)
+        && arguments.TryGetProperty("label", out JsonElement label) && label.ValueKind == JsonValueKind.String
+        && VisibleControlSurface.AffirmativeAnswer(label.GetString());
+
+    /// <summary>
+    /// Renew al máximo (guarda diálogo destructivo): read only. The click's window (the one it names, or the last look's,
+    /// or the one in front), through the modal dialog that disables it, is a dialog whose own words ask about
+    /// replacing, overwriting, deleting, discarding, not saving or losing changes, and the label is that dialog's
+    /// affirmative button: the receipt says the call needs the person's yes (NeedsConfirmation). The dialog's words are
+    /// those of the last look when it was of that dialog, else of a read of it bounded in time (nothing pressed, brought
+    /// up or captured). Null when it is not so or cannot be read.
+    /// </summary>
+    public async ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!PreflightMayRaise(operation, arguments))
+            return null;
+        string label = arguments.GetProperty("label").GetString()!.Trim();
+        nint named = arguments.TryGetProperty("window", out JsonElement window) && window.ValueKind == JsonValueKind.Number
+            && window.TryGetInt64(out long handle) && handle > 0
+                ? (nint)handle
+                : 0;
+        LastView? view;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        nint target = named != 0 ? named
+            : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd
+            : VisibleControlSurface.FrontWindow();
+        nint dialog = target == 0 ? 0 : VisibleControlSurface.ModalSurface(target);
+        if (dialog == 0 || !VisibleControlSurface.IsDialogWindow(dialog))
+            return null;
+
+        IReadOnlyList<ViewControl> controls;
+        string title;
+        if (view is not null && view.Hwnd == dialog)
+        {
+            (controls, title) = (view.Controls, view.TreeTitle);
+        }
+        else
+        {
+            JsonDocument? answer;
+            try
+            {
+                answer = await _worker.SendAsync(
+                        ViewCommand(dialog, view?.Limit ?? 60, [], tail: false, AfterReadSeconds),
+                        AfterReadBudget, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or JsonException or TimeoutException
+                or InvalidOperationException)
+            {
+                return null;
+            }
+
+            if (answer is null)
+                return null;
+            using (answer)
+            {
+                if (!answer.RootElement.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
+                    return null;
+                (controls, title) = (ParseControls(answer.RootElement), ReadString(answer.RootElement, "window"));
+            }
+        }
+
+        if (title.Length == 0)
+            title = VisibleControlSurface.WindowTitle(dialog);
+        bool itsButton = controls.Any(control => control.Kind is not ("Text" or "Document") && SameLabel(label, control.Name));
+        IEnumerable<string?> said = controls.Where(static control => control.Kind is "Text" or "Document")
+            .Select(static control => (string?)control.Name)
+            .Append(title);
+        return itsButton && VisibleControlSurface.AsksToDestroy(said)
+            ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
+            : null;
+    }
+
     private long _clicks;
 
     /// <summary>Revision 3 of r24b (finding 3): the clicks this adapter has made (IViewedFields).</summary>

@@ -337,6 +337,33 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             reusedExisting: reused);
     }
 
+    // Renew al máximo (guarda msconfig): the catalog entry the opening would resolve, judged by the program its shortcut
+    // runs (VisibleControlSurface.SystemToolLaunch), or a packaged one by its package's own name (Windows Security's).
+    // A catalog that cannot be read tells nothing: the opening fails on it.
+    public async ValueTask<bool> OpensSystemToolAsync(string applicationId, CancellationToken cancellationToken)
+    {
+        if (!ApplicationIds.IsValidRequest(applicationId))
+        {
+            return false;
+        }
+
+        IReadOnlyList<InstalledApplicationEntry> catalog;
+        try
+        {
+            catalog = await ReadCatalogAsync(cancellationToken, applicationId).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return false;
+        }
+
+        return InstalledApplicationResolver.Resolve(applicationId, catalog).Entry is { } entry
+            && (entry.AppUserModelId.Contains('!')
+                ? External.VisibleControlSurface.SystemTool(InstalledApplicationResolver.PackageName(entry))
+                : External.VisibleControlSurface.SystemToolLaunch(entry.TargetPath, entry.TargetArguments)
+                    || External.VisibleControlSurface.SystemToolLaunch(entry.AppUserModelId, entry.TargetArguments));
+    }
+
     public async ValueTask<ApplicationInstalledResult> IsInstalledAsync(
         string applicationName,
         CancellationToken cancellationToken)

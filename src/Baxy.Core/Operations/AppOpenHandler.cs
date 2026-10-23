@@ -14,7 +14,7 @@ internal sealed class AppOpenHandler(
     Func<long, OpenedWindowFront>? frontOf = null,
     IGameTitles? games = null,
     Func<long, string, CancellationToken, ValueTask<long>>? settle = null)
-    : IOperationHandler
+    : IOperationHandler, IInvocationPreflight
 {
     // BAXY Renew cu (C03 en frío): how long an application started behind its sign-in may take to show its window.
     internal static readonly TimeSpan SignInBudget = TimeSpan.FromSeconds(30);
@@ -29,6 +29,27 @@ internal sealed class AppOpenHandler(
 
     public OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("app.open");
+
+    // Renew al máximo (guarda msconfig): E014 «abre la configuración de sonido» opened «Configuración del sistema»
+    // (msconfig) elevated without asking, the window where the incidente del 2026-10-15 disabled 256 services. An
+    // opening whose name resolves to a tool that configures Windows itself (the provider's rule, the one no click acts
+    // on) is this invocation's own risk: it asks in normal mode, bound to it. Read only; any other opening goes straight.
+    public bool MayRaise(JsonElement arguments) => true;
+
+    public async ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        string? appId = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("appId", out JsonElement named)
+            && named.ValueKind == JsonValueKind.String
+                ? named.GetString()
+                : null;
+        return appId is not null && ApplicationIds.IsValidRequest(appId)
+            && await _provider.OpensSystemToolAsync(appId, cancellationToken).ConfigureAwait(false)
+                ? InvocationPreflightResult.Raised(OperationRisk.Irreversible)
+                : InvocationPreflightResult.Proceed;
+    }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(
         OperationInvocation invocation,
@@ -100,7 +121,15 @@ internal sealed class AppOpenHandler(
                 // another application.
                 bool placeOfApplication = arguments.Place is null || ApplicationPlaces.PlacesOf(arguments.AppId)
                     .Any(declared => declared.Place == arguments.Place);
-                string? places = ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(arguments.AppId, arguments.AppId) : null;
+                // Renew al máximo (E014): a place of another application says the opening that reaches it (the model
+                // read placeIn as a value of place, then opened msconfig with no place).
+                IReadOnlyList<string> owners = placeOfApplication ? [] : ApplicationPlaces.ApplicationsWith(arguments.Place);
+                string? places = !ModelAids.On(ModelAids.AppPlaces) ? null
+                    : owners.Count > 0
+                        ? $"app_open with appId \"{owners[0]}\" and place \"{arguments.Place}\" opens it: "
+                            + $"{arguments.Place} is a place of {string.Join(" or ", owners)}, not of {arguments.AppId}, "
+                            + "which opened with no place does not show it"
+                        : PlacesNext(arguments.AppId, arguments.AppId);
                 return OperationOutcome.Failure(
                     placeOfApplication ? "place_value_not_taken" : "place_not_of_application",
                     result: Facts(writer =>
@@ -112,7 +141,8 @@ internal sealed class AppOpenHandler(
                         // The places of its application and what each takes, as a fact whether the aids are on or off.
                         if (placeOfApplication)
                             WritePlaces(writer, arguments.AppId);
-                        WriteNames(writer, "placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place));
+                        WriteNames(writer, "placeIn",
+                            placeOfApplication ? ApplicationPlaces.ApplicationsWith(arguments.Place) : owners);
                         if (places is not null) writer.WriteString("next", places);
                     }));
             }

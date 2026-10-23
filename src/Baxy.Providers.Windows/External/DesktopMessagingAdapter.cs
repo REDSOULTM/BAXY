@@ -558,6 +558,9 @@ internal interface IExternalOperationAdapter
         JsonElement arguments,
         CancellationToken cancellationToken) =>
         ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
+
+    // Renew al máximo (guarda diálogo destructivo): IExternalCapabilityProvider.PreflightMayRaise, for its operations.
+    bool PreflightMayRaise(string operation, JsonElement arguments) => false;
 }
 
 // Name: the recipient the model asked for, matched (folded, whole) against what the client shows. Shown: what the

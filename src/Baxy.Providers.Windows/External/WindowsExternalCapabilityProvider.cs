@@ -376,6 +376,14 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             : ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
     }
 
+    // Renew al máximo (guarda diálogo destructivo): as the read, the one adapter that claims the operation says.
+    public bool PreflightMayRaise(string operation, JsonElement arguments)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        IExternalOperationAdapter[] claiming = _adapters.Where(candidate => candidate.CanHandle(operation)).ToArray();
+        return claiming.Length == 1 && claiming[0].PreflightMayRaise(operation, arguments);
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> InvokeBoundAsync(
         string operation,
         JsonElement arguments,
