@@ -33,6 +33,14 @@ internal sealed class NetworkEgress
     /// <summary>What the call carries out that waits for the person's «sí», as a code for the model; null: it goes.</summary>
     internal string? Holds(string operation, JsonObject arguments)
     {
+        // Renew al máximo (F001, int6 s0): «pon Doom Eternal» gave game.launch an id that is Rocket League's; refused
+        // with game_title_mismatch, the model called it again with title «Rocket League» and that game started. The
+        // title is the person's to say: one they did not say waits for their «sí» like a host nobody gave.
+        if (operation == "game.launch" && Text(arguments["title"]) is { } title && !Said(title))
+        {
+            return "game_title_not_said";
+        }
+
         if (!NativeTurnLoop.Has(operation, arguments, OperationEffects.Network))
         {
             return null;
@@ -168,6 +176,13 @@ internal sealed class NetworkEgress
         // A name with hyphens is the person's when they said every part of it («rfc editor» for rfc-editor.org).
         string[] parts = name.Split('-', StringSplitOptions.RemoveEmptyEntries);
         return name.Length >= 3 && parts.Length > 0 && parts.All(_words.Contains);
+    }
+
+    // Every word of the name is one the person said in this session («doom eternal» in «pon Doom Eternal»).
+    private bool Said(string name)
+    {
+        string[] words = [.. Regex.Split(Folded(name), @"[^\p{L}\p{Nd}]+").Where(word => word.Length > 0)];
+        return words.Length > 0 && words.All(_words.Contains);
     }
 
     private static string HostOf(string address)

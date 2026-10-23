@@ -17,6 +17,23 @@ public sealed class NetworkEgressTests
         "{\"label\":\"respuesta\",\"value\":\"sí\"}," +
         "{\"label\":\"clave\",\"value\":\"[REDACTED]\"}]}}";
 
+    // F001 (int6 s0): refused for a title that was not the id's game, the model gave the id's own title and launched a
+    // game nobody asked for. A title the person said goes; any other waits for their «sí».
+    [Test]
+    public void AGameThePersonDidNotNameWaits()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("abre Steam y pon Doom Eternal");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Holds("game.launch", new JsonObject { ["appId"] = "782330", ["title"] = "DOOM Eternal" }),
+                Is.Null);
+            Assert.That(egress.Holds("game.launch", new JsonObject { ["appId"] = "252950", ["title"] = "Rocket League" }),
+                Is.EqualTo("game_title_not_said"));
+        });
+    }
+
     [Test]
     public void TheFetchOfASearchResultGoes()
     {
