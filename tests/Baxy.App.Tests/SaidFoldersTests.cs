@@ -94,7 +94,10 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard("pon al final de apuntes.txt, en la carpeta banco-local, la frase revisar la estufa");
         var call = new JsonObject
         {
-            ["relativePath"] = "apuntes.txt", ["text"] = "revisar la estufa", ["folder"] = "home", ["append"] = true,
+            ["relativePath"] = "apuntes.txt",
+            ["text"] = "revisar la estufa",
+            ["folder"] = "home",
+            ["append"] = true,
         };
 
         SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"), call);
@@ -107,7 +110,9 @@ public sealed class SaidFoldersTests
             Assert.That(next, Does.Not.Contain("folder \"desktop\""));
             Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
             {
-                ["relativePath"] = "banco-local/apuntes.txt", ["text"] = "revisar la estufa", ["folder"] = "home",
+                ["relativePath"] = "banco-local/apuntes.txt",
+                ["text"] = "revisar la estufa",
+                ["folder"] = "home",
             }), Is.Null);
         });
     }
@@ -247,7 +252,9 @@ public sealed class SaidFoldersTests
                 new JsonObject { ["relativePath"] = "apuntes.txt", ["text"] = "uno", ["folder"] = "desktop" }), Is.Null);
             Assert.That(said.Rule("file.read", Descriptor("file.read"), new JsonObject
             {
-                ["fileName"] = "apuntes.txt", ["folder"] = "home", ["subdirectory"] = "banco-local",
+                ["fileName"] = "apuntes.txt",
+                ["folder"] = "home",
+                ["subdirectory"] = "banco-local",
             }), Is.Null);
         });
     }
