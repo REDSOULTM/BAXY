@@ -43,10 +43,12 @@ internal static class FieldStepProjection
         return (groups, operations);
     });
 
-    // Arguments that name what a call is about, in the order they are read for the chip's and the card's target.
+    // Arguments that name what a call is about, in the order they are read for the chip's and the card's target. A
+    // title comes before an id (auditoría de la App, 2026-10-23: game.launch's card, held because the person did not
+    // name that game, showed its Steam id «252950», not «Rocket League»).
     private static readonly string[] TargetKeys =
     [
-        "appId", "title", "name", "application", "query", "url", "location", "place", "host", "command", "label",
+        "title", "appId", "name", "application", "query", "url", "location", "place", "host", "command", "label",
         "key", "setting", "folder", "packageId", "to", "subject", "text",
     ];
 

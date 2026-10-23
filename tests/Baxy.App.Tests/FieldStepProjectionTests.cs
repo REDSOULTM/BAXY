@@ -176,6 +176,22 @@ public sealed class FieldStepProjectionTests
         Assert.That((bool?)card["effectStarted"], Is.EqualTo(effectStarted));
     }
 
+    // A game the person did not name waits for their «sí» (NetworkEgress, game_title_not_said): its card names the game.
+    [Test]
+    public void TheCardOfAGameNamesTheGameNotItsStoreId()
+    {
+        var arguments = new JsonObject { ["appId"] = "252950", ["title"] = "Rocket League" };
+        JsonObject card = FieldStepProjection.Card("k1", "confirm", "game.launch", arguments, OperationRisks.LowReversible,
+            DateTimeOffset.UtcNow.AddMinutes(2), context: null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)card["target"], Is.EqualTo("Rocket League"));
+            Assert.That(FieldStepProjection.Label("game.launch", arguments), Does.EndWith("· Rocket League"));
+            Assert.That(FieldStepProjection.Target(new JsonObject { ["appId"] = "Calculadora" }), Is.EqualTo("Calculadora"));
+        });
+    }
+
     internal static JsonObject Finished(string status, bool verified, JsonObject facts, string? errorCode = null)
     {
         var step = new NativeTurnStep(Operation, new JsonObject(), status, verified, errorCode, 5, facts.ToJsonString(), "c1",
