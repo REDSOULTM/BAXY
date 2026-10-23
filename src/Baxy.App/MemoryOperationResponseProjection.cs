@@ -140,9 +140,14 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         JsonElement? privateArguments = null)
     {
         message = string.Empty;
+        // Renew al máximo (w8): «sensitive» (only when true) marks a sensitive or secret record (MemoryHandlers.Correct).
+        bool flagged = payload.ValueKind == JsonValueKind.Object && payload.TryGetProperty("sensitive", out _);
         if (!HasExactProperties(
                 payload,
-                ["version", "recordId", "revision", "selector", "replayed", "changed"])
+                flagged
+                    ? ["version", "recordId", "revision", "selector", "replayed", "changed", "sensitive"]
+                    : ["version", "recordId", "revision", "selector", "replayed", "changed"])
+            || (flagged && !(TryGetBoolean(payload, "sensitive", out bool sensitiveRecord) && sensitiveRecord))
             || !HasVersionOne(payload)
             || !TryGetCanonicalIdentifier(payload, "recordId", out _)
             || !TryGetInt32(payload, "revision", minimum: 1, maximum: int.MaxValue, out _)
@@ -174,16 +179,20 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         {
             observed["changed"] = false;
         }
-        if (operationName == "memory.sensitive.save")
+        if (operationName == "memory.sensitive.save" || flagged)
         {
             observed["sensitive"] = true;
         }
+        // Renew al máximo (w8): a value is said back only for a record that is neither sensitive nor secret, and only
+        // when it does not look like a secret itself (SensitiveText), whatever operation kept it.
         if (privateArguments is { ValueKind: JsonValueKind.Object } arguments
             && operationName != "memory.sensitive.save"
+            && !flagged
             && arguments.TryGetProperty("value", out JsonElement valueElement)
             && valueElement.ValueKind == JsonValueKind.String
             && valueElement.GetString() is { } value
             && !string.IsNullOrWhiteSpace(value)
+            && !SensitiveText.Contains(value)
             && StrictUtf8.GetByteCount(value) <= MaximumSelectorUtf8Bytes
             && !HasControlCharacter(value))
         {

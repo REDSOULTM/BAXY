@@ -74,6 +74,24 @@ public sealed class MemoryRecallScopeTests
         });
     }
 
+    // Renew al máximo (w8): a corrected record says whether it is sensitive (the App then never says its value back).
+    [TestCase(MemorySensitivity.Sensitive, true)]
+    [TestCase(MemorySensitivity.Normal, false)]
+    public async Task ACorrectSaysWhetherTheRecordIsSensitive(MemorySensitivity sensitivity, bool flagged)
+    {
+        using var temporary = new Temporary();
+        temporary.Remember("mi direccion", "Calle Uno 1", sensitivity);
+        JsonObject corrected = await temporary.RunOpenedAsync("memory.correct", new JsonObject
+        {
+            ["version"] = 1, ["selector"] = "mi direccion", ["value"] = "Calle Dos 2", ["retention"] = "persistent",
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(corrected.ContainsKey("sensitive"), Is.EqualTo(flagged));
+            Assert.That(corrected.ToJsonString(), Does.Not.Contain("Calle"));
+        });
+    }
+
     private sealed class Temporary : IDisposable
     {
         private readonly string _path = Path.Combine(Path.GetTempPath(), "baxy-memory-recall-" + Guid.NewGuid().ToString("N"));
@@ -89,10 +107,25 @@ public sealed class MemoryRecallScopeTests
             _codec = new BoundProtectedJsonCodec(_protector);
         }
 
-        internal void Remember(string selector, string value)
+        internal void Remember(string selector, string value, MemorySensitivity sensitivity = MemorySensitivity.Normal)
         {
             _store.Configure(new MemoryConfigureRequest("enable-1", Enabled: true));
-            _store.Save(new MemorySaveRequest("save-1", selector, selector, value));
+            _store.Save(new MemorySaveRequest("save-1", selector, selector, value, Sensitivity: sensitivity));
+        }
+
+        internal async Task<JsonObject> RunOpenedAsync(string operation, JsonObject payload)
+        {
+            IOperationHandler handler = MemoryHandlers.Create(_store, _codec)
+                .Single(candidate => candidate.Definition.Name == operation);
+            string mission = Guid.NewGuid().ToString("D");
+            string invocation = Guid.NewGuid().ToString("D");
+            JsonElement sealedArguments = _codec.SealArguments(operation, mission, invocation,
+                Guid.NewGuid().ToString("D"), payload);
+            OperationOutcome outcome = await handler.ExecuteAsync(
+                new OperationInvocation("r1", mission, invocation, sealedArguments), CancellationToken.None);
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            using OpenedBoundProtectedJson opened = _codec.OpenResult(outcome.Result!.Value, operation, mission, invocation);
+            return JsonNode.Parse(opened.Payload.GetRawText())!.AsObject();
         }
 
         internal async Task<OperationOutcome> RecallAsync(JsonObject payload) =>

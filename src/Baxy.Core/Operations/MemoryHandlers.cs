@@ -556,7 +556,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                 result.Revision,
                 result.Selector,
                 result.Replayed,
-                result.Changed),
+                result.Changed,
+                Sensitive: current.Sensitivity is MemorySensitivity.Sensitive or MemorySensitivity.Secret),
             MemoryHandlersJsonContext.Default.MemoryMutationWireResult);
     }
 
