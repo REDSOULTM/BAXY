@@ -2,8 +2,8 @@
 
 The voice (chosen by the owner by ear, 2026-10-17) is a blend of three of Supertonic's male styles built by
 scripts/voice/make_baxy_voice.py into BAXY_RENEW_TTS_DIR, beside the model and baxy-voice.json, the rest of the recipe:
-flow-matching steps, speed, a fixed seed (the same sentence always sounds the same) and «shift», a fraction of a semitone that makes the voice a little smaller (pitch and formants together: the engine
-speaks that much slower and the take is resampled that much shorter, so the tempo stays). The text is first turned into
+flow-matching steps, speed, a fixed seed (the same sentence always sounds the same) and «shift», a fraction of a
+semitone that makes the voice a little smaller (pitch and formants together: the engine speaks that much slower and the take is resampled that much shorter, so the tempo stays). The text is first turned into
 what is said (speech_text.py: numbers, dates, English names); every sentence is brought to the same loudness, since the
 engine's level varies with the sentence.
 

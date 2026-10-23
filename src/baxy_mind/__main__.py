@@ -159,6 +159,10 @@ def main() -> int:
                     protocol.write_message(mind.decide(request_id, str(message.get("text") or ""),
                                                        message.get("pendingConfirmation")))
                 elif kind == "turn.continue":
+                    # After a tool the answer may come long after the output closed (HOLD_S 20 s; file.find 11-14 s,
+                    # web.fetch up to 160 s): it opens again (0.38 s on the PC) while the model writes it.
+                    if not message.get("beat"):
+                        voice.speech.prepare()
                     protocol.write_message(mind.continue_turn(request_id, str(message.get("observation") or ""),
                                                               bool(message.get("final")), bool(message.get("beat"))))
                 elif kind == "turn.beat":
@@ -167,6 +171,7 @@ def main() -> int:
                     mind.end_beat()
                     protocol.write_message({"type": "turn.beat.ended", "id": request_id})
                 elif kind == "turn.confirm":
+                    voice.speech.prepare()  # the person's «sí» or «no» is answered aloud too
                     protocol.write_message(mind.confirm(request_id, bool(message.get("approve")),
                                                         str(message.get("label") or "")))
                 elif kind == "session.new":
