@@ -67,6 +67,11 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
     private const string CpuRegistryValue = "ProcessorNameString";
     private readonly IExternalProcessRunner _processRunner;
 
+    // Renew al máximo (w8): the operating system's identity (caption, version, workstation) took a PowerShell started
+    // cold on every system.status summary (0.4-0.7 s). Windows changes it only through an update that restarts it, and
+    // BAXY with it, so the first verified read is kept for the life of this probe; a failed read is not kept.
+    private System.Runtime.CompilerServices.StrongBox<OperatingSystemReading>? _operatingSystem;
+
     public WindowsSystemStatusProbe()
         : this(new ExternalProcessRunner())
     {
@@ -261,6 +266,11 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        if (Volatile.Read(ref _operatingSystem) is { } known)
+        {
+            return known.Value;
+        }
+
         const string script = """
             $ErrorActionPreference = 'Stop'
             Get-CimInstance -ClassName Win32_OperatingSystem -Property Caption,Version,ProductType |
@@ -294,13 +304,15 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
                 throw new IOException("Windows returned an invalid operating-system identity.");
             }
 
-            return new OperatingSystemReading(
+            OperatingSystemReading reading = new(
                 version.Major,
                 version.Minor,
                 version.Build,
                 GetArchitectureName(RuntimeInformation.OSArchitecture),
                 productType == 1,
                 captionValue.GetString()!.Trim().Normalize(NormalizationForm.FormC));
+            Volatile.Write(ref _operatingSystem, new System.Runtime.CompilerServices.StrongBox<OperatingSystemReading>(reading));
+            return reading;
         }
         catch (JsonException exception)
         {

@@ -117,10 +117,37 @@ public sealed class WindowsOperatingSystemProbeTests
         Assert.That(runner.Token, Is.EqualTo(cancellation.Token));
     }
 
+    // Renew al máximo (w8): the identity is read with PowerShell once and kept; a read that failed is tried again.
+    [Test]
+    public async Task TheIdentityIsReadOnceAndAFailedReadIsTriedAgain()
+    {
+        var runner = new StubRunner
+        {
+            Output = """{"Caption":"Microsoft Windows 11 Home","Version":"10.0.26300","ProductType":1}""",
+            ExitCodes = new Queue<int>([1]),
+        };
+        var provider = new WindowsSystemStatusProvider(
+            new WindowsSystemStatusProbe(runner), TimeSpan.FromMilliseconds(10));
+
+        SystemStatusSnapshot failed = await provider.GetStatusAsync(SystemStatusScope.OperatingSystem, CancellationToken.None);
+        SystemStatusSnapshot first = await provider.GetStatusAsync(SystemStatusScope.All, CancellationToken.None);
+        SystemStatusSnapshot second = await provider.GetStatusAsync(SystemStatusScope.OperatingSystem, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(failed.OperatingSystem, Is.Null);
+            Assert.That(first.OperatingSystem!.BuildNumber, Is.EqualTo(26300));
+            Assert.That(second.OperatingSystem!.Caption, Is.EqualTo("Microsoft Windows 11 Home"));
+            Assert.That(runner.Calls, Is.EqualTo(2));
+        });
+    }
+
     private sealed class StubRunner : IExternalProcessRunner
     {
         public string Output { get; init; } = "";
         public int ExitCode { get; init; }
+        public Queue<int> ExitCodes { get; init; } = new();
+        public int Calls { get; private set; }
         public Exception? Exception { get; init; }
         public Func<CancellationToken, Task>? Wait { get; init; }
         public string? Executable { get; private set; }
@@ -132,6 +159,7 @@ public sealed class WindowsOperatingSystemProbeTests
             string executable, IReadOnlyList<string> arguments,
             TimeSpan timeout, CancellationToken cancellationToken)
         {
+            Calls++;
             Executable = executable;
             Arguments = arguments;
             Timeout = timeout;
@@ -144,7 +172,7 @@ public sealed class WindowsOperatingSystemProbeTests
             {
                 await Wait(cancellationToken);
             }
-            return new ExternalProcessResult(ExitCode, Output, "private process detail");
+            return new ExternalProcessResult(ExitCodes.Count > 0 ? ExitCodes.Dequeue() : ExitCode, Output, "private process detail");
         }
     }
 }
