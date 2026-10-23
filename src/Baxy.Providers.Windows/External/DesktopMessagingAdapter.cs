@@ -415,7 +415,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     // Renew al máximo (w8): a send that failed after Enter came back with no result (the code and effectObserved only):
     // nothing said Enter was pressed, so «not verified» read as «not sent» and a model sent it again (twice in the chat).
     // It says Enter was pressed, that the message may be in the chat, what was read there and whether the chat still
-    // named the recipient; every other failure is as before.
+    // named the recipient; every other failure is as before. Renew al máximo (w9): one stopped just before Enter because
+    // the chat no longer named the recipient says the text was typed and not sent.
     private static ExternalCapabilityReceipt SendNotVerified(
         string operation,
         DesktopMessageObservation sent,
@@ -426,6 +427,19 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             sent.ErrorCode ?? "message_delivery_not_verified",
             sent.EffectObserved,
             sent.EffectMayHaveOccurred || sent.EnterPressed);
+        if (sent.ErrorCode == WindowsDesktopMessagingAutomation.RecipientChangedBeforeEnter)
+        {
+            return failure with
+            {
+                Result = JsonObject(
+                    ("version", 1),
+                    ("messageWritten", true),
+                    ("enterPressed", false),
+                    ("sent", false),
+                    ("displayName", displayName)),
+            };
+        }
+
         if (!sent.EnterPressed)
         {
             return failure;
@@ -785,6 +799,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     /// typed: it is left as it was and the flow stops, nothing written.
     /// </summary>
     internal const string ComposerHasPersonDraft = "composer_has_person_draft";
+
+    /// <summary>
+    /// Renew al máximo (w9): the text was typed and seen in the composer, and just before Enter the chat's header no
+    /// longer named the recipient: Enter was not pressed, nothing was sent, and the text typed is left in the composer.
+    /// </summary>
+    internal const string RecipientChangedBeforeEnter = "message_recipient_changed_before_enter";
 
     // C5: Ctrl+A selects whatever the focused field holds. When that field is the conversation's composer and it holds
     // text, the composer's picture (composer, taken just before) changes under the selection; a placeholder is not
@@ -1271,7 +1291,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // The same rows over the whole pane, the widest read below: an old bubble with these words anywhere there
             // before Enter is not the delivery.
             beforePane = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel, 0);
-            SendKey(VirtualKeyReturn);
+            if (!await PressEnterInVerifiedChatAsync(
+                    async token => await ShownRecipientAsync(
+                        recipient.WindowHandle, recipient.Channel, recipient.Name, token).ConfigureAwait(false) is not null,
+                    () => SendKey(VirtualKeyReturn),
+                    cancellationToken).ConfigureAwait(false))
+            {
+                return new(false, false, string.Empty, RecipientChangedBeforeEnter) { EffectMayHaveOccurred = true };
+            }
         }
         catch (LeasedInput.BurstStoppedException stop)
         {
@@ -1293,6 +1320,27 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return await SentReadBackAsync(
             token => ReadBackAfterEnterAsync(recipient, text, beforeSend, beforePane, token),
             cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Renew al máximo (w9): the chat was verified before typing, and the typed draft's OCR takes seconds; its header is
+    /// read again just before Enter, and Enter is pressed only while it still names the recipient. Otherwise nothing is
+    /// pressed or cleared (the composer in front may be another chat's) and the text typed is said to be left there.
+    /// </summary>
+    internal static async ValueTask<bool> PressEnterInVerifiedChatAsync(
+        Func<CancellationToken, ValueTask<bool>> recipientShown,
+        Action pressEnter,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(recipientShown);
+        ArgumentNullException.ThrowIfNull(pressEnter);
+        if (!await recipientShown(cancellationToken).ConfigureAwait(false))
+        {
+            return false;
+        }
+
+        pressEnter();
+        return true;
     }
 
     /// <summary>

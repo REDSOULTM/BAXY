@@ -250,6 +250,9 @@ def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None
     unsure = json.dumps({"status": "failed", "error": "message_delivery_not_verified", "effectUncertain": True})
     assert _outcome(stopped) == "falló (composer_has_person_draft): el mensaje no se escribió ni se envió"
     assert _outcome(unsure) == "sin confirmar: pudo o no ocurrir"
+    typed = json.dumps({"status": "failed", "error": "message_recipient_changed_before_enter", "effectUncertain": True,
+                        "observed": {"version": 1, "messageWritten": True, "enterPressed": False, "sent": False}})
+    assert _outcome(typed) == "falló (message_recipient_changed_before_enter): el mensaje quedó escrito y no se envió"
 
 
 @pytest.mark.parametrize("verification,told", [

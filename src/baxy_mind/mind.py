@@ -176,10 +176,12 @@ def _outcome(observation: str, read: bool = False) -> str:
         return "cancelado por la persona"
     # Uso real 2026-10-21 (e2e del notebook): a message stopped before it was written touched the client (an uncertain
     # effect) and the model told «le mandé el mensaje»; what the result knows of the message comes first.
+    # Renew al máximo (w9): one typed and stopped just before Enter (the chat no longer named the recipient) was not sent.
     shown = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
-    if status != "completed" and shown.get("sent") is False and shown.get("messageWritten") is False:
+    if status != "completed" and shown.get("sent") is False and isinstance(shown.get("messageWritten"), bool):
         error = facts.get("error") or facts.get("cause")
-        return "falló" + (f" ({error})" if error else "") + ": el mensaje no se escribió ni se envió"
+        written = "quedó escrito y no se envió" if shown["messageWritten"] else "no se escribió ni se envió"
+        return "falló" + (f" ({error})" if error else "") + ": el mensaje " + written
     # Al máximo 8.3 (notebook): an act that failed or stayed unsure but whose state was read again after it says whether
     # what was asked holds now; the result's code and its uncertainty stay as they are.
     after = shown.get("stateAfter")

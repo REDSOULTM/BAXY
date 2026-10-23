@@ -453,6 +453,72 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // Renew al máximo (w9): the recipient was checked only before typing, never again before Enter. Enter is pressed
+    // only while the chat's header still names the recipient, read just before it.
+    [TestCase(true, 1)]
+    [TestCase(false, 0)]
+    public async Task EnterIsPressedOnlyWhileTheChatStillNamesTheRecipient(bool shown, int presses)
+    {
+        int pressed = 0;
+
+        bool sent = await WindowsDesktopMessagingAutomation.PressEnterInVerifiedChatAsync(
+            _ => ValueTask.FromResult(shown), () => pressed++, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sent, Is.EqualTo(shown));
+            Assert.That(pressed, Is.EqualTo(presses));
+        });
+    }
+
+    [Test]
+    public void TheSendReadsTheRecipientAgainRightBeforeEnter()
+    {
+        string source = AdapterSource();
+        int send = source.IndexOf("private static async ValueTask<DesktopMessageObservation> SendInBurstAsync(", StringComparison.Ordinal);
+        int sendEnd = source.IndexOf("\n    }\n", Math.Max(send, 0), StringComparison.Ordinal);
+        string body = source[send..sendEnd];
+        Assert.Multiple(() =>
+        {
+            Assert.That(send, Is.GreaterThan(0));
+            Assert.That(body, Does.Contain("PressEnterInVerifiedChatAsync("));
+            Assert.That(body, Does.Not.Contain("SendKey(VirtualKeyReturn);"));
+        });
+    }
+
+    [TestCase("message.send", """{"channel":"whatsapp","recipient":"Letras","text":"Hola"}""")]
+    [TestCase("message.send.test", """{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}""")]
+    public async Task ASendStoppedBeforeEnterSaysTheTextWasTypedAndNotSent(string operation, string arguments)
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            new DesktopMessageObservation(false, false, string.Empty,
+                WindowsDesktopMessagingAutomation.RecipientChangedBeforeEnter) { EffectMayHaveOccurred = true });
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_recipient_changed_before_enter"));
+                Assert.That(receipt.Result!.Value.GetProperty("messageWritten").GetBoolean(), Is.True);
+                Assert.That(receipt.Result.Value.GetProperty("enterPressed").GetBoolean(), Is.False);
+                Assert.That(receipt.Result.Value.GetProperty("sent").GetBoolean(), Is.False);
+                Assert.That(receipt.Result.Value.GetProperty("displayName").GetString(), Is.EqualTo("Letras"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
     // The flows that press Enter mark it on the observation they return.
     [Test]
     public void EveryReadBackAfterEnterSaysEnterWasPressed()
