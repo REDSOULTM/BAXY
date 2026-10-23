@@ -111,6 +111,38 @@ public sealed class MissionFrontTests
         });
     }
 
+    // Renew al máximo (w5): an act stopped by the person's input says why and that the window was not looked at, beside
+    // the code, which stays; whether anything was sent is as the receipt says. With the aids off it reads as before.
+    [TestCase("all", false, "nothing of the act was sent")]
+    [TestCase("all", true, "whether it landed was not looked at")]
+    [TestCase("none", true, null)]
+    public void AnActStoppedByThePersonsInputSaysWhyItStopped(string aids, bool mayHaveSent, string? next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        ExternalCapabilityReceipt stopped = mayHaveSent
+            ? ExternalJson.FailureAfterEffect("input.visible.click", "input_user_interrupted", effectObserved: true)
+            : ExternalJson.FailureBeforeEffect("input.visible.click", "input_user_interrupted");
+
+        ExternalCapabilityReceipt told = WindowsExternalCapabilityProvider.Interrupted(stopped);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(told.ErrorCode, Is.EqualTo("input_user_interrupted"));
+            Assert.That(told.Verified, Is.False);
+            if (next is null)
+            {
+                Assert.That(told.Result, Is.Null);
+                return;
+            }
+
+            Assert.That(told.Result?.GetProperty("reason").GetString(), Does.Contain("the person's mouse or keys"));
+            Assert.That(told.Result?.GetProperty("next").GetString(), Does.Contain(next).And.Contain("input_visible_controls"));
+            Assert.That(told.Result?.GetProperty("next").GetString(), Does.Not.Contain("closed"));
+        });
+        Assert.That(WindowsExternalCapabilityProvider.Interrupted(
+            ExternalJson.FailureBeforeEffect("input.visible.click", "input_window_changed")).Result, Is.Null);
+    }
+
     // CU4 (auditoría final 2): an act that would reach a developer's or BAXY's own window no look named is never sent,
     // and no front is taken for it.
     [Test]

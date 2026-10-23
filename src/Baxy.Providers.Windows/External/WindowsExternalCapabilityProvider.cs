@@ -448,9 +448,31 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         CancellationToken cancellationToken)
     {
         StrongBox<bool> unanswered = MediaSessionCalls.Watch();
-        return MediaSessionCalls.Diagnosed(
-            await InvokeWatchedAsync(operation, arguments, cancellationToken).ConfigureAwait(false), unanswered);
+        return Interrupted(MediaSessionCalls.Diagnosed(
+            await InvokeWatchedAsync(operation, arguments, cancellationToken).ConfigureAwait(false), unanswered));
     }
+
+    /// <summary>
+    /// Renew al máximo (w5): an act stopped by the person's input reached the model as the bare code and the reply
+    /// told «la ventana se cerró»; the facts of the stop beside the code, which stays: why BAXY stopped, whether
+    /// anything was sent as the receipt says, and that whether the act landed was not looked at.
+    /// </summary>
+    internal static ExternalCapabilityReceipt Interrupted(ExternalCapabilityReceipt receipt) =>
+        receipt.ErrorCode != LeasedInput.Interrupted || !Infrastructure.ModelAids.On(Infrastructure.ModelAids.InterruptedNext)
+            ? receipt
+            : receipt with
+            {
+                Result = ExternalJson.Extended(receipt.Result, writer =>
+                {
+                    writer.WriteString("reason", "BAXY stopped because input that was not its own (the person's mouse "
+                        + "or keys) came during the act");
+                    writer.WriteString("next", receipt.EffectObserved || receipt.EffectMayHaveOccurred
+                        ? "part of the act may have been sent before the stop; whether it landed was not looked at: "
+                            + "looking at the window again (input_visible_controls) tells"
+                        : "nothing of the act was sent; the window was not looked at after the stop: looking at it "
+                            + "again (input_visible_controls) tells how it is");
+                }),
+            };
 
     private async ValueTask<ExternalCapabilityReceipt> InvokeWatchedAsync(
         string operation,

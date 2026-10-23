@@ -65,6 +65,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5, F004): a text typed with no window named says, as a sentence, the one window it went into.</summary>
     public const string TypedTargetNext = "typed_target_next";
 
+    /// <summary>Renew al máximo (w5): an act stopped by the person's input says why it stopped and how the window is seen.</summary>
+    public const string InterruptedNext = "interrupted_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
