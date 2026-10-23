@@ -102,8 +102,9 @@ def test_the_clock_lists_only_the_last_calls_of_a_long_session(tmp_path: Path) -
     from baxy_mind.mind import SESSION_CALLS
     from test_mind_final import _call, _mind, _say
     calls = SESSION_CALLS + 2
+    # «Sí.» after ten failures contradicts them (aid «answer_check»): the model is asked once more («No.»).
     mind, server = _mind(tmp_path, [*[_call("app_open", {"appId": f"App{i}"}) for i in range(calls)], _say("Listo."),
-                                    _say("Sí.")])
+                                    _say("Sí."), _say("No.")])
     mind.decide(1, "abre todas")
     for i in range(calls):
         mind.continue_turn(2 + i, json.dumps({"status": "failed", "error": f"e{i}"}), final=i == calls - 1)
@@ -131,7 +132,8 @@ def test_a_session_kept_before_the_count_says_how_many_calls_it_shows(tmp_path: 
 def test_a_call_whose_result_never_came_is_in_the_session_calls(tmp_path: Path) -> None:
     # 8.1: the turn ended while the call ran; it may have run, so the clock never says that none did.
     from test_mind_final import _call, _mind, _say
-    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Paint"}), _say("Sí.")])
+    # «Sí.» over a call with no result is asked once more (aid «answer_check»): nothing completed that close.
+    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Paint"}), _say("Sí."), _say("No lo sé.")])
     mind.decide(1, "cierra paint")
     mind.decide(2, "¿ya lo cerraste?")
     assert _clocks(server)[-1].endswith("en esta sesión: 1 (app_close → sin resultado: pudo o no ocurrir)]")

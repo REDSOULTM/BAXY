@@ -117,7 +117,9 @@ def test_an_answer_straight_from_the_decision_is_synthesized_before_the_turn_ret
     mind, server = _mind(tmp_path, [_say(FIRST + REST)])
     told: list[tuple] = []
     mind.foresee = lambda text, done: told.append((text, done)) or speech.foresee(text, done)
-    result = mind.decide(1, "¿está spotify abierto?")
+    # A request that asks nothing of the PC's state: «¿está spotify abierto?» answered with no look is what the answer
+    # check asks again (aid «answer_check», test_answer_check.py).
+    result = mind.decide(1, "pon música")
     assert "logprobs" in server.bodies[0]  # not streamed: the doubt is read
     assert told == [(result["reply"], True)]  # given to the voice before the turn's result went back
     _until(lambda: synthesized)
