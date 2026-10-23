@@ -116,3 +116,42 @@ def test_a_run_with_system_one_waits_for_it_and_stops_when_it_died() -> None:
         bench_decision.wait_system_one(FakeLaya([], ready=False, exit_code=3), timeout=1, poll=0.01)
     with pytest.raises(SystemExit, match="not up"):
         bench_decision.wait_system_one(FakeLaya([], ready=False), timeout=0.05, poll=0.01)
+
+
+def _run(folder: Path, name: str, rows: list[dict]) -> Path:
+    path = folder / name
+    path.write_text("\n".join(json.dumps(r) for r in [{"summary": {}}] + rows) + "\n", encoding="utf-8")
+    return path
+
+
+def test_pareado_leaves_out_e2e_cases_that_never_ran_and_names_server_errors(tmp_path) -> None:
+    import pareado
+    errors: dict = {}
+    run = _run(tmp_path, "e2e.jsonl", [
+        {"id": "E1", "ok": True, "status": "ok"}, {"id": "E2", "ok": False, "status": "setup_fallido"},
+        {"id": "E3", "ok": False, "status": "void"}, {"id": "E4", "ok": False, "status": "sesion_bloqueada"},
+        {"id": "E5", "ok": False, "status": "fallo"}, {"id": "P1", "ok": False, "error": "HTTP 500"}])
+    assert pareado.rows(run, "ok", errors) == {"E1": True, "E5": False, "P1": False}
+    assert errors == {str(run): 1}
+
+
+def test_pareado_counts_wrong_actions_as_its_secondary_metric(tmp_path) -> None:
+    import pareado
+    run = _run(tmp_path, "d.jsonl", [
+        {"id": "P1", "ok": False, "kind": "action"}, {"id": "P2", "ok": True, "kind": "action"},
+        {"id": "P3", "ok": False, "kind": "clarify"}, {"id": "P4", "ok": False, "kind": "action", "excluded": True}])
+    assert pareado.rows(run, "wrong_action") == {"P1": True, "P2": False, "P3": False}
+
+
+def test_pareado_clusters_dictation_twins_with_their_clean_case() -> None:
+    import pareado
+    cluster_of = pareado.clusters([{"id": "D1"}, {"id": "D2", "twin": "D1"}, {"id": "D3"}, {"id": "D4"}])
+    assert cluster_of == {"D1": "D1", "D2": "D1", "D3": "D3", "D4": "D4"}
+    reference = [{"D1": False, "D2": False, "D3": True, "D4": True}]
+    arm = [{"D1": True, "D2": True, "D3": True, "D4": False}]
+    result = pareado.compare(reference, arm, set(), cluster_of)
+    assert result["delta"] == 1 and result["clusters"] == 3
+    # Pair sums +2, 0, -1: SE = sqrt(3/2 · ((2-1/3)² + (0-1/3)² + (-1-1/3)²)) = sqrt(7) ≈ 2.65.
+    assert result["delta_se_twins"] == 2.65
+    assert result["delta_ci95_twins"][0] <= 1 <= result["delta_ci95_twins"][1]
+    assert "clusters" not in pareado.compare(reference, arm, set(), None)
