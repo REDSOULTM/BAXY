@@ -3132,3 +3132,10 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   visible_button_postread_unchanged (50 s) antes de decir, con verdad, «no pude entrar a la Biblioteca». Límite a contar:
   el 4B no usa el lugar de app_open aquí y la ayuda de llamada repetida no lo frenó. La primera pasada no guardó
   eventos (faltó --capture) y se repitió.
+- 05:28 (23-10) **HOLDOUT v4, E2E (72 casos, NB)**: 5 corridas válidas (0 setup_failed, frente limpio, MSConfig\services
+  0); rotulado de voz corregido (relabel_px.py, cambia sólo s1off s0 H4E027 a ok). `s1off` s0 43; `s1on` 41 + 45 = 43,0;
+  `maximo` 45 + 49 = **47,0** (65,3 %). Pareado `maximo` frente a `s1on`: +4,0, IC95 [−0,5; +9,0], McNemar p 0,125;
+  suben H4E017, H4E025, H4E026, H4E062, ninguno baja por mayoría; pass^2 41 → 44. Archivos 3/10 en todas (rutas dictadas:
+  límite del modelo). **Costo**: primera respuesta p50 3,4 → 4,3 s en `maximo` (+0,9 s en turnos con herramientas:
+  turn.continue lee más del resultado, prompt_n 124 → 156 por stateAfter, next y ayudas, y escribe más, 399 → 487 ms;
+  sin herramientas +0,06 s).
