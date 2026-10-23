@@ -421,6 +421,12 @@ TURN_ROOM_TOKENS = 3584
 # after it: 28 % of turn.decide re-read over 500 tokens (p50 761 tokens / 701 ms, p90 2.5k / 1.6 s), and a session at
 # its bound cut one turn at every new one. Cut to 60 %, the next turns grow at its end until the bound again.
 TRIM_TO = 0.6
+# Renew al máximo (w5): a cut also takes the turns down to this share of HISTORY_TURNS (3 of 8), all of them without
+# their results' bodies, so the next cut comes six turns later. Each cut re-reads all that is left plus ~500 tokens of
+# the prefix (the slot's last checkpoint before the history). Estimated on the measured session's shapes (offline replay
+# with the model's chat template, not measured on the model): turn.decide re-reads −3 to −14 % against b84547ed5 on
+# that session, −21 % on random 30-turn sessions of its turns; 0.6 here, +1 % and −10 %.
+TRIM_TURNS_TO = 0.4
 # Ronda final 45 (regla 3): what is cut is said where the model reads, or it took what is left for the whole session
 # («nunca me lo dijiste» about a turn no longer shown).
 TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "
@@ -1000,24 +1006,26 @@ class Mind:
         self._turn = None
 
     def _trim(self) -> None:
-        """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result. Past it, the
-        oldest closed turns' results lose their bodies until their characters and tokens fit TRIM_TO (1.1), and if that
-        is not enough the oldest turns go until what is left fits TRIM_TO of every bound."""
+        """Keep the last turns that fit the budget; a turn starts at its clock, so no call loses its result. While they
+        fit, nothing already sent changes (the model re-reads from the first changed message on). Past a bound, one
+        rewrite: the oldest turns go down to TRIM_TURNS_TO of the count, every kept closed turn loses its results'
+        bodies (1.1, in one block), and the oldest turns go until what is left fits TRIM_TO of every bound."""
+        # Renew al máximo (w5): 1.1 left out bodies only down to TRIM_TO of the characters and kept every turn, so the
+        # count bound came back a turn or two later and the whole history was re-read again (sesión larga, notebook
+        # 2026-10-22: turns 12 and 14 re-read 2,844 and 1,932 tokens, the base 747 and 333). One deep rewrite instead.
         turns = self._turn_sizes()
         if len(turns) <= 1 or self._fits(turns):
             return
-        starts = [t[0] for t in turns]
-        for start, end in zip(starts, starts[1:]):
-            if self._fits(turns, TRIM_TO, count=False):
-                break
-            if self._compact(self.conversation[start:end]):
-                turns = self._turn_sizes()
-        if self._fits(turns):
-            return
-        dropped = 1
+        dropped = 0
+        while dropped < len(turns) - 1 and len(turns) - dropped > HISTORY_TURNS * TRIM_TURNS_TO:
+            dropped += 1
+        starts = [t[0] for t in turns[dropped:]]
+        if any([self._compact(self.conversation[start:end]) for start, end in zip(starts, starts[1:])]):
+            turns = self._turn_sizes()
         while dropped < len(turns) - 1 and not self._fits(turns[dropped:], TRIM_TO):
             dropped += 1
-        self._drop(turns[dropped][0], dropped)
+        if dropped:
+            self._drop(turns[dropped][0], dropped)
 
     def _drop(self, end: int, turns: int) -> None:
         """Take out the oldest `turns`, up to the first kept turn's clock (`end`): an earlier note of what was cut goes
@@ -1058,11 +1066,10 @@ class Mind:
             self._tokens = {t: self._tokens[t] if t in self._tokens else len(self.server.tokenize(t)) for t in texts}
         return [(a, len(t), self._tokens.get(t, 0)) for a, t in zip(bounds, texts)]
 
-    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0, count: bool = True) -> bool:
-        """Whether these turns fit `share` of every bound: turns (unless not `count`: leaving out results never changes
-        how many there are), characters and the tokens the prefix leaves."""
+    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0) -> bool:
+        """Whether these turns fit `share` of every bound: turns, characters and the tokens the prefix leaves."""
         room = self.server.context - self.prefix_tokens - TURN_ROOM_TOKENS
-        return ((not count or len(turns) <= HISTORY_TURNS * share) and sum(t[1] for t in turns) <= HISTORY_CHARS * share
+        return (len(turns) <= HISTORY_TURNS * share and sum(t[1] for t in turns) <= HISTORY_CHARS * share
                 and (not self.prefix_tokens or sum(t[2] for t in turns) <= room * share))
 
     def _turn_starts(self) -> list[int]:
