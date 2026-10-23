@@ -3170,3 +3170,10 @@ el PC: la GPU del PC queda para él; los agentes del PC sólo escriben código y
 - Holdout v5: dos agentes aislados del PC lo escriben y sellan como el v4 (decisión 720 con ~60 casos de carpetas
   nombradas; e2e 72 con 14 de archivos; falsedades 36 con los patrones nuevos). Clave en BAXY-coord\holdout-v5-clave.txt.
 - Pendiente del dueño: medir el reconocimiento de nombres con su voz (sólo con su permiso).
+- 12:0x (23-10) **int9 = 17d986bfd** (renew-maximo + w6-banco + w6-settle + w6-rutas + w6-fals2 + w6-lat; PC: Kernel 695,
+  Contracts 74, App 134, Setup 477, pytest 392). **decision3 ×3 en el NB** (bench de int9, S1 encendido; renew-maximo con
+  --src de su mente): int9 247 / 246 / 244 = **245,67** frente a 244 / 239 / 243 = 242,0: Δ +3,67, IC95 [+0,33; +7,33];
+  por mayoría gana 5 y pierde 1; pass^3 239 frente a 238; p50 0,86-0,89 s frente a 0,89-0,91 s. Siguen Providers entero,
+  e2e ×3 y falsedades ×3 en el NB. En el PC: agentes w7-breve (respuestas más largas tras herramienta), w7-apps
+  (apps de nombre parecido) y el parche de llama.cpp (permiso del dueño); prueba del oído con la voz del dueño lista en
+  D:\BAXYWork\voz-dueno\PROBAR_MI_VOZ.cmd (las grabaciones no se suben).
