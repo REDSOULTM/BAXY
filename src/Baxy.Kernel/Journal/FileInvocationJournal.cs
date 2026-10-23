@@ -458,6 +458,72 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         }
     }
 
+    /// <summary>The error code of the terminal <see cref="AbandonInterruptedAsync"/> records.</summary>
+    public const string AbandonedErrorCode = "invocation_abandoned";
+
+    /// <summary>
+    /// Auditoría del núcleo 2026-10-23: every invocation an earlier Core started and never ended (it stopped, a handler
+    /// threw, its run was left retryable) gets an authenticated terminal of its own: failed, <see cref="AbandonedErrorCode"/>,
+    /// its effect possibly standing. The App never resumes a call of an earlier session, so nothing would ever end it, and
+    /// each held a completion reservation (2 MiB of the cap) forever. A retry of it is then that answer, never run again.
+    /// The Core calls this once, after opening and before any request. Returns how many it ended.
+    /// </summary>
+    public async ValueTask<int> AbandonInterruptedAsync(CancellationToken cancellationToken)
+    {
+        EnsureUsable();
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            string[] interrupted = [.. _started.Keys
+                .Where(invocationId => !_completed.ContainsKey(invocationId)
+                    && _completionReservations.Contains(invocationId)
+                    && _retainedStates.ContainsKey(invocationId))
+                .Order(StringComparer.Ordinal)];
+            foreach (string invocationId in interrupted)
+            {
+                JournalPayload started = _retainedStates[invocationId];
+                var request = new OperationRequest(
+                    ProtocolTypes.OperationRequest,
+                    started.RequestId,
+                    started.MissionId,
+                    started.InvocationId,
+                    started.Operation,
+                    EmptyArguments());
+                Operations.OperationOutcome abandoned =
+                    Operations.OperationOutcome.Failure(AbandonedErrorCode, effectMayHaveOccurred: true);
+                var response = new OperationResponse(
+                    ProtocolTypes.OperationResponse,
+                    started.RequestId,
+                    started.MissionId,
+                    started.InvocationId,
+                    OperationStatuses.Failed,
+                    Operations.OperationVisibleFacts.FromOutcome(started.Operation, abandoned),
+                    Verified: false,
+                    Replayed: false,
+                    Result: null,
+                    ErrorCode: AbandonedErrorCode,
+                    EffectMayHaveOccurred: true);
+                var payload = CreatePayload(JournalPhases.Completed, request, started.RequestFingerprint, response);
+                payload = await AppendCompletedAsync(payload, cancellationToken).ConfigureAwait(false);
+                _completed.Add(invocationId, new CompletedInvocation(started.RequestFingerprint, response));
+                _retainedStates[invocationId] = payload;
+                _completionReservations.Remove(invocationId);
+            }
+
+            return interrupted.Length;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    private static JsonElement EmptyArguments()
+    {
+        using JsonDocument empty = JsonDocument.Parse("{}");
+        return empty.RootElement.Clone();
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_disposed)

@@ -85,6 +85,69 @@ public sealed class FileInvocationJournalTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: what an earlier Core left begun ends, authenticated, as abandoned (failed, its
+    // effect possibly standing): a retry of it is that answer and runs nothing, the answer survives a reopen, and the
+    // completion reservations it held are free again for new invocations.
+    [Test]
+    public async Task InterruptedInvocationsEndAsAbandonedAndFreeTheirReservations()
+    {
+        OperationRequest first = CreateRequest();
+        OperationRequest second = CreateRequest();
+        await using (FileInvocationJournal journal = await OpenJournalAsync())
+        {
+            await journal.RecordStartedAsync(first, RequestFingerprint.Compute(first), CancellationToken.None);
+            await journal.RecordStartedAsync(second, RequestFingerprint.Compute(second), CancellationToken.None);
+        }
+
+        const int completionReservationBytes = 4 * 1024;
+        long maximumJournalBytes = new FileInfo(_journalPath).Length + (2 * completionReservationBytes) + 64;
+        var handler = new CountingHandler();
+        int abandoned;
+        OperationResponse refusedBefore;
+        OperationResponse acceptedAfter;
+        OperationResponse retry;
+        await using (FileInvocationJournal journal = await FileInvocationJournal.OpenWithCapacityForTestingAsync(
+                         _journalPath,
+                         new JournalHmacAuthenticator(_authenticationKey),
+                         maximumJournalBytes,
+                         completionReservationBytes))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            refusedBefore = await engine.ExecuteAsync(CreateRequest(), CancellationToken.None);
+            abandoned = await journal.AbandonInterruptedAsync(CancellationToken.None);
+            acceptedAfter = await engine.ExecuteAsync(CreateRequest(), CancellationToken.None);
+            retry = await engine.ExecuteAsync(
+                first with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        OperationResponse afterReopen;
+        int abandonedAgain;
+        await using (FileInvocationJournal reopened = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), reopened))
+        {
+            abandonedAgain = await reopened.AbandonInterruptedAsync(CancellationToken.None);
+            afterReopen = await engine.ExecuteAsync(
+                second with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refusedBefore.ErrorCode, Is.EqualTo("journal_capacity_reached"));
+            Assert.That(abandoned, Is.EqualTo(2));
+            Assert.That(acceptedAfter.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(retry.Replayed, Is.True);
+            Assert.That(retry.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(retry.ErrorCode, Is.EqualTo(FileInvocationJournal.AbandonedErrorCode));
+            Assert.That(retry.EffectMayHaveOccurred, Is.True);
+            Assert.That(abandonedAgain, Is.Zero);
+            Assert.That(afterReopen.Replayed, Is.True);
+            Assert.That(afterReopen.ErrorCode, Is.EqualTo(FileInvocationJournal.AbandonedErrorCode));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
     // Auditoría del núcleo 2026-10-23: evidence larger than the completion reserved before the effect is dropped, never
     // the terminal state (the core used to end after the effect); its facts stay, and the replay runs nothing again.
     [Test]
