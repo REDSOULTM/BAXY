@@ -85,6 +85,49 @@ public sealed class FileInvocationJournalTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: evidence larger than the completion reserved before the effect is dropped, never
+    // the terminal state (the core used to end after the effect); its facts stay, and the replay runs nothing again.
+    [Test]
+    public async Task EvidenceLargerThanTheReservationIsDroppedAndTheTerminalStateKept()
+    {
+        OperationRequest request = CreateRequest() with
+        {
+            Arguments = JsonSerializer.SerializeToElement(new { title = "Compras", content = new string('x', 40_000) }),
+        };
+        var handler = new CountingHandler();
+        OperationResponse response;
+        OperationResponse replay;
+        await using (FileInvocationJournal journal = await FileInvocationJournal.OpenWithCapacityForTestingAsync(
+                         _journalPath,
+                         new JournalHmacAuthenticator(_authenticationKey),
+                         maximumJournalBytes: 1024 * 1024,
+                         completionReservationBytes: 32 * 1024))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            response = await engine.ExecuteAsync(request, CancellationToken.None);
+        }
+
+        await using (FileInvocationJournal reopened = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), reopened))
+        {
+            replay = await engine.ExecuteAsync(
+                request with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(response.Verified, Is.True);
+            Assert.That(response.Result, Is.Null);
+            Assert.That(response.Message, Does.Contain("\"observed\""));
+            Assert.That(replay.Replayed, Is.True);
+            Assert.That(replay.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(replay.Message, Is.EqualTo(response.Message));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
     [Test]
     public async Task ReopenReplaysCompletedInvocationWithCurrentRequestId()
     {

@@ -304,9 +304,22 @@ public sealed class MissionEngine : IDisposable
         CancellationToken cancellationToken,
         ConfirmationBinding? grantedBinding = null)
     {
-        await _journal
-            .RecordCompletedAsync(request, fingerprint, response, cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            await _journal
+                .RecordCompletedAsync(request, fingerprint, response, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (JournalCapacityException) when (response.Result is not null)
+        {
+            // Auditoría del núcleo 2026-10-23: evidence larger than what the journal reserved before the effect ended the
+            // core after the effect, with no terminal state. The terminal is kept without the evidence, as the protocol
+            // line already drops it (ProtocolJson.SerializeBoundedToUtf8Bytes); its facts (the message) stay.
+            response = response with { Result = null };
+            await _journal
+                .RecordCompletedAsync(request, fingerprint, response, cancellationToken)
+                .ConfigureAwait(false);
+        }
         if (grantedBinding is { } binding)
         {
             _confirmationAuthority.Revoke(binding);
