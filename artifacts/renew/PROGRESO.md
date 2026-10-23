@@ -3088,3 +3088,16 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
     núcleo rechaza y el modelo reintenta.
   - **int7** = int6 + nb-f001 (F001: un juego que la persona no nombró espera su sí; con nb-f002 F002 3 → 0 falsas,
     F010 y M132) + nb-w5-f004 + w5-steam + w5-speed2.
+- 00:4x-01:3x (23-10) **Dueño dormido: el PC libre.** Agentes cerrados: w5-confirm (3 defectos de seguridad en
+  confirmaciones), w5-tail (cola lenta), w5-ui (9 etiquetas de pantalla), w5-resto, w5-stt, y retirada w5-grammar.
+  - **Banco de respuestas a una confirmación** (modelo real, papelera pendiente de notas.txt, 29 frases):
+    int7 ×3: sí 15/15 aprueban, no 8/8 rechazan, pero «sí pero el otro» (0,77-0,79) y «sí no» (0,99) APROBABAN. Con el
+    piso de confianza w5-confirm2 (approve:true bajo 0,95 se pregunta), int8 ×2: 15/15, 8/8, 6/6 seguras («no sé» y «sí
+    no» rechazan, «sí pero el otro» pregunta cuál).
+  - **w5-d2** decision2 ×3: 234 / 233 / 232 = 233,0 (sin P212: +2,67, IC95 [+0,67; +5,33]).
+  - **nb-w5-mem** decision2 ×3: 230 / 229 / 228 = 229,0 (Δ −0,33 n.s.); −21 % de tokens releídos en sesión larga.
+  - **w5-stt**: hotwords del catálogo en Parakeet Ultra; banco sintético 1 366 frases: nombres instalados 562 → 744 de
+    1 012, WER 18,97 → 13,43 %, sin nombre 2,96 → 3,41 %, sin más latencia; no es la voz del dueño.
+  - **int8 = 852fc8a9a** (int7 + w5-confirm2 + w5-tail + w5-ui + w5-resto + nb-w5-mem): decision2 ×3 233 / 231 / 231 =
+    231,67 (sin P212: +1,33, IC95 [−0,67; +4,0], nada baja); suites PC pytest 331, Kernel 693, Contracts 74, App 110,
+    Setup 477 y NB Providers ENTERO 2 803/2 803: **criterio de suites cumplido en int8**.
