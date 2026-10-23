@@ -53,9 +53,9 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
                 "note_ambiguous",
                 SerializeAmbiguity(exception)));
         }
-        catch (NoteSelectionStaleException)
+        catch (NoteSelectionStaleException stale)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("note_selection_stale"));
+            return ValueTask.FromResult(OperationOutcome.Failure("note_selection_stale", StaleFacts(stale.NoteId)));
         }
         catch (NoteConflictException)
         {
@@ -125,6 +125,22 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         }
 
         return Facts(facts, next);
+    }
+
+    // Renew al máximo (w9): a snapshot that no longer matches (the note changed after it was read, or after the yes)
+    // changed nothing; it says the note as it is now.
+    protected JsonElement? StaleFacts(Guid id)
+    {
+        try
+        {
+            return Facts(new JsonObject { ["note"] = Summary(Store.Read(id, includeTrashed: true)) },
+                "nothing changed: the note is no longer as the call named it (expectedTitle, expectedRevision, "
+                + "expectedIsTrashed); it is as shown now", ModelAids.NoteSnapshotNext);
+        }
+        catch (Exception exception) when (exception is NoteStoreException or IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
     }
 
     protected JsonElement? TitleNotFoundFacts(JsonElement arguments, NoteListScope scope)
@@ -203,14 +219,14 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         return folded.ToString().Trim();
     }
 
-    private static JsonNode? Summary(NoteRecord note) => JsonSerializer.SerializeToNode(
+    protected static JsonNode? Summary(NoteRecord note) => JsonSerializer.SerializeToNode(
         ToSummary(new NoteSummaryRecord(
             note.Id, note.Title, note.CreatedAtUtc, note.UpdatedAtUtc, note.TrashedAtUtc, note.Revision)),
         CoreJsonContext.Default.NoteSummaryResult);
 
-    private static JsonElement Facts(JsonObject facts, string next)
+    protected static JsonElement Facts(JsonObject facts, string next, string aid = ModelAids.NoteNotFoundNext)
     {
-        if (ModelAids.On(ModelAids.NoteNotFoundNext))
+        if (ModelAids.On(aid))
         {
             facts["next"] = next;
         }
@@ -498,7 +514,13 @@ internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store
 
     // Renew al máximo (w5): a note.trash asks the person's yes, and one whose note is not there (or is there under that
     // title more than once) failed only after the yes. The selection is read first (no effect) and that failure
-    // answers without asking; a selection by snapshot is left to the execution.
+    // answers without asking.
+    // Renew al máximo (w9): the yes named only the title or the id, so a note changed between the yes and the run was
+    // trashed as it was by then. The yes is asked only for a snapshot (noteId, expectedTitle, expectedRevision,
+    // expectedIsTrashed) that is the note now: a call without one fails here with the note and the call that names it
+    // (note_trash_snapshot_required), one that no longer matches with the note as it is (note_selection_stale). The yes
+    // is bound to those arguments, this read runs again on the confirmed call, and the run trashes only that snapshot
+    // (TrashSelected). Bypass asks no yes and reads nothing here.
     public ValueTask<InvocationPreflightResult> PreflightAsync(JsonElement arguments, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -526,17 +548,34 @@ internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store
                                 note.Id, note.Title, LocalNoteStore.CreateContentPreview(note.Content),
                                 note.CreatedAtUtc, note.UpdatedAtUtc, note.Revision, note.IsTrashed))])))));
                 }
+
+                return ValueTask.FromResult(SnapshotRequired(named[0]));
             }
             else if (selector is { Title: null, NoteId: { } noteId } && Guid.TryParseExact(noteId, "D", out Guid id))
             {
+                NoteRecord note;
                 try
                 {
-                    Store.Read(id, includeTrashed: true);
+                    note = Store.Read(id, includeTrashed: true);
                 }
                 catch (NoteNotFoundException)
                 {
                     return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
                         "note_not_found", IdNotFoundFacts(arguments), causeCode: "by_id")));
+                }
+
+                if (selector is { ExpectedTitle: null, ExpectedRevision: null, ExpectedIsTrashed: null })
+                {
+                    return ValueTask.FromResult(SnapshotRequired(note));
+                }
+
+                if (selector is { ExpectedTitle: { } expectedTitle, ExpectedRevision: { } revision,
+                        ExpectedIsTrashed: { } trashed }
+                    && !NamedBySnapshot(note, expectedTitle.Normalize(System.Text.NormalizationForm.FormC).Trim(),
+                        revision, trashed))
+                {
+                    return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
+                        "note_selection_stale", StaleFacts(note.Id))));
                 }
             }
         }
@@ -548,6 +587,29 @@ internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store
 
         return ValueTask.FromResult(InvocationPreflightResult.Proceed);
     }
+
+    // The note as it is now (or, for a confirmed call already run, as that run left it: one revision on, in the trash),
+    // by the store's own comparison (LocalNoteStore.MatchesSelection, IsReachedReplay).
+    private static bool NamedBySnapshot(NoteRecord note, string title, long revision, bool trashed) =>
+        string.Equals(note.Title, title, StringComparison.OrdinalIgnoreCase)
+        && ((note.Revision == revision && note.IsTrashed == trashed)
+            || (!trashed && note.IsTrashed && revision < long.MaxValue && note.Revision == revision + 1));
+
+    private static InvocationPreflightResult SnapshotRequired(NoteRecord note) =>
+        InvocationPreflightResult.Fails(OperationOutcome.Failure("note_trash_snapshot_required", Facts(
+            new JsonObject
+            {
+                ["note"] = Summary(note),
+                ["call"] = new JsonObject
+                {
+                    ["noteId"] = note.Id.ToString("D"),
+                    ["expectedTitle"] = note.Title,
+                    ["expectedRevision"] = note.Revision,
+                    ["expectedIsTrashed"] = note.IsTrashed,
+                },
+            },
+            "nothing was trashed: the yes is asked for the note as it is now; call note.trash with the arguments in call",
+            ModelAids.NoteSnapshotNext)));
 
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {

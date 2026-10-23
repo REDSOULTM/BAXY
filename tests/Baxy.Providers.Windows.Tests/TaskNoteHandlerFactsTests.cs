@@ -176,8 +176,8 @@ public sealed class TaskNoteHandlerFactsTests
         });
     }
 
-    // A note.trash (it asks the person's yes) of a title no note has failed only after the yes; it fails before asking,
-    // and one note of that title goes on to ask.
+    // A note.trash (it asks the person's yes) of a title no note has failed only after the yes; it fails before asking.
+    // Renew al máximo (w9): one note of that title asks for its snapshot first (ANoteTrashYesIsAskedForASnapshot).
     [Test]
     public async Task ANoteTrashOfATitleNoNoteHasFailsBeforeTheYes()
     {
@@ -195,7 +195,89 @@ public sealed class TaskNoteHandlerFactsTests
             Assert.That(missing.Failure?.EffectMayHaveOccurred, Is.False);
             Assert.That(missing.Failure?.Result?.GetProperty("searched").GetString(),
                 Is.EqualTo("active and trashed notes"));
-            Assert.That(present, Is.SameAs(InvocationPreflightResult.Proceed));
+            Assert.That(present.Failure?.ErrorCode, Is.EqualTo("note_trash_snapshot_required"));
+        });
+    }
+
+    // Renew al máximo (w9): the yes of a note.trash named only the title or the id, so a note edited between the yes and
+    // the run was trashed as it was by then. A call without a snapshot fails before the yes with the call that names
+    // the note as it is now; that call goes on to ask.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task ANoteTrashYesIsAskedForASnapshot(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var store = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        NoteRecord note = store.Create("Ideas", "x");
+        var handler = new TrashNoteHandler(store);
+
+        InvocationPreflightResult byTitle = await Preflight(handler, Json("""{"title":"ideas"}"""), CancellationToken.None);
+        InvocationPreflightResult byId = await Preflight(handler, Json($$"""{"noteId":"{{note.Id:D}}"}"""),
+            CancellationToken.None);
+        JsonElement call = byTitle.Failure!.Result!.Value.GetProperty("call");
+        InvocationPreflightResult snapshot = await Preflight(handler, call, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(byTitle.Failure.ErrorCode, Is.EqualTo("note_trash_snapshot_required"));
+            Assert.That(byTitle.Failure.EffectMayHaveOccurred, Is.False);
+            Assert.That(byId.Failure?.ErrorCode, Is.EqualTo("note_trash_snapshot_required"));
+            Assert.That(call.GetProperty("noteId").GetString(), Is.EqualTo(note.Id.ToString("D")));
+            Assert.That(call.GetProperty("expectedTitle").GetString(), Is.EqualTo("Ideas"));
+            Assert.That(call.GetProperty("expectedRevision").GetInt64(), Is.EqualTo(note.Revision));
+            Assert.That(call.GetProperty("expectedIsTrashed").GetBoolean(), Is.False);
+            Assert.That(byTitle.Failure.Result!.Value.TryGetProperty("next", out _), Is.EqualTo(hint));
+            Assert.That(snapshot, Is.SameAs(InvocationPreflightResult.Proceed));
+            Assert.That(store.Read(note.Id).IsTrashed, Is.False);
+        });
+    }
+
+    // Renew al máximo (w9): a note changed after its yes (edited) is not trashed: the confirmed call's read and the run
+    // both say note_selection_stale with the note as it is now, and the note stays where it was.
+    [Test]
+    public async Task ANoteChangedAfterItsYesIsNotTrashed()
+    {
+        using TemporaryDirectory temporary = new();
+        var store = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        NoteRecord note = store.Create("Ideas", "x");
+        var handler = new TrashNoteHandler(store);
+        string snapshot = $$"""{"noteId":"{{note.Id:D}}","expectedTitle":"Ideas","expectedRevision":{{note.Revision}},"expectedIsTrashed":false}""";
+        InvocationPreflightResult asked = await Preflight(handler, Json(snapshot), CancellationToken.None);
+        NoteRecord edited = store.UpdateSelected(new NoteSelection(note.Id, "Ideas", note.Revision, false), "Ideas", "y");
+
+        InvocationPreflightResult confirmed = await Preflight(handler, Json(snapshot), CancellationToken.None);
+        OperationOutcome run = await handler.ExecuteAsync(Invocation(snapshot), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked, Is.SameAs(InvocationPreflightResult.Proceed));
+            Assert.That(confirmed.Failure?.ErrorCode, Is.EqualTo("note_selection_stale"));
+            Assert.That(run.ErrorCode, Is.EqualTo("note_selection_stale"));
+            Assert.That(run.EffectMayHaveOccurred, Is.False);
+            Assert.That(run.Result!.Value.GetProperty("note").GetProperty("revision").GetInt64(),
+                Is.EqualTo(edited.Revision));
+            Assert.That(store.Read(note.Id).IsTrashed, Is.False);
+        });
+    }
+
+    // A confirmed note.trash already run (its note one revision on, in the trash) is read as that run, not as stale.
+    [Test]
+    public async Task ANoteTrashAlreadyRunIsNotReadAsStale()
+    {
+        using TemporaryDirectory temporary = new();
+        var store = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        NoteRecord note = store.Create("Ideas", "x");
+        var handler = new TrashNoteHandler(store);
+        string snapshot = $$"""{"noteId":"{{note.Id:D}}","expectedTitle":"Ideas","expectedRevision":{{note.Revision}},"expectedIsTrashed":false}""";
+        OperationOutcome first = await handler.ExecuteAsync(Invocation(snapshot), CancellationToken.None);
+
+        InvocationPreflightResult again = await Preflight(handler, Json(snapshot), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Succeeded, Is.True);
+            Assert.That(again, Is.SameAs(InvocationPreflightResult.Proceed));
         });
     }
 

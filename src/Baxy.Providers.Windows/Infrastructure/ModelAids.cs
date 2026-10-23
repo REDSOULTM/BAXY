@@ -119,6 +119,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5): a note not found says where it was looked, the one in the trash, or titles close to it.</summary>
     public const string NoteNotFoundNext = "note_not_found_next";
 
+    /// <summary>Renew al máximo (w9): a note.trash with no snapshot, or a snapshot the note no longer is, says what to call or how the note is now.</summary>
+    public const string NoteSnapshotNext = "note_snapshot_next";
+
     /// <summary>Renew al máximo (w5): a calendar time or range refused says which argument, why, and that nothing ran.</summary>
     public const string CalendarTimeNext = "calendar_time_next";
 

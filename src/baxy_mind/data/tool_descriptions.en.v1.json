@@ -261,6 +261,11 @@
    "expectedRevision": "Leave it out.",
    "expectedIsTrashed": "Leave it out."
   },
+  "note.trash": {
+   "expectedTitle": "Only with noteId, as the call of the last note_trash result gives it.",
+   "expectedRevision": "Only with noteId, as the call of the last note_trash result gives it.",
+   "expectedIsTrashed": "Only with noteId, as the call of the last note_trash result gives it."
+  },
   "file.open": {
    "folder": "Which of the person's folders: desktop, documents, downloads or pictures when they name one; home for any other folder of theirs, with that folder before the file in name («Proyectos\\informe.docx»)."
   },
