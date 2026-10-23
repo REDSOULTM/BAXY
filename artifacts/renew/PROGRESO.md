@@ -3148,3 +3148,6 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   que deja «archivos» en 3/10 en e2e). Contaminación entre brazos anotada: escrituras fuera del banco persisten en el home
   del NB (tareas_hoy.txt, config.ini, q4\notes.txt) y el orden fue s1off → s1on → maximo (afecta F007 y F036). Juez 35B en
   curso en el PC. Hashes de e2e.json 2dbbf64a… y falsedades.json a36bf73a… coinciden en las dos máquinas.
+- 07:3x (23-10) Juez 35B de las falsedades del holdout: ~1 h por configuración en el PC (s1off casi terminado a las
+  07:35); el veredicto pre-registrado principal es la lectura a mano (arriba). El mensaje final al dueño sale ahora; las
+  cifras del juez se añaden al informe cuando terminen.
