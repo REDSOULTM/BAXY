@@ -59,6 +59,12 @@ public static class ModelAids
     /// <summary>Renew al máximo (E027): a known file found nowhere says nothing beyond the folders walked was searched.</summary>
     public const string SearchScope = "search_scope";
 
+    /// <summary>
+    /// Auditoría de falsedades (F001): an invalid_or_expired_window_id says the id is used up, nothing was done to the
+    /// window and nothing was read of it.
+    /// </summary>
+    public const string WindowIdSpent = "window_id_spent";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
