@@ -149,7 +149,7 @@ internal sealed partial class WindowsScrollAdapter : IExternalOperationAdapter
                     // The mission's window when the step names it (v3 point 0 review: a look no longer brings it to the
                     // front, so the wheel never goes to whatever is in front instead), else the window a person acts on.
                     if (missionWindow != 0 && !VisibleControlSurface.IsAlive(missionWindow))
-                        return ExternalJson.FailureBeforeEffect(operation, "input_window_not_in_front");
+                        return ExternalJson.FailureBeforeEffect(operation, ForegroundLease.WindowGone);
                     window = missionWindow != 0
                         ? missionWindow
                         : await _foreground(cancellationToken).ConfigureAwait(false);

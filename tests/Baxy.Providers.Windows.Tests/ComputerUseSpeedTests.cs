@@ -833,7 +833,8 @@ public sealed class ComputerUseSpeedTests
     }
 
     // v3 point 0 review: a scroll names its view's window; one Windows cannot bring to the front (here: one
-    // that does not exist) gets no wheel, which would move whatever covers it.
+    // that does not exist) gets no wheel, which would move whatever covers it. Renew al máximo (w8): one that does not
+    // exist is said gone (input_window_not_found), never «not in front».
     [Test]
     public async Task AScrollWhoseNamedWindowCannotBeFrontedMovesNothing()
     {
@@ -842,7 +843,7 @@ public sealed class ComputerUseSpeedTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.ErrorCode, Is.EqualTo("input_window_not_in_front"));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_window_not_found"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
         });
     }
