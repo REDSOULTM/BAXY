@@ -101,6 +101,9 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5): a note not found says where it was looked, the one in the trash, or titles close to it.</summary>
     public const string NoteNotFoundNext = "note_not_found_next";
 
+    /// <summary>Renew al máximo (w5): a calendar time or range refused says which argument, why, and that nothing ran.</summary>
+    public const string CalendarTimeNext = "calendar_time_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

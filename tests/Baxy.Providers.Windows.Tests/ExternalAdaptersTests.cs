@@ -4211,6 +4211,40 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w5): a time with its own offset is that instant, sent to Outlook in UTC; it came back
+    // «microsoft_desktop_adapter_failed», read as Outlook failing. One with no offset is refused before anything runs,
+    // naming the argument and (aid calendar_time_next) why.
+    [Test]
+    public async Task ACalendarTimeWithItsOffsetIsTakenAndOneWithoutIsNamed()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        const string output = """{"ok":true,"effectObserved":false,"events":[]}""";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(output);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt offset = await adapter.InvokeAsync(
+            "calendar.event.list",
+            Json("""{"startUtc":"2026-07-17T00:00:00-03:00","endUtc":"2026-07-18T00:00:00-03:00"}"""),
+            CancellationToken.None);
+        string sent = Encoding.UTF8.GetString(Convert.FromBase64String(runner.LastArguments[^1]));
+        ExternalCapabilityReceipt local = await adapter.InvokeAsync(
+            "calendar.event.create",
+            Json("""{"startUtc":"2026-07-17T18:00:00","endUtc":"2026-07-17T19:00:00Z","title":"Dentista"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(offset.Verified, Is.True, offset.ErrorCode);
+            Assert.That(JsonDocument.Parse(sent).RootElement.GetProperty("startUtc").GetString(),
+                Is.EqualTo("2026-07-17T03:00:00.0000000+00:00"));
+            Assert.That(local.ErrorCode, Is.EqualTo("calendar_time_not_exact"));
+            Assert.That(local.EffectObserved || local.EffectMayHaveOccurred, Is.False);
+            Assert.That(local.Result?.GetProperty("argument").GetString(), Is.EqualTo("startUtc"));
+            Assert.That(local.Result?.GetProperty("next").GetString(), Does.EndWith("no event was created"));
+        });
+    }
+
     [Test]
     public async Task EmailSendGoesToTheFreeAddressAndIsVerifiedInSentItems()
     {

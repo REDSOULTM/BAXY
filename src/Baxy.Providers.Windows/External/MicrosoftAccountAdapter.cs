@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
+using Baxy.Providers.Windows.Infrastructure;
 using Microsoft.Win32;
 
 namespace Baxy.Providers.Windows.External;
@@ -343,11 +344,26 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         {
             return ExternalJson.Failure(operation, "outlook_profile_not_configured");
         }
-        DateTimeOffset start = RequireUtc(arguments, "startUtc");
-        DateTimeOffset end = RequireUtc(arguments, "endUtc");
-        if (end <= start || end - start > TimeSpan.FromDays(366))
+        // Renew al máximo (w5): a time that is not an exact instant threw, and came back «microsoft_desktop_adapter_failed»,
+        // read as Outlook failing; a range the wrong way round was a bare code. Both say which argument and why, before
+        // anything ran. A time with its own offset is that instant, taken in UTC.
+        foreach (string name in (string[])["startUtc", "endUtc"])
         {
-            return ExternalJson.Failure(operation, "calendar_range_invalid");
+            if (!TryInstant(arguments, name, out _))
+                return CalendarRefusal(operation, "calendar_time_not_exact", create, name,
+                    $"{name} has no offset, so it names no exact time; write it in UTC with Z, like 2026-10-23T21:00:00Z");
+        }
+        TryInstant(arguments, "startUtc", out DateTimeOffset start);
+        TryInstant(arguments, "endUtc", out DateTimeOffset end);
+        if (end <= start)
+        {
+            return CalendarRefusal(operation, "calendar_range_invalid", create, "endUtc",
+                "endUtc is not after startUtc");
+        }
+        if (end - start > TimeSpan.FromDays(366))
+        {
+            return CalendarRefusal(operation, "calendar_range_invalid", create, "endUtc",
+                "the range is longer than 366 days; a shorter one, or several, is read");
         }
         string? title = create ? ExternalJson.RequiredString(arguments, "title") : null;
         string input = ExternalJson.Create(writer =>
@@ -508,15 +524,35 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             ? code
             : fallback;
 
-    private static DateTimeOffset RequireUtc(JsonElement arguments, string name)
+    private static readonly System.Text.RegularExpressions.Regex ExplicitOffset = new(
+        @"(?:[Zz]|[+-][0-9]{2}:?[0-9]{2})$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // An exact instant: a date and time that carries its offset (Z, or +hh:mm), in UTC.
+    private static bool TryInstant(JsonElement arguments, string name, out DateTimeOffset instant)
     {
-        string value = ExternalJson.RequiredString(arguments, name);
-        if (!DateTimeOffset.TryParse(value, out DateTimeOffset parsed) || parsed.Offset != TimeSpan.Zero)
+        string value = ExternalJson.RequiredString(arguments, name).Trim();
+        instant = default;
+        if (!ExplicitOffset.IsMatch(value)
+            || !DateTimeOffset.TryParse(value, System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out DateTimeOffset parsed))
         {
-            throw new InvalidDataException($"{name} must be an exact UTC timestamp.");
+            return false;
         }
-        return parsed;
+        instant = parsed.ToUniversalTime();
+        return true;
     }
+
+    // A calendar call refused before anything ran: the argument, and (aid calendar_time_next) why, as a sentence.
+    private static ExternalCapabilityReceipt CalendarRefusal(
+        string operation, string code, bool create, string argument, string why) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("argument", argument);
+            if (ModelAids.On(ModelAids.CalendarTimeNext))
+                writer.WriteString("next", why + (create ? "; no event was created" : "; no event was read"));
+            writer.WriteEndObject();
+        }), code);
 
     private static JsonElement CalendarCreated(JsonElement root)
     {
