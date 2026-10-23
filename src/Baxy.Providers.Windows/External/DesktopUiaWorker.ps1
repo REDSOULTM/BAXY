@@ -21,6 +21,7 @@
 #   {"cmd":"reveal","hwnd":123,"aliases":["Omega"],"direction":"down","amount":10}   (trae a la vista un elemento fuera de ella)
 #   {"cmd":"field","hwnd":123,"controlId":"42.1837.4","text":"hola","replace":false}   (texto dirigido; sin «text», solo lo lee)
 #   {"cmd":"textcaret","hwnd":123,"processId":4242,"max":8192}   (el parrafo del cursor del foco, por TextPattern; solo lee)
+#   {"cmd":"focuskind","hwnd":123}   (lo que tiene el foco del teclado: tipo, editable, TextPattern, dentro de la ventana; solo lee)
 #   {"cmd":"script","script":"...","args":["123"]}   (un guion de UserBrowserScripts, $args como en -Command)
 #   {"cmd":"unnamed","hwnd":123,"limit":24}   (accionables sin nombre ni respaldo: candidatos a leer su tooltip)
 #   {"cmd":"tooltips","hwnd":123,"pids":[4242]}   (los tooltips visibles de esos procesos y de la ventana, con su texto)
@@ -1310,19 +1311,25 @@ function Test-NameHolds([string]$name,[string[]]$aliases){
 # Choche' sin preguntar). Un control cuyo nombre pide la palabra de la persona (sale al mundo, llega a alguien o no se
 # deshace) cuando ninguna etiqueta la pide no se pulsa: se responde con su nombre, para que el paso lo nombre y RiskPolicy
 # pregunte. Patron y pista de atajo de RiskPolicy (peticion 'asks': AsksPattern, FoldHint); plegado como su Fold.
-function Get-AskFolded([string]$text,[string]$hint){
-  $form=$text.Normalize([Text.NormalizationForm]::FormD).ToLowerInvariant()
+# Auditoria del nucleo 2026-10-23: por compatibilidad (FormKD) y con las letras parecidas leidas como la latina que imitan
+# (RiskPolicy.Confusables, pares en la peticion 'asks'), como su Fold.
+function Get-AskFolded([string]$text,[string]$hint,[string]$confusables=''){
+  $form=$text.Normalize([Text.NormalizationForm]::FormKD).ToLowerInvariant()
   $kept=New-Object System.Text.StringBuilder
   foreach($ch in $form.ToCharArray()){
     $category=[Globalization.CharUnicodeInfo]::GetUnicodeCategory($ch)
-    if($category -ne [Globalization.UnicodeCategory]::NonSpacingMark -and $category -ne [Globalization.UnicodeCategory]::Format){ [void]$kept.Append($ch) }
+    if($category -ne [Globalization.UnicodeCategory]::NonSpacingMark -and $category -ne [Globalization.UnicodeCategory]::Format){
+      $latin=$ch
+      for($pair=0;$pair+1 -lt $confusables.Length;$pair+=2){ if($confusables[$pair] -ceq $ch){ $latin=$confusables[$pair+1]; break } }
+      [void]$kept.Append($latin)
+    }
   }
   $folded=$kept.ToString().Split([char[]]@(),[StringSplitOptions]::RemoveEmptyEntries) -join ' '
   return ([regex]::Replace($folded,$hint,'',[Text.RegularExpressions.RegexOptions]::CultureInvariant)).Trim()
 }
 function Test-Asks([string]$text,$asks){
   if([string]::IsNullOrWhiteSpace($text)){ return $false }
-  return [regex]::IsMatch((Get-AskFolded $text ([string]$asks.hint)),[string]$asks.pattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)
+  return [regex]::IsMatch((Get-AskFolded $text ([string]$asks.hint) ([string]$asks.confusables)),[string]$asks.pattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)
 }
 # Revision de V (H2, H3): lo que recibe la pulsacion. Su nombre crudo (Format-Name lo recorta a 80: un canal de voz de
 # nombre largo perdia 'Canal de voz' en el recorte) y su nombre mostrado; y, si no se pulsa por si mismo (sin Invoke,
@@ -4284,6 +4291,26 @@ function Do-Focus($request){
 # MISMO proceso que la ventana y que «processId» (el documento de otro proceso nunca se lee: la busqueda se para en el
 # primer elemento ajeno). Nunca DocumentRange.GetText(-1): solo el parrafo (o la linea) que contiene GetSelection()[0],
 # como mucho «max» caracteres, y la respuesta dice si se corto (bounded). Nunca el texto de una contrasena.
+# Auditoria del nucleo 2026-10-23: lo que tiene el foco del teclado, para el prevuelo de una tecla que declara
+# target text_field: su tipo, si su valor se puede editar, si tiene TextPattern y si esta dentro de la ventana pedida (o
+# la de delante). Solo lee: nada se pulsa, se enfoca ni se trae al frente.
+function Do-FocusKind($request){
+  $target=Get-Root ([long]$request.hwnd) -Front
+  if($null -eq $target){ return @{ ok=$false; error='focus_window_not_found' } }
+  $node=$null; try { $node=$AE::FocusedElement } catch {}
+  if($null -eq $node){ return @{ ok=$false; error='focus_not_found' } }
+  $kind=''; try { $kind=([string]$node.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
+  $editable=$false; $found=$null
+  try { if($node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$found)){ $editable=-not ([System.Windows.Automation.ValuePattern]$found).Current.IsReadOnly } } catch { $editable=$false }
+  $text=$false; $found=$null
+  try { $text=$node.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found) } catch { $text=$false }
+  $inside=$false; $up=$node; $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+  for($depth=0; $depth -lt 64 -and $null -ne $up; $depth++){
+    if([System.Windows.Automation.Automation]::Compare($up,$target.root)){ $inside=$true; break }
+    try { $up=$walker.GetParent($up) } catch { $up=$null }
+  }
+  return @{ ok=$true; kind=$kind; editable=[bool]$editable; text=[bool]$text; inside=$inside }
+}
 function Do-TextCaret($request){
   $target=Get-Root ([long]$request.hwnd)
   if($null -eq $target){ return @{ ok=$false; error='active_window_not_found' } }
@@ -4476,6 +4503,7 @@ while($true){
     elseif($cmd -eq 'field'){ Send-Line (Invoke-Kept $request { param($r) Do-Field $r }) }
     elseif($cmd -eq 'focus'){ Send-Line (Invoke-Kept $request { param($r) Do-Focus $r }) }
     elseif($cmd -eq 'textcaret'){ Send-Line (Do-TextCaret $request) }
+    elseif($cmd -eq 'focuskind'){ Send-Line (Do-FocusKind $request) }
     elseif($cmd -eq 'unnamed'){ Send-Line (Do-Unnamed $request) }
     elseif($cmd -eq 'tooltips'){ Send-Line (Do-Tooltips $request) }
     elseif($cmd -eq 'reveal'){ Send-Line (Invoke-Kept $request { param($r) Do-Reveal $r }) }

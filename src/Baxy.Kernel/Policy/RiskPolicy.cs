@@ -359,6 +359,32 @@ public static partial class RiskPolicy
     /// <summary>The trailing shortcut hint a fold drops («Enviar (Ctrl+Enter)»), for the worker's fold.</summary>
     public static string FoldHint => WorldActs.ShortcutHint.ToString();
 
+    /// <summary>
+    /// Auditoría del núcleo 2026-10-23: the look-alike letters a fold reads as the Latin letter they imitate, as pairs
+    /// (look-alike, Latin), for the worker's fold too. A label «Еnviar» with a Cyrillic «Е», or «Εliminar» with a Greek
+    /// one, looks like the verb to the person and to the model and asks as the verb does. Cyrillic and Greek lower case
+    /// (a fold lowers first), and a few Latin variants the compatibility decomposition keeps.
+    /// </summary>
+    public static string Confusables => ConfusablePairs;
+
+    private const string ConfusablePairs =
+        "аaвbеeһhіiјjкkмmнhоoрpсcтtуyхxѕsԁdӏlԛqԝwүyґr"
+        + "αaβbγyεeηnιiκkνvοoρpτtυuχxωw"
+        + "ıiɑaɡgɩiſs";
+
+    private static readonly Dictionary<char, char> LatinOf = Pairs(ConfusablePairs);
+
+    private static Dictionary<char, char> Pairs(string pairs)
+    {
+        var map = new Dictionary<char, char>();
+        for (int index = 0; index + 1 < pairs.Length; index += 2)
+        {
+            map.Add(pairs[index], pairs[index + 1]);
+        }
+
+        return map;
+    }
+
     // Leaves the computer, reaches a person or cannot be undone: LabelReachesAPerson or LabelCannotBeUndone, as one.
     internal static bool LabelAsks(string? label) => !string.IsNullOrWhiteSpace(label) && Asks.Value.IsMatch(Fold(label));
 
@@ -376,10 +402,12 @@ public static partial class RiskPolicy
         + $"(?=.*?(?:{pattern}))";
 
     // Lower case, without accents, without format characters (a zero-width space or a direction mark inside a label
-    // must not hide its verb) and without a trailing shortcut hint («Enviar (Ctrl+Enter)», «Delete (Supr)»).
+    // must not hide its verb) and without a trailing shortcut hint («Enviar (Ctrl+Enter)», «Delete (Supr)»). Auditoría
+    // del núcleo 2026-10-23: by compatibility (a full-width «Ｅｎｖｉａｒ», a ligature, a mathematical letter) and with
+    // look-alike letters read as the Latin they imitate (<see cref="Confusables"/>).
     private static string Fold(string value)
     {
-        string form = value.Normalize(System.Text.NormalizationForm.FormD).ToLowerInvariant();
+        string form = value.Normalize(System.Text.NormalizationForm.FormKD).ToLowerInvariant();
         var builder = new System.Text.StringBuilder(form.Length);
         foreach (char character in form)
         {
@@ -387,7 +415,7 @@ public static partial class RiskPolicy
             if (category is not (System.Globalization.UnicodeCategory.NonSpacingMark
                 or System.Globalization.UnicodeCategory.Format))
             {
-                builder.Append(character);
+                builder.Append(LatinOf.TryGetValue(character, out char latin) ? latin : character);
             }
         }
 
@@ -412,9 +440,11 @@ public static partial class RiskPolicy
     // «Mover a la papelera», «Vaciar papelera de reciclaje», «Empty Recycle Bin», «Quitar de la biblioteca»,
     // «Remove», «Limpiar historial», «Clear all»). Only verb forms count: «Eliminados», «Deleted items» or
     // «Papelera de reciclaje» name a place, not an act. Incidente del 2026-10-15 (msconfig, «Deshabilitar todos»): turning
-    // off everything a list holds at once («Deshabilitar todos», «Desactivar todo», «Disable all») asks too.
+    // off everything a list holds at once («Deshabilitar todos», «Desactivar todo», «Disable all») asks too. Auditoría del
+    // núcleo 2026-10-23: ending a program without letting it save («Finalizar tarea», «End task», «Forzar cierre», «Force
+    // quit») loses what it held, as system.process.terminate.named (work_loss) does.
     [GeneratedRegex(
-        @"\b(?:deshabilitar\s+tod[oa]s?|deshabilita\s+tod[oa]s?|desactivar\s+tod[oa]s?|desactiva\s+tod[oa]s?|disable\s+all|turn\s+off\s+all|no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|descartar|descarta|discard|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
+        @"\b(?:finalizar\s+(?:la\s+)?tarea|finaliza\s+(?:la\s+)?tarea|end\s+task|forzar\s+(?:el\s+)?cierre|fuerza\s+(?:el\s+)?cierre|force\s+(?:quit|close)|deshabilitar\s+tod[oa]s?|deshabilita\s+tod[oa]s?|desactivar\s+tod[oa]s?|desactiva\s+tod[oa]s?|disable\s+all|turn\s+off\s+all|no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|descartar|descarta|discard|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
         RegexOptions.CultureInvariant)]
     private static partial Regex DestructiveVerb();
 }

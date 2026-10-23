@@ -68,6 +68,97 @@ public sealed class InvocationRiskTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: a read that fails with any exception (a window read's IOException or
+    // Win32Exception, a timeout of its own) keeps the declared risk, in a read that could lower it and in one that could
+    // raise it; it never ends the engine.
+    [TestCase(typeof(IOException))]
+    [TestCase(typeof(System.ComponentModel.Win32Exception))]
+    [TestCase(typeof(TimeoutException))]
+    [TestCase(typeof(OperationCanceledException))]
+    public async Task AReadThatFailsWithAnyExceptionKeepsTheDeclaredRisk(Type failure)
+    {
+        var lowering = new FailingReadHandler(OperationRisk.Irreversible, (Exception)Activator.CreateInstance(failure)!);
+        var raising = new FailingReadHandler(OperationRisk.Reversible, (Exception)Activator.CreateInstance(failure)!);
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([lowering, raising]), journal);
+
+        OperationResponse asked = await engine.ExecuteAsync(
+            Request("""{"windowId":"win_settings"}"""), CancellationToken.None);
+        OperationResponse ran = await engine.ExecuteAsync(
+            Request("""{"windowId":"win_settings"}""") with { Operation = "app.open" }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(lowering.ExecutionCount, Is.Zero);
+            Assert.That(ran.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(raising.PreflightCount, Is.EqualTo(1));
+            Assert.That(raising.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Auditoría del núcleo 2026-10-23: a MayRaise that throws says nothing; the invocation goes as declared, unread, and
+    // the engine answers.
+    [Test]
+    public async Task AMayRaiseThatThrowsKeepsTheDeclaredRiskUnread()
+    {
+        var handler = new ThrowingMayRaiseHandler();
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse response = await engine.ExecuteAsync(
+            Request("""{"windowId":"win_dialog"}""") with { Operation = "app.open" }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.PreflightCount, Is.Zero);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    private sealed class ThrowingMayRaiseHandler : IOperationHandler, IInvocationPreflight
+    {
+        public int ExecutionCount { get; private set; }
+
+        public int PreflightCount { get; private set; }
+
+        public OperationDefinition Definition { get; } = new("app.open", OperationRisk.Reversible, "Open an application.");
+
+        public bool MayRaise(JsonElement arguments) => throw new System.ComponentModel.Win32Exception(5);
+
+        public ValueTask<InvocationPreflightResult> PreflightAsync(
+            JsonElement arguments,
+            CancellationToken cancellationToken)
+        {
+            PreflightCount++;
+            return ValueTask.FromResult(InvocationPreflightResult.Raised(OperationRisk.Irreversible));
+        }
+
+        public ValueTask<OperationOutcome> ExecuteAsync(
+            OperationInvocation invocation,
+            CancellationToken cancellationToken)
+        {
+            ExecutionCount++;
+            return ValueTask.FromResult(OperationOutcome.Success(invocation.Arguments));
+        }
+    }
+
+    [Test]
+    public void TheCallersCancellationDuringAReadGoesOnAsACancellation()
+    {
+        var handler = new FailingReadHandler(OperationRisk.Irreversible, null);
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        using var cancelled = new CancellationTokenSource();
+        handler.Cancel = cancelled;
+
+        Assert.That(
+            async () => await engine.ExecuteAsync(Request("""{"windowId":"win_settings"}"""), cancelled.Token),
+            Throws.InstanceOf<OperationCanceledException>());
+        Assert.That(handler.ExecutionCount, Is.Zero);
+    }
+
     // Al máximo, flujos («¿Borro viejo.txt?» → «sí» → «no existe»): a target that is not there is that failure now,
     // with its candidates, and no yes is asked for what cannot run; a target there once asks as before.
     [Test]
@@ -247,6 +338,45 @@ public sealed class InvocationRiskTests
         {
             PreflightCount++;
             return ValueTask.FromResult(found);
+        }
+
+        public ValueTask<OperationOutcome> ExecuteAsync(
+            OperationInvocation invocation,
+            CancellationToken cancellationToken)
+        {
+            ExecutionCount++;
+            return ValueTask.FromResult(OperationOutcome.Success(invocation.Arguments));
+        }
+    }
+
+    // A read of the invocation that fails (Irreversible: one that could lower it; Reversible as app.open: one that could
+    // raise it), or, with no failure, cancels the caller's token as it reads.
+    private sealed class FailingReadHandler(OperationRisk risk, Exception? failure) : IOperationHandler, IInvocationPreflight
+    {
+        public int ExecutionCount { get; private set; }
+
+        public int PreflightCount { get; private set; }
+
+        public CancellationTokenSource? Cancel { get; set; }
+
+        public OperationDefinition Definition { get; } = risk == OperationRisk.Irreversible
+            ? new("app.close", risk, "Close a resolved window.")
+            : new("app.open", risk, "Open an application.");
+
+        public bool MayRaise(JsonElement arguments) => true;
+
+        public ValueTask<InvocationPreflightResult> PreflightAsync(
+            JsonElement arguments,
+            CancellationToken cancellationToken)
+        {
+            PreflightCount++;
+            if (Cancel is { } cancel)
+            {
+                cancel.Cancel();
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            throw failure!;
         }
 
         public ValueTask<OperationOutcome> ExecuteAsync(

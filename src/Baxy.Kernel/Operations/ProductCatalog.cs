@@ -808,14 +808,16 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "game.store.page.app.open.place.v1",
             "Abre en Steam, al frente, la página de la tienda del juego que lleva ese título (lo resuelve su búsqueda pública) y dice qué juego es; mirar la ventana dice si llegó.",
-            effects: [WindowInput()]),
+            // Auditoría del núcleo 2026-10-23: el título sale a la búsqueda pública de la tienda.
+            effects: [WindowInput(), Network()]),
         Descriptor(
             "game.store.search",
             Schema([String("query", maximumUtf8Bytes: 128, nonWhitespace: true)], ["query"]),
             OperationRisks.LowReversible,
             "game.store.search.app.open.place.v1",
             "Abre en Steam, al frente, la búsqueda de su tienda con lo que se busca (un título, un tema o un tipo de juego); mirar la ventana dice qué resultados muestra.",
-            effects: [WindowInput()]),
+            // Auditoría del núcleo 2026-10-23: lo que se busca sale a la tienda de Steam.
+            effects: [WindowInput(), Network()]),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
         // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
         // dirección del dato y el diálogo propio de Steam, ya no por su consola),
@@ -1082,6 +1084,8 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "media.play.exact.session.postread.v1",
             "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+            // Auditoría del núcleo 2026-10-23: el título sale a la búsqueda de Spotify.
+            effects: [Network()],
             // Al máximo, flujos: SpotifyDesktopAdapter.CallBudget.
             budget: TimeSpan.FromSeconds(85)),
         Descriptor(
@@ -1095,6 +1099,8 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "media.play.query.session.postread.v1",
             "Busca en Spotify y reproduce el primer resultado de su propia búsqueda (o el titulado como la búsqueda, si Spotify muestra uno) y verifica now-playing.",
+            // Auditoría del núcleo 2026-10-23: lo que se busca sale a la búsqueda de Spotify.
+            effects: [Network()],
             // Al máximo, flujos: SpotifyDesktopAdapter.CallBudget.
             budget: TimeSpan.FromSeconds(85)),
         Descriptor(
@@ -1102,7 +1108,9 @@ public static class ProductCatalog
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
             OperationRisks.ExternalCommunication,
             "media.play.youtube.cdp.video.postread.v1",
-            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; con el reproductor propio instalado, sólo el sonido (audioOnly) en una ventana «BAXY YouTube»; en el navegador reproduce el primer vídeo que lista YouTube."),
+            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; con el reproductor propio instalado, sólo el sonido (audioOnly) en una ventana «BAXY YouTube»; en el navegador reproduce el primer vídeo que lista YouTube.",
+            // Auditoría del núcleo 2026-10-23: lo que se busca sale a YouTube.
+            effects: [Network()]),
         Descriptor(
             "media.seek.relative",
             Schema([Integer("seconds", -3_600, 3_600)], ["seconds"]),
@@ -1532,7 +1540,9 @@ public static class ProductCatalog
                 ["resourceUri", "service"]),
             OperationRisks.ExternalCommunication,
             "streaming.navigate.session.uri.postread.v1",
-            "Navega una sesión autenticada de streaming a un recurso exacto y verifica su URI."),
+            "Navega una sesión autenticada de streaming a un recurso exacto y verifica su URI.",
+            // Auditoría del núcleo 2026-10-23: la dirección sale al servicio.
+            effects: [Network()]),
         Descriptor(
             "streaming.play.named",
             Schema(
@@ -1549,7 +1559,9 @@ public static class ProductCatalog
                 ["service", "title"]),
             OperationRisks.ExternalCommunication,
             "streaming.play.named.netflix.cdp.video.progress.v1",
-            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; en el navegador de la persona, hasta 10 candidatos."),
+            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; en el navegador de la persona, hasta 10 candidatos.",
+            // Auditoría del núcleo 2026-10-23: el título sale a la búsqueda del servicio.
+            effects: [Network()]),
         Descriptor(
             "system.application.crash.diagnose",
             Schema(

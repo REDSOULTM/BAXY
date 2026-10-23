@@ -55,6 +55,9 @@ public sealed class ComputerUsePressedNameTests
         ("Enviar a Ron92", "Enviar", false),
         ("En\u200Bviar mensaje", "mensaje", true),
         ("Un título largo - Sitio", "Sitio", false),
+        // Auditoría del núcleo 2026-10-23: a look-alike letter (Cyrillic) inside the verb, and ending a program unsaved.
+        ("Еnviar mensaje", "mensaje", true),
+        ("Finalizar tarea", "tarea", true),
     ];
 
     [Test]
@@ -432,7 +435,7 @@ public sealed class ComputerUsePressedNameTests
             start.ArgumentList.Add(argument);
         start.ArgumentList.Add(Convert.ToBase64String(Encoding.Unicode.GetBytes(script)));
         start.Environment["BAXY_PRESSED_WORKER"] = WorkerPath();
-        start.Environment["BAXY_ASKS"] = JsonSerializer.Serialize(new { pattern = RiskPolicy.AsksPattern, hint = RiskPolicy.FoldHint });
+        start.Environment["BAXY_ASKS"] = JsonSerializer.Serialize(new { pattern = RiskPolicy.AsksPattern, hint = RiskPolicy.FoldHint, confusables = RiskPolicy.Confusables });
         start.Environment["BAXY_CASES"] = cases;
         foreach ((string name, string value) in more)
             start.Environment[name] = value;

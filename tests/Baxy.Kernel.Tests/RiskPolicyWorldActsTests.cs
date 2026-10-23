@@ -238,4 +238,26 @@ public sealed class RiskPolicyWorldActsTests
             Assert.That(RiskPolicy.LabelAsks(label), Is.EqualTo(asks), "the worker's pattern reads it alike");
         });
     }
+
+    // Auditoría del núcleo 2026-10-23: a verb written with look-alike letters (a Cyrillic «Е», a Greek «Ε», full-width
+    // letters) asks as the verb does, in the policy and in the worker's pattern; ending a program unsaved asks too.
+    [TestCase("Еnviar mensaje", true)]
+    [TestCase("Εliminar", true)]
+    [TestCase("Ｅｎｖｉａｒ", true)]
+    [TestCase("Cоmprar ahora", true)]
+    [TestCase("Dеlete", true)]
+    [TestCase("Finalizar tarea", true)]
+    [TestCase("End task", true)]
+    [TestCase("Forzar cierre", true)]
+    [TestCase("Force quit", true)]
+    [TestCase("Tarea finalizada", false)]
+    [TestCase("Открыть", false)]
+    public void A_look_alike_or_an_unsaved_end_asks_as_the_verb_does(string label, bool asks)
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(Click(label), Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+            Assert.That(RiskPolicy.LabelAsks(label), Is.EqualTo(asks), "the worker's pattern reads it alike");
+        });
+    }
 }

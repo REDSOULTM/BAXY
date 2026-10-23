@@ -32,6 +32,10 @@ public sealed class CatalogEffectTests
         "shell.command.run", "peripheral.print",
         // Al máximo 11.5 (after the lists): the URL a navigation opens leaves the PC too; NetworkEgress reads the fact.
         "browser.navigate", "browser.navigate.named",
+        // Auditoría del núcleo 2026-10-23: a search or an address the model wrote for a service leaves the PC too
+        // (the lists left them to the heartbeat's risks).
+        "media.play.query", "media.play.exact", "media.play.youtube", "streaming.play.named", "streaming.navigate",
+        "game.store.search", "game.store.page",
     ];
 
     [Test]
@@ -58,7 +62,7 @@ public sealed class CatalogEffectTests
     public void EveryOperationTheListsNamedIsInTheCatalog()
     {
         string[] names = [.. ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)];
-        Assert.That(WindowInputAlways.Concat(NetworkAlways), Is.SubsetOf(names));
+        Assert.That(WindowInputAlways.Union(NetworkAlways), Is.SubsetOf(names));
     }
 
     // The lists as they were (b6b731f94).
