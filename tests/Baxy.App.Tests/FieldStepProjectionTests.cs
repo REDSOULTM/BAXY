@@ -44,6 +44,21 @@ public sealed class FieldStepProjectionTests
         Assert.That((string?)view["obs"], Is.EqualTo("Ya estaba así · level: 40"));
     }
 
+    // SaidFolders' note is for the model, in its words: the chip says what was observed only.
+    [Test]
+    public void TheNoteForTheModelOfAFolderThePersonNamedIsNotAFactOfTheChip()
+    {
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true, new JsonObject
+        {
+            ["status"] = "completed",
+            ["verification"] = OperationVisibleFacts.VerificationOutputOnly,
+            ["saidFolder"] = "the person named «proyecto» (C:\\x\\proyecto): this call looked in C:\\x\\proyecto",
+            ["count"] = 2,
+        });
+
+        Assert.That((string?)view["obs"], Is.EqualTo("Leído · count: 2"));
+    }
+
     [TestCase(OperationVisibleFacts.VerificationNone)]
     [TestCase(null)]
     public void ACompletionWithoutAVerificationIsNotSaidVerified(string? verification)

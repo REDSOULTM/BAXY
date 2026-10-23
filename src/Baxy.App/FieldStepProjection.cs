@@ -52,11 +52,13 @@ internal static class FieldStepProjection
         "key", "setting", "folder", "packageId", "to", "subject", "text",
     ];
 
-    // Facts of a result that only describe the reply itself, never what was observed.
+    // Facts of a result that only describe the reply itself, never what was observed, and the App's notes written for
+    // the model (auditoría de la App, 2026-10-23: the chip of a read routed into the folder the person named showed
+    // «saidFolder: the person named «proyecto» (C:\Users\…», English meant for the model, with the path).
     private static readonly HashSet<string> PlumbingFacts = new(StringComparer.Ordinal)
     {
         "status", "verified", "version", "authority", "next", "effectStarted", "error", "operation", "argumentsGiven",
-        "arguments", "argumentProblems", "detail", "waiting", "effectUncertain", "replayed",
+        "arguments", "argumentProblems", "detail", "waiting", "effectUncertain", "replayed", "saidFolder",
         OperationVisibleFacts.VerificationKey,
     };
 
