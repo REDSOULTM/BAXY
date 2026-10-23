@@ -18,12 +18,23 @@ from .voice import Voice
 
 # BAXY Renew al máximo 11.6: the trace keeps every turn's rows (the person's words among them) on this PC, so it has a
 # cap: past it when the mind starts, it becomes turns.jsonl.1 (the one before is dropped) and a new one begins. It stays
-# in %LOCALAPPDATA%\BAXY\renew: catalog.configure.json is written beside it (mind.py) and the benches read it there.
+# in %LOCALAPPDATA%\BAXY\renew (a bench's run folder with BAXY_RENEW_TRACE_DIR: trace_dir): catalog.configure.json is
+# written beside it (mind.py) and the benches read it there.
 TRACE_LIMIT_BYTES = 50 * 1024 * 1024
 
 # Al máximo W5: the requests after which the conversation may be read ahead for the next one (Mind.prefill decides
 # whether a turn is left open): a turn's last answer, a heartbeat's end and a kept session's load.
 PREFILLED_AFTER = ("turn.decide", "turn.continue", "turn.beat.end", "session.load")
+
+
+def trace_dir(environ: dict[str, str] | None = None) -> Path:
+    """Where the trace and catalog.configure.json go: BAXY_RENEW_TRACE_DIR when given, else %LOCALAPPDATA%\\BAXY\\renew.
+    Audit w8-medir (2026-10-23): the benches that drive the product (e2e, falsedades, resources) wrote every bench turn
+    into the owner's own turns.jsonl, mixed with his real turns and, past the cap, rotating them out; they set it to
+    their run's folder."""
+    source = os.environ if environ is None else environ
+    given = source.get("BAXY_RENEW_TRACE_DIR", "").strip()
+    return Path(given) if given else Path(source.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
 
 
 def bounded_trace(trace: Path, limit: int = TRACE_LIMIT_BYTES) -> Path:
@@ -58,7 +69,7 @@ def main() -> int:
         system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), server_path,
                                int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
         system_one.start()
-    trace = bounded_trace(Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "turns.jsonl")
+    trace = bounded_trace(trace_dir() / "turns.jsonl")
     mind = Mind(server, trace, system_one)
     def spoken(queued: float, sounded: float, notice: bool) -> None:
         # From the App's voice.speak to the first sound, and when it sounded (the turn's own rows say when its text

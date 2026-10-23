@@ -155,3 +155,18 @@ def test_pareado_clusters_dictation_twins_with_their_clean_case() -> None:
     assert result["delta_se_twins"] == 2.65
     assert result["delta_ci95_twins"][0] <= 1 <= result["delta_ci95_twins"][1]
     assert "clusters" not in pareado.compare(reference, arm, set(), None)
+
+
+def test_the_benchs_product_writes_its_mind_trace_in_the_run(tmp_path, monkeypatch) -> None:
+    import bench_e2e
+    started = {}
+
+    def popen(command, **options):
+        started.update(options)
+        return SimpleNamespace()
+
+    monkeypatch.setattr(bench_e2e.subprocess, "Popen", popen)
+    monkeypatch.setattr(bench_e2e, "set_aside_notepad_tabs", lambda backup: 0)
+    conductor = bench_e2e.Conductor(tmp_path, tmp_path / "perfil")
+    assert started["env"]["BAXY_RENEW_TRACE_DIR"] == str(tmp_path / "mente") == str(conductor.mind_dir)
+    started["stdout"].close()

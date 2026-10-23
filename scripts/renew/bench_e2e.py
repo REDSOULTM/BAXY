@@ -216,10 +216,14 @@ class Conductor:
         self.commands.mkdir(parents=True, exist_ok=True)
         self.sequence = 0
         self.events = Events(run_dir / "events.jsonl")
+        # The mind's trace and the catalog it was sent go to the run (audit w8-medir): in the owner's turns.jsonl they
+        # mixed bench turns with his real ones and, past its cap, rotated his out.
+        self.mind_dir = run_dir / "mente"
         self.process = subprocess.Popen(
             ["cmd", "/c", str(ROOT / "scripts" / "run_renew.cmd"), "--conductor", "--command-dir", str(self.commands),
              "--capture", str(run_dir), "--profile", str(profile), "--timeout-ms", "300000"],
-            cwd=str(ROOT), stdout=(run_dir / "console.txt").open("w", encoding="utf-8"), stderr=subprocess.STDOUT)
+            cwd=str(ROOT), stdout=(run_dir / "console.txt").open("w", encoding="utf-8"), stderr=subprocess.STDOUT,
+            env={**os.environ, "BAXY_RENEW_TRACE_DIR": str(self.mind_dir)})
 
     def send(self, command: dict) -> int:
         self.sequence += 1
