@@ -465,6 +465,50 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (w6, rutas): a call limited to a subfolder says that subfolder, never only its known folder: «not in
+    // home, subfolders included» was read as the whole home folder searched. A listing says what it listed and that it
+    // did not walk the subfolders; a path is looked up only at its place.
+    [Test]
+    public async Task ALookInASubfolderSaysThatSubfolder()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "taller", "sub"));
+        await File.WriteAllTextAsync(Path.Combine(home, "taller", "a.txt"), "a");
+        await File.WriteAllTextAsync(Path.Combine(home, "taller", "sub", "b.txt"), "b");
+        await File.WriteAllTextAsync(Path.Combine(home, "lejos.txt"), "c");
+        WindowsKnownFileAdapter adapter = Home(home);
+
+        ExternalCapabilityReceipt found = await adapter.InvokeAsync("file.find",
+            Json("""{"folder":"home","subdirectory":"taller","query":"*.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find",
+            Json("""{"folder":"home","subdirectory":"taller","order":"size"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt trash = await adapter.InvokeAsync("filesystem.known.trash.named",
+            Json("""{"folder":"home","subdirectory":"taller","fileName":"lejos.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read",
+            Json("""{"folder":"home","subdirectory":"taller","fileName":"lejos.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt byPath = await adapter.InvokeAsync("file.read",
+            Json("""{"folder":"home","fileName":"taller/lejos.txt"}"""), CancellationToken.None);
+
+        static string[] Strings(JsonElement array) => [.. array.EnumerateArray().Select(item => item.GetString()!)];
+        Assert.Multiple(() =>
+        {
+            Assert.That(Strings(found.Result!.Value.GetProperty("searchScope").GetProperty("folders")),
+                Is.EqualTo(new[] { "home/taller" }));
+            Assert.That(Strings(listed.Result!.Value.GetProperty("listed")), Is.EqualTo(new[] { "home/taller" }));
+            Assert.That(listed.Result!.Value.GetProperty("topLevelOnly").GetBoolean(), Is.True);
+            Assert.That(Strings(trash.Result!.Value.GetProperty("searchedFolders")), Is.EqualTo(new[] { "home/taller" }));
+            Assert.That(trash.Result!.Value.GetProperty("next").GetString(), Does.StartWith(
+                "lejos.txt is not in home/taller, subfolders included; nothing else on the PC was searched"));
+            Assert.That(read.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(Strings(read.Result!.Value.GetProperty("searchedFolders")), Is.EqualTo(new[] { "home/taller" }));
+            Assert.That(read.Result!.Value.GetProperty("next").GetString(), Does.StartWith(
+                "lejos.txt is not in home/taller, subfolders included"));
+            Assert.That(byPath.Result!.Value.GetProperty("walked").GetBoolean(), Is.False);
+            Assert.That(byPath.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
     // BAXY Renew (notebook): a name found nowhere says the folders walked; found twice, the places, as file.read
     // gives them; neither sends anything to the bin.
     [Test]
@@ -882,7 +926,13 @@ public sealed class KnownFileToolsTests
             Assert.That(nowhere.ErrorCode, Is.EqualTo("known_file_not_found"));
             Assert.That(nowhere.Result!.Value.GetProperty("searchScope").TryGetProperty("timeLimitReached", out _),
                 Is.False);
-            Assert.That(nowhere.Result!.Value.TryGetProperty("next", out _), Is.False);
+            // Renew al máximo (w6, rutas): a whole walk that found nothing says where it walked and that nothing else was.
+            Assert.That(nowhere.Result!.Value.TryGetProperty("next", out JsonElement whole), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(whole.GetString(), Is.EqualTo(
+                    "nada.txt is not in home, subfolders included; nothing else on the PC was searched"));
+            }
         });
     }
 
