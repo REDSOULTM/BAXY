@@ -37,7 +37,8 @@ internal sealed class SaidFolders
 {
     internal const string LeftOut = "said_folder_left_out";
 
-    /// <summary>JSON as the model reads it: accents and «» as they are, never as \u escapes.</summary>
+    /// <summary>JSON as the model reads it: accents and «» as they are, never as \u escapes (every result the App writes
+    /// itself, NativeTurnLoop).</summary>
     internal static readonly JsonSerializerOptions AsWritten = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
     // Where a folder named only by its name is looked for (its top level).

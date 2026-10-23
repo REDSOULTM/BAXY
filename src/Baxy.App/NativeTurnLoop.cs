@@ -569,7 +569,7 @@ internal sealed class NativeTurnLoop
 
             held["next"] = AskThePersonAbout(operation);
             return Record(operation, arguments, started, WithArguments(held, "arguments", operation, arguments)
-                .ToJsonString());
+                .ToJsonString(SaidFolders.AsWritten));
         }
 
         return await SendAsync(core, prepared, arguments, confirmationToken: null, answered: false, started,
@@ -651,7 +651,7 @@ internal sealed class NativeTurnLoop
             if (JsonNode.Parse(observation) is JsonObject facts)
             {
                 facts["waiting"] = note;
-                return facts.ToJsonString();
+                return facts.ToJsonString(SaidFolders.AsWritten);
             }
         }
         catch (System.Text.Json.JsonException)
@@ -715,7 +715,7 @@ internal sealed class NativeTurnLoop
                 ["status"] = "rejected",
                 ["error"] = "only_the_person_answers",
                 ["next"] = AskThePerson,
-            }.ToJsonString());
+            }.ToJsonString(SaidFolders.AsWritten));
         }
 
         if (_proposal is { } proposal && _proposalExpiresUtc > _time.GetUtcNow())
@@ -849,7 +849,8 @@ internal sealed class NativeTurnLoop
                 asked["saidFolder"] = said;
             }
 
-            return Record(operation, arguments, started, asked.ToJsonString(), response, sent: challenge.ReconciliationRequired);
+            return Record(operation, arguments, started, asked.ToJsonString(SaidFolders.AsWritten), response,
+                sent: challenge.ReconciliationRequired);
         }
 
         Resolve(prepared, memory);
@@ -1028,6 +1029,9 @@ internal sealed class NativeTurnLoop
         }
     }
 
+    // Every result the App writes itself goes as SaidFolders.AsWritten writes it, accents and «» as they are (auditoría
+    // de la App, 2026-10-23: a held call's arguments, which the model reads back, and a waiting result rewritten here
+    // reached it as ó escapes, where the provider's own text and the replayed note did not).
     // What BAXY itself says of a call it did not send or whose answer it could not read, with one header: how it ended
     // (status), its code and, only when they hold, that it may have happened and that a completion is unverified
     // (verification none, OperationVisibleFacts' table).
@@ -1062,6 +1066,6 @@ internal sealed class NativeTurnLoop
             facts[key] = value?.DeepClone();
         }
 
-        return facts.ToJsonString();
+        return facts.ToJsonString(SaidFolders.AsWritten);
     }
 }

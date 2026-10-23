@@ -145,6 +145,56 @@ public sealed class NativeTurnLoopTests
         });
     }
 
+    // Auditoría de la App (2026-10-23): what the App writes itself reached the model as \u escapes («Pokémon»),
+    // the held call's arguments included; the provider's text and SaidFolders' already went as written.
+    [Test]
+    public async Task AHeldCallReachesTheModelAsItWasWritten()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = "game.launch",
+                    ["arguments"] = new JsonObject { ["appId"] = "1", ["title"] = "Pokémon «Rojo»" },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "clarify",
+                    ["question"] = "¿Abro ese juego?",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+        });
+
+        await loop.RunAsync("abre un juego", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        string observation = (string)fake.Requests("turn.continue").Single()["observation"]!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(observation, Does.Contain("\"title\":\"Pokémon «Rojo»\""));
+            Assert.That(observation, Does.Not.Contain("\\u"));
+            Assert.That((string?)JsonNode.Parse(observation)?["cause"], Is.EqualTo("game_title_not_said"));
+        });
+    }
+
     // Auditoría de la App (2026-10-23): told to answer in words (here, the engine is down), a mind that still calls does
     // not get that call run; before, each call ran, came back final again, and the turn never ended.
     [Test]
