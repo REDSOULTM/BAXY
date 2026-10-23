@@ -309,3 +309,40 @@ def test_a_read_in_a_turn_is_told_by_the_risk_the_app_sent(tmp_path: Path) -> No
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert tool.endswith("[En este turno: window_application_status → lectura: sólo miró, sin abrir, cerrar ni "
                          "cambiar nada; lo que vio está arriba]")
+
+
+SAID = r"crea un archivo compras.txt en C:\Users\ana\BAXY-bench que diga: pan, leche y huevos"
+LEFT_OUT = {"relativePath": "compras.txt", "text": "pan, leche y huevos", "folder": "home"}
+WHOLE = {"relativePath": r"C:\Users\ana\BAXY-bench\compras.txt", "text": "pan, leche y huevos", "folder": "home"}
+
+
+@pytest.mark.parametrize("setting,said,first,told", [
+    ("all", SAID, LEFT_OUT, True),
+    ("none", SAID, LEFT_OUT, False),
+    # Contracases: the path's last folder is in the call; the person's home itself is the folder home.
+    ("all", SAID, WHOLE, False),
+    ("all", SAID, {**LEFT_OUT, "relativePath": "BAXY-bench/compras.txt"}, False),
+    ("all", r"crea compras.txt en C:\Users\ana que diga pan", LEFT_OUT, False),
+    ("all", r"crea compras.txt en C:\Users\ana\Desktop que diga pan", {**LEFT_OUT, "folder": "desktop"}, False),
+])
+def test_a_call_that_leaves_out_the_folder_of_a_path_the_person_said_is_written_again_once(
+        tmp_path: Path, monkeypatch, setting: str, said: str, first: dict, told: bool) -> None:
+    # Renew al máximo (w5, E006): «crea un archivo compras.txt en C:\Users\usuario\BAXY-bench …» was written as
+    # relativePath «compras.txt» in home at 0.93-0.95 every run (int5 X s0/s1, int M s0, int5 M s1) and the file went to
+    # C:\Users\usuario\compras.txt. The call is not run: the model reads what it left out and writes it again, once.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    monkeypatch.setenv("USERPROFILE", r"C:\Users\ana")
+    mind, server = _mind(tmp_path, [_call("file_write", first), _call("file_write", first)])
+    result = mind.decide(1, said)
+    assert result["kind"] == "action" and result["arguments"] == first
+    assert len(server.bodies) == (2 if told else 1)
+    if told:
+        note = server.bodies[1]["messages"][-1]
+        assert note == {"role": "user", "content": (
+            r"[Nota interna, no la escribió la persona: la persona dijo la ruta «C:\Users\ana\BAXY-bench» y la "
+            "llamada file_write que ibas a hacer no la nombra (falta «BAXY-bench»), así que no se ejecutó. Vuelve a "
+            "llamarla con esa ruta entera en sus argumentos.]")}
+        # The call it nearly made never enters the conversation; its row says what it left out.
+        assert not [m for m in server.bodies[1]["messages"] if m.get("tool_calls")]
+        row = [r for r in _trace(mind) if r.get("kind") == "said_path_note"][0]
+        assert row["arguments"] == first and row["aids"] == {"said_path_next": note["content"]}

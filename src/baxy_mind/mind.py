@@ -295,6 +295,37 @@ def field_note(observation: str, args: str | None) -> str:
     return note.format(label=label.strip())
 
 
+# Aid «said_path_next» (Renew al máximo w5, E006): «crea un archivo compras.txt en C:\Users\usuario\BAXY-bench …» was
+# written as relativePath «compras.txt» in home at 0.93-0.95 every run, and the file went to C:\Users\usuario\compras.txt.
+# A full path the person said whose last part the call does not name is told before anything runs, once per turn, and
+# the model writes the call again; the person's home itself is the folder home, and a known folder its folder.
+_SAID_PATH = re.compile(r"(?<!\w)[A-Za-z]:\\[^\s\"'«»<>|?*,;]*")
+_PATH_ARGUMENT = re.compile(r"path|folder|directory|file", re.IGNORECASE)
+_FOLDER_WORDS = {"escritorio": "desktop", "documentos": "documents", "descargas": "downloads"}
+SAID_PATH_NOTE = ("[Nota interna, no la escribió la persona: la persona dijo la ruta «{path}» y la llamada {call} que "
+                  "ibas a hacer no la nombra (falta «{part}»), así que no se ejecutó. Vuelve a llamarla con esa ruta "
+                  "entera en sus argumentos.]")
+
+
+def said_path_left_out(text: Any, arguments: Any) -> tuple[str, str] | None:
+    """The first full path in the person's words whose last part a call about files or folders leaves out, and that
+    part; None when the call names it, takes no path, or the path is the person's home folder itself."""
+    if not isinstance(arguments, dict) or not any(_PATH_ARGUMENT.search(str(key)) for key in arguments):
+        return None
+    written = _fold(json.dumps(arguments, ensure_ascii=False).replace("\\\\", "\\"))
+    home = _fold(str(Path.home())).rstrip("\\")
+    for match in _SAID_PATH.finditer(str(text or "")):
+        path = match.group(0).rstrip("\\/.:")
+        parts = [part for part in re.split(r"[\\/]+", path) if part]
+        if len(parts) < 2 or _fold(path) == home:
+            continue
+        last = _fold(parts[-1])
+        if last in written or _FOLDER_WORDS.get(last, "\0") in written:
+            continue
+        return path, parts[-1]
+    return None
+
+
 SAME_CALL_TOLD = 3
 # Auditoría de falsedades: «ya se hizo» is the call's, never its effect's (a click that failed three times read «ya se
 # hizo»): the call was made, and its result is said beside it.
@@ -1445,6 +1476,21 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
+        left_out = (said_path_left_out(turn.get("text"), calls[0]["arguments"])
+                    if calls and self._doubted(stage, turn, final) and not turn.get("path_told")
+                    and _aid_on("said_path_next") else None)
+        if left_out:
+            # Renew al máximo (w5, E006): the call that left out the place the person said never runs nor enters the
+            # conversation; the model reads what it left out and decides again (its doubt is read then, as always).
+            turn["path_told"] = True
+            said = SAID_PATH_NOTE.format(path=left_out[0], part=left_out[1], call=calls[0]["wire"])
+            conv.append({"role": "user", "content": said})
+            private = bool(turn.get("private"))
+            self._log(stage, started, reply, text=None if private else turn["text"], kind="said_path_note",
+                      operation=self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"]),
+                      arguments=None if private else calls[0]["arguments"], content=None,
+                      aids={"said_path_next": said} if not private else ["said_path_next"])
+            return self._next(request_id, stage, turn)
         note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
         if isinstance(note, dict):
             # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
