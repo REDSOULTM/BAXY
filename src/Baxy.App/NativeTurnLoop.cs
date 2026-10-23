@@ -118,6 +118,7 @@ internal sealed class NativeTurnLoop
     private readonly SilenceNotice _notice;
     private readonly NetworkEgress _egress = new();
     private readonly SaidFolders _said;
+    private readonly SaidApplication _saidApp = new();
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
@@ -126,7 +127,7 @@ internal sealed class NativeTurnLoop
     private bool _proposalByBeat;
     private string? _proposalCause;
     // Where the waiting call acts beside the folder the person named (SaidFolders), for its result once approved.
-    private string? _waitingSaid;
+    private (string Key, string Note)? _waitingSaid;
     private bool _beat;
     // The person's answer is the person's: it answers only a call whose question was published before their words or
     // their press arrived (ConfirmationAsk.Answers: _askedAt before _personAt, both Stopwatch timestamps;
@@ -189,10 +190,12 @@ internal sealed class NativeTurnLoop
         if (answering)
         {
             _said.Answered(text);
+            _saidApp.Answered(text);
         }
         else
         {
             _said.Heard(text);
+            _saidApp.Heard(text);
         }
 
         await PersonTurnAsync(mind, arrivedAt, answering,
@@ -333,6 +336,7 @@ internal sealed class NativeTurnLoop
         _beat = true;
         _egress.NewTurn();
         _said.Clear();
+        _saidApp.Clear();
         _turnStarted = Stopwatch.GetTimestamp();
         try
         {
@@ -358,6 +362,7 @@ internal sealed class NativeTurnLoop
         DropPending();
         _egress.Reset();
         _said.Clear();
+        _saidApp.Clear();
         if (!engineRestarted)
         {
             ResolveUncertain(endedTurn: null, all: true);
@@ -553,7 +558,7 @@ internal sealed class NativeTurnLoop
 
         // Renew al máximo (w6, rutas): a file call that leaves out the folder the person named in this turn is routed
         // into it when it only reads, or refused before anything runs with the call that names it (SaidFolders).
-        string? said = null;
+        (string Key, string Note)? said = null;
         if (_said.Rule(operation, descriptor, arguments) is { } ruling)
         {
             if (ruling.Refusal is { } leftOut)
@@ -562,7 +567,14 @@ internal sealed class NativeTurnLoop
             }
 
             arguments = ruling.Arguments;
-            said = ruling.Note;
+            said = ruling.Note is { } note ? ("saidFolder", note) : null;
+        }
+        // Renew al máximo (w7, apps): an app.open of an application the person did not name, at a place only another
+        // one has, opens that one there (SaidApplication).
+        else if (_saidApp.Rule(operation, arguments) is { } owner)
+        {
+            arguments = owner.Arguments;
+            said = (SaidApplication.NoteKey, owner.Note);
         }
 
         ResolveUncertain(endedTurn: null);
@@ -689,14 +701,15 @@ internal sealed class NativeTurnLoop
         return descriptor.Effects.Any(effect => effect.Applies(given.RootElement));
     }
 
-    // Where the call acted, beside the folder the person named (SaidFolders).
-    private static string WithSaidFolder(string observation, string said)
+    // Where the call acted, beside the folder the person named (SaidFolders) or the application of its place
+    // (SaidApplication).
+    private static string WithSaid(string observation, string key, string said)
     {
         try
         {
             if (JsonNode.Parse(observation) is JsonObject facts)
             {
-                facts["saidFolder"] = said;
+                facts[key] = said;
                 return facts.ToJsonString(SaidFolders.AsWritten);
             }
         }
@@ -812,7 +825,7 @@ internal sealed class NativeTurnLoop
             return refused;
         }
 
-        string? said = _waitingSaid;
+        (string Key, string Note)? said = _waitingSaid;
         Resolved(approve ? "approved" : "declined");
         if (!approve)
         {
@@ -863,7 +876,7 @@ internal sealed class NativeTurnLoop
             return refused;
         }
 
-        string? said = _waitingSaid;
+        (string Key, string Note)? said = _waitingSaid;
         _proposal = null;
         Resolved(approve ? "approved" : "declined");
         if (!approve)
@@ -903,7 +916,7 @@ internal sealed class NativeTurnLoop
         bool answered,
         long started,
         CancellationToken cancellationToken,
-        string? said = null)
+        (string Key, string Note)? said = null)
     {
         string operation = prepared.OperationName;
         bool memory = MemoryOperationProtector.IsMemoryOperation(operation);
@@ -944,9 +957,9 @@ internal sealed class NativeTurnLoop
                 ["next"] = AskThePersonAbout(operation),
             }, "arguments", operation, arguments);
             asked["effectStarted"] = challenge.ReconciliationRequired;
-            if (said is not null)
+            if (said is { } told)
             {
-                asked["saidFolder"] = said;
+                asked[told.Key] = told.Note;
             }
 
             return Record(operation, arguments, started, asked.ToJsonString(SaidFolders.AsWritten), response,
@@ -957,9 +970,9 @@ internal sealed class NativeTurnLoop
         string body = memory
             ? MemoryObservation(prepared, response)
             : OperationResponseProjection.Create(response, operation).Message;
-        if (said is not null)
+        if (said is { } fact)
         {
-            body = WithSaidFolder(body, said);
+            body = WithSaid(body, fact.Key, fact.Note);
         }
 
         if (memory && response.Status == OperationStatuses.Completed

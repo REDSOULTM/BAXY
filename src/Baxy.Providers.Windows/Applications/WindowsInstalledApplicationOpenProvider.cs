@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using Baxy.Contracts;
+using Baxy.Providers.Windows.Infrastructure;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
@@ -384,12 +385,15 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             return false;
         }
 
-        return InstalledApplicationResolver.Resolve(applicationId, catalog).Entry is { } entry
-            && (entry.AppUserModelId.Contains('!')
-                ? External.VisibleControlSurface.SystemTool(InstalledApplicationResolver.PackageName(entry))
-                : External.VisibleControlSurface.SystemToolLaunch(entry.TargetPath, entry.TargetArguments)
-                    || External.VisibleControlSurface.SystemToolLaunch(entry.AppUserModelId, entry.TargetArguments));
+        return InstalledApplicationResolver.Resolve(applicationId, catalog).Entry is { } entry && OpensSystemTool(entry);
     }
+
+    // The rule of the guard above for one catalog entry (also what the installed list leaves out, CreateCatalogSnapshot).
+    internal static bool OpensSystemTool(InstalledApplicationEntry entry) =>
+        entry.AppUserModelId.Contains('!')
+            ? External.VisibleControlSurface.SystemTool(InstalledApplicationResolver.PackageName(entry))
+            : External.VisibleControlSurface.SystemToolLaunch(entry.TargetPath, entry.TargetArguments)
+                || External.VisibleControlSurface.SystemToolLaunch(entry.AppUserModelId, entry.TargetArguments);
 
     public async ValueTask<ApplicationInstalledResult> IsInstalledAsync(
         string applicationName,
@@ -462,6 +466,13 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 "The Start application catalog contains a Unicode replacement character.");
         }
 
+        // Renew al máximo (w7, apps; aid «system_tools_unlisted»): a tool that configures Windows itself, by the guard's
+        // rule (OpensSystemTool), is not listed to the model (E014 read «Configuración del sistema» for «la configuración
+        // de sonido» and opened msconfig elevated); app.open still opens it by its name. Its name stays out after the
+        // grouping below, so no other entry's name is listed in its place.
+        HashSet<string> systemTools = ModelAids.On(ModelAids.SystemToolsUnlisted)
+            ? new(catalog.Where(OpensSystemTool).Select(static entry => entry.AppUserModelId), StringComparer.Ordinal)
+            : [];
         var candidates = new List<(string Name, string AppUserModelId, string Key)>();
         foreach (InstalledApplicationEntry entry in catalog)
         {
@@ -489,10 +500,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
         string[] safelyResolvableNames = candidates
             .GroupBy(static candidate => candidate.Key, StringComparer.Ordinal)
-            .Where(static group =>
+            .Where(group =>
                 group.Select(static candidate => candidate.AppUserModelId)
                     .Distinct(StringComparer.Ordinal)
-                    .Count() == 1)
+                    .Count() == 1
+                && !systemTools.Contains(group.First().AppUserModelId))
             .Select(static group => group
                 .OrderBy(static candidate => candidate.Name, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(static candidate => candidate.Name, StringComparer.Ordinal)

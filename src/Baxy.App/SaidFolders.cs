@@ -497,8 +497,8 @@ internal sealed class SaidFolders
     private static string[] Parts(string path) =>
         path.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-    // Folded words between single spaces: «BAXY-bench,» and «baxy bench» are « baxy bench ».
-    private static string Spoken(string text)
+    // Folded words between single spaces: «BAXY-bench,» and «baxy bench» are « baxy bench » (SaidApplication too).
+    internal static string Spoken(string text)
     {
         var spoken = new StringBuilder(" ");
         foreach (char character in PersonFolders.Fold(text))

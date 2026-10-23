@@ -128,6 +128,20 @@ public static class ModelAids
     /// <summary>Renew al máximo (w8): a chat message refused or left unverified says what was written and what to do next.</summary>
     public const string MessageTextNext = "message_text_next";
 
+    /// Renew al máximo (w7, apps; e2e E014, «abre la configuración de sonido»: «Configuración del sistema» with place
+    /// sound 34 times in the PC's practice runs, and twice on the notebook): an app.open of an application the person did
+    /// not name, at a place it does not have and only one other application has, opens that one at the place instead,
+    /// and its result says so (Baxy.App.SaidApplication).
+    /// </summary>
+    public const string PlaceOwner = "place_owner";
+
+    /// <summary>
+    /// Renew al máximo (w7, apps; E014: msconfig opened elevated on the notebook, 2026-10-22): the tools that configure
+    /// Windows itself, by the rule the guards use (VisibleControlSurface.SystemToolLaunch), are left out of the installed
+    /// applications the model reads; app.open still opens them by name. It changes the prefix once (a stable list).
+    /// </summary>
+    public const string SystemToolsUnlisted = "system_tools_unlisted";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
