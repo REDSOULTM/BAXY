@@ -121,7 +121,15 @@ internal sealed class AppOpenHandler(
                 // another application.
                 bool placeOfApplication = arguments.Place is null || ApplicationPlaces.PlacesOf(arguments.AppId)
                     .Any(declared => declared.Place == arguments.Place);
-                string? places = ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(arguments.AppId, arguments.AppId) : null;
+                // Renew al máximo (E014): a place of another application says the opening that reaches it (the model
+                // read placeIn as a value of place, then opened msconfig with no place).
+                IReadOnlyList<string> owners = placeOfApplication ? [] : ApplicationPlaces.ApplicationsWith(arguments.Place);
+                string? places = !ModelAids.On(ModelAids.AppPlaces) ? null
+                    : owners.Count > 0
+                        ? $"app_open with appId \"{owners[0]}\" and place \"{arguments.Place}\" opens it: "
+                            + $"{arguments.Place} is a place of {string.Join(" or ", owners)}, not of {arguments.AppId}, "
+                            + "which opened with no place does not show it"
+                        : PlacesNext(arguments.AppId, arguments.AppId);
                 return OperationOutcome.Failure(
                     placeOfApplication ? "place_value_not_taken" : "place_not_of_application",
                     result: Facts(writer =>
@@ -133,7 +141,8 @@ internal sealed class AppOpenHandler(
                         // The places of its application and what each takes, as a fact whether the aids are on or off.
                         if (placeOfApplication)
                             WritePlaces(writer, arguments.AppId);
-                        WriteNames(writer, "placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place));
+                        WriteNames(writer, "placeIn",
+                            placeOfApplication ? ApplicationPlaces.ApplicationsWith(arguments.Place) : owners);
                         if (places is not null) writer.WriteString("next", places);
                     }));
             }

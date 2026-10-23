@@ -40,6 +40,37 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Renew al máximo (E014, int2 s1): refused «Configuración del sistema» with place sound, the model took placeIn
+    // («Configuración») for a value of place, then opened msconfig with no place. With the aid app_places, the refusal
+    // says which application the place is of and the opening that reaches it; with BAXY_AYUDAS=none, the facts alone.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task APlaceOfAnotherApplicationSaysTheOpeningThatReachesIt(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        var provider = new VerifiedOpening(@"C:\WINDOWS\system32\msconfig.exe");
+
+        OperationOutcome outcome = await Handler(provider).ExecuteAsync(
+            Invocation("""{"appId":"Configuración del sistema","place":"sound"}"""), CancellationToken.None);
+        JsonElement result = outcome.Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_of_application"));
+            Assert.That(result.GetProperty("placeIn").EnumerateArray().Select(name => name.GetString()),
+                Is.EqualTo(new[] { "Configuración" }));
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("app_open with appId \"Configuración\" and place \"sound\" "
+                    + "opens it: sound is a place of Configuración, not of Configuración del sistema, which opened with no "
+                    + "place does not show it"));
+            }
+
+            Assert.That(provider.Calls, Is.Zero);
+        });
+    }
+
     // The Calculator is launched by System32\calc.exe, and the window verified is CalculatorApp's: the opening names it
     // CalculatorApp, as the window in front would be named (foregroundHeldBy) and the keys sent to it (sentTo).
     [Test]
