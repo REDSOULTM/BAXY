@@ -3101,3 +3101,10 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   - **int8 = 852fc8a9a** (int7 + w5-confirm2 + w5-tail + w5-ui + w5-resto + nb-w5-mem): decision2 ×3 233 / 231 / 231 =
     231,67 (sin P212: +1,33, IC95 [−0,67; +4,0], nada baja); suites PC pytest 331, Kernel 693, Contracts 74, App 110,
     Setup 477 y NB Providers ENTERO 2 803/2 803: **criterio de suites cumplido en int8**.
+- 02:1x (23-10) **e2e de práctica en el PC, int8 frente a int6** (s0-s1): int6 23 + 25 = 24,0; int8 23 + 24 = 23,5;
+  Δ −0,5, IC95 [−2,5; +1,5], ningún caso cambia por mayoría, pass^2 21 → 22. E017 de int8: s0 guardó en la carpeta
+  equivocada (límite del modelo), s1 input_window_not_in_front ×5 y luego bien.
+  **INCIDENTE**: el Bloc de notas del dueño (abierto desde las 22:29, con una pestaña sin guardar) quedó al frente en
+  tres casos y BAXY escribió en él: «lista: pilas, cables» ×2 (int6 s0, int8 s0) y «hola desde BAXY» ×1 (int8 s1). Nada
+  se guardó a disco; no se toca su documento a ciegas (hace falta su sí en el diálogo de control del escritorio). Se le
+  avisa para quitarlas con Ctrl+H. Regla desde ahora: ningún banco que actúa en el PC con su Bloc de notas abierto.
