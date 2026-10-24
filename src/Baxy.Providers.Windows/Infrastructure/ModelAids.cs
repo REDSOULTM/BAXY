@@ -59,6 +59,19 @@ public static class ModelAids
     /// <summary>Renew al máximo (E027): a known file found nowhere says nothing beyond the folders walked was searched.</summary>
     public const string SearchScope = "search_scope";
 
+    /// <summary>
+    /// Holdout v5 (V5E052: «factura marzo.pdf» dictated, factura-marzo.pdf there, nothing offered): a known file named
+    /// exactly by none gives, from the same walk, up to 5 names with the same words under other separators (space, -, _,
+    /// .), case or accents as candidates, and that fact; nothing is done to them, and the exact name is asked for again.
+    /// </summary>
+    public const string NearNames = "near_names";
+
+    /// <summary>Holdout v5 (V5E047, «is not in no folder»): a known file call whose subdirectory does not exist says so, as a relative path.</summary>
+    public const string MissingSubdirectory = "missing_subdirectory";
+
+    /// <summary>Holdout v5 (V5E061, another file's whole content as oldText): a file.edit whose oldText is not in the file says it may not be the file meant.</summary>
+    public const string EditTextAbsent = "edit_text_absent";
+
     /// <summary>Renew al máximo (F002): window.application.status says as a sentence whether BAXY opened the window.</summary>
     public const string ProvenanceNext = "provenance_next";
 

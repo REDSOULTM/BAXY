@@ -1071,4 +1071,162 @@ public sealed class KnownFileToolsTests
             Assert.That(File.ReadAllText(Path.Combine(home, "sub", "notas.txt")), Is.EqualTo("martes"));
         });
     }
+
+    // Holdout v5 (V5E052, «manda a la papelera factura marzo punto pdf de documentos facturas pyme»): a voice dictates no
+    // hyphen, and «factura marzo.pdf» matched nothing while factura-marzo.pdf was there; nothing was offered, so the
+    // file could never be reached. With aid near_names, a name matched by no file exactly gives, from the same walk, the
+    // names with the same words under other separators, case or accents (and, for a read or an edit, another
+    // extension), as candidates with that fact; nothing is trashed, read or edited by them, and the exact name named
+    // again is the one the core asks the yes for. Off (BAXY_AYUDAS without it), or with nothing alike, it is as before.
+    [TestCase("all", true)]
+    [TestCase("search_scope", false)]
+    public async Task ANameAlmostTheSameGivesTheExactNamesAndActsOnNone(string aids, bool near)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, FolderRecycleBin bin) = Folders(temporary);
+        string pyme = Path.Combine(documents, "facturas pyme");
+        Directory.CreateDirectory(pyme);
+        Directory.CreateDirectory(Path.Combine(desktop, "fotos_viaje"));
+        string factura = Path.Combine(pyme, "factura-marzo.pdf");
+        string informe = Path.Combine(pyme, "Informe_Final.txt");
+        string cancion = Path.Combine(desktop, "canción.txt");
+        await File.WriteAllTextAsync(factura, "x");
+        await File.WriteAllTextAsync(informe, "lunes");
+        await File.WriteAllTextAsync(cancion, "lunes");
+
+        ExternalCapabilityReceipt trash = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"factura marzo.pdf"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt? asked = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
+            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"factura marzo.pdf"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt folder = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"desktop","fileName":"Fotos Viaje"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(
+            """{"folder":"all_known","fileName":"informe final.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt byPath = await adapter.InvokeAsync("file.read", Json(
+            """{"folder":"documents","fileName":"facturas pyme/informe final"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt edit = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"desktop","fileName":"CANCION.TXT","oldText":"lunes","newText":"martes"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt nothingAlike = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"factura abril.pdf"}"""),
+            CancellationToken.None);
+        // The exact name, named again, is one target: the read before the yes leaves the call to ask.
+        ExternalCapabilityReceipt? exact = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
+            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"factura-marzo.pdf"}"""),
+            CancellationToken.None);
+
+        static string[] Names(ExternalCapabilityReceipt receipt) =>
+            receipt.Result!.Value.TryGetProperty("candidates", out JsonElement candidates)
+                ? [.. candidates.EnumerateArray().Select(item => item.GetProperty("relativePath").GetString()!)]
+                : [];
+        static string? Next(ExternalCapabilityReceipt? receipt) =>
+            receipt?.Result is { } result && result.TryGetProperty("next", out JsonElement next) ? next.GetString() : null;
+        const string elsewhere = "; nothing else on the PC was searched; folder \"desktop\" or \"documents\" searches more";
+        Assert.Multiple(() =>
+        {
+            foreach (ExternalCapabilityReceipt refused in new[] { trash, folder, read, byPath, edit, nothingAlike })
+            {
+                Assert.That(refused.ErrorCode, Is.EqualTo("known_file_not_found"));
+                Assert.That(refused.EffectMayHaveOccurred, Is.False);
+            }
+            Assert.That(asked?.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(Names(trash), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "factura-marzo.pdf") } : []));
+            Assert.That(Names(asked!), Is.EqualTo(Names(trash)));
+            Assert.That(Names(folder), Is.EqualTo(near ? new[] { "fotos_viaje" } : []));
+            Assert.That(Names(read), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "Informe_Final.txt") } : []));
+            Assert.That(Names(byPath), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "Informe_Final.txt") } : []));
+            Assert.That(Names(edit), Is.EqualTo(near ? new[] { "canción.txt" } : []));
+            Assert.That(Next(trash), Is.EqualTo(near
+                ? "no file or folder is named exactly factura marzo.pdf; these have the same words with other "
+                    + "separators, case or accents: \"factura-marzo.pdf\"; to use one, call again with its exact name "
+                    + "as fileName"
+                : "factura marzo.pdf is not in documents/facturas pyme, subfolders included" + elsewhere));
+            Assert.That(Next(read), Is.EqualTo(near
+                ? "no file is named exactly informe final.txt; these have the same words with other separators, "
+                    + "case, accents or extension: \"Informe_Final.txt\"; to use one, call again with its exact name "
+                    + "as fileName"
+                : "informe final.txt is not in desktop, documents, subfolders included; nothing else on the PC was "
+                    + "searched"));
+            Assert.That(Next(byPath), near ? Does.Contain("\"Informe_Final.txt\"") : Is.Null);
+            // Nothing alike is the refusal of before, whatever the aid.
+            Assert.That(Names(nothingAlike), Is.Empty);
+            Assert.That(Next(nothingAlike), Is.EqualTo(
+                "factura abril.pdf is not in documents/facturas pyme, subfolders included" + elsewhere));
+            Assert.That(read.Result!.Value.TryGetProperty("text", out _), Is.False, "nothing was read");
+            Assert.That(File.ReadAllText(cancion), Is.EqualTo("lunes"), "nothing was edited");
+            Assert.That(File.Exists(factura), Is.True, "nothing was trashed");
+            Assert.That(Directory.Exists(Path.Combine(desktop, "fotos_viaje")), Is.True);
+            Assert.That(bin.Recycled, Is.Empty);
+            Assert.That(exact, Is.Null);
+        });
+    }
+
+    // Holdout v5 (V5E047): a subdirectory that does not exist walked no folder, and the result said «X is not in no
+    // folder». With aid missing_subdirectory it says the subfolder named is not in that known folder, as a relative path.
+    [TestCase("all", true)]
+    [TestCase("search_scope", false)]
+    public async Task ASubdirectoryThatDoesNotExistSaysSo(string aids, bool missing)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, _, string documents, FolderRecycleBin bin) = Folders(temporary);
+        Directory.CreateDirectory(Path.Combine(documents, "facturas pyme"));
+        await File.WriteAllTextAsync(Path.Combine(documents, "facturas pyme", "factura.pdf"), "x");
+
+        ExternalCapabilityReceipt trash = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"documents","subdirectory":"facturas pymes","fileName":"factura.pdf"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(
+            """{"folder":"documents","subdirectory":"facturas pymes/2026","fileName":"factura.pdf"}"""),
+            CancellationToken.None);
+
+        const string before = "factura.pdf is not in no folder, subfolders included; nothing else on the PC was "
+            + "searched; folder \"desktop\" or \"documents\" searches more";
+        Assert.Multiple(() =>
+        {
+            Assert.That(trash.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(read.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(trash.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(missing
+                ? "documents has no subfolder \"facturas pymes\" (documents/facturas pymes does not exist), so "
+                    + "factura.pdf was not looked for; file_find on documents with no subdirectory lists its folders"
+                : before));
+            Assert.That(read.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(missing
+                ? "documents has no subfolder \"facturas pymes/2026\" (documents/facturas pymes/2026 does not exist), "
+                    + "so factura.pdf was not looked for; file_find on documents with no subdirectory lists its folders"
+                : before));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
+    // Holdout v5 (V5E061): the oldText of a file.edit was the whole content of another file (found by the «Sin título»
+    // of a Notepad window), and the model then replaced this one whole. With aid edit_text_absent the refusal adds the
+    // fact that this file holds no such text and may not be the file the person means; it forbids nothing.
+    [TestCase("all", true)]
+    [TestCase("search_scope", false)]
+    public async Task AnEditWhoseTextIsNotInTheFileSaysItMayNotBeTheFileMeant(string aids, bool fact)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, FolderRecycleBin bin) = Folders(temporary);
+        string path = Path.Combine(desktop, "Sin título.txt");
+        await File.WriteAllTextAsync(path, "lista de compras\n");
+
+        ExternalCapabilityReceipt edit = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"desktop","fileName":"Sin título.txt","oldText":"Hola mundo","newText":"Hola BAXY"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(edit.ErrorCode, Is.EqualTo("known_edit_text_not_found"));
+            Assert.That(edit.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(
+                "the file does not hold oldText exactly as given (spaces, line breaks and accents count); "
+                + (fact ? "Sin título.txt holds no such text, so it may not be the file the person means; " : "")
+                + "nothing was changed; oldText must be the exact text inside the file, copied from file_read; "
+                + "file_write with the whole new content replaces all of it"));
+            Assert.That(File.ReadAllText(path), Is.EqualTo("lista de compras\n"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
 }
