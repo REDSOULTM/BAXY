@@ -3226,3 +3226,20 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   0 → 74,1 %; ningún corte prematuro. Wake (50 «Baxi» + orden, OneCore): limpio idéntico; 10 y 5 dB cierran todas a
   1,2-1,3 s (antes ninguna), WER 10,2 → 9,8 y 15,4 → 10,9 %. Ruido solo: Ultra no transcribe nada, antes ni ahora.
   Pendiente: el cuarto real con la voz del dueño y el ruido que es voz (tele), ver APLAZADOS.
+- 22:xx (23-10) **w9-bucle (PC, sin correr el producto; réplica de la sesión de int10 en la GPU del PC)**: el bucle
+  de «abre la calculadora» (mirar + pulsar «Sistema» siete veces, el menú abriéndose y cerrándose). Dos ayudas de la
+  mente con interruptor (9279dd23d): `same_call_closes` (la llamada que same_call_next acaba de avisar, repetida como
+  siguiente decisión, no corre) y `look_click_cap` (el tercer clic igual tras la misma mirada que vio lo mismo no
+  corre); en ambas el modelo responde en palabras con los hechos del turno. Topes por datos (10.717 turnos de
+  práctica de las dos máquinas): 79 repeticiones justo tras el aviso, ninguna acabó en lo pedido; tercer par igual en
+  27 turnos, ninguno hizo nada; el segundo par sí sirvió en 3 de 58, por eso el tope es 2. Réplica
+  (`scripts/renew/ayudas/bucle.py`, la sesión forzada hasta la primera mirada, semillas 0-4): int10 15 llamadas en 3
+  semillas (y otro control pulsado sin fin en una 4.ª); con las ayudas 10 y respuesta del modelo. Causa: no es de
+  int10 (mismo prompt de sistema y descripciones que int9 salvo email_latest_reply): en las sesiones del notebook desde
+  t1 el turno de la calculadora miró tras abrir en 14 de 15 y entró en bucle en 7; int9 fue la excepción (sus frases
+  divergen desde el turno 2 y la historia cambia la decisión al borde). En la réplica, tras abrir mira 2 de 10
+  semillas y, ya mirada, pulsa «Sistema» 9 de 10: el motor es el clic tras mirar, más la regla 9 (mirar tras cada
+  clic) y un menú que alterna, que nunca repite «tres seguidas» (TurnClosing). Probado y no subido: limitar a place
+  «Look at the window afterwards» de app_open (miradas 2/10 → 0/10, clics tras mirar 9/10 → 7/10): cambia el prefijo
+  de todos los turnos y necesita e2e. web.fetch repetido: sin tope, medido en APLAZADOS. Suites: pytest 631, Kernel
+  729, Contracts 74, App 188, Setup 477, verde.
