@@ -677,7 +677,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
 
     // What a refused write saw: whether the file is there, where, and whether the call appended. Al máximo, flujos: and
     // the version of it the refusal was decided on (its SHA-256 and size), so a replace that came without the hash goes
-    // straight in a second call instead of a file.read first; its previous version still goes to the Recycle Bin.
+    // straight in a second call instead of a file.read first; its previous version still goes to the Recycle Bin. Hallazgo
+    // E030 (w9-sha): that second call asks the person first, since a hash only a refusal told is no sighting (ToldVersions).
     private static FilesystemProviderException WriteRefused(
         string code, string path, bool exists, bool append, string? currentSha256 = null, long size = 0) =>
         new(code)

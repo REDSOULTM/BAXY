@@ -28,6 +28,9 @@ public sealed class MissionEngine : IDisposable
     private readonly HashSet<string> _safeRetries = new(StringComparer.Ordinal);
     private readonly HashSet<string> _reconciling = new(StringComparer.Ordinal);
 
+    // Hallazgo E030 (w9-sha): the versions the responses sent gave, completed or not, under the execution gate too.
+    private readonly ToldVersions _toldVersions = new();
+
     /// <summary>
     /// Único constructor. Lo obligatorio va por parámetro; lo opcional, en
     /// <see cref="MissionEngineOptions"/>, para que añadir una dependencia no
@@ -84,10 +87,12 @@ public sealed class MissionEngine : IDisposable
                 }
 
                 _confirmationAuthority.Revoke(ConfirmationBinding.Create(request, fingerprint));
-                return PrivateOperationBoundary.NormalizeReplay(
+                OperationResponse replayed = PrivateOperationBoundary.NormalizeReplay(
                     request,
                     completed.Response,
                     _privateEnvelopeAuthenticator);
+                _toldVersions.Record(replayed);
+                return replayed;
             }
 
             if (await _journal
@@ -150,6 +155,16 @@ public sealed class MissionEngine : IDisposable
                 {
                     policy = Evaluate(handler, risk, request.Arguments);
                 }
+            }
+
+            // Hallazgo E030 (w9-sha): a replacement whose expected version only a refusal or a failure told the mind
+            // (ToldVersions) saw nothing of what it replaces; in normal mode it asks, bound to this invocation.
+            if (policy == PolicyDecision.Allow
+                && preflightFailure is null
+                && _confirmationMode() == ConfirmationMode.Normal
+                && _toldVersions.OnlyToldBy(request.Operation, request.Arguments))
+            {
+                policy = PolicyDecision.RequireConfirmation;
             }
 
             // Auditoría del núcleo 2026-10-23: an invocation that started before and did not end (the handler threw, the core
@@ -259,6 +274,7 @@ public sealed class MissionEngine : IDisposable
             }
 
             OperationResponse response = ToResponse(request, outcome);
+            _toldVersions.Record(response);
             if (outcome.Retryable)
             {
                 // Revisión 2026-10-22 (K-6): a retryable outcome keeps its grant for the retry, unless its effect may

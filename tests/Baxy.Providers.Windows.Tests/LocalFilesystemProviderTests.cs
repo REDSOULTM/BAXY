@@ -1,7 +1,10 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Filesystem;
 using Baxy.Providers.Windows.Infrastructure;
@@ -121,6 +124,59 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(bin.Recycled.Select(File.ReadAllText), Is.EqualTo(new[] { "uno" }));
             Assert.That(File.ReadAllText(Path.Combine(temporary.Path, "sandbox", "dato.txt")), Is.EqualTo("dos"));
         });
+    }
+
+    // Hallazgo de seguridad E030 (w9-sha), the bench's sequence on the real provider and journal: «sobrescribe notas.txt
+    // con el texto 'vacío'» went without the hash, the refusal told the file's current one (currentSha256), and the retry
+    // with it replaced the file unasked. The retry asks, bound to it, and with no yes the file stays as it was; a real read
+    // of the file (this provider's filesystem.read.text here, file.read in the product) is a sighting it goes on.
+    [Test]
+    public async Task AReplacementUnderTheHashItsRefusalToldAsksAndTheFileStaysWithoutTheYes()
+    {
+        const string before = "uno\r\ndos\r\ntres\r\n";
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        FilesystemMutationResult original = provider.WriteText("BAXY-bench/notas.txt", before, null);
+        await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+            Path.Combine(temporary.Path, "journal.jsonl"), new JournalHmacAuthenticator(new byte[32]));
+        using var engine = new MissionEngine(new OperationRegistry(FilesystemHandlers.Create(provider)), journal);
+
+        OperationResponse refused = await engine.ExecuteAsync(
+            Request("file.write", """{"relativePath":"BAXY-bench/notas.txt","text":"vacío"}"""), CancellationToken.None);
+        string told = refused.Result!.Value.GetProperty("currentSha256").GetString()!;
+        string replace = $$"""{"relativePath":"BAXY-bench/notas.txt","text":"vacío","expectedSha256":"{{told}}"}""";
+        OperationResponse asked = await engine.ExecuteAsync(Request("file.write", replace), CancellationToken.None);
+        string untouched = File.ReadAllText(Path.Combine(sandbox, "BAXY-bench", "notas.txt"));
+        int recycledWithoutTheYes = bin.Recycled.Count;
+        OperationResponse read = await engine.ExecuteAsync(
+            Request("filesystem.read.text", $$"""{"resourceId":"{{original.ResourceId}}"}"""), CancellationToken.None);
+        OperationResponse replaced = await engine.ExecuteAsync(Request("file.write", replace), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused.ErrorCode, Is.EqualTo("version_conflict"));
+            Assert.That(told, Is.EqualTo(original.Sha256));
+            Assert.That(asked.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
+            Assert.That(untouched, Is.EqualTo(before));
+            Assert.That(recycledWithoutTheYes, Is.Zero);
+            Assert.That(read.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(replaced.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "BAXY-bench", "notas.txt")), Is.EqualTo("vacío"));
+        });
+    }
+
+    private static OperationRequest Request(string operation, string arguments)
+    {
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        return new OperationRequest(
+            ProtocolTypes.OperationRequest,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            operation,
+            document.RootElement.Clone());
     }
 
     // Renew al máximo (w8): a subfolder named wrong was made silently and the file told as written; the folder the write

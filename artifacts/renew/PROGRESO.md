@@ -3226,3 +3226,17 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   0 → 74,1 %; ningún corte prematuro. Wake (50 «Baxi» + orden, OneCore): limpio idéntico; 10 y 5 dB cierran todas a
   1,2-1,3 s (antes ninguna), WER 10,2 → 9,8 y 15,4 → 10,9 %. Ruido solo: Ultra no transcribe nada, antes ni ahora.
   Pendiente: el cuarto real con la voz del dueño y el ruido que es voz (tele), ver APLAZADOS.
+- 19:xx (23-10) **w9-sha (PC, sin correr el producto; hallazgo de seguridad E030)**: «sobrescribe notas.txt…» →
+  file.write sin hash → `version_conflict`, cuya negativa trae `currentSha256` (LocalFilesystemProvider.WriteRefused) →
+  el modelo reintentaba con ese hash y RiskPolicy dejaba pasar el reemplazo (file.write es low_reversible → Allow) sin
+  el «sí». Ahora el kernel (`ToldVersions`, en MissionEngine) anota las versiones que dan sus respuestas: las de una
+  completada cuentan como vistas, las de una negativa o un fallo no; un reemplazo bajo una versión que sólo dio una
+  negativa pide confirmación en modo normal, ligada a esa invocación (Bypass igual que antes). Mismo patrón cerrado en
+  note.update (`note_selection_stale` da la revisión, nunca el contenido) y task.update (`task_version_conflict`),
+  con la versión ligada a su nota o tarea; el append de file.write no reemplaza y sigue directo. Revisados sin hueco:
+  file.edit (sin versión; exige el texto exacto), filesystem.copy/move y backup.restore (nunca sobrescriben:
+  `destination_exists`), backup.create (copia), memory.correct (`memory_conflict` no dice el valor), task.complete,
+  reopen y restore (no pierden nada), note.trash y task.delete (ya preguntan). El catálogo de la interfaz marca
+  file.write, note.update y task.update «sometimes». Suites: Kernel 736, Contracts 74, App 188, Setup 477,
+  Providers 3067, pytest 624, todo verde. Límite: la memoria es del proceso del núcleo; tras reiniciarlo, una negativa
+  de antes sólo cuenta si se repite su invocación (la reproducción la vuelve a anotar).
