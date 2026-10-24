@@ -2588,5 +2588,94 @@
         }
       }
     }
+  },
+  "cien": {
+    "prompt": "BAXY Renew al 100 % sin reentrenar (fase 3), PC líder + NB apoyo, 2026-10-24",
+    "base": "hub/renew-maximo 4b956a806 (código = int10f 19be8b42a)",
+    "ramas": {
+      "pc": "renew-cien",
+      "nb": "nb-cien"
+    },
+    "punto_de_partida": "holdout v5: decisión 624,0; e2e 49,0; falsedades claras 4; primera respuesta p50 4,3 s; VRAM/RAM 3986/3634 MiB",
+    "metas_contra_final_v5": {
+      "e2e": "+5 de 76 (media 2 semillas), IC95 sin cruzar 0; confirmaciones >= 6 de 8",
+      "decision": "sin pérdida (IC95 > -3); ya_hecho +8 de 40",
+      "falsedades_claras": "<= final_v5",
+      "primera_respuesta_p50": "-0,4 s misma máquina",
+      "recursos": "VRAM <= 4096 MiB, RAM con voz <= 4 GB"
+    },
+    "tareas": {
+      "holdout_v6": {
+        "maquina": "PC",
+        "estado": "escribiéndose (dos agentes aislados)",
+        "ruta": "F:/BAXYeval/renew_v6/holdout",
+        "clave": "C:/Users/usuario/BAXY-coord/holdout-v6-clave.txt",
+        "arnes_congelado": "F:/BAXYeval/renew_v6/harness_ref (scripts/renew de 4b956a806)"
+      },
+      "H1_confirmaciones": {
+        "maquina": "PC",
+        "estado": "diagnóstico"
+      },
+      "H2_tareas_siempre_fallidas": {
+        "maquina": "PC+NB",
+        "estado": "diagnóstico",
+        "pc": [
+          "V5E008",
+          "V5E016",
+          "V5E018",
+          "V5E045",
+          "V5E046",
+          "V5E047",
+          "V5E051",
+          "V5E052",
+          "V5E060",
+          "V5E061",
+          "V5E062",
+          "V5E066"
+        ],
+        "nb": [
+          "V5E021",
+          "V5E023",
+          "V5E029",
+          "V5E032",
+          "V5E034",
+          "V5E040",
+          "V5E043",
+          "V5E044"
+        ]
+      },
+      "H3_ya_lo_hiciste": {
+        "maquina": "PC",
+        "estado": "diagnóstico"
+      },
+      "H4_bucles_lectura": {
+        "maquina": "PC",
+        "estado": "diagnóstico"
+      },
+      "H5_urls_inventadas": {
+        "maquina": "PC",
+        "estado": "pendiente"
+      },
+      "H6_sin_respuesta": {
+        "maquina": "PC",
+        "estado": "diagnóstico"
+      },
+      "H7_latencia": {
+        "maquina": "NB",
+        "estado": "pendiente"
+      },
+      "H8_uso_diario": {
+        "maquina": "PC",
+        "estado": "pendiente"
+      },
+      "H9_engine_no_answer": {
+        "maquina": "NB",
+        "estado": "pendiente"
+      },
+      "H10_limites": {
+        "maquina": "PC",
+        "estado": "pendiente"
+      }
+    }
   }
 }

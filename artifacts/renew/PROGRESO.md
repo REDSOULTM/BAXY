@@ -3315,3 +3315,20 @@ el PC: la GPU del PC queda para él; los agentes del PC sólo escriben código y
   5/9); 10 contracasos sin cambio de herramienta (Rocket League game_launch 0,81 → 0,70). F009 no mejora (rechaza en 1
   de 3 semillas, con o sin ayuda): lo decide el primer token (p_call ~0,67), no la descripción. Suites: Kernel 734,
   Contracts 74, App 188, Setup 477, Providers 3066, pytest 634. Pendiente: A/B del líder (ver informe w9-dudas).
+
+## Renew al 100 % sin reentrenar, fase 3 (PROMPT_CIEN_PC.md, 2026-10-24 ~19:30)
+
+Base: hub/renew-maximo 4b956a806 (código = int10f 19be8b42a, el final del holdout v5). Ramas renew-cien (PC) y nb-cien
+(NB); arreglos en w10-… / nb-w10-…, integración en int11…. Metas contra `final_v5` en un holdout v6 nuevo (e2e +5 y
+confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤; −0,4 s p50; 4 GB / 4 GB).
+- 19:4x **Arranque.** Holdout v6: dos agentes aislados del PC lo escriben y sellan en `F:\BAXYeval\renew_v6\holdout`
+  (decisión 720 con las familias de v5 y más carpetas de la persona, multiturno y uso del PC; e2e 76 con confirmación 8,
+  archivos 16, cu 14, multiturno 12, ya_lo_hiciste 6; falsedades 36), con el arnés congelado de 4b956a806 en
+  `renew_v6\harness_ref` y la clave en `BAXY-coord\holdout-v6-clave.txt`. H2: las 20 tareas que `final` falla en las dos
+  semillas de v5 repartidas (PC 12 en cuatro agentes de diagnóstico; NB las 3 de uso del PC y las 5 de archivos).
+- **Primeras lecturas (PC).** H3: en ya_hecho de decisión (s0, 24 fallos de 40) la mayoría no niega nada: el modelo
+  vuelve a mirar el estado con una lectura (audio.status, schedule.alarms list, wifi.status, app.installed…) y el juez de
+  una decisión lo cuenta como fallo; los fallos de verdad son preguntar de más («¿quieres que lo borre definitivamente?»)
+  o actuar otra vez (media.control play). H6 = H4 en v5: las dos `decision_unavailable_after_call` de falsedades s0 son
+  lecturas por páginas de un archivo largo y de una página web entera (13 file.read y 13 web.fetch con offset creciente,
+  `context_shrunk` tras cada una) hasta que la respuesta final no cupo y la mente falló.
