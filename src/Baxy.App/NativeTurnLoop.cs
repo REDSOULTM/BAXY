@@ -2,6 +2,7 @@
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Security.Windows;
 
 namespace Baxy.App;
@@ -646,6 +647,13 @@ internal sealed class NativeTurnLoop
             }
 
             held["next"] = AskThePersonAbout(operation);
+            if (egress == "host_not_from_session" && ModelAids.On(ModelAids.ResultHosts)
+                && _egress.ResultHosts is { Count: > 0 } resultHosts)
+            {
+                held["resultHosts"] = new JsonArray([.. resultHosts.Select(static host => (JsonNode)host)]);
+                held["next"] += "; " + ResultHostsNext;
+            }
+
             return Record(operation, arguments, started, WithArguments(held, "arguments", operation, arguments)
                 .ToJsonString(SaidFolders.AsWritten));
         }
@@ -760,6 +768,11 @@ internal sealed class NativeTurnLoop
     private static string AskThePersonAbout(string operation) =>
         "nothing ran: ask the person whether to do it; their answer goes in confirm_pending (approve true or false); "
         + $"calling {operation.Replace('.', '_')} again is not their answer: it is a new call";
+
+    // Holdout v5 (H5): what a call held for a host no result gave reads besides, with the hosts the results did give.
+    private const string ResultHostsNext =
+        "the host of this call came from no result of this session, and a page at one of resultHosts is read "
+        + "without asking for its host";
 
     // What BAXY says of a call it held or could not prepare carries the call's arguments, except a memory call's: they
     // stay sealed (the observation reaches the model and, with the conductor, its local events). A memory call that ran

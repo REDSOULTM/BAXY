@@ -152,6 +152,51 @@ public sealed class NetworkEgressTests
             Is.EqualTo("host_not_from_session"));
     }
 
+    // Holdout v5 (H5): what a held host's result lists are the hosts the session's results gave, in the order they came,
+    // once each: never one only the person's words gave, nor one memory read.
+    [Test]
+    public void TheResultHostsAreTheResultsAddressesInTheOrderTheyCameOnceEach()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("busca en internet el clima de mañana en Santiago, o en tiempo.example");
+        egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":[" +
+            "{\"title\":\"Clima\",\"url\":\"https://news.google.com/rss/articles/CBMi1?oc=5\",\"snippet\":\"vln.cl\"}," +
+            "{\"url\":\"https://www.News.Google.com/rss/articles/CBMi2\"}]}}");
+        egress.Observed("memory.recall", "{\"status\":\"completed\",\"observed\":{\"records\":[" +
+            "{\"label\":\"radio\",\"value\":\"https://www.vln.cl/\",\"url\":\"https://memoria.example/\"}]}}");
+        egress.Observed("web.fetch", "{\"status\":\"completed\",\"observed\":{\"finalUrl\":\"https://meteochile.gob.cl/hoy\"}}");
+
+        Assert.That(egress.ResultHosts, Is.EqualTo(new[] { "news.google.com", "meteochile.gob.cl" }));
+    }
+
+    [Test]
+    public void TheResultHostsAreTheLastEightTheResultsGave()
+    {
+        var egress = new NetworkEgress();
+        egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":["
+            + string.Join(",", Enumerable.Range(1, 10).Select(static n => $"{{\"url\":\"https://sitio{n}.example/\"}}"))
+            + "]}}");
+        egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":[{\"url\":\"https://sitio9.example/b\"}]}}");
+
+        Assert.That(egress.ResultHosts,
+            Is.EqualTo(Enumerable.Range(3, 8).Select(static n => $"sitio{n}.example")));
+    }
+
+    [Test]
+    public void WithNoResultsOrANewSessionThereAreNoResultHosts()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("abre https://tiempo.example/");
+        Assert.That(egress.ResultHosts, Is.Empty);
+
+        egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":[{\"url\":\"https://clima.example/\"}]}}");
+        egress.NewTurn();
+        Assert.That(egress.ResultHosts, Is.EqualTo(new[] { "clima.example" }));
+
+        egress.Reset();
+        Assert.That(egress.ResultHosts, Is.Empty);
+    }
+
     [Test]
     public void ACallThatSendsNothingOutIsNeverHeld()
     {

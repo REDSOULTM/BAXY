@@ -152,6 +152,13 @@ public static class ModelAids
     /// </summary>
     public const string SystemToolsUnlisted = "system_tools_unlisted";
 
+    /// <summary>
+    /// Holdout v5 (H5, en vivo: after a web.search whose results were news.google.com, a web.fetch of vln.cl, a site
+    /// none of them was, held as host_not_from_session): a call held for a host no result gave lists the hosts this
+    /// session's results gave (Baxy.App.NetworkEgress.ResultHosts) and says a page at one of them is read without asking.
+    /// </summary>
+    public const string ResultHosts = "result_hosts";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
