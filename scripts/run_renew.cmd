@@ -46,6 +46,9 @@ if not exist "%LOCALAPPDATA%\BAXY\renew\system_one.off" (
   if not defined BAXY_S1_CORRECT set "BAXY_S1_CORRECT=1"
   if /I "%COMPUTERNAME%"=="REDNOTE" (
     if not defined BAXY_S1_GGUF set "BAXY_S1_GGUF=D:\BAXYeval\s1\tuned\layam-long-s1-Q8_0.gguf"
+    rem Palanca 6, medida en el notebook el 2026-10-23 con medir_laya_cpu.py: con 6 hilos Laya elige igual, 48 de 48 y
+    rem mismas probabilidades, y tarda 97 ms menos sola y 25 ms menos con el 4B generando. El PC no se midio: queda en 4.
+    if not defined BAXY_S1_THREADS set "BAXY_S1_THREADS=6"
   ) else (
     if not defined BAXY_S1_GGUF set "BAXY_S1_GGUF=D:\BAXYRuntime\candidates\systemone\tuned\layam-long-s1-Q8_0.gguf"
   )
