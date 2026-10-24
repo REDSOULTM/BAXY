@@ -278,7 +278,7 @@ public static class ProductCatalog
             Schema([String("expression", maximumLength: 64, nonWhitespace: true)], ["expression"]),
             OperationRisks.LowReversible,
             "calculator.expression.evaluate.windows.calculator.uia.display.v1",
-            "Pulsa una expresión aritmética simple (números y + - * /) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora.",
+            "Pulsa una expresión aritmética simple (números y + - * /; ^ y paréntesis en el modo científico) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; empezada por un operador, sigue desde el número que muestra; sin efecto fuera de la Calculadora.",
             effects: [WindowInput()]),
         Descriptor(
             "calendar.event.create",

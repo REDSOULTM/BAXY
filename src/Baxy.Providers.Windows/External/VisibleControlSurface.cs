@@ -1617,6 +1617,11 @@ internal static partial class VisibleControlSurface
         }
     }
 
+    /// <summary>Holdout v5 V5E021: whether the opened application still runs: its process, or for one launched now any
+    /// process its launch started (<see cref="ProcessFamily"/>, as <see cref="FrontOpenedAsync"/> follows it).</summary>
+    internal static bool OpenedAlive(OpenedApplication opened) =>
+        opened.Launched ? ProcessFamily(opened).Count > 0 : ProcessAlive(opened);
+
     private static bool ProcessAlive(OpenedApplication opened)
     {
         try

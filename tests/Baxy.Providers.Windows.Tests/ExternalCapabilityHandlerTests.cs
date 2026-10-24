@@ -127,13 +127,93 @@ public sealed class ExternalCapabilityHandlerTests
     [Test]
     public async Task ACalculatorInAnotherModeCarriesNoAppOpenHint()
     {
-        string message = await CalculatorMessage("""{"ok":false,"error":"calculator_mode_not_standard"}""");
+        string message = await CalculatorMessage("""{"ok":false,"error":"calculator_mode_not_supported"}""");
         using JsonDocument facts = JsonDocument.Parse(message);
 
         Assert.Multiple(() =>
         {
-            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("calculator_mode_not_standard"));
+            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("calculator_mode_not_supported"));
             Assert.That(facts.RootElement.TryGetProperty("observed", out _), Is.False);
+        });
+    }
+
+    // Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): «+53» was refused as invalid, and «53+53» cleared
+    // the 47 the person had there without saying so. An expression that starts with an operator continues from the
+    // number shown and the receipt says which number; one that starts with a number says what the clear removed.
+    [Test]
+    public async Task AnExpressionStartingWithAnOperatorContinuesFromTheNumberShown()
+    {
+        OperationOutcome outcome = await Calculator(
+            """{"ok":true,"continued":true,"before":"47","mode":"standard","displayName":"Se muestra 100","expressionName":"47 + 53=","value":"100"}""",
+            "+ 53");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("expression").GetString(), Is.EqualTo("+53"));
+            Assert.That(result.GetProperty("startedFrom").GetString(), Is.EqualTo("47"));
+            Assert.That(result.TryGetProperty("clearedDisplay", out _), Is.False);
+            Assert.That(result.GetProperty("mode").GetString(), Is.EqualTo("standard"));
+            Assert.That(result.GetProperty("value").GetString(), Is.EqualTo("100"));
+        });
+    }
+
+    // Contracaso: an expression that starts with a number clears the display first, and says what it held.
+    [Test]
+    public async Task AnExpressionStartingWithANumberSaysWhatTheClearRemoved()
+    {
+        OperationOutcome outcome = await Calculator(
+            """{"ok":true,"continued":false,"before":"47","mode":"standard","displayName":"Se muestra 106","expressionName":"53 + 53=","value":"106"}""",
+            "53+53");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("clearedDisplay").GetString(), Is.EqualTo("47"));
+            Assert.That(result.TryGetProperty("startedFrom", out _), Is.False);
+        });
+    }
+
+    // Holdout v5 V5E029 («calcula 2 elevado a 10» in Scientific mode): «2^10» was refused before reaching the keypad.
+    // ^ and parentheses go to the keypad (its Scientific buttons), and the receipt says the mode it was pressed in.
+    [TestCase("2^10")]
+    [TestCase("(1+2)*3")]
+    [TestCase("2*(3+4)")]
+    public async Task PowerAndParenthesesReachTheKeypadAndTheReceiptSaysTheMode(string expression)
+    {
+        OperationOutcome outcome = await Calculator(
+            """{"ok":true,"continued":false,"before":"0","mode":"scientific","displayName":"Se muestra 1.024","expressionName":"2 ^ 10=","value":"1.024"}""",
+            expression);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("mode").GetString(), Is.EqualTo("scientific"));
+        });
+    }
+
+    // Holdout v5 V5E029: calculator_expression_invalid came with no word of what was wrong. It says which characters
+    // were refused (none, when only the shape was wrong) and what is accepted: facts, nothing pressed.
+    [TestCase("2%3", "%")]
+    [TestCase("x²+1", "x²")]
+    [TestCase("2++3", null)]
+    [TestCase("(2+3", null)]
+    public async Task AnInvalidExpressionSaysWhatWasRefusedAndWhatIsAccepted(string expression, string? refused)
+    {
+        string message = OperationVisibleFacts.FromOutcome(
+            "calculator.expression.evaluate", await Calculator("""{"ok":true}""", expression));
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement root = facts.RootElement;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(root.GetProperty("error").GetString(), Is.EqualTo("calculator_expression_invalid"));
+            Assert.That(root.TryGetProperty("effectUncertain", out _), Is.False);
+            JsonElement observed = root.GetProperty("observed");
+            Assert.That(observed.TryGetProperty("refused", out JsonElement shown) ? shown.GetString() : null, Is.EqualTo(refused));
+            Assert.That(observed.GetProperty("accepted").GetString(), Does.Contain("^"));
         });
     }
 
@@ -172,16 +252,19 @@ public sealed class ExternalCapabilityHandlerTests
         });
     }
 
-    private static async Task<string> CalculatorMessage(string scriptOutput)
+    private static async Task<string> CalculatorMessage(string scriptOutput) =>
+        OperationVisibleFacts.FromOutcome("calculator.expression.evaluate", await Calculator(scriptOutput, "6*7"));
+
+    private static async Task<OperationOutcome> Calculator(string scriptOutput, string expression)
     {
         const string operation = "calculator.expression.evaluate";
         var adapter = new WindowsDeviceControlAdapter(
             Path.GetTempPath(), Path.GetTempPath(), new ScriptedRunner(scriptOutput));
-        OperationOutcome outcome = await new ExternalCapabilityHandler(operation, new AdapterProvider(adapter))
+        return await new ExternalCapabilityHandler(operation, new AdapterProvider(adapter))
             .ExecuteAsync(
-                new OperationInvocation("request", "mission", "invocation", Json("""{"expression":"6*7"}""")),
+                new OperationInvocation(
+                    "request", "mission", "invocation", Json(JsonSerializer.Serialize(new { expression }))),
                 CancellationToken.None);
-        return OperationVisibleFacts.FromOutcome(operation, outcome);
     }
 
     private sealed class ScriptedRunner(string output) : IExternalProcessRunner

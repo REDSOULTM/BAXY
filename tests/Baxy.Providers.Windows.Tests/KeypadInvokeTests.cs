@@ -96,6 +96,108 @@ public sealed class KeypadInvokeTests
         }));
     }
 
+    // Holdout v5 V5E029 («cambia la calculadora a modo científico y calcula 2 elevado a 10»): ^ and the parentheses are
+    // the Scientific keypad's buttons, found by their AutomationId as well as by name (the same in every language); the
+    // Standard keypad has none of them and presses nothing.
+    [Test]
+    public void TheScientificKeypadPressesPowerAndParenthesesByItsButtons()
+    {
+        string answer = Run($$"""
+            $es=[string[]]@({{Quoted(Spanish)}})
+            $sci=[string[]]@('Cero','Uno','Dos','Tres','Más','Multiplicar por','Es igual a','Potencia','Abre','Cierra')
+            $ids=[string[]]@('num0Button','num1Button','num2Button','num3Button','plusButton','multiplyButton','equalButton','powerButton','openParenthesisButton','closeParenthesisButton')
+            function Plan($keys,$names,$ids){ $plan=Select-KeypadPresses $keys $names $map $ids; if($null -eq $plan){ 'none' } else { ($plan -join ' ') } }
+            $answers=@(
+              (Plan '2^10=' $sci $ids),
+              (Plan '(1+2)*3=' $sci $ids),
+              (Plan '2^10=' $es @()),
+              (Plan '(1+2)=' $es @())
+            )
+            [Console]::Out.Write(($answers -join ','))
+            """);
+
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "2 7 1 0 6",        // «Dos», xʸ (powerButton), «Uno», «Cero», «Es igual a»
+            "8 1 4 2 9 5 3 6",  // «(», «Uno», «Más», «Dos», «)», «Multiplicar por», «Tres», «Es igual a»
+            "none",             // counter-case: the Standard keypad has no xʸ
+            "none",             // counter-case: nor parentheses
+        }));
+    }
+
+    // Holdout v5 V5E029: the mode is read from the keypad's buttons (the parenthesis button is not on the Standard one;
+    // π is only on the Scientific one), and an expression with ^ or parentheses outside Scientific mode presses nothing
+    // and says it needs that mode; the mode is never switched by the evaluation.
+    [Test]
+    public void TheModeIsReadFromTheKeypadAndAPowerNeedsTheScientificOne()
+    {
+        string answer = Run("""
+            $standard=[string[]]@('num1Button','plusButton','percentButton','clearButton')
+            $scientific=[string[]]@('num1Button','plusButton','piButton','powerButton','openParenthesisButton')
+            $programmer=[string[]]@('num1Button','plusButton','aButton','openParenthesisButton')
+            $answers=@(
+              (Get-KeypadMode $standard),
+              (Get-KeypadMode $scientific),
+              (Get-KeypadMode $programmer),
+              (Get-ModeRefusal 'standard' '2^10'),
+              (Get-ModeRefusal 'standard' '(1+2)*3'),
+              (Get-ModeRefusal 'standard' '6*7'),
+              (Get-ModeRefusal 'scientific' '2^10'),
+              (Get-ModeRefusal 'scientific' '6*7'),
+              (Get-ModeRefusal 'other' '6*7')
+            )
+            [Console]::Out.Write(($answers -join ','))
+            """);
+
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "standard", "scientific", "other",
+            "calculator_needs_scientific_mode",
+            "calculator_needs_scientific_mode",
+            "",
+            "",
+            "",
+            "calculator_mode_not_supported",
+        }));
+    }
+
+    // Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): an expression that starts with an operator continues
+    // from the number the display shows (nothing is cleared); one that starts with a number or a parenthesis clears.
+    // A continued expression is proved by a display that changed from what it showed before the presses.
+    [Test]
+    public void AnExpressionStartingWithAnOperatorContinuesFromTheDisplay()
+    {
+        string answer = Run("""
+            $was=@{expr='';value='47'}
+            $after=@{expr='6 × 7=';value='42'}
+            $answers=@(
+              [string](Test-ContinuesDisplay '+53'),
+              [string](Test-ContinuesDisplay '*2'),
+              [string](Test-ContinuesDisplay '-5'),
+              [string](Test-ContinuesDisplay '^2'),
+              [string](Test-ContinuesDisplay '53+1'),
+              [string](Test-ContinuesDisplay '(2+3)*4'),
+              [string](Test-ShowsLastOperand '47 + 53=' '100' '+53' $was),
+              [string](Test-ShowsLastOperand '' '100' '+53' $was),
+              [string](Test-ShowsLastOperand '' '47' '+53' $was),
+              [string](Test-ShowsLastOperand '6 × 7=' '42' '+7' $after),
+              [string](Test-ShowsLastOperand '2 × (3 + 4)=' '14' '2*(3+4)')
+            )
+            [Console]::Out.Write(($answers -join ','))
+            """);
+
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "True", "True", "True", "True",
+            "False", "False",  // a number or a parenthesis first clears the display
+            "True",            // 47 + 53 shown, the last operand pressed
+            "True",            // without the expression line: a number other than the one shown before
+            "False",           // counter-case: the display still shows what it showed before
+            "False",           // counter-case: the same expression line and number as before the presses
+            "True",            // a closing parenthesis after the last operand
+        }));
+    }
+
     [Test]
     public void TheCalculatorScriptSendsNoKeyAndBringsNoWindowUp()
     {
@@ -111,12 +213,12 @@ public sealed class KeypadInvokeTests
 
     // Review r4: a keypad that ignored the presses (the window suspended) left the previous result on the display,
     // read as the new expression's. The clear button is required (no button, nothing pressed) and the display must read
-    // 0 after it before any other press.
+    // 0 after it before any other press. Holdout v5 V5E021: except for an expression that continues from the display.
     [Test]
     public void TheClearButtonIsRequiredAndMustLeaveZeroBeforeAnyPress()
     {
         string script = WindowsDeviceControlAdapter.CalculatorScript;
-        int clearRequired = script.IndexOf("if($clear -lt 0){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}", StringComparison.Ordinal);
+        int clearRequired = script.IndexOf("if(-not $continued -and $clear -lt 0 -and $entry -lt 0){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}", StringComparison.Ordinal);
         int zeroRequired = script.IndexOf("if(-not (Test-ShowsZero $cleared)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified'", StringComparison.Ordinal);
         int firstPress = script.IndexOf("foreach($at in $plan)", StringComparison.Ordinal);
         Assert.Multiple(() =>

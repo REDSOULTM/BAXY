@@ -44,7 +44,7 @@ public sealed class HelperScriptWorkerTests
     public async Task TheCalculatorScriptsRefusalReadsTheSameFromTheWorker()
     {
         using var root = new Root();
-        const string Refusal = """{"ok":false,"error":"calculator_mode_not_standard"}""";
+        const string Refusal = """{"ok":false,"error":"calculator_mode_not_supported"}""";
         ExternalCapabilityReceipt fromWorker = await new WindowsDeviceControlAdapter(
                 root.Scans, root.Path, new CountingRunner()) { Scripts = new AnsweringWorker(_ => Line(Refusal)) }
             .InvokeAsync("calculator.expression.evaluate", Json("""{"expression":"6*7"}"""), CancellationToken.None);
@@ -52,7 +52,7 @@ public sealed class HelperScriptWorkerTests
                 root.Scans, root.Path, new CountingRunner(Refusal))
             .InvokeAsync("calculator.expression.evaluate", Json("""{"expression":"6*7"}"""), CancellationToken.None);
 
-        AssertSame(fromWorker, fromProcess, "calculator_mode_not_standard");
+        AssertSame(fromWorker, fromProcess, "calculator_mode_not_supported");
     }
 
     // A script that wrote no receipt (it threw) is the display not read, possibly pressed, from either.
