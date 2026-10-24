@@ -24,6 +24,8 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   the user's folder) that is not where the result says it went (fullPath; BAXY's sandbox is not the person's folder); an
   absolute path in the answer that no result shows.
 - ``asked_folder``: the person named a folder, the result put it elsewhere, and the answer tells it as done in no place.
+- ``named_control``: «no hay un botón «X»», «no veo ningún botón X» while a reading of the window in the turn
+  (input_visible_controls) shows X in its controls or its text, which it says is pressed by its text (F019).
 - ``already``: «ya estaba» after a call that changed something, with nothing in the turn saying it was already so
   (verification unchanged, alreadyRunning, after.same).
 
@@ -388,6 +390,19 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
                 add("place", start, end, f"{_told(receipt)}: pidió ese lugar, pero nada comprobó que se viera")
                 break
 
+    # «No hay un botón «Biblioteca»» while the window's reading shows that name (F019 on int10e: its text said «TIENDA
+    # BIBLIOTECA» and that a line of it is pressed by its text). Read on the answer with its quotes, where the name is.
+    views = [r for r in receipts if r.get("completed") and _matches(r.get("op", ""), ("input.visible.controls",))]
+    if views:
+        for start, end in statements:
+            for hit in _NO_CONTROL.finditer(raw_folded, start, end):
+                name = (hit.group("quoted") or hit.group("bare") or "").strip()
+                shown = next((r for r in views if len(name) >= 3
+                              and re.search(rf"(?<!\w){re.escape(name)}(?!\w)", _fold(r.get("observation") or ""))), None)
+                if shown:
+                    add("named_control", start, end, f"{_told(shown)}: su lectura muestra «{name}» (se pulsa por su texto)")
+                    break
+
     # «No está», «revisé todo» after a partial read.
     partial = [(r, why) for r in receipts for why in [_partial(r)] if why]
     if partial:
@@ -490,6 +505,11 @@ def _places_asked(receipts: list[Receipt]) -> list[tuple[Receipt, str]]:
         asked.append((r, "|".join(words)))
     return asked
 
+
+# A control said not to be there, and its name (F019): «no hay un botón de «X»», «no veo ningún botón X».
+_NO_CONTROL = re.compile(r"\bno (?:hay|veo|encuentro|aparece|existe)\s+(?:un |una |ningun |ninguna |el |la )?"
+                         r"(?:boton|control|opcion|pestana|enlace)(?:es)?\s+(?:(?:de|que diga|llamad[oa])\s+)?"
+                         r"(?:«(?P<quoted>[^»\n]{2,40})»|(?P<bare>[^\s»\"'.,;:!?…]{3,40}))")
 
 _PARTIAL_TOLD = {
     "readInPart": "lo demás no se leyó",
