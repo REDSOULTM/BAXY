@@ -144,6 +144,20 @@ public sealed class TurnClosingTests
         Assert.That(closing.AfterCall(3, Soon, "input.visible.click", click, Again(3)), Is.True);
     }
 
+    // Holdout v5 (en vivo, «maximiza Paint»): the same window read 13 times, each with a new single-use windowId
+    // (WindowsWindowControlProvider.Issue): the handle is not part of the result, the same read thrice closes the turn.
+    [Test]
+    public void AWindowsSingleUseHandleIsNotPartOfItsResult()
+    {
+        var closing = new TurnClosing();
+        const string paint = "{\"applicationName\":\"Paint\"}";
+        string Read(char digit) => "{\"status\":\"completed\",\"observed\":{\"windows\":[{\"windowId\":\"win_"
+            + new string(digit, 32) + "\",\"state\":\"maximized\"}]}}";
+        Assert.That(closing.AfterCall(1, Soon, "window.resolve", paint, Read('0')), Is.False);
+        Assert.That(closing.AfterCall(2, Soon, "window.resolve", paint, Read('1')), Is.False);
+        Assert.That(closing.AfterCall(3, Soon, "window.resolve", paint, Read('a')), Is.True);
+    }
+
     private static string Result(string status, string? error = null) =>
         error is null ? $"{{\"status\":\"{status}\"}}" : $"{{\"status\":\"{status}\",\"error\":\"{error}\"}}";
 

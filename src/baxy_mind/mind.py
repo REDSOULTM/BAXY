@@ -579,17 +579,22 @@ def _places_listed(application: str | None) -> str:
 
 # The provider's count of the same click seen unchanged in a row (WindowsVisibleControlAdapter.RepeatedUnchanged).
 REPEAT_KEY = "unchangedInARow"
+# A window's single-use handle (WindowsWindowControlProvider.Issue): a new one at every read of the same window.
+_WINDOW_HANDLE = re.compile(r"\bwin_[0-9a-f]{32}\b")
 
 
 def _result_key(observation: str) -> str:
     """Al máximo 7.7: the same result is the same content (three looks at a window still loading, each with another view,
     were told «el mismo resultado»), without how long the call took («…Ms»), as the App's TurnClosing compares it.
     Holdout v4: nor a click's own count of its repeats (unchangedInARow) and the «next» that count brings, which differ
-    on each repeat of the same unchanged click."""
+    on each repeat of the same unchanged click. Holdout v5 (en vivo, «maximiza Paint»: 13 window.resolve): nor a window's
+    single-use handle, new at every read of the same window."""
     def only_repeat(node: Any) -> bool:
         return isinstance(node, dict) and REPEAT_KEY in node and set(node) <= {REPEAT_KEY, "next"}
 
     def untimed(node: Any) -> Any:
+        if isinstance(node, str):
+            return _WINDOW_HANDLE.sub("win_", node)
         if isinstance(node, dict):
             repeat = REPEAT_KEY in node
             # A result that holds nothing but the count is the same as the first one, which had none.

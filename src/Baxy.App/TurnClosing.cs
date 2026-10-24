@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace Baxy.App;
 
@@ -73,6 +74,10 @@ internal sealed class TurnClosing
     // the same unchanged click; the mind compares the same way.
     private const string RepeatKey = "unchangedInARow";
 
+    // Holdout v5 (en vivo, «maximiza Paint»: 13 window.resolve): nor a window's single-use handle
+    // (WindowsWindowControlProvider.Issue), new at every read of the same window; the mind compares the same way.
+    private static readonly Regex WindowHandle = new(@"\bwin_[0-9a-f]{32}\b", RegexOptions.CultureInvariant);
+
     private static void WithoutTimes(JsonNode node)
     {
         if (node is JsonObject facts)
@@ -86,6 +91,10 @@ internal sealed class TurnClosing
                         && inner.All(static pair => pair.Key is RepeatKey or "next")))
                 {
                     facts.Remove(key);
+                }
+                else if (facts[key] is JsonValue value && value.TryGetValue(out string? text))
+                {
+                    facts[key] = WindowHandle.Replace(text, "win_");
                 }
                 else if (facts[key] is { } child)
                 {
