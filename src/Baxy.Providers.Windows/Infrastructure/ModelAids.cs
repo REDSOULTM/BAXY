@@ -78,6 +78,14 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5, F004): a text typed with no window named says, as a sentence, the one window it went into.</summary>
     public const string TypedTargetNext = "typed_target_next";
 
+    /// <summary>
+    /// Holdout v5 (V5E061: «cámbialo, era el miércoles» after a text typed into an unsaved Notepad became a file.edit of
+    /// another file): a completed input.text.type that named no field says the text is in that window, not written to a
+    /// file by BAXY (a file holds it once that application saves it), and that it is changed in that window (Ctrl+A,
+    /// then the text again).
+    /// </summary>
+    public const string TypedInWindow = "typed_in_window";
+
     /// <summary>Renew al máximo (w5): an act stopped by the person's input says why it stopped and how the window is seen.</summary>
     public const string InterruptedNext = "interrupted_next";
 

@@ -106,8 +106,52 @@ public sealed class MissionFrontTests
             Assert.That(receipt.Result?.TryGetProperty("next", out _), Is.EqualTo(next));
             if (next)
             {
-                Assert.That(receipt.Result?.GetProperty("next").GetString(), Does.Contain("belongs to Code").And.Contain("app_open"));
+                // A paste names no window: its route is still the opening or the front.
+                Assert.That(receipt.Result?.GetProperty("next").GetString(), Does.Contain("belongs to Code").And.Contain("app_open")
+                    .And.Contain("window_focus").And.Not.Contain("input_visible_controls"));
             }
+        });
+    }
+
+    // Holdout v5 (V5E066, «en el bloc de notas que tengo abierto escribe: comprar velas»): input_text_type with no window
+    // was refused at a protected window in front, and the next named app_open (which may open another Notepad) and
+    // window_focus (which needs an id no call had given), never the one look that gives the open window's number. With
+    // the aid on, a refused act that takes a window names that look first, and says a step with no window named acts on
+    // the window in front; with the aids off it reads as before (no next).
+    [TestCase("all", """{"text":"comprar velas"}""", true)]
+    [TestCase("all", """{"text":"comprar velas","window":18016}""", true)]
+    [TestCase("none", """{"text":"comprar velas"}""", false)]
+    public async Task AProtectedWindowRefusalOfAnActThatTakesAWindowNamesTheLookThatGivesItsNumber(
+        string aids, string arguments, bool next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
+        {
+            RefusedProcessOf = (_, _) => "Code",
+        };
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json(arguments), CancellationToken.None);
+
+        bool named = arguments.Contains("window", StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
+            Assert.That(adapter.Calls, Is.Zero);
+            Assert.That(receipt.Result?.TryGetProperty("next", out _), Is.EqualTo(next));
+            if (!next)
+                return;
+            string told = receipt.Result!.Value.GetProperty("next").GetString()!;
+            Assert.That(told, Does.StartWith("nothing was sent").And.Contain("belongs to Code"));
+            Assert.That(told, Does.Contain("input_visible_controls with application"));
+            Assert.That(told, Does.Contain("input_text_type with window set to that number"));
+            Assert.That(told.IndexOf("input_visible_controls", StringComparison.Ordinal),
+                Is.LessThan(told.IndexOf("app_open", StringComparison.Ordinal)), "the look comes before an opening");
+            Assert.That(told, Does.Not.Contain("window_focus"));
+            Assert.That(told.Contains("with no window named acts on the window in front", StringComparison.Ordinal),
+                Is.EqualTo(!named));
         });
     }
 
