@@ -458,3 +458,17 @@ def test_the_apps_said_folder_refusal_is_traced_and_reaches_the_model_as_it_came
     assert tool.startswith(refused + "\n")
     aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
     assert aid["aids"] == {"said_folder": {"saidFolders": ["C:/perfil/obra"], "next": json.loads(refused)["next"]}}
+
+
+def test_the_same_window_read_with_a_new_handle_each_time_is_the_same_result(tmp_path: Path, monkeypatch) -> None:
+    # Holdout v5 (en vivo, «maximiza Paint»): 13 window.resolve after the maximize, each with the same window but a new
+    # single-use windowId (WindowsWindowControlProvider.Issue), so no read was «the same call with the same result».
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    resolve = _call("window_resolve", {"applicationName": "Paint"})
+    mind, server = _mind(tmp_path, [resolve, resolve, resolve, _say("Paint quedó maximizado.")])
+    mind.decide(1, "maximiza paint")
+    for index, handle in enumerate(["0" * 32, "1" * 32, "a" * 32]):
+        mind.continue_turn(2 + index, json.dumps({"status": "completed", "verification": "output_only", "observed": {"windows": [
+            {"windowId": f"win_{handle}", "title": "Sin título - Paint", "state": "maximized"}], "count": 1}}))
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert "window_resolve ya se llamó 3 veces en este turno" in last
