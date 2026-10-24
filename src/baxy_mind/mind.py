@@ -23,6 +23,7 @@ from typing import Any
 from .answer_check import check as check_answer
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
+from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 
 _DATA = Path(__file__).with_name("data")
@@ -2207,8 +2208,11 @@ class Mind:
                 continue
             text = _fold(str(int(value) if isinstance(value, float) and value.is_integer() else value))
             stem, dot, extension = text.rpartition(".")
+            # Holdout v5 E062 (dictado): «hasta el setenta» founds 70; a transcript writes small numbers in words.
+            number = int(text) if text.isdigit() and int(text) < 1000 else None
             if not said(text) and not (dot and re.fullmatch(r"[a-z0-9]{1,5}", extension) and said(stem)
-                                       and said(extension)):
+                                       and said(extension)) \
+                    and not (number is not None and (said(_fold(cardinal(number))) or said(cardinal_en(number)))):
                 return False
         return True
 
