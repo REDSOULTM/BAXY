@@ -1885,19 +1885,36 @@ class Mind:
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
                 "arguments": {"approve": approve}, "reply": "", "question": ""}
 
-    def _make_room(self, conv: list[dict[str, Any]]) -> bool:
+    def _make_room(self, conv: list[dict[str, Any]], final: bool = False) -> bool:
         """One step of room for an open turn past the context, whether there was one: the earlier turns' results leave
         out their bodies, else the oldest earlier turn goes, else the open turn's results but the newest leave out
-        theirs. All in place: the person's open turn is this same conversation."""
+        theirs, else those of the newest's loop also leave out their facts lines (the newest's lists every call of its
+        loop), else, for the last answer only, the newest leaves out its body too. All in place: the person's open turn
+        is this same conversation."""
         starts = [i for i, m in enumerate(conv)
                   if m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
         if conv is self.conversation and len(starts) > 1:
             if not self._compact(conv[:starts[-1]]):
                 self._drop(starts[1], 1)
             return True
-        results = [m for m in conv[(starts[-1] if starts else 0):]
-                   if m["role"] == "tool" and TURN_FACTS in str(m.get("content") or "")]
-        return self._compact(results[:-1])
+        begin = starts[-1] if starts else 0
+        results = [m for m in conv[begin:] if m["role"] == "tool" and TURN_FACTS in str(m.get("content") or "")]
+        if self._compact(results[:-1]):
+            return True
+        # H6 (holdout v5 V5F028/V5F029): each left-out result kept its own facts line, and each lists every call of its
+        # loop before it, so they grew with the square of the calls (14 of them, 5.1k tokens at a log's 15th page) and
+        # the last answer did not fit: no answer at all. The newest's line says them all; a loop starts at the last
+        # message of the person (or a note) before it.
+        loop = max([i for i in range(begin, len(conv)) if conv[i]["role"] == "user"], default=begin)
+        bare = False
+        for message in conv[loop:]:
+            content = str(message.get("content") or "")
+            if (message["role"] == "tool" and message is not (results[-1] if results else None)
+                    and content.startswith(COMPACTED) and TURN_FACTS in content):
+                message["content"] = COMPACTED
+                bare = True
+        # The last answer always comes: its newest result leaves out its body too (its facts stay, said as omitted).
+        return bare or (final and self._compact(results[-1:]))
 
     def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
         started = time.perf_counter()
@@ -1936,7 +1953,7 @@ class Mind:
             # results were cut and the model answered in words at once (15 context_shrunk in the trace, each one ended
             # its mission); now room is made a step at a time (_make_room, said where the model reads) and the turn goes
             # on as it was. With no room left to make, the refusal reaches the App.
-            if error.code != 400 or not self._make_room(conv):
+            if error.code != 400 or not self._make_room(conv, final):
                 raise
             self._log(stage, started, None, kind="context_shrunk", operation=None, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=final)
