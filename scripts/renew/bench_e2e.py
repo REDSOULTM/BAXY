@@ -240,7 +240,9 @@ class Conductor:
             ["cmd", "/c", str(ROOT / "scripts" / "run_renew.cmd"), "--conductor", "--command-dir", str(self.commands),
              "--capture", str(run_dir), "--profile", str(profile), "--timeout-ms", "300000"],
             cwd=str(ROOT), stdout=(run_dir / "console.txt").open("w", encoding="utf-8"), stderr=subprocess.STDOUT,
-            env={**os.environ, "BAXY_RENEW_TRACE_DIR": str(self.mind_dir)})
+            # Al máximo (notebook, engine_no_answer): the App's own trace goes to the run too, and with it, when the
+            # channel to the core is cut, why (core-disconnect.jsonl beside it).
+            env={**os.environ, "BAXY_RENEW_TRACE_DIR": str(self.mind_dir), "BAXY_APP_TRACE": str(run_dir / "app-trace.jsonl")})
 
     def send(self, command: dict) -> int:
         self.sequence += 1
