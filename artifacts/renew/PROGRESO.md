@@ -3355,3 +3355,6 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   pytest 654 (+ test_voice_vad 4/4 con el Python 3.10 de la voz; en 3.12 falta silero_vad, también en la base). Catálogo
   `renew_v6\catalog-int11.json` (el volcado de int10f es idéntico a catalog-v5final; cambian sólo explorer.count y
   sandbox.move.named). En medida: decision3 x3 (PC), e2e práctica 30 + H2 20 x3 y falsedades x3 (NB).
+- 20:44 **w10-duda medida** (decision3 x3, PC, catálogo v5final, misma sesión): base int10f 239/237/239 = 238,33; w10-duda
+  242/241/243 = 242,0; Δ +3,67 (IC95 [+1,0; +7,0]), sube P070, Q113, Q116 y no baja ninguno; pass^3 233 → 236; acciones
+  equivocadas 13,0 → 12,33 (IC95 [−4,67; +3,67]). Se queda.
