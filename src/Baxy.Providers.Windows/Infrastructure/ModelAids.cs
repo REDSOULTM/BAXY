@@ -180,6 +180,13 @@ public static class ModelAids
     /// </summary>
     public const string ResultHosts = "result_hosts";
 
+    /// <summary>
+    /// V5E016 («si alguien en Tokio mira el reloj ahora mismo, ¿qué hora ve?»: the model added the offset to the PC's
+    /// local clock and missed the change of day): a system.time with a place gives that place's date, clock time and
+    /// weekday at the observed instant.
+    /// </summary>
+    public const string PlaceClock = "place_clock";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
