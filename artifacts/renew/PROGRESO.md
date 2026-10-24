@@ -3191,3 +3191,10 @@ el PC: la GPU del PC queda para él; los agentes del PC sólo escriben código y
 - Cola del NB pedida por buzón: Providers entero; decision3 x3, e2e x3 y falsedades x3 frente a int9; recursos y sesión larga; A/B del servidor parcheado; ablación de ayudas nuevas si algo pierde.
 - Nota de w7-breve: en la reproducción en CPU, E006/E019 dijeron «en C:\Users\…\BAXY-bench» para ficheros escritos en la carpeta personal, en todos los brazos (no lo causa facts_once). Hay que mirarlo en las falsedades GPU de int10.
 - Pendiente para int10b: nb-w8-audio, w8-hablar (acierto de la decisión temprana y driver hablado), nb-nuevo4, nb-w5-open.
+
+### 2026-10-24 madrugada — medidas en el PC (el dueño cedió el PC) y HEAD candidato int10e
+- decision3 x3 en el PC, pareado: int9 243,67 | int10 242,67 (Δ −1,0, IC [−4,67, +2,33]) | int10 con catálogo int9 244,67 | int10c 243,0 | int10d 241,67. Todo dentro del ruido: la «pérdida de 3» de int10 era de una semilla. system_tools_unlisted se queda (con 241,7 frente a 242,0 sin ella).
+- e2e x3 en el PC: int10 28,0 | int10c 28,67 (E020 0/3 → 3/3 fallos arreglados; E030 siempre bien) | int10d 28,0 (pierde E020 sin arreglar E027): int10d se descarta.
+- E027 (borrar en BAXY-bench, confirmación del núcleo): p_call 0,78-0,85 hasta int10b, +w9-sha y +w9-bucle (corridas completas s0); ~0,6 desde w9-dudas, sin una ayuda sola que lo explique. En 2 de 3 semillas pregunta por texto antes de proponer el borrado (seguro; puede pedir el sí dos veces). Queda como límite conocido.
+- NB: palanca 7 (umbrales de duda) sin par mejor, queda 0,4/0,6; palanca 6 (Laya -t 6) y vad-sin-torch (−144 MiB) entran. Recursos de int10e con oído real: VRAM 3986 MiB, producto con voz 3634 MiB (margen 462).
+- HEAD candidato: int10e d7168fb7b = int10c + nb-vad-sin-torch + nb-laya-t6. Suites PC verdes (pytest 642, Kernel 741, Contracts 74, App 188, Setup 477, Providers 3067). catalog-v5final.json b33d2b3a…41b1. Plan del holdout v5: CIERRE_PLAN_V5.md (con las objeciones del NB).
