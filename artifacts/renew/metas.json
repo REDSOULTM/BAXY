@@ -2509,6 +2509,10 @@
       {
         "when": "2026-10-23 01:30-02:15",
         "what": "e2e de práctica en el PC escribió en el Bloc de notas del dueño (pestaña sin guardar): «lista: pilas, cables» ×2 y «hola desde BAXY» ×1; nada guardado a disco; se le avisa para quitarlas; regla: ningún banco que actúa con su Bloc de notas abierto"
+      },
+      {
+        "when": "2026-10-23 ~22:00",
+        "what": "el agente w9-bucle, al buscar sesiones largas en las trazas del NB, dejó pasar con un filtro la corrida ho4-maximo-s0-fals-falsedades (holdout v4, ya abierto y gastado en la fase 1) y listó sólo los nombres de operación de su turno de calculadora; sin contenido, no entra en ningún número; el holdout v5 sigue sin abrir"
       }
     ],
     "holdout_v5": {
