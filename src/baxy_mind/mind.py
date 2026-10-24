@@ -34,12 +34,14 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 # words are the model's, written once at warm-up (Mind.warm): al máximo 9.2a (2026-10-22), a phrase fixed here broke
 # invariant 5 (cero respuestas visibles fijas). What is asked is an instruction, not a phrase; a phrase it does not
 # write usably (empty, more than NOTICE_MAX_CHARS or NOTICE_MAX_WORDS, more than one line, markup) leaves the notice
-# empty, and with no phrase the App says none (SilenceNotice.PhraseOf).
+# empty, and with no phrase the App says none (SilenceNotice.PhraseOf). Fase 3 (H7): at «dos a cinco palabras» it wrote
+# «Estoy procesando tu solicitud.», 1,81 s of audio the reply waits behind once it has started (the e2e p50 of 4,32 s
+# was 2,5 s plus that notice); at most three words.
 NOTICE_ASK = ("[Esto no lo dice la persona. Cuando algo que te pidan tarde unos segundos, dirás en voz alta una frase muy "
-              "breve para que sepa que sigues en ello. Escribe sólo esa frase, de dos a cinco palabras, sin decir que "
+              "breve para que sepa que sigues en ello. Escribe sólo esa frase, de una a tres palabras, sin decir que "
               "hiciste algo ni ningún resultado.]")
 NOTICE_MAX_CHARS = 40
-NOTICE_MAX_WORDS = 6
+NOTICE_MAX_WORDS = 3
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
