@@ -106,6 +106,66 @@ public sealed class NativeScheduledNotificationTests
         });
     }
 
+    // V5E060: «make it 6:45 instead» came as a create with no title, which the catalog allows; the provider required
+    // one, threw, and the catch said the scheduler failed when it was never touched. With no title the notification
+    // shows BAXY alone (no words added), it is scheduled and read back, and the result names no title.
+    [Test]
+    public async Task CreateWithoutTitleIsScheduledAndReadBack()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        DateTimeOffset due = DateTimeOffset.UtcNow.AddHours(4);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"alarm"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync(
+            "schedule.alarms", Json("""{"action":"list"}"""), CancellationToken.None);
+
+        FakeTask task = scheduler.Tasks.Values.Single();
+        string ring = File.ReadAllText(
+            Path.Combine(temporary.Path, "scheduled-notifications", task.Name + ".ps1"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.Result?.GetProperty("taskName").GetString(), Is.EqualTo(task.Name));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_task_scheduler_postread"));
+            Assert.That(receipt.Result?.TryGetProperty("title", out _), Is.False);
+            Assert.That(ring, Does.Not.Contain("$title"));
+            Assert.That(listed.Verified, Is.True, listed.ErrorCode);
+            Assert.That(listed.Result!.Value.GetProperty("notifications")[0].TryGetProperty("title", out _), Is.False);
+        });
+    }
+
+    // An argument of the wrong type fails before any effect with its own code, never as a scheduler failure.
+    [TestCase("""{"action":"create","inMinutes":30,"kind":"alarm","title":5}""", "notification_title_invalid")]
+    [TestCase("""{"action":"create","inMinutes":30,"kind":"alarm","title":"   "}""", "notification_title_invalid")]
+    [TestCase("""{"action":"create","inMinutes":30,"kind":"alarm","recurrence":1}""", "notification_recurrence_invalid")]
+    public async Task AnInvalidArgumentFailsBeforeTheSchedulerWithItsOwnCode(string arguments, string code)
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms", Json(arguments), CancellationToken.None);
+
+        string root = Path.Combine(temporary.Path, "scheduled-notifications");
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(scheduler.Tasks, Is.Empty);
+            Assert.That(Directory.Exists(root) && Directory.EnumerateFiles(root).Any(), Is.False);
+        });
+    }
+
     [Test]
     public async Task CancelByClockRemovesTheBoundTaskAndVerifiesItsAbsence()
     {
