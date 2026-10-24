@@ -1,4 +1,53 @@
-# BAXY Renew al máximo: informe final (2026-10-23)
+# BAXY Renew al máximo: informe final (fase 1: 2026-10-23; fase 2: 2026-10-24)
+
+## Fase 2 (2026-10-23 → 24), en corto para el dueño
+
+Versión final: `renew-maximo` 441526cd8 (código = `int10f` 19be8b42a). Medida una sola vez en el holdout v5, nuevo y
+sellado, contra BAXY al empezar la misión (`inicio`) y al cerrar la fase 1 (`maximo`). Detalle: `HOLDOUT_V5.md`.
+
+| Qué | `inicio` | `maximo` | `final` | Lectura |
+|---|---|---|---|---|
+| Decisión (720 × 3 semillas) | 608,0 | 623,3 | **624,0** | +16 sobre el inicio (p 0,023); igual que la fase 1 |
+| Acciones equivocadas propuestas | 74,3 | 64,0 | 66,3 | −8 sobre el inicio (no significativo) |
+| Tareas reales (76 × 2) | 49,5 | 48,0 | 49,0 | sin diferencia |
+| Falsedades claras (72 conversaciones, a ciegas) | 13 | 9 | **4** | −69 % sobre el inicio (p 0,049 sin ajustar) |
+| Primera respuesta (p50) | 3,4 s | 4,3 s | 4,3 s | +0,9 s desde la fase 1 |
+| VRAM / RAM con voz | — | 3 990 MiB / — | 3 986 MiB / 3 634 MiB | dentro de 4 GB / 4 GB |
+
+Lo que la fase 2 añadió, sin reentrenar:
+
+1. **Más honesto, medido en el holdout**: un tercio de las falsedades claras del inicio. BAXY ya no niega lo que no buscó
+   ni inventa cifras; un comprobador revisa la respuesta final contra lo que de verdad corrió.
+2. **Más seguro**: sobrescribir un archivo con la versión que dio la propia negativa ya pide tu sí (E030); el «sí» de la
+   interfaz va ligado a su tarjeta y el de tirar una nota a su versión; antes del Enter se vuelve a leer el destinatario;
+   los listados de memoria no muestran los nombres de tus registros sensibles; cancelar una alarma sin hora nombra cuál o
+   pregunta; el freno de red retiene tu IP pública y paró en vivo un sitio que el modelo inventó.
+3. **Mejor oído**: con ruido de fondo (ventilador, calle) la orden cierra en 1,2 s en vez de esperar 12 s; la palabra de
+   activación usa 591 MiB menos; BAXY decide mientras terminas de hablar (≈0,55 s menos por orden, medido sin el producto).
+4. **Sin bucles**: repetir la misma llamada tras el aviso cierra el turno; un tercer clic igual tras ver lo mismo no corre.
+5. **Más preciso al decidir que el inicio** (+16 de 720), sobre todo en operaciones raras, las que se confunden entre sí y
+   los pedidos de varios pasos; en los cuatro idiomas.
+
+Lo que no mejoró o empeoró, dicho tal cual:
+
+- **Tareas reales**: en el holdout no hay ganancia demostrable (la práctica decía +2 a +3); las confirmaciones siguen
+  siendo lo más flojo (3–5 de 8).
+- **«¿Ya lo hiciste?»** con el resultado en el historial: 14–15 de 40 en las tres versiones. Es del modelo.
+- **Uso diario** en decisión: 3 menos que el inicio (109,7 frente a 112,7 de 120).
+- **Más lento tras una herramienta**: +0,9 s hasta la primera palabra (desde la fase 1).
+- **Límites conocidos**: E027 a veces pregunta por texto antes de proponer un borrado (seguro, puede pedir el sí dos
+  veces); `engine_no_answer` intermitente al abrir Steam en frío (ahora queda registrado el motivo); en vivo, maximizar
+  Paint repitió 13 lecturas de ventana; el modelo inventó una URL buscando el clima (el freno la paró).
+
+Lo que espera por ti: `D:\BAXYWork\voz-dueno\PROBAR_MI_VOZ.cmd` (30 frases con tu voz, para el reconocimiento); tu oído
+para la voz final; las decisiones de diseño pendientes (riesgo de Bluetooth/Wi-Fi, borrar la memoria de sesión, la
+huella HMAC); y revisar los restos de bancos movidos (no borrados) a `D:\BAXYeval\restos-home-2026-10-24` en el notebook.
+El servicio de Windows `ChatGPT` del PC quedó deshabilitado por la propia app al cerrarla: si usas Codex, ábrelo de nuevo
+o reinstálalo.
+
+---
+
+# Fase 1 (2026-10-23)
 
 > Versión final: `renew-maximo` 452854a18 (código = `fin` 371f4de72). El holdout v4 se abrió una sola vez sobre ella,
 > con el plan pre-registrado en `CIERRE_PLAN.md`. Todo lo que dice «práctica» se midió en bancos de práctica, no en el

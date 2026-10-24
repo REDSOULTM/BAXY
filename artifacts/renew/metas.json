@@ -2513,6 +2513,10 @@
       {
         "when": "2026-10-23 ~22:00",
         "what": "el agente w9-bucle, al buscar sesiones largas en las trazas del NB, dejó pasar con un filtro la corrida ho4-maximo-s0-fals-falsedades (holdout v4, ya abierto y gastado en la fase 1) y listó sólo los nombres de operación de su turno de calculadora; sin contenido, no entra en ningún número; el holdout v5 sigue sin abrir"
+      },
+      {
+        "when": "2026-10-24",
+        "what": "holdout v5: VOID por rutas F:→D: en el NB, Codex en el perfil, Opera y colas duplicadas, sesión bloqueada y corte de luz (todo repetido); la clave del ciego s1 escrita en el perfil quedó en la cuarentena del bench (V5E069); el servicio ChatGPT del PC pasó a deshabilitado por la propia app al forzar su cierre"
       }
     ],
     "holdout_v5": {
@@ -2531,7 +2535,58 @@
       },
       "decision.7z": "d7d2fcb81b78a7be4253a7eccf243766e6a162ec8440fa4bd91cff75fdc586a5",
       "decision.json": "313d2778f74be99795b6e790af5b04f3ccb3674c02d7616033561815fccee585",
-      "canario_decision": "ae331636-53b8-4e54-84fe-a49986b78ade"
+      "canario_decision": "ae331636-53b8-4e54-84fe-a49986b78ade",
+      "resultado": {
+        "fecha": "2026-10-24",
+        "head_final": "int10f 19be8b42a (renew-maximo 441526cd8)",
+        "decision_720x3": {
+          "inicio": 608.0,
+          "maximo": 623.33,
+          "final": 624.0,
+          "final_menos_inicio": {
+            "delta": 16.0,
+            "ic95": [
+              5.67,
+              27.0
+            ],
+            "p_holm": 0.0226
+          },
+          "final_menos_maximo": {
+            "delta": 0.67,
+            "ic95": [
+              -6.0,
+              7.33
+            ],
+            "p_holm": 0.5034
+          },
+          "acciones_equivocadas": {
+            "inicio": 74.33,
+            "maximo": 64.0,
+            "final": 66.33
+          }
+        },
+        "e2e_76x2": {
+          "inicio": 49.5,
+          "maximo": 48.0,
+          "final": 49.0,
+          "final_menos_inicio_ic95": [
+            -6.0,
+            7.0
+          ],
+          "pass2": {
+            "inicio": 42,
+            "maximo": 40,
+            "final": 42
+          }
+        },
+        "falsedades_claras_72": {
+          "inicio": 13,
+          "maximo": 9,
+          "final": 4,
+          "final_vs_inicio_p_exacta": 0.049,
+          "lectura": "a ciegas, un agente por semilla"
+        }
+      }
     }
   }
 }
