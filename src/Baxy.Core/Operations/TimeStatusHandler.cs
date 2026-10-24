@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Globalization;
 using System.Text.Json;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.SystemStatus;
 
 namespace Baxy.Core.Operations;
@@ -12,8 +13,9 @@ internal sealed class TimeStatusHandler(ITimeStatusProvider provider, IPlaceTime
 
     public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
     {
-        // With a named place or zone, the reading also carries that zone's offset
-        // at the same observed instant; the mind does the clock arithmetic.
+        // With a named place or zone, the reading also carries that zone's offset at the same observed instant. With
+        // the aid place_clock (V5E016: the model added the offset to the PC's local clock and missed the change of day)
+        // it carries that place's own date, clock time and weekday too; without it, the mind does the clock arithmetic.
         PlaceTimeZone? place = null;
         if (ReadPlace(invocation.Arguments) is { } named)
         {
@@ -41,6 +43,13 @@ internal sealed class TimeStatusHandler(ITimeStatusProvider provider, IPlaceTime
                 writer.WriteNumber(
                     "utcOffsetMinutes",
                     checked((int)place.Zone.GetUtcOffset(snapshot.UtcNow).TotalMinutes));
+                if (ModelAids.On(ModelAids.PlaceClock))
+                {
+                    DateTimeOffset there = TimeZoneInfo.ConvertTime(snapshot.UtcNow, place.Zone);
+                    writer.WriteString("date", there.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+                    writer.WriteString("localTime", there.ToString("HH:mm", CultureInfo.InvariantCulture));
+                    writer.WriteString("weekday", there.ToString("dddd", CultureInfo.InvariantCulture));
+                }
                 writer.WriteString("authority", place.Authority);
                 writer.WriteEndObject();
             }
