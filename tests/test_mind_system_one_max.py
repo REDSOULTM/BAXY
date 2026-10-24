@@ -211,3 +211,23 @@ def test_a_correction_to_a_read_with_the_effects_of_the_chosen_call_runs(tmp_pat
         assert result["kind"] == "action" and result["arguments"] == filled
     else:
         assert fills in ([], [choice])
+
+
+AUDIO_APP = {"name": "audio.app.volume.set", "description": "Set an app's volume", "risk": "low_reversible",
+             "argumentsSchema": {"type": "object", "properties": {"app": {"type": "string"},
+                                                                  "level": {"type": "integer"}},
+                                 "required": ["app", "level"], "additionalProperties": False}}
+AUDIO = {"name": "audio.volume", "description": "Set the PC's volume", "risk": "low_reversible",
+         "argumentsSchema": {"type": "object", "properties": {"level": {"type": "integer"}}, "required": ["level"],
+                             "additionalProperties": False}}
+
+
+@pytest.mark.parametrize("words, operation", [("ponle volumen hasta el setenta que no escucho el video", "audio.volume"),
+                                              ("set the volume to seventy please", "audio.volume"),
+                                              ("ponle volumen hasta el 70", "audio.volume"),
+                                              ("ponle volumen hasta el sesenta", "audio.app.volume.set")])
+def test_a_number_said_in_words_founds_a_correction(tmp_path, monkeypatch, words, operation) -> None:
+    # Holdout v5 E062 (dictado): Laya chose audio_volume at 0.86 for «hasta el setenta», but «70» was not in the words,
+    # the correction was unfounded and Qwen's app volume for «video» ran and failed in both seeds.
+    mind, _ = _corrects(tmp_path, monkeypatch, [AUDIO_APP, AUDIO], "audio_app_volume_set", "audio_volume", {"level": 70})
+    assert mind.decide(1, words)["operation"] == operation
