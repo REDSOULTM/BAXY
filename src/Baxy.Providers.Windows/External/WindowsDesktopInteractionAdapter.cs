@@ -367,8 +367,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         ["control"] = [0x11],
         ["ctrl_a"] = [0x11, 0x41],
         ["ctrl_c"] = [0x11, 0x43],
+        // Holdout v5 V5E023: the end and the start of the whole text (End and Home alone stay on the line).
+        ["ctrl_end"] = [0x11, 0x23],
         ["ctrl_f"] = [0x11, 0x46],
         ["ctrl_h"] = [0x11, 0x48],
+        ["ctrl_home"] = [0x11, 0x24],
         ["ctrl_k"] = [0x11, 0x4B],
         // ctrl_l enfoca la barra de direcciones del navegador de delante.
         ["ctrl_l"] = [0x11, 0x4C],

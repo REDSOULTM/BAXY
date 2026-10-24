@@ -1009,6 +1009,8 @@ internal sealed class WindowsVisibleControlAdapter
     /// Renew al máximo (w8): with either view cut at its cap (<paramref name="cut"/>: the window had more controls than
     /// it listed), a control not listed after is not «gone» (a click that adds three pushes three others past the cap)
     /// and nothing unlisted is known the same: no «gone», «sameListed» in place of «same», and «cut».
+    /// Holdout v5 V5E029: a changed state is written as it was and as it is («focused → (none)»), and a whole view whose
+    /// only difference is the keyboard's focus (controls that took or lost it, nothing else) says «focusOnly».
     /// </summary>
     internal static JsonElement ViewDifference(
         IReadOnlyList<ViewControl> before,
@@ -1044,6 +1046,7 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         List<string> changed = [], appeared = [], moved = [];
+        bool focusOnly = true;
         for (int i = 0; i < after.Count; i++)
         {
             ViewControl now = after[i];
@@ -1051,7 +1054,12 @@ internal sealed class WindowsVisibleControlAdapter
                 appeared.Add(Entry(now));
             else if (was.Kind != now.Kind || was.Name != now.Name || was.State != now.State
                 || (was.Value ?? string.Empty) != (now.Value ?? string.Empty))
-                changed.Add(Entry(now));
+            {
+                changed.Add(Entry(now, was));
+                focusOnly &= was.Kind == now.Kind && was.Name == now.Name
+                    && (was.Value ?? string.Empty) == (now.Value ?? string.Empty)
+                    && WithoutFocus(was.State) == WithoutFocus(now.State);
+            }
             else if (was.Index != now.Index)
                 moved.Add($"[{now.Index}] {now.Kind} «{now.Name}» was [{was.Index}]");
         }
@@ -1060,6 +1068,8 @@ internal sealed class WindowsVisibleControlAdapter
             $"{was.Kind} «{was.Name}»"
             + (disabledAfter.Any(off => off.Kind == was.Kind && off.Name == was.Name) ? " disabled" : string.Empty))];
         bool titled = beforeTitle.Length > 0 && afterTitle.Length > 0 && beforeTitle != afterTitle;
+        // A cut view does not know its unlisted controls the same.
+        focusOnly &= changed.Count > 0 && appeared.Count + gone.Count + moved.Count == 0 && !titled && !cut;
         int room = cap;
         return ExternalJson.Create(writer =>
         {
@@ -1084,6 +1094,8 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteNumber("omitted", omitted);
             if (cut)
                 writer.WriteBoolean("cut", true);
+            if (focusOnly)
+                writer.WriteBoolean("focusOnly", true);
             writer.WriteEndObject();
 
             void WriteList(string name, List<string> entries)
@@ -1099,12 +1111,19 @@ internal sealed class WindowsVisibleControlAdapter
             }
         });
 
-        static string Entry(ViewControl control) =>
+        static string Entry(ViewControl control, ViewControl? was = null) =>
             $"[{control.Index}] {control.Kind} «{control.Name}»"
-            + (control.State.Length > 0 ? " " + control.State : string.Empty)
+            + (was is not null && was.State != control.State
+                ? $" {StateOrNone(was.State)} → {StateOrNone(control.State)}"
+                : control.State.Length > 0 ? " " + control.State : string.Empty)
             + (control.Value is { Length: > 0 } value
                 ? " = " + (value.Length > 60 ? value[..60] + "…" : value)
                 : string.Empty);
+
+        static string StateOrNone(string state) => state.Length > 0 ? state : "(none)";
+
+        static string WithoutFocus(string state) =>
+            string.Join(' ', state.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(word => word != "focused"));
     }
 
     /// <summary>Renew al máximo (7.1): the receipt with the view after its act («after»), its own facts as they were.</summary>
@@ -1343,6 +1362,12 @@ internal sealed class WindowsVisibleControlAdapter
                 receipt = receipt with { Result = hint };
         }
 
+        // Renew al máximo (7.1): a completed click carries the view of its window after it, which becomes the last view.
+        if (receipt.Verified && receipt.ErrorCode is null && receipt.EffectObserved && _actedWindow != 0
+            && !EffectElsewhere(receipt.Result)
+            && await AfterActAsync(_actedWindow, cancellationToken).ConfigureAwait(false) is { } after)
+            receipt = FocusOnly(receipt, after) ?? WithAfter(receipt, after);
+
         if (receipt.Verified
             && receipt.Result is { ValueKind: JsonValueKind.Object } result
             && result.TryGetProperty("surfaceChanged", out JsonElement changed)
@@ -1351,15 +1376,30 @@ internal sealed class WindowsVisibleControlAdapter
             _screenChangedUtc = DateTime.UtcNow;
         }
 
-        receipt = RepeatedUnchanged(receipt, arguments);
+        return RepeatedUnchanged(receipt, arguments);
+    }
 
-        // Renew al máximo (7.1): a completed click carries the view of its window after it, which becomes the last view.
-        if (receipt.Verified && receipt.ErrorCode is null && receipt.EffectObserved && _actedWindow != 0
-            && !EffectElsewhere(receipt.Result)
-            && await AfterActAsync(_actedWindow, cancellationToken).ConfigureAwait(false) is { } after)
-            receipt = WithAfter(receipt, after);
-
-        return receipt;
+    // Holdout v5 V5E029 (s1): «Modo de calculadora Estándar», a Text and not a button, was clicked; the window's image
+    // changed only because the display lost the focus ring, and the click came back completed (surfaceChanged), so the
+    // model read that it worked. A click the tree pressed whose only proof is that image («uia_surface»), with the view
+    // after it differing only in the focus, changed nothing: unchanged, with that view. Null for any other receipt.
+    private static ExternalCapabilityReceipt? FocusOnly(ExternalCapabilityReceipt receipt, JsonElement after)
+    {
+        if (receipt.Result is not { ValueKind: JsonValueKind.Object } result
+            || !result.TryGetProperty("cascadeStage", out JsonElement stage) || stage.ValueKind != JsonValueKind.String
+            || stage.GetString() != "uia_surface"
+            || !after.TryGetProperty("focusOnly", out JsonElement focusOnly) || focusOnly.ValueKind != JsonValueKind.True)
+            return null;
+        ExternalCapabilityReceipt unchanged =
+            ExternalJson.FailureAfterEffect(receipt.Operation, "visible_button_postread_unchanged", effectObserved: true);
+        return unchanged with
+        {
+            Result = ExternalJson.Extended(null, writer =>
+            {
+                writer.WritePropertyName("after");
+                after.WriteTo(writer);
+            }),
+        };
     }
 
     // Holdout v4 (en vivo: «abre la biblioteca de Steam» opened Steam without app_open's place and pressed «Biblioteca» 7

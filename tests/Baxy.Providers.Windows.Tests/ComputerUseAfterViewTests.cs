@@ -211,12 +211,70 @@ public sealed class ComputerUseAfterViewTests
             Assert.That(Strings(capped, "appeared")[0], Is.EqualTo("[3] ListItem «Fila 0»"));
             Assert.That(Strings(capped, "changed"), Is.EqualTo(new[]
             {
-                "[1] CheckBox «Negrita» on", "[2] Text «La pantalla muestra 5»",
+                "[1] CheckBox «Negrita» off → on", "[2] Text «La pantalla muestra 5»",
             }), "the same identity with another state or name is a change, never gone and appeared");
             Assert.That(capped.GetProperty("omitted").GetInt32(), Is.EqualTo(12), "30 + 2 entries, 20 shown");
             Assert.That(capped.GetProperty("title").GetString(), Is.EqualTo("Documento"));
             Assert.That(same.GetProperty("same").GetBoolean(), Is.True);
             Assert.That(same.EnumerateObject().Count(), Is.EqualTo(1), "nothing else said of a window that did not change");
+        });
+    }
+
+    // Holdout v5 V5E029 (s1): «Modo de calculadora Estándar», a Text and not a button, was clicked; the window's image
+    // changed because the display lost the focus ring, and the click came back completed. A click whose only proof is
+    // the image, with the view after it differing only in the focus, is unchanged and carries that view; a view after
+    // it with anything else changed keeps it completed.
+    [TestCase("Se muestra 0", "visible_button_postread_unchanged", TestName = "only the focus moved: unchanged")]
+    [TestCase("Se muestra 5", null, TestName = "counter-case: the display changed: completed")]
+    public void AClickProvedByItsImageWhoseViewAfterDiffersOnlyInTheFocusIsUnchanged(string shown, string? error)
+    {
+        WithWindow(window =>
+        {
+            const string PendingLabel =
+                "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_pending\"," +
+                "\"pending\":true,\"name\":\"Modo de calculadora Estándar\",\"kind\":\"Text\"," +
+                "\"controlIdentity\":\"1.46\",\"absentOrDisabled\":false,\"selected\":false,\"toggled\":false}";
+            const string UnchangedLabel =
+                "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_unchanged\"," +
+                "\"name\":\"Modo de calculadora Estándar\",\"controlIdentity\":\"1.46\",\"absentOrDisabled\":false}";
+            string viewAfter =
+                "{\"ok\":true,\"error\":\"\",\"window\":\"Calculadora\",\"controls\":[" +
+                "{\"kind\":\"Text\",\"name\":\"" + shown + "\",\"id\":\"1.38\",\"state\":\"\",\"value\":null}," +
+                "{\"kind\":\"Text\",\"name\":\"Modo de calculadora Estándar\",\"id\":\"1.46\",\"state\":\"\"," +
+                "\"value\":null}]," +
+                "\"controlCount\":2,\"partial\":false}";
+            var worker = new CommandWorker(command => command switch
+            {
+                "click" => PendingLabel,
+                "postread" => UnchangedLabel,
+                "view" => viewAfter,
+                _ => null,
+            });
+            int captures = 0;
+            // The three images before the click are the same; every one after it differs from them.
+            ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint hwnd, bool? selfDrawn, CancellationToken token) =>
+                ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
+                    new VisibleControlSurface.CapturedWindow(hwnd, [], 0, 0, 10, 10, captures++ < 3 ? "before" : "after"));
+            var adapter = new WindowsVisibleControlAdapter(worker, null, null, elevated: _ => false, capture: Capture)
+            {
+                ReadsAfterAct = true,
+                PopupsOf = _ => [],
+            };
+            RememberView(adapter, window,
+                new(0, "1.38", "Text", "Se muestra 0", "focused"),
+                new(1, "1.46", "Text", "Modo de calculadora Estándar", ""));
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Modo de calculadora Estándar", "1.46");
+
+            Assert.That(receipt.Result, Is.Not.Null, receipt.ErrorCode);
+            JsonElement after = receipt.Result!.Value.GetProperty("after");
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+                Assert.That(receipt.Verified, Is.EqualTo(error is null));
+                Assert.That(after.TryGetProperty("focusOnly", out _), Is.EqualTo(error is not null));
+                Assert.That(Strings(after, "changed"), Is.EqualTo(new[] { $"[0] Text «{shown}» focused → (none)" }));
+            });
         });
     }
 
@@ -409,6 +467,19 @@ public sealed class ComputerUseAfterViewTests
             field.FieldType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
             [window, controls], null)!;
         field.SetValue(adapter, view);
+    }
+
+    // A worker that answers by the command's «cmd».
+    private sealed class CommandWorker(Func<string?, string?> answer) : IUiaWorker
+    {
+        public ValueTask<JsonDocument?> SendAsync(string commandJson, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            using JsonDocument command = JsonDocument.Parse(commandJson);
+            string? text = answer(command.RootElement.TryGetProperty("cmd", out JsonElement name)
+                ? name.GetString()
+                : null);
+            return ValueTask.FromResult(text is null ? null : JsonDocument.Parse(text));
+        }
     }
 
     // A worker that answers in order (null once its answers run out).
