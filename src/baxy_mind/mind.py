@@ -463,6 +463,45 @@ SAME_CALL_PLACES = (" {application} también se abre directo en sus lugares, sin
                     "«{application}» y place {listed}.")
 
 
+# Aids «same_call_closes» and «look_click_cap» (w9-bucle; int10's long session of the notebook, 2026-10-23: «abre la
+# calculadora», then a look and a click on «Sistema» seven times, the menu opening and closing, 35 model calls and 27.9k
+# tokens until context_shrunk; same_call_next told the third look once and the model went on): a call the mind does not
+# hand to the App. Its result says why, and the model answers in words from what the turn shows. Measured over the
+# practice runs of both machines (10,717 turns, holdouts left out):
+# - same_call_closes: the call told by same_call_next, written again as the model's very next decision with the same
+#   arguments. 79 such repeats: 73 came back the same, and none of the 6 others ended in what was asked. Later in the
+#   turn, after another call, it runs: E011 (calculator_window_not_found twice, app_open, then the same sum) completes.
+# - look_click_cap: a click after a look the turn already had LOOK_CLICK_PAIRS times (the same look, the same content
+#   seen, the same click). A second such pair came in 58 turns: 47 times the same as the first, and in 3 it did what
+#   the first had not (Settings' «Sistema», Steam's «BIBLIOTECA» twice). A third came in 27: none of its clicks did
+#   anything (each failed, or opened and closed the calculator's menu again) and all 27 answered that they could not.
+LOOK_CLICK_PAIRS = 2
+SAME_CALL_NOT_RUN = json.dumps({"status": "not_run", "reason": "this same call, with the same arguments, was already "
+                                                               "made in this turn and told so above; it was not made "
+                                                               "again"})
+LOOK_CLICK_NOT_RUN = json.dumps({"status": "not_run",
+                                 "reason": f"this click, after the same look that saw the same, was already made "
+                                           f"{LOOK_CLICK_PAIRS} times in this turn; it was not made again"})
+SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
+LOOK_CLICK_REFUSED = f"no se ejecutó: la misma mirada y el mismo clic ya iban {LOOK_CLICK_PAIRS} veces"
+# What the model reads at the end of the last result of a turn that takes no more calls.
+NO_MORE_CALLS = ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo con lo que muestran los "
+                 "resultados.]")
+
+
+def _call_key(arguments: Any) -> str:
+    """A call's arguments as one text, so the same arguments written in another order or with a key left out as null
+    are the same call."""
+    if isinstance(arguments, str):
+        try:
+            arguments = json.loads(arguments)
+        except json.JSONDecodeError:
+            return arguments
+    if isinstance(arguments, dict):
+        arguments = {k: v for k, v in arguments.items() if v is not None}
+    return json.dumps(arguments, sort_keys=True, ensure_ascii=False)
+
+
 def same_call_places(application: str | None) -> str:
     """The places of the turn's application for a repeated click's options; empty for none."""
     listed = _places_listed(application)
@@ -1701,11 +1740,13 @@ class Mind:
         # whatever came between, is told as a fact with its options, once per turn (a loop of a look and a click repeats
         # both): a second time when it failed or stayed unsure, a third when it completed (SAME_CALL_FAILED_TOLD).
         seen = turn.setdefault("calls_seen", {})
+        turn.pop("same_told_call", None)  # same_call_closes: only the model's next decision after the notice
         key = json.dumps([calling, turn.get("calling_args"), _result_key(observation)], ensure_ascii=False)
         seen[key] = seen.get(key, 0) + 1
         told_at = SAME_CALL_TOLD if outcome.startswith(COMPLETED_OUTCOMES) else SAME_CALL_FAILED_TOLD
         if seen[key] == told_at and not turn.get("same_told") and _aid_on("same_call_next"):
             turn["same_told"] = True
+            turn["same_told_call"] = [turn.get("calling"), _call_key(turn.get("calling_args"))]  # same_call_closes
             # Auditoría de la mente (w8): not the places again when app_places_next just told them in this result.
             options = SAME_CALL_CLOSED if final else SAME_CALL_OPTIONS + (
                 same_call_places(turn.get("app_named"))
@@ -1713,6 +1754,14 @@ class Mind:
             repeated = SAME_CALL_NOTE.format(call=calling, times=told_at, outcome=outcome, options=options)
             note += repeated
             aids["same_call_next"] = repeated.strip()
+        # Aid «look_click_cap»: each click right after a look, by that look, what it saw and the click; a look waits for
+        # the call after it.
+        pairs = turn.setdefault("look_clicks", {})
+        if calling == "input_visible_click" and turn.get("look"):
+            pair = json.dumps([*turn["look"], _call_key(turn.get("calling_args"))], ensure_ascii=False)
+            pairs[pair] = pairs.get(pair, 0) + 1
+        turn["look"] = ([_call_key(turn.get("calling_args")), _result_key(observation)]
+                        if calling == "input_visible_controls" else None)
         # Aid «result_dedup» (w6-lat): what the facts line below says of this result is not said in it again.
         compact = _aid_on("result_dedup")
         told = _deduplicated(observation, outcome) if compact else observation
@@ -1733,10 +1782,10 @@ class Mind:
             # The App closes the turn (its step budget spent, the engine down, or a confirmation waiting for the
             # person): said where the model reads it, at the end of the last result, without a cause the mind does not
             # know.
-            conv[-1]["content"] += ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo "
-                                    "con lo que muestran los resultados.]")
+            conv[-1]["content"] += NO_MORE_CALLS
         completed = outcome.startswith(COMPLETED_OUTCOMES)
         if turn["queue"] and not final and completed:
+            turn.pop("same_told_call", None)  # chosen before the notice was read
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.perf_counter(), "")
         for call in turn["queue"]:
             conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN if final else NOT_RUN_AFTER})
@@ -2170,6 +2219,9 @@ class Mind:
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))
+            refused = self._repeat_refused(turn, name, call)
+            if refused:
+                return self._close_repeat(request_id, turn, call, reply, stage, started, *refused)
             turn["awaiting"] = call["id"]
             turn["calling"] = name
             turn["calling_args"] = json.dumps(call["arguments"], sort_keys=True, ensure_ascii=False)
@@ -2187,6 +2239,42 @@ class Mind:
                   operation=result["operation"], arguments=call["arguments"] if call and not private else None,
                   content=None if private else content, **doubt_of)
         return result
+
+    @staticmethod
+    def _repeat_refused(turn: dict[str, Any], name: str, call: dict[str, Any]) -> tuple[str, str, str] | None:
+        """Aids «same_call_closes» and «look_click_cap» (LOOK_CLICK_PAIRS): whether this call of the model is one the
+        mind does not hand to the App, as (the trace's kind, its result, its facts); None: it runs."""
+        arguments = _call_key(call["arguments"])
+        if turn.get("same_told_call") == [name, arguments] and _aid_on("same_call_closes"):
+            return "same_call_closed", SAME_CALL_NOT_RUN, SAME_CALL_REFUSED
+        if (call["wire"] == "input_visible_click" and turn.get("look") and _aid_on("look_click_cap")
+                and (turn.get("look_clicks") or {}).get(json.dumps([*turn["look"], arguments], ensure_ascii=False),
+                                                       0) >= LOOK_CLICK_PAIRS):
+            return "look_click_closed", LOOK_CLICK_NOT_RUN, LOOK_CLICK_REFUSED
+        return None
+
+    def _close_repeat(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
+                      stage: str, started: float, kind: str, result: str, refused: str) -> dict[str, Any]:
+        """A refused repeat (_repeat_refused) ends its turn's calls: it and the calls queued behind it do not run, its
+        result says why with the turn's facts, and the model answers in words from what the results show, as when the
+        App closes a turn (NO_MORE_CALLS)."""
+        done = turn.setdefault("done", [])
+        done.append(f"{call['wire']} → {refused}")
+        line = _said_once(done) if _aid_on("facts_once") else done
+        for later in [call, *(turn.get("queue") or [])]:
+            told = result + TURN_FACTS + "; ".join(line) + "]" + NO_MORE_CALLS if later is call else NOT_RUN
+            turn["conv"].append({"role": "tool", "tool_call_id": later["id"], "content": told})
+            turn.setdefault("receipts", []).append({
+                "op": self.wire_to_op.get(later["wire"], later["wire"]), "tool": later["wire"],
+                "arguments": later["arguments"], "observation": result if later is call else NOT_RUN,
+                "outcome": GIST_NOT_RUN, "completed": False,
+                "read": self.risk.get(later["wire"]) == "read_only"})
+        turn["queue"], turn["awaiting"] = [], None
+        private = bool(turn.get("private"))
+        self._log(stage, started, reply, text=None if private else turn["text"], kind=kind,
+                  operation=self.wire_to_op.get(call["wire"], call["wire"]),
+                  arguments=None if private else call["arguments"], content=None)
+        return self._next(request_id, stage, turn, final=True)
 
     # ---- trace ---------------------------------------------------------------------------------------------
     def forget_trace(self) -> bool:

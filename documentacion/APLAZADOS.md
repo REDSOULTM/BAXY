@@ -281,3 +281,13 @@ que el catálogo no tenga. Estado y hallazgos: `documentacion/NAVEGADOR_USUARIO.
   que en este PC es el del dueño y no se toca. Ahorro posible: ~0,3 s sólo en los turnos de correo o calendario. Se
   retoma con un Outlook de prueba (el notebook) y una prueba que cierre Outlook entre dos llamadas y mire que el
   proceso termina.
+- **Renew al máximo, w9-bucle (2026-10-23): web.fetch sigue leyendo una página por partes sin tope.** En la sesión
+  larga de int10, el turno que pedía una curiosidad de los pulpos leyó la misma página cuatro veces (desplazamientos 0, 4.000,
+  8.000 y 12.000 de 16.140 caracteres, 13,8 s), igual que int9: no es una regresión, y el dato estaba en la segunda
+  parte. Medido en las corridas de práctica de las dos máquinas: en el caso RFC 2324, de 197 turnos el «418» apareció
+  en la primera o segunda parte en 147, en la tercera o cuarta en 3 y en ninguna parte leída en 47; de los 150 que lo
+  vieron, 125 siguieron leyendo 2 a 5 partes más. Cada lectura tiene otros argumentos y otro contenido, así que no es
+  una repetición (same_call_next y TurnClosing no la ven), y un tope por número habría cortado los que necesitaban la
+  cuarta parte; una nota de «ya tienes el dato» sería un juicio sobre el contenido, no un hecho. Coste: ~2-3 s por
+  parte de más, acotado por el presupuesto del turno (15 llamadas, 90 s). Se retoma si un banco de latencia muestra
+  que pesa; la palanca no sería una ayuda sino el proveedor (partes más grandes, menos llamadas).
