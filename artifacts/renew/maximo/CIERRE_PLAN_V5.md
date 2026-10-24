@@ -79,6 +79,20 @@ ventana ajena, el frente sostenido por una ventana invisible) se repite antes de
    antes de correrlos (como `bench_decision.py` en decisión).
 5. Una corrida con el frente sostenido por una ventana invisible (GameInputSvc) es VOID y se repite entera.
 
-## Al congelar
+## Al congelar (2026-10-24 ~09:30), antes de extraer los 7z y sin haber visto ningún caso
 
-(se completa antes de extraer los 7z)
+- **HEAD final**: `int10f` 19be8b42a = int10c 46d4901d5 + `nb-vad-sin-torch` + `nb-laya-t6` (= int10e d7168fb7b) +
+  `nb-core-motivo` (sólo diagnóstico) + `nb-f019-boton` (regla `named_control` de answer_check). `int10d` (sin
+  `named_folder_theirs`) se descartó con datos: perdía E020 3/3 y no arreglaba E027.
+- **Suites sobre 19be8b42a**: PC pytest 648, Kernel 741, Contracts 74, App 189, Setup 477, Providers 3067; NB pytest 647
+  (1 omitida), App 189, Providers 3067 (sobre int10e; int10f no toca Providers).
+- **Recursos** (NB, int10e, oído real): VRAM 3986 MiB (`vram_attribution` ok), producto con voz 3634 MiB.
+- **Catálogos**: `catalog-base.json` 4441e3b8…5495; `catalog-final.json` b3184bed…315f; `catalog-v5final.json`
+  b33d2b3a…41b1 (180 capacidades del HEAD final; 583 apps = las 600 de catalog-final menos las 17 herramientas).
+- **7z comprobados** contra `metas.json`: decision.7z d7d2fcb8…86a5, e2e_falsedades.7z a3f201b8…c2ca.
+- **Arnés común probado** en el PC: `inicio` y `maximo` con `scripts/renew` de int10f, decision3 de práctica sin errores
+  (246 y 245, S1 sin consultas sin respuesta) y e2e E001-E002 2/2 cada uno con S1 encendido.
+- **Regla del buzón**: el buzón está en el perfil del dueño (`C:\Users\usuario\BAXY-coord`) y el bench del PC lo cuenta como
+  archivo del dueño cambiado; mientras el PC corre e2e o falsedades del holdout nadie escribe en él.
+- **Límites conocidos antes de abrir** (práctica): E027 pregunta por texto antes de proponer el borrado en 2 de 3
+  semillas desde w9-dudas (seguro; puede pedir el sí dos veces); `engine_no_answer` intermitente al abrir Steam en frío.
