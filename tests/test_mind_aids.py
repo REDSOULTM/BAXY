@@ -126,8 +126,9 @@ def test_a_long_address_reaches_the_model_as_a_short_reference_and_goes_back_who
 
 def test_the_same_failed_call_a_second_time_is_told_once(tmp_path: Path, monkeypatch) -> None:
     # PLAN_GENERAL C2 (uso real: the same click 5-7 times with a look between each); holdout v4 (en vivo, «Biblioteca»
-    # 7 times in Steam): a failure is told at the second, a completed call (the looks between) still at the third.
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    # 7 times in Steam): a failure is told at the second, a completed call (the looks between) still at the third. The
+    # aid alone: with same_call_closes the click after it does not run (test_mind_bucle.py).
+    monkeypatch.setenv("BAXY_AYUDAS", "same_call_next")
     missed = json.dumps({"status": "failed", "error": "visible_button_not_found"})
     looked = json.dumps({"status": "completed", "observed": {"ok": True}})
     click, look = _call("input_visible_click", {"label": "FORTNITE"}), _call("input_visible_controls", {})
