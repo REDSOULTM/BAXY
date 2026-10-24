@@ -47,45 +47,8 @@ public sealed class NativeTurnLoopTests
     [Test]
     public async Task AFetchOfAHostNobodyGaveWaitsForThePersonsYes()
     {
-        using var fake = new FakeMind();
-        fake.Script(new JsonObject
-        {
-            ["reply"] = new JsonObject
-            {
-                ["turn.decide"] = new JsonObject
-                {
-                    ["type"] = "turn.result",
-                    ["kind"] = "action",
-                    ["operation"] = "web.fetch",
-                    ["arguments"] = new JsonObject { ["url"] = "https://exfil.example/c" },
-                },
-                ["turn.continue"] = new JsonObject
-                {
-                    ["type"] = "turn.result",
-                    ["kind"] = "clarify",
-                    ["question"] = "¿Abro esa página?",
-                },
-            },
-        });
-        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
-        CoreProcessClient core = ReadyCore();
-        var steps = new List<NativeTurnStep>();
-        var asked = new List<NativeTurnConfirmation>();
-        var registry = new RetryableOperationRegistry();
-        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
-        {
-            Core = () => core,
-            Mind = () => mind,
-            Registry = () => registry,
-            MemoryProtector = static () => null,
-            Publish = static (_, _) => { },
-            Fail = static _ => { },
-            Notice = static _ => { },
-            StepCompleted = steps.Add,
-            ConfirmationAsked = asked.Add,
-        });
-
-        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+        (List<NativeTurnStep> steps, List<NativeTurnConfirmation> asked, NativeTurnLoop loop) =
+            await HoldAFetchAsync(results: null);
 
         Assert.That(steps.Select(static step => (step.Operation, step.Status, step.Sent)),
             Is.EqualTo(new[] { ("web.fetch", "needs_confirmation", false) }));
@@ -93,6 +56,58 @@ public sealed class NativeTurnLoopTests
         Assert.That(asked.Select(static call => (call.Operation, call.Proposal, call.Cause)),
             Is.EqualTo(new[] { ("web.fetch", false, (string?)"host_not_from_session") }));
         Assert.That(loop.HasPendingConfirmation, Is.True);
+    }
+
+    // Holdout v5 (H5, en vivo): «busca en internet el clima de mañana en Santiago» gave news.google.com results and the
+    // model fetched a site none of them was (vln.cl); held, BAXY asked for it. The held result says which hosts this
+    // session's results gave, and that a page at one of them is read without asking.
+    [Test]
+    public async Task AHeldHostSaysWhichHostsTheSessionsResultsGave()
+    {
+        (List<NativeTurnStep> steps, _, _) = await HoldAFetchAsync(Search(
+            "https://news.google.com/rss/articles/CBMi1?oc=5", "https://www.news.google.com/rss/articles/CBMi2",
+            "https://meteochile.gob.cl/pronostico"));
+
+        JsonNode? held = JsonNode.Parse(steps[0].Observation);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)held?["cause"], Is.EqualTo("host_not_from_session"));
+            Assert.That(held?["resultHosts"]?.AsArray().Select(static host => (string?)host),
+                Is.EqualTo(new[] { "news.google.com", "meteochile.gob.cl" }));
+            Assert.That((string?)held?["next"], Does.StartWith(TodaysNext));
+            Assert.That((string?)held?["next"], Does.Contain("came from no result of this session"));
+            Assert.That((string?)held?["next"], Does.Contain("a page at one of resultHosts is read without asking"));
+        });
+    }
+
+    [Test]
+    public async Task AHeldHostWithNoResultsInTheSessionSaysWhatItSaidBefore()
+    {
+        (List<NativeTurnStep> steps, _, _) = await HoldAFetchAsync(results: null);
+
+        JsonNode? held = JsonNode.Parse(steps[0].Observation);
+        Assert.That(held?["resultHosts"], Is.Null);
+        Assert.That((string?)held?["next"], Is.EqualTo(TodaysNext));
+    }
+
+    [Test]
+    [NonParallelizable]
+    public async Task WithTheResultHostsAidOffAHeldHostSaysWhatItSaidBefore()
+    {
+        string? before = Environment.GetEnvironmentVariable("BAXY_AYUDAS");
+        Environment.SetEnvironmentVariable("BAXY_AYUDAS", "said_folder");
+        try
+        {
+            (List<NativeTurnStep> steps, _, _) = await HoldAFetchAsync(Search("https://news.google.com/rss/articles/CBMi1"));
+
+            JsonNode? held = JsonNode.Parse(steps[0].Observation);
+            Assert.That(held?["resultHosts"], Is.Null);
+            Assert.That((string?)held?["next"], Is.EqualTo(TodaysNext));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_AYUDAS", before);
+        }
     }
 
     // Auditoría de falsedades (F010): an answer with nothing waiting says this call did nothing, never only the bare
@@ -549,6 +564,72 @@ public sealed class NativeTurnLoopTests
         var asked = (NativeTurnConfirmation?)typeof(NativeTurnLoop).GetMethod("Waiting", Private)!.Invoke(loop, null);
 
         Assert.That(asked?.EffectStarted, Is.EqualTo(reconciliationRequired));
+    }
+
+    private const string TodaysNext = "nothing ran: ask the person whether to do it; their answer goes in confirm_pending "
+        + "(approve true or false); calling web_fetch again is not their answer: it is a new call";
+
+    private static string Search(params string[] urls) =>
+        new JsonObject
+        {
+            ["status"] = "completed",
+            ["observed"] = new JsonObject
+            {
+                ["results"] = new JsonArray([.. urls.Select(static url => (JsonNode)new JsonObject { ["url"] = url })]),
+            },
+        }.ToJsonString();
+
+    // The person's turn where the model fetches a host nobody gave (exfil.example), after what the session's earlier
+    // calls returned (a web.search's result, as the loop observes it), if any.
+    private static async Task<(List<NativeTurnStep> Steps, List<NativeTurnConfirmation> Asked, NativeTurnLoop Loop)>
+        HoldAFetchAsync(string? results)
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = "web.fetch",
+                    ["arguments"] = new JsonObject { ["url"] = "https://exfil.example/c" },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "clarify",
+                    ["question"] = "¿Abro esa página?",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var steps = new List<NativeTurnStep>();
+        var asked = new List<NativeTurnConfirmation>();
+        var registry = new RetryableOperationRegistry();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+            ConfirmationAsked = asked.Add,
+        });
+        if (results is not null)
+        {
+            var egress = (NetworkEgress)typeof(NativeTurnLoop)
+                .GetField("_egress", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(loop)!;
+            egress.Observed("web.search", results);
+        }
+
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+        return (steps, asked, loop);
     }
 
     // An engine that says it is ready and is never sent anything: a held call stops before it.
