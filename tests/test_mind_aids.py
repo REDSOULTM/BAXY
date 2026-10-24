@@ -242,6 +242,81 @@ def test_a_sentence_aid_ends_its_tools_description_only_when_on(tmp_path: Path, 
     assert trash.endswith("the one filesystem_list shows).") is folder
 
 
+FILES_AND_GAMES = {"capabilities": [
+    {"name": name, "description": f"{name}.", "argumentsSchema": {"type": "object", "properties": {}}}
+    for name in ("file.open", "file.read", "file.find", "filesystem.list", "filesystem.search", "game.launch",
+                 "game.installed.named")]}
+
+
+@pytest.mark.parametrize("setting,on", [
+    ("named_folder_theirs", {"file_open", "file_read", "file_find", "filesystem_list", "filesystem_search"}),
+    ("read_find_split", {"file_read", "file_find"}),
+    ("game_epic_look", {"game_launch", "game_installed_named"}),
+    ("none", set())])
+def test_the_dudas_sentence_aids_end_only_their_tools_descriptions(tmp_path: Path, monkeypatch, setting: str,
+                                                                   on: set[str]) -> None:
+    # Renew al máximo (w9-dudas): F009 and E020 (a folder of the person's named with BAXY taken for BAXY's own), E018
+    # (file_read against file_find for a file's lines), F016 (an Epic game not in game_launch's Steam list).
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    before, _ = _mind(tmp_path / "before", [])
+    before.configure(FILES_AND_GAMES)
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, _ = _mind(tmp_path, [])
+    mind.configure(FILES_AND_GAMES)
+    for cap in FILES_AND_GAMES["capabilities"]:
+        wire = cap["name"].replace(".", "_")
+        plain, told = _description(before, wire), _description(mind, wire)
+        assert told.startswith(plain) and (told != plain) is (wire in on), wire
+    if on:
+        traced = [r for r in _trace(mind) if r["stage"] == "configure.aid"][0]["aids"]
+        assert {tool.replace(".", "_") for tool in traced[setting]} == on
+
+
+def test_two_aids_of_one_tool_add_their_sentences_in_order(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_AYUDAS", "named_folder_theirs,read_find_split")
+    mind, _ = _mind(tmp_path, [])
+    mind.configure(FILES_AND_GAMES)
+    read = _description(mind, "file_read")
+    assert "contains BAXY" in read and read.endswith("no file_find before it.")
+    assert read.index("contains BAXY") < read.index("(totalLines), and it looks")
+
+
+TYPED = json.dumps({"status": "completed", "verification": "readback", "observed": {
+    "ok": True, "delivered": True, "sentTo": {"title": "Sin título: Bloc de notas", "process": "Notepad"}}})
+WRITTEN = json.dumps({"status": "completed", "verification": "readback", "observed": {
+    "name": "prueba.txt", "fullPath": "C:\\Users\\ana\\proyectos\\prueba.txt", "created": True}})
+
+
+@pytest.mark.parametrize("setting,typed,told", [("all", True, True), ("written_not_window", True, True),
+                                                ("all", False, False), ("none", True, False)])
+def test_a_file_written_after_typing_into_a_window_says_that_window_was_not_saved(
+        tmp_path: Path, monkeypatch, setting: str, typed: bool, told: bool) -> None:
+    # Falsedades F013: «guardé prueba.txt» with Notepad's tab still «Sin título» after file_write wrote the file.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    calls = [_call("input_text_type", {"text": "prueba 123"})] if typed else []
+    mind, server = _mind(tmp_path, [*calls, _call("file_write", {"relativePath": "proyectos/prueba.txt",
+                                                                 "text": "prueba 123", "folder": "home"}),
+                                    _say("Listo.")])
+    mind.decide(1, "escribe prueba 123 y guárdalo en proyectos como prueba.txt")
+    if typed:
+        mind.continue_turn(2, TYPED)
+    mind.continue_turn(3, WRITTEN)
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    note = ("[Ayuda: file_write escribió C:\\Users\\ana\\proyectos\\prueba.txt directo en el disco, sin pasar por "
+            "ninguna ventana: lo escrito antes en «Sin título: Bloc de notas» (Notepad) no se guardó con esta llamada.]")
+    assert last.endswith(note) is told
+    aids = [r for r in _trace(mind) if r["stage"] == "turn.aid"]
+    assert ("written_not_window" in (aids[-1]["aids"] if aids else {})) is told
+
+
+def test_a_file_write_that_failed_says_nothing_of_the_window() -> None:
+    from baxy_mind.mind import written_note
+    receipts = [{"tool": "input_text_type", "completed": True, "observation": TYPED}]
+    assert written_note(json.dumps({"status": "failed", "error": "file_exists"}), receipts) == ""
+    assert written_note(WRITTEN, [{**receipts[0], "completed": False}]) == ""
+    assert "«Sin título: Bloc de notas»" in written_note(WRITTEN, receipts)
+
+
 def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None:
     # Uso real 2026-10-21 (e2e del notebook): «le mandé el mensaje» after a send stopped at the person's draft.
     from baxy_mind.mind import _outcome
