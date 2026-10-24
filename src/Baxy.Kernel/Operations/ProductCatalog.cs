@@ -860,10 +860,12 @@ public static class ProductCatalog
                     // Goal v3 punto 2: guardar, guardar como, abrir, reemplazar,
                     // cortar, la barra de menús (F10) y el menú contextual del
                     // control enfocado (Shift+F10); ninguno cierra nada.
-                    "backspace", "context_menu", "control", "ctrl_a", "ctrl_c", "ctrl_f", "ctrl_h", "ctrl_k",
-                    "ctrl_l", "ctrl_o", "ctrl_s", "ctrl_shift_escape", "ctrl_shift_s", "ctrl_t", "ctrl_v", "ctrl_w",
-                    "ctrl_x", "ctrl_z", "delete", "end", "enter", "escape", "f10", "f5", "home", "page_down", "page_up",
-                    "shift", "shift_f10", "space", "tab", "win",
+                    // Holdout v5 V5E023: Ctrl+End and Ctrl+Home move the caret to the end or start of the whole text
+                    // («agrega al final» in a Notepad just opened, its caret at 0); they only move it, so never ask.
+                    "backspace", "context_menu", "control", "ctrl_a", "ctrl_c", "ctrl_end", "ctrl_f", "ctrl_h",
+                    "ctrl_home", "ctrl_k", "ctrl_l", "ctrl_o", "ctrl_s", "ctrl_shift_escape", "ctrl_shift_s", "ctrl_t",
+                    "ctrl_v", "ctrl_w", "ctrl_x", "ctrl_z", "delete", "end", "enter", "escape", "f10", "f5", "home",
+                    "page_down", "page_up", "shift", "shift_f10", "space", "tab", "win",
                 ]),
                 // Revisión de V (H1): lo que Enter o Espacio pulsan según la vista del paso (el control
                 // enfocado o, desde un campo, el resultado elegido de su lista): lo declara el modelo y
@@ -885,7 +887,7 @@ public static class ProductCatalog
             ], ["key"]),
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
-            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío.",
+            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Inicio/Fin, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío.",
             effects: [WindowInput()]),
         Descriptor(
             "input.keyboard.layout",

@@ -35,4 +35,34 @@ public sealed class ViewDifferenceCutTests
             Assert.That(cutSame.GetProperty("sameListed").GetBoolean(), Is.True);
         });
     }
+
+    // Holdout v5 V5E029 (s1): a click on the mode's label only took the focus ring off the display, and the difference
+    // said «changed: [38] Text «Se muestra 0»», with nothing of what changed. It says the state as it was and as it is,
+    // and that the focus is the only difference.
+    [Test]
+    public void ADifferenceOfTheFocusAloneSaysSoAndWhatChanged()
+    {
+        WindowsVisibleControlAdapter.ViewControl Display(string state) =>
+            new() { Index = 38, Id = "1.38", Kind = "Text", Name = "Se muestra 0", State = state };
+        WindowsVisibleControlAdapter.ViewControl Bold(string state) =>
+            new() { Index = 39, Id = "1.39", Kind = "CheckBox", Name = "Negrita", State = state };
+
+        JsonElement focus = WindowsVisibleControlAdapter.ViewDifference(
+            [Display("focused"), Bold("off")], "Calculadora", [Display(""), Bold("off focused")], [], "Calculadora");
+        JsonElement toggled = WindowsVisibleControlAdapter.ViewDifference(
+            [Display("focused"), Bold("off")], "Calculadora", [Display(""), Bold("on focused")], [], "Calculadora");
+        JsonElement cut = WindowsVisibleControlAdapter.ViewDifference(
+            [Display("focused")], "Calculadora", [Display("")], [], "Calculadora", cut: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(focus.GetProperty("focusOnly").GetBoolean(), Is.True);
+            Assert.That(focus.GetProperty("changed").EnumerateArray().Select(entry => entry.GetString()), Is.EqualTo(new[]
+            {
+                "[38] Text «Se muestra 0» focused → (none)", "[39] CheckBox «Negrita» off → off focused",
+            }));
+            Assert.That(toggled.TryGetProperty("focusOnly", out _), Is.False, "a state beside the focus changed");
+            Assert.That(cut.TryGetProperty("focusOnly", out _), Is.False, "what a cut view did not list is not known");
+        });
+    }
 }
