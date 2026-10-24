@@ -297,6 +297,23 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         _ => 0,
     };
 
+    // Holdout v5 (V5E066): an input_text_type with no window refused at a protected window in front was told app_open
+    // (another Notepad) or window_focus (an id no call had given), never the look by name that gives the open window's
+    // number. The acts of ActTarget that take a window (the catalog's «window») name that look first; the others (a
+    // paste, Ctrl+A, a copy) take none, and keep the opening or the front.
+    private static string ProtectedNext(string operation, string program, bool named)
+    {
+        string refused = $"nothing was sent: the window it would go to belongs to {program}, where BAXY does not act";
+        if (operation is not ("input.visible.click" or "input.key.press" or "input.text.type" or "input.scroll"))
+            return refused + "; BAXY itself can open the application it meant (app_open) or bring its window to the front "
+                + "(window_focus) and then do this step again there";
+        string step = operation.Replace('.', '_');
+        return refused + (named ? "" : $"; {step} with no window named acts on the window in front")
+            + "; the window of another application that is open is reached by looking at it by its name "
+            + "(input_visible_controls with application), whose result gives that window's number, and doing this step "
+            + $"again as {step} with window set to that number; an application that is not open is opened first (app_open)";
+    }
+
     public InstalledGameCatalogSnapshot GetInstalledGameCatalogSnapshot()
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
@@ -438,11 +455,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                     // BAXY Renew cu (C18): a paste with no app opened went to the window in front (a developer's) and
                     // the reply blamed the app it meant; the fact of where it went, and how another window is reached.
                     if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.ProtectedFrontNext))
-                    {
-                        writer.WriteString("next", $"nothing was sent: the window it would go to belongs to {program}, "
-                            + "where BAXY does not act; BAXY itself can open the application it meant (app_open) or bring "
-                            + "its window to the front (window_focus) and then do this step again there");
-                    }
+                        writer.WriteString("next", ProtectedNext(operation, program, MissionWindow(arguments) != 0));
 
                     writer.WriteEndObject();
                 }), "protected_window");

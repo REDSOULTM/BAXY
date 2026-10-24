@@ -660,12 +660,18 @@ public sealed class TextDeliveryTests
                 Assert.That(next.GetString(), Does.Contain("into the window in front, of Calculadora (CalculatorApp)"));
                 Assert.That(next.GetString(), Does.Contain("no other application received it"));
                 Assert.That(next.GetString(), Does.Contain("no application was opened or brought to the front"));
-                Assert.That(next.GetString(), Does.EndWith("it was not read back there"));
+                Assert.That(next.GetString(), Does.Contain("it was not read back there"));
+                // Holdout v5 (V5E066): how the window of another application is reached, as the one look that gives
+                // its number and the text typed again with it.
+                Assert.That(next.GetString(), Does.Contain("input_visible_controls with application"));
+                Assert.That(next.GetString(), Does.EndWith("input_text_type with window set to that number"));
+                Assert.That(next.GetString(), Does.Not.Contain("not written to a file"), "a text not read back is no completed one");
             }
         });
     }
 
-    // The sentence for a text read back says no doubt, and one sent to the application just opened says so.
+    // The sentence for a text read back says no doubt, and one sent to the application just opened says so; only the
+    // one sent to the window in front names the look that reaches another application's window.
     [Test]
     public void TheTypedTargetSentenceFollowsTheReadBackAndTheOpening()
     {
@@ -675,9 +681,96 @@ public sealed class TextDeliveryTests
         {
             Assert.That(read, Does.Contain("of Sin título: Bloc de notas (Notepad)"));
             Assert.That(read, Does.Not.Contain("not read back"));
+            Assert.That(read, Does.Contain("input_visible_controls with application"));
             Assert.That(opened, Does.Contain("window of Notepad, the application just opened"));
             Assert.That(opened, Does.Not.Contain("brought to the front"));
             Assert.That(opened, Does.EndWith("it was not read back there"));
+            Assert.That(opened, Does.Not.Contain("input_visible_controls"));
+        });
+    }
+
+    // Holdout v5 (V5E061): after a text typed into a Notepad window with nothing saved, «cámbialo, era el miércoles» was
+    // taken for a file (file.edit «Sin título» edited another file on disk). With the aid typed_in_window a completed text
+    // says it is in that window and in no file BAXY wrote, and that it is changed in that window with the operations that
+    // exist (Ctrl+A by input_key_press, then input_text_type); with the aid off the receipt reads as before.
+    [TestCase("all", true)]
+    [TestCase("typed_target_next", false)]
+    [TestCase("none", false)]
+    public async Task ATextTypedIntoANamedWindowSaysItIsInThatWindowAndInNoFile(string aids, bool told)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var keyboard = new FakeDesktopKeyboard();
+        FakeFieldMessages messages = Notepad();
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages).InvokeAsync(
+            "input.text.type", Json("""{"text":"reunión el martes","window":4660}"""), CancellationToken.None);
+
+        bool hasNext = receipt.Result!.Value.TryGetProperty("next", out JsonElement next);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(messages.Content[Edit], Is.EqualTo("reunión el martes"));
+            Assert.That(hasNext, Is.EqualTo(told));
+            if (!told)
+                return;
+            string said = next.GetString()!;
+            Assert.That(said, Does.Contain("(window 4660)"));
+            Assert.That(said, Does.Contain("not written to a file").And.Contain("BAXY saved nothing"));
+            Assert.That(said, Does.Contain("a file holds it only once that application saves it"));
+            Assert.That(said, Does.Contain("input_key_press with key ctrl_a and window 4660"));
+            Assert.That(said, Does.Contain("not only what was typed"));
+            Assert.That(said, Does.Contain("input_text_type with window 4660"));
+        });
+    }
+
+    // The same fact after the sentence of the window in front (typed_target_next), with the look that gives that
+    // window's number; with typed_target_next alone the next is that sentence and nothing else.
+    [TestCase("all", true)]
+    [TestCase("typed_target_next", false)]
+    public async Task ATextReadBackInTheWindowInFrontAddsThatItIsInNoFile(string aids, bool held)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        FakeFieldMessages notepad = Notepad();
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "Sin título: Bloc de notas"),
+            FrontProcess = "Notepad",
+            EachCharacter = typed => notepad.Content[Edit] += "hola"[typed],
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, notepad).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        string said = receipt.Result!.Value.GetProperty("next").GetString()!;
+        string front = WindowsDesktopInteractionAdapter.TypedInto("Sin título: Bloc de notas", "Notepad", true, true);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(said, Does.StartWith(front));
+            Assert.That(said == front, Is.EqualTo(!held));
+            if (held)
+            {
+                Assert.That(said, Does.Contain("Sin título: Bloc de notas (Notepad)").And.Contain("not written to a file"));
+                Assert.That(said, Does.Contain("input_key_press with key ctrl_a and window set to that number"));
+            }
+        });
+    }
+
+    // A text put in a field of a view (index) is that field's value, which replace changes: no word of files or Ctrl+A.
+    [Test]
+    public async Task ATextPutInAFieldOfAViewSaysNothingOfFiles()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        var fields = new FakeViewedFields(
+            """{"ok":true,"error":"","kind":"Edit","className":"","nativeHwnd":0,"method":"setvalue","delivered":true}""");
+
+        ExternalCapabilityReceipt receipt = await Adapter(new FakeDesktopKeyboard(), new FakeFieldMessages(), fields)
+            .InvokeAsync("input.text.type", Json("""{"text":"mouse","window":4660,"index":3}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.TryGetProperty("next", out _), Is.False);
         });
     }
 
