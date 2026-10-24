@@ -64,7 +64,7 @@ contar (`renew_v5\holdout\claves-ciego`, lecturas en `renew_v5\holdout\ciego\s{0
 p 0,049 sin ajustar; 0,098 con Holm entre las dos comparaciones; el plan lo trata como descriptivo). Frente a `maximo`:
 9 contra 4 (p 0,27). Lo que dejó de pasar: negar que haya algo en BAXY-bench tras buscar sólo en la carpeta de trabajo,
 cifras inventadas (espacio libre, tamaño de página) y «ya lo moví» sin llamada. Las 4 de `final`: dar por hecho un pegado
-que sólo tiene recibo de entrega (V5F007), decir que un archivo no existe en BAXY-bench sin buscarlo (V5F015), dar como
+que sólo tiene recibo de entrega (V5F007), negar sin buscar que BAXY-bench tenga un archivo (V5F015), dar como
 última una línea leída a medias (V5F027) y no ver una carpeta que el resultado sí ubicaba (V5F033). Además, dos
 conversaciones de `final` en la semilla del PC acabaron sin ninguna respuesta (`decision_unavailable_after_call`).
 
