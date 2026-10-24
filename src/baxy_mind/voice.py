@@ -15,7 +15,6 @@ in its place, in real time (voice_feed.py, scripts/voice/hablar.py).
 from __future__ import annotations
 
 import copy
-import importlib.resources
 import importlib.util
 import json
 import os
@@ -126,7 +125,12 @@ class Vad:
     in a pause, and with k 1.5 left some to MAX_S: a direct request has no noise heard before it to learn the floor."""
 
     def __init__(self, sherpa_onnx: Any) -> None:
-        model = importlib.resources.files("silero_vad") / "data" / "silero_vad.onnx"
+        # Al máximo (notebook, 2026-10-24): the file is found where the package lives, without running it — its
+        # __init__ imports torch, 149 MiB of the mind for a path (importlib.resources.files imported it).
+        spec = importlib.util.find_spec("silero_vad")
+        if spec is None or not spec.submodule_search_locations:
+            raise ModuleNotFoundError("silero_vad")
+        model = Path(next(iter(spec.submodule_search_locations))) / "data" / "silero_vad.onnx"
         self._model = sherpa_onnx.VadModel.create(sherpa_onnx.VadModelConfig(
             silero_vad=sherpa_onnx.SileroVadModelConfig(model=str(model), threshold=SPEECH_P, min_silence_duration=0.05,
                                                         min_speech_duration=0.05, window_size=VAD_STEP),

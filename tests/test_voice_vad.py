@@ -1,6 +1,10 @@
 """Silero VAD in the voice (src/baxy_mind/voice.py, Vad and voiced): every 512 samples heard are one window, given with
 the 64 before as sherpa-onnx asks; a window's speech counts for the block in which it was heard whole; a block is voice
 only when it is loud and heard as speech, so steady noise above VOICE_RMS never keeps a request open."""
+import os
+import subprocess
+import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
@@ -66,3 +70,22 @@ def test_silero_never_takes_steady_noise_or_silence_for_speech() -> None:
         vad.reset()
         marks = np.concatenate([vad.marks(block) for block in audio.reshape(-1, BLOCK)])
         assert not voiced(audio, marks).any()
+
+
+def test_the_silero_model_is_found_without_running_its_package() -> None:
+    # Al máximo (notebook, 2026-10-24): importlib.resources.files("silero_vad") imported the package, and the package
+    # imports torch: the mind grew by 149 MiB (USS) for the path of a file. The voice runs the .onnx with sherpa-onnx.
+    pytest.importorskip("silero_vad")
+    code = ("import sys\n"
+            "from types import SimpleNamespace as N\n"
+            "from baxy_mind.voice import Vad\n"
+            "seen = {}\n"
+            "model = N(window_size=lambda: 576, reset=lambda: None)\n"
+            "Vad(N(VadModel=N(create=lambda config: model), VadModelConfig=lambda **kw: None,\n"
+            "      SileroVadModelConfig=lambda **kw: seen.update(kw)))\n"
+            "import os\n"
+            "print(os.path.isfile(seen['model']), 'silero_vad' in sys.modules, 'torch' in sys.modules)\n")
+    env = dict(os.environ, PYTHONPATH=str(Path(voice.__file__).resolve().parents[1]))
+    out = subprocess.run([sys.executable, "-X", "utf8", "-c", code], capture_output=True, text=True, env=env, timeout=120)
+    assert out.returncode == 0, out.stderr
+    assert out.stdout.split() == ["True", "False", "False"]
