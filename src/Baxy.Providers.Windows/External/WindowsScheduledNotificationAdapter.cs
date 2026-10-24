@@ -88,8 +88,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         {
             return effectBoundary.Failure(operation, "notification_scheduler_failed");
         }
+        // V5E060: the arguments are read before this boundary with their own codes; what lands here is the scheduler's.
         catch (Exception exception) when (exception is IOException or JsonException
-            or UnauthorizedAccessException or TimeoutException or InvalidDataException)
+            or UnauthorizedAccessException or TimeoutException)
         {
             return effectBoundary.Failure(operation, "notification_scheduler_failed");
         }
@@ -102,6 +103,12 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         && !string.IsNullOrWhiteSpace(value.GetString())
             ? value.GetString()!.Trim()
             : null;
+
+    // An argument written with a value (null is the same as leaving it out).
+    private static bool Present(JsonElement arguments, string name) =>
+        arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty(name, out JsonElement value)
+        && value.ValueKind != JsonValueKind.Null;
 
     /// <summary>
     /// When a new alarm or reminder rings: inMinutes or inSeconds (a timer) from now, or «at» as a local clock time
@@ -468,8 +475,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
     private static string? ReadRingTitle(string path)
     {
         if (!File.Exists(path)) return null;
-        Match encoded = Regex.Match(File.ReadAllText(path), @"FromBase64String\('([A-Za-z0-9+/=]+)'\)",
-            RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+        // The title's own line: a ring script with no title has none, and the receipt path in it is no title.
+        Match encoded = Regex.Match(File.ReadAllText(path), @"^\$title=.*?FromBase64String\('([A-Za-z0-9+/=]+)'\)",
+            RegexOptions.CultureInvariant | RegexOptions.Multiline, TimeSpan.FromMilliseconds(100));
         if (!encoded.Success) return null;
         try
         {
@@ -489,14 +497,17 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        string title = ExternalJson.RequiredString(arguments, "title");
-        string? recurrence = arguments.TryGetProperty("recurrence", out JsonElement recurrenceElement)
-            ? recurrenceElement.GetString() : null;
-        if (recurrence is not null and not ("daily" or "hourly"))
-            return ExternalJson.Failure(operation, "notification_recurrence_invalid");
+        // V5E060: the title is optional, as the catalog has it (a create without one was refused as a scheduler
+        // failure the scheduler never saw); one that is there and is not words fails here with its own code.
+        string? title = OptionalString(arguments, "title");
+        if (title is null && Present(arguments, "title"))
+            return ExternalJson.FailureBeforeEffect(operation, "notification_title_invalid");
+        string? recurrence = OptionalString(arguments, "recurrence");
+        if ((recurrence is null && Present(arguments, "recurrence")) || recurrence is not (null or "daily" or "hourly"))
+            return ExternalJson.FailureBeforeEffect(operation, "notification_recurrence_invalid");
         if (due <= DateTimeOffset.UtcNow.AddSeconds(5)
             || due > DateTimeOffset.UtcNow.AddYears(1)
-            || Encoding.UTF8.GetByteCount(title) > 1_024)
+            || (title is not null && Encoding.UTF8.GetByteCount(title) > 1_024))
             return ExternalJson.Failure(operation, "notification_schedule_invalid");
 
         await PruneSpentNotificationsAsync(cancellationToken).ConfigureAwait(false);
@@ -520,7 +531,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         ExternalCapabilityReceipt scheduled = Parse(operation, process, taskName, effectBoundary, writer =>
         {
             writer.WriteString("kind", kind);
-            writer.WriteString("title", title);
+            if (title is not null) writer.WriteString("title", title);
             writer.WriteString("dueUtc", due.ToUniversalTime());
             writer.WriteString("dueLocal", due.ToLocalTime().ToString(
                 "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
@@ -786,19 +797,21 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
     // The receipt is written after ringing and says what was delivered: the notification only when it is read back
     // from the notification history, and which sound played. Auditoría final (regla 3): a history that could not be read
     // after Show leaves notificationShown null (not read), and a sound counts once it played once.
-    private static void WriteRingScript(string path, string receiptPath, string title)
+    // V5E060: with no title the notification is BAXY alone, its second line left empty; no words are put there.
+    private static void WriteRingScript(string path, string receiptPath, string? title)
     {
-        string title64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(title));
         string receipt64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(receiptPath));
         string tag = Path.GetFileNameWithoutExtension(path)[^16..];
         string script = "$ErrorActionPreference='Stop'\n"
-            + "$title=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('" + title64 + "'))\n"
+            + (title is null ? "" : "$title=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"
+                + Convert.ToBase64String(Encoding.UTF8.GetBytes(title)) + "'))\n")
             + "$receipt=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('" + receipt64 + "'))\n"
             + "$toast=$false\n"
             + "try{[void][Windows.UI.Notifications.ToastNotificationManager,Windows.UI.Notifications,ContentType=WindowsRuntime]\n"
             + "$app='{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe'\n"
             + "$xml=[Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)\n"
-            + "$text=$xml.GetElementsByTagName('text');[void]$text.Item(0).AppendChild($xml.CreateTextNode('BAXY'));[void]$text.Item(1).AppendChild($xml.CreateTextNode($title))\n"
+            + "$text=$xml.GetElementsByTagName('text');[void]$text.Item(0).AppendChild($xml.CreateTextNode('BAXY'))"
+            + (title is null ? "" : ";[void]$text.Item(1).AppendChild($xml.CreateTextNode($title))") + "\n"
             + "$note=[Windows.UI.Notifications.ToastNotification]::new($xml);$note.Tag='" + tag + "'\n"
             + "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show($note);$toast=$null;Start-Sleep -Milliseconds 300\n"
             + "$toast=@([Windows.UI.Notifications.ToastNotificationManager]::History.GetHistory($app)|Where-Object{$_.Tag -eq '" + tag + "'}).Count -gt 0}catch{}\n"
