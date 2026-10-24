@@ -96,6 +96,49 @@ public sealed class KeyPressLandingTests
     public void AWindowThatDoesNotExistIsUnknown() =>
         Assert.That(new KeyWindowReader().KindOf(0x7FFF_FFF0), Is.EqualTo(KeyWindowKind.Unknown));
 
+    // Holdout v5 V5E021 (s1): app.open had opened a Calculator the bench closed 24 s later; with a new Calculator in
+    // front, Enter asked for 90 s because the dead opening's process names read empty (unknown). An opening whose
+    // process no longer exists is no window a key reaches (OpenedApplicationKeyboard sends it to the front then): the
+    // window in front decides. Read only, no input sent.
+    [Test]
+    public void AnOpeningWhoseProcessNoLongerExistsLeavesTheFrontToDecide()
+    {
+        var dead = new VisibleControlSurface.OpenedApplication(0x7FFF_FFF0, DateTime.UtcNow.AddSeconds(-24), DateTime.UtcNow, Launched: false);
+
+        Assert.That(Reader(dead).KindOf(null), Is.EqualTo(KeyWindowKind.Ordinary));
+    }
+
+    // Contracaso: a live opening that is not in front still decides (here, a messaging client's window).
+    [Test]
+    public void ALiveOpeningNotInFrontStillDecides()
+    {
+        using var self = System.Diagnostics.Process.GetCurrentProcess();
+        var live = new VisibleControlSurface.OpenedApplication(
+            self.Id, self.StartTime.ToUniversalTime(), DateTime.UtcNow, Launched: false, Window: 2);
+
+        Assert.That(Reader(live).KindOf(null), Is.EqualTo(KeyWindowKind.Messaging));
+    }
+
+    // The window in front (1) is a browser; the opened application's window (2) is a messaging client's.
+    private static KeyWindowReader Reader(VisibleControlSurface.OpenedApplication opened) => new(
+        new Opening(opened),
+        () => 1,
+        window => window == 2 ? ["Discord"] : ["chrome"],
+        (_, _) => false);
+
+    private sealed class Opening(VisibleControlSurface.OpenedApplication opened) : IOpenedApplicationFocus
+    {
+        public VisibleControlSurface.OpenedApplication? TakeOpened() => opened;
+
+        public VisibleControlSurface.OpenedApplication? PeekOpened() => opened;
+
+        public ValueTask<VisibleControlSurface.OpenedSurface> FrontAsync(
+            VisibleControlSurface.OpenedApplication application,
+            bool judgeDrawn,
+            CancellationToken cancellationToken,
+            bool bringToFront = false) => ValueTask.FromResult(default(VisibleControlSurface.OpenedSurface));
+    }
+
     private static Task<(OperationResponse, KeysProvider)> Press(KeyWindowKind kind, string arguments) =>
         Press(new FixedReader(kind), arguments);
 

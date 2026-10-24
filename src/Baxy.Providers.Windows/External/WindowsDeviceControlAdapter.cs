@@ -898,29 +898,54 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           foreach($c in $decomposed.ToCharArray()){ if([Globalization.CharUnicodeInfo]::GetUnicodeCategory($c) -ne [Globalization.UnicodeCategory]::NonSpacingMark){ [void]$kept.Append($c) } }
           return (($kept.ToString().ToLowerInvariant()) -replace '\s+',' ').Trim()
         }
-        function Find-KeypadButton([string[]]$names,$wanted){
+        # Holdout v5 V5E029: a button is also found by its AutomationId ($ids, in the same order as $names), the same in
+        # every language (the Scientific keypad's xʸ and parentheses).
+        function Find-KeypadButton([string[]]$names,$wanted,[string[]]$ids=@()){
           $folded=@($wanted | ForEach-Object { Get-KeyFolded ([string]$_) })
-          for($i=0;$i -lt $names.Count;$i++){ if($folded -contains (Get-KeyFolded $names[$i])){ return $i } }
+          for($i=0;$i -lt $names.Count;$i++){ if($folded -contains (Get-KeyFolded $names[$i]) -or ($i -lt $ids.Count -and $folded -contains (Get-KeyFolded $ids[$i]))){ return $i } }
           return -1
         }
-        function Select-KeypadPresses([string]$keys,[string[]]$names,$map){
+        function Select-KeypadPresses([string]$keys,[string[]]$names,$map,[string[]]$ids=@()){
           $plan=New-Object System.Collections.Generic.List[int]
           foreach($ch in $keys.ToCharArray()){
-            $at=Find-KeypadButton $names @($map.keys.([string]$ch))
+            $at=Find-KeypadButton $names @($map.keys.([string]$ch)) $ids
             if($at -lt 0){ return $null }
             $plan.Add($at)
           }
           return ,$plan.ToArray()
         }
+        # Holdout v5 V5E029: the keypad's mode, from its buttons' AutomationIds: the Standard one has no parenthesis, only
+        # the Scientific one has π; any other (Programmer) is «other».
+        function Get-KeypadMode([string[]]$ids){
+          if($ids -notcontains 'openParenthesisButton'){ return 'standard' }
+          if($ids -contains 'piButton'){ return 'scientific' }
+          return 'other'
+        }
+        # Ronda final 27 (regla 3) and holdout v5 V5E029: Standard applies each operator in the order typed, Scientific
+        # follows precedence and has ^ and parentheses. Another keypad presses nothing, nor does an expression that needs
+        # the Scientific buttons on the Standard one: the mode is never switched here.
+        function Get-ModeRefusal([string]$mode,[string]$keys){
+          if($mode -eq 'other'){ return 'calculator_mode_not_supported' }
+          if($mode -ne 'scientific' -and $keys -match '[\^()]'){ return 'calculator_needs_scientific_mode' }
+          return ''
+        }
+        # Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): an expression that starts with an operator
+        # continues from the number the display shows; any other clears the display first.
+        function Test-ContinuesDisplay([string]$keys){ return ($keys -match '^[-+*/^]') }
         function Test-ShowsZero([string]$value){ return ($value.Trim() -match '^-?0(?:[.,]0*)?$') }
-        function Test-ShowsLastOperand([string]$shown,[string]$value,[string]$keys){
+        function Test-ShowsLastOperand([string]$shown,[string]$value,[string]$keys,$start=$null){
           if($value -notmatch '^-?\d'){ return $false }
+          if($null -eq $start){ $start=@{expr='';value='0'} }
+          # Holdout v5 V5E021: the display read before the presses (the 0 the clear left, or the number a continued
+          # expression starts from) shown again unchanged is no proof that they were pressed.
+          if($shown -eq [string]$start.expr -and $value -eq [string]$start.value){ return $false }
           if($shown.Trim().Length -eq 0){
-            # Without the expression line the display is the only proof, and it showed 0 right after the clear button: only a
+            # Without the expression line the display is the only proof. After the clear button it showed 0: only a
             # number other than 0 says the buttons were pressed (a result of 0 is not told from a keypad that ignored them).
-            return -not (Test-ShowsZero $value)
+            return (-not (Test-ShowsZero ([string]$start.value))) -or -not (Test-ShowsZero $value)
           }
-          $last=([regex]::Match($keys,'(\d+(?:\.\d+)?)$').Groups[1].Value -replace '[^0-9]','')
+          # The last number typed, before any closing parenthesis.
+          $last=([regex]::Match($keys,'(\d+(?:\.\d+)?)[^0-9]*$').Groups[1].Value -replace '[^0-9]','')
           $digits=($shown -replace '[^0-9]','')
           return ($last.Length -gt 0 -and $digits.EndsWith($last))
         }
@@ -928,11 +953,11 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # read every 50 ms within the same 300 ms and taken as soon as it shows the expression's last operand
         # (Test-ShowsLastOperand) twice in a row unchanged; otherwise the read at 300 ms is taken, as before, and the
         # caller's check decides on it.
-        function Wait-ShownResult([scriptblock]$read,[string]$keys,[int]$budget,[int]$interval){
+        function Wait-ShownResult([scriptblock]$read,[string]$keys,[int]$budget,[int]$interval,$start=$null){
           $clock=[Diagnostics.Stopwatch]::StartNew();$last=$null
           while($true){
             $now=& $read
-            if($null -ne $last -and $now.name -eq $last.name -and $now.expr -eq $last.expr -and $now.value -eq $last.value -and (Test-ShowsLastOperand $now.expr $now.value $keys)){ return $now }
+            if($null -ne $last -and $now.name -eq $last.name -and $now.expr -eq $last.expr -and $now.value -eq $last.value -and (Test-ShowsLastOperand $now.expr $now.value $keys $start)){ return $now }
             $left=$budget-$clock.ElapsedMilliseconds
             if($left -le 0){ return $now }
             $last=$now
@@ -952,38 +977,56 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'ApplicationFrameWindow')
         $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){foreach($c in $f.FindAll([System.Windows.Automation.TreeScope]::Children,[System.Windows.Automation.Condition]::TrueCondition)){$p=Get-Process -Id $c.Current.ProcessId -ErrorAction SilentlyContinue;if($p -and [string]$p.Path -like '*\WindowsApps\Microsoft.WindowsCalculator_*'){$calc=$f;break}};if($calc){break}}
         if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
-        $keys=($expr -replace '[^0-9+\-*/.]','')
+        $keys=($expr -replace '[^0-9+\-*/.^()]','')
         if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}
-        # Ronda final 27 (regla 3): the expression is pressed in the order typed, which only the Standard mode computes so
-        # (Scientific follows precedence): a keypad with the parenthesis button (any other mode) presses nothing.
-        $parenCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'openParenthesisButton')
-        if($null -ne $calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$parenCond)){[pscustomobject]@{ok=$false;error='calculator_mode_not_standard'}|ConvertTo-Json -Compress;exit 9}
         $buttonCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
-        $buttons=@($calc.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttonCond))
-        $names=[string[]]@($buttons | ForEach-Object { [string]$_.Current.Name })
-        $plan=Select-KeypadPresses ($keys+'=') $names $map
+        function Read-Keypad(){ $found=@($calc.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttonCond)); return @{buttons=$found;names=[string[]]@($found | ForEach-Object { [string]$_.Current.Name });ids=[string[]]@($found | ForEach-Object { [string]$_.Current.AutomationId })} }
+        $keypad=Read-Keypad;$buttons=$keypad.buttons;$names=$keypad.names;$ids=$keypad.ids
+        $mode=Get-KeypadMode $ids
+        $refusal=Get-ModeRefusal $mode $keys
+        if($refusal){[pscustomobject]@{ok=$false;error=$refusal;mode=$mode}|ConvertTo-Json -Compress;exit 9}
+        $plan=Select-KeypadPresses ($keys+'=') $names $map $ids
         if($null -eq $plan){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
         function Invoke-KeypadButton($element){ $pattern=$null; if($element.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){ ([System.Windows.Automation.InvokePattern]$pattern).Invoke(); return $true }; return $false }
         # The clear button is required, and the display must show 0 after it: a keypad that ignored the presses (the window
-        # suspended or minimized) would otherwise leave the previous result there, read as this expression's.
-        $clear=Find-KeypadButton $names @($map.clear)
-        if($clear -lt 0){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
+        # suspended or minimized) would otherwise leave the previous result there, read as this expression's. Holdout v5
+        # V5E029: the Scientific keypad shows «C» only while its entry is empty and «CE» in its place otherwise.
+        $continued=Test-ContinuesDisplay $keys
+        $clear=Find-KeypadButton $names @($map.clear) $ids
+        $entry=Find-KeypadButton $names @($map.clearEntry) $ids
+        if(-not $continued -and $clear -lt 0 -and $entry -lt 0){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
         $idCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorResults')
         $display=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
         if($null -eq $display){[pscustomobject]@{ok=$false;error='calculator_display_not_read'}|ConvertTo-Json -Compress;exit 5}
         function Read-DisplayValue(){ return (([string]$display.Current.Name) -replace '^[^0-9\-]*','').Trim() }
-        if(-not (Invoke-KeypadButton $buttons[$clear])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=0}|ConvertTo-Json -Compress;exit 7}
-        $cleared=Read-DisplayValue
-        for($waited=0;-not (Test-ShowsZero $cleared) -and $waited -lt 300;$waited+=40){ Start-Sleep -Milliseconds 40; $cleared=Read-DisplayValue }
-        if(-not (Test-ShowsZero $cleared)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';clearedDisplay=$cleared}|ConvertTo-Json -Compress;exit 8}
-        $pressed=0
-        foreach($at in $plan){ if(-not (Invoke-KeypadButton $buttons[$at])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=$pressed}|ConvertTo-Json -Compress;exit 7}; $pressed++; Start-Sleep -Milliseconds 30 }
         $exprCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorExpression')
         $read={ $shown=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$exprCond); @{name=[string]$display.Current.Name;expr=$(if($shown){[string]$shown.Current.Name}else{''});value=(Read-DisplayValue)} }
-        $settled=Wait-ShownResult $read $keys 300 50
+        $before=& $read
+        if($continued){
+          # Holdout v5 V5E021: nothing is cleared; the number shown is where the expression continues from.
+          if($before.value -notmatch '^-?\d'){[pscustomobject]@{ok=$false;error='calculator_display_not_a_number';displayName=$before.name}|ConvertTo-Json -Compress;exit 10}
+        } else {
+          $clearButton=$null
+          if($clear -lt 0){
+            # CE empties the entry and brings «C» back, which is pressed next.
+            if(-not (Invoke-KeypadButton $buttons[$entry])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=0}|ConvertTo-Json -Compress;exit 7}
+            for($waited=0;$null -eq $clearButton -and $waited -lt 300;$waited+=40){ Start-Sleep -Milliseconds 40; $now=Read-Keypad; $at=Find-KeypadButton $now.names @($map.clear) $now.ids; if($at -ge 0){ $clearButton=$now.buttons[$at] } }
+            if($null -eq $clearButton){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';pressed=1}|ConvertTo-Json -Compress;exit 8}
+          } else { $clearButton=$buttons[$clear] }
+          if(-not (Invoke-KeypadButton $clearButton)){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=0}|ConvertTo-Json -Compress;exit 7}
+          $cleared=Read-DisplayValue
+          for($waited=0;-not (Test-ShowsZero $cleared) -and $waited -lt 300;$waited+=40){ Start-Sleep -Milliseconds 40; $cleared=Read-DisplayValue }
+          if(-not (Test-ShowsZero $cleared)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';clearedDisplay=$cleared}|ConvertTo-Json -Compress;exit 8}
+        }
+        $start=& $read
+        $pressed=0
+        foreach($at in $plan){ if(-not (Invoke-KeypadButton $buttons[$at])){[pscustomobject]@{ok=$false;error='calculator_button_not_invokable';pressed=$pressed}|ConvertTo-Json -Compress;exit 7}; $pressed++; Start-Sleep -Milliseconds 30 }
+        $settled=Wait-ShownResult $read $keys 300 50 $start
         $name=$settled.name;$exprName=$settled.expr;$value=$settled.value
-        if(-not (Test-ShowsLastOperand $exprName $value $keys)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';displayName=$name;expressionName=$exprName}|ConvertTo-Json -Compress;exit 8}
-        [pscustomobject]@{ok=$true;typed=$keys;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value}|ConvertTo-Json -Compress
+        if(-not (Test-ShowsLastOperand $exprName $value $keys $start)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';displayName=$name;expressionName=$exprName}|ConvertTo-Json -Compress;exit 8}
+        # What the display showed before: the number a continued expression started from, or what the clear removed.
+        $was=$(if($before.value -match '^-?\d'){$before.value}else{$before.name})
+        [pscustomobject]@{ok=$true;typed=$keys;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value;mode=$mode;continued=[bool]$continued;before=$was}|ConvertTo-Json -Compress
         """;
 
     // The keypad's buttons by the characters they press (src/baxy_mind/data/keypad_keys.v1.json, embedded).
@@ -1004,9 +1047,37 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         writer.WriteEndObject();
     });
 
+    // Holdout v5 V5E021/V5E029: numbers joined by + - * / ^, each inside any parentheses opened before it and closed
+    // after it (balancing groups: every «(» closed by the end); an operator first continues from the number shown.
+    // Whether the keypad has ^ and the parentheses is the script's to read (only the Scientific one has them).
     private static readonly Regex CalculatorExpression = new(
-        @"^\s*\d{1,12}(?:[.,]\d{1,6})?(?:\s*[-+*/]\s*\d{1,12}(?:[.,]\d{1,6})?){1,8}\s*$",
+        @"^[-+*/^]?(?<open>\()*\d{1,12}(?:\.\d{1,6})?(?<-open>\))*(?:[-+*/^](?<open>\()*\d{1,12}(?:\.\d{1,6})?(?<-open>\))*)*(?(open)(?!))$",
         RegexOptions.CultureInvariant);
+
+    private const string CalculatorCharacters = "0123456789+-*/^().,";
+
+    private static readonly Regex NumberSplit = new(@"[\d.,]\s+[\d.,]", RegexOptions.CultureInvariant);
+
+    // What calculator_expression_invalid tells the model it accepts: a fact, nothing pressed.
+    private const string CalculatorAccepted = "numbers with a decimal point or comma, joined by + - * / ^, with ( ) around "
+        + "parts; ^ and ( ) only in Scientific mode; an operator first continues from the number shown";
+
+    /// <summary>
+    /// The keys an expression presses (a decimal comma is the «.» the keypad presses, spaces dropped), or null when it
+    /// is not one: <paramref name="refused"/> then holds the characters that are not accepted (none when only its shape
+    /// is wrong).
+    /// </summary>
+    internal static string? CalculatorKeys(string expression, out string refused)
+    {
+        refused = string.Concat(expression
+            .Where(character => !char.IsWhiteSpace(character) && !CalculatorCharacters.Contains(character))
+            .Distinct());
+        string keys = string.Concat(expression.Where(character => !char.IsWhiteSpace(character))).Replace(',', '.');
+        int operators = keys.Count(character => "+-*/^".Contains(character));
+        // A space is dropped between the parts, never inside a number («1 2+3» is not 12+3).
+        return refused.Length == 0 && operators is >= 1 and <= 8 && !NumberSplit.IsMatch(expression)
+            && CalculatorExpression.IsMatch(keys) ? keys : null;
+    }
 
     private async ValueTask<ExternalCapabilityReceipt> CalculatorEvaluateAsync(
         string operation,
@@ -1014,15 +1085,21 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         ExternalEffectBoundary effectBoundary,
         CancellationToken token)
     {
-        string expression = ExternalJson.RequiredString(arguments, "expression").Trim();
-        if (!CalculatorExpression.IsMatch(expression))
+        string expression = ExternalJson.RequiredString(arguments, "expression");
+        if (CalculatorKeys(expression, out string refused) is not { } normalized)
         {
-            return ExternalJson.Failure(operation, "calculator_expression_invalid");
+            JsonElement observed = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                if (refused.Length > 0)
+                {
+                    writer.WriteString("refused", refused);
+                }
+                writer.WriteString("accepted", CalculatorAccepted);
+                writer.WriteEndObject();
+            });
+            return new ExternalCapabilityReceipt(operation, false, false, observed, "calculator_expression_invalid");
         }
-        // A decimal comma is the decimal separator the keypad presses as «.»; the operators are + - * / only.
-        string normalized = expression
-            .Replace(",", ".", StringComparison.Ordinal)
-            .Replace(" ", string.Empty, StringComparison.Ordinal);
         // Review r4: the buttons are pressed by UI Automation's Invoke, which sends no key, moves no pointer and takes
         // no front, so the person's keyboard and mouse are never shared: no burst is asked for, the person's pause is
         // not waited for, and their typing in their own window does not stop the expression half pressed (v3 point 0:
@@ -1071,6 +1148,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("expression", normalized);
+            // Holdout v5 V5E021/V5E029: the mode it was pressed in, and what the display showed before: the number a
+            // continued expression started from, or what the clear removed (read, never assumed).
+            if (root.TryGetProperty("mode", out JsonElement mode) && mode.ValueKind == JsonValueKind.String)
+            {
+                writer.WriteString("mode", mode.GetString());
+            }
+            if (root.TryGetProperty("before", out JsonElement before) && before.ValueKind == JsonValueKind.String)
+            {
+                writer.WriteString(Bool(root, "continued") ? "startedFrom" : "clearedDisplay", before.GetString());
+            }
             writer.WriteString("shownExpression", root.TryGetProperty("expressionName", out JsonElement shown) && shown.ValueKind == JsonValueKind.String ? shown.GetString() ?? string.Empty : string.Empty);
             writer.WriteString("display", root.TryGetProperty("displayName", out JsonElement display) && display.ValueKind == JsonValueKind.String ? display.GetString() ?? string.Empty : string.Empty);
             writer.WriteString("value", value);

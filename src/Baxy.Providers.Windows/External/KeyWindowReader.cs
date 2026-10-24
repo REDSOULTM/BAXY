@@ -25,7 +25,7 @@ public interface IKeyWindowReader
 {
     /// <summary>
     /// The window <paramref name="window"/> names; with none, the window in front and, when a fresh app.open's
-    /// application is not in front, that application too (a key with no window goes to it,
+    /// application still runs and is not in front, that application too (a key with no window goes to it,
     /// <see cref="OpenedApplicationKeyboard"/>). The first that is not ordinary decides.
     /// </summary>
     KeyWindowKind KindOf(long? window);
@@ -38,7 +38,33 @@ public interface IKeyWindowReader
 /// </summary>
 public sealed class KeyWindowReader : IKeyWindowReader
 {
-    private readonly OpenedApplicationFocus _opened = new();
+    private readonly IOpenedApplicationFocus _opened;
+    private readonly Func<nint> _front;
+    private readonly Func<nint, IEnumerable<string>> _processNames;
+    private readonly Func<nint, VisibleControlSurface.OpenedApplication, bool> _windowOf;
+
+    public KeyWindowReader()
+        : this(new OpenedApplicationFocus(), VisibleControlSurface.FrontWindow, WindowProcessNames,
+            WindowsVisibleControlAdapter.IsWindowOfOpened)
+    {
+    }
+
+    /// <param name="opened">The opening app.open noted (<see cref="OpenedApplicationFocus"/>).</param>
+    /// <param name="front">The window in front now.</param>
+    /// <param name="processNames">A window's process names: its own and, for a frame, the hosted app's.</param>
+    /// <param name="windowOf">Whether a window is the opened application's
+    /// (<see cref="WindowsVisibleControlAdapter.IsWindowOfOpened"/>).</param>
+    internal KeyWindowReader(
+        IOpenedApplicationFocus opened,
+        Func<nint> front,
+        Func<nint, IEnumerable<string>> processNames,
+        Func<nint, VisibleControlSurface.OpenedApplication, bool> windowOf)
+    {
+        _opened = opened ?? throw new ArgumentNullException(nameof(opened));
+        _front = front ?? throw new ArgumentNullException(nameof(front));
+        _processNames = processNames ?? throw new ArgumentNullException(nameof(processNames));
+        _windowOf = windowOf ?? throw new ArgumentNullException(nameof(windowOf));
+    }
 
     public KeyWindowKind KindOf(long? window)
     {
@@ -47,16 +73,19 @@ public sealed class KeyWindowReader : IKeyWindowReader
             return named > 0 ? OfWindow((nint)named) : KeyWindowKind.Unknown;
         }
 
-        nint front = VisibleControlSurface.FrontWindow();
+        nint front = _front();
         if (front == 0)
         {
             return KeyWindowKind.Unknown;
         }
 
+        // Holdout v5 V5E021: an opening whose process no longer exists (closed since; its names read empty, unknown) is
+        // no window a key reaches (OpenedApplicationKeyboard sends it to the front then): the front decides.
         KeyWindowKind kind = OfWindow(front);
         if (kind != KeyWindowKind.Ordinary
             || _opened.PeekOpened() is not { } opened
-            || WindowsVisibleControlAdapter.IsWindowOfOpened(front, opened))
+            || _windowOf(front, opened)
+            || !VisibleControlSurface.OpenedAlive(opened))
         {
             return kind;
         }
@@ -64,7 +93,7 @@ public sealed class KeyWindowReader : IKeyWindowReader
         List<string> names = [ProcessName(opened.ProcessId)];
         if (opened.Window != 0)
         {
-            names.AddRange(WindowProcessNames(opened.Window));
+            names.AddRange(_processNames(opened.Window));
         }
 
         return Classify(names);
@@ -91,7 +120,7 @@ public sealed class KeyWindowReader : IKeyWindowReader
         return names.Any(VisibleControlSurface.RunsWhatIsTyped) ? KeyWindowKind.Console : KeyWindowKind.Ordinary;
     }
 
-    private static KeyWindowKind OfWindow(nint window) => Classify(WindowProcessNames(window));
+    private KeyWindowKind OfWindow(nint window) => Classify(_processNames(window));
 
     private static IEnumerable<string> WindowProcessNames(nint window)
     {
