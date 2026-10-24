@@ -691,8 +691,8 @@ public sealed class TextDeliveryTests
 
     // Holdout v5 (V5E061): after a text typed into a Notepad window with nothing saved, «cámbialo, era el miércoles» was
     // taken for a file (file.edit «Sin título» edited another file on disk). With the aid typed_in_window a completed text
-    // says it is in that window and in no file BAXY wrote, and that it is changed in that window with the operations that
-    // exist (Ctrl+A by input_key_press, then input_text_type); with the aid off the receipt reads as before.
+    // says it is in that window and in no file BAXY wrote, and nothing more (no way to replace it: int11 E012); with the aid
+    // off the receipt reads as before.
     [TestCase("all", true)]
     [TestCase("typed_target_next", false)]
     [TestCase("none", false)]
@@ -717,9 +717,8 @@ public sealed class TextDeliveryTests
             Assert.That(said, Does.Contain("(window 4660)"));
             Assert.That(said, Does.Contain("not written to a file").And.Contain("BAXY saved nothing"));
             Assert.That(said, Does.Contain("a file holds it only once that application saves it"));
-            Assert.That(said, Does.Contain("input_key_press with key ctrl_a and window 4660"));
-            Assert.That(said, Does.Contain("not only what was typed"));
-            Assert.That(said, Does.Contain("input_text_type with window 4660"));
+            // Only the fact: no way to replace the text (int11 e2e E012: the model replaced what nobody asked to change).
+            Assert.That(said, Does.Not.Contain("ctrl_a").And.Not.Contain("in place of"));
         });
     }
 
@@ -751,7 +750,7 @@ public sealed class TextDeliveryTests
             if (held)
             {
                 Assert.That(said, Does.Contain("Sin título: Bloc de notas (Notepad)").And.Contain("not written to a file"));
-                Assert.That(said, Does.Contain("input_key_press with key ctrl_a and window set to that number"));
+                Assert.That(said, Does.Not.Contain("ctrl_a"));
             }
         });
     }

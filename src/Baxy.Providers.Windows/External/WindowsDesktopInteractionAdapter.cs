@@ -958,8 +958,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             : where;
     }
 
-    // Holdout v5 (V5E061): a completed text, as a sentence: the window it is in (by its number when the step named one),
-    // that BAXY wrote no file, and that changing it is done there by the operations that exist (Ctrl+A, then the text).
+    // Holdout v5 (V5E061): a completed text, as a sentence: the window it is in (by its number when the step named one)
+    // and that BAXY wrote no file. Only the fact: with a way to replace it told after every typing, the model replaced
+    // what nobody asked to change (int11 e2e E012, NB s0: Ctrl+A and the text again, and in a Spanish Notepad Ctrl+A is
+    // «Abrir», so the second text went into its dialog).
     internal static string TypedInWindow(JsonElement result, nint window)
     {
         string title = result.TryGetProperty("sentTo", out JsonElement sentTo)
@@ -977,13 +979,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             _ => "",
         };
         string which = named.Length > 0 ? $"the window of {named}" : "that window";
-        string number = window != 0 ? $"window {window}" : "window set to that number";
-        return $"the text is in {which}" + (window != 0 ? $" ({number})" : "")
-            + ", not written to a file: BAXY saved nothing, and a file holds it only once that application saves it; "
-            + "it is changed in that window, not in a file"
-            + (window != 0 ? "" : " (its number is given by input_visible_controls with application set to its name)")
-            + $": input_key_press with key ctrl_a and {number} selects all of its text there, not only what was typed, "
-            + $"and input_text_type with {number} then types the new text in place of the selection";
+        return $"the text is in {which}" + (window != 0 ? $" (window {window})" : "")
+            + ", not written to a file: BAXY saved nothing, and a file holds it only once that application saves it";
     }
 
     // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad), by its title
