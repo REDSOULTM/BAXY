@@ -3358,3 +3358,10 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
 - 20:44 **w10-duda medida** (decision3 x3, PC, catálogo v5final, misma sesión): base int10f 239/237/239 = 238,33; w10-duda
   242/241/243 = 242,0; Δ +3,67 (IC95 [+1,0; +7,0]), sube P070, Q113, Q116 y no baja ninguno; pass^3 233 → 236; acciones
   equivocadas 13,0 → 12,33 (IC95 [−4,67; +3,67]). Se queda.
+- 21:0x **snippets_only descartada** (V5E008/018, sin commit; medida offline con el modelo real, 8 turnos del Metro × 3
+  semillas): con la ayuda, el modelo abre la página 0/24 frente a 4/24 sin ella; seis redacciones de hecho, ninguna mejora
+  la base; contrapeso (12 búsquedas cuyo fragmento ya responde) limpio en todos los brazos. Ninguna ayuda sola explica la
+  regresión de abrir la página (quitar cualquiera: 3-6/24); `inicio` 86991ca9d abre 8/8 en la semilla 0 frente a 1/8 de
+  `maximo` 452854a18: en bisección (código de la mente que no es de ayudas). Un 1975 dicho sin abrir la página es inventado.
+- **int11b** = int11 + nb-w10-clic (V5E029 focusOnly, ctrl_end/ctrl_home) + nb-w10-calc (V5E021/029): suites y catálogo en
+  curso; decision3 x3 en cola tras la de int11.
