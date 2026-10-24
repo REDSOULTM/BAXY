@@ -3257,3 +3257,19 @@ Goal: la mejor versión de BAXY Renew sin reentrenar Qwen. Dos sesiones: PC líd
   «Look at the window afterwards» de app_open (miradas 2/10 → 0/10, clics tras mirar 9/10 → 7/10): cambia el prefijo
   de todos los turnos y necesita e2e. web.fetch repetido: sin tope, medido en APLAZADOS. Suites: pytest 631, Kernel
   729, Contracts 74, App 188, Setup 477, verde.
+- 22:xx (23-10) **w9-dudas (PC, sin correr el producto)**: mirar antes de preguntar y no dar por completa una lista
+  que no lo es. Causas leídas en las trazas de mente del NB (int9-int10, práctica): F016 «lanza Fortnite» quería
+  game_catalog_list (0,28-0,34, rivales installed/launch/entitlement) y la duda lo retuvo; F009 la palabra BAXY de
+  BAXY-bench se tomó por la carpeta de trabajo; E018 file_read/file_find a 0,49 cada uno; E020 file_find contra
+  filesystem_*; F013 «guardé prueba.txt» con el Bloc «Sin título»; F019 «no hay más botones» bajo «Controles: (ninguno)»,
+  con el aviso de lista incompleta sólo después. Cinco ayudas, cada una con su interruptor: `game_epic_look`,
+  `named_folder_theirs`, `read_find_split` (frases de descripción, mind.py, ahora varias por herramienta),
+  `written_not_window` (nota tras un file_write de un turno que escribió en una ventana), `controls_not_complete`
+  (ModelAids + ScreenViewProjection: el encabezado dice que la lista no es completa y una vacía es «no se leyó
+  ninguno»). Medida offline con `scripts/renew/ayudas/dudas.py` (catálogo int10 del NB entero, GPU, capa 0 a 0,4, sin
+  Laya; 3 semillas; 14 decisiones y 7 turnos reproducidos): F016 retenida 3/3 → 0/3 (game_installed_named 0,66);
+  E018 file_find 0,56 → file_read 0,58; E020 file_find 0,47 → 0,57; F013 distingue el archivo de la ventana 0/3 → 3/3;
+  F019 «no hay botones» en la primera respuesta 4/9 → 1/9 (la de seguimiento, con esa frase ya en la historia, 5/9 →
+  5/9); 10 contracasos sin cambio de herramienta (Rocket League game_launch 0,81 → 0,70). F009 no mejora (rechaza en 1
+  de 3 semillas, con o sin ayuda): lo decide el primer token (p_call ~0,67), no la descripción. Suites: Kernel 734,
+  Contracts 74, App 188, Setup 477, Providers 3066, pytest 634. Pendiente: A/B del líder (ver informe w9-dudas).

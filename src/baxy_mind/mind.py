@@ -358,11 +358,43 @@ def _aid_on(aid: str) -> bool:
 # Aid «person_folder_sentence» (lever 8): one sentence of fact at the end of a tool's description
 # (artifacts/renew/ayudas/DISENO_PALANCAS.md), from what filesystem_list already says (td:63). E027 0/3 → 3/3 in the
 # e2e of both machines. Lever 7 (the modes, in system.settings.set) was measured and left out: scenes −2,25.
+# Renew al máximo (w9-dudas, practice falsehoods and e2e of int9-int10), each its own switch; measured offline on the
+# notebook's int10 catalog, 3 seeds, layer 0 at 0.4 (scripts/renew/ayudas/dudas.py):
+# «named_folder_theirs» (F009: «no puedo abrir un archivo de BAXY-bench, es tu carpeta de trabajo» with no call; E020:
+# file_find against the work folder's tools at 0.46-0.51 for «el más grande dentro de BAXY-bench»): where BAXY's work
+# folder is, in the tools that read or open the person's files and in the work folder's own. E020 file_find 0.47 → 0.57;
+# F009 no better (it refuses on 1 seed of 3 with or without it, as on the notebook), worse without file_open's sentence.
+# «read_find_split» (E018: «¿cuántas líneas tiene registro.log de BAXY-bench?», file_read against file_find at 0.49 each,
+# held by the doubt and asked): which of the two counts a named file's lines, and that file_read finds the file itself.
+# file_find 0.56 → file_read 0.58, 3/3.
+# «game_epic_look» (F016: «lanza Fortnite», an Epic game, split between game_launch, whose list is Steam's, and three
+# reads at 0.28-0.34, held and asked «¿abrir o instalar?»): the list is Steam's, and the read that looks in Steam and
+# Epic. Held 3/3 → game_installed_named at 0.66, 0/3; «lanza Rocket League» still game_launch (0.81 → 0.70).
+WORK_FOLDER = "BAXY's own work folder is only filesystem-sandbox, in BAXY's data under AppData"
+NAMED_FOLDER = (" Any folder of the person's home is theirs, even one whose name contains BAXY: it goes in subdirectory, "
+                f"with folder home ({WORK_FOLDER}).")
+SANDBOX_ONLY = (" This work folder is filesystem-sandbox, in BAXY's data under AppData: any other folder of the person's "
+                "home is file_find's, whatever its name.")
 DESCRIPTION_AIDS = {
-    "filesystem.known.trash.named": (
+    "filesystem.known.trash.named": ((
         "person_folder_sentence",
         " A folder the person names, in their home or anywhere else, is theirs even if its name contains BAXY or bench: "
-        "delete from it like from any other folder (BAXY's own work folder is only the one filesystem_list shows)."),
+        "delete from it like from any other folder (BAXY's own work folder is only the one filesystem_list shows)."),),
+    "file.open": (("named_folder_theirs", " Any folder of the person's home is theirs, even one whose name contains "
+                                          f"BAXY: open from it with folder home and that folder in name ({WORK_FOLDER})."),),
+    "file.read": (("named_folder_theirs", NAMED_FOLDER),
+                  ("read_find_split", " It also tells how many lines a named file has (totalLines), and it looks for the "
+                                      "file itself: no file_find before it.")),
+    "file.find": (("named_folder_theirs", NAMED_FOLDER),
+                  ("read_find_split", " What a named file says, or how many lines it has, is file_read, which looks for "
+                                      "the file itself.")),
+    "filesystem.list": (("named_folder_theirs", SANDBOX_ONLY),),
+    "filesystem.search": (("named_folder_theirs", SANDBOX_ONLY),),
+    "game.launch": (("game_epic_look", " The installed games list is Steam's only: a game not in it may be installed "
+                                       "from Epic, so before saying it is not installed, game_installed_named looks in "
+                                       "Steam and Epic without opening anything."),),
+    "game.installed.named": (("game_epic_look", " It is also the look for a game the person wants to play that is not "
+                                                "in game_launch's list of installed games (Steam's only)."),),
 }
 
 def _fold(name: str) -> str:
@@ -440,6 +472,37 @@ def field_note(observation: str, args: str | None) -> str:
         return ""
     note = FIELD_NOTE if observed.get("focused") is True else FIELD_NOTE_UNCHECKED
     return note.format(label=label.strip())
+
+
+# Renew al máximo (w9-dudas, falsedades F013: «abre el bloc de notas, escribe 'prueba 123' y guárdalo en … como
+# prueba.txt»): the text typed into Notepad, then file_write wrote the file, and «guardé prueba.txt» was told while
+# Notepad's tab stayed «Sin título». The file is what was saved; the window's text is not, and file_write never touches it.
+# Replayed (dudas.py, 3 seeds): the answer told the window apart 0/3 → 3/3.
+WRITTEN_NOTE = ("\n[Ayuda: file_write escribió {path} directo en el disco, sin pasar por ninguna ventana: lo escrito antes "
+                "en «{title}» ({process}) no se guardó con esta llamada.]")
+
+
+def written_note(observation: str, receipts: list[dict[str, Any]]) -> str:
+    """Aid «written_not_window»: a completed file_write in a turn that typed text into a window before it says the file
+    was written straight to the disk and that window's text was not saved by it (the window of the last such typing, as
+    its result named it). Empty otherwise."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return ""
+    observed = facts.get("observed") if isinstance(facts, dict) else None
+    if not isinstance(observed, dict) or facts.get("status") != "completed" or not observed.get("fullPath"):
+        return ""
+    for receipt in reversed(receipts):
+        if receipt["tool"] != "input_text_type" or not receipt["completed"]:
+            continue
+        try:
+            sent = (json.loads(receipt["observation"]).get("observed") or {}).get("sentTo")
+        except (json.JSONDecodeError, AttributeError):
+            sent = None
+        if isinstance(sent, dict) and sent.get("title"):
+            return WRITTEN_NOTE.format(path=observed["fullPath"], title=sent["title"], process=sent.get("process") or "?")
+    return ""
 
 
 # Measured history (PLAN_GENERAL C2, cf29f2510): told at the third, its risk «sondeos legítimos»: a look repeated at a
@@ -1102,10 +1165,10 @@ class Mind:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
                 description += " The person's installed games: " + "; ".join(games) + "."
-            if name in DESCRIPTION_AIDS and _aid_on(DESCRIPTION_AIDS[name][0]):
-                aid, sentence = DESCRIPTION_AIDS[name]
-                description = description.rstrip() + sentence
-                aids[aid] = sentence.strip()
+            for aid, sentence in DESCRIPTION_AIDS.get(name, ()):
+                if _aid_on(aid):
+                    description = description.rstrip() + sentence
+                    aids.setdefault(aid, {})[name] = sentence.strip()
             raw = cap.get("argumentsSchema")
             constants: dict[str, Any] = {}
             schema = _model_schema(raw if isinstance(raw, dict) else {}, constants)
@@ -1735,6 +1798,12 @@ class Mind:
                 turn["field_told"] = True
                 note += field
                 aids["field_focused_next"] = field.strip()
+        if calling == "file_write" and _aid_on("written_not_window"):
+            # The receipts before this call's own (_receipt above put it last).
+            written = written_note(observation, turn.get("receipts", [])[:-1])
+            if written:
+                note += written
+                aids["written_not_window"] = written.strip()
         # Aid «same_call_next» (PLAN_GENERAL C2; uso real: the same click 5-7 times, a reload and a typing in turn): a
         # call made again in this turn with the same arguments and the same result (its content, _result_key),
         # whatever came between, is told as a fact with its options, once per turn (a loop of a look and a click repeats

@@ -98,6 +98,13 @@ public static class ModelAids
     /// </summary>
     public const string DrawnTextNext = "drawn_text_next";
 
+    /// <summary>
+    /// Renew al máximo (w9-dudas, falsedades F019): a look whose list of controls the reader says is not whole (drawn
+    /// without controls, cut, partial, only the frame, its tree unread) says so in the heading of the list, and an empty
+    /// one is «none read», never «(ninguno)».
+    /// </summary>
+    public const string ControlsNotComplete = "controls_not_complete";
+
     /// <summary>Renew al máximo (w8): a keyboard act refused for a window run as administrator says nothing was sent and why.</summary>
     public const string ElevatedNext = "elevated_next";
 
