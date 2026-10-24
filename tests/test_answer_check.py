@@ -339,3 +339,27 @@ def test_the_session_calls_go_with_a_kept_session(tmp_path: Path, monkeypatch) -
     # A session kept before the aid, with calls in it: what ran is not known whole, and nothing is said of it.
     mind.load_session([m for m in kept if m.get("role") != "baxy.session"])
     assert mind._calls is None
+
+
+# ---- a control said not to be there while the reading shows its name -----------------------------------------------
+# F019 on int10e (notebook, 6 seeds, clear in 3): «abre Steam y ve a la biblioteca» → the reading of Steam has no
+# controls but its text says «TIENDA BIBLIOTECA», «se pulsa por su texto», and the answer said there was no such button.
+STEAM_VIEW = {"status": "completed", "verification": "output_only",
+              "view": "Ventana «Steam» (steamwebhelper, window 24905238), al frente\nLugar a la vista: library de Steam\n"
+                      "Controles (no es la lista completa de la ventana: puede tener más):\n(no se leyó ninguno)\n"
+                      "(esta ventana no da sus controles: una línea de ahí se pulsa por su texto, como label, y que algo "
+                      "no salga en «Controles» no significa que no esté)\n"
+                      "Texto arriba: Steam Ver Amigos Productos Ayuda | TIENDA BIBLIOTECA COMUNIDAD | Página principal"}
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("Abrí Steam y me quedé en la biblioteca, pero no hay un botón de «Biblioteca»…", True),
+    ("No veo ningún botón «Comunidad» en esa ventana.", True),
+    ("Ahí no hay botón de «Página principal», así que no pude ir.", True),  # E015: the whole quoted name
+    ("No hay un botón «Descargas» en lo que leí de Steam.", False),  # a name the reading does not show
+    ("Pulsé «Biblioteca» por su texto.", False),
+    ("¿No hay un botón de «Biblioteca»?", False),
+])
+def test_a_control_said_absent_whose_name_the_reading_shows(answer: str, flagged: bool) -> None:
+    view = _r("input.visible.controls", STEAM_VIEW, {"application": "Steam", "includeText": True})
+    assert ("named_control" in _rules(answer, [view])) is flagged
