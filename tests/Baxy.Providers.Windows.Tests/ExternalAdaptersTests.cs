@@ -2235,6 +2235,60 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Holdout v5 V5E032/V5E040: moving a file of the person's by its name (BAXY-bench\presupuesto_v2.xlsx to archivo-2025)
+    // or copying it (contrato.txt as contrato-respaldo.txt) had no call: the move by name reached only BAXY's working
+    // folder. With folder (and subdirectory) it acts inside that folder: never over a file, never into a folder it would
+    // have to make, never outside it.
+    [Test]
+    public async Task ANamedFileOfThePersonsIsMovedOrCopiedInsideTheFolderNamed()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "perfil");
+        string bench = Path.Combine(home, "BAXY-bench");
+        Directory.CreateDirectory(Path.Combine(bench, "archivo-2025"));
+        await File.WriteAllTextAsync(Path.Combine(bench, "presupuesto_v2.xlsx"), "hoja");
+        await File.WriteAllTextAsync(Path.Combine(bench, "contrato.txt"), "texto");
+        var adapter = new WindowsSandboxNamedFileAdapter(temporary.Path, folder => folder == "home" ? home : null, []);
+        Task<ExternalCapabilityReceipt> Run(string arguments) => adapter.InvokeAsync(
+            "filesystem.sandbox.move.named", Json(arguments), CancellationToken.None).AsTask();
+
+        // A folder alone as the destination is that folder, with the file's own name.
+        ExternalCapabilityReceipt moved = await Run("""
+            {"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"presupuesto_v2.xlsx","destinationRelativePath":"archivo-2025"}
+            """);
+        ExternalCapabilityReceipt copied = await Run("""
+            {"copy":true,"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"contrato-respaldo.txt"}
+            """);
+        ExternalCapabilityReceipt over = await Run("""
+            {"copy":true,"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"contrato-respaldo.txt"}
+            """);
+        ExternalCapabilityReceipt unmade = await Run("""
+            {"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"viejos/contrato.txt"}
+            """);
+        ExternalCapabilityReceipt outside = await Run("""
+            {"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"../../fuera.txt"}
+            """);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(moved.Verified, Is.True, moved.ErrorCode);
+            Assert.That(File.ReadAllText(Path.Combine(bench, "archivo-2025", "presupuesto_v2.xlsx")), Is.EqualTo("hoja"));
+            Assert.That(File.Exists(Path.Combine(bench, "presupuesto_v2.xlsx")), Is.False);
+            Assert.That(moved.Result?.GetProperty("destinationRelativePath").GetString(),
+                Is.EqualTo("archivo-2025/presupuesto_v2.xlsx"));
+            Assert.That(moved.Result?.GetProperty("sourceAbsent").GetBoolean(), Is.True);
+            Assert.That(copied.Verified, Is.True, copied.ErrorCode);
+            Assert.That(File.ReadAllText(Path.Combine(bench, "contrato-respaldo.txt")), Is.EqualTo("texto"));
+            Assert.That(copied.Result?.GetProperty("sourceKept").GetBoolean(), Is.True);
+            Assert.That(over.ErrorCode, Is.EqualTo("named_file_destination_exists"));
+            Assert.That(over.EffectMayHaveOccurred, Is.False);
+            Assert.That(unmade.ErrorCode, Is.EqualTo("named_file_destination_folder_not_found"));
+            Assert.That(outside.ErrorCode, Is.EqualTo("named_file_destination_invalid"));
+            Assert.That(File.Exists(Path.Combine(bench, "contrato.txt")), Is.True);
+            Assert.That(Directory.Exists(Path.Combine(bench, "viejos")), Is.False);
+        });
+    }
+
     [Test]
     public async Task NamedSandboxDiffResolvesOnlyTheExactFileName()
     {

@@ -67,7 +67,6 @@ internal sealed class SaidFolders
     private readonly Func<string, string?> _known;
     private readonly HashSet<string> _told = new(StringComparer.Ordinal);
     private string _words = string.Empty;
-    private IReadOnlyList<Place>? _places;
 
     /// <param name="known">Where each known folder is, by its label (tests point them at a temporary folder).</param>
     internal SaidFolders(Func<string, string?>? known = null) => _known = known ?? PersonFolders.Path;
@@ -88,7 +87,6 @@ internal sealed class SaidFolders
     internal void Heard(string words)
     {
         _words = words ?? string.Empty;
-        _places = null;
         _told.Clear();
     }
 
@@ -96,20 +94,18 @@ internal sealed class SaidFolders
     /// The person's words answer the call that waits for their «sí»: the folders of the turn that asked it still hold,
     /// with any these words add, as when they press Sí (auditoría de la App, 2026-10-23).
     /// </summary>
-    internal void Answered(string words)
-    {
+    internal void Answered(string words) =>
         _words = _words.Length == 0 ? words ?? string.Empty : _words + "\n" + words;
-        _places = null;
-    }
 
     /// <summary>A heartbeat or a new session: no words of the person's hold.</summary>
     internal void Clear() => Heard(string.Empty);
 
-    /// <summary>The folders this turn's words name, read when a file call first asks (most turns make none).</summary>
+    /// <summary>
+    /// The folders this turn's words name, read at each file call (most turns make none): a folder the turn made since
+    /// the last one counts (holdout v5 V5E043: «crea la carpeta X y dentro un archivo» wrote the file beside it).
+    /// </summary>
     internal IReadOnlyList<Place> Places()
     {
-        if (_places is not null)
-            return _places;
         var found = new List<Place>();
         foreach (Match match in FullPath.Matches(_words))
         {
@@ -121,32 +117,29 @@ internal sealed class SaidFolders
 
         bool pathSaid = found.Count > 0;
         string rest = FullPath.Replace(_words, " ");
-        // The words of a relative path are that path's («Documentos/proyecto» is not Documents).
-        string spoken = Spoken(pathSaid ? rest : RelativePath.Replace(rest, " "));
-        foreach ((string name, string label) in PersonFolders.Names)
+        var folders = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+        string[] Folders(string root) => folders.TryGetValue(root, out string[]? known) ? known
+            : folders[root] = TopFolders(root);
+        string[] roots = [.. NameRoots.Select(Root).OfType<string>().Distinct(StringComparer.OrdinalIgnoreCase)];
+        string[] qualifiers = HomeWords.Any(word => Spoken(RelativePath.Replace(rest, " "))
+            .Contains(Spoken(word), StringComparison.Ordinal)) && Root("home") is { } home ? [home] : [];
+
+        // The folders of that name in the roots, kept where the words also name the root.
+        IEnumerable<string> Named(string name)
         {
-            if (spoken.Contains(Spoken(name), StringComparison.Ordinal) && Root(label) is { } root && Directory.Exists(root))
-                found.Add(new(root, name));
+            string[] all = [.. roots.SelectMany(Folders).Where(folder =>
+                Spoken(Path.GetFileName(folder)) == name)];
+            string[] qualified = [.. all.Where(folder => qualifiers.Any(root => Same(Path.GetDirectoryName(folder)!, root)))];
+            return qualified.Length > 0 ? qualified : all;
         }
 
-        string[] qualifiers = HomeWords.Any(word => spoken.Contains(Spoken(word), StringComparison.Ordinal))
-            && Root("home") is { } home ? [home] : [];
+        // A relative path said, with the words after it while they still name something under where it starts
+        // (holdout v5 V5E045/V5E047: «Documentos\Turnos Farmacia» was Documents\Turnos); of its starts, the ones where
+        // it exists, when any does (V5E044 on the PC: a BAXY-bench on the Desktop without the facturas named).
+        var relatives = new List<Place>();
+        var saidRelatives = new List<string>();
         if (!pathSaid)
         {
-            var folders = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
-            string[] Folders(string root) => folders.TryGetValue(root, out string[]? known) ? known
-                : folders[root] = TopFolders(root);
-            string[] roots = [.. NameRoots.Select(Root).OfType<string>().Distinct(StringComparer.OrdinalIgnoreCase)];
-
-            // The folders of that name in the roots, kept where the words also name the root.
-            IEnumerable<string> Named(string name)
-            {
-                string[] all = [.. roots.SelectMany(Folders).Where(folder =>
-                    Spoken(Path.GetFileName(folder)) == name)];
-                string[] qualified = [.. all.Where(folder => qualifiers.Any(root => Same(Path.GetDirectoryName(folder)!, root)))];
-                return qualified.Length > 0 ? qualified : all;
-            }
-
             foreach (Match match in RelativePath.Matches(rest))
             {
                 string[] parts = Parts(match.Value.TrimEnd('.', ':', ')'));
@@ -154,17 +147,38 @@ internal sealed class SaidFolders
                     continue;
                 string[] starts = PersonFolders.Names.TryGetValue(PersonFolders.Fold(parts[0]), out string? label)
                     && Root(label) is { } known ? [known] : [.. Named(Spoken(parts[0]))];
-                foreach (string start in starts)
-                {
-                    if (FolderOf(Path.Combine([start, .. parts[1..]])) is { } folder)
-                        found.Add(new(folder, match.Value.TrimEnd('.', ':', ')'), starts.Length == 1));
-                }
+                string said = LongestRelative(match.Value, rest[(match.Index + match.Length)..], starts);
+                saidRelatives.Add(said);
+                parts = Parts(said);
+                string[] all = [.. starts.Select(start => FolderOf(Path.Combine([start, .. parts[1..]]))).OfType<string>()];
+                string[] existing = [.. all.Where(Directory.Exists)];
+                string[] kept = existing.Length > 0 ? existing : all;
+                relatives.AddRange(kept.Select(folder => new Place(folder, said, kept.Length == 1)));
             }
+        }
 
+        // The words of a relative path are that path's («Documentos/proyecto» is not Documents).
+        string spoken = Spoken(pathSaid ? rest
+            : RelativePath.Replace(saidRelatives.Aggregate(rest, static (text, said) => text.Replace(said, " ")), " "));
+        var knownSaid = new HashSet<string>(StringComparer.Ordinal);
+        foreach ((string name, string label) in PersonFolders.Names)
+        {
+            if (spoken.Contains(Spoken(name), StringComparison.Ordinal) && Root(label) is { } root && Directory.Exists(root))
+            {
+                found.Add(new(root, name));
+                knownSaid.Add(Spoken(name));
+            }
+        }
+
+        if (!pathSaid)
+        {
+            found.AddRange(relatives);
+            // A known folder's name is that folder, not a folder of its name inside it (holdout v5 V5E043 on the
+            // notebook: «en documentos» went to Documentos\Documentos).
             foreach (string name in roots.SelectMany(Folders).Select(folder => Spoken(Path.GetFileName(folder)))
                          .Distinct(StringComparer.Ordinal))
             {
-                if (name.Count(char.IsLetter) >= 3 && name.Trim() != OwnName
+                if (name.Count(char.IsLetter) >= 3 && name.Trim() != OwnName && !knownSaid.Contains(name)
                     && spoken.Contains(name, StringComparison.Ordinal))
                 {
                     string[] named = [.. Named(name)];
@@ -177,9 +191,8 @@ internal sealed class SaidFolders
         // («de proyecto al escritorio» with a proyecto on the Desktop and another in the home folder).
         Place[] distinct = [.. found.GroupBy(place => place.Path, StringComparer.OrdinalIgnoreCase)
             .Select(group => group.OrderByDescending(place => place.Sure).First())];
-        _places = [.. distinct.Where(place => !distinct.Any(other =>
+        return [.. distinct.Where(place => !distinct.Any(other =>
             other.Sure && !Same(other.Path, place.Path) && Within(other.Path, place.Path)))];
-        return _places;
     }
 
     /// <summary>What happens to this call in this turn; null: it runs as it is (not a file call, or inside a folder named).</summary>
@@ -289,7 +302,13 @@ internal sealed class SaidFolders
             }
 
             if (folder is null)
-                return null;
+            {
+                // Without folder the work folder's own operations act in it (holdout v5 V5E032/V5E040: moving and
+                // copying by name).
+                return operation.StartsWith("filesystem.sandbox.", StringComparison.Ordinal)
+                    ? new([], true, Takes("sourceFileName") ? Text(arguments["sourceFileName"]) : null) : null;
+            }
+
             string[] labels = folder == "all_known"
                 ? [.. folderArgument.AllowedValues.Where(static value => value is not ("all_known" or "home" or "projects"))]
                 : [folder];
@@ -305,7 +324,8 @@ internal sealed class SaidFolders
                 roots = Path.IsPathFullyQualified(subdirectory) ? [Path.GetFullPath(subdirectory)]
                     : [.. roots.Select(root => Combine(root, subdirectory))];
             string? name = Takes("name") ? Text(arguments["name"]) : null;
-            string? item = name ?? (Takes("fileName") ? Text(arguments["fileName"]) : null);
+            string? item = name ?? (Takes("fileName") ? Text(arguments["fileName"]) : null)
+                ?? (Takes("sourceFileName") ? Text(arguments["sourceFileName"]) : null);
             if (item is null)
             {
                 string? query = Takes("query") ? Text(arguments["query"]) : null;
@@ -355,6 +375,9 @@ internal sealed class SaidFolders
                 routed["subdirectory"] = relative;
             if (Text(routed["fileName"]) is { } fileName)
                 routed["fileName"] = Path.GetFileName(fileName.TrimEnd('/', '\\'));
+            // A destination inside the folder, without the folder's own path it repeats (V5E032: «BAXY-bench/…»).
+            if (Text(routed["destinationRelativePath"]) is { } destination)
+                routed["destinationRelativePath"] = Inside(destination, relative);
             return routed;
         }
 
@@ -461,6 +484,26 @@ internal sealed class SaidFolders
             candidate += " " + word;
             string trimmed = candidate.TrimEnd(ending);
             if (Absolute(trimmed) is { } full && (Directory.Exists(full) || File.Exists(full)))
+                best = trimmed;
+        }
+
+        return best;
+    }
+
+    // A relative path the words said, with the words after it while they keep naming something that exists under one of
+    // the folders it can start in (a folder with spaces in its name), without the punctuation that ends a sentence.
+    private static string LongestRelative(string said, string after, IReadOnlyList<string> starts)
+    {
+        char[] ending = ['.', ':', ')', ',', ';', '\\', '/'];
+        string best = said.TrimEnd('.', ':', ')');
+        string candidate = said;
+        foreach (string word in after.Split(' ').Skip(1).Take(5))
+        {
+            candidate += " " + word;
+            string trimmed = candidate.TrimEnd(ending);
+            string[] parts = Parts(trimmed);
+            if (starts.Any(start => Absolute(Path.Combine([start, .. parts[1..]])) is { } full
+                    && (Directory.Exists(full) || File.Exists(full))))
                 best = trimmed;
         }
 

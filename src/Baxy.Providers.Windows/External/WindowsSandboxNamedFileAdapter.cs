@@ -1,15 +1,30 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Baxy.Providers.Windows.Filesystem;
 
 namespace Baxy.Providers.Windows.External;
 
 internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
 {
-    private readonly string _root;
+    // Holdout v5 V5E032/V5E040: how long the search for a file of the person's by its name walks (as file.read's).
+    private static readonly TimeSpan WalkTimeLimit = TimeSpan.FromSeconds(8);
+    private const int CandidatesShown = 5;
 
-    internal WindowsSandboxNamedFileAdapter(string dataRoot) =>
+    private readonly string _root;
+    private readonly Func<string, string?> _knownFolder;
+    private readonly IReadOnlyList<string> _privateRoots;
+
+    internal WindowsSandboxNamedFileAdapter(
+        string dataRoot,
+        Func<string, string?>? knownFolder = null,
+        IReadOnlyList<string>? privateRoots = null)
+    {
         _root = Path.Combine(Path.GetFullPath(dataRoot), "filesystem-sandbox");
+        _knownFolder = knownFolder ?? WindowsFileToolsAdapter.KnownFolderPath;
+        _privateRoots = privateRoots ?? BaxyPrivateArea.DefaultRoots();
+    }
 
     public bool CanHandle(string operation) => operation is
         "filesystem.sandbox.diff.named" or "filesystem.sandbox.move.named";
@@ -57,6 +72,11 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         string sourceName = SafeFileName(ExternalJson.RequiredString(arguments, "sourceFileName"));
         string relativeDestination = ExternalJson.RequiredString(arguments, "destinationRelativePath")
             .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+        bool copy = arguments.TryGetProperty("copy", out JsonElement copyElement)
+            && copyElement.ValueKind == JsonValueKind.True;
+        if (arguments.TryGetProperty("folder", out JsonElement folder))
+            return InFolder(operation, arguments, folder.GetString() ?? string.Empty, sourceName, relativeDestination,
+                copy, effectBoundary);
         string source = ResolveUnique(sourceName);
         string destination = ConfinedDestination(relativeDestination);
         if (File.Exists(destination) || Directory.Exists(destination))
@@ -64,20 +84,149 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         string hash = Hash(source);
         effectBoundary.Cross();
         Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
-        File.Move(source, destination);
-        if (File.Exists(source) || !File.Exists(destination)
-            || !string.Equals(Hash(destination), hash, StringComparison.Ordinal))
+        if (!Transfer(source, destination, copy, hash))
             return ExternalJson.Failure(operation, "sandbox_move_postread_failed", true);
-        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
+        return Moved(operation, sourceName, relativeDestination, hash, copy,
+            "sandbox_named_move_hash_absence_postread", null);
+    }
+
+    // Holdout v5 V5E032/V5E040: a file of the person's, named by its name inside a known folder (or a subfolder of it),
+    // moved or copied to a path inside that same folder. The file is the one of that name under it (file.read's walk,
+    // 8 s at most); the destination is a file that does not exist yet, in a folder that does (a folder alone is that
+    // folder, with the file's own name), never outside the folder named nor in BAXY's own area.
+    private ExternalCapabilityReceipt InFolder(
+        string operation,
+        JsonElement arguments,
+        string label,
+        string sourceName,
+        string relativeDestination,
+        bool copy,
+        ExternalEffectBoundary effectBoundary)
+    {
+        if (_knownFolder(label) is not { } known)
+            return ExternalJson.Failure(operation, "known_folder_invalid");
+        string root = Path.GetFullPath(known).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        string? subdirectory = null;
+        if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectoryElement))
+        {
+            subdirectory = subdirectoryElement.GetString()?.Trim() ?? string.Empty;
+            root = WindowsKnownFileAdapter.SubdirectoryRoots([(label, root)], subdirectory, _privateRoots)[0].Root;
+            if (!Directory.Exists(root))
+                return ExternalJson.Failure(operation, "known_subdirectory_not_found");
+        }
+
+        (string[] matches, bool walkStopped) = FindInFolder(root, label, sourceName);
+        if (matches.Length == 0)
+            return ExternalJson.Failure(operation, walkStopped ? "named_file_search_incomplete" : "named_file_not_found");
+        if (matches.Length > 1)
+        {
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteStartArray("candidates");
+                foreach (string match in matches.Take(CandidatesShown))
+                    writer.WriteStringValue(Relative(root, match));
+                writer.WriteEndArray();
+                if (matches.Length > CandidatesShown) writer.WriteBoolean("candidatesTruncated", true);
+                writer.WriteEndObject();
+            }), "named_file_ambiguous");
+        }
+
+        string source = matches[0];
+        string destination = Path.GetFullPath(Path.IsPathFullyQualified(relativeDestination) ? relativeDestination
+            : Path.Combine(root, relativeDestination)).TrimEnd(Path.DirectorySeparatorChar);
+        if (!destination.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+            return ExternalJson.Failure(operation, "named_file_destination_invalid");
+        if (Directory.Exists(destination))
+            destination = Path.Combine(destination, Path.GetFileName(source));
+        if (BaxyPrivateArea.Holds(_privateRoots, destination))
+            return ExternalJson.Failure(operation, "path_reserved");
+        if (File.Exists(destination) || Directory.Exists(destination))
+            return ExternalJson.Failure(operation, "named_file_destination_exists");
+        string parent = Path.GetDirectoryName(destination)!;
+        if (!Directory.Exists(parent))
+            return ExternalJson.Failure(operation, "named_file_destination_folder_not_found");
+        if (CrossesReparsePoint(root, parent))
+            return ExternalJson.Failure(operation, "named_file_destination_invalid");
+        string hash = Hash(source);
+        effectBoundary.Cross();
+        if (!Transfer(source, destination, copy, hash))
+            return ExternalJson.Failure(operation, "named_file_move_postread_failed", true);
+        return Moved(operation, sourceName, Relative(root, destination), hash, copy,
+            "known_folder_named_move_hash_absence_postread", writer =>
+            {
+                writer.WriteString("folder", label);
+                if (subdirectory is not null) writer.WriteString("subdirectory", subdirectory);
+                writer.WriteString("sourceRelativePath", Relative(root, source));
+            });
+    }
+
+    // The files of that whole name (case aside) under the folder, walked as the known-folder tools walk it.
+    private (string[] Matches, bool WalkStopped) FindInFolder(string root, string label, string fileName)
+    {
+        var matches = new List<string>();
+        var walk = Stopwatch.StartNew();
+        foreach (string file in Directory.EnumerateFiles(root, "*", WindowsKnownFileAdapter.WalkOptions(label)))
+        {
+            if (walk.Elapsed >= WalkTimeLimit)
+                return ([.. matches], true);
+            if (string.Equals(Path.GetFileName(file), fileName, StringComparison.OrdinalIgnoreCase)
+                && !BaxyPrivateArea.Holds(_privateRoots, file))
+            {
+                matches.Add(file);
+                if (matches.Count > CandidatesShown)
+                    break;
+            }
+        }
+
+        return ([.. matches], false);
+    }
+
+    private static bool CrossesReparsePoint(string root, string folder)
+    {
+        for (string? current = folder; current is not null && current.Length > root.Length;
+             current = Path.GetDirectoryName(current))
+        {
+            if ((File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static string Relative(string root, string path) => Path.GetRelativePath(root, path).Replace('\\', '/');
+
+    // Moved, or copied with the source kept, and read back: the destination holds the source's hash, and the source is
+    // gone after a move and still there after a copy.
+    private static bool Transfer(string source, string destination, bool copy, string hash)
+    {
+        if (copy)
+            File.Copy(source, destination, overwrite: false);
+        else
+            File.Move(source, destination);
+        return File.Exists(source) == copy && File.Exists(destination)
+            && string.Equals(Hash(destination), hash, StringComparison.Ordinal);
+    }
+
+    private static ExternalCapabilityReceipt Moved(
+        string operation,
+        string sourceName,
+        string destination,
+        string hash,
+        bool copy,
+        string authority,
+        Action<Utf8JsonWriter>? place) =>
+        ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            place?.Invoke(writer);
             writer.WriteString("sourceFileName", sourceName);
-            writer.WriteString("destinationRelativePath", relativeDestination);
-            writer.WriteString("sha256", hash); writer.WriteBoolean("sourceAbsent", true);
-            writer.WriteString("authority", "sandbox_named_move_hash_absence_postread");
+            writer.WriteString("destinationRelativePath", destination);
+            writer.WriteString("sha256", hash);
+            writer.WriteBoolean(copy ? "sourceKept" : "sourceAbsent", true);
+            writer.WriteString("authority", copy ? authority.Replace("_absence_", "_kept_") : authority);
             writer.WriteEndObject();
         }), true);
-    }
 
     private ExternalCapabilityReceipt Diff(string operation, JsonElement arguments)
     {

@@ -56,7 +56,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             {
                 string subdirectory = subdirectoryElement.GetString()?.Trim()
                     ?? throw new InvalidDataException("known_subdirectory_invalid");
-                roots = SubdirectoryRoots(roots, subdirectory);
+                roots = SubdirectoryRoots(roots, subdirectory, _privateRoots);
             }
             return ValueTask.FromResult(operation switch
             {
@@ -489,7 +489,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             (string Label, string Root)[] roots = Roots(ExternalJson.RequiredString(arguments, "folder"));
             if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectory))
                 roots = SubdirectoryRoots(roots, subdirectory.GetString()?.Trim()
-                    ?? throw new InvalidDataException("known_subdirectory_invalid"));
+                    ?? throw new InvalidDataException("known_subdirectory_invalid"), _privateRoots);
             return ValueTask.FromResult(TrashTarget(operation, roots, arguments, out _));
         }
         catch (Exception exception) when (exception is InvalidDataException or IOException
@@ -1426,7 +1426,7 @@ if __name__ == "__main__":
 
     // The profile root (home) holds AppData and the system's own hidden folders, which are not where the person keeps
     // files: they are not walked (BAXY Renew 2026-10-15).
-    private static EnumerationOptions WalkOptions(string label) => new()
+    internal static EnumerationOptions WalkOptions(string label) => new()
     {
         RecurseSubdirectories = true,
         IgnoreInaccessible = true,
@@ -1501,9 +1501,11 @@ if __name__ == "__main__":
         ["home"] = [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)],
     };
 
-    private (string Label, string Root)[] SubdirectoryRoots(
+    // The folder inside each known folder that subdirectory names, confined to it (also for ExplorerFolderAdapter).
+    internal static (string Label, string Root)[] SubdirectoryRoots(
         IReadOnlyList<(string Label, string Root)> roots,
-        string subdirectory)
+        string subdirectory,
+        IReadOnlyList<string> privateRoots)
     {
         if (!string.IsNullOrWhiteSpace(subdirectory) && Path.IsPathFullyQualified(subdirectory))
         {
@@ -1531,7 +1533,7 @@ if __name__ == "__main__":
             if (!candidate.StartsWith(root + Path.DirectorySeparatorChar,
                     StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("known_subdirectory_invalid");
-            if (BaxyPrivateArea.Holds(_privateRoots, candidate)) throw new InvalidDataException("path_reserved");
+            if (BaxyPrivateArea.Holds(privateRoots, candidate)) throw new InvalidDataException("path_reserved");
             // Renew al máximo (auditoría de flujos): every part of the way is checked, not only the last; through
             // «AppData\Local\Application Data» (Windows' junction back to Local) BAXY's own area was edited.
             if (Directory.Exists(candidate) && CrossesReparsePoint(root, candidate))
