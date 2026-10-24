@@ -605,11 +605,13 @@ public static class ProductCatalog
                 [
                     String("extension", maximumUtf8Bytes: 16, nonWhitespace: true),
                     String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
+                    // Holdout v5 V5E034/V5E044: «¿cuántos pdf hay en BAXY-bench\facturas?» had no call.
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["extension"]),
             OperationRisks.ReadOnly,
             "filesystem.explorer.count.foreground.folder.toplevel.v1",
-            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta; no cuenta los archivos ocultos ni los de sistema."),
+            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra (o en una subcarpeta suya) o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta; no cuenta los archivos ocultos ni los de sistema."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
