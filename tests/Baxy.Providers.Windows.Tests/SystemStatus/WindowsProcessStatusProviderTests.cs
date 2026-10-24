@@ -1,4 +1,7 @@
 using System.Diagnostics;
+using System.Text.Json;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.SystemStatus;
 using NUnit.Framework;
 using static Baxy.Providers.Windows.SystemStatus.WindowsProcessStatusProvider;
@@ -105,6 +108,31 @@ public sealed class WindowsProcessStatusProviderTests
         cancellation.Cancel();
         Assert.ThrowsAsync<OperationCanceledException>(async () =>
             await provider.GetProcessesAsync(ProcessStatusSort.Cpu, 5, cancellation.Token));
+    }
+
+    // Renew al máximo (w8): 142 of 323 processes on the notebook deny being read and were left out without a word; the
+    // list says how many it left out.
+    [Test]
+    public async Task TheListSaysHowManyProcessesWindowsDidNotLetItRead()
+    {
+        var snapshot = new ProcessStatusSnapshot(
+            2, [new ProcessStatusEntry(10, 1, "app", 2048, 1), new ProcessStatusEntry(11, 2, "tool", 1024, 1)],
+            UnmeasuredProcessCount: 142);
+
+        OperationOutcome outcome = await new ProcessListHandler(new FixedProcesses(snapshot)).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", JsonDocument.Parse("{}").RootElement.Clone()),
+            CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+        JsonElement result = outcome.Result!.Value;
+        Assert.That(result.GetProperty("observedProcessCount").GetInt32(), Is.EqualTo(2));
+        Assert.That(result.GetProperty("unmeasuredProcessCount").GetInt32(), Is.EqualTo(142));
+    }
+
+    private sealed class FixedProcesses(ProcessStatusSnapshot snapshot) : IProcessStatusProvider
+    {
+        public ValueTask<ProcessStatusSnapshot> GetProcessesAsync(
+            ProcessStatusSort sort, int limit, CancellationToken cancellationToken) => ValueTask.FromResult(snapshot);
     }
 
     private static KeyValuePair<ProcessIdentity, ProcessSample> Sample(

@@ -319,16 +319,20 @@ public sealed class ForegroundLeaseTests
         });
     }
 
+    // Renew al máximo (w8): a window gone is refused as gone (input_window_not_found), for a burst and for a mission's
+    // front alike; «not in front» for it left the reply to guess the cause.
     [Test]
     public async Task AGoneWindowIsRefusedWithoutTouchingTheDesktop()
     {
         var desktop = new FakeDesktop { MissionAlive = false };
-        IInputBurst burst = await Lease(new FakePause(), new FakeClock { NowMs = 10_000 }, desktop)
-            .AcquireAsync(Mission, CancellationToken.None);
+        ForegroundLease lease = Lease(new FakePause(), new FakeClock { NowMs = 10_000 }, desktop);
+        IInputBurst burst = await lease.AcquireAsync(Mission, CancellationToken.None);
+        string? mission = await lease.TakeForMissionAsync(Mission, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(burst.Refusal, Is.EqualTo("input_window_not_in_front"));
+            Assert.That(burst.Refusal, Is.EqualTo("input_window_not_found"));
+            Assert.That(mission, Is.EqualTo("input_window_not_found"));
             Assert.That(desktop.Fronted, Is.Empty);
         });
     }

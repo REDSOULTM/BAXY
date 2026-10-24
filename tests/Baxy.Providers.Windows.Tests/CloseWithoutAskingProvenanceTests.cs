@@ -556,7 +556,12 @@ public sealed class CloseWithoutAskingProvenanceTests
             Assert.That(notOpened.GetProperty("openedByBaxy").GetBoolean(), Is.False);
             Assert.That(notOpened.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
             if (hint)
-                Assert.That(next.GetString(), Does.EndWith("is open, but BAXY did not open it in this session: it was already open"));
+            {
+                Assert.That(next.GetString(), Does.EndWith(
+                    "is open, but BAXY did not open it in this session; who opened it, and when, is not known"));
+                // Auditoría del Core (w8): never «it was already open»: the person may have opened it during the session.
+                Assert.That(next.GetString(), Does.Not.Contain("already"));
+            }
         });
     }
 

@@ -372,17 +372,17 @@ def test_the_decision_model_reads_the_request_and_the_question_its_answer_answer
 @pytest.mark.parametrize("final", [False, True])
 def test_the_same_call_aid_offers_more_tools_only_when_the_turn_admits_them(tmp_path: Path, monkeypatch,
                                                                          final: bool) -> None:
-    # Review 12: on the third same call, «Opciones: otra herramienta…» beside «Este turno no admite más herramientas».
+    # Review 12: on the same call told again, «Opciones: otra herramienta…» beside «Este turno no admite más
+    # herramientas» (holdout v4: a failure is told at the second).
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     missed = json.dumps({"status": "failed", "error": "visible_button_not_found"})
     click = _call("input_visible_click", {"label": "FORTNITE"})
-    mind, server = _mind(tmp_path, [click, click, click, _say("No encontré ese botón.")])
+    mind, server = _mind(tmp_path, [click, click, _say("No encontré ese botón.")])
     mind.decide(1, "busca fortnite ahí")
     mind.continue_turn(2, missed)
-    mind.continue_turn(3, missed)
-    mind.continue_turn(4, missed, final=final)
+    mind.continue_turn(3, missed, final=final)
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
-    assert "ya se llamó 3 veces en este turno" in last
+    assert "ya se llamó 2 veces en este turno" in last
     assert ("Opciones: otra herramienta" in last) is not final
 
 
@@ -495,6 +495,8 @@ def test_laya_is_started_with_no_gpu_device(monkeypatch, tmp_path):
 
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
     monkeypatch.setattr(system_one.subprocess, "Popen", Started)
-    system_one.SystemOne("laya.gguf", "llama-server.exe").start()
+    laya = system_one.SystemOne("laya.gguf", "llama-server.exe")
+    laya.start()
+    laya.close()  # its watcher would start the exited double again, after this test
     args = started[0]
     assert args[args.index("-dev") + 1] == "none"

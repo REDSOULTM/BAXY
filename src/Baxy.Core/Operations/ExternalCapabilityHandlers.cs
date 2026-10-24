@@ -482,8 +482,11 @@ internal sealed class ExternalCapabilityHandler(
         if (Definition.ProductDescriptor!.RequiresObservedEffect && !receipt.EffectObserved
             && !(receipt.StateAlreadyReached && !receipt.EffectMayHaveOccurred))
         {
+            // Auditoría del Core (w8): the provider's verified post-read is what it saw after the call; it travels with
+            // the failure, marked effectObserved:false, never as success (status, code and uncertainty unchanged).
             return OperationOutcome.Failure(
                 "external_verification_failed",
+                result: Unobserved(receipt.Result.Value),
                 effectMayHaveOccurred: receipt.EffectMayHaveOccurred,
                 causeCode: receipt.EffectMayHaveOccurred
                     ? "external_effect_ambiguous"
@@ -497,9 +500,15 @@ internal sealed class ExternalCapabilityHandler(
 
     // Ronda B: the state already reached travels to the model as changed:false in the result (a disconnection that
     // was already done reads apart from one that happened); a result that says changed itself keeps its own.
-    private static JsonElement Unchanged(JsonElement result)
+    private static JsonElement Unchanged(JsonElement result) => WithFact(result, "changed");
+
+    // The verified post-read of a call whose effect was not observed: effectObserved:false beside its own properties (a
+    // result that says it itself keeps its own).
+    private static JsonElement Unobserved(JsonElement result) => WithFact(result, "effectObserved");
+
+    private static JsonElement WithFact(JsonElement result, string name)
     {
-        if (result.ValueKind != JsonValueKind.Object || result.TryGetProperty("changed", out _))
+        if (result.ValueKind != JsonValueKind.Object || result.TryGetProperty(name, out _))
         {
             return result;
         }
@@ -513,7 +522,7 @@ internal sealed class ExternalCapabilityHandler(
                 property.WriteTo(writer);
             }
 
-            writer.WriteBoolean("changed", false);
+            writer.WriteBoolean(name, false);
             writer.WriteEndObject();
         }
 

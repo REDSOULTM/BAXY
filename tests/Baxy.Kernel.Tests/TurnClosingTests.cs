@@ -129,6 +129,21 @@ public sealed class TurnClosingTests
         Assert.That(closing.AfterCall(3, Soon, "shell.command.run", command, ConsoleRun(805)), Is.True);
     }
 
+    // Holdout v4 (the Steam library, «Biblioteca» 7 times): the click's own count of its unchanged repeats, and the «next»
+    // it brings, differ on each repeat and are not its result: the same unchanged click thrice still closes the turn.
+    [Test]
+    public void AClicksCountOfItsUnchangedRepeatsIsNotPartOfItsResult()
+    {
+        var closing = new TurnClosing();
+        const string click = "{\"label\":\"Biblioteca\"}";
+        const string first = "{\"status\":\"failed\",\"error\":\"visible_button_postread_unchanged\"}";
+        string Again(int times) => "{\"status\":\"failed\",\"error\":\"visible_button_postread_unchanged\","
+            + $"\"observed\":{{\"unchangedInARow\":{times},\"next\":\"changed nothing {times} times\"}}}}";
+        Assert.That(closing.AfterCall(1, Soon, "input.visible.click", click, first), Is.False);
+        Assert.That(closing.AfterCall(2, Soon, "input.visible.click", click, Again(2)), Is.False);
+        Assert.That(closing.AfterCall(3, Soon, "input.visible.click", click, Again(3)), Is.True);
+    }
+
     private static string Result(string status, string? error = null) =>
         error is null ? $"{{\"status\":\"{status}\"}}" : $"{{\"status\":\"{status}\",\"error\":\"{error}\"}}";
 

@@ -62,7 +62,7 @@ internal sealed class AudioMuteHandler(IAudioControlProvider provider) : IOperat
         if (final.Muted != arguments.State
             || baseline.VolumePercent != final.VolumePercent)
         {
-            return AudioControlEvidence.VerificationFailure(receipt);
+            return AudioControlEvidence.VerificationFailure(receipt, final);
         }
 
         AudioStatusReceipt observed = await _provider.GetStatusAsync(
@@ -70,7 +70,7 @@ internal sealed class AudioMuteHandler(IAudioControlProvider provider) : IOperat
             cancellationToken).ConfigureAwait(false);
         if (!AudioControlEvidence.MatchesIndependentStatus(receipt, observed))
         {
-            return AudioControlEvidence.VerificationFailure(receipt);
+            return AudioControlEvidence.VerificationFailure(receipt, AudioControlEvidence.ReadAfter(receipt, observed));
         }
 
         JsonElement serialized = AudioControlEvidence.SerializeVerified(receipt);

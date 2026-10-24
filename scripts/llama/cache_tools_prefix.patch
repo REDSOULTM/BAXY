@@ -1,0 +1,678 @@
+diff --git a/common/chat.cpp b/common/chat.cpp
+index 4856713..17330d9 100644
+--- a/common/chat.cpp
++++ b/common/chat.cpp
+@@ -956,6 +956,16 @@ common_chat_prompt common_chat_template_direct_apply(
+     return common_chat_template_direct_apply_impl(tmpl, inputs, std::nullopt, std::nullopt, std::nullopt);
+ }
+ 
++// the suffix gen_prompt adds to no_gen_prompt
++static std::string common_chat_generation_prompt_diff(const std::string & no_gen_prompt, const std::string & gen_prompt) {
++    size_t prefix_len = 0;
++    size_t min_size = std::min(no_gen_prompt.size(), gen_prompt.size());
++    while (prefix_len < min_size && no_gen_prompt[prefix_len] == gen_prompt[prefix_len]) {
++        prefix_len++;
++    }
++    return gen_prompt.substr(prefix_len);
++}
++
+ std::string common_chat_template_generation_prompt_impl(
+     const common_chat_template & tmpl,
+     const autoparser::generation_params & inputs,
+@@ -970,12 +980,23 @@ std::string common_chat_template_generation_prompt_impl(
+     params.add_generation_prompt = true;
+     std::string gen_prompt       = common_chat_template_direct_apply_impl(tmpl, params, messages_override, tools_override, additional_context).str();
+ 
+-    size_t prefix_len = 0;
+-    size_t min_size = std::min(no_gen_prompt.size(), gen_prompt.size());
+-    while (prefix_len < min_size && no_gen_prompt[prefix_len] == gen_prompt[prefix_len]) {
+-        prefix_len++;
+-    }
+-    return gen_prompt.substr(prefix_len);
++    return common_chat_generation_prompt_diff(no_gen_prompt, gen_prompt);
++}
++
++std::string common_chat_template_generation_prompt_given(
++    const common_chat_template & tmpl,
++    const autoparser::generation_params & inputs,
++    const std::string & gen_prompt,
++    const std::optional<json> & messages_override,
++    const std::optional<json> & tools_override,
++    const std::optional<json> & additional_context) {
++
++    autoparser::generation_params params = inputs;
++    params.add_generation_prompt = false;
++    params.continue_final_message = COMMON_CHAT_CONTINUATION_NONE;
++    std::string no_gen_prompt    = common_chat_template_direct_apply_impl(tmpl, params, messages_override, tools_override, additional_context).str();
++
++    return common_chat_generation_prompt_diff(no_gen_prompt, gen_prompt);
+ }
+ 
+ std::string common_chat_template_generation_prompt(
+@@ -1758,6 +1779,24 @@ const common_chat_msg & common_chat_session::finish(const common_chat_input & ch
+     return result;
+ }
+ 
++static bool common_baxy_env_flag(const char * name, bool fallback) {
++    const char * value = std::getenv(name);
++    if (value == nullptr || *value == '\0') {
++        return fallback;
++    }
++    return std::string(value) != "0";
++}
++
++bool common_baxy_cache_enabled() {
++    static const bool enabled = common_baxy_env_flag("BAXY_LLAMA_CACHE", true);
++    return enabled;
++}
++
++bool common_baxy_cache_check() {
++    static const bool check = common_baxy_cache_enabled() && common_baxy_env_flag("BAXY_LLAMA_CACHE_CHECK", false);
++    return check;
++}
++
+ std::map<std::string, bool> common_chat_templates_get_caps(const common_chat_templates * chat_templates) {
+     GGML_ASSERT(chat_templates != nullptr);
+     GGML_ASSERT(chat_templates->template_default != nullptr);
+diff --git a/common/chat.h b/common/chat.h
+index dcff949..2c096af 100644
+--- a/common/chat.h
++++ b/common/chat.h
+@@ -450,6 +450,13 @@ common_chat_tool_choice common_chat_tool_choice_parse_oaicompat(const std::strin
+ 
+ bool common_chat_templates_support_enable_thinking(const common_chat_templates * chat_templates);
+ 
++// BAXY Renew (cache_tools_prefix.patch): the chat path keeps, between requests, what does not change with the
++// messages (the tool-call parser and grammar, the tokens of the prompt's start) and renders the template once less.
++// On unless BAXY_LLAMA_CACHE=0 (then everything is computed as in stock b11609); BAXY_LLAMA_CACHE_CHECK=1 also computes
++// every cached result the stock way, compares, logs the comparison and uses the stock result.
++bool common_baxy_cache_enabled();
++bool common_baxy_cache_check();
++
+ // Parses a JSON array of messages in OpenAI's chat completion API format.
+ std::vector<common_chat_msg> common_chat_msgs_parse_oaicompat(const common_json & messages);
+ 
+diff --git a/common/jinja/value.cpp b/common/jinja/value.cpp
+index 6edd8b9..e871070 100644
+--- a/common/jinja/value.cpp
++++ b/common/jinja/value.cpp
+@@ -12,6 +12,10 @@
+ #include <optional>
+ #include <algorithm>
+ 
++// BAXY Renew (cache_tools_prefix.patch, common/chat.cpp)
++bool common_baxy_cache_enabled();
++bool common_baxy_cache_check();
++
+ #define FILENAME "jinja-value"
+ 
+ namespace jinja {
+@@ -1598,7 +1602,116 @@ static void value_to_json_internal(std::ostringstream & oss, const value & val,
+     }
+ }
+ 
++// BAXY Renew (cache_tools_prefix.patch): the same text as value_to_json_internal, appended to a string instead of
++// written character by character to a stream (a tool list's `tool | tojson` was most of a template's render)
++static void value_to_json_append(std::string & out, const value & val, int curr_lvl, int indent, const std::string_view item_sep, const std::string_view key_sep);
++
++static void value_to_json_append_string(std::string & out, const std::string & str) {
++    out += '"';
++    for (char c : str) {
++        switch (c) {
++            case '"': out += "\\\""; break;
++            case '\\': out += "\\\\"; break;
++            case '\b': out += "\\b"; break;
++            case '\f': out += "\\f"; break;
++            case '\n': out += "\\n"; break;
++            case '\r': out += "\\r"; break;
++            case '\t': out += "\\t"; break;
++            default:
++                if (static_cast<unsigned char>(c) < 0x20) {
++                    char buf[7];
++                    snprintf(buf, sizeof(buf), "\\u%04x", static_cast<unsigned char>(c));
++                    out += buf;
++                } else {
++                    out += c;
++                }
++        }
++    }
++    out += '"';
++}
++
++static void value_to_json_append(std::string & out, const value & val, int curr_lvl, int indent, const std::string_view item_sep, const std::string_view key_sep) {
++    auto indent_str = [&out, indent](int lvl) {
++        if (indent > 0) {
++            out.append((size_t) lvl * indent, ' ');
++        }
++    };
++    auto newline = [&out, indent]() {
++        if (indent >= 0) {
++            out += '\n';
++        }
++    };
++
++    if (is_val<value_none>(val) || val->is_undefined()) {
++        out += "null";
++    } else if (is_val<value_bool>(val)) {
++        out += (val->as_bool() ? "true" : "false");
++    } else if (is_val<value_int>(val)) {
++        std::ostringstream oss; // numbers as the stream writes them
++        oss << val->as_int();
++        out += oss.str();
++    } else if (is_val<value_float>(val)) {
++        std::ostringstream oss;
++        oss << val->as_float();
++        out += oss.str();
++    } else if (is_val<value_string>(val)) {
++        value_to_json_append_string(out, val->as_string().str());
++    } else if (is_val<value_array>(val)) {
++        const auto & arr = val->as_array();
++        out += '[';
++        if (!arr.empty()) {
++            newline();
++            for (size_t i = 0; i < arr.size(); ++i) {
++                indent_str(curr_lvl + 1);
++                value_to_json_append(out, arr[i], curr_lvl + 1, indent, item_sep, key_sep);
++                if (i < arr.size() - 1) {
++                    out += item_sep;
++                }
++                newline();
++            }
++            indent_str(curr_lvl);
++        }
++        out += ']';
++    } else if (is_val<value_object>(val)) {
++        const auto & obj = val->as_ordered_object(); // IMPORTANT: need to keep exact order
++        out += '{';
++        if (!obj.empty()) {
++            newline();
++            size_t i = 0;
++            for (const auto & pair : obj) {
++                indent_str(curr_lvl + 1);
++                value_to_json_append_string(out, pair.first->as_string().str());
++                out += key_sep;
++                value_to_json_append(out, pair.second, curr_lvl + 1, indent, item_sep, key_sep);
++                if (i < obj.size() - 1) {
++                    out += item_sep;
++                }
++                newline();
++                ++i;
++            }
++            indent_str(curr_lvl);
++        }
++        out += '}';
++    } else {
++        out += "null";
++    }
++}
++
+ std::string value_to_json(const value & val, int indent, const std::string_view item_sep, const std::string_view key_sep) {
++    if (common_baxy_cache_enabled()) {
++        std::string out;
++        value_to_json_append(out, val, 0, indent, item_sep, key_sep);
++        if (common_baxy_cache_check()) {
++            std::ostringstream oss;
++            value_to_json_internal(oss, val, 0, indent, item_sep, key_sep);
++            if (oss.str() != out) {
++                fprintf(stderr, "value_to_json: BAXY cache check: JSON text differs from stock, using stock\n");
++                return oss.str();
++            }
++        }
++        JJ_DEBUG("value_to_json: result=%s", out.c_str());
++        return out;
++    }
+     std::ostringstream oss;
+     value_to_json_internal(oss, val, 0, indent, item_sep, key_sep);
+     JJ_DEBUG("value_to_json: result=%s", oss.str().c_str());
+diff --git a/common/parsers/parsers.h b/common/parsers/parsers.h
+index 8f0a97c..bc0f0f5 100644
+--- a/common/parsers/parsers.h
++++ b/common/parsers/parsers.h
+@@ -39,6 +39,16 @@ std::string common_chat_template_generation_prompt_impl(
+     const std::optional<json> & tools_override = std::nullopt,
+     const std::optional<json> & additional_context = std::nullopt);
+ 
++// the same suffix, given the render with add_generation_prompt set and no continuation: only the render without it is
++// made (BAXY Renew: a parser that already rendered that very prompt does not render it a second time)
++std::string common_chat_template_generation_prompt_given(
++    const common_chat_template & tmpl,
++    const autoparser::generation_params & inputs,
++    const std::string & gen_prompt,
++    const std::optional<json> & messages_override = std::nullopt,
++    const std::optional<json> & tools_override = std::nullopt,
++    const std::optional<json> & additional_context = std::nullopt);
++
+ bool is_lfm2_template(const std::string & src);
+ 
+ namespace workaround {
+diff --git a/common/parsers/qwen3-coder.cpp b/common/parsers/qwen3-coder.cpp
+index abed169..57274ab 100644
+--- a/common/parsers/qwen3-coder.cpp
++++ b/common/parsers/qwen3-coder.cpp
+@@ -1,4 +1,46 @@
+ #include "parsers.h"
++#include "log.h"
++
++#include <list>
++#include <mutex>
++
++// BAXY Renew (cache_tools_prefix.patch): the tool-call parser and its grammar depend on the template, the tools, the
++// tool choice, the response format and the reasoning settings, never on the messages; they are kept for the last few
++// combinations instead of being built again for every request (~12 ms with ~180 tools).
++namespace {
++
++struct qwen3_coder_tools_entry {
++    std::string                         key;
++    common_peg_arena                    parser;
++    std::string                         grammar;
++    bool                                grammar_lazy = false;
++    std::vector<common_grammar_trigger> grammar_triggers;
++};
++
++struct qwen3_coder_tools_cache {
++    std::mutex                         mutex;
++    std::list<qwen3_coder_tools_entry> entries; // most recently used first
++    static constexpr size_t            capacity = 4;
++};
++
++qwen3_coder_tools_cache & qwen3_coder_tools() {
++    static qwen3_coder_tools_cache cache;
++    return cache;
++}
++
++bool same_triggers(const std::vector<common_grammar_trigger> & a, const std::vector<common_grammar_trigger> & b) {
++    if (a.size() != b.size()) {
++        return false;
++    }
++    for (size_t i = 0; i < a.size(); i++) {
++        if (a[i].type != b[i].type || a[i].value != b[i].value || a[i].token != b[i].token) {
++            return false;
++        }
++    }
++    return true;
++}
++
++} // namespace
+ 
+ common_chat_params common_chat_params_init_qwen3_coder(const common_chat_template &          tmpl,
+                                                               const autoparser::generation_params & inputs) {
+@@ -7,7 +49,23 @@ common_chat_params common_chat_params_init_qwen3_coder(const common_chat_templat
+     const std::string GEN_PREFIX = "<|im_start|>assistant\n";
+ 
+     data.prompt            = common_chat_template_direct_apply_impl(tmpl, inputs);
+-    data.generation_prompt = common_chat_template_generation_prompt_impl(tmpl, inputs);
++    if (!common_baxy_cache_enabled()) {
++        data.generation_prompt = common_chat_template_generation_prompt_impl(tmpl, inputs);
++    } else if (inputs.has_continuation()) {
++        // the generation prompt is replaced below (GEN_PREFIX and the message being continued): not rendered
++    } else if (inputs.add_generation_prompt && inputs.continue_final_message == COMMON_CHAT_CONTINUATION_NONE) {
++        // the render with add_generation_prompt and no continuation is data.prompt itself: rendered once, not twice
++        data.generation_prompt = common_chat_template_generation_prompt_given(tmpl, inputs, data.prompt.str());
++        if (common_baxy_cache_check()) {
++            auto stock = common_chat_template_generation_prompt_impl(tmpl, inputs);
++            if (stock != data.generation_prompt) {
++                LOG_WRN("%s: BAXY cache check: generation prompt differs from stock, using stock\n", __func__);
++                data.generation_prompt = stock;
++            }
++        }
++    } else {
++        data.generation_prompt = common_chat_template_generation_prompt_impl(tmpl, inputs);
++    }
+     data.format            = COMMON_CHAT_FORMAT_PEG_NATIVE;
+ 
+     auto supports_reasoning = tmpl.source().find("<think>") != std::string::npos;
+@@ -59,6 +117,33 @@ common_chat_params common_chat_params_init_qwen3_coder(const common_chat_templat
+         data.prompt.append(data.generation_prompt);
+     }
+ 
++    std::string tools_key;
++    if (common_baxy_cache_enabled()) {
++        tools_key = tmpl.source();
++        tools_key += '\x1f';
++        tools_key += inputs.tools.dump();
++        tools_key += '\x1f';
++        tools_key += inputs.json_schema.dump();
++        tools_key += '\x1f';
++        tools_key += std::to_string((int) inputs.tool_choice) + (inputs.parallel_tool_calls ? "p" : "s") +
++                     (extract_reasoning ? "r" : "n");
++        auto & cache = qwen3_coder_tools();
++        std::lock_guard<std::mutex> lock(cache.mutex);
++        for (auto it = cache.entries.begin(); it != cache.entries.end(); ++it) {
++            if (it->key == tools_key) {
++                cache.entries.splice(cache.entries.begin(), cache.entries, it);
++                if (!common_baxy_cache_check()) {
++                    data.parser           = it->parser;
++                    data.grammar          = it->grammar;
++                    data.grammar_lazy     = it->grammar_lazy;
++                    data.grammar_triggers = it->grammar_triggers;
++                    return data;
++                }
++                break;
++            }
++        }
++    }
++
+     std::vector<std::string> tool_call_starts = { "<tool_call>" };
+ 
+     if (is_qwen3_coder) {
+@@ -188,5 +273,34 @@ common_chat_params common_chat_params_init_qwen3_coder(const common_chat_templat
+         }
+     }
+ 
++    if (!tools_key.empty()) {
++        auto & cache = qwen3_coder_tools();
++        std::lock_guard<std::mutex> lock(cache.mutex);
++        auto it = cache.entries.begin();
++        while (it != cache.entries.end() && it->key != tools_key) {
++            ++it;
++        }
++        if (it != cache.entries.end()) {
++            // check mode: the kept parser and grammar against the ones just built
++            const bool same = it->grammar == data.grammar && it->grammar_lazy == data.grammar_lazy &&
++                              same_triggers(it->grammar_triggers, data.grammar_triggers) &&
++                              it->parser.dump(it->parser.root()) == data.parser.dump(data.parser.root());
++            if (!same) {
++                LOG_WRN("%s: BAXY cache check: kept tool-call parser or grammar differs from stock, using stock\n", __func__);
++                it->parser           = data.parser;
++                it->grammar          = data.grammar;
++                it->grammar_lazy     = data.grammar_lazy;
++                it->grammar_triggers = data.grammar_triggers;
++            } else {
++                LOG_INF("%s: BAXY cache check: tool-call parser and grammar (%zu bytes) identical\n", __func__, data.grammar.size());
++            }
++        } else {
++            cache.entries.push_front({ tools_key, data.parser, data.grammar, data.grammar_lazy, data.grammar_triggers });
++            if (cache.entries.size() > qwen3_coder_tools_cache::capacity) {
++                cache.entries.pop_back();
++            }
++        }
++    }
++
+     return data;
+ }
+diff --git a/tools/server/server-common.cpp b/tools/server/server-common.cpp
+index c32c0d1..75942dc 100644
+--- a/tools/server/server-common.cpp
++++ b/tools/server/server-common.cpp
+@@ -9,8 +9,11 @@
+ 
+ #include "server-common.h"
+ 
++#include <algorithm>
++#include <list>
+ #include <random>
+ #include <sstream>
++#include <unordered_map>
+ #include <fstream>
+ #include <limits>
+ #include <cstring>
+@@ -910,6 +913,209 @@ json json_get_nested_values(const std::vector<std::string> & paths, const json &
+     return result;
+ }
+ 
++// ---------------------------------------------------------------------------------------------------------------------
++// BAXY Renew (cache_tools_prefix.patch): the tokens of a prompt's start, kept between requests.
++//
++// With special tokens parsed, llama_vocab::impl::tokenize first splits the text at every special token
++// (tokenizer_st_partition) and then tokenizes each piece between them on its own. So a text cut right after a special
++// token S tokenizes as the tokens up to S followed by the tokens of the rest, provided no other special token can match
++// across the cut (no special token holds an end of S followed by more text) and S strips no whitespace around it. Such
++// cuts are recorded while each kept text's tokens are checked piece by piece against the text; a new prompt takes the
++// kept tokens up to the last cut inside the start it shares with a kept text and tokenizes only the rest. Only for BPE
++// vocabularies, special tokens parsed, no BOS/EOS added and texts of at least 4 KiB.
++namespace {
++
++struct prompt_cut {
++    size_t offset;   // text offset right after a special token
++    size_t n_tokens; // tokens up to and including it
++};
++
++struct prompt_entry {
++    std::string             text;
++    llama_tokens            tokens;
++    std::vector<prompt_cut> cuts; // ascending
++};
++
++struct prompt_token_cache {
++    std::mutex                            mutex;
++    const llama_vocab *                   vocab = nullptr;
++    std::unordered_map<llama_token, bool> cut_after; // special token -> whether a cut may follow it
++    std::vector<std::string>              specials;  // the texts of all special tokens
++    std::list<prompt_entry>               entries;   // most recently used first
++};
++
++constexpr size_t PROMPT_CACHE_MIN_TEXT = 4096;
++constexpr size_t PROMPT_CACHE_ENTRIES  = 8;
++
++prompt_token_cache & prompt_tokens_cache() {
++    static prompt_token_cache cache;
++    return cache;
++}
++
++bool prompt_special_attr(llama_token_attr attr) {
++    // the tokens tokenizer_st_partition splits at (llama-vocab.cpp, cache_special_tokens)
++    return attr & (LLAMA_TOKEN_ATTR_CONTROL | LLAMA_TOKEN_ATTR_USER_DEFINED | LLAMA_TOKEN_ATTR_UNKNOWN);
++}
++
++// whether a cut may follow the special token `id`; cache.mutex held
++bool prompt_may_cut_after(prompt_token_cache & cache, const llama_vocab * vocab, llama_token id) {
++    const auto known = cache.cut_after.find(id);
++    if (known != cache.cut_after.end()) {
++        return known->second;
++    }
++    const llama_token_attr attr = llama_vocab_get_attr(vocab, id);
++    const std::string      s    = llama_vocab_get_text(vocab, id);
++    bool ok = prompt_special_attr(attr) && !(attr & (LLAMA_TOKEN_ATTR_LSTRIP | LLAMA_TOKEN_ATTR_RSTRIP)) && !s.empty();
++    if (ok && cache.specials.empty()) {
++        const int32_t n_vocab = llama_vocab_n_tokens(vocab);
++        for (llama_token t = 0; t < n_vocab; t++) {
++            if (prompt_special_attr(llama_vocab_get_attr(vocab, t))) {
++                cache.specials.emplace_back(llama_vocab_get_text(vocab, t));
++            }
++        }
++    }
++    for (size_t i = 0; ok && i < cache.specials.size(); i++) {
++        const std::string & t = cache.specials[i];
++        if (t == s) {
++            continue;
++        }
++        for (size_t k = 1; ok && k <= s.size(); k++) {
++            const std::string tail = s.substr(s.size() - k);
++            for (size_t pos = t.find(tail); pos != std::string::npos; pos = t.find(tail, pos + 1)) {
++                if (pos + k < t.size()) {
++                    ok = false; // t could start inside s (or before it) and end after the cut
++                    break;
++                }
++            }
++        }
++    }
++    cache.cut_after[id] = ok;
++    return ok;
++}
++
++// appends the cuts among tokens[from..], whose text starts at `offset` in `text`; false when the tokens' pieces do not
++// give back the text byte for byte; cache.mutex held
++bool prompt_add_cuts(prompt_token_cache & cache, const llama_vocab * vocab, const std::string & text,
++                     const llama_tokens & tokens, size_t from, size_t offset, std::vector<prompt_cut> & cuts) {
++    std::vector<char> piece(256);
++    for (size_t i = from; i < tokens.size(); i++) {
++        int32_t n = llama_token_to_piece(vocab, tokens[i], piece.data(), (int32_t) piece.size(), 0, true);
++        if (n < 0) {
++            piece.resize(-n);
++            n = llama_token_to_piece(vocab, tokens[i], piece.data(), (int32_t) piece.size(), 0, true);
++        }
++        if (n < 0 || offset + n > text.size() || (n > 0 && memcmp(text.data() + offset, piece.data(), n) != 0)) {
++            return false;
++        }
++        offset += n;
++        if (prompt_special_attr(llama_vocab_get_attr(vocab, tokens[i])) && prompt_may_cut_after(cache, vocab, tokens[i])) {
++            cuts.push_back({ offset, i + 1 });
++        }
++    }
++    return offset == text.size();
++}
++
++} // namespace
++
++llama_tokens server_tokenize_prompt(const llama_vocab * vocab, const std::string & text, bool add_special, bool parse_special) {
++    if (!common_baxy_cache_enabled() || !parse_special || text.size() < PROMPT_CACHE_MIN_TEXT ||
++            llama_vocab_type(vocab) != LLAMA_VOCAB_TYPE_BPE ||
++            (add_special && (llama_vocab_get_add_bos(vocab) || llama_vocab_get_add_eos(vocab)))) {
++        return common_tokenize(vocab, text, add_special, parse_special);
++    }
++    auto & cache = prompt_tokens_cache();
++
++    llama_tokens            tokens;
++    std::vector<prompt_cut> cuts;
++    size_t                  offset = 0;
++    std::string             source; // the kept text the start comes from
++    {
++        std::lock_guard<std::mutex> lock(cache.mutex);
++        if (cache.vocab != vocab) {
++            cache.vocab = vocab;
++            cache.entries.clear();
++            cache.cut_after.clear();
++            cache.specials.clear();
++        }
++        const prompt_entry * best     = nullptr;
++        const prompt_cut   * best_cut = nullptr;
++        for (const auto & entry : cache.entries) {
++            const size_t n    = std::min(entry.text.size(), text.size());
++            const size_t same = std::mismatch(text.begin(), text.begin() + n, entry.text.begin()).first - text.begin();
++            auto it = std::upper_bound(entry.cuts.begin(), entry.cuts.end(), same,
++                                       [](size_t value, const prompt_cut & cut) { return value < cut.offset; });
++            if (it != entry.cuts.begin()) {
++                --it;
++                if (best_cut == nullptr || it->offset > best_cut->offset) {
++                    best     = &entry;
++                    best_cut = &*it;
++                }
++            }
++        }
++        if (best_cut != nullptr) {
++            tokens.assign(best->tokens.begin(), best->tokens.begin() + best_cut->n_tokens);
++            for (const auto & cut : best->cuts) {
++                if (cut.offset > best_cut->offset) {
++                    break;
++                }
++                cuts.push_back(cut);
++            }
++            offset = best_cut->offset;
++            if (best_cut == &best->cuts.back()) {
++                source = best->text; // the new text continues all that text's kept start: it takes its place
++            }
++        }
++    }
++
++    size_t kept = tokens.size();
++    if (offset == 0) {
++        tokens = common_tokenize(vocab, text, add_special, parse_special);
++    } else {
++        const llama_tokens rest = common_tokenize(vocab, text.substr(offset), false, parse_special);
++        tokens.insert(tokens.end(), rest.begin(), rest.end());
++    }
++
++    if (common_baxy_cache_check()) {
++        const llama_tokens stock = common_tokenize(vocab, text, add_special, parse_special);
++        if (stock != tokens) {
++            size_t i = 0;
++            while (i < stock.size() && i < tokens.size() && stock[i] == tokens[i]) {
++                i++;
++            }
++            LOG_WRN("%s: BAXY cache check: prompt tokens differ from stock at token %zu (%zu stock, %zu cached, %zu kept), using stock\n",
++                    __func__, i, stock.size(), tokens.size(), kept);
++            tokens = stock;
++            cuts.clear();
++            offset = 0;
++            kept   = 0;
++            source.clear();
++        } else {
++            LOG_INF("%s: BAXY cache check: prompt tokens identical (%zu tokens: %zu kept, %zu tokenized)\n",
++                    __func__, tokens.size(), kept, tokens.size() - kept);
++        }
++    } else {
++        LOG_INF("%s: BAXY prompt cache: %zu tokens, %zu kept, %zu tokenized\n", __func__, tokens.size(), kept, tokens.size() - kept);
++    }
++
++    {
++        std::lock_guard<std::mutex> lock(cache.mutex);
++        if (cache.vocab == vocab && prompt_add_cuts(cache, vocab, text, tokens, kept, offset, cuts) && !cuts.empty()) {
++            // the new text replaces the one whose whole kept start it continues, and the same text kept before
++            for (auto it = cache.entries.begin(); it != cache.entries.end(); ++it) {
++                if ((!source.empty() && it->text == source) || it->text == text) {
++                    cache.entries.erase(it);
++                    break;
++                }
++            }
++            cache.entries.push_front({ text, tokens, std::move(cuts) });
++            if (cache.entries.size() > PROMPT_CACHE_ENTRIES) {
++                cache.entries.pop_back();
++            }
++        }
++    }
++    return tokens;
++}
++
+ llama_tokens tokenize_mixed(const llama_vocab * vocab, const json & json_prompt, bool add_special, bool parse_special) {
+     // If `add_bos` is true, we only add BOS, when json_prompt is a string,
+     // or the first element of the json_prompt array is a string.
+@@ -940,7 +1146,7 @@ llama_tokens tokenize_mixed(const llama_vocab * vocab, const json & json_prompt,
+         }
+     } else {
+         auto s = json_prompt.template get<std::string>();
+-        prompt_tokens = common_tokenize(vocab, s, add_special, parse_special);
++        prompt_tokens = server_tokenize_prompt(vocab, s, add_special, parse_special);
+     }
+ 
+     return prompt_tokens;
+diff --git a/tools/server/server-common.h b/tools/server/server-common.h
+index 5bd2ed5..1111d04 100644
+--- a/tools/server/server-common.h
++++ b/tools/server/server-common.h
+@@ -279,6 +279,11 @@ json json_get_nested_values(const std::vector<std::string> & paths, const json &
+  */
+ llama_tokens tokenize_mixed(const llama_vocab * vocab, const json & json_prompt, bool add_special, bool parse_special);
+ 
++// BAXY Renew (cache_tools_prefix.patch): common_tokenize(vocab, text, add_special, parse_special), but a text that starts
++// like one tokenized before (up to right after a special token) takes the kept tokens of that start and tokenizes only
++// the rest. The same tokens as common_tokenize (see server-common.cpp); BAXY_LLAMA_CACHE=0 turns it off.
++llama_tokens server_tokenize_prompt(const llama_vocab * vocab, const std::string & text, bool add_special, bool parse_special);
++
+ // return the last index of character that can form a valid string
+ // if the last character is potentially cut in half, return the index before the cut
+ // if validate_utf8(text) == text.size(), then the whole text is valid utf8
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index 60c5633..3f6ded2 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -4820,7 +4820,29 @@ std::unique_ptr<server_res_generator> server_routes::handle_completions_impl(
+ 
+         if (res_type != TASK_RESPONSE_TYPE_NONE && ctx_server.mctx != nullptr) {
+             // This is the case used by OAI compatible chat path with MTMD. TODO It can be moved to the path below.
+-            inputs.push_back(process_mtmd_prompt(ctx_server.mctx, prompt.get<std::string>(), files, ctx_server.init_opt));
++            const std::string text = prompt.get<std::string>();
++            if (common_baxy_cache_enabled() && files.empty() && text.find(get_media_marker()) == std::string::npos &&
++                    !llama_vocab_get_add_bos(ctx_server.vocab) && !llama_vocab_get_add_eos(ctx_server.vocab)) {
++                // BAXY Renew: with no media mtmd_tokenize gives the text's own tokens, special tokens parsed and none
++                // added (mtmd.cpp, mtmd_tokenizer::add_text), in one text chunk: the same tokens, kept between requests
++                server_tokens tokens(server_tokenize_prompt(ctx_server.vocab, text, false, true), true);
++                if (common_baxy_cache_check()) {
++                    server_tokens stock = process_mtmd_prompt(ctx_server.mctx, text, files, ctx_server.init_opt);
++                    bool same = stock.size() == tokens.size(); // get_tokens() is not for mtmd tokens
++                    for (size_t i = 0; same && i < stock.size(); i++) {
++                        same = stock[i] == tokens[i];
++                    }
++                    if (!same) {
++                        SRV_WRN("%s", "BAXY cache check: prompt tokens differ from mtmd's, using mtmd's\n");
++                        tokens = std::move(stock);
++                    } else {
++                        SRV_INF("BAXY cache check: prompt tokens identical to mtmd's (%zu tokens)\n", tokens.size());
++                    }
++                }
++                inputs.push_back(std::move(tokens));
++            } else {
++                inputs.push_back(process_mtmd_prompt(ctx_server.mctx, text, files, ctx_server.init_opt));
++            }
+         } else {
+             // Everything else, including multimodal completions.
+             inputs = tokenize_input_prompts(ctx_server.vocab, ctx_server.mctx, prompt, true, true, ctx_server.init_opt);

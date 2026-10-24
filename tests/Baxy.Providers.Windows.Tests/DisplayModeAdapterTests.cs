@@ -41,6 +41,7 @@ public sealed class DisplayModeAdapterTests
             Assert.That(receipt.Result?.GetProperty("final").GetProperty("refreshHz").GetUInt32(), Is.EqualTo(60u));
             Assert.That(receipt.Result?.GetProperty("changed").GetBoolean(), Is.True);
             Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("windows_display_settings_readback"));
+            Assert.That(receipt.Result?.GetProperty("monitor").GetString(), Is.EqualTo("primary"));
         });
     }
 
@@ -114,6 +115,44 @@ public sealed class DisplayModeAdapterTests
             Assert.That(display.Applied, Is.EqualTo(new[] { new DisplayModeValue(1920, 1080, 60, 32) }));
             Assert.That(display.Saves, Is.Empty);
             Assert.That(display.Saved("\\\\.\\DISPLAY1"), Is.EqualTo(Now));
+        });
+    }
+
+    // Renew al máximo (w8): Windows says DISP_CHANGE_SUCCESSFUL and the screen still reads the old mode: the change may
+    // land later, so the receipt does not say nothing happened, and it keeps the mode read.
+    [Test]
+    public async Task ASuccessWindowsDoesNotShowYetMayHaveHappened()
+    {
+        var display = new FakeDisplay(Now, Modes) { AppliesNow = false };
+
+        ExternalCapabilityReceipt receipt = await Invoke(display, new { refreshHz = 60 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("display_mode_not_verified"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("stateAfter").GetProperty("shown").GetProperty("refreshHz").GetUInt32(),
+                Is.EqualTo(144u));
+        });
+    }
+
+    // Renew al máximo (w8): a mode not listed says what is listed, so the model can offer it.
+    [Test]
+    public async Task AModeNotListedSaysTheRatesOrResolutionsListed()
+    {
+        ExternalCapabilityReceipt rate = await Invoke(new FakeDisplay(Now, Modes), new { refreshHz = 59 });
+        ExternalCapabilityReceipt size = await Invoke(new FakeDisplay(Now, Modes), new { width = 1024, height = 768 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(rate.ErrorCode, Is.EqualTo("display_mode_not_listed"));
+            Assert.That(rate.EffectMayHaveOccurred, Is.False);
+            Assert.That(rate.Result?.GetProperty("listedRefreshHz").EnumerateArray().Select(static hz => hz.GetUInt32()),
+                Is.EqualTo(new uint[] { 144, 120, 60 }));
+            Assert.That(size.ErrorCode, Is.EqualTo("display_mode_not_listed"));
+            Assert.That(size.Result?.GetProperty("listedResolutions").EnumerateArray().Select(static r => r.GetString()),
+                Is.EqualTo(new[] { "1920x1080", "1600x900", "1280x720" }));
         });
     }
 
@@ -192,6 +231,30 @@ public sealed class DisplayModeAdapterTests
             Assert.That(kept.Result?.GetProperty("savedForRestart").GetBoolean(), Is.True);
             Assert.That(display.Saves, Is.EqualTo(new[] { sixty }));
             Assert.That(display.Saved("\\\\.\\DISPLAY1"), Is.EqualTo(sixty));
+        });
+    }
+
+    // Renew al máximo (w5): a mode shown and not saved was told «done» as if kept; with the aid display_restart the
+    // result says a restart shows the saved mode again and how this one is kept. With BAXY_AYUDAS=none, the facts alone.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AModeShownButNotSavedSaysARestartShowsTheSavedOne(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var display = new FakeDisplay(Now, Modes);
+
+        ExternalCapabilityReceipt shown = await Invoke(display, new { refreshHz = 60 });
+        ExternalCapabilityReceipt kept = await Invoke(display, new { refreshHz = 60 });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shown.Result!.Value.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("1920x1080 at 60 Hz is shown now and not saved: the next restart "
+                    + "or sign-in shows the mode Windows has saved; display_mode_set with this same mode again keeps it"));
+            }
+            Assert.That(kept.Result!.Value.TryGetProperty("next", out _), Is.False, "a saved mode needs no word");
         });
     }
 

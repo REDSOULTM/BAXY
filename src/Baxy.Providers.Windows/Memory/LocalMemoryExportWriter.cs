@@ -587,7 +587,8 @@ public sealed class LocalMemoryExportWriter : IMemoryExportWriter
             ValidateBoundedText(
                 record.Value,
                 LocalMemoryStore.MaximumValueUtf8Bytes,
-                allowEmpty: true);
+                allowEmpty: true,
+                allowLineBreaks: true);
             if (record.Tags is null || record.Tags.Count > LocalMemoryStore.MaximumTags)
             {
                 throw new MemoryExportUnavailableException();
@@ -645,12 +646,16 @@ public sealed class LocalMemoryExportWriter : IMemoryExportWriter
         }
     }
 
-    private static void ValidateBoundedText(string value, int maximumUtf8Bytes, bool allowEmpty)
+    // Renew al máximo (w8): the store keeps a value with a line break or a tab (LocalMemoryStore.NormalizeValue), and one
+    // such value made every export memory_export_unavailable until it was forgotten; a value is held to the store's rule.
+    private static void ValidateBoundedText(
+        string value, int maximumUtf8Bytes, bool allowEmpty, bool allowLineBreaks = false)
     {
         if (value is null
             || (!allowEmpty && string.IsNullOrWhiteSpace(value))
             || !value.IsNormalized(NormalizationForm.FormC)
-            || value.Any(static character => char.IsControl(character))
+            || value.Any(character => char.IsControl(character)
+                && !(allowLineBreaks && character is '\r' or '\n' or '\t'))
             || StrictUtf8.GetByteCount(value) > maximumUtf8Bytes)
         {
             throw new MemoryExportUnavailableException();

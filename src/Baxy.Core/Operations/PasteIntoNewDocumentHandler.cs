@@ -66,10 +66,61 @@ internal sealed class PasteIntoNewDocumentHandler(
                 causeCode: "paste_application_not_opened");
         }
 
-        using JsonDocument empty = JsonDocument.Parse("{}");
-        return await _paste.ExecuteAsync(
+        // Auditoría del Core (w8): the paste names the window the opening verified. With no window it went to whatever
+        // held the front, and the opening does not always leave its window there: asked in front while the person works
+        // in another window it is raised without their keyboard (ShownWithoutFocus), Windows may refuse the front, and
+        // the person may click elsewhere meanwhile; the clipboard then went into their own document or chat. Named, the
+        // mission's lease brings that window up after the person's pause, or nothing is sent (input_window_not_in_front).
+        if (opened.Result is not { ValueKind: JsonValueKind.Object } facts
+            || !facts.TryGetProperty("windowHandle", out JsonElement handle)
+            || handle.ValueKind != JsonValueKind.Number
+            || !handle.TryGetInt64(out long window)
+            || window <= 0)
+        {
+            return OperationOutcome.Failure(
+                "verification_failed",
+                result: opened.Result,
+                effectMayHaveOccurred: true,
+                causeCode: "paste_window_unknown");
+        }
+
+        using JsonDocument target = JsonDocument.Parse($$"""{"window":{{window}}}""");
+        OperationOutcome pasted = await _paste.ExecuteAsync(
             new OperationInvocation(
-                invocation.RequestId, invocation.MissionId, invocation.InvocationId, empty.RootElement.Clone()),
+                invocation.RequestId, invocation.MissionId, invocation.InvocationId, target.RootElement.Clone()),
             cancellationToken).ConfigureAwait(false);
+        if (pasted.Succeeded)
+            return pasted;
+
+        // Renew al máximo (w5): the application was opened before the paste failed (an empty clipboard is refused before
+        // any key): the failure says so, with an effect that did occur, never «nothing happened» with a new window open.
+        return OperationOutcome.Failure(
+            pasted.ErrorCode ?? "paste_not_verified",
+            result: Opened(pasted.Result, application),
+            effectMayHaveOccurred: true,
+            causeCode: pasted.CauseCode);
+    }
+
+    private static JsonElement Opened(JsonElement? result, string application)
+    {
+        var buffer = new System.Buffers.ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            if (result is { ValueKind: JsonValueKind.Object } read)
+            {
+                foreach (JsonProperty property in read.EnumerateObject())
+                {
+                    if (property.Name != "applicationOpened")
+                        property.WriteTo(writer);
+                }
+            }
+
+            writer.WriteString("applicationOpened", application);
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 }

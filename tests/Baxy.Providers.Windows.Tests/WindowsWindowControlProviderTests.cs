@@ -389,6 +389,51 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Auditoría del Core (w8): a maximize, minimize or restore already as asked said a bare changed:false (read as «no
+    // pude», C13), while a move, a resize or a snap said the next too; now every window action says it.
+    [TestCase(WindowControlAction.Maximize, "maximized")]
+    [TestCase(WindowControlAction.Minimize, "minimized")]
+    [TestCase(WindowControlAction.Restore, "normal")]
+    public async Task AWindowActionAlreadyAsAskedSaysThisCallChangedNothing(WindowControlAction action, string state)
+    {
+        var platform = new FakePlatform();
+        platform.SetInitialState(state);
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(
+            new WindowActionHandler("window." + action.ToString().ToLowerInvariant(), action, provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("changed").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(WindowControlResultJson.UnchangedNext));
+            Assert.That(outcome.Result!.Value.GetProperty("window").GetProperty("state").GetString(), Is.EqualTo(state));
+            Assert.That(platform.ExecuteCalls, Is.Zero);
+        });
+    }
+
+    // Contracase: an action that changed the window says neither.
+    [Test]
+    public async Task AWindowActionThatChangedTheWindowSaysNoUnchangedNext()
+    {
+        var platform = new FakePlatform();
+        platform.SetInitialState("normal");
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(
+            new WindowActionHandler("window.maximize", WindowControlAction.Maximize, provider), new { windowId });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.TryGetProperty("changed", out _), Is.False);
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
     // Auditoría de falsedades: a window already where it was asked to go is told as its state before the call, never as
     // «done» by this call («¿ya lo moviste?»).
     [Test]
@@ -548,6 +593,47 @@ public sealed class WindowsWindowControlProviderTests
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.ActionFailed));
             Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
+        });
+    }
+
+    // Auditoría del Core (w8): a snap Windows took and the window did not failed with nothing of the window, while move,
+    // resize and the state actions said the window read after; now it says it too, with whether it is on the half.
+    [Test]
+    public async Task ASnapTheWindowDidNotTakeCarriesTheWindowReadAfter()
+    {
+        var platform = new FakePlatform { SetBoundsIgnored = true, WorkAreaBounds = new WindowBounds(0, 0, 1536, 816) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        OperationOutcome outcome = await Run(new WindowSnapHandler(provider), new { windowId, side = "left" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
+            Assert.That(state.GetProperty("present").GetBoolean(), Is.True);
+            Assert.That(state.GetProperty("state").GetString(), Is.EqualTo("normal"));
+            Assert.That(state.GetProperty("width").GetInt32(), Is.Not.EqualTo(768));
+            Assert.That(state.GetProperty("requestedStateReached").GetBoolean(), Is.False);
+            Assert.That(state.GetProperty("authority").GetString(), Is.EqualTo("windows_window_identity_postread"));
+        });
+    }
+
+    // Contracase: a snap refused before anything reached the window says no state after.
+    [Test]
+    public async Task ASnapRefusedBeforeAnyEffectCarriesNoStateAfter()
+    {
+        var platform = new FakePlatform { SetBoundsAccepted = false, WorkAreaBounds = new WindowBounds(0, 0, 1536, 816) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SnapAsync(windowId, "left", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.EffectMayHaveOccurred, Is.False);
+            Assert.That(result.StateAfter, Is.Null);
         });
     }
 

@@ -101,7 +101,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
         if ((WithControlCharacters("message.draft", text, TextHasControlCharacters)
-                ?? WithControlCharacters("message.draft", recipient, RecipientHasControlCharacters)) is { } refused)
+                ?? WithControlCharacters("message.draft", recipient, RecipientHasControlCharacters)
+                ?? WithoutReadableText("message.draft", text)) is { } refused)
         {
             return refused;
         }
@@ -178,7 +179,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string recipient = RequiredString(arguments, "recipient");
         string text = RequiredString(arguments, "text");
         if ((WithControlCharacters("message.send", text, TextHasControlCharacters)
-                ?? WithControlCharacters("message.send", recipient, RecipientHasControlCharacters)) is { } refused)
+                ?? WithControlCharacters("message.send", recipient, RecipientHasControlCharacters)
+                ?? WithoutReadableText("message.send", text)) is { } refused)
         {
             return refused;
         }
@@ -217,11 +219,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             if (sent.ErrorCode == WindowsDesktopMessagingAutomation.ComposerHasPersonDraft)
                 return StoppedAtPersonDraft("message.send", sent);
-            return Failure(
-                "message.send",
-                sent.ErrorCode ?? "message_delivery_not_verified",
-                sent.EffectObserved,
-                sent.EffectMayHaveOccurred);
+            return SendNotVerified("message.send", sent, resolved.Shown);
         }
 
         return Success(
@@ -265,7 +263,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
 
         // The owner's test destination is the name typed into the chat search.
         if ((WithControlCharacters("message.send.test", text, TextHasControlCharacters)
-                ?? WithControlCharacters("message.send.test", forced, RecipientHasControlCharacters)) is { } refused)
+                ?? WithControlCharacters("message.send.test", forced, RecipientHasControlCharacters)
+                ?? WithoutReadableText("message.send.test", text)) is { } refused)
         {
             return refused;
         }
@@ -305,11 +304,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             if (sent.ErrorCode == WindowsDesktopMessagingAutomation.ComposerHasPersonDraft)
                 return StoppedAtPersonDraft("message.send.test", sent);
-            return Failure(
-                "message.send.test",
-                sent.ErrorCode ?? "message_delivery_not_verified",
-                sent.EffectObserved,
-                sent.EffectMayHaveOccurred);
+            return SendNotVerified("message.send.test", sent, resolved.Shown);
         }
 
         return Success(
@@ -417,6 +412,65 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     private static ExternalCapabilityReceipt Success(string operation, JsonElement result) =>
         new(operation, true, true, result, null);
 
+    // Renew al máximo (w8): a send that failed after Enter came back with no result (the code and effectObserved only):
+    // nothing said Enter was pressed, so «not verified» read as «not sent» and a model sent it again (twice in the chat).
+    // It says Enter was pressed, that the message may be in the chat, what was read there and whether the chat still
+    // named the recipient; every other failure is as before. Renew al máximo (w9): one stopped just before Enter because
+    // the chat no longer named the recipient says the text was typed and not sent.
+    private static ExternalCapabilityReceipt SendNotVerified(
+        string operation,
+        DesktopMessageObservation sent,
+        string displayName)
+    {
+        ExternalCapabilityReceipt failure = Failure(
+            operation,
+            sent.ErrorCode ?? "message_delivery_not_verified",
+            sent.EffectObserved,
+            sent.EffectMayHaveOccurred || sent.EnterPressed);
+        if (sent.ErrorCode == WindowsDesktopMessagingAutomation.RecipientChangedBeforeEnter)
+        {
+            return failure with
+            {
+                Result = JsonObject(
+                    ("version", 1),
+                    ("messageWritten", true),
+                    ("enterPressed", false),
+                    ("sent", false),
+                    ("displayName", displayName)),
+            };
+        }
+
+        if (!sent.EnterPressed)
+        {
+            return failure;
+        }
+
+        return failure with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("messageWritten", true);
+                writer.WriteBoolean("enterPressed", true);
+                writer.WriteString("sent", "unknown");
+                writer.WriteString("displayName", displayName);
+                if (!string.IsNullOrWhiteSpace(sent.Read))
+                    writer.WriteString("deliveryRead", sent.Read);
+                if (sent.RecipientStillShown is { } shown)
+                    writer.WriteBoolean("recipientStillShown", shown);
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.MessageTextNext))
+                {
+                    writer.WriteString("next", "Enter was pressed in the chat of " + displayName
+                        + ", so the message may already be there; sending it again may send it twice: say it may "
+                        + "have been sent and let the person look at the chat");
+                }
+
+                writer.WriteEndObject();
+            }),
+        };
+    }
+
     private static ExternalCapabilityReceipt Failure(
         string operation,
         string error,
@@ -470,6 +524,39 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     // result.
     private const string TextHasControlCharacters = "message_text_has_control_characters";
     private const string RecipientHasControlCharacters = "message_recipient_has_control_characters";
+
+    internal const string TextNotVerifiable = "message_text_not_verifiable";
+
+    // Renew al máximo (w8): the composer and the sent bubble are verified by OCR on letters and digits only (Fold), so a
+    // text with neither («👍», «?!») could never be verified: it was typed, cleared and reported as a draft not verified
+    // that may have had an effect. It is refused before the client is opened or anything typed.
+    private static ExternalCapabilityReceipt? WithoutReadableText(string operation, string text)
+    {
+        if (WindowsDesktopMessagingAutomation.Fold(text).Length > 0)
+        {
+            return null;
+        }
+
+        return new(
+            operation,
+            false,
+            false,
+            ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("messageWritten", false);
+                writer.WriteBoolean("sent", false);
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.MessageTextNext))
+                {
+                    writer.WriteString("next", "nothing was written: what is written in a chat is verified by reading its "
+                        + "letters and digits, and this text has none; a text with at least one word can be sent");
+                }
+
+                writer.WriteEndObject();
+            }),
+            TextNotVerifiable);
+    }
 
     private static ExternalCapabilityReceipt? WithControlCharacters(string operation, string text, string errorCode)
     {
@@ -589,6 +676,12 @@ internal sealed record DesktopRecipientObservation(
 }
 
 // Read and Match (C4): the text read where the message was looked for, and «exact» or «tolerant» (TextMatch).
+// Renew al máximo (w8): an OCR read: its passes joined (Text, what every other reader takes) and each pass alone.
+internal sealed record OcrText(string Text, IReadOnlyList<string> Passes)
+{
+    public static implicit operator string(OcrText read) => read.Text;
+}
+
 internal sealed record DesktopMessageObservation(
     bool Verified,
     bool EffectObserved,
@@ -599,6 +692,12 @@ internal sealed record DesktopMessageObservation(
 {
     // Keys reached the composer without positive evidence of what they left (EffectObserved stays false).
     internal bool EffectMayHaveOccurred { get; init; }
+
+    // Renew al máximo (w8): Enter was pressed in the chat; a failure after it is a message that may be there.
+    internal bool EnterPressed { get; init; }
+
+    // After Enter: whether the chat's header still named the recipient (null: not read).
+    internal bool? RecipientStillShown { get; init; }
 
     // Ronda B: the typed text was not seen in the composer and what was typed here is cleared (it was empty before,
     // C5); the keys reached it, and a part of the text may remain, so the failure says an effect may have occurred.
@@ -700,6 +799,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     /// typed: it is left as it was and the flow stops, nothing written.
     /// </summary>
     internal const string ComposerHasPersonDraft = "composer_has_person_draft";
+
+    /// <summary>
+    /// Renew al máximo (w9): the text was typed and seen in the composer, and just before Enter the chat's header no
+    /// longer named the recipient: Enter was not pressed, nothing was sent, and the text typed is left in the composer.
+    /// </summary>
+    internal const string RecipientChangedBeforeEnter = "message_recipient_changed_before_enter";
 
     // C5: Ctrl+A selects whatever the focused field holds. When that field is the conversation's composer and it holds
     // text, the composer's picture (composer, taken just before) changes under the selection; a placeholder is not
@@ -1186,7 +1291,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // The same rows over the whole pane, the widest read below: an old bubble with these words anywhere there
             // before Enter is not the delivery.
             beforePane = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel, 0);
-            SendKey(VirtualKeyReturn);
+            if (!await PressEnterInVerifiedChatAsync(
+                    async token => await ShownRecipientAsync(
+                        recipient.WindowHandle, recipient.Channel, recipient.Name, token).ConfigureAwait(false) is not null,
+                    () => SendKey(VirtualKeyReturn),
+                    cancellationToken).ConfigureAwait(false))
+            {
+                return new(false, false, string.Empty, RecipientChangedBeforeEnter) { EffectMayHaveOccurred = true };
+            }
         }
         catch (LeasedInput.BurstStoppedException stop)
         {
@@ -1211,6 +1323,27 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     }
 
     /// <summary>
+    /// Renew al máximo (w9): the chat was verified before typing, and the typed draft's OCR takes seconds; its header is
+    /// read again just before Enter, and Enter is pressed only while it still names the recipient. Otherwise nothing is
+    /// pressed or cleared (the composer in front may be another chat's) and the text typed is said to be left there.
+    /// </summary>
+    internal static async ValueTask<bool> PressEnterInVerifiedChatAsync(
+        Func<CancellationToken, ValueTask<bool>> recipientShown,
+        Action pressEnter,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(recipientShown);
+        ArgumentNullException.ThrowIfNull(pressEnter);
+        if (!await recipientShown(cancellationToken).ConfigureAwait(false))
+        {
+            return false;
+        }
+
+        pressEnter();
+        return true;
+    }
+
+    /// <summary>
     /// The read-back of a message whose Enter was already pressed. Renew al máximo (auditoría de flujos): a capture, a
     /// read or a cancel that failed here escaped as a bare provider failure, and the message may already be in the chat
     /// (a model told «failed» sends it again); it is said as a delivery not verified, with its effect observed.
@@ -1227,7 +1360,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         catch (Exception failure) when (failure is IOException or InvalidOperationException or ExternalException
             or OperationCanceledException)
         {
-            return new(false, true, string.Empty, "message_delivery_not_verified");
+            return new(false, true, string.Empty, "message_delivery_not_verified") { EnterPressed = true };
         }
     }
 
@@ -1240,7 +1373,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     {
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
         byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
-        string afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
+        OcrText afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
         string afterHash = Convert.ToHexStringLower(SHA256.HashData(after));
         bool changed = !CryptographicOperations.FixedTimeEquals(
             SHA256.HashData(beforeSend),
@@ -1250,7 +1383,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // applies here too; the band changed and the header still names the
         // destination, which no other chat's text can satisfy at once. C4: the
         // receipt says the text read and whether it matched exactly or tolerantly.
-        string deliveryRead = afterText;
+        string deliveryRead = afterText.Text;
         string? match = TextMatch(afterText, text);
         if (match is null)
         {
@@ -1264,11 +1397,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             {
                 byte[] wider = CaptureRegion(
                     recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel, bandWidth);
-                string widerText = await ReadTextAsync(wider, cancellationToken).ConfigureAwait(false);
+                OcrText widerText = await ReadTextAsync(wider, cancellationToken).ConfigureAwait(false);
                 match = TextMatch(widerText, text);
                 if (match is not null)
                 {
-                    deliveryRead = widerText;
+                    deliveryRead = widerText.Text;
                     afterHash = Convert.ToHexStringLower(SHA256.HashData(wider));
                     break;
                 }
@@ -1292,7 +1425,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             afterHash,
             delivered ? null : "message_delivery_not_verified",
             deliveryRead.Trim(),
-            match);
+            match) { EnterPressed = true, RecipientStillShown = stillTarget };
     }
 
     public async ValueTask<DesktopMessageObservation> DraftAsync(
@@ -1418,10 +1551,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 && (read is null || ContentChanged(read, bitmap)))
             {
                 read = bitmap;
-                string observed = await ReadTextAsync(bitmap, cancellationToken).ConfigureAwait(false);
+                OcrText observed = await ReadTextAsync(bitmap, cancellationToken).ConfigureAwait(false);
                 if (TextMatch(observed, text) is { } match)
                 {
-                    return new(bitmap, true, observed.Trim(), match);
+                    return new(bitmap, true, observed.Text.Trim(), match);
                 }
             }
 
@@ -1693,6 +1826,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     internal static string? TextMatch(string observed, string expected) =>
         ContainsPhrase(observed, expected) ? "exact" : DeliveryMatches(observed, expected) ? "tolerant" : null;
 
+    // Renew al máximo (w8): a read joins its OCR passes, and the joined text could show the phrase across two passes
+    // («hola» read twice made «hola hola» exact). «exact» is now one pass showing it whole; the tolerant match still pools
+    // the passes as before (it already held whenever the joined phrase did), so what verifies is unchanged.
+    internal static string? TextMatch(OcrText observed, string expected) =>
+        observed.Passes.Any(pass => ContainsPhrase(pass, expected)) ? "exact"
+            : DeliveryMatches(observed.Text, expected) ? "tolerant" : null;
+
     internal static bool DeliveryMatches(string observed, string target)
     {
         if (SpacelessMatches(observed, target))
@@ -1786,14 +1926,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         return edits <= 1;
     }
 
-    private static async ValueTask<string> ReadTextAsync(
+    private static async ValueTask<OcrText> ReadTextAsync(
         byte[] bitmap,
         CancellationToken cancellationToken)
     {
         string? executable = FindTesseract();
         if (executable is null)
         {
-            return string.Empty;
+            return new OcrText(string.Empty, []);
         }
 
         // A dark theme draws light text on a dark background, which Tesseract
@@ -1821,7 +1961,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         string text = string.Join('\n', readings);
-        return text;
+        return new OcrText(text, readings);
     }
 
     private static byte[] Upscale2xNearest(byte[] bitmap)

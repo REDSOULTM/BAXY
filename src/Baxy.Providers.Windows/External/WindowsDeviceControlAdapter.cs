@@ -117,17 +117,21 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='scan_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
     // Auditoría final (regla 3): a netsh that failed or printed no profile header is a list not read, never an empty one.
-    private const string WifiProfilesScript = """
+    internal const string WifiProfilesScript = """
         $text=@(netsh wlan show profiles);$code=$LASTEXITCODE
         if($code -ne 0 -or -not (($text -join "`n") -match '(?im)^\s*(?:Profiles on interface|Perfiles en la interfaz)')){[pscustomobject]@{ok=$false}|ConvertTo-Json -Compress;exit 0}
         $profiles=@();foreach($line in $text){if($line -match '^\s*(?:All User Profile|Perfil de todos los usuarios)\s*:\s*(.+?)\s*$'){$profiles+=@($Matches[1])}}
         [pscustomobject]@{ok=$true;profiles=$profiles}|ConvertTo-Json -Compress
         """;
     // Auditoría final (regla 3): a netsh that failed or printed no interface header is a status not read, never
-    // «disconnected».
-    private const string WifiStatusScript = """
-        $text=@(netsh wlan show interfaces);$code=$LASTEXITCODE
-        if($code -ne 0 -or -not (($text -join "`n") -match '(?i)(?:hay|there (?:is|are))\s+\d+\s+interfa')){[pscustomobject]@{ok=$false}|ConvertTo-Json -Compress;exit 0}
+    // «disconnected». Renew al máximo (w8): the WLAN service stopped and a computer with no Wi-Fi adapter are said as
+    // such (wifi.scan's own codes; the notebook has none: «No hay ninguna interfaz inalámbrica en el sistema»), and
+    // any other unread status as wifi_status_not_read, not the adapter's generic failure.
+    internal const string WifiStatusScript = """
+        $text=@(netsh wlan show interfaces);$code=$LASTEXITCODE;$joined=($text -join "`n")
+        if($joined -match '(?i)is not running|no se está ejecutando|no está en ejecución'){[pscustomobject]@{ok=$false;error='wlan_service_not_running'}|ConvertTo-Json -Compress;exit 0}
+        if($joined -match '(?i)no hay ninguna interfaz|there is no wireless interface|no wireless interface'){[pscustomobject]@{ok=$false;error='wifi_radio_not_found'}|ConvertTo-Json -Compress;exit 0}
+        if($code -ne 0 -or -not ($joined -match '(?i)(?:hay|there (?:is|are))\s+\d+\s+interfa')){[pscustomobject]@{ok=$false;error='wifi_status_not_read'}|ConvertTo-Json -Compress;exit 0}
         $connected=$false;$profile=''
         foreach($line in $text){if($line -match '^\s*(?:State|Estado)\s*:\s*(connected|conectado)\s*$'){$connected=$true};if($line -match '^\s*(?:Profile|Perfil)\s*:\s*(.+?)\s*$'){$profile=$Matches[1]}}
         [pscustomobject]@{ok=$true;connected=$connected;profile=$profile}|ConvertTo-Json -Compress
@@ -142,7 +146,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         function Write-BaxyBrightnessAbsent{[pscustomobject]@{ok=$false;effectObserved=$false;error='brightness_not_supported'}|ConvertTo-Json -Compress}
 
         """;
-    private const string BrightnessScript = BrightnessInstances + """
+    // Renew al máximo (w5): a set is read back every 100 ms until every monitor shows the level, for 1.5 s at most. One
+    // read after a fixed 300 ms called a panel still fading towards it a failure, and made one that got there wait.
+    internal const string BrightnessScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$value=[byte]$args[0];$effect=$false
         try {$methods=@(Get-BaxyBrightness WmiMonitorBrightnessMethods);$current=@(Get-BaxyBrightness WmiMonitorBrightness)
           if($methods.Count -eq 0 -or $current.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
@@ -150,12 +156,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           if($baseline.Count -gt 0 -and @($baseline|Where-Object {$_ -ne $value}).Count -eq 0){
             [pscustomobject]@{ok=$true;effectObserved=$false;changed=$false;baselineValues=$baseline;values=$baseline}|ConvertTo-Json -Compress;exit 0
           }
-          foreach($method in $methods){Invoke-CimMethod -InputObject $method -MethodName WmiSetBrightness -Arguments @{Timeout=1;Brightness=$value}|Out-Null};$effect=$true;Start-Sleep -Milliseconds 300
-          $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness|ForEach-Object {[int]$_.CurrentBrightness})
-          [pscustomobject]@{ok=($after.Count -gt 0 -and @($after|Where-Object {$_ -ne $value}).Count -eq 0);effectObserved=$true;changed=$true;baselineValues=$baseline;values=$after}|ConvertTo-Json -Compress
+          foreach($method in $methods){Invoke-CimMethod -InputObject $method -MethodName WmiSetBrightness -Arguments @{Timeout=1;Brightness=$value}|Out-Null};$effect=$true
+          $deadline=(Get-Date).AddMilliseconds(1500)
+          do{Start-Sleep -Milliseconds 100
+            $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness|ForEach-Object {[int]$_.CurrentBrightness})
+            $reached=($after.Count -gt 0 -and @($after|Where-Object {$_ -ne $value}).Count -eq 0)}while(-not $reached -and (Get-Date) -lt $deadline)
+          [pscustomobject]@{ok=$reached;effectObserved=$true;changed=$true;baselineValues=$baseline;values=$after}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
-    private const string BrightnessAdjustScript = BrightnessInstances + """
+    internal const string BrightnessAdjustScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$delta=[int]$args[0];$effect=$false
         try {
           $methods=@(Get-BaxyBrightness WmiMonitorBrightnessMethods)
@@ -169,14 +178,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             if($null -eq $method){throw 'brightness_method_not_found'}
             Invoke-CimMethod -InputObject $method -MethodName WmiSetBrightness -Arguments @{Timeout=1;Brightness=[byte]$target}|Out-Null
           }
-          $effect=$true;Start-Sleep -Milliseconds 300
-          $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness)
-          $values=@();$ok=$after.Count -eq $current.Count
-          foreach($item in $after){$value=[int]$item.CurrentBrightness;$values+=@($value);if(-not $expected.ContainsKey([string]$item.InstanceName) -or $expected[[string]$item.InstanceName] -ne $value){$ok=$false}}
+          $effect=$true;$deadline=(Get-Date).AddMilliseconds(1500)
+          do{Start-Sleep -Milliseconds 100
+            $after=@(Get-CimInstance -Namespace root/WMI -ClassName WmiMonitorBrightness)
+            $values=@();$ok=$after.Count -eq $current.Count
+            foreach($item in $after){$value=[int]$item.CurrentBrightness;$values+=@($value);if(-not $expected.ContainsKey([string]$item.InstanceName) -or $expected[[string]$item.InstanceName] -ne $value){$ok=$false}}
+          }while(-not $ok -and (Get-Date) -lt $deadline)
           [pscustomobject]@{ok=$ok;effectObserved=$effect;baselineValues=$baseline;values=$values}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_adjust_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
-    private const string BrightnessStatusScript = BrightnessInstances + """
+    internal const string BrightnessStatusScript = BrightnessInstances + """
         $ErrorActionPreference='Stop'
         try {
           function Read-BaxyBrightness {
@@ -384,6 +395,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         {
             return ExternalJson.Failure(operation, "bluetooth_winrt_inventory_timeout");
         }
+        catch (WifiStatusUnreadException unread)
+        {
+            return effectBoundary.Failure(operation, unread.Code);
+        }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException or InvalidDataException or JsonException
             or TimeoutException)
@@ -440,7 +455,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     {
         string id = ExternalJson.RequiredString(arguments, "deviceId");
         if (!_bluetooth.TryGetValue(id, out string? nativeId))
-            return ExternalJson.Failure(operation, "bluetooth_identity_expired");
+            return IdentityUnknown(operation, "bluetooth_identity_expired", "deviceId", "paired", "bluetooth_device_list");
         DeviceInformation item = await DeviceInformation.CreateFromIdAsync(nativeId);
         if (item.Pairing.IsPaired)
             return ExternalJson.Switched(operation, BluetoothPairResult(id, item.Name), effectObserved: false);
@@ -455,6 +470,20 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, BluetoothPairResult(id, after.Name), true);
     }
 
+    // Renew al máximo (w5): an id no list of this Core gave (an older session's, or one made up) was a bare «expired»; with
+    // the aid identity_relist it says nothing was done and which list gives the ids.
+    private static ExternalCapabilityReceipt IdentityUnknown(
+        string operation, string code, string argument, string done, string list) =>
+        ModelAids.On(ModelAids.IdentityRelist)
+            ? new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("next", $"this {argument} is not one {list} gave since BAXY started, and nothing was {done}; "
+                    + $"{list} gives the ids to use");
+                writer.WriteEndObject();
+            }), code)
+            : ExternalJson.Failure(operation, code);
+
     private static JsonElement BluetoothPairResult(string id, string name) => ExternalJson.Create(writer =>
     {
         writer.WriteStartObject(); writer.WriteNumber("version", 1); writer.WriteString("deviceId", id);
@@ -462,11 +491,57 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         writer.WriteString("authority", "windows_device_pairing_postread"); writer.WriteEndObject();
     });
 
+    /// <summary>Renew al máximo (w8): the radios this adapter switches and reads (the WinRT Radio API; a fake in tests).</summary>
+    internal IRadioSet Radios { get; init; } = WindowsRadioSet.Instance;
+
+    // Renew al máximo (w8): a switched radio was read once, right after SetStateAsync returned, so one still settling
+    // was told «postread failed» though it got there a moment later. The radios are now read every 100 ms until they
+    // show the asked state, for 2 s at most, and a failure keeps the last read as stateAfter.
+    internal static readonly TimeSpan RadioPollPause = TimeSpan.FromMilliseconds(100);
+
+    internal static readonly TimeSpan RadioPollHorizon = TimeSpan.FromSeconds(2);
+
+    private async ValueTask<(IRadioHandle[] Observed, bool Reached)> ReadRadiosUntilAsync(
+        Func<IRadioHandle, bool> kind,
+        Func<IRadioHandle[], bool> reached,
+        CancellationToken token)
+    {
+        int polls = (int)(RadioPollHorizon / RadioPollPause);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        for (int poll = 0; ; poll++)
+        {
+            IRadioHandle[] observed = (await Radios.ListAsync()).Where(kind).ToArray();
+            if (reached(observed))
+                return (observed, true);
+            if (poll >= polls || clock.Elapsed >= RadioPollHorizon)
+                return (observed, false);
+            await _delay(RadioPollPause, token);
+        }
+    }
+
+    private static JsonElement RadioStateAfter(IRadioHandle[] observed) => ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteStartArray("radios");
+        foreach (IRadioHandle radio in observed)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("kind", radio.Kind.ToString());
+            writer.WriteString("name", radio.Name);
+            writer.WriteString("state", radio.State.ToString());
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+        writer.WriteBoolean("requestedStateReached", false);
+        writer.WriteString("authority", "windows_radio_api_reread");
+        writer.WriteEndObject();
+    });
+
     // NETWORK1737 «qué redes wifi hay» → «sí, prendelo»: the Wi-Fi radio is
     // switched through the same official Radio API as Bluetooth, with the
     // person's confirmation, and the state is read back; a read-only status
     // answers «¿el wifi está prendido?» without touching it.
-    private static async ValueTask<ExternalCapabilityReceipt> WifiRadioSetAsync(
+    private async ValueTask<ExternalCapabilityReceipt> WifiRadioSetAsync(
         string operation,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary,
@@ -478,12 +553,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "wifi_radio_state_invalid");
         }
         bool requested = stateElement.GetBoolean();
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
         {
             return ExternalJson.Failure(operation, "wifi_radio_access_denied");
         }
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => radio.Kind == RadioKind.WiFi)
             .ToArray();
         if (radios.Length == 0)
@@ -494,13 +569,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // FT/proveedores goal (review of receipts): a radio disabled by its switch or driver (RadioState.Disabled) is
         // off: turning it off changes nothing and is not told «may have happened»; turning on radios that are all
         // disabled is said before anything is touched.
-        bool Reached(Radio radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
+        bool Reached(IRadioHandle radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
         if (requested && radios.All(radio => radio.State == RadioState.Disabled))
         {
             return ExternalJson.FailureBeforeEffect(operation, "wifi_radio_disabled");
         }
         bool effectObserved = false;
-        foreach (Radio radio in radios)
+        foreach (IRadioHandle radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (Reached(radio))
@@ -515,12 +590,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 return effectBoundary.Failure(operation, "wifi_radio_change_rejected", effectObserved);
             }
         }
-        Radio[] observed = (await Radio.GetRadiosAsync())
-            .Where(radio => radio.Kind == RadioKind.WiFi)
-            .ToArray();
-        if (observed.Length == 0 || !observed.All(Reached))
+        (IRadioHandle[] observed, bool reached) = await ReadRadiosUntilAsync(
+            radio => radio.Kind == RadioKind.WiFi, read => read.Length > 0 && read.All(Reached), cancellationToken);
+        if (!reached)
         {
-            return effectBoundary.Failure(operation, "wifi_radio_postread_failed", effectObserved);
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "wifi_radio_postread_failed", effectObserved), RadioStateAfter(observed));
         }
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -541,7 +616,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // apagadas. Un driver que restaure enciende las que estaban encendidas.
     private static readonly RadioKind[] AirplaneRadioKinds = [RadioKind.WiFi, RadioKind.Bluetooth, RadioKind.MobileBroadband];
 
-    private static async ValueTask<ExternalCapabilityReceipt> AirplaneModeSetAsync(
+    private async ValueTask<ExternalCapabilityReceipt> AirplaneModeSetAsync(
         string operation,
         int value,
         ExternalEffectBoundary effectBoundary,
@@ -549,10 +624,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     {
         if (value is not (0 or 1))
             return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_value_invalid");
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
             return ExternalJson.FailureBeforeEffect(operation, "airplane_mode_radio_access_denied");
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
             .ToArray();
         if (radios.Length == 0)
@@ -571,7 +646,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 operation, value == 1 ? "airplane_radios_already_all_off" : "airplane_radios_already_on");
         }
         bool effectObserved = false;
-        foreach (Radio radio in radios)
+        foreach (IRadioHandle radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (radio.State == desired || radio.State == RadioState.Disabled)
@@ -583,13 +658,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 return effectBoundary.Failure(operation, "airplane_mode_change_rejected", effectObserved);
         }
 
-        Radio[] observed = (await Radio.GetRadiosAsync())
-            .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
-            .ToArray();
+        (IRadioHandle[] observed, bool reached) = await ReadRadiosUntilAsync(
+            radio => AirplaneRadioKinds.Contains(radio.Kind),
+            read => read.Length > 0 && (value == 1
+                ? read.All(radio => radio.State != RadioState.On)
+                : read.All(radio => radio.State is RadioState.On or RadioState.Disabled)),
+            cancellationToken);
         bool allOff = observed.All(radio => radio.State != RadioState.On);
-        bool reached = value == 1 ? allOff : observed.All(radio => radio.State is RadioState.On or RadioState.Disabled);
         if (!reached)
-            return effectBoundary.Failure(operation, "airplane_mode_postread_failed", effectObserved);
+        {
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "airplane_mode_postread_failed", effectObserved),
+                RadioStateAfter(observed));
+        }
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -600,7 +681,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteBoolean("allRadiosOff", allOff);
             writer.WriteBoolean("changed", effectObserved);
             writer.WriteStartArray("radios");
-            foreach (Radio radio in observed)
+            foreach (IRadioHandle radio in observed)
             {
                 writer.WriteStartObject();
                 writer.WriteString("kind", radio.Kind.ToString());
@@ -618,12 +699,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved);
     }
 
-    private static async ValueTask<ExternalCapabilityReceipt> AirplaneModeStatusAsync(string operation)
+    private async ValueTask<ExternalCapabilityReceipt> AirplaneModeStatusAsync(string operation)
     {
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
             return ExternalJson.Failure(operation, "airplane_mode_radio_access_denied");
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => AirplaneRadioKinds.Contains(radio.Kind))
             .ToArray();
         if (radios.Length == 0)
@@ -636,7 +717,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteBoolean("allRadiosOff", radios.All(radio => radio.State != RadioState.On));
             writer.WriteNumber("radioCount", radios.Length);
             writer.WriteStartArray("radios");
-            foreach (Radio radio in radios)
+            foreach (IRadioHandle radio in radios)
             {
                 writer.WriteStartObject();
                 writer.WriteString("kind", radio.Kind.ToString());
@@ -652,14 +733,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    private static async ValueTask<ExternalCapabilityReceipt> WifiRadioStatusAsync(string operation)
+    private async ValueTask<ExternalCapabilityReceipt> WifiRadioStatusAsync(string operation)
     {
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
         {
             return ExternalJson.Failure(operation, "wifi_radio_access_denied");
         }
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => radio.Kind == RadioKind.WiFi)
             .ToArray();
         if (radios.Length == 0)
@@ -679,7 +760,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
-    private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioSetAsync(
+    private async ValueTask<ExternalCapabilityReceipt> BluetoothRadioSetAsync(
         string operation,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary,
@@ -691,12 +772,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return ExternalJson.Failure(operation, "bluetooth_radio_state_invalid");
         }
         bool requested = stateElement.GetBoolean();
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
         {
             return ExternalJson.Failure(operation, "bluetooth_radio_access_denied");
         }
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => radio.Kind == RadioKind.Bluetooth)
             .ToArray();
         if (radios.Length == 0)
@@ -707,13 +788,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // FT/proveedores goal (review of receipts): a radio disabled by its switch or driver (RadioState.Disabled) is
         // off: turning it off changes nothing and is not told «may have happened»; turning on radios that are all
         // disabled is said before anything is touched.
-        bool Reached(Radio radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
+        bool Reached(IRadioHandle radio) => radio.State == desired || (!requested && radio.State == RadioState.Disabled);
         if (requested && radios.All(radio => radio.State == RadioState.Disabled))
         {
             return ExternalJson.FailureBeforeEffect(operation, "bluetooth_radio_disabled");
         }
         bool effectObserved = false;
-        foreach (Radio radio in radios)
+        foreach (IRadioHandle radio in radios)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (Reached(radio))
@@ -731,15 +812,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     effectObserved);
             }
         }
-        Radio[] observed = (await Radio.GetRadiosAsync())
-            .Where(radio => radio.Kind == RadioKind.Bluetooth)
-            .ToArray();
-        if (observed.Length == 0 || !observed.All(Reached))
+        (IRadioHandle[] observed, bool reached) = await ReadRadiosUntilAsync(
+            radio => radio.Kind == RadioKind.Bluetooth, read => read.Length > 0 && read.All(Reached), cancellationToken);
+        if (!reached)
         {
-            return effectBoundary.Failure(
-                operation,
-                "bluetooth_radio_postread_failed",
-                effectObserved);
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "bluetooth_radio_postread_failed", effectObserved),
+                RadioStateAfter(observed));
         }
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -757,14 +836,14 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: the radio
     // state was only observable as the post-read of a change; a read-only
     // read answers the question without touching the radio.
-    private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioStatusAsync(string operation)
+    private async ValueTask<ExternalCapabilityReceipt> BluetoothRadioStatusAsync(string operation)
     {
-        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        RadioAccessStatus access = await Radios.RequestAccessAsync();
         if (access != RadioAccessStatus.Allowed)
         {
             return ExternalJson.Failure(operation, "bluetooth_radio_access_denied");
         }
-        Radio[] radios = (await Radio.GetRadiosAsync())
+        IRadioHandle[] radios = (await Radios.ListAsync())
             .Where(radio => radio.Kind == RadioKind.Bluetooth)
             .ToArray();
         if (radios.Length == 0)
@@ -1244,6 +1323,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 writer.WriteString("format", format);
                 writer.WriteNumber("freeGiB", free);
                 writer.WriteNumber("totalGiB", total);
+                // Holdout v4 (falsedad, units): the sizes written with their unit (ReadingUnits).
+                writer.WriteString("free", Infrastructure.ReadingUnits.Size(free * 1024d * 1024d * 1024d));
+                writer.WriteString("total", Infrastructure.ReadingUnits.Size(total * 1024d * 1024d * 1024d));
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
@@ -1836,7 +1918,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
     private async ValueTask<string[]?> ReadWifiProfilesAsync(CancellationToken token)
     {
-        ExternalProcessResult process = await RunPowerShellAsync(WifiProfilesScript, [], token);
+        ExternalProcessResult process = await RunQuickScriptAsync(WifiProfilesScript, [], token);
         using JsonDocument source = ParseLastJson(process.Output);
         if (source.RootElement.ValueKind != JsonValueKind.Object || !Bool(source.RootElement, "ok"))
         {
@@ -1893,7 +1975,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string id = ExternalJson.RequiredString(arguments, "profileId");
         if (!_wifi.TryGetValue(id, out string? profile))
         {
-            return ExternalJson.Failure(operation, "wifi_profile_identity_expired");
+            return IdentityUnknown(operation, "wifi_profile_identity_expired", "profileId", "connected", "wifi_profile_list");
         }
 
         return await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token);
@@ -2069,10 +2151,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return effectBoundary.Failure(operation, "wifi_connect_dispatch_rejected");
         }
 
-        for (int observation = 0; observation <= 30; observation++)
+        (int pauses, TimeSpan pause) = WifiPolling(TimeSpan.FromMilliseconds(500), 30);
+        for (int observation = 0; observation <= pauses; observation++)
         {
-            using JsonDocument status = await WifiStatusAsync(token);
-            if (Bool(status.RootElement, "connected")
+            using JsonDocument? status = await TryWifiStatusAsync(token);
+            if (status is not null
+                && Bool(status.RootElement, "connected")
                 && string.Equals(
                     status.RootElement.GetProperty("profile").GetString(),
                     profile,
@@ -2081,9 +2165,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 return ExternalJson.Success(operation, WifiResult(id, true, place), true);
             }
 
-            if (observation < 30)
+            if (observation < pauses)
             {
-                await _delay(TimeSpan.FromMilliseconds(500), token);
+                await _delay(pause, token);
             }
         }
 
@@ -2114,10 +2198,11 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return effectBoundary.Failure(operation, "wifi_disconnect_dispatch_rejected");
         }
 
-        for (int observation = 0; observation <= 20; observation++)
+        (int pauses, TimeSpan pause) = WifiPolling(TimeSpan.FromMilliseconds(300), 20);
+        for (int observation = 0; observation <= pauses; observation++)
         {
-            using JsonDocument status = await WifiStatusAsync(token);
-            if (!Bool(status.RootElement, "connected"))
+            using JsonDocument? status = await TryWifiStatusAsync(token);
+            if (status is not null && !Bool(status.RootElement, "connected"))
             {
                 return ExternalJson.Success(
                     operation,
@@ -2125,14 +2210,24 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     true);
             }
 
-            if (observation < 20)
+            if (observation < pauses)
             {
-                await _delay(TimeSpan.FromMilliseconds(300), token);
+                await _delay(pause, token);
             }
         }
 
         return ExternalJson.Failure(operation, "wifi_disconnect_not_verified", true);
     }
+
+    // Renew al máximo (w5): with the worker a status read costs a netsh run, not a PowerShell started cold (400-700 ms),
+    // so the connection is looked at every 100 ms within the same horizon (15 s to connect, 6 s to disconnect); without
+    // it (the test seams) as before.
+    private (int Pauses, TimeSpan Pause) WifiPolling(TimeSpan coldPause, int coldPauses) =>
+        Scripts is null
+            ? (coldPauses, coldPause)
+            : ((int)(coldPause * coldPauses / WifiPollPause), WifiPollPause);
+
+    internal static readonly TimeSpan WifiPollPause = TimeSpan.FromMilliseconds(100);
 
     private static ValueTask DelayAsync(
         TimeSpan delay,
@@ -2182,7 +2277,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string operation,
         CancellationToken token)
     {
-        ExternalProcessResult process = await RunPowerShellAsync(WifiScanScript, [], token);
+        ExternalProcessResult process = await RunQuickScriptAsync(WifiScanScript, [], token);
         using JsonDocument document = ParseLastJson(process.Output);
         JsonElement root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object)
@@ -2230,7 +2325,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 writer.WriteString("ssid", string.IsNullOrWhiteSpace(ssid) ? "(oculta)" : ssid);
                 writer.WriteBoolean("hidden", string.IsNullOrWhiteSpace(ssid));
                 writer.WriteString("authentication", authentication);
-                if (signal is int value) writer.WriteNumber("signalPercent", value); else writer.WriteNull("signalPercent");
+                if (signal is int value)
+                {
+                    writer.WriteNumber("signalPercent", value);
+                    writer.WriteString("signal", Infrastructure.ReadingUnits.Percent(value));
+                }
+                else writer.WriteNull("signalPercent");
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
@@ -2348,7 +2448,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         }
 
         effectBoundary.Cross(token);
-        ExternalProcessResult process = await RunPowerShellAsync(
+        ExternalProcessResult process = await RunQuickScriptAsync(
             BrightnessScript,
             [value.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             token);
@@ -2358,10 +2458,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
-            return effectBoundary.Failure(
-                operation,
-                "brightness_postread_failed",
-                effect);
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "brightness_postread_failed", effect),
+                BrightnessStateAfter(response.RootElement, value));
         }
 
         // Ronda 22 (r18 t4-c04 t2: the same level asked again took 10.2 s against 3.6 s the first time): a set whose
@@ -2413,7 +2512,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
         int delta = direction == "up" ? amount : -amount;
         effectBoundary.Cross(token);
-        ExternalProcessResult process = await RunPowerShellAsync(
+        ExternalProcessResult process = await RunQuickScriptAsync(
             BrightnessAdjustScript,
             [delta.ToString(System.Globalization.CultureInfo.InvariantCulture)],
             token);
@@ -2423,10 +2522,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
-            return effectBoundary.Failure(
-                operation,
-                "brightness_adjustment_postread_failed",
-                effect);
+            return ExternalJson.WithStateAfter(
+                effectBoundary.Failure(operation, "brightness_adjustment_postread_failed", effect),
+                BrightnessStateAfter(response.RootElement, requested: null));
         }
 
         JsonElement result = ExternalJson.Create(writer =>
@@ -2451,6 +2549,31 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effect);
     }
 
+    // Renew al máximo (w8): a set or step whose read-back did not show the level within 1.5 s said only «postread
+    // failed»; the levels the last read saw (and the ones before) go with it as stateAfter, never as a success.
+    private static JsonElement? BrightnessStateAfter(JsonElement response, int? requested)
+    {
+        if (!response.TryGetProperty("values", out JsonElement values) || values.ValueKind != JsonValueKind.Array
+            || values.GetArrayLength() == 0)
+            return null;
+        return ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WritePropertyName("values");
+            values.WriteTo(writer);
+            if (response.TryGetProperty("baselineValues", out JsonElement baseline) && baseline.ValueKind == JsonValueKind.Array)
+            {
+                writer.WritePropertyName("baselineValues");
+                baseline.WriteTo(writer);
+            }
+            if (requested is int level)
+                writer.WriteNumber("requestedLevel", level);
+            writer.WriteBoolean("requestedStateReached", false);
+            writer.WriteString("authority", "wmi_monitor_brightness_postread");
+            writer.WriteEndObject();
+        });
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> SettingStatusAsync(
         string operation, JsonElement arguments, CancellationToken token)
     {
@@ -2459,7 +2582,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             return await AirplaneModeStatusAsync(operation).ConfigureAwait(false);
         if (setting != "brightness")
             return ExternalJson.Failure(operation, "brightness_status_invalid");
-        ExternalProcessResult process = await RunPowerShellAsync(
+        ExternalProcessResult process = await RunQuickScriptAsync(
             BrightnessStatusScript, [], token);
         using JsonDocument response = ParseLastJson(process.Output);
         if (String(response.RootElement, "error") == BrightnessNotSupported)
@@ -2535,17 +2658,38 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     private async ValueTask<JsonDocument> WifiStatusAsync(
         CancellationToken token)
     {
-        ExternalProcessResult process = await RunPowerShellAsync(
+        ExternalProcessResult process = await RunQuickScriptAsync(
             WifiStatusScript,
             [],
             token);
         JsonDocument status = ParseLastJson(process.Output);
         if (status.RootElement.ValueKind != JsonValueKind.Object || !Bool(status.RootElement, "ok"))
         {
+            string code = status.RootElement.ValueKind == JsonValueKind.Object ? String(status.RootElement, "error") : "";
             status.Dispose();
-            throw new IOException("netsh wlan show interfaces was not read.");
+            throw new WifiStatusUnreadException(
+                code is "wlan_service_not_running" or "wifi_radio_not_found" ? code : "wifi_status_not_read");
         }
         return status;
+    }
+
+    // Renew al máximo (w8): after a connect or disconnect was sent, one status netsh did not answer ended the wait with
+    // the adapter's generic failure; it is now one look that saw nothing, and the wait goes on.
+    private async ValueTask<JsonDocument?> TryWifiStatusAsync(CancellationToken token)
+    {
+        try
+        {
+            return await WifiStatusAsync(token);
+        }
+        catch (WifiStatusUnreadException)
+        {
+            return null;
+        }
+    }
+
+    private sealed class WifiStatusUnreadException(string code) : IOException("netsh wlan show interfaces was not read.")
+    {
+        internal string Code { get; } = code;
     }
 
     private ValueTask<ExternalProcessResult> RunPowerShellAsync(
@@ -2553,6 +2697,18 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         IReadOnlyList<string> arguments,
         CancellationToken token) =>
         _runner.RunPowerShellAsync(script, arguments, TimeSpan.FromSeconds(60), token);
+
+    // Renew al máximo (w5): a short read or set of WMI (the brightness) or of netsh (the Wi-Fi's state, saved profiles and
+    // networks in sight) runs in the product's UI Automation worker, already started, with the same script, arguments
+    // and budget; a PowerShell started cold for it cost 400-700 ms on the notebook against 10-20 ms for a WMI read.
+    // Without the worker (the test seams) it runs as before.
+    private ValueTask<ExternalProcessResult> RunQuickScriptAsync(
+        string script,
+        IReadOnlyList<string> arguments,
+        CancellationToken token) =>
+        Scripts is { } worker
+            ? UiaWorkerScript.RunAsync(worker, script, arguments, TimeSpan.FromSeconds(60), token)
+            : RunPowerShellAsync(script, arguments, token);
 
     private static JsonElement WifiResult(string? id, bool connected, string? place = null) =>
         ExternalJson.Create(writer =>

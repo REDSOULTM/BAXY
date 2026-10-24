@@ -65,6 +65,39 @@ public sealed class NetworkEgressTests
         Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "1.1.1.1" }), Is.Null);
     }
 
+    // Auditoría de la App (2026-10-23): an IP carries no words, so a page at any IP went out unasked, query and all.
+    [Test]
+    public void APageAtAnAddressNobodyGaveWaitsUnlessItIsInThePersonsNetwork()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("lee la página que te dije");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://203.0.113.9/c?d=Ñuñoa" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://[2001:db8::7]/x" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://192.168.1.1/estado" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://127.0.0.2/" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://[::1]/" }), Is.Null);
+            // A ping sends no page.
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "203.0.113.9" }), Is.Null);
+        });
+
+        egress.Heard("abre http://203.0.113.9/estado");
+        egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":[" +
+            "{\"url\":\"http://198.51.100.4/informe\"}]}}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://203.0.113.9/estado" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://198.51.100.4/informe" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://203.0.113.90/" }),
+                Is.EqualTo("host_not_from_session"));
+        });
+    }
+
     [Test]
     public void AnAddressThePersonWroteOrAHyphenatedNameTheySaidGoes()
     {

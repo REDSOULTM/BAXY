@@ -3,6 +3,7 @@ using Baxy.Contracts;
 using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 using NUnit.Framework;
 
 namespace Baxy.Kernel.Tests;
@@ -83,9 +84,8 @@ public sealed class MissionEngineTests
         };
 
         OperationResponse conflict = await engine.ExecuteAsync(conflicting, CancellationToken.None);
-        OperationResponse recovered = await engine.ExecuteAsync(
-            original with { RequestId = Guid.NewGuid().ToString("D") },
-            CancellationToken.None);
+        // Auditoría del núcleo 2026-10-23: the original's start may have acted; its retry asks first.
+        (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, original);
 
         Assert.Multiple(() =>
         {
@@ -295,11 +295,24 @@ public sealed class MissionEngineTests
             Assert.That(completed, Is.Null);
         });
 
-        OperationResponse recovered = await engine.ExecuteAsync(
+        // Auditoría del núcleo 2026-10-23: the handler threw after it may have acted, so the retry is not run again
+        // unasked (it used to be, on the same identity): it asks with reconciliationRequired and runs on the yes.
+        OperationResponse asked = await engine.ExecuteAsync(
             request with { RequestId = Guid.NewGuid().ToString("D") },
+            CancellationToken.None);
+        int executedBeforeTheYes = handler.ExecutionCount;
+        OperationResponse recovered = await engine.ExecuteAsync(
+            request with
+            {
+                RequestId = Guid.NewGuid().ToString("D"),
+                ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString(),
+            },
             CancellationToken.None);
         Assert.Multiple(() =>
         {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(asked.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
+            Assert.That(executedBeforeTheYes, Is.EqualTo(1));
             Assert.That(recovered.Status, Is.EqualTo(OperationStatuses.Completed));
             Assert.That(recovered.Verified, Is.True);
             Assert.That(recovered.Replayed, Is.False);
@@ -326,6 +339,94 @@ public sealed class MissionEngineTests
             Assert.That(response.Status, Is.EqualTo(OperationStatuses.Rejected));
             Assert.That(response.ErrorCode, Is.EqualTo("invalid_arguments"));
             Assert.That(handler.ExecutionCount, Is.Zero);
+        });
+    }
+
+    // Auditoría del núcleo 2026-10-23: an invocation whose earlier run may have acted is never run again without the
+    // person: not in Bypass, and not on the yes given before that run (it was for that run only).
+    [Test]
+    public async Task AnUncertainStartAsksBeforeRunningAgainEvenInBypassAndOnAnEarlierYes()
+    {
+        var handler = new RetryableOnceHandler(OperationRisk.Irreversible, effectMayHaveOccurred: false);
+        ConfirmationMode mode = ConfirmationMode.Normal;
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([handler]),
+            journal,
+            new MissionEngineOptions { ConfirmationMode = () => mode });
+        OperationRequest request = CreateRequest("{}");
+        await journal.RecordStartedAsync(request, RequestFingerprint.Compute(request), CancellationToken.None);
+
+        mode = ConfirmationMode.Bypass;
+        OperationResponse inBypass = await engine.ExecuteAsync(request, CancellationToken.None);
+        mode = ConfirmationMode.Normal;
+        (OperationResponse asked, OperationResponse confirmed) = await UncertainStart.RetryAsync(engine, request);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inBypass.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(inBypass.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            // The yes to the reconciliation runs it; a retryable run with nothing done keeps it pending.
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task AYesGivenBeforeARunThatMayHaveActedDoesNotRunItAgain()
+    {
+        var handler = new RetryableOnceHandler(OperationRisk.Irreversible, effectMayHaveOccurred: true);
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = CreateRequest("{}");
+
+        OperationResponse challenge = await engine.ExecuteAsync(request, CancellationToken.None);
+        OperationRequest approved = request with
+        {
+            ConfirmationToken = challenge.Result!.Value.GetProperty("token").GetString(),
+        };
+        OperationResponse first = await engine.ExecuteAsync(approved, CancellationToken.None);
+        OperationResponse sameYes = await engine.ExecuteAsync(
+            approved with { RequestId = Guid.NewGuid().ToString("D") },
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Status, Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(first.EffectMayHaveOccurred, Is.True);
+            Assert.That(sameYes.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(sameYes.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Auditoría del núcleo 2026-10-23: a success the handler could not verify did act, so it ends failed with its effect
+    // possibly standing, in the response and in the facts the model reads, and its replay says the same.
+    [Test]
+    public async Task AnUnverifiedSuccessEndsFailedWithItsEffectPossiblyStanding()
+    {
+        var handler = new UnverifiedSuccessHandler();
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = CreateRequest("{}");
+
+        OperationResponse first = await engine.ExecuteAsync(request, CancellationToken.None);
+        OperationResponse replay = await engine.ExecuteAsync(
+            request with { RequestId = Guid.NewGuid().ToString("D") },
+            CancellationToken.None);
+
+        using JsonDocument facts = JsonDocument.Parse(first.Message);
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(first.Verified, Is.False);
+            Assert.That(first.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(first.EffectMayHaveOccurred, Is.True);
+            Assert.That(facts.RootElement.GetProperty("effectUncertain").GetBoolean(), Is.True);
+            Assert.That(replay.Replayed, Is.True);
+            Assert.That(replay.EffectMayHaveOccurred, Is.True);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
         });
     }
 
@@ -368,6 +469,23 @@ public sealed class MissionEngineTests
             cancellationToken.ThrowIfCancellationRequested();
             ExecutionCount++;
             return ValueTask.FromResult(OperationOutcome.Success(invocation.Arguments));
+        }
+    }
+
+    private sealed class UnverifiedSuccessHandler : IOperationHandler
+    {
+        public int ExecutionCount { get; private set; }
+
+        public OperationDefinition Definition { get; } =
+            new("note.create", OperationRisk.Reversible, "Create a local note.");
+
+        public ValueTask<OperationOutcome> ExecuteAsync(
+            OperationInvocation invocation,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ExecutionCount++;
+            return ValueTask.FromResult(new OperationOutcome(true, false, null, null));
         }
     }
 

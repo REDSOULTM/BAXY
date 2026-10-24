@@ -265,3 +265,29 @@ que el catálogo no tenga. Estado y hallazgos: `documentacion/NAVEGADOR_USUARIO.
   1/3** (n6#2 con estado base limpio: «no vi en la pantalla un control con el que seguir» tras 3 pasos; n6#3 sobre el
   Word que dejó n6#2). Las dos corridas anteriores no valen (estado sucio: el Excel/Word del caso anterior seguía
   abierto). Se retoma sólo si la fase 1 mide n6 estable sin la rama y el caso que arregla lo pide.
+- **Al máximo, palanca 2 (2026-10-23): el fin de la orden con ruido, resuelto en sintético; falta el cuarto real.**
+  `voice.py` decide la voz con Silero VAD + RMS (w9-ruido): con ruido rosa a 20, 10 y 5 dB todas las órdenes cierran
+  (antes, a 10 y 5 dB, ninguna antes de `MAX_S`) y el caso limpio queda idéntico. Medido sólo con voces sintéticas y
+  ruido estacionario. Queda: el cuarto real con la voz del dueño (ventilador, calle) y el ruido que es voz (tele,
+  música cantada), que Silero oye como habla: es de esperar que ahí la orden siga corriendo hasta `MAX_S`, como antes
+  (no medido).
+- **Renew al máximo, w9 (2026-10-23): correo y calendario siguen con un PowerShell por llamada.** Medido en el PC:
+  arrancar `powershell.exe -NoProfile -NonInteractive -Command` con un script trivial cuesta 308 ms p50 (298-320, 10
+  corridas). Reutilizar un proceso (`PowerShellScriptWorker`, como Spotify y las teclas) no entra: los tres scripts de
+  `MicrosoftAccountAdapter` (correo, envío, calendario) crean `Outlook.Application` y sueltan sus objetos COM al salir
+  el proceso. En un proceso vivo esas referencias quedan hasta que corre el GC, y mientras tanto Outlook no se cierra
+  cuando la persona cierra su ventana (queda en segundo plano con el perfil abierto). Haría falta soltar cada objeto
+  COM en cada llamada (`ReleaseComObject` y GC al final de cada ejecución) y comprobarlo contra Outlook de verdad,
+  que en este PC es el del dueño y no se toca. Ahorro posible: ~0,3 s sólo en los turnos de correo o calendario. Se
+  retoma con un Outlook de prueba (el notebook) y una prueba que cierre Outlook entre dos llamadas y mire que el
+  proceso termina.
+- **Renew al máximo, w9-bucle (2026-10-23): web.fetch sigue leyendo una página por partes sin tope.** En la sesión
+  larga de int10, el turno que pedía una curiosidad de los pulpos leyó la misma página cuatro veces (desplazamientos 0, 4.000,
+  8.000 y 12.000 de 16.140 caracteres, 13,8 s), igual que int9: no es una regresión, y el dato estaba en la segunda
+  parte. Medido en las corridas de práctica de las dos máquinas: en el caso RFC 2324, de 197 turnos el «418» apareció
+  en la primera o segunda parte en 147, en la tercera o cuarta en 3 y en ninguna parte leída en 47; de los 150 que lo
+  vieron, 125 siguieron leyendo 2 a 5 partes más. Cada lectura tiene otros argumentos y otro contenido, así que no es
+  una repetición (same_call_next y TurnClosing no la ven), y un tope por número habría cortado los que necesitaban la
+  cuarta parte; una nota de «ya tienes el dato» sería un juicio sobre el contenido, no un hecho. Coste: ~2-3 s por
+  parte de más, acotado por el presupuesto del turno (15 llamadas, 90 s). Se retoma si un banco de latencia muestra
+  que pesa; la palanca no sería una ayuda sino el proveedor (partes más grandes, menos llamadas).

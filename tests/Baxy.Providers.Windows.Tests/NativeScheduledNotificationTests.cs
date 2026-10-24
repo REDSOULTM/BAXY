@@ -184,6 +184,39 @@ public sealed class NativeScheduledNotificationTests
         });
     }
 
+    // Renew al máximo (w8): a schedule that fails before its Register (the ring script gone, the due time passed
+    // meanwhile) changed nothing and says so with its cause, never a bare process failure read as «may have changed».
+    [TestCase("ring_script_missing", 1)]
+    [TestCase("due_time_not_future", -1)]
+    public async Task AScheduleThatFailsBeforeRegisteringSaysNothingChanged(string cause, int hours)
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        string ring = Path.Combine(temporary.Path, "ring.ps1");
+        if (cause != "ring_script_missing")
+            File.WriteAllText(ring, "# ring");
+        var backend = new NativeScheduledNotificationBackend(scheduler);
+
+        ExternalProcessResult result = await backend.RunAsync(
+            new ScheduledNotificationRequest("schedule", "alarm")
+            {
+                TaskName = TaskName("Alarm", 'a'),
+                DueUtc = DateTimeOffset.UtcNow.AddHours(hours).ToString("O"),
+                RingScriptPath = ring,
+            },
+            CancellationToken.None);
+
+        using JsonDocument line = JsonDocument.Parse(result.Output);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ExitCode, Is.Zero);
+            Assert.That(line.RootElement.GetProperty("ok").GetBoolean(), Is.False);
+            Assert.That(line.RootElement.GetProperty("effectBoundaryCrossed").GetBoolean(), Is.False);
+            Assert.That(line.RootElement.GetProperty("error").GetString(), Is.EqualTo(cause));
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
     // Auditoría final 2: the diagnosis reads what each ring wrote, not only how many rang.
     [Test]
     public async Task DiagnosisReadsWhatEachRingWrote()
@@ -368,6 +401,142 @@ public sealed class NativeScheduledNotificationTests
             Assert.That(outcome.Result!.Value.GetProperty("canceled").GetBoolean(), Is.True);
             Assert.That(outcome.Result!.Value.TryGetProperty("pendingFound", out _), Is.False);
             Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (w9): a cancel by kind canceled the newest of that kind and the result named none of it. The one
+    // pending is canceled by its identity and named (title and local time), so the model can say which.
+    [Test]
+    public async Task ACancelByKindNamesTheOneItCanceled()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        DateTimeOffset due = DateTimeOffset.UtcNow.AddHours(2);
+        await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"alarm","title":"Despertar"}"""),
+            CancellationToken.None);
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","kind":"alarm"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("title").GetString(), Is.EqualTo("Despertar"));
+            Assert.That(outcome.Result!.Value.GetProperty("nextRunLocal").GetString(), Is.EqualTo(
+                due.ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)));
+            Assert.That(outcome.Result!.Value.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_task_scheduler_exact_identity_absence_postread"));
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (w9): with several of the kind pending, the newest was canceled in silence. None is canceled now:
+    // the failure lists them (title and local time each), and (aid cancel_scope) says at names the one.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task ACancelByKindWithSeveralPendingCancelsNoneAndListsThem(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        foreach ((int hours, string title) in new[] { (2, "Despertar"), (3, "Pastilla") })
+        {
+            await adapter.InvokeAsync(
+                "schedule.alarms",
+                Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(hours))}}","kind":"alarm","title":"{{title}}"}"""),
+                CancellationToken.None);
+        }
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","kind":"alarm"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("notification_cancel_ambiguous"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("pendingCount").GetInt32(), Is.EqualTo(2));
+            Assert.That(outcome.Result!.Value.GetProperty("pending")[0].GetProperty("title").GetString(),
+                Is.EqualTo("Despertar"));
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.EqualTo(hint));
+            Assert.That(scheduler.Tasks, Has.Count.EqualTo(2));
+        });
+    }
+
+    // Renew al máximo (w5): a cancel with no kind and no time looked only among reminders, so the one alarm pending
+    // was «nothing pending» (a done call the model reads as «la cancelé») and kept ringing. It is canceled now.
+    [Test]
+    public async Task ACancelWithNoKindCancelsTheOneAlarmPending()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(2))}}","kind":"alarm","title":"Despertar"}"""),
+            CancellationToken.None);
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("kind").GetString(), Is.EqualTo("alarm"));
+            Assert.That(outcome.Result!.Value.GetProperty("canceled").GetBoolean(), Is.True);
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
+    // Renew al máximo (w5): with an alarm and a reminder pending and no kind, nothing is canceled before the person's
+    // words name one: the failure carries both, and (aid cancel_scope) says nothing was canceled.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task ACancelWithNoKindAndBothKindsPendingCancelsNothingAndListsThem(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        foreach (string kind in new[] { "alarm", "reminder" })
+        {
+            await adapter.InvokeAsync(
+                "schedule.alarms",
+                Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(2))}}","kind":"{{kind}}","title":"{{kind}}"}"""),
+                CancellationToken.None);
+        }
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("notification_kind_ambiguous"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("pending").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.EqualTo(hint));
+            Assert.That(scheduler.Tasks, Has.Count.EqualTo(2));
+        });
+    }
+
+    // Renew al máximo (w5): a cancel that found nothing pending says, as a sentence (aid cancel_scope), that nothing
+    // was canceled; «canceled:false» on a done call was read as «la cancelé».
+    [TestCase("""{"action":"cancel","kind":"alarm"}""", "nothing was canceled: no alarm set by BAXY is pending")]
+    [TestCase("""{"action":"cancel"}""", "nothing was canceled: no alarm or reminder set by BAXY is pending")]
+    public async Task ACancelWithNothingPendingSaysNothingWasCanceled(string arguments, string next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, new FakeTaskScheduler());
+
+        OperationOutcome outcome = await Handle(adapter, arguments);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("pendingFound").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(next));
         });
     }
 

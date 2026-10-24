@@ -39,3 +39,92 @@ def test_an_argument_the_catalog_renamed_is_checked_under_its_new_name() -> None
     called = {"kind": "action", "operation": "filesystem.sandbox.diff.named"}
     assert judge(expect, called, {"leftFileName": "version1.txt", "rightFileName": "version2.txt"}) is True
     assert judge(expect, called, {"leftFileName": "version2.txt", "rightFileName": "version1.txt"}) is False
+
+
+def test_an_any_case_is_met_by_any_of_its_options() -> None:
+    # decision3 Q084: the date answered from the turn's clock (the design) or read with system.time.
+    expect = {"kind": "any", "options": [{"kind": "text"}, {"kind": "call", "op": "system.time", "args": {}}]}
+    assert judge(expect, _said("Hoy es jueves 15 de octubre."), None) is True
+    assert judge(expect, {"kind": "action", "operation": "system.time"}, {}) is True
+    assert judge(expect, {"kind": "action", "operation": "web.search"}, {"query": "fecha"}) is False
+
+
+def test_an_any_case_checks_the_arguments_of_each_option() -> None:
+    # decision3 Q263: folder documents, or the known folder at the head of the path (the provider maps it).
+    expect = {"kind": "any", "options": [
+        {"kind": "call", "op": "filesystem.create.directory", "args": {"folder": "documents", "relativePath": "proyectos"}},
+        {"kind": "call", "op": "filesystem.create.directory",
+         "args": {"relativePath": r"re:(^|[/\\])(documentos|documents|mis documentos)[/\\]proyectos"}}]}
+    called = {"kind": "action", "operation": "filesystem.create.directory"}
+    assert judge(expect, called, {"relativePath": "Documentos/Proyectos"}) is True
+    assert judge(expect, called, {"relativePath": "Proyectos", "folder": "documents"}) is True
+    assert judge(expect, called, {"relativePath": "Proyectos"}) is False
+
+
+def test_an_any_case_whose_options_were_all_retired_is_not_counted() -> None:
+    expect = {"kind": "any", "options": [{"kind": "call", "op": "routine.list"}, {"kind": "call_any", "ops": ["routine.read"]}]}
+    assert judge(expect, {"kind": "action", "operation": "routine.list"}, {}) is None
+
+
+def test_a_case_with_a_pending_confirmation_reaches_the_mind_with_it() -> None:
+    from bench_decision import decide
+    seen = {}
+
+    class Mind:
+        def decide(self, request_id, text, pending=None):
+            seen.update(id=request_id, text=text, pending=pending)
+            return {"kind": "action"}
+
+    pending = {"operation": "file.trash", "arguments": {"fileName": "a.txt"}}
+    decide(Mind(), {"id": "X1", "text": "dale", "pending": pending})
+    assert seen == {"id": "X1", "text": "dale", "pending": pending}
+    decide(Mind(), {"id": "X2", "text": "abre paint"})
+    assert seen["pending"] is None
+
+
+# Audit w8-medir (2026-10-23): an argument of a code list is that code. As part of the text, «close» passed close_all,
+# «space» backspace and «escape» ctrl_shift_escape; free text (a name, a path) is still met by the text that holds it.
+CATALOG = {"capabilities": [
+    {"name": "browser.control", "argumentsSchema": {"properties": {
+        "action": {"type": "string", "enum": ["close", "close_all", "new_tab"]}}}},
+    {"name": "input.key.press", "argumentsSchema": {"properties": {
+        "key": {"type": "string", "enum": ["space", "backspace", "escape", "ctrl_shift_escape"]}}}},
+    {"name": "app.open", "argumentsSchema": {"properties": {
+        "appId": {"type": "string"}, "place": {"type": "string", "enum": ["game", "gamemode"]}}}},
+]}
+
+
+def _call(op: str) -> dict:
+    return {"kind": "action", "operation": op}
+
+
+def test_a_code_of_the_arguments_list_must_be_that_code() -> None:
+    from bench_decision import enums_of
+    enums = enums_of(CATALOG)
+    close = {"kind": "call", "op": "browser.control", "args": {"action": "close"}}
+    assert judge(close, _call("browser.control"), {"action": "close_all"}, enums) is False
+    assert judge(close, _call("browser.control"), {"action": "Close "}, enums) is True
+    space = {"kind": "call", "op": "input.key.press", "args": {"key": "space"}}
+    assert judge(space, _call("input.key.press"), {"key": "backspace"}, enums) is False
+    escape = {"kind": "call", "op": "input.key.press", "args": {"key": "escape"}}
+    assert judge(escape, _call("input.key.press"), {"key": "ctrl_shift_escape"}, enums) is False
+    # Without the catalog the judge reads as before the audit (a run re-judged without --catalog).
+    assert judge(close, _call("browser.control"), {"action": "close_all"}) is True
+
+
+def test_free_text_and_a_value_outside_the_list_are_still_part_of_the_text() -> None:
+    from bench_decision import enums_of
+    enums = enums_of(CATALOG)
+    chrome = {"kind": "call", "op": "app.open", "args": {"appId": "chrome", "place": "re:^game$"}}
+    assert judge(chrome, _call("app.open"), {"appId": "Google Chrome", "place": "game"}, enums) is True
+    assert judge(chrome, _call("app.open"), {"appId": "Google Chrome", "place": "gamemode"}, enums) is False
+    # An expectation written for a code the list no longer has is read as text, as it was.
+    older = {"kind": "call", "op": "app.open", "args": {"place": "mode"}}
+    assert judge(older, _call("app.open"), {"place": "gamemode"}, enums) is True
+
+
+def test_an_any_case_hands_the_codes_to_each_option() -> None:
+    from bench_decision import enums_of
+    expect = {"kind": "any", "options": [{"kind": "call", "op": "browser.control", "args": {"action": "close"}},
+                                         {"kind": "ask"}]}
+    assert judge(expect, _call("browser.control"), {"action": "close_all"}, enums_of(CATALOG)) is False

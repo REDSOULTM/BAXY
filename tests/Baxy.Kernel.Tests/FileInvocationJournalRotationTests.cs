@@ -130,9 +130,8 @@ public sealed class FileInvocationJournalRotationTests
             OperationResponse replay = await engine.ExecuteAsync(
                 early with { RequestId = Guid.NewGuid().ToString("D") },
                 CancellationToken.None);
-            OperationResponse recovered = await engine.ExecuteAsync(
-                incomplete with { RequestId = Guid.NewGuid().ToString("D") },
-                CancellationToken.None);
+            // Auditoría del núcleo 2026-10-23: a start that may have acted is retried on the person's yes.
+            (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, incomplete);
 
             Assert.Multiple(() =>
             {
@@ -271,11 +270,12 @@ public sealed class FileInvocationJournalRotationTests
         {
             case "modified":
                 string text = File.ReadAllText(archive, Encoding.UTF8);
-                int index = text.IndexOf("pan", StringComparison.Ordinal);
+                // Auditoría del núcleo 2026-10-23: the content is sealed now; a clear field of the record is changed.
+                int index = text.IndexOf("note.create", StringComparison.Ordinal);
                 Assert.That(index, Is.GreaterThan(0));
                 File.WriteAllText(
                     archive,
-                    string.Concat(text.AsSpan(0, index), "pon", text.AsSpan(index + 3)),
+                    string.Concat(text.AsSpan(0, index), "note.creatx", text.AsSpan(index + 11)),
                     new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
                 break;
             case "truncated":
@@ -601,6 +601,136 @@ public sealed class FileInvocationJournalRotationTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: a reset (the live journal and its anchor moved away) authenticates the earlier
+    // manifest before setting it aside and carries every id it retired and every invocation its retained segments
+    // completed: a retry of one is refused, never executed again.
+    [Test]
+    public async Task AResetJournalStillRefusesWhatTheArchivesCompletedAndRetired()
+    {
+        OperationRequest retiredEarly = CreateRequest();
+        OperationRequest archivedLate = CreateRequest();
+        var handler = new CountingHandler();
+        await using (FileInvocationJournal journal = await OpenRotatingAsync(retainedArchiveSegments: 1))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            _ = await engine.ExecuteAsync(retiredEarly, CancellationToken.None);
+            await ExecuteUntilAsync(engine, () => File.Exists(Archive(2)));
+            _ = await engine.ExecuteAsync(archivedLate, CancellationToken.None);
+            await ExecuteUntilAsync(engine, () => File.Exists(Archive(3)));
+        }
+
+        string movedAway = Path.Combine(_root, "moved");
+        Directory.CreateDirectory(movedAway);
+        File.Move(_journalPath, Path.Combine(movedAway, "missions.jsonl"));
+        File.Move(LiveAnchor, Path.Combine(movedAway, "missions.jsonl.anchor"));
+
+        var afterReset = new CountingHandler();
+        await using FileInvocationJournal reset = await OpenRotatingAsync(retainedArchiveSegments: 1);
+        using var resetEngine = new MissionEngine(new OperationRegistry([afterReset]), reset);
+        OperationResponse early = await resetEngine.ExecuteAsync(
+            retiredEarly with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        OperationResponse late = await resetEngine.ExecuteAsync(
+            archivedLate with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        OperationResponse fresh = await resetEngine.ExecuteAsync(CreateRequest(), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(early.ErrorCode, Is.EqualTo("idempotency_conflict"));
+            Assert.That(late.ErrorCode, Is.EqualTo("idempotency_conflict"));
+            Assert.That(fresh.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(afterReset.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Archived state nothing authenticated vouches for fails a reset closed: segments without their manifest, or a
+    // manifest that does not authenticate.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AResetBesideUnvouchedArchivedStateFailsClosed(bool tamper)
+    {
+        await using (FileInvocationJournal journal = await OpenRotatingAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([new CountingHandler()]), journal))
+        {
+            await ExecuteUntilAsync(engine, () => File.Exists(Archive(1)));
+        }
+
+        File.Delete(_journalPath);
+        File.Delete(LiveAnchor);
+        if (tamper)
+        {
+            byte[] manifest = File.ReadAllBytes(Manifest);
+            int tag = System.Text.Encoding.UTF8.GetString(manifest).LastIndexOf("\"tag\":\"", StringComparison.Ordinal) + 7;
+            manifest[tag] = manifest[tag] == (byte)'0' ? (byte)'1' : (byte)'0';
+            File.WriteAllBytes(Manifest, manifest);
+        }
+        else
+        {
+            File.Delete(Manifest);
+        }
+
+        Assert.That(
+            async () => await OpenRotatingAsync(),
+            Throws.InstanceOf<JournalIntegrityException>());
+    }
+
+    // Auditoría del núcleo 2026-10-23: retention by age. A completion older than the age kept leaves the live segment
+    // at the next open and, its segment sealed longer ago than that, leaves the disk; its id is retired first, so a
+    // retry is refused, never executed. Younger ones stay where they were.
+    [Test]
+    public async Task ACompletionOlderThanTheAgeKeptLeavesAndItsRetryIsRefused()
+    {
+        OperationRequest request = CreateRequest();
+        var handler = new CountingHandler();
+        await using (FileInvocationJournal journal = await OpenRotatingAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            _ = await engine.ExecuteAsync(request, CancellationToken.None);
+        }
+
+        OperationResponse young;
+        await using (FileInvocationJournal journal = await OpenAgedAsync(TimeSpan.FromDays(29)))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            young = await engine.ExecuteAsync(
+                request with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        }
+
+        bool archivedWhileYoung = File.Exists(Archive(1));
+        OperationResponse old;
+        await using (FileInvocationJournal journal = await OpenAgedAsync(TimeSpan.FromDays(31)))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            old = await engine.ExecuteAsync(
+                request with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(young.Replayed, Is.True);
+            Assert.That(archivedWhileYoung, Is.False);
+            Assert.That(old.ErrorCode, Is.EqualTo("idempotency_conflict"));
+            Assert.That(File.Exists(Archive(1)), Is.False);
+            Assert.That(File.ReadAllText(_journalPath, Encoding.UTF8), Does.Not.Contain(request.InvocationId));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    private ValueTask<FileInvocationJournal> OpenAgedAsync(TimeSpan ahead) =>
+        FileInvocationJournal.OpenWithRotationForTestingAsync(
+            _journalPath,
+            new JournalHmacAuthenticator(_authenticationKey),
+            MaximumJournalBytes,
+            CompletionReservationBytes,
+            RotationThresholdBytes,
+            retainedArchiveSegments: 2,
+            time: new AheadTime(ahead));
+
+    // The clock this many days ahead: what the journal wrote now reads as that old.
+    private sealed class AheadTime(TimeSpan ahead) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => base.GetUtcNow() + ahead;
+    }
+
     [Test]
     public async Task ArchivedSegmentsWithoutTheirManifestAreDetected()
     {
@@ -682,11 +812,12 @@ public sealed class FileInvocationJournalRotationTests
         string archive = Archive(1);
         DateTime written = File.GetLastWriteTimeUtc(archive);
         string text = File.ReadAllText(archive, Encoding.UTF8);
-        int at = text.IndexOf("pan", StringComparison.Ordinal);
+        // Auditoría del núcleo 2026-10-23: the content is sealed now; a clear field of the record is changed.
+        int at = text.IndexOf("note.create", StringComparison.Ordinal);
         Assert.That(at, Is.GreaterThan(0));
         File.WriteAllText(
             archive,
-            string.Concat(text.AsSpan(0, at), "pon", text.AsSpan(at + 3)),
+            string.Concat(text.AsSpan(0, at), "note.creatx", text.AsSpan(at + 11)),
             new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
         File.SetLastWriteTimeUtc(archive, written);
 
@@ -810,7 +941,8 @@ public sealed class FileInvocationJournalRotationTests
         await using FileInvocationJournal journal = await OpenRotatingAsync(diagnostics: diagnostics.Add);
         using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
         _ = await engine.ExecuteAsync(CreateRequest(), CancellationToken.None);
-        while (new FileInfo(_journalPath).Length <= RotationThresholdBytes - 512)
+        // Auditoría del núcleo 2026-10-23: a sealed completion is longer, so the margin is two invocations, not 512 bytes.
+        while (new FileInfo(_journalPath).Length <= RotationThresholdBytes - 2048)
         {
             _ = await engine.ExecuteAsync(CreateRequest(), CancellationToken.None);
         }

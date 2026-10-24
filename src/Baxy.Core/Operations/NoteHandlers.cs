@@ -1,5 +1,7 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Notes;
 
 namespace Baxy.Core.Operations;
@@ -35,12 +37,14 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         {
             return ValueTask.FromResult(OperationOutcome.Failure(
                 "note_not_found",
+                IdNotFoundFacts(invocation.Arguments),
                 causeCode: "by_id"));
         }
-        catch (NoteTitleNotFoundException)
+        catch (NoteTitleNotFoundException missing)
         {
             return ValueTask.FromResult(OperationOutcome.Failure(
                 "note_not_found",
+                TitleNotFoundFacts(invocation.Arguments, missing.Scope),
                 causeCode: "by_title"));
         }
         catch (NoteTitleAmbiguousException exception)
@@ -49,9 +53,9 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
                 "note_ambiguous",
                 SerializeAmbiguity(exception)));
         }
-        catch (NoteSelectionStaleException)
+        catch (NoteSelectionStaleException stale)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("note_selection_stale"));
+            return ValueTask.FromResult(OperationOutcome.Failure("note_selection_stale", StaleFacts(stale.NoteId)));
         }
         catch (NoteConflictException)
         {
@@ -61,13 +65,19 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         {
             return ValueTask.FromResult(OperationOutcome.Failure("note_capacity_reached"));
         }
-        catch (NoteCorruptionException) when (Definition.Risk == OperationRisk.ReadOnly)
+        // Auditoría del Core (w8): a corrupt note, or a store whose path became unsafe, met by an operation that changes
+        // something threw past this handler and ended the core (exit 70), as C-1 found for a failed write: one bad note
+        // file stopped every note.create (the idempotency look reads them all). It is this operation's failure, named;
+        // where in the change the store noticed is not known, so a change may have begun for one that changes.
+        catch (NoteCorruptionException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("note_integrity_failed"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "note_integrity_failed", effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
         }
-        catch (UnsafeNoteStorePathException) when (Definition.Risk == OperationRisk.ReadOnly)
+        catch (UnsafeNoteStorePathException)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("unsafe_storage"));
+            return ValueTask.FromResult(OperationOutcome.Failure(
+                "unsafe_storage", effectMayHaveOccurred: Definition.Risk != OperationRisk.ReadOnly));
         }
         // Revisión 2026-10-22 (C-1): a write the disk or a guarded folder failed threw past this handler and ended the
         // core (exit 70); it is this operation's failure, and a change may have begun only for one that changes.
@@ -79,6 +89,151 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
     }
 
     protected abstract OperationOutcome Execute(OperationInvocation invocation);
+
+    // Renew al máximo (w5): «note_not_found» came bare: a note.read by the title of a note in the trash, or by a title
+    // written a little differently, was «no existe». It says where it was looked, the note in the trash that has that
+    // id or title, or the notes whose titles come close; aid note_not_found_next says it as a sentence.
+    protected JsonElement? IdNotFoundFacts(JsonElement arguments)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("noteId", out JsonElement given)
+            || given.ValueKind != JsonValueKind.String
+            || !Guid.TryParseExact(given.GetString(), "D", out Guid id)
+            || id == Guid.Empty)
+        {
+            return null;
+        }
+
+        var facts = new JsonObject { ["noteId"] = id.ToString("D") };
+        string next;
+        try
+        {
+            NoteRecord trashed = Store.Read(id, includeTrashed: true);
+            facts["note"] = Summary(trashed);
+            next = trashed.IsTrashed
+                ? "the note is in the trash; note.restore brings it back"
+                : "the note is there now; read it again";
+        }
+        catch (NoteNotFoundException)
+        {
+            facts["searched"] = "active and trashed notes";
+            next = "no note has this noteId, trashed ones included; note.search or note.list gives the ids";
+        }
+        catch (Exception exception) when (exception is NoteStoreException or IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+
+        return Facts(facts, next);
+    }
+
+    // Renew al máximo (w9): a snapshot that no longer matches (the note changed after it was read, or after the yes)
+    // changed nothing; it says the note as it is now.
+    protected JsonElement? StaleFacts(Guid id)
+    {
+        try
+        {
+            return Facts(new JsonObject { ["note"] = Summary(Store.Read(id, includeTrashed: true)) },
+                "nothing changed: the note is no longer as the call named it (expectedTitle, expectedRevision, "
+                + "expectedIsTrashed); it is as shown now", ModelAids.NoteSnapshotNext);
+        }
+        catch (Exception exception) when (exception is NoteStoreException or IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    protected JsonElement? TitleNotFoundFacts(JsonElement arguments, NoteListScope scope)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("title", out JsonElement given)
+            || given.ValueKind != JsonValueKind.String)
+        {
+            return null;
+        }
+
+        string title = given.GetString()!.Normalize(System.Text.NormalizationForm.FormC).Trim();
+        IReadOnlyList<NoteRecord> notes;
+        try
+        {
+            notes = Store.List(NoteListScope.All);
+        }
+        catch (Exception exception) when (exception is NoteStoreException or IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+
+        string searched = scope == NoteListScope.Active ? "active notes" : "active and trashed notes";
+        var facts = new JsonObject { ["title"] = title, ["searched"] = searched };
+        NoteRecord[] inTrash = scope == NoteListScope.Active
+            ? [.. notes.Where(note => note.IsTrashed
+                && string.Equals(note.Title, title, StringComparison.OrdinalIgnoreCase))]
+            : [];
+        string next;
+        if (inTrash.Length > 0)
+        {
+            facts["inTrash"] = new JsonArray([.. inTrash.Select(Summary)]);
+            next = $"a note titled \"{title}\" is in the trash; note.restore brings it back";
+        }
+        else
+        {
+            NoteRecord[] close = [.. notes.Where(note => TitlesClose(note.Title, title))
+                .OrderBy(note => note.IsTrashed).ThenByDescending(note => note.UpdatedAtUtc).Take(5)];
+            if (close.Length > 0)
+            {
+                facts["similarTitles"] = new JsonArray([.. close.Select(Summary)]);
+            }
+
+            next = $"no note is titled \"{title}\" exactly among {searched}"
+                + (close.Length == 0 ? string.Empty
+                    : "; titles close to it: " + string.Join(", ", close.Select(note => $"\"{note.Title}\"")))
+                + "; note.search finds notes by the words they contain";
+        }
+
+        return Facts(facts, next);
+    }
+
+    // Close: one title holds the other, or they share a word of four letters or more (case and accents aside).
+    private static bool TitlesClose(string stored, string asked)
+    {
+        string a = Folded(stored), b = Folded(asked);
+        if (a.Length == 0 || b.Length == 0) return false;
+        if (a.Contains(b, StringComparison.Ordinal) || b.Contains(a, StringComparison.Ordinal)) return true;
+        HashSet<string> words = [.. Words(a)];
+        return Words(b).Any(words.Contains);
+    }
+
+    private static IEnumerable<string> Words(string folded) =>
+        folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(word => word.Length >= 4);
+
+    private static string Folded(string text)
+    {
+        var folded = new System.Text.StringBuilder(text.Length);
+        foreach (char character in text.Normalize(System.Text.NormalizationForm.FormD))
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
+                == System.Globalization.UnicodeCategory.NonSpacingMark) continue;
+            folded.Append(char.IsLetterOrDigit(character) ? char.ToLowerInvariant(character) : ' ');
+        }
+
+        return folded.ToString().Trim();
+    }
+
+    protected static JsonNode? Summary(NoteRecord note) => JsonSerializer.SerializeToNode(
+        ToSummary(new NoteSummaryRecord(
+            note.Id, note.Title, note.CreatedAtUtc, note.UpdatedAtUtc, note.TrashedAtUtc, note.Revision)),
+        CoreJsonContext.Default.NoteSummaryResult);
+
+    protected static JsonElement Facts(JsonObject facts, string next, string aid = ModelAids.NoteNotFoundNext)
+    {
+        if (ModelAids.On(aid))
+        {
+            facts["next"] = next;
+        }
+
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
+    }
 
     protected static T Parse<T>(
         JsonElement arguments,
@@ -225,7 +380,7 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
     protected static JsonElement Serialize(NoteResult result) =>
         JsonSerializer.SerializeToElement(result, CoreJsonContext.Default.NoteResult);
 
-    private static JsonElement SerializeAmbiguity(NoteTitleAmbiguousException exception)
+    protected static JsonElement SerializeAmbiguity(NoteTitleAmbiguousException exception)
     {
         NoteAmbiguityCandidateResult[] candidates = exception.Candidates
             .Select(static candidate => new NoteAmbiguityCandidateResult(
@@ -352,10 +507,109 @@ internal sealed class ListNotesHandler(INoteStore store) : NoteHandlerBase(store
     }
 }
 
-internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store)
+internal sealed class TrashNoteHandler(INoteStore store) : NoteHandlerBase(store), IInvocationPreflight
 {
     public override OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("note.trash");
+
+    // Renew al máximo (w5): a note.trash asks the person's yes, and one whose note is not there (or is there under that
+    // title more than once) failed only after the yes. The selection is read first (no effect) and that failure
+    // answers without asking.
+    // Renew al máximo (w9): the yes named only the title or the id, so a note changed between the yes and the run was
+    // trashed as it was by then. The yes is asked only for a snapshot (noteId, expectedTitle, expectedRevision,
+    // expectedIsTrashed) that is the note now: a call without one fails here with the note and the call that names it
+    // (note_trash_snapshot_required), one that no longer matches with the note as it is (note_selection_stale). The yes
+    // is bound to those arguments, this read runs again on the confirmed call, and the run trashes only that snapshot
+    // (TrashSelected). Bypass asks no yes and reads nothing here.
+    public ValueTask<InvocationPreflightResult> PreflightAsync(JsonElement arguments, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        try
+        {
+            NoteSelectorArguments selector = Parse(arguments, CoreJsonContext.Default.NoteSelectorArguments);
+            if (selector is { NoteId: null, Title: { } title })
+            {
+                string normalized = title.Normalize(System.Text.NormalizationForm.FormC).Trim();
+                NoteRecord[] named = [.. Store.List(NoteListScope.All)
+                    .Where(note => string.Equals(note.Title, normalized, StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(static note => note.UpdatedAtUtc).ThenBy(static note => note.Id)];
+                if (named.Length == 0)
+                {
+                    return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
+                        "note_not_found", TitleNotFoundFacts(arguments, NoteListScope.All), causeCode: "by_title")));
+                }
+
+                if (named.Length > 1)
+                {
+                    return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
+                        "note_ambiguous",
+                        SerializeAmbiguity(new NoteTitleAmbiguousException(NoteListScope.All, [.. named.Select(
+                            static note => new NoteAmbiguityCandidate(
+                                note.Id, note.Title, LocalNoteStore.CreateContentPreview(note.Content),
+                                note.CreatedAtUtc, note.UpdatedAtUtc, note.Revision, note.IsTrashed))])))));
+                }
+
+                return ValueTask.FromResult(SnapshotRequired(named[0]));
+            }
+            else if (selector is { Title: null, NoteId: { } noteId } && Guid.TryParseExact(noteId, "D", out Guid id))
+            {
+                NoteRecord note;
+                try
+                {
+                    note = Store.Read(id, includeTrashed: true);
+                }
+                catch (NoteNotFoundException)
+                {
+                    return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
+                        "note_not_found", IdNotFoundFacts(arguments), causeCode: "by_id")));
+                }
+
+                if (selector is { ExpectedTitle: null, ExpectedRevision: null, ExpectedIsTrashed: null })
+                {
+                    return ValueTask.FromResult(SnapshotRequired(note));
+                }
+
+                if (selector is { ExpectedTitle: { } expectedTitle, ExpectedRevision: { } revision,
+                        ExpectedIsTrashed: { } trashed }
+                    && !NamedBySnapshot(note, expectedTitle.Normalize(System.Text.NormalizationForm.FormC).Trim(),
+                        revision, trashed))
+                {
+                    return ValueTask.FromResult(InvocationPreflightResult.Fails(OperationOutcome.Failure(
+                        "note_selection_stale", StaleFacts(note.Id))));
+                }
+            }
+        }
+        catch (Exception exception) when (exception is JsonException or NoteStoreException or IOException
+            or UnauthorizedAccessException or ArgumentException)
+        {
+            // Not read: the call asks and runs as always.
+        }
+
+        return ValueTask.FromResult(InvocationPreflightResult.Proceed);
+    }
+
+    // The note as it is now (or, for a confirmed call already run, as that run left it: one revision on, in the trash),
+    // by the store's own comparison (LocalNoteStore.MatchesSelection, IsReachedReplay).
+    private static bool NamedBySnapshot(NoteRecord note, string title, long revision, bool trashed) =>
+        string.Equals(note.Title, title, StringComparison.OrdinalIgnoreCase)
+        && ((note.Revision == revision && note.IsTrashed == trashed)
+            || (!trashed && note.IsTrashed && revision < long.MaxValue && note.Revision == revision + 1));
+
+    private static InvocationPreflightResult SnapshotRequired(NoteRecord note) =>
+        InvocationPreflightResult.Fails(OperationOutcome.Failure("note_trash_snapshot_required", Facts(
+            new JsonObject
+            {
+                ["note"] = Summary(note),
+                ["call"] = new JsonObject
+                {
+                    ["noteId"] = note.Id.ToString("D"),
+                    ["expectedTitle"] = note.Title,
+                    ["expectedRevision"] = note.Revision,
+                    ["expectedIsTrashed"] = note.IsTrashed,
+                },
+            },
+            "nothing was trashed: the yes is asked for the note as it is now; call note.trash with the arguments in call",
+            ModelAids.NoteSnapshotNext)));
 
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {

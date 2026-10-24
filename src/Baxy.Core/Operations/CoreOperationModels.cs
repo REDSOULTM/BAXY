@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Core.Operations;
 
@@ -167,7 +168,14 @@ internal sealed record ProcessListItemResult(
     long WorkingSetBytes,
     double TotalProcessorSeconds,
     double? CpuUsagePercent,
-    double? SampleDurationSeconds);
+    double? SampleDurationSeconds)
+{
+    // Holdout v4 (falsedad, «69 % de CPU» for 0.69 %): the reading with its unit (ReadingUnits). cpuUsage is the share of
+    // all the logical processors together.
+    public string? CpuUsage => ReadingUnits.Percent(CpuUsagePercent);
+
+    public string WorkingSet => ReadingUnits.Size(WorkingSetBytes);
+}
 
 internal sealed record ProcessListResult(
     int Version,
@@ -178,28 +186,60 @@ internal sealed record ProcessListResult(
     string ObservationScope,
     int? LogicalProcessorCount,
     // Ronda final 8 (regla 3): false when the observation stopped before every process.
-    bool ObservationComplete);
+    bool ObservationComplete,
+    // Renew al máximo (w8): processes Windows did not let BAXY read (another user's, protected ones), not in the list.
+    int UnmeasuredProcessCount);
 
 internal sealed record SystemStatusCpuResult(
     double UsagePercent,
     int LogicalProcessorCount,
     string? Model,
-    int? PhysicalCoreCount);
+    int? PhysicalCoreCount)
+{
+    // Holdout v4 (falsedad, «69 % de CPU» for 0.69 %): the reading with its unit (ReadingUnits).
+    public string Usage => ReadingUnits.Percent(UsagePercent);
+}
 
 internal sealed record SystemStatusMemoryResult(
     ulong TotalBytes,
     ulong AvailableBytes,
-    ulong? InstalledBytes);
+    ulong? InstalledBytes)
+{
+    // Holdout v4 (falsedad, units): the sizes written with their unit, and the part in use (total less available).
+    public string Total => ReadingUnits.Size(TotalBytes);
+
+    public string Available => ReadingUnits.Size(AvailableBytes);
+
+    public string? Installed => ReadingUnits.Size(InstalledBytes);
+
+    public string InUse => ReadingUnits.Size(TotalBytes - Math.Min(AvailableBytes, TotalBytes));
+
+    public string? InUseShare => ReadingUnits.Share(TotalBytes - Math.Min(AvailableBytes, TotalBytes), TotalBytes);
+}
 
 internal sealed record SystemStatusDiskResult(
     long TotalBytes,
-    long AvailableBytes);
+    long AvailableBytes)
+{
+    // Holdout v4 (falsedad, units): the sizes written with their unit, and the part in use (total less available).
+    public string Total => ReadingUnits.Size(TotalBytes);
+
+    public string Available => ReadingUnits.Size(AvailableBytes);
+
+    public string InUse => ReadingUnits.Size(Math.Max(0, TotalBytes - AvailableBytes));
+
+    public string? InUseShare => ReadingUnits.Share(Math.Max(0, TotalBytes - AvailableBytes), TotalBytes);
+}
 
 internal sealed record SystemStatusBatteryResult(
     bool? IsPresent,
     int? ChargePercent,
     bool? IsCharging,
-    bool? IsAcOnline);
+    bool? IsAcOnline)
+{
+    // Holdout v4 (falsedad, units): the charge written with its unit.
+    public string? Charge => ReadingUnits.Percent(ChargePercent);
+}
 
 internal sealed record SystemStatusOperatingSystemResult(
     int MajorVersion,

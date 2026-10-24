@@ -24,7 +24,9 @@ public sealed record LocalTaskQuery(IReadOnlyList<LocalTaskRecord> Tasks, int Ma
 
 public interface ILocalTaskStore
 {
-    LocalTaskRecord Create(string title, string details, string? due);
+    /// <param name="idempotencyKey">The invocation that creates it (as note.create): the same key with the same task
+    /// gives back the task it already created, never a second one; with another task it is a conflict.</param>
+    LocalTaskRecord Create(string title, string details, string? due, string? idempotencyKey = null);
 
     LocalTaskRecord Read(Guid id, bool includeDeleted = false);
 

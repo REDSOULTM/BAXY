@@ -20,6 +20,12 @@ internal sealed partial class UserBrowserSurface
         if (!SameSite(requested, observed)
             || !string.Equals(PathOf(requested), PathOf(observed), StringComparison.Ordinal))
             return false;
+        return KeepsAskedQuery(requested, observed);
+    }
+
+    /// <summary>Every query parameter asked for is in the address read with the same value (others may be added).</summary>
+    internal static bool KeepsAskedQuery(Uri requested, Uri observed)
+    {
         List<KeyValuePair<string, string>> seen = QueryOf(observed);
         return QueryOf(requested).All(asked => seen.Any(pair => SameParameter(asked, pair)));
     }

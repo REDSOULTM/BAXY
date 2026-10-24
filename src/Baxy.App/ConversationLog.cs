@@ -56,6 +56,31 @@ internal sealed class ConversationLog
         }
     }
 
+    /// <summary>
+    /// The person had BAXY forget everything, or deleted every conversation: this log goes too, its archive included.
+    /// Auditoría de la App (2026-10-23): the kept conversations are sealed and deleted then because they hold what memory
+    /// calls read, and this log kept the same lines in clear text after both. What follows is logged again.
+    /// </summary>
+    internal void Clear()
+    {
+        lock (_gate)
+        {
+            foreach (string path in (string[])[_file.FilePath, _file.ArchivePath])
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+                {
+                    // Held by another reader for a moment: the next forget takes it.
+                }
+            }
+
+            _lastUserMessageAt = null;
+        }
+    }
+
     /// <summary>Appends one message; a failure to write never reaches the shell.</summary>
     internal void Append(ConversationMessage message)
     {

@@ -206,9 +206,12 @@ public sealed class WindowsScreenshotProviderTests
         }, new FixedTimeProvider());
         var provider = new WindowsScreenshotProvider(temporary.Path, platform, new FixedTimeProvider());
 
-        Assert.ThrowsAsync<IOException>(async () => await provider.CaptureActiveWindowAsync(CancellationToken.None));
+        // Renew al máximo (w8): the change has its own code, not the generic active_window_capture_failed.
+        ScreenshotUnavailableException? changed = Assert.ThrowsAsync<ScreenshotUnavailableException>(
+            async () => await provider.CaptureActiveWindowAsync(CancellationToken.None));
         Assert.Multiple(() =>
         {
+            Assert.That(changed!.Code, Is.EqualTo("active_window_changed_during_capture"));
             Assert.That(copied, Is.True);
             Assert.That(observations, Is.EqualTo(2));
             Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
@@ -444,4 +447,38 @@ public sealed class WindowsScreenshotProviderTests
 
     // A drawn frame (ronda final 17: an all-black one is refused as the screen copy of what could not be read).
     private static byte[] Lit(int length) => Enumerable.Repeat((byte)128, length).ToArray();
+}
+
+/// <summary>Renew al máximo (w8): a capture that could not be taken for a reason it knows says what to do.</summary>
+[TestFixture]
+public sealed class ScreenshotCaptureHandlerFailureTests
+{
+    [Test]
+    public async Task AWindowThatChangedDuringTheCaptureSaysSoAndWhatToDo()
+    {
+        var handler = new Baxy.Core.Operations.ScreenshotCaptureHandler(
+            new ChangingWindow(), "capture.active.window", activeWindow: true);
+
+        Baxy.Kernel.Operations.OperationOutcome outcome = await handler.ExecuteAsync(
+            new Baxy.Kernel.Operations.OperationInvocation(
+                "request", "mission", "invocation", System.Text.Json.JsonDocument.Parse("{}").RootElement.Clone()),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("active_window_changed_during_capture"));
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(),
+                Does.Contain("capture again").And.Contain("nothing was stored"));
+        });
+    }
+
+    private sealed class ChangingWindow : IScreenshotProvider
+    {
+        public ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public ValueTask<CaptureResult> CaptureActiveWindowAsync(CancellationToken cancellationToken) =>
+            throw new ScreenshotUnavailableException("active_window_changed_during_capture", "changed");
+    }
 }

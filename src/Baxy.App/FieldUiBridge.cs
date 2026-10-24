@@ -61,7 +61,21 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         // Design v4: the view scales itself (720p to 8K, its own accessible sizes); the host keeps the zoom at 1.
         _channel = new FieldProductChannel(viewModel, this, telemetry, lifetimeCancellation);
         _webView.WebMessageReceived += OnWebMessageReceived;
+        _webView.NavigationStarting += OnNavigationStarting;
     }
+
+    /// <summary>
+    /// Auditoría de la App (2026-10-23): the document the sockets belong to is leaving (the loading page, a return to
+    /// the view, a reload). It never says socket_close as it goes, so every later event was posted once more per socket
+    /// of every document the view had had; the next one opens its own.
+    /// </summary>
+    internal void DocumentLeaving() => _sockets.Clear();
+
+    /// <summary>The event sockets of the document shown now.</summary>
+    internal int OpenSockets => _sockets.Count;
+
+    private void OnNavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs eventArgs) =>
+        DocumentLeaving();
 
     bool IFieldEventSink.Publish(JsonObject eventData) => PostEvent(eventData);
 
@@ -353,6 +367,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
 
         _disposed = true;
         _webView.WebMessageReceived -= OnWebMessageReceived;
+        _webView.NavigationStarting -= OnNavigationStarting;
         foreach (string socketId in _sockets.ToArray())
         {
             PostSocket(socketId, "close", code: 1001, reason: "BAXY closing");

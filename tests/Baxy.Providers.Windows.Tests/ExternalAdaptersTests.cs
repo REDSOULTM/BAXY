@@ -381,6 +381,34 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Holdout v4 (falsedad, a partial read told as a whole one): a log read that stopped at its limit of events says it
+    // read only the newest ones of those hours; one that read all of them reached the end.
+    [Test]
+    public async Task ACrashLogReadThatStoppedAtItsLimitIsReadInPart()
+    {
+        const string stopped = """
+            {"ok":true,"firstObservationCount":80,"secondObservationCount":80,"stableCount":80,"readCap":80,"events":[{"recordId":1,"eventId":1000}]}
+            """;
+        const string whole = """
+            {"ok":true,"firstObservationCount":3,"secondObservationCount":3,"stableCount":3,"readCap":80,"events":[{"recordId":1,"eventId":1000}]}
+            """;
+
+        ExternalCapabilityReceipt cut = await new WindowsApplicationCrashDiagnosticAdapter(new StubProcessRunner(stopped))
+            .InvokeAsync("system.application.crash.diagnose", Json("""{"hours":24,"limit":20}"""), CancellationToken.None);
+        ExternalCapabilityReceipt all = await new WindowsApplicationCrashDiagnosticAdapter(new StubProcessRunner(whole))
+            .InvokeAsync("system.application.crash.diagnose", Json("""{"hours":24,"limit":20}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(cut.Result?.GetProperty("readInPart").GetBoolean(), Is.True);
+            Assert.That(cut.Result?.GetProperty("endReached").GetBoolean(), Is.False);
+            Assert.That(cut.Result?.GetProperty("eventsSeen").GetInt32(), Is.EqualTo(80));
+            Assert.That(cut.Result?.GetProperty("eventsShown").GetInt32(), Is.EqualTo(1));
+            Assert.That(all.Result?.TryGetProperty("readInPart", out _), Is.False);
+            Assert.That(all.Result?.GetProperty("endReached").GetBoolean(), Is.True);
+        });
+    }
+
     [Test]
     public async Task ExactNamedProcessTerminationRejectsPathsBeforeTakingAnEffect()
     {
@@ -658,6 +686,50 @@ public sealed class ExternalAdaptersTests
                 CaptureVisionAdapter.FindTessdata(executable, "fr-FR", out string unsupported),
                 Is.Null);
             Assert.That(unsupported, Is.Empty);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", previousExecutable);
+            Environment.SetEnvironmentVariable("BAXY_TESSDATA_DIR", previousTessdata);
+        }
+    }
+
+    // Renew al máximo (w8): a Tesseract that starts and fails is told as that, with what to do, never as a missing
+    // Windows OCR language pack (windows_ocr_language_not_available, as every Tesseract failure was).
+    [Test]
+    [NonParallelizable]
+    public async Task ATesseractThatFailsIsToldAsItsOwnFailureWithWhatToDo()
+    {
+        using TemporaryDirectory temporary = new();
+        string tessdata = Path.Combine(temporary.Path, "tessdata");
+        Directory.CreateDirectory(tessdata);
+        File.WriteAllBytes(Path.Combine(tessdata, "eng.traineddata"), [1]);
+        File.WriteAllBytes(Path.Combine(tessdata, "spa.traineddata"), [1]);
+        string capture = Path.Combine(temporary.Path, "capture_" + new string('a', 32) + ".bmp");
+        File.WriteAllBytes(capture, new byte[64]);
+        // where.exe takes Tesseract's arguments as a bad search and exits with an error, as a broken Tesseract does.
+        string failing = Path.Combine(Environment.SystemDirectory, "where.exe");
+        string? previousExecutable = Environment.GetEnvironmentVariable("BAXY_TESSERACT_EXE");
+        string? previousTessdata = Environment.GetEnvironmentVariable("BAXY_TESSDATA_DIR");
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", failing);
+            Environment.SetEnvironmentVariable("BAXY_TESSDATA_DIR", tessdata);
+
+            ExternalCapabilityReceipt failed = await CaptureVisionAdapter.ReadTesseractOcrAsync(
+                "ocr.read", "capture_" + new string('a', 32), capture, null, CancellationToken.None);
+            ExternalCapabilityReceipt french = await CaptureVisionAdapter.ReadTesseractOcrAsync(
+                "ocr.read", "capture_" + new string('a', 32), capture, "fr-FR", CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(failed.ErrorCode, Is.EqualTo("tesseract_ocr_failed"));
+                Assert.That(failed.Verified, Is.False);
+                Assert.That(failed.Result!.Value.GetProperty("exitCode").GetInt32(), Is.Not.Zero);
+                Assert.That(failed.Result!.Value.GetProperty("next").GetString(), Does.Contain("vision_describe"));
+                Assert.That(french.ErrorCode, Is.EqualTo("windows_ocr_language_not_available"));
+                Assert.That(french.Result!.Value.GetProperty("next").GetString(), Does.Contain("Spanish and English"));
+            });
         }
         finally
         {
@@ -1359,6 +1431,58 @@ public sealed class ExternalAdaptersTests
             Assert.That(epic.Result?.TryGetProperty("installed", out _), Is.False);
             Assert.That(epic.Result?.GetProperty("state").GetString(), Is.EqualTo("install_not_finished"));
         });
+    }
+
+    // Renew al máximo (w8): a corrupt Epic manifest (or one its store is rewriting) failed the whole check, Steam's
+    // games included. It is left aside and counted: the Steam game is still found; a name not found is not said absent.
+    [Test]
+    public async Task OneUnreadableManifestLeavesTheOthersRead()
+    {
+        using TemporaryDirectory temporary = new();
+        string steamApps = Path.Combine(temporary.Path, "steamapps");
+        string epicManifests = Path.Combine(temporary.Path, "epic");
+        Directory.CreateDirectory(Path.Combine(steamApps, "common", "Hollow Knight"));
+        Directory.CreateDirectory(epicManifests);
+        await File.WriteAllTextAsync(
+            Path.Combine(steamApps, "appmanifest_367520.acf"),
+            "\"AppState\" { \"appid\" \"367520\" \"name\" \"Hollow Knight\" " +
+            "\"StateFlags\" \"4\" \"installdir\" \"Hollow Knight\" }");
+        await File.WriteAllTextAsync(Path.Combine(epicManifests, "broken.item"), "{ \"DisplayName\": ");
+        var adapter = new WindowsGameInstallationAdapter([steamApps], [epicManifests]);
+
+        ExternalCapabilityReceipt found = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"Hollow Knight"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt other = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"Fall Guys"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.ErrorCode, Is.Null);
+            Assert.That(found.Result?.GetProperty("installed").GetBoolean(), Is.True);
+            Assert.That(found.Result?.GetProperty("manifestsUnread").GetInt32(), Is.EqualTo(1));
+            Assert.That(other.ErrorCode, Is.Null);
+            Assert.That(other.Result?.GetProperty("state").GetString(), Is.EqualTo("install_state_not_read"));
+        });
+    }
+
+    // Renew al máximo (w8): «¿tengo instalado assassins creed origins?» against the manifest «Assassin's Creed Origins»:
+    // the apostrophe folded to a space and the game was said not installed.
+    [Test]
+    public async Task AnInstalledTitleWithAnApostropheIsFoundAsItIsSaid()
+    {
+        using TemporaryDirectory temporary = new();
+        string steamApps = Path.Combine(temporary.Path, "steamapps");
+        Directory.CreateDirectory(Path.Combine(steamApps, "common", "ACOrigins"));
+        await File.WriteAllTextAsync(
+            Path.Combine(steamApps, "appmanifest_582160.acf"),
+            "\"AppState\" { \"appid\" \"582160\" \"name\" \"Assassin's Creed Origins\" " +
+            "\"StateFlags\" \"4\" \"installdir\" \"ACOrigins\" }");
+        var adapter = new WindowsGameInstallationAdapter([steamApps], []);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"assassins creed origins"}"""), CancellationToken.None);
+
+        Assert.That(receipt.Result?.GetProperty("installed").GetBoolean(), Is.True);
     }
 
     // Renew al máximo (auditoría de flujos, decision2): a name no manifest bears exactly names the closest ones read.
@@ -2321,6 +2445,24 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w5): clipboard.copy looks for the copy every 50 ms for 1 s, as input.key.press ctrl_c does (one
+    // look after a fixed 120 ms failed a slower application's copy), and a Ctrl+C accepted in the same window that left
+    // the clipboard as it was is said as clipboard_not_changed, not as an input not verified.
+    [Test]
+    public void TheCopyIsLookedForOftenAndACopyOfNothingIsSaidSo()
+    {
+        string script = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "DesktopKeyPress.ps1"));
+        int copyWait = script.IndexOf("$deadline=(Get-Date).AddMilliseconds(1000)", StringComparison.Ordinal);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(copyWait, Is.GreaterThan(0));
+            Assert.That(script, Does.Contain("do{Start-Sleep -Milliseconds 50}while($verified -and ([BaxyKeyInput]::GetClipboardSequenceNumber() -eq $clipboardSequenceBefore"));
+            Assert.That(script, Does.Contain("} else { Start-Sleep -Milliseconds 120 }"), "the fixed wait is only for the other acts");
+            Assert.That(script, Does.Contain("{'clipboard_not_changed'}else{'input_effect_not_verified'}"));
+        });
+    }
+
     [Test]
     public async Task ClipboardCopyRequiresStableFocusAcceptedChordAndSequenceChange()
     {
@@ -2809,6 +2951,10 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("brightness_postread_failed"));
             Assert.That(receipt.StateAlreadyReached, Is.False);
+            // Renew al máximo (w8): the level the last read saw goes with the failure.
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("stateAfter").GetProperty("values")[0].GetInt32(), Is.EqualTo(30));
+            Assert.That(receipt.Result?.GetProperty("stateAfter").GetProperty("requestedLevel").GetInt32(), Is.EqualTo(40));
         });
     }
 
@@ -3150,6 +3296,47 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("wifi_status_changed_during_read"));
             Assert.That(receipt.EffectObserved, Is.False);
+        });
+    }
+
+    // Renew al máximo (w8): a Wi-Fi status netsh did not give says why (the WLAN service stopped, or not read), never the
+    // adapter's generic failure; after a disconnection was sent, one unanswered look does not end the wait.
+    [Test]
+    public async Task AnUnreadWifiStatusSaysWhyAndOneUnansweredLookDoesNotEndTheWait()
+    {
+        using TemporaryDirectory temporary = new();
+        var stopped = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wlan_service_not_running\"}",
+        ]));
+        var unread = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wifi_status_not_read\"}",
+        ]));
+        var none = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new SequencedProcessRunner([
+            "{\"ok\":false,\"error\":\"wifi_radio_not_found\"}",
+        ]));
+        var delay = new RecordingDelay();
+        var disconnecting = new SequencedProcessRunner([
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Private WiFi\"}",
+            "",
+            "{\"ok\":false,\"error\":\"wifi_status_not_read\"}",
+            "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
+        ]);
+        var disconnect = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, disconnecting, delay.DelayAsync);
+
+        ExternalCapabilityReceipt stoppedReceipt = await stopped.InvokeAsync("wifi.status", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt unreadReceipt = await unread.InvokeAsync("wifi.status", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt noneReceipt = await none.InvokeAsync("wifi.ensure.connected", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt disconnected = await disconnect.InvokeAsync("wifi.disconnect", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(stoppedReceipt.ErrorCode, Is.EqualTo("wlan_service_not_running"));
+            Assert.That(stoppedReceipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(unreadReceipt.ErrorCode, Is.EqualTo("wifi_status_not_read"));
+            Assert.That(noneReceipt.ErrorCode, Is.EqualTo("wifi_radio_not_found"));
+            Assert.That(disconnected.Verified, Is.True, disconnected.ErrorCode);
+            Assert.That(disconnecting.Calls, Is.EqualTo(4));
+            Assert.That(delay.Calls, Is.EqualTo(1));
         });
     }
 
@@ -4183,6 +4370,78 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Renew al máximo (w5): a time with its own offset is that instant, sent to Outlook in UTC; it came back
+    // «microsoft_desktop_adapter_failed», read as Outlook failing. One with no offset is refused before anything runs,
+    // naming the argument and (aid calendar_time_next) why.
+    [Test]
+    public async Task ACalendarTimeWithItsOffsetIsTakenAndOneWithoutIsNamed()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        const string output = """{"ok":true,"effectObserved":false,"events":[]}""";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(output);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt offset = await adapter.InvokeAsync(
+            "calendar.event.list",
+            Json("""{"startUtc":"2026-07-17T00:00:00-03:00","endUtc":"2026-07-18T00:00:00-03:00"}"""),
+            CancellationToken.None);
+        string sent = Encoding.UTF8.GetString(Convert.FromBase64String(runner.LastArguments[^1]));
+        ExternalCapabilityReceipt local = await adapter.InvokeAsync(
+            "calendar.event.create",
+            Json("""{"startUtc":"2026-07-17T18:00:00","endUtc":"2026-07-17T19:00:00Z","title":"Dentista"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(offset.Verified, Is.True, offset.ErrorCode);
+            Assert.That(JsonDocument.Parse(sent).RootElement.GetProperty("startUtc").GetString(),
+                Is.EqualTo("2026-07-17T03:00:00.0000000+00:00"));
+            Assert.That(local.ErrorCode, Is.EqualTo("calendar_time_not_exact"));
+            Assert.That(local.EffectObserved || local.EffectMayHaveOccurred, Is.False);
+            Assert.That(local.Result?.GetProperty("argument").GetString(), Is.EqualTo("startUtc"));
+            Assert.That(local.Result?.GetProperty("next").GetString(), Does.EndWith("no event was created"));
+        });
+    }
+
+    // Renew al máximo (w8): Outlook keeps an event's times to the minute: a create with seconds is refused before
+    // anything runs; and an event saved whose read-back differs is named by the failure, so it is not made twice.
+    [Test]
+    public async Task ACalendarCreateWithSecondsIsRefusedAndAMismatchNamesTheEventMade()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        const string mismatch = "{\"ok\":false,\"effectObserved\":true,\"error\":\"outlook_calendar_postread_mismatch\"," +
+            "\"entryId\":\"private-entry\",\"title\":\"Dentista\",\"startUtc\":\"2026-07-17T18:00:00.0000000Z\"," +
+            "\"endUtc\":\"2026-07-17T19:00:00.0000000Z\"}";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(mismatch);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt seconds = await adapter.InvokeAsync(
+            "calendar.event.create",
+            Json("""{"startUtc":"2026-07-17T18:00:30Z","endUtc":"2026-07-17T19:00:00Z","title":"Dentista"}"""),
+            CancellationToken.None);
+        bool ranForSeconds = runner.LastArguments.Length > 0;
+        ExternalCapabilityReceipt made = await adapter.InvokeAsync(
+            "calendar.event.create",
+            Json("""{"startUtc":"2026-07-17T18:00:00Z","endUtc":"2026-07-17T19:00:00Z","title":"Dentista"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ranForSeconds, Is.False);
+            Assert.That(seconds.ErrorCode, Is.EqualTo("calendar_time_not_whole_minute"));
+            Assert.That(seconds.Result?.GetProperty("argument").GetString(), Is.EqualTo("startUtc"));
+            Assert.That(seconds.EffectObserved || seconds.EffectMayHaveOccurred, Is.False);
+            Assert.That(made.ErrorCode, Is.EqualTo("outlook_calendar_postread_mismatch"));
+            Assert.That(made.EffectObserved, Is.True);
+            Assert.That(made.Result?.GetProperty("eventId").GetString(), Does.StartWith("event_"));
+            Assert.That(made.Result?.GetProperty("startUtc").GetString(), Is.EqualTo("2026-07-17T18:00:00.0000000Z"));
+            Assert.That(made.Result?.GetRawText(), Does.Not.Contain("private-entry"));
+            Assert.That(made.Result?.GetProperty("next").GetString(), Does.Contain("second event"));
+        });
+    }
+
     [Test]
     public async Task EmailSendGoesToTheFreeAddressAndIsVerifiedInSentItems()
     {
@@ -4391,6 +4650,114 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("private-sent-entry"));
         });
     }
+
+    // Renew al máximo (w8): the reply is bound to the mail its yes named. The script compares the newest mail's opaque
+    // id with expectedMessageId before Reply(); a newer mail sends nothing, and the receipt says so with no uncertainty.
+    [Test]
+    public async Task AReplyNamingAMailThatIsNoLongerTheNewestSendsNothingAndNamesTheNewest()
+    {
+        string named = OpaqueMail("inbox-entry-read-before");
+        const string output = "{\"ok\":false,\"effectObserved\":false,\"error\":\"email_latest_changed\"," +
+            "\"entryId\":\"inbox-entry-arrived-after\",\"subject\":\"Otro asunto\"," +
+            "\"sender\":\"other@example.test\",\"receivedUtc\":\"2026-07-17T10:05:00Z\"}";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(output);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt;
+        using (ModelAids.Use("all"))
+        {
+            receipt = await adapter.InvokeAsync(
+                "email.latest.reply",
+                Json("{\"text\":\"ok\",\"expectedMessageId\":\"" + named + "\"}"),
+                CancellationToken.None);
+        }
+
+        string script = runner.LastArguments.Single(argument => argument.Contains(".Reply()", StringComparison.Ordinal));
+        using JsonDocument input = JsonDocument.Parse(
+            Encoding.UTF8.GetString(Convert.FromBase64String(runner.LastArguments[^1])));
+        Assert.Multiple(() =>
+        {
+            Assert.That(input.RootElement.GetProperty("expectedMessageId").GetString(), Is.EqualTo(named));
+            Assert.That(script.IndexOf("email_latest_changed", StringComparison.Ordinal),
+                Is.LessThan(script.IndexOf(".Reply()", StringComparison.Ordinal)));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("email_latest_changed"));
+            JsonElement latest = receipt.Result!.Value.GetProperty("latest");
+            Assert.That(latest.GetProperty("messageId").GetString(), Is.EqualTo(OpaqueMail("inbox-entry-arrived-after")));
+            Assert.That(latest.GetProperty("sender").GetString(), Is.EqualTo("other@example.test"));
+            Assert.That(receipt.Result.Value.GetProperty("expectedMessageId").GetString(), Is.EqualTo(named));
+            Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.StartWith("nothing was sent"));
+            Assert.That(receipt.Result.Value.GetRawText(), Does.Not.Contain("inbox-entry-arrived-after"));
+        });
+    }
+
+    // Renew al máximo (w8): before the yes, a reply that names no mail, or one that is not the newest, fails with the
+    // newest mail's id; the one that names the newest goes on to ask.
+    [TestCase(null, "email_reply_message_id_required")]
+    [TestCase("inbox-entry-old", "email_latest_changed")]
+    [TestCase("inbox-entry-newest", null)]
+    public async Task AReplyIsBoundToTheNewestMailBeforeThePersonIsAsked(string? namedEntry, string? failure)
+    {
+        const string read = "{\"ok\":true,\"effectObserved\":false," +
+            "\"entryId\":\"inbox-entry-newest\",\"subject\":\"Informe\"," +
+            "\"sender\":\"sender@example.test\",\"receivedUtc\":\"2026-07-17T10:00:00Z\"," +
+            "\"body\":\"Contenido privado\",\"bodyLength\":17}";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(read);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+        string arguments = namedEntry is null
+            ? "{\"text\":\"ok\"}"
+            : "{\"text\":\"ok\",\"expectedMessageId\":\"" + OpaqueMail(namedEntry) + "\"}";
+
+        ExternalCapabilityReceipt? found = await ((IExternalOperationAdapter)adapter).PreflightAsync(
+            "email.latest.reply", Json(arguments), CancellationToken.None);
+
+        using JsonDocument input = JsonDocument.Parse(
+            Encoding.UTF8.GetString(Convert.FromBase64String(runner.LastArguments[^1])));
+        Assert.Multiple(() =>
+        {
+            Assert.That(input.RootElement.GetProperty("action").GetString(), Is.EqualTo("read"));
+            if (failure is null)
+            {
+                Assert.That(found, Is.Null);
+                return;
+            }
+
+            Assert.That(found, Is.Not.Null);
+            Assert.That(found!.ErrorCode, Is.EqualTo(failure));
+            Assert.That(found.Verified || found.EffectObserved || found.EffectMayHaveOccurred, Is.False);
+            Assert.That(found.Result!.Value.GetProperty("latest").GetProperty("messageId").GetString(),
+                Is.EqualTo(OpaqueMail("inbox-entry-newest")));
+            Assert.That(found.Result.Value.GetRawText(), Does.Not.Contain("Contenido privado"));
+        });
+    }
+
+    [Test]
+    public async Task AReplyWhoseExpectedMessageIdIsNotAMessageIdRunsNothing()
+    {
+        using TemporaryDirectory temporary = new();
+        var runner = new ThrowingProcessRunner(new InvalidOperationException("must not run"));
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "email.latest.reply",
+            Json("""{"text":"ok","expectedMessageId":"the last one"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(runner.Calls, Is.Zero);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("email_message_id_invalid"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result!.Value.GetProperty("argument").GetString(), Is.EqualTo("expectedMessageId"));
+        });
+    }
+
+    private static string OpaqueMail(string entryId) => "email_"
+        + Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(entryId)))[..24];
 
     [Test]
     public async Task MissingLocalYouTubeDependenciesFailBeforeTheEffectBoundary()
@@ -5042,6 +5409,36 @@ public sealed class ExternalAdaptersTests
             Assert.That(connected.Verified, Is.True);
             Assert.That(connected.EffectObserved, Is.True);
             Assert.That(runner.ConnectCalls, Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (w5): an id no list of this Core gave (an older session's, or made up) was a bare «expired»; with
+    // the aid identity_relist it says nothing was done and which list gives the ids. BAXY_AYUDAS=none: the code alone.
+    [TestCase("all", "bluetooth.device.pair", """{"deviceId":"bluetooth_0000"}""", "bluetooth_identity_expired",
+        "this deviceId is not one bluetooth_device_list gave since BAXY started, and nothing was paired; "
+        + "bluetooth_device_list gives the ids to use")]
+    [TestCase("all", "wifi.connect", """{"profileId":"wifi_0000"}""", "wifi_profile_identity_expired",
+        "this profileId is not one wifi_profile_list gave since BAXY started, and nothing was connected; "
+        + "wifi_profile_list gives the ids to use")]
+    [TestCase("none", "bluetooth.device.pair", """{"deviceId":"bluetooth_0000"}""", "bluetooth_identity_expired", null)]
+    public async Task AnIdNoListGaveSaysNothingWasDoneAndWhichListGivesOne(
+        string aids, string operation, string arguments, string code, string? next)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner("{}");
+        var adapter = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(runner.LastArguments, Is.Empty, "nothing was run");
+            Assert.That(receipt.Result is { } result && result.TryGetProperty("next", out JsonElement written)
+                ? written.GetString() : null, Is.EqualTo(next));
         });
     }
 

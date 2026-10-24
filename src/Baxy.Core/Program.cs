@@ -362,6 +362,23 @@ internal static class Program
                     cancellationToken)
                 .ConfigureAwait(false);
             authenticator = null;
+            try
+            {
+                // Auditoría del núcleo 2026-10-23: what an earlier start left begun ends, authenticated, as abandoned
+                // (its effect possibly standing), so it is never run again and holds no reservation.
+                int abandoned = await journal.AbandonInterruptedAsync(cancellationToken).ConfigureAwait(false);
+                if (abandoned > 0)
+                {
+                    Console.Error.WriteLine(
+                        $"BAXY core: {abandoned} invocations an earlier start left begun ended as abandoned.");
+                }
+            }
+            catch
+            {
+                await journal.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
+
             return journal;
         }
         finally

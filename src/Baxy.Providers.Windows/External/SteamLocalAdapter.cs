@@ -748,15 +748,21 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         .Distinct(StringComparer.Ordinal)
         .ToArray();
 
+    // Renew al máximo (w8): an apostrophe joins its word; as a space it made «assassin s creed», which no spoken title
+    // ever matched (launch, entitlement, install and uninstall). And a word's final «s» is left aside on both sides, so
+    // the possessive is matched said with it or without it («assassins creed», «Sid Meier Civilization»).
+    internal static bool IsApostrophe(char character) => character is '\'' or '’' or '‘' or 'ʼ' or '`' or '´';
+
     internal static string FoldTitle(string value)
     {
         string decomposed = value.Normalize(NormalizationForm.FormD);
         return string.Join(' ', new string(decomposed
             .Where(character => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
-                != System.Globalization.UnicodeCategory.NonSpacingMark)
+                != System.Globalization.UnicodeCategory.NonSpacingMark && !IsApostrophe(character))
             .Select(char.ToLowerInvariant)
             .Select(character => char.IsLetterOrDigit(character) ? character : ' ')
-            .ToArray()).Split(' ', StringSplitOptions.RemoveEmptyEntries));
+            .ToArray()).Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(static word => word.Length > 3 && word[^1] == 's' ? word[..^1] : word));
     }
 
     private ExternalCapabilityReceipt Status(string operation, JsonElement arguments)
@@ -786,8 +792,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteNumber("bytesTotal", game?.BytesToDownload ?? 0);
             if (game is not null && game.BytesToDownload > 0)
             {
-                writer.WriteNumber("progressPercent", Math.Clamp(
-                    game.BytesDownloaded * 100d / game.BytesToDownload, 0d, 100d));
+                double progress = Math.Clamp(game.BytesDownloaded * 100d / game.BytesToDownload, 0d, 100d);
+                writer.WriteNumber("progressPercent", progress);
+                // Holdout v4 (falsedad, «69 %» for 0.69 %): the readings with their unit (ReadingUnits).
+                writer.WriteString("progress", Infrastructure.ReadingUnits.Percent(progress));
+                writer.WriteString("downloaded", Infrastructure.ReadingUnits.Size(game.BytesDownloaded));
+                writer.WriteString("total", Infrastructure.ReadingUnits.Size(game.BytesToDownload));
             }
             else writer.WriteNull("progressPercent");
             writer.WriteString("authority", game is null
@@ -886,8 +896,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         // Ronda final 32 (regla 3): a download that wrote no bytes yet (a new install queued: UpdateRequired with
         // UpdateStarted, 1026) or an update of an installed game (UpdateStarted 1024, UpdateRunning 256, Downloading
         // 1048576) is not cancelled here: while one is in the manifests, «no active download left» is not said.
+        // Renew al máximo (w8): one in pause (UpdatePaused 512) is no active download: Steam keeps UpdateStarted on a
+        // paused update of an installed game, and «cancela las descargas» failed steam_downloads_not_covered forever.
         const ulong DownloadFlags = 1024UL | 256UL | 1048576UL;
-        if (after.Any(game => (game.StateFlags & DownloadFlags) != 0))
+        if (after.Any(game => (game.StateFlags & DownloadFlags) != 0 && (game.StateFlags & PausedFlag) == 0))
             return ExternalJson.Failure(operation, "steam_downloads_not_covered", active.Length > 0);
         return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
         {

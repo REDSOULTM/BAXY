@@ -19,21 +19,25 @@ internal interface INetworkIpProbe
 public sealed class WindowsNetworkIpProvider : INetworkIpProvider
 {
     private readonly INetworkIpProbe _probe;
+    private readonly Func<TimeSpan, CancellationToken, Task> _delay;
 
     public WindowsNetworkIpProvider() : this(new NetworkInformationIpProbe()) { }
 
-    internal WindowsNetworkIpProvider(INetworkIpProbe probe) =>
-        _probe = probe ?? throw new ArgumentNullException(nameof(probe));
-
-    public ValueTask<NetworkIpSnapshot?> ReadVerifiedAsync(CancellationToken cancellationToken)
+    internal WindowsNetworkIpProvider(INetworkIpProbe probe, Func<TimeSpan, CancellationToken, Task>? delay = null)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        string[] first = Normalize(_probe.Read());
-        cancellationToken.ThrowIfCancellationRequested();
-        string[] second = Normalize(_probe.Read());
-        if (!first.SequenceEqual(second, StringComparer.Ordinal))
-            return ValueTask.FromResult<NetworkIpSnapshot?>(null);
-        return ValueTask.FromResult<NetworkIpSnapshot?>(new NetworkIpSnapshot(first));
+        _probe = probe ?? throw new ArgumentNullException(nameof(probe));
+        _delay = delay ?? NetworkStableRead.Delay;
+    }
+
+    // Renew al máximo (w5): two reads in a row that agree, a change read again (NetworkStableRead).
+    public async ValueTask<NetworkIpSnapshot?> ReadVerifiedAsync(CancellationToken cancellationToken)
+    {
+        string[]? stable = await NetworkStableRead.ReadAsync(
+            () => Normalize(_probe.Read()),
+            static (first, second) => first.SequenceEqual(second, StringComparer.Ordinal),
+            _delay,
+            cancellationToken).ConfigureAwait(false);
+        return stable is null ? null : new NetworkIpSnapshot(stable);
     }
 
     private static string[] Normalize(IEnumerable<string> addresses) => addresses

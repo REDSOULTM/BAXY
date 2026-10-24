@@ -138,7 +138,18 @@ internal static class ScreenViewProjection
             text.Append("Seleccionados o activados: ").Append(string.Join(" | ", chosen)).Append('\n');
         }
 
-        text.Append("Controles:\n");
+        int count = (int?)view["controlCount"] ?? controls.Count;
+        bool drawn = controls.Count <= 1 && (string?)view["textAuthority"] == "windows_media_ocr_lines";
+        // Renew al máximo (w9-dudas, falsedades F019): «no hay más botones en esa ventana» and «la ventana no muestra sus
+        // botones» were told of Steam's library under «Controles:» / «(ninguno)», with the note that the list was not
+        // whole only after it. Where the reader says its list is not whole, the heading says it, before any control.
+        // Replayed on the notebook's int10 turns (scripts/renew/ayudas/dudas.py, 3 runs × 3 seeds): «no buttons» in the
+        // first answer 4/9 → 1/9; in the follow-up, whose history already said it, 5/9 → 5/9.
+        bool notWhole = Baxy.Providers.Windows.Infrastructure.ModelAids.On(
+                Baxy.Providers.Windows.Infrastructure.ModelAids.ControlsNotComplete)
+            && (drawn || count > controls.Count || (bool?)view["partial"] == true || (bool?)view["frameOnly"] == true
+                || (string?)view["uiaFailed"] is { Length: > 0 });
+        text.Append(notWhole ? "Controles (no es la lista completa de la ventana: puede tener más):\n" : "Controles:\n");
         foreach (JsonNode? node in controls)
         {
             if (node is JsonObject control)
@@ -149,13 +160,23 @@ internal static class ScreenViewProjection
 
         if (controls.Count == 0)
         {
-            text.Append("(ninguno)\n");
+            text.Append(notWhole ? "(no se leyó ninguno)\n" : "(ninguno)\n");
         }
 
-        int count = (int?)view["controlCount"] ?? controls.Count;
         if (count > controls.Count)
         {
             text.Append("(+").Append(count - controls.Count).Append(" más, sin listar por el tope)\n");
+        }
+
+        // Renew al máximo (w8, falsedades F019): Steam's library read only by OCR, with no control or one, was told «hay
+        // 324 juegos» from «FAVORITOS (324)» and «no hay botón de Biblioteca» while «BIBLIOTECA» was in its text (and a
+        // click by that label pressed it). Such a window's text is what it shows: each line says only its own words, any
+        // line is pressed by its label, and a word missing from «Controles» is not missing from the window.
+        if (drawn && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.DrawnTextNext))
+        {
+            text.Append("(esta ventana no da sus controles: su «Texto» se leyó de la pantalla tal cual, y cada línea dice "
+                + "sólo lo que pone (un número junto a un nombre cuenta sólo lo de ese nombre); una línea de ahí se pulsa "
+                + "por su texto, como label, y que algo no salga en «Controles» no significa que no esté)\n");
         }
 
         if (view["disabled"] is JsonArray disabled && disabled.Count > 0)

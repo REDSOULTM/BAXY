@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Text.Json;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Filesystem;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Core.Operations;
 
@@ -52,10 +53,11 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
                     RequiredString(arguments, "destinationRelativePath"))),
                 "filesystem.list" => FilesystemResultJson.List(_provider.List(
                     OptionalString(arguments, "relativeDirectory") ?? string.Empty,
-                    OptionalInt(arguments, "limit") ?? 50)),
+                    OptionalInt(arguments, "limit") ?? 50), ModelAids.On(ModelAids.WorkFolderScope)),
                 "filesystem.search" => FilesystemResultJson.List(_provider.Search(
                     arguments.GetProperty("query").GetString()!,
-                    OptionalInt(arguments, "limit") ?? 50)),
+                    OptionalInt(arguments, "limit") ?? 50), ModelAids.On(ModelAids.WorkFolderScope),
+                    arguments.GetProperty("query").GetString()),
                 "filesystem.read.text" => FilesystemResultJson.Text(_provider.ReadText(
                     RequiredString(arguments, "resourceId"),
                     OptionalInt(arguments, "maximumBytes") ?? 1_048_576)),
@@ -168,7 +170,8 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
 
 internal static class FilesystemResultJson
 {
-    public static JsonElement List(FilesystemListResult result) => Write(writer =>
+    public static JsonElement List(FilesystemListResult result, bool workFolder = false, string? query = null) =>
+        Write(writer =>
     {
         writer.WritePropertyName("entries");
         writer.WriteStartArray();
@@ -180,6 +183,19 @@ internal static class FilesystemResultJson
         {
             writer.WriteNumber("totalCount", total);
             writer.WriteBoolean("hasMore", total > result.Count);
+        }
+        // Renew al máximo (w5, E020): «el archivo más grande dentro de BAXY-bench, en mi carpeta de usuario» listed the
+        // working folder, empty, and was answered «no hay nada en mi carpeta de trabajo». Whose folder it is, and, when
+        // nothing was found, that the person's folders were not looked at.
+        if (workFolder)
+        {
+            writer.WriteString("folder", "baxy_work");
+            if (result.Count == 0)
+            {
+                writer.WriteString("next", (query is null ? "BAXY's own working folder holds nothing here"
+                        : $"nothing named {query} in BAXY's own working folder")
+                    + "; the person's folders (their home and everything under it) were not looked at: file_find looks there");
+            }
         }
     });
 
@@ -207,6 +223,9 @@ internal static class FilesystemResultJson
         if (result.FullPath is not null) writer.WriteString("fullPath", result.FullPath);
         if (result.SameNameInHome is not null) writer.WriteString("sameNameInHome", result.SameNameInHome);
         if (result.Created) writer.WriteBoolean("created", true);
+        // Renew al máximo (w8): a folder of the path this write made, so a subfolder named wrong is not told as the
+        // person's existing one.
+        if (result.FolderCreated is not null) writer.WriteString("folderCreated", result.FolderCreated);
         // E006/E024 (pc-ayudas, lever 3b): with a folder of that name in the person's home, the fact and the option, as
         // calculator_next: without it the model said «lo guardé en BAXY-bench» of the working folder (continuation probe,
         // 2 of 3 per seed; 0 with it). Only with the home folder seen: a generic hint made it name a folder that is not.

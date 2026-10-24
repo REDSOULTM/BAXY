@@ -2,9 +2,13 @@
 
 usage: py -3.12 -X utf8 scripts/renew/bench_decision.py <label> --cases FILE [--temp 0.2]
        [--gguf PATH] [--server-args "..."] [--catalog FILE] [--ctx 40960]
-Cases: list of {id, family, history?, text, expect{kind: call|call_any|ask|text, op?, ops?, args?}} (see README of the
-banks). Writes <banks>/runs/<label>.jsonl: a summary line (accuracy, decision p50/p90, VRAM and RAM of llama-server and
-of this process acting as the mind) and one row per case.
+Cases: list of {id, family, history?, text, expect{kind: call|call_any|ask|text|any, op?, ops?, args?, options?}} (see
+README of the banks; «any» lists the expectations a case accepts). Writes <banks>/runs/<label>.jsonl: a summary line (accuracy, decision p50/p90, VRAM and RAM of llama-server and
+of this process acting as the mind) and one row per case. The summary's «run» says what was measured (run_record): the
+mind's source, the catalog, the judge, the GGUF and the server with their sha256, KV, context, seed, temperature, System
+One and every BAXY_* switch; «errors» the cases the model server failed (a failure, but not the model's answer).
+The kernel's confirmation mode the mind reads (System One's «corrige») is the bench's own, normal, unless BAXY_DATA_DIR
+is given: it was the owner's file %LOCALAPPDATA%\\BAXY\\1\\confirmation-mode, different on each machine.
 """
 import argparse
 import json
@@ -18,6 +22,9 @@ import unicodedata
 from pathlib import Path
 
 import psutil
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import run_meta  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
@@ -47,7 +54,17 @@ def norm(value):
     return "".join(ch for ch in text if not unicodedata.combining(ch))
 
 
-def arg_ok(want, got):
+def enums_of(catalog: dict) -> dict[str, dict[str, set[str]]]:
+    """Each operation's arguments that take one code of a list (their schema's enum), normalized: op → arg → codes."""
+    found: dict[str, dict[str, set[str]]] = {}
+    for cap in catalog.get("capabilities") or []:
+        for name, schema in ((cap.get("argumentsSchema") or {}).get("properties") or {}).items():
+            if isinstance(schema, dict) and isinstance(schema.get("enum"), list):
+                found.setdefault(str(cap.get("name")), {})[name] = {norm(v).strip() for v in schema["enum"]}
+    return found
+
+
+def arg_ok(want, got, codes=None):
     if got is None:
         return False
     if isinstance(want, bool):
@@ -59,17 +76,32 @@ def arg_ok(want, got):
             return False
     if isinstance(want, str) and want.startswith("re:"):
         return re.search(want[3:], norm(got)) is not None
+    if codes and norm(want).strip() in codes:
+        # Audit w8-medir (2026-10-23): one code of the argument's list is that code, not any text that holds it. As a
+        # part of the text, «close» passed browser.control close_all, «space» backspace, «tab» alt_tab, «escape»
+        # ctrl_shift_escape (Task Manager), «memory» cpu_memory and os_memory, «game» gamemode (16 such pairs in
+        # catalog-final.json).
+        return norm(got).strip() == norm(want).strip()
     return norm(want) in norm(got)
 
 
-def judge(expect, result, arguments):
+def judge(expect, result, arguments, enums=None):
+    """True, False, or None (not counted). With `enums` (enums_of the run's catalog), an argument of a code list is
+    compared exactly; without it, as part of the text, as before the audit."""
     kind = result.get("kind")
+    enums = enums or {}
+    if expect["kind"] == "any":
+        # decision3 (README of practica): a case with more than one defensible answer lists them as options of any kind;
+        # it is met by any of them, and left out only when every option names a retired operation.
+        verdicts = [judge(option, result, arguments, enums) for option in expect["options"]]
+        return None if all(v is None for v in verdicts) else any(bool(v) for v in verdicts)
     if expect["kind"] == "call":
         op, args, fixed = current(expect["op"], expect.get("args"))
         if op is None:  # retired with no replacement: not counted
             return None
+        codes = enums.get(op) or {}
         return (kind == "action" and result.get("operation") == op
-                and all(arg_ok(v, (arguments or {}).get(k)) for k, v in {**args, **fixed}.items()))
+                and all(arg_ok(v, (arguments or {}).get(k), codes.get(k)) for k, v in {**args, **fixed}.items()))
     if expect["kind"] == "call_any":
         live = [current(candidate) for candidate in expect["ops"]]
         if all(op is None for op, _, _ in live):
@@ -77,8 +109,9 @@ def judge(expect, result, arguments):
         for op, _, fixed in live:
             if op is None:
                 continue
+            codes = enums.get(op) or {}
             if kind == "action" and result.get("operation") == op and all(
-                    arg_ok(v, (arguments or {}).get(k)) for k, v in fixed.items()):
+                    arg_ok(v, (arguments or {}).get(k), codes.get(k)) for k, v in fixed.items()):
                 return True
         return False
     if expect["kind"] == "ask":
@@ -97,6 +130,49 @@ def judge(expect, result, arguments):
         return (all(re.search(spec, said) for spec in ([must] if isinstance(must, str) else must))
                 and not any(re.search(spec, said) for spec in ([must_not] if isinstance(must_not, str) else must_not)))
     raise ValueError(expect)
+
+
+def decide(mind, case):
+    """The model's decision for a case, with the confirmation the case says is waiting for the person's «sí» (a case of
+    the family confirmacion_pendiente carries `pending` {operation, arguments}, as the App sends it with the words;
+    holdout v5: without it confirm_pending read nothing_pending and those cases could never pass)."""
+    return mind.decide(case["id"], case["text"], pending=case.get("pending"))
+
+
+class CountedSystemOne:
+    """System One as the mind calls it (choose), counting the times it was asked and the times no answer came back: its
+    server down, an order slower than choose's timeout (2 s each), or an answer not of its shape. The mind then goes on
+    as Qwen decided, so a run «with System One» silently measured part of its cases without it (audit w8-medir)."""
+
+    def __init__(self, inner) -> None:
+        self.inner = inner
+        self.asked = self.unanswered = 0
+        self.case: str | None = None  # this case's: None, «answered» or «unanswered»
+
+    def choose(self, text, history, options, *more, **named):
+        answer = self.inner.choose(text, history, options, *more, **named)
+        if len(options) >= 2:
+            self.asked += 1
+            self.unanswered += answer is None
+            self.case = "unanswered" if answer is None or self.case == "unanswered" else "answered"
+        return answer
+
+    def __getattr__(self, name):
+        return getattr(self.inner, name)
+
+
+def wait_system_one(system_one, timeout: float = 300.0, poll: float = 0.25) -> None:
+    """Until System One's server answers its health check. A server that died or never came up stops the run: the
+    first cases ran without it (nothing waited for it: the product's turns do not, by design) and a crash under the
+    RAM of a busy PC left the whole run without it, still labelled «with System One»."""
+    deadline = time.monotonic() + timeout
+    while not system_one.ready:
+        process = getattr(system_one, "_process", None)
+        if process is not None and process.poll() is not None:
+            raise SystemExit(f"System One's server exited ({process.returncode}): see system-one.log; nothing was measured")
+        if time.monotonic() > deadline:
+            raise SystemExit(f"System One's server was not up after {timeout:.0f} s; nothing was measured")
+        time.sleep(poll)
 
 
 def gpu_used_mib():
@@ -121,6 +197,22 @@ def resources(server_pid, gpu_before):
             "mind": ram(os.getpid()), "gpu_before_mib": gpu_before, "gpu_after_mib": after}
 
 
+def run_record(args, server, mind, environ=None) -> dict:
+    """What this run measured with (run_meta): written into the summary, so a run says what it is without its script."""
+    cache = run_meta._cache_path()
+    src = Path(args.src)
+    return {"machine": run_meta.machine(), "src": str(src), "src_git": run_meta.git_state(src),
+            "mind_sha256": run_meta.tree_sha256(src / "baxy_mind"),
+            "judge_sha256": run_meta.sha256_file(Path(__file__)),
+            "equivalence_sha256": run_meta.sha256_file(EQUIVALENCE_FILE),
+            "catalog": run_meta.fingerprint(args.catalog, cache), "gguf": run_meta.fingerprint(args.gguf, cache),
+            "server": run_meta.fingerprint(args.server, cache), "server_args": args.server_args,
+            "kv": list(getattr(server, "kv", []) or []), "ctx": int(args.ctx),
+            "seed": getattr(mind, "seed", None), "temp": float(args.temp),
+            "s1_gguf": run_meta.fingerprint(os.environ.get("BAXY_S1_GGUF", "").strip() or None, cache),
+            "confirmation_mode": run_meta.confirmation_mode(environ), "env": run_meta.baxy_env(environ)}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
@@ -140,6 +232,10 @@ def main():
 
     runs = BANKS / "runs"
     runs.mkdir(parents=True, exist_ok=True)
+    # The confirmation mode «corrige» reads is the bench's (normal), never the owner's file on this machine.
+    os.environ.setdefault("BAXY_DATA_DIR", str(runs / f"{args.label}.datos"))
+    trace = runs / f"{args.label}.trace.jsonl"
+    trace.unlink(missing_ok=True)  # the mind appends: a label run again kept the trace of the run before
     gpu_before = gpu_used_mib()
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), extra_args=args.server_args.split(),
                        log_name=f"bench-{args.label}.log")
@@ -150,25 +246,32 @@ def main():
         system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
                                int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
         system_one.start()
-    mind = Mind(server, runs / f"{args.label}.trace.jsonl", system_one)
-    mind.configure(json.loads(Path(args.catalog).read_text(encoding="utf-8")))
+        system_one = CountedSystemOne(system_one)
+    mind = Mind(server, trace, system_one)
+    catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
+    enums = enums_of(catalog)
+    mind.configure(catalog)
     server.wait_ready(600)
     t0 = time.monotonic()
     mind.warm()
     warm_s = time.monotonic() - t0
+    if system_one is not None:
+        wait_system_one(system_one)
     cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))
     rows, by_family = [], {}
     for case in cases:
         started = time.monotonic()
+        if system_one is not None:
+            system_one.case = None
         try:
             mind.new_session(case.get("history") or [])
-            result = mind.decide(case["id"], case["text"])
+            result = decide(mind, case)
             error = None
         except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
             result, error = {"kind": "error"}, repr(exc)[:200]
         latency = time.monotonic() - started
         arguments = result.get("arguments") if result.get("operation") else None
-        verdict = judge(case["expect"], result, arguments)
+        verdict = judge(case["expect"], result, arguments, enums)
         excluded = verdict is None
         ok = error is None and bool(verdict)
         if not excluded:
@@ -178,12 +281,18 @@ def main():
         rows.append({"id": case["id"], "family": case.get("family"), "ok": ok, "excluded": excluded,
                      "latency_s": round(latency, 3),
                      "kind": result.get("kind"), "operation": result.get("operation"), "arguments": arguments,
-                     "reply": result.get("reply") or result.get("question"), "error": error})
+                     "reply": result.get("reply") or result.get("question"), "error": error,
+                     "system_one": system_one.case if system_one is not None else None})
         print(f"{case['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
               flush=True)
     measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
     server.close()
+    s1 = None
     if system_one is not None:
+        # Asked, and not answered (the cases go on as Qwen decided): a run with many unanswered is not «with S1».
+        s1 = {"asked": system_one.asked, "unanswered": system_one.unanswered, "up_at_end": system_one.ready,
+              "unanswered_ids": [r["id"] for r in rows if r["system_one"] == "unanswered"],
+              "threads": int(os.environ.get("BAXY_S1_THREADS", "4") or 4)}
         system_one.close()
     latencies = [r["latency_s"] for r in rows]
     counted = [r for r in rows if not r["excluded"]]
@@ -191,9 +300,12 @@ def main():
                "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in counted),
                "n": len(counted), "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
                "excluded_retired": [r["id"] for r in rows if r["excluded"]],
+               # A case the model server failed (HTTP error, timeout) counts as wrong; a run with any is not clean.
+               "errors": sum(1 for r in rows if r["error"]), "error_ids": [r["id"] for r in rows if r["error"]],
                "p50": round(statistics.median(latencies), 3),
                "p90": round(statistics.quantiles(latencies, n=10)[8], 3) if len(latencies) > 2 else None,
-               "warm_s": round(warm_s, 1), "families": by_family, "resources": measured}
+               "warm_s": round(warm_s, 1), "families": by_family, "resources": measured, "system_one": s1,
+               "run": run_record(args, server, mind)}
     with open(runs / f"{args.label}.jsonl", "w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
         for row in rows:

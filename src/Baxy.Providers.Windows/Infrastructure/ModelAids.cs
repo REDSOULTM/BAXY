@@ -74,6 +74,84 @@ public static class ModelAids
     /// </summary>
     public const string WindowIdSpent = "window_id_spent";
 
+    /// <summary>Renew al máximo (w5, E024): an append refused for a missing file says where one of that name is.</summary>
+    public const string AppendElsewhere = "append_elsewhere";
+
+    /// <summary>Renew al máximo (w5, E020): a look at BAXY's working folder says it is BAXY's, and one that found nothing that the person's folders were not looked at.</summary>
+    public const string WorkFolderScope = "work_folder_scope";
+
+    /// <summary>
+    /// Renew al máximo (w6, rutas): a file call that leaves out the folder the person named in this turn is routed there
+    /// (a read) or refused before any effect with the call that names it (anything else) (Baxy.App.SaidFolders).
+    /// </summary>
+    public const string SaidFolder = "said_folder";
+
+    /// <summary>
+    /// Holdout v4 (en vivo: «Biblioteca» pressed 7 times in Steam, each visible_button_postread_unchanged, 50 s): the
+    /// same click seen unchanged a second time in a row says so, and the places its application opens straight at.
+    /// </summary>
+    public const string RepeatedUnchangedNext = "repeated_unchanged_next";
+
+    /// <summary>
+    /// Renew al máximo (w8, falsedades F019): a look at a window drawn without controls (Steam's library, read only by
+    /// OCR) says its text is the screen's words, pressed by label, and that a word missing from the controls is not absent.
+    /// </summary>
+    public const string DrawnTextNext = "drawn_text_next";
+
+    /// <summary>
+    /// Renew al máximo (w9-dudas, falsedades F019): a look whose list of controls the reader says is not whole (drawn
+    /// without controls, cut, partial, only the frame, its tree unread) says so in the heading of the list, and an empty
+    /// one is «none read», never «(ninguno)».
+    /// </summary>
+    public const string ControlsNotComplete = "controls_not_complete";
+
+    /// <summary>Renew al máximo (w8): a keyboard act refused for a window run as administrator says nothing was sent and why.</summary>
+    public const string ElevatedNext = "elevated_next";
+
+    /// <summary>Renew al máximo (w5): a network.ping with no reply says it does not tell a site or the internet is down.</summary>
+    public const string PingScope = "ping_scope";
+
+    /// <summary>Renew al máximo (w5): a display.mode.set shown but not saved says a restart shows the saved mode again.</summary>
+    public const string DisplayRestart = "display_restart";
+
+    /// <summary>Renew al máximo (w5): a Bluetooth device or Wi-Fi profile id no list of this session gave says which list gives one.</summary>
+    public const string IdentityRelist = "identity_relist";
+
+    /// <summary>Renew al máximo (w5): a schedule.alarms cancel that canceled nothing says so and what it looked among.</summary>
+    public const string CancelScope = "cancel_scope";
+
+    /// <summary>Renew al máximo (w5): a task not found or changed says what that taskId holds now and that nothing changed.</summary>
+    public const string TaskStateNext = "task_state_next";
+
+    /// <summary>Renew al máximo (w5): a note not found says where it was looked, the one in the trash, or titles close to it.</summary>
+    public const string NoteNotFoundNext = "note_not_found_next";
+
+    /// <summary>Renew al máximo (w9): a note.trash with no snapshot, or a snapshot the note no longer is, says what to call or how the note is now.</summary>
+    public const string NoteSnapshotNext = "note_snapshot_next";
+
+    /// <summary>Renew al máximo (w5): a calendar time or range refused says which argument, why, and that nothing ran.</summary>
+    public const string CalendarTimeNext = "calendar_time_next";
+
+    /// <summary>Renew al máximo (w8): an email.latest.reply refused for its mail (none named, or not the newest now) says which mail to name.</summary>
+    public const string ReplyMessageIdNext = "reply_message_id_next";
+
+    /// <summary>Renew al máximo (w8): a chat message refused or left unverified says what was written and what to do next.</summary>
+    public const string MessageTextNext = "message_text_next";
+
+    /// Renew al máximo (w7, apps; e2e E014, «abre la configuración de sonido»: «Configuración del sistema» with place
+    /// sound 34 times in the PC's practice runs, and twice on the notebook): an app.open of an application the person did
+    /// not name, at a place it does not have and only one other application has, opens that one at the place instead,
+    /// and its result says so (Baxy.App.SaidApplication).
+    /// </summary>
+    public const string PlaceOwner = "place_owner";
+
+    /// <summary>
+    /// Renew al máximo (w7, apps; E014: msconfig opened elevated on the notebook, 2026-10-22): the tools that configure
+    /// Windows itself, by the rule the guards use (VisibleControlSurface.SystemToolLaunch), are left out of the installed
+    /// applications the model reads; app.open still opens them by name. It changes the prefix once (a stable list).
+    /// </summary>
+    public const string SystemToolsUnlisted = "system_tools_unlisted";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

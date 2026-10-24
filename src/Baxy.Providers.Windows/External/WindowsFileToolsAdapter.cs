@@ -757,13 +757,24 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                 (body, contentType) = await FetchAsync(uri, cancellationToken).ConfigureAwait(false);
             }
         }
-        catch (HttpRequestException)
+        // Renew al máximo (w8): an answer of the server (404, 403, 500) is told with its status, and a connection cut in
+        // the middle of the body (HttpIOException, an IOException) is the source's failure before anything was written;
+        // it escaped this adapter and was told as external_provider_failed, an effect that may have occurred.
+        catch (HttpRequestException exception) when (exception.StatusCode is { } status)
         {
-            return ExternalJson.FailureBeforeEffect(operation, "download_source_unavailable");
+            return DownloadSourceFailure(operation, "download_http_status", (int)status,
+                "the server answered with an error status and nothing was saved; another address may work");
+        }
+        catch (Exception exception) when (exception is HttpRequestException or IOException)
+        {
+            return DownloadSourceFailure(operation, "download_source_unavailable", null,
+                "the address could not be reached, or the connection was cut, and nothing was saved; trying again later "
+                + "or another address may work");
         }
         catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            return ExternalJson.FailureBeforeEffect(operation, "download_source_unavailable");
+            return DownloadSourceFailure(operation, "download_timed_out", null,
+                "the server did not answer in time and nothing was saved; trying again later may work");
         }
         catch (InvalidDataException)
         {
@@ -781,8 +792,19 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         {
             await File.WriteAllBytesAsync(path, body, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or OperationCanceledException)
         {
+            // Renew al máximo (w8): a write cut short (disk full, cancelled) left a partial file under the new name.
+            try
+            {
+                File.Delete(path);
+            }
+            catch (Exception cleanup) when (cleanup is IOException or UnauthorizedAccessException)
+            {
+            }
+            if (exception is OperationCanceledException)
+                throw;
             return effectBoundary.Failure(operation, "download_write_failed");
         }
 
@@ -808,6 +830,18 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
     }
+
+    private static ExternalCapabilityReceipt DownloadSourceFailure(
+        string operation, string code, int? status, string next) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            if (status is { } value) writer.WriteNumber("statusCode", value);
+            writer.WriteBoolean("saved", false);
+            writer.WriteString("next", next);
+            writer.WriteEndObject();
+        }), code);
 
     private async Task<(byte[] Body, string ContentType)> FetchAsync(Uri uri, CancellationToken cancellationToken)
     {

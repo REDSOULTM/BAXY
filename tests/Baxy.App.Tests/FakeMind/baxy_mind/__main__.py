@@ -17,7 +17,7 @@ import time
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REQUESTS = ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
-            "session.new", "session.export", "session.load",
+            "session.new", "session.export", "session.load", "trace.forget",
             "voice.start", "voice.stop", "voice.release", "voice.status", "voice.speak", "voice.cancel"]
 READER = {"voice.speak", "voice.cancel", "voice.status", "voice.release"}
 _write_lock = threading.Lock()
@@ -67,6 +67,8 @@ def answer(message: dict) -> None:
         reply = {"type": "session.ready"}
     elif kind == "session.export":
         reply = {"type": "session.exported", "conversation": []}
+    elif kind == "trace.forget":
+        reply = {"type": "trace.forgotten", "cleared": True}
     elif kind == "voice.start":
         reply = {"type": "voice.started", "mode": message.get("mode")}
     elif kind == "voice.stop":

@@ -3198,3 +3198,120 @@ el PC: la GPU del PC queda para él; los agentes del PC sólo escriben código y
 - E027 (borrar en BAXY-bench, confirmación del núcleo): p_call 0,78-0,85 hasta int10b, +w9-sha y +w9-bucle (corridas completas s0); ~0,6 desde w9-dudas, sin una ayuda sola que lo explique. En 2 de 3 semillas pregunta por texto antes de proponer el borrado (seguro; puede pedir el sí dos veces). Queda como límite conocido.
 - NB: palanca 7 (umbrales de duda) sin par mejor, queda 0,4/0,6; palanca 6 (Laya -t 6) y vad-sin-torch (−144 MiB) entran. Recursos de int10e con oído real: VRAM 3986 MiB, producto con voz 3634 MiB (margen 462).
 - HEAD candidato: int10e d7168fb7b = int10c + nb-vad-sin-torch + nb-laya-t6. Suites PC verdes (pytest 642, Kernel 741, Contracts 74, App 188, Setup 477, Providers 3067). catalog-v5final.json b33d2b3a…41b1. Plan del holdout v5: CIERRE_PLAN_V5.md (con las objeciones del NB).
+- 11:xx (23-10) **w6-rutas (PC, sin correr el producto)**: la carpeta que la persona nombra es el lugar de las llamadas de
+  archivos, por construcción. Fusionado nb-w5-e2e (e5b6ff46b append_elsewhere, 0fd3d564f work_folder_scope; la nota
+  said_path_next de la mente se retira: la sustituye la App). `SaidFolders` (App, ayuda said_folder): las carpetas que
+  nombran las palabras del turno (ruta completa; nombre de carpeta conocida; nombre de una carpeta del primer nivel de
+  home, Escritorio, Documentos o Descargas, solo o como inicio de ruta relativa) son el lugar; una llamada de archivos
+  fuera de ellas se lleva a la carpeta si sólo lee (saidFolder en el resultado) o se rechaza antes de cualquier efecto
+  (said_folder_left_out, next con la llamada que la nombra); la misma llamada repetida igual corre y dice que actuó
+  fuera. Los recibos de file.find/read/edit/trash dicen la subcarpeta mirada («home/X»), el listado listed/topLevelOnly,
+  y el no encontrado de file.read/edit dónde se buscó. Pendiente: medir en el PC la e2e de práctica (E006, E017, E019,
+  E020, E024, E027, E030) y las falsedades; ojo E030: la sobrescritura ahora cae en el archivo correcto y file.write no
+  pide confirmación (decisión 8), así que su oráculo UNCHANGED puede pasar a fallo.
+- 16:xx (23-10) **w8-chequeo (palanca 3, PC, sin GPU)**: ayuda «answer_check» de la mente
+  (`src/baxy_mind/answer_check.py`, `Mind._check_answer`): antes de hablar, el final se lee contra los recibos del turno
+  y las llamadas de la sesión con reglas sobre campos tipados (not_completed, no_call, implied_yes, unread_state, place,
+  partial, number, folder, asked_folder, already). Si algo no cuadra, el modelo escribe una vez más, sin herramientas, con
+  una nota que sólo dice el hecho (CHECK_NOTE); la segunda respuesta se dice tal cual y la traza la guarda (`turn.check`,
+  round 1/2, kept). Offline sobre la práctica (`scripts/renew/maximo/chequeo_offline.py`, 2 675 líneas de falsedades
+  F001-F020 y e2e E001-E030; sin ho4/hv4/final ni holdout): de las 11 claras leídas a mano en pc-t2 marca 11, de sus 232
+  limpias 0, de sus 9 dudosas 2 (F013 ×6, la ruta literalmente cierta, queda fuera a propósito). Marca 127 líneas (4,7 %;
+  2,4 % en las corridas del código más nuevo), todas defendibles a mano: claras implied_yes 43 (F002/F015),
+  folder 22 (E006/E017/E019/E024), unread_state 3; lugar no comprobado (place) 44 (F019/E015/E014; en e2e el oráculo
+  vio la biblioteca en la mayoría); dudosas partial 7 y asked_folder 8. Coste: 0,3 ms p50 / 2 ms p99 por respuesta; una
+  regeneración (~0,5-0,7 s) sólo en las marcadas. Pendiente: A/B en el PC (falsedades ×3 semillas y e2e ×2, brazo sin la
+  ayuda = BAXY_AYUDAS con todas las ids menos answer_check).
+- 12:1x (23-10) **w7-apps (PC, sin correr el producto)**: nombres vecinos en la lista de app_open. Evidencia: E014 en las
+  37 e2e de práctica del PC eligió mal la app en 9 (todas del 15-10, p1-p9): «Configuración del sistema» con place sound
+  en p4-p7 (34 llamadas: 15 invalid_arguments del esquema de entonces, 19 place_not_of_application; p5 y p6 acabaron
+  abriendo msconfig sin lugar), msconfig sin lugar en p3 y p8, «Configuración de Monitor en DisplayFusion» en p1, p2 y
+  p9; las 28 desde p10 eligen «Configuración» + sound. NB int3: s0 msconfig + sound (rechazado), s1 msconfig abierto.
+  decision2/3 (todas las max-*-d2): ningún fallo de appId de app_open (el único fallo con app_open es P031, otro caso).
+  Hecho, cada uno con su interruptor: **(a) place_owner** (`SaidApplication`, App): un app.open de una app que las
+  palabras del turno no nombran, en un lugar que no tiene y que sólo otra app tiene, abre esa otra en el lugar antes de
+  ejecutar (placeOwner en el resultado, con cómo se abre la escrita); cubre p4-p7 y NB s0. **(b)
+  system_tools_unlisted** (proveedor, al hacer el snapshot del catálogo): las herramientas que configuran Windows, por
+  la regla de las guardas (OpensSystemTool = SystemToolLaunch/paquete), no entran en la lista que lee el modelo;
+  app.open las sigue abriendo por nombre. Cubre p3-p8 y NB s0/s1; cambia el prefijo una vez (estable): en este PC ~17
+  nombres (Configuración del sistema, Servicios, Editor del Registro, Programador de tareas, Firewall, Administrador de
+  tareas…), y salen también de las palabras clave del oído. DisplayFusion (p1, p2, p9) no lo cubre ninguna. **(c)
+  descartada**: System One decide la herramienta, no el appId, y su compuerta es la confianza del nombre de la
+  herramienta (0,99 en E014: no ve el error); sin fallos de appId en decision no hay qué medir. Pendiente: A/B del NB
+  (E014 ×N con ONLY, e2e entera; decision2 sólo ve (b) con un catálogo recapturado con la ayuda).
+- 17:xx (23-10) **w9-msg (PC, sin correr el producto; cierra los cinco puntos abiertos de la auditoría nb-w8-msg)**:
+  (1) privacidad de memoria: un listado (memory.list, recall de todo o de un tipo, el recall exacto sin acierto) ya no
+  nombra los registros sensibles o secretos, sólo los cuenta (`sensitiveNotNamed`); sólo un recall exacto que lo nombró
+  dice su etiqueta, con el valor en «[REDACTED]»; memory.export no cambia (4094836a7). (2) mensajería: la cabecera del
+  chat se lee otra vez justo antes del Enter, y si ya no nombra al destinatario no se pulsa ni se borra nada:
+  `message_recipient_changed_before_enter`, escrito y no enviado (c686a77e7). (3) note.trash: el «sí» se pide sólo para
+  una instantánea de la nota (noteId, expectedTitle, expectedRevision, expectedIsTrashed); sin ella falla antes con
+  `note_trash_snapshot_required` y la llamada que la nombra; una nota que cambió tras el «sí» no se tira
+  (`note_selection_stale` con la nota como está) (69157661e). (4) schedule.alarms cancel sin at: la única pendiente se
+  cancela por su identidad y el resultado la nombra (título, hora local); con varias no se cancela ninguna
+  (`notification_cancel_ambiguous`, con la lista); se retira el modo «cancel» del planificador (6495a7c9e). (5) correo y
+  calendario: PowerShell en frío medido en 308 ms p50; reutilizar el proceso exige soltar Outlook en cada llamada y no
+  se puede comprobar en este PC (el Outlook es del dueño): queda en APLAZADOS.md. Suites: Kernel 729, Contracts 74,
+  App 188, Setup 477, Providers 3066, pytest 617, todo verde. Coste: en modo normal, tirar una nota sin instantánea
+  cuesta un paso más del modelo. Pendiente: medir en vivo (NB) la tirada de notas y la cancelación de alarmas.
+- 18:xx (23-10) **w9-ruido (PC, sin correr el producto)**: el fin de la orden con ruido de fondo. `voice.py` decide
+  que un bloque es voz si es fuerte (`VOICE_RMS`) **y** Silero VAD v6 (el `silero_vad.onnx` del runtime, por
+  sherpa-onnx, CPU: 0,4 ms por bloque de 100 ms, +15 MiB junto a Ultra) oyó habla en él; la alimentación WAV marca el
+  fin de voz igual. En modo wake, con el cuarto ruidoso (4 de 5 bloques antes de la llamada sobre `VOICE_RMS`), la cola
+  de «Baxy» es 0,8 s (Silero la sostiene hasta 0,7 s tras el disparo a 5 dB). Elegido por medida frente a un piso
+  adaptativo (k × percentil bajo del RMS): ése cortaba 36-60 órdenes en una pausa a 5 dB o dejaba algunas en `MAX_S`.
+  `medir_anticipada.py` ahora oye el ruido de verdad (20/10/5 dB a lo largo de todo lo oído) en lugar de cortar el
+  gemelo limpio. 683 locuciones sintéticas, modo directo, espera 0,2: limpio idéntico antes/después en las 683 (cierra
+  0,9 s tras la voz, 0 cortes, WER 11,46 %, anticipada 86,5 %); 20 dB igual o antes (anticipada 84,0 → 83,3 %: 5
+  órdenes cierran 0,7 s antes y su anticipada cambia); 10 dB: cerradas 0 → 100 %, 10,3 → 1,2 s p50 (1,3 p90), WER
+  22,3 → 21,2 % (muestra de 98), anticipada 1 → 81,8 %; 5 dB: 0 → 100 %, 1,2/1,3 s, WER 29,1 → 28,8 %, anticipada
+  0 → 74,1 %; ningún corte prematuro. Wake (50 «Baxi» + orden, OneCore): limpio idéntico; 10 y 5 dB cierran todas a
+  1,2-1,3 s (antes ninguna), WER 10,2 → 9,8 y 15,4 → 10,9 %. Ruido solo: Ultra no transcribe nada, antes ni ahora.
+  Pendiente: el cuarto real con la voz del dueño y el ruido que es voz (tele), ver APLAZADOS.
+- 19:xx (23-10) **w9-sha (PC, sin correr el producto; hallazgo de seguridad E030)**: «sobrescribe notas.txt…» →
+  file.write sin hash → `version_conflict`, cuya negativa trae `currentSha256` (LocalFilesystemProvider.WriteRefused) →
+  el modelo reintentaba con ese hash y RiskPolicy dejaba pasar el reemplazo (file.write es low_reversible → Allow) sin
+  el «sí». Ahora el kernel (`ToldVersions`, en MissionEngine) anota las versiones que dan sus respuestas: las de una
+  completada cuentan como vistas, las de una negativa o un fallo no; un reemplazo bajo una versión que sólo dio una
+  negativa pide confirmación en modo normal, ligada a esa invocación (Bypass igual que antes). Mismo patrón cerrado en
+  note.update (`note_selection_stale` da la revisión, nunca el contenido) y task.update (`task_version_conflict`),
+  con la versión ligada a su nota o tarea; el append de file.write no reemplaza y sigue directo. Revisados sin hueco:
+  file.edit (sin versión; exige el texto exacto), filesystem.copy/move y backup.restore (nunca sobrescriben:
+  `destination_exists`), backup.create (copia), memory.correct (`memory_conflict` no dice el valor), task.complete,
+  reopen y restore (no pierden nada), note.trash y task.delete (ya preguntan). El catálogo de la interfaz marca
+  file.write, note.update y task.update «sometimes». Suites: Kernel 736, Contracts 74, App 188, Setup 477,
+  Providers 3067, pytest 624, todo verde. Límite: la memoria es del proceso del núcleo; tras reiniciarlo, una negativa
+  de antes sólo cuenta si se repite su invocación (la reproducción la vuelve a anotar).
+- 22:xx (23-10) **w9-bucle (PC, sin correr el producto; réplica de la sesión de int10 en la GPU del PC)**: el bucle
+  de «abre la calculadora» (mirar + pulsar «Sistema» siete veces, el menú abriéndose y cerrándose). Dos ayudas de la
+  mente con interruptor (9279dd23d): `same_call_closes` (la llamada que same_call_next acaba de avisar, repetida como
+  siguiente decisión, no corre) y `look_click_cap` (el tercer clic igual tras la misma mirada que vio lo mismo no
+  corre); en ambas el modelo responde en palabras con los hechos del turno. Topes por datos (10.717 turnos de
+  práctica de las dos máquinas): 79 repeticiones justo tras el aviso, ninguna acabó en lo pedido; tercer par igual en
+  27 turnos, ninguno hizo nada; el segundo par sí sirvió en 3 de 58, por eso el tope es 2. Réplica
+  (`scripts/renew/ayudas/bucle.py`, la sesión forzada hasta la primera mirada, semillas 0-4): int10 15 llamadas en 3
+  semillas (y otro control pulsado sin fin en una 4.ª); con las ayudas 10 y respuesta del modelo. Causa: no es de
+  int10 (mismo prompt de sistema y descripciones que int9 salvo email_latest_reply): en las sesiones del notebook desde
+  t1 el turno de la calculadora miró tras abrir en 14 de 15 y entró en bucle en 7; int9 fue la excepción (sus frases
+  divergen desde el turno 2 y la historia cambia la decisión al borde). En la réplica, tras abrir mira 2 de 10
+  semillas y, ya mirada, pulsa «Sistema» 9 de 10: el motor es el clic tras mirar, más la regla 9 (mirar tras cada
+  clic) y un menú que alterna, que nunca repite «tres seguidas» (TurnClosing). Probado y no subido: limitar a place
+  «Look at the window afterwards» de app_open (miradas 2/10 → 0/10, clics tras mirar 9/10 → 7/10): cambia el prefijo
+  de todos los turnos y necesita e2e. web.fetch repetido: sin tope, medido en APLAZADOS. Suites: pytest 631, Kernel
+  729, Contracts 74, App 188, Setup 477, verde.
+- 22:xx (23-10) **w9-dudas (PC, sin correr el producto)**: mirar antes de preguntar y no dar por completa una lista
+  que no lo es. Causas leídas en las trazas de mente del NB (int9-int10, práctica): F016 «lanza Fortnite» quería
+  game_catalog_list (0,28-0,34, rivales installed/launch/entitlement) y la duda lo retuvo; F009 la palabra BAXY de
+  BAXY-bench se tomó por la carpeta de trabajo; E018 file_read/file_find a 0,49 cada uno; E020 file_find contra
+  filesystem_*; F013 «guardé prueba.txt» con el Bloc «Sin título»; F019 «no hay más botones» bajo «Controles: (ninguno)»,
+  con el aviso de lista incompleta sólo después. Cinco ayudas, cada una con su interruptor: `game_epic_look`,
+  `named_folder_theirs`, `read_find_split` (frases de descripción, mind.py, ahora varias por herramienta),
+  `written_not_window` (nota tras un file_write de un turno que escribió en una ventana), `controls_not_complete`
+  (ModelAids + ScreenViewProjection: el encabezado dice que la lista no es completa y una vacía es «no se leyó
+  ninguno»). Medida offline con `scripts/renew/ayudas/dudas.py` (catálogo int10 del NB entero, GPU, capa 0 a 0,4, sin
+  Laya; 3 semillas; 14 decisiones y 7 turnos reproducidos): F016 retenida 3/3 → 0/3 (game_installed_named 0,66);
+  E018 file_find 0,56 → file_read 0,58; E020 file_find 0,47 → 0,57; F013 distingue el archivo de la ventana 0/3 → 3/3;
+  F019 «no hay botones» en la primera respuesta 4/9 → 1/9 (la de seguimiento, con esa frase ya en la historia, 5/9 →
+  5/9); 10 contracasos sin cambio de herramienta (Rocket League game_launch 0,81 → 0,70). F009 no mejora (rechaza en 1
+  de 3 semillas, con o sin ayuda): lo decide el primer token (p_call ~0,67), no la descripción. Suites: Kernel 734,
+  Contracts 74, App 188, Setup 477, Providers 3066, pytest 634. Pendiente: A/B del líder (ver informe w9-dudas).

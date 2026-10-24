@@ -20,6 +20,17 @@ public sealed class MissionEngine : IDisposable
     private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
 
+    // Auditoría del núcleo 2026-10-23 (replay never re-executes without the person): the invocations whose last run ended
+    // retryable with nothing done (the provider said so), the only started ones a retry runs again unasked; and those
+    // whose uncertain start the person is being asked about, so the yes to that question is not revoked again. Both live
+    // under the execution gate, in memory only: after a restart every started invocation is uncertain.
+    private const int MaximumRememberedRetries = 1024;
+    private readonly HashSet<string> _safeRetries = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _reconciling = new(StringComparer.Ordinal);
+
+    // Hallazgo E030 (w9-sha): the versions the responses sent gave, completed or not, under the execution gate too.
+    private readonly ToldVersions _toldVersions = new();
+
     /// <summary>
     /// Único constructor. Lo obligatorio va por parámetro; lo opcional, en
     /// <see cref="MissionEngineOptions"/>, para que añadir una dependencia no
@@ -76,10 +87,12 @@ public sealed class MissionEngine : IDisposable
                 }
 
                 _confirmationAuthority.Revoke(ConfirmationBinding.Create(request, fingerprint));
-                return PrivateOperationBoundary.NormalizeReplay(
+                OperationResponse replayed = PrivateOperationBoundary.NormalizeReplay(
                     request,
                     completed.Response,
                     _privateEnvelopeAuthenticator);
+                _toldVersions.Record(replayed);
+                return replayed;
             }
 
             if (await _journal
@@ -134,13 +147,42 @@ public sealed class MissionEngine : IDisposable
             else if (policy == PolicyDecision.Allow
                 && handler is IInvocationPreflight raising
                 && _confirmationMode() == ConfirmationMode.Normal
-                && raising.MayRaise(request.Arguments))
+                && MayRaise(raising, request.Arguments))
             {
                 InvocationPreflightResult found = await Preflight(raising, request.Arguments, cancellationToken)
                     .ConfigureAwait(false);
                 if (found.Risk is { } risk && risk > handler.Definition.Risk)
                 {
                     policy = Evaluate(handler, risk, request.Arguments);
+                }
+            }
+
+            // Hallazgo E030 (w9-sha): a replacement whose expected version only a refusal or a failure told the mind
+            // (ToldVersions) saw nothing of what it replaces; in normal mode it asks, bound to this invocation.
+            if (policy == PolicyDecision.Allow
+                && preflightFailure is null
+                && _confirmationMode() == ConfirmationMode.Normal
+                && _toldVersions.OnlyToldBy(request.Operation, request.Arguments))
+            {
+                policy = PolicyDecision.RequireConfirmation;
+            }
+
+            // Auditoría del núcleo 2026-10-23: an invocation that started before and did not end (the handler threw, the core
+            // stopped, its last run may have acted) is not run again without the person, in either mode: its effect may
+            // stand. It asks, bound to it, with reconciliationRequired; a yes given before that run was for that run only.
+            // A retry after a run that said nothing was done goes on as the provider's own retry.
+            bool uncertainStart = startedFingerprint is not null
+                && knownOperation
+                && handler is not null
+                && validArguments
+                && preflightFailure is null
+                && !_safeRetries.Contains(request.InvocationId);
+            if (uncertainStart)
+            {
+                policy = PolicyDecision.RequireConfirmation;
+                if (_reconciling.Add(request.InvocationId))
+                {
+                    _confirmationAuthority.Revoke(ConfirmationBinding.Create(request, fingerprint));
                 }
             }
 
@@ -200,6 +242,9 @@ public sealed class MissionEngine : IDisposable
                 request.MissionId,
                 request.InvocationId,
                 request.Arguments);
+            // This run spends what was known of the earlier one: only its own outcome can make a retry safe again.
+            _safeRetries.Remove(request.InvocationId);
+            _reconciling.Remove(request.InvocationId);
             OperationOutcome outcome = preflightFailure ?? await handler
                 .ExecuteAsync(invocation, cancellationToken)
                 .ConfigureAwait(false);
@@ -216,7 +261,20 @@ public sealed class MissionEngine : IDisposable
                     "A retryable outcome must be unverified, unsuccessful, and contain an error code.");
             }
 
+            // Auditoría del núcleo 2026-10-23 (estados terminales honestos): a handler that says it succeeded but could
+            // not verify it did act. It ends failed, never completed, and its effect may stand, as a private operation's
+            // already does (PrivateOperationBoundary): «failed» alone read as «nothing happened» and invited a repeat.
+            if (outcome is { Succeeded: true, Verified: false, EffectMayHaveOccurred: false })
+            {
+                outcome = OperationOutcome.Failure(
+                    outcome.ErrorCode ?? "verification_failed",
+                    outcome.Result,
+                    effectMayHaveOccurred: true,
+                    causeCode: outcome.CauseCode);
+            }
+
             OperationResponse response = ToResponse(request, outcome);
+            _toldVersions.Record(response);
             if (outcome.Retryable)
             {
                 // Revisión 2026-10-22 (K-6): a retryable outcome keeps its grant for the retry, unless its effect may
@@ -225,6 +283,16 @@ public sealed class MissionEngine : IDisposable
                 if (outcome.EffectMayHaveOccurred && grantedBinding is { } spent)
                 {
                     _confirmationAuthority.Revoke(spent);
+                }
+                else if (!outcome.EffectMayHaveOccurred && !uncertainStart)
+                {
+                    if (_safeRetries.Count >= MaximumRememberedRetries)
+                    {
+                        // Forgetting one only makes its retry ask.
+                        _safeRetries.Clear();
+                    }
+
+                    _safeRetries.Add(request.InvocationId);
                 }
 
                 return response;
@@ -292,14 +360,29 @@ public sealed class MissionEngine : IDisposable
         CancellationToken cancellationToken,
         ConfirmationBinding? grantedBinding = null)
     {
-        await _journal
-            .RecordCompletedAsync(request, fingerprint, response, cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            await _journal
+                .RecordCompletedAsync(request, fingerprint, response, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (JournalCapacityException) when (response.Result is not null)
+        {
+            // Auditoría del núcleo 2026-10-23: evidence larger than what the journal reserved before the effect ended the
+            // core after the effect, with no terminal state. The terminal is kept without the evidence, as the protocol
+            // line already drops it (ProtocolJson.SerializeBoundedToUtf8Bytes); its facts (the message) stay.
+            response = response with { Result = null };
+            await _journal
+                .RecordCompletedAsync(request, fingerprint, response, cancellationToken)
+                .ConfigureAwait(false);
+        }
         if (grantedBinding is { } binding)
         {
             _confirmationAuthority.Revoke(binding);
         }
 
+        _safeRetries.Remove(request.InvocationId);
+        _reconciling.Remove(request.InvocationId);
         return response;
     }
 
@@ -331,8 +414,11 @@ public sealed class MissionEngine : IDisposable
         {
             found = await preflight.PreflightAsync(arguments, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception exception) when (exception is InvalidOperationException
-            or ArgumentException or JsonException or KeyNotFoundException)
+        // Auditoría del núcleo 2026-10-23: any read that fails keeps the declared risk, not only the four kinds listed
+        // before: an IOException or a Win32Exception of a window read escaped the engine before any terminal state and
+        // ended the core. Only the caller's own cancellation goes on as one.
+        catch (Exception exception) when (exception is not OperationCanceledException
+            || !cancellationToken.IsCancellationRequested)
         {
             return InvocationPreflightResult.Proceed;
         }
@@ -341,6 +427,21 @@ public sealed class MissionEngine : IDisposable
             or null
             ? found
             : InvocationPreflightResult.Proceed;
+    }
+
+    // Auditoría del núcleo 2026-10-23: whether a handler says this invocation may be riskier than declared. MayRaise is
+    // pure by contract; one that throws says nothing, and the invocation keeps its declared risk, as a read that fails
+    // does (Preflight), instead of the exception leaving the engine before any terminal state.
+    private static bool MayRaise(IInvocationPreflight preflight, JsonElement arguments)
+    {
+        try
+        {
+            return preflight.MayRaise(arguments);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return false;
+        }
     }
 
     // Every string and property name decodes to text (no lone surrogate).

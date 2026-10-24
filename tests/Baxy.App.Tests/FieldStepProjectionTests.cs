@@ -44,6 +44,21 @@ public sealed class FieldStepProjectionTests
         Assert.That((string?)view["obs"], Is.EqualTo("Ya estaba así · level: 40"));
     }
 
+    // SaidFolders' note is for the model, in its words: the chip says what was observed only.
+    [Test]
+    public void TheNoteForTheModelOfAFolderThePersonNamedIsNotAFactOfTheChip()
+    {
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true, new JsonObject
+        {
+            ["status"] = "completed",
+            ["verification"] = OperationVisibleFacts.VerificationOutputOnly,
+            ["saidFolder"] = "the person named «proyecto» (C:\\x\\proyecto): this call looked in C:\\x\\proyecto",
+            ["count"] = 2,
+        });
+
+        Assert.That((string?)view["obs"], Is.EqualTo("Leído · count: 2"));
+    }
+
     [TestCase(OperationVisibleFacts.VerificationNone)]
     [TestCase(null)]
     public void ACompletionWithoutAVerificationIsNotSaidVerified(string? verification)
@@ -174,6 +189,36 @@ public sealed class FieldStepProjectionTests
             "recoverable_delete", DateTimeOffset.UtcNow.AddMinutes(2), context: null, effectStarted);
 
         Assert.That((bool?)card["effectStarted"], Is.EqualTo(effectStarted));
+    }
+
+    // A game the person did not name waits for their «sí» (NetworkEgress, game_title_not_said): its card names the game.
+    [Test]
+    public void TheCardOfAGameNamesTheGameNotItsStoreId()
+    {
+        var arguments = new JsonObject { ["appId"] = "252950", ["title"] = "Rocket League" };
+        JsonObject card = FieldStepProjection.Card("k1", "confirm", "game.launch", arguments, OperationRisks.LowReversible,
+            DateTimeOffset.UtcNow.AddMinutes(2), context: null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)card["target"], Is.EqualTo("Rocket League"));
+            Assert.That(FieldStepProjection.Label("game.launch", arguments), Does.EndWith("· Rocket League"));
+            Assert.That(FieldStepProjection.Target(new JsonObject { ["appId"] = "Calculadora" }), Is.EqualTo("Calculadora"));
+        });
+    }
+
+    // Auditoría de la App: a read of a page held by the person's own turn has no risk label; its card says why it asks.
+    [TestCase("host_not_from_session", "web.fetch", "va a un sitio que nadie dio")]
+    [TestCase("sends_remembered_value", "web.search", "envía un dato de tu memoria")]
+    [TestCase("game_title_not_said", "game.launch", "un juego que no nombraste")]
+    [TestCase(null, "web.fetch", null)]
+    public void TheCardOfACallThePersonsTurnHeldSaysWhy(string? cause, string operation, string? said)
+    {
+        Assert.That(ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor), Is.True);
+        JsonObject card = FieldStepProjection.Card("k1", "confirm", operation, new JsonObject(), descriptor!.Risk,
+            DateTimeOffset.UtcNow.AddMinutes(2), context: null, cause: cause);
+
+        Assert.That((string?)card["risk"], Is.EqualTo(said));
     }
 
     internal static JsonObject Finished(string status, bool verified, JsonObject facts, string? errorCode = null)

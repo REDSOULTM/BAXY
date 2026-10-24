@@ -34,9 +34,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
     /// <summary>The product's adapter: a mission's key or text goes to its window by window messages or UI Automation
     /// when its field takes them (<paramref name="fields"/>: the last view's fields), else by the keyboard.</summary>
+    // Renew al máximo (w5): the key script (copy, paste, the pointer, the layout) runs in one persistent PowerShell
+    // (PowerShellScriptWorker): a powershell.exe started cold and its Add-Type compiled cost 1.0-1.9 s of every copy and
+    // paste on the notebook. The other scripts go on in their own process.
     internal WindowsDesktopInteractionAdapter(IViewedFields? fields)
         : this(
-            new ExternalProcessRunner(),
+            KeyScriptRunner(Path.Combine(AppContext.BaseDirectory, "DesktopKeyPress.ps1")),
             Path.Combine(AppContext.BaseDirectory, "KnownFolderOpen.ps1"),
             Path.Combine(AppContext.BaseDirectory, "KnownFileOpen.ps1"),
             Path.Combine(AppContext.BaseDirectory, "DesktopSelectAll.ps1"),
@@ -55,6 +58,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// the person asked for, and giving the cursor back would undo it.
     /// </summary>
     internal IForegroundLease? ChordLease { get; init; }
+
+    /// <summary>The product's runner of the helper scripts: the key script in its persistent PowerShell, the rest each in
+    /// a process of its own.</summary>
+    internal static IExternalProcessRunner KeyScriptRunner(string keyPressScript) => new PowerShellScriptWorker(keyPressScript);
 
     /// <summary>
     /// Renew al máximo (rendimiento): the persistent UI Automation worker filesystem.folder.open's script runs in
@@ -100,6 +107,35 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         {
             return null;
         }
+    }
+
+    /// <summary>The kind of window a key lands on (K-2 refinada), for a declared text field's Enter.</summary>
+    internal IKeyWindowReader KeyWindows { get; init; } = new KeyWindowReader();
+
+    // Auditoría del núcleo 2026-10-23 (DeclaredTextFieldPress): a key press that declares a text field is read before it
+    // goes unasked; nothing else this adapter does is.
+    public bool PreflightMayRaise(string operation, JsonElement arguments) =>
+        DeclaredTextFieldPress.Applies(operation, arguments);
+
+    public async ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        if (!DeclaredTextFieldPress.Applies(operation, arguments))
+            return null;
+        nint window = NamedWindow(arguments);
+        FocusRead? focus = null;
+        if (_fields is not null)
+        {
+            using JsonDocument? answer = await _fields.FocusKindAsync(window, cancellationToken).ConfigureAwait(false);
+            focus = DeclaredTextFieldPress.Read(answer);
+        }
+
+        KeyWindowKind kind = KeyWindows.KindOf(window == 0 ? null : window);
+        return DeclaredTextFieldPress.NeedsYes(arguments, focus, kind)
+            ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
+            : null;
     }
 
     public bool CanHandle(string operation) => operation is

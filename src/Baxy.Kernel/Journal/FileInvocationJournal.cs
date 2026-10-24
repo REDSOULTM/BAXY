@@ -30,6 +30,12 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     // it is refused, never executed again.
     private const long DefaultRotationThresholdBytes = DefaultMaximumJournalBytes / 4 * 3;
     private const int DefaultRetainedArchiveSegments = 2;
+
+    // Auditoría del núcleo 2026-10-23: retention by age too, not only by size. A live segment whose oldest completion
+    // is older than this rotates when the journal opens, and an archived segment sealed longer ago than this leaves
+    // (its completions retired first, as the size retention does): a light user's responses no longer stay for years.
+    // A record is kept at most about twice this long.
+    internal static readonly TimeSpan DefaultMaximumRecordAge = TimeSpan.FromDays(30);
     private const string RotationCandidateSuffix = ".rotating";
     private const string ManifestSuffix = ".segments";
     private const string RetiredSuffix = ".retired";
@@ -58,6 +64,19 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     private readonly string _manifestPath;
     private readonly string _retiredPath;
     private readonly JournalHmacAuthenticator _authenticator;
+
+    // Auditoría del núcleo 2026-10-23: what a completed response carries of the person (its message, its result, its
+    // cause: a clipboard's text, an OCR, an email's body, a console's output) is sealed on disk with AES-GCM under a key
+    // derived from the journal's own key (which DPAPI protects), bound to the record's operation, mission, invocation
+    // and fingerprint. Its status, verification, error code and effect stay clear: they are what replay decides by.
+    // Memory operations are sealed by their own boundary already. Records written before stay readable as they are.
+    private const string SealKeyDomain = "baxy.journal.response.seal.v1";
+    private const string SealPurpose = "journal.response.v1";
+    private const string SealProtection = "journal-aes-gcm";
+    private const string SealedMessage = "{\"sealed\":true}";
+    private const int SealNonceBytes = 12;
+    private const int SealTagBytes = 16;
+    private readonly byte[] _sealKey;
     private FileStream _stream;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly Dictionary<string, CompletedInvocation> _completed =
@@ -72,6 +91,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     private readonly int _completionReservationBytes;
     private readonly long? _rotationThresholdBytes;
     private readonly int _retainedArchiveSegments;
+    private readonly TimeSpan _maximumRecordAge;
+    private readonly TimeProvider _time;
     private readonly Action<JournalCommitStage>? _crashHook;
     private readonly Action<string>? _diagnostics;
     private JournalSegmentManifest? _manifest;
@@ -89,7 +110,9 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         long? rotationThresholdBytes,
         int retainedArchiveSegments,
         Action<JournalCommitStage>? crashHook,
-        Action<string>? diagnostics)
+        Action<string>? diagnostics,
+        TimeSpan maximumRecordAge,
+        TimeProvider time)
     {
         _path = path;
         _anchorPath = string.Concat(path, ".anchor");
@@ -97,10 +120,13 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         _retiredPath = string.Concat(path, RetiredSuffix);
         _stream = stream;
         _authenticator = authenticator;
+        _sealKey = Convert.FromHexString(authenticator.ComputeTag(SealKeyDomain, ReadOnlySpan<byte>.Empty));
         _maximumJournalBytes = maximumJournalBytes;
         _completionReservationBytes = completionReservationBytes;
         _rotationThresholdBytes = rotationThresholdBytes;
         _retainedArchiveSegments = retainedArchiveSegments;
+        _maximumRecordAge = maximumRecordAge;
+        _time = time;
         _crashHook = crashHook;
         _diagnostics = diagnostics;
     }
@@ -136,6 +162,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             DefaultRetainedArchiveSegments,
             crashHook: null,
             diagnostics,
+            DefaultMaximumRecordAge,
+            TimeProvider.System,
             cancellationToken).ConfigureAwait(false);
 
     /// <summary>
@@ -159,6 +187,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             DefaultRetainedArchiveSegments,
             crashHook,
             diagnostics: null,
+            DefaultMaximumRecordAge,
+            TimeProvider.System,
             cancellationToken).ConfigureAwait(false);
 
     internal static async ValueTask<FileInvocationJournal> OpenWithRotationForTestingAsync(
@@ -170,6 +200,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         int retainedArchiveSegments,
         Action<JournalCommitStage>? crashHook = null,
         Action<string>? diagnostics = null,
+        TimeSpan? maximumRecordAge = null,
+        TimeProvider? time = null,
         CancellationToken cancellationToken = default) =>
         await OpenCoreAsync(
             journalPath,
@@ -180,6 +212,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             retainedArchiveSegments,
             crashHook,
             diagnostics,
+            maximumRecordAge ?? DefaultMaximumRecordAge,
+            time ?? TimeProvider.System,
             cancellationToken).ConfigureAwait(false);
 
     private static async ValueTask<FileInvocationJournal> OpenCoreAsync(
@@ -191,6 +225,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         int retainedArchiveSegments,
         Action<JournalCommitStage>? crashHook,
         Action<string>? diagnostics,
+        TimeSpan maximumRecordAge,
+        TimeProvider time,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(authenticator);
@@ -240,7 +276,9 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                 rotationThresholdBytes,
                 retainedArchiveSegments,
                 crashHook,
-                diagnostics);
+                diagnostics,
+                maximumRecordAge,
+                time);
             ownershipTransferred = true;
             try
             {
@@ -444,7 +482,11 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                     "Completion has no capacity reserved before effect execution.");
             }
 
-            var payload = CreatePayload(JournalPhases.Completed, request, requestFingerprint, response);
+            var payload = CreatePayload(
+                JournalPhases.Completed,
+                request,
+                requestFingerprint,
+                Seal(request.Operation, request.MissionId, request.InvocationId, requestFingerprint, response));
             payload = await AppendCompletedAsync(payload, cancellationToken).ConfigureAwait(false);
             _completed.Add(
                 request.InvocationId,
@@ -456,6 +498,222 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         {
             _gate.Release();
         }
+    }
+
+    /// <summary>The error code of the terminal <see cref="AbandonInterruptedAsync"/> records.</summary>
+    public const string AbandonedErrorCode = "invocation_abandoned";
+
+    /// <summary>
+    /// Auditoría del núcleo 2026-10-23: every invocation an earlier Core started and never ended (it stopped, a handler
+    /// threw, its run was left retryable) gets an authenticated terminal of its own: failed, <see cref="AbandonedErrorCode"/>,
+    /// its effect possibly standing. The App never resumes a call of an earlier session, so nothing would ever end it, and
+    /// each held a completion reservation (2 MiB of the cap) forever. A retry of it is then that answer, never run again.
+    /// The Core calls this once, after opening and before any request. Returns how many it ended.
+    /// </summary>
+    public async ValueTask<int> AbandonInterruptedAsync(CancellationToken cancellationToken)
+    {
+        EnsureUsable();
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            string[] interrupted = [.. _started.Keys
+                .Where(invocationId => !_completed.ContainsKey(invocationId)
+                    && _completionReservations.Contains(invocationId)
+                    && _retainedStates.ContainsKey(invocationId))
+                .Order(StringComparer.Ordinal)];
+            foreach (string invocationId in interrupted)
+            {
+                JournalPayload started = _retainedStates[invocationId];
+                var request = new OperationRequest(
+                    ProtocolTypes.OperationRequest,
+                    started.RequestId,
+                    started.MissionId,
+                    started.InvocationId,
+                    started.Operation,
+                    EmptyArguments());
+                Operations.OperationOutcome abandoned =
+                    Operations.OperationOutcome.Failure(AbandonedErrorCode, effectMayHaveOccurred: true);
+                var response = new OperationResponse(
+                    ProtocolTypes.OperationResponse,
+                    started.RequestId,
+                    started.MissionId,
+                    started.InvocationId,
+                    OperationStatuses.Failed,
+                    Operations.OperationVisibleFacts.FromOutcome(started.Operation, abandoned),
+                    Verified: false,
+                    Replayed: false,
+                    Result: null,
+                    ErrorCode: AbandonedErrorCode,
+                    EffectMayHaveOccurred: true);
+                var payload = CreatePayload(
+                    JournalPhases.Completed,
+                    request,
+                    started.RequestFingerprint,
+                    Seal(started.Operation, started.MissionId, started.InvocationId, started.RequestFingerprint, response));
+                payload = await AppendCompletedAsync(payload, cancellationToken).ConfigureAwait(false);
+                _completed.Add(invocationId, new CompletedInvocation(started.RequestFingerprint, response));
+                _retainedStates[invocationId] = payload;
+                _completionReservations.Remove(invocationId);
+            }
+
+            return interrupted.Length;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <summary>The response as it is written: what it carries of the person sealed, the rest clear.</summary>
+    private OperationResponse Seal(
+        string operation,
+        string missionId,
+        string invocationId,
+        string requestFingerprint,
+        OperationResponse response)
+    {
+        if (Mission.PrivateOperationBoundary.IsPrivateOperation(operation))
+        {
+            return response;
+        }
+
+        var plain = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(plain))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("message", response.Message);
+            writer.WritePropertyName("result");
+            if (response.Result is { } result)
+            {
+                result.WriteTo(writer);
+            }
+            else
+            {
+                writer.WriteNullValue();
+            }
+
+            writer.WriteString("causeCode", response.CauseCode);
+            writer.WriteEndObject();
+        }
+
+        byte[] sealedBytes = new byte[SealNonceBytes + plain.WrittenCount + SealTagBytes];
+        Span<byte> nonce = sealedBytes.AsSpan(0, SealNonceBytes);
+        RandomNumberGenerator.Fill(nonce);
+        using (var aes = new AesGcm(_sealKey, SealTagBytes))
+        {
+            aes.Encrypt(
+                nonce,
+                plain.WrittenSpan,
+                sealedBytes.AsSpan(SealNonceBytes, plain.WrittenCount),
+                sealedBytes.AsSpan(SealNonceBytes + plain.WrittenCount, SealTagBytes),
+                SealBinding(operation, missionId, invocationId, requestFingerprint));
+        }
+
+        CryptographicOperations.ZeroMemory(MemoryMarshalSpan(plain));
+        var envelope = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(envelope))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("protection", SealProtection);
+            writer.WriteString("purpose", SealPurpose);
+            writer.WriteString("ciphertext", Convert.ToBase64String(sealedBytes));
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument sealedResult = JsonDocument.Parse(envelope.WrittenMemory);
+        return response with
+        {
+            Message = SealedMessage,
+            Result = sealedResult.RootElement.Clone(),
+            CauseCode = null,
+        };
+    }
+
+    /// <summary>
+    /// The response a record holds, opened when it was sealed (<see cref="Seal"/>); one written before sealing existed
+    /// comes back as it is. A sealed one that does not open (another key, a changed binding) fails closed.
+    /// </summary>
+    private OperationResponse Unseal(JournalPayload payload)
+    {
+        OperationResponse response = payload.Response!;
+        if (response.Result is not { ValueKind: JsonValueKind.Object } envelope
+            || !string.Equals(response.Message, SealedMessage, StringComparison.Ordinal)
+            || !envelope.TryGetProperty("purpose", out JsonElement purpose)
+            || purpose.ValueKind != JsonValueKind.String
+            || !string.Equals(purpose.GetString(), SealPurpose, StringComparison.Ordinal))
+        {
+            return response;
+        }
+
+        byte[] sealedBytes;
+        try
+        {
+            sealedBytes = envelope.TryGetProperty("protection", out JsonElement protection)
+                && protection.ValueKind == JsonValueKind.String
+                && string.Equals(protection.GetString(), SealProtection, StringComparison.Ordinal)
+                && envelope.TryGetProperty("ciphertext", out JsonElement ciphertext)
+                && ciphertext.ValueKind == JsonValueKind.String
+                    ? Convert.FromBase64String(ciphertext.GetString()!)
+                    : throw new JournalIntegrityException("A sealed journal response is malformed.");
+        }
+        catch (FormatException)
+        {
+            throw new JournalIntegrityException("A sealed journal response is malformed.");
+        }
+
+        if (sealedBytes.Length < SealNonceBytes + SealTagBytes)
+        {
+            throw new JournalIntegrityException("A sealed journal response is malformed.");
+        }
+
+        int length = sealedBytes.Length - SealNonceBytes - SealTagBytes;
+        byte[] plain = new byte[length];
+        try
+        {
+            using (var aes = new AesGcm(_sealKey, SealTagBytes))
+            {
+                aes.Decrypt(
+                    sealedBytes.AsSpan(0, SealNonceBytes),
+                    sealedBytes.AsSpan(SealNonceBytes, length),
+                    sealedBytes.AsSpan(SealNonceBytes + length, SealTagBytes),
+                    plain,
+                    SealBinding(payload.Operation, payload.MissionId, payload.InvocationId, payload.RequestFingerprint));
+            }
+
+            using JsonDocument opened = JsonDocument.Parse(plain);
+            JsonElement root = opened.RootElement;
+            JsonElement result = root.GetProperty("result");
+            JsonElement cause = root.GetProperty("causeCode");
+            return response with
+            {
+                Message = root.GetProperty("message").GetString()!,
+                Result = result.ValueKind == JsonValueKind.Null ? null : result.Clone(),
+                CauseCode = cause.ValueKind == JsonValueKind.Null ? null : cause.GetString(),
+            };
+        }
+        catch (Exception exception) when (exception is CryptographicException or JsonException
+            or KeyNotFoundException or InvalidOperationException)
+        {
+            throw new JournalIntegrityException("A sealed journal response does not open with this journal's key.");
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(plain);
+        }
+    }
+
+    private static byte[] SealBinding(string operation, string missionId, string invocationId, string requestFingerprint) =>
+        System.Text.Encoding.UTF8.GetBytes(
+            string.Join('|', SealPurpose, operation, missionId, invocationId, requestFingerprint));
+
+    private static Span<byte> MemoryMarshalSpan(ArrayBufferWriter<byte> buffer) =>
+        System.Runtime.InteropServices.MemoryMarshal.AsMemory(buffer.WrittenMemory).Span;
+
+    private static JsonElement EmptyArguments()
+    {
+        using JsonDocument empty = JsonDocument.Parse("{}");
+        return empty.RootElement.Clone();
     }
 
     public async ValueTask DisposeAsync()
@@ -473,6 +731,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         finally
         {
             _authenticator.Dispose();
+            CryptographicOperations.ZeroMemory(_sealKey);
             _gate.Dispose();
         }
     }
@@ -646,10 +905,15 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                 cancellationToken)
             .ConfigureAwait(false);
         DeleteStaleRotationCandidate();
-        LoadManifest(liveInitialized);
+        if (liveInitialized)
+        {
+            await ResetRotationStateAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        LoadManifest();
         await LoadArchivedSegmentsAsync(cancellationToken).ConfigureAwait(false);
         TryEnforceArchiveRetention();
-        if (ShouldRotate(pendingBytes: 0))
+        if (ShouldRotate(pendingBytes: 0) || LiveHoldsAnExpiredCompletion())
         {
             await TryRotateAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -883,7 +1147,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             ValidateTerminalResponse(payload.Response);
             _completed.Add(
                 payload.InvocationId,
-                new CompletedInvocation(payload.RequestFingerprint, payload.Response));
+                new CompletedInvocation(payload.RequestFingerprint, Unseal(payload)));
             _retainedStates[payload.InvocationId] = payload;
         }
         else if (string.Equals(payload.Phase, JournalPhases.RetainedCompleted, StringComparison.Ordinal))
@@ -899,7 +1163,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             _started.Add(payload.InvocationId, payload.RequestFingerprint);
             _completed.Add(
                 payload.InvocationId,
-                new CompletedInvocation(payload.RequestFingerprint, payload.Response));
+                new CompletedInvocation(payload.RequestFingerprint, Unseal(payload)));
             _retainedStates.Add(payload.InvocationId, payload);
         }
         else
@@ -1745,32 +2009,85 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
     }
 
     /// <summary>
+    /// A live segment created just now (its anchor was absent) means the journal was reset: the earlier rotation state
+    /// is set aside, never deleted, and segment numbering continues above every file left on disk. Auditoría del núcleo
+    /// 2026-10-23: it used to be set aside unread, so moving two files away forgot every invocation the archived
+    /// segments completed and every retired id, and a retry of one ran again. Now the earlier manifest is authenticated
+    /// first, and every id it retired and every invocation its retained segments completed (each segment authenticated
+    /// end to end) is carried into the new retired-id file: a retry of one is refused, never executed. Archived state
+    /// that nothing authenticated vouches for (segments or a retired file without their manifest, a manifest that fails
+    /// authentication or holds an unfinished rotation, a listed segment missing) fails the open closed.
+    /// </summary>
+    private async ValueTask ResetRotationStateAsync(CancellationToken cancellationToken)
+    {
+        _ = PreparePath(_manifestPath);
+        _ = PreparePath(_retiredPath);
+        SortedSet<long> onDisk = ArchivedSegmentNumbersOnDisk(_path, string.Empty);
+        var carried = new HashSet<string>(StringComparer.Ordinal);
+        if (File.Exists(_manifestPath))
+        {
+            JournalSegmentManifest earlier = ReadManifestFile(_manifestPath, _authenticator);
+            if (!string.Equals(earlier.Phase, JournalManifestPhases.Committed, StringComparison.Ordinal))
+            {
+                throw new JournalIntegrityException(
+                    "A reset journal's earlier segment manifest holds an unfinished rotation.");
+            }
+
+            LoadRetired(earlier.Retired);
+            carried.UnionWith(_retired);
+            _retired.Clear();
+            foreach (JournalArchiveLink link in earlier.Segments)
+            {
+                string segmentPath = PreparePath(SegmentPath(_path, link.Segment));
+                if (!File.Exists(segmentPath))
+                {
+                    throw new JournalIntegrityException(
+                        "A reset journal's earlier manifest lists an archived segment that is missing.");
+                }
+
+                SegmentScan scan = await IndexOrScanSegmentAsync(segmentPath, link, cancellationToken)
+                    .ConfigureAwait(false);
+                foreach (string invocationId in scan.Completed.Keys)
+                {
+                    carried.Add(RetiredKey(invocationId));
+                }
+            }
+        }
+        else if (onDisk.Count > 0 || File.Exists(_retiredPath))
+        {
+            throw new JournalIntegrityException(
+                "A reset journal lies beside archived state without its authenticated manifest.");
+        }
+
+        string stamp = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
+        SetAside(_manifestPath, stamp);
+        SetAside(_retiredPath, stamp);
+        if (onDisk.Count == 0 && carried.Count == 0)
+        {
+            return;
+        }
+
+        JournalSegmentManifest manifest = EmptyManifest(_authenticator, floor: onDisk.Count > 0 ? onDisk.Max : 0);
+        JournalRetiredState retired = AppendRetired(
+            manifest.Retired,
+            [.. carried.Order(StringComparer.Ordinal)]);
+        WriteManifest(manifest with { Retired = retired });
+    }
+
+    /// <summary>
     /// Reads the authenticated segment manifest and the retired ids it vouches for.
     /// Every archived segment file numbered above the manifest's floor must be one
     /// the manifest lists (retained or pruned), so a deleted or replayed manifest is
-    /// detected. A live segment created just now (its anchor was absent) means the
-    /// journal was reset: the earlier rotation state is set aside, never deleted,
-    /// and segment numbering continues above every file left on disk.
+    /// detected.
     /// </summary>
-    private void LoadManifest(bool liveInitialized)
+    private void LoadManifest()
     {
         _ = PreparePath(_manifestPath);
         _ = PreparePath(_retiredPath);
         _retired.Clear();
         SortedSet<long> onDisk = ArchivedSegmentNumbersOnDisk(_path, string.Empty);
         JournalSegmentManifest? manifest = null;
-        if (liveInitialized)
-        {
-            string stamp = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
-            SetAside(_manifestPath, stamp);
-            SetAside(_retiredPath, stamp);
-            if (onDisk.Count > 0)
-            {
-                manifest = EmptyManifest(_authenticator, floor: onDisk.Max);
-                WriteManifest(manifest);
-            }
-        }
-        else if (File.Exists(_manifestPath))
+        if (File.Exists(_manifestPath))
         {
             manifest = ReadManifestFile(_manifestPath, _authenticator);
             if (!string.Equals(manifest.Phase, JournalManifestPhases.Committed, StringComparison.Ordinal))
@@ -2257,10 +2574,18 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             return;
         }
 
-        if (manifest.Segments.Length > _retainedArchiveSegments)
+        // Newest first: the kept ones are a prefix, so each still links to the next older kept one.
+        int keep = 0;
+        while (keep < manifest.Segments.Length && keep < _retainedArchiveSegments
+            && !ArchiveExpired(manifest.Segments[keep]))
         {
-            JournalArchiveLink[] kept = manifest.Segments[.._retainedArchiveSegments];
-            long[] pruned = manifest.Segments[_retainedArchiveSegments..]
+            keep++;
+        }
+
+        if (keep < manifest.Segments.Length)
+        {
+            JournalArchiveLink[] kept = manifest.Segments[..keep];
+            long[] pruned = manifest.Segments[keep..]
                 .Select(static link => link.Segment)
                 .ToArray();
             List<string> retiredIds = _archived
@@ -2364,6 +2689,17 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
             // Retried on the next open or rotation.
         }
     }
+
+    // Retention by age: the live segment holds a completion older than the age kept (only with rotation on).
+    private bool LiveHoldsAnExpiredCompletion() =>
+        _rotationThresholdBytes is not null
+        && _retainedStates.Values.Any(state => _completed.ContainsKey(state.InvocationId)
+            && state.TimestampUtc < _time.GetUtcNow() - _maximumRecordAge);
+
+    // Retention by age: an archived segment sealed longer ago than the age kept (its file is never written again).
+    private bool ArchiveExpired(JournalArchiveLink link) =>
+        File.GetLastWriteTimeUtc(PreparePath(SegmentPath(_path, link.Segment)))
+            < (_time.GetUtcNow() - _maximumRecordAge).UtcDateTime;
 
     private bool ShouldRotate(int pendingBytes) =>
         _rotationThresholdBytes is { } threshold
@@ -2654,7 +2990,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                     if (payload.Response is not null
                         && string.Equals(payload.InvocationId, targetInvocationId, StringComparison.Ordinal))
                     {
-                        target = new CompletedInvocation(payload.RequestFingerprint, payload.Response);
+                        target = new CompletedInvocation(payload.RequestFingerprint, Unseal(payload));
                     }
 
                     sequence = payload.Sequence;
@@ -2969,6 +3305,8 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                 _retainedArchiveSegments,
                 crashHook: null,
                 diagnostics: null,
+                _maximumRecordAge,
+                _time,
                 cancellationToken)
             .ConfigureAwait(false);
         if (candidate._started.Count != _started.Count

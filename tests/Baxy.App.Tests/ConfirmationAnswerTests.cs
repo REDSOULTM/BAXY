@@ -22,11 +22,35 @@ public sealed class ConfirmationAnswerTests
             ViewModelHarness.AcceptTurns(viewModel);
             WaitingCalls.Ask(viewModel);
             WaitingCalls.Busy(viewModel, true);
+            string card = (string)view.Sink.Items.Single(static i => (string?)i["who"] == "card")["id"]!;
 
-            (int status, JsonObject body) = await view.SendAsync("POST", "/confirmation/answer", new JsonObject { ["approve"] = true });
+            (int status, JsonObject body) = await view.SendAsync("POST", "/confirmation/answer",
+                new JsonObject { ["approve"] = true, ["card"] = card });
 
             Assert.That(status, Is.EqualTo(409));
             Assert.That((string?)body["error"], Is.EqualTo("turn_in_progress"));
+            Assert.That(viewModel.HasPendingConfirmation, Is.True);
+        }
+    }
+
+    // Auditoría de la App (2026-10-23): the view sent no card, and an answer naming none took whichever card waited.
+    [Test]
+    public async Task AnAnswerThatNamesNoCardIsRefused()
+    {
+        using var fake = new FakeMind();
+        var viewModel = new MainWindowViewModel();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            ViewModelHarness.AcceptTurns(viewModel);
+            WaitingCalls.Ask(viewModel);
+
+            (int status, JsonObject body) = await view.SendAsync("POST", "/confirmation/answer",
+                new JsonObject { ["approve"] = true });
+
+            Assert.That(status, Is.EqualTo(400));
+            Assert.That((string?)body["error"], Is.EqualTo("card_required"));
+            Assert.That(viewModel.Messages, Is.Empty);
             Assert.That(viewModel.HasPendingConfirmation, Is.True);
         }
     }

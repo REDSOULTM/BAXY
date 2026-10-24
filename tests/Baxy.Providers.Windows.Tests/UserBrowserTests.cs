@@ -473,6 +473,16 @@ public sealed class UserBrowserTests
         Assert.That(UserBrowserSurface.ReachedTarget(new Uri(requested), seen!), Is.EqualTo(reached));
     }
 
+    // Renew al máximo (w8): a named browser's navigation compared the path and not the query, so youtube.com/watch?v=A
+    // that ended on ?v=B was told as arrived.
+    [TestCase("https://youtube.com/watch?v=A", "https://www.youtube.com/watch?v=B", false)]
+    [TestCase("https://youtube.com/watch?v=A", "https://www.youtube.com/watch", false)]
+    [TestCase("https://youtube.com/watch?v=A", "https://www.youtube.com/watch?v=A&pp=x", true)]
+    [TestCase("https://youtube.com/", "https://www.youtube.com/", true)]
+    [TestCase("https://youtube.com/watch?v=A", "https://accounts.google.com/watch?v=A", false)]
+    public void ANamedBrowserArrivesOnlyWithTheQueryAskedFor(string requested, string observed, bool reached) =>
+        Assert.That(NamedBrowserAdapter.DestinationMatches(new Uri(requested), new Uri(observed)), Is.EqualTo(reached));
+
     [TestCase("https://www.google.com/search?q=cercanias", "www.google.com/search?q=El+Aleph", true)]
     [TestCase("https://www.google.com/search?q=cercanias", "www.google.com/search?q=cercanias&hl=es", false)]
     [TestCase("https://www.google.com/search?q=cercanias", "consent.google.com/ml?q=otra", false)]

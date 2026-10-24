@@ -520,9 +520,12 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             throw new MemoryNotFoundException();
         }
 
+        // Renew al máximo (w8): a sensitive record reads back redacted here, so its expectedValue was compared with
+        // «[REDACTED]» and every such correct ended in memory_conflict; the store compares it with the real value.
         if (exact.Length != 1
             || (expectedKind.HasValue && exact[0].Kind != expectedKind.Value)
             || (expectedValue is not null
+                && !string.Equals(exact[0].Value, LocalMemoryStore.RedactedSecretValue, StringComparison.Ordinal)
                 && !string.Equals(exact[0].Value, expectedValue, StringComparison.Ordinal)))
         {
             throw new MemoryConflictException();
@@ -556,7 +559,8 @@ internal sealed class MemoryOperationHandler : IOperationHandler
                 result.Revision,
                 result.Selector,
                 result.Replayed,
-                result.Changed),
+                result.Changed,
+                Sensitive: current.Sensitivity is MemorySensitivity.Sensitive or MemorySensitivity.Secret),
             MemoryHandlersJsonContext.Default.MemoryMutationWireResult);
     }
 

@@ -43,18 +43,22 @@ internal static class FieldStepProjection
         return (groups, operations);
     });
 
-    // Arguments that name what a call is about, in the order they are read for the chip's and the card's target.
+    // Arguments that name what a call is about, in the order they are read for the chip's and the card's target. A
+    // title comes before an id (auditoría de la App, 2026-10-23: game.launch's card, held because the person did not
+    // name that game, showed its Steam id «252950», not «Rocket League»).
     private static readonly string[] TargetKeys =
     [
-        "appId", "title", "name", "application", "query", "url", "location", "place", "host", "command", "label",
+        "title", "appId", "name", "application", "query", "url", "location", "place", "host", "command", "label",
         "key", "setting", "folder", "packageId", "to", "subject", "text",
     ];
 
-    // Facts of a result that only describe the reply itself, never what was observed.
+    // Facts of a result that only describe the reply itself, never what was observed, and the App's notes written for
+    // the model (auditoría de la App, 2026-10-23: the chip of a read routed into the folder the person named showed
+    // «saidFolder: the person named «proyecto» (C:\Users\…», English meant for the model, with the path).
     private static readonly HashSet<string> PlumbingFacts = new(StringComparer.Ordinal)
     {
         "status", "verified", "version", "authority", "next", "effectStarted", "error", "operation", "argumentsGiven",
-        "arguments", "argumentProblems", "detail", "waiting", "effectUncertain", "replayed",
+        "arguments", "argumentProblems", "detail", "waiting", "effectUncertain", "replayed", "saidFolder",
         OperationVisibleFacts.VerificationKey,
     };
 
@@ -201,15 +205,17 @@ internal static class FieldStepProjection
     }
 
     /// <summary>The Sí/No card of a call waiting for the person (design: {risk, title, target, expires}), and whether
-    /// an earlier attempt of it may already have happened (the kernel asks again: <paramref name="effectStarted"/>).</summary>
+    /// an earlier attempt of it may already have happened (the kernel asks again: <paramref name="effectStarted"/>).
+    /// <paramref name="cause"/>: why the person's turn held it (NetworkEgress), said before its risk.</summary>
     internal static JsonObject Card(string id, string kind, string operation, JsonObject arguments, string risk,
-        DateTimeOffset expiresUtc, string? context, bool effectStarted = false) => new()
+        DateTimeOffset expiresUtc, string? context, bool effectStarted = false, string? cause = null) => new()
     {
         ["who"] = "card",
         ["id"] = id,
         ["ts"] = DateTimeOffset.Now.ToString("HH:mm", CultureInfo.InvariantCulture),
         ["kind"] = kind,
-        ["risk"] = RiskLabel(operation, risk, arguments),
+        ["risk"] = string.Join(" · ", new[] { CauseLabel(cause), RiskLabel(operation, risk, arguments) }
+            .Where(static label => label is not null)) is { Length: > 0 } said ? said : null,
         ["title"] = Title(operation),
         ["target"] = Target(arguments),
         ["context"] = context,
@@ -275,7 +281,8 @@ internal static class FieldStepProjection
     }
 
     // RiskPolicy in normal mode, without arguments: always asks, or asks only with some arguments (a click on «Enviar»,
-    // Ctrl+W, a console command that changes something, closing every tab), or never.
+    // Ctrl+W, a console command that changes something, closing every tab, a replacement under a version only a refusal
+    // told: ToldVersions), or never.
     private static string ConfirmationOf(ProductOperationDescriptor descriptor)
     {
         if (RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, descriptor.Name)
@@ -285,6 +292,7 @@ internal static class FieldStepProjection
         }
 
         return descriptor.Name is "shell.command.run" or "input.visible.click" or "input.key.press" or "browser.control"
+            || ToldVersions.ExpectsAVersion(descriptor.Name)
             ? "sometimes"
             : "never";
     }
@@ -312,6 +320,16 @@ internal static class FieldStepProjection
         OperationRisks.PrivacySensitive => "toca datos privados",
         _ when operation == "shell.command.run" => "cambia el sistema",
         _ when operation is "input.visible.click" or "input.key.press" && Target(arguments).Length > 0 => "sale al mundo o no se deshace",
+        _ => null,
+    };
+
+    // Auditoría de la App (2026-10-23): a call the person's turn held (a read of a page, a game) has no risk of its own
+    // to show, and its card said nothing of why it asked; the cause NetworkEgress gave the model is said.
+    private static string? CauseLabel(string? cause) => cause switch
+    {
+        "host_not_from_session" => "va a un sitio que nadie dio",
+        "sends_remembered_value" => "envía un dato de tu memoria",
+        "game_title_not_said" => "un juego que no nombraste",
         _ => null,
     };
 

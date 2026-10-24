@@ -7,6 +7,20 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class NativeWindowFocusTests
 {
+    // Renew al máximo (w8): a window whose own dialog (or the dialog's own) holds the front is in front; another
+    // window, or one that only shares a process, is not.
+    [TestCase(10L, true)]
+    [TestCase(11L, true)]
+    [TestCase(12L, true)]
+    [TestCase(20L, false)]
+    [TestCase(0L, false)]
+    public void AWindowWhoseOwnDialogHoldsTheFrontHoldsIt(long foreground, bool holds)
+    {
+        var owners = new Dictionary<nint, nint> { [11] = 10, [12] = 11, [20] = 30 };
+        Assert.That(Win32WindowControlPlatform.HoldsTheFront(
+            10, (nint)foreground, window => owners.TryGetValue(window, out nint owner) ? owner : 0), Is.EqualTo(holds));
+    }
+
     [TestCase("normal")]
     [TestCase("maximized")]
     public void VisibleWindowFocusDoesNotChangeShowState(string state)

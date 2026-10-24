@@ -296,6 +296,11 @@ public sealed class KnownFileToolsTests
             Assert.That(listed.Result?.GetProperty("entries").EnumerateArray()
                     .Select(entry => entry.GetProperty("kind").GetString() + ":" + entry.GetProperty("name").GetString()),
                 Is.EqualTo(new[] { "folder:proyectos", "file:presupuesto 2026.xlsx" }));
+            // Holdout v4 (falsedad, «no había .bak» with them in a subfolder): the listing is of the top level, its
+            // folder was not opened, and it says so.
+            Assert.That(listed.Result?.GetProperty("depth").GetString(), Is.EqualTo("top_level"));
+            Assert.That(listed.Result?.GetProperty("subfoldersNotOpened").GetInt32(), Is.EqualTo(1));
+            Assert.That(listed.Result?.GetProperty("readInPart").GetBoolean(), Is.True);
             Assert.That(named.Result?.GetProperty("files").EnumerateArray()
                     .Select(file => file.GetProperty("folder").GetString() + ":" + file.GetProperty("name").GetString()),
                 Is.EqualTo(new[] { "desktop:presupuesto 2026.xlsx", "documents:Presupuesto viejo.txt" }));
@@ -465,6 +470,50 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Renew al máximo (w6, rutas): a call limited to a subfolder says that subfolder, never only its known folder: «not in
+    // home, subfolders included» was read as the whole home folder searched. A listing says what it listed and that it
+    // did not walk the subfolders; a path is looked up only at its place.
+    [Test]
+    public async Task ALookInASubfolderSaysThatSubfolder()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "taller", "sub"));
+        await File.WriteAllTextAsync(Path.Combine(home, "taller", "a.txt"), "a");
+        await File.WriteAllTextAsync(Path.Combine(home, "taller", "sub", "b.txt"), "b");
+        await File.WriteAllTextAsync(Path.Combine(home, "lejos.txt"), "c");
+        WindowsKnownFileAdapter adapter = Home(home);
+
+        ExternalCapabilityReceipt found = await adapter.InvokeAsync("file.find",
+            Json("""{"folder":"home","subdirectory":"taller","query":"*.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find",
+            Json("""{"folder":"home","subdirectory":"taller","order":"size"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt trash = await adapter.InvokeAsync("filesystem.known.trash.named",
+            Json("""{"folder":"home","subdirectory":"taller","fileName":"lejos.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read",
+            Json("""{"folder":"home","subdirectory":"taller","fileName":"lejos.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt byPath = await adapter.InvokeAsync("file.read",
+            Json("""{"folder":"home","fileName":"taller/lejos.txt"}"""), CancellationToken.None);
+
+        static string[] Strings(JsonElement array) => [.. array.EnumerateArray().Select(item => item.GetString()!)];
+        Assert.Multiple(() =>
+        {
+            Assert.That(Strings(found.Result!.Value.GetProperty("searchScope").GetProperty("folders")),
+                Is.EqualTo(new[] { "home/taller" }));
+            Assert.That(Strings(listed.Result!.Value.GetProperty("listed")), Is.EqualTo(new[] { "home/taller" }));
+            Assert.That(listed.Result!.Value.GetProperty("topLevelOnly").GetBoolean(), Is.True);
+            Assert.That(Strings(trash.Result!.Value.GetProperty("searchedFolders")), Is.EqualTo(new[] { "home/taller" }));
+            Assert.That(trash.Result!.Value.GetProperty("next").GetString(), Does.StartWith(
+                "lejos.txt is not in home/taller, subfolders included; nothing else on the PC was searched"));
+            Assert.That(read.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(Strings(read.Result!.Value.GetProperty("searchedFolders")), Is.EqualTo(new[] { "home/taller" }));
+            Assert.That(read.Result!.Value.GetProperty("next").GetString(), Does.StartWith(
+                "lejos.txt is not in home/taller, subfolders included"));
+            Assert.That(byPath.Result!.Value.GetProperty("walked").GetBoolean(), Is.False);
+            Assert.That(byPath.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
     // BAXY Renew (notebook): a name found nowhere says the folders walked; found twice, the places, as file.read
     // gives them; neither sends anything to the bin.
     [Test]
@@ -599,7 +648,11 @@ public sealed class KnownFileToolsTests
             Assert.That(scope.GetProperty("filesScanned").GetInt32(), Is.EqualTo(4));
             Assert.That(scope.GetProperty("skippedNotText").GetInt32(), Is.EqualTo(1));
             Assert.That(scope.GetProperty("skippedTooLarge").GetInt32(), Is.EqualTo(1));
+            // Holdout v4 (falsedad): two files were not read as text, so the search read only part of the folder.
+            Assert.That(found.Result?.GetProperty("readInPart").GetBoolean(), Is.True);
             Assert.That(narrowed.Result?.GetProperty("count").GetInt32(), Is.Zero);
+            // Every *.md file was read as text: nothing read in part.
+            Assert.That(narrowed.Result?.TryGetProperty("readInPart", out _), Is.False);
         });
     }
 
@@ -713,6 +766,60 @@ public sealed class KnownFileToolsTests
             Assert.That(File.ReadAllBytes(bin.Recycled[0]), Is.EqualTo(before));
             Assert.That(absent.ErrorCode, Is.EqualTo("known_edit_text_not_found"));
             Assert.That(Directory.GetFiles(desktop), Is.EqualTo(new[] { path }));
+        });
+    }
+
+    // Renew al máximo (w8): a log its program holds open for writing is read (and searched by content), not refused as
+    // file_in_use or skipped as unreadable.
+    [Test]
+    public async Task ALogStillOpenForWritingIsReadAndSearched()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, _) = Folders(temporary);
+        string path = Path.Combine(desktop, "servidor.log");
+        using var logger = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read);
+        logger.Write(Encoding.UTF8.GetBytes("inicio\nerror: disco lleno\n"));
+        logger.Flush();
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"desktop","fileName":"servidor.log"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt found = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"desktop","content":"disco lleno"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("inicio\nerror: disco lleno\n"));
+            Assert.That(found.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+        });
+    }
+
+    // Renew al máximo (w8, F015): file.edit got the file's name as oldText and the refusal only said «not found»; it now
+    // says that oldText was the name and what to do, and any oldText the file does not hold as asked says what to do.
+    [Test]
+    public async Task AnEditGivenTheFileNameAsItsTextSaysSoAndWhatToDo()
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, FolderRecycleBin bin) = Folders(temporary);
+        string path = Path.Combine(desktop, "notas.txt");
+        await File.WriteAllTextAsync(path, "Reunión el lunes\n");
+
+        ExternalCapabilityReceipt name = await adapter.InvokeAsync(
+            "file.edit", Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"notas.txt","newText":"x"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt other = await adapter.InvokeAsync(
+            "file.edit", Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"reunion","newText":"x"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(name.ErrorCode, Is.EqualTo("known_edit_text_not_found"));
+            Assert.That(name.Result?.GetProperty("next").GetString(),
+                Does.StartWith("oldText was the file's name").And.Contain("file_read"));
+            Assert.That(other.Result?.GetProperty("next").GetString(),
+                Does.StartWith("the file does not hold oldText exactly").And.Contain("file_read"));
+            Assert.That(File.ReadAllText(path), Is.EqualTo("Reunión el lunes\n"));
+            Assert.That(bin.Recycled, Is.Empty);
         });
     }
 
@@ -882,7 +989,13 @@ public sealed class KnownFileToolsTests
             Assert.That(nowhere.ErrorCode, Is.EqualTo("known_file_not_found"));
             Assert.That(nowhere.Result!.Value.GetProperty("searchScope").TryGetProperty("timeLimitReached", out _),
                 Is.False);
-            Assert.That(nowhere.Result!.Value.TryGetProperty("next", out _), Is.False);
+            // Renew al máximo (w6, rutas): a whole walk that found nothing says where it walked and that nothing else was.
+            Assert.That(nowhere.Result!.Value.TryGetProperty("next", out JsonElement whole), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(whole.GetString(), Is.EqualTo(
+                    "nada.txt is not in home, subfolders included; nothing else on the PC was searched"));
+            }
         });
     }
 

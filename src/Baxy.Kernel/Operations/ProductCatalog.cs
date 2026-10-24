@@ -447,10 +447,17 @@ public static class ProductCatalog
             "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 6.000 caracteres se corta (bodyTruncated)."),
         Descriptor(
             "email.latest.reply",
-            Schema([String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true)], ["text"]),
+            // Renew al máximo (w8): expectedMessageId (the messageId email.latest.read gave) binds the reply, and the
+            // person's yes, to one mail; one that is no longer the newest sends nothing (MicrosoftAccountAdapter).
+            Schema(
+                [
+                    String("expectedMessageId", types: NullableString, maximumUtf8Bytes: 64),
+                    String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true),
+                ],
+                ["text"]),
             OperationRisks.ExternalCommunication,
             "email.latest.reply.outlook.sent.postread.v1",
-            "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; el resultado trae el cuerpo del correo respondido, cortado a 6.000 caracteres (bodyTruncated)."),
+            "Responde al mensaje mas reciente de Outlook (el de expectedMessageId, el messageId que dio email.latest.read; si ya no es el más nuevo no envía nada y dice cuál lo es) y verifica la copia enviada por contenido y hora; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; el resultado trae el cuerpo del correo respondido, cortado a 6.000 caracteres (bodyTruncated)."),
         // Fase 7 (D4, 2026-09-20): correo a una dirección libre desde el perfil clásico de
         // Outlook del dueño, confirmado en modo normal; la copia en Elementos enviados
         // (destinatario, texto, hora) es la prueba. Sin Outlook clásico se dice el límite.
@@ -801,14 +808,16 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "game.store.page.app.open.place.v1",
             "Abre en Steam, al frente, la página de la tienda del juego que lleva ese título (lo resuelve su búsqueda pública) y dice qué juego es; mirar la ventana dice si llegó.",
-            effects: [WindowInput()]),
+            // Auditoría del núcleo 2026-10-23: el título sale a la búsqueda pública de la tienda.
+            effects: [WindowInput(), Network()]),
         Descriptor(
             "game.store.search",
             Schema([String("query", maximumUtf8Bytes: 128, nonWhitespace: true)], ["query"]),
             OperationRisks.LowReversible,
             "game.store.search.app.open.place.v1",
             "Abre en Steam, al frente, la búsqueda de su tienda con lo que se busca (un título, un tema o un tipo de juego); mirar la ventana dice qué resultados muestra.",
-            effects: [WindowInput()]),
+            // Auditoría del núcleo 2026-10-23: lo que se busca sale a la tienda de Steam.
+            effects: [WindowInput(), Network()]),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
         // Rumble en Steam» es una desinstalación real (encargo imp-steam: por la
         // dirección del dato y el diálogo propio de Steam, ya no por su consola),
@@ -1075,6 +1084,8 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "media.play.exact.session.postread.v1",
             "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+            // Auditoría del núcleo 2026-10-23: el título sale a la búsqueda de Spotify.
+            effects: [Network()],
             // Al máximo, flujos: SpotifyDesktopAdapter.CallBudget.
             budget: TimeSpan.FromSeconds(85)),
         Descriptor(
@@ -1088,6 +1099,8 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "media.play.query.session.postread.v1",
             "Busca en Spotify y reproduce el primer resultado de su propia búsqueda (o el titulado como la búsqueda, si Spotify muestra uno) y verifica now-playing.",
+            // Auditoría del núcleo 2026-10-23: lo que se busca sale a la búsqueda de Spotify.
+            effects: [Network()],
             // Al máximo, flujos: SpotifyDesktopAdapter.CallBudget.
             budget: TimeSpan.FromSeconds(85)),
         Descriptor(
@@ -1095,7 +1108,9 @@ public static class ProductCatalog
             Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
             OperationRisks.ExternalCommunication,
             "media.play.youtube.cdp.video.postread.v1",
-            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; con el reproductor propio instalado, sólo el sonido (audioOnly) en una ventana «BAXY YouTube»; en el navegador reproduce el primer vídeo que lista YouTube."),
+            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; con el reproductor propio instalado, sólo el sonido (audioOnly) en una ventana «BAXY YouTube»; en el navegador reproduce el primer vídeo que lista YouTube.",
+            // Auditoría del núcleo 2026-10-23: lo que se busca sale a YouTube.
+            effects: [Network()]),
         Descriptor(
             "media.seek.relative",
             Schema([Integer("seconds", -3_600, 3_600)], ["seconds"]),
@@ -1481,7 +1496,7 @@ public static class ProductCatalog
                 ["action"]),
             OperationRisks.LowReversible,
             "schedule.windows.task.local.clock.postread.v1",
-            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, el de esa hora local o el último; al listar, las próximas 20 por hora como mucho (dice cuántas hay); y verifica la tarea en Windows."),
+            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, el de esa hora local o el único pendiente (con varios no cancela ninguno y dice cuáles hay); al listar, las próximas 20 por hora como mucho (dice cuántas hay); y verifica la tarea en Windows."),
         Descriptor(
             "shell.command.run",
             Schema(
@@ -1525,7 +1540,9 @@ public static class ProductCatalog
                 ["resourceUri", "service"]),
             OperationRisks.ExternalCommunication,
             "streaming.navigate.session.uri.postread.v1",
-            "Navega una sesión autenticada de streaming a un recurso exacto y verifica su URI."),
+            "Navega una sesión autenticada de streaming a un recurso exacto y verifica su URI.",
+            // Auditoría del núcleo 2026-10-23: la dirección sale al servicio.
+            effects: [Network()]),
         Descriptor(
             "streaming.play.named",
             Schema(
@@ -1542,7 +1559,9 @@ public static class ProductCatalog
                 ["service", "title"]),
             OperationRisks.ExternalCommunication,
             "streaming.play.named.netflix.cdp.video.progress.v1",
-            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; en el navegador de la persona, hasta 10 candidatos."),
+            "Busca y reproduce un título en una sesión autenticada de Netflix, Disney+ o HBO Max y verifica la reproducción: en el navegador propio del producto, que el video avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; en el navegador de la persona, hasta 10 candidatos.",
+            // Auditoría del núcleo 2026-10-23: el título sale a la búsqueda del servicio.
+            effects: [Network()]),
         Descriptor(
             "system.application.crash.diagnose",
             Schema(

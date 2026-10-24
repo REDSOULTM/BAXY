@@ -85,6 +85,155 @@ public sealed class FileInvocationJournalTests
         });
     }
 
+    // Auditoría del núcleo 2026-10-23: what a response carries of the person (a clipboard's text, an OCR, an email's
+    // body, a console's output) is sealed on disk; only how it ended stays clear. A replay, after a reopen too, is the
+    // exact response.
+    [Test]
+    public async Task WhatAResponseCarriesOfThePersonIsSealedOnDiskAndReplaysWhole()
+    {
+        const string Secret = "contraseña del banco 4417-1234";
+        OperationRequest request = CreateRequest() with
+        {
+            Arguments = JsonSerializer.SerializeToElement(new { title = "Compras", content = Secret }),
+        };
+        var handler = new CountingHandler();
+        OperationResponse first;
+        await using (FileInvocationJournal journal = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            first = await engine.ExecuteAsync(request, CancellationToken.None);
+        }
+
+        string onDisk = Encoding.UTF8.GetString(await File.ReadAllBytesAsync(_journalPath));
+        OperationResponse replay;
+        await using (FileInvocationJournal reopened = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), reopened))
+        {
+            replay = await engine.ExecuteAsync(
+                request with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Message, Does.Contain("4417-1234"));
+            Assert.That(onDisk, Does.Not.Contain("4417-1234"));
+            Assert.That(onDisk, Does.Not.Contain("Compras"));
+            Assert.That(onDisk, Does.Contain("journal-aes-gcm"));
+            Assert.That(onDisk, Does.Contain("\"completed\""));
+            Assert.That(replay.Replayed, Is.True);
+            Assert.That(replay.Message, Is.EqualTo(first.Message));
+            Assert.That(JsonElement.DeepEquals(replay.Result!.Value, first.Result!.Value), Is.True);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Auditoría del núcleo 2026-10-23: what an earlier Core left begun ends, authenticated, as abandoned (failed, its
+    // effect possibly standing): a retry of it is that answer and runs nothing, the answer survives a reopen, and the
+    // completion reservations it held are free again for new invocations.
+    [Test]
+    public async Task InterruptedInvocationsEndAsAbandonedAndFreeTheirReservations()
+    {
+        OperationRequest first = CreateRequest();
+        OperationRequest second = CreateRequest();
+        await using (FileInvocationJournal journal = await OpenJournalAsync())
+        {
+            await journal.RecordStartedAsync(first, RequestFingerprint.Compute(first), CancellationToken.None);
+            await journal.RecordStartedAsync(second, RequestFingerprint.Compute(second), CancellationToken.None);
+        }
+
+        const int completionReservationBytes = 4 * 1024;
+        long maximumJournalBytes = new FileInfo(_journalPath).Length + (2 * completionReservationBytes) + 64;
+        var handler = new CountingHandler();
+        int abandoned;
+        OperationResponse refusedBefore;
+        OperationResponse acceptedAfter;
+        OperationResponse retry;
+        await using (FileInvocationJournal journal = await FileInvocationJournal.OpenWithCapacityForTestingAsync(
+                         _journalPath,
+                         new JournalHmacAuthenticator(_authenticationKey),
+                         maximumJournalBytes,
+                         completionReservationBytes))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            refusedBefore = await engine.ExecuteAsync(CreateRequest(), CancellationToken.None);
+            abandoned = await journal.AbandonInterruptedAsync(CancellationToken.None);
+            acceptedAfter = await engine.ExecuteAsync(CreateRequest(), CancellationToken.None);
+            retry = await engine.ExecuteAsync(
+                first with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        OperationResponse afterReopen;
+        int abandonedAgain;
+        await using (FileInvocationJournal reopened = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), reopened))
+        {
+            abandonedAgain = await reopened.AbandonInterruptedAsync(CancellationToken.None);
+            afterReopen = await engine.ExecuteAsync(
+                second with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refusedBefore.ErrorCode, Is.EqualTo("journal_capacity_reached"));
+            Assert.That(abandoned, Is.EqualTo(2));
+            Assert.That(acceptedAfter.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(retry.Replayed, Is.True);
+            Assert.That(retry.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(retry.ErrorCode, Is.EqualTo(FileInvocationJournal.AbandonedErrorCode));
+            Assert.That(retry.EffectMayHaveOccurred, Is.True);
+            Assert.That(abandonedAgain, Is.Zero);
+            Assert.That(afterReopen.Replayed, Is.True);
+            Assert.That(afterReopen.ErrorCode, Is.EqualTo(FileInvocationJournal.AbandonedErrorCode));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    // Auditoría del núcleo 2026-10-23: evidence larger than the completion reserved before the effect is dropped, never
+    // the terminal state (the core used to end after the effect); its facts stay, and the replay runs nothing again.
+    [Test]
+    public async Task EvidenceLargerThanTheReservationIsDroppedAndTheTerminalStateKept()
+    {
+        OperationRequest request = CreateRequest() with
+        {
+            Arguments = JsonSerializer.SerializeToElement(new { title = "Compras", content = new string('x', 40_000) }),
+        };
+        var handler = new CountingHandler();
+        OperationResponse response;
+        OperationResponse replay;
+        await using (FileInvocationJournal journal = await FileInvocationJournal.OpenWithCapacityForTestingAsync(
+                         _journalPath,
+                         new JournalHmacAuthenticator(_authenticationKey),
+                         maximumJournalBytes: 1024 * 1024,
+                         completionReservationBytes: 32 * 1024))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            response = await engine.ExecuteAsync(request, CancellationToken.None);
+        }
+
+        await using (FileInvocationJournal reopened = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), reopened))
+        {
+            replay = await engine.ExecuteAsync(
+                request with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(response.Verified, Is.True);
+            Assert.That(response.Result, Is.Null);
+            Assert.That(response.Message, Does.Contain("\"observed\""));
+            Assert.That(replay.Replayed, Is.True);
+            Assert.That(replay.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(replay.Message, Is.EqualTo(response.Message));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
     [Test]
     public async Task ReopenReplaysCompletedInvocationWithCurrentRequestId()
     {
@@ -344,16 +493,15 @@ public sealed class FileInvocationJournalTests
         await using (FileInvocationJournal reopened = await OpenJournalAsync())
         using (var engine = new MissionEngine(new OperationRegistry([recoveryHandler]), reopened))
         {
-            OperationResponse retry = await engine.ExecuteAsync(
-                request with { RequestId = retryRequestId },
-                CancellationToken.None);
+            // Auditoría del núcleo 2026-10-23: after a restart nothing says the pending run did nothing, so the retry
+            // asks (reconciliationRequired) and runs on the yes, as a new request.
+            (_, OperationResponse retry) = await UncertainStart.RetryAsync(engine, request with { RequestId = retryRequestId });
 
             Assert.Multiple(() =>
             {
                 Assert.That(retry.Status, Is.EqualTo(OperationStatuses.Completed));
                 Assert.That(retry.Verified, Is.True);
                 Assert.That(retry.Replayed, Is.False);
-                Assert.That(retry.RequestId, Is.EqualTo(retryRequestId));
                 Assert.That(recoveryHandler.ExecutionCount, Is.EqualTo(1));
             });
         }
@@ -381,9 +529,8 @@ public sealed class FileInvocationJournalTests
             };
 
             OperationResponse conflict = await engine.ExecuteAsync(conflicting, CancellationToken.None);
-            OperationResponse recovered = await engine.ExecuteAsync(
-                original with { RequestId = Guid.NewGuid().ToString("D") },
-                CancellationToken.None);
+            // Auditoría del núcleo 2026-10-23: a start that may have acted is retried on the person's yes.
+            (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, original);
 
             Assert.Multiple(() =>
             {
@@ -496,9 +643,8 @@ public sealed class FileInvocationJournalTests
             OperationResponse incompleteConflict = await engine.ExecuteAsync(
                 ChangeContent(incompleteRequest, "contenido conflictivo"),
                 CancellationToken.None);
-            OperationResponse recovered = await engine.ExecuteAsync(
-                incompleteRequest with { RequestId = Guid.NewGuid().ToString("D") },
-                CancellationToken.None);
+            // Auditoría del núcleo 2026-10-23: a start that may have acted is retried on the person's yes.
+            (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, incompleteRequest);
             OperationResponse triggerReplay = await engine.ExecuteAsync(
                 triggerRequest with { RequestId = Guid.NewGuid().ToString("D") },
                 CancellationToken.None);

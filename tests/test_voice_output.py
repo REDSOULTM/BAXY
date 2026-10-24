@@ -339,6 +339,9 @@ def test_the_first_sound_says_whether_it_is_the_notice_or_the_answer(
     # The App closes a turn's notice when its answer is heard: the voice tells it so.
     events: list[dict] = []
     voice = object.__new__(Voice)
-    voice._write, voice._mode, voice._on_spoken = events.append, "wake", lambda *rest: None
+    voice._write, voice._mode, voice._on_spoken, voice._answered = events.append, "wake", lambda *rest: None, 0
     voice._sounding(1.0, 1.2, False)
     assert events == [{"type": "voice.event", "event": "sound", "mode": "wake", "notice": False}]
+    # The answers that sounded are counted (a feed of WAV files waits for them, voice_feed.py); the notice is not one.
+    voice._sounding(1.0, 1.2, True)
+    assert voice._answered == 1

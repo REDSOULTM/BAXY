@@ -550,9 +550,54 @@ internal sealed class CoreProcessClient : IAsyncDisposable
         FailPending(exception);
         if (Interlocked.Exchange(ref _disconnectSignaled, 1) == 0)
         {
+            WriteDisconnectReport(exception);
             Disconnected?.Invoke();
         }
     }
+
+    // Al máximo (notebook, engine_no_answer): a call cut by a disconnect said only «engine_no_answer», whether the
+    // core ended, closed its channel or wrote a line the protocol refuses; the core's stderr stayed in memory. With
+    // the shell trace on (BAXY_APP_TRACE), why it ended goes beside the trace; nothing else changes.
+    private void WriteDisconnectReport(Exception exception)
+    {
+        string? trace = Environment.GetEnvironmentVariable(ShellTrace.PathEnvironmentVariable);
+        if (_disposed || string.IsNullOrWhiteSpace(trace))  // the shell closing it is no disconnect to explain
+        {
+            return;
+        }
+
+        try
+        {
+            int? exitCode = null;
+            if (_process is { HasExited: true } ended)
+            {
+                exitCode = ended.ExitCode;
+            }
+
+            string report = DisconnectReport(DateTimeOffset.Now, exception, exitCode, _diagnostics.ToArray());
+            string folder = Path.GetDirectoryName(Path.GetFullPath(trace)) ?? ".";
+            File.AppendAllText(Path.Combine(folder, "core-disconnect.jsonl"), report + Environment.NewLine, Encoding.UTF8);
+        }
+        catch (Exception failure) when (failure is IOException or UnauthorizedAccessException
+            or InvalidOperationException or NotSupportedException or Win32Exception)
+        {
+            _diagnostics.Enqueue("disconnect_report_failed");
+        }
+    }
+
+    internal static string DisconnectReport(
+        DateTimeOffset at,
+        Exception exception,
+        int? exitCode,
+        IReadOnlyList<string> stderr) =>
+        JsonSerializer.Serialize(new
+        {
+            at = at.ToString("O"),
+            exception = exception.GetType().Name,
+            message = exception.Message,
+            exitCode,
+            stderr,
+        });
 
     private void FailPending(Exception exception)
     {

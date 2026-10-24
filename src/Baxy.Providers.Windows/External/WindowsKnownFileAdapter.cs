@@ -260,8 +260,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteString("order", order);
             writer.WriteStartObject("searchScope");
             writer.WriteStartArray("folders");
-            foreach (string label in searched.Select(root => root.Label).Distinct(StringComparer.Ordinal))
-                writer.WriteStringValue(label);
+            foreach (string place in PlacesLooked(searched))
+                writer.WriteStringValue(place);
             writer.WriteEndArray();
             writer.WriteNumber("maxRecursionDepth", 12);
             writer.WriteNumber("timeLimitSeconds", WalkTimeLimit.TotalSeconds);
@@ -283,6 +283,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 walk.Reached || (content is null ? hits.Count > limit : hits.Count >= limit || scanLimitReached));
             writer.WriteBoolean("exhaustive", false);
             writer.WriteEndObject();
+            // Holdout v4 (falsedad, a partial read told as a whole one): a search that did not look at everything under
+            // its folders (the walk's time limit, the scan's file limit, the limit of hits it stops at, files it could not
+            // read as text) says so at its top, so a «no está» is told only of what was read.
+            bool skippedFiles = skippedTooLarge + skippedNotText + skippedUnreadable > 0;
+            if (walk.Reached || (content is not null && (scanLimitReached || hits.Count >= limit || skippedFiles)))
+                writer.WriteBoolean("readInPart", true);
             writer.WriteString("authority", content is null
                 ? "windows_known_folders_name_search_postread"
                 : "windows_known_folders_text_content_search_postread");
@@ -307,9 +313,11 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
         };
         List<(KnownEntry Entry, bool IsFolder, long Size, DateTime ModifiedUtc)> entries = [];
+        int hiddenOrSystem = 0;
         foreach ((string label, string root) in roots)
         {
             if (!Directory.Exists(root)) continue;
+            hiddenOrSystem += HiddenOrSystemEntries(root);
             foreach (string path in Directory.EnumerateFileSystemEntries(root, "*", options))
             {
                 if (BaxyPrivateArea.Holds(_privateRoots, path)) continue;
@@ -357,14 +365,50 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             }
             writer.WriteEndArray();
             writer.WriteNumber("shownCount", shown.Length);
+            // Renew al máximo (w6, rutas): which folder was listed, and that its subfolders were not walked.
+            writer.WriteStartArray("listed");
+            foreach (string place in PlacesLooked(roots))
+                writer.WriteStringValue(place);
+            writer.WriteEndArray();
+            writer.WriteBoolean("topLevelOnly", true);
             writer.WriteString("order", order);
             writer.WriteNumber("resultLimit", limit);
             writer.WriteBoolean("resultsMayBeTruncated", entries.Count > shown.Length);
             writer.WriteBoolean("hiddenAndSystemSkipped", true);
+            // Holdout v4 (falsedad: «Sí, porque no había .bak» with three .bak files present): a listing is of the top
+            // level only; what it did not look at is said beside what it listed, so a «no hay» is told only of that: the
+            // folders it lists were not opened, the hidden and system entries were left out, and the entries past
+            // those listed here are not in it (readInPart when any of these is so).
+            writer.WriteString("depth", "top_level");
+            writer.WriteNumber("subfoldersNotOpened", folderCount);
+            writer.WriteNumber("hiddenOrSystemSkipped", hiddenOrSystem);
+            if (entries.Count > shown.Length) writer.WriteNumber("entriesNotListed", entries.Count - shown.Length);
+            if (folderCount > 0 || hiddenOrSystem > 0 || entries.Count > shown.Length)
+                writer.WriteBoolean("readInPart", true);
             writer.WriteString("authority", "windows_known_folder_toplevel_postread");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // The hidden and system entries directly in a folder, which a listing of it leaves out (desktop.ini among them).
+    internal static int HiddenOrSystemEntries(string folder)
+    {
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = false,
+            IgnoreInaccessible = true,
+            AttributesToSkip = 0,
+        };
+        try
+        {
+            return new DirectoryInfo(folder).EnumerateFileSystemInfos("*", options)
+                .Count(entry => (entry.Attributes & (FileAttributes.Hidden | FileAttributes.System)) != 0);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return 0;
+        }
     }
 
     private enum ContentScan
@@ -374,6 +418,16 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         TooLarge,
         NotText,
         Unreadable,
+    }
+
+    // Renew al máximo (w8): a log its program still writes is open for writing, and File.ReadAllBytes (FileShare.Read)
+    // could not open it: file.read said file_in_use and a search by content skipped it as unreadable. A read shares
+    // writing and deletion, as Notepad does, and takes the bytes the file had when it was opened.
+    internal static byte[] ReadShared(string path)
+    {
+        using FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        byte[] bytes = new byte[checked((int)stream.Length)];
+        return bytes[..stream.ReadAtLeast(bytes, bytes.Length, throwOnEndOfStream: false)];
     }
 
     private static ContentScan FirstLineContaining(string path, string content, out int line, out string lineText)
@@ -388,7 +442,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             using (FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
                 head = head[..stream.ReadAtLeast(head, head.Length, throwOnEndOfStream: false)];
             if (TextFileEncoding.LooksBinary(head)) return ContentScan.NotText;
-            string text = TextFileEncoding.Decode(File.ReadAllBytes(path));
+            string text = TextFileEncoding.Decode(ReadShared(path));
             int index = text.IndexOf(content, StringComparison.OrdinalIgnoreCase);
             if (index < 0) return ContentScan.Absent;
             int start = text.LastIndexOf('\n', Math.Max(0, index - 1)) + 1;
@@ -504,8 +558,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         // gives them, so the next call can name the right one.
         if (matches.Length == 0)
         {
-            string[] searched = [.. roots.Where(item => Directory.Exists(item.Root))
-                .Select(item => item.Label).Distinct(StringComparer.Ordinal)];
+            string[] searched = PlacesLooked(roots);
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -567,11 +620,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         Action<Utf8JsonWriter> seen)
     {
         if (info.Length > MaximumTextBytes) return ExternalJson.Failure(operation, "known_text_too_large");
-        byte[] bytes = File.ReadAllBytes(file.Path);
+        byte[] bytes = ReadShared(file.Path);
         if (TextFileEncoding.LooksBinary(bytes)) return ExternalJson.Failure(operation, "known_file_not_text");
         string full = TextFileEncoding.Decode(bytes);
         return ExternalJson.Success(operation, ReadResult(
-            file, "text", full.Length, LineCount(full), offset, Page(full, offset, maximumCharacters),
+            file, "text", full.Length, LineCount(full), offset, LinesBefore(full, offset),
+            Page(full, offset, maximumCharacters),
             writer =>
             {
                 writer.WriteNumber("bytes", bytes.Length);
@@ -661,7 +715,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         int textPages = IntOf(root, "textPages");
         int unreadPages = IntOf(root, "unreadPages");
         return ExternalJson.Success(operation, ReadResult(
-            file, "pdf", characters, totalLines, offset, text,
+            file, "pdf", characters, totalLines, offset, IntOf(root, "linesBefore"), text,
             writer =>
             {
                 writer.WriteNumber("pages", pages);
@@ -677,18 +731,24 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // What a read says before the text itself, so a cut observation still shows how much there is and where to go on:
     // the lines of the whole text and of the page returned, counted here (the 4B miscounted them, e2e p6 E018).
+    // Holdout v4 (falsedad): after pages up to line ~1,904 of 3,000 and a last read that failed, the answer was «revisé
+    // todo el archivo y no apareció». Which lines of the whole this page holds (fromLine, toLine), whether it reaches the
+    // end of the text (endReached), and, when it is not the whole text, readInPart: a text not in this page was not
+    // looked for in the rest (the mind's outcome line says «leído en parte» from it).
     private static JsonElement ReadResult(
         KnownEntry file,
         string kind,
         int characters,
         int totalLines,
         int offset,
+        int linesBefore,
         string text,
         Action<Utf8JsonWriter> kindFacts,
         string fileSha256,
         string authority) => ExternalJson.Create(writer =>
     {
         bool hasMore = offset + text.Length < characters;
+        int lines = LineCount(text);
         writer.WriteStartObject(); writer.WriteNumber("version", 1);
         writer.WriteString("kind", kind);
         writer.WriteString("reviewLabel", Path.GetFileName(file.Path));
@@ -696,10 +756,17 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         writer.WriteNumber("characters", characters);
         writer.WriteNumber("totalLines", totalLines);
         writer.WriteNumber("offset", offset);
-        writer.WriteNumber("lines", LineCount(text));
+        writer.WriteNumber("lines", lines);
+        if (lines > 0)
+        {
+            writer.WriteNumber("fromLine", linesBefore + 1);
+            writer.WriteNumber("toLine", linesBefore + lines);
+        }
         writer.WriteNumber("returnedCharacters", text.Length);
         writer.WriteBoolean("hasMore", hasMore);
         if (hasMore) writer.WriteNumber("nextOffset", offset + text.Length);
+        writer.WriteBoolean("endReached", !hasMore);
+        if (offset > 0 || hasMore) writer.WriteBoolean("readInPart", true);
         kindFacts(writer);
         writer.WriteString("fileSha256", fileSha256);
         writer.WriteString("text", text);
@@ -718,6 +785,18 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 lines++;
         }
         return text.Length > 0 && text[^1] is not ('\n' or '\r') ? lines + 1 : lines;
+    }
+
+    // The lines a text ends before offset (as LineCount counts their breaks): the page from offset starts on the next.
+    internal static int LinesBefore(string text, int offset)
+    {
+        int end = Math.Min(offset, text.Length), lines = 0;
+        for (int index = 0; index < end; index++)
+        {
+            if (text[index] == '\n' || (text[index] == '\r' && (index + 1 == text.Length || text[index + 1] != '\n')))
+                lines++;
+        }
+        return lines;
     }
 
     private static string Page(string full, int offset, int maximumCharacters)
@@ -773,6 +852,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteString("folder", file.Label);
                 writer.WriteNumber("occurrences", occurrences);
                 writer.WriteBoolean("changed", false);
+                writer.WriteString("next", EditRefusalNext(occurrences, oldText, file.Path));
                 writer.WriteEndObject();
             }), occurrences == 0 ? "known_edit_text_not_found" : "known_edit_text_not_unique");
         }
@@ -829,6 +909,22 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // The file a stopped walk found is the one seen in the part walked, not proven the only one of its name: a read says
     // which one it is (relativePath) and how far the walk went. A whole walk adds nothing.
+    // Renew al máximo (w8, F015): oldText was the file's own name and the refusal only said «not found». What to do is
+    // said for any oldText the file does not hold as asked, and a name of the file given as oldText is named as that.
+    internal static string EditRefusalNext(int occurrences, string oldText, string path)
+    {
+        if (occurrences > 1)
+            return $"oldText appears {occurrences} times; nothing was changed; give a longer oldText that appears once, "
+                + "or replaceAll true to change every one";
+        string name = Path.GetFileName(path), stem = Path.GetFileNameWithoutExtension(path), asked = oldText.Trim();
+        string read = "nothing was changed; oldText must be the exact text inside the file, copied from file_read; "
+            + "file_write with the whole new content replaces all of it";
+        return asked.Equals(name, StringComparison.OrdinalIgnoreCase) || asked.Equals(stem, StringComparison.OrdinalIgnoreCase)
+            || asked.Equals(path, StringComparison.OrdinalIgnoreCase)
+            ? "oldText was the file's name, not text inside it; " + read
+            : "the file does not hold oldText exactly as given (spaces, line breaks and accents count); " + read;
+    }
+
     private Action<Utf8JsonWriter> StoppedWalkFacts(KnownEntry file, bool walkStopped)
     {
         if (!walkStopped) return _ => { };
@@ -944,14 +1040,21 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string code = matches.Count > 1 ? "known_file_ambiguous" : "known_file_not_found";
         if (candidates.Length == 0)
         {
-            string[] searched = [.. roots.Where(item => Directory.Exists(item.Root))
-                .Select(item => item.Label).Distinct(StringComparer.Ordinal)];
+            string[] searched = PlacesLooked(roots);
+            bool walked = !fullPath && parts.Length == 1;
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                // Renew al máximo (w6, rutas): where it was looked for, as file.find and the delete say it; a path is
+                // looked up only at its place (walked false).
+                writer.WriteStartArray("searchedFolders");
+                foreach (string place in searched)
+                    writer.WriteStringValue(place);
+                writer.WriteEndArray();
+                writer.WriteBoolean("walked", walked);
                 WriteWalkScope(writer, stopped);
-                if (stopped && ModelAids.On(ModelAids.SearchScope))
-                    writer.WriteString("next", StoppedWalkScope(stem, searched));
+                if (ModelAids.On(ModelAids.SearchScope) && (stopped || walked))
+                    writer.WriteString("next", stopped ? StoppedWalkScope(stem, searched) : NotFoundScope(stem, searched));
                 writer.WriteEndObject();
             }), code);
         }
@@ -1015,6 +1118,24 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // The path of a file relative to the known folder it is in (never the absolute path), whatever subdirectory the
     // search started from.
+    // Renew al máximo (w6, rutas): where a call looked, as the model names it: the known folder, or the subfolder of it
+    // the call named («home/proyecto»), never the absolute path. The searched folders said only «home» of a search
+    // limited to home's proyecto, and «X is not in home, subfolders included» was read as the whole home searched.
+    private string PlaceOf((string Label, string Root) looked)
+    {
+        string path = Path.GetFullPath(looked.Root).TrimEnd(Path.DirectorySeparatorChar);
+        foreach (string folderRoot in _configuredRoots.TryGetValue(looked.Label, out string[]? roots) ? roots : [])
+        {
+            string root = Path.GetFullPath(folderRoot).TrimEnd(Path.DirectorySeparatorChar);
+            if (path.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                return looked.Label + "/" + Path.GetRelativePath(root, path).Replace(Path.DirectorySeparatorChar, '/');
+        }
+        return looked.Label;
+    }
+
+    private string[] PlacesLooked(IEnumerable<(string Label, string Root)> roots) =>
+        [.. roots.Where(item => Directory.Exists(item.Root)).Select(PlaceOf).Distinct(StringComparer.Ordinal)];
+
     private string RelativeToFolder(KnownEntry entry)
     {
         if (_configuredRoots.TryGetValue(entry.Label, out string[]? folderRoots))
@@ -1080,6 +1201,7 @@ def main() -> int:
             "unreadPages": unread,
             "characters": len(full),
             "lines": len(full.splitlines()),
+            "linesBefore": full.count("\n", 0, offset),
             "encrypted": encrypted,
             "text": full[offset:offset + maximum],
         }, ensure_ascii=False))

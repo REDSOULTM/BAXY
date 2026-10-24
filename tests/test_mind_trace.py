@@ -26,3 +26,12 @@ def test_a_trace_under_its_cap_stays_and_a_missing_folder_is_made(tmp_path: Path
 
     assert trace.read_text(encoding="utf-8") == "x" * 100
     assert not (trace.parent / "turns.jsonl.1").exists()
+
+
+def test_a_bench_puts_the_trace_in_its_run_and_the_product_keeps_the_owners_folder(tmp_path: Path) -> None:
+    # Audit w8-medir: the e2e and falsedades benches wrote their turns into the owner's turns.jsonl.
+    from baxy_mind.__main__ import trace_dir
+    assert trace_dir({"LOCALAPPDATA": str(tmp_path)}) == tmp_path / "BAXY" / "renew"
+    run = tmp_path / "runs" / "x-e2e" / "mente"
+    assert trace_dir({"LOCALAPPDATA": str(tmp_path), "BAXY_RENEW_TRACE_DIR": str(run)}) == run
+    assert trace_dir({"LOCALAPPDATA": str(tmp_path), "BAXY_RENEW_TRACE_DIR": "  "}) == tmp_path / "BAXY" / "renew"

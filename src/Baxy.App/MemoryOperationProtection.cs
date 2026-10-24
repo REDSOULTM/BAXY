@@ -220,6 +220,20 @@ internal sealed class MemoryOperationProtector
 
                     break;
                 }
+            // Renew al máximo (w8): a correct skipped the secret check, so a normal record corrected to a password was
+            // kept as normal and shown in clear by recall, list and the export. A value that looks like a secret is
+            // corrected only by forgetting the record and saving it with memory_sensitive_save.
+            case "memory.correct":
+                if (payload.TryGetProperty("value", out JsonElement corrected)
+                    && corrected.ValueKind == JsonValueKind.String
+                    && SensitiveText.Contains(corrected.GetString()!))
+                {
+                    throw new MemoryRequestRefusedException("memory_value_needs_sensitive_channel",
+                        "This value looks like a secret and memory_correct keeps it as the record already is: forget "
+                        + "the record with memory_forget, then save the value with memory_sensitive_save.");
+                }
+
+                break;
             case "memory.sensitive.save":
                 if (RequiredString(payload, "sensitivity") is not ("sensitive" or "secret"))
                 {

@@ -30,13 +30,15 @@ public sealed class LocalTaskStore : ILocalTaskStore
         _timeProvider = timeProvider ?? TimeProvider.System;
     }
 
-    public LocalTaskRecord Create(string title, string details, string? due)
+    public LocalTaskRecord Create(string title, string details, string? due, string? idempotencyKey = null)
     {
         string normalizedTitle = NormalizeText(title, nameof(title), MaximumTitleUtf8Bytes, false, false);
         string normalizedDetails = NormalizeText(details, nameof(details), MaximumDetailsUtf8Bytes, true, true);
         DateTimeOffset? dueUtc = ParseDue(due);
         var payload = new TaskPayload(normalizedDetails, dueUtc, false, null);
-        return ToTask(_documents.Create(normalizedTitle, Serialize(payload)));
+        // Auditoría del Core (w8): keyed by the invocation, as notes are: a task.create run again after the core ended
+        // mid-invocation (the journal had it started, not completed) finds the task it made instead of making a second.
+        return ToTask(_documents.Create(normalizedTitle, Serialize(payload), idempotencyKey));
     }
 
     public LocalTaskRecord Read(Guid id, bool includeDeleted = false) =>
@@ -241,7 +243,10 @@ public sealed class LocalTaskStore : ILocalTaskStore
     private static DateTimeOffset? ParseDue(string? due)
     {
         if (due is null) return null;
-        if (!DateTimeOffset.TryParse(
+        // Renew al máximo (w8): the invariant culture also read «10/11/2026» month first (11 October, where the person
+        // meant 10 November); only the ISO shape the model is told is read, and anything else is refused, never guessed.
+        if (!IsoDue.IsMatch(due)
+            || !DateTimeOffset.TryParse(
                 due,
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal,
@@ -252,6 +257,10 @@ public sealed class LocalTaskStore : ILocalTaskStore
 
         return parsed.ToUniversalTime();
     }
+
+    private static readonly System.Text.RegularExpressions.Regex IsoDue = new(
+        @"^\s*[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[T ][0-9]{2}:[0-9]{2}(?::[0-9]{2}(?:\.[0-9]{1,7})?)?)?(?:Z|[+-][0-9]{2}:?[0-9]{2})?\s*$",
+        System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
     private DateTimeOffset GetUtcNow() => _timeProvider.GetUtcNow().ToUniversalTime();
 

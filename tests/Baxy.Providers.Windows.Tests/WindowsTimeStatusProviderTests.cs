@@ -27,6 +27,24 @@ public sealed class WindowsTimeStatusProviderTests
         Assert.That(await provider.ReadVerifiedAsync(CancellationToken.None), Is.Null);
     }
 
+    // Renew al máximo (w8): a zone changed while BAXY runs is the one read, not the one Windows had when it started.
+    [Test]
+    public void TheZoneIsReadAfreshOnEachRead()
+    {
+        TimeZoneInfo[] zones =
+        [
+            TimeZoneInfo.CreateCustomTimeZone("w8-a", TimeSpan.FromHours(-3), "a", "a"),
+            TimeZoneInfo.CreateCustomTimeZone("w8-b", TimeSpan.FromHours(1), "b", "b"),
+        ];
+        int reads = 0;
+        var probe = new SystemTimeStatusProbe(() => zones[Math.Min(reads++, 1)]);
+
+        Assert.That(probe.Read().LocalUtcOffsetMinutes, Is.EqualTo(-180));
+        Assert.That(probe.Read().LocalUtcOffsetMinutes, Is.EqualTo(60));
+        Assert.That(new SystemTimeStatusProbe().Read().LocalUtcOffsetMinutes,
+            Is.EqualTo((int)TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow).TotalMinutes));
+    }
+
     private sealed class FakeProbe(params TimeStatusSnapshot[] values) : ITimeStatusProbe
     {
         private readonly Queue<TimeStatusSnapshot> _values = new(values);

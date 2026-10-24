@@ -144,6 +144,15 @@ public sealed class DesktopMessagingAdapterTests
     public void ADeliveryReadSaysHowItMatched(string observed, string expected, string? match) =>
         Assert.That(WindowsDesktopMessagingAutomation.TextMatch(observed, expected), Is.EqualTo(match));
 
+    // Renew al máximo (w8): «exact» is one OCR pass showing the phrase whole, never a phrase made of two passes joined;
+    // what the joined passes show is still the tolerant match, so what verifies is unchanged.
+    [TestCase(new[] { "hola" , "hola" }, "hola hola", "tolerant")]
+    [TestCase(new[] { "hola hola", "" }, "hola hola", "exact")]
+    [TestCase(new[] { "nada", "otra" }, "hola", null)]
+    public void AnExactMatchIsOnePassShowingTheWholePhrase(string[] passes, string expected, string? match) =>
+        Assert.That(WindowsDesktopMessagingAutomation.TextMatch(new OcrText(string.Join('\n', passes), passes), expected),
+            Is.EqualTo(match));
+
     // C5: the send and the draft read the composer before typing and never clear it first; the read (a select-all
     // whose picture shows text) deletes nothing and stops on the person's draft.
     [TestCase("SendInBurstAsync(")]
@@ -401,6 +410,132 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // Renew al máximo (w8): a send that failed after Enter says Enter was pressed and the message may be in the chat,
+    // with what was read there; before, its result was null and «not verified» read as «not sent».
+    [TestCase("message.send", """{"channel":"whatsapp","recipient":"Letras","text":"Hola"}""")]
+    [TestCase("message.send.test", """{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}""")]
+    public async Task ASendNotVerifiedAfterEnterSaysTheMessageMayBeInTheChat(string operation, string arguments)
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            new DesktopMessageObservation(false, true, "hash", "message_delivery_not_verified", "Hol", null)
+            {
+                EnterPressed = true,
+                RecipientStillShown = true,
+            });
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt;
+            using (Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all"))
+            {
+                receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.True);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
+                Assert.That(receipt.Result, Is.Not.Null);
+                Assert.That(receipt.Result!.Value.GetProperty("enterPressed").GetBoolean(), Is.True);
+                Assert.That(receipt.Result.Value.GetProperty("sent").GetString(), Is.EqualTo("unknown"));
+                Assert.That(receipt.Result.Value.GetProperty("deliveryRead").GetString(), Is.EqualTo("Hol"));
+                Assert.That(receipt.Result.Value.GetProperty("recipientStillShown").GetBoolean(), Is.True);
+                Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.Contain("may send it twice"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // Renew al máximo (w9): the recipient was checked only before typing, never again before Enter. Enter is pressed
+    // only while the chat's header still names the recipient, read just before it.
+    [TestCase(true, 1)]
+    [TestCase(false, 0)]
+    public async Task EnterIsPressedOnlyWhileTheChatStillNamesTheRecipient(bool shown, int presses)
+    {
+        int pressed = 0;
+
+        bool sent = await WindowsDesktopMessagingAutomation.PressEnterInVerifiedChatAsync(
+            _ => ValueTask.FromResult(shown), () => pressed++, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sent, Is.EqualTo(shown));
+            Assert.That(pressed, Is.EqualTo(presses));
+        });
+    }
+
+    [Test]
+    public void TheSendReadsTheRecipientAgainRightBeforeEnter()
+    {
+        string source = AdapterSource();
+        int send = source.IndexOf("private static async ValueTask<DesktopMessageObservation> SendInBurstAsync(", StringComparison.Ordinal);
+        int sendEnd = source.IndexOf("\n    }\n", Math.Max(send, 0), StringComparison.Ordinal);
+        string body = source[send..sendEnd];
+        Assert.Multiple(() =>
+        {
+            Assert.That(send, Is.GreaterThan(0));
+            Assert.That(body, Does.Contain("PressEnterInVerifiedChatAsync("));
+            Assert.That(body, Does.Not.Contain("SendKey(VirtualKeyReturn);"));
+        });
+    }
+
+    [TestCase("message.send", """{"channel":"whatsapp","recipient":"Letras","text":"Hola"}""")]
+    [TestCase("message.send.test", """{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}""")]
+    public async Task ASendStoppedBeforeEnterSaysTheTextWasTypedAndNotSent(string operation, string arguments)
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            new DesktopMessageObservation(false, false, string.Empty,
+                WindowsDesktopMessagingAutomation.RecipientChangedBeforeEnter) { EffectMayHaveOccurred = true });
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_recipient_changed_before_enter"));
+                Assert.That(receipt.Result!.Value.GetProperty("messageWritten").GetBoolean(), Is.True);
+                Assert.That(receipt.Result.Value.GetProperty("enterPressed").GetBoolean(), Is.False);
+                Assert.That(receipt.Result.Value.GetProperty("sent").GetBoolean(), Is.False);
+                Assert.That(receipt.Result.Value.GetProperty("displayName").GetString(), Is.EqualTo("Letras"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // The flows that press Enter mark it on the observation they return.
+    [Test]
+    public void EveryReadBackAfterEnterSaysEnterWasPressed()
+    {
+        string source = AdapterSource();
+        int readBack = source.IndexOf("internal static async ValueTask<DesktopMessageObservation> SentReadBackAsync(", StringComparison.Ordinal);
+        int after = source.IndexOf("private static async ValueTask<DesktopMessageObservation> ReadBackAfterEnterAsync(", StringComparison.Ordinal);
+        int afterEnd = source.IndexOf("\n    }\n", Math.Max(after, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(readBack, Is.GreaterThan(0));
+            Assert.That(after, Is.GreaterThan(0));
+            Assert.That(source[readBack..after], Does.Contain("EnterPressed = true"));
+            Assert.That(source[after..afterEnd], Does.Contain("EnterPressed = true"));
+        });
+    }
+
     // Ronda B: a draft typed and not seen in the composer is cleared; the keys reached it, so the send and the draft
     // both say an effect may have occurred (never a clean failure, never an observed effect).
     [TestCase("message.send.test", """{"channel":"whatsapp","requestedRecipient":"Letras","text":"Hola"}""")]
@@ -591,6 +726,44 @@ public sealed class DesktopMessagingAdapterTests
         {
             Reads++;
             return ValueTask.FromResult(ClientInteraction.Unanswered);
+        }
+    }
+
+    // Renew al máximo (w8): a text with no letter or digit cannot be verified in the chat (the OCR reads only those): it
+    // is refused before the client is opened or anything typed, never typed and cleared as a draft not verified.
+    [TestCase("message.draft", "recipient", "👍")]
+    [TestCase("message.send", "recipient", "?!")]
+    [TestCase("message.send.test", "requestedRecipient", "🙂 🎉")]
+    public async Task AMessageWithNoLetterOrDigitIsRefusedBeforeAnythingIsOpened(
+        string operation, string recipientField, string text)
+    {
+        string arguments = JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["channel"] = "whatsapp",
+            [recipientField] = "Letras",
+            ["text"] = text,
+        });
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
+            DesktopMessageObservation.DraftNotVerified());
+        string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(automation.Calls, Is.Zero);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_text_not_verifiable"));
+                Assert.That(receipt.EffectObserved || receipt.EffectMayHaveOccurred, Is.False);
+                Assert.That(receipt.Result?.GetProperty("messageWritten").GetBoolean(), Is.False);
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
         }
     }
 

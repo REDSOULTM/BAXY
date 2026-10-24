@@ -1,7 +1,10 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Filesystem;
 using Baxy.Providers.Windows.Infrastructure;
@@ -123,6 +126,130 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Hallazgo de seguridad E030 (w9-sha), the bench's sequence on the real provider and journal: «sobrescribe notas.txt
+    // con el texto 'vacío'» went without the hash, the refusal told the file's current one (currentSha256), and the retry
+    // with it replaced the file unasked. The retry asks, bound to it, and with no yes the file stays as it was; a real read
+    // of the file (this provider's filesystem.read.text here, file.read in the product) is a sighting it goes on.
+    [Test]
+    public async Task AReplacementUnderTheHashItsRefusalToldAsksAndTheFileStaysWithoutTheYes()
+    {
+        const string before = "uno\r\ndos\r\ntres\r\n";
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        FilesystemMutationResult original = provider.WriteText("BAXY-bench/notas.txt", before, null);
+        await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+            Path.Combine(temporary.Path, "journal.jsonl"), new JournalHmacAuthenticator(new byte[32]));
+        using var engine = new MissionEngine(new OperationRegistry(FilesystemHandlers.Create(provider)), journal);
+
+        OperationResponse refused = await engine.ExecuteAsync(
+            Request("file.write", """{"relativePath":"BAXY-bench/notas.txt","text":"vacío"}"""), CancellationToken.None);
+        string told = refused.Result!.Value.GetProperty("currentSha256").GetString()!;
+        string replace = $$"""{"relativePath":"BAXY-bench/notas.txt","text":"vacío","expectedSha256":"{{told}}"}""";
+        OperationResponse asked = await engine.ExecuteAsync(Request("file.write", replace), CancellationToken.None);
+        string untouched = File.ReadAllText(Path.Combine(sandbox, "BAXY-bench", "notas.txt"));
+        int recycledWithoutTheYes = bin.Recycled.Count;
+        OperationResponse read = await engine.ExecuteAsync(
+            Request("filesystem.read.text", $$"""{"resourceId":"{{original.ResourceId}}"}"""), CancellationToken.None);
+        OperationResponse replaced = await engine.ExecuteAsync(Request("file.write", replace), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused.ErrorCode, Is.EqualTo("version_conflict"));
+            Assert.That(told, Is.EqualTo(original.Sha256));
+            Assert.That(asked.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
+            Assert.That(untouched, Is.EqualTo(before));
+            Assert.That(recycledWithoutTheYes, Is.Zero);
+            Assert.That(read.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(replaced.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "BAXY-bench", "notas.txt")), Is.EqualTo("vacío"));
+        });
+    }
+
+    private static OperationRequest Request(string operation, string arguments)
+    {
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        return new OperationRequest(
+            ProtocolTypes.OperationRequest,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            operation,
+            document.RootElement.Clone());
+    }
+
+    // Renew al máximo (w8): a subfolder named wrong was made silently and the file told as written; the folder the write
+    // made is said, and a write into folders already there says none.
+    [Test]
+    public async Task AWriteSaysTheFolderItMade()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox, new KnownFileToolsTests.FolderRecycleBin(
+            Path.Combine(temporary.Path, "bin")));
+        Directory.CreateDirectory(Path.Combine(sandbox, "Proyectos"));
+
+        async Task<OperationOutcome> Write(string relativePath)
+        {
+            using JsonDocument arguments = JsonDocument.Parse(
+                JsonSerializer.Serialize(new { relativePath, text = "hola" }));
+            return await new FilesystemHandler("file.write", provider).ExecuteAsync(
+                new OperationInvocation("r", "m", "i", arguments.RootElement.Clone()), CancellationToken.None);
+        }
+
+        OperationOutcome made = await Write("Proyetos/2026/notas.txt");
+        OperationOutcome there = await Write("Proyectos/notas.txt");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(made.Succeeded, Is.True, made.ErrorCode);
+            Assert.That(made.Result!.Value.GetProperty("folderCreated").GetString(), Is.EqualTo("Proyetos"));
+            Assert.That(there.Succeeded, Is.True, there.ErrorCode);
+            Assert.That(there.Result!.Value.TryGetProperty("folderCreated", out _), Is.False);
+        });
+    }
+
+    // Renew al máximo (w8): a replace whose new version could not take the name once the previous one was in the bin
+    // deleted the new text; it is kept beside the name and the failure says where both are.
+    [Test]
+    public void AReplaceThatCannotTakeTheNameAfterTheBinKeepsTheNewText()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var bin = new RetakenNameBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(sandbox, bin);
+        FilesystemMutationResult first = provider.WriteText("dato.txt", "uno", null);
+
+        FilesystemProviderException? failure = Assert.Throws<FilesystemProviderException>(
+            () => provider.WriteText("dato.txt", "dos", first.Sha256));
+
+        string kept = Path.Combine(sandbox, failure!.Result!.Value.GetProperty("newTextFile").GetString()!);
+        Assert.Multiple(() =>
+        {
+            Assert.That(failure.Code, Is.EqualTo("write_not_completed_previous_recycled"));
+            Assert.That(failure.EffectMayHaveOccurred, Is.True);
+            Assert.That(File.ReadAllText(kept), Is.EqualTo("dos"));
+            Assert.That(File.ReadAllText(bin.Recycled.Single()), Is.EqualTo("uno"));
+        });
+    }
+
+    // A bin that takes the file, after which something else takes its name (a folder here, a sync client in use).
+    private sealed class RetakenNameBin(string folder) : IRecycleBin
+    {
+        internal List<string> Recycled { get; } = [];
+
+        public bool Recycle(string path)
+        {
+            Directory.CreateDirectory(folder);
+            string destination = Path.Combine(folder, Guid.NewGuid().ToString("N"));
+            File.Move(path, destination);
+            Recycled.Add(destination);
+            Directory.CreateDirectory(path);
+            return true;
+        }
+    }
+
     [Test]
     public void AReplaceTheBinCannotTakeChangesNothing()
     {
@@ -226,6 +353,106 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(provider.WriteText("logs/nuevo.txt", "", null, append: true).ReachedState, Is.True);
             Assert.That(bin.Recycled, Is.Empty);
         });
+    }
+
+    // Renew al máximo (w5, E024): «añade a notas.txt, en la carpeta BAXY-bench» came as relativePath
+    // «notas.txt» in home, the subfolder left out, and the append made a new home\notas.txt (int5 X s0/s1, int M s0).
+    // An append presupposes the file: missing there and found below the same folder, nothing is written and the
+    // places are told; with BAXY_AYUDAS=none, the facts without the sentence. Contracase: found nowhere, it is made.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnAppendToAMissingFileFoundInASubfolderWritesNothingAndSaysWhere(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(Path.Combine(home, "BAXY-bench"));
+        Directory.CreateDirectory(Path.Combine(home, ".oculta"));
+        File.SetAttributes(Path.Combine(home, ".oculta"), FileAttributes.Directory | FileAttributes.Hidden);
+        File.WriteAllText(Path.Combine(home, "BAXY-bench", "notas.txt"), "uno\r\ndos\r\ntres\r\n");
+        File.WriteAllText(Path.Combine(home, ".oculta", "lista.txt"), "x");
+        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"))
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+        };
+
+        OperationOutcome outcome = await Handle(provider, "file.write",
+            """{"relativePath":"notas.txt","text":"revisar el router","folder":"home","append":true}""");
+        OperationOutcome made = await Handle(provider, "file.write",
+            """{"relativePath":"lista.txt","text":"pan","folder":"home","append":true}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("append_target_missing"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(File.Exists(Path.Combine(home, "notas.txt")), Is.False);
+            Assert.That(File.ReadAllText(Path.Combine(home, "BAXY-bench", "notas.txt")), Is.EqualTo("uno\r\ndos\r\ntres\r\n"));
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("exists").GetBoolean(), Is.False);
+            Assert.That(result.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(home, "notas.txt")));
+            Assert.That(result.GetProperty("sameNameIn").EnumerateArray().Select(item => item.GetString()),
+                Is.EqualTo(new[] { "BAXY-bench/notas.txt" }));
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo(
+                    $"nothing was written: notas.txt is not in {home}; a file of that name is in BAXY-bench/notas.txt, "
+                    + "and file_write with that relativePath and the same folder appends to it; without append, a new "
+                    + "notas.txt is made here"));
+            }
+            // A name found nowhere (a hidden folder is not looked in) is made, as before.
+            Assert.That(made.Succeeded, Is.True, made.ErrorCode);
+            Assert.That(File.ReadAllText(Path.Combine(home, "lista.txt")), Is.EqualTo("pan"));
+        });
+    }
+
+    // Renew al máximo (w5, E020): «¿cuál es el archivo más grande dentro de BAXY-bench, en mi carpeta de usuario?» ran
+    // filesystem.list (int5 X s0: Qwen chose filesystem_search, System One corrected it to filesystem_list), whose
+    // result was an empty list and a path, and the answer was «no hay nada en mi carpeta de trabajo». A listing or a
+    // search of the working folder says it is BAXY's (folder baxy_work), and one that found nothing that the person's
+    // folders were not looked at; with BAXY_AYUDAS=none, neither.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnEmptyLookAtTheWorkingFolderSaysThePersonsFoldersWereNotLookedAt(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+
+        JsonElement empty = await Observed(provider, "filesystem.list", "{}");
+        JsonElement missing = await Observed(provider, "filesystem.search", """{"query":"informe"}""");
+        provider.WriteText("informe.txt", "uno", null);
+        JsonElement listed = await Observed(provider, "filesystem.list", "{}");
+        JsonElement found = await Observed(provider, "filesystem.search", """{"query":"informe"}""");
+
+        Assert.Multiple(() =>
+        {
+            foreach (JsonElement look in new[] { empty, missing, listed, found })
+            {
+                Assert.That(look.TryGetProperty("folder", out JsonElement folder), Is.EqualTo(hint));
+                if (hint) Assert.That(folder.GetString(), Is.EqualTo("baxy_work"));
+            }
+            Assert.That(empty.TryGetProperty("next", out JsonElement none), Is.EqualTo(hint));
+            Assert.That(missing.TryGetProperty("next", out JsonElement nothing), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(none.GetString(), Is.EqualTo("BAXY's own working folder holds nothing here; the person's "
+                    + "folders (their home and everything under it) were not looked at: file_find looks there"));
+                Assert.That(nothing.GetString(), Is.EqualTo("nothing named informe in BAXY's own working folder; the "
+                    + "person's folders (their home and everything under it) were not looked at: file_find looks there"));
+            }
+            Assert.That(listed.TryGetProperty("next", out _), Is.False);
+            Assert.That(found.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
+    private static async Task<JsonElement> Observed(IFilesystemProvider provider, string operation, string arguments)
+    {
+        OperationOutcome outcome = await Handle(provider, operation, arguments);
+        Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+        using JsonDocument message = JsonDocument.Parse(OperationVisibleFacts.FromOutcome(operation, outcome));
+        return message.RootElement.GetProperty("observed").Clone();
     }
 
     // BAXY Renew (notebook): a hash expected of a file that is not there is said as that, not as another version;

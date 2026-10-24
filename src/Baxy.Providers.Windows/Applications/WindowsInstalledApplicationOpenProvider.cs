@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using Baxy.Contracts;
+using Baxy.Providers.Windows.Infrastructure;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
@@ -47,6 +48,13 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // Ronda 20 P4 (v3-01): how far apart the windows of a cold start are looked at while they settle, and for how long.
     internal static readonly TimeSpan StartSettleDelay = TimeSpan.FromMilliseconds(400);
     internal static readonly TimeSpan StartSettleBudget = TimeSpan.FromSeconds(10);
+    // Renew al máximo (w6-settle): how long a start that already showed its main window goes without a window event of
+    // the application before one confirming look may end its settle.
+    internal static readonly TimeSpan StartEventQuiet = TimeSpan.FromMilliseconds(250);
+    // Renew al máximo (nuevo4): the UI Automation part of a New command (a tab strip's reads and press) in all, and what
+    // must be left of it to press the strip's add button and read the new tab back.
+    internal static readonly TimeSpan TabStripBudget = TimeSpan.FromMilliseconds(1500);
+    internal static readonly TimeSpan TabStripPressReserve = TimeSpan.FromMilliseconds(400);
 
     private readonly IInstalledApplicationPlatform _platform;
     private readonly TimeSpan _catalogReadBudget;
@@ -377,12 +385,15 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             return false;
         }
 
-        return InstalledApplicationResolver.Resolve(applicationId, catalog).Entry is { } entry
-            && (entry.AppUserModelId.Contains('!')
-                ? External.VisibleControlSurface.SystemTool(InstalledApplicationResolver.PackageName(entry))
-                : External.VisibleControlSurface.SystemToolLaunch(entry.TargetPath, entry.TargetArguments)
-                    || External.VisibleControlSurface.SystemToolLaunch(entry.AppUserModelId, entry.TargetArguments));
+        return InstalledApplicationResolver.Resolve(applicationId, catalog).Entry is { } entry && OpensSystemTool(entry);
     }
+
+    // The rule of the guard above for one catalog entry (also what the installed list leaves out, CreateCatalogSnapshot).
+    internal static bool OpensSystemTool(InstalledApplicationEntry entry) =>
+        entry.AppUserModelId.Contains('!')
+            ? External.VisibleControlSurface.SystemTool(InstalledApplicationResolver.PackageName(entry))
+            : External.VisibleControlSurface.SystemToolLaunch(entry.TargetPath, entry.TargetArguments)
+                || External.VisibleControlSurface.SystemToolLaunch(entry.AppUserModelId, entry.TargetArguments);
 
     public async ValueTask<ApplicationInstalledResult> IsInstalledAsync(
         string applicationName,
@@ -455,6 +466,13 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 "The Start application catalog contains a Unicode replacement character.");
         }
 
+        // Renew al máximo (w7, apps; aid «system_tools_unlisted»): a tool that configures Windows itself, by the guard's
+        // rule (OpensSystemTool), is not listed to the model (E014 read «Configuración del sistema» for «la configuración
+        // de sonido» and opened msconfig elevated); app.open still opens it by its name. Its name stays out after the
+        // grouping below, so no other entry's name is listed in its place.
+        HashSet<string> systemTools = ModelAids.On(ModelAids.SystemToolsUnlisted)
+            ? new(catalog.Where(OpensSystemTool).Select(static entry => entry.AppUserModelId), StringComparer.Ordinal)
+            : [];
         var candidates = new List<(string Name, string AppUserModelId, string Key)>();
         foreach (InstalledApplicationEntry entry in catalog)
         {
@@ -482,10 +500,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
         string[] safelyResolvableNames = candidates
             .GroupBy(static candidate => candidate.Key, StringComparer.Ordinal)
-            .Where(static group =>
+            .Where(group =>
                 group.Select(static candidate => candidate.AppUserModelId)
                     .Distinct(StringComparer.Ordinal)
-                    .Count() == 1)
+                    .Count() == 1
+                && !systemTools.Contains(group.First().AppUserModelId))
             .Select(static group => group
                 .OrderBy(static candidate => candidate.Name, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(static candidate => candidate.Name, StringComparer.Ordinal)
@@ -936,6 +955,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
 
+        // Renew al máximo (nuevo4): the worker a tab strip is read with starts with the launch (once, then kept): its cold
+        // start (about 2.5 s) would otherwise eat the strip's whole budget on the first «nuevo».
+        _platform.PrewarmTabStrip();
         ApplicationOpenResult opened = await OpenAsync(
             request with { NewDocument = false },
             launchAnew: true,
@@ -956,7 +978,10 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 : opened;
         }
 
+        // Renew al máximo (nuevo4): the application's own names, the part after «: » in a document's title.
+        string[] names = [Bare(entry.Name), Bare(opened.DisplayName)];
         IReadOnlyList<InstalledApplicationObservation> before;
+        IReadOnlyList<TextFieldObservation> fieldsBefore;
         string titleBefore;
         bool titleTells;
         HashSet<string> bareTitles;
@@ -968,7 +993,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             // one has come for two looks. A title the start showed on another window (a splash), or the application's
             // bare name, is never a document; the settled main window's own title may be one (revisión 2 de P4).
             bareTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Bare(entry.Name), Bare(opened.DisplayName) };
-            (long? settled, IReadOnlyList<string> startTitles) = await SettleStartAsync(entry, window, theirs, cancellationToken)
+            (long? settled, IReadOnlyList<string> startTitles) = await SettleStartAsync(
+                    entry, window, process, theirs, names, cancellationToken)
                 .ConfigureAwait(false);
             if (settled is not long main)
             {
@@ -986,6 +1012,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             titleTells = string.Equals(titleFirst, titleBefore, StringComparison.Ordinal);
             // What was there is read right before the command (P4): a window born before it is never its document.
             before = _platform.Inventory(entry);
+            // Renew al máximo (rendimiento): and the window's text fields, to see a new tab whose title repeats.
+            fieldsBefore = _platform.TextFields(window);
         }
         catch (Exception exception) when (exception is ApplicationInventoryException
             or InvalidDataException
@@ -997,6 +1025,16 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
 
         bool IsDocument(long handle) => !bareTitles.Contains(Bare(_platform.WindowTitle(handle)));
+
+        // Renew al máximo (w8): a window born after the command is the new document only when its title names one, or
+        // repeats the title of the window the command went to (another window of the same kind: «Windows PowerShell»).
+        // In w6-settle a cold Steam's «Iniciar sesión en Steam», born while the command waited, was told a new document.
+        bool IsNewDocument(long handle)
+        {
+            string title = Bare(_platform.WindowTitle(handle));
+            return !bareTitles.Contains(title)
+                && (NamesADocument(title, names) || string.Equals(title, Bare(titleBefore), StringComparison.Ordinal));
+        }
 
         // The window in front before the command (its burst hands the front back to it).
         long frontBeforeCommand = request.Foreground ? _platform.ForegroundWindow() : 0;
@@ -1024,8 +1062,48 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 shownWithoutFocus: shown);
         }
 
+        // Renew al máximo (nuevo2): Ctrl+N is not every window's New. Windows 11's Notepad in Spanish bolds with it
+        // («Negrita (Ctrl+N)»): the shown tab, maybe restored with text, took the format and «un Bloc de notas nuevo»
+        // ended new_document_not_created 10 of 10 after 8 s. A toggle that takes Ctrl+N gets no key: the tab strip's add
+        // button makes the new tab or, with none, no New command is known and nothing is sent.
+        // Renew al máximo (nuevo4): only a window titled as a document (never a start or welcome screen, nor a splash the
+        // settle of 654ace67c passed by) is read, and only through its tab strip (TabStripCommandAsync). Measured live: a
+        // cold Word settled on its «Abriendo - Word» splash (MsoSplash, the only window yet), titled as a document; only
+        // a main window (IsMainWindow: never a splash) is read.
+        TabStripCommand strip = IsDocument(window) && _platform.IsMainWindow(window) && NamesADocument(Bare(titleBefore), names)
+            ? await TabStripCommandAsync(window, cancellationToken).ConfigureAwait(false)
+            : TabStripCommand.ShortcutIsNew;
+        if (strip == TabStripCommand.NoNewCommand)
+        {
+            // As a command the lease refused: only a window born empty with this launch is a new document.
+            return await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken).ConfigureAwait(false)
+                ?? NotCreated();
+        }
+
+        if (strip == TabStripCommand.NewEmptyTabShown && IsDocument(window))
+        {
+            InstalledApplicationObservation? tab;
+            try
+            {
+                tab = _platform.Inventory(entry).FirstOrDefault(item =>
+                    item.WindowHandle == window && item.ProcessId == process && item.Visible);
+            }
+            catch (Exception exception) when (exception is ApplicationInventoryException
+                or InvalidOperationException
+                or System.ComponentModel.Win32Exception)
+            {
+                return NotCreated();
+            }
+
+            if (tab is not null)
+            {
+                return await MadeAsync(tab).ConfigureAwait(false);
+            }
+        }
+
         // The command goes only to the application's own window, in a burst of the foreground lease (finding 4).
-        if (!await _platform.IssueNewDocumentAsync(window, cancellationToken).ConfigureAwait(false))
+        if (strip == TabStripCommand.ShortcutIsNew
+            && !await _platform.IssueNewDocumentAsync(window, cancellationToken).ConfigureAwait(false))
         {
             return await BornEmptyAsync(request, entry, theirs, opened.DisplayName, cancellationToken).ConfigureAwait(false)
                 ?? NotCreated();
@@ -1074,11 +1152,22 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 dialogs = appeared.Where(item => _platform.IsOwnedWindow(item.WindowHandle)).Select(static item => item.WindowHandle).ToList();
                 // P4: a window titled with the application's bare name (its start screen) is no document either.
                 made = appeared
-                    .Where(item => !dialogs.Contains(item.WindowHandle) && IsDocument(item.WindowHandle))
+                    .Where(item => !dialogs.Contains(item.WindowHandle) && IsNewDocument(item.WindowHandle))
                     .OrderByDescending(static item => item.Foreground)
                     .FirstOrDefault();
                 if (made is null && titleTells && TitleShowsAnotherDocument(titleBefore, _platform.WindowTitle(window))
                     && IsDocument(window))
+                {
+                    made = current.FirstOrDefault(item => item.WindowHandle == window && item.ProcessId == process && item.Visible);
+                }
+
+                // Renew al máximo (rendimiento): Windows 11's Notepad gives its new tab the title the launched one had
+                // («Sin título - Bloc de notas»), so the title tells nothing and every «un Bloc de notas nuevo» waited
+                // the whole budget. A text field born after the command, shown and empty, in place of a field shown
+                // before (the document in view replaced by a new empty one), with no dialog, tells it as soon as it is
+                // there. Without that (no fields, or one field for every document), the looks go on as before.
+                if (made is null && dialogs.Count == 0 && IsDocument(window)
+                    && ShowsANewEmptyField(fieldsBefore, _platform.TextFields(window)))
                 {
                     made = current.FirstOrDefault(item => item.WindowHandle == window && item.ProcessId == process && item.Visible);
                 }
@@ -1129,6 +1218,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 && !_platform.IsOwnedWindow(item.WindowHandle)
                 && _platform.WindowTitle(item.WindowHandle) is { Length: > 0 } title
                 && !bare.Contains(Bare(title))
+                // Renew al máximo (nuevo4): titled as a document: an empty start or welcome screen («Bienvenido»,
+                // «Bloc de notas: Inicio») is no new document.
+                && NamesADocument(Bare(title), bare)
                 && _platform.HoldsNoText(item.WindowHandle));
         }
         catch (Exception exception) when (exception is ApplicationInventoryException
@@ -1152,11 +1244,83 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         return Success(request, entry, made, reused: false, newDocument: true);
     }
 
+    /// <summary>
+    /// Renew al máximo (nuevo4): what the window's tab strip says of its New command, in <see cref="TabStripBudget"/> at
+    /// most for all of it, the worker's start included (1eb63ed58 read every toggle of any window for up to 10 s, about
+    /// 4 s on the first «nuevo»). A window without a tab strip (a Tab with a TabItem) is asked only that, and gets Ctrl+N
+    /// as before; one with a strip is scanned for a toggle that takes Ctrl+N and the strip's add button. Up to there
+    /// nothing is pressed, so any failure (any exception, a step left at its share of the budget) is Ctrl+N as before. The
+    /// add button is pressed only with <see cref="TabStripPressReserve"/> left to read the new tab back; once it may have
+    /// been pressed, a failure sends no key on top of it (Ctrl+N would bold the new tab): the looks tell what came.
+    /// </summary>
+    private async ValueTask<TabStripCommand> TabStripCommandAsync(long window, CancellationToken cancellationToken)
+    {
+        DateTimeOffset start = _time.GetUtcNow();
+        TimeSpan Left() => TabStripBudget - (_time.GetUtcNow() - start);
+        TabStripCommand read;
+        try
+        {
+            if (!await _platform.ShowsTabStripAsync(window, Left(), cancellationToken).ConfigureAwait(false)
+                || Left() <= TimeSpan.Zero)
+            {
+                return TabStripCommand.ShortcutIsNew;
+            }
+
+            read = await _platform.ReadTabStripCommandAsync(window, Left(), cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException
+            || !cancellationToken.IsCancellationRequested)
+        {
+            return TabStripCommand.ShortcutIsNew;
+        }
+
+        if (read == TabStripCommand.NoNewCommand)
+        {
+            return TabStripCommand.NoNewCommand;
+        }
+
+        if (read != TabStripCommand.AddButtonShown || Left() < TabStripPressReserve)
+        {
+            return TabStripCommand.ShortcutIsNew;
+        }
+
+        try
+        {
+            TabStripCommand added = await _platform.NewTabFromStripAsync(window, Left(), cancellationToken).ConfigureAwait(false);
+            return added is TabStripCommand.TabAdded or TabStripCommand.NewEmptyTabShown ? added : TabStripCommand.ShortcutIsNew;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException
+            || !cancellationToken.IsCancellationRequested)
+        {
+            return TabStripCommand.TabAdded;
+        }
+    }
+
     // A window title with a part besides the application's name («Nueva pestaña - …», «Sin título - …»): a dash
-    // between spaces separates them.
-    private static bool NamesADocument(string title) =>
-        title.Contains(" - ", StringComparison.Ordinal) || title.Contains(" — ", StringComparison.Ordinal)
-        || title.Contains(" – ", StringComparison.Ordinal);
+    // between spaces separates them. Renew al máximo (nuevo2): or a colon before a space, as Windows 11's Notepad 11.2607
+    // titles its tabs («Sin título: Bloc de notas»); read as one segment, its own document was a start title and no new
+    // tab of that window was ever a document. Renew al máximo (nuevo4): read as the dash is, the document first and the
+    // application after it: only the application's own names («names», the opening's, never a list here) after the last
+    // «: » make it a document's title. A colon is common elsewhere, with the application first or absent («Steam: Iniciar
+    // sesión», «Configuración: Sistema»), and such a start or welcome screen is never a document.
+    internal static bool NamesADocument(string title, IReadOnlyCollection<string> names)
+    {
+        if (title.Contains(" - ", StringComparison.Ordinal) || title.Contains(" — ", StringComparison.Ordinal)
+            || title.Contains(" – ", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        int colon = title.LastIndexOf(": ", StringComparison.Ordinal);
+        if (colon <= 0 || title[..colon].Trim().Length == 0)
+        {
+            return false;
+        }
+
+        string application = title[(colon + 2)..].Trim();
+        return application.Length > 0
+            && names.Any(name => string.Equals(name, application, StringComparison.OrdinalIgnoreCase));
+    }
 
     // A title as the bare name of an application is compared: its unsaved mark and its spaces left aside.
     private static string Bare(string? title) =>
@@ -1168,17 +1332,31 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // verified, else any shown; with the titles the start showed on its other windows (never the settled main
     // window's own title, which a new window of the command may repeat). A window the application had before the
     // launch («theirs», auditoría D6) is never one of the start's.
+    // Renew al máximo (w6-settle): two still looks cost at least 0.8 s per cold «un X nuevo». Once the start has shown a
+    // window after the verified one (the main window after a splash), the application's window events (created, shown,
+    // hidden, renamed) are watched: StartEventQuiet with none, then one confirming look that brings no new window and
+    // finds that last-born window still shown and a main window (IsMainWindow: never a splash), end the settle there.
+    // Anything else keeps the looks as they were: no window born after the verified one (it may be a splash while the
+    // main window is built hidden: an earlier shorter quiet sent «Nuevo» to a splash and was rejected), no events to
+    // watch, events that never stop (each look still StartSettleDelay apart), within StartSettleBudget.
     private async ValueTask<(long? Window, IReadOnlyList<string> Titles)> SettleStartAsync(
         InstalledApplicationEntry entry,
         long started,
+        int process,
         HashSet<long> theirs,
+        IReadOnlyCollection<string> names,
         CancellationToken cancellationToken)
     {
-        List<long> Shown() => _platform.Inventory(entry)
-            .Where(item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath)
-                && !theirs.Contains(item.WindowHandle) && !_platform.IsOwnedWindow(item.WindowHandle))
-            .Select(static item => item.WindowHandle)
-            .ToList();
+        // The processes the start's windows were seen in: the ones whose window events are watched.
+        var processes = new HashSet<int> { process };
+        List<long> Shown()
+        {
+            List<InstalledApplicationObservation> items = [.. _platform.Inventory(entry)
+                .Where(item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath)
+                    && !theirs.Contains(item.WindowHandle) && !_platform.IsOwnedWindow(item.WindowHandle))];
+            processes.UnionWith(items.Select(static item => item.ProcessId));
+            return [.. items.Select(static item => item.WindowHandle)];
+        }
 
         var titles = new List<string> { _platform.WindowTitle(started) };
         var seen = new HashSet<long> { started };
@@ -1191,19 +1369,64 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             }
         }
 
-        int still = 0;
-        Stopwatch clock = Stopwatch.StartNew();
-        for (int look = 0;
-            still < 2 && look * StartSettleDelay < StartSettleBudget && clock.Elapsed < StartSettleBudget;
-            look++)
+        // Watched only from the first window born after the verified one: before it, the events could end nothing.
+        IWindowEventWatch? events = null;
+        List<long>? confirmed = null;
+        try
         {
-            await _platform.DelayAsync(StartSettleDelay, cancellationToken).ConfigureAwait(false);
-            List<long> fresh = Shown().Where(seen.Add).ToList();
-            born.AddRange(fresh);
-            still = fresh.Count == 0 ? still + 1 : 0;
+            bool watching = false;
+            int still = 0;
+            Stopwatch clock = Stopwatch.StartNew();
+            for (int look = 0;
+                still < 2 && look * StartSettleDelay < StartSettleBudget && clock.Elapsed < StartSettleBudget;
+                look++)
+            {
+                if (!watching && born.Count > 0)
+                {
+                    watching = true;
+                    events = _platform.WatchWindowEvents(processes);
+                }
+
+                TimeSpan wait = StartSettleDelay;
+                int bornAtConfirm = 0;
+                if (events is not null)
+                {
+                    (bool quiet, TimeSpan waited) = await events
+                        .QuietAsync(StartEventQuiet, StartSettleDelay, cancellationToken).ConfigureAwait(false);
+                    wait = waited >= StartSettleDelay ? TimeSpan.Zero : StartSettleDelay - waited;
+                    if (quiet)
+                    {
+                        List<long> confirming = Shown();
+                        List<long> freshNow = confirming.Where(seen.Add).ToList();
+                        born.AddRange(freshNow);
+                        bornAtConfirm = freshNow.Count;
+                        if (freshNow.Count == 0 && born.LastOrDefault(confirming.Contains) is long newest && newest != 0
+                            && _platform.IsMainWindow(newest))
+                        {
+                            confirmed = confirming;
+                            break;
+                        }
+                    }
+                }
+
+                if (wait > TimeSpan.Zero)
+                {
+                    await _platform.DelayAsync(wait, cancellationToken).ConfigureAwait(false);
+                }
+
+                // A window the confirming look found born counts as born in this look: two still looks stay 400 ms apart.
+                List<long> fresh = Shown().Where(seen.Add).ToList();
+                born.AddRange(fresh);
+                still = fresh.Count + bornAtConfirm == 0 ? still + 1 : 0;
+            }
+        }
+        finally
+        {
+            // The watch's hooks go with the settle, a cancelled or failed one included.
+            events?.Dispose();
         }
 
-        List<long> shown = Shown();
+        List<long> shown = confirmed ?? Shown();
         long? chosen = born.LastOrDefault(shown.Contains) is long last && last != 0 ? last
             : shown.Contains(started) ? started
             : shown.Count > 0 ? shown[0]
@@ -1217,7 +1440,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         if (chosen is long main)
         {
             string settled = Bare(_platform.WindowTitle(main));
-            if (NamesADocument(settled))
+            if (NamesADocument(settled, names))
             {
                 titles.RemoveAll(title => string.Equals(Bare(title), settled, StringComparison.OrdinalIgnoreCase));
             }
@@ -1236,6 +1459,17 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     {
         static string Document(string title) => title.Replace("*", string.Empty, StringComparison.Ordinal).Trim();
         return now.Length > 0 && !string.Equals(Document(before), Document(now), StringComparison.Ordinal);
+    }
+
+    // Renew al máximo (rendimiento): the window shows a new empty document in place of the one it showed: a field shown
+    // before the command is no longer shown (or is gone), and a field that was not there before is shown and empty.
+    internal static bool ShowsANewEmptyField(IReadOnlyList<TextFieldObservation> before, IReadOnlyList<TextFieldObservation> now)
+    {
+        bool left = before.Any(earlier => earlier.Shown
+            && !now.Any(field => field.Handle == earlier.Handle && field.Shown));
+        bool born = now.Any(field => field.Shown && field.Empty
+            && !before.Any(earlier => earlier.Handle == field.Handle));
+        return left && born;
     }
 
     // Whether «window» is the opened application's: its window, or a window of its process or of the same program.
@@ -1392,6 +1626,31 @@ internal sealed record InstalledApplicationObservation(
     string? ProcessName = null,
     bool HostedByTerminal = false);
 
+// Renew al máximo (rendimiento): one text field of a window (an Edit or RichEdit child), whether it is shown, and
+// whether it holds no text (asked only of a shown field; a hidden one is never said empty).
+internal readonly record struct TextFieldObservation(long Handle, bool Shown, bool Empty);
+
+// Renew al máximo (nuevo2): what the window's own controls say of its New command. Windows 11's Notepad in Spanish
+// (11.2607) shows «Negrita (Ctrl+N)»: Ctrl+N bolds the shown tab and makes nothing; its new tab is the tab strip's «+».
+internal enum TabStripCommand
+{
+    // Nothing in the window takes Ctrl+N for another command (or it could not be read): Ctrl+N is sent, as before.
+    ShortcutIsNew,
+
+    // A toggle (a format) takes Ctrl+N and the window has no tab strip button to add a tab: no New command is known.
+    NoNewCommand,
+
+    // Renew al máximo (nuevo4): a toggle takes Ctrl+N and the tab strip shows its add button, not pressed yet (the read).
+    AddButtonShown,
+
+    // The tab strip's add button was invoked; the new tab is looked for as any New command's document.
+    TabAdded,
+
+    // The tab strip's add button was invoked and UI Automation read it made: one tab more, the selected one new, and
+    // every document shown empty.
+    NewEmptyTabShown,
+}
+
 internal interface IInstalledApplicationPlatform : IOpeningFront
 {
     ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
@@ -1439,6 +1698,25 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     ValueTask<bool> IssueNewDocumentAsync(long windowHandle, CancellationToken cancellationToken) =>
         ValueTask.FromResult(false);
 
+    // Renew al máximo (nuevo2, nuevo4): read by UI Automation, without a key, before the New command, each step within
+    // «within» (its answer left behind past it): when a toggle (a format, never a New) takes Ctrl+N, the window's tab
+    // strip add button is pressed instead and the new tab read back. PrewarmTabStrip starts the worker (no wait);
+    // ShowsTabStripAsync only tells whether the window shows a tab strip (a Tab with a TabItem); ReadTabStripCommandAsync
+    // reads its toggles and add button (ShortcutIsNew, NoNewCommand or AddButtonShown), pressing nothing;
+    // NewTabFromStripAsync presses the add button (TabAdded, NewEmptyTabShown, or ShortcutIsNew: not pressed).
+    void PrewarmTabStrip()
+    {
+    }
+
+    ValueTask<bool> ShowsTabStripAsync(long windowHandle, TimeSpan within, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(false);
+
+    ValueTask<TabStripCommand> ReadTabStripCommandAsync(long windowHandle, TimeSpan within, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(TabStripCommand.ShortcutIsNew);
+
+    ValueTask<TabStripCommand> NewTabFromStripAsync(long windowHandle, TimeSpan within, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(TabStripCommand.ShortcutIsNew);
+
     // BAXY Renew cu (C18): Esc given to this window in the same burst of the foreground lease: a start screen dismissed
     // (Office's leaves a blank document); whether Windows took both events.
     ValueTask<bool> IssueDismissStartAsync(long windowHandle, CancellationToken cancellationToken) =>
@@ -1451,8 +1729,20 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // empty; false when it has none or one holds text or does not answer.
     bool HoldsNoText(long windowHandle) => false;
 
+    // Renew al máximo (rendimiento): the window's text fields (its Edit or RichEdit children), each shown or not and,
+    // when shown, empty or not; none when it has none or they cannot be read.
+    IReadOnlyList<TextFieldObservation> TextFields(long windowHandle) => [];
+
     // Whether another window owns this one (a dialog of the application).
     bool IsOwnedWindow(long windowHandle) => false;
+
+    // Renew al máximo (w6-settle): the window events of these processes and of the helpers and frames they show windows
+    // through (WindowEventWatch), from now until disposed; null when none can be watched (the settle then only looks).
+    IWindowEventWatch? WatchWindowEvents(IReadOnlyCollection<int> processes) => null;
+
+    // Renew al máximo (w6-settle): whether the window is one a person works in, not a splash: shown, uncloaked, owned by
+    // no other, no tool window, with a title bar or a frame that resizes and minimizes. False when it cannot be told.
+    bool IsMainWindow(long windowHandle) => false;
 
     // The window in front now, whether the person works in a window, and the opened one shown above theirs without
     // the activation: IOpeningFront (r20b palanca 4).
@@ -2507,7 +2797,252 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
     }
 
+    // Renew al máximo (nuevo2, nuevo4): the UI Automation worker that reads a window's tab strip, started with the launch
+    // of a «nuevo» (PrewarmTabStrip) and kept; a read the opening left behind past its budget frees it within
+    // TabStripWorkerHang (a worker that never answers is replaced).
+    private static readonly Lazy<External.UiaWorkerHost> TabStripWorker = new(static () => new External.UiaWorkerHost());
+    private static readonly object TabStripWarmLock = new();
+    private static Task? s_tabStripWarm;
+    internal static readonly TimeSpan TabStripWorkerHang = TimeSpan.FromSeconds(10);
+
+    // $args[0]: the window; $args[1]: the step, «strip» (whether a Tab holds a TabItem), «command» (whether a toggle
+    // takes Ctrl+N and the strip shows its add button) or «add» (the press); $args[2]: the press's deadline, in UTC
+    // ticks. Only reads, and in «add» one Invoke of the add button, never past its deadline less 200 ms; never a key, never
+    // a tab of the window selected or closed. The add button: an enabled, shown, invokable Button child of the strip (no
+    // scroll RepeatButton) on the tabs' row, right after the last shown tab (before the first in a right-to-left strip),
+    // within three rows of it; a ribbon's «File» before its tabs, or a button far from them, never is. Its last JSON line
+    // is the answer; any failure before the press is «shortcut» (Ctrl+N, as before), after it «added».
+    private const string TabStripScript = """
+        $ErrorActionPreference='Stop'
+        $mode=[string]$args[1]
+        $phase='read'
+        try {
+          Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes
+          $AE=[System.Windows.Automation.AutomationElement]
+          $CT=[System.Windows.Automation.ControlType]
+          $scope=[System.Windows.Automation.TreeScope]
+          function Kind($type){ New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,$type) }
+          $root=$AE::FromHandle([IntPtr][long]$args[0])
+          $strips=@()
+          foreach($tab in $root.FindAll($scope::Descendants,(Kind $CT::Tab))){
+            if($null -ne $tab.FindFirst($scope::Descendants,(Kind $CT::TabItem))){ $strips+=$tab }
+          }
+          if($mode -eq 'strip'){ if($strips.Count -gt 0){ '{"strip":true}' } else { '{"strip":false}' }; return }
+          if($strips.Count -eq 0){ '{"outcome":"shortcut"}'; return }
+          function AddButton($strip){
+            $items=@($strip.FindAll($scope::Descendants,(Kind $CT::TabItem)) | Where-Object { -not $_.Current.IsOffscreen -and -not $_.Current.BoundingRectangle.IsEmpty })
+            if($items.Count -eq 0){ return $null }
+            $top=[double]::MaxValue; $bottom=[double]::MinValue; $left=[double]::MaxValue; $right=[double]::MinValue
+            foreach($item in $items){
+              $r=$item.Current.BoundingRectangle
+              $top=[Math]::Min($top,$r.Top); $bottom=[Math]::Max($bottom,$r.Bottom); $left=[Math]::Min($left,$r.Left); $right=[Math]::Max($right,$r.Right)
+            }
+            if($bottom -le $top){ return $null }
+            $rtl=$items.Count -gt 1 -and $items[$items.Count-1].Current.BoundingRectangle.Left -lt $items[0].Current.BoundingRectangle.Left
+            $reach=3*($bottom-$top)
+            foreach($button in $strip.FindAll($scope::Children,(Kind $CT::Button))){
+              $current=$button.Current
+              if(-not $current.IsEnabled -or $current.IsOffscreen -or [string]$current.ClassName -match 'RepeatButton' -or -not [bool]$button.GetCurrentPropertyValue($AE::IsInvokePatternAvailableProperty)){ continue }
+              $r=$current.BoundingRectangle
+              if($r.IsEmpty){ continue }
+              $middle=($r.Top+$r.Bottom)/2
+              if($middle -lt $top -or $middle -gt $bottom){ continue }
+              if($rtl){ $gap=$left-$r.Right } else { $gap=$r.Left-$right }
+              if($gap -ge -2 -and $gap -le $reach){ return $button }
+            }
+            return $null
+          }
+          if($mode -eq 'command'){
+            $toggle=New-Object System.Windows.Automation.PropertyCondition($AE::IsTogglePatternAvailableProperty,$true)
+            $taken=$false
+            foreach($button in $root.FindAll($scope::Descendants,(New-Object System.Windows.Automation.AndCondition((Kind $CT::Button),$toggle)))){
+              $current=$button.Current
+              $shown=[regex]::Match([string]$current.Name,'\(([^()]*)\)\s*$').Groups[1].Value
+              foreach($key in @([string]$current.AcceleratorKey,$shown)){ if($key -match '^\s*(Ctrl|Control|Strg)\s*\+\s*N\s*$'){ $taken=$true } }
+            }
+            if(-not $taken){ '{"outcome":"shortcut"}'; return }
+          }
+          $add=$null; $strip=$null
+          foreach($candidate in $strips){
+            $found=AddButton $candidate
+            if($null -ne $found){ $add=$found; $strip=$candidate; break }
+          }
+          if($mode -eq 'command'){ if($null -eq $add){ '{"outcome":"none"}' } else { '{"outcome":"add"}' }; return }
+          if($mode -ne 'add' -or $null -eq $add){ '{"outcome":"shortcut"}'; return }
+          $deadline=[long]$args[2]
+          function Items(){ @($strip.FindAll($scope::Descendants,(Kind $CT::TabItem)) | ForEach-Object {
+            $selected=$false; try { $selected=$_.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern).Current.IsSelected } catch {}
+            [pscustomobject]@{ id=[string]::Join('.',$_.GetRuntimeId()); selected=$selected } }) }
+          $before=@(Items)
+          if([DateTime]::UtcNow.Ticks -ge $deadline-2000000){ '{"outcome":"shortcut"}'; return }
+          $phase='press'
+          $add.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+          while([DateTime]::UtcNow.Ticks -lt $deadline-600000){
+            Start-Sleep -Milliseconds 50
+            $now=@(Items); $picked=@($now | Where-Object { $_.selected })
+            if($now.Count -eq $before.Count+1 -and $picked.Count -eq 1 -and @($before | ForEach-Object { $_.id }) -notcontains $picked[0].id){
+              $documents=@($root.FindAll($scope::Descendants,(Kind $CT::Document)) | Where-Object { -not $_.Current.IsOffscreen })
+              $empty=$documents.Count -gt 0
+              foreach($document in $documents){
+                $length=-1; try { $length=$document.GetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern).DocumentRange.GetText(1).Length } catch {}
+                if($length -ne 0){ $empty=$false }
+              }
+              if($empty){ '{"outcome":"added","newEmpty":true}'; return }
+            }
+          }
+          '{"outcome":"added","newEmpty":false}'
+        } catch {
+          if($phase -eq 'press'){ '{"outcome":"added","newEmpty":false}' } else { '{"outcome":"shortcut"}' }
+        }
+        """;
+
+    public void PrewarmTabStrip() => _ = TabStripWarm();
+
+    private static Task TabStripWarm()
+    {
+        lock (TabStripWarmLock)
+        {
+            if (s_tabStripWarm is null || s_tabStripWarm.IsFaulted || s_tabStripWarm.IsCanceled)
+            {
+                s_tabStripWarm = Task.Run(static async () =>
+                    await TabStripWorker.Value.PrewarmAsync(CancellationToken.None).ConfigureAwait(false));
+            }
+
+            return s_tabStripWarm;
+        }
+    }
+
+    // One step of the tab strip's script within «within», its start included: its last JSON line, or null when nothing was
+    // sent (the worker did not start in time). A step sent and not answered in time throws TimeoutException: it is left
+    // behind (observed, never rethrown), and a press so left never comes after its deadline.
+    private static async ValueTask<string?> RunTabStripAsync(
+        long windowHandle,
+        string step,
+        TimeSpan within,
+        CancellationToken cancellationToken)
+    {
+        if (within <= TimeSpan.Zero)
+        {
+            return null;
+        }
+
+        long deadline = DateTime.UtcNow.Ticks + within.Ticks;
+        long started = Stopwatch.GetTimestamp();
+        try
+        {
+            await TabStripWarm().WaitAsync(within, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException
+            || !cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
+        TimeSpan left = within - Stopwatch.GetElapsedTime(started);
+        if (left <= TimeSpan.Zero)
+        {
+            return null;
+        }
+
+        Task<External.ExternalProcessResult> run = External.UiaWorkerScript.RunAsync(
+            TabStripWorker.Value,
+            TabStripScript,
+            [
+                windowHandle.ToString(CultureInfo.InvariantCulture),
+                step,
+                deadline.ToString(CultureInfo.InvariantCulture),
+            ],
+            TabStripWorkerHang,
+            cancellationToken).AsTask();
+        _ = run.ContinueWith(
+            static task => _ = task.Exception,
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default);
+        return (await run.WaitAsync(left, cancellationToken).ConfigureAwait(false)).Output;
+    }
+
+    public async ValueTask<bool> ShowsTabStripAsync(long windowHandle, TimeSpan within, CancellationToken cancellationToken) =>
+        await RunTabStripAsync(windowHandle, "strip", within, cancellationToken).ConfigureAwait(false) is { } line
+        && ReadTabStripShown(line);
+
+    public async ValueTask<TabStripCommand> ReadTabStripCommandAsync(
+        long windowHandle,
+        TimeSpan within,
+        CancellationToken cancellationToken)
+    {
+        TabStripCommand answer = await RunTabStripAsync(windowHandle, "command", within, cancellationToken)
+            .ConfigureAwait(false) is { } line ? ReadTabStripAnswer(line) : TabStripCommand.ShortcutIsNew;
+        return answer is TabStripCommand.NoNewCommand or TabStripCommand.AddButtonShown ? answer : TabStripCommand.ShortcutIsNew;
+    }
+
+    public async ValueTask<TabStripCommand> NewTabFromStripAsync(
+        long windowHandle,
+        TimeSpan within,
+        CancellationToken cancellationToken)
+    {
+        TabStripCommand answer = await RunTabStripAsync(windowHandle, "add", within, cancellationToken)
+            .ConfigureAwait(false) is { } line ? ReadTabStripAnswer(line) : TabStripCommand.ShortcutIsNew;
+        return answer is TabStripCommand.TabAdded or TabStripCommand.NewEmptyTabShown ? answer : TabStripCommand.ShortcutIsNew;
+    }
+
+    // The probe's answer: only «strip: true» is a tab strip shown.
+    internal static bool ReadTabStripShown(string line)
+    {
+        try
+        {
+            using JsonDocument answer = JsonDocument.Parse(line.Length > 0 ? line : "{}");
+            return answer.RootElement.ValueKind == JsonValueKind.Object
+                && answer.RootElement.TryGetProperty("strip", out JsonElement strip) && strip.ValueKind == JsonValueKind.True;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
+    // The script's answer; anything else is no answer (Ctrl+N, as before).
+    internal static TabStripCommand ReadTabStripAnswer(string line)
+    {
+        try
+        {
+            using JsonDocument answer = JsonDocument.Parse(line.Length > 0 ? line : "{}");
+            JsonElement root = answer.RootElement;
+            string? outcome = root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("outcome", out JsonElement value) && value.ValueKind == JsonValueKind.String
+                    ? value.GetString() : null;
+            bool newEmpty = root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("newEmpty", out JsonElement empty) && empty.ValueKind == JsonValueKind.True;
+            return outcome switch
+            {
+                "none" => TabStripCommand.NoNewCommand,
+                "add" => TabStripCommand.AddButtonShown,
+                "added" => newEmpty ? TabStripCommand.NewEmptyTabShown : TabStripCommand.TabAdded,
+                _ => TabStripCommand.ShortcutIsNew,
+            };
+        }
+        catch (JsonException)
+        {
+            return TabStripCommand.ShortcutIsNew;
+        }
+    }
+
     public bool IsOwnedWindow(long windowHandle) => GetWindow(checked((nint)windowHandle), 4) != 0;
+
+    public IWindowEventWatch? WatchWindowEvents(IReadOnlyCollection<int> processes) => WindowEventWatch.Start(processes);
+
+    // WS_CAPTION (0x00C00000, both bits), or WS_THICKFRAME (0x00040000) with WS_MINIMIZEBOX (0x00020000): a window a
+    // person moves, resizes or minimizes; a splash has neither. WS_EX_TOOLWINDOW (0x80) is never one.
+    public bool IsMainWindow(long windowHandle)
+    {
+        nint window = checked((nint)windowHandle);
+        if (window == 0 || !IsWindowVisible(window) || IsCloaked(window) || GetWindow(window, 4) != 0)
+            return false;
+        long style = GetWindowLongPtr(window, -16).ToInt64();
+        long extended = GetWindowLongPtr(window, -20).ToInt64();
+        return (extended & 0x80) == 0
+            && ((style & 0x00C00000) == 0x00C00000 || (style & 0x00060000) == 0x00060000);
+    }
 
     // BAXY Renew cu (C18): the window's text fields (children whose class is an Edit or a RichEdit), each asked its
     // length (WM_GETTEXTLENGTH, 500 ms at most, never a hung window's wait): true only with one at least and all empty.
@@ -2531,6 +3066,26 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         _ = EnumChildWindows(checked((nint)windowHandle), callback, nint.Zero);
         GC.KeepAlive(callback);
         return fields > 0 && !holdsText;
+    }
+
+    // Renew al máximo (rendimiento): the same text fields as HoldsNoText, each with whether Windows shows it (it and
+    // its parents visible) and, only when shown, whether it answered an empty length (WM_GETTEXTLENGTH, 500 ms at most).
+    public IReadOnlyList<TextFieldObservation> TextFields(long windowHandle)
+    {
+        var fields = new List<TextFieldObservation>();
+        EnumWindowsProc callback = (child, _) =>
+        {
+            if (!ReadClassName(child).Contains("Edit", StringComparison.OrdinalIgnoreCase))
+                return true;
+            bool shown = IsWindowVisible(child);
+            bool empty = shown && SendMessageTimeout(child, 0x000E, 0, 0, 0x0002, 500, out nint length) != 0
+                && length == 0;
+            fields.Add(new TextFieldObservation(child, shown, empty));
+            return true;
+        };
+        _ = EnumChildWindows(checked((nint)windowHandle), callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return fields;
     }
 
     public unsafe string WindowTitle(long windowHandle)
@@ -2651,6 +3206,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     // GW_OWNER (4): the window that owns this one, 0 for none.
     [LibraryImport("user32.dll")]
     private static partial nint GetWindow(nint window, uint command);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static partial nint GetWindowLongPtr(nint window, int index);
 
     [LibraryImport("user32.dll", EntryPoint = "SendMessageTimeoutW")]
     private static partial nint SendMessageTimeout(

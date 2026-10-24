@@ -7,7 +7,7 @@ namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
 /// BAXY Renew cu (C18): clipboard.paste.into opens a new document of the application named (in front, for control) and
-/// then pastes, with no argument of its own; an opening that fails pastes nothing.
+/// then pastes into the window that opening verified; an opening that fails pastes nothing.
 /// </summary>
 [TestFixture]
 public sealed class PasteIntoNewDocumentHandlerTests
@@ -20,7 +20,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
         var handler = new PasteIntoNewDocumentHandler(paste, (invocation, _) =>
         {
             opened.Add(invocation.Arguments.Clone());
-            return ValueTask.FromResult(OperationOutcome.Success(Element("""{"appId":"Word"}""")));
+            return ValueTask.FromResult(OperationOutcome.Success(Element("""{"appId":"Word","windowHandle":4242}""")));
         });
 
         OperationOutcome outcome = await handler.ExecuteAsync(Invocation("""{"appId":"Word"}"""), CancellationToken.None);
@@ -32,7 +32,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
             Assert.That(opened[0].GetProperty("appId").GetString(), Is.EqualTo("Word"));
             Assert.That(opened[0].GetProperty("newDocument").GetBoolean(), Is.True);
             Assert.That(opened[0].GetProperty("foreground").GetBoolean(), Is.True);
-            Assert.That(paste.Arguments, Is.EqualTo(new[] { "{}" }));
+            Assert.That(paste.Arguments, Is.EqualTo(new[] { """{"window":4242}""" }));
         });
     }
 
@@ -53,6 +53,28 @@ public sealed class PasteIntoNewDocumentHandlerTests
         });
     }
 
+    // Renew al máximo (w5): a paste refused after the application was opened (an empty clipboard, refused before any key)
+    // keeps its code and says the application was opened, an effect that did occur; it read as «nothing happened».
+    [Test]
+    public async Task APasteThatFailsAfterTheOpeningSaysTheApplicationWasOpened()
+    {
+        var paste = new RecordingPaste(OperationOutcome.Failure("clipboard_empty"));
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => ValueTask.FromResult(OperationOutcome.Success(Element("""{"windowHandle":4242}"""))));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("clipboard_empty"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(outcome.Result!.Value.GetProperty("applicationOpened").GetString(), Is.EqualTo("Bloc de notas"));
+            Assert.That(paste.Arguments, Is.EqualTo(new[] { """{"window":4242}""" }));
+        });
+    }
+
     // BAXY Renew cu (C18 variante): Word already running takes the new document and the paste through its object model;
     // nothing is opened nor pasted by the window. Its failure is the answer, said as it is.
     [TestCase(true, null)]
@@ -62,7 +84,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
         var paste = new RecordingPaste();
         int opened = 0;
         var handler = new PasteIntoNewDocumentHandler(paste,
-            (_, _) => { opened++; return ValueTask.FromResult(OperationOutcome.Success(Element("{}"))); },
+            (_, _) => { opened++; return ValueTask.FromResult(OperationOutcome.Success(Element("""{"windowHandle":4242}"""))); },
             (_, _) => ValueTask.FromResult<Baxy.Providers.Windows.External.OfficePasteResult?>(
                 new(verified, true, code, "Documento2", verified ? 63 : 0)));
 
@@ -88,7 +110,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
         var paste = new RecordingPaste();
         int opened = 0;
         var handler = new PasteIntoNewDocumentHandler(paste,
-            (_, _) => { opened++; return ValueTask.FromResult(OperationOutcome.Success(Element("{}"))); },
+            (_, _) => { opened++; return ValueTask.FromResult(OperationOutcome.Success(Element("""{"windowHandle":4242}"""))); },
             (_, _) => ValueTask.FromResult<Baxy.Providers.Windows.External.OfficePasteResult?>(null));
 
         OperationOutcome outcome = await handler.ExecuteAsync(Invocation("""{"appId":"Word"}"""), CancellationToken.None);
@@ -97,8 +119,68 @@ public sealed class PasteIntoNewDocumentHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(opened, Is.EqualTo(1));
-            Assert.That(paste.Arguments, Is.EqualTo(new[] { "{}" }));
+            Assert.That(paste.Arguments, Is.EqualTo(new[] { """{"window":4242}""" }));
         });
+    }
+
+    // Auditoría del Core (w8): an opening asked in front while the person works elsewhere raises its window without
+    // their keyboard (shownWithoutFocus), and a paste with no window went to theirs. The window the opening verified
+    // reaches the provider as the mission's window, the one its lease brings up after the person's pause or refuses.
+    [Test]
+    public async Task ThePasteReachesTheProviderNamingTheOpenedWindowEvenWhenItWasShownWithoutFocus()
+    {
+        var provider = new RecordingProvider();
+        var handler = new PasteIntoNewDocumentHandler(
+            new ExternalCapabilityHandler("clipboard.paste", provider),
+            (_, _) => ValueTask.FromResult(OperationOutcome.Success(Element(
+                """{"appId":"Bloc de notas","windowHandle":4242,"foreground":false,"shownWithoutFocus":true}"""))));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Bloc de notas"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(provider.Operations, Is.EqualTo(new[] { "clipboard.paste" }));
+            Assert.That(Baxy.Providers.Windows.External.WindowsExternalCapabilityProvider.MissionWindow(provider.Arguments[0]),
+                Is.EqualTo((nint)4242));
+        });
+    }
+
+    // Contracase: an opening told done without the window it verified pastes nothing (the application may be open).
+    [Test]
+    public async Task AnOpeningWithoutItsWindowPastesNothing()
+    {
+        var paste = new RecordingPaste();
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => ValueTask.FromResult(OperationOutcome.Success(Element("""{"appId":"Word"}"""))));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("""{"appId":"Word"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(outcome.CauseCode, Is.EqualTo("paste_window_unknown"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True);
+            Assert.That(paste.Arguments, Is.Empty);
+        });
+    }
+
+    private sealed class RecordingProvider : Baxy.Providers.Windows.External.IExternalCapabilityProvider
+    {
+        internal List<string> Operations { get; } = [];
+
+        internal List<JsonElement> Arguments { get; } = [];
+
+        public ValueTask<Baxy.Providers.Windows.External.ExternalCapabilityReceipt> InvokeAsync(
+            string operation, JsonElement arguments, CancellationToken cancellationToken)
+        {
+            Operations.Add(operation);
+            Arguments.Add(arguments.Clone());
+            return ValueTask.FromResult(Baxy.Providers.Windows.External.ExternalJson.Success(
+                operation, Element("""{"version":1,"delivered":true}""")));
+        }
     }
 
     [TestCase("Word", "word")]
@@ -118,7 +200,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
     private static OperationInvocation Invocation(string arguments) =>
         new("request", "mission", "invocation", Element(arguments));
 
-    private sealed class RecordingPaste : IOperationHandler
+    private sealed class RecordingPaste(OperationOutcome? answer = null) : IOperationHandler
     {
         internal List<string> Arguments { get; } = [];
 
@@ -127,7 +209,7 @@ public sealed class PasteIntoNewDocumentHandlerTests
         public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
         {
             Arguments.Add(invocation.Arguments.GetRawText());
-            return ValueTask.FromResult(OperationOutcome.Success(Element("""{"pasted":true}""")));
+            return ValueTask.FromResult(answer ?? OperationOutcome.Success(Element("""{"pasted":true}""")));
         }
     }
 }

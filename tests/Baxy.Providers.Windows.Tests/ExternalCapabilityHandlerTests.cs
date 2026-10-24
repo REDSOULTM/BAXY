@@ -50,8 +50,40 @@ public sealed class ExternalCapabilityHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(unobserved.Succeeded, Is.False);
+            Assert.That(unobserved.Verified, Is.False);
+            Assert.That(unobserved.ErrorCode, Is.EqualTo("external_verification_failed"));
             Assert.That(unobserved.CauseCode, Is.EqualTo("external_effect_unobserved"));
+            Assert.That(unobserved.EffectMayHaveOccurred, Is.False);
         });
+    }
+
+    // Auditoría del Core (w8): that failure dropped the provider's verified post-read; it keeps it now, marked
+    // effectObserved:false, with the status, code and uncertainty as they were.
+    [Test]
+    public async Task AnUnobservedEffectKeepsTheVerifiedPostReadAsFacts()
+    {
+        OperationOutcome unobserved = await Handle(ExternalJson.Success(
+            "wifi.disconnect", Json("""{"version":1,"connected":true,"ssid":"Casa"}"""), effectObserved: false));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unobserved.Succeeded, Is.False);
+            Assert.That(unobserved.CauseCode, Is.EqualTo("external_effect_unobserved"));
+            Assert.That(unobserved.Result?.GetProperty("connected").GetBoolean(), Is.True);
+            Assert.That(unobserved.Result?.GetProperty("ssid").GetString(), Is.EqualTo("Casa"));
+            Assert.That(unobserved.Result?.GetProperty("effectObserved").GetBoolean(), Is.False);
+            Assert.That(unobserved.Result?.TryGetProperty("changed", out _), Is.False);
+        });
+    }
+
+    // Contracase: a result that says effectObserved itself keeps its own, never a second key.
+    [Test]
+    public async Task AnUnobservedResultThatSaysItselfKeepsItsOwn()
+    {
+        OperationOutcome unobserved = await Handle(ExternalJson.Success(
+            "wifi.disconnect", Json("""{"connected":true,"effectObserved":false}"""), effectObserved: false));
+
+        Assert.That(unobserved.Result?.GetRawText(), Is.EqualTo("""{"connected":true,"effectObserved":false}"""));
     }
 
     // E011 (pc-ayudas): calculator.expression.evaluate without the Calculator's window failed with its code alone, and

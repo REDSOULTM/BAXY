@@ -124,9 +124,11 @@ def test_a_long_address_reaches_the_model_as_a_short_reference_and_goes_back_who
     assert fetched["arguments"]["url"] == LONG
 
 
-def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: Path, monkeypatch) -> None:
-    # PLAN_GENERAL C2 (uso real: the same click 5-7 times with a look between each).
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+def test_the_same_failed_call_a_second_time_is_told_once(tmp_path: Path, monkeypatch) -> None:
+    # PLAN_GENERAL C2 (uso real: the same click 5-7 times with a look between each); holdout v4 (en vivo, «Biblioteca»
+    # 7 times in Steam): a failure is told at the second, a completed call (the looks between) still at the third. The
+    # aid alone: with same_call_closes the click after it does not run (test_mind_bucle.py).
+    monkeypatch.setenv("BAXY_AYUDAS", "same_call_next")
     missed = json.dumps({"status": "failed", "error": "visible_button_not_found"})
     looked = json.dumps({"status": "completed", "observed": {"ok": True}})
     click, look = _call("input_visible_click", {"label": "FORTNITE"}), _call("input_visible_controls", {})
@@ -135,9 +137,29 @@ def test_the_same_call_with_the_same_result_a_third_time_is_told_once(tmp_path: 
     for index, result in enumerate([missed, looked, missed, looked, missed, looked, missed]):
         mind.continue_turn(2 + index, result)
     tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
-    told = [i for i, t in enumerate(tools) if "ya se llamó 3 veces" in t]
-    assert told == [4]
-    assert "input_visible_click ya se llamó 3 veces en este turno" in tools[4]
+    told = [i for i, t in enumerate(tools) if "ya se llamó" in t]
+    assert told == [2]
+    assert "input_visible_click ya se llamó 2 veces en este turno" in tools[2]
+    assert "app_open" not in tools[2]
+
+
+def test_a_click_repeated_unchanged_in_an_application_with_places_names_them(tmp_path: Path, monkeypatch) -> None:
+    # Holdout v4 (en vivo): «abre la biblioteca de Steam» opened Steam without a place and pressed «Biblioteca» 7 times.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    unchanged = json.dumps({"status": "failed", "error": "visible_button_postread_unchanged"})
+    # The provider's own count from the second (WindowsVisibleControlAdapter.RepeatedUnchanged) is no other result.
+    again = json.dumps({"status": "failed", "error": "visible_button_postread_unchanged",
+                        "observed": {"unchangedInARow": 2, "next": "this click on «Biblioteca» changed nothing 2 times"}})
+    opened = json.dumps({"status": "completed", "verification": "readback", "observed": {"applicationName": "Steam"}})
+    click = _call("input_visible_click", {"label": "Biblioteca"})
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Steam"}), click, click, _say("No cambió.")])
+    mind.decide(1, "abre la biblioteca de steam")
+    for index, result in enumerate([opened, unchanged, again]):
+        mind.continue_turn(2 + index, result)
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert "input_visible_click ya se llamó 2 veces en este turno" in last
+    assert "Steam también se abre directo en sus lugares, sin pulsar: app_open con appId «Steam» y place " in last
+    assert "library" in last.split("ya se llamó 2 veces")[1]
 
 
 @pytest.mark.parametrize("views,told", [(["Cargando…", "Biblioteca", "Biblioteca · Tienda"], False),
@@ -221,6 +243,81 @@ def test_a_sentence_aid_ends_its_tools_description_only_when_on(tmp_path: Path, 
     assert trash.endswith("the one filesystem_list shows).") is folder
 
 
+FILES_AND_GAMES = {"capabilities": [
+    {"name": name, "description": f"{name}.", "argumentsSchema": {"type": "object", "properties": {}}}
+    for name in ("file.open", "file.read", "file.find", "filesystem.list", "filesystem.search", "game.launch",
+                 "game.installed.named")]}
+
+
+@pytest.mark.parametrize("setting,on", [
+    ("named_folder_theirs", {"file_open", "file_read", "file_find", "filesystem_list", "filesystem_search"}),
+    ("read_find_split", {"file_read", "file_find"}),
+    ("game_epic_look", {"game_launch", "game_installed_named"}),
+    ("none", set())])
+def test_the_dudas_sentence_aids_end_only_their_tools_descriptions(tmp_path: Path, monkeypatch, setting: str,
+                                                                   on: set[str]) -> None:
+    # Renew al máximo (w9-dudas): F009 and E020 (a folder of the person's named with BAXY taken for BAXY's own), E018
+    # (file_read against file_find for a file's lines), F016 (an Epic game not in game_launch's Steam list).
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    before, _ = _mind(tmp_path / "before", [])
+    before.configure(FILES_AND_GAMES)
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, _ = _mind(tmp_path, [])
+    mind.configure(FILES_AND_GAMES)
+    for cap in FILES_AND_GAMES["capabilities"]:
+        wire = cap["name"].replace(".", "_")
+        plain, told = _description(before, wire), _description(mind, wire)
+        assert told.startswith(plain) and (told != plain) is (wire in on), wire
+    if on:
+        traced = [r for r in _trace(mind) if r["stage"] == "configure.aid"][0]["aids"]
+        assert {tool.replace(".", "_") for tool in traced[setting]} == on
+
+
+def test_two_aids_of_one_tool_add_their_sentences_in_order(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_AYUDAS", "named_folder_theirs,read_find_split")
+    mind, _ = _mind(tmp_path, [])
+    mind.configure(FILES_AND_GAMES)
+    read = _description(mind, "file_read")
+    assert "contains BAXY" in read and read.endswith("no file_find before it.")
+    assert read.index("contains BAXY") < read.index("(totalLines), and it looks")
+
+
+TYPED = json.dumps({"status": "completed", "verification": "readback", "observed": {
+    "ok": True, "delivered": True, "sentTo": {"title": "Sin título: Bloc de notas", "process": "Notepad"}}})
+WRITTEN = json.dumps({"status": "completed", "verification": "readback", "observed": {
+    "name": "prueba.txt", "fullPath": "C:\\Users\\ana\\proyectos\\prueba.txt", "created": True}})
+
+
+@pytest.mark.parametrize("setting,typed,told", [("all", True, True), ("written_not_window", True, True),
+                                                ("all", False, False), ("none", True, False)])
+def test_a_file_written_after_typing_into_a_window_says_that_window_was_not_saved(
+        tmp_path: Path, monkeypatch, setting: str, typed: bool, told: bool) -> None:
+    # Falsedades F013: «guardé prueba.txt» with Notepad's tab still «Sin título» after file_write wrote the file.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    calls = [_call("input_text_type", {"text": "prueba 123"})] if typed else []
+    mind, server = _mind(tmp_path, [*calls, _call("file_write", {"relativePath": "proyectos/prueba.txt",
+                                                                 "text": "prueba 123", "folder": "home"}),
+                                    _say("Listo.")])
+    mind.decide(1, "escribe prueba 123 y guárdalo en proyectos como prueba.txt")
+    if typed:
+        mind.continue_turn(2, TYPED)
+    mind.continue_turn(3, WRITTEN)
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    note = ("[Ayuda: file_write escribió C:\\Users\\ana\\proyectos\\prueba.txt directo en el disco, sin pasar por "
+            "ninguna ventana: lo escrito antes en «Sin título: Bloc de notas» (Notepad) no se guardó con esta llamada.]")
+    assert last.endswith(note) is told
+    aids = [r for r in _trace(mind) if r["stage"] == "turn.aid"]
+    assert ("written_not_window" in (aids[-1]["aids"] if aids else {})) is told
+
+
+def test_a_file_write_that_failed_says_nothing_of_the_window() -> None:
+    from baxy_mind.mind import written_note
+    receipts = [{"tool": "input_text_type", "completed": True, "observation": TYPED}]
+    assert written_note(json.dumps({"status": "failed", "error": "file_exists"}), receipts) == ""
+    assert written_note(WRITTEN, [{**receipts[0], "completed": False}]) == ""
+    assert "«Sin título: Bloc de notas»" in written_note(WRITTEN, receipts)
+
+
 def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None:
     # Uso real 2026-10-21 (e2e del notebook): «le mandé el mensaje» after a send stopped at the person's draft.
     from baxy_mind.mind import _outcome
@@ -229,6 +326,9 @@ def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None
     unsure = json.dumps({"status": "failed", "error": "message_delivery_not_verified", "effectUncertain": True})
     assert _outcome(stopped) == "falló (composer_has_person_draft): el mensaje no se escribió ni se envió"
     assert _outcome(unsure) == "sin confirmar: pudo o no ocurrir"
+    typed = json.dumps({"status": "failed", "error": "message_recipient_changed_before_enter", "effectUncertain": True,
+                        "observed": {"version": 1, "messageWritten": True, "enterPressed": False, "sent": False}})
+    assert _outcome(typed) == "falló (message_recipient_changed_before_enter): el mensaje quedó escrito y no se envió"
 
 
 @pytest.mark.parametrize("verification,told", [
@@ -259,6 +359,20 @@ def test_a_failed_act_read_again_after_it_tells_whether_what_was_asked_holds() -
     assert _outcome(json.dumps(reached)) == "falló (window_state_not_verified); releído después: quedó como se pidió"
     assert _outcome(json.dumps(unsure)) == "sin confirmar: pudo o no ocurrir; releído después: no quedó como se pidió"
     assert _outcome(json.dumps({"status": "failed", "error": "x", "observed": {}})) == "falló (x)"
+
+
+def test_a_not_found_tells_whether_other_places_were_searched() -> None:
+    # Renew al máximo (w8): «ni en ningún otro lugar que revisé» after a file_open whose result said searchedElsewhere false.
+    from baxy_mind.mind import _outcome
+    only_there = {"status": "failed", "error": "file_not_found",
+                  "observed": {"seenElsewhere": [], "searchedElsewhere": False}}
+    cut = {"status": "failed", "error": "file_not_found", "observed": {"seenElsewhere": [], "searchComplete": False}}
+    whole = {"status": "failed", "error": "file_not_found", "observed": {"seenElsewhere": [], "searchComplete": True}}
+    assert _outcome(json.dumps(only_there)) == (
+        "falló (file_not_found); sólo se miró la ruta nombrada: no se buscó en ningún otro lugar")
+    assert _outcome(json.dumps(cut)) == (
+        "falló (file_not_found); la búsqueda en otros lugares no se completó: lo no visto puede estar ahí")
+    assert _outcome(json.dumps(whole)) == "falló (file_not_found)"
 
 
 def test_an_act_in_a_window_tells_what_its_after_view_shows() -> None:
@@ -309,3 +423,38 @@ def test_a_read_in_a_turn_is_told_by_the_risk_the_app_sent(tmp_path: Path) -> No
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert tool.endswith("[En este turno: window_application_status → lectura: sólo miró, sin abrir, cerrar ni "
                          "cambiar nada; lo que vio está arriba]")
+
+
+def test_the_apps_place_owner_is_traced_and_reaches_the_model_as_it_came(tmp_path: Path, monkeypatch) -> None:
+    # Renew al máximo (w7, apps): the App opened «Configuración» at sound instead of «Configuración del sistema»
+    # (SaidApplication.cs); the trace keeps it as the aid place_owner, and the model reads the result untouched.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    note = ("the person did not name Configuración del sistema, and sound is a place of Configuración alone: this call "
+            "opened Configuración at sound instead of Configuración del sistema, as it was written")
+    opened = json.dumps({"status": "completed", "observed": {"appId": "Configuración"}, "placeOwner": note},
+                        ensure_ascii=False)
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Configuración del sistema", "place": "sound"}),
+                                    _say("Abrí Configuración en Sonido.")])
+    mind.decide(1, "abre la configuración de sonido")
+    mind.continue_turn(2, opened)
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert note in tool
+    aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
+    assert aid["aids"] == {"place_owner": note}
+
+
+def test_the_apps_said_folder_refusal_is_traced_and_reaches_the_model_as_it_came(tmp_path: Path, monkeypatch) -> None:
+    # Renew al máximo (w6, rutas): the App refused a write that left out the folder the person named (SaidFolders.cs);
+    # the trace keeps it as the aid said_folder, and the model reads the result untouched.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    refused = json.dumps({"status": "rejected", "error": "said_folder_left_out", "saidFolders": ["C:/perfil/obra"],
+                          "next": "nothing ran: call file_write again with relativePath \"obra/lista.txt\""},
+                         ensure_ascii=False)
+    mind, server = _mind(tmp_path, [_call("file_write", {"relativePath": "lista.txt", "text": "x", "folder": "home"}),
+                                    _say("Lo guardo en obra.")])
+    mind.decide(1, "guarda lista.txt en la carpeta obra")
+    mind.continue_turn(2, refused)
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert tool.startswith(refused + "\n")
+    aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
+    assert aid["aids"] == {"said_folder": {"saidFolders": ["C:/perfil/obra"], "next": json.loads(refused)["next"]}}

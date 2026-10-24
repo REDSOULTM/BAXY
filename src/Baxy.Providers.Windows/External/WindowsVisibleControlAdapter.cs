@@ -978,21 +978,25 @@ internal sealed class WindowsVisibleControlAdapter
             List<ViewControl> controls = ParseControls(root);
             List<ViewControl> disabled = ParseControls(root, "disabled");
             string title = ReadString(root, "window");
+            bool afterCut = root.TryGetProperty("controlCount", out JsonElement total) && total.ValueKind == JsonValueKind.Number
+                && total.TryGetInt32(out int counted) && counted > controls.Count;
             lock (_viewLock)
             {
                 if (!ReferenceEquals(_lastView, before))
                     return null;
                 _lastView = new LastView(window, controls)
                 {
+                    Cut = afterCut,
                     TreeTitle = title,
                     Limit = before.Limit,
                     Wanted = before.Wanted,
                     Tail = before.Tail,
+                    Application = before.Application,
                 };
                 _viewsRead++;
             }
 
-            return ViewDifference(before.Controls, before.TreeTitle, controls, disabled, title);
+            return ViewDifference(before.Controls, before.TreeTitle, controls, disabled, title, cut: before.Cut || afterCut);
         }
     }
 
@@ -1002,6 +1006,9 @@ internal sealed class WindowsVisibleControlAdapter
     /// «gone» (no longer listed; «disabled» when the window now lists it disabled) and «moved» (the same control at
     /// another index), each with its index in the new view; «title» when the window's name changed. At most
     /// <paramref name="cap"/> entries, in that order, and «omitted» the rest; «same» when nothing differs.
+    /// Renew al máximo (w8): with either view cut at its cap (<paramref name="cut"/>: the window had more controls than
+    /// it listed), a control not listed after is not «gone» (a click that adds three pushes three others past the cap)
+    /// and nothing unlisted is known the same: no «gone», «sameListed» in place of «same», and «cut».
     /// </summary>
     internal static JsonElement ViewDifference(
         IReadOnlyList<ViewControl> before,
@@ -1009,7 +1016,8 @@ internal sealed class WindowsVisibleControlAdapter
         IReadOnlyList<ViewControl> after,
         IReadOnlyList<ViewControl> disabledAfter,
         string afterTitle,
-        int cap = AfterViewCap)
+        int cap = AfterViewCap,
+        bool cut = false)
     {
         var matched = new ViewControl?[after.Count];
         var used = new HashSet<ViewControl>(ReferenceEqualityComparer.Instance);
@@ -1048,7 +1056,7 @@ internal sealed class WindowsVisibleControlAdapter
                 moved.Add($"[{now.Index}] {now.Kind} «{now.Name}» was [{was.Index}]");
         }
 
-        List<string> gone = [.. before.Where(was => !used.Contains(was)).Select(was =>
+        List<string> gone = cut ? [] : [.. before.Where(was => !used.Contains(was)).Select(was =>
             $"{was.Kind} «{was.Name}»"
             + (disabledAfter.Any(off => off.Kind == was.Kind && off.Name == was.Name) ? " disabled" : string.Empty))];
         bool titled = beforeTitle.Length > 0 && afterTitle.Length > 0 && beforeTitle != afterTitle;
@@ -1058,7 +1066,9 @@ internal sealed class WindowsVisibleControlAdapter
             writer.WriteStartObject();
             if (!titled && changed.Count + appeared.Count + gone.Count + moved.Count == 0)
             {
-                writer.WriteBoolean("same", true);
+                writer.WriteBoolean(cut ? "sameListed" : "same", true);
+                if (cut)
+                    writer.WriteBoolean("cut", true);
                 writer.WriteEndObject();
                 return;
             }
@@ -1072,6 +1082,8 @@ internal sealed class WindowsVisibleControlAdapter
             int omitted = changed.Count + appeared.Count + gone.Count + moved.Count - (cap - room);
             if (omitted > 0)
                 writer.WriteNumber("omitted", omitted);
+            if (cut)
+                writer.WriteBoolean("cut", true);
             writer.WriteEndObject();
 
             void WriteList(string name, List<string> entries)
@@ -1339,6 +1351,8 @@ internal sealed class WindowsVisibleControlAdapter
             _screenChangedUtc = DateTime.UtcNow;
         }
 
+        receipt = RepeatedUnchanged(receipt, arguments);
+
         // Renew al máximo (7.1): a completed click carries the view of its window after it, which becomes the last view.
         if (receipt.Verified && receipt.ErrorCode is null && receipt.EffectObserved && _actedWindow != 0
             && !EffectElsewhere(receipt.Result)
@@ -1346,6 +1360,85 @@ internal sealed class WindowsVisibleControlAdapter
             receipt = WithAfter(receipt, after);
 
         return receipt;
+    }
+
+    // Holdout v4 (en vivo: «abre la biblioteca de Steam» opened Steam without app_open's place and pressed «Biblioteca» 7
+    // times, each visible_button_postread_unchanged, 50 s): the same click (its label, index, control, manner and window)
+    // seen unchanged again right after the last one says how many times in a row (unchangedInARow), and from the second,
+    // as a fact, that the click changed nothing that many times and, when the application of the window (the one the
+    // look named, else its process) has places of its own (ApplicationPlaces), that app_open with place opens them
+    // without pressing. Any other result of a click starts the count again.
+    private string? _unchangedClick;
+    private int _unchangedInARow;
+
+    private ExternalCapabilityReceipt RepeatedUnchanged(ExternalCapabilityReceipt receipt, JsonElement arguments)
+    {
+        if (receipt.ErrorCode != "visible_button_postread_unchanged")
+        {
+            _unchangedClick = null;
+            _unchangedInARow = 0;
+            return receipt;
+        }
+
+        string click = ClickIdentity(arguments, _actedWindow);
+        _unchangedInARow = click == _unchangedClick ? _unchangedInARow + 1 : 1;
+        _unchangedClick = click;
+        if (_unchangedInARow < 2)
+            return receipt;
+        string? application;
+        lock (_viewLock)
+        {
+            application = _lastView is { } view && (view.Hwnd == _actedWindow || _actedWindow == 0)
+                ? view.Application : null;
+        }
+
+        application ??= _actedWindow != 0 ? VisibleControlSurface.ViewProcess(_actedWindow).ProcessName : null;
+        string label = arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("label", out JsonElement named)
+            && named.ValueKind == JsonValueKind.String ? named.GetString()!.Trim() : string.Empty;
+        int times = _unchangedInARow;
+        // A result that already says what comes next (alreadySelected) is left as it is: a key written twice would void
+        // the observation, and the same call's comparisons (mind.py _result_key, TurnClosing) leave out only the count
+        // and the «next» it brings.
+        if (receipt.Result is { ValueKind: JsonValueKind.Object } result && result.TryGetProperty("next", out _))
+            return receipt;
+        return receipt with
+        {
+            Result = ExternalJson.Extended(receipt.Result, writer =>
+            {
+                writer.WriteNumber("unchangedInARow", times);
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.RepeatedUnchangedNext))
+                    writer.WriteString("next", RepeatedUnchangedNext(label, times, application));
+            }),
+        };
+    }
+
+    // The click as the model asked for it: the same label, index, control, manner and window (the one acted on when the
+    // call named none).
+    internal static string ClickIdentity(JsonElement arguments, nint actedWindow)
+    {
+        string Part(string name) => arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty(name, out JsonElement value) && value.ValueKind != JsonValueKind.Null
+                ? value.ToString().Trim().ToLowerInvariant() : string.Empty;
+        string window = Part("window");
+        return string.Join(" | ", Part("label"), Part("index"), Part("controlId"), Part("manner"), Part("choose"),
+            Part("search"), window.Length > 0 ? window : actedWindow.ToString(System.Globalization.CultureInfo.InvariantCulture));
+    }
+
+    internal static string RepeatedUnchangedNext(string label, int times, string? application)
+    {
+        string said = $"this click on «{label}» changed nothing {times} times in a row: each time the window looked the "
+            + "same after it as before it";
+        IReadOnlyList<(string Place, string? Takes)> places = ApplicationPlaces.PlacesOf(application);
+        if (places.Count == 0)
+            return said;
+        string squeezed = new([.. label.ToLowerInvariant().Where(char.IsLetterOrDigit)]);
+        IEnumerable<(string Place, string? Takes)> ordered = places
+            .OrderBy(place => place.Place == squeezed ? 0 : 1)
+            .ThenBy(place => place.Place, StringComparer.Ordinal);
+        string listed = string.Join(", ", ordered.Select(place => place.Takes is null
+            ? $"\"{place.Place}\"" : $"\"{place.Place}\" (placeValue: the {place.Takes})"));
+        return said + $"; {application} opens straight at its places without pressing: app_open with appId "
+            + $"\"{application}\" and place {listed}";
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ClickAsync(
@@ -2354,10 +2447,12 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 _lastView = new LastView(hwnd, controls)
                 {
+                    Cut = counted > controls.Count,
                     TreeTitle = treeTitle,
                     Limit = limit,
                     Wanted = wanted,
                     Tail = tail,
+                    Application = application,
                 };
                 _viewsRead++;
             }
@@ -3789,6 +3884,7 @@ internal sealed class WindowsVisibleControlAdapter
     {
         ["pattern"] = RiskPolicy.AsksPattern,
         ["hint"] = RiskPolicy.FoldHint,
+        ["confusables"] = RiskPolicy.Confusables,
     };
 
     private static bool ShouldKeep(ExternalCapabilityReceipt receipt) =>
@@ -3937,6 +4033,19 @@ internal sealed class WindowsVisibleControlAdapter
             WorkerClickBudget,
             cancellationToken);
 
+    /// <summary>Auditoría del núcleo 2026-10-23: what holds the keyboard's focus and whether it lies inside
+    /// <paramref name="window"/> (0: the one in front), read by UI Automation (the worker's «focuskind»: nothing pressed,
+    /// focused or brought up); null when the worker did not answer.</summary>
+    public ValueTask<JsonDocument?> FocusKindAsync(nint window, CancellationToken cancellationToken) =>
+        _worker.SendAsync(
+            new JsonObject
+            {
+                ["cmd"] = "focuskind",
+                ["hwnd"] = window,
+            }.ToJsonString(),
+            WorkerClickBudget,
+            cancellationToken);
+
     /// <summary>Brings the element named <paramref name="label"/> into view in <paramref name="window"/> through UI
     /// Automation (the worker's «reveal»); null when the worker did not answer.</summary>
     internal ValueTask<JsonDocument?> RevealAsync(
@@ -4006,11 +4115,18 @@ internal sealed class WindowsVisibleControlAdapter
         // it the same way and numbers it alike, and the window's name in its tree, which that read compares.
         internal string TreeTitle { get; init; } = string.Empty;
 
+        // Renew al máximo (w8): the window had more controls than this view listed (its cap).
+        internal bool Cut { get; init; }
+
         internal int Limit { get; init; } = 60;
 
         internal IReadOnlyList<string> Wanted { get; init; } = [];
 
         internal bool Tail { get; init; }
+
+        // Holdout v4 (en vivo, the Steam library): the application the look named, whose places a repeated unchanged
+        // click is told with.
+        internal string? Application { get; init; }
     }
 
     private readonly record struct ViewResult(ExternalCapabilityReceipt Receipt, IReadOnlyList<string> Names);
