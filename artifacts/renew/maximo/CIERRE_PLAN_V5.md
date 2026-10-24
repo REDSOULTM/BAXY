@@ -70,6 +70,15 @@ ventana ajena, el frente sostenido por una ventana invisible) se repite antes de
 4. Prueba en vivo en el PC (el dueño cedió el PC), restaurando todo al terminar.
 5. `INFORME_MAXIMO.md` (sección fase 2) y mensaje al dueño.
 
+## Cambios aceptados del NB (buzón 2026-10-24 00:50), antes de abrir
+
+1. En el NB, e2e y falsedades corren una tras otra, no a la vez.
+2. Recursos en el NB con las rutas WAKE/STT del notebook (`measure_resources.py` tal cual no carga el oído en REDNOTE).
+3. `nb-vad-sin-torch` y `nb-laya-t6` entran en el HEAD final.
+4. Arnés común en e2e y falsedades: los `scripts/renew` del HEAD final se copian a los worktrees de `inicio` y `maximo`
+   antes de correrlos (como `bench_decision.py` en decisión).
+5. Una corrida con el frente sostenido por una ventana invisible (GameInputSvc) es VOID y se repite entera.
+
 ## Al congelar
 
 (se completa antes de extraer los 7z)
