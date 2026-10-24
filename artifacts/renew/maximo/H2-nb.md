@@ -47,4 +47,5 @@ en `nb-w10-cuenta`.
 | Rama | Commit | Pruebas que fallaban antes | Suites | Medida |
 |---|---|---|---|---|
 | `nb-w10-cuenta` | fd2ed124e | 5 de `SaidFoldersTests`, 1 de `KnownTextAndExplorerCountTests` | App 195, Kernel 741, pytest 647, Providers 3068/3068 | pendiente: casos v5 ×3 y e2e de práctica ×3 en el NB; decision3 ×3 en el PC (cambia el esquema) |
-| `nb-w10-mover` (sobre cuenta) | 8780e0f34 | `ANamedFileOfThePersonsIsMovedOrCopiedInsideTheFolderNamed`, `AMoveByNameInTheWorkFolderIsRefusedWithTheCallInTheFolderNamed` | App 196, Kernel 741, `ExternalAdaptersTests` 250, pytest 647 | igual; amplía `filesystem.sandbox.move.named` (copy, folder, subdirectory), sin operaciones nuevas |
+| `nb-w10-mover` (sobre cuenta) | 8780e0f34 | `ANamedFileOfThePersonsIsMovedOrCopiedInsideTheFolderNamed`, `AMoveByNameInTheWorkFolderIsRefusedWithTheCallInTheFolderNamed` | App 196, Kernel 741, Providers 3069/3069, pytest 647 | igual; amplía `filesystem.sandbox.move.named` (copy, folder, subdirectory), sin operaciones nuevas |
+| `nb-w10-clic` | c8d3e613c | `ViewDifferenceCutTests` (foco solo), `ComputerUseAfterViewTests` (clic focusOnly), teclas `ctrl_end`/`ctrl_home` en `ComputerUseSpeedTests`, `OperationRegistryTests`, `ProductCatalogTests` | Providers 3072/3072, Kernel 746, pytest 647 | V5E029, V5E023 ×3 en int11b (en vivo sin probar) |
