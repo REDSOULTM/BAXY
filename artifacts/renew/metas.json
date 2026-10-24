@@ -2607,10 +2607,50 @@
     "tareas": {
       "holdout_v6": {
         "maquina": "PC",
-        "estado": "escribiéndose (dos agentes aislados)",
-        "ruta": "F:/BAXYeval/renew_v6/holdout",
+        "estado": "sellado 2026-10-24 (~20:20); no se abre hasta el cierre",
+        "autores": "dos agentes aislados del PC (sin código del producto, ramas de la fase 3, casos v5 ni sus corridas)",
+        "ruta": "F:/BAXYeval/renew_v6/holdout (copia en NB D:/BAXYeval/renew_v6/holdout, sha256 comprobados)",
         "clave": "C:/Users/usuario/BAXY-coord/holdout-v6-clave.txt",
-        "arnes_congelado": "F:/BAXYeval/renew_v6/harness_ref (scripts/renew de 4b956a806)"
+        "arnes_congelado": "F:/BAXYeval/renew_v6/harness_ref (scripts/renew de 4b956a806)",
+        "decision.7z": "4dec630a717adefecedce9c1a3b61116fbc346e71bfd1fde7d81bf2c87e12a5e",
+        "decision.json": "3727231ffd5817ce418809f21039e87566019fe3635fbcfa294341d6289abed7",
+        "fuentes_holdout_decision.7z": "ab39fdc656d0fdf13dafd2b9ba0ebe38ce52c51c80e8f6e422a70c954be0344d",
+        "canario_decision": "841e81a6-1d39-4103-b40d-8053bd78b800",
+        "e2e_falsedades.7z": "7644a4150905339eaa4cd35e1d3268225e367468155ecbbe0c1be872f951b848",
+        "e2e.json": "ae82d8201e0631488770f8b9c448c59ad1105e5641c1f16fadd1d0b8dad1e07b",
+        "falsedades.json": "58a660c6d6af5b5042b629e6ac89027874902ea356c8edebcbd8e5fc875d2380",
+        "e2e_falsedades_fuentes.7z": "862bf185a3c386612b2ffdb3ec5e5080366c6890b6b9eadf1a7b94aeff0feb92",
+        "canario_e2e_falsedades": "e6e127b1-9d6b-4278-acde-4ca79b898e32",
+        "casos": {
+          "decision": 720,
+          "e2e": 76,
+          "falsedades": 36
+        },
+        "decision_familias": {
+          "comun": 125,
+          "par_minimo": 90,
+          "riesgo": 60,
+          "preguntar": 50,
+          "no_puedo": 45,
+          "texto": 45,
+          "multiturno": 100,
+          "ya_hecho": 40,
+          "confirmacion_pendiente": 40,
+          "larga_cola": 85,
+          "multipaso": 40
+        },
+        "decision_carpetas_persona": 141,
+        "e2e_areas": {
+          "comunes": 14,
+          "cu": 14,
+          "archivos": 16,
+          "confirmacion": 8,
+          "multiturno": 12,
+          "ya_lo_hiciste": 6,
+          "imposibles": 3,
+          "voz": 3
+        },
+        "validacion": "PROBLEMAS: 0 en los dos (holdout_tools/validacion.txt, holdout_tools_e2e/validacion.txt); dedup 0 colisiones contra v1-v5 abiertos y práctica"
       },
       "H1_confirmaciones": {
         "maquina": "PC",
