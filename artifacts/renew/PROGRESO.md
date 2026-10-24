@@ -3332,3 +3332,26 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   o actuar otra vez (media.control play). H6 = H4 en v5: las dos `decision_unavailable_after_call` de falsedades s0 son
   lecturas por páginas de un archivo largo y de una página web entera (13 file.read y 13 web.fetch con offset creciente,
   `context_shrunk` tras cada una) hasta que la respuesta final no cupo y la mente falló.
+- 20:0x-20:35 **Diagnóstico H2 del PC** en `maximo/H2-pc.md` (12 casos con causa, archivo:línea y rama). H1 tal como se
+  planteó no aparece: en las cinco confirmaciones del PC no hay ningún `doubt_ask`; fallan por `said_folder` con rutas
+  relativas con espacios (V5E045/047, arreglado por el NB), nombres dictados casi iguales (V5E052), el medio «en la
+  terminal» (V5E051) y la idea falsa del modelo de que no puede borrar carpetas (V5E046). La duda sí falla por otra vía
+  (NB, V5E023): el rival «=» de otra tokenización contaba como duda (w10-duda).
+- **H3 (ya lo hiciste)**: en `ya_hecho` de decisión (final v5, 120 decisiones) 45 bien, ~50 lecturas de verificación (lo
+  que la regla del sistema pide: el historial del banco no trae ninguna llamada y el reloj dice «llamadas: ninguna»), 13
+  preguntas, 5 contradicciones y ~6 acciones (reproducir, quitar el silencio, abrir Photoshop). Es sobre todo un efecto
+  del banco; queda como secundaria pre-registrada en CIERRE_PLAN_V6 y lo que actúa va al brief.
+- **H4** (w10-bucle 0fe6a5cb8): el windowId de un solo uso rompía «misma llamada, mismo resultado» en la mente y en
+  TurnClosing (13 window.resolve tras maximizar Paint). **H6** (w10-sinrespuesta c39fcfff9): reproducido con el modelo
+  real; la respuesta final no cabía por 231/379 tokens tras 15 lecturas paginadas (líneas de hechos que crecen con el
+  cuadrado de las llamadas); ahora siempre cabe y el modelo dice bien hasta dónde leyó. **H5** (w10-web ec37cef4a):
+  un host retenido lista los hosts que dieron los resultados de la sesión. **H8**: −3 en `comun` sin causa única de la App
+  (hora ambigua «siete quince», profileName frente a place, mirar antes de lanzar en un dictado, DisplayFusion).
+- Holdout v6 **sellado** (~20:20; sha256 en metas): decisión 720 (141 con carpeta de la persona), e2e 76, falsedades 36.
+- PC: la e2e dio VOID antes de actuar (Spotify y un Bloc con texto sin guardar del dueño, usado a las 19:24): las e2e
+  pasan al NB; el PC hace decisión y reproducciones offline.
+- **int11 = 066802ea2** (renew-cien + w10-bucle, duda, numeros, desc, web, sinrespuesta, archivos, teclado, alarma, hora
+  + nb-w10-mover (con cuenta), nb-w10-aviso). Suites PC: Kernel 742, Contracts 74, Setup 477, App 202, Providers 3091,
+  pytest 654 (+ test_voice_vad 4/4 con el Python 3.10 de la voz; en 3.12 falta silero_vad, también en la base). Catálogo
+  `renew_v6\catalog-int11.json` (el volcado de int10f es idéntico a catalog-v5final; cambian sólo explorer.count y
+  sandbox.move.named). En medida: decision3 x3 (PC), e2e práctica 30 + H2 20 x3 y falsedades x3 (NB).
