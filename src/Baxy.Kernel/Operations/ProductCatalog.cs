@@ -699,13 +699,17 @@ public static class ProductCatalog
             "filesystem.sandbox.move.named",
             Schema(
                 [
+                    // Holdout v5 V5E032/V5E040: a file of the person's (folder, subdirectory) moved or copied by name.
+                    Boolean("copy"),
                     String("destinationRelativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                    String("folder", values: ["desktop", "documents", "downloads", "home"]),
                     String("sourceFileName", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["destinationRelativePath", "sourceFileName"]),
             OperationRisks.LowReversible,
             "filesystem.sandbox.move.named.hash.absence.v1",
-            "Mueve un archivo de nombre único dentro del sandbox y verifica hash y ausencia del origen."),
+            "Mueve (o copia, con copy) un archivo de nombre único dentro del sandbox o, con folder, en esa carpeta conocida (o en su subcarpeta), sin sobrescribir, y verifica hash y ausencia (o permanencia) del origen."),
         Descriptor(
             "filesystem.search",
             Schema(

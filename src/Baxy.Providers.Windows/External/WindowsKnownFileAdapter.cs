@@ -1317,7 +1317,7 @@ if __name__ == "__main__":
 
     // The profile root (home) holds AppData and the system's own hidden folders, which are not where the person keeps
     // files: they are not walked (BAXY Renew 2026-10-15).
-    private static EnumerationOptions WalkOptions(string label) => new()
+    internal static EnumerationOptions WalkOptions(string label) => new()
     {
         RecurseSubdirectories = true,
         IgnoreInaccessible = true,

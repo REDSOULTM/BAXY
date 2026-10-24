@@ -302,7 +302,13 @@ internal sealed class SaidFolders
             }
 
             if (folder is null)
-                return null;
+            {
+                // Without folder the work folder's own operations act in it (holdout v5 V5E032/V5E040: moving and
+                // copying by name).
+                return operation.StartsWith("filesystem.sandbox.", StringComparison.Ordinal)
+                    ? new([], true, Takes("sourceFileName") ? Text(arguments["sourceFileName"]) : null) : null;
+            }
+
             string[] labels = folder == "all_known"
                 ? [.. folderArgument.AllowedValues.Where(static value => value is not ("all_known" or "home" or "projects"))]
                 : [folder];
@@ -318,7 +324,8 @@ internal sealed class SaidFolders
                 roots = Path.IsPathFullyQualified(subdirectory) ? [Path.GetFullPath(subdirectory)]
                     : [.. roots.Select(root => Combine(root, subdirectory))];
             string? name = Takes("name") ? Text(arguments["name"]) : null;
-            string? item = name ?? (Takes("fileName") ? Text(arguments["fileName"]) : null);
+            string? item = name ?? (Takes("fileName") ? Text(arguments["fileName"]) : null)
+                ?? (Takes("sourceFileName") ? Text(arguments["sourceFileName"]) : null);
             if (item is null)
             {
                 string? query = Takes("query") ? Text(arguments["query"]) : null;
@@ -368,6 +375,9 @@ internal sealed class SaidFolders
                 routed["subdirectory"] = relative;
             if (Text(routed["fileName"]) is { } fileName)
                 routed["fileName"] = Path.GetFileName(fileName.TrimEnd('/', '\\'));
+            // A destination inside the folder, without the folder's own path it repeats (V5E032: «BAXY-bench/…»).
+            if (Text(routed["destinationRelativePath"]) is { } destination)
+                routed["destinationRelativePath"] = Inside(destination, relative);
             return routed;
         }
 

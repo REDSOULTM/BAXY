@@ -548,6 +548,39 @@ public sealed class SaidFoldersTests
             Is.EqualTo(new[] { (sub, true) }));
     }
 
+    // Holdout v5 V5E032: a move by name in a folder of theirs was refused with no call that could reach it, and the
+    // model's destination repeated the folder («BAXY-bench/archivo-2025/…»).
+    [Test]
+    public void AMoveByNameInTheWorkFolderIsRefusedWithTheCallInTheFolderNamed()
+    {
+        string accounts = Path.Combine(_home, "contabilidad");
+        Directory.CreateDirectory(Path.Combine(accounts, "archivo-2025"));
+        File.WriteAllText(Path.Combine(accounts, "presupuesto.xlsx"), "x");
+        SaidFolders said = Heard("mueve presupuesto.xlsx a archivo-2025 dentro de contabilidad");
+        ProductOperationDescriptor move = Descriptor("filesystem.sandbox.move.named");
+
+        SaidFolders.Ruling? sandbox = said.Rule("filesystem.sandbox.move.named", move, new JsonObject
+        {
+            ["sourceFileName"] = "presupuesto.xlsx",
+            ["destinationRelativePath"] = "contabilidad/archivo-2025/presupuesto.xlsx",
+        });
+
+        string next = (string?)sandbox?.Refusal?["next"] ?? string.Empty;
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.Contain("call filesystem_sandbox_move_named again with"));
+            Assert.That(next, Does.Contain("destinationRelativePath \"archivo-2025/presupuesto.xlsx\""));
+            Assert.That(next, Does.Contain("folder \"home\" and subdirectory \"contabilidad\""));
+            Assert.That(said.Rule("filesystem.sandbox.move.named", move, new JsonObject
+            {
+                ["sourceFileName"] = "presupuesto.xlsx",
+                ["destinationRelativePath"] = "archivo-2025/presupuesto.xlsx",
+                ["folder"] = "home",
+                ["subdirectory"] = "contabilidad",
+            }), Is.Null);
+        });
+    }
+
     private SaidFolders Heard(string words)
     {
         var said = new SaidFolders(Known);
