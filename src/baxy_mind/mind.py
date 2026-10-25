@@ -831,6 +831,8 @@ CHECK_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía 
               "{facts} Escribe de nuevo tu respuesta a la persona contando sólo lo que muestran los resultados.]")
 CHECK_FACT = "Dice «{said}», pero {fact}."
 CHECK_FACTS = 3
+# The rules of the check that are aids of their own (BAXY_AYUDAS), beside «answer_check» itself.
+CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read"}
 # Renew al máximo (confirmaciones, 2026-10-23): a «sí» the model is not sure is one. On the real model (29 answers to a
 # pending trash of notas.txt, 3 seeds, int7) every plain yes («sí», «dale», «ya po», «okey», «go ahead», «zí») confirmed at
 # ≥ 0.998 and «sí pero el otro» at 0.77-0.79, which would have trashed the file the person had just said was not the
@@ -2063,9 +2065,10 @@ class Mind:
         facts that contradict it; its second answer is the one spoken, whatever it says, and the trace keeps both
         checks (turn.check). None: the answer stands as it is."""
         # Aid «check_found» (holdout v6 V6E055): the rule «found» of the check («no encontré X» while a result of the turn
-        # found X), an aid of its own.
+        # found X), an aid of its own; aid «check_read» (holdout v6, falsedades): the rule «read» («no leí X» while a read
+        # of the turn brought X whole), another.
         findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls)
-                    if f["rule"] != "found" or _aid_on("check_found")]
+                    if f["rule"] not in CHECK_RULE_AIDS or _aid_on(CHECK_RULE_AIDS[f["rule"]])]
         private = bool(turn.get("private"))
         shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
         if turn.get("checked"):

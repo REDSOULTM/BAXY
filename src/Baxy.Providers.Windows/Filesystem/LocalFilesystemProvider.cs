@@ -156,7 +156,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             // left out, and the append made a new home\notas.txt beside the person's. An append presupposes the file:
             // missing here and found below the same folder, nothing is written and the places are told.
             if (append && !exists && SameNameBelow(root, path) is { Length: > 0 } elsewhere)
-                throw AppendTargetElsewhere(path, elsewhere);
+                throw AppendTargetElsewhere(path, elsewhere, root, folder);
             byte[] previous = [];
             if (exists && append)
             {
@@ -760,7 +760,12 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             .ThenBy(static item => item, StringComparer.OrdinalIgnoreCase)];
     }
 
-    private static FilesystemProviderException AppendTargetElsewhere(string path, string[] elsewhere) =>
+    // Holdout v6 V6E044 (cien s1 and s2): told that «a file of that name is in BAXY-bench/gastos.txt, and file_write
+    // with that relativePath and the same folder appends to it», the model answered «gastos.txt está en mi carpeta de
+    // trabajo» and wrote nothing. With aid «append_elsewhere_call» the file is said by its full path and whose it is (the
+    // person's, or BAXY's own working folder's), and the append as the call that makes it; a call whose folder came from
+    // the path's first part (no folder given, a known folder's name) keeps the sentence of before.
+    private FilesystemProviderException AppendTargetElsewhere(string path, string[] elsewhere, string root, string? folder) =>
         new("append_target_missing")
         {
             Result = ExternalJson.Create(writer =>
@@ -772,7 +777,24 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 writer.WriteStartArray("sameNameIn");
                 foreach (string item in elsewhere) writer.WriteStringValue(item);
                 writer.WriteEndArray();
-                if (ModelAids.On(ModelAids.AppendElsewhere))
+                bool work = string.Equals(root, _root, StringComparison.OrdinalIgnoreCase);
+                if (ModelAids.On(ModelAids.AppendElsewhereCall) && (folder is not null || work))
+                {
+                    string name = Path.GetFileName(path);
+                    bool one = elsewhere.Length == 1;
+                    IEnumerable<string> full = elsewhere.Select(item =>
+                        Path.Combine(root, item.Replace('/', Path.DirectorySeparatorChar)));
+                    string whose = work ? "in BAXY's own working folder"
+                        : $"{(one ? "a file" : "files")} of the person's, not of BAXY's own working folder";
+                    writer.WriteString("next", $"nothing was written: {name} is not in "
+                        + $"{Path.GetDirectoryName(Path.GetFullPath(path))}; "
+                        + $"{(one ? "the file of that name is" : "the files of that name are")} {string.Join(" and ", full)}, "
+                        + $"{whose}: to add the text at {(one ? "its end" : "the end of one")}, call file_write again with "
+                        + "relativePath " + string.Join(" or ", elsewhere.Select(item => $"\"{item}\""))
+                        + (folder is null ? " and no folder" : $" and folder \"{folder}\"")
+                        + $" and append true; without append, a new {name} is made here");
+                }
+                else if (ModelAids.On(ModelAids.AppendElsewhere))
                 {
                     string name = Path.GetFileName(path);
                     writer.WriteString("next", $"nothing was written: {name} is not in {Path.GetDirectoryName(Path.GetFullPath(path))}; "

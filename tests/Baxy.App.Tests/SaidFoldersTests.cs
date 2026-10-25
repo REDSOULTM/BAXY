@@ -673,6 +673,49 @@ public sealed class SaidFoldersTests
         });
     }
 
+    // Holdout v6 V6E034 (final_v5 s0): a filesystem_copy of BAXY's working folder, refused for the folder the person
+    // named, was told only that it «cannot name a folder of theirs», and the answer was «No pude copiarlo: contrato.txt
+    // está en BAXY-bench, que es una carpeta de la persona, no mi carpeta de trabajo». A call of the working folder whose
+    // act another operation does in the person's folders is refused with that operation as a call, its arguments for
+    // the folder named (aid «said_folder_counterpart»); with the aid off, as before.
+    [TestCase("filesystem.copy", "all",
+        "filesystem_copy cannot name a folder of theirs, and filesystem_sandbox_move_named does it there: call "
+        + "filesystem_sandbox_move_named with destinationRelativePath \"respaldo.txt\" and folder \"home\" and subdirectory "
+        + "\"archivador\" and copy true, and sourceFileName the file's own name. If the person asked")]
+    [TestCase("filesystem.move", "all",
+        "filesystem_move cannot name a folder of theirs, and filesystem_sandbox_move_named does it there: call "
+        + "filesystem_sandbox_move_named with destinationRelativePath \"respaldo.txt\" and folder \"home\" and subdirectory "
+        + "\"archivador\", and sourceFileName the file's own name. If the person asked")]
+    [TestCase("filesystem.read.text", "all",
+        "filesystem_read_text cannot name a folder of theirs, and file_read does it there: call file_read with folder "
+        + "\"home\" and subdirectory \"archivador\", and fileName the file's own name. If the person asked")]
+    [TestCase("filesystem.copy", "said_folder", "filesystem_copy cannot name a folder of theirs. If the person asked")]
+    [TestCase("filesystem.read.text", "said_folder",
+        "to look there, call file_find with folder \"home\" and subdirectory \"archivador\". If the person asked")]
+    public void ACallOfTheWorkingFolderIsRefusedWithTheCallThatDoesItInTheFolderNamed(
+        string operation, string aids, string told)
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "archivador"));
+        File.WriteAllText(Path.Combine(_home, "archivador", "contrato.txt"), "x");
+        string? before = Environment.GetEnvironmentVariable("BAXY_AYUDAS");
+        Environment.SetEnvironmentVariable("BAXY_AYUDAS", aids);
+        try
+        {
+            SaidFolders said = Heard("en archivador haz una copia de contrato.txt que se llame respaldo.txt");
+            var call = new JsonObject { ["resourceId"] = "fs_0123456789abcdef", ["expectedSha256"] = new string('a', 64) };
+            if (operation != "filesystem.read.text")
+                call["destinationRelativePath"] = "archivador/respaldo.txt";
+
+            string next = (string?)said.Rule(operation, Descriptor(operation), call)?.Refusal?["next"] ?? string.Empty;
+
+            Assert.That(next, Does.Contain(told));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_AYUDAS", before);
+        }
+    }
+
     // Holdout v6 V6E043 (dictado, «en mis documentos dentro de la carpeta recetas abuela crea … sopaipillas punto
     // txt»): a folder recetas in the home folder was named too, and the call offered for Recetas Abuela kept the model's
     // recetas_abuela inside it; the model asked or wrote Recetas Abuela\recetas_abuela\sopaipillas.txt.

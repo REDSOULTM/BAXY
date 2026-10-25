@@ -387,9 +387,14 @@ public sealed class LocalFilesystemProviderTests
     // «notas.txt» in home, the subfolder left out, and the append made a new home\notas.txt (int5 X s0/s1, int M s0).
     // An append presupposes the file: missing there and found below the same folder, nothing is written and the
     // places are told; with BAXY_AYUDAS=none, the facts without the sentence. Contracase: found nowhere, it is made.
-    [TestCase("all", true)]
-    [TestCase("none", false)]
-    public async Task AnAppendToAMissingFileFoundInASubfolderWritesNothingAndSaysWhere(string aids, bool hint)
+    // Holdout v6 V6E044 (cien s1 and s2): told «a file of that name is in BAXY-bench/gastos.txt, and file_write with that
+    // relativePath and the same folder appends to it», the model answered «gastos.txt está en mi carpeta de trabajo» and
+    // wrote nothing. With aid «append_elsewhere_call» the file is said by its full path, as the person's, and the append
+    // as a call with its arguments; with «append_elsewhere» alone, the sentence of before.
+    [TestCase("all", "call")]
+    [TestCase("append_elsewhere", "where")]
+    [TestCase("none", null)]
+    public async Task AnAppendToAMissingFileFoundInASubfolderWritesNothingAndSaysWhere(string aids, string? hint)
     {
         using IDisposable setting = ModelAids.Use(aids);
         using TemporaryDirectory temporary = new();
@@ -420,18 +425,45 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(result.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(home, "notas.txt")));
             Assert.That(result.GetProperty("sameNameIn").EnumerateArray().Select(item => item.GetString()),
                 Is.EqualTo(new[] { "BAXY-bench/notas.txt" }));
-            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
-            if (hint)
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint is not null));
+            if (hint == "where")
             {
                 Assert.That(next.GetString(), Is.EqualTo(
                     $"nothing was written: notas.txt is not in {home}; a file of that name is in BAXY-bench/notas.txt, "
                     + "and file_write with that relativePath and the same folder appends to it; without append, a new "
                     + "notas.txt is made here"));
             }
+            if (hint == "call")
+            {
+                Assert.That(next.GetString(), Is.EqualTo(
+                    $"nothing was written: notas.txt is not in {home}; the file of that name is "
+                    + $"{Path.Combine(home, "BAXY-bench", "notas.txt")}, a file of the person's, not of BAXY's own working "
+                    + "folder: to add the text at its end, call file_write again with relativePath \"BAXY-bench/notas.txt\" "
+                    + "and folder \"home\" and append true; without append, a new notas.txt is made here"));
+            }
             // A name found nowhere (a hidden folder is not looked in) is made, as before.
             Assert.That(made.Succeeded, Is.True, made.ErrorCode);
             Assert.That(File.ReadAllText(Path.Combine(home, "lista.txt")), Is.EqualTo("pan"));
         });
+    }
+
+    // The same refusal in BAXY's working folder says the file is there, and the call with no folder.
+    [Test]
+    public void AnAppendInTheWorkingFolderToAFileFoundBelowSaysTheCallWithNoFolder()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+        provider.WriteText("notas/recado.txt", "pan", null);
+
+        FilesystemProviderException refused = Assert.Throws<FilesystemProviderException>(
+            () => provider.WriteText("recado.txt", "leche", null, append: true))!;
+
+        Assert.That(refused.Result!.Value.GetProperty("next").GetString(), Does.Contain(
+            $"the file of that name is {Path.Combine(sandbox, "notas", "recado.txt")}, in BAXY's own working folder: to add "
+            + "the text at its end, call file_write again with relativePath \"notas/recado.txt\" and no folder and append "
+            + "true;"));
     }
 
     // Renew al máximo (w5, E020): «¿cuál es el archivo más grande dentro de BAXY-bench, en mi carpeta de usuario?» ran
