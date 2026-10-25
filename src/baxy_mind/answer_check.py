@@ -37,6 +37,10 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   for another reason: a ``relativePath`` (and the ``name`` beside it) of its own or of one of its listed files (V6E055:
   an edit refused with known_file_search_incomplete had found ideas.txt in BAXY-bench). The name is compared with its
   accents (a name alike that a search offers differs in them), and a place named after it must hold the file found.
+- ``read``: «no leí recado.txt», «no pude leer / no he leído / no pude abrir recado.txt» (or «I couldn't read
+  recado.txt») while a read of the turn completed with that file's text, whole: a non-empty text and nothing left
+  unread (readInPart, hasMore, endReached false, unread PDF pages). The name is compared as in ``found``; «no pude abrir»
+  is not read against a read when an open of the turn did not complete (it may tell that one).
 
 What never counts as a claim: a sentence or the part of one that is a question, a clause with «no / nunca / sin /
 tampoco» before the verb («no pude abrirlo», «no lo cerré»), a conditional «si…», quoted text, or a promise («voy a
@@ -463,6 +467,9 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
 
     # «No encontré X» while a result of the turn found X (V6E055).
     findings.extend(f for f in _not_found_names(answer, folded, raw_folded, statements, receipts) if f not in findings)
+
+    # «No leí X» while a result of the turn read X whole (holdout v6, falsedades).
+    findings.extend(f for f in _not_read_names(answer, folded, raw_folded, statements, receipts) if f not in findings)
 
     # «Ya estaba».
     changed = [r for r in receipts if r.get("completed") and _parsed(r).get("verification") == "readback"]
@@ -932,4 +939,83 @@ def _not_found_names(answer: str, folded: str, raw_folded: str, statements: list
                 if same and all(any(s + "\\" in place for s in shows) for shows in places):
                     return [{"rule": "found", "said": _quote(answer, start, end),
                              "fact": f"{_told(receipt)}: su resultado muestra que encontró {relative}"}]
+    return []
+
+
+# ---- texts read -------------------------------------------------------------------------------------------------------
+# «No leí X», «no pude leer X», «no he leído X», «no pude abrir X» (and «I couldn't read X»), and the file named right
+# after it in its clause as what was not read: only an article or the word for a file or its text between them (not «el
+# resto de X», «todo»: a part of it).
+_NOT_READ = re.compile(r"\bno (?:(?:lo|la|los|las|le|se) )*(?:(?P<read>lei|he leido|(?:pude|logre) leer(?:lo|la)?)"
+                       r"|(?P<open>(?:pude|logre) abrir(?:lo|la)?))\b"
+                       r"|\bi (?:did not|didn['’]?t|could not|couldn['’]?t|have not|haven['’]?t|was not able to|"
+                       r"wasn['’]?t able to|was unable to) (?:(?P<eread>read)|(?P<eopen>open))\b")
+_READ_OBJECT = re.compile(r"(?:[\s«\"“']|\b(?:el|la|los|las|un|una|tu|su|tus|sus|archivo|fichero|documento|texto|"
+                          r"contenido|de|del|the|file|your|document|text|of)\b)*")
+
+
+def _read_whole(receipts: list[Receipt]) -> list[tuple[set[str], str, str, Receipt]]:
+    """The files a completed read of the turn brought whole, as (their names and relative paths, lower case with
+    backslashes; its place as ``found`` writes one: the known folder, the subfolder and the file; the name the result
+    gives; the receipt): a non-empty text with nothing of it left unread."""
+    whole = []
+    for r in receipts:
+        if not r.get("completed"):
+            continue
+        facts = _parsed(r)
+        observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else facts
+        text = observed.get("text")
+        if not isinstance(text, str) or not text.strip():
+            continue
+        if any(where.get("readInPart") is True or where.get("hasMore") is True or where.get("endReached") is False
+               or (isinstance(where.get("unreadPages"), int) and where["unreadPages"] > 0)
+               for where in (observed, facts)):
+            continue
+        arguments = r.get("arguments") or {}
+        names = [observed.get(key) for key in ("reviewLabel", "name", "fileName", "relativePath")]
+        names += [arguments.get(key) for key in ("fileName", "name", "relativePath")]
+        subdirectory = arguments.get("subdirectory")
+        given = arguments.get("fileName") or arguments.get("name")
+        if isinstance(subdirectory, str) and isinstance(given, str) and subdirectory.strip():
+            names.append(subdirectory.rstrip("\\/") + "\\" + given)
+        paths = {n.strip().replace("/", "\\").lower() for n in names if isinstance(n, str) and n.strip()}
+        if paths:
+            label = next((n for n in names if isinstance(n, str) and n.strip()), "")
+            parts = [observed.get("folder") or arguments.get("folder"), subdirectory, given or label]
+            place = "\\" + "\\".join(str(p).strip("\\/") for p in parts if isinstance(p, str) and p.strip())
+            whole.append((paths, place.replace("/", "\\").lower(), str(observed.get("reviewLabel") or label), r))
+    return whole
+
+
+def _not_read_names(answer: str, folded: str, raw_folded: str, statements: list[tuple[int, int]],
+                    receipts: list[Receipt]) -> list[dict]:
+    """«No leí recado.txt» while a result of the turn read recado.txt whole (rule ``read``)."""
+    whole = _read_whole(receipts)
+    if not whole:
+        return []
+    # An open of the turn that did not complete is what «no pude abrir» may tell (file_open failed, file_read did not).
+    open_failed = any(not r.get("completed") and _does("abrir", str(r.get("op")), bool(r.get("read"))) for r in receipts)
+    for start, end in statements:
+        for hit in _NOT_READ.finditer(folded, start, end):
+            if (hit.group("open") or hit.group("eopen")) and open_failed:
+                continue
+            stop = next((m.start() for m in _CLAUSE_END.finditer(folded, hit.end(), end)), end)
+            name = next(_FILE_NAME.finditer(raw_folded, hit.end(), stop), None)
+            if name is None or not _READ_OBJECT.fullmatch(folded, hit.end(), name.start()):
+                continue
+            said = answer[name.start():name.end()].replace("/", "\\").lower()
+            # A place named after it must hold the file read («no pude leer recado.txt de Descargas» of another one).
+            rest = folded[name.end():stop]
+            places = [shows for _, pattern, shows in _FOLDERS if pattern.search(rest)]
+            for paths, place, label, receipt in whole:
+                if not all(any(s + "\\" in place for s in shows) for shows in places):
+                    continue
+                if "\\" in said:
+                    same = any("\\" in p and (p == said or p.endswith("\\" + said) or said.endswith("\\" + p))
+                               for p in paths)
+                else:
+                    same = any(p.rsplit("\\", 1)[-1] == said for p in paths)
+                if same:
+                    return [{"rule": "read", "said": _quote(answer, start, end),
+                             "fact": f"{_told(receipt)}: su resultado trae el texto entero de {label}"}]
     return []

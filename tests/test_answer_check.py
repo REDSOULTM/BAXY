@@ -530,3 +530,83 @@ def test_the_found_rule_is_an_aid_of_its_own(tmp_path: Path, monkeypatch, settin
     if checked:
         note = server.bodies[-1]["messages"][-1]["content"]
         assert "su resultado muestra que encontró BAXY-bench\\ideas.txt." in note
+
+
+# ---- «no leí X» while a result of the turn read X whole ---------------------------------------------------------------
+# Holdout v6 (falsedades, cien s0, the one clear falsehood): the answer denied having read a text the turn had read
+# whole. Only a completed read whose result holds the text of that very file, with nothing left unread (readInPart,
+# hasMore, endReached false, unread PDF pages), contradicts it.
+READ_WHOLE = {"status": "completed", "verification": "output_only",
+              "observed": {"version": 1, "kind": "text", "reviewLabel": "recado.txt", "folder": "home", "characters": 36,
+                           "totalLines": 2, "offset": 0, "lines": 2, "returnedCharacters": 36, "hasMore": False,
+                           "endReached": True, "text": "Comprar pan.\r\nLlamar al dentista.\r\n"}}
+READ_PART = {"status": "completed", "verification": "output_only",
+             "observed": {"version": 1, "kind": "text", "reviewLabel": "recado.txt", "folder": "home",
+                          "characters": 9000, "offset": 0, "returnedCharacters": 4000, "hasMore": True,
+                          "nextOffset": 4000, "endReached": False, "readInPart": True, "text": "Comprar pan…"}}
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("No leí recado.txt.", True),
+    ("No pude leer recado.txt, así que no sé qué dice.", True),
+    ("No he leído el archivo recado.txt todavía.", True),
+    ("No logré leer BAXY-bench\\recado.txt.", True),
+    ("No pude abrir recado.txt.", True),
+    ("I couldn't read recado.txt.", True),
+    ("I didn't read the file recado.txt.", True),
+    ("Leí recado.txt: dice que compres pan y llames al dentista.", False),
+    ("No leí todo, sólo el principio de recado.txt.", False),
+    ("No leí notas.txt, sólo recado.txt.", False),  # another file
+    ("No pude leer el resto de recado.txt.", False),  # not the file named right after the verb
+    ("No pude leer recado.txt de Descargas.", False),  # a place that does not hold the one read
+    ("No pude leer recado.txt de BAXY-bench.", True),
+    ("¿No leí recado.txt?", False),
+])
+def test_a_file_said_not_read_that_a_result_of_the_turn_read_whole(answer: str, flagged: bool) -> None:
+    read = _r("file.read", READ_WHOLE, {"folder": "home", "subdirectory": "BAXY-bench", "fileName": "recado.txt"})
+    assert ("read" in _rules(answer, [read], "léeme el recado.txt de BAXY-bench")) is flagged
+
+
+@pytest.mark.parametrize("answer", [
+    "No leí todo, sólo el principio.",
+    "No leí recado.txt entero, sólo el principio.",
+    "No pude leer recado.txt completo: es largo.",
+    "No leí recado.txt.",
+])
+def test_a_file_read_only_in_part_may_be_said_not_read(answer: str) -> None:
+    read = _r("file.read", READ_PART, {"folder": "home", "fileName": "recado.txt"})
+    assert "read" not in _rules(answer, [read], "léeme recado.txt")
+
+
+def test_a_read_that_failed_or_brought_no_text_or_an_open_that_failed_may_be_said_not_read() -> None:
+    failed = _r("file.read", {"status": "failed", "error": "known_text_encoding_unsupported",
+                              "observed": {"reviewLabel": "recado.txt"}}, {"folder": "home", "fileName": "recado.txt"})
+    assert "read" not in _rules("No pude leer recado.txt: su codificación no se reconoce.", [failed])
+    scanned = _r("file.read", {"status": "completed", "verification": "output_only", "observed": {
+        "kind": "pdf", "reviewLabel": "boleta.pdf", "characters": 0, "hasMore": False, "endReached": True,
+        "pages": 1, "textPages": 0, "hasText": False, "text": ""}}, {"folder": "home", "fileName": "boleta.pdf"})
+    assert "read" not in _rules("No pude leer boleta.pdf: no tiene texto.", [scanned])
+    # Its text read and its window not opened: «no pude abrir» tells the open that failed.
+    read = _r("file.read", READ_WHOLE, {"folder": "home", "fileName": "recado.txt"})
+    opened = _r("file.open", {"status": "failed", "error": "application_window_not_observed"},
+                {"folder": "home", "name": "recado.txt"})
+    assert "read" not in _rules("No pude abrir recado.txt en pantalla, pero lo leí.", [read, opened])
+
+
+@pytest.mark.parametrize("setting, checked", [(None, True), ("answer_check", False), ("answer_check,check_read", True)])
+def test_the_read_rule_is_an_aid_of_its_own(tmp_path: Path, monkeypatch, setting, checked) -> None:
+    if setting is None:
+        monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    else:
+        monkeypatch.setenv("BAXY_AYUDAS", setting)
+    first = "No pude leer recado.txt, así que no sé qué dice."
+    mind, server = _mind(tmp_path, [_call("file_read", {"folder": "home", "fileName": "recado.txt"}), _say(first),
+                                    _say("Dice: comprar pan y llamar al dentista.")])
+    mind.wire_to_op = {"file_read": "file.read"}
+    mind.risk = {**mind.risk, "file_read": "read_only"}
+    mind.decide(1, "léeme recado.txt")
+    result = mind.continue_turn(2, json.dumps(READ_WHOLE))
+    assert (result["reply"] != first) is checked
+    if checked:
+        note = server.bodies[-1]["messages"][-1]["content"]
+        assert "su resultado trae el texto entero de recado.txt" in note
