@@ -900,6 +900,69 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Ronda q-web: a page evaluation that threw (exceptionDetails), a CDP error, or a value of another type escaped as
+    // KeyNotFoundException or InvalidOperationException, out of the adapter; it is cdp_evaluation_failed.
+    [TestCase("""{"id":1,"result":{"result":{"type":"object","subtype":"error","description":"ReferenceError"},"exceptionDetails":{"text":"Uncaught"}}}""")]
+    [TestCase("""{"id":1,"error":{"code":-32000,"message":"Cannot find context with specified id"}}""")]
+    [TestCase("""{"id":1,"result":{"result":{"type":"undefined"}}}""")]
+    [TestCase("""{"id":1,"result":{"result":{"type":"number","value":3}}}""")]
+    public void AnEvaluationWithoutAStringIsACdpEvaluationFailure(string response)
+    {
+        using JsonDocument document = JsonDocument.Parse(response);
+
+        CdpCommandException failure = Assert.Throws<CdpCommandException>(
+            () => CdpBrowserSession.EvaluatedString(document.RootElement))!;
+
+        Assert.That(failure.Code, Is.EqualTo("cdp_evaluation_failed"));
+    }
+
+    [TestCase("""{"id":1,"result":{"result":{"type":"string","value":"8"}}}""")]
+    [TestCase("""{"id":1,"result":{"result":{"type":"undefined"}}}""")]
+    [TestCase("""{"id":1,"result":{"result":{"type":"number","value":1},"exceptionDetails":{"text":"Uncaught"}}}""")]
+    public void AnEvaluationWithoutANumberIsACdpEvaluationFailure(string response)
+    {
+        using JsonDocument document = JsonDocument.Parse(response);
+
+        CdpCommandException failure = Assert.Throws<CdpCommandException>(
+            () => CdpBrowserSession.EvaluatedNumber(document.RootElement))!;
+
+        Assert.That(failure.Code, Is.EqualTo("cdp_evaluation_failed"));
+    }
+
+    [Test]
+    public void AnEvaluationReturnsItsValue()
+    {
+        using JsonDocument text = JsonDocument.Parse("""{"id":1,"result":{"result":{"type":"string","value":"https://example.com/"}}}""");
+        using JsonDocument none = JsonDocument.Parse("""{"id":1,"result":{"result":{"type":"object","subtype":"null","value":null}}}""");
+        using JsonDocument number = JsonDocument.Parse("""{"id":1,"result":{"result":{"type":"number","value":120.5}}}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CdpBrowserSession.EvaluatedString(text.RootElement), Is.EqualTo("https://example.com/"));
+            Assert.That(CdpBrowserSession.EvaluatedString(none.RootElement), Is.Empty);
+            Assert.That(CdpBrowserSession.EvaluatedNumber(number.RootElement), Is.EqualTo(120.5));
+        });
+    }
+
+    [Test]
+    public async Task AFailedPageEvaluationIsToldByItsCodeNotAsAnEscapedException()
+    {
+        using TemporaryDirectory temporary = new();
+        using var edge = new ThrowingPageSession(
+            temporary.Path, new CdpCommandException("cdp_evaluation_failed", "Runtime.evaluate threw."));
+        using var http = new HttpClient(new StubHttpHandler("<rss><channel></channel></rss>"));
+        using var web = new WebBrowserAdapter(edge, http, new CdpBrowserSessionContext());
+
+        ExternalCapabilityReceipt page = await web.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.False);
+            Assert.That(page.ErrorCode, Is.EqualTo("cdp_evaluation_failed"));
+        });
+    }
+
     [Test]
     public async Task NamedBrowserNavigationKeepsItsSessionForTheImmediatePageRead()
     {
@@ -6296,6 +6359,12 @@ public sealed class ExternalAdaptersTests
             cancellationToken.ThrowIfCancellationRequested();
             return ValueTask.FromResult(result);
         }
+    }
+
+    private sealed class ThrowingPageSession(string profile, Exception failure) : CdpBrowserSession(profile)
+    {
+        internal override ValueTask<CdpPageReadResult> ReadPageAsync(
+            int maximumCharacters, CancellationToken cancellationToken) => ValueTask.FromException<CdpPageReadResult>(failure);
     }
 
     private sealed class StubBrowserPageSession(string profile, CdpPageReadResult result)

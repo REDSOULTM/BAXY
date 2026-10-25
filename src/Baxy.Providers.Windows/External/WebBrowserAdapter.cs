@@ -141,6 +141,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return effectBoundary.Failure(operation, "web_argument_invalid");
         }
+        catch (CdpCommandException exception)
+        {
+            return effectBoundary.Failure(operation, exception.Code);
+        }
         catch (Exception exception) when (exception is IOException
             or HttpRequestException or WebSocketException or JsonException
             or TimeoutException or XmlException)
@@ -1407,6 +1411,13 @@ internal sealed class CdpBrowserSessionContext
         ArgumentNullException.ThrowIfNull(session);
         _ = Interlocked.CompareExchange(ref _active, null, session);
     }
+}
+
+/// <summary>A CDP command that did not give what it was sent for, told by its own code: an IOException, so every caller
+/// that takes a lost CDP endpoint as a failure takes this one too.</summary>
+internal sealed class CdpCommandException(string code, string message) : IOException(message)
+{
+    internal string Code { get; } = code;
 }
 
 internal class CdpBrowserSession : IDisposable
@@ -2853,8 +2864,7 @@ internal class CdpBrowserSession : IDisposable
             writer.WriteBoolean("returnByValue", true);
             if (userGesture) writer.WriteBoolean("userGesture", true);
         }, cancellationToken).ConfigureAwait(false);
-        return response.GetProperty("result").GetProperty("result").GetProperty("value").GetString()
-            ?? string.Empty;
+        return EvaluatedString(response);
     }
 
     private async ValueTask<double> EvaluateNumberAsync(
@@ -2865,8 +2875,42 @@ internal class CdpBrowserSession : IDisposable
             writer.WriteString("expression", expression);
             writer.WriteBoolean("returnByValue", true);
         }, cancellationToken).ConfigureAwait(false);
-        return response.GetProperty("result").GetProperty("result").GetProperty("value").GetDouble();
+        return EvaluatedNumber(response);
     }
+
+    // Ronda q-web: the value a Runtime.evaluate gave by value. A page script that threw (exceptionDetails), a CDP error
+    // or a value of another type escaped as KeyNotFoundException or InvalidOperationException, out of every adapter;
+    // it is cdp_evaluation_failed. A null value stays the empty string it was.
+    internal static string EvaluatedString(JsonElement response) =>
+        EvaluatedValue(response) switch
+        {
+            { ValueKind: JsonValueKind.String } value => value.GetString() ?? string.Empty,
+            { ValueKind: JsonValueKind.Null } => string.Empty,
+            _ => throw EvaluationFailed(),
+        };
+
+    internal static double EvaluatedNumber(JsonElement response) =>
+        EvaluatedValue(response) is { ValueKind: JsonValueKind.Number } value && value.TryGetDouble(out double number)
+            ? number
+            : throw EvaluationFailed();
+
+    private static JsonElement EvaluatedValue(JsonElement response)
+    {
+        if (response.ValueKind != JsonValueKind.Object
+            || !response.TryGetProperty("result", out JsonElement outer)
+            || outer.ValueKind != JsonValueKind.Object
+            || outer.TryGetProperty("exceptionDetails", out _)
+            || !outer.TryGetProperty("result", out JsonElement remote)
+            || remote.ValueKind != JsonValueKind.Object
+            || !remote.TryGetProperty("value", out JsonElement value))
+        {
+            throw EvaluationFailed();
+        }
+        return value;
+    }
+
+    private static CdpCommandException EvaluationFailed() =>
+        new("cdp_evaluation_failed", "Runtime.evaluate gave no value of the expected type.");
 
     private static async ValueTask<JsonElement> ReceiveCommandAsync(
         ClientWebSocket socket,
