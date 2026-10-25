@@ -755,6 +755,61 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Revisión del núcleo (q-core): clipboard.paste.into opens its application through app.open; a system tool named
+    // there asks as app.open does, and nothing is launched before the yes. It launched msconfig without asking.
+    [TestCase(true, "Configuración del sistema")]
+    [TestCase(false, "Bloc de notas")]
+    public async Task APasteIntoASystemToolWaitsForTheYesAndLaunchesNothing(bool asks, string appId)
+    {
+        var platform = new SystemToolsPlatform();
+        AppOpenHandler open = Handler(new WindowsInstalledApplicationOpenProvider(platform));
+        var handler = new PasteIntoNewDocumentHandler(new NoPaste(), open.ExecuteAsync, openPreflight: open);
+        string root = Path.Combine(Path.GetTempPath(), "baxy-paste-system-tool-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+                Path.Combine(root, "journal.jsonl"),
+                new JournalHmacAuthenticator(RandomNumberGenerator.GetBytes(JournalHmacAuthenticator.KeyLength)));
+            using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+            OperationResponse response = await engine.ExecuteAsync(
+                new OperationRequest(
+                    ProtocolTypes.OperationRequest,
+                    Guid.NewGuid().ToString("D"),
+                    Guid.NewGuid().ToString("D"),
+                    Guid.NewGuid().ToString("D"),
+                    "clipboard.paste.into",
+                    JsonSerializer.SerializeToElement(new { appId })),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                if (asks)
+                {
+                    Assert.That(response.ErrorCode, Is.EqualTo("confirmation_required"));
+                    Assert.That(platform.Activated, Is.Empty, "nothing is launched before the yes");
+                }
+                else
+                {
+                    Assert.That(response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+                    Assert.That(platform.Activated, Is.EqualTo(new[] { appId }));
+                }
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    private sealed class NoPaste : IOperationHandler
+    {
+        public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("clipboard.paste");
+
+        public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(OperationOutcome.Failure("clipboard_empty"));
+    }
+
     // The rule is the one clicks are refused by (SystemToolProcesses, the applets of lote 4 c): the program a shortcut
     // runs, a console of the MMC host, an applet by its .cpl or run by rundll32. Contracasos: the Sound applet the person
     // asks for, Notepad, a document.
