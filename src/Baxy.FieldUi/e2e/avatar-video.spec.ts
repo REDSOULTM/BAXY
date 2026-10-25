@@ -37,3 +37,13 @@ test('un clip que sale de la pantalla suelta su archivo (no queda un reproductor
   expect(errors).toEqual([]);
   await page.close();
 });
+
+test('montado dos veces (StrictMode) queda un solo lienzo de boca sobre el vídeo', async () => {
+  // the effect's cleanup takes off the page what the effect put there: the clips and the lip-sync's canvas
+  const page = await browser.newPage();
+  await page.route('**/clips/*.mp4', (r) => r.fulfill({ path: join(ROOT, 'public', 'clips', r.request().url().split('/').pop()!), contentType: 'video/mp4' }));
+  await page.goto(base + '/e2e/harness/avatar.html?strict');
+  await page.waitForFunction(() => !!document.querySelector('.bx-avid video.on'));
+  expect(await page.locator('.bx-avid canvas.bx-lip').count()).toBe(1);
+  await page.close();
+});

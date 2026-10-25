@@ -173,7 +173,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       cancelAnimationFrame(raf); window.clearTimeout(cutting);
       document.removeEventListener('visibilitychange', onVis);
       window.clearInterval(watchReady); window.clearInterval(watchdog);
-      el.querySelectorAll<Clip>('video').forEach(drop);
+      el.querySelectorAll<Clip>('video').forEach(drop); lip.remove();
       ready.current(false);
     };
   }, []);
