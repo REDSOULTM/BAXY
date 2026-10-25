@@ -702,6 +702,36 @@ public sealed class SaidFoldersTests
         });
     }
 
+    // Revisión de nb-w11-arch: with two folders of one sound (Vaca and Baca), the one whose name the words spell is the
+    // folder named, never also the other: a write in Baca for «la carpeta vaca» ran as inside the folder named.
+    [Test]
+    public void OfTwoFoldersOfOneSoundTheOneSpelledAsSaidIsTheFolderNamed()
+    {
+        string cow = Path.Combine(_home, "Vaca");
+        string other = Path.Combine(_home, "Baca");
+        Directory.CreateDirectory(cow);
+        Directory.CreateDirectory(other);
+        Directory.CreateDirectory(Path.Combine(_home, "cajon", "vino"));
+        Directory.CreateDirectory(Path.Combine(_home, "cajon", "bino"));
+        SaidFolders said = Heard("escribe notas.txt en la carpeta vaca que diga hola");
+
+        SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"), new JsonObject
+        {
+            ["relativePath"] = "Baca/notas.txt", ["text"] = "hola", ["folder"] = "home",
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { cow }));
+            Assert.That(ruling?.Refusal, Is.Not.Null, "a write in the other folder of that sound ran unasked");
+            // The same inside a folder, past a separator said as a word.
+            Assert.That(Heard("cuantos pdf hay en cajon barra bino").Places().Select(static place => place.Path),
+                Is.EqualTo(new[] { Path.Combine(_home, "cajon", "bino") }));
+            Assert.That(Heard("cuantos pdf hay en cajon barra vino").Places().Select(static place => place.Path),
+                Is.EqualTo(new[] { Path.Combine(_home, "cajon", "vino") }));
+        });
+    }
+
     // Holdout v5 V5E044 (dictado, «cuantos pdf hay en baxy bench barra facturas»): the separator said as a word left
     // the place at the outer folder, and the count looked only at its top level.
     [TestCase("barra")]

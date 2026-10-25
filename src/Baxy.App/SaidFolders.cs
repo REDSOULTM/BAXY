@@ -133,11 +133,16 @@ internal sealed class SaidFolders
         string[] qualifiers = HomeWords.Any(word => Spoken(RelativePath.Replace(rest, " "))
             .Contains(Spoken(word), StringComparison.Ordinal)) && Root("home") is { } home ? [home] : [];
 
-        // The folders of that name in the roots, kept where the words also name the root.
-        IEnumerable<string> Named(string name)
+        // The folders of that name in the roots, kept where the words also name the root. Of several of one sound, the
+        // ones spelled as said (said: the words as Spoken writes them) when any is: «vaca» is Vaca, not
+        // also Baca (revisión de nb-w11-arch).
+        IEnumerable<string> Named(string name, string said)
         {
             string[] all = [.. roots.SelectMany(Folders).Where(folder =>
                 Sounded(Path.GetFileName(folder)) == name)];
+            string[] spelled = [.. all.Where(folder => said.Contains(Spoken(Path.GetFileName(folder)), StringComparison.Ordinal))];
+            if (spelled.Length > 0)
+                all = spelled;
             string[] qualified = [.. all.Where(folder => qualifiers.Any(root => Same(Path.GetDirectoryName(folder)!, root)))];
             return qualified.Length > 0 ? qualified : all;
         }
@@ -155,7 +160,7 @@ internal sealed class SaidFolders
                 if (parts.Length < 2)
                     continue;
                 string[] starts = PersonFolders.Names.TryGetValue(PersonFolders.Fold(parts[0]), out string? label)
-                    && Root(label) is { } known ? [known] : [.. Named(Sounded(parts[0]))];
+                    && Root(label) is { } known ? [known] : [.. Named(Sounded(parts[0]), Spoken(parts[0]))];
                 string said = LongestRelative(match.Value, rest[(match.Index + match.Length)..], starts);
                 saidRelatives.Add(said);
                 parts = Parts(said);
@@ -167,8 +172,11 @@ internal sealed class SaidFolders
         }
 
         // The words of a relative path are that path's («Documentos/proyecto» is not Documents).
-        string spoken = Sounded(pathSaid ? rest
-            : RelativePath.Replace(saidRelatives.Aggregate(rest, static (text, said) => text.Replace(said, " ")), " "));
+        string words = pathSaid ? rest
+            : RelativePath.Replace(saidRelatives.Aggregate(rest, static (text, said) => text.Replace(said, " ")), " ");
+        string spoken = Sounded(words);
+        // The same words as written (Sounded keeps every position): which of the folders of one sound they spell.
+        string written = Spoken(words);
         var knownSaid = new HashSet<string>(StringComparer.Ordinal);
         foreach ((string name, string label) in PersonFolders.Names)
         {
@@ -195,7 +203,7 @@ internal sealed class SaidFolders
                 if (Occurrences(spoken, name).All(at => names.Any(other => other.Length > name.Length
                         && Occurrences(spoken, other).Any(from => from <= at && at + name.Length <= from + other.Length))))
                     continue;
-                string[] named = [.. Named(name)];
+                string[] named = [.. Named(name, written)];
                 found.AddRange(named.Select(folder => new Place(folder, Path.GetFileName(folder), named.Length == 1)));
             }
         }
@@ -203,7 +211,7 @@ internal sealed class SaidFolders
         // A separator said as a word between a folder named and one inside it leads into that one (holdout v5 V5E044,
         // dictado: «cuantos pdf hay en baxy bench barra facturas» counted in BAXY-bench).
         for (int index = 0; index < found.Count; index++)
-            found[index] = Deeper(found[index], spoken);
+            found[index] = Deeper(found[index], spoken, written);
 
         // A folder that holds another one named is the way to it, unless that one is only one of several of its name
         // («de proyecto al escritorio» with a proyecto on the Desktop and another in the home folder).
@@ -600,22 +608,25 @@ internal sealed class SaidFolders
 
     // The folder a separator said as a word leads into from a place («cajón barra facturas»: facturas inside cajón), as
     // far as the words keep naming a folder inside the last one.
-    private static Place Deeper(Place place, string spoken)
+    // Of several inside it of one sound, the one spelled as written says (the same words as Spoken writes them).
+    private static Place Deeper(Place place, string spoken, string written)
     {
         string said = Sounded(place.Said);
         int at = spoken.IndexOf(said, StringComparison.Ordinal);
         if (said.Trim().Length == 0 || at < 0)
             return place;
-        string after = spoken[(at + said.Length - 1)..];
+        int after = at + said.Length - 1;
         string folder = place.Path;
-        while (SaidSeparator.Match(after) is { Success: true } separator)
+        while (SaidSeparator.Match(spoken[after..]) is { Success: true } separator)
         {
-            string rest = after[(separator.Length - 1)..];
+            int next = after + separator.Length - 1;
+            string rest = spoken[next..];
             string? inner = TopFolders(folder).Where(child => rest.StartsWith(Sounded(Path.GetFileName(child)), StringComparison.Ordinal))
-                .OrderByDescending(child => Path.GetFileName(child).Length).FirstOrDefault();
+                .OrderByDescending(child => written[next..].StartsWith(Spoken(Path.GetFileName(child)), StringComparison.Ordinal))
+                .ThenByDescending(child => Path.GetFileName(child).Length).FirstOrDefault();
             if (inner is null)
                 break;
-            after = rest[(Sounded(Path.GetFileName(inner)).Length - 1)..];
+            after = next + Sounded(Path.GetFileName(inner)).Length - 1;
             folder = inner;
         }
 
