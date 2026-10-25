@@ -173,7 +173,7 @@ internal sealed class MemoryPanel
             (JsonElement page, string? error) = await ExecuteAsync(client, protector, "memory.list", new JsonObject
             {
                 ["version"] = 1,
-                ["limit"] = pageSize,
+                ["limit"] = PageLimit(offset, pageSize),
                 ["offset"] = offset,
             }, cancellationToken);
             if (error == "memory_disabled")
@@ -220,6 +220,9 @@ internal sealed class MemoryPanel
         // The store holds at most 512 entries, all listed; «total» lets the view say so if that ever differs.
         return (new JsonObject { ["enabled"] = true, ["total"] = total, ["items"] = items }, null);
     }
+
+    // The page asked at offset: the store refuses a page that reaches past its 512 entries (offset + limit).
+    internal static int PageLimit(int offset, int pageSize) => Math.Min(pageSize, MaximumRecords - offset);
 
     // Estabilización M2 (identity live check 2026-10-11 §5: the panel showed FAVORITE_COLOR, BIRTHDAY): the datum's name
     // in the person's words (data: the labels of src/baxy_mind/data/memory_subjects.v1.json, embedded here; only this
