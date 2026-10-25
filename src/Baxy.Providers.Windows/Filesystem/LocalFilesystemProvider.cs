@@ -326,6 +326,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     /// <summary>BAXY's own state (<see cref="BaxyPrivateArea"/>); tests point it at a temporary folder.</summary>
     internal IReadOnlyList<string> PrivateRoots { get; init; } = BaxyPrivateArea.DefaultRoots();
 
+    /// <summary>The folders Windows runs at sign-in (<see cref="AutostartArea"/>); tests point it at a temporary folder.</summary>
+    internal IReadOnlyList<string> AutostartRoots { get; init; } = AutostartArea.DefaultRoots();
+
     private string RootFor(string? folder)
     {
         if (folder is null) return _root;
@@ -557,6 +560,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         bool inWorkingFolder = string.Equals(full, _root, StringComparison.OrdinalIgnoreCase)
             || full.StartsWith(_root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
         if (!inWorkingFolder && BaxyPrivateArea.Holds(PrivateRoots, full)) throw Error("path_reserved");
+        // Revisión de fase 3: a known folder resolved here is written (file.write, filesystem.create.directory), never
+        // where Windows runs it at sign-in.
+        if (!inWorkingFolder && AutostartArea.Holds(AutostartRoots, full)) throw Error("path_autostart");
         EnsureSafePathIn(root, full, allowMissingLeaf);
         return full;
     }

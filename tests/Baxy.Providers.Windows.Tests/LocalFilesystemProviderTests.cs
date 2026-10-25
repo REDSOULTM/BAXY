@@ -1046,6 +1046,62 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Revisión de fase 3: what Windows runs at sign-in (the Startup folders) is not written through the home folder, by
+    // its full path, by its 8.3 alias or as a folder inside it, nor appended to; a file.write there would run at the next
+    // sign-in. Refused before any effect; the rest of AppData stays writable.
+    [Test]
+    public void NothingIsWrittenWhereWindowsRunsItAtSignIn()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        const string programs = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs";
+        string startup = Path.Combine(home, programs.Replace('/', Path.DirectorySeparatorChar), "Startup");
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        Directory.CreateDirectory(startup);
+        Directory.CreateDirectory(sandbox);
+        string existing = Path.Combine(startup, "suyo.cmd");
+        File.WriteAllText(existing, "@echo suyo");
+        var provider = new LocalFilesystemProvider(sandbox)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+            PrivateRoots = [],
+            AutostartRoots = [startup],
+        };
+        string startMenu = Path.GetDirectoryName(Path.GetDirectoryName(startup)!)!;
+        string alias = Path.Combine(Path.GetDirectoryName(startMenu)!, Path.GetFileName(ShortPath(startMenu)), "Programs",
+            "Startup");
+
+        Assert.Multiple(() =>
+        {
+            foreach (TestDelegate write in (TestDelegate[])[
+                () => provider.WriteText(programs + "/Startup/x.cmd", "calc", null, "home"),
+                () => provider.WriteText(Path.Combine(startup, "x.cmd"), "calc", null),
+                () => provider.WriteText(Path.Combine(alias, "x.cmd"), "calc", null, "home"),
+                () => provider.WriteText(programs + "/Startup/suyo.cmd", "calc", null, "home", append: true),
+                () => provider.CreateDirectory(programs + "/Startup/sub", "home"),
+            ])
+            {
+                Assert.That(write, Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_autostart"));
+            }
+            Assert.That(Directory.EnumerateFileSystemEntries(startup), Is.EqualTo(new[] { existing }));
+            Assert.That(File.ReadAllText(existing), Is.EqualTo("@echo suyo"));
+            provider.WriteText(programs + "/otra-app/ajustes.txt", "suyo", null, "home");
+            Assert.That(File.Exists(Path.Combine(Path.GetDirectoryName(startup)!, "otra-app", "ajustes.txt")), Is.True);
+        });
+    }
+
+    // The 8.3 alias Windows keeps for a folder («Start Menu» is STARTM~1 where the volume makes them).
+    private static string ShortPath(string path)
+    {
+        char[] buffer = new char[1024];
+        uint length = GetShortPathNameW(path, buffer, (uint)buffer.Length);
+        return length is > 0 and < 1024 ? new string(buffer, 0, (int)length) : path;
+    }
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+    private static extern uint GetShortPathNameW(string longPath, [System.Runtime.InteropServices.Out] char[] shortPath, uint length);
+
     // What the model reads of a file.write: the observed part of its message.
     private static async Task<JsonElement> WriteMessage(IFilesystemProvider provider, string arguments)
     {
