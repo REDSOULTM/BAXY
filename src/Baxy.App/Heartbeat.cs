@@ -163,6 +163,21 @@ internal sealed class Heartbeat : IAsyncDisposable
             throw;
         }
 
+        // Revisión de calidad (2026-10-25): the moment took two engine round trips; the owner may have put BAXY to rest
+        // or silenced it meanwhile (or the person's turn began). What changed waits for the next look.
+        if (!_canBeat())
+        {
+            if (changed)
+            {
+                lock (_gate)
+                {
+                    _events.InsertRange(0, events);
+                }
+            }
+
+            return;
+        }
+
         await _beat(moment, HeartbeatMoment.Speaks((string?)moment["owner_activity"] ?? string.Empty, _quietDuring))
             .ConfigureAwait(false);
     }

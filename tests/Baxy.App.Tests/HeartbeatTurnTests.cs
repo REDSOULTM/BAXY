@@ -76,6 +76,51 @@ public sealed class HeartbeatTurnTests
         }
     }
 
+    // Revisión de calidad (2026-10-25): whether a heartbeat may run was read before the moment was gathered (memory and
+    // reminders: two engine round trips of up to 10 s each); the owner who put BAXY to rest or silenced it meanwhile
+    // still got the beat.
+    [Test]
+    public async Task AHeartbeatThatMayNoLongerRunOnceItsMomentIsGatheredDoesNotBeat()
+    {
+        bool rested = false;
+        int beats = 0;
+        Heartbeat heartbeat = new(
+            (_, _) =>
+            {
+                beats++;
+                return Task.CompletedTask;
+            },
+            () => !rested,
+            static () => [],
+            () =>
+            {
+                rested = true;
+                return Task.FromResult<IReadOnlyList<string>>([]);
+            },
+            static () => Task.FromResult(new JsonArray()));
+        await using (heartbeat)
+        {
+            var clock = new LaterClock();
+            typeof(Heartbeat).GetField("_pace", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .SetValue(heartbeat, new HeartbeatPace(clock));
+            clock.Later = TimeSpan.FromHours(1);
+            Events(heartbeat).Add("app opened: Discord");
+
+            await (Task)typeof(Heartbeat).GetMethod("LookAsync", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .Invoke(heartbeat, [CancellationToken.None])!;
+
+            Assert.That(beats, Is.Zero, "the heartbeat beat after the owner put BAXY to rest");
+            Assert.That(Events(heartbeat), Does.Contain("app opened: Discord"), "what changed was lost");
+        }
+    }
+
+    private sealed class LaterClock : TimeProvider
+    {
+        internal TimeSpan Later { get; set; }
+
+        public override DateTimeOffset GetUtcNow() => base.GetUtcNow() + Later;
+    }
+
     private static Heartbeat Heartbeat() => new(
         static (_, _) => Task.CompletedTask,
         static () => false,
