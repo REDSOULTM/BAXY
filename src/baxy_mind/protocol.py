@@ -60,11 +60,20 @@ def read_message() -> dict[str, Any] | None:
     return _decode_message(line)
 
 
+def whole_code_points(text: str) -> str:
+    """El texto sin sustitutos UTF-16 sueltos (json.loads acepta el escape de una mitad sin su par): cada uno pasa a
+    U+FFFD, como los escribe System.Text.Json en la App. Sueltos, codificarlos en UTF-8 lanzaba UnicodeEncodeError, que
+    hacía fallar la respuesta o la traza."""
+    try:
+        text.encode("utf-8")
+        return text
+    except UnicodeEncodeError:
+        return text.encode("utf-16-le", "surrogatepass").decode("utf-16-le", "replace")
+
+
 def write_message(message: dict[str, Any]) -> None:
     stream = sys.stdout.buffer
-    payload = json.dumps(message, ensure_ascii=False, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    payload = whole_code_points(json.dumps(message, ensure_ascii=False, separators=(",", ":"))).encode("utf-8")
     if len(payload) > MAX_LINE_BYTES:
         raise ProtocolViolation("reply_too_large", f"{len(payload)} bytes")
     with _WRITE_LOCK:

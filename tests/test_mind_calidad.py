@@ -323,3 +323,36 @@ def test_an_answer_check_that_fails_leaves_the_answer_and_says_so_in_the_trace(
     rows = [r for r in _trace(mind) if r["stage"] == "turn.check"]
     assert [(r["round"], r["error"], r["findings"]) for r in rows] == [(1, "ZeroDivisionError", [])]
     assert "a fault of the heuristic" not in json.dumps(rows)
+
+
+def test_a_lone_surrogate_from_json_goes_to_the_app_as_a_replacement_character(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """json.loads accepts the escape of one half of a surrogate pair (a text cut mid-emoji) and gives a lone surrogate;
+    encoded in UTF-8 it raised UnicodeEncodeError and the reply never reached the App. It goes as U+FFFD, the character
+    System.Text.Json writes for one; a whole pair stays the emoji."""
+    import io
+    import json
+    import types
+
+    from baxy_mind import protocol
+
+    out = io.BytesIO()
+    monkeypatch.setattr(protocol.sys, "stdout", types.SimpleNamespace(buffer=out))
+    cut = json.loads('"corta \ud83d"')
+    protocol.write_message({"type": "turn.result", "reply": cut, "whole": json.loads('"\ud83d\ude00"')})
+    sent = json.loads(out.getvalue().decode("utf-8"))
+    assert sent["reply"] == "corta \ufffd" and sent["whole"] == "\U0001f600"
+
+
+def test_a_lone_surrogate_in_a_turn_does_not_break_its_trace(tmp_path: pathlib.Path) -> None:
+    """The trace row of a turn whose words carry a lone surrogate raised UnicodeEncodeError (not an OSError) out of
+    Mind._write_row, and the turn failed with it."""
+    import json
+
+    from test_mind_aids import _trace
+    from test_mind_final import _mind, _say
+
+    mind, _ = _mind(tmp_path, [_say("Dime cuál quieres.")])
+    result = mind.decide(1, json.loads('"pon la de \ud83d"'))
+    assert result["reply"] == "Dime cuál quieres."
+    assert any("pon la de \ufffd" in json.dumps(row, ensure_ascii=False) for row in _trace(mind))

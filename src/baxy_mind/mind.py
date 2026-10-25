@@ -23,6 +23,7 @@ from typing import Any
 from .answer_check import check as check_answer
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
+from .protocol import whole_code_points
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 
@@ -2603,7 +2604,8 @@ class Mind:
             holding[1].append(row)  # a decision made early: written only if it is used (early.py)
             return
         try:
+            line = whole_code_points(json.dumps(row, ensure_ascii=False, default=str))  # a lone surrogate: U+FFFD
             with self._log_lock, self.trace.open("a", encoding="utf-8") as out:
-                out.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
+                out.write(line + "\n")
         except OSError:
             pass
