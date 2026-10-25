@@ -13,7 +13,12 @@ export function SessionsPanel({ onClose, onNew, revision }: { onClose: () => voi
   const [ed, setEd] = useState<string | null>(null);
   const [val, setVal] = useState('');
   const [note, setNote] = useState<string | null>(null);
-  useEffect(() => { void getJson<{ sessions: SessionRow[] }>('/sessions').then((r) => setList(r ? r.sessions : null)); }, [revision]);
+  // a list read before the session changed again never covers the newer one, even if it answers last
+  useEffect(() => {
+    let stale = false;
+    void getJson<{ sessions: SessionRow[] }>('/sessions').then((r) => { if (!stale) setList(r ? r.sessions : null); });
+    return () => { stale = true; };
+  }, [revision]);
   const reload = async () => { const r = await getJson<{ sessions: SessionRow[] }>('/sessions'); setList(r ? r.sessions : null); };
   const save = async () => {
     const id = ed;

@@ -176,3 +176,22 @@ test('memoria: una lectura vieja que llega tarde no tapa la nueva', async () => 
   await h.page.waitForTimeout(1200);
   await expect(h.page.locator('.bx-mem-row')).toContainText('verde');
 });
+
+test('sesiones: una lista vieja que llega tarde no tapa la nueva', async () => {
+  h = await openView();
+  h.emit({ type: 'session', id: 's1', label: 'Mañana' });
+  let n = 0, renamed = false;
+  h.reply('/sessions', async () => {
+    n++;
+    const first = !renamed;
+    if (first) await later(900);
+    return { body: { sessions: [{ id: 's1', label: first ? 'Mañana' : 'Compras', ts: '10:00', current: true, turn_count: 2 }] } };
+  });
+  await h.page.locator('button', { hasText: 'Sesiones' }).first().click();
+  await expect.poll(() => n).toBeGreaterThan(0);
+  renamed = true;
+  h.emit({ type: 'session', id: 's1', label: 'Compras' }); // renamed by BAXY meanwhile
+  await expect(h.page.locator('.bx-sess-t')).toHaveText('Compras');
+  await h.page.waitForTimeout(1200);
+  await expect(h.page.locator('.bx-sess-t')).toHaveText('Compras');
+});
