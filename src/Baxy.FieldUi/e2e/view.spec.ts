@@ -61,3 +61,12 @@ test('mantener para hablar: si la ventana pierde el foco con el espacio pulsado,
   await h.page.evaluate(() => window.dispatchEvent(new Event('blur')));
   await expect.poll(voice).toEqual(['/voice/trigger', '/voice/release']);
 });
+
+test('mantener para hablar: un toque que el sistema cancela suelta el oído', async () => {
+  h = await openView({ mic: 'ptt' });
+  const mic = h.page.locator('.bx-mic');
+  await mic.dispatchEvent('pointerdown', { pointerId: 1, pointerType: 'touch', isPrimary: true, button: 0 });
+  await expect.poll(voice).toEqual(['/voice/trigger']);
+  await mic.dispatchEvent('pointercancel', { pointerId: 1, pointerType: 'touch', isPrimary: true });
+  await expect.poll(voice).toEqual(['/voice/trigger', '/voice/release']);
+});

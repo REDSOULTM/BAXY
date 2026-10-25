@@ -67,6 +67,8 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
           onClick={() => { if (mic !== 'ptt') setMenu(!menu); }}
           onPointerDown={(e) => { if (mic === 'ptt') { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); onPttStart(); } }}
           onPointerUp={() => { if (mic === 'ptt') onPttEnd(); }}
+          /* a press the system takes away (a touch turned into a scroll, the pen leaving) never sends its pointerup */
+          onPointerCancel={() => { if (mic === 'ptt') onPttEnd(); }}
           title={mic === 'ptt' ? 'Mantén para hablar' : cur.label}
         ><Icon name={cur.icon} size={15} /></button>
         <button className={'bx-caret' + (menu ? ' open' : '')} onClick={() => setMenu(!menu)} title="Modo de micrófono">
