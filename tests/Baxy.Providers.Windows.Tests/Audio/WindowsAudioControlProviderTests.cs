@@ -618,6 +618,72 @@ public sealed class WindowsAudioControlProviderTests
         Assert.That(preserved!.Receipt, Is.Null);
     }
 
+    // Revisión de calidad (nb-q-apps): every volume or mute leaves its state under a new invocation id; nothing removed
+    // them, and once the folder held the maximum every later volume or mute failed with state_capacity_reached for
+    // good. At capacity the oldest finished invocations go; an intent still without its receipt is never removed.
+    [Test]
+    public void FinishedInvocationsMakeRoomAndPendingIntentsStay()
+    {
+        using TestEnvironment environment = new(volumeScalar: 0.50f, muted: false);
+        var store = new AudioInvocationStore(environment.StateDirectory, maximumInvocationCount: 4);
+        AudioInvocationState Intent(string invocationId) => new(
+            invocationId,
+            AudioOperationIds.Volume,
+            AudioTargetIds.DefaultOutput,
+            new string('a', 64),
+            RequestedLevel: 30,
+            RequestedState: null,
+            new AudioEndpointState(50, false),
+            BaselineVolumeScalar: 0.50f,
+            DateTimeOffset.UtcNow.UtcTicks,
+            Receipt: null,
+            FinalVolumeScalar: null);
+        AudioInvocationState Finished(string invocationId)
+        {
+            AudioInvocationState intent = Intent(invocationId);
+            return intent with
+            {
+                Receipt = new AudioControlReceipt(
+                    invocationId,
+                    AudioOperationIds.Volume,
+                    AudioTargetIds.DefaultOutput,
+                    intent.EndpointIdHash,
+                    RequestedLevel: 30,
+                    RequestedState: null,
+                    intent.Baseline,
+                    Final: null,
+                    Applied: false,
+                    Reconciled: false,
+                    Verified: false,
+                    AudioControlErrorCodes.EndpointChanged),
+            };
+        }
+
+        string pending = InvocationId();
+        store.Save(Intent(pending));
+        string[] finished = [InvocationId(), InvocationId(), InvocationId()];
+        foreach (string invocationId in finished)
+            store.Save(Finished(invocationId));
+        string next = InvocationId();
+
+        Assert.That(() => store.EnsureCompletionCapacity(Intent(next)), Throws.Nothing);
+        store.Save(Intent(next));
+        Assert.Multiple(() =>
+        {
+            Assert.That(store.Load(pending), Is.Not.Null);
+            Assert.That(store.Load(next), Is.Not.Null);
+            Assert.That(finished.Count(invocationId => store.Load(invocationId) is null), Is.GreaterThanOrEqualTo(1));
+        });
+
+        // Only pending intents: nothing may go, and the capacity still holds.
+        using TestEnvironment pendingOnly = new(volumeScalar: 0.50f, muted: false);
+        var full = new AudioInvocationStore(pendingOnly.StateDirectory, maximumInvocationCount: 2);
+        full.Save(Intent(InvocationId()));
+        full.Save(Intent(InvocationId()));
+        Assert.That(() => full.EnsureCompletionCapacity(Intent(InvocationId())),
+            Throws.TypeOf<AudioStateCapacityException>());
+    }
+
     [TestCase("null-state")]
     [TestCase("null-evidence")]
     public async Task NullOrStructurallyCorruptStateFailsClosedWithoutPlatformAccess(

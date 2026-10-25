@@ -1011,4 +1011,47 @@ public sealed class SteamLocalAdapterTests
             Assert.That(none, Is.Null);
         });
     }
+
+    // Revisión de calidad (nb-q-apps): Steam deletes a manifest at the end of an uninstall and rewrites it while it
+    // downloads; one manifest gone or locked between the listing and its read failed the whole catalog (an IOException
+    // out of every poll), and InstalledGames() said «no games», so winget's guard against uninstalling a Steam game was
+    // skipped. The other games are still read; a gone manifest is skipped, a locked one leaves its library unread.
+    [Test]
+    public void OneManifestThatCannotBeReadDoesNotFailTheCatalog()
+    {
+        string library = Path.Combine(Path.GetTempPath(), "baxy-steam-" + Guid.NewGuid().ToString("N"));
+        string steamApps = Path.Combine(library, "steamapps");
+        Directory.CreateDirectory(steamApps);
+        try
+        {
+            File.WriteAllText(Path.Combine(steamApps, "appmanifest_10.acf"),
+                "\"AppState\"\n{\n\t\"appid\"\t\t\"10\"\n\t\"name\"\t\t\"Portal\"\n\t\"StateFlags\"\t\t\"4\"\n\t\"installdir\"\t\t\"Portal\"\n}\n");
+            File.WriteAllText(Path.Combine(steamApps, "appmanifest_20.acf"), "gone");
+            File.WriteAllText(Path.Combine(steamApps, "appmanifest_30.acf"), "locked");
+            byte[] Read(string path) => Path.GetFileName(path) switch
+            {
+                "appmanifest_20.acf" => throw new FileNotFoundException("deleted by Steam", path),
+                "appmanifest_30.acf" => throw new IOException("sharing violation"),
+                _ => File.ReadAllBytes(path),
+            };
+
+            IReadOnlyList<SteamLocalGame> games = SteamLocalAdapter.ReadInstalledCatalog([library], Read);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(games.Select(game => game.AppId), Is.EqualTo(new[] { "10" }));
+                Assert.That(((SteamLocalAdapter.InstalledCatalog)games).UnreadLibraries, Is.EqualTo(1));
+            });
+
+            IReadOnlyList<SteamLocalGame> withoutTheLocked = SteamLocalAdapter.ReadInstalledCatalog(
+                [library], path => Path.GetFileName(path) == "appmanifest_30.acf"
+                    ? throw new FileNotFoundException("deleted by Steam", path)
+                    : Read(path));
+            Assert.That(((SteamLocalAdapter.InstalledCatalog)withoutTheLocked).UnreadLibraries, Is.EqualTo(0));
+        }
+        finally
+        {
+            Directory.Delete(library, recursive: true);
+        }
+    }
 }

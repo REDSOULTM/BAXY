@@ -151,8 +151,11 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.FailureBeforeEffect(operation, "youtube_stream_not_resolved");
         }
+        // Revisión de calidad (nb-q-apps): a yt-dlp or mpv that Windows refuses to run (Smart App Control, a file
+        // quarantined, not an executable) throws Win32Exception from Process.Start; it left the adapter, the dispatch
+        // never tried the browser, and the turn failed with an exception instead of a receipt.
         catch (Exception exception) when (exception is IOException or JsonException
-            or InvalidOperationException or TimeoutException)
+            or InvalidOperationException or TimeoutException or System.ComponentModel.Win32Exception)
         {
             return effectBoundary.Failure(operation, "youtube_local_player_failed");
         }
@@ -419,7 +422,17 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         {
             if (!HasActivePlayer)
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_inactive");
-            bool? paused = await ReadPauseAsync(cancellationToken).ConfigureAwait(false);
+            bool? paused;
+            try
+            {
+                paused = await ReadPauseAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or JsonException)
+            {
+                // Revisión de calidad (nb-q-apps): a player whose IPC closed or answered garbage mid-read threw out of
+                // media.status (the only path here without a catch); a read is not the player's state.
+                paused = null;
+            }
             if (paused is null)
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_ipc_unavailable");
             // Renew al máximo (B-APP-1): left paused while a system session plays, it is not what is playing.
@@ -616,7 +629,41 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         json.WriteEndObject();
     });
 
+    // Revisión de calidad (nb-q-apps): only the connect to the player's IPC had a deadline; a player that took the
+    // connection and never answered (a frozen audio device, a stuck core) held the gate for good, and with it
+    // media.status, media.control and the pause that runs before every other playback. One exchange has this long; past
+    // it the player reads as unavailable (null), as a connection refused does.
+    internal TimeSpan IpcExchangeTimeout { get; init; } = TimeSpan.FromSeconds(10);
+
     private async ValueTask<bool?> ReadPauseAsync(CancellationToken cancellationToken)
+    {
+        using var exchange = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        exchange.CancelAfter(IpcExchangeTimeout);
+        try
+        {
+            return await ReadPauseOnceAsync(exchange.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+    }
+
+    private async ValueTask<bool?> SetPauseAsync(bool paused, CancellationToken cancellationToken)
+    {
+        using var exchange = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        exchange.CancelAfter(IpcExchangeTimeout);
+        try
+        {
+            return await SetPauseOnceAsync(paused, exchange.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+    }
+
+    private async ValueTask<bool?> ReadPauseOnceAsync(CancellationToken cancellationToken)
     {
         (StreamReader reader, StreamWriter writer, NamedPipeClientStream pipe)? ipc =
             await ConnectIpcAsync(cancellationToken).ConfigureAwait(false);
@@ -635,7 +682,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
-    private async ValueTask<bool?> SetPauseAsync(bool paused, CancellationToken cancellationToken)
+    private async ValueTask<bool?> SetPauseOnceAsync(bool paused, CancellationToken cancellationToken)
     {
         (StreamReader reader, StreamWriter writer, NamedPipeClientStream pipe)? ipc =
             await ConnectIpcAsync(cancellationToken).ConfigureAwait(false);

@@ -273,6 +273,21 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Revisión de calidad (nb-q-apps): an uninstall entry whose DisplayName holds a lone surrogate made the fold throw
+    // ArgumentException out of app.installed; it names no application, and the next entry is still compared.
+    [TestCase("Bad\uD800Name", "badname", false)]
+    [TestCase("  ", "spotify", false)]
+    [TestCase(null, "spotify", false)]
+    [TestCase("Spotify", "spotify", true)]
+    public void AnUninstallNameThatCannotBeFoldedNamesNothing(string? candidate, string target, bool named)
+    {
+        bool observed = false;
+        Assert.That(
+            () => observed = WindowsInstalledApplicationOpenProvider.NamesInstalledApplication(candidate, target),
+            Throws.Nothing);
+        Assert.That(observed, Is.EqualTo(named));
+    }
+
     // Auditoría final: a name installed under no entry gets the closest installed names back, as app.open says them.
     [Test]
     public async Task ANameNotInstalledGetsTheClosestInstalledNames()
