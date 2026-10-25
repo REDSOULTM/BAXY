@@ -52,13 +52,23 @@ $null = Assert-BaxyRuntimeLock `
     -Profile Runtime `
     -FailurePrefix 'mind_runtime_setup_failed'
 
+# Calidad PC 2026-10-25: BAXY Renew replaced VoiceEngine (and its probe) by Voice, and importing it failed every
+# setup. The ear as Voice loads it: its module, sherpa-onnx (Parakeet, k4) and Silero's model file (Vad).
 $probeCode = @'
-from baxy_mind.voice import VoiceEngine
+import importlib.util
 import json
+from pathlib import Path
 
-probe = VoiceEngine.probe()
+from baxy_mind import voice  # noqa: F401
+
+vad = importlib.util.find_spec('silero_vad')
+probe = {
+    'stt': importlib.util.find_spec('sherpa_onnx') is not None,
+    'vad': bool(vad and vad.submodule_search_locations and (
+        Path(next(iter(vad.submodule_search_locations))) / 'data' / 'silero_vad.onnx').is_file()),
+}
 print(json.dumps(probe, ensure_ascii=False))
-raise SystemExit(0 if probe.get('stt') and probe.get('vad') else 2)
+raise SystemExit(0 if probe['stt'] and probe['vad'] else 2)
 '@
 $previousPythonPath = [Environment]::GetEnvironmentVariable(
     'PYTHONPATH',
