@@ -221,6 +221,41 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
+    // Revisión de calidad del núcleo (final2): a page one character longer than a projection step, with no space near
+    // the cut (a minified file, a text in Chinese), loses its last character and gains «…»: as long as before, but cut.
+    [Test]
+    public void APageOneCharacterOverAStepIsStillReadInPart()
+    {
+        string page = new('字', 2_001);
+        JsonElement result = JsonSerializer.SerializeToElement(new
+        {
+            offset = 0,
+            fromLine = 1,
+            toLine = 1,
+            returnedCharacters = page.Length,
+            hasMore = false,
+            endReached = true,
+            nextOffset = (int?)null,
+            text = page,
+            // What else the result carries pushes the message past its budget; the first step cuts it to fit.
+            summary = string.Join(' ', Enumerable.Repeat("resumen", 900)),
+        });
+
+        using JsonDocument message = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("file.read", OperationOutcome.Success(result)));
+        JsonElement observed = message.RootElement.GetProperty("observed");
+        string shown = observed.GetProperty("text").GetString()!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shown, Is.Not.EqualTo(page));
+            Assert.That(observed.GetProperty("readInPart").GetBoolean(), Is.True);
+            Assert.That(observed.GetProperty("endReached").GetBoolean(), Is.False);
+            Assert.That(observed.GetProperty("hasMore").GetBoolean(), Is.True);
+            Assert.That(observed.GetProperty("nextOffset").GetInt32(), Is.EqualTo(shown.Length - 1));
+        });
+    }
+
     // Round 1 (2026-10-15): a cut page keeps as much text as the message holds, not the first step's 2,000 characters.
     [Test]
     public void ACutPageKeepsAsMuchTextAsTheMessageHolds()

@@ -530,10 +530,12 @@ public static class OperationVisibleFacts
 
                 // A page of a text read by offset (file.read, web.fetch) whose text was cut here goes on from where
                 // its shown text ends, not from where the provider's page ended: the model never skips text it did
-                // not see (audit 2026-10-15, R2).
+                // not see (audit 2026-10-15, R2). Revisión de calidad del núcleo (final2): a text one character over the
+                // bound with no space near it is as long cut as whole (its last character gave way to «…»), so it is
+                // told cut by what it shows, not by its length.
                 if (obj["text"] is JsonValue whole && whole.TryGetValue(out string? read)
                     && projected["text"] is JsonValue part && part.TryGetValue(out string? shown)
-                    && shown.Length < read.Length
+                    && !string.Equals(shown, read, StringComparison.Ordinal)
                     && obj["offset"] is JsonValue offset && offset.TryGetValue(out int start))
                 {
                     int shownCharacters = shown.Length - 1; // without the «…» that marks the cut
