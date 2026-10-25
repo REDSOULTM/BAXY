@@ -931,6 +931,10 @@ internal sealed class WindowsVisibleControlAdapter
     // The window the running click pressed in (by the tree, at a point or by the pointer); 0 before any press.
     private nint _actedWindow;
 
+    // Revisión de nb-w11-revision: the desktop's root windows before the last click (its handoff watch), so a click whose
+    // view after it differs only in the focus is not told unchanged when a window of another process came meanwhile.
+    private HandoffWatch? _clickRoots;
+
     /// <summary>
     /// Renew al máximo (7.1): the window of the last view read again after a completed act, by the look's own request
     /// (the worker's «view», with that look's limit, words and cut, so its numbering is a look's) and bounded in time.
@@ -1314,6 +1318,7 @@ internal sealed class WindowsVisibleControlAdapter
         ExternalCapabilityReceipt receipt;
         _pressedUnchanged = null;
         _actedWindow = 0;
+        _clickRoots = null;
         // BAXY Renew cu (C11): the grid item a click names by its index, as the look called it («Encabezado de columna»).
         string? clickedType = null;
         if (arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("index", out JsonElement clickedIndex)
@@ -1366,7 +1371,13 @@ internal sealed class WindowsVisibleControlAdapter
         if (receipt.Verified && receipt.ErrorCode is null && receipt.EffectObserved && _actedWindow != 0
             && !EffectElsewhere(receipt.Result)
             && await AfterActAsync(_actedWindow, cancellationToken).ConfigureAwait(false) is { } after)
-            receipt = FocusOnly(receipt, after) ?? WithAfter(receipt, after);
+        {
+            // A window of another process that came since the click (a browser it opened) left this one inactive: its
+            // lost focus is the click's effect elsewhere, never «unchanged» (the model would press again).
+            receipt = FocusOnly(receipt, after) is { } unchanged && !AnotherWindowCame(_clickRoots)
+                ? unchanged
+                : WithAfter(receipt, after);
+        }
 
         if (receipt.Verified
             && receipt.Result is { ValueKind: JsonValueKind.Object } result
@@ -3209,7 +3220,7 @@ internal sealed class WindowsVisibleControlAdapter
         // Pasada r15b B2 (v3-17): the window's own popups before the click; one born of it is its effect.
         IReadOnlyList<nint> popupsBefore = PopupsOf(hwnd);
         // Ronda 20b, palanca 8, objetivo 3 (v3-44): the desktop's root windows before the click.
-        HandoffWatch? roots = RootsBefore(hwnd);
+        HandoffWatch? roots = _clickRoots = RootsBefore(hwnd);
         var clickRequest = new JsonObject
         {
             ["cmd"] = "click",
@@ -3290,7 +3301,7 @@ internal sealed class WindowsVisibleControlAdapter
         // itself gives no proof of the press by its image.
         bool animated = await WindowAnimatesAsync(hwnd, cancellationToken).ConfigureAwait(false);
         // Ronda final 19: the desktop's roots as close to the press as this path can take them (after the probe).
-        HandoffWatch? roots = RootsBefore(hwnd);
+        HandoffWatch? roots = _clickRoots = RootsBefore(hwnd);
         PointerPressed pointed = await LocatedPointPress.PointerAsync(
             _pointer, hwnd, x, y, null, null, cancellationToken, PopupsOf).ConfigureAwait(false);
         if (!pointed.Pressed)

@@ -632,6 +632,19 @@ public sealed class SaidFoldersTests
             new JsonObject { ["relativePath"] = "mis_notas_2027", ["folder"] = "documents" }), Is.Null);
     }
 
+    // Revisión de nb-w11-revision: the person's words with a character no folder name can hold («informe: tercer
+    // trimestre») are no spelling to offer: the call that leaves it out is refused for nothing, and the one offered
+    // fails (filesystem_path_invalid) before anything is made.
+    [TestCase("crea en documentos la carpeta informe: tercer trimestre", "informe tercer trimestre")]
+    [TestCase("crea en documentos la carpeta notas*viejas", "notas viejas")]
+    public void ANameTheirWordsCannotSpellAsAFolderIsNotOffered(string words, string made)
+    {
+        SaidFolders said = Heard(words);
+
+        Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
+            new JsonObject { ["relativePath"] = made, ["folder"] = "documents" })?.Refusal, Is.Null);
+    }
+
     private SaidFolders Heard(string words)
     {
         var said = new SaidFolders(Known);

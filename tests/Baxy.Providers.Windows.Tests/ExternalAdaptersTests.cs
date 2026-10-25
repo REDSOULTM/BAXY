@@ -2297,6 +2297,67 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Revisión de nb-w11-revision: a walk the time limit stopped after one file of that name may have left another one
+    // unseen; the one seen is not «the file of that name» to move (file.edit refuses the same, known_file_search_incomplete).
+    [Test]
+    public async Task ANamedFileOfThePersonsSeenByAWalkCutShortIsNotMoved()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "perfil");
+        Directory.CreateDirectory(Path.Combine(home, "viejos"));
+        Directory.CreateDirectory(Path.Combine(home, "destino"));
+        await File.WriteAllTextAsync(Path.Combine(home, "contrato.txt"), "nuevo");
+        await File.WriteAllTextAsync(Path.Combine(home, "viejos", "contrato.txt"), "viejo");
+        // The walk's clock: the start and the first file within the limit, every later file past it.
+        int read = 0;
+        DateTime start = new(2026, 10, 25, 12, 0, 0, DateTimeKind.Utc);
+        var adapter = new WindowsSandboxNamedFileAdapter(
+            temporary.Path, folder => folder == "home" ? home : null, [], () => read++ < 2 ? start : start.AddHours(1));
+
+        ExternalCapabilityReceipt moved = await adapter.InvokeAsync(
+            "filesystem.sandbox.move.named",
+            Json("""{"folder":"home","sourceFileName":"contrato.txt","destinationRelativePath":"destino"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(moved.Verified, Is.False);
+            Assert.That(moved.ErrorCode, Is.EqualTo("named_file_search_incomplete"));
+            Assert.That(moved.EffectMayHaveOccurred, Is.False);
+            Assert.That(File.Exists(Path.Combine(home, "contrato.txt")), Is.True);
+            Assert.That(Directory.EnumerateFiles(Path.Combine(home, "destino")), Is.Empty);
+        });
+    }
+
+    // Revisión de nb-w11-revision: «otro.txt:oculto» is no file of the folder but a hidden stream of the person's otro.txt;
+    // a copy there writes inside a file of theirs that the explorer shows unchanged. It is refused before any effect.
+    [TestCase("otro.txt:oculto")]
+    [TestCase("destino/otro.txt:oculto")]
+    public async Task ANamedFileOfThePersonsIsNeverCopiedIntoAStreamOfAnother(string destination)
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "perfil");
+        Directory.CreateDirectory(Path.Combine(home, "destino"));
+        await File.WriteAllTextAsync(Path.Combine(home, "contrato.txt"), "texto");
+        await File.WriteAllTextAsync(Path.Combine(home, "otro.txt"), "suyo");
+        await File.WriteAllTextAsync(Path.Combine(home, "destino", "otro.txt"), "suyo");
+        var adapter = new WindowsSandboxNamedFileAdapter(temporary.Path, folder => folder == "home" ? home : null, []);
+
+        ExternalCapabilityReceipt copied = await adapter.InvokeAsync(
+            "filesystem.sandbox.move.named",
+            Json("{\"copy\":true,\"folder\":\"home\",\"sourceFileName\":\"contrato.txt\",\"destinationRelativePath\":\""
+                + destination + "\"}"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(copied.Verified, Is.False);
+            Assert.That(copied.ErrorCode, Is.EqualTo("named_file_destination_invalid"));
+            Assert.That(copied.EffectMayHaveOccurred, Is.False);
+            Assert.That(File.Exists(Path.Combine(home, destination)), Is.False, "no stream was written");
+        });
+    }
+
     [Test]
     public async Task NamedSandboxDiffResolvesOnlyTheExactFileName()
     {

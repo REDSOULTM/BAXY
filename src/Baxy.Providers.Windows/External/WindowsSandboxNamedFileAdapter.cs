@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -15,15 +14,19 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
     private readonly string _root;
     private readonly Func<string, string?> _knownFolder;
     private readonly IReadOnlyList<string> _privateRoots;
+    private readonly Func<DateTime> _utcNow;
 
+    /// <param name="utcNow">The clock of the walk's time limit (tests stop it where they need).</param>
     internal WindowsSandboxNamedFileAdapter(
         string dataRoot,
         Func<string, string?>? knownFolder = null,
-        IReadOnlyList<string>? privateRoots = null)
+        IReadOnlyList<string>? privateRoots = null,
+        Func<DateTime>? utcNow = null)
     {
         _root = Path.Combine(Path.GetFullPath(dataRoot), "filesystem-sandbox");
         _knownFolder = knownFolder ?? WindowsFileToolsAdapter.KnownFolderPath;
         _privateRoots = privateRoots ?? BaxyPrivateArea.DefaultRoots();
+        _utcNow = utcNow ?? (() => DateTime.UtcNow);
     }
 
     public bool CanHandle(string operation) => operation is
@@ -116,7 +119,9 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         }
 
         (string[] matches, bool walkStopped) = FindInFolder(root, label, sourceName);
-        if (matches.Length == 0)
+        // The one file a walk cut by its time limit saw is not the only one of that name (file.edit's rule,
+        // known_file_search_incomplete): nothing is moved.
+        if (matches.Length == 0 || (matches.Length == 1 && walkStopped))
             return ExternalJson.Failure(operation, walkStopped ? "named_file_search_incomplete" : "named_file_not_found");
         if (matches.Length > 1)
         {
@@ -137,7 +142,10 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
             relativeDestination = WithoutRepeatedFolder(root, subdirectory, relativeDestination);
         string destination = Path.GetFullPath(Path.IsPathFullyQualified(relativeDestination) ? relativeDestination
             : Path.Combine(root, relativeDestination)).TrimEnd(Path.DirectorySeparatorChar);
-        if (!destination.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+        // A name with «:» past the folder is a stream of another file of theirs («otro.txt:oculto»), not a file in it.
+        if (!destination.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+            || destination[(root.Length + 1)..].Split(Path.DirectorySeparatorChar)
+                .Any(static part => part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
             return ExternalJson.Failure(operation, "named_file_destination_invalid");
         if (Directory.Exists(destination))
             destination = Path.Combine(destination, Path.GetFileName(source));
@@ -167,10 +175,10 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
     private (string[] Matches, bool WalkStopped) FindInFolder(string root, string label, string fileName)
     {
         var matches = new List<string>();
-        var walk = Stopwatch.StartNew();
+        DateTime deadline = _utcNow() + WalkTimeLimit;
         foreach (string file in Directory.EnumerateFiles(root, "*", WindowsKnownFileAdapter.WalkOptions(label)))
         {
-            if (walk.Elapsed >= WalkTimeLimit)
+            if (_utcNow() >= deadline)
                 return ([.. matches], true);
             if (string.Equals(Path.GetFileName(file), fileName, StringComparison.OrdinalIgnoreCase)
                 && !BaxyPrivateArea.Holds(_privateRoots, file))
