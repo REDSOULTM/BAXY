@@ -223,6 +223,27 @@ public sealed class FieldStepProjectionTests
         Assert.That((string?)card["risk"], Is.EqualTo(said));
     }
 
+    // Revisión 2026-10-25: «Qué puedo hacer» said input.pointer.control never asks, but its click asks in normal mode
+    // (RiskPolicy, K-1): an operation that asks with some arguments is «sometimes», never «never».
+    [TestCase("input.pointer.control", """{"action":"click","x":10,"y":10}""")]
+    [TestCase("input.visible.click", """{"label":"Enviar"}""")]
+    [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""")]
+    [TestCase("browser.control", """{"action":"close_all"}""")]
+    [TestCase("shell.command.run", """{"command":"Remove-Item notas.txt"}""")]
+    public void TheCatalogSaysSometimesOfAnOperationThatAsksWithSomeArguments(string operation, string arguments)
+    {
+        JsonObject? item = FieldStepProjection.Catalog()["groups"]!.AsArray()
+            .SelectMany(static group => group!["items"]!.AsArray())
+            .OfType<JsonObject>()
+            .SingleOrDefault(entry => (string?)entry["name"] == operation);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(FieldStepProjection.NormalModeAsks(operation, JsonNode.Parse(arguments)!.AsObject()), Is.True);
+            Assert.That((string?)item?["confirm"], Is.EqualTo("sometimes"));
+        });
+    }
+
     internal static JsonObject Finished(string status, bool verified, JsonObject facts, string? errorCode = null)
     {
         var step = new NativeTurnStep(Operation, new JsonObject(), status, verified, errorCode, 5, facts.ToJsonString(), "c1",
