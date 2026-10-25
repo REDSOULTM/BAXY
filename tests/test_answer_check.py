@@ -228,6 +228,98 @@ def test_a_place_asked_for_and_not_reached_told_as_done_in_no_place() -> None:
     assert _rules(r"Listo, lo agregué en C:\Users\ana\notas.txt.", [home], request) == []
 
 
+# ---- the name a file was saved with ---------------------------------------------------------------------------------
+# E017 (practice e2e, notebook, every version): «Guardar como» opened, no name nor folder typed, «Guardar» pressed: Windows
+# saved «lista pilas, cables.txt» in the home folder, and the answer said «guardé lista.txt en …\BAXY-bench».
+SAVE_REQUEST = r"abre el bloc de notas, escribe 'lista: pilas, cables' y guárdalo como lista.txt en C:\Users\usuario\BAXY-bench"
+SAVE_ANSWER = r"Listo, guardé lista.txt en C:\Users\usuario\BAXY-bench."
+
+
+def _view(title: str) -> dict:
+    return _r("input.visible.controls", {"status": "completed", "verification": "output_only",
+                                         "view": f"Ventana «{title}» (Notepad, window 7), al frente\nControles:\n"
+                                                 f"[0] Document «Editor de texto» (centro)\n[1] TitleBar «{title}» (arriba)"},
+              {"application": "Bloc de notas"})
+
+
+def _click(label: str, after: dict | None = None) -> dict:
+    observed = {"ok": True, "name": label, "kind": "Button", "effectObserved": True, **({"after": after} if after else {})}
+    return _r("input.visible.click", {**DONE, "observed": observed}, {"label": label})
+
+
+def _saving(*after_save: dict) -> list[dict]:
+    """E017's turn up to the press of «Guardar» in the dialog, with what was read after it."""
+    dialog = _r("input.visible.controls", {"status": "completed", "verification": "output_only",
+                                           "view": "Ventana «Guardar como» (Notepad, window 9), al frente, es el diálogo "
+                                                   "modal\nFoco: [41] Edit «Nombre de archivo:» = lista pilas, cables.txt"})
+    return [_r("app.open", {**DONE, "observed": {"appId": "Bloc de notas"}}),
+            _r("input.text.type", {**DONE, "observed": {"windowTitle": "Sin título: Bloc de notas"}},
+               {"text": "lista: pilas, cables"}),
+            _click("Archivo"), _click("Guardar como"), dialog, _click("Guardar"), *after_save]
+
+
+def test_a_name_said_saved_that_the_window_after_the_save_contradicts() -> None:
+    receipts = _saving(_view("lista pilas, cables.txt: Bloc de notas"))
+    findings = check(SAVE_ANSWER, SAVE_REQUEST, receipts, [(r["op"], r["completed"], r["read"]) for r in receipts])
+    assert [f["rule"] for f in findings] == ["saved_name"]
+    assert "lista.txt" in findings[0]["fact"] and "lista pilas, cables.txt" in findings[0]["fact"]
+    # The press's own result may carry the title it left (its «after»), and a path said holds the name too.
+    titled = _saving()[:-1] + [_click("Guardar", {"changed": ["[29] TitleBar «lista pilas, cables.txt: Bloc de notas»"],
+                                                  "gone": ["[30] TitleBar «Sin título: Bloc de notas»"]})]
+    assert _rules(SAVE_ANSWER, titled, SAVE_REQUEST) == ["saved_name"]
+    assert _rules(r"Lo guardé en C:\Users\usuario\BAXY-bench\lista.txt.", receipts, SAVE_REQUEST) == ["saved_name"]
+
+
+@pytest.mark.parametrize("answer", [
+    "No pude guardarlo como lista.txt: la ventana dice lista pilas, cables.txt.",  # negated
+    "No guardé lista.txt; Windows lo llamó lista pilas, cables.txt.",
+    "¿Guardé lista.txt donde querías?",  # a question
+    "Lo guardé. ¿Quieres que lo renombre a lista.txt?",  # the name is in the question
+    "Guardé «lista.txt» en BAXY-bench.",  # quoted
+    "Guardé lista pilas, cables.txt en tu carpeta de usuario.",  # the name the window says
+])
+def test_a_name_told_as_not_saved_asked_or_quoted_claims_nothing(answer: str) -> None:
+    assert "saved_name" not in _rules(answer, _saving(_view("lista pilas, cables.txt: Bloc de notas")), SAVE_REQUEST)
+
+
+def test_a_name_the_turn_shows_or_no_name_shown_at_all_is_not_contradicted() -> None:
+    # The window says the name said (unsaved mark included).
+    assert _rules(SAVE_ANSWER, _saving(_view("*lista.txt: Bloc de notas")), SAVE_REQUEST) == []
+    # A result of the turn shows it (the name typed in the dialog, a file result): the window is not all there is.
+    typed = _saving(_view("lista pilas, cables.txt: Bloc de notas"))
+    typed.insert(5, _r("input.text.type", {**DONE, "observed": {}}, {"text": "lista.txt"}))
+    assert _rules(SAVE_ANSWER, typed, SAVE_REQUEST) == []
+    # Nothing read after the save, or a title with no extension (hidden extensions): no name is shown, and the rule
+    # is silent (what was not verified is other rules' to tell).
+    assert _rules(SAVE_ANSWER, _saving(), SAVE_REQUEST) == []
+    assert _rules(SAVE_ANSWER, _saving(_view("lista pilas, cables: Bloc de notas")), SAVE_REQUEST) == []
+    # A name shown only before the save is not what the save left.
+    before = _saving()
+    before.insert(2, _view("borrador.txt: Bloc de notas"))
+    assert _rules(SAVE_ANSWER, before, SAVE_REQUEST) == []
+    # A window that names no file of that kind (a page, an e-mail address) is not the file's window.
+    assert _rules(SAVE_ANSWER, _saving(_view("(sin asunto) - ana@gmail.com - Gmail - Opera")), SAVE_REQUEST) == []
+    assert _rules(SAVE_ANSWER, _saving(_view("Amazon.com: compras - Opera")), SAVE_REQUEST) == []
+
+
+def test_the_same_name_with_another_extension_is_another_file() -> None:
+    # On Windows the extension is part of the name: lista.md is not lista.txt, and a person who looks for lista.txt
+    # does not find it. Same stem or same extension is what makes a window's name the saved file's.
+    assert _rules(SAVE_ANSWER, _saving(_view("lista.md: Bloc de notas")), SAVE_REQUEST) == ["saved_name"]
+    assert _rules(SAVE_ANSWER, _saving(_view("LISTA.TXT: Bloc de notas")), SAVE_REQUEST) == []  # case is not a name
+
+
+def test_a_saved_name_is_read_the_same_in_any_app_and_from_a_file_result() -> None:
+    paint = [_r("app.open", {**DONE, "observed": {"appId": "Paint"}}), _click("Guardar"),
+             _r("input.visible.controls", {"status": "completed", "verification": "output_only",
+                                           "view": "Ventana «Sin título.png - Paint» (mspaint, window 3), al frente"})]
+    assert _rules("Listo, lo guardé como dibujo.png.", paint, "guarda el dibujo como dibujo.png") == ["saved_name"]
+    written = _r("file.write", {**DONE, "observed": {"name": "notas.txt", "fullPath": r"C:\Users\ana\notas.txt"}})
+    findings = check("Creé lista.txt con tu texto.", "crea lista.txt", [written], [("file.write", True, False)])
+    assert [f["rule"] for f in findings] == ["saved_name"] and "notas.txt" in findings[0]["fact"]
+    assert _rules("Creé notas.txt con tu texto.", [written]) == []
+
+
 def test_a_place_app_open_only_asked_for() -> None:
     # F019: «abre Steam y ve a la biblioteca» → app_open with place, nothing read back, nothing looked after it.
     asked = _r("app.open", {"status": "completed", "verification": "delivered_only",
