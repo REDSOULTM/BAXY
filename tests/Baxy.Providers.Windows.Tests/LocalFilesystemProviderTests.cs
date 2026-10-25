@@ -1091,6 +1091,68 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Revisión de fase 3: PowerShell runs the profiles in Documents\WindowsPowerShell and Documents\PowerShell every time
+    // it opens without -NoProfile; no file.write (nor append, nor a folder) goes there through the documents folder or by
+    // full path. The folders come from where Windows says Documents is, not from a user name; the rest of Documents
+    // (a sibling with a similar name too) stays writable.
+    [Test]
+    public void NothingIsWrittenWherePowerShellRunsItAtStart()
+    {
+        using TemporaryDirectory temporary = new();
+        string documents = Path.Combine(temporary.Path, "OneDrive", "Documentos");
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        string windowsPowerShell = Path.Combine(documents, "WindowsPowerShell");
+        Directory.CreateDirectory(windowsPowerShell);
+        Directory.CreateDirectory(sandbox);
+        string existing = Path.Combine(windowsPowerShell, "Microsoft.PowerShell_profile.ps1");
+        File.WriteAllText(existing, "# suyo");
+        IReadOnlyList<string> roots = AutostartArea.RootsFrom(folder =>
+            folder == Environment.SpecialFolder.MyDocuments ? documents : Path.Combine(temporary.Path, "absent", folder.ToString()));
+        var provider = new LocalFilesystemProvider(sandbox)
+        {
+            KnownFolderPath = folder => folder == "documents" ? documents : Path.Combine(temporary.Path, "absent", folder),
+            PrivateRoots = [],
+            AutostartRoots = roots,
+        };
+
+        Assert.Multiple(() =>
+        {
+            foreach (TestDelegate write in (TestDelegate[])[
+                () => provider.WriteText("WindowsPowerShell/Microsoft.PowerShell_profile.ps1", "calc", null, "documents", append: true),
+                () => provider.WriteText("WindowsPowerShell/profile.ps1", "calc", null, "documents"),
+                () => provider.WriteText("PowerShell/Microsoft.PowerShell_profile.ps1", "calc", null, "documents"),
+                () => provider.WriteText("PowerShell/Microsoft.VSCode_profile.ps1", "calc", null, "documents"),
+                () => provider.WriteText(Path.Combine(documents, "PowerShell", "profile.ps1"), "calc", null),
+                () => provider.CreateDirectory("PowerShell", "documents"),
+                () => provider.CreateDirectory("WindowsPowerShell/Modules/m", "documents"),
+            ])
+            {
+                Assert.That(write, Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_autostart"));
+            }
+            Assert.That(Directory.EnumerateFileSystemEntries(windowsPowerShell), Is.EqualTo(new[] { existing }));
+            Assert.That(File.ReadAllText(existing), Is.EqualTo("# suyo"));
+            Assert.That(Directory.Exists(Path.Combine(documents, "PowerShell")), Is.False);
+            provider.WriteText("PowerShellNotas/perfil.txt", "suyo", null, "documents");
+            Assert.That(File.Exists(Path.Combine(documents, "PowerShellNotas", "perfil.txt")), Is.True);
+        });
+    }
+
+    // The profile folders guarded by default are the ones under the Documents Windows names (redirected or not yet made).
+    [Test]
+    public void ThePowerShellProfileFoldersFollowWindowsDocuments()
+    {
+        string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments,
+            Environment.SpecialFolderOption.DoNotVerify);
+        Assume.That(Path.IsPathFullyQualified(documents), Is.True);
+
+        Assert.That(AutostartArea.DefaultRoots(), Is.SupersetOf(new[]
+        {
+            Path.GetFullPath(Path.Combine(documents, "WindowsPowerShell")),
+            Path.GetFullPath(Path.Combine(documents, "PowerShell")),
+        }));
+    }
+
     // The 8.3 alias Windows keeps for a folder («Start Menu» is STARTM~1 where the volume makes them).
     private static string ShortPath(string path)
     {
