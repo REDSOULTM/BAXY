@@ -599,6 +599,7 @@ public static class ProductCatalog
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0701 «Dime cuantos archivos .py
         // hay en el directorio actual», D24): el directorio actual es la carpeta del
         // Explorador en primer plano; sin Explorador delante falla (no_explorer_in_front).
+        // Holdout v6 V6E027: sin ninguno delante, el único abierto («la carpeta que tengo abierta en el explorer»).
         Descriptor(
             "filesystem.explorer.count",
             Schema(
@@ -611,7 +612,7 @@ public static class ProductCatalog
                 ["extension"]),
             OperationRisks.ReadOnly,
             "filesystem.explorer.count.foreground.folder.toplevel.v1",
-            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra (o en una subcarpeta suya) o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta; no cuenta los archivos ocultos ni los de sistema."),
+            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra (o en una subcarpeta suya) o, sin ella, en la que muestra la ventana del Explorador en primer plano o, sin ninguna delante, la única abierta (si no, falla), y nombra esa carpeta sin revelar su ruta; no cuenta los archivos ocultos ni los de sistema."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),

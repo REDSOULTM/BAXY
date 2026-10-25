@@ -17,6 +17,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     // none, and the model told «la ventana de Word está protegida» when a terminal was in front. Null in the test seams.
     private Func<string, JsonElement, string?>? _refusedProcess;
     private Func<string, JsonElement, string?>? _elevatedAct;
+    // Holdout v6 V6E016: the desktop's windows an act may reach, as a refusal lists them. Null in the test seams.
+    private Func<IReadOnlyList<string>>? _openWindows;
     private readonly IOpenedApplicationKeyboard? _openedKeyboard;
     private int _disposed;
 
@@ -40,6 +42,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             OpenedApplicationKeyboard.Product)
     {
         _refusedProcess = RefusedProcess;
+        _openWindows = OpenWindows;
         _elevatedAct = static (operation, arguments) => ElevatedActCode(operation, ActTarget(operation, arguments),
             static window => unchecked((int)VisibleControlSurface.ProcessOf(window)), VisibleControlSurface.RunsAboveUs,
             VisibleControlSurface.Elevated);
@@ -252,6 +255,24 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         set => _refusedProcess = value;
     }
 
+    // A test seam's way to list the desktop's windows an act may reach (the product's reads them, OpenWindows).
+    internal Func<IReadOnlyList<string>>? OpenWindowsOf
+    {
+        set => _openWindows = value;
+    }
+
+    /// <summary>
+    /// Holdout v6 V6E016 («en el bloc de notas que está abierto escribe: …», both seeds): the text went with no window to
+    /// the developer's editor in front, was refused, and the reply ended there although the refusal named the look that
+    /// gives the Notepad's number. The desktop's root windows an act may reach, top of the Z order first, each as a look
+    /// names it («title» (process, window N)), N being what the act takes as window.
+    /// </summary>
+    private static IReadOnlyList<string> OpenWindows() =>
+        [.. VisibleControlSurface.RootWindowsNow(0).Windows
+            .Where(window => !VisibleControlSurface.ActRefused(window.Window))
+            .Select(window => $"«{VisibleControlSurface.WindowTitle(window.Window)}» "
+                + $"({VisibleControlSurface.ViewProcess(window.Window).ProcessName}, window {(long)window.Window})")];
+
     // A test seam's way to say a keyboard act's window runs above BAXY (the product's reads its process token).
     internal Func<string, JsonElement, string?>? ElevatedActOf
     {
@@ -297,19 +318,29 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         _ => 0,
     };
 
+    // The acts of ActTarget that take a window (the catalog's «window»).
+    private static bool TakesAWindow(string operation) =>
+        operation is "input.visible.click" or "input.key.press" or "input.text.type" or "input.scroll";
+
     // Holdout v5 (V5E066): an input_text_type with no window refused at a protected window in front was told app_open
     // (another Notepad) or window_focus (an id no call had given), never the look by name that gives the open window's
     // number. The acts of ActTarget that take a window (the catalog's «window») name that look first; the others (a
     // paste, Ctrl+A, a copy) take none, and keep the opening or the front.
-    private static string ProtectedNext(string operation, string program, bool named)
+    // Holdout v6 V6E016: with the windows an act may reach listed beside it, the step is done again with the number of
+    // the one meant, and only a window not listed is looked at by its name first.
+    private static string ProtectedNext(string operation, string program, bool named, bool listed)
     {
         string refused = $"nothing was sent: the window it would go to belongs to {program}, where BAXY does not act";
-        if (operation is not ("input.visible.click" or "input.key.press" or "input.text.type" or "input.scroll"))
+        if (!TakesAWindow(operation))
             return refused + "; BAXY itself can open the application it meant (app_open) or bring its window to the front "
                 + "(window_focus) and then do this step again there";
         string step = operation.Replace('.', '_');
         return refused + (named ? "" : $"; {step} with no window named acts on the window in front")
-            + "; the window of another application that is open is reached by looking at it by its name "
+            + (listed
+                ? $"; the windows open that BAXY may act in are in windows (top first), and doing this step again as {step} "
+                    + "with window set to the number of the one meant sends it there; a window not listed"
+                : "; the window of another application that is open")
+            + " is reached by looking at it by its name "
             + "(input_visible_controls with application), whose result gives that window's number, and doing this step "
             + $"again as {step} with window set to that number; an application that is not open is opened first (app_open)";
     }
@@ -455,7 +486,20 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                     // BAXY Renew cu (C18): a paste with no app opened went to the window in front (a developer's) and
                     // the reply blamed the app it meant; the fact of where it went, and how another window is reached.
                     if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.ProtectedFrontNext))
-                        writer.WriteString("next", ProtectedNext(operation, program, MissionWindow(arguments) != 0));
+                    {
+                        IReadOnlyList<string> open = TakesAWindow(operation) && _openWindows is { } windows
+                            ? windows()
+                            : [];
+                        if (open.Count > 0)
+                        {
+                            writer.WriteStartArray("windows");
+                            foreach (string window in open.Take(WindowsVisibleControlAdapter.NamedWindowCandidateLimit))
+                                writer.WriteStringValue(window);
+                            writer.WriteEndArray();
+                        }
+
+                        writer.WriteString("next", ProtectedNext(operation, program, MissionWindow(arguments) != 0, open.Count > 0));
+                    }
 
                     writer.WriteEndObject();
                 }), "protected_window");

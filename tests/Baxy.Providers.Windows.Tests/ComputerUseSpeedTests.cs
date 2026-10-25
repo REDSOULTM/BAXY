@@ -90,6 +90,32 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
+    // Holdout v6 V6E024 («on the calculator, hit the C button», both seeds): «control» was pressed alone and the reply
+    // said it was pressed, the display unchecked. A modifier alone says, beside its receipt, that it writes nothing and
+    // how a window's button is pressed; another key, or the aids off, says nothing of it.
+    [TestCase("all", "control", true)]
+    [TestCase("all", "shift", true)]
+    [TestCase("all", "ctrl_c", false)]
+    [TestCase("none", "control", false)]
+    public async Task AModifierPressedAloneSaysItWritesNothingAndHowAButtonIsPressed(string aids, string key, bool told)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var keyboard = new FakeDesktopKeyboard();
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(
+            "input.key.press", Json($$"""{"key":"{{key}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("key").GetString(), Is.EqualTo(key), "the receipt stays");
+            Assert.That(receipt.Result?.TryGetProperty("next", out _), Is.EqualTo(told));
+            if (told)
+                Assert.That(receipt.Result?.GetProperty("next").GetString(), Does.StartWith(key + " was pressed by itself")
+                    .And.Contain("input_visible_click"));
+        });
+    }
+
     [Test]
     public async Task AKeyOutsideTheCatalogIsRefusedBeforeAnythingIsSent()
     {

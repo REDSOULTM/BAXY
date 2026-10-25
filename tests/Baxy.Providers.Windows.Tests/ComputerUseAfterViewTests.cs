@@ -224,9 +224,12 @@ public sealed class ComputerUseAfterViewTests
     // changed because the display lost the focus ring, and the click came back completed. A click whose only proof is
     // the image, with the view after it differing only in the focus, is unchanged and carries that view; a view after
     // it with anything else changed keeps it completed.
-    [TestCase("Se muestra 0", "visible_button_postread_unchanged", TestName = "only the focus moved: unchanged")]
-    [TestCase("Se muestra 5", null, TestName = "counter-case: the display changed: completed")]
-    public void AClickProvedByItsImageWhoseViewAfterDiffersOnlyInTheFocusIsUnchanged(string shown, string? error)
+    // Holdout v6 V6E020: in a view cut at its cap too (Settings' taskbar page, its current crumb pressed).
+    [TestCase("Se muestra 0", "visible_button_postread_unchanged", 2, TestName = "only the focus moved: unchanged")]
+    [TestCase("Se muestra 0", "visible_button_postread_unchanged", 74, TestName = "only the focus moved, cut view: unchanged")]
+    [TestCase("Se muestra 5", null, 2, TestName = "counter-case: the display changed: completed")]
+    public void AClickProvedByItsImageWhoseViewAfterDiffersOnlyInTheFocusIsUnchanged(
+        string shown, string? error, int controlCount)
     {
         WithWindow(window =>
         {
@@ -242,7 +245,7 @@ public sealed class ComputerUseAfterViewTests
                 "{\"kind\":\"Text\",\"name\":\"" + shown + "\",\"id\":\"1.38\",\"state\":\"\",\"value\":null}," +
                 "{\"kind\":\"Text\",\"name\":\"Modo de calculadora Estándar\",\"id\":\"1.46\",\"state\":\"\"," +
                 "\"value\":null}]," +
-                "\"controlCount\":2,\"partial\":false}";
+                "\"controlCount\":" + controlCount + ",\"partial\":false}";
             var worker = new CommandWorker(command => command switch
             {
                 "click" => PendingLabel,

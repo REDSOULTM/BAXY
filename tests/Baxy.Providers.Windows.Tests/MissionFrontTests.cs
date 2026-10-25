@@ -155,6 +155,44 @@ public sealed class MissionFrontTests
         });
     }
 
+    // Holdout v6 V6E016 («en el bloc de notas que está abierto escribe: comprar tierra de hojas para las macetas», both
+    // seeds): the text with no window was refused at the editor in front and the reply ended there, the Notepad's number
+    // one look away. The refusal of an act that takes a window lists the windows it may reach, with their numbers, and
+    // says the step is done again with the one meant; a paste, which takes none, lists nothing; with the aids off, nothing.
+    [TestCase("all", "input.text.type", """{"text":"comprar tierra"}""", true)]
+    [TestCase("all", "clipboard.paste", "{}", false)]
+    [TestCase("none", "input.text.type", """{"text":"comprar tierra"}""", false)]
+    public async Task AProtectedWindowRefusalListsTheWindowsTheActMayReachWithTheirNumbers(
+        string aids, string operation, string arguments, bool listed)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter(operation, lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
+        {
+            RefusedProcessOf = (_, _) => "Code",
+            OpenWindowsOf = () => ["«pendientes_hoy.txt: Bloc de notas» (Notepad, window 2230342)"],
+        };
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
+            Assert.That(adapter.Calls, Is.Zero);
+            Assert.That(receipt.Result?.TryGetProperty("windows", out _), Is.EqualTo(listed));
+            if (!listed)
+                return;
+            Assert.That(receipt.Result!.Value.GetProperty("windows").EnumerateArray().Select(window => window.GetString()),
+                Is.EqualTo(new[] { "«pendientes_hoy.txt: Bloc de notas» (Notepad, window 2230342)" }));
+            string told = receipt.Result!.Value.GetProperty("next").GetString()!;
+            Assert.That(told, Does.Contain("input_text_type with window set to the number of the one meant"));
+            Assert.That(told.IndexOf("windows (top first)", StringComparison.Ordinal),
+                Is.LessThan(told.IndexOf("input_visible_controls", StringComparison.Ordinal)),
+                "the listed windows come before a look");
+        });
+    }
+
     // Renew al máximo (w5): an act stopped by the person's input says why and that the window was not looked at, beside
     // the code, which stays; whether anything was sent is as the receipt says. With the aids off it reads as before.
     [TestCase("all", false, "nothing of the act was sent")]

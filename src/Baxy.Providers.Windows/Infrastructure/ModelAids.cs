@@ -79,6 +79,9 @@ public static class ModelAids
     public const string TypedTargetNext = "typed_target_next";
 
 
+    /// <summary>Holdout v6 V6E024: control or shift pressed alone says it writes nothing and how a window's button is pressed.</summary>
+    public const string LoneModifierNext = "lone_modifier_next";
+
     /// <summary>Renew al máximo (w5): an act stopped by the person's input says why it stopped and how the window is seen.</summary>
     public const string InterruptedNext = "interrupted_next";
 
