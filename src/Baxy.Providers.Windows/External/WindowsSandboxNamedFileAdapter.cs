@@ -15,18 +15,22 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
     private readonly Func<string, string?> _knownFolder;
     private readonly IReadOnlyList<string> _privateRoots;
     private readonly Func<DateTime> _utcNow;
+    // The folders Windows runs at sign-in (AutostartArea): never a destination.
+    private readonly IReadOnlyList<string> _autostartRoots;
 
     /// <param name="utcNow">The clock of the walk's time limit (tests stop it where they need).</param>
     internal WindowsSandboxNamedFileAdapter(
         string dataRoot,
         Func<string, string?>? knownFolder = null,
         IReadOnlyList<string>? privateRoots = null,
-        Func<DateTime>? utcNow = null)
+        Func<DateTime>? utcNow = null,
+        IReadOnlyList<string>? autostartRoots = null)
     {
         _root = Path.Combine(Path.GetFullPath(dataRoot), "filesystem-sandbox");
         _knownFolder = knownFolder ?? WindowsFileToolsAdapter.KnownFolderPath;
         _privateRoots = privateRoots ?? BaxyPrivateArea.DefaultRoots();
         _utcNow = utcNow ?? (() => DateTime.UtcNow);
+        _autostartRoots = autostartRoots ?? AutostartArea.DefaultRoots();
     }
 
     public bool CanHandle(string operation) => operation is
@@ -151,6 +155,9 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
             destination = Path.Combine(destination, Path.GetFileName(source));
         if (BaxyPrivateArea.Holds(_privateRoots, destination))
             return ExternalJson.Failure(operation, "path_reserved");
+        // Revisión de fase 3: nothing is moved nor copied where Windows runs it at sign-in.
+        if (AutostartArea.Holds(_autostartRoots, destination))
+            return ExternalJson.Failure(operation, "path_autostart");
         if (File.Exists(destination) || Directory.Exists(destination))
             return ExternalJson.Failure(operation, "named_file_destination_exists");
         string parent = Path.GetDirectoryName(destination)!;

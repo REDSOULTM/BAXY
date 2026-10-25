@@ -22,13 +22,18 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         IReadOnlyDictionary<string, string[]> configuredRoots,
         IRecycleBin? recycleBin = null,
         IReadOnlyList<string>? privateRoots = null,
-        Func<DateTime>? utcNow = null)
+        Func<DateTime>? utcNow = null,
+        IReadOnlyList<string>? autostartRoots = null)
     {
         _configuredRoots = configuredRoots;
         _recycleBin = recycleBin ?? WindowsRecycleBin.Instance;
         _privateRoots = privateRoots ?? BaxyPrivateArea.DefaultRoots();
         _utcNow = utcNow ?? (() => DateTime.UtcNow);
+        _autostartRoots = autostartRoots ?? AutostartArea.DefaultRoots();
     }
+
+    // The folders Windows runs at sign-in (AutostartArea): never edited.
+    private readonly IReadOnlyList<string> _autostartRoots;
 
     // The clock a walk's time limit is measured with (a test stops a walk where it wants).
     private readonly Func<DateTime> _utcNow;
@@ -853,6 +858,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         // the one seen is named, so the next call can name it by its path.
         if (walkStopped)
             return SearchIncompleteRefusal(operation, file);
+        // Revisión de fase 3: a file Windows runs at sign-in is read like any other, never edited.
+        if (AutostartArea.Holds(_autostartRoots, file.Path))
+            return ExternalJson.Failure(operation, "path_autostart");
         if (new FileInfo(file.Path).Length > MaximumTextBytes)
             return ExternalJson.Failure(operation, "known_text_too_large");
         byte[] before = File.ReadAllBytes(file.Path);

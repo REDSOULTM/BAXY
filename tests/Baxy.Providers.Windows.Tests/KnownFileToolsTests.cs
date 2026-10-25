@@ -167,6 +167,55 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Revisión de fase 3: a file in the Startup folder (Windows runs it at sign-in) is read and found as any other, but
+    // file.edit does not change it, named by its path, its full path or its subdirectory.
+    [Test]
+    public async Task AFileWindowsRunsAtSignInIsReadButNotEdited()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string startup = Path.Combine(home, "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "Programs", "Startup");
+        string script = Path.Combine(startup, "arranque.cmd");
+        Directory.CreateDirectory(startup);
+        await File.WriteAllTextAsync(script, "@echo hola");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin, [],
+            autostartRoots: [startup]);
+        Task<ExternalCapabilityReceipt> Run(string operation, object arguments) =>
+            adapter.InvokeAsync(operation, Json(JsonSerializer.Serialize(arguments)), CancellationToken.None).AsTask();
+
+        ExternalCapabilityReceipt read = await Run("file.read", new { folder = "home", fileName = script });
+        ExternalCapabilityReceipt found = await Run("file.find",
+            new { folder = "home", subdirectory = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup" });
+        ExternalCapabilityReceipt byPath = await Run("file.edit", new
+        {
+            folder = "home", fileName = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/arranque.cmd",
+            oldText = "hola", newText = "calc",
+        });
+        ExternalCapabilityReceipt byFullPath = await Run("file.edit",
+            new { folder = "home", fileName = script, oldText = "hola", newText = "calc" });
+        ExternalCapabilityReceipt bySubdirectory = await Run("file.edit", new
+        {
+            folder = "home", subdirectory = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup",
+            fileName = "arranque.cmd", oldText = "hola", newText = "calc",
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("@echo hola"));
+            Assert.That(found.Verified, Is.True, found.ErrorCode);
+            Assert.That(found.Result?.GetProperty("entries")[0].GetProperty("name").GetString(), Is.EqualTo("arranque.cmd"));
+            foreach (ExternalCapabilityReceipt edited in (ExternalCapabilityReceipt[])[byPath, byFullPath, bySubdirectory])
+            {
+                Assert.That(edited.ErrorCode, Is.EqualTo("path_autostart"));
+                Assert.That(edited.EffectMayHaveOccurred, Is.False);
+            }
+            Assert.That(File.ReadAllText(script), Is.EqualTo("@echo hola"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];

@@ -2358,6 +2358,50 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Revisión de fase 3: a file of the person's is not moved nor copied into the Startup folder (Windows runs it at
+    // sign-in), named by its path inside the folder, by its full path or as the subdirectory's own destination.
+    [Test]
+    public async Task ANamedFileIsNeverMovedOrCopiedWhereWindowsRunsItAtSignIn()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "perfil");
+        const string programs = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs";
+        string startup = Path.Combine(home, programs.Replace('/', Path.DirectorySeparatorChar), "Startup");
+        Directory.CreateDirectory(startup);
+        await File.WriteAllTextAsync(Path.Combine(home, "nota.cmd"), "calc");
+        await File.WriteAllTextAsync(Path.Combine(Path.GetDirectoryName(startup)!, "otra.cmd"), "calc");
+        var adapter = new WindowsSandboxNamedFileAdapter(temporary.Path, folder => folder == "home" ? home : null, [],
+            autostartRoots: [startup]);
+        Task<ExternalCapabilityReceipt> Run(object arguments) => adapter.InvokeAsync(
+            "filesystem.sandbox.move.named", Json(JsonSerializer.Serialize(arguments)), CancellationToken.None).AsTask();
+
+        ExternalCapabilityReceipt moved = await Run(new
+        {
+            folder = "home", sourceFileName = "nota.cmd", destinationRelativePath = programs + "/Startup",
+        });
+        ExternalCapabilityReceipt copied = await Run(new
+        {
+            copy = true, folder = "home", sourceFileName = "nota.cmd",
+            destinationRelativePath = Path.Combine(startup, "x.cmd"),
+        });
+        ExternalCapabilityReceipt inside = await Run(new
+        {
+            copy = true, folder = "home", subdirectory = programs, sourceFileName = "otra.cmd",
+            destinationRelativePath = "Startup/x.cmd",
+        });
+
+        Assert.Multiple(() =>
+        {
+            foreach (ExternalCapabilityReceipt receipt in (ExternalCapabilityReceipt[])[moved, copied, inside])
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("path_autostart"));
+                Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            }
+            Assert.That(Directory.EnumerateFileSystemEntries(startup), Is.Empty);
+            Assert.That(File.ReadAllText(Path.Combine(home, "nota.cmd")), Is.EqualTo("calc"));
+        });
+    }
+
     [Test]
     public async Task NamedSandboxDiffResolvesOnlyTheExactFileName()
     {
