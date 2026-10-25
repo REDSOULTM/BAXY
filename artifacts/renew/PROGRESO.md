@@ -3384,3 +3384,9 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   sale negra, el proveedor lanza IOException, nadie la ataja y el core se para (exit 70) → `engine_no_answer`. Arreglos:
   nb-w10-negra 4bc235b34 (el dibujo ilegible es «sin dibujo leído») y w10-motor (el core contesta esa petición como
   fallo con efecto incierto y sigue), en curso. Van a int11d.
+- 23:17 **int11c en el banco de decisión v5** (720, ya práctica; referencia ho5-final s0-2, mismo código base, catálogo y
+  juez): 631/629/622 = 627,33 frente a 624,0 (Δ +3,33, IC95 [−3,67; +10,67]; gemelos [−4,0; +10,67]); acciones
+  equivocadas 66,33 → 63,33; pass^3 602 → 609. Por familia: comun 109,7 → 111,3 (H8 recupera algo), multiturno 62,3 →
+  64,7, ya_hecho 15,0 → 16,7 (H3: lejos del +8), larga_cola 70,3 → 69,7. Sin pérdida en ningún banco de decisión.
+- 22:49 **int11d e852c2db3** (int11c + nb-w10-negra + w10-motor, H9): suites PC Kernel 747, Contracts 74, Setup 477, App
+  208, Providers 3119, pytest 654 (+vad con py3.10); catálogo idéntico al de int11c. Candidato a HEAD final.
