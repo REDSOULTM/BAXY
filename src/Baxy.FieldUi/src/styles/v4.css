@@ -229,7 +229,8 @@ html.hc .bx-avid video{mix-blend-mode:normal;filter:contrast(1.15)}
 .bx-avid ~ canvas{position:relative;z-index:2}
 /* light theme: the hologram clips only read on dark, so it uses the drawn face */
 html.lt .bx-avid{display:none!important}
-@media (prefers-reduced-motion:reduce){.bx-avid video{transition:none}.bx-avid.s-booting video{animation:none}}
+/* reduced motion: no fade between clips (.fade outranks the plain rule), no powering-up pulse, no shake on an error */
+@media (prefers-reduced-motion:reduce){.bx-avid video,.bx-avid.fade video{transition:none}.bx-avid.s-booting video,.bx-avid.s-error video.on{animation:none}}
 /* round-2 fixes: the folded chat is fully hidden, the centre never spills, panel names ellipsize in accessible mode */
 .bx2.chat-off:not(.narrow) .bx-right{border-left-width:0;visibility:hidden;transition:visibility 0s .45s}
 .bx2 .bx-center{overflow:hidden}
