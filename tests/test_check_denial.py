@@ -83,6 +83,15 @@ def test_a_denied_act_that_a_tool_of_the_catalog_does_is_flagged_with_that_tool(
     "No puedo abrir archivos .exe.",
     "No borré el archivo.",
     "Puedo borrar la carpeta si quieres.",
+    # Revisión w11-rev4: a condition after the denial, a place outside the person's folders, what the person asked.
+    "No puedo abrir el archivo si no me dices cuál es.",
+    "No puedo crear el archivo sin un nombre.",
+    "I can't open the file unless you tell me which one.",
+    "No puedo borrar archivos fuera de tus carpetas.",
+    "I can't delete files outside your folders.",
+    "No puedo borrar ese archivo: me pediste que no lo tocara.",
+    "No puedo borrar archivos de esa carpeta, me dijiste que no borrara nada ahí.",
+    "I can't delete that file, you asked me not to touch it.",
 ])
 def test_real_limits_policy_questions_and_conditions_are_not_flagged(answer: str) -> None:
     assert _denials(answer) == []

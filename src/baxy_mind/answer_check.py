@@ -1099,9 +1099,14 @@ _REAL_LIMIT = re.compile(
     r"no (?:esta|estan|aparece|aparecen|existe|existen) (?:instalad\w*|en el catalogo)|no (?:lo |la )?encontre|"
     r"not installed|not found|usb|pendrive|disco externo|unidad|nube|cloud|onedrive|google drive|dropbox|icloud|"
     r"servidor|server|otro (?:pc|computador|ordenador|equipo)|celular|telefono|movil|phone|system32|"
-    r"archivos de programa|program files|ejecutables?|executables?|instalador\w*|installers?|programas?)\b"
+    r"archivos de programa|program files|ejecutables?|executables?|instalador\w*|installers?|programas?|"
+    # Revisión w11-rev4: a place outside the person's folders, as the rule says, and what the person asked BAXY not to
+    # do («me pediste que no lo tocara»), which no earlier call of the session holds.
+    r"fuera de|outside|me pediste|me dijiste|pediste que no|dijiste que no|you asked me|you told me)\b"
     r"|\.exe\b|\bc:\\windows")
 _IF = re.compile(r"\b(?:si|if)\b")
+# A condition after the denial («no puedo abrir el archivo si no me dices cuál», «sin un nombre»): no limit either.
+_IF_AFTER = re.compile(r"\b(?:si|if|sin|unless|without|mientras no)\b")
 
 
 def _first_sentence(description: str) -> str:
@@ -1126,6 +1131,9 @@ def _denials(answer: str, folded: str, statements: list[tuple[int, int]], receip
             if any(not (m.group(0) == "si" and answer[m.start():m.start() + 2].lower() == "sí")
                    for m in _IF.finditer(folded, start, hit.start())):
                 continue  # «si no me dices dónde, no puedo…»: a condition, not a limit
+            if any(not (m.group(0) == "si" and answer[m.start():m.start() + 2].lower() == "sí")
+                   for m in _IF_AFTER.finditer(folded, hit.end(), end)):
+                continue  # «no puedo abrirlo si no me dices cuál»: a condition after it
             stop = next((m.start() for m in _CLAUSE_END.finditer(folded, hit.end(), end)), end)
             if "acces" in hit.group(0):
                 act = "acceso"
