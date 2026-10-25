@@ -12,7 +12,11 @@ import { lipAt } from '../../lip';
    (the journey's path gets a family per call), so each new family adds a segment instead of replaying a whole flow.
    Design v5: with `overlay` the canvas sits over the video avatar (AvatarVid) and draws only the live network — mesh
    trail, hubs, sparks, tracer, labels — skipping helmet, body and features (NOC/NOR clip them away), stays still (no
-   tilt or bounce) and publishes the face's geometry as --av-x / --av-y / --av-s on its parent so the video lines up. */
+   tilt or bounce) and publishes the face's geometry as --av-x / --av-y / --av-s on its parent so the video lines up.
+   With prefers-reduced-motion the face keeps what tells the state (colours, expression, the mouth with the voice, the
+   ears' rings, the walk through the network, the rim and the core) and drops the decorative motion: no float, hop,
+   squash or sway, no idle or speaking gestures, no gaze following the pointer, no confetti, notes or sparks, and the
+   particles and the tilt take their place at once. */
 
 type FaceState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking' | 'error' | 'confirm';
 const PAL: Record<string, { f: string; l: string; p: string }> = {
@@ -99,6 +103,8 @@ function FaceView(props: FaceProps) {
       for (let i = 0; i < n; i++) fx.push({ k: 'conf', x: (Math.random() - 0.5) * 0.5, y: -0.9, vx: (Math.random() - 0.5) * 2.4, vy: -1.4 - Math.random() * 1.6, t: 0, life: 1.3 + Math.random() * 0.8, c: cs[i % cs.length], r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 14 });
     };
     window.addEventListener('pointermove', onMove, { passive: true });
+    const calmQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let rm = calmQ.matches;
     const size = () => {
       const lw = cv.clientWidth, lh = cv.clientHeight;
       if (!lw || !lh) return;
@@ -135,7 +141,7 @@ function FaceView(props: FaceProps) {
       G[g].pts.forEach((p) => { const dx = p.x - c[0], dy = p.y - c[1], d = Math.hypot(dx, dy) || 1, m = power * (0.6 + Math.random() * 0.8); p.vx += (dx / d) * m + (Math.random() - 0.5) * power * 0.5; p.vy += (dy / d) * m + (Math.random() - 0.5) * power * 0.5; });
       flashes.push({ x: c[0], y: c[1], t: 0 });
     };
-    explode(Object.keys(G), 4.5, [0, -0.15]);
+    if (!rm) explode(Object.keys(G), 4.5, [0, -0.15]);
 
     const bulbPos = (): Pt => [Math.sin(ant * 0.14) * 0.36, -0.84 - Math.cos(ant * 0.14) * 0.36];
     const NP = (i: number): Pt => (i === BXM.hub.web ? bulbPos() : [BXM.N[i].x, BXM.N[i].y]);
@@ -169,6 +175,7 @@ function FaceView(props: FaceProps) {
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
       const { state, expr, talking, journey, hold, light, net } = P.current;
+      rm = calmQ.matches;
       const ADD: GlobalCompositeOperation = light ? 'source-over' : 'lighter';
       const calm = state === 'standby' || ((state === 'idle' || state === 'confirm') && !trs.some((tr) => tr.u < 1) && !fx.length && !flashes.length);
       if (!dirty && (now - last) / 1000 < (state === 'standby' ? 0.048 : calm ? 0.031 : 0)) return;
@@ -180,7 +187,7 @@ function FaceView(props: FaceProps) {
       (['f', 'l', 'p'] as const).forEach((k) => { const t = hex(pal[k]); col[k] = col[k].map((v, i) => v + (t[i] - v) * Math.min(1, dt * 3)) as RGB; });
       const TRC = light ? 'rgba(' + (col.p[0] | 0) + ',' + (col.p[1] | 0) + ',' + (col.p[2] | 0) + ',' : 'rgba(255,246,224,';
       vis += ((state === 'standby' ? 0.5 : 1) - vis) * Math.min(1, dt * 2);
-      if (prevState === 'standby' && state !== 'standby') { explode(Object.keys(G), 3.2); boot = T - 0.3; }
+      if (prevState === 'standby' && state !== 'standby' && !rm) { explode(Object.keys(G), 3.2); boot = T - 0.3; }
       // journey through the mesh: a new turn starts a new walk; each new family of the same turn adds a segment after
       // the one walking now.
       if (journey && journey.turn !== jTurn) {
@@ -205,8 +212,9 @@ function FaceView(props: FaceProps) {
         talk += (talkT - talk) * Math.min(1, dt * 22);
       }
       const key = expr + (talking ? '|t' : '');
-      if (key !== lastKey) { if (lastKey && !talking) { ['eyeL', 'eyeR', 'mouth'].forEach((g) => burstFeature(g, 1.5)); bounceV += 3; antV += (Math.random() < 0.5 ? -1 : 1) * 6; } lastKey = key; }
+      if (key !== lastKey) { if (lastKey && !talking && !rm) { ['eyeL', 'eyeR', 'mouth'].forEach((g) => burstFeature(g, 1.5)); bounceV += 3; antV += (Math.random() < 0.5 ? -1 : 1) * 6; } lastKey = key; }
       // mood entry reactions
+      if (expr !== prevExpr && rm) prevExpr = expr;
       if (expr !== prevExpr) {
         if (expr === 'happy') { confetti(34); hopV -= 2.6; sqV += 2; }
         if (expr === 'sad') { fx.push({ k: 'drop', x: 0.8, y: -0.48, vx: 0, vy: 0.18, t: 0, life: 1.8 }); sqV -= 1.2; }
@@ -217,7 +225,7 @@ function FaceView(props: FaceProps) {
       }
       // idle behaviours
       const mouseLive = T - lastMouseT < 2.5;
-      if (state === 'idle' && expr === 'neutral' && !act) {
+      if (state === 'idle' && expr === 'neutral' && !act && !rm) {
         nextAct -= dt;
         if (nextAct <= 0) {
           const pool = Object.keys(IDLE).filter((k) => !lastActs.includes(k) && !(mouseLive && (k === 'look' || k === 'chat' || k === 'peek')));
@@ -235,9 +243,10 @@ function FaceView(props: FaceProps) {
       if (act && act.name === 'hum' && Math.random() < dt * 2.4) fx.push({ k: 'note', x: 0.16, y: 0.36, vx: 0.22 + Math.random() * 0.1, vy: -0.42, t: 0, life: 1.6, ph: Math.random() * 6 });
       if (act && act.name === 'antenna' && !act.fired && au > 0.15) { act.fired = 1; spark(BXM.hub.mente, 6, 3); spark(BXM.hub.mente, 6, 3); }
       // thinking variants
-      if (state === 'thinking') { thinkT -= dt; if (thinkT <= 0 || !thinkV) { thinkV = pick(THINK.filter((v) => v !== thinkV)); thinkT = 1.5 + Math.random() * 0.8; } } else thinkV = null;
+      if (state === 'thinking' && rm) thinkV = 'up';
+      else if (state === 'thinking') { thinkT -= dt; if (thinkT <= 0 || !thinkV) { thinkV = pick(THINK.filter((v) => v !== thinkV)); thinkT = 1.5 + Math.random() * 0.8; } } else thinkV = null;
       // speaking gestures
-      if (talking) {
+      if (talking && !rm) {
         nextGest -= dt;
         if (nextGest <= 0) {
           const g = pick(TALK.filter((x) => !gest || x !== gest.name));
@@ -276,24 +285,25 @@ function FaceView(props: FaceProps) {
         if (nm === 'tiltq') { xtilt = act.s * 0.1 * aenv; }
         if (nm === 'hum') { xtilt = Math.sin(au * 12.56) * 0.045; ycy = -Math.abs(Math.sin(au * 12.56)) * 0.012; }
         if (nm === 'shake') { xtilt = Math.sin(au * 25) * 0.06 * (1 - au); }
-      } else if (mouse && mouseLive && state !== 'standby') {
+      } else if (mouse && mouseLive && state !== 'standby' && !rm) {
         tgx = Math.max(-1, Math.min(1, (mouse[0] - 0.5) * 2)) * 0.06; tgy = Math.max(-1, Math.min(1, (mouse[1] - 0.4) * 2)) * 0.045;
       }
-      if (state === 'listening') { tgy = -0.01; xtilt += leanS * 0.02; ycy += Math.sin(T * 3.4) * 0.01 * lvl; xlift += lvl * 0.025; }
+      if (state === 'listening') { tgy = -0.01; xtilt += leanS * 0.02; if (!rm) ycy += Math.sin(T * 3.4) * 0.01 * lvl; xlift += lvl * 0.025; }
       if (gest) { const nm = gest.name; if (nm === 'brow') xlift += 0.05 * genv; if (nm === 'nod') ycy += 0.02 * genv; if (nm === 'tilt') xtilt += leanS * 0.05 * genv; if (nm === 'lean') { xtilt += leanS * 0.04 * genv; tgx = leanS * 0.04 * genv; } }
       browLift += (xlift - browLift) * Math.min(1, dt * 10);
       droopY += ((expr === 'sad' ? 0.035 : state === 'standby' ? 0.02 : 0) - droopY) * Math.min(1, dt * 3);
       gx += (tgx - gx) * Math.min(1, dt * 5); gy += (tgy - gy) * Math.min(1, dt * 5);
-      tilt += ((TILT[ex] || 0) + xtilt + (state === 'listening' ? leanS * (0.04 + Math.sin(T * 1.3) * 0.01) : 0) + (state === 'speaking' ? Math.sin(T * 2.1) * 0.014 : 0) - tilt) * Math.min(1, dt * 3);
+      tilt += ((TILT[ex] || 0) + xtilt + (state === 'listening' ? leanS * (0.04 + (rm ? 0 : Math.sin(T * 1.3) * 0.01)) : 0) + (state === 'speaking' && !rm ? Math.sin(T * 2.1) * 0.014 : 0) - tilt) * (rm ? 1 : Math.min(1, dt * 3));
+      if (rm) { browLift = xlift; gx = tgx; gy = tgy; droopY = expr === 'sad' ? 0.035 : state === 'standby' ? 0.02 : 0; }
       for (let s = 0, n = Math.max(1, Math.ceil(dt / 0.008)), q = dt / n; s < n; s++) {
-        antV += (-ant * 90 - antV * 5 + (talking ? Math.sin(T * 9) * 7 : 0)) * q; ant += antV * q;
+        antV += (-ant * 90 - antV * 5 + (talking && !rm ? Math.sin(T * 9) * 7 : 0)) * q; ant += antV * q;
         bounceV += (-bounce * 160 - bounceV * 9) * q; bounce += bounceV * q;
         hopV += (-hop * 120 - hopV * 7) * q; hop += hopV * q;
         sqV += (-sq * 140 - sqV * 8) * q; sq += sqV * q;
       }
       earGlow += ((state === 'listening' ? 1 : state === 'speaking' ? 0.5 : 0.18) - earGlow) * Math.min(1, dt * 4);
       earL2 += ((state === 'listening' ? 1 : 0) - earL2) * Math.min(1, dt * 5);
-      lvl += ((state === 'listening' ? 0.25 + Math.random() * 0.75 : 0) - lvl) * Math.min(1, dt * 16);
+      lvl += ((state === 'listening' ? (rm ? 0.6 : 0.25 + Math.random() * 0.75) : 0) - lvl) * Math.min(1, dt * 16);
       // targets
       const droop = state === 'standby' ? 0.03 : 0;
       const setT = (g: string, s: Pt[]) => { const pts = G[g].pts; for (let i = 0; i < pts.length; i++) { pts[i].tx = s[i][0]; pts[i].ty = s[i][1] + (/^(body|plate)/.test(g) ? 0 : droop); } };
@@ -314,13 +324,14 @@ function FaceView(props: FaceProps) {
       for (const g of Object.values(G)) {
         const k = g.k * (g.kind === 'f' && talking ? 2.4 : 1) * ramp, d = Math.exp(-(g.kind === 'f' ? 11 : 7.5) * h2);
         for (const p of g.pts) {
+          if (rm) { p.x = p.tx; p.y = p.ty; p.vx = 0; p.vy = 0; continue; }
           for (let s = 0; s < subs; s++) { p.vx = (p.vx + (p.tx - p.x) * k * h2) * d; p.vy = (p.vy + (p.ty - p.y) * k * h2) * d; p.x += p.vx * h2; p.y += p.vy * h2; }
           const v2 = p.vx * p.vx + p.vy * p.vy; if (v2 > 0.5 && v2 < 60) streaks.push(p);
         }
         g.closed += (g.closedT - g.closed) * Math.min(1, dt * 8);
       }
       // ambient sparks wander the mesh
-      if (Math.random() < (RATE[state] || 0) * dt * ramp && sparks.length < 18) {
+      if (!rm && Math.random() < (RATE[state] || 0) * dt * ramp && sparks.length < 18) {
         const H = BXM.hub;
         const src = state === 'listening' ? [H.memoria, H.musica, H.verificar][Math.floor(Math.random() * 3)]
           : state === 'thinking' ? (Math.random() < 0.5 ? H.mente : BXM.ring[Math.floor(Math.random() * BXM.ring.length)])
@@ -335,7 +346,7 @@ function FaceView(props: FaceProps) {
       ctx.clearRect(0, 0, w, h);
       const OV = !!P.current.overlay;
       const NOC = () => { if (OV) { ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 0, 0); ctx.clip(); } }, NOR = () => { if (OV) ctx.restore(); };
-      const S =Math.max(1, Math.min((refW > 40 ? Math.min(w, refW) : w) / 3.0, (h - 10) / 2.7)), cx = w / 2, cy = 14 + 1.3 * S + Math.sin(T * 0.9) * S * 0.016 * (state === 'standby' ? 0.4 : 1);
+      const S =Math.max(1, Math.min((refW > 40 ? Math.min(w, refW) : w) / 3.0, (h - 10) / 2.7)), cx = w / 2, cy = 14 + 1.3 * S + (rm ? 0 : Math.sin(T * 0.9) * S * 0.016 * (state === 'standby' ? 0.4 : 1));
       let stx = 0, sty = 0;
       if (act && act.name === 'stretch') { sty = 0.06 * aenv; stx = -0.03 * aenv; }
       if (act && act.name === 'yawn') sty = 0.03 * aenv;
@@ -348,7 +359,7 @@ function FaceView(props: FaceProps) {
       }
       X = (x) => x * S; Y = (y) => y * S;
       const sh = 0.5 + 0.5 * Math.sin(T * 2);
-      for (const d of dust) d.a += d.sp * dt * (state === 'thinking' ? 3 : 1);
+      if (!rm) for (const d of dust) d.a += d.sp * dt * (state === 'thinking' ? 3 : 1);
       [true, false].forEach((odd) => {
         ctx.fillStyle = rgba(col.l, (odd ? 0.15 + 0.25 * sh : 0.4 - 0.25 * sh) * vis); ctx.beginPath();
         for (const d of dust) { if (d.odd !== odd) continue; const x = X(Math.cos(d.a) * d.r), y = Y(Math.sin(d.a) * d.r * d.yk - 0.05); ctx.moveTo(x + 1, y); ctx.arc(x, y, 1, 0, 6.283); }
@@ -567,7 +578,7 @@ function FaceView(props: FaceProps) {
         ctx.strokeStyle = 'rgba(255,255,255,' + ((light ? 0.22 : 0.13) * vis).toFixed(3) + ')'; ctx.lineWidth = Math.max(2, S * 0.022); line(sheen);
         ctx.lineWidth = Math.max(1.5, S * 0.012); line(arcP(0.84, Math.PI + 0.5, Math.PI + 0.66, 5));
         const gp = (T * 0.16) % 1;
-        if (gp < 0.35) {
+        if (gp < 0.35 && !rm) {
           const u = gp / 0.35, [x, y] = sheen[Math.min(sheen.length - 1, Math.floor(u * sheen.length))], a = Math.sin(u * Math.PI) * 0.7 * vis;
           const gg = ctx.createRadialGradient(x, y, 0, x, y, S * 0.05); gg.addColorStop(0, 'rgba(255,255,255,' + a.toFixed(3) + ')'); gg.addColorStop(1, 'rgba(255,255,255,0)');
           ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(x, y, S * 0.05, 0, 6.283); ctx.fill();
