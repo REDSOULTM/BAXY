@@ -260,4 +260,28 @@ public sealed class RiskPolicyWorldActsTests
             Assert.That(RiskPolicy.LabelAsks(label), Is.EqualTo(asks), "the worker's pattern reads it alike");
         });
     }
+
+    // Revisión de calidad del núcleo (final2): a control's name with a sign before its verb («¡Comprar!», «🛒 Comprar
+    // ahora», «✉ Enviar») or glued after it («Pagar.», «¡Publicar!») is still that verb; the noun that only shares its
+    // stem still is not.
+    [TestCase("¡Comprar!", true)]
+    [TestCase("🛒 Comprar ahora", true)]
+    [TestCase("¡Cómpralo ya!", true)]
+    [TestCase("Pagar.", true)]
+    [TestCase("Buy!", true)]
+    [TestCase("✉ Enviar", true)]
+    [TestCase("¿Enviar ahora?", true)]
+    [TestCase("¡Publicar!", true)]
+    [TestCase("▶ Unirse", true)]
+    [TestCase("¡Compras!", false)]
+    [TestCase("(Enviados)", false)]
+    [TestCase("★ Publicaciones", false)]
+    public void A_sign_around_the_verb_does_not_hide_it(string label, bool asks)
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(Click(label), Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+            Assert.That(RiskPolicy.LabelAsks(label), Is.EqualTo(asks), "the worker's pattern reads it alike");
+        });
+    }
 }

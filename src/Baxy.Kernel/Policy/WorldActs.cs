@@ -54,11 +54,13 @@ internal static class WorldActs
     private static string Shape(string where, string[] said)
     {
         string words = string.Join('|', said.Select(Regex.Escape));
+        // Revisión de calidad del núcleo (final2): the first word is the first after any sign before it («✉ Enviar»,
+        // «▶ Unirse»), and a sign glued after it («¡Publicar!») does not make it another word.
         return where switch
         {
             "anywhere" => $@"\b(?:{words})\b",
-            "first" => $@"^(?:{words})\b",
-            "firstShort" => $@"^(?:{words})(?:\s+\S+){{0,3}}$",
+            "first" => $@"^\W*(?:{words})\b",
+            "firstShort" => $@"^\W*(?:{words})\W*(?:\s+\S+){{0,3}}$",
             _ => throw new InvalidDataException(where),
         };
     }
