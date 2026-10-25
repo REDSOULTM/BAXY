@@ -434,6 +434,40 @@ public sealed class ComputerUseAfterViewTests
         Assert.That(answer.Split('|'), Is.EqualTo(new[] { "1.5", "0", "12" }));
     }
 
+    // Revisión de nb-w11-cursor: with caret_place off the look reads the focused field's caret all the same (TextPattern
+    // calls on every look, and the caret in the look's JSON); the look asks for no caret then, nor does a burst's look,
+    // and the worker reads one only for a look that does not say caret false.
+    [Test]
+    public void TheCaretIsReadOnlyForALookOfTheModelWithItsAidOn()
+    {
+        string on = WindowsVisibleControlAdapter.ViewCommand(7, 60, []);
+        string off;
+        using (Baxy.Providers.Windows.Infrastructure.ModelAids.Use("none"))
+            off = WindowsVisibleControlAdapter.ViewCommand(7, 60, []);
+        string answer = RunWorker("""
+            $read=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.IfStatementAst] -and $node.Extent.Text -match 'Get-CaretPlace' -and $node.Extent.Text -match 'NotePropertyName caret' },$true) | Sort-Object { $_.Extent.Text.Length })
+            if($read.Count -eq 0){ throw 'no caret read' }
+            function Get-CaretPlace($el){ $script:Reads+=1; return 'end' }
+            $focused=[pscustomobject]@{ kind='Edit'; id='1.2'; value='hola' }
+            $elements=@{ '1.2'=$null }
+            $said=@()
+            foreach($request in @([pscustomobject]@{ cmd='view'; hwnd=7; limit=60 },[pscustomobject]@{ cmd='view'; hwnd=7; limit=60; caret=$false })){
+              $script:Reads=0
+              $focusedOut=[pscustomobject]@{ kind='Edit' }
+              . ([scriptblock]::Create($read[0].Extent.Text))
+              $said+=@("$($script:Reads):$($focusedOut.caret)")
+            }
+            [Console]::Out.Write(($said -join '|'))
+            """);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(on, Is.EqualTo("""{"cmd":"view","hwnd":7,"limit":60}"""));
+            Assert.That(off, Is.EqualTo("""{"cmd":"view","hwnd":7,"limit":60,"caret":false}"""));
+            Assert.That(answer.Split('|'), Is.EqualTo(new[] { "1:end", "0:" }));
+        });
+    }
+
     private static string RunWorker(string body)
     {
         string worker = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");

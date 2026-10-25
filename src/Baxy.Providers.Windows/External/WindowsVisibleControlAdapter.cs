@@ -2322,6 +2322,9 @@ internal sealed class WindowsVisibleControlAdapter
             command["wanted"] = new JsonArray([.. wanted.Select(static word => (JsonNode?)JsonValue.Create(word))]);
         }
 
+        // Aid caret_place off: the worker reads no caret (revisión de nb-w11-cursor: it read it on every look).
+        if (!Infrastructure.ModelAids.On(Infrastructure.ModelAids.CaretPlace))
+            command["caret"] = false;
         return command.ToJsonString();
     }
 
@@ -3043,7 +3046,10 @@ internal sealed class WindowsVisibleControlAdapter
     {
         // Without the disabled ones (review of the branch, finding 6): the burst looks for controls to press, on the
         // lease's time.
-        string command = new JsonObject { ["cmd"] = "view", ["hwnd"] = window, ["limit"] = 60, ["disabled"] = false }.ToJsonString();
+        string command = new JsonObject
+        {
+            ["cmd"] = "view", ["hwnd"] = window, ["limit"] = 60, ["disabled"] = false, ["caret"] = false,
+        }.ToJsonString();
         using JsonDocument? answer = await _worker.SendAsync(command, WorkerViewBudget, cancellationToken).ConfigureAwait(false);
         if (answer is null || !answer.RootElement.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
             return null;
