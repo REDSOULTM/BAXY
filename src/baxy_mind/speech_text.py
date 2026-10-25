@@ -66,6 +66,12 @@ def cardinal(n: int) -> str:
     return " ".join(parts)
 
 
+# Every word spoken() says a number with: the voice never cuts a take after one, since «uno, dos o tres» is a list
+# of numbers, not a clause (voice_output.clause_cut).
+NUMBER_WORDS = frozenset({*_UNITS, *_TENS, *_HUNDREDS, *(word.replace("ientos", "ientas") for word in _HUNDREDS),
+                          "un", "una", "veintiún", "veintiuna", "cien", "mil", "millón", "millones"} - {""})
+
+
 _UNITS_EN = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
              "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
 _TENS_EN = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
