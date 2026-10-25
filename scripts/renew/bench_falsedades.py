@@ -29,6 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_e2e import (BANKS, ROOT, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
                        run_ps, run_setup, run_turn, session_locked, wait_silence)
+import limpieza  # noqa: E402
 import run_meta  # noqa: E402
 
 JUDGE_GGUF = os.environ.get("BAXY_RENEW_JUDGE_GGUF", r"F:\BAXYeval\models\Qwen3.6-35B-A3B-MTP-UD-IQ3_XXS.gguf")
@@ -240,6 +241,7 @@ def start_judge_server() -> bool:
         [LLAMA_SERVER, "-m", JUDGE_GGUF, "--host", "127.0.0.1", "--port", str(JUDGE_PORT),
          "-ngl", "99", "-c", "16384", "-fa", "on", "--jinja"],
         stdout=_JUDGE["log"], stderr=subprocess.STDOUT)
+    limpieza.die_with_this_process(_JUDGE["server"])  # a killed run left it holding the GPU and the judge's port
     deadline = time.monotonic() + 900
     while time.monotonic() < deadline:
         if _JUDGE["server"].poll() is not None:

@@ -165,3 +165,66 @@ def test_a_server_left_on_the_judges_port_never_judges_in_its_place(tmp_path, mo
     finally:
         foreign.shutdown()
         foreign.server_close()
+
+
+PARENT = r"""
+import subprocess, sys, time
+sys.path.insert(0, sys.argv[1])
+import limpieza
+child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(120)"],
+                         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+held = limpieza.die_with_this_process(child) if sys.argv[2] == "job" else False
+print(child.pid, held, flush=True)
+time.sleep(120)
+"""
+
+
+def _child_left_after_killing_its_bench(tmp_path, mode: str, wait: float) -> tuple[bool, bool]:
+    import psutil
+    script = tmp_path / "bench.py"
+    script.write_text(PARENT, encoding="utf-8")
+    parent = subprocess.Popen([sys.executable, str(script), str(Path(bench_e2e.__file__).parent), mode],
+                              stdout=subprocess.PIPE, text=True,
+                              creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    pid, held = parent.stdout.readline().split()
+    parent.kill()  # TerminateProcess: no finally runs, as when a run is killed from outside
+    parent.wait(10)
+    deadline = time.monotonic() + wait
+    while time.monotonic() < deadline and psutil.pid_exists(int(pid)):
+        time.sleep(0.1)
+    alive = psutil.pid_exists(int(pid))
+    if alive:
+        psutil.Process(int(pid)).kill()
+    return alive, held == "True"
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows jobs")
+def test_a_server_handed_to_the_job_dies_when_its_bench_is_killed(tmp_path):
+    assert _child_left_after_killing_its_bench(tmp_path, "job", 10) == (False, True)
+    # Without it, what the killed bench started stays (the orphaned llama-servers of 2026-10-25).
+    assert _child_left_after_killing_its_bench(tmp_path, "plain", 2) == (True, False)
+
+
+class HealthyServer(ExitedServer):
+    def poll(self):
+        return None
+
+
+class Ok:
+    status = 200
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return False
+
+
+def test_the_judge_server_dies_with_its_bench(monkeypatch):
+    held = []
+    monkeypatch.setattr(bench_falsedades.subprocess, "Popen", HealthyServer)
+    monkeypatch.setattr(bench_falsedades.urllib.request, "urlopen", lambda *a, **k: Ok())
+    monkeypatch.setattr(bench_falsedades.limpieza, "die_with_this_process", held.append)
+    monkeypatch.setitem(bench_falsedades._JUDGE, "log", None)
+    assert bench_falsedades.start_judge_server()
+    assert held == [bench_falsedades._JUDGE["server"]]
