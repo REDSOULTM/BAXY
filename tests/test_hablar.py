@@ -59,3 +59,30 @@ def test_an_arm_is_read_from_the_feed_log_and_the_trace(tmp_path: Path) -> None:
     turns = json.loads((run / "summary.json").read_text(encoding="utf-8"))["turns"]
     # From the end of the person's voice: the first sound (the notice counts) and the first answer.
     assert [(t["first_sound_ms"], t["first_answer_ms"]) for t in turns] == [(1500, 1500), (2000, 3400)]
+
+
+def test_an_arm_runs_on_its_own_profile_never_the_owners(tmp_path: Path, monkeypatch) -> None:
+    # Calidad PC 2026-10-25: the arm set BAXY_DATA_DIR, which run_baxy.ps1 always replaces (by dev-mente-v2 or the
+    # profile it is given; the core takes only a child of %LOCALAPPDATA%/BAXY): every arm ran on the owner's profile.
+    started: list = []
+
+    class Launcher:
+        pid = 2 ** 31 - 2  # no such process: the arm has no family to close
+
+        def __init__(self, command, env, **_kw) -> None:
+            started.append(command)
+            Path(env["BAXY_RENEW_VOICE_FEED_LOG"]).write_text(
+                json.dumps({"event": "done", "at": "2026-10-25T20:00:00"}) + "\n", encoding="utf-8")
+
+        def poll(self) -> int:
+            return 0
+
+    for var in ("BAXY_RENEW_WAKE_DIR", "BAXY_RENEW_STT_DIR"):
+        (tmp_path / var).mkdir()
+        monkeypatch.setenv(var, str(tmp_path / var))
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "local"))
+    monkeypatch.setattr(hablar.subprocess, "Popen", Launcher)
+    _wav(tmp_path / "uno.wav", 1.0, 16000)
+    (tmp_path / "feed.txt").write_text("uno.wav\t3\n", encoding="utf-8")
+    hablar.correr(tmp_path, "default1", "default", "default", 60)
+    assert started[0][-2:] == ["--profile", "hablar-default1"]

@@ -20,7 +20,7 @@ probar: each file of SET through voice.py's own path offline (the k4 wake word a
 names as hotwords, CPU, ~1 GB of RAM, faster than real time; no product, no microphone): whether «Baxy» is heard and
 what is transcribed. Run it once per set before the product.
 correr: one arm in SET/LABEL (a new folder): the product (scripts/run_renew.cmd, its window) with
-BAXY_VOICE_WAKE_ON_START=1, BAXY_DATA_DIR=SET/LABEL/profile and SET's feed, until the feed says done (or --timeout),
+BAXY_VOICE_WAKE_ON_START=1, the profile %LOCALAPPDATA%/BAXY/hablar-LABEL and SET's feed, until the feed says done (or --timeout),
 then it is closed. The mind's trace rows written meanwhile (%LOCALAPPDATA%/BAXY/renew/turns.jsonl from the byte it had
 when the arm began) are copied to SET/LABEL/turns.jsonl; the feed's times are SET/LABEL/feed.jsonl. Then resumir.
 resumir: per file, the turn.decide row after its voice ended (its «early»: hit, saved_ms, waited_ms, or hit false and
@@ -266,7 +266,9 @@ def correr(set_dir: Path, label: str, early: str, warm: str, timeout: float) -> 
         raise SystemExit(f"{run} exists: each arm is a new label")
     run.mkdir(parents=True)
     log = run / "feed.jsonl"
-    env = dict(os.environ, BAXY_VOICE_WAKE_ON_START="1", BAXY_DATA_DIR=str(run / "profile"),
+    # Calidad PC 2026-10-25: BAXY_DATA_DIR was set here, and run_baxy.ps1 always replaces it (the core takes only a
+    # child of %LOCALAPPDATA%/BAXY): every arm ran on the owner's development profile. Each arm its own profile.
+    env = dict(os.environ, BAXY_VOICE_WAKE_ON_START="1",
                BAXY_RENEW_VOICE_FEED=str(set_dir / "feed.txt"), BAXY_RENEW_VOICE_FEED_LOG=str(log))
     for var, value in (("BAXY_RENEW_EARLY", early), ("BAXY_RENEW_WAKE_WARM", warm)):
         env.pop(var, None)
@@ -277,8 +279,8 @@ def correr(set_dir: Path, label: str, early: str, warm: str, timeout: float) -> 
     (run / "arm.json").write_text(json.dumps({"early": early, "wake_warm": warm, "started": dt.datetime.now().isoformat(
         timespec="seconds"), "trace_offset": offset, "computer": os.environ.get("COMPUTERNAME")}), encoding="utf-8")
     console = (run / "console.txt").open("w", encoding="utf-8")
-    process = subprocess.Popen(["cmd", "/c", str(ROOT / "scripts" / "run_renew.cmd")], cwd=str(ROOT), env=env,
-                               stdout=console, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(["cmd", "/c", str(ROOT / "scripts" / "run_renew.cmd"), "--profile", f"hablar-{label}"],
+                               cwd=str(ROOT), env=env, stdout=console, stderr=subprocess.STDOUT)
     family: dict[int, psutil.Process] = {}
     deadline = time.monotonic() + timeout
     done = False
