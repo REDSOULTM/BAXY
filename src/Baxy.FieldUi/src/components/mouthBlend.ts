@@ -94,6 +94,12 @@ export class MouthBlend {
   private readonly corr = [new Float32Array(N), new Float32Array(N), new Float32Array(N)];
   private readonly w = new Float32Array(N);
   private readonly ws = new Float32Array(N);
+  // the composition's work arrays, kept between frames (each is written whole before it is read)
+  private readonly num = new Float32Array(N);
+  private readonly den = new Float32Array(N);
+  private readonly area = new Float32Array(N);
+  private readonly a = new Float32Array(N);
+  private readonly dw = new Float32Array(N);
   private readonly out: ImageData;
 
   constructor(cuts: Uint8ClampedArray[]) {
@@ -134,14 +140,13 @@ export class MouthBlend {
   /** the frame's mouth area with mouth k in it; `live` is the clip's frame cropped to MOUTH_BOX */
   compose(live: Uint8ClampedArray, k: number): ImageData {
     const cut = this.cuts[k], cm = this.cutMasks[k], lm = mouthMask(live, 18);
-    const { D, corr, w, ws } = this;
+    const { D, corr, w, ws, num, den, area, a, dw } = this;
     for (let i = 0; i < N; i++) {
       w[i] = this.inZone[i] && !lm[i] && !cm[i] ? 1 : 0;
       for (let c = 0; c < 3; c++) D[c][i] = live[i * 4 + c] - cut[i * 4 + c];
     }
     soften(w, 5, ws);
     // the light under the mouths, coarse to fine: each finer estimate takes over where it has enough support
-    const num = new Float32Array(N), den = new Float32Array(N), area = new Float32Array(N), a = new Float32Array(N), dw = new Float32Array(N);
     let first = true;
     for (const r of [60, 30, 14, 6]) {
       windowSums(w, r, den, area);
