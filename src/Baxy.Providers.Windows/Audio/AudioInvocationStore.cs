@@ -65,11 +65,19 @@ internal sealed class AudioInvocationStore
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
 
     private readonly string _stateDirectory;
+    private readonly int _maximumInvocationCount;
 
     public AudioInvocationStore(string stateDirectory)
+        : this(stateDirectory, MaximumInvocationCount)
     {
+    }
+
+    internal AudioInvocationStore(string stateDirectory, int maximumInvocationCount)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(maximumInvocationCount, 1);
         RejectAlternateDataStream(stateDirectory);
         _stateDirectory = SafePathPolicy.NormalizeAndCreatePrivateDirectory(stateDirectory);
+        _maximumInvocationCount = maximumInvocationCount;
     }
 
     public AudioInvocationState? Load(string invocationId)
@@ -276,12 +284,18 @@ internal sealed class AudioInvocationStore
 
     private void EnsureCapacity(string targetPath, long replacementBytes)
     {
-        switch (InvocationStateCapacityPolicy.Evaluate(
-            _stateDirectory,
-            targetPath,
-            replacementBytes,
-            MaximumInvocationCount,
-            MaximumTotalStateBytes))
+        InvocationStateCapacityViolation violation = EvaluateCapacity(targetPath, replacementBytes);
+        if (violation == InvocationStateCapacityViolation.Capacity)
+        {
+            // Revisión de calidad (nb-q-apps): every volume or mute leaves its state behind under a new invocation id
+            // and nothing removed them, so after 16 384 of them every later volume or mute failed with
+            // state_capacity_reached for good. At capacity the oldest finished invocations (a terminal receipt) go;
+            // an intent still without its receipt stays, since its reconciliation needs it.
+            PruneCompletedStates(targetPath);
+            violation = EvaluateCapacity(targetPath, replacementBytes);
+        }
+
+        switch (violation)
         {
             case InvocationStateCapacityViolation.ReparsePoint:
                 throw new AudioStateCorruptException(
@@ -292,6 +306,82 @@ internal sealed class AudioInvocationStore
                 return;
             default:
                 throw new UnreachableException();
+        }
+    }
+
+    private InvocationStateCapacityViolation EvaluateCapacity(string targetPath, long replacementBytes) =>
+        InvocationStateCapacityPolicy.Evaluate(
+            _stateDirectory,
+            targetPath,
+            replacementBytes,
+            _maximumInvocationCount,
+            MaximumTotalStateBytes);
+
+    // Removes the oldest states that carry a terminal receipt until a quarter of the capacity is free again, so the
+    // folder is not listed and read in full on every later mutation. A file that is not a valid state of this store
+    // (or one being written) is never touched.
+    private void PruneCompletedStates(string targetPath)
+    {
+        FileInfo[] files;
+        try
+        {
+            files = new DirectoryInfo(_stateDirectory).GetFiles("*.json", SearchOption.TopDirectoryOnly);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return;
+        }
+
+        int excess = files.Length - (_maximumInvocationCount - Math.Max(1, _maximumInvocationCount / 4));
+        foreach (FileInfo file in files.OrderBy(static file => file.LastWriteTimeUtc))
+        {
+            if (excess <= 0)
+            {
+                return;
+            }
+
+            if ((file.Attributes & FileAttributes.ReparsePoint) != 0
+                || file.Length is <= 0 or > MaximumStateBytes
+                || string.Equals(file.FullName, targetPath, StringComparison.OrdinalIgnoreCase)
+                || !IsCompletedState(file.FullName))
+            {
+                continue;
+            }
+
+            try
+            {
+                file.Delete();
+                excess--;
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // In use now: it goes with a later prune.
+            }
+        }
+    }
+
+    private bool IsCompletedState(string path)
+    {
+        try
+        {
+            AudioInvocationDocument? document = JsonSerializer.Deserialize(
+                File.ReadAllBytes(path),
+                AudioInvocationJsonContext.Default.AudioInvocationDocument);
+            if (document?.State?.InvocationId is not { } invocationId
+                || !string.Equals(GetStatePath(invocationId), path, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return ReadAndValidate(path, invocationId).Receipt is not null;
+        }
+        catch (Exception exception) when (exception is AudioStateCorruptException
+            or IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or ArgumentException)
+        {
+            return false;
         }
     }
 
