@@ -1144,6 +1144,84 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Revisión de calidad (archivos): «descarga.exe:Zone.Identifier» is no file of the person's but the mark Windows keeps
+    // on what came from the internet (SmartScreen reads it before running it); a stream of a file is never written,
+    // replaced, appended to nor made through a file tool, with or without a folder.
+    [Test]
+    public void AStreamOfAFileIsNeverWritten()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(home);
+        string program = Path.Combine(home, "descarga.exe");
+        File.WriteAllText(program, "MZ");
+        const string mark = "[ZoneTransfer]\r\nZoneId=3\r\n";
+        File.WriteAllText(program + ":Zone.Identifier", mark);
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"), bin)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+            PrivateRoots = [],
+        };
+        string markHash = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(mark)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => provider.WriteText("descarga.exe:Zone.Identifier", "", markHash, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(() => provider.WriteText("descarga.exe:Zone.Identifier", "ZoneId=0", null, "home", append: true),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(() => provider.WriteText("descarga.exe:otro", "x", null, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(() => provider.CreateDirectory("carpeta:flujo", "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(File.ReadAllText(program + ":Zone.Identifier"), Is.EqualTo(mark));
+            Assert.That(File.ReadAllText(program), Is.EqualTo("MZ"));
+            Assert.That(bin.Recycled, Is.Empty);
+            Assert.That(Directory.EnumerateFileSystemEntries(home).Select(Path.GetFileName), Is.EqualTo(new[] { "descarga.exe" }));
+        });
+    }
+
+    // Revisión de calidad (archivos): the working folder lives inside BAXY's own area and is usable through home, but its
+    // backups are not: written through home they were replaced (a backup's bytes and its recorded hash), and a restore
+    // then gave the forged bytes as a verified backup.
+    [Test]
+    public void TheWorkingFoldersBackupsAreNeverWrittenThroughAKnownFolder()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string privateArea = Path.Combine(home, "AppData", "Local", "BAXY");
+        string sandbox = Path.Combine(privateArea, "1", "filesystem-sandbox");
+        Directory.CreateDirectory(sandbox);
+        var provider = new LocalFilesystemProvider(sandbox)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+            PrivateRoots = [privateArea],
+        };
+        string id = "backup_" + new string('a', 32);
+        const string backups = "AppData/Local/BAXY/1/filesystem-sandbox/.backups/";
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => provider.WriteText(backups + id + ".bin", "falso", null, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(() => provider.WriteText(backups + id + ".sha256", new string('b', 64), null, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(() => provider.CreateDirectory(backups + "dentro", "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(Directory.EnumerateFileSystemEntries(Path.Combine(sandbox, ".backups")), Is.Empty);
+            provider.WriteText("AppData/Local/BAXY/1/filesystem-sandbox/nota.txt", "trabajo", null, "home");
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "nota.txt")), Is.EqualTo("trabajo"));
+        });
+    }
+
     // Revisión de fase 3: what Windows runs at sign-in (the Startup folders) is not written through the home folder, by
     // its full path, by its 8.3 alias or as a folder inside it, nor appended to; a file.write there would run at the next
     // sign-in. Refused before any effect; the rest of AppData stays writable.
