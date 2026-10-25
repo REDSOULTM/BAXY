@@ -443,3 +443,14 @@ sesión larga de cada integración; diagnóstico H2 de V5E021, 023, 029 (cu) y V
 - Trampa: `mx/despierto.ps1` nunca mantuvo despierto el NB: en PowerShell 5.1 `0x80000003` es un Int32 negativo y la
   llamada a `SetThreadExecutionState(uint)` fallaba cada 30 s (también durante el holdout v5, que se bloqueó a las 11:00).
   Copia arreglada en `cien/despierto.ps1` (`[uint32]2147483651`).
+
+**Al día, 2026-10-24 20:45.**
+- Ramas en hub: `nb-w10-cuenta` fd2ed124e y `nb-w10-mover` 8780e0f34 (H2 archivos), `nb-w10-aviso` 3cfe46f68 (H7), en
+  int11 066802ea2; `nb-w10-clic` c8d3e613c y `nb-w10-calc` 37f6038cf (H2 uso del PC), para int11b. Detalle y pruebas
+  en `maximo/H2-nb.md` y `maximo/H7-nb.md`.
+- Las e2e de práctica pasaron al NB (el dueño usa el PC). Cola `cien/cola_c3.sh`: base int10f (worktree hv5-final) frente
+  a int11 (worktree `BAXY-Renew-int11`), prac 30 + h2 20 (`renew_v6/practica/e2e_h2.nbD.json`, 69 rutas F:→D:) ×3
+  semillas intercaladas, luego falsedades de práctica ×3; `nvidia-smi` a 1 Hz en `cien/gpu-estado.csv`.
+- VOID mío: `c3-base-s0-prac-e2e.void-frio2` (la limpieza final de la cola de Steam en frío mató el producto).
+- H9 sin repro todavía (1/1 bien en frío; 0 en todo el holdout v5); cada e2e guarda `app-trace.jsonl` y
+  `core-disconnect.jsonl`.
