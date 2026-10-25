@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test';
 import { MOUTHS, MOUTH_LEVELS } from '../src/components/avatarClips';
 import { LipMouth } from '../src/components/mouthBlend';
+import { BXM, bxRoute } from '../src/components/face/geometry';
 
-/* The avatar's own logic against the view's modules, with no app: the lip-sync's choice of mouth. */
+/* The avatar's own logic against the view's modules, with no app: the lip-sync's choice of mouth and the walk of the
+   face's network. */
 
 test('la boca que vuelve tras un corte breve se compone en ese mismo fotograma, y es una boca que existe', () => {
   // the voice turns the composed mouth on and off (a 0.35 s cut, a pause): the hole opens again in the video at once,
@@ -34,4 +36,19 @@ test('mientras suena, la boca se compone unas 30 veces por segundo y cada boca d
   expect(composed).toBeLessThanOrEqual(62);
   expect(changes, 'la boca cambia con la voz').toBeGreaterThan(10);
   expect(short, 'ninguna boca dura menos de 50 ms').toBe(0);
+});
+
+test('el recorrido que entra o sale de la web va por la red, sin saltar en línea recta por la cara', () => {
+  // the antenna's bulb («web») hangs from «mente» only: a turn that searched the internet and then opened an app, or
+  // answered (store.ts appends «verificar»), walks back down through «mente»
+  const broken: string[] = [];
+  for (const hubs of [['mente', 'web', 'verificar'], ['mente', 'web', 'apps'], ['mente', 'apps', 'web'], ['mente', 'archivos', 'web', 'musica']]) {
+    for (let k = 0; k < 20; k++) {
+      const r = bxRoute(hubs);
+      const jumps = r.filter((n, i) => i > 0 && !BXM.adj[r[i - 1]].includes(n)).length;
+      const ends = hubs.every((h) => r.includes(BXM.hub[h])) && r[r.length - 1] === BXM.hub[hubs[hubs.length - 1]];
+      if (jumps || !ends) { broken.push(hubs.join('→') + ': ' + jumps + ' saltos'); break; }
+    }
+  }
+  expect(broken).toEqual([]);
 });

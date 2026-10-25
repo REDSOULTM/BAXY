@@ -142,18 +142,20 @@ export function bxBuildMesh(): Mesh {
 }
 export const BXM = bxBuildMesh();
 
-/* a wandering shortest path through the mesh, hub to hub */
+/* a wandering shortest path through the mesh, hub to hub; it never crosses another hub, except «mente» on the way to
+   or from «web» (the antenna's bulb hangs from «mente» only) */
 export function bxRoute(hubs: string[]): number[] {
   const out = [BXM.hub[hubs[0]]];
   for (let s = 0; s < hubs.length - 1; s++) {
     const A = BXM.hub[hubs[s]], B = BXM.hub[hubs[s + 1]], dist = new Map<number, number>([[A, 0]]), prev = new Map<number, number>(), done = new Set<number>(), W: Record<string, number> = {};
+    const via = A === BXM.hub.web || B === BXM.hub.web ? BXM.hub.mente : -1;
     for (;;) {
       let u = -1, du = Infinity;
       dist.forEach((d, k) => { if (!done.has(k) && d < du) { du = d; u = k; } });
       if (u < 0 || u === B) break;
       done.add(u);
       for (const v of BXM.adj[u]) {
-        if (BXM.N[v].hub && v !== B) continue;
+        if (BXM.N[v].hub && v !== B && v !== via) continue;
         const key = u < v ? u + '-' + v : v + '-' + u;
         if (!(key in W)) W[key] = 0.35 + Math.random() * 2.4;
         const nd = du + Math.hypot(BXM.N[u].x - BXM.N[v].x, BXM.N[u].y - BXM.N[v].y) * W[key];
