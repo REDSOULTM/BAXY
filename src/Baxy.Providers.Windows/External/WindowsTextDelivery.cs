@@ -42,6 +42,10 @@ internal interface IFieldMessages
     /// answered in time.</summary>
     bool SelectAll(nint hwnd);
 
+    /// <summary>EM_SETSEL(start, end): that range of the control's text selected, so what is inserted next replaces it;
+    /// whether the control answered in time.</summary>
+    bool Select(nint hwnd, int start, int end);
+
     /// <summary>EM_REPLACESEL (undoable), sent and waited for; whether the control answered in time.</summary>
     bool ReplaceSelection(nint hwnd, string text);
 
@@ -118,10 +122,11 @@ internal readonly record struct CaretText(string Text, string Unit, bool Bounded
 /// <summary>What a delivery aimed at a field did: the method that took it, whether its re-read proves it was
 /// delivered, whether anything may have reached the field, the failure when it did not, and the entry of a list a «select»
 /// chose, as it was read (auditoría C9); and, read back, where the text landed in what the field held (Práctica V5E023,
-/// <see cref="WindowsTextDelivery.Landed"/>).</summary>
+/// <see cref="WindowsTextDelivery.Landed"/>). Práctica V5E061: the part of the text a replacement changed
+/// (<see cref="WindowsTextDelivery.Replace"/>), and how many times the field's text held it when it was refused.</summary>
 internal readonly record struct FieldDelivery(
     string Method, bool Delivered, bool EffectMayHaveOccurred, string? Error, string FieldClass, string? Entry = null,
-    string? Landed = null);
+    string? Landed = null, string? Replaced = null, int Occurrences = 0);
 
 /// <summary>
 /// Text and keys delivered to the field of the mission's window by window messages (CONTRATO_VISTA_ACCION.md §2):
@@ -279,6 +284,66 @@ internal sealed class WindowsTextDelivery
             : new FieldDelivery("wm_char", false, true,
                 Same(identity) ? "input_effect_not_verified" : "input_window_changed", fieldClass);
     }
+
+    /// <summary>
+    /// Práctica V5E061 («cámbialo, era el miércoles, no el martes»: the new text went in at the caret, after the old one):
+    /// the one part <paramref name="replacing"/> of the text of <paramref name="field"/>, an edit control of the window,
+    /// changed into <paramref name="text"/>. The control's whole text is read (WM_GETTEXT); the old text must be in it
+    /// exactly once, by ordinal comparison, or nothing is sent (<c>input_text_replacing_not_found</c>,
+    /// <c>input_text_replacing_ambiguous</c> with <see cref="FieldDelivery.Occurrences"/>). It is selected (EM_SETSEL, at
+    /// the control's own position: a rich edit counts a line break as one character) and the selection re-read, typed
+    /// over (EM_REPLACESEL, undoable) and the whole text read again: it must be the text before with that part changed and
+    /// nothing else, line breaks aside. Null when the field is not an edit control of the window (nothing sent). A
+    /// read-only, password or disabled control gets nothing (<c>input_field_not_writable</c>); a text that is not read
+    /// whole, or too long for the selection to be re-read, is not changed (<c>input_field_not_readable</c>).
+    /// </summary>
+    internal FieldDelivery? Replace(WindowIdentity identity, nint field, string replacing, string text)
+    {
+        string fieldClass = _messages.ClassName(field);
+        if (!identity.Alive || !_messages.Belongs(identity.Window, field) || !IsEditClass(fieldClass))
+            return null;
+        if (!_messages.IsEnabled(field) || !TakesTyping(_messages.Style(field)))
+            return new FieldDelivery("em_replacesel", false, false, "input_field_not_writable", fieldClass);
+        int length = _messages.TextLength(field);
+        // EM_GETSEL's packed answer stops at 65535: past it the selection could not be re-read.
+        string? was = length is >= 0 and < Packed ? _messages.Text(field, length) : null;
+        if (was is null || was.Length != length)
+            return new FieldDelivery("em_replacesel", false, false, "input_field_not_readable", fieldClass);
+        int count = Occurrences(was, replacing);
+        if (count != 1)
+            return new FieldDelivery("em_replacesel", false, false,
+                count == 0 ? "input_text_replacing_not_found" : "input_text_replacing_ambiguous", fieldClass,
+                Occurrences: count);
+        int at = was.IndexOf(replacing, StringComparison.Ordinal);
+        int start = at - (IsRichEdit(fieldClass) ? Occurrences(was[..at], "\r\n") : 0);
+        if (!Same(identity))
+            return new FieldDelivery("em_replacesel", false, false, "input_window_changed", fieldClass);
+        // Ronda final 17 (regla 3): from here the person's field has its selection moved, an effect either way.
+        if (!_messages.Select(field, start, start + replacing.Length)
+            || _messages.Selection(field) != (start, start + replacing.Length))
+            return new FieldDelivery("em_replacesel", false, true, "input_effect_not_verified", fieldClass);
+        if (!Same(identity))
+            return new FieldDelivery("em_replacesel", false, true, "input_window_changed", fieldClass);
+        _ = _messages.ReplaceSelection(field, text);
+        string expected = Plain(was[..at] + text + was[(at + replacing.Length)..]);
+        int after = _messages.TextLength(field);
+        string? now = after is >= 0 and <= ReadableText ? _messages.Text(field, after) : null;
+        return now is not null && Plain(now) == expected
+            ? new FieldDelivery("em_replacesel", true, true, null, fieldClass, Replaced: replacing)
+            : new FieldDelivery("em_replacesel", false, true,
+                Same(identity) ? "input_effect_not_verified" : "input_window_changed", fieldClass);
+    }
+
+    // The longest text whose selection EM_GETSEL re-reads (its packed answer stops at 65535).
+    private const int Packed = 0xFFFF;
+
+    // A rich edit (RichEdit of any version, or a framework class derived from one), whose positions count a line break
+    // as one character where its WM_GETTEXT gives «\r\n»; a classic Edit counts both.
+    private static bool IsRichEdit(string className) =>
+        className.Split('.').Any(static part => part.StartsWith("RichEdit", StringComparison.OrdinalIgnoreCase));
+
+    // A control's text with its line breaks as one character, as Holds reads it.
+    private static string Plain(string value) => value.Replace("\r", string.Empty, StringComparison.Ordinal);
 
     /// <summary>
     /// Queues a single key to <paramref name="field"/>, a classic control of the mission's window. Null when the key
@@ -596,6 +661,9 @@ internal sealed partial class WindowsFieldMessages : IFieldMessages
 
     public bool SelectAll(nint hwnd) =>
         SendMessageTimeoutW(hwnd, EmSetSel, 0, -1, AbortIfHung, Timeout, out _) != 0;
+
+    public bool Select(nint hwnd, int start, int end) =>
+        SendMessageTimeoutW(hwnd, EmSetSel, start, end, AbortIfHung, Timeout, out _) != 0;
 
     public unsafe bool ReplaceSelection(nint hwnd, string text)
     {

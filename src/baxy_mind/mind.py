@@ -401,7 +401,15 @@ DESCRIPTION_AIDS = {
                                        "Steam and Epic without opening anything."),),
     "game.installed.named": (("game_epic_look", " It is also the look for a game the person wants to play that is not "
                                                 "in game_launch's list of installed games (Steam's only)."),),
+    # «text_replacing» (práctica V5E061, «cámbialo, era el miércoles, no el martes»: the new text went in at the caret,
+    # «martesreunión con Pedro el miércoles», and replace is refused for a document): the argument that changes one part
+    # of the text already written (ARGUMENT_AIDS), and this sentence.
+    "input.text.type": (("text_replacing", " To change one part of a text already written, pass replacing = that "
+                                           "part and text = what goes in its place."),),
 }
+# Arguments of a tool the model sees only with their aid on (by the catalog's own schema, dropped otherwise), so the
+# tool reads as before with the aid off.
+ARGUMENT_AIDS = {"input.text.type": {"replacing": "text_replacing"}}
 
 def _fold(name: str) -> str:
     text = unicodedata.normalize("NFKD", name).casefold()
@@ -1211,6 +1219,9 @@ class Mind:
                 constants_of[name] = constants
             schema["type"] = "object"
             schema.setdefault("properties", {})
+            for argument, aid in ARGUMENT_AIDS.get(name, {}).items():
+                if not _aid_on(aid):
+                    schema["properties"].pop(argument, None)
             # What one argument means, where the model fills it (a folder named by the person went missing from the
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():

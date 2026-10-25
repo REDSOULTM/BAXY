@@ -1351,16 +1351,43 @@ internal sealed class FakeFieldMessages : IFieldMessages
         return true;
     }
 
+    // The ranges EM_SETSEL was asked for, by control.
+    internal List<(nint Field, int Start, int End)> Selects { get; } = [];
+
+    // A rich edit's positions count a line break («\r\n» in its WM_GETTEXT) as one character.
+    internal bool BreaksCountOne { get; init; }
+
+    public bool Select(nint hwnd, int start, int end)
+    {
+        Selects.Add((hwnd, start, end));
+        _allSelected.Remove(hwnd);
+        if (Content.ContainsKey(hwnd))
+            Selected[hwnd] = (start, end);
+        return true;
+    }
+
     public bool ReplaceSelection(nint hwnd, string text)
     {
         if (TakesReplace && Content.TryGetValue(hwnd, out string? content))
         {
             Content[hwnd] = _allSelected.Remove(hwnd) ? text
-                : Selected.Remove(hwnd, out (int Start, int End) range) ? content[..range.Start] + text + content[range.End..]
+                : Selected.Remove(hwnd, out (int Start, int End) range)
+                    ? content[..Raw(content, range.Start)] + text + content[Raw(content, range.End)..]
                 : content + text;
         }
 
         return true;
+    }
+
+    // The index in the text WM_GETTEXT gives of a control position.
+    private int Raw(string content, int position)
+    {
+        if (!BreaksCountOne)
+            return position;
+        int raw = 0;
+        for (int counted = 0; counted < position && raw < content.Length; counted++)
+            raw += content[raw] == '\r' && raw + 1 < content.Length && content[raw + 1] == '\n' ? 2 : 1;
+        return raw;
     }
 
     public bool PostChar(nint hwnd, char character)

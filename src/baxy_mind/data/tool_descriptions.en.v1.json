@@ -283,6 +283,7 @@
    "dialectCountry": "The country the person's own way of speaking marks (AR, CL, CO, ES, MX or VE), only when it is clear; leave it out otherwise. It only chooses among places of the same name and comparable size (Valencia in Spain or in Venezuela); the result then says namesakesElsewhere: true, so name the country read. A place, region or country the person said goes in location instead."
   },
   "input.text.type": {
+   "replacing": "The part to change, exactly as written there (capitals and accents included); it must be there exactly once, or nothing changes.",
    "text": "At most 4,096 characters and 8,192 bytes (UTF-8), with no line break or tab (each is a key of its own: input_key_press); a longer text or one with them is refused and nothing is typed."
   },
   "email.send": {

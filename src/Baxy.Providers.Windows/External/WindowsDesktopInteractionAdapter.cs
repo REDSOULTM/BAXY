@@ -455,6 +455,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         int? index = null;
         bool replace = false;
         bool entry = false;
+        string? replacing = null;
         bool openedApplication = arguments.ValueKind == JsonValueKind.Object
             && arguments.TryGetProperty(WindowsExternalCapabilityProvider.OpenedApplicationArgument, out JsonElement opened)
             && opened.ValueKind == JsonValueKind.True;
@@ -478,11 +479,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 index = position;
             }
 
-            if (typing && arguments.TryGetProperty("replace", out JsonElement replacing) && replacing.ValueKind != JsonValueKind.Null)
+            if (typing && arguments.TryGetProperty("replace", out JsonElement whole) && whole.ValueKind != JsonValueKind.Null)
             {
-                if (replacing.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+                if (whole.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
                     throw new InvalidDataException("replace");
-                replace = replacing.ValueKind == JsonValueKind.True;
+                replace = whole.ValueKind == JsonValueKind.True;
             }
 
             if (typing && arguments.TryGetProperty("entry", out JsonElement listed) && listed.ValueKind != JsonValueKind.Null)
@@ -491,12 +492,20 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     throw new InvalidDataException("entry");
                 entry = listed.ValueKind == JsonValueKind.True;
             }
+
+            if (typing && arguments.TryGetProperty("replacing", out JsonElement part) && part.ValueKind != JsonValueKind.Null)
+                replacing = ExternalJson.RequiredString(arguments, "replacing");
         }
         catch (InvalidDataException)
         {
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
         }
 
+        // Práctica V5E061: one part of the field's text changed, never its whole value nor a list's entry; the old text
+        // carries no control character either, as a typed one.
+        if (replacing is not null && (replace || entry || replacing.Length > MaximumTypedText
+            || replacing.Any(char.IsControl)))
+            return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
         // A replaced value needs the field it replaces: the window's own focus may be a document.
         if (replace && index is null)
             return ExternalJson.FailureBeforeEffect(operation, "input_field_not_replaceable");
@@ -511,6 +520,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         if ((typing && text.Length > MaximumTypedText) || (!typing && !VirtualKeys.TryGetValue(key!, out chord!))
             || (typing && text.Any(char.IsControl)) || (index is not null && window == 0))
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
+        if (replacing is not null)
+            return await ReplaceInFieldAsync(operation, replacing, text, window, index, cancellationToken)
+                .ConfigureAwait(false);
         if (window != 0 && _delivery is not null)
         {
             // Read before anything is sent: the receipt states the front as it was, not as the delivery left it.
@@ -1240,6 +1252,73 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     }
 
     /// <summary>
+    /// Práctica V5E061 («cámbialo, era el miércoles, no el martes»: the new text went in at the caret, and «replace» is
+    /// refused for a document): the one part <paramref name="replacing"/> of a field's text changed into
+    /// <paramref name="text"/> by the field's own edit control (<see cref="WindowsTextDelivery.Replace"/>), never by the
+    /// keyboard, whose typing would add the text at the caret. The field is the one of the last view the step names
+    /// (<c>index</c>, read by the worker without writing anything: its own window, and whether it is a password or
+    /// read-only), else the keyboard's focus of the window named, else of the window in front, as a text with no window
+    /// goes there. Anything else (no edit control there, a text not read whole) is refused before anything is sent.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> ReplaceInFieldAsync(
+        string operation, string replacing, string text, nint window, int? index, CancellationToken cancellationToken)
+    {
+        DesktopForeground frontBefore = _keyboard.Foreground();
+        if (_delivery is not { } delivery)
+            return ExternalJson.FailureBeforeEffect(operation, "input_field_not_readable");
+        WindowIdentity identity = delivery.Messages.Identity(window != 0 ? window : frontBefore.Window);
+        if (!identity.Alive)
+            return ExternalJson.FailureBeforeEffect(operation, "input_window_not_found");
+        nint field;
+        if (index is int position)
+        {
+            if (_fields is null || !_fields.TryViewedField(position, out nint viewed, out string controlId) || viewed != window)
+                return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
+            // Only the field's description: no text is given to the worker, so nothing is written.
+            using JsonDocument? answer = await _fields.FieldAsync(window, controlId, null, false, cancellationToken)
+                .ConfigureAwait(false);
+            if (answer is null)
+                return ExternalJson.FailureBeforeEffect(operation, "field_no_receipt");
+            JsonElement root = answer.RootElement;
+            string? error = root.TryGetProperty("error", out JsonElement errorValue) && errorValue.ValueKind == JsonValueKind.String
+                ? errorValue.GetString()
+                : null;
+            if (!root.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
+                return ExternalJson.FailureBeforeEffect(operation, error is "active_window_not_found" ? "visible_control_identity_stale"
+                    : error is { Length: > 0 } ? error : "field_no_receipt");
+            if (Flag(root, "readOnly", false) || Flag(root, "password", false) || !Flag(root, "enabled", true))
+                return ExternalJson.FailureBeforeEffect(operation, "input_field_not_writable");
+            field = root.TryGetProperty("nativeHwnd", out JsonElement native) && native.ValueKind == JsonValueKind.Number
+                && native.TryGetInt64(out long hwnd) && hwnd > 0
+                    ? (nint)hwnd
+                    : 0;
+        }
+        else
+        {
+            field = delivery.Messages.FocusOf(identity.Window);
+        }
+
+        FieldDelivery? replaced = field == 0 ? null : delivery.Replace(identity, field, replacing, text);
+        if (replaced is not { } done)
+            return ExternalJson.FailureBeforeEffect(operation, "input_field_not_readable");
+        if (done.Error is "input_text_replacing_not_found" or "input_text_replacing_ambiguous")
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("replacing", replacing);
+                writer.WriteNumber("occurrences", done.Occurrences);
+                writer.WriteString("next", done.Occurrences == 0
+                    ? $"«{replacing}» is not in the text of that field, read whole and compared exactly (capitals and "
+                      + "accents included); nothing was changed"
+                    : $"«{replacing}» is in the text of that field {done.Occurrences} times, so which one to change is "
+                      + "not known; nothing was changed; a replacing with more of the words around the one meant is "
+                      + "there once");
+                writer.WriteEndObject();
+            }), done.Error);
+        return FieldReceipt(operation, null, text, identity, frontBefore, done);
+    }
+
+    /// <summary>
     /// Review of combos-galerias (findings 1 and 2): a closed list's entry named by the goal, chosen in the list box the
     /// view named (the worker's «field» with «entry»: its entry of that name selected by pattern, the selection and the
     /// box's value re-read). Never a text written into the box nor sent to its edit control or the keyboard: a list with
@@ -1417,9 +1496,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 "setvalue" => "windows_uia_setvalue_reread",
                 "select" => "windows_uia_selection_reread",
                 "postmessage" => "win32_postmessage_queued",
+                _ when delivery.Replaced is not null => "win32_edit_text_reread_whole",
                 _ => "win32_edit_message_reread",
             });
             writer.WriteNull("error");
+            // Práctica V5E061: the part changed and what the whole text read back showed of it.
+            if (delivery.Replaced is { } old)
+                writer.WriteString("replaced", $"«{old}» was replaced by «{text}» at its one place in the text; the whole "
+                    + $"text was read back after it: it holds «{text}» there and nothing else in it changed");
             // Práctica V5E023 («agregué al final» said of a text that went in before the old one): where the text read
             // back landed in what the field held.
             if (delivery.Landed is { } landed)

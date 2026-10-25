@@ -404,6 +404,11 @@ public sealed class ProductCatalogTests
     [TestCase("input.text.type", """{"text":"800","index":2,"replace":true,"window":4660}""", true)]
     [TestCase("input.text.type", """{"text":"800","field":"Ancho","index":2,"window":4660}""", false)]
     [TestCase("input.text.type", """{"text":"800","replace":"yes"}""", false)]
+    // Práctica V5E061 («cámbialo, era el miércoles, no el martes»): the one part of the text to change, as it is there.
+    [TestCase("input.text.type", """{"text":"miércoles","replacing":"martes","window":4660}""", true)]
+    [TestCase("input.text.type", """{"text":"miércoles","replacing":null}""", true)]
+    [TestCase("input.text.type", """{"text":"miércoles","replacing":" "}""", false)]
+    [TestCase("input.text.type", """{"text":"miércoles","replacing":3}""", false)]
     // Ronda 19 (r17 t2-c13): the country the person's speech marks goes with the place as a declared hint.
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"ES"}""", true)]
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":null}""", true)]

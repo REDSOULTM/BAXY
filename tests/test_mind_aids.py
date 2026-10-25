@@ -294,6 +294,37 @@ def test_two_aids_of_one_tool_add_their_sentences_in_order(tmp_path: Path, monke
     assert read.index("contains BAXY") < read.index("(totalLines), and it looks")
 
 
+TEXT_TYPE = {"capabilities": [{"name": "input.text.type", "description": "Type a text.", "argumentsSchema": {
+    "type": "object", "properties": {"text": {"type": "string"}, "replacing": {"type": ["string", "null"]},
+                                     "window": {"type": ["integer", "null"]}}, "required": ["text"]}}]}
+
+
+@pytest.mark.parametrize("setting,on", [("all", True), ("text_replacing", True), ("none", False),
+                                        ("named_folder_theirs", False)])
+def test_input_text_type_shows_replacing_only_with_its_aid(tmp_path: Path, monkeypatch, setting: str, on: bool) -> None:
+    # Práctica V5E061 («cámbialo, era el miércoles, no el martes»: the new text went in at the caret, after the old one):
+    # the argument that changes one part of the text, and the sentence that says it, reach the model only with the aid;
+    # without it the tool reads as before, argument and all.
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    before, _ = _mind(tmp_path / "before", [])
+    before.configure(TEXT_TYPE)
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, _ = _mind(tmp_path, [])
+    mind.configure(TEXT_TYPE)
+    plain = next(t for t in before.tools if t["function"]["name"] == "input_text_type")["function"]
+    tool = next(t for t in mind.tools if t["function"]["name"] == "input_text_type")["function"]
+    assert "replacing" not in plain["parameters"]["properties"] and "replacing" not in plain["description"]
+    assert ("replacing" in tool["parameters"]["properties"]) is on
+    assert (tool["description"] != plain["description"]) is on
+    if on:
+        assert tool["description"].startswith(plain["description"]) and "replacing" in tool["description"]
+        assert "exactly once" in tool["parameters"]["properties"]["replacing"]["description"]
+        traced = [r for r in _trace(mind) if r["stage"] == "configure.aid"][0]["aids"]
+        assert set(traced["text_replacing"]) == {"input.text.type"}
+    else:
+        assert tool == plain
+
+
 TYPED = json.dumps({"status": "completed", "verification": "readback", "observed": {
     "ok": True, "delivered": True, "sentTo": {"title": "Sin título: Bloc de notas", "process": "Notepad"}}})
 WRITTEN = json.dumps({"status": "completed", "verification": "readback", "observed": {

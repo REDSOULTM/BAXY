@@ -973,6 +973,11 @@ public static class ProductCatalog
                     // en un documento ni en una contraseña) y la prueba es el valor
                     // releído; sin el campo mismo, por teclado no se envía nada.
                     Boolean("replace", types: NullableBoolean),
+                    // Práctica V5E061 («cámbialo, era el miércoles, no el martes»): la
+                    // parte del texto del campo que se cambia por «text», tal como está;
+                    // tiene que estar una sola vez, y la prueba es el texto entero
+                    // releído con sólo esa parte cambiada (también en un documento).
+                    String("replacing", types: NullableString, maximumUtf8Bytes: 8_192, nonWhitespace: true),
                     String("text", maximumUtf8Bytes: 8_192, nonWhitespace: true),
                     // La ventana mirada: el texto va dirigido sólo a ella (hwnd,
                     // proceso y hora de creación); por teclado, sólo mientras ella
@@ -984,7 +989,7 @@ public static class ProductCatalog
                 ["text"]),
             OperationRisks.PrivacySensitive,
             "input.text.type.win32.sendinput.accepted.v1",
-            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput; como mucho 4.096 caracteres, sin saltos de línea ni tabuladores; si no, se rechaza y no se escribe nada.",
+            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput; como mucho 4.096 caracteres, sin saltos de línea ni tabuladores; si no, se rechaza y no se escribe nada. Con replacing cambia sólo esa parte del texto del campo, hallada una sola vez, por mensajes a su control de edición, y verifica el texto entero releído.",
             effects: [WindowInput()]),
         Descriptor(
             "input.visible.click",
