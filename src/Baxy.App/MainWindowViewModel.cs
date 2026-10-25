@@ -508,9 +508,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         string label = approve ? "Sí" : "No";
-        await RunTurnAsync(label, () => _loop.AnswerConfirmationAsync(approve, label, arrivedAt, cancellationToken),
-            cancellationToken);
-        return true;
+        // Revisión de calidad (2026-10-25): a new or opened conversation holds the turn without being busy, and the press
+        // waited for it; the call it answers is asked again once the turn is this press's (Reset dropped it).
+        return await RunTurnAsync(label, () => _loop.AnswerConfirmationAsync(approve, label, arrivedAt, cancellationToken),
+            cancellationToken,
+            () => _loop.HasPendingConfirmation
+                && (answering is null || ReferenceEquals(answering, _askedConfirmation)));
     }
 
     /// <summary>Whether a heartbeat may run now: everything is up and nothing holds the turn or waits for the person.</summary>
@@ -665,7 +668,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    private async Task RunTurnAsync(string visibleUserText, Func<Task> turn, CancellationToken cancellationToken)
+    // stillAsked: what the turn answers still holds once the turn is its own; false when it no longer does (nothing ran).
+    private async Task<bool> RunTurnAsync(string visibleUserText, Func<Task> turn, CancellationToken cancellationToken,
+        Func<bool>? stillAsked = null)
     {
         // Ronda final 41 (regla: doble pulsación): a turn waiting for a heartbeat to end is already busy, so a second
         // Enter (nothing visible had happened yet) is refused instead of queued to run the same request twice.
@@ -677,7 +682,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             IsBusy = true;
             await _turnGate.WaitAsync(cancellationToken);
             entered = true;
+            if (stillAsked?.Invoke() == false)
+            {
+                return false;
+            }
+
             await RunGatedTurnAsync(visibleUserText, turn, cancellationToken);
+            return true;
         }
         finally
         {
