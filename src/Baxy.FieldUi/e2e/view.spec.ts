@@ -29,3 +29,24 @@ test('Enter en la caja de texto vacía responde Sí; Esc sobre un botón respond
   await h.page.keyboard.press('Escape');
   await expect.poll(answers).toEqual([{ approve: true, card: 'c2' }, { approve: false, card: 'c1' }]);
 });
+
+test('una tarjeta se responde una vez: el segundo Sí no llega al host ni dice que no se tomó', async () => {
+  h = await openView({ items: [card('c1')] });
+  let n = 0;
+  h.reply('/confirmation/answer', () => (n++ === 0 ? { body: { ok: true } } : { status: 409 }));
+  await h.page.locator('.bx-card .bx-btn', { hasText: 'Sí' }).dblclick();
+  await h.page.keyboard.press('Enter');
+  await h.page.waitForTimeout(400);
+  expect(answers()).toEqual([{ approve: true, card: 'c1' }]);
+  await expect(h.page.locator('.bx-notice')).toHaveCount(0);
+});
+
+test('una respuesta que el host rechazó se dice y se puede dar otra vez', async () => {
+  h = await openView({ items: [card('c1')] });
+  let n = 0;
+  h.reply('/confirmation/answer', () => (n++ === 0 ? { status: 409 } : { body: { ok: true } }));
+  await h.page.locator('.bx-card .bx-btn', { hasText: 'Sí' }).click();
+  await expect(h.page.locator('.bx-notice')).toContainText('no se tomó tu respuesta');
+  await h.page.locator('.bx-card .bx-btn', { hasText: 'Sí' }).click();
+  await expect.poll(answers).toEqual([{ approve: true, card: 'c1' }, { approve: true, card: 'c1' }]);
+});

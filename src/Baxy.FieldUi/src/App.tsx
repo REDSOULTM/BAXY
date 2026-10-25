@@ -303,9 +303,15 @@ export default function App() {
     if (r === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
   }, []);
   // the answer names the card it answers: a press or a key meant for one that ended never answers the next (the host
-  // refuses it), and a refused answer is said, never lost in silence
+  // refuses it), and a refused answer is said, never lost in silence. A card is answered once: a second press or key
+  // while the host has not yet said the card ended is not sent (the host would refuse it and the view would say the
+  // answer it took was not taken); a refused answer can be given again.
+  const answered = useRef(new Set<string>());
   const answer = useCallback(async (approve: boolean, card: string) => {
+    if (answered.current.has(card)) return;
+    answered.current.add(card);
     if (await send('POST', '/confirmation/answer', { approve, card }) === null) {
+      answered.current.delete(card);
       setNotice({ b: 'Confirmación', t: 'no se tomó tu respuesta: BAXY seguía ocupado o esa tarjeta ya no espera' });
     }
   }, []);
