@@ -2135,11 +2135,19 @@ class Mind:
         # a try that failed there may be what the answer tells: the rule reads nothing.
         denials = (_aid_on(CHECK_RULE_AIDS["denial"]) and not turn.get("receipts") and not turn.get("checked")
                    and not self.trimmed_turns)
-        catalog = {self.wire_to_op[t["function"]["name"]]: str(t["function"].get("description") or "")
-                   for t in self.tools if t["function"]["name"] in self.wire_to_op} if denials else None
-        findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls,
-                                            catalog=catalog, tries=self._tries(turn["conv"]) if denials else None)
-                    if f["rule"] not in CHECK_RULE_AIDS or _aid_on(CHECK_RULE_AIDS[f["rule"]])]
+        try:
+            catalog = {self.wire_to_op[t["function"]["name"]]: str(t["function"].get("description") or "")
+                       for t in self.tools if t["function"]["name"] in self.wire_to_op} if denials else None
+            findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [],
+                                                self._calls, catalog=catalog,
+                                                tries=self._tries(turn["conv"]) if denials else None)
+                        if f["rule"] not in CHECK_RULE_AIDS or _aid_on(CHECK_RULE_AIDS[f["rule"]])]
+        except Exception as error:  # noqa: BLE001 - a check that fails finds nothing: the answer stands
+            # Revisión de calidad: a heuristic that breaks on some answer never takes the turn with it; the trace says
+            # it failed (its type only) and the answer is spoken as it is.
+            self._log("turn.check", started, None, round=2 if turn.get("checked") else 1, findings=[], kept=False,
+                      error=type(error).__name__)
+            return None
         private = bool(turn.get("private"))
         shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
         if turn.get("checked"):
