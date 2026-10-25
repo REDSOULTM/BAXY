@@ -523,6 +523,41 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Holdout v6 V6E041 («agrégale al file jugadores.txt … la línea: Matías, arquero»): written without append, refused,
+    // then read and replaced by that line alone. The refusal of a write with neither append nor the hash says what each
+    // does; with BAXY_AYUDAS=none, the facts without the sentence; a replace whose hash is not the file's says nothing.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AWriteWithoutAppendOrHashToAFileThereSaysWhatAppendAndTheHashDo(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+        provider.WriteText("jugadores.txt", "Benja, delantero\r\n", null);
+
+        OperationOutcome refused = await Handle(
+            provider, "file.write", """{"relativePath":"jugadores.txt","text":"Matías, arquero"}""");
+        OperationOutcome stale = await Handle(provider, "file.write",
+            $$"""{"relativePath":"jugadores.txt","text":"x","expectedSha256":"{{new string('0', 64)}}"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused.ErrorCode, Is.EqualTo("version_conflict"));
+            Assert.That(refused.Result!.Value.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo(
+                    "nothing was written: jugadores.txt is already there; file_write with append true adds the text as a "
+                    + "new line at its end and keeps what it has, and with expectedSha256 (currentSha256) it replaces all "
+                    + "the file has with the text, its previous version to the Recycle Bin"));
+            }
+            Assert.That(stale.ErrorCode, Is.EqualTo("version_conflict"));
+            Assert.That(stale.Result!.Value.TryGetProperty("next", out _), Is.False);
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "jugadores.txt")), Is.EqualTo("Benja, delantero\r\n"));
+        });
+    }
+
     // Al máximo, flujos: the refusal of a replace without the hash took a file.read and another file.write; it carries
     // the version it saw (its hash and size), so the second call goes straight, its previous version to the bin.
     [Test]

@@ -181,7 +181,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             if (conflict)
                 throw WriteRefused(
                     current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append,
-                    current, current is null ? 0 : append ? previous.Length : new FileInfo(path).Length);
+                    current, current is null ? 0 : append ? previous.Length : new FileInfo(path).Length,
+                    replaceOrAppend: current is not null && !append && !IsHash(expectedSha256));
 
             // A refused write leaves nothing behind: the folder of a new file is made only now.
             EnsureHandleRoom();
@@ -679,8 +680,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     // the version of it the refusal was decided on (its SHA-256 and size), so a replace that came without the hash goes
     // straight in a second call instead of a file.read first; its previous version still goes to the Recycle Bin. Hallazgo
     // E030 (w9-sha): that second call asks the person first, since a hash only a refusal told is no sighting (ToldVersions).
+    // Holdout v6 V6E041: a write that came without append and without the hash says both ways on.
     private static FilesystemProviderException WriteRefused(
-        string code, string path, bool exists, bool append, string? currentSha256 = null, long size = 0) =>
+        string code, string path, bool exists, bool append, string? currentSha256 = null, long size = 0,
+        bool replaceOrAppend = false) =>
         new(code)
         {
             Result = ExternalJson.Create(writer =>
@@ -693,6 +696,13 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 {
                     writer.WriteString("currentSha256", currentSha256);
                     writer.WriteNumber("size", size);
+                }
+                if (replaceOrAppend && ModelAids.On(ModelAids.ReplaceOrAppend))
+                {
+                    writer.WriteString("next", $"nothing was written: {Path.GetFileName(path)} is already there; "
+                        + "file_write with append true adds the text as a new line at its end and keeps what it has, and "
+                        + "with expectedSha256 (currentSha256) it replaces all the file has with the text, its previous "
+                        + "version to the Recycle Bin");
                 }
                 writer.WriteEndObject();
             }),
