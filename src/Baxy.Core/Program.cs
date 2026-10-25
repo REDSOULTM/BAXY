@@ -263,7 +263,7 @@ internal static class Program
                 .ConfigureAwait(false);
             await WriteMessageAsync(
                 output,
-                ProtocolJson.SerializeBoundedToUtf8Bytes(response, MaximumLineBytes),
+                CoreRequest.ToLine(request, response, MaximumLineBytes, Console.Error),
                 cancellationToken).ConfigureAwait(false);
         }
 

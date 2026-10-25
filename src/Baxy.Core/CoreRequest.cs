@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Baxy.Contracts;
 using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
@@ -42,6 +43,33 @@ internal static class CoreRequest
             diagnostics.WriteLine(
                 $"BAXY core: {request.Operation} ended in an unexpected {cause}; answered failed, its invocation stays started.");
             return UnexpectedFailure(request, cause);
+        }
+    }
+
+    /// <summary>
+    /// The protocol line of the engine's response (ProtocolJson.SerializeBoundedToUtf8Bytes). Revisión del núcleo
+    /// (q-core): a response the protocol refuses (a handler's error code out of its alphabet, a line that does not fit
+    /// even without evidence) threw JsonException out of the loop and ended the core after the effect; that request is
+    /// answered failed with its effect uncertain instead, as a handler that threw is.
+    /// </summary>
+    internal static byte[] ToLine(
+        OperationRequest request,
+        OperationResponse response,
+        int maximumLineBytes,
+        TextWriter diagnostics)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(diagnostics);
+        try
+        {
+            return ProtocolJson.SerializeBoundedToUtf8Bytes(response, maximumLineBytes);
+        }
+        catch (JsonException exception)
+        {
+            string cause = exception.GetType().Name;
+            diagnostics.WriteLine(
+                $"BAXY core: {request.Operation} ended in a response the protocol refuses; answered failed.");
+            return ProtocolJson.SerializeToUtf8Bytes(UnexpectedFailure(request, cause));
         }
     }
 
