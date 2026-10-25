@@ -3,7 +3,7 @@ import type { BaxyState } from '../types';
 import { LIB, MOUTH_BOX, MOUTH_LEVELS, NEXT, SLEEP_END, clip, groupFor, mouthLevel, type Group } from './avatarClips';
 import { lipAt } from '../lip';
 import { cutMouths } from './mouths';
-import type { MouthBlend } from './mouthBlend';
+import { LipMouth, type MouthBlend } from './mouthBlend';
 
 /* BAXY's avatar in video (design v5, app.jsx BxAvatarVid): a library of Higgsfield clips in public/clips. Every clip
    starts and ends on the same master frame (the «dormido» ones on the sleep frame), so any clip can follow any other
@@ -56,6 +56,8 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       v.load();
       return v;
     };
+    // a clip taken off the page lets go of its file: a detached video keeps its player and its frames until collected
+    const drop = (v: Clip) => { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); };
     const take = (g: Group) => { const v = warm[g] ?? make(g); delete warm[g]; return v; };
     const refill = (g: Group) => { if (!dead && !warm[g]) warm[g] = make(g); };
     const target = (): Group => {
@@ -72,12 +74,12 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       v.classList.add('on');
       if (old) old.classList.remove('on');
       front = v; v._t = performance.now(); cur = g; pose = SLEEP_END[g] ? 'S' : 'M';
-      if (old) window.setTimeout(() => { old.pause(); old.remove(); }, fade ? 380 : 80);
+      if (old) window.setTimeout(() => drop(old), fade ? 380 : 80);
       // keep only the current clip, «reposo» and the likely next one warm
       for (const k of Object.keys(warm) as Group[]) {
         if (k !== g && k !== 'reposo' && !NEXT[g].includes(k)) {
           const w = warm[k]!; delete warm[k];
-          w.removeAttribute('src'); w.load(); w.remove();
+          drop(w);
         }
       }
       refill(g); refill('reposo'); NEXT[g].forEach(refill);
@@ -86,7 +88,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       const v = take(g);
       if (v.readyState < 2 && front) {
         // the current clip stays on screen until the next one has a frame (at most 2.5 s)
-        if (pending && pending.v !== v) pending.v.remove();
+        if (pending && pending.v !== v) drop(pending.v);
         const go = () => { if (dead || !pending || pending.v !== v) return; pending = null; swap(v, g, fade); };
         pending = { v };
         v.addEventListener('loadeddata', go, { once: true });
@@ -143,8 +145,8 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       }, ms);
     };
     cutLater(1500);
-    const first = MOUTH_LEVELS.map((_, i) => MOUTH_LEVELS.slice(0, i).reduce((a, b) => a + b, 0));
-    let lipOn = false, level = -1, since = 0, turn = 0, raf = 0, composed = 0;
+    const lipMouth = new LipMouth(MOUTH_LEVELS);
+    let lipOn = false, raf = 0;
     const mouth = () => {
       raf = requestAnimationFrame(mouth);
       const L = lipAt(), t = performance.now();
@@ -155,16 +157,14 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       // and on a speaking clip: the area replaced is built from its mouths (a resting clip's smile is wider)
       const on = L.known && L.active && !!blend && cur === 'hablando' && !!front && front.readyState >= 2 && shown === 1
         && +getComputedStyle(front).opacity > 0.99;
-      if (on !== lipOn) { lipOn = on; el.classList.toggle('lip', on); if (!on) { lctx.clearRect(0, 0, MW, MH); level = -1; delete el.dataset.mouth; } }
-      if (!on || t - composed < 30) return; // composed about 30 times a second, from the frame on screen
-      composed = t;
-      // a new level shows a different mouth of that level each time; a mouth stays at least 50 ms (a 20 fps mouth)
-      const k = mouthLevel(L.level);
-      if (k !== level && t - since >= 50) { level = k; since = t; turn++; }
-      const m = first[level] + (turn % MOUTH_LEVELS[level]);
+      if (on !== lipOn) { lipOn = on; el.classList.toggle('lip', on); if (!on) { lctx.clearRect(0, 0, MW, MH); lipMouth.off(); delete el.dataset.mouth; } }
+      if (!on) return;
+      // composed about 30 times a second, from the frame on screen (mouthBlend.ts LipMouth)
+      const m = lipMouth.at(mouthLevel(L.level), t);
+      if (m < 0) return;
       gctx.drawImage(front!, MX, MY, MW, MH, 0, 0, MW, MH);
       lctx.putImageData(blend!.compose(gctx.getImageData(0, 0, MW, MH).data, m), 0, 0);
-      el.dataset.mouth = String(level);
+      el.dataset.mouth = String(lipMouth.level);
     };
     raf = requestAnimationFrame(mouth);
     advance(false);
@@ -173,7 +173,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       cancelAnimationFrame(raf); window.clearTimeout(cutting);
       document.removeEventListener('visibilitychange', onVis);
       window.clearInterval(watchReady); window.clearInterval(watchdog);
-      el.querySelectorAll('video').forEach((v) => { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); });
+      el.querySelectorAll<Clip>('video').forEach(drop); lip.remove();
       ready.current(false);
     };
   }, []);

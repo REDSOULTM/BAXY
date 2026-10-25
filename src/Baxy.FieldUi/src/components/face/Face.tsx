@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef } from 'react';
 import {
   BODYH, BXM, FK, FY, GLYPH_EX, GLYPH_Q, HUB_LABEL, HUB_NAME, IDLE, PLATE, SH, THINK, TALK, TILT,
-  bxArc, bxBrow, bxEll, bxEye, bxMouth, bxRoute, bxSample, bxSuper, type Pt,
+  bxArc, bxBrow, bxEll, bxEye, bxMouth, bxRoute, bxSample, bxSegment, bxSuper, type Pt,
 } from './geometry';
 import type { Journey } from '../../store';
 import { lipAt } from '../../lip';
@@ -61,8 +61,7 @@ function FaceView(props: FaceProps) {
   useEffect(() => { P.current = props; });
   useEffect(() => {
     const cv = ref.current!, ctx = cv.getContext('2d')!;
-    const DPR = Math.min(1.25, window.devicePixelRatio || 1);
-    let dpr = DPR, refW = 0, dirty = true, w = 0, h = 0, raf = 0, last = performance.now();
+    let dpr = 1, refW = 0, dirty = true, w = 0, h = 0, raf = 0, last = performance.now();
     const mkG = (n: number, kind: Group['kind'], closed: number, k: number): Group => ({
       kind, closed, closedT: closed, k, pts: Array.from({ length: n }, () => ({ x: 0, y: -0.1, vx: 0, vy: 0, tx: 0, ty: 0, big: Math.random() < 0.22 })),
     });
@@ -90,7 +89,7 @@ function FaceView(props: FaceProps) {
     let gest: { name: string; t0: number; dur: number } | null = null, nextGest = 0.8, leanS = 1, hop = 0, hopV = 0, sq = 0, sqV = 0, browLift = 0;
     let fx: Fx[] = [], qA = 0, exA = 0, bubA = 0, scanA = 0, lastMouseT = -9, droopY = 0, prevExpr = '';
     let earL2 = 0, lvl = 0, sparks: Spark[] = [], flashes: { x: number; y: number; t: number }[] = [], earGlow = 0, trs: Tracer[] = [], trail = 0;
-    let jTurn: string | null = null, jLen = 0;
+    let jTurn: string | null = null, jPath: string[] = [];
     const heat = new Float32Array(BXM.N.length);
     const onMove = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); mouse = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; lastMouseT = performance.now() / 1000; };
     const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
@@ -102,7 +101,8 @@ function FaceView(props: FaceProps) {
     const size = () => {
       const lw = cv.clientWidth, lh = cv.clientHeight;
       if (!lw || !lh) return;
-      const vz = cv.getBoundingClientRect().width / lw || 1;
+      // the screen's density now: a window moved to a screen of another scale keeps its CSS size (no resize)
+      const DPR = Math.min(1.25, window.devicePixelRatio || 1), vz = cv.getBoundingClientRect().width / lw || 1;
       dpr = Math.max(0.5, Math.min(DPR * vz, Math.sqrt(FACE_MAXPX / (lw * lh)))); w = lw; h = lh;
       const host = cv.closest('.bx2');
       if (host) {
@@ -116,6 +116,10 @@ function FaceView(props: FaceProps) {
     let sizeQ = 0;
     const sizeSoon = () => { if (!sizeQ) sizeQ = requestAnimationFrame(() => { sizeQ = 0; size(); }); };
     const onVis = () => { if (!document.hidden) size(); };
+    let dense: MediaQueryList | null = null;
+    const onDense = () => { watchDense(); size(); };
+    const watchDense = () => { dense?.removeEventListener('change', onDense); dense = window.matchMedia('(resolution: ' + (window.devicePixelRatio || 1) + 'dppx)'); dense.addEventListener('change', onDense); };
+    watchDense();
     size();
     const ro = new ResizeObserver(sizeSoon); ro.observe(cv);
     window.addEventListener('resize', sizeSoon); window.addEventListener('bx-scale', size); document.addEventListener('visibilitychange', onVis);
@@ -179,13 +183,16 @@ function FaceView(props: FaceProps) {
       // journey through the mesh: a new turn starts a new walk; each new family of the same turn adds a segment after
       // the one walking now.
       if (journey && journey.turn !== jTurn) {
-        jTurn = journey.turn; jLen = journey.path.length; heat.fill(0); trail = 1;
+        jTurn = journey.turn; jPath = journey.path; heat.fill(0); trail = 1;
         trs = journey.path.length > 1 ? [mkTracer(bxRoute(journey.path), Math.max(1.2, 0.9 * (journey.path.length - 1)), T)] : [];
-      } else if (journey && journey.path.length > jLen) {
-        const seg = journey.path.slice(Math.max(0, jLen - 1));
-        jLen = journey.path.length; trail = 1;
-        const lastTr = trs[trs.length - 1];
-        trs.push(mkTracer(bxRoute(seg), Math.max(0.9, 0.9 * (seg.length - 1)), lastTr ? Math.max(T, lastTr.t0 + lastTr.dur) : T));
+      } else if (journey && journey.path !== jPath) {
+        const seg = bxSegment(jPath, journey.path);
+        jPath = journey.path;
+        if (seg) {
+          trail = 1;
+          const lastTr = trs[trs.length - 1];
+          trs.push(mkTracer(bxRoute(seg), Math.max(0.9, 0.9 * (seg.length - 1)), lastTr ? Math.max(T, lastTr.t0 + lastTr.dur) : T));
+        }
       }
       if (state === 'speaking' && prevState !== 'speaking') { trs.forEach((tr) => { tr.t0 = T - tr.dur; }); trs.push(mkTracer([BXM.hub.verificar, BXM.hub.voz], 0.7, T + 0.05)); trail = 1; }
       prevState = state;
@@ -707,7 +714,7 @@ function FaceView(props: FaceProps) {
     };
     raf = requestAnimationFrame(tick);
     return () => {
-      cancelAnimationFrame(raf); cancelAnimationFrame(sizeQ); ro.disconnect();
+      cancelAnimationFrame(raf); cancelAnimationFrame(sizeQ); ro.disconnect(); dense?.removeEventListener('change', onDense);
       window.removeEventListener('pointermove', onMove); window.removeEventListener('resize', sizeSoon); window.removeEventListener('bx-scale', size); document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
