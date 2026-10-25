@@ -236,9 +236,13 @@ class Conductor:
         # The mind's trace and the catalog it was sent go to the run (audit w8-medir): in the owner's turns.jsonl they
         # mixed bench turns with his real ones and, past its cap, rotated his out.
         self.mind_dir = run_dir / "mente"
+        launch = [str(ROOT / "scripts" / "run_renew.cmd"), "--conductor", "--command-dir", str(self.commands),
+                  "--capture", str(run_dir), "--profile", str(profile), "--timeout-ms", "300000"]
+        # PC-Q (2026-10-25): cmd /c with more than two quotes drops the first and the last, so a checkout whose path had
+        # a space never started («C:» is not a command). /s takes the line between the outer quotes as it is; every
+        # argument is quoted (a path cannot hold a quote), so neither a space nor a «&» splits it.
         self.process = subprocess.Popen(
-            ["cmd", "/c", str(ROOT / "scripts" / "run_renew.cmd"), "--conductor", "--command-dir", str(self.commands),
-             "--capture", str(run_dir), "--profile", str(profile), "--timeout-ms", "300000"],
+            'cmd /s /c "' + " ".join(f'"{part}"' for part in launch) + '"',
             cwd=str(ROOT), stdout=(run_dir / "console.txt").open("w", encoding="utf-8"), stderr=subprocess.STDOUT,
             # Al máximo (notebook, engine_no_answer): the App's own trace goes to the run too, and with it, when the
             # channel to the core is cut, why (core-disconnect.jsonl beside it).
@@ -387,70 +391,84 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict,
         result["profile"] = isolation.after(case["id"], case_dir)
         return result
 
-    run_turn(conductor, {"session": "new"}, 30)
-    replies, speech, turn_events, turn_from = [], [], [], []
-    turns = case.get("turns") or []
-    for number, turn in enumerate(turns, start=1):
-        if number > 1 and turn.get("barge_in_after_ms") is None:
-            wait_silence(conductor)
-        turn_from.append(len(conductor.events.all))
-        if turn.get("barge_in_after_ms") is not None:
-            # Sent N ms after the previous answer started to sound (not its notice); the previous turn must have sounded.
-            prior = next((e for e in reversed(conductor.events.all)
-                          if e["type"] == "speech.start" and not e.get("notice")), None)
-            if prior is None:
-                conductor.events.wait(lambda e: e["type"] == "speech.start" and not e.get("notice"), 15)
-            time.sleep(float(turn["barge_in_after_ms"]) / 1000)
-        left = max(5.0, budget - (time.monotonic() - started))
-        events = run_turn(conductor, {"text": turn["text"]}, left)
-        end = next((e for e in events if e["type"] == "turn.end"), {})
-        asked = bool(end.get("pendingConfirmation"))
-        confirmation_text = ""
-        if asked:
-            confirmation_text = next((e["body"] for e in reversed(events)
-                                      if e["type"] == "message" and e["speaker"] == "baxy"), "")
-        answered = turn.get("reply_if_confirmation") if asked else None
-        if asked and answered:
+    # PC-Q (2026-10-25): a case that broke under its turns or oracles (an exception, a Ctrl+C) still runs its cleanup and
+    # the profile restore (as falsedades, R12.6): the files it created outside the sandbox stayed for the next case.
+    stage = "turns"
+    try:
+        run_turn(conductor, {"session": "new"}, 30)
+        replies, speech, turn_events, turn_from = [], [], [], []
+        turns = case.get("turns") or []
+        for number, turn in enumerate(turns, start=1):
+            if number > 1 and turn.get("barge_in_after_ms") is None:
+                wait_silence(conductor)
+            turn_from.append(len(conductor.events.all))
+            if turn.get("barge_in_after_ms") is not None:
+                # Sent N ms after the previous answer started to sound (not its notice); the previous turn must have sounded.
+                prior = next((e for e in reversed(conductor.events.all)
+                              if e["type"] == "speech.start" and not e.get("notice")), None)
+                if prior is None:
+                    conductor.events.wait(lambda e: e["type"] == "speech.start" and not e.get("notice"), 15)
+                time.sleep(float(turn["barge_in_after_ms"]) / 1000)
             left = max(5.0, budget - (time.monotonic() - started))
-            events += run_turn(conductor, {"text": answered}, left)
-        finals = [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"]
-        final = finals[-1] if finals and (not asked or answered) else ("" if asked and not answered else
-                                                                      (finals[-1] if finals else ""))
-        replies.append({"turn": number, "text": final, "asked_confirmation": asked,
-                        "confirmation_text": confirmation_text, "answered": answered})
-        turn_events.append(events)
+            events = run_turn(conductor, {"text": turn["text"]}, left)
+            end = next((e for e in events if e["type"] == "turn.end"), {})
+            asked = bool(end.get("pendingConfirmation"))
+            confirmation_text = ""
+            if asked:
+                confirmation_text = next((e["body"] for e in reversed(events)
+                                          if e["type"] == "message" and e["speaker"] == "baxy"), "")
+            answered = turn.get("reply_if_confirmation") if asked else None
+            if asked and answered:
+                left = max(5.0, budget - (time.monotonic() - started))
+                events += run_turn(conductor, {"text": answered}, left)
+            finals = [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"]
+            final = finals[-1] if finals and (not asked or answered) else ("" if asked and not answered else
+                                                                          (finals[-1] if finals else ""))
+            replies.append({"turn": number, "text": final, "asked_confirmation": asked,
+                            "confirmation_text": confirmation_text, "answered": answered})
+            turn_events.append(events)
 
-    # Let the last answer finish sounding before the voice rule and the oracles read the world.
-    wait_silence(conductor)
-    conductor.events.poll()
+        # Let the last answer finish sounding before the voice rule and the oracles read the world.
+        wait_silence(conductor)
+        conductor.events.poll()
 
-    speech = utterances(conductor.events.all, turn_from, replies)
+        speech = utterances(conductor.events.all, turn_from, replies)
 
-    (case_dir / "replies.json").write_text(json.dumps(replies, ensure_ascii=False), encoding="utf-8")
-    (case_dir / "speech.json").write_text(json.dumps(speech, ensure_ascii=False), encoding="utf-8")
-    lib_env["BAXY_E2E_REPLIES"] = str(case_dir / "replies.json")
-    lib_env["BAXY_E2E_SPEECH"] = str(case_dir / "speech.json")
-    oracles = []
-    for index, oracle in enumerate(case.get("oracle") or []):
-        script = case_dir / f"oracle{index}.ps1"
-        ps_file(script, [oracle["ps"]])
-        code, out = run_ps(script, lib_env, 240)
-        matched = code == 0 and re.search(oracle["expect_regex"], out.strip()) is not None
-        oracles.append({"expect": oracle["expect_regex"], "ok": matched, "out": out.strip()[:400]})
+        (case_dir / "replies.json").write_text(json.dumps(replies, ensure_ascii=False), encoding="utf-8")
+        (case_dir / "speech.json").write_text(json.dumps(speech, ensure_ascii=False), encoding="utf-8")
+        lib_env["BAXY_E2E_REPLIES"] = str(case_dir / "replies.json")
+        lib_env["BAXY_E2E_SPEECH"] = str(case_dir / "speech.json")
+        oracles = []
+        for index, oracle in enumerate(case.get("oracle") or []):
+            script = case_dir / f"oracle{index}.ps1"
+            ps_file(script, [oracle["ps"]])
+            code, out = run_ps(script, lib_env, 240)
+            matched = code == 0 and re.search(oracle["expect_regex"], out.strip()) is not None
+            oracles.append({"expect": oracle["expect_regex"], "ok": matched, "out": out.strip()[:400]})
 
-    spoken_ok = True
-    if case.get("must_speak"):
-        for reply in replies:
-            if not reply["text"]:
-                continue
-            said = [s for s in speech if s["turn"] == reply["turn"] and norm(s["spoken_text"]) == norm(reply["text"])]
-            barged = any(t.get("barge_in_after_ms") is not None for t in (case.get("turns") or [])[reply["turn"]:])
-            spoken_ok &= bool(said) and (barged or any(s["completed"] for s in said))
-    cleanup = case_dir / "cleanup.ps1"
-    ps_file(cleanup, case.get("cleanup") or [])
-    _, cleanup_out = run_ps(cleanup, lib_env, 300)
-    leftovers = [line for line in cleanup_out.splitlines() if line.startswith("LEFTOVER")]
-    profile = isolation.after(case["id"], case_dir)
+        spoken_ok = True
+        if case.get("must_speak"):
+            for reply in replies:
+                if not reply["text"]:
+                    continue
+                said = [s for s in speech if s["turn"] == reply["turn"] and norm(s["spoken_text"]) == norm(reply["text"])]
+                barged = any(t.get("barge_in_after_ms") is not None for t in (case.get("turns") or [])[reply["turn"]:])
+                spoken_ok &= bool(said) and (barged or any(s["completed"] for s in said))
+        stage = "cleanup"
+        cleanup = case_dir / "cleanup.ps1"
+        ps_file(cleanup, case.get("cleanup") or [])
+        _, cleanup_out = run_ps(cleanup, lib_env, 300)
+        leftovers = [line for line in cleanup_out.splitlines() if line.startswith("LEFTOVER")]
+        stage = "profile"
+        profile = isolation.after(case["id"], case_dir)
+        stage = "done"
+    finally:
+        if stage == "turns":
+            cleanup = case_dir / "cleanup.ps1"
+            ps_file(cleanup, case.get("cleanup") or [])
+            run_ps(cleanup, lib_env, 300)
+        if stage in ("turns", "cleanup"):
+            isolation.after(case["id"], case_dir)
     ok = bool(oracles) and all(o["ok"] for o in oracles) and spoken_ok  # a case with no oracle checks nothing
     first_audio, first_response_audio, unanswered = [], [], []
     for number in range(1, len(turn_from) + 1):
@@ -470,6 +488,22 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict,
             "steps": [{"op": e["operation"], "status": e["status"], "verified": e["verified"]}
                       for events in turn_events for e in events if e["type"] == "step"],
             "seconds": round(time.monotonic() - started, 1)}
+
+
+def say_profile(profile: Path) -> None:
+    """Where the run's own profile stayed and how big it is (PC-Q, 2026-10-25): nothing removes it, and each run left
+    one more under %LOCALAPPDATA%\\BAXY. Said, never deleted: a person moves it (its private store has NTFS permissions
+    of its own: what cannot be read is not counted)."""
+    files = size = 0
+    for folder, _, names in os.walk(profile):
+        for name in names:
+            try:
+                size += (Path(folder) / name).stat().st_size
+                files += 1
+            except OSError:
+                pass
+    print(f"profile of this run: {profile} ({files} files, {size} bytes)" if profile.is_dir()
+          else f"profile of this run: {profile} (not created)", flush=True)
 
 
 def main() -> None:
@@ -504,36 +538,41 @@ def main() -> None:
         print(json.dumps({"error": "conductor_not_ready", "event": ready}), flush=True)
         conductor.close()
         sys.exit(2)
-    record = run_meta.product_record(ROOT, run_dir, launched)  # after configure: the catalog is in the run
     env_base = dict(os.environ)
     rows = []
     stopped_before = None
-    for index, case in enumerate(cases):
-        if session_locked():
-            # The cases left count as failures (the session was locked: nothing more could run), so the bank is
-            # never silently shorter than its cases (round B).
-            stopped_before = case["id"]
-            print(json.dumps({"error": "sesion_bloqueada", "before": case["id"]}), flush=True)
-            rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
-                      "status": "sesion_bloqueada", "oracles": [], "replies": [], "steps": []}
-                     for left in cases[index:]]
-            break
-        case_dir = run_dir / case["id"]
-        case_dir.mkdir(exist_ok=True)
-        row = judge_case(case, conductor, case_dir, env_base, isolation)
-        if row["status"] == "void":
-            # A window the bench did not open appeared: nothing more runs, and the cases left count as VOID.
-            void, stopped_before = row["detail"], case["id"]
-            print(f"VOID before {case['id']}: {void}", flush=True)
-            rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
-                      "status": "void", "oracles": [], "replies": [], "steps": []} for left in cases[index:]]
-            break
-        rows.append(row)
-        removed = (row.get("profile") or {}).get("removed") or []
-        print(f"{row['id']} {row['area']:<12} {'ok ' if row['ok'] else 'BAD'} {row['status']} {row.get('seconds')}s "
-              f"{[o['ok'] for o in row.get('oracles', [])]} voz={row.get('spoken_ok')}"
-              + (f" fuera del sandbox: {len(removed)} a cuarentena" if removed else ""), flush=True)
-    conductor.close()
+    # PC-Q (2026-10-25): whatever stops the cases (an exception, a Ctrl+C), the product closes and the owner's Notepad
+    # tabs go back; it stayed running, typing into nothing, with its mind and llama-server holding the GPU.
+    try:
+        record = run_meta.product_record(ROOT, run_dir, launched)  # after configure: the catalog is in the run
+        for index, case in enumerate(cases):
+            if session_locked():
+                # The cases left count as failures (the session was locked: nothing more could run), so the bank is
+                # never silently shorter than its cases (round B).
+                stopped_before = case["id"]
+                print(json.dumps({"error": "sesion_bloqueada", "before": case["id"]}), flush=True)
+                rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
+                          "status": "sesion_bloqueada", "oracles": [], "replies": [], "steps": []}
+                         for left in cases[index:]]
+                break
+            case_dir = run_dir / case["id"]
+            case_dir.mkdir(exist_ok=True)
+            row = judge_case(case, conductor, case_dir, env_base, isolation)
+            if row["status"] == "void":
+                # A window the bench did not open appeared: nothing more runs, and the cases left count as VOID.
+                void, stopped_before = row["detail"], case["id"]
+                print(f"VOID before {case['id']}: {void}", flush=True)
+                rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
+                          "status": "void", "oracles": [], "replies": [], "steps": []} for left in cases[index:]]
+                break
+            rows.append(row)
+            removed = (row.get("profile") or {}).get("removed") or []
+            print(f"{row['id']} {row['area']:<12} {'ok ' if row['ok'] else 'BAD'} {row['status']} {row.get('seconds')}s "
+                  f"{[o['ok'] for o in row.get('oracles', [])]} voz={row.get('spoken_ok')}"
+                  + (f" fuera del sandbox: {len(removed)} a cuarentena" if removed else ""), flush=True)
+    finally:
+        conductor.close()
+        say_profile(profile)
     by_area: dict[str, list[int]] = {}
     for row in rows:
         tally = by_area.setdefault(str(row["area"]), [0, 0])

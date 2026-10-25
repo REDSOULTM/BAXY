@@ -14,13 +14,15 @@ with today's judge (holdout: one judge for every configuration).
 import argparse
 import glob
 import json
+import os
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_decision import enums_of, judge  # noqa: E402
 
-PRACTICE = Path(r"F:\BAXYeval\renew_v1\practica")
+# Where the other scripts find the banks (BAXY_RENEW_BANKS, D: on the notebook): it was F: whatever that said.
+PRACTICE = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1")) / "practica"
 
 
 def load_bank(path: Path) -> list[dict]:

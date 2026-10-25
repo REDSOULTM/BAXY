@@ -15,6 +15,7 @@ Sources, per lever:
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 from pathlib import Path
 
@@ -160,7 +161,8 @@ def write(out: Path, arm: str, seed: int) -> Path:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("arms", nargs="*", default=list(ARMS))
-    parser.add_argument("--out", default=r"F:\BAXYeval\renew_v1\ab")
+    # Where the other scripts find the banks (BAXY_RENEW_BANKS, D: on the notebook): it was F: whatever that said.
+    parser.add_argument("--out", default=str(Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1")) / "ab"))
     parser.add_argument("--seeds", default="0,1,2")
     args = parser.parse_args()
     for arm in args.arms:

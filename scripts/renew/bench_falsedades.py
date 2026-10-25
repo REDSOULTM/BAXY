@@ -18,6 +18,7 @@ import argparse
 import http.client
 import json
 import os
+import socket
 import subprocess
 import sys
 import time
@@ -27,7 +28,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_e2e import (BANKS, ROOT, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
-                       run_ps, run_setup, run_turn, session_locked, wait_silence)
+                       run_ps, run_setup, run_turn, say_profile, session_locked, wait_silence)
+import limpieza  # noqa: E402
 import run_meta  # noqa: E402
 
 JUDGE_GGUF = os.environ.get("BAXY_RENEW_JUDGE_GGUF", r"F:\BAXYeval\models\Qwen3.6-35B-A3B-MTP-UD-IQ3_XXS.gguf")
@@ -77,31 +79,35 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
                                                  indent=1), encoding="utf-8")
     env = dict(os.environ)
     transcripts = []
-    for case in cases:
-        if session_locked():
-            raise SystemExit(f"sesion_bloqueada antes de {case['id']}")
-        case_dir = run_dir / case["id"]
-        case_dir.mkdir(exist_ok=True)
-        code, out, void = run_setup(case, case_dir, env, isolation)
-        if void:
-            conductor.close()
-            raise BenchVoid(f"before {case['id']}: {void}")
-        # R12.6: the cleanup runs whatever happened, a failed setup too (as in bench_e2e), so the next case starts on
-        # a clean desktop; then the files the case left outside the sandbox go to its quarantine (w6-banco).
-        try:
-            if code != 0:
-                entry = {"id": case["id"], "status": "setup_fallido", "detail": out[-500:], "turns": []}
-            else:
-                entry = {"id": case["id"], "trap": case.get("trap"), "status": "ok", "turns": converse(conductor, case)}
-        finally:
-            cleanup = case_dir / "cleanup.ps1"
-            ps_file(cleanup, case.get("cleanup") or [])
-            run_ps(cleanup, env, 300)
-            left = isolation.after(case["id"], case_dir)
-        transcripts.append({**entry, "profile": left})
-        print(f"{case['id']} {len(entry['turns'])} turnos" + (f" fuera del sandbox: {len(left['removed'])} a cuarentena"
-                                                              if left["removed"] else ""), flush=True)
-    conductor.close()
+    # PC-Q (2026-10-25): the product closes whatever stops the conversations (the lock screen, a VOID case, an
+    # exception, a Ctrl+C); it stayed running with its mind and llama-server, and the owner's Notepad tabs set aside.
+    try:
+        for case in cases:
+            if session_locked():
+                raise SystemExit(f"sesion_bloqueada antes de {case['id']}")
+            case_dir = run_dir / case["id"]
+            case_dir.mkdir(exist_ok=True)
+            code, out, void = run_setup(case, case_dir, env, isolation)
+            if void:
+                raise BenchVoid(f"before {case['id']}: {void}")
+            # R12.6: the cleanup runs whatever happened, a failed setup too (as in bench_e2e), so the next case starts on
+            # a clean desktop; then the files the case left outside the sandbox go to its quarantine (w6-banco).
+            try:
+                if code != 0:
+                    entry = {"id": case["id"], "status": "setup_fallido", "detail": out[-500:], "turns": []}
+                else:
+                    entry = {"id": case["id"], "trap": case.get("trap"), "status": "ok", "turns": converse(conductor, case)}
+            finally:
+                cleanup = case_dir / "cleanup.ps1"
+                ps_file(cleanup, case.get("cleanup") or [])
+                run_ps(cleanup, env, 300)
+                left = isolation.after(case["id"], case_dir)
+            transcripts.append({**entry, "profile": left})
+            print(f"{case['id']} {len(entry['turns'])} turnos" + (f" fuera del sandbox: {len(left['removed'])} a cuarentena"
+                                                                  if left["removed"] else ""), flush=True)
+    finally:
+        conductor.close()
+        say_profile(profile)
     (run_dir / "transcripts.json").write_text(json.dumps(transcripts, ensure_ascii=False, indent=1), encoding="utf-8")
     return transcripts
 
@@ -220,19 +226,34 @@ def judge_line(messages: list[dict]) -> dict:
 _JUDGE: dict = {}
 
 
-def start_judge_server() -> None:
+def port_free(port: int) -> bool:
+    with socket.socket() as probe:
+        try:
+            probe.bind(("127.0.0.1", port))
+        except OSError:
+            return False
+    return True
+
+
+def start_judge_server() -> bool:
+    """Whether the judge's server came up. PC-Q (2026-10-25): a server that exited (its GGUF missing, its port taken)
+    was waited for 900 s, at every restart too."""
     _JUDGE["server"] = subprocess.Popen(
         [LLAMA_SERVER, "-m", JUDGE_GGUF, "--host", "127.0.0.1", "--port", str(JUDGE_PORT),
          "-ngl", "99", "-c", "16384", "-fa", "on", "--jinja"],
         stdout=_JUDGE["log"], stderr=subprocess.STDOUT)
+    limpieza.die_with_this_process(_JUDGE["server"])  # a killed run left it holding the GPU and the judge's port
     deadline = time.monotonic() + 900
     while time.monotonic() < deadline:
+        if _JUDGE["server"].poll() is not None:
+            return False
         try:
             with urllib.request.urlopen(f"http://127.0.0.1:{JUDGE_PORT}/health", timeout=2) as reply:
                 if reply.status == 200:
-                    return
+                    return True
         except Exception:  # noqa: BLE001 - still loading
             time.sleep(1)
+    return False
 
 
 def judge_chat(messages: list[dict], seed: int = 0) -> dict:
@@ -275,8 +296,14 @@ def judge_chat(messages: list[dict], seed: int = 0) -> dict:
 
 def judge(replicas: list[list[dict]], log_dir: Path) -> list[list[dict]]:
     """Every line of every replica's transcripts, with one judge server for all of them (it takes minutes to load)."""
+    # PC-Q: a server already on the judge's port (one a killed run left, with whatever model it loaded) answered the
+    # health check and judged every line, while the one started here could not bind and exited.
+    if not port_free(JUDGE_PORT):
+        raise SystemExit(f"the judge's port {JUDGE_PORT} is in use (a judge server left by a run that died?): close it")
     _JUDGE["log"] = (log_dir / "judge-server.log").open("w", encoding="utf-8")
-    start_judge_server()
+    if not start_judge_server():
+        _JUDGE["server"].kill()
+        raise SystemExit(f"the judge's server did not come up: see {log_dir / 'judge-server.log'}; nothing was judged")
     try:
         return [judge_transcripts(transcripts) for transcripts in replicas]
     finally:
@@ -319,8 +346,17 @@ def judge_transcripts(transcripts: list[dict]) -> list[dict]:
     return rows
 
 
+def judge_record() -> dict:
+    """The judge that read the lines (PC-Q, 2026-10-25): its GGUF and server with their sha256, its seeds and this
+    script's sha256 (its prompt and its vote). The summary named only the product that talked (run.json), and a
+    --judge-only may read transcripts made long before with another BAXY_RENEW_JUDGE_GGUF."""
+    cache = run_meta._cache_path()
+    return {"gguf": run_meta.fingerprint(JUDGE_GGUF, cache), "server": run_meta.fingerprint(LLAMA_SERVER, cache),
+            "seeds": list(JUDGE_SEEDS), "script_sha256": run_meta.sha256_file(Path(__file__))}
+
+
 def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict], rows: list[dict],
-                run_dir: Path | None = None) -> dict:
+                run_dir: Path | None = None, judged_by: dict | None = None) -> dict:
     false_lines = [r for r in rows if r.get("falsedad")]
     try:
         record = json.loads((run_dir / "run.json").read_text(encoding="utf-8")) if run_dir else None
@@ -345,7 +381,7 @@ def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict
                                        if turn.get("failure")}),
             "turnos_sin_linea": sorted({t["id"] for t in transcripts for turn in t.get("turns") or []
                                         if not any(str(b).strip() for b in turn.get("baxy") or [])}),
-            **profile_summary(transcripts), "run": record}
+            **profile_summary(transcripts), "run": record, "judge": judged_by}
 
 
 def replicas_summary(label: str, summaries: list[dict]) -> dict:
@@ -420,9 +456,10 @@ def main() -> None:
                               "conversations": {label: len(t) for label, t in conversations.items()}}))
             return
     judged = judge([conversations[label] for label, _ in replicas], run_dirs[replicas[0][0]])
+    judged_by = judge_record()
     summaries = []
     for (label, seed), rows in zip(replicas, judged):
-        summary = run_summary(label, args.cases, seed, conversations[label], rows, run_dirs[label])
+        summary = run_summary(label, args.cases, seed, conversations[label], rows, run_dirs[label], judged_by)
         summaries.append(summary)
         with (run_dirs[label] / "results.jsonl").open("w", encoding="utf-8") as out:
             out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")

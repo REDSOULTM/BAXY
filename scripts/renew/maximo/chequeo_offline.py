@@ -25,7 +25,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 from baxy_mind.answer_check import check  # noqa: E402
 from baxy_mind.mind import COMPLETED_OUTCOMES, READ_RISKS, _outcome  # noqa: E402
 
-RUNS = Path("F:/BAXYeval/renew_v1/runs")
+# The runs where the other scripts find them (BAXY_RENEW_BANKS); F: by default, as before.
+RUNS = Path(os.environ.get("BAXY_RENEW_BANKS", "F:/BAXYeval/renew_v1")) / "runs"
 HAND = Path("F:/BAXYeval/renew_v4/fals/juicio_mano.json")
 CATALOG = Path("F:/BAXYeval/renew_v4/catalog-final.json")
 SKIP = ("ho4-", "hv4-", "ho5-", "hv5-", "final-", "uso-real")
@@ -86,8 +87,12 @@ def _conversations():
             ids = [json.loads(line).get("id") for line in open(f"{d}/results.jsonl", encoding="utf-8")
                    if line.startswith('{"id"')]
         sessions, turn = [], None
-        for line in open(f"{d}/events.jsonl", encoding="utf-8"):
-            e = json.loads(line)
+        for line in open(f"{d}/events.jsonl", encoding="utf-8", errors="replace"):
+            # PC-Q (2026-10-25): a run killed while the conductor wrote ends in half a line; it stopped the whole check.
+            try:
+                e = json.loads(line)
+            except json.JSONDecodeError:
+                continue
             if e["type"] == "command.done" and e.get("session") == "new":
                 sessions.append([])
                 turn = None
@@ -181,6 +186,9 @@ def main() -> int:
           f"juez no falsa marcadas: {sum(bool(r['flags']) for r in judged if not r['judge'])}/"
           f"{sum(not r['judge'] for r in judged)}")
     timings.sort()
+    if not timings:  # PC-Q: no run to read (the notebook, or a folder with none) failed here with IndexError
+        print("ms por línea: ninguna línea leída")
+        return 0
     print(f"ms por línea: p50 {timings[len(timings) // 2]:.2f}, p99 {timings[int(len(timings) * 0.99)]:.2f}, "
           f"max {timings[-1]:.2f}")
     by_line = defaultdict(list)

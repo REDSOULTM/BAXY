@@ -2,10 +2,11 @@
 One seed: per item ok 0/1; Δ (B-A) with its 95 % CI by paired bootstrap over items, items up/down, exact McNemar.
 Several seeds: per item mean over seeds; McNemar on the majority. Also: status counts (anything not ok/fail voids it),
 setup_failed, and the gate cases E011/E017/E024 plus E020 and E006 per seed."""
-import json, random, sys
+import json, os, random, sys
 from math import comb
 from pathlib import Path
-RUNS = Path("D:/BAXYeval/renew_v1/runs")
+# The notebook's runs (D:) unless BAXY_RENEW_BANKS says where the banks are, as for the other scripts.
+RUNS = Path(os.environ.get("BAXY_RENEW_BANKS", "D:/BAXYeval/renew_v1")) / "runs"
 GATE = ("E011", "E017", "E024", "E020", "E006")
 
 def rows(prefix, seed):

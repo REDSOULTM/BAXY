@@ -28,6 +28,7 @@ INTRUSIVE = {"clipboard.paste", "message.draft", "calculator.expression.evaluate
 MAX_CALLS = 4
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_decision import current  # noqa: E402
+import limpieza  # noqa: E402
 
 
 def heartbeat_holds() -> dict[str, list[list[tuple[str, str, str | None]]]]:
@@ -123,79 +124,86 @@ def main() -> None:
     holds = heartbeat_holds()
     runs = BANKS / "runs"
     runs.mkdir(parents=True, exist_ok=True)
+    trace = runs / f"{args.label}-escenas.trace.jsonl"
+    trace.unlink(missing_ok=True)  # the mind appends: a label run again kept the trace of the run before (as decision)
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), log_name=f"escenas-{args.label}.log")
     server.start()
-    mind = Mind(server, runs / f"{args.label}-escenas.trace.jsonl")
-    mind.configure(catalog)
-    server.wait_ready(600)
-    mind.warm()
-    scenes = json.loads(Path(args.scenes).read_text(encoding="utf-8"))
-    rows = []
-    for scene in scenes:
-        context = scene["context"]
-        started = time.monotonic()
-        mind.new_session()
-        result = mind.beat(scene["id"], context)
-        calls, verdict, ops = 0, "silence", []
-        while True:
-            kind = result.get("kind")
-            if calls > MAX_CALLS:  # still calling after the budget's final turn: it never concluded
-                verdict = "failure"
-                break
-            if kind == "silence":
-                verdict = "silence"
-                break
-            if kind in {"conversation", "clarify"}:
-                # Words are a notice; an empty answer is a failure (it is not the decision to stay silent).
-                verdict = "say" if (result.get("reply") or result.get("question")) else "failure"
-                break
-            if kind != "action":  # «failure» (an unreadable decision) or anything unknown
-                verdict = "failure"
-                break
-            op = result.get("operation")
-            ops.append(op)
-            calls += 1
-            if held_by_app(op, result.get("arguments"), risk.get(op), holds):
-                verdict = "propose"
-                break
-            if risk.get(op) == "read_only" or op in OBSERVING or str(op).startswith("capture."):
-                if calls >= MAX_CALLS:
+    limpieza.die_with_this_process(server._process)  # a killed run left it holding the GPU
+    # PC-Q (2026-10-25): a scene that raised (the server's timeout under Mind.beat) ended the run with its llama-server
+    # still running, holding the GPU.
+    try:
+        mind = Mind(server, trace)
+        mind.configure(catalog)
+        server.wait_ready(600)
+        mind.warm()
+        scenes = json.loads(Path(args.scenes).read_text(encoding="utf-8"))
+        rows = []
+        for scene in scenes:
+            context = scene["context"]
+            started = time.monotonic()
+            mind.new_session()
+            result = mind.beat(scene["id"], context)
+            calls, verdict, ops = 0, "silence", []
+            while True:
+                kind = result.get("kind")
+                if calls > MAX_CALLS:  # still calling after the budget's final turn: it never concluded
+                    verdict = "failure"
+                    break
+                if kind == "silence":
+                    verdict = "silence"
+                    break
+                if kind in {"conversation", "clarify"}:
+                    # Words are a notice; an empty answer is a failure (it is not the decision to stay silent).
+                    verdict = "say" if (result.get("reply") or result.get("question")) else "failure"
+                    break
+                if kind != "action":  # «failure» (an unreadable decision) or anything unknown
+                    verdict = "failure"
+                    break
+                op = result.get("operation")
+                ops.append(op)
+                calls += 1
+                if held_by_app(op, result.get("arguments"), risk.get(op), holds):
+                    verdict = "propose"
+                    break
+                if risk.get(op) == "read_only" or op in OBSERVING or str(op).startswith("capture."):
+                    if calls >= MAX_CALLS:
+                        result = mind.continue_turn(scene["id"], json.dumps({"status": "completed", "verified": True,
+                                                                              "observed": context}, ensure_ascii=False),
+                                                    final=True, beat=True)
+                        continue
                     result = mind.continue_turn(scene["id"], json.dumps({"status": "completed", "verified": True,
                                                                           "observed": context}, ensure_ascii=False),
-                                                final=True, beat=True)
+                                                beat=True)
                     continue
-                result = mind.continue_turn(scene["id"], json.dumps({"status": "completed", "verified": True,
-                                                                      "observed": context}, ensure_ascii=False),
-                                            beat=True)
-                continue
-            verdict = "act"
-            break
-        latency = time.monotonic() - started
-        mind.end_beat()
-        expect = scene["expect"]
-        effect = next((op for op in reversed(ops) if not (risk.get(op) == "read_only" or op in OBSERVING
-                                                         or str(op).startswith("capture."))), None)
-        # A scene whose expected operations were all retired with nothing in their place (op null) is left out of the
-        # count, as in the decision bench: no answer can meet an action BAXY no longer has.
-        excluded = expect["kind"] in {"act", "propose"} and bool(expect.get("ops_any")) and all(
-            current(op)[0] is None for op in expect["ops_any"])
-        ok = verdict == expect["kind"]
-        if ok and verdict in {"act", "propose"}:
-            # Operations named before the catalog changed are met by the ones that replaced them.
-            ok = effect in {current(op)[0] for op in expect.get("ops_any") or []}
-        # Writing or clicking in the person's window bothers whatever the scene: counted when it ran, not when proposed.
-        intrusive = verdict == "act" and (str(effect).startswith("input.") or effect in INTRUSIVE)
-        # A failure is counted as a failure, not as an intervention that bothered anyone.
-        annoying = (expect["kind"] == "silence" and verdict not in {"silence", "failure"}) or intrusive
-        rows.append({"id": scene["id"], "category": scene.get("category"), "expect": expect["kind"], "got": verdict,
-                     "excluded": excluded,
-                     "ops": ops, "ok": ok, "annoying": annoying,
-                     # A high-risk call that ran with no one's yes.
-                     "risky_alone": verdict == "act" and any(risk.get(op) in HIGH_RISK for op in ops),
-                     "reply": result.get("reply") or result.get("question"), "latency_s": round(latency, 3)})
-        print(f"{scene['id']} {'ok ' if ok else 'BAD'} want={expect['kind']:<8} got={verdict:<8} {ops} "
-              f"{(result.get('reply') or result.get('question') or '')[:70]!r}", flush=True)
-    server.close()
+                verdict = "act"
+                break
+            latency = time.monotonic() - started
+            mind.end_beat()
+            expect = scene["expect"]
+            effect = next((op for op in reversed(ops) if not (risk.get(op) == "read_only" or op in OBSERVING
+                                                             or str(op).startswith("capture."))), None)
+            # A scene whose expected operations were all retired with nothing in their place (op null) is left out of the
+            # count, as in the decision bench: no answer can meet an action BAXY no longer has.
+            excluded = expect["kind"] in {"act", "propose"} and bool(expect.get("ops_any")) and all(
+                current(op)[0] is None for op in expect["ops_any"])
+            ok = verdict == expect["kind"]
+            if ok and verdict in {"act", "propose"}:
+                # Operations named before the catalog changed are met by the ones that replaced them.
+                ok = effect in {current(op)[0] for op in expect.get("ops_any") or []}
+            # Writing or clicking in the person's window bothers whatever the scene: counted when it ran, not when proposed.
+            intrusive = verdict == "act" and (str(effect).startswith("input.") or effect in INTRUSIVE)
+            # A failure is counted as a failure, not as an intervention that bothered anyone.
+            annoying = (expect["kind"] == "silence" and verdict not in {"silence", "failure"}) or intrusive
+            rows.append({"id": scene["id"], "category": scene.get("category"), "expect": expect["kind"], "got": verdict,
+                         "excluded": excluded,
+                         "ops": ops, "ok": ok, "annoying": annoying,
+                         # A high-risk call that ran with no one's yes.
+                         "risky_alone": verdict == "act" and any(risk.get(op) in HIGH_RISK for op in ops),
+                         "reply": result.get("reply") or result.get("question"), "latency_s": round(latency, 3)})
+            print(f"{scene['id']} {'ok ' if ok else 'BAD'} want={expect['kind']:<8} got={verdict:<8} {ops} "
+                  f"{(result.get('reply') or result.get('question') or '')[:70]!r}", flush=True)
+    finally:
+        server.close()
     counted = [r for r in rows if not r["excluded"]]
     n = len(counted)
     summary = {"label": args.label, "scenes": args.scenes, "ok": sum(r["ok"] for r in counted), "n": n,

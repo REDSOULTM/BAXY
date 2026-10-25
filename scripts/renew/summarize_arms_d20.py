@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import statistics
 from pathlib import Path
@@ -21,7 +22,8 @@ def first(path: Path) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--runs", default=r"F:\BAXYeval\renew_v1\runs")
+    # Where the other scripts find the banks (BAXY_RENEW_BANKS, D: on the notebook): it was F: whatever that said.
+    parser.add_argument("--runs", default=str(Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1")) / "runs"))
     parser.add_argument("--prefix", default="pc-d20")
     args = parser.parse_args()
     arms: dict[str, dict[str, list]] = {}

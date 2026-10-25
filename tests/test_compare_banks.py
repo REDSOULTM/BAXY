@@ -52,3 +52,25 @@ def test_a_rejudge_with_the_runs_catalog_holds_each_code_to_itself() -> None:
         "action": {"enum": ["close", "close_all"]}}}}]}
     assert rejudge([row], {"H001": bank[0]}, by_old)["new"] == (1, 1)
     assert rejudge([row], {"H001": bank[0]}, by_old, enums_of(catalog))["new"] == (0, 1)
+
+
+def test_the_default_practice_banks_follow_baxy_renew_banks(tmp_path, monkeypatch, capsys) -> None:
+    # PC-Q (2026-10-25): the other scripts find the banks in BAXY_RENEW_BANKS (D: on the notebook); compare_banks read
+    # F:\BAXYeval\renew_v1\practica whatever it said.
+    import importlib
+    import json
+
+    import compare_banks
+    (tmp_path / "practica").mkdir()
+    (tmp_path / "practica" / "decision2.json").write_text(json.dumps(OLD), encoding="utf-8")
+    (tmp_path / "practica" / "decision3.json").write_text(json.dumps(NEW), encoding="utf-8")
+    (tmp_path / "run.jsonl").write_text(json.dumps({"summary": {"cases": "otro.json"}}) + "\n", encoding="utf-8")
+    monkeypatch.setenv("BAXY_RENEW_BANKS", str(tmp_path))
+    try:
+        importlib.reload(compare_banks)
+        monkeypatch.setattr(sys, "argv", ["compare_banks.py", str(tmp_path / "run.jsonl")])
+        compare_banks.main()
+    finally:
+        monkeypatch.undo()
+        importlib.reload(compare_banks)
+    assert capsys.readouterr().out.startswith("decision2.json 3 → decision3.json 2: 1 relabelled, retired ['P003']")
