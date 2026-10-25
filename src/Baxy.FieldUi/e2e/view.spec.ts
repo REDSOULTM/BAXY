@@ -134,3 +134,23 @@ test('la caja no admite más de lo que el host acepta (4096 caracteres)', async 
   await box().press('Enter');
   await expect.poll(() => h.calls.filter((c) => c.path === '/turn').map((c) => (c.body as { text: string }).text.length)).toEqual([4096]);
 });
+
+test('accesibilidad: la opción elegida de cada selector y lo que despliega cada botón se anuncian', async () => {
+  h = await openView({ items: [{ who: 'baxy', id: 'b1', ts: '12:00', text: 'Listo.', steps: [{ id: 'st1', label: 'Abrir la calculadora', fam: 'apps', status: 'ok', obs: 'Ventana a la vista' }] }] });
+  const p = h.page;
+  // a step's chip opens what it observed
+  const chip = p.getByRole('button', { name: /Abrir la calculadora/ });
+  await expect(chip).toHaveAttribute('aria-expanded', 'false');
+  await chip.click();
+  await expect(chip).toHaveAttribute('aria-expanded', 'true');
+  // the microphone's menu
+  const caret = p.getByRole('button', { name: 'Modo de micrófono' });
+  await expect(caret).toHaveAttribute('aria-expanded', 'false');
+  await caret.click();
+  await expect(caret).toHaveAttribute('aria-expanded', 'true');
+  await p.keyboard.press('Escape');
+  // Ajustes: the theme chosen
+  await p.locator('.bx-gear').click();
+  await expect(p.getByRole('button', { name: 'Oscuro', pressed: true })).toHaveCount(1);
+  await expect(p.getByRole('button', { name: 'Claro', pressed: false })).toHaveCount(1);
+});

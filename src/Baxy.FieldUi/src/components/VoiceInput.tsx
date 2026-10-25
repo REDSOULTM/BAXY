@@ -84,7 +84,7 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
           onPointerCancel={() => { if (mic === 'ptt') onPttEnd(); }}
           title={mic === 'ptt' ? 'Mantén para hablar' : cur.label}
         ><Icon name={cur.icon} size={15} /></button>
-        <button className={'bx-caret' + (menu ? ' open' : '')} onClick={() => setMenu(!menu)} title="Modo de micrófono">
+        <button className={'bx-caret' + (menu ? ' open' : '')} onClick={() => setMenu(!menu)} title="Modo de micrófono" aria-expanded={menu}>
           <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M1.5 5 L4 2.5 L6.5 5"></path></svg>
         </button>
       </div>
