@@ -1,5 +1,5 @@
-import json, re, sys
-R = 'D:/BAXYeval/renew_v1/runs/'
+import json, os, re, sys
+R = os.environ.get('BAXY_RENEW_BANKS', 'D:/BAXYeval/renew_v1') + '/runs/'  # PC-Q: as the other scripts
 lib = re.compile(r'(?i)instalado localmente|añadir estanter|jugados recientemente|ordenar por')
 login = re.compile(r'(?i)iniciar sesi|contraseña|sign in|password')
 for label in sys.argv[1:]:

@@ -25,7 +25,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 from baxy_mind.answer_check import check  # noqa: E402
 from baxy_mind.mind import COMPLETED_OUTCOMES, READ_RISKS, _outcome  # noqa: E402
 
-RUNS = Path("F:/BAXYeval/renew_v1/runs")
+# The runs where the other scripts find them (BAXY_RENEW_BANKS); F: by default, as before.
+RUNS = Path(os.environ.get("BAXY_RENEW_BANKS", "F:/BAXYeval/renew_v1")) / "runs"
 HAND = Path("F:/BAXYeval/renew_v4/fals/juicio_mano.json")
 CATALOG = Path("F:/BAXYeval/renew_v4/catalog-final.json")
 SKIP = ("ho4-", "hv4-", "ho5-", "hv5-", "final-", "uso-real")

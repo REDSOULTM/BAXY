@@ -28,3 +28,31 @@ def test_with_no_line_to_check_it_says_so_instead_of_failing(tmp_path, monkeypat
     monkeypatch.setattr(sys, "argv", ["chequeo_offline.py"])
     assert chequeo_offline.main() == 0
     assert "líneas 0" in capsys.readouterr().out
+
+
+def test_the_runs_read_are_those_of_baxy_renew_banks(tmp_path, monkeypatch):
+    import importlib
+    monkeypatch.setenv("BAXY_RENEW_BANKS", str(tmp_path))
+    try:
+        importlib.reload(chequeo_offline)
+        assert chequeo_offline.RUNS == tmp_path / "runs"
+    finally:
+        monkeypatch.undo()
+        importlib.reload(chequeo_offline)
+
+
+def test_the_notebooks_paired_ab_reads_the_runs_of_baxy_renew_banks(tmp_path):
+    import os
+    import subprocess
+    for prefix, ok in (("A", False), ("B", True)):
+        run = tmp_path / "runs" / f"{prefix}-s0-e2e-e2e"
+        run.mkdir(parents=True)
+        (run / "results.jsonl").write_text(json.dumps({"summary": {}}) + "\n"
+                                           + json.dumps({"id": "E001", "ok": ok, "status": "ok"}) + "\n",
+                                           encoding="utf-8")
+    script = Path(__file__).resolve().parents[1] / "scripts" / "renew" / "notebook" / "ayudas" / "pareado_ab.py"
+    done = subprocess.run([sys.executable, "-X", "utf8", str(script), "A", "B", "0"], capture_output=True, text=True,
+                          encoding="utf-8", env={**os.environ, "BAXY_RENEW_BANKS": str(tmp_path)},
+                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    assert done.returncode == 0, done.stderr
+    assert "up ['E001']" in done.stdout
