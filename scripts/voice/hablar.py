@@ -298,11 +298,13 @@ def correr(set_dir: Path, label: str, early: str, warm: str, timeout: float) -> 
                 break
             time.sleep(2)
     finally:
-        for child in list(family.values()) + [psutil.Process(process.pid)]:
+        for child in family.values():
             try:
                 child.kill()
             except psutil.Error:
                 pass
+        if process.poll() is None:  # run_renew.cmd may have ended once the app was launched
+            process.kill()
         console.close()
     rows = []
     if trace.is_file():
