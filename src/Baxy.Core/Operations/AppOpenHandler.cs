@@ -57,6 +57,23 @@ internal sealed class AppOpenHandler(
             return InvocationPreflightResult.Proceed;
         }
 
+        // Revisión del núcleo (q-core): a value with no place, or one its place does not take, is refused by the opening
+        // the same way (place_value_not_taken, nothing launched); a game's title is looked up first, so it still asks.
+        string? placeName = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("place", out JsonElement placed) && placed.ValueKind == JsonValueKind.String
+                ? placed.GetString()
+                : null;
+        string? placeValue = arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("placeValue", out JsonElement valued) && valued.ValueKind == JsonValueKind.String
+                ? valued.GetString()
+                : null;
+        if (appId is not null && placeValue is not null
+            && ApplicationPlaces.GameCatalogOf(appId, placeName) is null
+            && ApplicationPlaces.Address(appId, placeName, placeValue) is null)
+        {
+            return InvocationPreflightResult.Proceed;
+        }
+
         return appId is not null && ApplicationIds.IsValidRequest(appId)
             && await _provider.OpensSystemToolAsync(appId, cancellationToken).ConfigureAwait(false)
                 ? InvocationPreflightResult.Raised(OperationRisk.Irreversible)

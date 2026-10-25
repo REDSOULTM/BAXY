@@ -755,6 +755,23 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Revisión del núcleo (q-core): a value with no place (or one its place does not take) is refused by the opening too,
+    // launching nothing (place_value_not_taken); asking the yes for msconfig first asked for nothing, as E014 int3 s1.
+    [Test]
+    public async Task ASystemToolWithAValueAndNoPlaceIsRefusedWithoutAsking()
+    {
+        var platform = new SystemToolsPlatform();
+
+        OperationResponse response = await OpenThroughEngine(
+            platform, "Configuración del sistema", confirm: false, placeValue: "sonido");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.EqualTo("place_value_not_taken"));
+            Assert.That(platform.Activated, Is.Empty);
+        });
+    }
+
     // Revisión del núcleo (q-core): clipboard.paste.into opens its application through app.open; a system tool named
     // there asks as app.open does, and nothing is launched before the yes. It launched msconfig without asking.
     [TestCase(true, "Configuración del sistema")]
@@ -827,7 +844,7 @@ public sealed class AppOpenHandlerTests
         Assert.That(VisibleControlSurface.SystemToolLaunch(target, arguments), Is.EqualTo(expected));
 
     private static async Task<OperationResponse> OpenThroughEngine(
-        SystemToolsPlatform platform, string appId, bool confirm, string? place = null)
+        SystemToolsPlatform platform, string appId, bool confirm, string? place = null, string? placeValue = null)
     {
         AppOpenHandler handler = Handler(new WindowsInstalledApplicationOpenProvider(platform));
         string root = Path.Combine(Path.GetTempPath(), "baxy-system-tool-" + Guid.NewGuid().ToString("N"));
@@ -844,9 +861,13 @@ public sealed class AppOpenHandlerTests
                 Guid.NewGuid().ToString("D"),
                 Guid.NewGuid().ToString("D"),
                 "app.open",
-                place is null
-                    ? JsonSerializer.SerializeToElement(new { appId })
-                    : JsonSerializer.SerializeToElement(new { appId, place }));
+                placeValue is not null
+                    ? place is null
+                        ? JsonSerializer.SerializeToElement(new { appId, placeValue })
+                        : JsonSerializer.SerializeToElement(new { appId, place, placeValue })
+                    : place is null
+                        ? JsonSerializer.SerializeToElement(new { appId })
+                        : JsonSerializer.SerializeToElement(new { appId, place }));
             OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
             if (confirm && response.ErrorCode == "confirmation_required")
             {
