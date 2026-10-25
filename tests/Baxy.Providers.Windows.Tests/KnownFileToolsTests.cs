@@ -249,6 +249,51 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Revisión de calidad (archivos): the previous version went to the bin and the edited text could not take its place
+    // (a sync client took the name meanwhile): the edited text, deleted with the temporary file, was lost and the file
+    // was gone from its place. The edited text stays beside it, named, as file.write keeps it.
+    [Test]
+    public async Task AnEditWhoseNewTextCannotTakeThePlaceKeepsTheNewText()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(home);
+        string path = Path.Combine(home, "lista.txt");
+        await File.WriteAllTextAsync(path, "pan y leche");
+        var bin = new RetakenNameBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin, []);
+
+        ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"home","fileName":"lista.txt","oldText":"leche","newText":"huevos"}"""), CancellationToken.None);
+
+        string[] kept = [.. Directory.EnumerateFiles(home, ".baxy-edit-*")];
+        Assert.Multiple(() =>
+        {
+            Assert.That(edited.ErrorCode, Is.EqualTo("known_edit_not_completed_previous_recycled"));
+            Assert.That(edited.EffectMayHaveOccurred, Is.True);
+            Assert.That(File.ReadAllText(bin.Recycled.Single()), Is.EqualTo("pan y leche"));
+            Assert.That(kept, Has.Length.EqualTo(1));
+            Assert.That(kept.Select(File.ReadAllText), Is.EqualTo(new[] { "pan y huevos" }));
+            Assert.That(edited.Result?.GetProperty("newTextFile").GetString(), Is.EqualTo(Path.GetFileName(kept.Single())));
+        });
+    }
+
+    // A bin that takes the file, after which something else takes its name (a folder here).
+    private sealed class RetakenNameBin(string folder) : IRecycleBin
+    {
+        internal List<string> Recycled { get; } = [];
+
+        public bool Recycle(string path)
+        {
+            Directory.CreateDirectory(folder);
+            string destination = Path.Combine(folder, Guid.NewGuid().ToString("N"));
+            File.Move(path, destination);
+            Recycled.Add(destination);
+            Directory.CreateDirectory(path);
+            return true;
+        }
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];
