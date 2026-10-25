@@ -547,6 +547,23 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         return new(true, complete, names);
     }
 
+    // Revisión de calidad (nb-q-apps): any installer can write a DisplayName with a lone surrogate, on which the fold
+    // (string.Normalize) throws ArgumentException; it left app.installed as an exception for every application looked up
+    // once the scan reached that key. Such a name names no application here, as the catalog read already treats it.
+    internal static bool NamesInstalledApplication(string? candidateName, string target)
+    {
+        if (string.IsNullOrWhiteSpace(candidateName))
+            return false;
+        try
+        {
+            return InstalledApplicationResolver.Normalize(candidateName) == target;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+    }
+
     private static string? TryReadInstalledVersion(string displayName)
     {
         string target = InstalledApplicationResolver.Normalize(displayName);
@@ -571,8 +588,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 {
                     using RegistryKey? item = uninstall.OpenSubKey(subKeyName, writable: false);
                     string? candidateName = item?.GetValue("DisplayName") as string;
-                    if (string.IsNullOrWhiteSpace(candidateName)
-                        || InstalledApplicationResolver.Normalize(candidateName) != target)
+                    if (!NamesInstalledApplication(candidateName, target))
                         continue;
                     string? version = item?.GetValue("DisplayVersion") as string;
                     if (!string.IsNullOrWhiteSpace(version) && version.Length <= 128)
