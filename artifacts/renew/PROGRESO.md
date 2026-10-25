@@ -3365,3 +3365,16 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   `maximo` 452854a18: en bisección (código de la mente que no es de ayudas). Un 1975 dicho sin abrir la página es inventado.
 - **int11b** = int11 + nb-w10-clic (V5E029 focusOnly, ctrl_end/ctrl_home) + nb-w10-calc (V5E021/029): suites y catálogo en
   curso; decision3 x3 en cola tras la de int11.
+- 21:09 **int11 en decision3 x3** (catálogo int11): 240/238/241 = 239,67 frente a la base 238,33 (Δ +1,33, IC95 [−4,0;
+  +6,67]); acciones equivocadas 13,0 → 9,0 (Δ −4,0, IC95 [−9,0; +0,33]); frente a w10-duda sola −2,33 (n.s.). Bajan P017
+  y P090 (alarmas: preguntan), Q031 («abre el tercero»), Q116, Q252. int11b (s1, s2): 242/242.
+- 21:43 **Ablaciones de int11, semilla 0**: con el catálogo v5final (sin el esquema del NB) 240; sin nb-w10-aviso 240; **sin
+  w10-desc 243**, y vuelven P017, P090, Q031 y Q116. **w10-desc descartada** (una palabra, «or folder», en el «Use when» de
+  trash.named voltea decisiones de otras herramientas: la lección P2.2); V5E046 queda como límite del modelo para el brief.
+- 21:4x **Bisección de V5E008/018** (agente del PC, copias de la mente por commit, 8 turnos × semillas): la caída de abrir
+  la página tras una búsqueda de fragmentos es 8.2 (05cf4b052, fusión 65da6bb1d: 8/8 → 1/8 en s0; 17/24 → 5/24 en tres
+  semillas), que puso «; lo que vio está arriba» al final de la línea de una lectura. **w10-lectura bc1eb2193** la quita
+  (12/24 frente a 4/24 abre la página; año correcto tras leer 7 frente a 2; 0 aperturas de más en 12 búsquedas que ya
+  responden). Pendiente su medida en falsedades (F002, F015) y e2e.
+- **int11c = aec328933** = int11b b47ab9c9b − w10-desc + nb-w10-dictado + w10-lectura. Suites, catálogo y decision3 x3 en
+  el PC; e2e x3 y falsedades x3 en el NB, pareadas con int11.
