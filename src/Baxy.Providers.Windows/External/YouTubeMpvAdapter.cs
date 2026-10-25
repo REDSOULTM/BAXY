@@ -619,7 +619,41 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         json.WriteEndObject();
     });
 
+    // Revisión de calidad (nb-q-apps): only the connect to the player's IPC had a deadline; a player that took the
+    // connection and never answered (a frozen audio device, a stuck core) held the gate for good, and with it
+    // media.status, media.control and the pause that runs before every other playback. One exchange has this long; past
+    // it the player reads as unavailable (null), as a connection refused does.
+    internal TimeSpan IpcExchangeTimeout { get; init; } = TimeSpan.FromSeconds(10);
+
     private async ValueTask<bool?> ReadPauseAsync(CancellationToken cancellationToken)
+    {
+        using var exchange = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        exchange.CancelAfter(IpcExchangeTimeout);
+        try
+        {
+            return await ReadPauseOnceAsync(exchange.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+    }
+
+    private async ValueTask<bool?> SetPauseAsync(bool paused, CancellationToken cancellationToken)
+    {
+        using var exchange = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        exchange.CancelAfter(IpcExchangeTimeout);
+        try
+        {
+            return await SetPauseOnceAsync(paused, exchange.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+    }
+
+    private async ValueTask<bool?> ReadPauseOnceAsync(CancellationToken cancellationToken)
     {
         (StreamReader reader, StreamWriter writer, NamedPipeClientStream pipe)? ipc =
             await ConnectIpcAsync(cancellationToken).ConfigureAwait(false);
@@ -638,7 +672,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
-    private async ValueTask<bool?> SetPauseAsync(bool paused, CancellationToken cancellationToken)
+    private async ValueTask<bool?> SetPauseOnceAsync(bool paused, CancellationToken cancellationToken)
     {
         (StreamReader reader, StreamWriter writer, NamedPipeClientStream pipe)? ipc =
             await ConnectIpcAsync(cancellationToken).ConfigureAwait(false);
