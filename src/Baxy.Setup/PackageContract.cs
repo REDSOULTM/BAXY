@@ -89,6 +89,15 @@ internal static class PackageContract
 
     internal static readonly string[] ZipPaths = Ordinal([.. ChecksumPaths, "SHA256SUMS"]);
 
+    // The trees Setup walks follow this contract, whose Field UI assets grow with the build: an installed version is
+    // its directories, its ZIP files and .baxy-version.json; a staging transaction adds package.zip and the version
+    // directory. The margin only bounds the walk; the exact file and directory sets are checked after it.
+    private const int TreeEntryMargin = 16;
+
+    internal static int MaximumVersionTreeEntries => DirectoryPaths.Length + ZipPaths.Length + 1 + TreeEntryMargin;
+
+    internal static int MaximumStagingTreeEntries => MaximumVersionTreeEntries + 2;
+
     private static string[] Ordinal(string[] paths)
     {
         Array.Sort(paths, StringComparer.Ordinal);

@@ -149,7 +149,6 @@ internal sealed class WindowsProductLifecycle
 {
     private const string ShortcutDescription = "BAXY";
     private const string ShortcutArguments = "--launch";
-    private const int MaximumInstalledTreeEntries = 64;
 
     private readonly string _root;
     private readonly WindowsProductLifecycleFactories _factories;
@@ -988,7 +987,7 @@ internal sealed class WindowsProductLifecycle
 
             SafeFileTree tree = PathSafety.InspectTree(
                 application.WorkingDirectory,
-                MaximumInstalledTreeEntries);
+                PackageContract.MaximumVersionTreeEntries);
             long total = 0;
             foreach (string relative in tree.Files)
             {

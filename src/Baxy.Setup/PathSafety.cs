@@ -151,7 +151,7 @@ internal static partial class PathSafety
         AssertNoAlternateDataStreams(directoryFull, isDirectory: true);
     }
 
-    internal static SafeFileTree InspectTree(string root, int maximumEntries = 64)
+    internal static SafeFileTree InspectTree(string root, int maximumEntries)
     {
         string rootFull = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         AssertExistingChainHasNoReparsePoint(rootFull);

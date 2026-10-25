@@ -22,13 +22,15 @@
     <EmbeddedResource Include="$(BaxyEmbeddedPackageAttestation)" LogicalName="Baxy.Setup.Payload.attestation.json" />
   </ItemGroup>
   <!-- The Field UI's built assets carry content hashes in their names: the package contract takes them from the build
-       it ships (PackageContract.PayloadPaths), never from a list kept by hand. -->
+       it ships (PackageContract.PayloadPaths), never from a list kept by hand. BaxyFieldUiAssetDirectory only lets a
+       test build stand in another asset set. -->
   <Target Name="BaxyFieldUiAssetContract" BeforeTargets="CoreCompile">
     <PropertyGroup>
       <BaxyFieldUiAssetSource>$(IntermediateOutputPath)FieldUiAssets.g.cs</BaxyFieldUiAssetSource>
+      <BaxyFieldUiAssetDirectory Condition="'$(BaxyFieldUiAssetDirectory)' == ''">$(MSBuildThisFileDirectory)..\Baxy.FieldUi\dist\assets\</BaxyFieldUiAssetDirectory>
     </PropertyGroup>
     <ItemGroup>
-      <BaxyFieldUiAsset Include="$(MSBuildThisFileDirectory)..\Baxy.FieldUi\dist\assets\*" />
+      <BaxyFieldUiAsset Include="$(BaxyFieldUiAssetDirectory)*" />
       <BaxyFieldUiAssetLine Include="@(BaxyFieldUiAsset->'&quot;FieldUi/assets/%(Filename)%(Extension)&quot;,')" />
     </ItemGroup>
     <Error Condition="'@(BaxyFieldUiAsset)' == ''"

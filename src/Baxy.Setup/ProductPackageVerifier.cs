@@ -173,7 +173,7 @@ public sealed class ProductPackageVerifier
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Verifier instances are injectable installation services.")]
     internal VerifiedInstalledVersion VerifyInstalledVersion(string versionRoot)
     {
-        SafeFileTree tree = PathSafety.InspectTree(versionRoot);
+        SafeFileTree tree = PathSafety.InspectTree(versionRoot, PackageContract.MaximumVersionTreeEntries);
         if (!tree.Directories.SequenceEqual(PackageContract.DirectoryPaths, StringComparer.Ordinal))
         {
             throw new InstallationSafetyException("An installed version has an unexpected directory set.");
@@ -466,7 +466,7 @@ public sealed class ProductPackageVerifier
 
     private static void VerifyExtractedPackageDirectory(string directory, VerifiedProductPackage package)
     {
-        SafeFileTree tree = PathSafety.InspectTree(directory);
+        SafeFileTree tree = PathSafety.InspectTree(directory, PackageContract.MaximumVersionTreeEntries);
         if (!tree.Directories.SequenceEqual(PackageContract.DirectoryPaths, StringComparer.Ordinal) ||
             !tree.Files.SequenceEqual(PackageContract.ZipPaths.Order(StringComparer.Ordinal), StringComparer.Ordinal))
         {
