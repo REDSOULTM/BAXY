@@ -216,6 +216,39 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Revisión de fase 3: the PowerShell profile in Documents (run every time PowerShell opens) is read as any other file,
+    // but file.edit does not change it.
+    [Test]
+    public async Task APowerShellProfileIsReadButNotEdited()
+    {
+        using TemporaryDirectory temporary = new();
+        string documents = Path.Combine(temporary.Path, "Documents");
+        string profile = Path.Combine(documents, "PowerShell", "Microsoft.PowerShell_profile.ps1");
+        Directory.CreateDirectory(Path.GetDirectoryName(profile)!);
+        await File.WriteAllTextAsync(profile, "Set-Location hola");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["documents"] = [documents] }, bin, [],
+            autostartRoots: AutostartArea.RootsFrom(folder => folder == Environment.SpecialFolder.MyDocuments ? documents : null));
+        Task<ExternalCapabilityReceipt> Run(string operation, object arguments) =>
+            adapter.InvokeAsync(operation, Json(JsonSerializer.Serialize(arguments)), CancellationToken.None).AsTask();
+
+        ExternalCapabilityReceipt read = await Run("file.read", new { folder = "documents", fileName = profile });
+        ExternalCapabilityReceipt edited = await Run("file.edit", new
+        {
+            folder = "documents", fileName = "PowerShell/Microsoft.PowerShell_profile.ps1", oldText = "hola", newText = "calc",
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Is.EqualTo("Set-Location hola"));
+            Assert.That(edited.ErrorCode, Is.EqualTo("path_autostart"));
+            Assert.That(edited.EffectMayHaveOccurred, Is.False);
+            Assert.That(File.ReadAllText(profile), Is.EqualTo("Set-Location hola"));
+            Assert.That(bin.Recycled, Is.Empty);
+        });
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];
