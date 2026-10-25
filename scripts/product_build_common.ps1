@@ -487,6 +487,17 @@ public static class BaxyStoredZipWriter
 '@
 }
 
+# Calidad PC 2026-10-25: the NativeAOT link (baxy-core, Baxy.Setup) runs Visual Studio's vcvars, which calls
+# vswhere.exe by name, and the VS Installer never puts its folder on PATH: build_product.ps1 failed with «"vswhere.exe"
+# no se reconoce» where run_renew.cmd, which adds the folder, did not. The same folder for this process only.
+function Use-BaxyVisualStudioInstallerPath {
+    if ($null -ne (Get-Command vswhere.exe -ErrorAction SilentlyContinue)) { return }
+    if ([string]::IsNullOrEmpty(${env:ProgramFiles(x86)})) { return }
+    $installer = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer'
+    if (-not (Test-Path -LiteralPath (Join-Path $installer 'vswhere.exe') -PathType Leaf)) { return }
+    $env:PATH = $installer + ';' + $env:PATH
+}
+
 function Write-BaxyUtf8NoBom {
     param(
         [Parameter(Mandatory = $true)][string]$Path,

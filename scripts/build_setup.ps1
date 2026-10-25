@@ -1105,6 +1105,7 @@ try {
     Assert-BaxyMsBuildPathSafe -Path $sourceRoot -Context 'Setup source snapshot path'
     Assert-BaxyMsBuildPathSafe -Path $workRoot -Context 'Setup isolated work path'
     [Environment]::SetEnvironmentVariable('SOURCE_DATE_EPOCH', [string]$sourceDateEpoch, 'Process')
+    Use-BaxyVisualStudioInstallerPath
 
     $informationalVersion = if (([string]$validatedPackage.manifest.version).Contains('+')) {
         "$($validatedPackage.manifest.version).sha.$($initialGit.commit.Substring(0, 12))"
