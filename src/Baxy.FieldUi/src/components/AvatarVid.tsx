@@ -56,6 +56,8 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       v.load();
       return v;
     };
+    // a clip taken off the page lets go of its file: a detached video keeps its player and its frames until collected
+    const drop = (v: Clip) => { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); };
     const take = (g: Group) => { const v = warm[g] ?? make(g); delete warm[g]; return v; };
     const refill = (g: Group) => { if (!dead && !warm[g]) warm[g] = make(g); };
     const target = (): Group => {
@@ -72,12 +74,12 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       v.classList.add('on');
       if (old) old.classList.remove('on');
       front = v; v._t = performance.now(); cur = g; pose = SLEEP_END[g] ? 'S' : 'M';
-      if (old) window.setTimeout(() => { old.pause(); old.remove(); }, fade ? 380 : 80);
+      if (old) window.setTimeout(() => drop(old), fade ? 380 : 80);
       // keep only the current clip, «reposo» and the likely next one warm
       for (const k of Object.keys(warm) as Group[]) {
         if (k !== g && k !== 'reposo' && !NEXT[g].includes(k)) {
           const w = warm[k]!; delete warm[k];
-          w.removeAttribute('src'); w.load(); w.remove();
+          drop(w);
         }
       }
       refill(g); refill('reposo'); NEXT[g].forEach(refill);
@@ -86,7 +88,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       const v = take(g);
       if (v.readyState < 2 && front) {
         // the current clip stays on screen until the next one has a frame (at most 2.5 s)
-        if (pending && pending.v !== v) pending.v.remove();
+        if (pending && pending.v !== v) drop(pending.v);
         const go = () => { if (dead || !pending || pending.v !== v) return; pending = null; swap(v, g, fade); };
         pending = { v };
         v.addEventListener('loadeddata', go, { once: true });
@@ -171,7 +173,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       cancelAnimationFrame(raf); window.clearTimeout(cutting);
       document.removeEventListener('visibilitychange', onVis);
       window.clearInterval(watchReady); window.clearInterval(watchdog);
-      el.querySelectorAll('video').forEach((v) => { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); });
+      el.querySelectorAll<Clip>('video').forEach(drop);
       ready.current(false);
     };
   }, []);
