@@ -2240,6 +2240,37 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Revisión de calidad (archivos): the working folder's backups are the filesystem provider's own; a move by name put
+    // a file and a recorded hash there as backup_<id>.bin and .sha256, which the provider then lists as a verified backup.
+    [Test]
+    public async Task ANamedSandboxMoveNeverReachesTheBackups()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "filesystem-sandbox");
+        Directory.CreateDirectory(Path.Combine(sandbox, ".backups"));
+        await File.WriteAllTextAsync(Path.Combine(sandbox, "falso.txt"), "payload");
+        var adapter = new WindowsSandboxNamedFileAdapter(temporary.Path);
+        string id = "backup_" + new string('a', 32);
+
+        ExternalCapabilityReceipt moved = await adapter.InvokeAsync(
+            "filesystem.sandbox.move.named",
+            Json($$"""{"sourceFileName":"falso.txt","destinationRelativePath":".backups/{{id}}.bin"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt copied = await adapter.InvokeAsync(
+            "filesystem.sandbox.move.named",
+            Json("""{"sourceFileName":"falso.txt","destinationRelativePath":"logs/../.Backups/sub/x.bin","copy":true}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(moved.ErrorCode, Is.EqualTo("sandbox_move_destination_invalid"));
+            Assert.That(copied.ErrorCode, Is.EqualTo("sandbox_move_destination_invalid"));
+            Assert.That(moved.EffectMayHaveOccurred || copied.EffectMayHaveOccurred, Is.False);
+            Assert.That(Directory.EnumerateFileSystemEntries(Path.Combine(sandbox, ".backups")), Is.Empty);
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "falso.txt")), Is.EqualTo("payload"));
+        });
+    }
+
     // Holdout v5 V5E032/V5E040: moving a file of the person's by its name (BAXY-bench\presupuesto_v2.xlsx to archivo-2025)
     // or copying it (contrato.txt as contrato-respaldo.txt) had no call: the move by name reached only BAXY's working
     // folder. With folder (and subdirectory) it acts inside that folder: never over a file, never into a folder it would
