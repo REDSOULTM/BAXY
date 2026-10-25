@@ -1,4 +1,4 @@
-"""H-ctx «cerrados» (BAXY_RENEW_CTX=cerrados): a closed turn's views lose their controls, its long texts and lists are
+"""H-ctx «cerrados» (BAXY_RENEW_CTX_MODE=cerrados): a closed turn's views lose their controls, its long texts and lists are
 cut with a note of how much, never a failure field nor a facts line; off by default."""
 import json
 from pathlib import Path
@@ -20,9 +20,9 @@ FAILED = json.dumps({"status": "failed", "error": "window_not_found", "reason": 
 
 def _session(tmp_path: Path, monkeypatch, setting: str | None) -> tuple:
     if setting is None:
-        monkeypatch.delenv("BAXY_RENEW_CTX", raising=False)
+        monkeypatch.delenv("BAXY_RENEW_CTX_MODE", raising=False)
     else:
-        monkeypatch.setenv("BAXY_RENEW_CTX", setting)
+        monkeypatch.setenv("BAXY_RENEW_CTX_MODE", setting)
     tmp_path.mkdir(parents=True, exist_ok=True)
     mind, server = _mind(tmp_path, [
         _call("input_visible_controls", {"application": "Bloc de notas"}),

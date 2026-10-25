@@ -16,14 +16,14 @@ ends each result, never the person's words nor BAXY's. Once in short a result is
 changes once: when the turn has just closed, before the history is read into the slot (prefill, where nobody waits),
 or at the next turn's start. The fixed prefix (system prompt and tools) is never touched.
 
-Off unless BAXY_RENEW_CTX names «cerrados» (comma-separated): the mind reads as it did before."""
+Off unless BAXY_RENEW_CTX_MODE names «cerrados» (comma-separated): the mind reads as it did before."""
 from __future__ import annotations
 
 import json
 import os
 from typing import Any
 
-CTX_ENV = "BAXY_RENEW_CTX"
+CTX_ENV = "BAXY_RENEW_CTX_MODE"
 CLOSED = "cerrados"
 CLOSED_VIEW = ("[Vista de un turno anterior: {n} líneas de controles omitidas; sus números ya no valen, mira de nuevo "
                "si hace falta]")

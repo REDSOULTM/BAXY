@@ -1,4 +1,4 @@
-"""H-ctx «vistas» (BAXY_RENEW_CTX=vistas): an older look replaced by a newer one of the same window, and an identical
+"""H-ctx «vistas» (BAXY_RENEW_CTX_MODE=vistas): an older look replaced by a newer one of the same window, and an identical
 result repeated later in the turn, reach the model once; off by default."""
 import json
 from pathlib import Path
@@ -25,9 +25,9 @@ FAILED = json.dumps({"status": "failed", "error": "visible_button_postread_uncha
 
 def _run(tmp_path: Path, monkeypatch, setting: str | None, results: list[str], calls: list[dict]) -> list[dict]:
     if setting is None:
-        monkeypatch.delenv("BAXY_RENEW_CTX", raising=False)
+        monkeypatch.delenv("BAXY_RENEW_CTX_MODE", raising=False)
     else:
-        monkeypatch.setenv("BAXY_RENEW_CTX", setting)
+        monkeypatch.setenv("BAXY_RENEW_CTX_MODE", setting)
     mind, server = _mind(tmp_path, [*calls, _say("Listo.")])
     step = mind.decide(1, "pon la calculadora en modo científico")
     for index, result in enumerate(results):

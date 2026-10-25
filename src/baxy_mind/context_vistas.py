@@ -13,7 +13,7 @@ the model re-reads only from the first older result changed on (a few hundred to
 looks). A result kept in short keeps every field but the view (its window line and focus stay), or, repeated, its
 status, error and verification: a failure is never left out, and the newest copy is always whole.
 
-Off unless BAXY_RENEW_CTX names «vistas» (comma-separated): the mind reads as it did before."""
+Off unless BAXY_RENEW_CTX_MODE names «vistas» (comma-separated): the mind reads as it did before."""
 from __future__ import annotations
 
 import json
@@ -21,7 +21,7 @@ import os
 import re
 from typing import Any
 
-CTX_ENV = "BAXY_RENEW_CTX"
+CTX_ENV = "BAXY_RENEW_CTX_MODE"
 VIEWS = "vistas"
 # What a superseded view says in place of its controls.
 SUPERSEDED_VIEW = ("[Vista sustituida por una más nueva de esta ventana, más abajo: {n} líneas de controles omitidas; "

@@ -1530,7 +1530,7 @@ class Mind:
             raise
 
     def _clean_closed(self) -> None:
-        """H-ctx «cerrados» (BAXY_RENEW_CTX=cerrados): with no turn open, the closed turns' results in short
+        """H-ctx «cerrados» (BAXY_RENEW_CTX_MODE=cerrados): with no turn open, the closed turns' results in short
         (context_cerrados.py), once each: at the history's prefill, where nobody waits, or at the next turn's start."""
         if not context_cerrados.on() or not self.conversation:
             return
@@ -1977,7 +1977,7 @@ class Mind:
                      "content": shown + "\n[En este turno: " + "; ".join(line) + "]" + note})
         turn["awaiting"] = None
         if context_vistas.on():
-            # H-ctx «vistas» (BAXY_RENEW_CTX=vistas): an older look this one replaces, or an identical older result, in
+            # H-ctx «vistas» (BAXY_RENEW_CTX_MODE=vistas): an older look this one replaces, or an identical older result, in
             # short (context_vistas.py); the prefix is untouched, the model re-reads from the first one changed.
             begin = max([i for i, m in enumerate(conv) if m["role"] == "user"
                          and str(m.get("content") or "").startswith(CLOCK_MARK)], default=0)
