@@ -607,6 +607,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 near.Add(item);
         }
         KnownEntry[] matches = found.Count > 0 ? [.. found] : [.. same];
+        // Revisión de calidad (archivos): a folder that only has the words of the name said («informe_final» for «informe
+        // final») is not trashed on that name: the yes was asked for the name said, and the whole folder would go. It is
+        // told as a candidate, by its own name and as a folder, so the next call (and its yes) names it.
+        if (found.Count == 0 && matches.Length == 1 && Directory.Exists(matches[0].Path))
+            return CandidatesRefusal(operation, "known_file_not_found", matches, kinds: true,
+                next: NearNamesNext("no file or folder", fileName, matches, "and it is a folder, trashed whole",
+                    walkStopped: false));
         if (matches.Length == 0 && near.Count > 0)
             return CandidatesRefusal(operation, "known_file_not_found", near,
                 next: NearNamesNext("no file or folder", fileName, near, "case or accents", walkStopped: false));
@@ -927,6 +934,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string expectedSha256 = Convert.ToHexStringLower(SHA256.HashData(after));
         string temporary = Path.Combine(
             Path.GetDirectoryName(file.Path)!, ".baxy-edit-" + Guid.NewGuid().ToString("N") + ".tmp");
+        bool keepNewText = false;
         try
         {
             using (var stream = new FileStream(
@@ -941,11 +949,21 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             // When the bin cannot take the previous version it stays where it was, unchanged.
             if (!_recycleBin.Recycle(file.Path))
                 return ExternalJson.Failure(operation, "previous_version_not_recycled");
-            File.Move(temporary, file.Path);
+            try
+            {
+                File.Move(temporary, file.Path);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // Revisión de calidad (archivos): the previous version is in the bin and the edited text could not take
+                // its place; deleted with the temporary file it was lost. It stays beside it, named (file.write's rule).
+                keepNewText = true;
+                return EditNotCompleted(operation, file, temporary);
+            }
         }
         finally
         {
-            if (File.Exists(temporary)) File.Delete(temporary);
+            if (!keepNewText && File.Exists(temporary)) File.Delete(temporary);
         }
         byte[] observed = File.ReadAllBytes(file.Path);
         string observedSha256 = Convert.ToHexStringLower(SHA256.HashData(observed));
@@ -968,6 +986,23 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteEndObject();
         }), effectObserved: true);
     }
+
+    // The previous version went to the Recycle Bin and the edited text could not take its place: both are kept and named.
+    private static ExternalCapabilityReceipt EditNotCompleted(string operation, KnownEntry file, string temporary) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("reviewLabel", Path.GetFileName(file.Path));
+            writer.WriteString("folder", file.Label);
+            writer.WriteBoolean("previousVersionRecycled", true);
+            writer.WriteString("newTextFile", Path.GetFileName(temporary));
+            writer.WriteString("next", "the previous version is in the Recycle Bin and the new text is in newTextFile "
+                + "beside it; another program may hold the name now; tell the person both places");
+            writer.WriteEndObject();
+        }), "known_edit_not_completed_previous_recycled")
+        {
+            EffectMayHaveOccurred = true,
+        };
 
     // The file a stopped walk found is the one seen in the part walked, not proven the only one of its name: a read says
     // which one it is (relativePath) and how far the walk went. A whole walk adds nothing.
@@ -1221,7 +1256,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // A refusal with the places it saw: each one's name, known folder and path relative to that folder.
     private ExternalCapabilityReceipt CandidatesRefusal(
-        string operation, string code, IEnumerable<KnownEntry> candidates, bool walkStopped = false, string? next = null) =>
+        string operation, string code, IEnumerable<KnownEntry> candidates, bool walkStopped = false, string? next = null,
+        bool kinds = false) =>
         new(operation, false, false, ExternalJson.Create(writer =>
         {
             KnownEntry[] all = [.. candidates];
@@ -1237,6 +1273,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteString("name", Path.GetFileName(candidate.Path));
                 writer.WriteString("folder", candidate.Label);
                 writer.WriteString("relativePath", RelativeToFolder(candidate));
+                if (kinds) writer.WriteBoolean("isFolder", Directory.Exists(candidate.Path));
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();

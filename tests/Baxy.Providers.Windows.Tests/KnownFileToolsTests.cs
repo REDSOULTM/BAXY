@@ -249,6 +249,87 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Revisión de calidad (archivos): with no file or folder named exactly so, a folder with the same words otherwise
+    // separated («informe_final» for «informe final») went whole to the bin after a yes asked for «informe final». It is
+    // a candidate now, by its own name and as a folder, before the yes; named exactly, it is trashed as before.
+    [Test]
+    public async Task AFolderThatOnlyHasTheWordsOfTheNameIsACandidateNotTrashed()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string folder = Path.Combine(home, "informe_final");
+        Directory.CreateDirectory(folder);
+        await File.WriteAllTextAsync(Path.Combine(folder, "capitulo.txt"), "uno");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin, []);
+
+        ExternalCapabilityReceipt? asked = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
+            """{"folder":"home","fileName":"informe final"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt trashed = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
+            """{"folder":"home","fileName":"informe final"}"""), CancellationToken.None);
+        bool before = Directory.Exists(folder);
+        ExternalCapabilityReceipt? exact = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
+            """{"folder":"home","fileName":"informe_final"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked?.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(trashed.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(trashed.EffectMayHaveOccurred, Is.False);
+            JsonElement candidate = trashed.Result!.Value.GetProperty("candidates")[0];
+            Assert.That(candidate.GetProperty("name").GetString(), Is.EqualTo("informe_final"));
+            Assert.That(candidate.GetProperty("isFolder").GetBoolean(), Is.True);
+            Assert.That(before, Is.True);
+            Assert.That(bin.Recycled, Is.Empty);
+            Assert.That(exact, Is.Null, "named exactly, the yes is asked for it");
+        });
+    }
+
+    // Revisión de calidad (archivos): the previous version went to the bin and the edited text could not take its place
+    // (a sync client took the name meanwhile): the edited text, deleted with the temporary file, was lost and the file
+    // was gone from its place. The edited text stays beside it, named, as file.write keeps it.
+    [Test]
+    public async Task AnEditWhoseNewTextCannotTakeThePlaceKeepsTheNewText()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(home);
+        string path = Path.Combine(home, "lista.txt");
+        await File.WriteAllTextAsync(path, "pan y leche");
+        var bin = new RetakenNameBin(Path.Combine(temporary.Path, "bin"));
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin, []);
+
+        ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
+            """{"folder":"home","fileName":"lista.txt","oldText":"leche","newText":"huevos"}"""), CancellationToken.None);
+
+        string[] kept = [.. Directory.EnumerateFiles(home, ".baxy-edit-*")];
+        Assert.Multiple(() =>
+        {
+            Assert.That(edited.ErrorCode, Is.EqualTo("known_edit_not_completed_previous_recycled"));
+            Assert.That(edited.EffectMayHaveOccurred, Is.True);
+            Assert.That(File.ReadAllText(bin.Recycled.Single()), Is.EqualTo("pan y leche"));
+            Assert.That(kept, Has.Length.EqualTo(1));
+            Assert.That(kept.Select(File.ReadAllText), Is.EqualTo(new[] { "pan y huevos" }));
+            Assert.That(edited.Result?.GetProperty("newTextFile").GetString(), Is.EqualTo(Path.GetFileName(kept.Single())));
+        });
+    }
+
+    // A bin that takes the file, after which something else takes its name (a folder here).
+    private sealed class RetakenNameBin(string folder) : IRecycleBin
+    {
+        internal List<string> Recycled { get; } = [];
+
+        public bool Recycle(string path)
+        {
+            Directory.CreateDirectory(folder);
+            string destination = Path.Combine(folder, Guid.NewGuid().ToString("N"));
+            File.Move(path, destination);
+            Recycled.Add(destination);
+            Directory.CreateDirectory(path);
+            return true;
+        }
+    }
+
     internal sealed class FolderRecycleBin(string folder, bool accepts = true) : IRecycleBin
     {
         internal List<string> Recycled { get; } = [];

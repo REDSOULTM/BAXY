@@ -339,8 +339,12 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
             throw new InvalidDataException("sandbox_move_destination_invalid");
         string root = Path.GetFullPath(_root).TrimEnd(Path.DirectorySeparatorChar);
         string destination = Path.GetFullPath(Path.Combine(root, relative));
+        // Revisión de calidad (archivos): the filesystem provider's backups are its own, not a destination.
+        string backups = Path.Combine(root, ".backups");
         if (!destination.StartsWith(root + Path.DirectorySeparatorChar,
-                StringComparison.OrdinalIgnoreCase))
+                StringComparison.OrdinalIgnoreCase)
+            || string.Equals(destination.TrimEnd(Path.DirectorySeparatorChar), backups, StringComparison.OrdinalIgnoreCase)
+            || destination.StartsWith(backups + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException("sandbox_move_destination_invalid");
         return destination;
     }

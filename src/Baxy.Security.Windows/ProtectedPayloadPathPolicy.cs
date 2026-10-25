@@ -45,6 +45,12 @@ internal static partial class ProtectedPayloadPathPolicy
                 throw InvalidPath();
             }
 
+            // Revisión del núcleo (q-core): a key's directory is never a volume's root, which would be made private.
+            if (string.Equals(Path.GetDirectoryName(fullPath), root, StringComparison.OrdinalIgnoreCase))
+            {
+                throw InvalidPath();
+            }
+
             EnsureRootIsFixedDrive(root);
             EnsureSegmentsAreSafe(fullPath, root);
             EnsureExistingPathHasNoReparsePoints(fullPath);

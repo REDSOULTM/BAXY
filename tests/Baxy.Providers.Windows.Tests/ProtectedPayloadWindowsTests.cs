@@ -457,6 +457,30 @@ public sealed class ProtectedPayloadWindowsTests
             Is.EqualTo(ProtectedPayloadErrorCode.InvalidKeyStorePath));
     }
 
+    // Revisión del núcleo (q-core): a key at a volume's root made its directory the volume itself, and the guard of
+    // AcquireDirectory against protecting a root never fired (GetRelativePath of a root to itself is «.», not empty): the
+    // private DACL went to the volume's root (refused unelevated, applied elevated). Such a key path is refused itself;
+    // only its validation runs here, nothing is created nor protected.
+    [Test]
+    public void ProtectedPayloadRejectsAKeyAtTheVolumeRoot()
+    {
+        string root = Path.GetPathRoot(Path.GetTempPath())!;
+        string path = Path.Combine(root, $"baxy-{Guid.NewGuid():N}.key");
+
+        ProtectedPayloadException? payload = Assert.Throws<ProtectedPayloadException>(
+            () => new WindowsProtectedPayload(path));
+        ProtectedPayloadException? journal = Assert.Throws<ProtectedPayloadException>(
+            () => new WindowsJournalAuthenticationKeyStore(path, new WindowsProtectedPayload(
+                Path.Combine(Path.GetTempPath(), $"baxy-{Guid.NewGuid():N}", "payload.key"))));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(payload!.ErrorCode, Is.EqualTo(ProtectedPayloadErrorCode.InvalidKeyStorePath));
+            Assert.That(journal!.ErrorCode, Is.EqualTo(ProtectedPayloadErrorCode.InvalidKeyStorePath));
+            Assert.That(File.Exists(path), Is.False);
+        });
+    }
+
     [Test]
     public void ProtectedPayloadDoesNotPersistPlaintextInEnvelopeOrKeySidecar()
     {

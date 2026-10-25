@@ -55,6 +55,30 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // Revisión de calidad (archivos): a folder that holds BAXY's own state (home's AppData) is not zipped: its journal and
+    // memory store went whole into a zip beside the person's files.
+    [Test]
+    public async Task AFolderThatHoldsBaxysOwnStateIsNotZipped()
+    {
+        string privateArea = Path.Combine(_root, "AppData", "Local", "BAXY");
+        Directory.CreateDirectory(privateArea);
+        File.WriteAllText(Path.Combine(privateArea, "confirmation-mode"), "normal");
+        var adapter = new WindowsFileToolsAdapter(folder => folder == "home" ? _root : null, null)
+        {
+            PrivateRoots = [privateArea],
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "file.compress", JsonSerializer.SerializeToElement(new { folder = "home", name = "AppData" }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("path_reserved"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(File.Exists(Path.Combine(_root, "AppData.zip")), Is.False);
+        });
+    }
+
     [Test]
     public async Task ZippingWhatDoesNotExistOrTwiceIsAnHonestAbsence()
     {

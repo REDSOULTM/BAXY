@@ -111,9 +111,11 @@ public static partial class WindowsPrivateStorage
             string current = root;
             handles.Add(OpenAndValidateDirectory(current, protectAcl: false));
             string relative = Path.GetRelativePath(root, fullPath);
-            string[] components = relative.Split(
-                Path.DirectorySeparatorChar,
-                StringSplitOptions.RemoveEmptyEntries);
+            // Revisión del núcleo (q-core): the root relative to itself is «.», never empty, so the guard below against
+            // protecting a volume's root never fired and its private DACL went to the root itself.
+            string[] components = relative == "."
+                ? []
+                : relative.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
             for (int index = 0; index < components.Length; index++)
             {
                 current = Path.Combine(current, components[index]);

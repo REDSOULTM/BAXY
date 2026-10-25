@@ -21,10 +21,14 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     {
     }
 
-    internal DesktopMessagingAdapter(IDesktopMessagingAutomation automation, string? testDestinationsPath = null)
+    internal DesktopMessagingAdapter(
+        IDesktopMessagingAutomation automation,
+        string? testDestinationsPath = null,
+        IExternalProcessRunner? mailRunner = null)
     {
         _automation = automation ?? throw new ArgumentNullException(nameof(automation));
         _testDestinationsPath = testDestinationsPath ?? DefaultTestDestinationsPath();
+        _mailRunner = mailRunner ?? new ExternalProcessRunner();
     }
 
     public bool CanHandle(string operation) =>
@@ -62,7 +66,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         }
     }
 
-    private static readonly ExternalProcessRunner MailRunner = new();
+    private readonly IExternalProcessRunner _mailRunner;
 
     public void Dispose() => _interaction.Dispose();
 
@@ -330,7 +334,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     // Owner decision 2026-09-18 §3: a mail request is really sent from the owner's
     // classic Outlook profile, always to the owner's own test mailbox; the copy in
     // Sent Items (recipient, text, time) is the delivery evidence.
-    private static async ValueTask<ExternalCapabilityReceipt> SendTestMailAsync(
+    private async ValueTask<ExternalCapabilityReceipt> SendTestMailAsync(
         string requestedRecipient,
         string forced,
         string text,
@@ -338,7 +342,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
     {
         string subject = MicrosoftAccountAdapter.SubjectFromText(text);
         string input = JsonObject(("to", forced), ("subject", subject), ("text", text)).GetRawText();
-        ExternalProcessResult process = await MailRunner.RunPowerShellAsync(
+        ExternalProcessResult process = await _mailRunner.RunPowerShellAsync(
             MicrosoftAccountAdapter.SendMailScript,
             [Convert.ToBase64String(Encoding.UTF8.GetBytes(input))],
             TimeSpan.FromSeconds(90),
@@ -346,13 +350,21 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string[] lines = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
         string line = lines.Length > 0 ? lines[^1] : "{}";
         bool effect = false;
+        // The script's own verdict ({ok, effectObserved}); a run that ended without it (PowerShell gone after Send may
+        // have run) never says «nothing was sent».
+        bool verdict = false;
         string? sentEntryId = null;
         string? sentUtc = null;
         try
         {
             using JsonDocument response = JsonDocument.Parse(line);
             JsonElement root = response.RootElement;
-            effect = root.TryGetProperty("effectObserved", out JsonElement observed)
+            verdict = root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("ok", out JsonElement said)
+                && said.ValueKind is JsonValueKind.True or JsonValueKind.False
+                && root.TryGetProperty("effectObserved", out JsonElement saidEffect)
+                && saidEffect.ValueKind is JsonValueKind.True or JsonValueKind.False;
+            effect = verdict && root.TryGetProperty("effectObserved", out JsonElement observed)
                 && observed.ValueKind == JsonValueKind.True;
             if (root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True
                 && root.TryGetProperty("sentEntryId", out JsonElement id) && id.ValueKind == JsonValueKind.String
@@ -370,8 +382,9 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             return Failure(
                 "message.send.test",
-                effect ? "message_delivery_not_verified" : "outlook_mail_send_failed",
-                effect);
+                effect || !verdict ? "message_delivery_not_verified" : "outlook_mail_send_failed",
+                effect,
+                effectMayHaveOccurred: !verdict);
         }
 
         string evidence = Convert.ToHexStringLower(
