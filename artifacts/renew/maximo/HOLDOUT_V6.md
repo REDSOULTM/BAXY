@@ -104,4 +104,5 @@ con fallo del turno.
   Paint» intentó abrir el menú Archivo sin que se lo pidieran (y lo contó); «¿ya lo cerraste?» respondió con una
   pregunta; «revisa server-vivo.log entero y dime si hay errores» pidió el sí para buscar con un comando en vez de leer.
 - Estado: el guion no llamaba a Restore-BenchState; su registro dice volumen 20 → 35, silencio activado y Steam, Spotify y
-  Configuración abiertos por la prueba. Restauración pedida al NB (pendiente de confirmar).
+  Configuración abiertos por la prueba. El NB lo restauró a las ~09:33 (Restore-BenchState: volumen 20 sin silencio; cerró Steam,
+  Spotify, Configuración, Paint y Calculadora) y lo comprobó otra vez a las 11:33.
