@@ -607,6 +607,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 near.Add(item);
         }
         KnownEntry[] matches = found.Count > 0 ? [.. found] : [.. same];
+        // Revisión de calidad (archivos): a folder that only has the words of the name said («informe_final» for «informe
+        // final») is not trashed on that name: the yes was asked for the name said, and the whole folder would go. It is
+        // told as a candidate, by its own name and as a folder, so the next call (and its yes) names it.
+        if (found.Count == 0 && matches.Length == 1 && Directory.Exists(matches[0].Path))
+            return CandidatesRefusal(operation, "known_file_not_found", matches, kinds: true,
+                next: NearNamesNext("no file or folder", fileName, matches, "and it is a folder, trashed whole",
+                    walkStopped: false));
         if (matches.Length == 0 && near.Count > 0)
             return CandidatesRefusal(operation, "known_file_not_found", near,
                 next: NearNamesNext("no file or folder", fileName, near, "case or accents", walkStopped: false));
@@ -1249,7 +1256,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // A refusal with the places it saw: each one's name, known folder and path relative to that folder.
     private ExternalCapabilityReceipt CandidatesRefusal(
-        string operation, string code, IEnumerable<KnownEntry> candidates, bool walkStopped = false, string? next = null) =>
+        string operation, string code, IEnumerable<KnownEntry> candidates, bool walkStopped = false, string? next = null,
+        bool kinds = false) =>
         new(operation, false, false, ExternalJson.Create(writer =>
         {
             KnownEntry[] all = [.. candidates];
@@ -1265,6 +1273,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteString("name", Path.GetFileName(candidate.Path));
                 writer.WriteString("folder", candidate.Label);
                 writer.WriteString("relativePath", RelativeToFolder(candidate));
+                if (kinds) writer.WriteBoolean("isFolder", Directory.Exists(candidate.Path));
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
