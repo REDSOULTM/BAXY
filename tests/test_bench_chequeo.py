@@ -19,3 +19,12 @@ def test_a_run_killed_mid_line_does_not_stop_the_check(tmp_path, monkeypatch):
     monkeypatch.setattr(chequeo_offline, "RUNS", tmp_path)
     found = list(chequeo_offline._conversations())
     assert [(bank, case, [t["person"] for t in turns]) for bank, _, case, turns in found] == [("e2e", "S00", ["hola"])]
+
+
+def test_with_no_line_to_check_it_says_so_instead_of_failing(tmp_path, monkeypatch, capsys):
+    # On a machine without the practice runs (the notebook reads D:), the timings were empty: IndexError at the end.
+    monkeypatch.setattr(chequeo_offline, "RUNS", tmp_path)
+    monkeypatch.setattr(chequeo_offline, "HAND", tmp_path / "none.json")
+    monkeypatch.setattr(sys, "argv", ["chequeo_offline.py"])
+    assert chequeo_offline.main() == 0
+    assert "líneas 0" in capsys.readouterr().out

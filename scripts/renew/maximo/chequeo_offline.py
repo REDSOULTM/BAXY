@@ -185,6 +185,9 @@ def main() -> int:
           f"juez no falsa marcadas: {sum(bool(r['flags']) for r in judged if not r['judge'])}/"
           f"{sum(not r['judge'] for r in judged)}")
     timings.sort()
+    if not timings:  # PC-Q: no run to read (the notebook, or a folder with none) failed here with IndexError
+        print("ms por línea: ninguna línea leída")
+        return 0
     print(f"ms por línea: p50 {timings[len(timings) // 2]:.2f}, p99 {timings[int(len(timings) * 0.99)]:.2f}, "
           f"max {timings[-1]:.2f}")
     by_line = defaultdict(list)
