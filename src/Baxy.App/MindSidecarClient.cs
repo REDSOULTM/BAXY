@@ -233,7 +233,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             JsonObject hello = await helloCompletion.Task
                 .WaitAsync(startupCancellation.Token)
                 .ConfigureAwait(false);
-            if ((string?)hello["protocol"] != "baxy.mind.v1")
+            if (Str(hello["protocol"]) != "baxy.mind.v1")
             {
                 throw new InvalidDataException("El sidecar de mente no habla baxy.mind.v1.");
             }
@@ -287,8 +287,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             returnProtocolError: true).ConfigureAwait(false);
         LastStartupFailure = MindStartupFailure.FromReply(reply);
         bool ready = reply is not null
-            && (string?)reply["type"] == "catalog.ready"
-            && (int?)reply["count"] == capabilities.Count;
+            && Str(reply["type"]) == "catalog.ready"
+            && Number(reply["count"]) == capabilities.Count;
         Notice = ready ? SilenceNotice.PhraseOf(reply) : null;
         return ready;
     }
@@ -412,7 +412,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "turn.beat.end" },
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && (string?)reply["type"] == "turn.beat.ended";
+        return reply is not null && Str(reply["type"]) == "turn.beat.ended";
     }
 
     /// <summary>The person pressed Sí or No: their answer enters the conversation as the confirmation call.</summary>
@@ -428,7 +428,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "session.export" },
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && (string?)reply["type"] == "session.exported" && reply["conversation"] is JsonArray conversation
+        return reply is not null && Str(reply["type"]) == "session.exported" && reply["conversation"] is JsonArray conversation
             ? (JsonArray)conversation.DeepClone()
             : null;
     }
@@ -440,7 +440,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "session.load", ["conversation"] = conversation.DeepClone() },
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && (string?)reply["type"] == "session.ready";
+        return reply is not null && Str(reply["type"]) == "session.ready";
     }
 
     /// <summary>The person had BAXY forget everything or deleted every conversation: the mind's trace, its archive and
@@ -452,7 +452,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "trace.forget" },
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && (string?)reply["type"] == "trace.forgotten" && (bool?)reply["cleared"] == true;
+        return reply is not null && Str(reply["type"]) == "trace.forgotten" && Flag(reply["cleared"]) == true;
     }
 
     /// <summary>Push-to-talk let go: the direct request being heard ends now.</summary>
@@ -462,7 +462,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "voice.release" },
             timeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && (string?)reply["type"] == "voice.released";
+        return reply is not null && Str(reply["type"]) == "voice.released";
     }
 
     /// <summary>A new conversation: the model forgets the session's turns.</summary>
@@ -472,7 +472,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "session.new" },
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && (string?)reply["type"] == "session.ready";
+        return reply is not null && Str(reply["type"]) == "session.ready";
     }
 
     private async Task<MindStep?> TurnRequestAsync(JsonObject request, CancellationToken cancellationToken)
@@ -487,26 +487,26 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
     internal static MindStep? ParseStep(JsonObject? reply)
     {
-        if (reply is null || (string?)reply["type"] != "turn.result")
+        if (reply is null || Str(reply["type"]) != "turn.result")
         {
             return null;
         }
 
-        switch ((string?)reply["kind"])
+        switch (Str(reply["kind"]))
         {
             // A name the model made up keeps the wire's «_» (the mind gives back the dotted name only of a catalog
             // tool): it goes on to the loop, which answers unknown_operation for the model to read, instead of the turn
             // failing with decision_unavailable.
-            case "action" when (string?)reply["operation"] is { Length: > 0 and <= 256 } operation
+            case "action" when Str(reply["operation"]) is { Length: > 0 and <= 256 } operation
                 && operation.All(static c => char.IsAsciiLetterOrDigit(c) || c is '.' or '_' or '-'):
                 return new MindStep(
                     "action",
                     operation,
                     reply["arguments"]?.DeepClone() as JsonObject ?? new JsonObject(),
                     string.Empty);
-            case "clarify" when (string?)reply["question"] is { Length: > 0 } question:
+            case "clarify" when Str(reply["question"]) is { Length: > 0 } question:
                 return new MindStep("question", null, null, question.Trim());
-            case "conversation" when (string?)reply["reply"] is { Length: > 0 } text:
+            case "conversation" when Str(reply["reply"]) is { Length: > 0 } text:
                 return new MindStep("reply", null, null, text.Trim());
             case "silence":
                 return new MindStep("silence", null, null, string.Empty);
@@ -549,8 +549,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return false;
         }
 
-        return (string?)reply["type"] == "voice.started"
-            && (string?)reply["mode"] == mode;
+        return Str(reply["type"]) == "voice.started"
+            && Str(reply["mode"]) == mode;
     }
 
     public async Task<bool> VoiceStopAsync(TimeSpan timeout, CancellationToken cancellationToken)
@@ -559,7 +559,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "voice.stop" },
             timeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && (string?)reply["type"] == "voice.stopped";
+        return reply is not null && Str(reply["type"]) == "voice.stopped";
     }
 
     public async Task<MindVoiceStatus?> VoiceStatusAsync(
@@ -571,19 +571,19 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             timeout,
             cancellationToken).ConfigureAwait(false);
         if (reply is null
-            || (string?)reply["type"] != "voice.status.result"
+            || Str(reply["type"]) != "voice.status.result"
             || reply["status"] is not JsonObject status)
         {
             return null;
         }
 
         return new MindVoiceStatus(
-            (bool?)status["available"] ?? false,
-            (bool?)status["input"] ?? false,
-            (bool?)status["stt"] ?? false,
-            (bool?)status["pending"] ?? false,
-            (bool?)status["wake"],
-            (bool?)status["tts"]);
+            Flag(status["available"]) ?? false,
+            Flag(status["input"]) ?? false,
+            Flag(status["stt"]) ?? false,
+            Flag(status["pending"]) ?? false,
+            Flag(status["wake"]),
+            Flag(status["tts"]));
     }
 
     public async Task<bool> VoiceSpeakAsync(
@@ -601,8 +601,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             timeout,
             cancellationToken).ConfigureAwait(false);
         return reply is not null
-            && (string?)reply["type"] == "voice.speak.result"
-            && (bool?)reply["accepted"] == true;
+            && Str(reply["type"]) == "voice.speak.result"
+            && Flag(reply["accepted"]) == true;
     }
 
     public async Task<bool> VoiceCancelAsync(
@@ -613,7 +613,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "voice.cancel" },
             timeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && (string?)reply["type"] == "voice.cancelled";
+        return reply is not null && Str(reply["type"]) == "voice.cancelled";
     }
 
     private async Task<JsonObject?> RequestAsync(
@@ -625,7 +625,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         // Cancellation and speech are handled by the sidecar apart from model work and never wait for an inference.
         // 2026-10-22, review of the App: so are releasing push-to-talk and reading the voice's state (the mind answers
         // them on its reader, __main__.py), which here still queued behind a turn: a release let go of late.
-        if ((string?)request["type"] is "voice.cancel" or "voice.speak" or "voice.release" or "voice.status")
+        if (Str(request["type"]) is "voice.cancel" or "voice.speak" or "voice.release" or "voice.status")
         {
             return await SendRequestAsync(request, timeout, returnProtocolError,
                 cancellationToken).ConfigureAwait(false);
@@ -657,7 +657,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         string requestId = Interlocked.Increment(ref _requestSequence)
             .ToString(CultureInfo.InvariantCulture);
         request["id"] = requestId;
-        string requestType = (string?)request["type"] ?? "unknown";
+        string requestType = Str(request["type"]) ?? "unknown";
         string traceId = ShellTraceSink.TurnId;
         ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "mind.request.start",
             $"{requestType}.id.{requestId}.budget_ms.{(long)timeout.TotalMilliseconds}");
@@ -701,7 +701,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(
                 cancellationToken, timeoutSource.Token);
             JsonObject reply = await completion.Task.WaitAsync(linked.Token).ConfigureAwait(false);
-            return (string?)reply["type"] == "error" && !returnProtocolError
+            return Str(reply["type"]) == "error" && !returnProtocolError
                 ? null
                 : reply;
         }
@@ -752,6 +752,17 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             _ => false,
         };
 
+    // Revisión de calidad (2026-10-25): a field of the mind's line that is not of its type is no value, never an
+    // exception (a cast threw out of the reader, which ended with the mind still running, and out of the request).
+    private static string? Str(JsonNode? node) =>
+        node is JsonValue value && value.TryGetValue(out string? text) ? text : null;
+
+    private static bool? Flag(JsonNode? node) =>
+        node is JsonValue value && value.TryGetValue(out bool flag) ? flag : null;
+
+    private static int? Number(JsonNode? node) =>
+        node is JsonValue value && value.TryGetValue(out int number) ? number : null;
+
     internal static byte[] SerializeRequestToUtf8(JsonObject request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -796,13 +807,13 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                     continue;
                 }
 
-                switch ((string?)message["type"])
+                switch (Str(message["type"]))
                 {
                     case "hello":
                         helloCompletion.TrySetResult(message);
                         continue;
                     case "voice.transcript":
-                        if ((string?)message["text"] is { Length: > 0 } transcript)
+                        if (Str(message["text"]) is { Length: > 0 } transcript)
                         {
                             TranscriptReceived?.Invoke(transcript);
                         }
@@ -813,7 +824,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                         continue;
                 }
 
-                if ((string?)message["id"] is { Length: > 0 } id
+                if (Str(message["id"]) is { Length: > 0 } id
                     && _pending.TryRemove(id, out var completion))
                 {
                     completion.TrySetResult(message);

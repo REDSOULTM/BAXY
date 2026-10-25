@@ -49,6 +49,62 @@ public sealed class MindSidecarClientTests
         });
     }
 
+    [Test]
+    public async Task AFieldOfAnotherTypeFromTheMindEndsNeitherItsReaderNorTheRequest()
+    {
+        // Revisión de calidad (2026-10-25): a line whose type, text or id was not a string ended the reader with the mind
+        // still running (ReadyLost, the mind relaunched), and a reply with such a field threw out of the request instead
+        // of being null or false.
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["emit"] = new JsonObject
+            {
+                ["session.new"] = new JsonArray(
+                    new JsonObject { ["type"] = "voice.transcript", ["text"] = 7 },
+                    new JsonObject { ["type"] = 5 },
+                    new JsonObject { ["type"] = "x", ["id"] = 3 }),
+            },
+            ["reply"] = new JsonObject
+            {
+                ["voice.status"] = new JsonObject
+                {
+                    ["type"] = "voice.status.result",
+                    ["status"] = new JsonObject { ["available"] = "yes", ["input"] = true },
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        Assert.That(await mind.NewSessionAsync(CancellationToken.None), Is.True);
+
+        MindVoiceStatus? status = await mind.VoiceStatusAsync(TimeSpan.FromSeconds(5), CancellationToken.None);
+        Assert.Multiple(() =>
+        {
+            Assert.That(status, Is.Not.Null, "the reader ended on the lines after session.ready");
+            Assert.That(status?.Available, Is.False);
+            Assert.That(status?.InputAvailable, Is.True);
+            Assert.That(mind.IsReady, Is.True);
+        });
+    }
+
+    [Test]
+    public void AStepWithAFieldOfAnotherTypeIsNoStep()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ParseStep(new JsonObject { ["type"] = "turn.result", ["kind"] = 3 }), Is.Null);
+            Assert.That(MindSidecarClient.ParseStep(new JsonObject
+            {
+                ["type"] = "turn.result", ["kind"] = "action", ["operation"] = 5,
+            }), Is.Null);
+            Assert.That(MindSidecarClient.ParseStep(new JsonObject { ["type"] = true }), Is.Null);
+            Assert.That(MindSidecarClient.ParseStep(new JsonObject
+            {
+                ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "hola",
+            })?.Text, Is.EqualTo("hola"));
+        });
+    }
+
     // A request that is still waiting when its caller gives up is a false, not an exception.
     private static async Task<bool> Within(Func<Task<bool>> request)
     {
