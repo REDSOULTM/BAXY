@@ -63,6 +63,9 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 BAXY/1.0 file-download");
     }
 
+    /// <summary>BAXY's own state (<see cref="Baxy.Providers.Windows.Filesystem.BaxyPrivateArea"/>); tests point it at a temporary folder.</summary>
+    internal IReadOnlyList<string> PrivateRoots { get; init; } = Baxy.Providers.Windows.Filesystem.BaxyPrivateArea.DefaultRoots();
+
     public bool CanHandle(string operation) =>
         operation is "file.compress" or "file.open" or "desktop.wallpaper.set" or "web.download";
 
@@ -103,6 +106,11 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         bool isDirectory = Directory.Exists(source);
         if (!isDirectory && !File.Exists(source))
             return ExternalJson.FailureBeforeEffect(operation, "file_not_found");
+        // Revisión de calidad (archivos): BAXY's own state is not one of the person's files: a folder that holds it
+        // (home's AppData) was zipped whole, its journal and memory store with it, beside the person's files.
+        if (Baxy.Providers.Windows.Filesystem.BaxyPrivateArea.Holds(PrivateRoots, source)
+            || (isDirectory && PrivateRoots.Any(root => Baxy.Providers.Windows.Filesystem.BaxyPrivateArea.Holds([source], root))))
+            return ExternalJson.FailureBeforeEffect(operation, "path_reserved");
         string zipPath = source.TrimEnd(Path.DirectorySeparatorChar) + ".zip";
         if (File.Exists(zipPath))
             return ExternalJson.FailureBeforeEffect(operation, "zip_already_exists");
