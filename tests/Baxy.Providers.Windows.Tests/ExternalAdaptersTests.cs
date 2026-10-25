@@ -4220,6 +4220,34 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Revisión de calidad: a page is cut on a character. Cut between the two halves of an emoji, the half left alone
+    // was written as U+FFFD (Utf8JsonWriter) and the emoji was in neither page; the next page starts at the emoji.
+    [Test]
+    public async Task WebFetchNeverCutsAnEmojiInTwo()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        var pages = new RoutingHttpHandler(
+            "<html><body><p>" + new string('a', 499) + "😀" + new string('b', 300) + "</p></body></html>", "{}");
+        using var http = new HttpClient(pages);
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt first = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://largo.example.com/","maximumCharacters":500}"""), CancellationToken.None);
+        ExternalCapabilityReceipt inside = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://largo.example.com/","maximumCharacters":500,"offset":500}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Result?.GetProperty("text").GetString(), Is.EqualTo(new string('a', 499)));
+            Assert.That(first.Result?.GetProperty("nextOffset").GetInt32(), Is.EqualTo(499));
+            Assert.That(inside.Result?.GetProperty("offset").GetInt32(), Is.EqualTo(499));
+            Assert.That(inside.Result?.GetProperty("text").GetString(), Does.StartWith("😀b"));
+            Assert.That(inside.Result?.GetProperty("text").GetString(), Does.Not.Contain("�"));
+        });
+    }
+
     // M98: a page is decoded in the charset its response declares, else the one its own first bytes declare, else
     // UTF-8; Latin-1 is read as Windows-1252, as browsers do.
     [Test]
