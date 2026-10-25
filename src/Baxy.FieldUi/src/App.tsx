@@ -301,6 +301,7 @@ export default function App() {
   const submit = useCallback(async (text: string) => {
     const r = await send('POST', '/turn', { text });
     if (r === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
+    return r !== null;
   }, []);
   // the answer names the card it answers: a press or a key meant for one that ended never answers the next (the host
   // refuses it), and a refused answer is said, never lost in silence. A card is answered once: a second press or key
@@ -512,7 +513,7 @@ export default function App() {
               {booting && s.boot ? <Boot boot={s.boot} />
                 : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} error={errorText} />}
               <VoiceInput mic={shownMic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
-                onSubmit={(t) => void submit(t)} state={state} canSend={canSend} />
+                onSubmit={submit} state={state} canSend={canSend} />
             </div>
           </div>
           <div className="bx-right">

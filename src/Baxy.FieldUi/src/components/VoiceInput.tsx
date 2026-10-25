@@ -20,7 +20,8 @@ interface Props {
   onMic: (m: MicMode) => void;
   onPttStart: () => void;
   onPttEnd: () => void;
-  onSubmit: (text: string) => void;
+  /** sends the request; false when the host did not take it */
+  onSubmit: (text: string) => Promise<boolean>;
   state: BaxyState;
   canSend: boolean;
 }
@@ -40,7 +41,13 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
     window.addEventListener('keydown', esc, true);
     return () => { window.removeEventListener('pointerdown', close); window.removeEventListener('keydown', esc, true); };
   }, [menu]);
-  const send = () => { if (!armed) return; onSubmit(draft.trim()); setDraft(''); };
+  // a request the host did not take comes back to the box (unless the person already wrote something else)
+  const send = async () => {
+    if (!armed) return;
+    const text = draft.trim();
+    setDraft('');
+    if (!(await onSubmit(text))) setDraft((d) => d || text);
+  };
   const ph = state === 'booting' ? 'Cargando el modelo…'
     : state === 'confirm' ? '↵ sí · esc no'
       : mic === 'ptt' ? 'Escribe o mantén espacio'
@@ -80,8 +87,8 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
       </div>
       <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={ph} spellCheck={false} autoFocus
         aria-label="Escribe a BAXY" data-ready={canSend ? 'true' : 'false'}
-        onKeyDown={(e) => { if (e.key === 'Enter' && armed) { e.preventDefault(); e.stopPropagation(); send(); } }} />
-      <button className={'bx-send' + (armed ? '' : ' hide')} onClick={send} title="Enviar"><Icon name="send" size={14} /></button>
+        onKeyDown={(e) => { if (e.key === 'Enter' && armed) { e.preventDefault(); e.stopPropagation(); void send(); } }} />
+      <button className={'bx-send' + (armed ? '' : ' hide')} onClick={() => void send()} title="Enviar"><Icon name="send" size={14} /></button>
     </div>
   );
 }

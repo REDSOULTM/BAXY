@@ -107,3 +107,22 @@ test('Esc con el menú del micrófono abierto cierra el menú y no rechaza la ta
   await h.page.waitForTimeout(300);
   expect(answers()).toEqual([]);
 });
+
+const box = () => h.page.locator('input[aria-label="Escribe a BAXY"]');
+
+test('un pedido que el host no tomó vuelve a la caja, no se pierde', async () => {
+  h = await openView();
+  h.reply('/turn', () => ({ status: 503 }));
+  await box().fill('abre la calculadora');
+  await box().press('Enter');
+  await expect(h.page.locator('.bx-notice')).toContainText('no pudo recibir el pedido');
+  await expect(box()).toHaveValue('abre la calculadora');
+});
+
+test('un pedido que el host tomó deja la caja vacía', async () => {
+  h = await openView();
+  await box().fill('abre la calculadora');
+  await box().press('Enter');
+  await expect.poll(() => h.calls.filter((c) => c.path === '/turn').map((c) => c.body)).toEqual([{ text: 'abre la calculadora' }]);
+  await expect(box()).toHaveValue('');
+});
