@@ -193,6 +193,15 @@ public static class ModelAids
     /// </summary>
     public const string PlaceClock = "place_clock";
 
+    /// <summary>
+    /// Práctica e2e E017 («guárdalo como lista.txt en C:\Users\ana\BAXY-bench»: in Notepad's «Guardar como» the model
+    /// pressed «Guardar» with «Nombre de archivo» still holding «lista pilas, cables», and said it saved lista.txt): a look
+    /// at a modal save dialog (a «Nombre de archivo»/«File name» edit and a «Guardar»/«Save» button) says, after that
+    /// edit, that what it holds is the name the file gets, in the folder the dialog's address shows, and that a full path
+    /// written in it saves there (ScreenViewProjection.SaveField).
+    /// </summary>
+    public const string SaveDialogNext = "save_dialog_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
