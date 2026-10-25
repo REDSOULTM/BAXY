@@ -5212,6 +5212,39 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Revisión de calidad (nb-q-apps): a resolver or a player Windows refuses to run throws Win32Exception from
+    // Process.Start; it escaped the adapter (the browser was never tried). Before anything played it is a failure
+    // before any effect; a player refused after the previous one was stopped may have changed what plays.
+    [Test]
+    public async Task AToolWindowsRefusesToRunIsAReceiptNotAnException()
+    {
+        using TemporaryDirectory temporary = new();
+        string mpv = Path.Combine(temporary.Path, "mpv.exe");
+        string notAnExecutable = Path.Combine(temporary.Path, "yt-dlp.exe");
+        string ytDlp = Path.Combine(temporary.Path, "yt-dlp.cmd");
+        await File.WriteAllTextAsync(mpv, "fixture");
+        await File.WriteAllTextAsync(notAnExecutable, "fixture");
+        await File.WriteAllTextAsync(ytDlp, "@echo Gatos\r\n@echo https://rr1.googlevideo.com/videoplayback\r\n");
+        using var refusedResolver = new YouTubeMpvAdapter(mpv, notAnExecutable, nodePath: null);
+        using var refusedPlayer = new YouTubeMpvAdapter(mpv, ytDlp, nodePath: null)
+        {
+            StartPlayer = _ => throw new System.ComponentModel.Win32Exception(4551),
+        };
+
+        ExternalCapabilityReceipt resolver = await refusedResolver.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt player = await refusedPlayer.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolver.Verified, Is.False);
+            Assert.That(resolver.EffectMayHaveOccurred, Is.False);
+            Assert.That(player.Verified, Is.False);
+            Assert.That(player.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
     // Renew al máximo (6.7): past the boundary, the budget ends the check (and no retry starts) with the honest failure
     // whose effect may have occurred; with the time left too short for a retry it is not started; with time it is.
     [TestCase(2_000, false, 1)]

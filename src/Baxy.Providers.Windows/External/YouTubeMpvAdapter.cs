@@ -151,8 +151,11 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         {
             return ExternalJson.FailureBeforeEffect(operation, "youtube_stream_not_resolved");
         }
+        // Revisión de calidad (nb-q-apps): a yt-dlp or mpv that Windows refuses to run (Smart App Control, a file
+        // quarantined, not an executable) throws Win32Exception from Process.Start; it left the adapter, the dispatch
+        // never tried the browser, and the turn failed with an exception instead of a receipt.
         catch (Exception exception) when (exception is IOException or JsonException
-            or InvalidOperationException or TimeoutException)
+            or InvalidOperationException or TimeoutException or System.ComponentModel.Win32Exception)
         {
             return effectBoundary.Failure(operation, "youtube_local_player_failed");
         }
