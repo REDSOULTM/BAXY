@@ -292,6 +292,7 @@ internal static partial class PathSafety
         if (!isDirectory)
         {
             AssertSingleLink(path);
+            ClearReadOnly(path, attributes);
             File.Delete(path);
             return;
         }
@@ -301,7 +302,17 @@ internal static partial class PathSafety
             DeleteEntryFailClosed(child);
         }
 
+        ClearReadOnly(path, attributes);
         Directory.Delete(path, recursive: false);
+    }
+
+    // Windows refuses to delete a read-only entry: a purge of the user's data would stop halfway on the first one.
+    private static void ClearReadOnly(string path, FileAttributes attributes)
+    {
+        if ((attributes & FileAttributes.ReadOnly) != 0)
+        {
+            File.SetAttributes(path, attributes & ~FileAttributes.ReadOnly);
+        }
     }
 
     private static void AssertNoAlternateDataStreams(string path, bool isDirectory)

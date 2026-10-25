@@ -120,6 +120,37 @@ public sealed class SetupUninstallExecutorTests
     }
 
     [Test]
+    public void PurgeDeletesReadOnlyDataFilesAndDirectories()
+    {
+        using TemporaryTree tree = new();
+        string dataRoot = Path.Combine(tree.Root, "data");
+        string nestedData = Path.Combine(dataRoot, "nested");
+        string readOnlyFile = Path.Combine(nestedData, "read-only.txt");
+        Directory.CreateDirectory(nestedData);
+        File.WriteAllText(readOnlyFile, "data");
+        File.SetAttributes(readOnlyFile, FileAttributes.ReadOnly);
+        File.SetAttributes(nestedData, FileAttributes.Directory | FileAttributes.ReadOnly);
+        try
+        {
+            PathSafety.DeleteTreeFailClosed(tree.Root, dataRoot);
+
+            Assert.That(Directory.Exists(dataRoot), Is.False);
+        }
+        finally
+        {
+            if (File.Exists(readOnlyFile))
+            {
+                File.SetAttributes(readOnlyFile, FileAttributes.Normal);
+            }
+
+            if (Directory.Exists(nestedData))
+            {
+                File.SetAttributes(nestedData, FileAttributes.Directory);
+            }
+        }
+    }
+
+    [Test]
     public void ForeignTombstoneIsRejectedBeforeMovingAnything()
     {
         using TemporaryTree tree = new();
