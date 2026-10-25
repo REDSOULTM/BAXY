@@ -145,6 +145,38 @@ public sealed class CoreRequestTests
         Assert.That(core.Diagnostics.ToString(), Is.Empty);
     }
 
+    // Revisión del núcleo (q-core): a response the protocol refuses (a handler's error code out of the protocol's
+    // alphabet) threw JsonException from the core's write, out of the loop, and ended the core (exit 70) after the effect.
+    // That request is answered failed with its effect uncertain, and the core reads the next.
+    [Test]
+    public async Task AResponseTheProtocolRefusesIsAnsweredFailedInsteadOfEndingTheCore()
+    {
+        await using var core = await Core.OpenAsync(new AnsweringHandler(OperationOutcome.Failure("Access-Denied")));
+        OperationRequest request = Request();
+
+        OperationResponse response = await CoreRequest.ExecuteAsync(
+            core.Engine, request, core.Diagnostics, CancellationToken.None);
+        OperationResponse answered = ProtocolJson.DeserializeResponse(
+            CoreRequest.ToLine(request, response, 1024 * 1024, core.Diagnostics));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(answered.RequestId, Is.EqualTo(request.RequestId));
+            Assert.That(answered.InvocationId, Is.EqualTo(request.InvocationId));
+            Assert.That(answered.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(answered.ErrorCode, Is.EqualTo(CoreRequest.UnexpectedFailureCode));
+            Assert.That(answered.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    private sealed class AnsweringHandler(OperationOutcome outcome) : IOperationHandler
+    {
+        public OperationDefinition Definition { get; } = new(ProductCatalog.GetRequired("app.open"));
+
+        public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(outcome);
+    }
+
     private static OperationRequest Request() => new(
         ProtocolTypes.OperationRequest,
         Guid.NewGuid().ToString("D"),
