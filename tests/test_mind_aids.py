@@ -221,6 +221,18 @@ def test_the_applications_with_places_are_named_from_the_data(tmp_path: Path) ->
         assert app in texts
 
 
+def test_file_find_tells_on_its_arguments_that_query_is_the_name_and_content_the_text_inside(tmp_path: Path) -> None:
+    # Práctica e2e V6E035 («¿qué archivo de la carpeta X tiene anotado Y?»): file_find with query Y, a search of names,
+    # three times, and «ningún archivo menciona Y» with Y written inside one; another run's content Y found it.
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": "file.find", "description": "Find files.", "argumentsSchema": {
+        "type": "object", "properties": {name: {"type": "string"} for name in ("content", "folder", "query")}}}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "file_find")["function"]
+    query, content = (tool["parameters"]["properties"][name]["description"] for name in ("query", "content"))
+    assert "name" in query and "never the text inside" in query
+    assert "inside" in content and "mentions" in content
+
+
 SETTINGS_AND_TRASH = {"capabilities": [
     {"name": "system.settings.set", "description": "Set a setting.", "argumentsSchema": {"type": "object", "properties": {}}},
     {"name": "filesystem.known.trash.named", "description": "Delete by name.",
