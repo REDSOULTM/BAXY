@@ -2650,7 +2650,113 @@
           "imposibles": 3,
           "voz": 3
         },
-        "validacion": "PROBLEMAS: 0 en los dos (holdout_tools/validacion.txt, holdout_tools_e2e/validacion.txt); dedup 0 colisiones contra v1-v5 abiertos y práctica"
+        "validacion": "PROBLEMAS: 0 en los dos (holdout_tools/validacion.txt, holdout_tools_e2e/validacion.txt); dedup 0 colisiones contra v1-v5 abiertos y práctica",
+        "resultado": {
+          "fecha": "2026-10-25",
+          "head_final": "int11f f1d041344 (renew-cien 8953ecd03)",
+          "decision_720x3": {
+            "inicio": 601.33,
+            "final_v5": 618.33,
+            "cien": 616.67,
+            "cien_menos_final_v5": {
+              "delta": -1.67,
+              "ic95": [
+                -7.67,
+                3.67
+              ]
+            },
+            "cien_menos_inicio": {
+              "delta": 15.33,
+              "ic95": [
+                5.33,
+                25.67
+              ],
+              "p_holm": 0.023
+            },
+            "acciones_equivocadas": {
+              "inicio": 95.33,
+              "final_v5": 75.67,
+              "cien": 80.33
+            },
+            "ya_hecho": {
+              "inicio": 12.7,
+              "final_v5": 12.7,
+              "cien": 14.3
+            }
+          },
+          "e2e_76x2_nb": {
+            "inicio": 49.0,
+            "final_v5": 55.5,
+            "cien": 57.0,
+            "cien_menos_final_v5": {
+              "delta": 1.5,
+              "ic95": [
+                -2.0,
+                5.5
+              ]
+            },
+            "cien_menos_inicio": {
+              "delta": 8.0,
+              "ic95": [
+                1.0,
+                15.0
+              ]
+            },
+            "confirmaciones_de_8": {
+              "inicio": [
+                6,
+                5
+              ],
+              "final_v5": [
+                7,
+                5
+              ],
+              "cien": [
+                6,
+                6
+              ]
+            },
+            "primera_respuesta_p50_ms_nb": {
+              "inicio": [
+                3319,
+                3501
+              ],
+              "final_v5": [
+                4313,
+                4312
+              ],
+              "cien": [
+                3740,
+                3839
+              ]
+            }
+          },
+          "falsedades_claras_72": {
+            "inicio": 15,
+            "final_v5": 6,
+            "cien": 1,
+            "dudosas": {
+              "inicio": 9,
+              "final_v5": 10,
+              "cien": 11
+            },
+            "cien_vs_final_v5_discordantes": "0 frente a 5, p exacta 0,0625",
+            "lectura": "a ciegas, un agente por semilla"
+          },
+          "recursos_nb": {
+            "vram_mib": 3989,
+            "ram_con_voz_mib": 3672
+          },
+          "metas": {
+            "e2e_mas5": "no",
+            "confirmaciones_6de8": "si",
+            "decision_sin_perdida": "no (IC95 inferior -7,67)",
+            "ya_hecho_mas8": "no (+1,7)",
+            "falsedades": "si",
+            "latencia_menos_0_4": "si (-0,52 s NB)",
+            "recursos": "si"
+          }
+        }
       },
       "H1_confirmaciones": {
         "maquina": "PC",
@@ -2724,6 +2830,7 @@
         "w10-bucle, w10-numeros, w10-web, w10-sinrespuesta, w10-archivos, w10-teclado, w10-alarma, w10-hora": "en int11 (suites verdes); medida e2e en el NB",
         "w10-teclado typed_in_window": "receta de reemplazo retirada (82211cf25): E012 en int11 escribía en el diálogo Abrir"
       }
-    }
+    },
+    "estado": "holdout v6 corrido una vez (2026-10-25); informe y mensaje al dueño"
   }
 }

@@ -3448,3 +3448,8 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   cumplida; GPU en P0 por el streaming en los seis brazos). Por área cien s0/s1: comunes 14/14, cu 8/8 de 14, archivos
   11/12 de 16, multiturno 9/8 de 12, ya_lo_hiciste 5/4 de 6, imposibles 1/2 de 3, voz 3/3. Falsedad cien s0 VOID (ventana
   de Configuración ajena) y repetida al final.
+- 12:xx **Holdout v6, falsedades** (NB s0 y s1, leídas a ciegas por dos agentes del PC; clave revelada después: A =
+  final_v5, B = inicio, C = cien): claras inicio 15 | final_v5 6 | cien 1 (dudosas 9 | 10 | 11); cien frente a final_v5 0
+  contra 5 conversaciones discordantes (p 0,0625). **Metas**: e2e +5 no (+1,5), confirmaciones sí (6/6), decisión sin
+  pérdida no (IC95 inferior −7,67), ya_hecho +8 no (+1,7), falsedades sí, latencia sí (−0,52 s), recursos sí. Resultados
+  en `maximo/HOLDOUT_V6.md`.
