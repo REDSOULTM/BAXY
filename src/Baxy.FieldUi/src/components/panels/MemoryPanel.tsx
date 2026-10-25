@@ -39,6 +39,7 @@ const ERRORS: Record<string, string> = {
 
 export function MemoryPanel({ onClose, revision }: { onClose: () => void; revision: number }) {
   const [data, setData] = useState<MemoryList | null>(null);
+  // what waits for its «¿Olvidar?»: 'all', or a row as 'key:' + its key (a memory may be called «all»)
   const [ask, setAsk] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
@@ -47,7 +48,12 @@ export function MemoryPanel({ onClose, revision }: { onClose: () => void; revisi
     const r = await getJson<MemoryList>('/memory');
     setData(r ?? { error: 'memory_unavailable', items: [] });
   }, []);
-  useEffect(() => { void getJson<MemoryList>('/memory').then((r) => setData(r ?? { error: 'memory_unavailable', items: [] })); }, [revision]);
+  // a reading started before the memory changed again never covers the newer one, even if it answers last
+  useEffect(() => {
+    let stale = false;
+    void getJson<MemoryList>('/memory').then((r) => { if (!stale) setData(r ?? { error: 'memory_unavailable', items: [] }); });
+    return () => { stale = true; };
+  }, [revision]);
 
   const run = async (call: () => Promise<MemoryList | null>, failure: string) => {
     setBusy(true);
@@ -69,8 +75,8 @@ export function MemoryPanel({ onClose, revision }: { onClose: () => void; revisi
     return (
       <div key={m.key} className="bx-mem-row">
         <span className="t">{sens ? <><b>{m.label ?? m.key}</b> · ••••••</> : m.label ? <><b>{m.label}</b> · {m.value}</> : m.value}</span>
-        {ask === m.key ? <ConfirmRow label="¿Olvidar?" yes="Sí, olvidar" onYes={() => void forget(m.key)} onNo={() => setAsk(null)} /> : (
-          <span className="acts"><button className="bx-lnk" disabled={busy} onClick={() => setAsk(m.key)}>Olvidar</button></span>
+        {ask === 'key:' + m.key ? <ConfirmRow label="¿Olvidar?" yes="Sí, olvidar" onYes={() => void forget(m.key)} onNo={() => setAsk(null)} /> : (
+          <span className="acts"><button className="bx-lnk" disabled={busy} onClick={() => setAsk('key:' + m.key)}>Olvidar</button></span>
         )}
       </div>
     );

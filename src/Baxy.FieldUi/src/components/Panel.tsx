@@ -40,7 +40,7 @@ export function Toggle({ on, onChange, locked, label }: { on: boolean; onChange?
 export function Seg<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
   return (
     <div className="bxs-seg">
-      {options.map(([v, l]) => <button key={v} className={value === v ? 'on' : ''} onClick={() => onChange(v)}>{l}</button>)}
+      {options.map(([v, l]) => <button key={v} className={value === v ? 'on' : ''} aria-pressed={value === v} onClick={() => onChange(v)}>{l}</button>)}
     </div>
   );
 }

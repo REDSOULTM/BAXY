@@ -23,7 +23,7 @@ const FAM_LABEL: Record<Fam, string> = {
 function StepChip({ s, open, onClick }: { s: Step; open: boolean; onClick: () => void }) {
   const st = ST[s.status] ?? ST.run;
   return (
-    <button className={'bx-chip st-' + s.status + (open ? ' open' : '')} onClick={onClick} title={st.label}>
+    <button className={'bx-chip st-' + s.status + (open ? ' open' : '')} onClick={onClick} title={st.label} aria-expanded={open}>
       <span className="ic">{s.status === 'run' ? <i className="spin"></i> : st.ic}</span>
       <span className="lb">{s.label}</span>
       {s.net ? <span className="nt"><Globe s={10} /></span> : null}
