@@ -97,6 +97,12 @@ internal interface IViewedFields
     ValueTask<System.Text.Json.JsonDocument?> FocusKindAsync(nint window, CancellationToken cancellationToken) =>
         ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
 
+    /// <summary>Revisión de la guarda F013 (teclas): whether <paramref name="key"/> (Enter or space) sent to
+    /// <paramref name="window"/> (0: the one in front) would answer yes to a dialog that asks about destroying something,
+    /// judged as a click on the control that would take it; a read only. False when it is not so or cannot tell.</summary>
+    ValueTask<bool> KeyAnswersDestructiveDialogAsync(nint window, string key, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(false);
+
     /// <summary>Renew al máximo (7.1): the view of <paramref name="window"/> read again after a completed act, as the
     /// difference from its last view (which it replaces); null when it was not read (no last view of that window, a
     /// read that failed or ran out of time).</summary>

@@ -113,30 +113,50 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     internal IKeyWindowReader KeyWindows { get; init; } = new KeyWindowReader();
 
     // Auditoría del núcleo 2026-10-23 (DeclaredTextFieldPress): a key press that declares a text field is read before it
-    // goes unasked; nothing else this adapter does is.
+    // goes unasked; nothing else this adapter does is. Revisión de la guarda F013 (teclas): nor Enter or space, which
+    // press the focused button of a dialog as a click on it does, while the last view's adapter can read that dialog.
     public bool PreflightMayRaise(string operation, JsonElement arguments) =>
-        DeclaredTextFieldPress.Applies(operation, arguments);
+        DeclaredTextFieldPress.Applies(operation, arguments) || AnswersADialog(operation, arguments);
 
     public async ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        if (!DeclaredTextFieldPress.Applies(operation, arguments))
+        bool declared = DeclaredTextFieldPress.Applies(operation, arguments);
+        bool answers = AnswersADialog(operation, arguments);
+        if (!declared && !answers)
             return null;
         nint window = NamedWindow(arguments);
-        FocusRead? focus = null;
-        if (_fields is not null)
+        if (declared)
         {
-            using JsonDocument? answer = await _fields.FocusKindAsync(window, cancellationToken).ConfigureAwait(false);
-            focus = DeclaredTextFieldPress.Read(answer);
+            FocusRead? focus = null;
+            if (_fields is not null)
+            {
+                using JsonDocument? answer = await _fields.FocusKindAsync(window, cancellationToken).ConfigureAwait(false);
+                focus = DeclaredTextFieldPress.Read(answer);
+            }
+
+            KeyWindowKind kind = KeyWindows.KindOf(window == 0 ? null : window);
+            if (DeclaredTextFieldPress.NeedsYes(arguments, focus, kind))
+                return new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true };
         }
 
-        KeyWindowKind kind = KeyWindows.KindOf(window == 0 ? null : window);
-        return DeclaredTextFieldPress.NeedsYes(arguments, focus, kind)
+        // Revisión de la guarda F013 (teclas): the key that would say yes to «¿Reemplazar?» asks as the click does,
+        // whatever the model declared of it; bound to this press by the engine (NeedsConfirmation raises its risk).
+        return answers && await _fields!.KeyAnswersDestructiveDialogAsync(
+                window, arguments.GetProperty("key").GetString()!, cancellationToken).ConfigureAwait(false)
             ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
             : null;
     }
+
+    // Pure: Enter or space, which press the focused control, with the visible controls' adapter to read it.
+    private bool AnswersADialog(string operation, JsonElement arguments) =>
+        _fields is not null
+        && operation == "input.key.press"
+        && arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty("key", out JsonElement key) && key.ValueKind == JsonValueKind.String
+        && key.GetString() is "enter" or "space";
 
     public bool CanHandle(string operation) => operation is
         "clipboard.copy" or

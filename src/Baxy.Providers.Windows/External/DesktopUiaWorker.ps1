@@ -21,7 +21,7 @@
 #   {"cmd":"reveal","hwnd":123,"aliases":["Omega"],"direction":"down","amount":10}   (trae a la vista un elemento fuera de ella)
 #   {"cmd":"field","hwnd":123,"controlId":"42.1837.4","text":"hola","replace":false}   (texto dirigido; sin «text», solo lo lee)
 #   {"cmd":"textcaret","hwnd":123,"processId":4242,"max":8192}   (el parrafo del cursor del foco, por TextPattern; solo lee)
-#   {"cmd":"focuskind","hwnd":123}   (lo que tiene el foco del teclado: tipo, editable, TextPattern, dentro de la ventana; solo lee)
+#   {"cmd":"focuskind","hwnd":123}   (lo que tiene el foco del teclado: tipo, nombre, editable, TextPattern, dentro de la ventana; solo lee)
 #   {"cmd":"script","script":"...","args":["123"]}   (un guion de UserBrowserScripts, $args como en -Command)
 #   {"cmd":"unnamed","hwnd":123,"limit":24}   (accionables sin nombre ni respaldo: candidatos a leer su tooltip)
 #   {"cmd":"tooltips","hwnd":123,"pids":[4242]}   (los tooltips visibles de esos procesos y de la ventana, con su texto)
@@ -4342,7 +4342,10 @@ function Do-FocusKind($request){
     if([System.Windows.Automation.Automation]::Compare($up,$target.root)){ $inside=$true; break }
     try { $up=$walker.GetParent($up) } catch { $up=$null }
   }
-  return @{ ok=$true; kind=$kind; editable=[bool]$editable; text=[bool]$text; inside=$inside }
+  # Revision de la guarda F013 (teclas): su nombre, como lo dice una mirada (Format-Name), para juzgar Enter o Espacio
+  # sobre el boton de un dialogo con la misma lectura que el clic.
+  $name=''; try { $name=Format-Name ([string]$node.Current.Name) } catch {}
+  return @{ ok=$true; kind=$kind; name=$name; editable=[bool]$editable; text=[bool]$text; inside=$inside }
 }
 function Do-TextCaret($request){
   $target=Get-Root ([long]$request.hwnd)
