@@ -69,6 +69,67 @@ public sealed class RiskPolicyShellTests
     public void Anything_else_asks_with_the_exact_command(string command) =>
         Assert.That(Run(command), Is.EqualTo(PolicyDecision.RequireConfirmation));
 
+    // Calidad del PC (2026-10-25): every character that chains, redirects, runs a block or expands a value asks, each
+    // on its own after a reading command; so does an empty stage, and a reading command is recognized in any case.
+    [TestCase("Get-Content a.txt < b.txt")]
+    [TestCase("dir & del a.txt")]
+    [TestCase("dir && del a.txt")]
+    [TestCase("dir || del a.txt")]
+    [TestCase("echo `$x")]
+    [TestCase("Get-ChildItem | Where-Object { $_.Length -gt 0 }")]
+    [TestCase("echo $env:USERPROFILE")]
+    [TestCase("echo @args")]
+    [TestCase("Get-Content a.txt\nRemove-Item a.txt")]
+    [TestCase("Get-Content a.txt\rRemove-Item a.txt")]
+    [TestCase("Get-Content [a].txt")]
+    [TestCase("ls |")]
+    [TestCase("| ls")]
+    [TestCase("ls | | sort")]
+    [TestCase("   ")]
+    [TestCase("")]
+    [TestCase("REMOVE-ITEM a.txt")]
+    public void A_metacharacter_or_an_empty_stage_asks(string command) =>
+        Assert.That(Run(command), Is.EqualTo(PolicyDecision.RequireConfirmation));
+
+    [TestCase("LS")]
+    [TestCase("Get-ChildItem | SORT-OBJECT Name")]
+    public void A_reading_command_is_recognized_in_any_case(string command) =>
+        Assert.That(Run(command), Is.EqualTo(PolicyDecision.Allow));
+
+    // A shell invocation whose arguments do not hold the command as text cannot be judged: it asks.
+    [TestCase("{}")]
+    [TestCase("{\"command\":null}")]
+    [TestCase("{\"command\":42}")]
+    [TestCase("{\"command\":[\"ls\"]}")]
+    [TestCase("{\"cmd\":\"ls\"}")]
+    [TestCase("[\"ls\"]")]
+    [TestCase("\"ls\"")]
+    public void Arguments_without_the_command_as_text_ask(string arguments)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("shell.command.run");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+        Assert.Multiple(() =>
+        {
+            Assert.That(RiskPolicy.ShellMayChange("shell.command.run", document.RootElement), Is.True);
+            Assert.That(
+                RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal,
+                    "shell.command.run", document.RootElement),
+                Is.EqualTo(PolicyDecision.RequireConfirmation));
+        });
+    }
+
+    [Test]
+    public void The_shell_rule_judges_only_the_shell_operation()
+    {
+        using JsonDocument document = JsonDocument.Parse("""{"command":"Remove-Item a.txt"}""");
+        Assert.Multiple(() =>
+        {
+            Assert.That(RiskPolicy.ShellMayChange("shell.command.run", document.RootElement), Is.True);
+            Assert.That(RiskPolicy.ShellMayChange("browser.navigate", document.RootElement), Is.False);
+            Assert.That(RiskPolicy.ShellMayChange(null, document.RootElement), Is.False);
+        });
+    }
+
     [Test]
     public void Bypass_runs_without_asking() =>
         Assert.That(Run("Remove-Item a.txt", ConfirmationMode.Bypass), Is.EqualTo(PolicyDecision.Allow));

@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\TestInfrastructure\NtfsTestJunction.cs" Link="TestInfrastructure\NtfsTestJunction.cs" />
+    <Compile Include="..\TestInfrastructure\ProductDefaultsSetUp.cs" Link="TestInfrastructure\ProductDefaultsSetUp.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
