@@ -245,6 +245,46 @@ public sealed class ProductPackageVerifierTests
         }
     }
 
+    [Test]
+    public void ContractCarriesTheWholeFieldUiDistTheAppPublishes()
+    {
+        // Baxy.App publishes src/Baxy.FieldUi/dist/** as FieldUi/**: the package contract must name every file and
+        // directory of it, not only dist/assets.
+        string dist = FindRepositoryFieldUiDist();
+        string[] files = Directory.EnumerateFiles(dist, "*", SearchOption.AllDirectories)
+            .Select(path => "FieldUi/" + Path.GetRelativePath(dist, path).Replace('\\', '/'))
+            .ToArray();
+        string[] directories = Directory.EnumerateDirectories(dist, "*", SearchOption.AllDirectories)
+            .Select(path => "FieldUi/" + Path.GetRelativePath(dist, path).Replace('\\', '/'))
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(files, Is.Not.Empty);
+            Assert.That(PackageContract.PayloadPaths, Is.SupersetOf(files));
+            Assert.That(PackageContract.DirectoryPaths, Is.SupersetOf(directories));
+            Assert.That(
+                PackageContract.PayloadPaths.Where(static path => path.StartsWith("FieldUi/", StringComparison.Ordinal)),
+                Is.EquivalentTo(files));
+            Assert.That(PackageContract.DirectoryPaths, Is.Ordered.Using((IComparer<string>)StringComparer.Ordinal));
+            Assert.That(PackageContract.DirectoryPaths, Is.Unique);
+        });
+    }
+
+    private static string FindRepositoryFieldUiDist()
+    {
+        for (DirectoryInfo? directory = new(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
+        {
+            string candidate = Path.Combine(directory.FullName, "src", "Baxy.FieldUi", "dist");
+            if (Directory.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        throw new AssertionException("src/Baxy.FieldUi/dist was not found above the test output.");
+    }
+
     private static byte[] ReplaceSourceWithNull(byte[] bytes)
     {
         string text = Encoding.UTF8.GetString(bytes);
