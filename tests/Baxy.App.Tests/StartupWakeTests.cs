@@ -39,6 +39,32 @@ public sealed class StartupWakeTests
         }
     }
 
+    // Revisión de nb-w11-arranque: the wake start waited for the ear inside the gate of the voice commands, with no
+    // bound, so a stop (rest, /voice/stop) waited behind it as long as the ear took to load, or for ever; once loaded,
+    // the wake word started before the stop the person had asked after it.
+    [Test]
+    public async Task AStopAskedWhileAWakeWaitsForTheEarIsNotHeldBehindItAndTheWakeDoesNotStartAfterIt()
+    {
+        using var fake = new FakeMind();
+        fake.Script(VoiceStatus(pending: true));
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        {
+            Task<bool> asked = viewModel.SetWakeVoiceAsync(true, CancellationToken.None);
+            Assert.That(await fake.WaitSeenAsync("voice.status", count: 3), Is.True);
+
+            Task<bool> stop = viewModel.SetWakeVoiceAsync(false, CancellationToken.None);
+            Assert.That(await Task.WhenAny(stop, Task.Delay(TimeSpan.FromSeconds(5))), Is.SameAs(stop),
+                "the stop waited behind a wake start held until the ear loads");
+            Assert.That(await stop, Is.True);
+
+            fake.Script(VoiceStatus(pending: false));
+            Assert.That(await asked.WaitAsync(TimeSpan.FromSeconds(15)), Is.False);
+            Assert.That(viewModel.IsWakeListening, Is.False);
+            Assert.That(fake.Seen, Does.Not.Contain("voice.start"));
+        }
+    }
+
     [Test]
     public async Task TheStartupWakeStartsWhenTheFirstVoiceReadGotNoAnswer()
     {
