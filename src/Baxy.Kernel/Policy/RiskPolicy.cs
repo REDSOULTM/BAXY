@@ -271,8 +271,10 @@ public static partial class RiskPolicy
             ? key.GetString()
             : null;
 
+    // Revisión de calidad del núcleo (final2): an empty or blank «onto» names nothing, as a missing one does (K-2 asks).
     private static string? OntoOf(JsonElement arguments) =>
         arguments.TryGetProperty("onto", out JsonElement onto) && onto.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(onto.GetString())
             ? onto.GetString()
             : null;
 
@@ -434,8 +436,10 @@ public static partial class RiskPolicy
     // and placing the order count wherever they appear. Uso real 2026-10-21 (e2e del notebook): «Cómpralo ya» opened a
     // checkout unasked, so the verb counts in its imperative and with its pronoun («Compra ahora», «Cómpralo ya»,
     // «Págalo»), and as «Purchase», «Adquirir» or «Pre-order»; the noun («Compras», «Historial de compras») does not.
+    // Revisión de calidad del núcleo (final2): a sign before the verb or glued after it («¡Comprar!», «🛒 Comprar
+    // ahora», «Pagar.») does not hide it.
     [GeneratedRegex(
-        @"^(?:compra(?:r(?:l[oa]s?)?|l[oa]s?)?|adquiri(?:r(?:l[oa])?)?|adquiere(?:l[oa])?|buy|purchase|pre-?(?:purchase|order)|paga(?:r(?:l[oa])?|l[oa])?|pay|eliminar|elimina|borrar|borra|delete|desinstalar|desinstala|uninstall)(?:\s+\S+){0,3}$|\b(?:checkout|check\s+out|finalizar\s+(?:la\s+)?compra|realizar\s+(?:el\s+)?pedido|place\s+(?:your\s+)?order|confirmar\s+(?:la\s+)?compra|confirm\s+purchase)\b",
+        @"^\W*(?:compra(?:r(?:l[oa]s?)?|l[oa]s?)?|adquiri(?:r(?:l[oa])?)?|adquiere(?:l[oa])?|buy|purchase|pre-?(?:purchase|order)|paga(?:r(?:l[oa])?|l[oa])?|pay|eliminar|elimina|borrar|borra|delete|desinstalar|desinstala|uninstall)\W*(?:\s+\S+){0,3}$|\b(?:checkout|check\s+out|finalizar\s+(?:la\s+)?compra|realizar\s+(?:el\s+)?pedido|place\s+(?:your\s+)?order|confirmar\s+(?:la\s+)?compra|confirm\s+purchase)\b",
         RegexOptions.CultureInvariant)]
     private static partial Regex IrreversibleAct();
 

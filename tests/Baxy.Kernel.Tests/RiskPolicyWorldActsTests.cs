@@ -201,6 +201,9 @@ public sealed class RiskPolicyWorldActsTests
     [TestCase("""{"key":"enter","onto":"Eliminar pruebas"}""", true)]
     [TestCase("""{"key":"enter","onto":"general (canal de texto)"}""", false)]
     [TestCase("""{"key":"enter","onto":null}""", true)]
+    // Revisión de calidad del núcleo (final2): an empty or blank name declares nothing either.
+    [TestCase("""{"key":"enter","onto":""}""", true)]
+    [TestCase("""{"key":"space","onto":"  "}""", true)]
     [TestCase("""{"key":"tab","onto":"Cotele!!!😎, Canal de voz, Choche"}""", false)]
     public void A_key_on_what_asks_asks_as_its_click_would(string arguments, bool asks)
     {
@@ -253,6 +256,30 @@ public sealed class RiskPolicyWorldActsTests
     [TestCase("Tarea finalizada", false)]
     [TestCase("Открыть", false)]
     public void A_look_alike_or_an_unsaved_end_asks_as_the_verb_does(string label, bool asks)
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(Click(label), Is.EqualTo(asks ? PolicyDecision.RequireConfirmation : PolicyDecision.Allow));
+            Assert.That(RiskPolicy.LabelAsks(label), Is.EqualTo(asks), "the worker's pattern reads it alike");
+        });
+    }
+
+    // Revisión de calidad del núcleo (final2): a control's name with a sign before its verb («¡Comprar!», «🛒 Comprar
+    // ahora», «✉ Enviar») or glued after it («Pagar.», «¡Publicar!») is still that verb; the noun that only shares its
+    // stem still is not.
+    [TestCase("¡Comprar!", true)]
+    [TestCase("🛒 Comprar ahora", true)]
+    [TestCase("¡Cómpralo ya!", true)]
+    [TestCase("Pagar.", true)]
+    [TestCase("Buy!", true)]
+    [TestCase("✉ Enviar", true)]
+    [TestCase("¿Enviar ahora?", true)]
+    [TestCase("¡Publicar!", true)]
+    [TestCase("▶ Unirse", true)]
+    [TestCase("¡Compras!", false)]
+    [TestCase("(Enviados)", false)]
+    [TestCase("★ Publicaciones", false)]
+    public void A_sign_around_the_verb_does_not_hide_it(string label, bool asks)
     {
         Assert.Multiple(() =>
         {
