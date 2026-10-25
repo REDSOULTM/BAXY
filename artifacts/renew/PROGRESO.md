@@ -3475,3 +3475,12 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   no arranca, se ve). La rama nb-w11-arranque traía además 16 commits de otras propuestas sin medir: no entran. Suites del
   PC sobre 9b2ef1d01: Kernel 753, Contracts 74, Setup 477, App 213, Providers 3116, pytest 664 (+ vad 4/4 con py3.10).
   El notebook, parado por orden del dueño a las 14:02.
+- 14:2x **Decisiones del dueño sobre lo pendiente** (2026-10-25): (1) Bluetooth y Wi-Fi siguen como están, directos en modo
+  Normal (encender o apagar el Bluetooth, emparejar, apagar el Wi-Fi, desconectar o conectar a otra red no piden el sí).
+  (2) y (3) «lo mejor para BAXY»: no había sesiones guardadas; el registro de la conversación y el diario de misiones
+  escritos antes del sellado (fase 2, 9e88b19b6), y la clave HMAC de ese diario, se apartaron de la raíz de datos del
+  producto a una carpeta de restos del perfil con manifiesto y SHA-256 (no se borró nada; la memoria y su clave no se
+  tocaron). El núcleo arrancó después con diario y clave nuevos (rc 0).
+- 14:3x renew-cien recibe también la revisión de arranque (777fa1f16 → d9da2603c: un «apagar» dado mientras la palabra
+  espera al oído ya no queda detrás de su carga) y la guarda de los perfiles de PowerShell (33b6dabb8 → 854f7d235); sin
+  medir en el holdout v6. App 214, Providers 3119.
