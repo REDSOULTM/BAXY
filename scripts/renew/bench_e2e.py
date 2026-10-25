@@ -504,36 +504,40 @@ def main() -> None:
         print(json.dumps({"error": "conductor_not_ready", "event": ready}), flush=True)
         conductor.close()
         sys.exit(2)
-    record = run_meta.product_record(ROOT, run_dir, launched)  # after configure: the catalog is in the run
     env_base = dict(os.environ)
     rows = []
     stopped_before = None
-    for index, case in enumerate(cases):
-        if session_locked():
-            # The cases left count as failures (the session was locked: nothing more could run), so the bank is
-            # never silently shorter than its cases (round B).
-            stopped_before = case["id"]
-            print(json.dumps({"error": "sesion_bloqueada", "before": case["id"]}), flush=True)
-            rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
-                      "status": "sesion_bloqueada", "oracles": [], "replies": [], "steps": []}
-                     for left in cases[index:]]
-            break
-        case_dir = run_dir / case["id"]
-        case_dir.mkdir(exist_ok=True)
-        row = judge_case(case, conductor, case_dir, env_base, isolation)
-        if row["status"] == "void":
-            # A window the bench did not open appeared: nothing more runs, and the cases left count as VOID.
-            void, stopped_before = row["detail"], case["id"]
-            print(f"VOID before {case['id']}: {void}", flush=True)
-            rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
-                      "status": "void", "oracles": [], "replies": [], "steps": []} for left in cases[index:]]
-            break
-        rows.append(row)
-        removed = (row.get("profile") or {}).get("removed") or []
-        print(f"{row['id']} {row['area']:<12} {'ok ' if row['ok'] else 'BAD'} {row['status']} {row.get('seconds')}s "
-              f"{[o['ok'] for o in row.get('oracles', [])]} voz={row.get('spoken_ok')}"
-              + (f" fuera del sandbox: {len(removed)} a cuarentena" if removed else ""), flush=True)
-    conductor.close()
+    # PC-Q (2026-10-25): whatever stops the cases (an exception, a Ctrl+C), the product closes and the owner's Notepad
+    # tabs go back; it stayed running, typing into nothing, with its mind and llama-server holding the GPU.
+    try:
+        record = run_meta.product_record(ROOT, run_dir, launched)  # after configure: the catalog is in the run
+        for index, case in enumerate(cases):
+            if session_locked():
+                # The cases left count as failures (the session was locked: nothing more could run), so the bank is
+                # never silently shorter than its cases (round B).
+                stopped_before = case["id"]
+                print(json.dumps({"error": "sesion_bloqueada", "before": case["id"]}), flush=True)
+                rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
+                          "status": "sesion_bloqueada", "oracles": [], "replies": [], "steps": []}
+                         for left in cases[index:]]
+                break
+            case_dir = run_dir / case["id"]
+            case_dir.mkdir(exist_ok=True)
+            row = judge_case(case, conductor, case_dir, env_base, isolation)
+            if row["status"] == "void":
+                # A window the bench did not open appeared: nothing more runs, and the cases left count as VOID.
+                void, stopped_before = row["detail"], case["id"]
+                print(f"VOID before {case['id']}: {void}", flush=True)
+                rows += [{"id": left["id"], "area": left.get("area"), "kind": left.get("kind"), "ok": False,
+                          "status": "void", "oracles": [], "replies": [], "steps": []} for left in cases[index:]]
+                break
+            rows.append(row)
+            removed = (row.get("profile") or {}).get("removed") or []
+            print(f"{row['id']} {row['area']:<12} {'ok ' if row['ok'] else 'BAD'} {row['status']} {row.get('seconds')}s "
+                  f"{[o['ok'] for o in row.get('oracles', [])]} voz={row.get('spoken_ok')}"
+                  + (f" fuera del sandbox: {len(removed)} a cuarentena" if removed else ""), flush=True)
+    finally:
+        conductor.close()
     by_area: dict[str, list[int]] = {}
     for row in rows:
         tally = by_area.setdefault(str(row["area"]), [0, 0])
