@@ -22,15 +22,18 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
     private readonly WindowsSystemStatusProvider _system = new();
     private readonly WindowsGpuStatusProvider _gpu = new();
     private readonly Func<int?> _mindProcess;
+    private readonly Func<CancellationToken, Task<FieldMetricSnapshot>> _measure;
     private readonly SemaphoreSlim _sampleLock = new(1, 1);
     private DateTimeOffset _cachedAt;
     private FieldMetricSnapshot? _cachedMetrics;
     private bool _disposed;
 
     /// <param name="mindProcess">The mind's process id while it runs (its llama-server is found by its executable).</param>
-    internal FieldTelemetrySampler(Func<int?> mindProcess)
+    /// <param name="measure">Tests measure with a double instead of the PC.</param>
+    internal FieldTelemetrySampler(Func<int?> mindProcess, Func<CancellationToken, Task<FieldMetricSnapshot>>? measure = null)
     {
         _mindProcess = mindProcess ?? throw new ArgumentNullException(nameof(mindProcess));
+        _measure = measure ?? MeasureAsync;
     }
 
     internal async Task<FieldMetricSnapshot> SampleAsync(CancellationToken cancellationToken)
@@ -49,19 +52,7 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
                 return _cachedMetrics;
             }
 
-            Task<SystemStatusSnapshot> systemTask = _system.GetStatusAsync(SystemStatusScope.Cpu, cancellationToken).AsTask();
-            Task<GpuStatusSnapshot> gpuTask = _gpu.GetStatusAsync(GpuStatusScope.Usage, cancellationToken).AsTask();
-            Task<(double? Temperature, double? Vram, double? Ram)> modelTask = Task.Run(ReadModel, cancellationToken);
-            await Task.WhenAll(systemTask, gpuTask, modelTask).ConfigureAwait(false);
-
-            SystemStatusSnapshot system = await systemTask.ConfigureAwait(false);
-            GpuStatusSnapshot gpu = await gpuTask.ConfigureAwait(false);
-            (double? temperature, double? vram, double? ram) = await modelTask.ConfigureAwait(false);
-            double? gpuPercent = gpu.Adapters
-                .Where(static adapter => adapter.UsagePercent.HasValue)
-                .Select(static adapter => (double?)adapter.UsagePercent!.Value)
-                .Max();
-            _cachedMetrics = new FieldMetricSnapshot(Percent(system.Cpu?.UsagePercent), Percent(gpuPercent), temperature, vram, ram);
+            _cachedMetrics = await _measure(cancellationToken).ConfigureAwait(false);
             _cachedAt = DateTimeOffset.UtcNow;
             return _cachedMetrics;
         }
@@ -69,6 +60,23 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
         {
             _sampleLock.Release();
         }
+    }
+
+    private async Task<FieldMetricSnapshot> MeasureAsync(CancellationToken cancellationToken)
+    {
+        Task<SystemStatusSnapshot> systemTask = _system.GetStatusAsync(SystemStatusScope.Cpu, cancellationToken).AsTask();
+        Task<GpuStatusSnapshot> gpuTask = _gpu.GetStatusAsync(GpuStatusScope.Usage, cancellationToken).AsTask();
+        Task<(double? Temperature, double? Vram, double? Ram)> modelTask = Task.Run(ReadModel, cancellationToken);
+        await Task.WhenAll(systemTask, gpuTask, modelTask).ConfigureAwait(false);
+
+        SystemStatusSnapshot system = await systemTask.ConfigureAwait(false);
+        GpuStatusSnapshot gpu = await gpuTask.ConfigureAwait(false);
+        (double? temperature, double? vram, double? ram) = await modelTask.ConfigureAwait(false);
+        double? gpuPercent = gpu.Adapters
+            .Where(static adapter => adapter.UsagePercent.HasValue)
+            .Select(static adapter => (double?)adapter.UsagePercent!.Value)
+            .Max();
+        return new FieldMetricSnapshot(Percent(system.Cpu?.UsagePercent), Percent(gpuPercent), temperature, vram, ram);
     }
 
     // The model's processes: the mind (a virtual environment's python.exe starts the real interpreter as its child) and
@@ -94,11 +102,9 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
 
     public ValueTask DisposeAsync()
     {
-        if (!_disposed)
-        {
-            _disposed = true;
-            _sampleLock.Dispose();
-        }
+        // The lock is not disposed: a reading under way at shutdown still releases it in its finally (it used to throw
+        // ObjectDisposedException there). A SemaphoreSlim whose wait handle nobody asked for holds nothing to free.
+        _disposed = true;
 
         return ValueTask.CompletedTask;
     }
