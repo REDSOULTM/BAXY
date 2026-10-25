@@ -2757,7 +2757,8 @@ function Do-View($request){
     for($k=0;$k -lt $ordered.Count;$k++){ if([object]::ReferenceEquals($controls[$k],$focused)){ $focusedIndex=$k; break } }
     $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; value=$focused.value; i=$focusedIndex }
     # Practica V5E023: el cursor de un campo de texto con texto (una contrasena no tiene valor leido), solo si se leyo.
-    if(($focused.kind -eq 'Edit' -or $focused.kind -eq 'Document') -and -not [string]::IsNullOrEmpty([string]$focused.value)){
+    # Revision de nb-w11-cursor: no en una mirada que dice caret false (la ayuda apagada, la de una rafaga).
+    if($request.caret -ne $false -and ($focused.kind -eq 'Edit' -or $focused.kind -eq 'Document') -and -not [string]::IsNullOrEmpty([string]$focused.value)){
       $caret=$(if(([string]$focused.id).Length -gt 0 -and $elements.ContainsKey([string]$focused.id)){ Get-CaretPlace $elements[[string]$focused.id] } else { '' })
       if($caret.Length -gt 0){ $focusedOut | Add-Member -NotePropertyName caret -NotePropertyValue $caret }
     }

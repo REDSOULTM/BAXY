@@ -1170,7 +1170,7 @@ public sealed class TextDeliveryTests
             Assert.That(body, Does.Contain("GetText(1)").And.Contain("GetText(3)").And.Not.Contain("GetText(-1)"));
             Assert.That(body, Does.Not.Contain("SetFocus").And.Not.Contain(".Select(").And.Not.Contain("ScrollIntoView"));
             Assert.That(script, Does.Contain(
-                "if(($focused.kind -eq 'Edit' -or $focused.kind -eq 'Document') -and -not [string]::IsNullOrEmpty([string]$focused.value)){"));
+                "if($request.caret -ne $false -and ($focused.kind -eq 'Edit' -or $focused.kind -eq 'Document') -and -not [string]::IsNullOrEmpty([string]$focused.value)){"));
             Assert.That(script, Does.Contain(
                 "if($caret.Length -gt 0){ $focusedOut | Add-Member -NotePropertyName caret -NotePropertyValue $caret }"));
         });
