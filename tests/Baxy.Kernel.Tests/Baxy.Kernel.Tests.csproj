@@ -9,7 +9,7 @@
          dependency. -->
     <Compile Include="..\..\src\Baxy.App\SilenceNotice.cs" Link="App\SilenceNotice.cs" />
     <Compile Include="..\..\src\Baxy.App\ScreenViewProjection.cs" Link="App\ScreenViewProjection.cs" />
-    <!-- The view reads one aid switch (drawn_text_next); the switches are one file with no Providers dependency. -->
+    <!-- The view reads aid switches (drawn_text_next, save_dialog_next…); the switches are one file with no Providers dependency. -->
     <Compile Include="..\..\src\Baxy.Providers.Windows\Infrastructure\ModelAids.cs" Link="App\ModelAids.cs" />
     <!-- The heartbeat's reading of the person's absence and return: one file with no App dependency. -->
     <Compile Include="..\..\src\Baxy.App\AwayWatch.cs" Link="App\AwayWatch.cs" />

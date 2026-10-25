@@ -107,6 +107,87 @@ public sealed class ScreenViewProjectionTests
         });
     }
 
+    // Práctica e2e E017: Notepad's «Guardar como», as the look read it (cut to the controls that matter).
+    private const string SaveAs =
+        "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+        "\"window\":{\"title\":\"Guardar como\",\"process\":\"Notepad\",\"hwnd\":9045810,\"foreground\":true,\"modal\":true}," +
+        "\"controls\":[" +
+        "{\"i\":13,\"kind\":\"TreeItem\",\"name\":\"ana\",\"state\":\"selected\",\"value\":\"ana\"}," +
+        "{\"i\":20,\"kind\":\"ComboBox\",\"name\":\"Nombre de archivo:\",\"state\":\"collapsed\",\"value\":\"lista pilas, cables\"}," +
+        "{\"i\":21,\"kind\":\"Edit\",\"name\":\"Nombre de archivo:\",\"zone\":\"B\",\"state\":\"focused\",\"value\":\"lista pilas, cables\"}," +
+        "{\"i\":26,\"kind\":\"Button\",\"name\":\"Guardar\",\"zone\":\"BR\",\"state\":\"\",\"value\":null,\"shortcut\":\"Alt+G\"}," +
+        "{\"i\":27,\"kind\":\"Button\",\"name\":\"Cancelar\",\"zone\":\"BR\",\"state\":\"\",\"value\":null}," +
+        "{\"i\":55,\"kind\":\"ToolBar\",\"name\":\"Dirección: C:\\\\Users\\\\ana\\\\BAXY-bench\",\"zone\":\"T\",\"state\":\"\",\"value\":null}]," +
+        "\"controlCount\":6,\"textAuthority\":\"not_read\",\"authority\":\"uia\"}";
+
+    private const string SaveFieldLine =
+        "[21] Edit «Nombre de archivo:» (abajo) = lista pilas, cables (focused)\n" +
+        "(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra el diálogo, " +
+        "C:\\Users\\ana\\BAXY-bench; una ruta entera escrita en él, C:\\…\\nombre.ext, lo guarda en esa ruta)\n" +
+        "[26] Button «Guardar»";
+
+    [Test]
+    public void ASaveDialogsFileNameSaysItIsTheNameInTheFolderItsAddressShows()
+    {
+        string on;
+        string off;
+        using (ModelAids.Use(ModelAids.SaveDialogNext))
+        {
+            on = (string?)Project("{\"status\":\"completed\"}", SaveAs)["view"] ?? string.Empty;
+        }
+
+        using (ModelAids.Use("none"))
+        {
+            off = (string?)Project("{\"status\":\"completed\"}", SaveAs)["view"] ?? string.Empty;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(on, Does.Contain(SaveFieldLine));
+            Assert.That(on.Split("(lo que tiene este campo").Length, Is.EqualTo(2), "said once, after the edit only");
+            Assert.That(off, Is.EqualTo(on.Replace(
+                "(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra el diálogo, " +
+                "C:\\Users\\ana\\BAXY-bench; una ruta entera escrita en él, C:\\…\\nombre.ext, lo guarda en esa ruta)\n",
+                string.Empty)));
+        });
+    }
+
+    [Test]
+    public void ASaveDialogWithNoAddressListedNamesNoFolder()
+    {
+        string look = SaveAs.Replace("\"kind\":\"ToolBar\",\"name\":\"Dirección: ", "\"kind\":\"ToolBar\",\"name\":\"Banda ");
+        using IDisposable setting = ModelAids.Use(ModelAids.SaveDialogNext);
+
+        string view = (string?)Project("{\"status\":\"completed\"}", look)["view"] ?? string.Empty;
+
+        Assert.That(view, Does.Contain(
+            "(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra el diálogo; " +
+            "una ruta entera escrita en él, C:\\…\\nombre.ext, lo guarda en esa ruta)\n"));
+    }
+
+    // An «Abrir» dialog has the same edit and no «Guardar»; a message box has neither; a window that is not modal is not
+    // the dialog; and the English dialog is the same dialog.
+    [TestCase("\"name\":\"Guardar\"", "\"name\":\"&Abrir\"", false)]
+    [TestCase("\"kind\":\"Edit\",\"name\":\"Nombre de archivo:\"", "\"kind\":\"Text\",\"name\":\"¿Quiere guardar los cambios?\"", false)]
+    [TestCase(",\"modal\":true", "", false)]
+    [TestCase("\"name\":\"Guardar\"", "\"name\":\"&Save\"", true)]
+    public void OnlyAModalSaveDialogSaysWhatItsFileNameIs(string from, string to, bool said)
+    {
+        string look = SaveAs.Replace(from, to);
+        if (said)
+        {
+            look = look.Replace("\"name\":\"Nombre de archivo:\"", "\"name\":\"File name:\"")
+                .Replace("Dirección: ", "Address: ");
+        }
+
+        using IDisposable setting = ModelAids.Use(ModelAids.SaveDialogNext);
+
+        string view = (string?)Project("{\"status\":\"completed\"}", look)["view"] ?? string.Empty;
+
+        Assert.That(view.Contains("(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra "
+            + "el diálogo, C:\\Users\\ana\\BAXY-bench;"), Is.EqualTo(said));
+    }
+
     private static JsonObject Project(string facts, string lookJson = Look)
     {
         using JsonDocument look = JsonDocument.Parse(lookJson);
