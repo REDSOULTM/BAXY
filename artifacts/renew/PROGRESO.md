@@ -3453,3 +3453,19 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   contra 5 conversaciones discordantes (p 0,0625). **Metas**: e2e +5 no (+1,5), confirmaciones sí (6/6), decisión sin
   pérdida no (IC95 inferior −7,67), ya_hecho +8 no (+1,7), falsedades sí, latencia sí (−0,52 s), recursos sí. Resultados
   en `maximo/HOLDOUT_V6.md`.
+- **Cierre de la fase 3 (2026-10-25)**, cada hueco:
+
+  | Hueco | Estado | Cifra |
+  |---|---|---|
+  | H1 confirmaciones | arreglado (duda «=», rutas con espacios, nombres casi iguales) | holdout v6 confirmaciones 6/6 de 8; decisión de práctica +3,67 |
+  | H2 20 tareas | 20 con causa escrita (`H2-pc.md`, `H2-nb.md`); 12 arregladas en práctica | práctica 1,0 → 10,67 de 20 (IC95 [+6; +13,7]) |
+  | H3 «ya lo hiciste» | límite del banco y del modelo | holdout 12,7 → 14,3 de 40; 53/120 lecturas de verificación (brief T11) |
+  | H4 bucles de lectura | arreglado (windowId de un solo uso) | en vivo: Paint maximizar con una lectura |
+  | H5 URLs inventadas | ayuda result_hosts | ningún host_not_from_session en el holdout ni en vivo |
+  | H6 sin respuesta | arreglado (la última respuesta siempre cabe) | reproducido con el modelo real; 0 sin respuesta en el holdout |
+  | H7 latencia | arreglado (aviso de 1-3 palabras); llama parcheado sin ganancia visible en e2e | holdout −0,52 s p50 (NB) |
+  | H8 uso diario | sin causa única de la App | holdout comun 110,3 → 109,3 (ruido) |
+  | H9 engine_no_answer | arreglado (captura negra + el núcleo no se cae) | 0 en el holdout y en la práctica desde int11d |
+  | H10 límites | al brief §7 (T9-T16) | E027/F009 con ablación N=40 |
+- Suites sobre f1d041344 en las dos máquinas, recursos 3 989 / 3 672 MiB, holdout v6 sellado antes y corrido una vez con el
+  plan pre-registrado, código final en hub/renew-cien 8953ecd03 (docs hasta f1e312a6e).
