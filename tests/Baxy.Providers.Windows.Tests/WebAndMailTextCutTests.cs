@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
@@ -40,5 +41,54 @@ public sealed class WebAndMailTextCutTests
             Assert.That(whole.Text, Is.EqualTo("hola " + Emoji));
             Assert.That(backslash.Text, Is.EqualTo("a\\ud83d"));
         });
+    }
+
+    // email.send: the subject taken from the text's opening was cut at 75 UTF-16 units; an emoji there was cut in two
+    // and the mail went out with «�» in its subject.
+    [Test]
+    public async Task AMailSubjectTakenFromTheTextNeverCutsAnEmojiInTwo()
+    {
+        const string output = "{\"ok\":true,\"effectObserved\":true,\"sentEntryId\":\"entry\"," +
+            "\"sentUtc\":\"2026-10-25T20:00:00Z\",\"sentTo\":[\"persona@example.com\"],\"subject\":\"s\"}";
+        string temporary = Path.Combine(Path.GetTempPath(), "baxy-cut-" + Guid.NewGuid().ToString("N"));
+        var runner = new CapturingProcessRunner(output);
+        var adapter = new MicrosoftAccountAdapter(temporary, runner);
+        string text = new string('a', 74) + Emoji + new string('b', 20);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "email.send",
+            JsonSerializer.SerializeToElement(new { to = "persona@example.com", text }),
+            CancellationToken.None);
+        using JsonDocument input = JsonDocument.Parse(
+            Encoding.UTF8.GetString(Convert.FromBase64String(runner.LastArguments[^1])));
+        string subject = input.RootElement.GetProperty("subject").GetString()!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(subject, Does.Not.Contain("�"));
+            Assert.That(subject, Is.EqualTo(new string('a', 74) + "…"));
+            Assert.That(input.RootElement.GetProperty("text").GetString(), Is.EqualTo(text));
+            // message.send.test's mail takes its subject the same way.
+            Assert.That(MicrosoftAccountAdapter.SubjectFromText(new string('a', 74) + Emoji + new string('b', 20)),
+                Is.EqualTo(new string('a', 74) + "…"));
+            Assert.That(MicrosoftAccountAdapter.SubjectFromText(new string('a', 73) + Emoji + new string('b', 20)),
+                Is.EqualTo(new string('a', 73) + Emoji + "…"));
+            Assert.That(MicrosoftAccountAdapter.SubjectFromText("hola " + Emoji), Is.EqualTo("hola " + Emoji));
+        });
+    }
+
+    private sealed class CapturingProcessRunner(string output) : IExternalProcessRunner
+    {
+        internal string[] LastArguments { get; private set; } = [];
+
+        public ValueTask<ExternalProcessResult> RunAsync(
+            string executable, IReadOnlyList<string> arguments, TimeSpan timeout,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            LastArguments = arguments.ToArray();
+            return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
+        }
     }
 }

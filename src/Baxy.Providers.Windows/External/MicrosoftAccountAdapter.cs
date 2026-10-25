@@ -425,7 +425,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         if (string.IsNullOrWhiteSpace(subject))
         {
             string firstLine = text.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? text;
-            subject = firstLine.Length <= 78 ? firstLine : firstLine[..75] + "…";
+            subject = SubjectFromText(firstLine);
         }
 
         string input = ExternalJson.Create(writer =>
@@ -468,6 +468,12 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         });
         return ExternalJson.Success(operation, result, effect);
     }
+
+    // The subject a mail takes from its text's opening when none is given: the text itself up to 78 characters, else its
+    // first 75 and «…». The cut never falls between the two halves of a character (an emoji): one half alone went out
+    // as «�» in the subject.
+    internal static string SubjectFromText(string text) =>
+        text.Length <= 78 ? text : text[..(char.IsHighSurrogate(text[74]) ? 74 : 75)] + "…";
 
     private async ValueTask<ExternalCapabilityReceipt> CalendarAsync(
         string operation,
