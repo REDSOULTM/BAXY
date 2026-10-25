@@ -81,8 +81,8 @@ public static class ModelAids
     /// <summary>
     /// Holdout v5 (V5E061: «cámbialo, era el miércoles» after a text typed into an unsaved Notepad became a file.edit of
     /// another file): a completed input.text.type that named no field says the text is in that window, not written to a
-    /// file by BAXY (a file holds it once that application saves it), and that it is changed in that window (Ctrl+A,
-    /// then the text again).
+    /// file by BAXY (a file holds it once that application saves it). Only the fact: a way to replace it, told after every
+    /// typing, made the model replace what nobody asked to change (int11 e2e E012).
     /// </summary>
     public const string TypedInWindow = "typed_in_window";
 
