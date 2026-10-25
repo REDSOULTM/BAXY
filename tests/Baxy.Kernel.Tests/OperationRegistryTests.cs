@@ -368,6 +368,10 @@ public sealed class OperationRegistryTests
     [TestCase("""{"key":"ctrl_w","window":4660}""", PolicyDecision.RequireConfirmation)]
     [TestCase("""{"key":"ctrl_t"}""", PolicyDecision.Allow)]
     [TestCase("""{"key":"ctrl_s"}""", PolicyDecision.Allow)]
+    // Holdout v5 V5E023: Ctrl+End and Ctrl+Home only move the caret, on a text field or anywhere.
+    [TestCase("""{"key":"ctrl_end"}""", PolicyDecision.Allow)]
+    [TestCase("""{"key":"ctrl_home","target":"text_field","window":4660}""", PolicyDecision.Allow)]
+    [TestCase("""{"key":"ctrl_end","target":"message_composer"}""", PolicyDecision.Allow)]
     public void Ctrl_w_asks_because_it_may_close_a_window(string arguments, PolicyDecision expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");

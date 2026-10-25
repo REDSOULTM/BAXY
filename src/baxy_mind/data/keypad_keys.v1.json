@@ -1,6 +1,6 @@
 {
  "version": 1,
- "source": "Regresiones r2 M4 / molestia r2 rama B punto 2 (2026-10-08): a keypad's buttons pressed by UI Automation's Invoke instead of keys sent with SendInput. Each character of an expression is the button named by one of these names (compared folded: lower case, no accents), in Spanish and English as the window writes them; «clear» is the button that empties the entry before the expression. Read by the App's providers (Baxy.Providers.Windows, embedded resource).",
+ "source": "Regresiones r2 M4 / molestia r2 rama B punto 2 (2026-10-08): a keypad's buttons pressed by UI Automation's Invoke instead of keys sent with SendInput. Each character of an expression is the button named by one of these names (compared folded: lower case, no accents), in Spanish and English as the window writes them; «clear» is the button that empties the entry before the expression. Holdout v5 V5E021/V5E029 (2026-10-24): a name may also be the button's AutomationId, the same in every language (the Scientific keypad's xʸ and parentheses); «clearEntry» (CE) is pressed where the Scientific keypad shows it in place of «clear». Read by the App's providers (Baxy.Providers.Windows, embedded resource).",
  "keys": {
   "0": ["cero", "zero"],
   "1": ["uno", "one"],
@@ -17,7 +17,11 @@
   "*": ["multiplicar por", "por", "multiplicar", "multiply by", "times", "multiply"],
   "/": ["dividir por", "dividido por", "dividir", "divide by", "divided by", "divide"],
   ".": ["separador decimal", "coma decimal", "punto decimal", "decimal separator", "decimal point"],
-  "=": ["es igual a", "igual a", "igual", "equals", "equal"]
+  "=": ["es igual a", "igual a", "igual", "equals", "equal"],
+  "^": ["'x' to the exponent", "powerButton"],
+  "(": ["left parenthesis", "openParenthesisButton"],
+  ")": ["right parenthesis", "closeParenthesisButton"]
  },
- "clear": ["borrar", "clear"]
+ "clear": ["borrar", "clear"],
+ "clearEntry": ["borrar entrada", "clear entry", "clearEntryButton"]
 }

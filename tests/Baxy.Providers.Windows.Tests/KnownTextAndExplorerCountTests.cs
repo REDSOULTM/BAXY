@@ -246,4 +246,42 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(named.Result?.GetProperty("folderName").GetString(), Is.EqualTo("Escritorio"));
         });
     }
+
+    // Holdout v5 V5E034/V5E044 («¿cuántos pdf hay en BAXY-bench\facturas?»): the count reached only a known folder's
+    // top level, so a folder inside it had no call and the reply was «no puedo». It counts in a subfolder of the known
+    // folder, confined to it as the other known-folder tools are.
+    [Test]
+    public async Task ASubfolderOfTheNamedKnownFolderIsCountedAndAWayOutOfItIsRefused()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "perfil");
+        string bills = Path.Combine(home, "BAXY-bench", "facturas");
+        Directory.CreateDirectory(Path.Combine(bills, "viejas"));
+        foreach (string name in new[] { "a.pdf", "b.PDF", "c.txt", Path.Combine("viejas", "d.pdf") })
+            await File.WriteAllTextAsync(Path.Combine(bills, name), "x");
+        Func<string, string?> known = folder => folder == "home" ? home : null;
+        var adapter = new ExplorerFolderAdapter(new ScriptedRunner("{}"), known, []);
+
+        async Task<ExternalCapabilityReceipt> Count(string subdirectory) => await adapter.InvokeAsync(
+            "filesystem.explorer.count",
+            Json($$"""{"extension":"pdf","folder":"home","subdirectory":"{{subdirectory.Replace("\\", "\\\\")}}"}"""),
+            CancellationToken.None);
+
+        ExternalCapabilityReceipt relative = await Count("BAXY-bench/facturas");
+        ExternalCapabilityReceipt full = await Count(bills);
+        ExternalCapabilityReceipt missing = await Count("BAXY-bench/recibos");
+        ExternalCapabilityReceipt outside = await Count("../..");
+
+        Assert.That(relative.Verified, Is.True, relative.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(relative.Result?.GetProperty("count").GetInt32(), Is.EqualTo(2));
+            Assert.That(relative.Result?.GetProperty("folderName").GetString(), Is.EqualTo("facturas"));
+            Assert.That(relative.Result?.GetProperty("subfoldersNotOpened").GetInt32(), Is.EqualTo(1));
+            Assert.That(full.Result?.GetProperty("count").GetInt32(), Is.EqualTo(2), full.ErrorCode);
+            Assert.That(missing.ErrorCode, Is.EqualTo("known_subdirectory_not_found"));
+            Assert.That(outside.ErrorCode, Is.EqualTo("known_subdirectory_invalid"));
+            Assert.That(outside.Verified, Is.False);
+        });
+    }
 }

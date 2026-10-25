@@ -660,12 +660,18 @@ public sealed class TextDeliveryTests
                 Assert.That(next.GetString(), Does.Contain("into the window in front, of Calculadora (CalculatorApp)"));
                 Assert.That(next.GetString(), Does.Contain("no other application received it"));
                 Assert.That(next.GetString(), Does.Contain("no application was opened or brought to the front"));
-                Assert.That(next.GetString(), Does.EndWith("it was not read back there"));
+                Assert.That(next.GetString(), Does.Contain("it was not read back there"));
+                // Holdout v5 (V5E066): how the window of another application is reached, as the one look that gives
+                // its number and the text typed again with it.
+                Assert.That(next.GetString(), Does.Contain("input_visible_controls with application"));
+                Assert.That(next.GetString(), Does.EndWith("input_text_type with window set to that number"));
+                Assert.That(next.GetString(), Does.Not.Contain("not written to a file"), "a text not read back is no completed one");
             }
         });
     }
 
-    // The sentence for a text read back says no doubt, and one sent to the application just opened says so.
+    // The sentence for a text read back says no doubt, and one sent to the application just opened says so; only the
+    // one sent to the window in front names the look that reaches another application's window.
     [Test]
     public void TheTypedTargetSentenceFollowsTheReadBackAndTheOpening()
     {
@@ -675,9 +681,11 @@ public sealed class TextDeliveryTests
         {
             Assert.That(read, Does.Contain("of Sin título: Bloc de notas (Notepad)"));
             Assert.That(read, Does.Not.Contain("not read back"));
+            Assert.That(read, Does.Contain("input_visible_controls with application"));
             Assert.That(opened, Does.Contain("window of Notepad, the application just opened"));
             Assert.That(opened, Does.Not.Contain("brought to the front"));
             Assert.That(opened, Does.EndWith("it was not read back there"));
+            Assert.That(opened, Does.Not.Contain("input_visible_controls"));
         });
     }
 

@@ -5,7 +5,7 @@ import json
 import urllib.error
 from pathlib import Path
 
-from baxy_mind.mind import COMPACTED, Mind
+from baxy_mind.mind import COMPACTED, NO_MORE_CALLS, Mind
 
 
 class FakeServer:
@@ -91,3 +91,61 @@ def test_the_turns_facts_say_where_a_file_was_made(tmp_path: Path) -> None:
     mind.continue_turn(2, json.dumps(observed))
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert r"file_write → completado y verificado en C:\Users\ana\compras.txt" in tool
+
+
+# H6 (holdout v5 V5F028/V5F029): 15 paged reads of a long log; each left-out result kept a facts line listing every call
+# before it, the last answer (tool_choice none) did not fit and the person got no answer at all. The context is in
+# characters here (a fake slot that refuses past LIMIT).
+LIMIT = 24000
+LOG = "".join(f"2026-10-01 03:{m:02d}:{s:02d} INFO request served\r\n" for m in range(60) for s in range(60))
+
+
+def _page(offset: int) -> str:
+    """A file_read result as the kernel gives it: a 4,000-character page of a 367,504-character log."""
+    return json.dumps({"status": "completed", "verification": "output_only", "observed": {
+        "version": 1, "kind": "text", "reviewLabel": "server.log", "folder": "home", "characters": 367504,
+        "totalLines": 9000, "offset": offset, "lines": 99, "fromLine": offset // 40 + 1, "toLine": offset // 40 + 99,
+        "returnedCharacters": 4000, "hasMore": True, "nextOffset": offset + 4000, "endReached": False,
+        "readInPart": True, "bytes": 367504, "fileSha256": "11" * 32, "text": LOG[offset:offset + 4000]}},
+        separators=(",", ":"))
+
+
+def _refusing_past(server, limit: int) -> None:
+    chat = server.chat
+
+    def refuse(body):
+        if len(json.dumps(body["messages"][1:], ensure_ascii=False)) > limit:
+            raise _overflow()
+        return chat(body)
+
+    server.chat = refuse
+
+
+def test_the_last_answer_of_a_turn_of_paged_reads_always_comes(tmp_path: Path) -> None:
+    pages = [_call("file_read", {"fileName": "server.log", "folder": "home", "offset": 4000 * n}) for n in range(15)]
+    mind, server = _mind(tmp_path, [*pages, _say("Leí sólo una parte del archivo; en esa parte no vi errores.")])
+    _refusing_past(server, LIMIT)
+    assert mind.decide(1, "check server.log and tell me if there were any errors anywhere in the file")["kind"] == "action"
+    for step in range(14):
+        assert mind.continue_turn(step, _page(4000 * step))["kind"] == "action"
+    # The App's 15th call closes the turn: the model answers in words from what the results show.
+    result = mind.continue_turn(15, _page(4000 * 14), final=True)
+    assert result["kind"] == "conversation" and result["reply"]
+    last = server.bodies[-1]
+    assert last["tool_choice"] == "none"
+    told = [m["content"] for m in last["messages"] if m["role"] == "tool"][-1]
+    assert NO_MORE_CALLS.strip() in told
+    assert "de 9000" in told and "no llegó al final" in told
+
+
+def test_the_last_answer_comes_even_when_its_newest_result_alone_does_not_fit(tmp_path: Path) -> None:
+    # The last resort, only for the last answer: the newest result leaves out its body too, and its facts line (how much
+    # of the file was read) stays where the model reads, said as omitted.
+    mind, server = _mind(tmp_path, [_call("file_read", {"fileName": "server.log", "folder": "home"}),
+                                    _say("No llegué a leer el final del archivo.")])
+    _refusing_past(server, 3000)
+    assert mind.decide(1, "check server.log")["kind"] == "action"
+    result = mind.continue_turn(2, _page(0), final=True)
+    assert result["reply"] == "No llegué a leer el final del archivo."
+    told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert told.startswith(COMPACTED) and "de 9000" in told and NO_MORE_CALLS.strip() in told

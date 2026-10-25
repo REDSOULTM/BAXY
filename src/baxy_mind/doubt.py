@@ -47,10 +47,24 @@ def read(reply: dict[str, Any] | None) -> dict[str, Any] | None:
     name_to = text.find(">", name_from)
     name_to = len(text) if name_to < 0 else name_to
     name = [i for i, s in enumerate(starts) if s + len(content[i].get("token", "")) > name_from and s < name_to]
-    p_name = math.prod(_p(content[i].get("logprob")) for i in name) if name else 0.0
-    weakest = min(name, key=lambda i: content[i].get("logprob", 0.0)) if name else None
+    # Holdout v5 E023: the token that carries the end of «<function=» into the name («=input») had «=» alone as its main
+    # rival, the same text cut otherwise, and that read as a doubt. A rival that only writes what is still the opening
+    # chooses no name: the token is read among those that do.
+    opened = {i: 1.0 - sum(_p(a.get("logprob")) for a in content[i].get("top_logprobs") or []
+                           if a["token"] and a["token"] != content[i].get("token")
+                           and text[starts[i]:name_from].startswith(a["token"]))
+              for i in name if starts[i] < name_from}
+
+    def p_of(i: int, logprob: float | None) -> float:
+        return _p(logprob) / opened[i] if i in opened and opened[i] > 0 else _p(logprob)
+
+    p_name = math.prod(p_of(i, content[i].get("logprob")) for i in name) if name else 0.0
+    weakest = min(name, key=lambda i: p_of(i, content[i].get("logprob", 0.0))) if name else None
     # The token chosen is not its own rival (review 2026-10-22: it was the first, completed again for nothing).
-    rivals = ([(a["token"], round(_p(a.get("logprob")), 3)) for a in content[weakest].get("top_logprobs") or []
-               if a["token"] != content[weakest].get("token")][:4] if weakest is not None else [])
+    rivals = ([(a["token"], round(p_of(weakest, a.get("logprob")), 3))
+               for a in content[weakest].get("top_logprobs") or []
+               if a["token"] != content[weakest].get("token")
+               and not (weakest in opened and text[starts[weakest]:name_from].startswith(a["token"]))][:4]
+              if weakest is not None else [])
     return {"confidence": round(p_call * p_name, 4), "p_call": round(p_call, 4), "p_name": round(p_name, 4),
             "rivals": rivals, "written": text[:starts[weakest]] if weakest is not None else ""}

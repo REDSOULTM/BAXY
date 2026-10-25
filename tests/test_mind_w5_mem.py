@@ -179,9 +179,9 @@ def test_without_words_of_the_person_the_note_says_only_how_many_turns_went(tmp_
 
 
 def test_a_read_kept_without_its_body_says_what_it_saw_was_left_out() -> None:
-    # A read's line (w5-fals: «lectura: … lo que vio está arriba») said the body was above after the cut took it.
-    from baxy_mind.mind import COMPACTED_FACTS, OUTPUT_READ
-    line = OUTPUT_READ
-    for kept, gone in COMPACTED_FACTS.items():
-        line = line.replace(kept, gone)
+    # A read's line (w5-fals: «lectura: … lo que vio está arriba») said the body was above after the cut took it; since
+    # fase 3 it says nothing of its body while it is there, and «se omitió» once it is gone, once however often it is told.
+    from baxy_mind.mind import OUTPUT_READ, _omitted
+    line = _omitted(OUTPUT_READ)
     assert "está arriba" not in line and line.endswith("lo que vio se omitió")
+    assert _omitted(line) == line and _omitted(f"x → {OUTPUT_READ}; y → {OUTPUT_READ}").count("se omitió") == 2

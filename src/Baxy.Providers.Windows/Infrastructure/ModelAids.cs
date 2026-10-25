@@ -59,11 +59,25 @@ public static class ModelAids
     /// <summary>Renew al máximo (E027): a known file found nowhere says nothing beyond the folders walked was searched.</summary>
     public const string SearchScope = "search_scope";
 
+    /// <summary>
+    /// Holdout v5 (V5E052: «factura marzo.pdf» dictated, factura-marzo.pdf there, nothing offered): a known file named
+    /// exactly by none gives, from the same walk, up to 5 names with the same words under other separators (space, -, _,
+    /// .), case or accents as candidates, and that fact; nothing is done to them, and the exact name is asked for again.
+    /// </summary>
+    public const string NearNames = "near_names";
+
+    /// <summary>Holdout v5 (V5E047, «is not in no folder»): a known file call whose subdirectory does not exist says so, as a relative path.</summary>
+    public const string MissingSubdirectory = "missing_subdirectory";
+
+    /// <summary>Holdout v5 (V5E061, another file's whole content as oldText): a file.edit whose oldText is not in the file says it may not be the file meant.</summary>
+    public const string EditTextAbsent = "edit_text_absent";
+
     /// <summary>Renew al máximo (F002): window.application.status says as a sentence whether BAXY opened the window.</summary>
     public const string ProvenanceNext = "provenance_next";
 
     /// <summary>Renew al máximo (w5, F004): a text typed with no window named says, as a sentence, the one window it went into.</summary>
     public const string TypedTargetNext = "typed_target_next";
+
 
     /// <summary>Renew al máximo (w5): an act stopped by the person's input says why it stopped and how the window is seen.</summary>
     public const string InterruptedNext = "interrupted_next";
@@ -85,6 +99,12 @@ public static class ModelAids
     /// (a read) or refused before any effect with the call that names it (anything else) (Baxy.App.SaidFolders).
     /// </summary>
     public const string SaidFolder = "said_folder";
+
+    /// <summary>
+    /// Fase 3 (holdout v5 V5E043): a folder made with the name the person said, spelled otherwise (viaje_chiloe_2027 for
+    /// «viaje chiloé 2027»), is refused once with the call that writes it as they said it (Baxy.App.SaidFolders).
+    /// </summary>
+    public const string SaidName = "said_name";
 
     /// <summary>
     /// Holdout v4 (en vivo: «Biblioteca» pressed 7 times in Steam, each visible_button_postread_unchanged, 50 s): the
@@ -151,6 +171,29 @@ public static class ModelAids
     /// applications the model reads; app.open still opens them by name. It changes the prefix once (a stable list).
     /// </summary>
     public const string SystemToolsUnlisted = "system_tools_unlisted";
+
+    /// <summary>
+    /// Holdout v5 (H5, en vivo: after a web.search whose results were news.google.com, a web.fetch of vln.cl, a site
+    /// none of them was, held as host_not_from_session): a call held for a host no result gave lists the hosts this
+    /// session's results gave (Baxy.App.NetworkEgress.ResultHosts) and says a page at one of them is read without asking.
+    /// </summary>
+    public const string ResultHosts = "result_hosts";
+
+    /// <summary>
+    /// V5E016 («si alguien en Tokio mira el reloj ahora mismo, ¿qué hora ve?»: the model added the offset to the PC's
+    /// local clock and missed the change of day): a system.time with a place gives that place's date, clock time and
+    /// weekday at the observed instant.
+    /// </summary>
+    public const string PlaceClock = "place_clock";
+
+    /// <summary>
+    /// Práctica e2e E017 («guárdalo como lista.txt en C:\Users\ana\BAXY-bench»: in Notepad's «Guardar como» the model
+    /// pressed «Guardar» with «Nombre de archivo» still holding «lista pilas, cables», and said it saved lista.txt): a look
+    /// at a modal save dialog (a «Nombre de archivo»/«File name» edit and a «Guardar»/«Save» button) says, after that
+    /// edit, that what it holds is the name the file gets, in the folder the dialog's address shows, and that a full path
+    /// written in it saves there (ScreenViewProjection.SaveField).
+    /// </summary>
+    public const string SaveDialogNext = "save_dialog_next";
 
     private static readonly AsyncLocal<string?> Setting = new();
 

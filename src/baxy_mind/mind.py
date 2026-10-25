@@ -23,6 +23,7 @@ from typing import Any
 from .answer_check import check as check_answer
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
+from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 
 _DATA = Path(__file__).with_name("data")
@@ -34,12 +35,14 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 # words are the model's, written once at warm-up (Mind.warm): al máximo 9.2a (2026-10-22), a phrase fixed here broke
 # invariant 5 (cero respuestas visibles fijas). What is asked is an instruction, not a phrase; a phrase it does not
 # write usably (empty, more than NOTICE_MAX_CHARS or NOTICE_MAX_WORDS, more than one line, markup) leaves the notice
-# empty, and with no phrase the App says none (SilenceNotice.PhraseOf).
+# empty, and with no phrase the App says none (SilenceNotice.PhraseOf). Fase 3 (H7): at «dos a cinco palabras» it wrote
+# «Estoy procesando tu solicitud.», 1,81 s of audio the reply waits behind once it has started (the e2e p50 of 4,32 s
+# was 2,5 s plus that notice); at most three words.
 NOTICE_ASK = ("[Esto no lo dice la persona. Cuando algo que te pidan tarde unos segundos, dirás en voz alta una frase muy "
-              "breve para que sepa que sigues en ello. Escribe sólo esa frase, de dos a cinco palabras, sin decir que "
+              "breve para que sepa que sigues en ello. Escribe sólo esa frase, de una a tres palabras, sin decir que "
               "hiciste algo ni ningún resultado.]")
 NOTICE_MAX_CHARS = 40
-NOTICE_MAX_WORDS = 6
+NOTICE_MAX_WORDS = 3
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
@@ -135,7 +138,10 @@ VERIFICATION = {
 # looked; shell_command_run and client_channel_locate are output_only too and may change things, so they keep the line
 # above.
 READ_RISKS = ("read_only", "privacy_sensitive")
-OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba"
+# Fase 3 (bisección de V5E008, 8 turnos × 3 semillas con el modelo real): with «; lo que vio está arriba» at its end the
+# model took a web_search's snippets as the answer and opened the page 4 of 24 times (1975 after reading it: 2); without
+# it, 12 of 24 (7); 8 of 8 before 8.2 put it there. No extra fetch on searches whose snippet already answers (0 of 12).
+OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada"
 # Every outcome of a completed call (the App runs the queued calls after one of these).
 COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ)
 # What the facts line adds of a result's own fields (_outcome), and what _deduplicated leaves out of it for that.
@@ -579,17 +585,22 @@ def _places_listed(application: str | None) -> str:
 
 # The provider's count of the same click seen unchanged in a row (WindowsVisibleControlAdapter.RepeatedUnchanged).
 REPEAT_KEY = "unchangedInARow"
+# A window's single-use handle (WindowsWindowControlProvider.Issue): a new one at every read of the same window.
+_WINDOW_HANDLE = re.compile(r"\bwin_[0-9a-f]{32}\b")
 
 
 def _result_key(observation: str) -> str:
     """Al máximo 7.7: the same result is the same content (three looks at a window still loading, each with another view,
     were told «el mismo resultado»), without how long the call took («…Ms»), as the App's TurnClosing compares it.
     Holdout v4: nor a click's own count of its repeats (unchangedInARow) and the «next» that count brings, which differ
-    on each repeat of the same unchanged click."""
+    on each repeat of the same unchanged click. Holdout v5 (en vivo, «maximiza Paint»: 13 window.resolve): nor a window's
+    single-use handle, new at every read of the same window."""
     def only_repeat(node: Any) -> bool:
         return isinstance(node, dict) and REPEAT_KEY in node and set(node) <= {REPEAT_KEY, "next"}
 
     def untimed(node: Any) -> Any:
+        if isinstance(node, str):
+            return _WINDOW_HANDLE.sub("win_", node)
         if isinstance(node, dict):
             repeat = REPEAT_KEY in node
             # A result that holds nothing but the count is the same as the first one, which had none.
@@ -789,17 +800,18 @@ COMPACTED = ("[Resultado omitido para que quepa la conversación: los ids de ven
 # Renew al máximo (w5): what a kept facts line says of the body it no longer has («su resultado está arriba» after the
 # result was left out read as a value the model could still quote), said as it is once the body is gone.
 COMPACTED_FACTS = {"su resultado está arriba": "su resultado se omitió",
-                   "lo que vio está arriba": "lo que vio se omitió",
                    "su after es la ventana de después": "su after se omitió"}
-assert all(k in label for k, label in (("su resultado está arriba", VERIFICATION["output_only"]),
-                                         ("lo que vio está arriba", OUTPUT_READ)))
+assert "su resultado está arriba" in VERIFICATION["output_only"]
+# A read says nothing of its body while it is there (OUTPUT_READ); once the body is gone its line says so, once.
+READ_OMITTED = "; lo que vio se omitió"
+_READ_KEPT = re.compile(re.escape(OUTPUT_READ) + "(?!" + re.escape(READ_OMITTED) + ")")
 
 
 def _omitted(facts: str) -> str:
     """Facts of calls whose results lost their bodies, said as they are now (COMPACTED_FACTS)."""
     for told, omitted in COMPACTED_FACTS.items():
         facts = facts.replace(told, omitted)
-    return facts
+    return _READ_KEPT.sub(OUTPUT_READ + READ_OMITTED, facts)
 
 # Review 16: the person's own text, when it alone does not fit (decide), keeps its start and the cut is said where the
 # model reads it; never cut below this many characters.
@@ -1885,19 +1897,36 @@ class Mind:
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
                 "arguments": {"approve": approve}, "reply": "", "question": ""}
 
-    def _make_room(self, conv: list[dict[str, Any]]) -> bool:
+    def _make_room(self, conv: list[dict[str, Any]], final: bool = False) -> bool:
         """One step of room for an open turn past the context, whether there was one: the earlier turns' results leave
         out their bodies, else the oldest earlier turn goes, else the open turn's results but the newest leave out
-        theirs. All in place: the person's open turn is this same conversation."""
+        theirs, else those of the newest's loop also leave out their facts lines (the newest's lists every call of its
+        loop), else, for the last answer only, the newest leaves out its body too. All in place: the person's open turn
+        is this same conversation."""
         starts = [i for i, m in enumerate(conv)
                   if m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
         if conv is self.conversation and len(starts) > 1:
             if not self._compact(conv[:starts[-1]]):
                 self._drop(starts[1], 1)
             return True
-        results = [m for m in conv[(starts[-1] if starts else 0):]
-                   if m["role"] == "tool" and TURN_FACTS in str(m.get("content") or "")]
-        return self._compact(results[:-1])
+        begin = starts[-1] if starts else 0
+        results = [m for m in conv[begin:] if m["role"] == "tool" and TURN_FACTS in str(m.get("content") or "")]
+        if self._compact(results[:-1]):
+            return True
+        # H6 (holdout v5 V5F028/V5F029): each left-out result kept its own facts line, and each lists every call of its
+        # loop before it, so they grew with the square of the calls (14 of them, 5.1k tokens at a log's 15th page) and
+        # the last answer did not fit: no answer at all. The newest's line says them all; a loop starts at the last
+        # message of the person (or a note) before it.
+        loop = max([i for i in range(begin, len(conv)) if conv[i]["role"] == "user"], default=begin)
+        bare = False
+        for message in conv[loop:]:
+            content = str(message.get("content") or "")
+            if (message["role"] == "tool" and message is not (results[-1] if results else None)
+                    and content.startswith(COMPACTED) and TURN_FACTS in content):
+                message["content"] = COMPACTED
+                bare = True
+        # The last answer always comes: its newest result leaves out its body too (its facts stay, said as omitted).
+        return bare or (final and self._compact(results[-1:]))
 
     def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
         started = time.perf_counter()
@@ -1936,7 +1965,7 @@ class Mind:
             # results were cut and the model answered in words at once (15 context_shrunk in the trace, each one ended
             # its mission); now room is made a step at a time (_make_room, said where the model reads) and the turn goes
             # on as it was. With no room left to make, the refusal reaches the App.
-            if error.code != 400 or not self._make_room(conv):
+            if error.code != 400 or not self._make_room(conv, final):
                 raise
             self._log(stage, started, None, kind="context_shrunk", operation=None, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=final)
@@ -2202,8 +2231,11 @@ class Mind:
                 continue
             text = _fold(str(int(value) if isinstance(value, float) and value.is_integer() else value))
             stem, dot, extension = text.rpartition(".")
+            # Holdout v5 E062 (dictado): «hasta el setenta» founds 70; a transcript writes small numbers in words.
+            number = int(text) if text.isdigit() and int(text) < 1000 else None
             if not said(text) and not (dot and re.fullmatch(r"[a-z0-9]{1,5}", extension) and said(stem)
-                                       and said(extension)):
+                                       and said(extension)) \
+                    and not (number is not None and (said(_fold(cardinal(number))) or said(cardinal_en(number)))):
                 return False
         return True
 

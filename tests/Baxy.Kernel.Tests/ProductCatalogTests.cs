@@ -418,6 +418,8 @@ public sealed class ProductCatalogTests
     [TestCase("input.visible.click", """{"label":"Sí","consequence":"delete"}""", false)]
     [TestCase("input.key.press", """{"key":"shift_f10"}""", true)]
     [TestCase("input.key.press", """{"key":"ctrl_shift_s"}""", true)]
+    [TestCase("input.key.press", """{"key":"ctrl_end"}""", true)]
+    [TestCase("input.key.press", """{"key":"ctrl_home"}""", true)]
     [TestCase("input.key.press", """{"key":"alt_f4"}""", false)]
     [TestCase("input.key.press", """{"key":"enter","consequence":"overwrite"}""", true)]
     [TestCase("input.key.press", """{"key":"enter","consequence":"delete"}""", false)]

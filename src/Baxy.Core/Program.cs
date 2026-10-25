@@ -259,7 +259,7 @@ internal static class Program
                 continue;
             }
 
-            OperationResponse response = await engine.ExecuteAsync(request, cancellationToken)
+            OperationResponse response = await CoreRequest.ExecuteAsync(engine, request, Console.Error, cancellationToken)
                 .ConfigureAwait(false);
             await WriteMessageAsync(
                 output,

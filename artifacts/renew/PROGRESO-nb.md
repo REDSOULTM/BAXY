@@ -422,3 +422,35 @@ mismo: al abrirlo aquí, la misma sustitución.
   título desde otro hilo (ayudante `Pumped` en ComputerUseSpeedTests).
 - Colas en `%TEMP%\claude\nb\mx`: `cola5.sh` (recursos de contexto 53 248: VRAM 3990), `cola8.sh` (int 1e4496020 vs
   renew-maximo d9a971bbe: e2e ×2, falsedades ×3, recursos, sesión larga). Turnero de compilaciones: `dotnet_turno.sh`.
+
+## Renew al 100 % sin reentrenar, fase 3 (2026-10-24 19:45, apoyo del PC; prompt PROMPT_CIEN_NOTEBOOK.md)
+
+**Dónde se trabaja.** Worktree `BAXY-Renew-s1`, rama `nb-cien` (desde `hub/renew-cien` 4b956a806; código = int10f
+19be8b42a); arreglos en ramas cortas `nb-w10-…`. Scripts y salidas en `%TEMP%\claude\nb\cien`. Reparto del líder
+(buzón 19:44): H7 latencia, H9 `engine_no_answer`, los arreglos de H2 en proveedores, uso del PC y archivos, recursos y
+sesión larga de cada integración; diagnóstico H2 de V5E021, 023, 029 (cu) y V5E032, 034, 040, 043, 044 (archivos).
+
+**Tareas abiertas (19:50).**
+- H2: tres subagentes de sólo lectura (cu; archivos 032/034/040; archivos 043/044) con las trazas s0 (copiadas del PC a
+  `D:\BAXYeval\renew_v1\runs\pc-ho5-final-s0-e2e-e2e`) y s1; resumen en `artifacts/renew/maximo/H2-nb.md`.
+- H7: el A/B en GPU del llama parcheado ya estaba hecho (2026-10-23 21:40: 50/50 peticiones idénticas, fuera de
+  prompt+predict p50 128,8 → 47,6 ms, e2e 29/30 igual que stock), y el A/B hablado de int10c también (anticipada −0,36 s
+  y precalentar al oír «Baxy» −0,26 s en la primera respuesta; ya van encendidas por defecto). Falta saber dónde está el
+  +0,9 s de la e2e: un subagente lo desglosa por etapa con ho5-{inicio,maximo,final}-s1 (misma máquina).
+- H9: cero `engine_no_answer` en todas las corridas del holdout v5 (6 del NB y las del PC). Cola `frio2.sh`: 12 arranques
+  de Steam en frío (5 y 15 min cerrado, tres frases) sobre hv5-final con la traza del App y los códigos de salida del
+  core (`D:\BAXYeval\repro-eno\frio2`).
+- Trampa: `mx/despierto.ps1` nunca mantuvo despierto el NB: en PowerShell 5.1 `0x80000003` es un Int32 negativo y la
+  llamada a `SetThreadExecutionState(uint)` fallaba cada 30 s (también durante el holdout v5, que se bloqueó a las 11:00).
+  Copia arreglada en `cien/despierto.ps1` (`[uint32]2147483651`).
+
+**Al día, 2026-10-24 20:45.**
+- Ramas en hub: `nb-w10-cuenta` fd2ed124e y `nb-w10-mover` 8780e0f34 (H2 archivos), `nb-w10-aviso` 3cfe46f68 (H7), en
+  int11 066802ea2; `nb-w10-clic` c8d3e613c y `nb-w10-calc` 37f6038cf (H2 uso del PC), para int11b. Detalle y pruebas
+  en `maximo/H2-nb.md` y `maximo/H7-nb.md`.
+- Las e2e de práctica pasaron al NB (el dueño usa el PC). Cola `cien/cola_c3.sh`: base int10f (worktree hv5-final) frente
+  a int11 (worktree `BAXY-Renew-int11`), prac 30 + h2 20 (`renew_v6/practica/e2e_h2.nbD.json`, 69 rutas F:→D:) ×3
+  semillas intercaladas, luego falsedades de práctica ×3; `nvidia-smi` a 1 Hz en `cien/gpu-estado.csv`.
+- VOID mío: `c3-base-s0-prac-e2e.void-frio2` (la limpieza final de la cola de Steam en frío mató el producto).
+- H9 sin repro todavía (1/1 bien en frío; 0 en todo el holdout v5); cada e2e guarda `app-trace.jsonl` y
+  `core-disconnect.jsonl`.

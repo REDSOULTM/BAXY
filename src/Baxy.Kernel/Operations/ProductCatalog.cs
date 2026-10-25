@@ -278,7 +278,7 @@ public static class ProductCatalog
             Schema([String("expression", maximumLength: 64, nonWhitespace: true)], ["expression"]),
             OperationRisks.LowReversible,
             "calculator.expression.evaluate.windows.calculator.uia.display.v1",
-            "Pulsa una expresión aritmética simple (números y + - * /) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora.",
+            "Pulsa una expresión aritmética simple (números y + - * /; ^ y paréntesis en el modo científico) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; empezada por un operador, sigue desde el número que muestra; sin efecto fuera de la Calculadora.",
             effects: [WindowInput()]),
         Descriptor(
             "calendar.event.create",
@@ -605,11 +605,13 @@ public static class ProductCatalog
                 [
                     String("extension", maximumUtf8Bytes: 16, nonWhitespace: true),
                     String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
+                    // Holdout v5 V5E034/V5E044: «¿cuántos pdf hay en BAXY-bench\facturas?» had no call.
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["extension"]),
             OperationRisks.ReadOnly,
             "filesystem.explorer.count.foreground.folder.toplevel.v1",
-            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta; no cuenta los archivos ocultos ni los de sistema."),
+            "Cuenta los archivos de primer nivel con la extensión dada en la carpeta conocida que se nombra (o en una subcarpeta suya) o, sin ella, en la que muestra la ventana del Explorador en primer plano (si no hay ninguna delante, falla), y nombra esa carpeta sin revelar su ruta; no cuenta los archivos ocultos ni los de sistema."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
@@ -697,13 +699,17 @@ public static class ProductCatalog
             "filesystem.sandbox.move.named",
             Schema(
                 [
+                    // Holdout v5 V5E032/V5E040: a file of the person's (folder, subdirectory) moved or copied by name.
+                    Boolean("copy"),
                     String("destinationRelativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                    String("folder", values: ["desktop", "documents", "downloads", "home"]),
                     String("sourceFileName", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["destinationRelativePath", "sourceFileName"]),
             OperationRisks.LowReversible,
             "filesystem.sandbox.move.named.hash.absence.v1",
-            "Mueve un archivo de nombre único dentro del sandbox y verifica hash y ausencia del origen."),
+            "Mueve (o copia, con copy) un archivo de nombre único dentro del sandbox o, con folder, en esa carpeta conocida (o en su subcarpeta), sin sobrescribir, y verifica hash y ausencia (o permanencia) del origen."),
         Descriptor(
             "filesystem.search",
             Schema(
@@ -860,10 +866,12 @@ public static class ProductCatalog
                     // Goal v3 punto 2: guardar, guardar como, abrir, reemplazar,
                     // cortar, la barra de menús (F10) y el menú contextual del
                     // control enfocado (Shift+F10); ninguno cierra nada.
-                    "backspace", "context_menu", "control", "ctrl_a", "ctrl_c", "ctrl_f", "ctrl_h", "ctrl_k",
-                    "ctrl_l", "ctrl_o", "ctrl_s", "ctrl_shift_escape", "ctrl_shift_s", "ctrl_t", "ctrl_v", "ctrl_w",
-                    "ctrl_x", "ctrl_z", "delete", "end", "enter", "escape", "f10", "f5", "home", "page_down", "page_up",
-                    "shift", "shift_f10", "space", "tab", "win",
+                    // Holdout v5 V5E023: Ctrl+End and Ctrl+Home move the caret to the end or start of the whole text
+                    // («agrega al final» in a Notepad just opened, its caret at 0); they only move it, so never ask.
+                    "backspace", "context_menu", "control", "ctrl_a", "ctrl_c", "ctrl_end", "ctrl_f", "ctrl_h",
+                    "ctrl_home", "ctrl_k", "ctrl_l", "ctrl_o", "ctrl_s", "ctrl_shift_escape", "ctrl_shift_s", "ctrl_t",
+                    "ctrl_v", "ctrl_w", "ctrl_x", "ctrl_z", "delete", "end", "enter", "escape", "f10", "f5", "home",
+                    "page_down", "page_up", "shift", "shift_f10", "space", "tab", "win",
                 ]),
                 // Revisión de V (H1): lo que Enter o Espacio pulsan según la vista del paso (el control
                 // enfocado o, desde un campo, el resultado elegido de su lista): lo declara el modelo y
@@ -885,7 +893,7 @@ public static class ProductCatalog
             ], ["key"]),
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
-            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío.",
+            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Inicio/Fin, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío.",
             effects: [WindowInput()]),
         Descriptor(
             "input.keyboard.layout",

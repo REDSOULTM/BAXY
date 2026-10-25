@@ -236,8 +236,10 @@ def test_the_notice_is_written_by_the_model_once_at_warm_up(tmp_path: Path) -> N
     assert notice["temperature"] == 0.0 and notice["max_tokens"] <= 32
 
 
+# «Estoy procesando tu solicitud.» (holdout v5, the phrase Qwen wrote at 2-5 words): 1,81 s of audio that the reply waits
+# behind (fase 3, H7: the e2e p50 of 4,32 s was 2,5 s + that notice), so a notice is three words at most.
 @pytest.mark.parametrize("written", ["", "   ", "Ya abrí la aplicación que me pediste y todo quedó funcionando perfecto.",
-                                     "Un momento.\nYa está.", "<tool_call>"])
+                                     "Un momento.\nYa está.", "<tool_call>", "Estoy procesando tu solicitud."])
 def test_a_notice_the_model_did_not_write_usably_goes_empty(tmp_path: Path, written: str) -> None:
     mind, _ = _warm_mind(tmp_path, written)
     assert mind.notice == ""

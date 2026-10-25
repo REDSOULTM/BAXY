@@ -150,11 +150,24 @@ internal static class ScreenViewProjection
             && (drawn || count > controls.Count || (bool?)view["partial"] == true || (bool?)view["frameOnly"] == true
                 || (string?)view["uiaFailed"] is { Length: > 0 });
         text.Append(notWhole ? "Controles (no es la lista completa de la ventana: puede tener más):\n" : "Controles:\n");
+        string? saveFolder = null;
+        JsonObject? saveField = Baxy.Providers.Windows.Infrastructure.ModelAids.On(
+                Baxy.Providers.Windows.Infrastructure.ModelAids.SaveDialogNext)
+            ? SaveField(view, controls, out saveFolder)
+            : null;
         foreach (JsonNode? node in controls)
         {
             if (node is JsonObject control)
             {
                 text.Append(Control(control)).Append('\n');
+                // Práctica e2e E017: «Guardar» pressed with the field still holding the text's first words, and
+                // «guardé lista.txt en BAXY-bench» said. What the field holds and where it saves, beside it.
+                if (ReferenceEquals(control, saveField))
+                {
+                    text.Append("(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra el diálogo")
+                        .Append(saveFolder is { Length: > 0 } ? ", " + saveFolder : string.Empty)
+                        .Append("; una ruta entera escrita en él, C:\\…\\nombre.ext, lo guarda en esa ruta)\n");
+                }
             }
         }
 
@@ -300,6 +313,50 @@ internal static class ScreenViewProjection
         });
         return true;
     }
+
+    // Windows' common save dialog, by its structure and not by the application that opened it: a modal window with a
+    // «Nombre de archivo»/«File name» edit and a «Guardar»/«Save» button (an «Abrir»/«Open» dialog has the edit and not
+    // the button). The folder is the one its address bar names («Dirección: …»/«Address: …»), when the reader listed it;
+    // the tree's selected item is not taken for it (in E017 it was «ana» while the address was BAXY-bench).
+    private static JsonObject? SaveField(JsonObject view, JsonArray controls, out string? folder)
+    {
+        folder = null;
+        if (view["window"] is not JsonObject window || (bool?)window["modal"] != true)
+        {
+            return null;
+        }
+
+        JsonObject[] all = controls.OfType<JsonObject>().ToArray();
+        JsonObject? field = all.FirstOrDefault(static control => (string?)control["kind"] == "Edit"
+            && Label((string?)control["name"]) is "nombre de archivo" or "file name");
+        if (field is null || !all.Any(static control => (string?)control["kind"] == "Button"
+            && Label((string?)control["name"]) is "guardar" or "save"))
+        {
+            return null;
+        }
+
+        foreach (JsonObject control in all.Where(static control => (string?)control["kind"] == "ToolBar"))
+        {
+            // The reader keeps the direction marks Windows puts around a folder's name («\u200eBAXY-bench»).
+            string name = Folded(new string(((string?)control["name"] ?? string.Empty)
+                .Where(static c => c is not ('\u200e' or '\u200f')).ToArray()));
+            foreach (string prefix in (string[])["Dirección:", "Address:"])
+            {
+                if (name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+                    && name[prefix.Length..].Trim() is { Length: > 0 } shown)
+                {
+                    folder = shown;
+                    return field;
+                }
+            }
+        }
+
+        return field;
+    }
+
+    // A control's name as a label: its access key's «&», a closing «:» and the case left out.
+    private static string Label(string? name) =>
+        Folded((name ?? string.Empty).Replace("&", string.Empty)).TrimEnd(':').Trim().ToLowerInvariant();
 
     private static string Folded(string? text) => string.Join(' ',
         (text ?? string.Empty).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));

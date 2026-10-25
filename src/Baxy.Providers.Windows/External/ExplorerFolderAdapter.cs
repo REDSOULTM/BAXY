@@ -41,16 +41,21 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
 
     private readonly IExternalProcessRunner _runner;
     private readonly Func<string, string?> _knownFolder;
+    private readonly IReadOnlyList<string> _privateRoots;
 
     internal ExplorerFolderAdapter()
         : this(new ExternalProcessRunner(), WindowsFileToolsAdapter.KnownFolderPath)
     {
     }
 
-    internal ExplorerFolderAdapter(IExternalProcessRunner runner, Func<string, string?> knownFolder)
+    internal ExplorerFolderAdapter(
+        IExternalProcessRunner runner,
+        Func<string, string?> knownFolder,
+        IReadOnlyList<string>? privateRoots = null)
     {
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
         _knownFolder = knownFolder ?? throw new ArgumentNullException(nameof(knownFolder));
+        _privateRoots = privateRoots ?? Baxy.Providers.Windows.Filesystem.BaxyPrivateArea.DefaultRoots();
     }
 
     public bool CanHandle(string operation) => operation == "filesystem.explorer.count";
@@ -72,10 +77,31 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             && folderElement.ValueKind == JsonValueKind.String ? folderElement.GetString() : null;
         if (named is not null)
         {
-            string? known = _knownFolder(named);
-            return known is null
-                ? ExternalJson.FailureBeforeEffect(operation, "known_folder_invalid")
-                : Count(operation, known, "known_folder", extension);
+            if (_knownFolder(named) is not { } known)
+                return ExternalJson.FailureBeforeEffect(operation, "known_folder_invalid");
+            // Holdout v5 V5E034/V5E044: a folder inside the known one, confined to it as the other known-folder tools.
+            if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectory))
+            {
+                try
+                {
+                    known = WindowsKnownFileAdapter.SubdirectoryRoots(
+                        [(named, known)], subdirectory.GetString()?.Trim() ?? string.Empty, _privateRoots)[0].Root;
+                }
+                catch (InvalidDataException exception)
+                {
+                    return ExternalJson.FailureBeforeEffect(operation, exception.Message);
+                }
+                catch (Exception exception) when (exception is ArgumentException or NotSupportedException
+                    or IOException or UnauthorizedAccessException)
+                {
+                    return ExternalJson.FailureBeforeEffect(operation, "known_subdirectory_invalid");
+                }
+
+                if (!Directory.Exists(known))
+                    return ExternalJson.FailureBeforeEffect(operation, "known_subdirectory_not_found");
+            }
+
+            return Count(operation, known, "known_folder", extension);
         }
 
         // Auditoría final (regla 3): «no Explorer in front» only from a probe that read every shell window; a probe

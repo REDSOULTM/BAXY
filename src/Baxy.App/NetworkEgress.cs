@@ -28,9 +28,20 @@ internal sealed class NetworkEgress
     /// <summary>The shortest remembered value looked for: a shorter one («sí», a year) is found in any address.</summary>
     internal const int MinimumRememberedCharacters = 8;
 
+    /// <summary>The most result hosts a held call's result lists (<see cref="ResultHosts"/>).</summary>
+    internal const int MaximumResultHosts = 8;
+
     private readonly HashSet<string> _hosts = new(StringComparer.Ordinal);
     private readonly HashSet<string> _words = new(StringComparer.Ordinal);
     private readonly List<string> _remembered = [];
+    private readonly List<string> _resultHosts = [];
+
+    /// <summary>
+    /// The hosts of the addresses this session's results gave (a search result, a page fetched or read, a tab), in the
+    /// order they came, once each, the last <see cref="MaximumResultHosts"/>: never one only the person's words gave,
+    /// nor one memory read.
+    /// </summary>
+    internal IReadOnlyList<string> ResultHosts => _resultHosts;
 
     /// <summary>What the call carries out that waits for the person's «sí», as a code for the model; null: it goes.</summary>
     internal string? Holds(string operation, JsonObject arguments)
@@ -122,6 +133,7 @@ internal sealed class NetworkEgress
         NewTurn();
         _hosts.Clear();
         _words.Clear();
+        _resultHosts.Clear();
     }
 
     private void Walk(JsonNode? node, bool memoryRead)
@@ -136,7 +148,16 @@ internal sealed class NetworkEgress
                         if ((key == "url" || key.EndsWith("Url", StringComparison.Ordinal))
                             && Uri.TryCreate(field, UriKind.Absolute, out Uri? address) && address.Host.Length > 0)
                         {
-                            _hosts.Add(Normalized(address.Host));
+                            string host = Normalized(address.Host);
+                            _hosts.Add(host);
+                            if (!memoryRead && !_resultHosts.Contains(host))
+                            {
+                                _resultHosts.Add(host);
+                                if (_resultHosts.Count > MaximumResultHosts)
+                                {
+                                    _resultHosts.RemoveAt(0);
+                                }
+                            }
                         }
 
                         // A record the projection shows (MemoryOperationResponseProjection: label and value; a

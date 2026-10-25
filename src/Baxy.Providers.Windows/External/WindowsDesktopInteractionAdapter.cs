@@ -345,8 +345,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         ["control"] = [0x11],
         ["ctrl_a"] = [0x11, 0x41],
         ["ctrl_c"] = [0x11, 0x43],
+        // Holdout v5 V5E023: the end and the start of the whole text (End and Home alone stay on the line).
+        ["ctrl_end"] = [0x11, 0x23],
         ["ctrl_f"] = [0x11, 0x46],
         ["ctrl_h"] = [0x11, 0x48],
+        ["ctrl_home"] = [0x11, 0x24],
         ["ctrl_k"] = [0x11, 0x4B],
         // ctrl_l enfoca la barra de direcciones del navegador de delante.
         ["ctrl_l"] = [0x11, 0x4C],
@@ -926,7 +929,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
               + "and no application was opened or brought to the front for it"
             : $"the text went by the keyboard into the window of {named}, the application just opened; no other "
               + "application received it";
-        return readBack ? where : where + "; it was not read back there";
+        where = readBack ? where : where + "; it was not read back there";
+        // Holdout v5 (V5E066): the one look that gives another application's open window its number, and the text
+        // typed again with it (never app_open, which may open a second window of it).
+        return front
+            ? where + "; the window of another application that is open is reached by looking at it by its name "
+              + "(input_visible_controls with application), whose result gives that window's number, and typing the "
+              + "text again as input_text_type with window set to that number"
+            : where;
     }
 
     // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad), by its title

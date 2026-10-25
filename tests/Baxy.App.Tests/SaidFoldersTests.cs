@@ -448,6 +448,190 @@ public sealed class SaidFoldersTests
         });
     }
 
+    // Holdout v5 V5E043/V5E031 (notebook): «documentos» named Documents and also a folder «Documentos» inside it; the
+    // inner one, as a folder the outer holds, took its place and sent «crea … en documentos» to Documentos\Documentos.
+    [Test]
+    public void AKnownFolderSaidStaysThePlaceWhenItHoldsAFolderOfItsName()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "Documents", "Documentos"));
+        SaidFolders said = Heard("crea una carpeta que se llame Viaje Chiloé 2027 en documentos");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(said.Places().Select(static place => place.Path),
+                Is.EqualTo(new[] { Path.Combine(_home, "Documents") }));
+            Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
+                new JsonObject { ["folder"] = "documents", ["relativePath"] = "Viaje Chiloé 2027" }), Is.Null);
+        });
+    }
+
+    // Holdout v5 V5E043: the folder the person asked for, made in this turn, holds the file they asked to write in it;
+    // the write that left it out (in Documents itself) went through because the folders named were read before it
+    // existed.
+    [Test]
+    public void AFolderMadeInTheTurnIsThePlaceOfTheNextCall()
+    {
+        SaidFolders said = Heard("en documentos crea la carpeta viaje chiloe 2027 y dentro un archivo itinerario.txt");
+        Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
+            new JsonObject { ["folder"] = "documents", ["relativePath"] = "viaje chiloe 2027" }), Is.Null);
+        Directory.CreateDirectory(Path.Combine(_home, "Documents", "viaje chiloe 2027"));
+
+        SaidFolders.Ruling? write = said.Rule("file.write", Descriptor("file.write"),
+            new JsonObject { ["folder"] = "documents", ["relativePath"] = "itinerario.txt", ["text"] = "día 1" });
+
+        Assert.That((string?)write?.Refusal?["next"],
+            Does.Contain("call file_write again with relativePath \"viaje chiloe 2027/itinerario.txt\""));
+    }
+
+    // Holdout v5 V5E034/V5E044: a count in a folder of theirs was refused with no call that could reach it.
+    [Test]
+    public void ACountLeavingOutTheFolderNamedIsRoutedIntoItsSubdirectory()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "Facturas Luz"));
+        SaidFolders said = Heard("cuántos pdf hay en facturas luz");
+
+        SaidFolders.Ruling? ruling = said.Rule("filesystem.explorer.count", Descriptor("filesystem.explorer.count"),
+            new JsonObject { ["extension"] = ".pdf", ["folder"] = "home" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ruling?.Refusal, Is.Null);
+            Assert.That((string?)ruling?.Arguments["subdirectory"], Is.EqualTo("Facturas Luz"));
+            Assert.That(ruling?.Note, Does.Contain("subdirectory \"Facturas Luz\""));
+        });
+    }
+
+    // Holdout v5 V5E045/V5E047 (PC): a relative path with a space in a folder's name was cut at the space
+    // («Documentos\Turnos Farmacia» became Documents\Turnos, which does not exist), and the model's right call was refused.
+    [Test]
+    public void ARelativePathSaidKeepsTheWordsOfAFolderWithSpacesInItsName()
+    {
+        string shifts = Path.Combine(_home, "Documents", "Turnos Farmacia");
+        Directory.CreateDirectory(shifts);
+        File.WriteAllText(Path.Combine(shifts, "horario.txt"), "lunes\n");
+        SaidFolders said = Heard(@"reemplaza horario.txt en Documentos\Turnos Farmacia, por: martes");
+
+        SaidFolders.Ruling? trash = said.Rule("filesystem.known.trash.named", Descriptor("filesystem.known.trash.named"),
+            new JsonObject { ["fileName"] = "horario.txt", ["folder"] = "documents" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { shifts }));
+            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
+            {
+                ["relativePath"] = "Turnos Farmacia/horario.txt", ["text"] = "martes", ["folder"] = "documents",
+            }), Is.Null);
+            Assert.That((string?)trash?.Refusal?["next"], Does.Contain("subdirectory \"Turnos Farmacia\""));
+        });
+    }
+
+    // The words after a relative path are its own only while they still name a folder that exists.
+    [Test]
+    public void ARelativePathSaidStopsWhereTheFolderItNamesEnds()
+    {
+        SaidFolders said = Heard(@"guarda en Documentos\obra nueva lista de materiales");
+
+        Assert.That(said.Places().Select(static place => place.Path),
+            Is.EqualTo(new[] { Path.Combine(_home, "Documents", "obra") }));
+    }
+
+    // Holdout v5 V5E044 (PC): «BAXY-bench/facturas» could start in the home folder or on the Desktop; only the home's
+    // holds facturas, so it is the one place (the Desktop's, a path that does not exist, was a second one).
+    [Test]
+    public void ARelativePathThatExistsUnderOnlyOneOfItsStartsIsThatOne()
+    {
+        string sub = Path.Combine(_home, "banco-local", "facturas");
+        Directory.CreateDirectory(sub);
+        SaidFolders said = Heard("cuántos pdf hay en banco-local/facturas");
+
+        Assert.That(said.Places().Select(static place => (place.Path, place.Sure)),
+            Is.EqualTo(new[] { (sub, true) }));
+    }
+
+    // Holdout v5 V5E032: a move by name in a folder of theirs was refused with no call that could reach it, and the
+    // model's destination repeated the folder («BAXY-bench/archivo-2025/…»).
+    [Test]
+    public void AMoveByNameInTheWorkFolderIsRefusedWithTheCallInTheFolderNamed()
+    {
+        string accounts = Path.Combine(_home, "contabilidad");
+        Directory.CreateDirectory(Path.Combine(accounts, "archivo-2025"));
+        File.WriteAllText(Path.Combine(accounts, "presupuesto.xlsx"), "x");
+        SaidFolders said = Heard("mueve presupuesto.xlsx a archivo-2025 dentro de contabilidad");
+        ProductOperationDescriptor move = Descriptor("filesystem.sandbox.move.named");
+
+        SaidFolders.Ruling? sandbox = said.Rule("filesystem.sandbox.move.named", move, new JsonObject
+        {
+            ["sourceFileName"] = "presupuesto.xlsx",
+            ["destinationRelativePath"] = "contabilidad/archivo-2025/presupuesto.xlsx",
+        });
+
+        string next = (string?)sandbox?.Refusal?["next"] ?? string.Empty;
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.Contain("call filesystem_sandbox_move_named again with"));
+            Assert.That(next, Does.Contain("destinationRelativePath \"archivo-2025/presupuesto.xlsx\""));
+            Assert.That(next, Does.Contain("folder \"home\" and subdirectory \"contabilidad\""));
+            Assert.That(said.Rule("filesystem.sandbox.move.named", move, new JsonObject
+            {
+                ["sourceFileName"] = "presupuesto.xlsx",
+                ["destinationRelativePath"] = "archivo-2025/presupuesto.xlsx",
+                ["folder"] = "home",
+                ["subdirectory"] = "contabilidad",
+            }), Is.Null);
+        });
+    }
+
+    // Holdout v5 V5E044 (dictado, «cuantos pdf hay en baxy bench barra facturas»): the separator said as a word left
+    // the place at the outer folder, and the count looked only at its top level.
+    [TestCase("barra")]
+    [TestCase("slash")]
+    [TestCase("diagonal")]
+    public void ASeparatorSaidAsAWordLeadsIntoTheSubfolderItNames(string separator)
+    {
+        string bills = Path.Combine(_home, "cajon", "facturas");
+        Directory.CreateDirectory(bills);
+        SaidFolders said = Heard($"cuantos pdf hay en cajon {separator} facturas");
+
+        Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { bills }));
+    }
+
+    // Holdout v5 V5E043: the person said «viaje chiloé 2027» and the folder was made as viaje_chiloe_2027; a name made
+    // differs from theirs only in accents, separators or case, and it is offered as they said it.
+    [Test]
+    public void AFolderMadeWithTheNameSaidSpelledOtherwiseIsRefusedWithTheirSpelling()
+    {
+        SaidFolders said = Heard("en documentos crea una carpeta que se llame viaje chiloé 2027 y adentro un archivo");
+        ProductOperationDescriptor create = Descriptor("filesystem.create.directory");
+        var call = new JsonObject { ["relativePath"] = "viaje_chiloe_2027", ["folder"] = "documents" };
+
+        SaidFolders.Ruling? ruling = said.Rule("filesystem.create.directory", create, call);
+        SaidFolders.Ruling? again = said.Rule("filesystem.create.directory", create, call);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)ruling?.Refusal?["error"], Is.EqualTo(SaidFolders.NameChanged));
+            Assert.That((string?)ruling?.Refusal?["next"], Does.Contain("relativePath \"viaje chiloé 2027\""));
+            Assert.That(again?.Refusal, Is.Null);
+            Assert.That(said.Rule("filesystem.create.directory", create,
+                new JsonObject { ["relativePath"] = "Viaje Chiloé 2027", ["folder"] = "documents" }), Is.Null);
+            Assert.That(said.Rule("filesystem.create.directory", create,
+                new JsonObject { ["relativePath"] = "fotos", ["folder"] = "documents" }), Is.Null);
+            // Only a name that folds to the same words: «viaje chiloe 2026» is another name, not theirs respelled.
+            Assert.That(said.Rule("filesystem.create.directory", create,
+                new JsonObject { ["relativePath"] = "viaje chiloe 2026", ["folder"] = "documents" }), Is.Null);
+        });
+    }
+
+    // Counter-case: the person wrote the underscore themselves, so their spelling is the call's.
+    [Test]
+    public void AFolderMadeWithTheNameAsThePersonWroteItRuns()
+    {
+        SaidFolders said = Heard("crea en documentos la carpeta mis_notas_2027");
+
+        Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
+            new JsonObject { ["relativePath"] = "mis_notas_2027", ["folder"] = "documents" }), Is.Null);
+    }
+
     private SaidFolders Heard(string words)
     {
         var said = new SaidFolders(Known);

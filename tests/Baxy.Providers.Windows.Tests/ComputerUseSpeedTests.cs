@@ -45,6 +45,9 @@ public sealed class ComputerUseSpeedTests
     [TestCase("ctrl_x", new ushort[] { 0x11, 0x58 })]
     [TestCase("f10", new ushort[] { 0x79 })]
     [TestCase("shift_f10", new ushort[] { 0x10, 0x79 })]
+    // Holdout v5 V5E023: the end and the start of the whole text.
+    [TestCase("ctrl_end", new ushort[] { 0x11, 0x23 })]
+    [TestCase("ctrl_home", new ushort[] { 0x11, 0x24 })]
     public async Task EveryCatalogKeyIsTheSameChordTheScriptPressed(string key, ushort[] chord)
     {
         var keyboard = new FakeDesktopKeyboard();

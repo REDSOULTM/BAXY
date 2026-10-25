@@ -61,3 +61,14 @@ def test_words_before_a_call_are_not_read_as_the_decision():
 
 def test_a_call_whose_opening_is_not_in_the_logprobs_has_no_doubt():
     assert read(_call_reply([token("Claro", 0.7), token(",", 1.0)])) is None
+
+
+def test_a_rival_that_only_writes_the_equals_sign_is_not_another_tool():
+    # Holdout v5 E023 (NB): «=input» at 0.345 against «=» alone at 0.336, the same text cut otherwise, read as a doubt
+    # under 0.4: 20 of 88 decisions of a run had that rival. It chooses no name, so the name's token is read without it.
+    tokens = [token("<tool_call>", 1.0), token("\n", 1.0), token("<", 1.0), token("function", 1.0),
+              token("=input", 0.345, [("=", 0.336), ("=file", 0.2)]), token("_visible", 1.0), token("_controls", 1.0),
+              token(">", 1.0)]
+    doubt = read(reply(tokens))
+    assert doubt["p_name"] == round(0.345 / (1 - 0.336), 4)
+    assert doubt["rivals"] == [("=file", round(0.2 / (1 - 0.336), 3))]

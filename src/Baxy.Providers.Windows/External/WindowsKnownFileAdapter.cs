@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Enumeration;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -55,7 +56,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             {
                 string subdirectory = subdirectoryElement.GetString()?.Trim()
                     ?? throw new InvalidDataException("known_subdirectory_invalid");
-                roots = SubdirectoryRoots(roots, subdirectory);
+                roots = SubdirectoryRoots(roots, subdirectory, _privateRoots);
             }
             return ValueTask.FromResult(operation switch
             {
@@ -488,7 +489,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             (string Label, string Root)[] roots = Roots(ExternalJson.RequiredString(arguments, "folder"));
             if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectory))
                 roots = SubdirectoryRoots(roots, subdirectory.GetString()?.Trim()
-                    ?? throw new InvalidDataException("known_subdirectory_invalid"));
+                    ?? throw new InvalidDataException("known_subdirectory_invalid"), _privateRoots);
             return ValueTask.FromResult(TrashTarget(operation, roots, arguments, out _));
         }
         catch (Exception exception) when (exception is InvalidDataException or IOException
@@ -548,17 +549,31 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             return ExternalJson.Failure(operation, "known_file_name_invalid");
         // FILES1603 «Borra la carpeta CarterTest del escritorio»: a directory with
         // that name in a known folder is trashed the same way, whole.
-        var matches = Enumerate(roots)
-            .Concat(EnumerateDirectories(roots))
-            .Where(item => string.Equals(
-                Path.GetFileName(item.Path), fileName, StringComparison.OrdinalIgnoreCase))
-            .Take(CandidatesShown + 1)
-            .ToArray();
+        string? folded = ModelAids.On(ModelAids.NearNames) && FoldedName(fileName) is { Length: > 0 } words ? words : null;
+        List<KnownEntry> found = [], near = [];
+        foreach (KnownEntry item in Enumerate(roots).Concat(EnumerateDirectories(roots)))
+        {
+            string name = Path.GetFileName(item.Path);
+            if (string.Equals(name, fileName, StringComparison.OrdinalIgnoreCase))
+            {
+                found.Add(item);
+                if (found.Count > CandidatesShown) break;
+            }
+            // Holdout v5 (V5E052): the names alike are only said when the name itself is nowhere, from the same walk.
+            else if (folded is not null && found.Count == 0 && near.Count <= CandidatesShown
+                && FoldedName(name) == folded)
+                near.Add(item);
+        }
+        KnownEntry[] matches = [.. found];
+        if (matches.Length == 0 && near.Count > 0)
+            return CandidatesRefusal(operation, "known_file_not_found", near,
+                next: NearNamesNext("no file or folder", fileName, near, "case or accents", walkStopped: false));
         // BAXY Renew (notebook): none says the known folders it walked; two or more, their places as file.read
         // gives them, so the next call can name the right one.
         if (matches.Length == 0)
         {
             string[] searched = PlacesLooked(roots);
+            string? missing = searched.Length == 0 ? MissingSubdirectoryNext(roots, fileName) : null;
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -569,7 +584,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 WriteWalkScope(writer);
                 // Renew al máximo (E027): «all_known» walked desktop, documents and downloads, the file was in a folder
                 // of home, and the answer was «no lo encontré en ninguna carpeta de tu PC». Said where it was not.
-                if (ModelAids.On(ModelAids.SearchScope))
+                if (missing is not null)
+                    writer.WriteString("next", missing);
+                else if (ModelAids.On(ModelAids.SearchScope))
                     writer.WriteString("next", NotFoundScope(fileName, searched));
                 writer.WriteEndObject();
             }), "known_file_not_found");
@@ -919,10 +936,14 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string name = Path.GetFileName(path), stem = Path.GetFileNameWithoutExtension(path), asked = oldText.Trim();
         string read = "nothing was changed; oldText must be the exact text inside the file, copied from file_read; "
             + "file_write with the whole new content replaces all of it";
+        // Holdout v5 (V5E061): oldText was the whole content of another file, and the next push was to rewrite this one.
+        // That this file holds no such text is said as a fact about which file it is.
+        string other = ModelAids.On(ModelAids.EditTextAbsent)
+            ? $"{name} holds no such text, so it may not be the file the person means; " : "";
         return asked.Equals(name, StringComparison.OrdinalIgnoreCase) || asked.Equals(stem, StringComparison.OrdinalIgnoreCase)
             || asked.Equals(path, StringComparison.OrdinalIgnoreCase)
             ? "oldText was the file's name, not text inside it; " + read
-            : "the file does not hold oldText exactly as given (spaces, line breaks and accents count); " + read;
+            : "the file does not hold oldText exactly as given (spaces, line breaks and accents count); " + other + read;
     }
 
     private Action<Utf8JsonWriter> StoppedWalkFacts(KnownEntry file, bool walkStopped)
@@ -1003,6 +1024,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         List<KnownEntry> matches = [];
         List<KnownEntry> stems = [];
         string stem = parts[^1];
+        string? folded = ModelAids.On(ModelAids.NearNames) && FoldedName(stem) is { Length: > 0 } words ? words : null;
         if (fullPath || parts.Length > 1)
         {
             foreach ((string label, string root) in roots)
@@ -1010,6 +1032,23 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 string path = Path.GetFullPath(Path.Combine(root, name));
                 if (BaxyPrivateArea.Holds(_privateRoots, path)) return ExternalJson.Failure(operation, "path_reserved");
                 if (File.Exists(path) && !CrossesReparsePoint(root, path)) matches.Add(new KnownEntry(label, root, path));
+            }
+            // Holdout v5 (V5E052): a path no file has is looked for alike only in the folder it names, its top level.
+            for (int index = 0; matches.Count == 0 && folded is not null && index < roots.Count; index++)
+            {
+                (string label, string root) = roots[index];
+                string folder = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(root, name)))!;
+                if (!Directory.Exists(folder) || CrossesReparsePoint(root, folder)) continue;
+                var topLevel = new EnumerationOptions
+                {
+                    IgnoreInaccessible = true, AttributesToSkip = WalkOptions(label).AttributesToSkip,
+                };
+                foreach (string file in Directory.EnumerateFiles(folder, "*", topLevel))
+                {
+                    if (stems.Count <= CandidatesShown && !BaxyPrivateArea.Holds(_privateRoots, file)
+                        && StemOrAlike(Path.GetFileName(file), stem, folded))
+                        stems.Add(new KnownEntry(label, root, file));
+                }
             }
         }
         else
@@ -1024,8 +1063,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                     if (matches.Count > CandidatesShown) break;
                 }
                 // The stems are only said when the name itself is nowhere: gathered in the same walk, not a second one.
-                else if (matches.Count == 0 && stems.Count <= CandidatesShown && string.Equals(
-                    Path.GetFileNameWithoutExtension(fileName), stem, StringComparison.OrdinalIgnoreCase))
+                else if (matches.Count == 0 && stems.Count <= CandidatesShown && StemOrAlike(fileName, stem, folded))
                     stems.Add(item);
             }
             walkStopped = walk.Reached;
@@ -1041,6 +1079,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (candidates.Length == 0)
         {
             string[] searched = PlacesLooked(roots);
+            string? missing = searched.Length == 0 ? MissingSubdirectoryNext(roots, stem) : null;
             bool walked = !fullPath && parts.Length == 1;
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
@@ -1053,12 +1092,81 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteEndArray();
                 writer.WriteBoolean("walked", walked);
                 WriteWalkScope(writer, stopped);
-                if (ModelAids.On(ModelAids.SearchScope) && (stopped || walked))
+                if (missing is not null)
+                    writer.WriteString("next", missing);
+                else if (ModelAids.On(ModelAids.SearchScope) && (stopped || walked))
                     writer.WriteString("next", stopped ? StoppedWalkScope(stem, searched) : NotFoundScope(stem, searched));
                 writer.WriteEndObject();
             }), code);
         }
-        return CandidatesRefusal(operation, code, candidates, stopped);
+        return CandidatesRefusal(operation, code, candidates, stopped, matches.Count == 0 && folded is not null
+            ? NearNamesNext("no file", stem, candidates, "case, accents or extension", stopped)
+            : null);
+    }
+
+    // The files a name found nowhere offers: its name with another extension, and (aid near_names, folded not null) the
+    // names that fold to the same words.
+    private static bool StemOrAlike(string fileName, string requested, string? folded) =>
+        string.Equals(Path.GetFileNameWithoutExtension(fileName), requested, StringComparison.OrdinalIgnoreCase)
+        || (folded is not null && (FoldedName(fileName) == folded
+            || FoldedName(Path.GetFileNameWithoutExtension(fileName)) == folded));
+
+    // Holdout v5 (V5E052): a name as a voice says it. Lower case, without accents, and the words between the separators a
+    // voice does not dictate (space, -, _ and .) joined by one space: «Factura_Marzo.PDF» and «factura marzo.pdf» are the
+    // same words. Only ever used to offer names; nothing is acted on by it.
+    internal static string FoldedName(string name)
+    {
+        string decomposed;
+        try
+        {
+            decomposed = name.Normalize(NormalizationForm.FormD);
+        }
+        catch (ArgumentException)
+        {
+            decomposed = name; // a name Windows allows with a lone surrogate has no normal form
+        }
+        var folded = new StringBuilder(decomposed.Length);
+        bool gap = false;
+        foreach (char character in decomposed)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.NonSpacingMark) continue;
+            if (character is ' ' or '-' or '_' or '.')
+            {
+                gap = folded.Length > 0;
+                continue;
+            }
+            if (gap) folded.Append(' ');
+            gap = false;
+            folded.Append(char.ToLowerInvariant(character));
+        }
+        return folded.ToString();
+    }
+
+    // The names alike, said as what they are: not the name asked, its words otherwise written; the exact one is named
+    // again to act on it (and then the core asks the yes for that one).
+    private static string NearNamesNext(
+        string nothing, string asked, IEnumerable<KnownEntry> alike, string otherwise, bool walkStopped) =>
+        $"{nothing} {(walkStopped ? "in the part walked " : "")}is named exactly {asked}; these have the same words with "
+        + $"other separators, {otherwise}: "
+        + string.Join(", ", alike.Take(CandidatesShown).Select(item => $"\"{Path.GetFileName(item.Path)}\"")
+            .Distinct(StringComparer.Ordinal))
+        + "; to use one, call again with its exact name as fileName";
+
+    // Holdout v5 (V5E047): a subdirectory that is not there walked no folder, and the next said «X is not in no folder».
+    // Which subfolder of which known folder does not exist, as the model names it.
+    private string? MissingSubdirectoryNext(IEnumerable<(string Label, string Root)> roots, string fileName)
+    {
+        if (!ModelAids.On(ModelAids.MissingSubdirectory)) return null;
+        (string Label, string Place)[] missing = [.. roots.Where(item => !Directory.Exists(item.Root))
+            .Select(item => (item.Label, Place: PlaceOf(item)))
+            .Where(item => item.Place.Length > item.Label.Length)
+            .Distinct()];
+        if (missing.Length == 0) return null;
+        return string.Join("; ", missing.Select(item =>
+                $"{item.Label} has no subfolder \"{item.Place[(item.Label.Length + 1)..]}\" ({item.Place} does not exist)"))
+            + $", so {fileName} was not looked for; file_find on "
+            + string.Join(" or ", missing.Select(item => item.Label).Distinct(StringComparer.Ordinal))
+            + " with no subdirectory lists its folders";
     }
 
     // A walk the time limit stopped knows only what it walked: the name is not in that part, and the rest is unknown.
@@ -1083,7 +1191,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // A refusal with the places it saw: each one's name, known folder and path relative to that folder.
     private ExternalCapabilityReceipt CandidatesRefusal(
-        string operation, string code, IEnumerable<KnownEntry> candidates, bool walkStopped = false) =>
+        string operation, string code, IEnumerable<KnownEntry> candidates, bool walkStopped = false, string? next = null) =>
         new(operation, false, false, ExternalJson.Create(writer =>
         {
             KnownEntry[] all = [.. candidates];
@@ -1102,6 +1210,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
+            if (next is not null) writer.WriteString("next", next);
             writer.WriteEndObject();
         }), code);
 
@@ -1317,7 +1426,7 @@ if __name__ == "__main__":
 
     // The profile root (home) holds AppData and the system's own hidden folders, which are not where the person keeps
     // files: they are not walked (BAXY Renew 2026-10-15).
-    private static EnumerationOptions WalkOptions(string label) => new()
+    internal static EnumerationOptions WalkOptions(string label) => new()
     {
         RecurseSubdirectories = true,
         IgnoreInaccessible = true,
@@ -1392,9 +1501,11 @@ if __name__ == "__main__":
         ["home"] = [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)],
     };
 
-    private (string Label, string Root)[] SubdirectoryRoots(
+    // The folder inside each known folder that subdirectory names, confined to it (also for ExplorerFolderAdapter).
+    internal static (string Label, string Root)[] SubdirectoryRoots(
         IReadOnlyList<(string Label, string Root)> roots,
-        string subdirectory)
+        string subdirectory,
+        IReadOnlyList<string> privateRoots)
     {
         if (!string.IsNullOrWhiteSpace(subdirectory) && Path.IsPathFullyQualified(subdirectory))
         {
@@ -1422,7 +1533,7 @@ if __name__ == "__main__":
             if (!candidate.StartsWith(root + Path.DirectorySeparatorChar,
                     StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("known_subdirectory_invalid");
-            if (BaxyPrivateArea.Holds(_privateRoots, candidate)) throw new InvalidDataException("path_reserved");
+            if (BaxyPrivateArea.Holds(privateRoots, candidate)) throw new InvalidDataException("path_reserved");
             // Renew al máximo (auditoría de flujos): every part of the way is checked, not only the last; through
             // «AppData\Local\Application Data» (Windows' junction back to Local) BAXY's own area was edited.
             if (Directory.Exists(candidate) && CrossesReparsePoint(root, candidate))

@@ -66,6 +66,24 @@ def cardinal(n: int) -> str:
     return " ".join(parts)
 
 
+_UNITS_EN = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+             "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+_TENS_EN = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+
+def cardinal_en(n: int) -> str:
+    """A whole number from 0 to 999 in English words («seventy five», «one hundred five»), as a transcript writes it
+    without its hyphen."""
+    hundreds, rest = divmod(n, 100)
+    words = [_UNITS_EN[hundreds], "hundred"] if hundreds else []
+    if rest >= 20:
+        tens, unit = divmod(rest, 10)
+        words += [_TENS_EN[tens]] + ([_UNITS_EN[unit]] if unit else [])
+    elif rest or not hundreds:
+        words.append(_UNITS_EN[rest])
+    return " ".join(words)
+
+
 def _apocope(words: str) -> str:
     """Before a masculine noun «uno» is «un» and «veintiuno» is «veintiún»."""
     if words.endswith("veintiuno"):

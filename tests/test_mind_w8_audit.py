@@ -176,7 +176,7 @@ def _clock_of(server) -> str:
                 if str(m["content"]).startswith("[Reloj:"))
 
 
-@pytest.mark.parametrize("setting, told", [("", "lo que vio se omitió"), ("none", "lo que vio está arriba")])
+@pytest.mark.parametrize("setting, told", [("", "; lo que vio se omitió"), ("none", "")])
 def test_the_clock_says_a_call_whose_body_was_cut_away_was_left_out(tmp_path, monkeypatch, setting, told) -> None:
     # Aid «clock_omitted»: the clock's calls of the session (8.1) said «lo que vio está arriba» for a read whose result
     # the trim had taken away, beside the kept facts lines saying «lo que vio se omitió».
@@ -192,7 +192,9 @@ def test_the_clock_says_a_call_whose_body_was_cut_away_was_left_out(tmp_path, mo
     mind.decide(3, "gracias")
     mind.decide(4, "¿qué decía?")
     assert mind.trimmed_turns == 2
-    assert f"file_read → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; {told}" in _clock_of(server)
+    clock = _clock_of(server)
+    assert f"file_read → lectura: sólo miró, sin abrir, cerrar ni cambiar nada{told}" in clock
+    assert ("se omitió" in clock) is bool(told)
 
 
 def test_the_clock_keeps_its_words_for_a_body_still_in_the_conversation(tmp_path, monkeypatch) -> None:
@@ -205,8 +207,8 @@ def test_the_clock_keeps_its_words_for_a_body_still_in_the_conversation(tmp_path
     kept = mind.export_session()
     mind.load_session(kept)
     mind.decide(3, "¿qué decía?")
-    assert "file_read → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba" in _clock_of(
-        server)
+    clock = _clock_of(server)
+    assert "file_read → lectura: sólo miró, sin abrir, cerrar ni cambiar nada" in clock and "se omitió" not in clock
 
 
 def test_forgetting_everything_takes_the_trace_and_its_archive(tmp_path, monkeypatch) -> None:
