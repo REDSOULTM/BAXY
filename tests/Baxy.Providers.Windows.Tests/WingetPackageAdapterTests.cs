@@ -389,6 +389,47 @@ public sealed class WingetPackageAdapterTests
         Assert.That(receipt.ErrorCode, Is.EqualTo("winget_adapter_unavailable"));
     }
 
+    // Revisión nb-q-apps2: the launch is let go when the call ends (the Process was never disposed), whether winget
+    // ended or still runs.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task TheLaunchIsReleasedWhenTheCallEnds(bool ended)
+    {
+        var runner = new ScriptedRunner(args => args[0] == "list" ? (0, ListDiscord) : (1, Nothing));
+        int released = 0;
+        var adapter = new WingetPackageAdapter(runner, _ => new(ended ? 999_999 : Environment.ProcessId, () => (1603, ""))
+        {
+            Release = () => released++,
+        });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "package.uninstall", JsonSerializer.SerializeToElement(new { packageId = "discord" }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(ended ? "winget_uninstall_not_verified" : "winget_uninstall_still_running"));
+            Assert.That(released, Is.EqualTo(1));
+            if (ended)
+                Assert.That(receipt.Result!.Value.TryGetProperty("wingetLastLine", out _), Is.False, "no line was read");
+        });
+    }
+
+    // Revisión nb-q-apps2: winget is started through the shell, hidden, so it inherits none of the core's handles (its
+    // stdio pipes among them); its output is not redirected. Nothing is started here.
+    [Test]
+    public void WingetIsStartedWithoutInheritingTheCoresHandles()
+    {
+        System.Diagnostics.ProcessStartInfo start = WingetPackageAdapter.LaunchStart(["install", "--id", "Spotify.Spotify"]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(start.UseShellExecute, Is.True);
+            Assert.That(start.RedirectStandardOutput || start.RedirectStandardError || start.RedirectStandardInput, Is.False);
+            Assert.That(start.WindowStyle, Is.EqualTo(System.Diagnostics.ProcessWindowStyle.Hidden));
+            Assert.That(start.ArgumentList, Is.EqualTo(new[] { "install", "--id", "Spotify.Spotify" }));
+        });
+    }
+
     private sealed class ScriptedRunner(Func<IReadOnlyList<string>, (int ExitCode, string Output)> script)
         : IExternalProcessRunner
     {

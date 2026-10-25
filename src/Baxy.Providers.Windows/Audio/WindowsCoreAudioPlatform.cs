@@ -714,6 +714,37 @@ internal sealed partial class WindowsCoreAudioPlatform
         }
     }
 
+    internal delegate int QueryInterfaceCall(nint unknown, in Guid iid, out nint pointer);
+
+    /// <summary>
+    /// Revisión nb-q-apps2: a session's control and volume interfaces, both or neither. A session that gave its control
+    /// but not its volume (rare) kept the control's reference for good; it is released.
+    /// </summary>
+    internal static bool QuerySessionInterfaces(
+        nint session,
+        QueryInterfaceCall query,
+        Action<nint> release,
+        out nint control,
+        out nint volume)
+    {
+        volume = 0;
+        if (query(session, in IidAudioSessionControl2, out control) < 0 || control == 0)
+        {
+            control = 0;
+            return false;
+        }
+
+        if (query(session, in IidSimpleAudioVolume, out volume) < 0 || volume == 0)
+        {
+            release(control);
+            control = 0;
+            volume = 0;
+            return false;
+        }
+
+        return true;
+    }
+
     private static ApplicationSessionAdjustment? AdjustMatchingSessions(
         IAudioSessionEnumerator sessions,
         string applicationName,
@@ -738,12 +769,12 @@ internal sealed partial class WindowsCoreAudioPlatform
                     continue;
                 }
 
-                nint controlPointer = 0;
-                nint volumePointer = 0;
+                nint controlPointer;
+                nint volumePointer;
                 try
                 {
-                    if (Marshal.QueryInterface(sessionPointer, in IidAudioSessionControl2, out controlPointer) < 0
-                        || Marshal.QueryInterface(sessionPointer, in IidSimpleAudioVolume, out volumePointer) < 0)
+                    if (!QuerySessionInterfaces(
+                            sessionPointer, Marshal.QueryInterface, ReleaseIUnknown, out controlPointer, out volumePointer))
                     {
                         continue;
                     }

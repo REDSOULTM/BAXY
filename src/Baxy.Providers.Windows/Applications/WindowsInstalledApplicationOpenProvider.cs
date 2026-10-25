@@ -2748,11 +2748,16 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             return FileActivation.Outcome.NotListed;
         if (executable is null || !File.Exists(executable))
             return FileActivation.Outcome.Refused;
-        var startInfo = new ProcessStartInfo(executable) { UseShellExecute = false };
-        startInfo.ArgumentList.Add(filePath);
-        using Process? process = Process.Start(startInfo);
-        return process is not null ? FileActivation.Outcome.Issued : FileActivation.Outcome.Refused;
+        return InvokerLaunch.StartOutsideBaxy(FileLaunchPlan(executable, filePath)) > 0
+            ? FileActivation.Outcome.Issued
+            : FileActivation.Outcome.Refused;
     }
+
+    // Revisión nb-q-apps2: Process.Start from the core handed the application every inheritable handle of the core (its
+    // stdio pipes among them) and left it in the core's kill-on-close job. It starts as InvokerLaunch starts the
+    // person's programs: nothing inherited, out of the job, in its own folder, the file its one quoted argument.
+    internal static InvokerLaunch.LaunchPlan FileLaunchPlan(string executable, string filePath) =>
+        new(executable, "\"" + filePath + "\"", Path.GetDirectoryName(executable) ?? Environment.SystemDirectory);
 
     public long ForegroundWindow() => ForegroundHandBack.Foreground();
 
