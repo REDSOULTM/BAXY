@@ -192,7 +192,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 100);
         List<(string Label, string Root)> searched = [];
         var walk = new WalkBudget(_utcNow, WalkTimeLimit);
-        IEnumerable<KnownEntry> named = Enumerate(roots, searched, walk);
+        // Every file the walk went through, whatever its name (find_content_next).
+        int walked = 0;
+        IEnumerable<KnownEntry> named = Enumerate(roots, searched, walk).Select(item =>
+        {
+            walked++;
+            return item;
+        });
         if (query is not null) named = named.Where(item => NameMatches(Path.GetFileName(item.Path), query));
         List<(KnownEntry File, int Line, string LineText)> hits = [];
         int scanned = 0, skippedTooLarge = 0, skippedNotText = 0, skippedUnreadable = 0;
@@ -294,12 +300,36 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             bool skippedFiles = skippedTooLarge + skippedNotText + skippedUnreadable > 0;
             if (walk.Reached || (content is not null && (scanLimitReached || hits.Count >= limit || skippedFiles)))
                 writer.WriteBoolean("readInPart", true);
+            if (content is null && query is not null && hits.Count == 0
+                && FindContentNext(arguments, query, searched, walked, walk.Reached) is { } inside)
+                writer.WriteString("next", inside);
             writer.WriteString("authority", content is null
                 ? "windows_known_folders_name_search_postread"
                 : "windows_known_folders_text_content_search_postread");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // Práctica e2e V6E035 («¿qué archivo de mi carpeta X tiene anotado el dato Y?»): file.find with query Y found no
+    // name with Y three times and the answer was «ningún archivo en X menciona Y», with Y written inside one of its files.
+    // A search of names (not a pattern) that matched none, over a walk that went through files and was not stopped,
+    // says that only names were matched, how many files had their text unread, and the call that reads inside them.
+    private string? FindContentNext(
+        JsonElement arguments, string query, List<(string Label, string Root)> searched, int walked, bool stopped)
+    {
+        if (!ModelAids.On(ModelAids.FindContentNext) || stopped || walked == 0
+            || query.Contains('*') || query.Contains('?'))
+            return null;
+        string? folder = OptionalText(arguments, "folder");
+        string? subdirectory = OptionalText(arguments, "subdirectory");
+        if (folder is null) return null;
+        string call = subdirectory is null
+            ? $"folder \"{folder}\" and content \"{query}\""
+            : $"folder \"{folder}\", subdirectory \"{subdirectory}\" and content \"{query}\"";
+        return $"no file name in {string.Join(", ", PlacesLooked(searched))} contains \"{query}\": this search "
+            + $"matched names only, so the text inside its {walked} file{(walked == 1 ? "" : "s")} was not searched; "
+            + $"to search inside {(walked == 1 ? "it" : "them")}, call file_find with {call}";
     }
 
     private ExternalCapabilityReceipt List(

@@ -254,6 +254,14 @@ public static class ModelAids
     /// </summary>
     public const string CaretPlace = "caret_place";
 
+    /// <summary>
+    /// Práctica e2e V6E035 («¿qué archivo de mi carpeta X tiene anotado el dato Y?», c3-junto-s0: file.find with query Y
+    /// three times, no name with Y, and «ningún archivo en X menciona Y» with Y written inside one): a file.find by name
+    /// (not a pattern) that matched none says that only names were matched, how many files under it had their text
+    /// unread, and the file_find call with the same folder and subdirectory and content Y (WindowsKnownFileAdapter).
+    /// </summary>
+    public const string FindContentNext = "find_content_next";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
