@@ -237,6 +237,66 @@ public sealed class ScreenViewProjectionTests
         Assert.That(view.Contains("(los otros lugares de"), Is.EqualTo(said));
     }
 
+    // Práctica V5E023 («en el Notepad que tengo abierto, agrega al final …»): the look as it read the Notepad, with where
+    // the reader found the caret of its focused document («caret»), or nothing said of it.
+    private static string NotepadLook(string caret) =>
+        "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+        "\"window\":{\"title\":\"borrador.txt: Bloc de notas\",\"process\":\"Notepad\",\"hwnd\":2688888,\"foreground\":false," +
+        "\"focused\":{\"kind\":\"Document\",\"name\":\"Editor de texto\"," +
+        "\"value\":\"Hola equipo, les cuento que el viernes no hay reunión.\",\"i\":0" + caret + "}}," +
+        "\"controls\":[" +
+        "{\"i\":0,\"kind\":\"Document\",\"name\":\"Editor de texto\",\"zone\":\"C\",\"state\":\"focused\"," +
+        "\"value\":\"Hola equipo, les cuento que el viernes no hay reunión.\"}," +
+        "{\"i\":24,\"kind\":\"Text\",\"name\":\"Línea 1, Columna 1\",\"zone\":\"BL\",\"state\":\"\",\"value\":null}]," +
+        "\"controlCount\":2,\"textAuthority\":\"not_read\",\"authority\":\"uia\"}";
+
+    private const string NotepadFocus =
+        "Foco: [0] Document «Editor de texto» = Hola equipo, les cuento que el viernes no hay reunión.";
+
+    [TestCase("start", " (cursor al principio del texto: lo que se escriba va antes de lo que ya tiene)")]
+    [TestCase("end", " (cursor al final del texto: lo que se escriba va después de lo que ya tiene)")]
+    [TestCase("middle", " (cursor en medio del texto: lo que se escriba va ahí, ni al principio ni al final)")]
+    [TestCase("selection", " (hay texto seleccionado: lo que se escriba lo reemplaza)")]
+    public void TheFocusedTextSaysWhereItsCaretIs(string caret, string note)
+    {
+        string look = NotepadLook(",\"caret\":\"" + caret + "\"");
+        string on;
+        string off;
+        using (ModelAids.Use(ModelAids.CaretPlace))
+        {
+            on = (string?)Project("{\"status\":\"completed\"}", look)["view"] ?? string.Empty;
+        }
+
+        using (ModelAids.Use("none"))
+        {
+            off = (string?)Project("{\"status\":\"completed\"}", look)["view"] ?? string.Empty;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(on, Does.Contain(NotepadFocus + note + "\n"));
+            Assert.That(on.Split("cursor").Length + on.Split("seleccionado:").Length, Is.EqualTo(3), "said once, on the focus");
+            Assert.That(off, Is.EqualTo(on.Replace(note, string.Empty)), "with the aid off the view is as before");
+        });
+    }
+
+    // Nothing is said of a caret the reader did not read (no TextPattern, a password, an empty text) or named otherwise.
+    [TestCase("")]
+    [TestCase(",\"caret\":\"\"")]
+    [TestCase(",\"caret\":\"line 1\"")]
+    public void AFocusWhoseCaretWasNotReadSaysNothingOfIt(string caret)
+    {
+        using IDisposable setting = ModelAids.Use(ModelAids.CaretPlace);
+
+        string view = (string?)Project("{\"status\":\"completed\"}", NotepadLook(caret))["view"] ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(view, Does.Contain(NotepadFocus + "\n"));
+            Assert.That(view, Does.Not.Contain("cursor").And.Not.Contain("seleccionado"));
+        });
+    }
+
     private static JsonObject Project(string facts, string lookJson = Look)
     {
         using JsonDocument look = JsonDocument.Parse(lookJson);

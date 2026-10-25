@@ -2586,6 +2586,33 @@ function Select-BodySurface($surfaces,$primary){
   }
   return $best
 }
+# Practica V5E023 («agrega al final» escrito al principio del texto: nada de la vista decia donde estaba el cursor):
+# donde esta el cursor de un campo de texto enfocado, por su TextPattern, la seleccion frente al documento entero:
+# «start» (nada antes), «end» (nada despues, o solo el salto de parrafo final que un RichEdit no deja pasar), «middle»,
+# «selection» (una seleccion no vacia: lo escrito la reemplaza); vacio cuando no se lee (sin TextPattern, varias
+# selecciones, un documento vacio, un fallo). Solo lee: nada se enfoca ni se mueve, y del texto solo un caracter antes
+# y tres despues del cursor.
+function Get-CaretPlace($el){
+  try {
+    $found=$null
+    if(-not $el.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found)){ return '' }
+    $tp=[System.Windows.Automation.TextPattern]$found
+    $ranges=@($tp.GetSelection())
+    if($ranges.Count -ne 1 -or $null -eq $ranges[0]){ return '' }
+    $caret=$ranges[0]
+    $from=[System.Windows.Automation.Text.TextPatternRangeEndpoint]::Start
+    $to=[System.Windows.Automation.Text.TextPatternRangeEndpoint]::End
+    if($caret.CompareEndpoints($from,$caret,$to) -ne 0){ return 'selection' }
+    $before=$tp.DocumentRange; $before.MoveEndpointByRange($to,$caret,$from)
+    $after=$tp.DocumentRange; $after.MoveEndpointByRange($from,$caret,$to)
+    $atStart=([string]$before.GetText(1)).Length -eq 0
+    $atEnd=([string]$after.GetText(3)) -match '^(\r\n|\r|\n)?\z'
+    if($atStart -and $atEnd){ return '' }
+    if($atStart){ return 'start' }
+    if($atEnd){ return 'end' }
+    return 'middle'
+  } catch { return '' }
+}
 function Do-View($request){
   $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt $script:ViewCap){$limit=$script:ViewCap}
   $target=Get-Root ([long]$request.hwnd) -Front
@@ -2729,6 +2756,11 @@ function Do-View($request){
     $focusedIndex=$null
     for($k=0;$k -lt $ordered.Count;$k++){ if([object]::ReferenceEquals($controls[$k],$focused)){ $focusedIndex=$k; break } }
     $focusedOut=[pscustomobject]@{ kind=$focused.kind; name=$focused.name; value=$focused.value; i=$focusedIndex }
+    # Practica V5E023: el cursor de un campo de texto con texto (una contrasena no tiene valor leido), solo si se leyo.
+    if(($focused.kind -eq 'Edit' -or $focused.kind -eq 'Document') -and -not [string]::IsNullOrEmpty([string]$focused.value)){
+      $caret=$(if(([string]$focused.id).Length -gt 0 -and $elements.ContainsKey([string]$focused.id)){ Get-CaretPlace $elements[[string]$focused.id] } else { '' })
+      if($caret.Length -gt 0){ $focusedOut | Add-Member -NotePropertyName caret -NotePropertyValue $caret }
+    }
   }
   # Renew al maximo (7.3): la caja de la ventana, en los mismos pixeles que los rect: el adaptador da a cada control su zona.
   return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; disabledCut=($withDimmed -and [bool]$script:DisabledCut); frameOnly=$frameOnly; partial=$viewPartial; box=$box }

@@ -106,8 +106,9 @@ internal readonly record struct WindowIdentity(nint Window, int ProcessId, long 
 }
 
 /// <summary>BAXY Renew (notebook), F004: the edit control that had the keyboard's focus of the window in front right
-/// before a text was typed into it by the keyboard, and the length its text must reach once the text is in.</summary>
-internal readonly record struct TypedMark(nint Field, int Expected);
+/// before a text was typed into it by the keyboard, and the length its text must reach once the text is in; and the text
+/// it held then, read only for where the typed text lands (<see cref="WindowsTextDelivery.Landed"/>; null otherwise).</summary>
+internal readonly record struct TypedMark(nint Field, int Expected, string? Was = null);
 
 /// <summary>FT/proveedores goal (E2): the paragraph at the caret of a document that is no Win32 edit control (Word's
 /// «_WwG»), as UI Automation read it: its text (at most the read's bound), the unit it was expanded to («paragraph» or
@@ -116,9 +117,11 @@ internal readonly record struct CaretText(string Text, string Unit, bool Bounded
 
 /// <summary>What a delivery aimed at a field did: the method that took it, whether its re-read proves it was
 /// delivered, whether anything may have reached the field, the failure when it did not, and the entry of a list a «select»
-/// chose, as it was read (auditoría C9).</summary>
+/// chose, as it was read (auditoría C9); and, read back, where the text landed in what the field held (Práctica V5E023,
+/// <see cref="WindowsTextDelivery.Landed"/>).</summary>
 internal readonly record struct FieldDelivery(
-    string Method, bool Delivered, bool EffectMayHaveOccurred, string? Error, string FieldClass, string? Entry = null);
+    string Method, bool Delivered, bool EffectMayHaveOccurred, string? Error, string FieldClass, string? Entry = null,
+    string? Landed = null);
 
 /// <summary>
 /// Text and keys delivered to the field of the mission's window by window messages (CONTRATO_VISTA_ACCION.md §2):
@@ -231,13 +234,14 @@ internal sealed class WindowsTextDelivery
         }
 
         int expected = Expected(field, before, text.Length);
+        string? was = replace ? null : Was(field, before);
 
         if (!Same(identity))
             return new FieldDelivery("em_replacesel", false, replace, "input_window_changed", fieldClass);
         bool answered = _messages.ReplaceSelection(field, text);
         int after = _messages.TextLength(field);
-        if (after == expected && Holds(field, text, after, replace))
-            return new FieldDelivery("em_replacesel", true, true, null, fieldClass);
+        if (after == expected && Holds(field, text, after, replace, out string? now))
+            return new FieldDelivery("em_replacesel", true, true, null, fieldClass, Landed: Landed(was, now, text));
         // The control answered and its text did not move: it does not take EM_REPLACESEL, nothing was inserted. Unless
         // the insertion replaced a selection as long as itself and the text is too long to be read: then nothing tells
         // the two apart, and typing it again could put it in twice.
@@ -268,9 +272,10 @@ internal sealed class WindowsTextDelivery
         }
 
         after = _messages.TextLength(field);
-        bool whole = queued == text.Length && after == expected && Holds(field, text, after, replace);
+        string? held = null;
+        bool whole = queued == text.Length && after == expected && Holds(field, text, after, replace, out held);
         return whole
-            ? new FieldDelivery("wm_char", true, true, null, fieldClass)
+            ? new FieldDelivery("wm_char", true, true, null, fieldClass, Landed: Landed(was, held, text))
             : new FieldDelivery("wm_char", false, true,
                 Same(identity) ? "input_effect_not_verified" : "input_window_changed", fieldClass);
     }
@@ -306,16 +311,71 @@ internal sealed class WindowsTextDelivery
             || !TakesTyping(_messages.Style(field)))
             return null;
         int before = _messages.TextLength(field);
-        return before < 0 ? null : new TypedMark(field, Expected(field, before, length));
+        return before < 0 ? null : new TypedMark(field, Expected(field, before, length), Was(field, before));
     }
 
     /// <summary>Whether the typed text is in the marked control, by the proof of a delivery: its text grew by the text
-    /// (minus the selection it replaced) and holds it. Nothing of the control's text leaves this check.</summary>
-    internal bool ReadsBack(TypedMark mark, string text)
+    /// (minus the selection it replaced) and holds it. Nothing of the control's text leaves this check but, read back,
+    /// where the text landed (<paramref name="landed"/>, <see cref="Landed"/>).</summary>
+    internal bool ReadsBack(TypedMark mark, string text, out string? landed)
     {
+        landed = null;
         int after = _messages.TextLength(mark.Field);
-        return after == mark.Expected && Holds(mark.Field, text, after);
+        if (after != mark.Expected || !Holds(mark.Field, text, after, false, out string? now))
+            return false;
+        landed = Landed(mark.Was, now, text);
+        return true;
     }
+
+    /// <summary>
+    /// Práctica V5E023 («agrega al final»: the text went in before «Hola equipo…», and «agregué al final» was said): where
+    /// a text read back in an edit control landed in the text the control held before, said as a fact the reply can be
+    /// held to. Only from the two reads: the text after is the text before with the typed one put in at one place (no
+    /// selection replaced), and every such place is at its start, every one at its end, or every one inside it; null
+    /// otherwise (no text before, a replacement, a read missing, a text the two reads place in more than one way).
+    /// </summary>
+    internal static string? Landed(string? was, string? now, string text)
+    {
+        if (was is not { Length: > 0 } || now is null || text.Length == 0 || now.Length != was.Length + text.Length)
+            return null;
+        int prefix = 0;
+        while (prefix < was.Length && now[prefix] == was[prefix])
+            prefix++;
+        int suffix = 0;
+        while (suffix < was.Length && now[now.Length - 1 - suffix] == was[was.Length - 1 - suffix])
+            suffix++;
+        // The text went in at «at» when what is before it is the old text's beginning and what is after it its end.
+        int from = was.Length - suffix;
+        if (from > prefix || prefix - from > LandingPlaces)
+            return null;
+        bool start = false, end = false, middle = false;
+        for (int at = from; at <= prefix; at++)
+        {
+            if (string.CompareOrdinal(now, at, text, 0, text.Length) != 0)
+                continue;
+            start |= at == 0;
+            end |= at == was.Length;
+            middle |= at > 0 && at < was.Length;
+        }
+
+        return (start, end, middle) switch
+        {
+            (true, false, false) => "the text went in at the start of the text the field already had, before it",
+            (false, true, false) => "the text went in at the end of the text the field already had, after it",
+            (false, false, true) => "the text went in inside the text the field already had, neither at its start nor at its end",
+            _ => null,
+        };
+    }
+
+    // The places a text repeated around its insertion (typing «a» into «aaa») leaves to try; past them nothing is said.
+    private const int LandingPlaces = 64;
+
+    // The text a field holds before an insertion, only for where it lands (ModelAids.CaretPlace): its line breaks as one
+    // character, as Holds reads it after; null with the aid off, an empty field or a text too long to read.
+    private string? Was(nint field, int length) =>
+        Infrastructure.ModelAids.On(Infrastructure.ModelAids.CaretPlace) && length is > 0 and <= ReadableText
+            ? _messages.Text(field, length)?.Replace("\r", string.Empty, StringComparison.Ordinal)
+            : null;
 
     /// <summary>BAXY Renew al máximo (E017): whether the marked control has taken the first <paramref name="sent"/>
     /// characters of a text of <paramref name="length"/> typed into it: its length reached what it had (minus the
@@ -406,11 +466,12 @@ internal sealed class WindowsTextDelivery
 
     // The text is in the field; a replaced value is the field's whole text. A text too long to be read proves
     // neither: its length alone is never taken for the text (rule 3).
-    private bool Holds(nint field, string text, int length, bool whole = false)
+    private bool Holds(nint field, string text, int length, bool whole, out string? content)
     {
+        content = null;
         if (length > ReadableText)
             return false;
-        string? content = _messages.Text(field, length)?.Replace("\r", string.Empty, StringComparison.Ordinal);
+        content = _messages.Text(field, length)?.Replace("\r", string.Empty, StringComparison.Ordinal);
         return content is not null
             && (whole ? content == text : content.Contains(text, StringComparison.Ordinal));
     }
