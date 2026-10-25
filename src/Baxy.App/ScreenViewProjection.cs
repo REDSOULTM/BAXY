@@ -24,6 +24,13 @@ namespace Baxy.App;
 /// </summary>
 internal static class ScreenViewProjection
 {
+    /// <summary>
+    /// The most places an application may have for a look to list its other places by name (sight_places). The data
+    /// (ApplicationPlaces) give Discord 1, Epic Games Launcher and Spotify 3, Steam 5 and Configuración 52: 8 lists every
+    /// launcher's few places on one short line, with room for a couple more, and never a list like Settings'.
+    /// </summary>
+    internal const int MaximumListedPlaces = 8;
+
     private static readonly (string Label, string[] Zones)[] Bands =
     [
         ("arriba", ["TL", "T", "TR"]),
@@ -158,13 +165,24 @@ internal static class ScreenViewProjection
             // store was in sight six looks said «Lugar a la vista: store» and nothing else, until the turn's 15 calls
             // ran out. Where the view says which place is in sight, it says beside it the application's other places
             // that app.open opens directly, from the data (ApplicationPlaces), as facts.
-            if (!arrived
-                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.SightPlaces)
-                && OtherPlaces((string?)place["application"], inSight) is { Length: > 0 } others)
+            // Revisión de nb-w11-quieto: an application with many places (Configuración, 52) would list them all, a
+            // block that invites going to them; beyond MaximumListedPlaces only their number is said.
+            string? application = (string?)place["application"];
+            int otherCount = Baxy.Kernel.Operations.ApplicationPlaces.PlacesOf(application).Count(other => other.Place != inSight);
+            if (!arrived && otherCount > 0
+                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.SightPlaces))
             {
-                text.Append("(los otros lugares de ").Append((string?)place["application"])
-                    .Append(" se abren directo, sin pulsar: app_open con appId «").Append((string?)place["application"])
-                    .Append("» y place ").Append(others).Append(")\n");
+                if (otherCount + 1 > MaximumListedPlaces)
+                {
+                    text.Append('(').Append(application).Append(" se abre directo, sin pulsar, en otros ").Append(otherCount)
+                        .Append(" lugares: app_open con appId «").Append(application).Append("» y su place)\n");
+                }
+                else
+                {
+                    text.Append("(los otros lugares de ").Append(application)
+                        .Append(" se abren directo, sin pulsar: app_open con appId «").Append(application)
+                        .Append("» y place ").Append(OtherPlaces(application, inSight)).Append(")\n");
+                }
             }
         }
 
