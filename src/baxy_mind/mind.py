@@ -25,6 +25,7 @@ from .doubt import read as read_doubt
 from .llm_server import LlmServer
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
+from . import web_focus
 
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
@@ -1810,6 +1811,16 @@ class Mind:
         return [i for i, m in enumerate(self.conversation)
                 if m["role"] == "user" and str(m.get("content") or "").startswith(CLOCK_MARK)]
 
+    @staticmethod
+    def _web_queries(turn: dict[str, Any]) -> list[str]:
+        """What a web page is read for (goal h-web): the person's words and the turn's web.search queries."""
+        queries = [str(turn.get("text") or "")]
+        for receipt in turn.get("receipts") or []:
+            query = receipt.get("arguments", {}).get("query") if receipt.get("op") == "web.search" else None
+            if isinstance(query, str):
+                queries.append(query)
+        return [q for q in queries if q.strip()]
+
     def continue_turn(self, request_id: Any, observation: str, final: bool = False,
                       beat: bool = False) -> dict[str, Any]:
         """The verified result of the call the App ran goes back as that call's tool message. ``final``: the App closes
@@ -1824,6 +1835,12 @@ class Mind:
         # after the typing failed, 2026-10-15 falsehood bench).
         done = turn.setdefault("done", [])
         calling = str(turn.get("calling", "?"))
+        received = observation
+        if calling == "web.fetch" and web_focus.on():
+            # Goal h-web (BAXY_WEB_FOCUS=1): the model reads the lead and the paragraphs nearest to what was asked; the
+            # answer check keeps the page as it came (received).
+            observation = web_focus.focus(observation, self._web_queries(turn), json.loads(
+                turn.get("calling_args") or "{}"))
         calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
         outcome = _outcome(observation, read=self.risk.get(calling) in READ_RISKS)
         # Aid «confirm_names_call» (auditoría de la mente, w8, P5): an answer to a confirmation says which call it
@@ -1842,7 +1859,7 @@ class Mind:
             turn["repeats"] = 1
             done.append(entry)
         self._ran_add(told, outcome, turn["awaiting"])
-        self._receipt(turn, calling, observation, outcome)
+        self._receipt(turn, calling, received, outcome)
         aids = _aids_seen(observation)
         named = json.loads(turn.get("calling_args") or "{}") if calling in {"app_open", "input_visible_controls"} else {}
         # Uso real: a look at another window (the browser's) came between the opening and the failures; the application
@@ -2477,6 +2494,8 @@ class Mind:
             turn["calling"] = name
             turn["calling_args"] = json.dumps(call["arguments"], sort_keys=True, ensure_ascii=False)
             arguments = self._expand({**call["arguments"], **self.constants.get(name, {})})
+            if name == "web.fetch":
+                arguments = web_focus.widen(arguments)  # goal h-web: BAXY_WEB_FOCUS=1 reads a wider part
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)
