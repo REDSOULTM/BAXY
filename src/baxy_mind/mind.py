@@ -2164,6 +2164,11 @@ class Mind:
                 except json.JSONDecodeError:
                     facts = None
                 status = facts.get("status") if isinstance(facts, dict) else None
+                # Revisión de final2: a call the owner switched off in Settings (FieldSettings.Refusal, «*_by_owner») is
+                # «rejected» as one refused for its arguments is, but nothing it was asked could have run: a real limit
+                # the answer may tell, never a try that left the act to do.
+                if status == "rejected" and str(facts.get("error") or "").endswith("_by_owner"):
+                    status = "refused_by_owner"
                 results[message.get("tool_call_id")] = str(status) if status else "unknown"
         tries = []
         for message in conv:

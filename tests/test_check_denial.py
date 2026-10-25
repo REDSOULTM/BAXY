@@ -196,3 +196,20 @@ def test_a_conversation_trimmed_of_its_earlier_turns_holds_the_denial(tmp_path: 
     mind.trimmed_turns = 1
     result = mind.decide(3, "¿por qué?")
     assert result["reply"] == "No puedo borrar archivos de esa carpeta." and len(server.bodies) == 3
+
+
+def test_an_earlier_try_the_owner_switched_off_holds_the_denial(tmp_path: Path, monkeypatch) -> None:
+    # Revisión de final2: a call the owner switched off in Settings («Mirar la pantalla») is «rejected» as a call refused
+    # for its arguments is, but it is a real limit: «no puedo leer el bloc de notas» after it is true, and the rule asked
+    # again with input_visible_controls and the tools, so the model took back a true answer or called it again.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [
+        _call("input_visible_controls", {"application": "Bloc de notas"}), _say("No pude: está desactivado."),
+        _say("No puedo leer el texto del bloc de notas.")])
+    mind.configure({"capabilities": [
+        {"name": "input.visible.controls", "description": "Mira una ventana y lee su texto.", "risk": "read_only",
+         "argumentsSchema": {"type": "object", "properties": {"application": {"type": "string"}}}}]})
+    mind.decide(1, "lee el bloc de notas")
+    mind.continue_turn(2, json.dumps({"status": "rejected", "error": "screen_disabled_by_owner"}))
+    result = mind.decide(3, "¿por qué no?")
+    assert result["reply"] == "No puedo leer el texto del bloc de notas." and len(server.bodies) == 3

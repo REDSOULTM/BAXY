@@ -719,6 +719,42 @@ public sealed class SaidFoldersTests
     // Holdout v6 V6E043 (dictado, «en mis documentos dentro de la carpeta recetas abuela crea … sopaipillas punto
     // txt»): a folder recetas in the home folder was named too, and the call offered for Recetas Abuela kept the model's
     // recetas_abuela inside it; the model asked or wrote Recetas Abuela\recetas_abuela\sopaipillas.txt.
+    // Revisión de final2: the same copy or move of the working folder written again runs as written; its note then said
+    // the counterpart as a call to make, so the act already made in the working folder was followed by a second one in
+    // the person's folder. After an act that ran, the note says only where it acted; a read still says its look there.
+    [TestCase("filesystem.copy", false)]
+    [TestCase("filesystem.move", false)]
+    [TestCase("filesystem.read.text", true)]
+    public void TheSameCallWrittenAgainIsNotToldTheCounterpartAsAnotherAct(string operation, bool told)
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "archivador"));
+        File.WriteAllText(Path.Combine(_home, "archivador", "contrato.txt"), "x");
+        string? before = Environment.GetEnvironmentVariable("BAXY_AYUDAS");
+        Environment.SetEnvironmentVariable("BAXY_AYUDAS", "all");
+        try
+        {
+            SaidFolders said = Heard("en archivador haz una copia de contrato.txt que se llame respaldo.txt");
+            var call = new JsonObject { ["resourceId"] = "fs_0123456789abcdef", ["expectedSha256"] = new string('a', 64) };
+            if (operation != "filesystem.read.text")
+                call["destinationRelativePath"] = "archivador/respaldo.txt";
+
+            SaidFolders.Ruling? first = said.Rule(operation, Descriptor(operation), call);
+            SaidFolders.Ruling? again = said.Rule(operation, Descriptor(operation), call);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(first?.Refusal, Is.Not.Null);
+                Assert.That(again?.Refusal, Is.Null);
+                Assert.That(again?.Note, Does.Contain("outside it, as it was written"));
+                Assert.That(again?.Note?.Contains("; filesystem_", StringComparison.Ordinal), Is.EqualTo(told));
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_AYUDAS", before);
+        }
+    }
+
     [Test]
     public void ANameSaidAsPartOfALongerFolderNameIsThatFolderAndItsRespellingIsIt()
     {

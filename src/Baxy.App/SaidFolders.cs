@@ -274,9 +274,12 @@ internal sealed class SaidFolders
             // Holdout v6 V6E042 (cien s0 and s2): the search refused was written again and ran in the working folder; its
             // note said only what it had not looked at, and the model answered «no está en mi carpeta de trabajo» (the
             // run that called file_find next found it). The look there is said again with what it did not look at.
+            // Revisión de final2: only after a read. A copy or a move written again has run as written; its counterpart
+            // said as a call to make would follow that act with a second one in the person's folder.
+            string? after = descriptor.Risk == OperationRisks.ReadOnly ? look : null;
             return new(arguments, $"{who} {named}; this call acted in {where}, outside it, as it was written: "
                 + $"it did not look at or change anything in {(places.Count == 1 ? "that folder" : "those folders")}"
-                + (look is null ? string.Empty : "; " + look), null);
+                + (after is null ? string.Empty : "; " + after), null);
         }
 
         string wire = operation.Replace('.', '_');
