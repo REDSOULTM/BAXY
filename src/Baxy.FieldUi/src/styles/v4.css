@@ -229,6 +229,9 @@ html.hc .bx-avid video{mix-blend-mode:normal;filter:contrast(1.15)}
 .bx-avid ~ canvas{position:relative;z-index:2}
 /* light theme: the hologram clips only read on dark, so it uses the drawn face */
 html.lt .bx-avid{display:none!important}
+/* reduced motion: the view's endless animations stop and what they show stays, still: the live and thinking dots and
+   the caret lit, the talking ring drawn, the spinner's arc, the boot bar full and dimmed (in progress, not 30 %) */
+@media (prefers-reduced-motion:reduce){.bx-statel.live i,.bx-c-think i,.bx-live::after,.bx-step .txt,.bx-mic.on.breath::before,.bx-mic.talking::before,.bx-wait .ar,.spin{animation:none}.bx-boot .bar i{animation:none;width:100%;opacity:.55}}
 /* reduced motion: no fade between clips (.fade outranks the plain rule), no powering-up pulse, no shake on an error */
 @media (prefers-reduced-motion:reduce){.bx-avid video,.bx-avid.fade video{transition:none}.bx-avid.s-booting video,.bx-avid.s-error video.on{animation:none}}
 /* round-2 fixes: the folded chat is fully hidden, the centre never spills, panel names ellipsize in accessible mode */

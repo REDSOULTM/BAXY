@@ -4,7 +4,8 @@ import type { BaxyState } from '../types';
 
 /* Full-window starfield + travelling comets (design cosmos.jsx, ported as is): batched draws at 30 fps, the nebula
    painted at a third of the size and cached, the same sky on every rebuild (seed 707), the buffer capped at 4 MP and
-   DPR ≤ 1.25. */
+   DPR ≤ 1.25. With prefers-reduced-motion the sky stays still: no turning, no twinkle, no comets (its colours still
+   follow the state). */
 
 type SkyState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking';
 const NEB: Record<SkyState, [string, string]> = {
@@ -39,6 +40,7 @@ function CosmosView({ state, focusX, light }: { state: BaxyState; focusX: number
     let w = 0, h = 0, raf = 0, last = performance.now(), acc = 0;
     let stars: Star[] = [], comets: Comet[] = [], spawn = 0, rot = 0, vis = 1, nebKey = '';
     const neb = document.createElement('canvas');
+    const calmQ = window.matchMedia('(prefers-reduced-motion: reduce)');
     const build = () => {
       const lw = cv.clientWidth, lh = cv.clientHeight;
       if (!lw || !lh) return;
@@ -85,15 +87,15 @@ function CosmosView({ state, focusX, light }: { state: BaxyState; focusX: number
       if (acc < 32) return;
       const dt = Math.min(0.08, acc / 1000); acc = 0;
       if (!w || !h) { build(); if (!w || !h) return; }
-      const st = S.current.state, T = now / 1000;
+      const st = S.current.state, T = now / 1000, rm = calmQ.matches;
       vis += ((st === 'standby' ? 0.35 : 1) - vis) * Math.min(1, dt * 1.5);
-      rot += dt * (st === 'standby' ? 0.002 : st === 'thinking' ? 0.012 : 0.005);
+      if (!rm) rot += dt * (st === 'standby' ? 0.002 : st === 'thinking' ? 0.012 : 0.005);
       if (nebKey !== st + S.current.light) { paintNebula(st); nebKey = st + S.current.light; }
       ctx.clearRect(0, 0, w, h);
       ctx.globalAlpha = vis; ctx.drawImage(neb, 0, 0, w, h);
       const cx = S.current.focusX * w, cy = h * 0.46, ca = Math.cos(rot), sa = Math.sin(rot);
       for (let c = 0; c < 3; c++) for (let b = 0; b < 3; b++) {
-        ctx.globalAlpha = vis * (0.35 + 0.55 * (0.5 + 0.5 * Math.sin(T * (0.8 + b * 0.5) + b * 2.1)));
+        ctx.globalAlpha = vis * (0.35 + 0.55 * (rm ? 0.5 : 0.5 + 0.5 * Math.sin(T * (0.8 + b * 0.5) + b * 2.1)));
         ctx.fillStyle = (S.current.light ? STAR_COLS_L : STAR_COLS)[c]; ctx.beginPath();
         for (const s of stars) {
           if (s.c !== c || s.b !== b) continue;
@@ -103,7 +105,8 @@ function CosmosView({ state, focusX, light }: { state: BaxyState; focusX: number
         }
         ctx.fill();
       }
-      spawn += dt * COMET[st].rate;
+      if (rm) { comets = []; spawn = 0; }
+      else spawn += dt * COMET[st].rate;
       while (spawn >= 1) { spawn -= 1; if (comets.length < 14) newComet(st); }
       comets = comets.filter((c) => c.t < 1.08);
       for (const c of comets) {
