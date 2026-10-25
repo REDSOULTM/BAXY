@@ -85,16 +85,18 @@ class SystemOne:
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         # A start again keeps what the server wrote before it exited (its cause) in the same log.
-        log = open(log_dir / "system-one.log", "a" if self.restarts else "w", encoding="utf-8")
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
         self._ready.clear()
         # An encoder reads its whole input in one batch: -b/-ub cover the longest state plus its options. No device at
         # all (-dev none): with only -ngl 0 the CUDA build still made a context and offloaded its big batches, and the
         # product's VRAM went 3902 → 4091 MiB with System One on (Renew al máximo, palanca 3.1).
-        self._process = subprocess.Popen(
-            [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), "-ngl", "0", "-dev", "none",
-             "-t", str(self.threads), "-c", "4096", "-np", "1", "-b", "2048", "-ub", "2048"],
-            stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
+        # The server writes its log through its own inherited handle: the mind's copy is closed once it started (one
+        # was left open at every start again).
+        with open(log_dir / "system-one.log", "a" if self.restarts else "w", encoding="utf-8") as log:
+            self._process = subprocess.Popen(
+                [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), "-ngl", "0", "-dev",
+                 "none", "-t", str(self.threads), "-c", "4096", "-np", "1", "-b", "2048", "-ub", "2048"],
+                stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
 
     def _watch(self) -> None:
         while True:

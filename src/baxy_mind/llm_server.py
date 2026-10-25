@@ -94,9 +94,10 @@ class LlmServer:
         self.forget_set_aside()
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
-        log = open(log_dir / self.log_name, "w", encoding="utf-8")
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-        self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
+        # The server writes its log through its own inherited handle: the mind's copy is closed once it started.
+        with open(log_dir / self.log_name, "w", encoding="utf-8") as log:
+            self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
         threading.Thread(target=self._wait_health, daemon=True).start()
 
     def _wait_health(self) -> None:
