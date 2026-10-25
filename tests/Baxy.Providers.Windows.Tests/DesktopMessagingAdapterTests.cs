@@ -856,6 +856,64 @@ public sealed class DesktopMessagingAdapterTests
         }
     }
 
+    // message.send.test by mail: a run that ended with no verdict (PowerShell gone before its last line, after Send may
+    // have run) was said as outlook_mail_send_failed with no effect, so a model sent the mail again. Only the script's
+    // own «nothing was sent» is a failure before the effect.
+    [Test]
+    public async Task ATestMailThatEndedWithNoVerdictMayHaveBeenSent()
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(false, false, 0, 0, "unused"),
+            DesktopMessageObservation.DraftNotVerified());
+        string destinations = TestDestinations("""{"email":"prueba@example.com"}""");
+        try
+        {
+            var silent = new MailRunner(string.Empty);
+            var refused = new MailRunner("{\"ok\":false,\"effectObserved\":false,\"error\":\"outlook_mail_send_failed\"}");
+            using var adapter = new DesktopMessagingAdapter(automation, destinations, silent);
+            using var refusing = new DesktopMessagingAdapter(automation, destinations, refused);
+
+            ExternalCapabilityReceipt unknown = await adapter.InvokeAsync(
+                "message.send.test",
+                Json("""{"channel":"email","requestedRecipient":"Lucas","text":"Hola"}"""),
+                CancellationToken.None);
+            ExternalCapabilityReceipt failed = await refusing.InvokeAsync(
+                "message.send.test",
+                Json("""{"channel":"email","requestedRecipient":"Lucas","text":"Hola"}"""),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(silent.Calls, Is.EqualTo(1));
+                Assert.That(unknown.Verified, Is.False);
+                Assert.That(unknown.ErrorCode, Is.EqualTo("message_delivery_not_verified"));
+                Assert.That(unknown.EffectMayHaveOccurred, Is.True);
+                Assert.That(failed.Verified, Is.False);
+                Assert.That(failed.ErrorCode, Is.EqualTo("outlook_mail_send_failed"));
+                Assert.That(failed.EffectObserved || failed.EffectMayHaveOccurred, Is.False);
+                Assert.That(automation.Calls, Is.Zero);
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    private sealed class MailRunner(string output) : IExternalProcessRunner
+    {
+        internal int Calls { get; private set; }
+
+        public ValueTask<ExternalProcessResult> RunAsync(
+            string executable, IReadOnlyList<string> arguments, TimeSpan timeout,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Calls++;
+            return ValueTask.FromResult(new ExternalProcessResult(output.Length == 0 ? 1 : 0, output, ""));
+        }
+    }
+
     // C6: the owner's test destinations, a private file the adapter is pointed at.
     private static string TestDestinations(string json)
     {
