@@ -1,3 +1,4 @@
+using System.IO;
 using Baxy.App;
 using NUnit.Framework;
 
@@ -47,5 +48,31 @@ public sealed class CoreProcessClientTests
             Assert.That(root.GetProperty("stderr").GetArrayLength(), Is.EqualTo(2));
             Assert.That(root.GetProperty("at").GetString(), Does.StartWith("2026-10-24T04:40:00"));
         });
+    }
+    // Stopping the core waited for its stdout/stderr readers with no bound: a program the core launched inherits the
+    // pipe's write end, so the read never ends and the stop never returned. The reap gives the reader a bounded wait,
+    // closes the stream, waits once more and moves on (LocalJsonlSidecarProcess.ReapPumpWithinAsync).
+    [Test]
+    public async Task StoppingTheCoreDoesNotWaitForeverForAReaderAProgramItLaunchedKeepsOpen()
+    {
+        var neverEnds = new TaskCompletionSource();
+        int closed = 0;
+
+        Task reap = CoreProcessClient.ReapPumpAsync(neverEnds.Task, () => closed++, TimeSpan.FromMilliseconds(50));
+
+        Assert.That(await Task.WhenAny(reap, Task.Delay(TimeSpan.FromSeconds(10))), Is.SameAs(reap));
+        Assert.That(closed, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task AReaderThatEndsOrFailsIsObservedWithoutClosingAnything()
+    {
+        int closed = 0;
+
+        await CoreProcessClient.ReapPumpAsync(Task.CompletedTask, () => closed++, TimeSpan.FromSeconds(1));
+        await CoreProcessClient.ReapPumpAsync(Task.FromException(new IOException("pipe")), () => closed++, TimeSpan.FromSeconds(1));
+        await CoreProcessClient.ReapPumpAsync(null, () => closed++, TimeSpan.FromSeconds(1));
+
+        Assert.That(closed, Is.Zero);
     }
 }
