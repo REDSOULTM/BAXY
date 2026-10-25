@@ -5,38 +5,33 @@ namespace Baxy.Providers.Windows.External;
 /// <summary>
 /// REOPEN1957 H0701 «Dime cuantos archivos .py hay en el directorio actual»
 /// (D24): «el directorio actual» is the folder of the Explorer window in the
-/// foreground, or the known folder the model names. With neither, it fails:
+/// foreground (with none in front, of the only one open: holdout v6 V6E027),
+/// or the known folder the model names. With neither, it fails:
 /// it took the Desktop in silence (BAXY Renew audit 2026-10-15). The count is
 /// of first-level files by extension; only the folder's own name is reported,
 /// never its path.
 /// </summary>
 internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
 {
+    // Holdout v6 V6E027: every Explorer window and tab (Windows 11's tabs are shell windows of the same HWND) with the
+    // folder it shows ('' for none: Home, This PC), and the window in front; which one is meant is chosen in C#
+    // (ChosenFolder). A file:// URL of a share is its UNC path; a window that could not be read is said as such.
     private const string ForegroundFolderScript = """
         $signature = '[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();'
         Add-Type -MemberDefinition $signature -Name ForegroundProbe -Namespace BaxyExplorer | Out-Null
         $foreground = [BaxyExplorer.ForegroundProbe]::GetForegroundWindow().ToInt64()
         $shell = New-Object -ComObject Shell.Application
-        # Windows 11's tabs are shell windows of the same HWND: one folder among them is the one in front only when they
-        # all show it; different folders leave the tab on show not known. A file:// URL of a share is its UNC path.
-        # Every tab of that window counts: one that shows no file folder (Home, This PC) or could not be read leaves the
-        # tab on show not known as well.
-        $paths = @();$explorer = $false;$unread = $false;$tabs = 0;$other = 0
+        $windows = @();$unread = $false
         foreach ($window in @($shell.Windows())) {
             try {
-                if ([int64]$window.HWND -eq $foreground -and $window.FullName -like '*explorer.exe') {
-                    $explorer = $true
-                    $tabs++
+                if ($window.FullName -like '*explorer.exe') {
                     $url = [string]$window.LocationURL
-                    if ($url.StartsWith('file:')) { $paths += @(([System.Uri]$url).LocalPath) } else { $other++ }
+                    $path = if ($url.StartsWith('file:')) { ([System.Uri]$url).LocalPath } else { '' }
+                    $windows += @{ hwnd = [int64]$window.HWND; path = [string]$path }
                 }
             } catch { $unread = $true }
         }
-        $distinct = @($paths | Sort-Object -Unique)
-        $known = (-not $unread) -and $other -eq 0 -and $distinct.Count -eq 1
-        $path = if ($known) { [string]$distinct[0] } else { '' }
-        $ambiguous = $distinct.Count -gt 1 -or ($distinct.Count -eq 1 -and $other -gt 0)
-        @{ foreground = $foreground; path = $path; explorer = $explorer; unread = $unread; tabs = $(if ($ambiguous) { 2 } else { 1 }) } | ConvertTo-Json -Compress
+        @{ foreground = $foreground; windows = $windows; unread = $unread } | ConvertTo-Json -Compress -Depth 3
         """;
 
     private readonly IExternalProcessRunner _runner;
@@ -104,11 +99,9 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             return Count(operation, known, "known_folder", extension);
         }
 
-        // Auditoría final (regla 3): «no Explorer in front» only from a probe that read every shell window; a probe
-        // that failed, or a window it could not read, is the front not read, and an Explorer showing no file folder is
-        // said as that.
-        string? explorerPath = null;
-        string notCounted = "explorer_front_not_read";
+        // Auditoría final (regla 3): «no Explorer» only from a probe that read every shell window; a probe that failed, or
+        // a window it could not read, is the folder not read, and an Explorer showing no file folder is said as that.
+        (string? Path, bool InFront, string NotCounted) chosen = (null, false, "explorer_front_not_read");
         try
         {
             ExternalProcessResult probe = await _runner.RunPowerShellAsync(
@@ -119,38 +112,59 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             if (probe.ExitCode == 0 && probe.Output.TrimStart().StartsWith('{'))
             {
                 using JsonDocument document = JsonDocument.Parse(probe.Output);
-                JsonElement root = document.RootElement;
-                if (root.TryGetProperty("path", out JsonElement pathElement)
-                    && pathElement.ValueKind == JsonValueKind.String
-                    && pathElement.GetString() is { Length: > 0 } path)
-                {
-                    explorerPath = path;
-                }
-                else if (root.TryGetProperty("tabs", out JsonElement tabs) && tabs.ValueKind == JsonValueKind.Number
-                    && tabs.GetInt32() > 1)
-                {
-                    notCounted = "explorer_front_tab_not_known";
-                }
-                else if (root.TryGetProperty("explorer", out JsonElement explorer) && explorer.ValueKind == JsonValueKind.True)
-                {
-                    notCounted = root.TryGetProperty("unread", out JsonElement partly) && partly.ValueKind == JsonValueKind.True
-                        ? "explorer_front_not_read"
-                        : "explorer_in_front_shows_no_file_folder";
-                }
-                else if (root.TryGetProperty("unread", out JsonElement unread) && unread.ValueKind == JsonValueKind.False)
-                {
-                    notCounted = "no_explorer_in_front";
-                }
+                chosen = ChosenFolder(document.RootElement);
             }
         }
-        catch (Exception exception) when (exception is JsonException or IOException or TimeoutException)
+        catch (Exception exception) when (exception is JsonException or IOException or TimeoutException
+            or InvalidOperationException)
         {
-            explorerPath = null;
+            chosen = (null, false, "explorer_front_not_read");
         }
 
-        return explorerPath is null
-            ? ExternalJson.FailureBeforeEffect(operation, notCounted)
-            : Count(operation, explorerPath, "explorer_foreground", extension);
+        return chosen.Path is null
+            ? ExternalJson.FailureBeforeEffect(operation, chosen.NotCounted)
+            : Count(operation, chosen.Path, chosen.InFront ? "explorer_foreground" : "explorer_open", extension);
+    }
+
+    /// <summary>
+    /// The folder of the Explorer window meant, from the probe's windows (hwnd and the folder each tab shows, '' for none):
+    /// the one in front; holdout v6 V6E027 («la carpeta que tengo abierta en el explorer», the Explorer behind the
+    /// developer's editor: no_explorer_in_front, and the reply «no hay ninguna ventana del Explorador abierta»), with none
+    /// in front, the only one open. One folder among a window's tabs is its folder only when they all show it. With
+    /// several open and none in front, or the only one open showing no one folder, which is meant is not known
+    /// (explorer_not_in_front); with none open, no_explorer_in_front.
+    /// </summary>
+    internal static (string? Path, bool InFront, string NotCounted) ChosenFolder(JsonElement probe)
+    {
+        if (!probe.TryGetProperty("unread", out JsonElement unread) || unread.ValueKind != JsonValueKind.False)
+            return (null, false, "explorer_front_not_read");
+        long front = probe.TryGetProperty("foreground", out JsonElement foreground) && foreground.TryGetInt64(out long hwnd)
+            ? hwnd
+            : 0;
+        var tabs = new List<(long Window, string Path)>();
+        if (probe.TryGetProperty("windows", out JsonElement windows) && windows.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement window in windows.EnumerateArray())
+            {
+                if (!window.TryGetProperty("hwnd", out JsonElement handle) || !handle.TryGetInt64(out long shown)
+                    || !window.TryGetProperty("path", out JsonElement path) || path.ValueKind != JsonValueKind.String)
+                    return (null, false, "explorer_front_not_read");
+                tabs.Add((shown, path.GetString()!));
+            }
+        }
+
+        long[] open = [.. tabs.Select(tab => tab.Window).Distinct()];
+        bool inFront = open.Contains(front);
+        if (!inFront && open.Length != 1)
+            return (null, false, open.Length == 0 ? "no_explorer_in_front" : "explorer_not_in_front");
+        long meant = inFront ? front : open[0];
+        string[] shownTabs = [.. tabs.Where(tab => tab.Window == meant).Select(tab => tab.Path)];
+        string[] folders = [.. shownTabs.Where(path => path.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase)];
+        if (folders.Length == 1 && folders.Length == shownTabs.Distinct(StringComparer.OrdinalIgnoreCase).Count())
+            return (folders[0], inFront, string.Empty);
+        if (!inFront)
+            return (null, false, "explorer_not_in_front");
+        return (null, true, folders.Length == 0 ? "explorer_in_front_shows_no_file_folder" : "explorer_front_tab_not_known");
     }
 
     private static ExternalCapabilityReceipt Count(string operation, string folder, string source, string extension)

@@ -1016,6 +1016,8 @@ internal sealed class WindowsVisibleControlAdapter
     /// and nothing unlisted is known the same: no «gone», «sameListed» in place of «same», and «cut».
     /// Holdout v5 V5E029: a changed state is written as it was and as it is («focused → (none)»), and a whole view whose
     /// only difference is the keyboard's focus (controls that took or lost it, nothing else) says «focusOnly».
+    /// A cut view never says it (revisión w11): what it did not list may have changed (a message sent, an item deleted
+    /// past the cap), and «focusOnly» turns the click unchanged, which would have the model press it again.
     /// </summary>
     internal static JsonElement ViewDifference(
         IReadOnlyList<ViewControl> before,

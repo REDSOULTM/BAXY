@@ -214,9 +214,9 @@ public sealed class KnownTextAndExplorerCountTests
         string url = "file:///" + project.Replace('\\', '/');
         Func<string, string?> known = folder => folder == "desktop" ? desktop : null;
         var inFront = new ExplorerFolderAdapter(
-            new ScriptedRunner("{\"foreground\":123,\"path\":\"" + project.Replace("\\", "\\\\") + "\"}"),
+            new ScriptedRunner(Probe(123, (123, project))),
             known);
-        var noneInFront = new ExplorerFolderAdapter(new ScriptedRunner("{\"foreground\":123,\"path\":\"\",\"explorer\":false,\"unread\":false}"), known);
+        var noneInFront = new ExplorerFolderAdapter(new ScriptedRunner(Probe(123)), known);
 
         ExternalCapabilityReceipt counted = await inFront.InvokeAsync(
             "filesystem.explorer.count", Json("""{"extension":".py"}"""), CancellationToken.None);
@@ -244,6 +244,81 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(named.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
             Assert.That(named.Result?.GetProperty("source").GetString(), Is.EqualTo("known_folder"));
             Assert.That(named.Result?.GetProperty("folderName").GetString(), Is.EqualTo("Escritorio"));
+        });
+    }
+
+    // The probe's facts: the window in front and each Explorer tab open, by its window and the folder it shows.
+    private static string Probe(long front, params (long Window, string Path)[] tabs) =>
+        JsonSerializer.Serialize(new
+        {
+            foreground = front,
+            windows = tabs.Select(tab => new { hwnd = tab.Window, path = tab.Path }),
+            unread = false,
+        });
+
+    // Holdout v6 V6E027 («¿cuántos files hay en la carpeta que tengo abierta en el explorer?», both seeds): the Explorer
+    // the person had open was behind another window, the count failed no_explorer_in_front and the reply said no Explorer
+    // was open. With none in front the only one open is counted, and said as that one (explorer_open); several open and
+    // none in front, or the only one open showing no one folder, is explorer_not_in_front, never «none open».
+    [Test]
+    public async Task WithNoExplorerInFrontTheOnlyOneOpenIsCountedAndSeveralAreSaidAsSuch()
+    {
+        using TemporaryDirectory temporary = new();
+        string photos = Path.Combine(temporary.Path, "fotos_viaje");
+        string other = Path.Combine(temporary.Path, "otra");
+        Directory.CreateDirectory(photos);
+        Directory.CreateDirectory(other);
+        foreach (string name in new[] { "img_01.jpg", "img_02.jpg", "nota.txt" })
+            await File.WriteAllTextAsync(Path.Combine(photos, name), "x");
+        async Task<ExternalCapabilityReceipt> Count(string probe) =>
+            await new ExplorerFolderAdapter(new ScriptedRunner(probe), _ => null).InvokeAsync(
+                "filesystem.explorer.count", Json("""{"extension":"jpg"}"""), CancellationToken.None);
+
+        ExternalCapabilityReceipt behind = await Count(Probe(9, (456, photos)));
+        ExternalCapabilityReceipt behindTabs = await Count(Probe(9, (456, photos), (456, photos)));
+        ExternalCapabilityReceipt several = await Count(Probe(9, (456, photos), (789, other)));
+        ExternalCapabilityReceipt split = await Count(Probe(9, (456, photos), (456, other)));
+        ExternalCapabilityReceipt home = await Count(Probe(9, (456, "")));
+        ExternalCapabilityReceipt front = await Count(Probe(789, (456, photos), (789, other)));
+
+        Assert.That(behind.Verified, Is.True, behind.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(behind.Result?.GetProperty("count").GetInt32(), Is.EqualTo(2));
+            Assert.That(behind.Result?.GetProperty("filesInFolder").GetInt32(), Is.EqualTo(3));
+            Assert.That(behind.Result?.GetProperty("folderName").GetString(), Is.EqualTo("fotos_viaje"));
+            Assert.That(behind.Result?.GetProperty("source").GetString(), Is.EqualTo("explorer_open"));
+            Assert.That(behindTabs.Result?.GetProperty("count").GetInt32(), Is.EqualTo(2), behindTabs.ErrorCode);
+            Assert.That(several.ErrorCode, Is.EqualTo("explorer_not_in_front"));
+            Assert.That(split.ErrorCode, Is.EqualTo("explorer_not_in_front"));
+            Assert.That(home.ErrorCode, Is.EqualTo("explorer_not_in_front"));
+            Assert.That(front.Result?.GetProperty("folderName").GetString(), Is.EqualTo("otra"), front.ErrorCode);
+            Assert.That(front.Result?.GetProperty("source").GetString(), Is.EqualTo("explorer_foreground"));
+        });
+    }
+
+    // Revisión w11: the probe as Windows PowerShell 5.1 writes it (ConvertTo-Json -Depth 3 keeps one window, or none, an
+    // array inside the object), and the codes of the window in front a probe that read it all tells; a probe that could
+    // not read a window, or a window without its handle, is the folder not read, never «none open».
+    [TestCase("""{"unread":false,"foreground":123,"windows":[]}""", null, "no_explorer_in_front")]
+    [TestCase("""{"unread":false,"foreground":123,"windows":[{"hwnd":111,"path":"C:\\Users\\x\\Docs y"}]}""",
+        "C:\\Users\\x\\Docs y", "")]
+    [TestCase("""{"unread":false,"foreground":111,"windows":[{"hwnd":111,"path":"C:\\a"},{"hwnd":111,"path":"C:\\b"}]}""",
+        null, "explorer_front_tab_not_known")]
+    [TestCase("""{"unread":false,"foreground":111,"windows":[{"hwnd":111,"path":""}]}""", null,
+        "explorer_in_front_shows_no_file_folder")]
+    [TestCase("""{"unread":true,"foreground":111,"windows":[{"hwnd":111,"path":"C:\\a"}]}""", null, "explorer_front_not_read")]
+    [TestCase("""{"unread":false,"foreground":9,"windows":[{"path":"C:\\a"}]}""", null, "explorer_front_not_read")]
+    public void TheProbeAsWindowsPowerShellWritesItChoosesTheFolderOrSaysWhy(string probe, string? path, string notCounted)
+    {
+        using JsonDocument document = JsonDocument.Parse(probe);
+
+        (string? chosen, _, string why) = ExplorerFolderAdapter.ChosenFolder(document.RootElement);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(chosen, Is.EqualTo(path));
+            Assert.That(why, Is.EqualTo(notCounted));
         });
     }
 

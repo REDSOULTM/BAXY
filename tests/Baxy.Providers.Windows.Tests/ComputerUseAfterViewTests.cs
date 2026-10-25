@@ -224,9 +224,15 @@ public sealed class ComputerUseAfterViewTests
     // changed because the display lost the focus ring, and the click came back completed. A click whose only proof is
     // the image, with the view after it differing only in the focus, is unchanged and carries that view; a view after
     // it with anything else changed keeps it completed.
-    [TestCase("Se muestra 0", "visible_button_postread_unchanged", TestName = "only the focus moved: unchanged")]
-    [TestCase("Se muestra 5", null, TestName = "counter-case: the display changed: completed")]
-    public void AClickProvedByItsImageWhoseViewAfterDiffersOnlyInTheFocusIsUnchanged(string shown, string? error)
+    // Revisión w11: a view cut at its cap (the window had more controls than it listed) does not know its unlisted
+    // controls the same: a press the tree made whose effect fell past the cap (a message sent, an item deleted at the end
+    // of a long list) is not told unchanged, which would have the model press it again; it stays completed, with the
+    // listed difference and its «cut».
+    [TestCase("Se muestra 0", "visible_button_postread_unchanged", 2, TestName = "only the focus moved: unchanged")]
+    [TestCase("Se muestra 0", null, 74, TestName = "only the listed focus moved, cut view: completed")]
+    [TestCase("Se muestra 5", null, 2, TestName = "counter-case: the display changed: completed")]
+    public void AClickProvedByItsImageWhoseViewAfterDiffersOnlyInTheFocusIsUnchanged(
+        string shown, string? error, int controlCount)
     {
         WithWindow(window =>
         {
@@ -242,7 +248,7 @@ public sealed class ComputerUseAfterViewTests
                 "{\"kind\":\"Text\",\"name\":\"" + shown + "\",\"id\":\"1.38\",\"state\":\"\",\"value\":null}," +
                 "{\"kind\":\"Text\",\"name\":\"Modo de calculadora Estándar\",\"id\":\"1.46\",\"state\":\"\"," +
                 "\"value\":null}]," +
-                "\"controlCount\":2,\"partial\":false}";
+                "\"controlCount\":" + controlCount + ",\"partial\":false}";
             var worker = new CommandWorker(command => command switch
             {
                 "click" => PendingLabel,
@@ -273,6 +279,7 @@ public sealed class ComputerUseAfterViewTests
                 Assert.That(receipt.ErrorCode, Is.EqualTo(error));
                 Assert.That(receipt.Verified, Is.EqualTo(error is null));
                 Assert.That(after.TryGetProperty("focusOnly", out _), Is.EqualTo(error is not null));
+                Assert.That(after.TryGetProperty("cut", out _), Is.EqualTo(controlCount > 2));
                 Assert.That(Strings(after, "changed"), Is.EqualTo(new[] { $"[0] Text «{shown}» focused → (none)" }));
             });
         });

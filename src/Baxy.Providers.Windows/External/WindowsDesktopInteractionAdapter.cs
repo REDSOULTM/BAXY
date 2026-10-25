@@ -163,13 +163,34 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 && NamedWindow(arguments) is nint window and not 0
                 && await _fields.AfterActAsync(window, cancellationToken).ConfigureAwait(false) is { } after)
                 receipt = WindowsVisibleControlAdapter.WithAfter(receipt, after);
-            return receipt;
+            return LoneModifier(operation, arguments, receipt);
         }
         finally
         {
             _focusOwed = null;
         }
     }
+
+    /// <summary>
+    /// Holdout v6 V6E024 («on the calculator, hit the C button», both seeds): the key pressed was «control», alone, and
+    /// the reply was that it was pressed and the display not checked. A modifier pressed by itself, as the fact of what it
+    /// is beside the receipt, which stays: it writes nothing and is no shortcut; a button the window shows is pressed by
+    /// its label. Any other receipt, as it came.
+    /// </summary>
+    internal static ExternalCapabilityReceipt LoneModifier(
+        string operation, JsonElement arguments, ExternalCapabilityReceipt receipt) =>
+        operation == "input.key.press" && receipt.Verified && arguments.ValueKind == JsonValueKind.Object
+        && arguments.TryGetProperty("key", out JsonElement key) && key.ValueKind == JsonValueKind.String
+        && key.GetString() is "control" or "shift"
+        && Infrastructure.ModelAids.On(Infrastructure.ModelAids.LoneModifierNext)
+            ? receipt with
+            {
+                Result = ExternalJson.Extended(receipt.Result, writer => writer.WriteString("next",
+                    $"{key.GetString()} was pressed by itself: a modifier key alone writes nothing and is no shortcut; a "
+                    + "button the window shows is pressed by its label (input_visible_click), after a look "
+                    + "(input_visible_controls) gives the labels")),
+            }
+            : receipt;
 
     // The window a step names («window»); 0 when it names none or not as a handle.
     private static nint NamedWindow(JsonElement arguments) =>
