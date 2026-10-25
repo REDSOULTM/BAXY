@@ -28,6 +28,7 @@ INTRUSIVE = {"clipboard.paste", "message.draft", "calculator.expression.evaluate
 MAX_CALLS = 4
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_decision import current  # noqa: E402
+import limpieza  # noqa: E402
 
 
 def heartbeat_holds() -> dict[str, list[list[tuple[str, str, str | None]]]]:
@@ -127,6 +128,7 @@ def main() -> None:
     trace.unlink(missing_ok=True)  # the mind appends: a label run again kept the trace of the run before (as decision)
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), log_name=f"escenas-{args.label}.log")
     server.start()
+    limpieza.die_with_this_process(server._process)  # a killed run left it holding the GPU
     # PC-Q (2026-10-25): a scene that raised (the server's timeout under Mind.beat) ended the run with its llama-server
     # still running, holding the GPU.
     try:

@@ -87,3 +87,9 @@ def test_a_label_run_again_keeps_no_trace_of_the_run_before(escenas):
     bench_escenas.main()
     trace = (folder / "runs" / "lbl-escenas.trace.jsonl").read_text(encoding="utf-8").splitlines()
     assert trace == ['{"beat": "S001"}']
+
+
+def test_the_scenes_server_dies_with_its_bench(escenas):
+    _, held = escenas
+    bench_escenas.main()
+    assert held == [FakeServer.made[0]._process]
