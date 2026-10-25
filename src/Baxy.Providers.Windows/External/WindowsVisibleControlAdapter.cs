@@ -1331,15 +1331,9 @@ internal sealed class WindowsVisibleControlAdapter
         _actedWindow = 0;
         _clickRoots = null;
         // BAXY Renew cu (C11): the grid item a click names by its index, as the look called it («Encabezado de columna»).
-        string? clickedType = null;
-        if (arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("index", out JsonElement clickedIndex)
-            && clickedIndex.ValueKind == JsonValueKind.Number && clickedIndex.TryGetInt32(out int clickedAt))
-        {
-            lock (_viewLock)
-            {
-                clickedType = _lastView?.Controls.FirstOrDefault(control => control.Index == clickedAt)?.ItemType;
-            }
-        }
+        // Only when that index's control is the one the click goes to (ClickAsync notes it): an index the label does not
+        // name, or of a look of another window, leaves the label to its cascade, which presses another control.
+        _indexedType = null;
 
         // Revision 3 of r24b (finding 3): counted before it acts, so a focus owed to a field is void after any click.
         Interlocked.Increment(ref _clicks);
@@ -1351,6 +1345,9 @@ internal sealed class WindowsVisibleControlAdapter
         {
             _pressedUnchanged = null;
         }
+
+        string? clickedType = _indexedType;
+        _indexedType = null;
 
         // BAXY Renew cu (C11): Excel in a normal window folds its ribbon groups into collapsed entries («Fuente»), and a
         // click on «Negrita» by its label found nothing, three times. The refusal says which collapsed entries the last
@@ -1432,6 +1429,9 @@ internal sealed class WindowsVisibleControlAdapter
     // without pressing. Any other result of a click starts the count again.
     private string? _unchangedClick;
     private int _unchangedInARow;
+
+    // The item type of the last view's control a click by index goes to (BAXY Renew cu, C11); null for any other click.
+    private string? _indexedType;
 
     private ExternalCapabilityReceipt RepeatedUnchanged(ExternalCapabilityReceipt receipt, JsonElement arguments)
     {
@@ -1637,6 +1637,7 @@ internal sealed class WindowsVisibleControlAdapter
             if (chosen is not null && SameLabel(label, chosen.Name))
             {
                 controlId = chosen.Id.Length > 0 ? chosen.Id : null;
+                _indexedType = chosen.ItemType;
             }
             else
             {
