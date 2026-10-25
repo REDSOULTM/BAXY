@@ -78,6 +78,7 @@ internal static class FieldStepProjection
         ["confirmation_expired"] = "No se ejecutó: la confirmación venció",
         ["engine_unavailable"] = "No se ejecutó: el motor local no estaba listo",
         ["engine_no_answer"] = "El motor no respondió a tiempo: puede haber corrido",
+        ["operation_unexpected_failure"] = "Falló de forma inesperada: puede haber corrido",
         ["invalid_arguments"] = "No se ejecutó: los datos de la llamada no eran válidos",
         ["unknown_operation"] = "No se ejecutó: esa acción no existe",
         ["web_disabled_by_owner"] = "No se ejecutó: la búsqueda web está apagada en Ajustes",

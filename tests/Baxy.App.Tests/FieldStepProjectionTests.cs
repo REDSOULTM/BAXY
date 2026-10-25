@@ -92,20 +92,22 @@ public sealed class FieldStepProjectionTests
         Assert.That((string?)view["status"], Is.EqualTo("maybe"));
     }
 
-    [Test]
-    public void AFailureWhoseEffectMayHaveHappenedIsNotAFailureNorDone()
+    // H9: a provider that threw is answered by the core with operation_unexpected_failure (CoreRequest), said as such.
+    [TestCase("engine_no_answer", "El motor no respondió a tiempo: puede haber corrido")]
+    [TestCase("operation_unexpected_failure", "Falló de forma inesperada: puede haber corrido")]
+    public void AFailureWhoseEffectMayHaveHappenedIsNotAFailureNorDone(string code, string reason)
     {
         JsonObject view = Finished(OperationStatuses.Failed, verified: false, new JsonObject
         {
             ["status"] = "failed",
-            ["error"] = "engine_no_answer",
+            ["error"] = code,
             ["effectUncertain"] = true,
         });
 
         Assert.Multiple(() =>
         {
             Assert.That((string?)view["status"], Is.EqualTo("maybe"));
-            Assert.That((string?)view["reason"], Is.EqualTo("El motor no respondió a tiempo: puede haber corrido"));
+            Assert.That((string?)view["reason"], Is.EqualTo(reason));
         });
     }
 
