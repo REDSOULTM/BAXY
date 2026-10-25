@@ -438,8 +438,9 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       const a = document.activeElement as HTMLInputElement | null;
       const typing = !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') && !!a.value.trim();
-      // Enter on a focused button presses that button: on the card's «No» it is a No, never the card's Sí
-      const control = e.key === 'Enter' && !!a?.closest?.('button, a[href], select, [role="button"], [role="switch"]');
+      // Enter on a focused button of a card presses that button: on the card's «No» it is a No, never the card's Sí.
+      // Any other focused button (the gear a closed panel gave the focus back to) does not take the card's Enter.
+      const control = e.key === 'Enter' && !!a?.closest?.('.bx-card') && !!a.closest('button, a[href], select, [role="button"], [role="switch"]');
       if (pendingCard && !panel && !typing && !control && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); void answer(e.key === 'Enter', pendingCard.id); return; }
       if (e.key === 'Escape' && panel) setPanel(null);
       if (e.key === ' ' && mic === 'ptt' && !e.repeat && !panel && !(a && a.tagName === 'INPUT' && a.value)) { e.preventDefault(); pttStart(); }

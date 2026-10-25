@@ -252,3 +252,18 @@ test('teclado: un panel abierto toma el foco y al cerrarse lo devuelve a lo que 
   await p.keyboard.press('Escape');
   await expect(memory).toBeFocused();
 });
+
+test('Enter con el foco en un botón fuera de la tarjeta (el engranaje tras cerrar Ajustes) responde Sí', async () => {
+  h = await openView();
+  const p = h.page;
+  await p.locator('.bx-gear').focus();
+  await p.keyboard.press('Enter');
+  await expect(p.locator('.settings-panel')).toBeVisible();
+  await p.keyboard.press('Escape');
+  await expect(p.locator('.bx-gear')).toBeFocused();
+  h.emit({ type: 'item', item: card('c1') });
+  await expect(p.locator('.bx-card.s-pending')).toHaveCount(1);
+  await p.keyboard.press('Enter');
+  await expect.poll(answers).toEqual([{ approve: true, card: 'c1' }]);
+  await expect(p.locator('.settings-panel')).toHaveCount(0);
+});
