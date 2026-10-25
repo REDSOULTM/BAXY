@@ -223,6 +223,15 @@ public static class ModelAids
     public const string SightPlaces = "sight_places";
 
     /// <summary>
+    /// Práctica e2e E014 («abre la configuración de sonido», c3-junto-s0, 2026-10-25: app.open at sound, then 14 clicks
+    /// and looks for a microphone nobody asked about, from a first look identical to the runs that stopped there; in 4 of
+    /// 17 c3 runs on every branch the model first pressed «Sonido» in the breadcrumb of the page it was on): a look whose
+    /// place in sight is the one this turn's app.open asked of that application says so, and then says no other places
+    /// (sight_places); one whose place in sight is another says which was asked (ScreenViewProjection, Baxy.App.TurnPlace).
+    /// </summary>
+    public const string AskedPlace = "asked_place";
+
+    /// <summary>
     /// Práctica V5E023 («en el Notepad que tengo abierto, agrega al final …»: the model typed with the caret at the start
     /// of the text, «nos vemos el lunesHola equipo…», and said «agregué al final»; nothing it read said where the caret
     /// was): a look whose focus is an edit or document with text says where its caret is, as UI Automation's TextPattern

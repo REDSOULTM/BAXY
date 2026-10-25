@@ -237,6 +237,81 @@ public sealed class ScreenViewProjectionTests
         Assert.That(view.Contains("(los otros lugares de"), Is.EqualTo(said));
     }
 
+    // Práctica e2e E014 («abre la configuración de sonido», c3-junto-s0, 2026-10-25): app.open opened Settings at sound,
+    // and the look, the same as in the runs that stopped there, did not say the window was where it was asked; the
+    // model pressed «Sonido» in the breadcrumb and went on for 15 calls. Where the place in sight is the one this turn's
+    // app.open asked of that application, the view says so, and the application's other places (sight_places), an
+    // invitation to go elsewhere nobody asked for, are left out.
+    private static readonly (string Application, string Place) AskedStore = ("steam", "store");
+
+    [Test]
+    public void ThePlaceInSightThatThisTurnsAppOpenAskedForIsSaidSoWithoutTheOtherPlaces()
+    {
+        string asked;
+        string none;
+        using (ModelAids.Use(ModelAids.SightPlaces + "," + ModelAids.AskedPlace))
+        {
+            asked = View(StoreInSight, AskedStore);
+            none = View(StoreInSight, null);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked, Does.Contain(
+                "Lugar a la vista: store de Steam (sólo ahí sale «store.steampowered.com»): es el que pidió app_open en "
+                + "este turno\n"));
+            Assert.That(asked, Does.Not.Contain("(los otros lugares de"));
+            Assert.That(none, Does.Contain("(los otros lugares de Steam"), "no place asked in the turn: as before");
+            Assert.That(none, Does.Not.Contain("pidió app_open"));
+        });
+    }
+
+    // A place in sight other than the one asked says which was asked, and the other places stay (sight_places).
+    [Test]
+    public void APlaceInSightOtherThanTheAskedOneSaysWhichWasAskedAndTheOtherPlaces()
+    {
+        using IDisposable setting = ModelAids.Use(ModelAids.SightPlaces + "," + ModelAids.AskedPlace);
+
+        string view = View(StoreInSight, ("Steam", "library"));
+
+        Assert.That(view, Does.Contain(
+            "Lugar a la vista: store de Steam (sólo ahí sale «store.steampowered.com»), no el que pidió app_open en "
+            + "este turno (library)\n(los otros lugares de Steam se abren directo"));
+    }
+
+    // A place asked of another application says nothing; with the aid off the view is as it was, asked or not.
+    [Test]
+    public void APlaceAskedOfAnotherApplicationOrWithTheAidOffChangesNothing()
+    {
+        string other;
+        string off;
+        string before;
+        using (ModelAids.Use(ModelAids.SightPlaces + "," + ModelAids.AskedPlace))
+        {
+            other = View(StoreInSight, ("Epic Games Launcher", "store"));
+            before = View(StoreInSight, null);
+        }
+
+        using (ModelAids.Use(ModelAids.SightPlaces))
+        {
+            off = View(StoreInSight, AskedStore);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(other, Is.EqualTo(before));
+            Assert.That(off, Is.EqualTo(before));
+        });
+    }
+
+    private static string View(string lookJson, (string Application, string Place)? asked)
+    {
+        using JsonDocument look = JsonDocument.Parse(lookJson);
+        Assert.That(ScreenViewProjection.TryCreate("{\"status\":\"completed\"}", look.RootElement, out string projected,
+            asked), Is.True);
+        return (string?)JsonNode.Parse(projected)?["view"] ?? throw new AssertionException("the view is not an object");
+    }
+
     // Práctica V5E023 («en el Notepad que tengo abierto, agrega al final …»): the look as it read the Notepad, with where
     // the reader found the caret of its focused document («caret»), or nothing said of it.
     private static string NotepadLook(string caret) =>

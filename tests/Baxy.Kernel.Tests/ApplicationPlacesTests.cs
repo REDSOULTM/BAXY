@@ -112,6 +112,15 @@ public sealed class ApplicationPlacesTests
         Assert.That((found?.Place, found?.Shown), Is.EqualTo((place, shown)));
     }
 
+    // Two names of one application, as the data compare them: case and accents left out; none is the same as nothing.
+    [TestCase("Configuración", "configuracion", true)]
+    [TestCase("Steam", "STEAM", true)]
+    [TestCase("Configuración", "Configuración del sistema", false)]
+    [TestCase(null, "Steam", false)]
+    [TestCase(null, null, false)]
+    public void TwoNamesAreTheSameApplicationAsTheDataCompareThem(string? one, string? other, bool same) =>
+        Assert.That(ApplicationPlaces.SameApplication(one, other), Is.EqualTo(same));
+
     // What a place shows is text long enough to tell it by, never an empty list: refused whole.
     [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","shows":[]}}}}}""")]
     [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","shows":["Inicio"," . "]}}}}}""")]
