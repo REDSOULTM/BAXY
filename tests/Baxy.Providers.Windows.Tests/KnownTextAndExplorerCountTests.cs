@@ -297,6 +297,31 @@ public sealed class KnownTextAndExplorerCountTests
         });
     }
 
+    // Revisión w11: the probe as Windows PowerShell 5.1 writes it (ConvertTo-Json -Depth 3 keeps one window, or none, an
+    // array inside the object), and the codes of the window in front a probe that read it all tells; a probe that could
+    // not read a window, or a window without its handle, is the folder not read, never «none open».
+    [TestCase("""{"unread":false,"foreground":123,"windows":[]}""", null, "no_explorer_in_front")]
+    [TestCase("""{"unread":false,"foreground":123,"windows":[{"hwnd":111,"path":"C:\\Users\\x\\Docs y"}]}""",
+        "C:\\Users\\x\\Docs y", "")]
+    [TestCase("""{"unread":false,"foreground":111,"windows":[{"hwnd":111,"path":"C:\\a"},{"hwnd":111,"path":"C:\\b"}]}""",
+        null, "explorer_front_tab_not_known")]
+    [TestCase("""{"unread":false,"foreground":111,"windows":[{"hwnd":111,"path":""}]}""", null,
+        "explorer_in_front_shows_no_file_folder")]
+    [TestCase("""{"unread":true,"foreground":111,"windows":[{"hwnd":111,"path":"C:\\a"}]}""", null, "explorer_front_not_read")]
+    [TestCase("""{"unread":false,"foreground":9,"windows":[{"path":"C:\\a"}]}""", null, "explorer_front_not_read")]
+    public void TheProbeAsWindowsPowerShellWritesItChoosesTheFolderOrSaysWhy(string probe, string? path, string notCounted)
+    {
+        using JsonDocument document = JsonDocument.Parse(probe);
+
+        (string? chosen, _, string why) = ExplorerFolderAdapter.ChosenFolder(document.RootElement);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(chosen, Is.EqualTo(path));
+            Assert.That(why, Is.EqualTo(notCounted));
+        });
+    }
+
     // Holdout v5 V5E034/V5E044 («¿cuántos pdf hay en BAXY-bench\facturas?»): the count reached only a known folder's
     // top level, so a folder inside it had no call and the reply was «no puedo». It counts in a subfolder of the known
     // folder, confined to it as the other known-folder tools are.
