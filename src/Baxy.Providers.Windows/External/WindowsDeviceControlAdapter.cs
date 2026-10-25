@@ -952,16 +952,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # Renew al máximo (rendimiento): the display after the last press was read once, after a fixed 300 ms. It is now
         # read every 50 ms within the same 300 ms and taken as soon as it shows the expression's last operand
         # (Test-ShowsLastOperand) twice in a row unchanged; otherwise the read at 300 ms is taken, as before, and the
-        # caller's check decides on it.
-        function Wait-ShownResult([scriptblock]$read,[string]$keys,[int]$budget,[int]$interval,$start=$null){
+        # caller's check decides on it. The budget runs on $elapsed (milliseconds since the first read) and the pauses on
+        # $sleep: the wall clock and Start-Sleep unless given.
+        function Wait-ShownResult([scriptblock]$read,[string]$keys,[int]$budget,[int]$interval,$start=$null,[scriptblock]$elapsed=$null,[scriptblock]$sleep=$null){
           $clock=[Diagnostics.Stopwatch]::StartNew();$last=$null
+          if($null -eq $elapsed){ $elapsed={ $clock.ElapsedMilliseconds } }
+          if($null -eq $sleep){ $sleep={ param($ms) Start-Sleep -Milliseconds $ms } }
           while($true){
             $now=& $read
             if($null -ne $last -and $now.name -eq $last.name -and $now.expr -eq $last.expr -and $now.value -eq $last.value -and (Test-ShowsLastOperand $now.expr $now.value $keys $start)){ return $now }
-            $left=$budget-$clock.ElapsedMilliseconds
+            $left=$budget-(& $elapsed)
             if($left -le 0){ return $now }
             $last=$now
-            Start-Sleep -Milliseconds ([Math]::Max(1,[Math]::Min($interval,$left)))
+            & $sleep ([Math]::Max(1,[Math]::Min($interval,$left)))
           }
         }
 

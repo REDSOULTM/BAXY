@@ -1748,14 +1748,17 @@ public sealed class ExternalAdaptersTests
 
     // M132, measured live: a client launched cold shows its navigation over a blank page and then loads its start
     // page, undoing a click made before. Nothing is looked at or pressed while the page is blank.
+    // On the click's own clock: the five fronts asked 20 ms apart are well inside the 400 ms the launch settles in,
+    // however slowly a loaded machine runs them (on the wall clock the fourth one, late, looked at the blank page).
     [Test]
     public async Task VisibleClickAfterALaunchDoesNotLookWhileThePageIsBlank()
     {
+        var time = new VirtualTime();
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
-        var focus = new ScriptedFocus(launched: true, windowAfter: 1, drawnAfter: 4);
+        var focus = new ScriptedFocus(launched: true, windowAfter: 1, drawnAfter: 4, time: time);
         var ocr = new CountingLocator("ocr", hit: true);
         var adapter = new WindowsVisibleControlAdapter(
-            worker, ocr, vision: null, focus, ShortTiming);
+            worker, ocr, vision: null, focus, ShortTiming, time: time);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""),
@@ -2067,13 +2070,15 @@ public sealed class ExternalAdaptersTests
 
     // Review r10: a page the previous click navigated to may still be loading behind a still frame; the first click
     // after a click that changed the screen keeps the full wait, the one after it answers after one still look.
+    // On the click's own clock: a look that takes longer than the label's budget on a loaded machine, or a still
+    // watch whose samples come late, does not change how many looks the wait makes.
     [Test]
     public async Task VisibleClickAfterAScreenChangeKeepsTheFullWait()
     {
         var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
         var adapter = new WindowsVisibleControlAdapter(
             worker, new CountingLocator("ocr", hit: true, hitFromCall: 1) { HitsUpTo = 1 }, vision: null,
-            timing: StillTiming, surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"));
+            timing: StillTiming, surfaceHash: (_, _) => ValueTask.FromResult<string?>("same"), time: new VirtualTime());
 
         ExternalCapabilityReceipt navigated = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"biblioteca"}"""), CancellationToken.None);
@@ -6445,7 +6450,8 @@ public sealed class ExternalAdaptersTests
         bool launched,
         int windowAfter,
         int drawnAfter = 0,
-        TimeSpan noted = default) : IOpenedApplicationFocus
+        TimeSpan noted = default,
+        TimeProvider? time = null) : IOpenedApplicationFocus
     {
         private bool _taken;
 
@@ -6458,7 +6464,7 @@ public sealed class ExternalAdaptersTests
             if (_taken)
                 return null;
             _taken = true;
-            DateTime at = DateTime.UtcNow - noted;
+            DateTime at = (time ?? TimeProvider.System).GetUtcNow().UtcDateTime - noted;
             return new VisibleControlSurface.OpenedApplication(4242, at.AddSeconds(-1), at, launched);
         }
 
@@ -6581,6 +6587,42 @@ public sealed class ExternalAdaptersTests
             Timeouts.Add(timeout);
             time.Advance(duration);
             return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
+        }
+    }
+
+    // A clock that moves only when the code under test waits on it: each wait advances it by its own length and ends
+    // at once, so what the code decides from the time depends on its waits, never on how fast the machine runs it.
+    private sealed class VirtualTime : TimeProvider
+    {
+        private DateTimeOffset _now = new(2026, 10, 25, 12, 0, 0, TimeSpan.Zero);
+
+        public override DateTimeOffset GetUtcNow() => _now;
+
+        public override long TimestampFrequency => TimeSpan.TicksPerSecond;
+
+        public override long GetTimestamp() => _now.UtcTicks;
+
+        public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
+        {
+            Assert.That(period, Is.EqualTo(Timeout.InfiniteTimeSpan), "only one-shot waits");
+            if (dueTime != Timeout.InfiniteTimeSpan)
+            {
+                _now += dueTime;
+                callback(state);
+            }
+
+            return new Elapsed();
+        }
+
+        private sealed class Elapsed : ITimer
+        {
+            public bool Change(TimeSpan dueTime, TimeSpan period) => false;
+
+            public void Dispose()
+            {
+            }
+
+            public ValueTask DisposeAsync() => ValueTask.CompletedTask;
         }
     }
 

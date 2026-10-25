@@ -232,7 +232,8 @@ public sealed class KeypadInvokeTests
 
     // Renew al máximo (rendimiento): the display after the last press was read once after a fixed 300 ms. It is read
     // every 50 ms within the same 300 ms and taken at the second identical read that shows the last operand; a display
-    // that never shows it is read at 300 ms, as before, for the caller's check to refuse.
+    // that never shows it is read at 300 ms, as before, for the caller's check to refuse. The time is the wait's own
+    // clock, advanced only by its pauses: on the wall clock a cold or loaded PowerShell took 454 ms for two reads.
     [Test]
     public void TheResultIsTakenWhenTheDisplayShowsItWithinTheSameBudget()
     {
@@ -240,9 +241,9 @@ public sealed class KeypadInvokeTests
             function Timed($reads,$keys){
               $count=@{n=0}
               $read={ $at=[Math]::Min($count.n,$reads.Count-1); $count.n++; $reads[$at] }
-              $clock=[Diagnostics.Stopwatch]::StartNew()
-              $got=Wait-ShownResult $read $keys 300 50
-              return @($got.value,$count.n,$clock.ElapsedMilliseconds)
+              $virtual=@{ms=0}
+              $got=Wait-ShownResult $read $keys 300 50 $null { $virtual.ms } { param($ms) $virtual.ms+=$ms }
+              return @($got.value,$count.n,$virtual.ms)
             }
             $shown=@{name='Se muestra 42';expr='6 × 7=';value='42'}
             $settled=Timed @($shown) '6*7'
