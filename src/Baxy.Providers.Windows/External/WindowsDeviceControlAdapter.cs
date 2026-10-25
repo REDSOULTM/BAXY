@@ -1288,9 +1288,31 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 }
             }
         }
-        installs.Sort((left, right) => string.CompareOrdinal(right.Version, left.Version));
+        installs.Sort((left, right) => ComparePythonVersions(right.Version, left.Version));
         return installs;
     }
+
+    // Revisión nb-q-apps2: versions sorted as text put 3.9 above 3.12. They are compared by their numbers in order
+    // (3.12.10 > 3.12.4 > 3.10 > 3.9), and only when all the numbers tie by their text (a suffix such as «t»).
+    internal static int ComparePythonVersions(string left, string right)
+    {
+        long[] first = VersionNumbers(left);
+        long[] second = VersionNumbers(right);
+        for (int index = 0; index < Math.Max(first.Length, second.Length); index++)
+        {
+            long one = index < first.Length ? first[index] : -1;
+            long other = index < second.Length ? second[index] : -1;
+            if (one != other)
+                return one.CompareTo(other);
+        }
+
+        return string.CompareOrdinal(left, right);
+    }
+
+    private static long[] VersionNumbers(string version) =>
+        Regex.Matches(version ?? string.Empty, "[0-9]{1,18}")
+            .Select(static match => long.Parse(match.Value, System.Globalization.CultureInfo.InvariantCulture))
+            .ToArray();
 
     private static ExternalCapabilityReceipt PythonStatus(string operation)
     {
@@ -1322,7 +1344,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
     // PIP1817 «instala requests con pip»: whether a package is installed is read
     // with pip show in every registered Python; nothing is installed or changed.
-    private const string PipShowScript = """
+    // Revisión nb-q-apps2: «-m» puts the working directory first in sys.path, and the script ran in BAXY's own; a
+    // «pip» there would have been what ran. It runs from the system folder, which holds no Python module.
+    internal const string PipShowScript = """
+        Set-Location -LiteralPath ([Environment]::SystemDirectory)
         $ErrorActionPreference='Continue';$exe=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]));$pkg=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[1]))
         $out = & $exe -m pip show $pkg 2>&1 | Out-String
         [pscustomobject]@{ok=$true;exit=$LASTEXITCODE;output=$out}|ConvertTo-Json -Compress
