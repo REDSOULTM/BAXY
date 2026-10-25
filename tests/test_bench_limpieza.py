@@ -1,7 +1,6 @@
 """The harness cleans up after itself (PC-Q, 2026-10-25): what a run started dies with it, whatever stopped it; a path
 with spaces starts the product. Doubles only: no product, no model, no GPU."""
 import json
-import os
 import socket
 import subprocess
 import sys
