@@ -87,3 +87,21 @@ Frente a `inicio` (toda la misión): decisión +15,3 (p Holm 0,023), e2e +8,0 (I
 
 Nada se reajustó después de abrir. Fuera del plan y sólo descriptivo: el NB corrió una tercera semilla de `cien` en la e2e
 del holdout ya abierto (58 de 75) y empezó arreglos sobre casos v6 (`nb-w11-*`); no entran en `cien` ni en estas cifras.
+
+## Prueba en vivo del HEAD final (NB, 2026-10-25 09:26-09:30, en silencio)
+
+En el NB y no en el PC: el PC tenía abiertos un Bloc de notas sin guardar y Spotify del dueño. Los 15 turnos de v5 y uno
+por hueco arreglado (23 en total, `F:\BAXYeval\renew_v6\vivo\turnos.jsonl`; captura en `vivo\nb`): 23 respondidos, ninguno
+con fallo del turno.
+
+- Bien: calculadora abrir y cerrar; volumen ±10 («ahora está en 30» / «en 20»); Spotify reproduce y pausa Bohemian
+  Rhapsody; «14 juegos instalados en Steam»; clima de mañana sin URL inventada; Paint maximizar, minimizar y cerrar, cada
+  uno una vez (H4: sin el bucle de lecturas de v5); «no hay Fortnite en Steam ni en Epic»; espacio del disco C; «sube el
+  volumen hasta el treinta y cinco» → 35 y avisa que sigue silenciado; la hora en Tokio; «en qué año se inauguró el Metro
+  de Santiago» → 1975 con la fuente (abrió la página); «borra prueba-vivo.txt» → el núcleo pide el sí, «no» no lo borra
+  y «¿lo borraste?» → «No, no lo borré» (H1 y H3).
+- Flojo: «abre la biblioteca de Steam» quedó en la Tienda y lo dijo («la Biblioteca está en el menú superior»); «abre
+  Paint» intentó abrir el menú Archivo sin que se lo pidieran (y lo contó); «¿ya lo cerraste?» respondió con una
+  pregunta; «revisa server-vivo.log entero y dime si hay errores» pidió el sí para buscar con un comando en vez de leer.
+- Estado: el guion no llamaba a Restore-BenchState; su registro dice volumen 20 → 35, silencio activado y Steam, Spotify y
+  Configuración abiertos por la prueba. Restauración pedida al NB (pendiente de confirmar).
