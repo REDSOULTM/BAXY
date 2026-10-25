@@ -118,8 +118,10 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
       const it = ev.item;
       // a reply's words arrived (new, or the steps' holder got its text): captions, mood and the walk's end.
       if (it.who === 'baxy' && it.text && !(before && before.who === 'baxy' && before.text === it.text)) {
-        // «verificar» goes to the end once; a family the turn went back to after it (a confirmed call) is not walked twice
-        const journey = s.journey ? { ...s.journey, path: [...s.journey.path.filter((p) => p !== 'verificar').filter((p, i, a) => i === 0 || p !== a[i - 1]), 'verificar'] } : s.journey;
+        // the walk ends at «verificar»; it only grows: what the face already walked is never reordered or cut (a turn
+        // that went back to a family after asking, a confirmed call, walks on from where it was)
+        const at = s.journey?.path;
+        const journey = s.journey && at && at[at.length - 1] !== 'verificar' ? { ...s.journey, path: [...at, 'verificar'] } : s.journey;
         return { ...s, items, sub: { text: it.text, key: it.id + ':' + it.text.length }, mood: moodOf(it.steps), journey, running: null };
       }
       // a new request (typed or heard): the last reply's captions leave with it

@@ -105,16 +105,18 @@ test('la red marca aparte una llamada que puede haber corrido («?») de una que
   expect(journeyAtEnd(null, 'maybe', 'apps')).toBeNull();
 });
 
-test('el recorrido de la red no repite una familia seguida cuando el turno vuelve a ella tras una respuesta', async () => {
+test('el recorrido de la red sólo crece: lo ya caminado no se reordena ni pierde su último tramo, sin familias repetidas seguidas', async () => {
   // a confirmation: the call, BAXY's words asking, the same family again once approved, the final words
   const { reduce, INITIAL } = await import('../src/store');
-  const step = (phase: 'start' | 'end', status: 'run' | 'ok' = 'run') => ({ type: 'step' as const, phase, turn: 't1', id: 's', label: 'Borrar', fam: 'archivos' as const, status });
+  const step = (phase: 'start' | 'end', fam: 'archivos' | 'apps', status: 'run' | 'ok' = 'run') => ({ type: 'step' as const, phase, turn: 't1', id: 's', label: 'Borrar', fam, status });
   const reply = (id: string, text: string) => ({ type: 'item' as const, item: { who: 'baxy' as const, id, text, ts: '', steps: [] } });
-  let s = reduce(INITIAL, step('start'));
-  s = reduce(s, reply('b1', '¿Lo borro?'));
-  expect(s.journey?.path).toEqual(['mente', 'archivos', 'verificar']);
-  s = reduce(s, step('start'));
-  s = reduce(s, step('end', 'ok'));
-  s = reduce(s, reply('b2', 'Listo.'));
-  expect(s.journey?.path).toEqual(['mente', 'archivos', 'verificar']);
+  const events = [step('start', 'archivos'), reply('b1', '¿Lo borro?'), step('start', 'archivos'), step('end', 'archivos', 'ok'), reply('b2', 'Listo.'),
+    step('start', 'apps'), reply('b3', 'Y abrí el Explorador.')];
+  let s = INITIAL;
+  const seen: string[][] = [];
+  for (const ev of events) { s = reduce(s, ev); if (s.journey) seen.push(s.journey.path); }
+  // each path the view receives starts with the one before it (the face walks only what was added)
+  for (let i = 1; i < seen.length; i++) expect(seen[i].slice(0, seen[i - 1].length), JSON.stringify(seen[i])).toEqual(seen[i - 1]);
+  for (const p of seen) expect(p.filter((n, i) => i > 0 && n === p[i - 1]), JSON.stringify(p)).toEqual([]);
+  expect(seen[seen.length - 1]).toEqual(['mente', 'archivos', 'verificar', 'archivos', 'verificar', 'apps', 'verificar']);
 });
