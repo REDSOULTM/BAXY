@@ -200,6 +200,27 @@ public sealed class SaidFoldersTests
             "to look there, call file_find with query \"llaves.txt\" and folder \"home\" and subdirectory \"cajones\""));
     }
 
+    // Holdout v6 V6E042 (cien s0 and s2): the refused search written again ran in the working folder, its note said only
+    // what it had not looked at, and the model answered «no está en mi carpeta de trabajo». The note of the search that
+    // ran as written says the look at the folder named as a call too.
+    [Test]
+    public void ASearchOfTheWorkingFolderWrittenAgainRunsAndItsNoteSaysTheCallThatLooksInTheFolderNamed()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "cajones", "azul"));
+        SaidFolders said = Heard("busca en cajones dónde está el file llaves.txt, que no me acuerdo en cuál lo dejé");
+        var search = new JsonObject { ["query"] = "llaves.txt" };
+
+        said.Rule("filesystem.search", Descriptor("filesystem.search"), search);
+        SaidFolders.Ruling? again = said.Rule("filesystem.search", Descriptor("filesystem.search"), search);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(again?.Refusal, Is.Null);
+            Assert.That(again?.Note, Does.Contain("it did not look at or change anything in that folder; to look there, "
+                + "call file_find with query \"llaves.txt\" and folder \"home\" and subdirectory \"cajones\""));
+        });
+    }
+
     // E027 shape: a delete is never routed; it is refused with the call that names the folder.
     [Test]
     public void ADeleteThatLeavesOutTheFolderNamedIsRefused()
