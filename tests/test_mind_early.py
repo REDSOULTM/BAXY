@@ -340,6 +340,7 @@ def test_the_sidecar_answers_the_app_with_the_decision_made_early(tmp_path: Path
     monkeypatch.setattr(Server, "start", lambda self: None, raising=False)
     monkeypatch.setattr(Server, "close", lambda self: None, raising=False)
     monkeypatch.setattr(Server, "name", "model.gguf", raising=False)
+    monkeypatch.setattr(sidecar, "declared_build", lambda path: "b11609")  # the server is a fake
     monkeypatch.setattr(sidecar, "LlmServer", type("Factory", (), {"REQUEST_SECONDS": 24.0,
                                                                    "__new__": lambda cls, *a, **k: server}))
     monkeypatch.setattr(sidecar, "Mind", EarlyMind)

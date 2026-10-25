@@ -69,6 +69,7 @@ def test_the_output_opens_for_every_answer_of_a_person_s_turn(
     monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", "its-server.exe")
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
     monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    monkeypatch.setattr(sidecar, "declared_build", lambda path: "b11609")  # the server is a fake
     monkeypatch.setattr(sidecar, "LlmServer", FakeServer)
     monkeypatch.setattr(sidecar, "Mind", FakeMind)
     monkeypatch.setattr(sidecar, "Voice", FakeVoice)

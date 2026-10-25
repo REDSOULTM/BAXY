@@ -11,7 +11,7 @@ from pathlib import Path
 
 from . import protocol
 from .early import Anticipation, early_silence, wake_warm
-from .llm_server import LlmServer
+from .llm_server import LlmServer, declared_build
 from .mind import Mind
 from .system_one import SystemOne
 from .voice import Voice
@@ -55,12 +55,14 @@ def main() -> int:
         sys.stderr.write("baxy_mind_renew_failure: BAXY_MIND_LLM_GGUF and BAXY_MIND_LLAMA_SERVER are required\n")
         return 2
     try:
+        # w11-llama (2026-10-25): only a declared llama-server starts, Qwen's and System One's (the same binary).
+        build = declared_build(server_path)
         # Renew al máximo 1.5 (2026-10-22): 53,248 and not 49,152. With the ~43k-token prefix the history had ~2.5k
         # tokens (about three turns); 4,096 more cost ~68 MiB of KV (8 full-attention layers × 4 KV heads × 256, q8_0),
         # room left once Laya stopped using the GPU (3.1: 3,902 MiB with System One on).
         server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
                            context=int(os.environ.get("BAXY_RENEW_CTX", "53248")))
-    except RuntimeError as error:  # a pinned port in use (llm_server._pinned_port)
+    except RuntimeError as error:  # an undeclared server, or a pinned port in use (llm_server._pinned_port)
         sys.stderr.write(f"baxy_mind_renew_failure: {error}\n")
         return 2
     server.start()
@@ -100,7 +102,7 @@ def main() -> int:
     mind.foresee = voice.speech.foresee  # the last answer's first sentence is synthesized while it is written
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL,
-        "models": {"llm": server.name},
+        "models": {"llm": server.name, "server": build},
         "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
                      "session.new", "session.export", "session.load", "trace.forget",
                      "voice.start", "voice.stop", "voice.release", "voice.status", "voice.speak", "voice.cancel"],

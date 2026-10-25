@@ -286,6 +286,7 @@ def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a
     monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", "llama-server.exe")
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
     monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    monkeypatch.setattr(sidecar, "declared_build", lambda path: "b11609")  # the server is a fake
     monkeypatch.setattr(sidecar, "LlmServer", FakeServer)
     monkeypatch.setattr(sidecar, "Mind", FakeMind)
     monkeypatch.setattr(sidecar, "Voice", FakeVoice)
