@@ -1141,6 +1141,42 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Revisión de calidad (archivos): the working folder lives inside BAXY's own area and is usable through home, but its
+    // backups are not: written through home they were replaced (a backup's bytes and its recorded hash), and a restore
+    // then gave the forged bytes as a verified backup.
+    [Test]
+    public void TheWorkingFoldersBackupsAreNeverWrittenThroughAKnownFolder()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string privateArea = Path.Combine(home, "AppData", "Local", "BAXY");
+        string sandbox = Path.Combine(privateArea, "1", "filesystem-sandbox");
+        Directory.CreateDirectory(sandbox);
+        var provider = new LocalFilesystemProvider(sandbox)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+            PrivateRoots = [privateArea],
+        };
+        string id = "backup_" + new string('a', 32);
+        const string backups = "AppData/Local/BAXY/1/filesystem-sandbox/.backups/";
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => provider.WriteText(backups + id + ".bin", "falso", null, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(() => provider.WriteText(backups + id + ".sha256", new string('b', 64), null, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(() => provider.CreateDirectory(backups + "dentro", "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
+            Assert.That(Directory.EnumerateFileSystemEntries(Path.Combine(sandbox, ".backups")), Is.Empty);
+            provider.WriteText("AppData/Local/BAXY/1/filesystem-sandbox/nota.txt", "trabajo", null, "home");
+            Assert.That(File.ReadAllText(Path.Combine(sandbox, "nota.txt")), Is.EqualTo("trabajo"));
+        });
+    }
+
     // Revisión de fase 3: what Windows runs at sign-in (the Startup folders) is not written through the home folder, by
     // its full path, by its 8.3 alias or as a folder inside it, nor appended to; a file.write there would run at the next
     // sign-in. Refused before any effect; the rest of AppData stays writable.
