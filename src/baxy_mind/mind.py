@@ -138,7 +138,10 @@ VERIFICATION = {
 # looked; shell_command_run and client_channel_locate are output_only too and may change things, so they keep the line
 # above.
 READ_RISKS = ("read_only", "privacy_sensitive")
-OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba"
+# Fase 3 (bisección de V5E008, 8 turnos × 3 semillas con el modelo real): with «; lo que vio está arriba» at its end the
+# model took a web_search's snippets as the answer and opened the page 4 of 24 times (1975 after reading it: 2); without
+# it, 12 of 24 (7); 8 of 8 before 8.2 put it there. No extra fetch on searches whose snippet already answers (0 of 12).
+OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada"
 # Every outcome of a completed call (the App runs the queued calls after one of these).
 COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ)
 # What the facts line adds of a result's own fields (_outcome), and what _deduplicated leaves out of it for that.
@@ -797,17 +800,18 @@ COMPACTED = ("[Resultado omitido para que quepa la conversación: los ids de ven
 # Renew al máximo (w5): what a kept facts line says of the body it no longer has («su resultado está arriba» after the
 # result was left out read as a value the model could still quote), said as it is once the body is gone.
 COMPACTED_FACTS = {"su resultado está arriba": "su resultado se omitió",
-                   "lo que vio está arriba": "lo que vio se omitió",
                    "su after es la ventana de después": "su after se omitió"}
-assert all(k in label for k, label in (("su resultado está arriba", VERIFICATION["output_only"]),
-                                         ("lo que vio está arriba", OUTPUT_READ)))
+assert "su resultado está arriba" in VERIFICATION["output_only"]
+# A read says nothing of its body while it is there (OUTPUT_READ); once the body is gone its line says so, once.
+READ_OMITTED = "; lo que vio se omitió"
+_READ_KEPT = re.compile(re.escape(OUTPUT_READ) + "(?!" + re.escape(READ_OMITTED) + ")")
 
 
 def _omitted(facts: str) -> str:
     """Facts of calls whose results lost their bodies, said as they are now (COMPACTED_FACTS)."""
     for told, omitted in COMPACTED_FACTS.items():
         facts = facts.replace(told, omitted)
-    return facts
+    return _READ_KEPT.sub(OUTPUT_READ + READ_OMITTED, facts)
 
 # Review 16: the person's own text, when it alone does not fit (decide), keeps its start and the cut is said where the
 # model reads it; never cut below this many characters.

@@ -34,6 +34,10 @@ producto envía. Laya `layam-long-s1-Q8_0.gguf` y umbrales 0,4 / 0,6 / corrige e
 - Antes de cada brazo que actúa en el PC: cerrados Codex/ChatGPT, Opera, Discord, WhatsApp, Configuración y cualquier
   ventana de DisplayFusion abierta por un caso; escritorio limpio. El buzón queda cerrado mientras actúa el PC (el NB
   escribe en `D:\BAXYeval\renew_v5\nb-notas.md`). En el NB, copia F:→D: con sha256 y número de rutas.
+- Latencia (primera respuesta tras herramienta): sólo pareada dentro de una máquina, con el estado de la GPU registrado a
+  1 Hz (`nvidia-smi`: pstate y reloj) en cada brazo y las mismas condiciones en los tres (p.ej. una sesión de streaming del
+  dueño que retiene la GPU en P0 en el NB: o en los tres brazos o en ninguno). En el NB una GPU que despierta tras ≥ 1,5 s
+  ociosa añade ~240 ms por decisión (medido por el NB el 2026-10-24).
 - Lectura a ciegas de falsedades: un agente por semilla con las configuraciones renombradas al azar; claves en
   `F:\BAXYeval\renew_v6\holdout\claves-ciego`, reveladas después de contar.
 

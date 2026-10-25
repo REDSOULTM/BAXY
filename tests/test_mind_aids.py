@@ -422,7 +422,7 @@ def test_a_read_in_a_turn_is_told_by_the_risk_the_app_sent(tmp_path: Path) -> No
                                       "observed": {"hasVisibleWindow": True}}))
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert tool.endswith("[En este turno: window_application_status → lectura: sólo miró, sin abrir, cerrar ni "
-                         "cambiar nada; lo que vio está arriba]")
+                         "cambiar nada]")
 
 
 def test_the_apps_place_owner_is_traced_and_reaches_the_model_as_it_came(tmp_path: Path, monkeypatch) -> None:
