@@ -220,6 +220,11 @@ def test_a_folder_named_after_a_participle_is_where_the_result_says_it_went() ->
     assert _rules("Guardado notas.txt en BAXY-bench.", [_written(r"C:\Users\ana\notas.txt")]) == ["folder"]
     assert _rules("Creada la carpeta fotos_2026 dentro de BAXY-bench.", [_r(
         "filesystem.create.directory", {**DONE, "observed": {"fullPath": r"C:\Users\ana\BAXY-bench\fotos_2026"}})]) == []
+    assert _rules("Listo: creada la carpeta fotos_2026 dentro de BAXY-bench.", [made]) == ["folder"]
+    # Revisión de nb-w11-multi: a participle that says where something was, not that this turn left it there, is no claim
+    # of where it went («estaba guardado en Descargas» of the file moved to Documentos).
+    moved = _written(r"C:\Users\ana\Documents\notas.txt")
+    assert _rules("Lo moví a Documentos. Estaba guardado en Descargas.", [moved]) == []
 
 
 def test_an_absolute_path_that_no_result_shows() -> None:
