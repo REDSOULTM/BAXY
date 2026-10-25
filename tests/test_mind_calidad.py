@@ -189,3 +189,62 @@ def test_a_kept_prefix_that_cannot_be_written_or_cleaned_does_not_fail_the_warm_
     monkeypatch.setattr(pathlib.Path, "write_text", unwritable)
     assert server.save_prefix("other", {"prefix_tokens": 1, "notice": ""}) is False
     assert not (tmp_path / f"{llm_server.PREFIX}other.json").exists()
+
+
+def test_the_model_servers_are_closed_even_when_the_voice_cannot_say_it_stopped(
+        tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """At the end the voice says it stopped (a voice.event on stdout); with the App gone that write fails, and the
+    OSError skipped closing the speech, llama-server and System One's server: without a job object around the mind (a
+    bench that runs it), both servers outlived it, the GPU's 4 GB held. Every step of the end runs."""
+    from baxy_mind import __main__ as sidecar
+    from baxy_mind.llm_server import LlmServer
+    from baxy_mind.mind import Mind
+
+    closed: list[str] = []
+
+    class Server(LlmServer):
+        def start(self):
+            pass
+
+        def close(self) -> None:
+            closed.append("server")
+
+    class Speech:
+        def foresee(self, text, done):
+            return True
+
+        def close(self) -> None:
+            closed.append("speech")
+
+    class Voice:
+        def __init__(self, *args, **kwargs) -> None:
+            self.speech = Speech()
+
+        def stop(self) -> None:
+            raise OSError(22, "Invalid argument")  # stdout's pipe, the App gone
+
+    class Laya:
+        def __init__(self, *args) -> None:
+            self.on_event = None
+
+        def start(self):
+            pass
+
+        def close(self) -> None:
+            closed.append("system_one")
+
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "model.gguf")
+    monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", EXE)
+    monkeypatch.setenv("BAXY_S1_GGUF", "laya.gguf")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.delenv("BAXY_VISION_SLOT_DIR", raising=False)
+    monkeypatch.delenv("BAXY_MIND_LLAMA_PORT", raising=False)
+    monkeypatch.setattr(sidecar, "declared_build", lambda path: "b11609")
+    monkeypatch.setattr(sidecar, "LlmServer", Server)
+    monkeypatch.setattr(sidecar, "SystemOne", Laya)
+    monkeypatch.setattr(sidecar, "Mind", Mind)
+    monkeypatch.setattr(sidecar, "Voice", Voice)
+    monkeypatch.setattr(sidecar.protocol, "read_message", lambda: None)
+    monkeypatch.setattr(sidecar.protocol, "write_message", lambda message: None)
+    assert sidecar.main() == 0
+    assert closed == ["speech", "server", "system_one"]

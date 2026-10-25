@@ -273,11 +273,19 @@ def main() -> int:
                     sys.stderr.write(f"baxy_mind_renew_failure:prefill:{error!r}\n")
                     sys.stderr.flush()
     finally:
-        voice.stop()
-        voice.speech.close()
-        server.close()
-        if system_one is not None:
-            system_one.close()
+        # Every step runs: the voice says it stopped on stdout, which fails once the App is gone, and that OSError
+        # skipped closing both model servers (they outlived a mind run without the App's job object).
+        for name, step in (("voice", voice.stop), ("speech", voice.speech.close), ("server", server.close),
+                           ("system_one", system_one.close if system_one is not None else None)):
+            if step is None:
+                continue
+            try:
+                step()
+            except Exception as error:  # noqa: BLE001 - the next step still runs
+                try:
+                    sys.stderr.write(f"baxy_mind_renew_failure:close:{name}:{error!r}\n")
+                except Exception:  # noqa: BLE001 - stderr's pipe goes with the App too
+                    pass
     return 0
 
 
