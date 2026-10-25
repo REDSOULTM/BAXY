@@ -95,6 +95,12 @@ public static class ModelAids
 
     /// <summary>Renew al máximo (w5, E024): an append refused for a missing file says where one of that name is.</summary>
     public const string AppendElsewhere = "append_elsewhere";
+    /// <summary>
+    /// Holdout v6 V6E044 (told «a file of that name is in BAXY-bench/gastos.txt», answered «gastos.txt está en mi carpeta
+    /// de trabajo»): that append refusal says the file by its full path, whose it is, and the file_write call that
+    /// appends to it, with its arguments.
+    /// </summary>
+    public const string AppendElsewhereCall = "append_elsewhere_call";
 
     /// <summary>
     /// Holdout v6 V6E041 («agrégale al file jugadores.txt … la línea: …», written without append and refused, then read
