@@ -151,7 +151,10 @@ internal static class ScreenViewProjection
             bool arrived = false;
             if (Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.AskedPlace)
                 && asked is { } wanted
-                && Baxy.Kernel.Operations.ApplicationPlaces.SameApplication(wanted.Application, (string?)place["application"]))
+                && Baxy.Kernel.Operations.ApplicationPlaces.SameApplication(wanted.Application, (string?)place["application"])
+                // Revisión w11-rev4: a place asked that declares nothing it shows is never found in sight (a game's page
+                // shows the store's address too): it is not told as the one in sight nor as not.
+                && Baxy.Kernel.Operations.ApplicationPlaces.DeclaresShown(wanted.Application, wanted.Place))
             {
                 arrived = string.Equals(wanted.Place, inSight, StringComparison.Ordinal);
                 text.Append(arrived

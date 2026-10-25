@@ -279,6 +279,28 @@ public sealed class ScreenViewProjectionTests
             + "este turno (library)\n(los otros lugares de Steam se abren directo"));
     }
 
+    // Revisión w11-rev4: a place that declares nothing it shows is never found in sight, so another one found is no proof
+    // it is not there: a game's page shows the store's address too («store.steampowered.com», as the data say), and
+    // «no el que pidió app_open (game)» was said with the game's page in sight. Only a place whose own text could be read
+    // and was not is told as not the one in sight; else the view is as with no place asked.
+    [Test]
+    public void APlaceAskedThatDeclaresNothingShownIsNotToldAsNotInSight()
+    {
+        string game;
+        string before;
+        using (ModelAids.Use(ModelAids.SightPlaces + "," + ModelAids.AskedPlace))
+        {
+            game = View(StoreInSight, ("Steam", "game"));
+            before = View(StoreInSight, null);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(game, Does.Not.Contain("pidió app_open"));
+            Assert.That(game, Is.EqualTo(before));
+        });
+    }
+
     // A place asked of another application says nothing; with the aid off the view is as it was, asked or not.
     [Test]
     public void APlaceAskedOfAnotherApplicationOrWithTheAidOffChangesNothing()

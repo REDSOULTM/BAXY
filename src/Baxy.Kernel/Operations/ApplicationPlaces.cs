@@ -232,6 +232,15 @@ public static class ApplicationPlaces
         !string.IsNullOrWhiteSpace(one) && !string.IsNullOrWhiteSpace(other)
         && string.Equals(Fold(one), Fold(other), StringComparison.Ordinal);
 
+    /// <summary>
+    /// Revisión w11-rev4: whether the data declare a text <paramref name="place"/> of <paramref name="application"/>
+    /// shows; a place that declares none is never found in sight (<see cref="PlaceShown(string?, IEnumerable{string?})"/>),
+    /// so another one found is no proof it is not there (a game's page shows the store's address too).
+    /// </summary>
+    public static bool DeclaresShown(string? application, string? place) =>
+        application is not null && place is not null && Loaded.Value.TryGetValue(Fold(application), out Application? declared)
+        && declared.Shows.TryGetValue(place, out IReadOnlyList<string>? texts) && texts.Count > 0;
+
     private static Application? Catalogued(IReadOnlyDictionary<string, Application> applications, string? catalog) =>
         catalog is null ? null : applications.Values.FirstOrDefault(
             application => string.Equals(application.GameCatalog, catalog, StringComparison.Ordinal));
