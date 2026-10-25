@@ -3,7 +3,7 @@ import type { BaxyState } from '../types';
 import { LIB, MOUTH_BOX, MOUTH_LEVELS, NEXT, SLEEP_END, clip, groupFor, mouthLevel, type Group } from './avatarClips';
 import { lipAt } from '../lip';
 import { cutMouths } from './mouths';
-import type { MouthBlend } from './mouthBlend';
+import { LipMouth, type MouthBlend } from './mouthBlend';
 
 /* BAXY's avatar in video (design v5, app.jsx BxAvatarVid): a library of Higgsfield clips in public/clips. Every clip
    starts and ends on the same master frame (the «dormido» ones on the sleep frame), so any clip can follow any other
@@ -143,8 +143,8 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       }, ms);
     };
     cutLater(1500);
-    const first = MOUTH_LEVELS.map((_, i) => MOUTH_LEVELS.slice(0, i).reduce((a, b) => a + b, 0));
-    let lipOn = false, level = -1, since = 0, turn = 0, raf = 0, composed = 0;
+    const lipMouth = new LipMouth(MOUTH_LEVELS);
+    let lipOn = false, raf = 0;
     const mouth = () => {
       raf = requestAnimationFrame(mouth);
       const L = lipAt(), t = performance.now();
@@ -155,16 +155,14 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       // and on a speaking clip: the area replaced is built from its mouths (a resting clip's smile is wider)
       const on = L.known && L.active && !!blend && cur === 'hablando' && !!front && front.readyState >= 2 && shown === 1
         && +getComputedStyle(front).opacity > 0.99;
-      if (on !== lipOn) { lipOn = on; el.classList.toggle('lip', on); if (!on) { lctx.clearRect(0, 0, MW, MH); level = -1; delete el.dataset.mouth; } }
-      if (!on || t - composed < 30) return; // composed about 30 times a second, from the frame on screen
-      composed = t;
-      // a new level shows a different mouth of that level each time; a mouth stays at least 50 ms (a 20 fps mouth)
-      const k = mouthLevel(L.level);
-      if (k !== level && t - since >= 50) { level = k; since = t; turn++; }
-      const m = first[level] + (turn % MOUTH_LEVELS[level]);
+      if (on !== lipOn) { lipOn = on; el.classList.toggle('lip', on); if (!on) { lctx.clearRect(0, 0, MW, MH); lipMouth.off(); delete el.dataset.mouth; } }
+      if (!on) return;
+      // composed about 30 times a second, from the frame on screen (mouthBlend.ts LipMouth)
+      const m = lipMouth.at(mouthLevel(L.level), t);
+      if (m < 0) return;
       gctx.drawImage(front!, MX, MY, MW, MH, 0, 0, MW, MH);
       lctx.putImageData(blend!.compose(gctx.getImageData(0, 0, MW, MH).data, m), 0, 0);
-      el.dataset.mouth = String(level);
+      el.dataset.mouth = String(lipMouth.level);
     };
     raf = requestAnimationFrame(mouth);
     advance(false);

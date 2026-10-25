@@ -166,3 +166,34 @@ export class MouthBlend {
     return this.out;
   }
 }
+
+/** Which mouth the lip-sync composes and when (AvatarVid), about 30 times a second: a new level of openness shows a
+    different mouth of that level each time, and a mouth stays at least 50 ms (a 20 fps mouth). The first one after the
+    clip's own mouth showed is composed at once: the hole opens in the video in that same frame, and an empty hole is
+    a dark box where the mouth goes. */
+export class LipMouth {
+  /** the level of openness shown (-1 while the clip keeps its own mouth) */
+  level = -1;
+  private since = 0;
+  private turn = 0;
+  private composed = 0;
+  private readonly levels: number[];
+  private readonly first: number[];
+
+  constructor(levels: number[]) {
+    this.levels = levels;
+    this.first = levels.map((_, i) => levels.slice(0, i).reduce((a, b) => a + b, 0));
+  }
+
+  /** the clip's own mouth shows again */
+  off(): void { this.level = -1; }
+
+  /** the mouth (its index in MOUTHS.flat()) to compose at `t` for level `k`, or -1 while the last one composed stays */
+  at(k: number, t: number): number {
+    const fresh = this.level < 0;
+    if (!fresh && t - this.composed < 30) return -1;
+    this.composed = t;
+    if (k !== this.level && (fresh || t - this.since >= 50)) { this.level = k; this.since = t; this.turn++; }
+    return this.first[this.level] + (this.turn % this.levels[this.level]);
+  }
+}
