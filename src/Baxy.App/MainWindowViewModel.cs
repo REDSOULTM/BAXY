@@ -56,6 +56,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // applies, and a command that arrives while it is starting waits for it first.
     private int _personVoiceChoice;
     private Task _startupVoice = Task.CompletedTask;
+    // Done once the mind's voice state is known (its ear loaded or failed to) and the startup voice was applied. It is
+    // set before the mind is announced ready, so a wake word asked for from then on (the interface applies the person's
+    // «escucho siempre» as soon as the mind is up) waits for it: 2026-10-25 (spoken A/B c11b-on1), sent while the ear
+    // still loaded under load, the start was answered as the App's wait ran out, the App stopped it again, and the
+    // startup voice had yielded to that command: the wake word never started.
+    private Task _voiceSettled = Task.CompletedTask;
+    private const string WakeUnavailable = "wake_unavailable";
     private bool _startupMindPending;
     private bool _isListening;
     private bool _isWakeListening;
@@ -270,7 +277,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>
     /// The voice's last trouble, until it hears again: voice_dropped_busy (a transcript that arrived while a turn ran
-    /// started nothing) or voice_error (the mind's listener failed on a block).
+    /// started nothing), voice_error (the mind's listener failed on a block) or wake_unavailable (the wake word asked
+    /// for, at start or by the person, did not start).
     /// </summary>
     internal string? VoiceFailure
     {
@@ -957,7 +965,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     return true;
                 }
 
-                bool started = await mind.VoiceStartAsync("wake", TimeSpan.FromSeconds(60), cancellationToken);
+                // A wake word is a mode, not an utterance: asked for while the ear still loads, it starts once it has
+                // loaded (_voiceSettled), instead of reaching a mind that holds it until then.
+                await _voiceSettled.WaitAsync(cancellationToken);
+                mind = _mindClient;
+                if (mind is not { IsReady: true })
+                {
+                    return false;
+                }
+
+                if (IsWakeListening)
+                {
+                    return true;
+                }
+
+                bool started = await mind.VoiceStartAsync("wake", MindSidecarClient.VoiceStartTimeout, cancellationToken);
                 IsWakeListening = started;
                 if (started)
                 {
@@ -966,6 +988,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     IsVoiceSpeaking = false;
                 }
 
+                WakeStartTold(started);
                 StatusDescription = started ? "Esperando «Baxy»" : "wake_inactive";
                 return started;
             }
@@ -1006,7 +1029,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // person who presses to talk over it lost their words; pressing to talk silences BAXY first, as typing does.
         if (IsVoiceSpeaking && mind.IsVoiceAvailable)
             _ = await mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), cancellationToken);
-        bool started = await mind.VoiceStartAsync("direct", TimeSpan.FromSeconds(60), cancellationToken);
+        bool started = await mind.VoiceStartAsync("direct", MindSidecarClient.VoiceStartTimeout, cancellationToken);
         IsMicAvailable = started;
         if (started)
         {
@@ -1164,15 +1187,30 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return;
         }
 
-        bool wakeStarted = await mind.VoiceStartAsync("wake", TimeSpan.FromSeconds(60), cancellationToken);
+        bool wakeStarted = await mind.VoiceStartAsync("wake", MindSidecarClient.VoiceStartTimeout, cancellationToken);
         IsWakeListening = wakeStarted;
         if (wakeStarted)
         {
             IsMicAvailable = true;
-            if (!IsBusy && Volatile.Read(ref _personVoiceChoice) == 0)
-            {
-                StatusDescription = "Esperando «Baxy»";
-            }
+        }
+
+        // A wake word that did not start is a state the interface shows (VoiceFailure), as the person's own does.
+        WakeStartTold(wakeStarted);
+        if (!IsBusy && Volatile.Read(ref _personVoiceChoice) == 0)
+        {
+            StatusDescription = wakeStarted ? "Esperando «Baxy»" : "wake_inactive";
+        }
+    }
+
+    private void WakeStartTold(bool started)
+    {
+        if (!started)
+        {
+            VoiceFailure = WakeUnavailable;
+        }
+        else if (VoiceFailure == WakeUnavailable)
+        {
+            VoiceFailure = null;
         }
     }
 
@@ -1204,17 +1242,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    private async Task SettleStartupVoiceAsync(MindSidecarClient mind, CancellationToken cancellationToken)
+    private async Task SettleStartupVoiceAsync(
+        MindSidecarClient mind,
+        TaskCompletionSource settled,
+        CancellationToken cancellationToken)
     {
         try
         {
-            MindVoiceStatus? voice = await VoiceStatusSettling.UntilSettledAsync(
+            MindVoiceStatus voice = await VoiceStatusSettling.UntilSettledAsync(
                 token => ReferenceEquals(_mindClient, mind) && mind.IsReady
                     ? mind.VoiceStatusAsync(TimeSpan.FromSeconds(10), token)
                     : throw new OperationCanceledException("mind_replaced"),
                 static (delay, token) => Task.Delay(delay, token),
                 cancellationToken);
-            if (voice is not null && !voice.Pending && ReferenceEquals(_mindClient, mind))
+            if (ReferenceEquals(_mindClient, mind))
             {
                 Task startupVoice = ApplyStartupVoiceAsync(mind, voice, cancellationToken);
                 _startupVoice = startupVoice;
@@ -1224,6 +1265,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         catch (Exception)
         {
             // Voice availability is optional state; a failed read never touches the turn.
+        }
+        finally
+        {
+            settled.TrySetResult();
         }
     }
 
@@ -1247,6 +1292,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             cancellationToken, startupAbandoned, _mindLifetimeCancellation.Token);
         MindSidecarClient? mind = null;
         bool starting = false;
+        TaskCompletionSource? voiceSettled = null;
+        bool settling = false;
         try
         {
             await _mindStart.WaitAsync(linked.Token);
@@ -1307,6 +1354,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             mind.VoiceEventReceived += OnMindVoiceEvent;
             mind.ReadyLost += OnMindReadyLost;
             Volatile.Write(ref _personVoiceChoice, 0);
+            // Before the mind is announced ready: a wake word asked for from then on waits for its voice to settle.
+            voiceSettled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            _voiceSettled = voiceSettled.Task;
             _mindClient = mind;
             _mindStartupState = MindStartupState.Ready;
             _mindStartupFailureCount = 0;
@@ -1316,13 +1366,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             MindVoiceStatus? voice = await mind.VoiceStatusAsync(TimeSpan.FromSeconds(10), linked.Token);
             IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
             SetVoicePieces(voice);
-            if (voice?.Pending == true)
+            if (voice is not { Pending: false })
             {
-                // The voice runtime is still importing: the mind serves turns now and the voice settles beside them.
-                _ = SettleStartupVoiceAsync(mind, _mindLifetimeCancellation.Token);
+                // The voice runtime is still importing, or its state did not come in time (a slow answer under load, not
+                // «no voice»: it used to be taken as none, and the wake word asked for at start never started): the
+                // mind serves turns now and the voice settles beside them, however long its ear takes to load.
+                settling = true;
+                _ = SettleStartupVoiceAsync(mind, voiceSettled, _mindLifetimeCancellation.Token);
             }
             else
             {
+                voiceSettled.TrySetResult();
                 _startupVoice = ApplyStartupVoiceAsync(mind, voice, linked.Token);
                 await _startupVoice;
             }
@@ -1341,6 +1395,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         finally
         {
+            if (!settling)
+            {
+                voiceSettled?.TrySetResult();
+            }
+
             if (starting)
             {
                 _mindStart.Release();
