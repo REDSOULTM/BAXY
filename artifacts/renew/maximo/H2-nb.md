@@ -51,3 +51,26 @@ en `nb-w10-cuenta`.
 | `nb-w10-clic` | c8d3e613c | `ViewDifferenceCutTests` (foco solo), `ComputerUseAfterViewTests` (clic focusOnly), teclas `ctrl_end`/`ctrl_home` en `ComputerUseSpeedTests`, `OperationRegistryTests`, `ProductCatalogTests` | Providers 3072/3072, Kernel 746, pytest 647 | V5E029, V5E023 ×3 en int11b (en vivo sin probar) |
 | `nb-w10-calc` | 37f6038cf | 13: `KeyPressLandingTests` (app abierta con proceso muerto), `KeypadInvokeTests` (científica, modo, seguir desde la pantalla), `ExternalCapabilityHandlerTests` (startedFrom, clearedDisplay, ^ y paréntesis, refused/accepted) | Providers 3081/3081, Kernel 741, pytest 647 | V5E021, V5E029 ×3 en int11b; AutomationIds comprobados en el paquete instalado, CE→C en Científica sin probar en vivo |
 | `nb-w10-dictado` (sobre mover) | 3c267c810 | `ASeparatorSaidAsAWordLeadsIntoTheSubfolderItNames` ×3, `AFolderMadeWithTheNameSaidSpelledOtherwiseIsRefusedWithTheirSpelling` (+ contracaso), destino repetido en `ANamedFileOfThePersonsIsMovedOrCopiedInsideTheFolderNamed` | App 201, Providers 3069/3069 | lo que int11 aún fallaba en h2 s0: V5E040 (destino que repite la carpeta), V5E044 («barra» dictado), V5E043 (ayuda said_name); para int11c |
+
+## Medida (práctica e2e en el NB, int11 frente a la base int10f, 3 semillas)
+
+| Banco | base | int11 | Δ (IC95) | Suben / bajan |
+|---|---|---|---|---|
+| Los 20 casos H2 de v5 | 1,0 | 7,0 | +6,0 [+2,33; +10,0], McNemar p 0,016 | ↑ V5E016 032 034 045 047 060 062; ↓ ninguno |
+| Práctica (30) | 29,0 | 28,0 | −1,0 [−2,67; +0,67] | ↓ E012 (recibo con ctrl_a; arreglado en int11b) |
+
+## Medida de los candidatos (práctica e2e en el NB, 3 semillas intercaladas)
+
+| Banco | base | int11 | int11c | int11f (×2) |
+|---|---|---|---|---|
+| Los 20 casos H2 de v5 | 1,0 | 7,0 | 10,67 | 11,5 |
+| Práctica (30) | 29,0 | 28,0 | 28,0 | 29,5 |
+
+int11c − base en H2: Δ +9,67 IC95 [+6,0; +13,67], McNemar p 0,0005 (Holm 0,001); suben V5E016 018 021 032 034 040 043 044 045 047 060 062 y no baja ninguno. De los ocho casos del NB, en int11f pasan V5E021, V5E032, V5E034, V5E043 y V5E044 en sus dos semillas y V5E040 en una; en int11c, los seis en s0 y s1 pero sólo V5E034, V5E043 y V5E044 en s2. V5E023 y V5E029 no pasan en ninguna corrida: dependen además de la duda del modelo.
+
+## Fallos del banco vistos al medir
+
+- **E029 (práctica), oráculo demasiado estrecho.** En `c3-int11c-s1-prac` la respuesta fue «No pido comida.»: una
+  negativa válida de algo que BAXY no hace (la pantalla quedó igual: el primer oráculo, `UNCHANGED`, aprueba). El segundo
+  oráculo exige una de las formas de su expresión regular («no puedo», «no lo hago», «eso no», «can't»…) y no recoge
+  «no pido». Cuenta como fallo del banco, no del producto; la base también lo falló en s1 con otra redacción.

@@ -454,3 +454,59 @@ sesión larga de cada integración; diagnóstico H2 de V5E021, 023, 029 (cu) y V
 - VOID mío: `c3-base-s0-prac-e2e.void-frio2` (la limpieza final de la cola de Steam en frío mató el producto).
 - H9 sin repro todavía (1/1 bien en frío; 0 en todo el holdout v5); cada e2e guarda `app-trace.jsonl` y
   `core-disconnect.jsonl`.
+
+**Al día, 2026-10-24 22:45.**
+- E2E de práctica en el NB, int11 066802ea2 frente a la base int10f, 3 semillas intercaladas, GPU caliente en los dos
+  (streaming), `pareado.py`: H2 (los 20 casos v5) 1,0 → 7,0, Δ +6,0 IC95 [+2,33; +10,0], McNemar p 0,016, suben
+  V5E016 032 034 045 047 060 062 y no baja ninguno, pass^3 0 → 4; práctica (30) 29,0 → 28,0, Δ −1,0 IC95
+  [−2,67; +0,67], baja sólo E012 (el recibo de input.text.type sugería ctrl_a: en el Bloc de notas en español abre
+  «Abrir»; arreglado por el PC en int11b). Primera respuesta p50, mediana de 6 corridas: 4 400 → 4 035 ms.
+- **H9 resuelto.** Primera repro con la traza del App (int11 s2, E015, «abre Steam y ve a la biblioteca»): el core salió
+  con código 70, «Window content capture came back black»: ShellApplicationPlaceOpener capturaba la ventana de Steam en
+  frío antes de entregar la dirección y la IOException llegaba a Program.Main. Arreglo en el proveedor
+  `nb-w10-negra` 4bc235b34 (Providers 3070/3070) y en el motor (PC, w10-motor).
+- `nb-w10-dictado` 3c267c810 (Providers 3069/3069): lo que int11 aún fallaba de archivos (V5E040, V5E043, V5E044). En
+  int11c aec328933, que se mide a continuación (e2e ×3, falsedades ×3, recursos con oído).
+
+**Al día, 2026-10-25 01:40.**
+- int11c aec328933 medido (e2e ×3, intercalado con base e int11): H2 1,0 | 7,0 | 10,67 (int11c − base +9,67, IC95
+  [+6,0; +13,67], p Holm 0,001, 12 suben y ninguno baja); práctica 29,0 | 28,0 | 28,0 (baja E029, fallo del oráculo).
+- Falsedades de práctica a ciegas (×3, clave en `D:\BAXYeval\renew_v6\practica\clave-c3`): claras base 2 | int11 2 |
+  int11c 6. Causas de int11c: F013 ×3 (guardar por «Guardar como» con el nombre que no era; lo empujaba la ayuda
+  typed_in_window del PC, que se retira en int11f), F019 (H9, arreglado en int11d), F009 (el nombre «BAXY-bench», límite
+  del modelo, como E027) y F001.
+- Ramas nuevas en hub: `nb-w10-negra` 4bc235b34 (H9), `nb-w10-guardar` fd5063832 (ayuda save_dialog_next, E017/F013).
+- En curso (`cien/cola_c3h.sh`): int11f f1d041344 (int11e − typed_in_window) frente a int11g 03fa1e306 (int11f −
+  w10-lectura), falsedades ×3 y e2e ×2 intercaladas; regla del PC: w10-lectura se queda sólo si int11f no tiene más
+  falsedades claras que int11g y no pierde e2e de práctica. Luego lectura a ciegas base/int11f/int11g y recursos con oído
+  del que gane.
+
+**Al día, 2026-10-25 04:10: candidato int11f.**
+- int11f f1d041344 (int11e − typed_in_window) frente a int11g 03fa1e306 (int11f − w10-lectura), regla pre-registrada del PC
+  (01:25): falsedades claras a ciegas ×3 (`D:\BAXYeval\renew_v6\practica\ciego-fg-lectura.md`, clave `clave-fg`): base 2 |
+  int11f 1 | int11g 1; e2e de práctica ×2 intercalada: int11g 28,5 → int11f 29,5 (Δ +1,0, IC95 [0,0; +2,5], pass^2 27 →
+  29), H2 11,0 → 11,5. Se queda w10-lectura: el candidato es int11f. Cero engine_no_answer y cero core-disconnect.
+- Recursos con oído real de int11f (k4 + Parakeet Ultra): con voz VRAM 3 989 MiB y RAM del producto 3 672 MiB (sin oído
+  3 980 / 2 712), `vram_attribution: ok`; dentro de 4 096 / 4 096.
+- Suites del NB sobre int11f: Providers 3 113/3 113, pytest 666 (1 omitida: necesita la librería del banco en su unidad).
+- E027 y F009 («BAXY-bench» tomado por la carpeta privada de BAXY): límite del modelo según la ablación del PC (con
+  «Proyectos-bench» p_call 0,99); va al brief del ajuste fino.
+- Sesión larga (22 turnos, `mx/sesion_larga.py`, S1 explícito) int11f | base int10f: 22/22 decisiones; pico USS de
+  llama-server 2 087 | 2 079 MiB; checkpoints borrados 0 | 0; relectura total 31,8 | 37,5 s; relectura de las decisiones
+  11,2 | 10,7 s (p50 348 | 306 ms).
+
+**Al día, 2026-10-25 10:45: holdout v6 del NB y propuestas para la fase siguiente.**
+- Holdout v6 (NB, s0 y s1, 76 casos, 75 puntuados): e2e inicio 49 / 49 | final_v5 56 / 55 | cien 57 / 57; cien −
+  final_v5 +1,5 (IC95 [−2,0; +5,5]); confirmaciones 6 / 6 de 8; primera respuesta p50 cien 3,74 / 3,84 s frente a
+  final_v5 4,31 s. Falsedades s0 y s1 de los tres brazos: 6 corridas válidas (la VOID de cien s0 se repitió entera),
+  copiadas al PC con SHA-256 para su lectura a ciegas (`F:/BAXYeval/renew_v6/fals-nb`). V6E022 falla en el setup en todas
+  las corridas del NB: fallo del banco (el bloqueo de primer plano de Windows impide traer el Bloc delante).
+- Tercera semilla de cien en v6 (fuera del plan, descriptiva): 58/76; su p50 4,70 s está contaminado por compilaciones
+  .NET de los agentes del NB (TTS +30 % ms/carácter, generación +11 % ms/token); desde entonces `mx/dotnet_turno.sh`
+  espera mientras exista `cien/medir.lock`.
+- El PC congeló cien = int11f f1d041344 (10:22). Las ramas `nb-w11-*` son propuestas para la fase siguiente, encontradas
+  después de abrir v6 y sin medir en holdout; no entran en renew-cien. Integración: `hub/nb-w11-junto` (revision, arch,
+  multi, clausula, llama, texto, vivo, cursor, flaky); pendientes cu (en revisión independiente) e inicio. Se mide en los
+  bancos de práctica que cien ya corrió (30 + 20 H2, ×2) para ver que nada empeora; v6 sólo descriptivo.
+- `hablar.py` caía al final de cada brazo en el NB (run_renew.cmd termina tras lanzar la app): arreglado en
+  `nb-w11-clausula` 5c0446a47; el A/B hablado de la primera cláusula se relanzó.

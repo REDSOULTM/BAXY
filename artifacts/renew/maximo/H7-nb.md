@@ -49,7 +49,7 @@ Simuladas sobre los turnos reales de `final` (el modelo reproduce la p50: 4 310 
 
 | Palanca | Dónde | p50 todos los turnos | Estado |
 |---|---|---|---|
-| Aviso de una a tres palabras (sigue escrito por Qwen) | `mind.py` `NOTICE_ASK`, `NOTICE_MAX_WORDS` | 4 310 → 3 907 ms | `nb-w10-aviso` 3cfe46f68, en int11; medida en curso |
+| Aviso de una a tres palabras (sigue escrito por Qwen) | `mind.py` `NOTICE_ASK`, `NOTICE_MAX_WORDS` | 4 310 → 3 907 ms | `nb-w10-aviso` 3cfe46f68, en int11: medido en e2e de práctica ×3, mediana de las p50 4 400 → 4 035 ms (−365 ms, GPU caliente en los dos brazos) |
 | llama-server parcheado (108 → ~48 ms fuera del modelo por petición, 2 en el camino) | `BAXY_MIND_LLAMA_SERVER` | −120 ms | réplica en GPU idéntica (50/50, 2026-10-23); falta decidir llevarlo al producto |
 | Primera cláusula a la voz | `voice_output.py:71`, `:220-260`, `:441-455` | 3 907 → 3 743 ms | cambia la prosodia: oído del dueño |
 | GPU en máximo rendimiento mientras corre BAXY | perfil de NVIDIA (ajuste del sistema) | ~−245 ms por `decide` en el NB | del dueño; no se toca |
