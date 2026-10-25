@@ -79,3 +79,11 @@ def test_a_scene_that_breaks_the_run_still_closes_its_server(escenas):
     with pytest.raises(TimeoutError):
         bench_escenas.main()
     assert FakeServer.made[0].closed
+
+
+def test_a_label_run_again_keeps_no_trace_of_the_run_before(escenas):
+    folder, _ = escenas
+    bench_escenas.main()
+    bench_escenas.main()
+    trace = (folder / "runs" / "lbl-escenas.trace.jsonl").read_text(encoding="utf-8").splitlines()
+    assert trace == ['{"beat": "S001"}']

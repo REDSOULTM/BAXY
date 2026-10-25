@@ -123,12 +123,14 @@ def main() -> None:
     holds = heartbeat_holds()
     runs = BANKS / "runs"
     runs.mkdir(parents=True, exist_ok=True)
+    trace = runs / f"{args.label}-escenas.trace.jsonl"
+    trace.unlink(missing_ok=True)  # the mind appends: a label run again kept the trace of the run before (as decision)
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), log_name=f"escenas-{args.label}.log")
     server.start()
     # PC-Q (2026-10-25): a scene that raised (the server's timeout under Mind.beat) ended the run with its llama-server
     # still running, holding the GPU.
     try:
-        mind = Mind(server, runs / f"{args.label}-escenas.trace.jsonl")
+        mind = Mind(server, trace)
         mind.configure(catalog)
         server.wait_ready(600)
         mind.warm()
