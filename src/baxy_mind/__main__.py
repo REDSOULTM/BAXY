@@ -45,6 +45,10 @@ def bounded_trace(trace: Path, limit: int = TRACE_LIMIT_BYTES) -> Path:
             os.replace(trace, trace.with_name(trace.name + ".1"))
     except FileNotFoundError:
         pass  # the first start: nothing to cap
+    except OSError as error:
+        # Another process holds one of the files open (Windows): the trace goes on where it is and is capped at the next
+        # start; the PermissionError ended the start, with llama-server already running.
+        sys.stderr.write(f"baxy_mind_renew_trace: not rotated: {error!r}\n")
     return trace
 
 

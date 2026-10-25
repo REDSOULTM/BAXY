@@ -141,3 +141,21 @@ def test_the_sessions_calls_for_the_answer_check_do_not_grow_with_each_repeat(tm
     kept[-1]["calls"] = [["app.open", True, False]] * 3 + [["app.close", False, False]]
     mind.load_session(kept)
     assert mind.export_session()[-1]["calls"] == [["app.open", True, False], ["app.close", False, False]]
+
+
+def test_a_trace_that_cannot_be_rotated_does_not_stop_the_mind_from_starting(tmp_path: pathlib.Path,
+                                                                            monkeypatch: pytest.MonkeyPatch) -> None:
+    """Past its cap the trace becomes turns.jsonl.1 when the mind starts; on Windows that fails while another process
+    holds either file open (a bench reading it, a scan), and the PermissionError ended main() before the request loop,
+    with llama-server already started. The trace then goes on in the same file and is capped at the next start."""
+    from baxy_mind import __main__ as sidecar
+
+    trace = tmp_path / "turns.jsonl"
+    trace.write_bytes(b"x" * 200)
+
+    def held(*_args) -> None:
+        raise PermissionError(32, "The process cannot access the file because it is being used by another process")
+
+    monkeypatch.setattr(sidecar.os, "replace", held)
+    assert sidecar.bounded_trace(trace, limit=100) == trace
+    assert trace.read_bytes() == b"x" * 200
