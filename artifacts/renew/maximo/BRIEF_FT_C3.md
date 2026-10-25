@@ -250,8 +250,10 @@ producto no da. Con S1, said_path_next se queda sólo como comprobación.
 
 ## 7. Añadido de la fase 3 (2026-10-24, «al 100 % sin reentrenar»): lo que sólo arregla el modelo
 
-Lo que la fase 3 no movió sin reentrenar, con su cifra (holdout v5, ya material de práctica, y bancos de práctica). Las
-cifras finales del holdout v6 se añaden al cerrar.
+Lo que la fase 3 no movió sin reentrenar, con su cifra (holdout v5, ya material de práctica, y bancos de práctica).
+Holdout v6 (`HOLDOUT_V6.md`), `cien` frente a `final_v5`: decisión 616,7 frente a 618,3 (−1,7, IC95 [−7,7, +3,7]),
+ya_hecho 14,3 frente a 12,7 de 40, e2e 57,0 frente a 55,5 de 75 (uso del PC 8 de 14 y archivos 11-12 de 16 son lo que
+más queda), falsedades claras 1 frente a 6. Lo que queda de decisión y de uso del PC es, sobre todo, de esta tabla.
 
 | Conducta | Evidencia | Por qué no se arregla fuera del modelo |
 |---|---|---|
