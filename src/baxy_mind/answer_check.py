@@ -47,6 +47,10 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   (DENIED_OPS). Not when the sentence gives a limit of its own (a confirmation, a protected window, something not
   installed or not found, a place outside the person's folders, a program) or a condition («si…»), nor when an earlier
   call of that act did not complete (it may be what the answer tells), except one the core refused for its arguments.
+- ``language``: an answer clearly in Spanish to this turn's words clearly in English (``request_is_english``,
+  ``reply_is_spanish``: words of only one language counted, with names, paths, numbers and quotes left out). Never on
+  Spanglish (one Spanish word is enough), on fewer than LANGUAGE_MIN_WORDS words, nor when the person asks for Spanish
+  or a translation; what the answer repeats of a result of the turn (a file read aloud) is not its language.
 
 What never counts as a claim: a sentence or the part of one that is a question, a clause with «no / nunca / sin /
 tampoco» before the verb («no pude abrirlo», «no lo cerré»), a conditional «si…», quoted text, or a promise («voy a
@@ -493,6 +497,9 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
                 add("already", _clause_start(folded, start, hit.start()), end,
                     f"{_told(changed[-1])}: cambió algo y nada dice que ya estuviera así")
                 break
+
+    # A Spanish answer to English words (aid check_language): last, after the facts of the results.
+    findings.extend(f for f in _language(answer, request, receipts) if f not in findings)
     return findings
 
 
@@ -1154,3 +1161,109 @@ def _denials(answer: str, folded: str, statements: list[tuple[int, int]], receip
                                   for op in named)
                 return [{"rule": "denial", "said": _quote(answer, start, end), "fact": facts}]
     return []
+
+
+# ---- the language of the answer (aid «check_language») ---------------------------------------------------------------
+# cien (e2e of the holdouts v6 and v7): 14 of 68 requests in English were answered in Spanish (V5E046 «No puedo eliminar
+# carpetas de BAXY-bench» to «delete the old-drafts folder inside BAXY-bench», V6E038, V6E049, V7E055…). The person may
+# speak Spanish, English or Spanglish; only a request clearly in English and an answer clearly in Spanish are read. A
+# light count of the words that only one language has: names (a capital inside a sentence, with its «de»/«of»), paths
+# and file names, numbers and quotes are left out, and of the request what follows a colon (the text to write).
+_EN_WORDS = frozenset("""
+the an of to in on at for with from into onto about is are was were be been it its it's that this these those what which
+who whom whose how why when where my your you i'm i've i'll don't doesn't didn't can't won't can could would should will
+shall do does did have had there here and but or not please now so just only also any some all inside instead them they
+their he she his her we our us let let's than then if out up down off over again more less much many very still actually
+wait make set open close delete type write show tell put turn switch look find read move copy create named called file
+files folder""".split())
+# Left out of both: «a», «me», «no», «i», «has», «son», «ya», «dime», «favor», «nada», «todo», words of both languages.
+_ES_WORDS = frozenset("""
+el la los las un una unos unas de del al que en y por para con sin es está están esta este estos estas ese esa eso esos
+esas mi mis tu tus su sus se lo le les nos más mas pero también tambien como cuando donde muy porque hay fue puedo
+puedes quieres quiero tengo tienes sí aquí aqui ahí ahi allá alla aca ahora mismo mejor otra otro toda listo hecho
+porfa ni tiene queda sigue abierto abierta cerrado cerrada guardado creado creada cierro abro borro carpeta carpetas
+archivo archivos ventana volumen pantalla ningún ninguna""".split())
+LANGUAGE_MIN_WORDS = 4  # words of the request, once names, paths, numbers and quotes are out
+LANGUAGE_MIN_REPLY_WORDS = 3
+_LANGUAGE_QUOTES = re.compile(r"«[^»]*»|“[^”]*”|\"[^\"]*\"|`[^`]*`|(?<!\w)'[^'\n]*'(?!\w)")
+_LANGUAGE_PATHS = re.compile(r"\S*[\\/]\S*|\S+\.[A-Za-z0-9]{1,5}\b|https?://\S+|\S*\d\S*")
+_LANGUAGE_NAMES = re.compile(r"(?<![.!?:]\s)(?<![¿¡])(?<!^)\b[A-ZÁÉÍÓÚÑ][\w-]*"
+                             r"(?:\s+(?:(?:de|del|la|las|los|of|the|y|and)\s+)?[A-ZÁÉÍÓÚÑ][\w-]*)*")
+_LANGUAGE_WORD = re.compile(r"[a-záéíóúüñ']+")
+_ASKS_SPANISH = re.compile(r"\b(?:spanish|espa[nñ]ol|castellano|translat\w*|tradu\w*)\b", re.IGNORECASE)
+
+
+def _language_text(text: str, colon: bool = False) -> str:
+    """The text whose language is read: quotes out and, with ``colon``, what follows the first colon."""
+    text = _LANGUAGE_QUOTES.sub(" ", text.replace("’", "'"))
+    return text.split(":", 1)[0] if colon else text
+
+
+def _language_words(text: str) -> list[str]:
+    text = _LANGUAGE_NAMES.sub(" ", _LANGUAGE_PATHS.sub(" ", text))
+    return [w for w in _LANGUAGE_WORD.findall(text.lower()) if w.strip("'")]
+
+
+def _language_counts(words: list[str], text: str) -> tuple[int, int]:
+    """(English words, Spanish words): a word with an accent or an «ñ», and each «¿» or «¡», are Spanish."""
+    english = sum(w in _EN_WORDS for w in words)
+    spanish = sum(w in _ES_WORDS or re.search(r"[áéíóúñ]", w) is not None for w in words)
+    return english, spanish + text.count("¿") + text.count("¡")
+
+
+def request_is_english(text: str) -> bool:
+    """This turn's words are clearly English: LANGUAGE_MIN_WORDS words or more before a colon, two of them English and
+    none Spanish, and nothing asks for Spanish or a translation."""
+    if not text or _ASKS_SPANISH.search(text):
+        return False
+    kept = _language_text(text, colon=True)
+    words = _language_words(kept)
+    english, spanish = _language_counts(words, kept)
+    return len(words) >= LANGUAGE_MIN_WORDS and spanish == 0 and english >= 2
+
+
+def reply_is_spanish(text: str, said: Iterable[str] = ()) -> bool:
+    """An answer clearly in Spanish: two Spanish words or more and four times its English ones, out of
+    LANGUAGE_MIN_REPLY_WORDS or more. ``said``: texts of the turn's results; the answer's runs of three words that
+    repeat them (a file read aloud) are not its own language."""
+    kept = _language_text(text)
+    words = _language_words(kept)
+    seen = {tuple(w[i:i + 3]) for t in said for w in [_LANGUAGE_WORD.findall(t.lower())] for i in range(len(w) - 2)}
+    if seen:
+        keep = [True] * len(words)
+        for i in range(len(words) - 2):
+            if tuple(words[i:i + 3]) in seen:
+                keep[i] = keep[i + 1] = keep[i + 2] = False
+        words = [w for w, k in zip(words, keep) if k]
+    english, spanish = _language_counts(words, kept)
+    return len(words) >= LANGUAGE_MIN_REPLY_WORDS and spanish >= 2 and spanish >= 4 * english
+
+
+def _result_texts(receipts: list[Receipt]) -> list[str]:
+    """Every text of the turn's results: the strings of their JSON, or the observation as it came."""
+    texts: list[str] = []
+
+    def walk(value: Any) -> None:
+        if isinstance(value, str):
+            texts.append(value)
+        elif isinstance(value, dict):
+            for item in value.values():
+                walk(item)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+    for receipt in receipts:
+        observation = str(receipt.get("observation") or "")
+        try:
+            walk(json.JSONDecoder().raw_decode(observation.lstrip())[0])
+        except ValueError:
+            texts.append(observation)
+    return texts
+
+
+def _language(answer: str, request: str, receipts: list[Receipt]) -> list[dict]:
+    """A Spanish answer to English words (rule ``language``): the fact, never words to say."""
+    if not request_is_english(request or "") or not reply_is_spanish(answer, _result_texts(receipts)):
+        return []
+    return [{"rule": "language", "said": _quote(answer, 0, len(answer)),
+             "fact": "la persona escribió en inglés y esta respuesta está en español"}]
