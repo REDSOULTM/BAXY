@@ -159,3 +159,33 @@ def test_a_trace_that_cannot_be_rotated_does_not_stop_the_mind_from_starting(tmp
     monkeypatch.setattr(sidecar.os, "replace", held)
     assert sidecar.bounded_trace(trace, limit=100) == trace
     assert trace.read_bytes() == b"x" * 200
+
+
+def test_a_kept_prefix_that_cannot_be_written_or_cleaned_does_not_fail_the_warm_up(
+        tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """LlmServer.save_prefix only saves time at the next start, but a file of the slot folder held by another process
+    (a scan of the 2 GB state just written) raised out of it: Mind.warm failed and the App was told the model did not
+    start (catalog_runtime_failure) with the model up and warm."""
+    monkeypatch.setenv("BAXY_VISION_SLOT_DIR", str(tmp_path))
+    monkeypatch.delenv("BAXY_MIND_LLAMA_PORT", raising=False)
+    server = llm_server.LlmServer("qwen.gguf", EXE)
+    stale = tmp_path / f"{llm_server.PREFIX}old.slot"
+    stale.write_bytes(b"old")
+    monkeypatch.setattr(server, "_post", lambda *_args: {"n_saved": 10})
+    real_unlink = pathlib.Path.unlink
+
+    def unlink(self: pathlib.Path, missing_ok: bool = False) -> None:
+        if self.name == stale.name:
+            raise PermissionError(32, "being used by another process")
+        real_unlink(self, missing_ok=missing_ok)
+
+    monkeypatch.setattr(pathlib.Path, "unlink", unlink)
+    assert server.save_prefix("new", {"prefix_tokens": 1, "notice": ""}) is True
+    assert (tmp_path / f"{llm_server.PREFIX}new.json").is_file() and stale.is_file()
+
+    def unwritable(self: pathlib.Path, *_args, **_kwargs) -> None:
+        raise PermissionError(13, "denied")
+
+    monkeypatch.setattr(pathlib.Path, "write_text", unwritable)
+    assert server.save_prefix("other", {"prefix_tokens": 1, "notice": ""}) is False
+    assert not (tmp_path / f"{llm_server.PREFIX}other.json").exists()
