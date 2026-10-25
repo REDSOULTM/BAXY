@@ -410,6 +410,9 @@ DESCRIPTION_AIDS = {
 # Arguments of a tool the model sees only with their aid on (by the catalog's own schema, dropped otherwise), so the
 # tool reads as before with the aid off.
 ARGUMENT_AIDS = {"input.text.type": {"replacing": "text_replacing"}}
+# What an argument means (tool_descriptions' arguments), read only with its aid on (revisión w11-rev4: file_find's query
+# and content, práctica V6E035, the aid of the next a search of names with no hit gives).
+ARGUMENT_MEANING_AIDS = {"file.find": {"query": "find_content_next", "content": "find_content_next"}}
 
 def _fold(name: str) -> str:
     text = unicodedata.normalize("NFKD", name).casefold()
@@ -1225,7 +1228,8 @@ class Mind:
             # What one argument means, where the model fills it (a folder named by the person went missing from the
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():
-                if isinstance(schema["properties"].get(argument), dict):
+                aid = ARGUMENT_MEANING_AIDS.get(name, {}).get(argument)
+                if isinstance(schema["properties"].get(argument), dict) and (aid is None or _aid_on(aid)):
                     schema["properties"][argument]["description"] = meaning.replace("{app_places}", APP_PLACES_TEXT)
             wire = name.replace(".", "_")
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}

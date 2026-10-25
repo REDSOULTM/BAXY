@@ -515,3 +515,17 @@ def test_the_same_window_read_with_a_new_handle_each_time_is_the_same_result(tmp
             {"windowId": f"win_{handle}", "title": "Sin título - Paint", "state": "maximized"}], "count": 1}}))
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert "window_resolve ya se llamó 3 veces en este turno" in last
+
+
+@pytest.mark.parametrize("setting,on", [("all", True), ("find_content_next", True), ("none", False)])
+def test_file_find_tells_name_and_inside_on_its_arguments_only_with_its_aid(tmp_path: Path, monkeypatch, setting: str,
+                                                                             on: bool) -> None:
+    # Revisión w11-rev4: what query and content mean (práctica V6E035) reached the model with BAXY_AYUDAS=none too; it is
+    # the aid find_content_next's, as the next of a search of names with no hit, and with it off the tool reads as before.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": "file.find", "description": "Find files.", "argumentsSchema": {
+        "type": "object", "properties": {name: {"type": "string"} for name in ("content", "folder", "query")}}}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "file_find")["function"]
+    for name in ("query", "content"):
+        assert ("description" in tool["parameters"]["properties"][name]) is on
