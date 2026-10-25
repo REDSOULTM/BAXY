@@ -60,10 +60,12 @@ test('con «reducir movimiento» se paran las animaciones sin fin de la vista y 
   expect((await endless()).length, 'sin la preferencia siguen las del diseño').toBe(11);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   expect(await endless(), 'con la preferencia ninguna sin fin').toEqual([]);
-  // still there: the live dot, the thinking dots, the caret, the talking ring, the spinner's arc and the boot bar
+  // still there: the live dot, the thinking dots, the caret, the always-listening and the talking rings, the spinner's
+  // arc and the boot bar
   const shown = await page.evaluate(() => [
     getComputedStyle(document.querySelector('.bx-statel i')!).opacity, getComputedStyle(document.querySelector('.bx-c-think i')!).opacity,
-    getComputedStyle(document.querySelector('.bx-live')!, '::after').opacity, getComputedStyle(document.querySelector('.bx-mic.talking')!, '::before').opacity,
+    getComputedStyle(document.querySelector('.bx-live')!, '::after').opacity, getComputedStyle(document.querySelector('.bx-mic.breath')!, '::before').opacity,
+    getComputedStyle(document.querySelector('.bx-mic.talking')!, '::before').opacity,
     getComputedStyle(document.querySelector('.spin')!).borderTopColor !== getComputedStyle(document.querySelector('.spin')!).borderBottomColor ? '1' : '0',
     // the boot bar fills its track (its content box): in progress, not stuck at 30 %
     String(((i: Element, bar: Element) => i.getBoundingClientRect().width >= bar.clientWidth - parseFloat(getComputedStyle(bar).paddingLeft) - parseFloat(getComputedStyle(bar).paddingRight) - 0.5)(document.querySelector('.bx-boot .bar i')!, document.querySelector('.bx-boot .bar')!) ? 1 : 0),
