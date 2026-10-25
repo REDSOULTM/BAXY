@@ -372,20 +372,16 @@ internal static class HeartbeatMoment
                     continue;
                 }
 
-                IEnumerable<(string Name, RegistryKey Key)> users = name == "NonPackaged"
-                    ? entry.GetSubKeyNames().Select(child => (child, entry.OpenSubKey(child)!)).Where(static e => e.Item2 is not null)
-                    : [(name, entry)];
-                foreach ((string user, RegistryKey key) in users)
+                // Each program's key under NonPackaged is opened, read and disposed one at a time.
+                bool held = name == "NonPackaged"
+                    ? AnyChildHeld<RegistryKey>(
+                        entry.GetSubKeyNames(),
+                        child => entry.OpenSubKey(child),
+                        (user, key) => Held(user, key, nonPackaged: true))
+                    : Held(name, entry, nonPackaged: false);
+                if (held)
                 {
-                    string executable = user.Replace('#', '\\');
-                    bool own = ownPython.Contains(executable, StringComparer.OrdinalIgnoreCase);
-                    if (!own && key.GetValue("LastUsedTimeStart") is long started && started > 0
-                        && key.GetValue("LastUsedTimeStop") is long stopped && stopped == 0
-                        && MicrophoneUse.StillHeld(started, bootFileTime, name == "NonPackaged" ? executable : null,
-                            path => (running ??= RunningExecutables()).Contains(path)))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
         }
@@ -396,6 +392,16 @@ internal static class HeartbeatMoment
         }
 
         return false;
+
+        bool Held(string user, RegistryKey key, bool nonPackaged)
+        {
+            string executable = user.Replace('#', '\\');
+            bool own = ownPython.Contains(executable, StringComparer.OrdinalIgnoreCase);
+            return !own && key.GetValue("LastUsedTimeStart") is long started && started > 0
+                && key.GetValue("LastUsedTimeStop") is long stopped && stopped == 0
+                && MicrophoneUse.StillHeld(started, bootFileTime, nonPackaged ? executable : null,
+                    path => (running ??= RunningExecutables()).Contains(path));
+        }
     }
 
     // The executables running now, by full path (a process whose image cannot be read is left out).
@@ -421,6 +427,50 @@ internal static class HeartbeatMoment
         return paths;
     }
 
+    // What a read gave within its limit; null when it failed or did not end in time (it is left to end on its own).
+    internal static string? ReadWithin(Task<string> read, TimeSpan limit)
+    {
+        ArgumentNullException.ThrowIfNull(read);
+        try
+        {
+            if (read.Wait(limit))
+            {
+                return read.Result;
+            }
+        }
+        catch (AggregateException)
+        {
+            return null;
+        }
+
+        _ = read.ContinueWith(
+            static abandoned => _ = abandoned.Exception,
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default);
+        return null;
+    }
+
+    // Whether any child key holds the microphone; every key opened is disposed, the one that answers and the ones a
+    // check fails on too.
+    internal static bool AnyChildHeld<TKey>(IEnumerable<string> names, Func<string, TKey?> open, Func<string, TKey, bool> held)
+        where TKey : class, IDisposable
+    {
+        ArgumentNullException.ThrowIfNull(names);
+        ArgumentNullException.ThrowIfNull(open);
+        ArgumentNullException.ThrowIfNull(held);
+        foreach (string name in names)
+        {
+            using TKey? key = open(name);
+            if (key is not null && held(name, key))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // The GPU is busy with something else (a game) when its load is high while BAXY is not deciding.
     private static bool? GpuBusy()
     {
@@ -438,7 +488,21 @@ internal static class HeartbeatMoment
                 return null;
             }
 
-            string output = smi.StandardOutput.ReadToEnd();
+            // ReadToEnd waited as long as nvidia-smi kept its pipe open, whatever WaitForExit's 2 s said after it.
+            if (ReadWithin(smi.StandardOutput.ReadToEndAsync(), TimeSpan.FromSeconds(2)) is not { } output)
+            {
+                try
+                {
+                    smi.Kill();
+                }
+                catch (Exception exception) when (exception is InvalidOperationException
+                    or System.ComponentModel.Win32Exception or NotSupportedException)
+                {
+                }
+
+                return null;
+            }
+
             smi.WaitForExit(2000);
             return int.TryParse(output.Split('\n')[0].Trim(), out int load) ? load >= 40 : null;
         }
