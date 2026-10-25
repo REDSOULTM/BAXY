@@ -176,11 +176,11 @@ internal sealed class SaidFolders
         }
 
         // The words of a relative path are that path's («Documentos/proyecto» is not Documents).
-        string words = pathSaid ? rest
+        string unpathed = pathSaid ? rest
             : RelativePath.Replace(saidRelatives.Aggregate(rest, static (text, said) => text.Replace(said, " ")), " ");
-        string spoken = Sounded(words);
+        string spoken = Sounded(unpathed);
         // The same words as written (Sounded keeps every position): which of the folders of one sound they spell.
-        string written = Spoken(words);
+        string written = Spoken(unpathed);
         var knownSaid = new HashSet<string>(StringComparer.Ordinal);
         foreach ((string name, string label) in PersonFolders.Names)
         {
