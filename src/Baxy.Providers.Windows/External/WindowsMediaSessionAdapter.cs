@@ -18,6 +18,10 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
     private readonly Func<TimeSpan, CancellationToken, ValueTask> _delay;
     private readonly MediaSessionAccess _sessions;
 
+    /// <summary>Revisión nb-q-apps2: Windows' media session manager as the adapter asks for it (a fake in tests).</summary>
+    internal Func<CancellationToken, Task<GlobalSystemMediaTransportControlsSessionManager>> RequestManager { get; init; } =
+        static token => GlobalSystemMediaTransportControlsSessionManager.RequestAsync().Bounded(token);
+
     internal WindowsMediaSessionAdapter(
         Func<TimeSpan, CancellationToken, ValueTask>? delay = null,
         MediaSessionAccess? sessions = null)
@@ -325,7 +329,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         try
         {
             GlobalSystemMediaTransportControlsSessionManager manager =
-                await GlobalSystemMediaTransportControlsSessionManager.RequestAsync().Bounded(cancellationToken);
+                await RequestManager(cancellationToken).ConfigureAwait(false);
             if (operation is "media.status" or "media.control" or "media.seek.relative")
             {
                 session = manager.GetCurrentSession();
@@ -422,7 +426,9 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                     is int client ? sessions[client] : null;
             }
         }
-        catch
+        // Revisión nb-q-apps2: the turn's cancel is the caller's, never a session that could not be read (which sends
+        // the request on to the next adapter).
+        catch (Exception exception) when (!(exception is OperationCanceledException && cancellationToken.IsCancellationRequested))
         {
             return ExternalJson.Failure(operation, "smtc_session_access_failed");
         }
