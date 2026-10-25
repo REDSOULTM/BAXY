@@ -336,7 +336,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         string text,
         CancellationToken cancellationToken)
     {
-        string subject = text.Length <= 78 ? text : text[..75] + "…";
+        string subject = MicrosoftAccountAdapter.SubjectFromText(text);
         string input = JsonObject(("to", forced), ("subject", subject), ("text", text)).GetRawText();
         ExternalProcessResult process = await MailRunner.RunPowerShellAsync(
             MicrosoftAccountAdapter.SendMailScript,
