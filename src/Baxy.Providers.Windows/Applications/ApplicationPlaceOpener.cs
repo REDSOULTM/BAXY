@@ -40,10 +40,7 @@ public sealed class ShellApplicationPlaceOpener : IApplicationPlaceOpener
         ArgumentException.ThrowIfNullOrWhiteSpace(address);
         long before = ForegroundHandBack.Foreground();
         nint window = (nint)applicationWindow;
-        External.VisibleControlSurface.CapturedWindow? drawnBefore = window == 0
-            ? null
-            : External.VisibleControlSurface.CaptureAsync(window, CancellationToken.None, selfDrawn: true)
-                .AsTask().GetAwaiter().GetResult();
+        External.VisibleControlSurface.CapturedWindow? drawnBefore = window == 0 ? null : Drawing(window, Capture);
         try
         {
             // A protocol's handler usually hands the address to the running application and leaves: there may be no
@@ -75,17 +72,51 @@ public sealed class ShellApplicationPlaceOpener : IApplicationPlaceOpener
         while (watch.Elapsed < within)
         {
             pause(ArrivalPollMs);
-            if (capture(earlier.Hwnd, CancellationToken.None).AsTask().GetAwaiter().GetResult() is not { } now)
-                return null;
-            if (!External.VisibleControlSurface.SameSurface(earlier, now))
+            External.VisibleControlSurface.CapturedWindow? now;
+            try
             {
-                _ = External.VisibleControlSurface.StableSurfaceAsync(
-                        now, capture, (ms, token) => { pause(ms); return Task.CompletedTask; }, CancellationToken.None)
-                    .AsTask().GetAwaiter().GetResult();
+                now = capture(earlier.Hwnd, CancellationToken.None).AsTask().GetAwaiter().GetResult();
+            }
+            catch (IOException)
+            {
+                continue;  // not drawn yet (a black frame while the application starts): looked at again
+            }
+
+            if (now is not { } drawn)
+                return null;
+            if (!External.VisibleControlSurface.SameSurface(earlier, drawn))
+            {
+                try
+                {
+                    _ = External.VisibleControlSurface.StableSurfaceAsync(
+                            drawn, capture, (ms, token) => { pause(ms); return Task.CompletedTask; }, CancellationToken.None)
+                        .AsTask().GetAwaiter().GetResult();
+                }
+                catch (IOException)
+                {
+                    // the change was seen; only its settling could not be read
+                }
+
                 return true;
             }
         }
         return false;
+    }
+
+    // The window's drawing before the address; null when it cannot be read. Fase 3, H9: with Steam starting cold the
+    // drawing came back black, the capture threw, and the exception stopped the core (exit 70, engine_no_answer).
+    internal static External.VisibleControlSurface.CapturedWindow? Drawing(
+        nint window,
+        Func<nint, CancellationToken, ValueTask<External.VisibleControlSurface.CapturedWindow?>> capture)
+    {
+        try
+        {
+            return capture(window, CancellationToken.None).AsTask().GetAwaiter().GetResult();
+        }
+        catch (IOException)
+        {
+            return null;
+        }
     }
 
     private static ValueTask<External.VisibleControlSurface.CapturedWindow?> Capture(nint hwnd, CancellationToken token) =>

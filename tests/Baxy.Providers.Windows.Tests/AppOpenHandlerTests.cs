@@ -287,6 +287,36 @@ public sealed class AppOpenHandlerTests
         Assert.That(changed, Is.EqualTo(expected));
     }
 
+    // Fase 3, H9 (practice e2e, «abre Steam y ve a la biblioteca» with Steam cold): the window's drawing came back black,
+    // the capture threw, and the exception stopped the core (exit 70: engine_no_answer, the turn lost). A drawing that
+    // cannot be read is no drawing read: before the address the watch says nothing; during it, it keeps looking.
+    [TestCase(new[] { "a", "!", "b" }, true)]
+    [TestCase(new[] { "a", "!" }, false)]
+    public void AnUnreadableDrawingDuringThePlaceWatchIsLookedAtAgain(string[] frames, bool expected)
+    {
+        int read = 0;
+        VisibleControlSurface.CapturedWindow Frame(int index) =>
+            frames[Math.Min(index, frames.Length - 1)] is var sha && sha != "!"
+                ? new VisibleControlSurface.CapturedWindow(4660, [], 0, 0, 10, 10, sha)
+                : throw new IOException("Window content capture came back black.");
+        ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint window, CancellationToken token) =>
+            ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(Frame(++read));
+
+        bool? changed = ShellApplicationPlaceOpener.AwaitPlaceDrawn(
+            Frame(0), Capture, static _ => Thread.Sleep(1), TimeSpan.FromMilliseconds(expected ? 5000 : 50));
+
+        Assert.That(changed, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void AnUnreadableDrawingBeforeTheAddressIsNoDrawing()
+    {
+        static ValueTask<VisibleControlSurface.CapturedWindow?> Black(nint window, CancellationToken token) =>
+            throw new IOException("Window content capture came back black.");
+
+        Assert.That(ShellApplicationPlaceOpener.Drawing(4660, Black), Is.Null);
+    }
+
     // Renew al máximo (6.3, aid open_recovery): a failed opening says, as facts, whether its launch was issued (and an
     // instance it reused), and where the model can look before telling the person: after a launch whose window was not
     // verified, or a launch Windows did not take. Only the facts of the provider's receipt; with BAXY_AYUDAS=none, or
