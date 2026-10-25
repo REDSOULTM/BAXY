@@ -211,6 +211,17 @@ def test_a_folder_named_is_where_the_result_says_it_went() -> None:
     assert _rules("Lo guardé en tu carpeta de usuario, no en BAXY-bench.", [home]) == []
 
 
+def test_a_folder_named_after_a_participle_is_where_the_result_says_it_went() -> None:
+    # Holdout v6 V6E058 (s1): «Creada la carpeta fotos_2026 dentro de BAXY-bench.» of a folder made in the home folder
+    # went unread: the claim opened with the participle, not with «creé».
+    made = _r("filesystem.create.directory", {**DONE, "observed": {"name": "fotos_2026",
+                                                                    "fullPath": r"C:\Users\ana\fotos_2026"}})
+    assert _rules("Creada la carpeta fotos_2026 dentro de BAXY-bench.", [made]) == ["folder"]
+    assert _rules("Guardado notas.txt en BAXY-bench.", [_written(r"C:\Users\ana\notas.txt")]) == ["folder"]
+    assert _rules("Creada la carpeta fotos_2026 dentro de BAXY-bench.", [_r(
+        "filesystem.create.directory", {**DONE, "observed": {"fullPath": r"C:\Users\ana\BAXY-bench\fotos_2026"}})]) == []
+
+
 def test_an_absolute_path_that_no_result_shows() -> None:
     home = _written(r"C:\Users\ana\notas.txt")
     assert _rules(r"Lo guardé en C:\Users\ana\notas.txt.", [home]) == []

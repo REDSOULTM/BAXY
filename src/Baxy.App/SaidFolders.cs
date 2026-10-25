@@ -71,6 +71,8 @@ internal sealed class SaidFolders
     private readonly Func<string, string?> _known;
     private readonly HashSet<string> _told = new(StringComparer.Ordinal);
     private string _words = string.Empty;
+    // The words of the person's previous request (none after a heartbeat or a new session).
+    private string _before = string.Empty;
 
     /// <param name="known">Where each known folder is, by its label (tests point them at a temporary folder).</param>
     internal SaidFolders(Func<string, string?>? known = null) => _known = known ?? PersonFolders.Path;
@@ -90,6 +92,7 @@ internal sealed class SaidFolders
     /// <summary>The person's words open a turn: the folders they name are this turn's.</summary>
     internal void Heard(string words)
     {
+        _before = _words;
         _words = words ?? string.Empty;
         _told.Clear();
     }
@@ -108,19 +111,21 @@ internal sealed class SaidFolders
     /// The folders this turn's words name, read at each file call (most turns make none): a folder the turn made since
     /// the last one counts (holdout v5 V5E043: «crea la carpeta X y dentro un archivo» wrote the file beside it).
     /// </summary>
-    internal IReadOnlyList<Place> Places()
+    internal IReadOnlyList<Place> Places() => Places(_words);
+
+    private IReadOnlyList<Place> Places(string words)
     {
         var found = new List<Place>();
-        foreach (Match match in FullPath.Matches(_words))
+        foreach (Match match in FullPath.Matches(words))
         {
-            string said = Longest(match.Value, _words[(match.Index + match.Length)..]);
+            string said = Longest(match.Value, words[(match.Index + match.Length)..]);
             if (Absolute(said) is { } full && Path.GetPathRoot(full) is { Length: > 0 } drive && Directory.Exists(drive)
                 && !Same(full, drive) && FolderOf(full) is { } folder)
                 found.Add(new(folder, said));
         }
 
         bool pathSaid = found.Count > 0;
-        string rest = FullPath.Replace(_words, " ");
+        string rest = FullPath.Replace(words, " ");
         var folders = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
         string[] Folders(string root) => folders.TryGetValue(root, out string[]? known) ? known
             : folders[root] = TopFolders(root);
@@ -218,6 +223,18 @@ internal sealed class SaidFolders
         if (!ModelAids.On(ModelAids.SaidFolder) || ReachOf(operation, descriptor, arguments) is not { } reach)
             return null;
         IReadOnlyList<Place> places = Places();
+        // Holdout v6 V6E058, V6E062, V6E055: the folder of a request is left unsaid in the next one («uy, me equivoqué de
+        // año, era fotos_2026»; «ábreme horario.txt que está ahí») and the call acted in the home folder. Words that name
+        // no folder are ruled by the folders the person's previous request named, never to route a read there.
+        bool earlier = places.Count == 0 && _before.Length > 0;
+        if (earlier)
+        {
+            if (descriptor.Risk == OperationRisks.ReadOnly)
+                return null;
+            places = Places(_before);
+        }
+
+        string who = earlier ? "the person's previous request named" : "the person named";
         if (places.Count == 0
             || (reach.Items.Count > 0 && reach.Items.All(item => places.Any(place => Within(item, place.Path)))))
             return null;
@@ -225,7 +242,7 @@ internal sealed class SaidFolders
         string where = reach.Sandbox ? "BAXY's own working folder" : string.Join(", ", reach.Items);
         if (!_told.Add(operation + "\n" + arguments.ToJsonString()))
         {
-            return new(arguments, $"the person named {named}; this call acted in {where}, outside it, as it was written: "
+            return new(arguments, $"{who} {named}; this call acted in {where}, outside it, as it was written: "
                 + $"it did not look at or change anything in {(places.Count == 1 ? "that folder" : "those folders")}", null);
         }
 
@@ -250,7 +267,7 @@ internal sealed class SaidFolders
             // Of two folders of that name, the one that holds the file is said by its path and what it holds.
             string which = places.Count == 1 ? "that folder"
                 : targets.Count == 1 ? targets[0].Path + Holding(targets[0], reach.Leaf) : "one of them";
-            next = $"nothing ran: the person named {named} and this call would act in {where}, outside it. If "
+            next = $"nothing ran: {who} {named} and this call would act in {where}, outside it. If "
                 + $"{which} is the place of this call, call {wire} again with "
                 + string.Join(", or ", options.Where(option => option.Arguments is not null).Select(option =>
                     Changes(arguments, option.Arguments!, whole: true) + (targets.Count == 1 ? string.Empty
@@ -266,15 +283,15 @@ internal sealed class SaidFolders
                 && targets.Count == 1 && Express(find, Shared(arguments, find), targets[0]) is { } look
                     ? $"to look there, call file_find with {Changes(new JsonObject(), look)}"
                     : $"{wire} cannot name a folder of theirs";
-            next = $"nothing ran: {wire} acts only in BAXY's own working folder, not in the person's folders, and the "
-                + $"person named {named}: {alternative}. If the person asked for BAXY's working folder itself, call it "
+            next = $"nothing ran: {wire} acts only in BAXY's own working folder, not in the person's folders, and "
+                + $"{who} {named}: {alternative}. If the person asked for BAXY's working folder itself, call it "
                 + "again exactly as before";
         }
         else
         {
             string values = string.Join(", ", descriptor.ArgumentsSchema.Properties
                 .First(static property => property.Name == "folder").AllowedValues);
-            next = $"nothing ran: the person named {named}, and {wire} reaches only the folders {values}, so it cannot "
+            next = $"nothing ran: {who} {named}, and {wire} reaches only the folders {values}, so it cannot "
                 + $"act there (it would act in {where}); {again}";
         }
 
@@ -497,14 +514,18 @@ internal sealed class SaidFolders
 
     // The arguments that differ, as the model writes them: folder "home" and subdirectory "proyecto". Whole: a place
     // given by folder and subdirectory is said with both (holdout v6 V6E034: told only the subdirectory of a call that
-    // had folder "home", the model wrote it without that folder).
+    // had folder "home", the model wrote it without that folder). A path inside a folder that changed is said with it
+    // (holdout v6 V6E065: told only folder "home" for a call whose relativePath already held the folder named, the
+    // model wrote that path again without it).
     private static string Changes(JsonObject given, JsonObject routed, bool whole = false)
     {
         bool split = whole && routed.ContainsKey("subdirectory");
+        bool moved = !JsonNode.DeepEquals(routed["folder"], given["folder"]);
         var changes = new List<string>();
         foreach ((string key, JsonNode? value) in routed)
         {
-            if (!JsonNode.DeepEquals(value, given[key]) || (split && key is "folder" or "subdirectory"))
+            if (!JsonNode.DeepEquals(value, given[key]) || (split && key is "folder" or "subdirectory")
+                || (moved && key == "relativePath"))
                 changes.Add($"{key} {value?.ToJsonString(AsWritten) ?? "null"}");
         }
 

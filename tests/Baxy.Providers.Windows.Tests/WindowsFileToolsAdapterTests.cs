@@ -187,6 +187,34 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // Holdout v6 V6E062: «ábreme horario.txt que está ahí» (BAXY-bench in the home folder, just opened) was asked in the
+    // home folder by its bare name, and the search never looked into the home folder's own folders: «no está en ningún
+    // otro lugar». Its folders are looked into one level down; a known folder inside it is said once.
+    [Test]
+    public void ABareNameAskedInTheHomeFolderIsSeenInItsOwnFolders()
+    {
+        string home = Directory.CreateDirectory(Path.Combine(_root, "home")).FullName;
+        string desktop = Directory.CreateDirectory(Path.Combine(home, "Desktop")).FullName;
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(home, "BAXY-bench")).FullName, "horario.txt"), "x");
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(home, "a", "b")).FullName, "hondo.txt"), "x");
+        File.WriteAllText(Path.Combine(desktop, "foto.png"), "x");
+        var adapter = new WindowsFileToolsAdapter(
+            folder => folder switch { "home" => home, "desktop" => desktop, _ => null }, null);
+
+        WindowsFileToolsAdapter.OpenTarget seen = adapter.LocateOpenTarget("home", "horario.txt");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(seen.Path, Is.Null, "a file in another folder is never opened in its place");
+            Assert.That(seen.Error, Is.EqualTo("file_not_found"));
+            Assert.That(seen.SeenElsewhere, Is.EqualTo(new[] { ("home", Path.Combine("BAXY-bench", "horario.txt")) }));
+            Assert.That(adapter.LocateOpenTarget("home", "hondo.txt").SeenElsewhere, Is.Empty, "one level down only");
+            Assert.That(adapter.LocateOpenTarget("home", "foto.png").SeenElsewhere, Has.Count.EqualTo(1));
+            // Asked in a known folder, the home folder is not looked into.
+            Assert.That(adapter.LocateOpenTarget("desktop", "horario.txt").SeenElsewhere, Is.Empty);
+        });
+    }
+
     // Revisión de la rama ruta: con subcarpetas en el nombre la persona dijo dónde
     // está; si no está ahí, otro archivo con el mismo nombre no lo reemplaza.
     [Test]

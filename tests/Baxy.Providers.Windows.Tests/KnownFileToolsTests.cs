@@ -1027,7 +1027,9 @@ public sealed class KnownFileToolsTests
     }
 
     // An edit of the one seen before the limit writes nothing: a deeper copy that was not walked may be the one meant.
-    // It names the one seen, says the walk stopped and (aid search_scope) how to edit it; its path edits it.
+    // It names the one seen, says the walk stopped and (aid search_scope) the call that edits it; its path edits it.
+    // Holdout v6 V6E055 (s1 of the final version): «found» after «stopped» and the call only described, the model
+    // answered «no encontré ideas.txt» in 2 of 4 runs instead of calling again; the call is said as said_folder says it.
     [TestCase("all", true)]
     [TestCase("none", false)]
     public async Task AnEditOfTheOneSeenBeforeTheLimitChangesNothingAndNamesIt(string aids, bool hint)
@@ -1060,9 +1062,9 @@ public sealed class KnownFileToolsTests
             Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
             if (hint)
             {
-                Assert.That(next.GetString(), Is.EqualTo("nothing was changed: the search of home stopped at its 8 s "
-                    + "limit after finding notas.txt, and the rest of the folder was not searched, so another file of "
-                    + "that name may be there; naming the subdirectory or the path (fileName \"notas.txt\") edits that one"));
+                Assert.That(next.GetString(), Is.EqualTo("nothing was changed: the search of home found notas.txt and "
+                    + "stopped at its 8 s limit before the rest of the folder, so another file of that name may be there. "
+                    + "If notas.txt is the file the person means, call file_edit again with fileName \"notas.txt\""));
             }
             Assert.That(File.ReadAllText(Path.Combine(home, "notas.txt")), Is.EqualTo("lunes"), "nothing was written");
             Assert.That(bin.Recycled, Is.Empty, "nothing went to the bin");

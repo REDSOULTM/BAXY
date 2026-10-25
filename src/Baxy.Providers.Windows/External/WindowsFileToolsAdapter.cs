@@ -421,6 +421,11 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
     // nombre con subcarpetas dice dónde está: no se busca en otro sitio.
     private static readonly string[] OpenSearchFolders = ["desktop", "documents", "downloads", "pictures"];
     private const int OpenSearchDepth = 4;
+    // Holdout v6 V6E062 («ábreme horario.txt que está ahí», right after BAXY-bench in the home folder was opened): a bare
+    // name asked in the home folder was looked for only in the four folders above, never in the person's own folders of
+    // their home, and «no está en ningún otro lugar» was the answer. The home folder holds the whole profile; its folders
+    // (its top level) are looked into one level down, before the four.
+    private const int HomeSearchDepth = 1;
     private const int OpenSearchCandidates = 5;
     private static readonly TimeSpan OpenSearchBudget = TimeSpan.FromSeconds(3);
 
@@ -469,13 +474,15 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             IgnoreInaccessible = true,
             AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.ReparsePoint,
         };
-        foreach (string known in OpenSearchFolders)
+        var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach ((string known, int depth) in OpenSearchPlaces(folder))
         {
             if (OutOfTime())
                 break;
             string? knownRoot = ResolveKnownFolder(known);
             if (knownRoot is null || !seen.Add(knownRoot))
                 continue;
+            options.MaxRecursionDepth = depth;
             try
             {
                 // El reloj y la cancelación se miran en cada entrada, no sólo en
@@ -491,7 +498,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                         && entry.FileName.Equals(leaf.AsSpan(), StringComparison.OrdinalIgnoreCase),
                     ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry _) => !OutOfTime(),
                 };
-                foreach (string candidate in entries)
+                // A known folder inside the home folder (its Desktop) is seen once, from the home folder.
+                foreach (string candidate in entries.Where(paths.Add))
                 {
                     found.Add((known, System.IO.Path.GetRelativePath(knownRoot, candidate)));
                     if (found.Count >= OpenSearchCandidates || OutOfTime())
@@ -511,6 +519,12 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
 
         return new(null, "file_not_found", found, !incomplete && found.Count < OpenSearchCandidates);
     }
+
+    // Where a bare name not in the folder asked is looked for, and how deep: the home folder's own folders first when it
+    // was the one asked, then the four known folders.
+    private static IEnumerable<(string Folder, int Depth)> OpenSearchPlaces(string folder) =>
+        (OpenSearchFolders.Contains(folder) ? [] : new[] { (folder, HomeSearchDepth) })
+            .Concat(OpenSearchFolders.Select(static known => (known, OpenSearchDepth)));
 
     private static JsonElement NotFoundResult(string folder, string name, OpenTarget target) => ExternalJson.Create(writer =>
     {
@@ -535,13 +549,15 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             return;
         }
         writer.WriteBoolean("searchComplete", target.SearchComplete);
-        // What the search covers, as it was made: the four known folders, four levels down, without hidden, system or
-        // unreadable folders and without links.
+        // What the search covers, as it was made: the four known folders, four levels down (and the home folder asked,
+        // one level), without hidden, system or unreadable folders and without links.
         writer.WriteStartArray("searchedFolders");
-        foreach (string known in OpenSearchFolders)
+        foreach ((string known, _) in OpenSearchPlaces(folder))
             writer.WriteStringValue(known);
         writer.WriteEndArray();
         writer.WriteNumber("searchedDepth", OpenSearchDepth);
+        if (!OpenSearchFolders.Contains(folder))
+            writer.WriteNumber("homeSearchedDepth", HomeSearchDepth);
         writer.WriteBoolean("skipsHiddenSystemAndUnreadable", true);
         writer.WriteEndObject();
     });

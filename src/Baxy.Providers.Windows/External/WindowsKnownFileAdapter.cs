@@ -969,11 +969,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteString("relativePath", relativePath);
             writer.WriteBoolean("changed", false);
             WriteWalkScope(writer, walkStopped: true);
+            // Holdout v6 V6E055: «stopped» before «found» and the call only described, the model answered «no
+            // encontré» in 2 of 4 runs; the call that edits the one found is said as said_folder says its call.
             if (ModelAids.On(ModelAids.SearchScope))
-                writer.WriteString("next", $"nothing was changed: the search of {file.Label} stopped at its "
-                    + $"{WalkTimeLimit.TotalSeconds:0} s limit after finding {relativePath}, and the rest of the folder "
-                    + "was not searched, so another file of that name may be there; naming the subdirectory or the path "
-                    + $"(fileName \"{relativePath}\") edits that one");
+                writer.WriteString("next", $"nothing was changed: the search of {file.Label} found {relativePath} and "
+                    + $"stopped at its {WalkTimeLimit.TotalSeconds:0} s limit before the rest of the folder, so another "
+                    + $"file of that name may be there. If {relativePath} is the file the person means, call "
+                    + $"{operation.Replace('.', '_')} again with fileName \"{relativePath}\"");
             writer.WriteEndObject();
         }), "known_file_search_incomplete");
     }
