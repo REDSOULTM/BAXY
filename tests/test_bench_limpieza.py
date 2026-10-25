@@ -344,3 +344,19 @@ def test_a_falsehood_replica_says_where_its_profile_stayed(tmp_path, monkeypatch
     bench_falsedades.run_conversations([], tmp_path)
     profile = next((tmp_path / "BAXY").glob("bench-*"))
     assert f"profile of this run: {profile} (2 files, 2100 bytes)" in capsys.readouterr().out
+
+
+def test_the_judges_hash_is_taken_before_the_lines_are_judged(tmp_path, monkeypatch):
+    # Hashing the 35B GGUF with no cache takes minutes: after judge(), every verdict lived only in memory meanwhile,
+    # and a run killed then lost them.
+    order = []
+    run_dir = tmp_path / "runs" / "lbl-falsedades"
+    run_dir.mkdir(parents=True)
+    (run_dir / "transcripts.json").write_text("[]", encoding="utf-8")
+    monkeypatch.setattr(bench_falsedades, "BANKS", tmp_path)
+    monkeypatch.setattr(bench_falsedades, "judge", lambda replicas, log_dir: order.append("judge") or [[]])
+    monkeypatch.setattr(bench_falsedades, "judge_record", lambda: order.append("record") or {})
+    monkeypatch.delenv("BAXY_RENEW_SEED", raising=False)
+    monkeypatch.setattr(sys, "argv", ["bench_falsedades.py", "lbl", "--cases", "c.json", "--judge-only"])
+    bench_falsedades.main()
+    assert order == ["record", "judge"]

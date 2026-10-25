@@ -455,8 +455,10 @@ def main() -> None:
             print(json.dumps({"label": args.label, "judged": False,
                               "conversations": {label: len(t) for label, t in conversations.items()}}))
             return
-    judged = judge([conversations[label] for label, _ in replicas], run_dirs[replicas[0][0]])
+    # Before judging (review of PC-Q): hashing the judge's GGUF with no cache takes minutes, and after judge() every
+    # verdict lives only in memory until results.jsonl is written.
     judged_by = judge_record()
+    judged = judge([conversations[label] for label, _ in replicas], run_dirs[replicas[0][0]])
     summaries = []
     for (label, seed), rows in zip(replicas, judged):
         summary = run_summary(label, args.cases, seed, conversations[label], rows, run_dirs[label], judged_by)
