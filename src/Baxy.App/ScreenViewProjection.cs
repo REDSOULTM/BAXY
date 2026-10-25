@@ -124,6 +124,18 @@ internal static class ScreenViewProjection
             text.Append("Lugar a la vista: ").Append((string?)place["name"]).Append(" de ")
                 .Append((string?)place["application"]).Append(" (sólo ahí sale «").Append((string?)place["shown"])
                 .Append("»)\n");
+            // Prueba en vivo de la versión final (renew_v6, «abre la biblioteca de Steam»): Steam opened cold with no
+            // place; its places were told by app.open and after a failed look while it was still updating, and once its
+            // store was in sight six looks said «Lugar a la vista: store» and nothing else, until the turn's 15 calls
+            // ran out. Where the view says which place is in sight, it says beside it the application's other places
+            // that app.open opens directly, from the data (ApplicationPlaces), as facts.
+            if (Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.SightPlaces)
+                && OtherPlaces((string?)place["application"], (string?)place["name"]) is { Length: > 0 } others)
+            {
+                text.Append("(los otros lugares de ").Append((string?)place["application"])
+                    .Append(" se abren directo, sin pulsar: app_open con appId «").Append((string?)place["application"])
+                    .Append("» y place ").Append(others).Append(")\n");
+            }
         }
 
         // BAXY Renew al máximo P8.4 (sonda F019: «quedó en la tienda» with the library's tab selected): what the reader
@@ -353,6 +365,18 @@ internal static class ScreenViewProjection
 
         return field;
     }
+
+    // The places of the application other than the one in sight, sorted, each with what its placeValue takes (as
+    // AppOpenHandler.PlacesNext says them); empty for an application with no other place.
+    private static string OtherPlaces(string? application, string? inSight) => string.Join(", ",
+        Baxy.Kernel.Operations.ApplicationPlaces.PlacesOf(application)
+            .Where(place => place.Place != inSight)
+            .Select(static place => place.Takes switch
+            {
+                "query" => $"{place.Place} (placeValue: lo que se busca)",
+                "game" or "slug" => $"{place.Place} (placeValue: el nombre del juego)",
+                _ => place.Place,
+            }));
 
     // A control's name as a label: its access key's «&», a closing «:» and the case left out.
     private static string Label(string? name) =>

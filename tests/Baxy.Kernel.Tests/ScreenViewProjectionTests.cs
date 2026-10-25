@@ -188,6 +188,55 @@ public sealed class ScreenViewProjectionTests
             + "el diálogo, C:\\Users\\ana\\BAXY-bench;"), Is.EqualTo(said));
     }
 
+    // Prueba en vivo de la versión final (renew_v6, «abre la biblioteca de Steam»): Steam opened with no place, and six
+    // looks at its store, read only by OCR, said «Lugar a la vista: store» and nothing else until the turn's calls ran
+    // out. The view says beside the place in sight the application's other places, which app_open opens directly.
+    private const string StoreInSight =
+        "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+        "\"window\":{\"title\":\"Steam\",\"process\":\"steamwebhelper\",\"hwnd\":19662756,\"foreground\":false}," +
+        "\"place\":{\"application\":\"Steam\",\"name\":\"store\",\"shown\":\"store.steampowered.com\"}," +
+        "\"controls\":[],\"controlCount\":0," +
+        "\"text\":{\"T\":[\"TIENDA | BIBLIOTECA COMUNIDAD\",\"https://store.steampowered.com/\"]}," +
+        "\"textAuthority\":\"windows_media_ocr_lines\",\"authority\":\"uia\"}";
+
+    [Test]
+    public void APlaceInSightSaysTheApplicationsOtherPlacesThatAppOpenOpens()
+    {
+        string on;
+        string off;
+        using (ModelAids.Use(ModelAids.SightPlaces))
+        {
+            on = (string?)Project("{\"status\":\"completed\"}", StoreInSight)["view"] ?? string.Empty;
+        }
+
+        using (ModelAids.Use("none"))
+        {
+            off = (string?)Project("{\"status\":\"completed\"}", StoreInSight)["view"] ?? string.Empty;
+        }
+
+        const string others = "(los otros lugares de Steam se abren directo, sin pulsar: app_open con appId «Steam» y "
+            + "place community, game (placeValue: el nombre del juego), library, results (placeValue: lo que se busca))\n";
+        Assert.Multiple(() =>
+        {
+            Assert.That(on, Does.Contain(
+                "Lugar a la vista: store de Steam (sólo ahí sale «store.steampowered.com»)\n" + others));
+            Assert.That(off, Is.EqualTo(on.Replace(others, string.Empty)));
+        });
+    }
+
+    // An application the data give no other place says no line; nor does a look that says no place in sight.
+    [TestCase("\"name\":\"store\"", "\"name\":\"store\"", true)]
+    [TestCase("\"application\":\"Steam\"", "\"application\":\"Bloc de notas\"", false)]
+    [TestCase("\"place\":{\"application\":\"Steam\",\"name\":\"store\",\"shown\":\"store.steampowered.com\"},", "", false)]
+    public void OnlyAPlaceInSightOfAnApplicationWithOtherPlacesSaysThem(string from, string to, bool said)
+    {
+        using IDisposable setting = ModelAids.Use(ModelAids.SightPlaces);
+
+        string view = (string?)Project("{\"status\":\"completed\"}", StoreInSight.Replace(from, to))["view"] ?? string.Empty;
+
+        Assert.That(view.Contains("(los otros lugares de"), Is.EqualTo(said));
+    }
+
     private static JsonObject Project(string facts, string lookJson = Look)
     {
         using JsonDocument look = JsonDocument.Parse(lookJson);

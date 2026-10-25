@@ -88,9 +88,12 @@ public sealed class ScreenViewProjectionTests
 
         Assert.Multiple(() =>
         {
+            // With every aid on (sight_places): the application's other places, which app_open opens, beside it.
             Assert.That(View(drawn), Does.StartWith(
                 "Ventana «Steam» (steamwebhelper, window 77), al frente\n" +
                 "Lugar a la vista: library de Steam (sólo ahí sale «Página principal»)\n" +
+                "(los otros lugares de Steam se abren directo, sin pulsar: app_open con appId «Steam» y place " +
+                "community, game (placeValue: el nombre del juego), results (placeValue: lo que se busca), store)\n" +
                 "Seleccionados o activados: "));
             Assert.That(View(Steam), Does.Not.Contain("Lugar a la vista"));
         });

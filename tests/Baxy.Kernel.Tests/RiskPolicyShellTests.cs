@@ -28,6 +28,10 @@ public sealed class RiskPolicyShellTests
     [TestCase("Get-Process | Sort-Object CPU -Descending | Select-Object -First 5")]
     [TestCase("echo hola")]
     [TestCase("whoami")]
+    // Prueba en vivo de la versión final (renew_v6): findstr only reads files and prints what matches.
+    [TestCase("findstr /C:\"ERROR\" \"C:\\Users\\ana\\BAXY-bench\\server-vivo.log\"")]
+    [TestCase("findstr /S /I /N error *.log")]
+    [TestCase("Get-Content server.log | findstr ERROR")]
     public void A_command_that_only_reads_runs_directly(string command) =>
         Assert.That(Run(command), Is.EqualTo(PolicyDecision.Allow));
 
@@ -60,6 +64,8 @@ public sealed class RiskPolicyShellTests
     [TestCase("pytest -q")]
     [TestCase("python --version")]
     [TestCase(".\\script.ps1")]
+    [TestCase("findstr ERROR server.log > errores.txt")]
+    [TestCase("findstr ERROR server.log | Out-File errores.txt")]
     public void Anything_else_asks_with_the_exact_command(string command) =>
         Assert.That(Run(command), Is.EqualTo(PolicyDecision.RequireConfirmation));
 

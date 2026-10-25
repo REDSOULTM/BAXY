@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
@@ -1518,6 +1519,18 @@ internal sealed class WindowsVisibleControlAdapter
                 && !string.IsNullOrWhiteSpace(identity.GetString()))
             {
                 controlId = identity.GetString()!.Trim();
+                // Prueba en vivo de la versión final (renew_v6, «abre Paint»): the model wrote the look's index in
+                // controlId («0» for [0] «Archivo»). No look or click gives a bare number as an identity (the tree's
+                // runtime id is dotted, «42.1234»; the others say their kind, «hmenu.», «hwnd.», «ocr.»), so the worker
+                // answered visible_control_identity_stale twice, a cause nothing showed, and the person was told one
+                // nobody saw. A bare number there is the look's index: read as the index when the click gives none, with
+                // the index's own guard below (the label must name that control).
+                if (controlId.All(char.IsAsciiDigit))
+                {
+                    if (index is null && int.TryParse(controlId, NumberStyles.None, CultureInfo.InvariantCulture, out int written))
+                        index = written;
+                    controlId = null;
+                }
             }
 
             // The window the click names: the hwnd of the view it was decided on (v3 point 0 review).

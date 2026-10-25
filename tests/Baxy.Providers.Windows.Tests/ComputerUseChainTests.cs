@@ -530,6 +530,56 @@ public sealed class ComputerUseChainTests
         }));
     }
 
+    // Prueba en vivo de la versión final (renew_v6, «abre Paint»): the model wrote the look's index in controlId («0» for
+    // [0] «Archivo», manner menu). It went to the worker as the identity «0», which no look or click gives, and was
+    // answered visible_control_identity_stale twice. A bare number there is the look's index: that control is pressed by
+    // its identity, by a plain click and in a manner alike.
+    [TestCase(null)]
+    [TestCase("menu")]
+    [TestCase("open")]
+    public void ABareNumberInControlIdIsTheLooksIndex(string? manner)
+    {
+        WithWindow(window =>
+        {
+            var worker = new OrderedWorker(Selected.Replace("\"Buscar\"", "\"Archivo\"", StringComparison.Ordinal));
+            WindowsVisibleControlAdapter adapter = Adapter(worker, new RecordingLease());
+            RememberView(adapter, window,
+                Control(0, "5.1", "MenuItem", "Archivo", "collapsed focused"),
+                Control(1, "5.2", "MenuItem", "Editar", "collapsed"));
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Archivo", "0", manner);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.Not.EqualTo("visible_control_identity_stale"));
+                Assert.That(worker.Commands, Is.Not.Empty);
+                Assert.That(worker.Commands[0], Does.Contain("\"controlId\":\"5.1\""), string.Join(" | ", worker.Commands));
+                Assert.That(worker.Commands.Any(command => command.Contains("\"controlId\":\"0\"", StringComparison.Ordinal)),
+                    Is.False);
+            });
+        });
+    }
+
+    // Its guard is the index's: a bare number whose control the label does not name presses nothing of that number (the
+    // label, in a manner, is the control of the look so named, as with no index at all).
+    [Test]
+    public void ABareNumberInControlIdKeepsTheIndexsLabelGuard()
+    {
+        WithWindow(window =>
+        {
+            var worker = new OrderedWorker(Selected.Replace("\"Buscar\"", "\"Archivo\"", StringComparison.Ordinal));
+            WindowsVisibleControlAdapter adapter = Adapter(worker, new RecordingLease());
+            RememberView(adapter, window,
+                Control(0, "5.1", "MenuItem", "Archivo", "collapsed focused"),
+                Control(1, "5.2", "MenuItem", "Editar", "collapsed"));
+
+            _ = Click(adapter, window, "Archivo", "1", "menu");
+
+            Assert.That(worker.Commands.Any(command => command.Contains("\"controlId\":\"5.2\"", StringComparison.Ordinal)
+                || command.Contains("\"controlId\":\"1\"", StringComparison.Ordinal)), Is.False, string.Join(" | ", worker.Commands));
+        });
+    }
+
     private static ExternalCapabilityReceipt Click(WindowsVisibleControlAdapter adapter, nint window, string label, string id, string? manner = null) =>
         adapter.InvokeAsync(
                 "input.visible.click",
