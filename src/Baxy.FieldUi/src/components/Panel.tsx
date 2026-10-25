@@ -1,12 +1,14 @@
 import type { ReactNode } from 'react';
 import { Icon } from './Icon';
+import { useDialogFocus } from '../utils/dialogFocus';
 
 /* A floating panel over a veil, inside the app: it never opens a window and never takes Windows' focus
    (design components/panels.jsx). */
 export function Panel({ title, onClose, width, children }: { title: string; onClose: () => void; width?: number; children: ReactNode }) {
+  const ref = useDialogFocus<HTMLDivElement>();
   return (
     <div className="panel-shroud" onClick={onClose}>
-      <div className="panel" style={width ? { width } : undefined} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={title}>
+      <div ref={ref} tabIndex={-1} className="panel" style={{ outline: 'none', ...(width ? { width } : null) }} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={title}>
         <div className="panel-head">
           <span className="panel-title">{title}</span>
           <button className="ibtn" onClick={onClose} data-tip="Cerrar" title="Cerrar"><Icon name="x" /></button>

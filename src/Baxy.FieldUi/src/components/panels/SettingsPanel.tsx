@@ -3,6 +3,7 @@ import { Icon, Globe } from '../Icon';
 import { Seg, Toggle } from '../Panel';
 import { getJson } from '../../api';
 import { spoken } from '../../duration';
+import { useDialogFocus } from '../../utils/dialogFocus';
 import type { GeneralSettings, Metrics, MicMode, NetEntry } from '../../types';
 
 /* Settings (design settings.jsx BxSettings). The theme, text size and contrast are this view's own presentation; the
@@ -56,6 +57,7 @@ interface Props {
 
 export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, micAvailable, onMic, a11y, onA11y, general, onGeneral, metrics, netLog, confirmSeconds, onMemory }: Props) {
   const [tab, setTab] = useState<Tab>('general');
+  const ref = useDialogFocus<HTMLDivElement>();
   const [voice, setVoice] = useState<{ tts?: { name?: string; downloaded?: boolean }; wake?: { downloaded?: boolean } } | null>(null);
   const [model, setModel] = useState<{ modelAlias?: string } | null>(null);
   useEffect(() => {
@@ -67,7 +69,7 @@ export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, 
   const tts = voice?.tts?.name ? 'Supertonic · ' + voice.tts.name + (voice.tts.downloaded ? '' : ' · no está en disco') : '—';
   return (
     <div className="panel-shroud" onClick={onClose}>
-      <div className="panel settings-panel bxs" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Ajustes">
+      <div ref={ref} tabIndex={-1} style={{ outline: 'none' }} className="panel settings-panel bxs" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Ajustes">
         <div className="panel-head">
           <span className="panel-title">Ajustes</span>
           <button className="bx-ib plain" onClick={onClose} title="Cerrar"><Icon name="x" size={14} /></button>

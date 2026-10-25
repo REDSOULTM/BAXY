@@ -233,3 +233,22 @@ test('ajustes: una lectura de los ajustes empezada antes de un cambio no lo desh
   for (let i = 0; i < 14; i++) { seen.push(await web.getAttribute('aria-checked')); await h.page.waitForTimeout(100); }
   expect(seen.filter((v) => v !== 'true'), 'el interruptor volvió atrás').toEqual([]);
 });
+
+test('teclado: un panel abierto toma el foco y al cerrarse lo devuelve a lo que lo abrió', async () => {
+  h = await openView();
+  const p = h.page;
+  const inPanel = () => p.evaluate(() => !!document.activeElement?.closest('.panel'));
+  await p.locator('.bx-gear').focus();
+  await p.keyboard.press('Enter');
+  await expect(p.locator('.settings-panel')).toBeVisible();
+  await expect.poll(inPanel, 'Ajustes tiene el foco').toBe(true);
+  await p.keyboard.press('Escape');
+  await expect(p.locator('.settings-panel')).toHaveCount(0);
+  await expect(p.locator('.bx-gear')).toBeFocused();
+  const memory = p.locator('button', { hasText: 'Memoria' }).first();
+  await memory.focus();
+  await p.keyboard.press('Enter');
+  await expect.poll(inPanel, 'Memoria tiene el foco').toBe(true);
+  await p.keyboard.press('Escape');
+  await expect(memory).toBeFocused();
+});
