@@ -75,3 +75,44 @@ def test_a_request_of_exactly_the_line_limit_is_read_as_the_app_writes_it(monkey
         with pytest.raises(protocol.ProtocolViolation) as refused:
             protocol.read_message()
         assert refused.value.code == "line_too_large"
+
+
+def _found(url: str) -> str:
+    import json
+
+    return json.dumps({"status": "completed", "observed": {"results": [{"title": "Lluvia", "url": url}]}})
+
+
+def test_the_short_references_of_turns_cut_out_are_not_kept(
+        tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Aid «short_refs»: every long address of the session stayed in Mind._refs for good, after the turns that showed it
+    were cut out of the conversation: the exported session (the App's 1 MiB per line) and the state an early decision
+    deep-copies grew with every address ever seen. What the conversation no longer shows is dropped; the numbers go on,
+    so a new address never takes the number of one still shown."""
+    from test_mind_final import _call, _mind, _say
+
+    from baxy_mind import mind as mind_module
+
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    monkeypatch.setattr(mind_module, "HISTORY_TURNS", 2)
+    first, second = ("https://news.example.org/rss/articles/" + letter * 300 + "?oc=5" for letter in "ab")
+    mind, server = _mind(tmp_path, [_call("web_search", {"query": "clima"}), _say("Encontré una noticia."),
+                                    _say("Hola."), _say("Hola."), _call("web_search", {"query": "lluvia"}),
+                                    _say("Otra noticia.")])
+    mind.decide(1, "el clima")
+    mind.continue_turn(2, _found(first))
+    mind.decide(3, "hola")
+    assert mind.export_session()[-1]["refs"] == {"ref:r1": first}
+    mind.decide(4, "hola")  # the first turn is cut out of the conversation
+    assert "ref:r1" not in json_text(mind.conversation)
+    assert mind.export_session()[-1]["refs"] == {}
+    mind.decide(5, "y la lluvia")
+    mind.continue_turn(6, _found(second))
+    assert "ref:r2" in json_text(server.bodies[-1]["messages"])
+    assert mind.export_session()[-1]["refs"] == {"ref:r2": second}
+
+
+def json_text(value) -> str:
+    import json
+
+    return json.dumps(value, ensure_ascii=False)
