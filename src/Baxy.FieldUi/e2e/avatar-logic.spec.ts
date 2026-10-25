@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { MOUTHS, MOUTH_LEVELS } from '../src/components/avatarClips';
 import { LipMouth } from '../src/components/mouthBlend';
-import { BXM, bxRoute } from '../src/components/face/geometry';
+import { BXM, bxRoute, bxSegment } from '../src/components/face/geometry';
 
 /* The avatar's own logic against the view's modules, with no app: the lip-sync's choice of mouth and the walk of the
    face's network. */
@@ -51,4 +51,18 @@ test('el recorrido que entra o sale de la web va por la red, sin saltar en líne
     }
   }
   expect(broken).toEqual([]);
+});
+
+test('cuando el recorrido del turno se reescribe, la cara camina el tramo nuevo hasta su final', () => {
+  // store.ts moves «verificar» to the end each time the reply's words change: after a confirmation the path
+  // [mente, archivos, verificar, archivos] becomes [mente, archivos, archivos, verificar], of the same length
+  const cases: [string[], string[], string[] | null][] = [
+    [['mente'], ['mente', 'web'], ['mente', 'web']],
+    [['mente', 'web'], ['mente', 'web', 'verificar'], ['web', 'verificar']],
+    [['mente', 'archivos', 'verificar', 'archivos'], ['mente', 'archivos', 'archivos', 'verificar'], ['archivos', 'verificar']],
+    [['mente', 'apps', 'verificar'], ['mente', 'apps', 'verificar'], null],
+  ];
+  const wrong = cases.filter(([seen, path, want]) => JSON.stringify(bxSegment(seen, path)) !== JSON.stringify(want))
+    .map(([seen, path, want]) => seen.join('→') + ' ⇒ ' + path.join('→') + ': ' + JSON.stringify(bxSegment(seen, path)) + ', no ' + JSON.stringify(want));
+  expect(wrong).toEqual([]);
 });

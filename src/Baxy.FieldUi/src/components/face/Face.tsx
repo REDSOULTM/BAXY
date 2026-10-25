@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef } from 'react';
 import {
   BODYH, BXM, FK, FY, GLYPH_EX, GLYPH_Q, HUB_LABEL, HUB_NAME, IDLE, PLATE, SH, THINK, TALK, TILT,
-  bxArc, bxBrow, bxEll, bxEye, bxMouth, bxRoute, bxSample, bxSuper, type Pt,
+  bxArc, bxBrow, bxEll, bxEye, bxMouth, bxRoute, bxSample, bxSegment, bxSuper, type Pt,
 } from './geometry';
 import type { Journey } from '../../store';
 import { lipAt } from '../../lip';
@@ -89,7 +89,7 @@ function FaceView(props: FaceProps) {
     let gest: { name: string; t0: number; dur: number } | null = null, nextGest = 0.8, leanS = 1, hop = 0, hopV = 0, sq = 0, sqV = 0, browLift = 0;
     let fx: Fx[] = [], qA = 0, exA = 0, bubA = 0, scanA = 0, lastMouseT = -9, droopY = 0, prevExpr = '';
     let earL2 = 0, lvl = 0, sparks: Spark[] = [], flashes: { x: number; y: number; t: number }[] = [], earGlow = 0, trs: Tracer[] = [], trail = 0;
-    let jTurn: string | null = null, jLen = 0;
+    let jTurn: string | null = null, jPath: string[] = [];
     const heat = new Float32Array(BXM.N.length);
     const onMove = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); mouse = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; lastMouseT = performance.now() / 1000; };
     const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
@@ -183,13 +183,16 @@ function FaceView(props: FaceProps) {
       // journey through the mesh: a new turn starts a new walk; each new family of the same turn adds a segment after
       // the one walking now.
       if (journey && journey.turn !== jTurn) {
-        jTurn = journey.turn; jLen = journey.path.length; heat.fill(0); trail = 1;
+        jTurn = journey.turn; jPath = journey.path; heat.fill(0); trail = 1;
         trs = journey.path.length > 1 ? [mkTracer(bxRoute(journey.path), Math.max(1.2, 0.9 * (journey.path.length - 1)), T)] : [];
-      } else if (journey && journey.path.length > jLen) {
-        const seg = journey.path.slice(Math.max(0, jLen - 1));
-        jLen = journey.path.length; trail = 1;
-        const lastTr = trs[trs.length - 1];
-        trs.push(mkTracer(bxRoute(seg), Math.max(0.9, 0.9 * (seg.length - 1)), lastTr ? Math.max(T, lastTr.t0 + lastTr.dur) : T));
+      } else if (journey && journey.path !== jPath) {
+        const seg = bxSegment(jPath, journey.path);
+        jPath = journey.path;
+        if (seg) {
+          trail = 1;
+          const lastTr = trs[trs.length - 1];
+          trs.push(mkTracer(bxRoute(seg), Math.max(0.9, 0.9 * (seg.length - 1)), lastTr ? Math.max(T, lastTr.t0 + lastTr.dur) : T));
+        }
       }
       if (state === 'speaking' && prevState !== 'speaking') { trs.forEach((tr) => { tr.t0 = T - tr.dur; }); trs.push(mkTracer([BXM.hub.verificar, BXM.hub.voz], 0.7, T + 0.05)); trail = 1; }
       prevState = state;
