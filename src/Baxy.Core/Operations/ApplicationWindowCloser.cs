@@ -55,14 +55,15 @@ internal static class ApplicationWindowCloser
             WindowCloseResult closed = await windows.CloseAsync(frame.WindowId, cancellationToken).ConfigureAwait(false);
             if (closed.ClosePrompted)
             {
-                return new(WindowControlErrorCodes.ClosePrompted, closedWindows, processes, titles, closedWindows > 0, hidden,
-                    frames.Length);
+                // Revisión del núcleo (q-core): a window already hidden is an effect too, as at the end.
+                return new(WindowControlErrorCodes.ClosePrompted, closedWindows, processes, titles,
+                    closedWindows > 0 || hidden > 0, hidden, frames.Length);
             }
 
             if (!closed.Succeeded || !closed.Verified || closed.ProcessId is null)
             {
                 return new(closed.ErrorCode ?? "app_close_failed", closedWindows, processes, titles,
-                    closedWindows > 0 || closed.EffectMayHaveOccurred, hidden, frames.Length);
+                    closedWindows > 0 || hidden > 0 || closed.EffectMayHaveOccurred, hidden, frames.Length);
             }
 
             processes.Add(closed.ProcessId.Value);

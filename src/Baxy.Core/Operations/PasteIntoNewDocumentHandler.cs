@@ -12,9 +12,37 @@ namespace Baxy.Core.Operations;
 internal sealed class PasteIntoNewDocumentHandler(
     IOperationHandler paste,
     Func<OperationInvocation, CancellationToken, ValueTask<OperationOutcome>> open,
-    Func<string, CancellationToken, ValueTask<Baxy.Providers.Windows.External.OfficePasteResult?>>? office = null)
-    : IOperationHandler
+    Func<string, CancellationToken, ValueTask<Baxy.Providers.Windows.External.OfficePasteResult?>>? office = null,
+    IInvocationPreflight? openPreflight = null)
+    : IOperationHandler, IInvocationPreflight
 {
+    // Revisión del núcleo (q-core): the opening this paste makes is app.open's, and so is its guard. Called straight, the
+    // engine never read app.open's preflight: «pega en Configuración del sistema» launched msconfig with no yes, the
+    // tool the guarda msconfig asks for. The application named is read by app.open's own preflight, bound to this one.
+    private readonly IInvocationPreflight? _openPreflight = openPreflight;
+
+    public bool MayRaise(JsonElement arguments) => _openPreflight is not null;
+
+    public ValueTask<InvocationPreflightResult> PreflightAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        if (_openPreflight is null
+            || arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("appId", out JsonElement named)
+            || named.ValueKind != JsonValueKind.String
+            || named.GetString() is not { Length: > 0 } application)
+        {
+            return ValueTask.FromResult(InvocationPreflightResult.Proceed);
+        }
+
+        return _openPreflight.PreflightAsync(
+            JsonSerializer.SerializeToElement(
+                new OpenApplicationArguments(application, Foreground: true, ForControl: true, NewDocument: true),
+                CoreJsonContext.Default.OpenApplicationArguments),
+            cancellationToken);
+    }
+
     // BAXY Renew cu (C18 variante): Word or Excel already running takes its new document and the paste through its own
     // object model (OfficeNewDocumentPaste); null for any other application or a closed one (the ordinary way).
     private readonly Func<string, CancellationToken, ValueTask<Baxy.Providers.Windows.External.OfficePasteResult?>> _office =

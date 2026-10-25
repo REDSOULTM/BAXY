@@ -132,6 +132,27 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
+    // Revisión del núcleo (q-core): a window that already hid before another asks to save is an effect that did occur;
+    // the stop said nothing had happened (only closed windows counted there, not the hidden ones the end counts).
+    [Test]
+    public async Task AStopAfterAWindowHidSaysItsEffectMayHaveOccurred()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "Steam"), Frame("win_b", 100, "Steam")])
+        {
+            Hides = "win_a",
+            Prompts = "win_b",
+        };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Steam\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.ClosePrompted));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.True, "a window had hidden already");
+        });
+    }
+
     // Al máximo, flujos: an application asked for by its name with no window to close is that failure before any yes;
     // one with its windows leaves the close to ask (and to resolve them again).
     [Test]
