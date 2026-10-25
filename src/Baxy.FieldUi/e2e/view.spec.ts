@@ -154,3 +154,25 @@ test('accesibilidad: la opción elegida de cada selector y lo que despliega cada
   await expect(p.getByRole('button', { name: 'Oscuro', pressed: true })).toHaveCount(1);
   await expect(p.getByRole('button', { name: 'Claro', pressed: false })).toHaveCount(1);
 });
+
+const surfaces = (memory_revision: number) => ({ type: 'surfaces', sessions: 2, memory: 1, memory_revision, tools: 10, triggers: 0 });
+const later = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+test('memoria: una lectura vieja que llega tarde no tapa la nueva', async () => {
+  h = await openView();
+  h.emit(surfaces(1));
+  let n = 0, saved = false;
+  h.reply('/memory', async () => {
+    n++;
+    const first = !saved;
+    if (first) await later(900);
+    return { body: { enabled: true, total: 1, items: [{ key: 'k', value: first ? 'color: azul' : 'color: verde', updated_at: '', kind: 'preference' }] } };
+  });
+  await h.page.locator('button', { hasText: 'Memoria' }).first().click();
+  await expect.poll(() => n).toBeGreaterThan(0);
+  saved = true;
+  h.emit(surfaces(2)); // BAXY saved something while the panel read
+  await expect(h.page.locator('.bx-mem-row')).toContainText('verde');
+  await h.page.waitForTimeout(1200);
+  await expect(h.page.locator('.bx-mem-row')).toContainText('verde');
+});

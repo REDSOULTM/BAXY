@@ -10,6 +10,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const ROUTES = /^\/(turn|confirmation|accessibility|settings|proposals|metrics|triggers|surfaces|sessions|voice|power|memory|catalog|agent)(\/|$)/;
 
 export interface Call { method: string; path: string; body: unknown }
+export interface Reply { status?: number; body?: unknown }
 
 export interface Host {
   page: Page;
@@ -17,8 +18,8 @@ export interface Host {
   calls: Call[];
   /** sends one host event over `/events`. */
   emit: (ev: Record<string, unknown>) => void;
-  /** the reply to a route: a JSON body, or a status for a refusal; default {}. */
-  reply: (path: string, fn: (c: Call) => { status?: number; body?: unknown }) => void;
+  /** the reply to a route: a JSON body, or a status for a refusal; default {}. It may take its time (a promise). */
+  reply: (path: string, fn: (c: Call) => Reply | Promise<Reply>) => void;
   close: () => Promise<void>;
 }
 
@@ -47,7 +48,7 @@ export async function openView(opts: { items?: unknown[]; mic?: string } = {}): 
   const ctx = await browser.newContext({ viewport: { width: 1400, height: 860 } });
   const page = await ctx.newPage();
   const calls: Call[] = [];
-  const replies = new Map<string, (c: Call) => { status?: number; body?: unknown }>();
+  const replies = new Map<string, (c: Call) => Reply | Promise<Reply>>();
   let socket: WebSocketRoute | null = null;
   // like the host, a socket that connects gets the state so far (StrictMode connects twice)
   const history: string[] = [];
@@ -60,7 +61,7 @@ export async function openView(opts: { items?: unknown[]; mic?: string } = {}): 
     try { body = req.postDataJSON(); } catch { body = req.postData(); }
     const call = { method: req.method(), path, body };
     calls.push(call);
-    const r = replies.get(path)?.(call) ?? {};
+    const r = (await replies.get(path)?.(call)) ?? {};
     await route.fulfill({ status: r.status ?? 200, contentType: 'application/json', body: JSON.stringify(r.body ?? {}) });
   });
   await page.routeWebSocket(/\/events$/, (ws) => {

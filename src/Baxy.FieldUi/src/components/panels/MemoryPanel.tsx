@@ -47,7 +47,12 @@ export function MemoryPanel({ onClose, revision }: { onClose: () => void; revisi
     const r = await getJson<MemoryList>('/memory');
     setData(r ?? { error: 'memory_unavailable', items: [] });
   }, []);
-  useEffect(() => { void getJson<MemoryList>('/memory').then((r) => setData(r ?? { error: 'memory_unavailable', items: [] })); }, [revision]);
+  // a reading started before the memory changed again never covers the newer one, even if it answers last
+  useEffect(() => {
+    let stale = false;
+    void getJson<MemoryList>('/memory').then((r) => { if (!stale) setData(r ?? { error: 'memory_unavailable', items: [] }); });
+    return () => { stale = true; };
+  }, [revision]);
 
   const run = async (call: () => Promise<MemoryList | null>, failure: string) => {
     setBusy(true);
