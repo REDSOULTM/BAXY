@@ -3420,3 +3420,11 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   ya no dice «lo que vio está arriba»); lo cubren saved_name y save_dialog_next en int11e. F019 = H9 (int11d). F009 = el
   límite del nombre BAXY-bench. F001 s1 = lugar y causa inventados tras fallar place:game. La meta se decide con int11e
   × 3 (encadenado en el NB). Suites de int11e en el PC: Kernel 753, Contracts 74, Setup 477, App 208 (Providers sigue).
+- 01:3x **typed_in_window descartada** (int11f f1d041344): en F013 de int11c, tras escribir, el modelo dejó de guardar con
+  file.write (base) y abrió «Guardar como» por la interfaz, donde dijo un nombre que no quedó; lo empujaba el hecho «un
+  archivo lo tiene sólo cuando esa aplicación lo guarda». Su objetivo, V5E061, no subió en la e2e. Fuera código,
+  interruptor, pruebas y dos auxiliares sólo suyos. int11e s1 del NB: E017 ya sin falsedad (dice el nombre que quedó); E020
+  nuevo (la lista con la respuesta y siguió buscando: ¿w10-lectura?).
+- **Regla de decisión, fijada antes de ver cifras**: int11f (con w10-lectura) frente a int11g 03fa1e306 (sin ella), NB,
+  falsedades de práctica ×3 a ciegas y e2e práctica + H2 ×2 intercaladas. Queda w10-lectura sólo si int11f no tiene más
+  falsedades claras que int11g y no pierde e2e de práctica; si no, el HEAD final es int11g.
