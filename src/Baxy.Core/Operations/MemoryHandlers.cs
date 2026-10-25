@@ -578,7 +578,12 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         RequireAllowedProperties(payload, ["version", "scope"], ["selector"]);
         RequireVersion(payload);
         string scope = RequiredString(payload, "scope");
-        string? selector = payload.TryGetProperty("selector", out _) ? OptionalNullableString(payload, "selector") : null;
+        // Revisión del núcleo (q-core): a blank selector (the catalog takes any string; a model fills an optional one with
+        // «») names nothing, as one left out: it read a bare invalid_arguments.
+        string? selector = payload.TryGetProperty("selector", out JsonElement given)
+            && !(given.ValueKind == JsonValueKind.String && string.IsNullOrWhiteSpace(given.GetString()))
+                ? OptionalNullableString(payload, "selector")
+                : null;
         MemoryKind? selectedKind = null;
         if (scope == "all" && selector is not null)
         {

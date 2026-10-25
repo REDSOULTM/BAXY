@@ -55,6 +55,20 @@ public sealed class MemoryRecallScopeTests
         Assert.That(outcome.ErrorCode, Is.Not.EqualTo("invalid_arguments"));
     }
 
+    // Revisión del núcleo (q-core): an empty selector (the catalog takes any string, a model fills optional strings with
+    // «») is no selector: exact reads what is remembered and all is a recall, never a bare invalid_arguments.
+    [TestCase("exact", "")]
+    [TestCase("exact", "  ")]
+    [TestCase("all", "")]
+    public async Task ABlankSelectorIsNoSelector(string scope, string selector)
+    {
+        using var temporary = new Temporary();
+        temporary.Remember("comida favorita", "pizza");
+        JsonObject recalled = await temporary.RecallOpenedAsync(
+            new JsonObject { ["version"] = 1, ["scope"] = scope, ["selector"] = selector });
+        Assert.That(recalled["records"]!.AsArray(), Has.Count.EqualTo(1));
+    }
+
     // Al máximo 11.2: an exact recall that matched nothing showed what is remembered as if it were the match (the model
     // told the favorite food as the name asked for). The list comes back said as not the exact match.
     [Test]
