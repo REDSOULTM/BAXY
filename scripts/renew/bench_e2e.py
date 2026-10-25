@@ -236,9 +236,13 @@ class Conductor:
         # The mind's trace and the catalog it was sent go to the run (audit w8-medir): in the owner's turns.jsonl they
         # mixed bench turns with his real ones and, past its cap, rotated his out.
         self.mind_dir = run_dir / "mente"
+        launch = [str(ROOT / "scripts" / "run_renew.cmd"), "--conductor", "--command-dir", str(self.commands),
+                  "--capture", str(run_dir), "--profile", str(profile), "--timeout-ms", "300000"]
+        # PC-Q (2026-10-25): cmd /c with more than two quotes drops the first and the last, so a checkout whose path had
+        # a space never started («C:» is not a command). /s takes the line between the outer quotes as it is; every
+        # argument is quoted (a path cannot hold a quote), so neither a space nor a «&» splits it.
         self.process = subprocess.Popen(
-            ["cmd", "/c", str(ROOT / "scripts" / "run_renew.cmd"), "--conductor", "--command-dir", str(self.commands),
-             "--capture", str(run_dir), "--profile", str(profile), "--timeout-ms", "300000"],
+            'cmd /s /c "' + " ".join(f'"{part}"' for part in launch) + '"',
             cwd=str(ROOT), stdout=(run_dir / "console.txt").open("w", encoding="utf-8"), stderr=subprocess.STDOUT,
             # Al máximo (notebook, engine_no_answer): the App's own trace goes to the run too, and with it, when the
             # channel to the core is cut, why (core-disconnect.jsonl beside it).

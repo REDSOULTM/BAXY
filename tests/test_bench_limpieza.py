@@ -228,3 +228,35 @@ def test_the_judge_server_dies_with_its_bench(monkeypatch):
     monkeypatch.setitem(bench_falsedades._JUDGE, "log", None)
     assert bench_falsedades.start_judge_server()
     assert held == [bench_falsedades._JUDGE["server"]]
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="cmd.exe")
+def test_the_product_starts_from_a_checkout_whose_path_has_spaces(tmp_path, monkeypatch):
+    # cmd /c with more than two quotes strips the first and the last: «C:\a b\scripts\run_renew.cmd» became «C:\a» and
+    # the conductor never started (the bench then waited 300 s for it and said conductor_not_ready).
+    root = tmp_path / "check out"
+    (root / "scripts").mkdir(parents=True)
+    (root / "scripts" / "run_renew.cmd").write_text(
+        '@echo off\r\n(for %%A in (%*) do @echo %%~A) > "%~dp0args.txt"\r\n', encoding="ascii")
+    run_dir = tmp_path / "run dir"
+    run_dir.mkdir()
+    started = {}
+
+    def popen(command, **options):
+        started["command"] = command
+        started["stdout"] = options["stdout"]
+        return SimpleNamespace()
+
+    real_popen = subprocess.Popen
+    monkeypatch.setattr(bench_e2e, "ROOT", root)
+    monkeypatch.setattr(bench_e2e.subprocess, "Popen", popen)
+    monkeypatch.setattr(bench_e2e, "set_aside_notepad_tabs", lambda backup: 0)
+    bench_e2e.Conductor(run_dir, tmp_path / "per fil")
+    started["stdout"].close()
+    monkeypatch.setattr(subprocess, "Popen", real_popen)
+    done = subprocess.run(started["command"], cwd=str(root), capture_output=True, text=True,
+                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert (root / "scripts" / "args.txt").read_text().split("\n")[:8] == [
+        "--conductor", "--command-dir", str(run_dir / "commands"), "--capture", str(run_dir), "--profile",
+        str(tmp_path / "per fil"), "--timeout-ms"]
