@@ -858,6 +858,28 @@ public sealed class SaidFoldersTests
         });
     }
 
+    // Revisión de nb-w11-multi: words that name a place that is no folder by its name (their home folder, BAXY's working
+    // folder) are a place of their own: the previous request's folder does not rule them. A write in the home folder for
+    // «en mi carpeta de usuario» was refused with the call that writes it in the previous request's folder.
+    [TestCase("guarda recados.txt en mi carpeta de usuario que diga pan", "file.write", "home")]
+    [TestCase("guarda recados.txt en tu carpeta de trabajo que diga pan", "filesystem.create.directory", null)]
+    [TestCase("guarda recados.txt en la carpeta de baxy que diga pan", "filesystem.create.directory", null)]
+    public void ATurnThatNamesAPlaceThatIsNoFolderByItsNameIsNotRuledByThePreviousRequest(
+        string words, string operation, string? folder)
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "taller-bench"));
+        var said = new SaidFolders(Known);
+        said.Heard("haz la carpeta fotos_2025 en taller-bench");
+        said.Heard(words);
+        var call = new JsonObject { ["relativePath"] = "recados.txt" };
+        if (operation == "file.write")
+            call["text"] = "pan";
+        if (folder is not null)
+            call["folder"] = folder;
+
+        Assert.That(said.Rule(operation, Descriptor(operation), call)?.Refusal, Is.Null);
+    }
+
     private SaidFolders Heard(string words)
     {
         var said = new SaidFolders(Known);
