@@ -1423,34 +1423,85 @@ internal sealed class WindowsVisibleControlAdapter
         string click = ClickIdentity(arguments, _actedWindow);
         _unchangedInARow = click == _unchangedClick ? _unchangedInARow + 1 : 1;
         _unchangedClick = click;
-        if (_unchangedInARow < 2)
-            return receipt;
-        string? application;
-        lock (_viewLock)
-        {
-            application = _lastView is { } view && (view.Hwnd == _actedWindow || _actedWindow == 0)
-                ? view.Application : null;
-        }
-
-        application ??= _actedWindow != 0 ? VisibleControlSurface.ViewProcess(_actedWindow).ProcessName : null;
-        string label = arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("label", out JsonElement named)
-            && named.ValueKind == JsonValueKind.String ? named.GetString()!.Trim() : string.Empty;
         int times = _unchangedInARow;
-        // A result that already says what comes next (alreadySelected) is left as it is: a key written twice would void
-        // the observation, and the same call's comparisons (mind.py _result_key, TurnClosing) leave out only the count
-        // and the «next» it brings.
+        // A result that already says what comes next (alreadySelected: a control that selects, so never a text) is left
+        // as it is: a key written twice would void the observation.
         if (receipt.Result is { ValueKind: JsonValueKind.Object } result && result.TryGetProperty("next", out _))
             return receipt;
+        LastView? seen;
+        lock (_viewLock)
+        {
+            seen = _lastView is { } view && (view.Hwnd == _actedWindow || _actedWindow == 0) ? view : null;
+        }
+
+        string label = arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("label", out JsonElement named)
+            && named.ValueKind == JsonValueKind.String ? named.GetString()!.Trim() : string.Empty;
+        string? textNext = seen is not null && Infrastructure.ModelAids.On(Infrastructure.ModelAids.TextClickNext)
+            ? TextClickNext(seen.Controls, label, arguments) : null;
+        if (times < 2 && textNext is null)
+            return receipt;
+        string? application = times < 2 ? null
+            : seen?.Application ?? (_actedWindow != 0 ? VisibleControlSurface.ViewProcess(_actedWindow).ProcessName : null);
         return receipt with
         {
             Result = ExternalJson.Extended(receipt.Result, writer =>
             {
+                // The count goes with every «next» it brings, the first one's on a text too, so the same call's
+                // comparisons (mind.py _result_key, TurnClosing), which leave out both, see the first click as today.
                 writer.WriteNumber("unchangedInARow", times);
-                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.RepeatedUnchangedNext))
-                    writer.WriteString("next", RepeatedUnchangedNext(label, times, application));
+                string? repeated = times >= 2 && Infrastructure.ModelAids.On(Infrastructure.ModelAids.RepeatedUnchangedNext)
+                    ? RepeatedUnchangedNext(label, times, application) : null;
+                string? next = repeated is null ? textNext : textNext is null ? repeated : repeated + "; " + textNext;
+                if (next is not null)
+                    writer.WriteString("next", next);
             }),
         };
     }
+
+    // Práctica V5E029 («cambia la calculadora a modo científico»: «Modo de calculadora Estándar», a Text, clicked 3 times,
+    // unchanged each time, while «Abrir navegación», beside it, opens the list of modes; never tried): the click the last
+    // look named (by index, identity, else label) is a static text (kind Text, with no state of a control that toggles,
+    // selects or opens), so the receipt says so and names, from that look, the controls nearest it (a collapsed one
+    // marked), or the window's collapsed entries when the text has no place. Null for anything else.
+    internal static string? TextClickNext(IReadOnlyList<ViewControl> controls, string label, JsonElement arguments)
+    {
+        bool given = arguments.ValueKind == JsonValueKind.Object;
+        ViewControl[] named = given && arguments.TryGetProperty("index", out JsonElement index)
+            && index.ValueKind == JsonValueKind.Number && index.TryGetInt32(out int at)
+                ? [.. controls.Where(control => control.Index == at)]
+            : given && arguments.TryGetProperty("controlId", out JsonElement identity)
+                && identity.ValueKind == JsonValueKind.String && identity.GetString()!.Trim() is { Length: > 0 } id
+                ? [.. controls.Where(control => control.Id == id)]
+            : [.. controls.Where(control => SameLabel(label, control.Name))];
+        if (named.Length == 0 || !named.All(static control => control.Kind == "Text"
+                && !control.State.Split(' ').Any(static part => part is "on" or "off" or "selected" or "expanded" or "collapsed")))
+            return null;
+        ViewControl text = named[0];
+        string said = $"«{text.Name}» is a text the window shows, not a control: clicking it changes nothing";
+        string Entry(ViewControl control) => $"[{control.Index}] {control.Kind} «{control.Name}»"
+            + (Folded(control) ? " (collapsed)" : string.Empty);
+        if (text.RectValue is not { } box)
+        {
+            ViewControl[] folded = [.. controls.Where(Folded).Take(TextClickLimit)];
+            return folded.Length == 0 ? said : said + "; the window's collapsed entries are " + string.Join(", ", folded.Select(Entry));
+        }
+
+        static long Gap(Rect a, Rect b)
+        {
+            long dx = Math.Max(0, Math.Max(a.X - (b.X + b.W), b.X - (a.X + a.W)));
+            long dy = Math.Max(0, Math.Max(a.Y - (b.Y + b.H), b.Y - (a.Y + a.H)));
+            return dx * dx + dy * dy;
+        }
+
+        ViewControl[] nearest = [.. controls
+            .Where(static control => PressesOrOpens(control) && control.RectValue is not null)
+            .OrderBy(control => Gap(box, control.RectValue!.Value))
+            .ThenBy(static control => control.Index)
+            .Take(TextClickLimit)];
+        return nearest.Length == 0 ? said : said + "; the controls nearest it are " + string.Join(", ", nearest.Select(Entry));
+    }
+
+    internal const int TextClickLimit = 3;
 
     // The click as the model asked for it: the same label, index, control, manner and window (the one acted on when the
     // call named none).
@@ -3878,8 +3929,7 @@ internal sealed class WindowsVisibleControlAdapter
     /// fact for a label no control had; null when the look showed none.</summary>
     internal static JsonElement? CollapsedHint(IReadOnlyList<ViewControl> controls)
     {
-        ViewControl[] folded = [.. controls.Where(static control => control.State.Contains("collapsed", StringComparison.Ordinal)
-            && control.Kind is "MenuItem" or "SplitButton" or "Button" or "ComboBox").Take(CollapsedHintLimit)];
+        ViewControl[] folded = [.. controls.Where(Folded).Take(CollapsedHintLimit)];
         if (folded.Length == 0)
             return null;
         return ExternalJson.Create(writer =>
@@ -3897,6 +3947,13 @@ internal sealed class WindowsVisibleControlAdapter
     }
 
     internal const int CollapsedHintLimit = 12;
+
+    // The kinds a look lists that are pressed or opened (an entry, a button, a split button, a list), and of them the
+    // collapsed ones: what opens a folded group, menu or list.
+    private static bool PressesOrOpens(ViewControl control) => control.Kind is "MenuItem" or "SplitButton" or "Button" or "ComboBox";
+
+    private static bool Folded(ViewControl control) =>
+        PressesOrOpens(control) && control.State.Contains("collapsed", StringComparison.Ordinal);
 
     internal static ExternalCapabilityReceipt NotNamed(
         string operation, string error, IReadOnlyList<string> candidates, int? total = null, string? next = null) =>
