@@ -50,6 +50,10 @@ internal sealed class SaidFolders
     private static readonly string[] HomeWords =
         ["carpeta de usuario", "carpeta del usuario", "mi usuario", "carpeta personal", "home"];
 
+    // The person's words for BAXY's working folder. With the home words, a place said that is no folder by its name: a
+    // turn that says one is not ruled by the folder of the previous request (revisión de nb-w11-multi).
+    private static readonly string[] WorkWords = ["carpeta de trabajo", "tu carpeta", "carpeta de baxy"];
+
     private const string OwnName = "baxy";
 
     private static readonly Regex FullPath = new(
@@ -222,7 +226,8 @@ internal sealed class SaidFolders
         // Holdout v6 V6E058, V6E062, V6E055: the folder of a request is left unsaid in the next one («uy, me equivoqué de
         // año, era fotos_2026»; «ábreme horario.txt que está ahí») and the call acted in the home folder. Words that name
         // no folder are ruled by the folders the person's previous request named, never to route a read there.
-        bool earlier = places.Count == 0 && _before.Length > 0;
+        bool earlier = places.Count == 0 && _before.Length > 0 && !HomeWords.Concat(WorkWords)
+            .Any(word => Spoken(_words).Contains(Spoken(word), StringComparison.Ordinal));
         if (earlier)
         {
             if (descriptor.Risk == OperationRisks.ReadOnly)
