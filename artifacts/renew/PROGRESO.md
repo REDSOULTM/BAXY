@@ -3440,3 +3440,11 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   Acciones equivocadas 95,33 | 75,67 | 80,33 (cien − final_v5 +4,67, IC95 [−0,67; +10,33]). Por familia, cien frente a
   final_v5: comun 110,3 → 109,3, larga_cola 80,0 → 79,7, par_minimo 81,7 → 82,0, multipaso 31,3 → 30,3, ya_hecho 12,7 →
   14,3 (+1,7; meta +8 no cumplida); secundaria ya_hecho: 53 de 120 decisiones son lecturas de verificación sin efecto.
+- 08:16 **Holdout v6, e2e** (NB s0 y s1 por la alternativa pre-registrada, 76 casos, n_scored 75: V6E022 setup_fallido en
+  los seis brazos): inicio 49 / 49 | final_v5 56 / 55 | cien 57 / 57. `cien` − `final_v5` +1,5 (IC95 [−2,0; +5,5], p 0,5;
+  suben V6E021 y V6E033, no baja ninguno; pass^2 51 → 54): la meta «+5 con IC95 sin cruzar 0» NO se cumple. `cien` −
+  `inicio` +8,0 (IC95 [+1,0; +15,0]). Confirmaciones de 8: inicio 6, 5 | final_v5 7, 5 | cien 6, 6 (meta ≥ 6: cumplida).
+  Primera respuesta p50 en el NB: 3 319 / 3 501 | 4 313 / 4 312 | 3 740 / 3 839 ms (cien − final_v5 ≈ −0,52 s: meta −0,4
+  cumplida; GPU en P0 por el streaming en los seis brazos). Por área cien s0/s1: comunes 14/14, cu 8/8 de 14, archivos
+  11/12 de 16, multiturno 9/8 de 12, ya_lo_hiciste 5/4 de 6, imposibles 1/2 de 3, voz 3/3. Falsedad cien s0 VOID (ventana
+  de Configuración ajena) y repetida al final.
