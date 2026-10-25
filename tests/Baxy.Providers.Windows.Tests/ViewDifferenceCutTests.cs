@@ -62,8 +62,9 @@ public sealed class ViewDifferenceCutTests
                 "[38] Text «Se muestra 0» focused → (none)", "[39] CheckBox «Negrita» off → off focused",
             }));
             Assert.That(toggled.TryGetProperty("focusOnly", out _), Is.False, "a state beside the focus changed");
-            // Holdout v6 V6E020: a cut view whose listed controls differ only in the focus says so, beside its «cut».
-            Assert.That(cut.GetProperty("focusOnly").GetBoolean(), Is.True);
+            // Revisión w11: what a cut view did not list may have changed (a press whose effect fell past the cap), so
+            // focusOnly, which turns a click unchanged, is never said of it.
+            Assert.That(cut.TryGetProperty("focusOnly", out _), Is.False, "what a cut view did not list is not known");
             Assert.That(cut.GetProperty("cut").GetBoolean(), Is.True);
         });
     }

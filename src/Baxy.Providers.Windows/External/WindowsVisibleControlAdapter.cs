@@ -1011,9 +1011,8 @@ internal sealed class WindowsVisibleControlAdapter
     /// and nothing unlisted is known the same: no «gone», «sameListed» in place of «same», and «cut».
     /// Holdout v5 V5E029: a changed state is written as it was and as it is («focused → (none)»), and a whole view whose
     /// only difference is the keyboard's focus (controls that took or lost it, nothing else) says «focusOnly».
-    /// Holdout v6 V6E020: so does a cut one whose listed controls differ only in it (its «cut» says the rest was not
-    /// listed): the current crumb of Settings' path, pressed, only moved the focus, and the click came back completed on
-    /// that image alone; the model then pressed the crumb before it and left the page it had asked for.
+    /// A cut view never says it (revisión w11): what it did not list may have changed (a message sent, an item deleted
+    /// past the cap), and «focusOnly» turns the click unchanged, which would have the model press it again.
     /// </summary>
     internal static JsonElement ViewDifference(
         IReadOnlyList<ViewControl> before,
@@ -1071,7 +1070,8 @@ internal sealed class WindowsVisibleControlAdapter
             $"{was.Kind} «{was.Name}»"
             + (disabledAfter.Any(off => off.Kind == was.Kind && off.Name == was.Name) ? " disabled" : string.Empty))];
         bool titled = beforeTitle.Length > 0 && afterTitle.Length > 0 && beforeTitle != afterTitle;
-        focusOnly &= changed.Count > 0 && appeared.Count + gone.Count + moved.Count == 0 && !titled;
+        // A cut view does not know its unlisted controls the same.
+        focusOnly &= changed.Count > 0 && appeared.Count + gone.Count + moved.Count == 0 && !titled && !cut;
         int room = cap;
         return ExternalJson.Create(writer =>
         {
