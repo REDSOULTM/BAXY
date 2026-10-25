@@ -73,4 +73,6 @@ def test_the_default_practice_banks_follow_baxy_renew_banks(tmp_path, monkeypatc
     finally:
         monkeypatch.undo()
         importlib.reload(compare_banks)
-    assert capsys.readouterr().out.startswith("decision2.json 3 → decision3.json 2: 1 relabelled, retired ['P003']")
+    banks, line = capsys.readouterr().out.splitlines()[:2]
+    assert banks.startswith(f"banks: {tmp_path} (BAXY_RENEW_BANKS); --old {tmp_path / 'practica' / 'decision2.json'}")
+    assert line.startswith("decision2.json 3 → decision3.json 2: 1 relabelled, retired ['P003']")

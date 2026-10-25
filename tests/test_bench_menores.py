@@ -61,13 +61,14 @@ def test_the_continuation_probe_closes_its_server_when_it_breaks(tmp_path, monke
     assert FakeServer.made[0].closed
 
 
-def test_the_d20_arms_go_to_the_banks_of_baxy_renew_banks(tmp_path, monkeypatch):
+def test_the_d20_arms_go_to_the_banks_of_baxy_renew_banks(tmp_path, monkeypatch, capsys):
     written = []
     monkeypatch.setattr(make_arms_d20, "write", lambda out, arm, seed: written.append(out) or out)
     monkeypatch.setenv("BAXY_RENEW_BANKS", str(tmp_path))
     monkeypatch.setattr(sys, "argv", ["make_arms_d20.py", "base", "--seeds", "0"])
     make_arms_d20.main()
     assert written == [tmp_path / "ab"]
+    assert capsys.readouterr().out.startswith(f"arms written in: {tmp_path / 'ab'} (banks BAXY_RENEW_BANKS)")
 
 
 def test_the_d20_summary_reads_the_runs_of_baxy_renew_banks(tmp_path, monkeypatch, capsys):
@@ -77,4 +78,5 @@ def test_the_d20_summary_reads_the_runs_of_baxy_renew_banks(tmp_path, monkeypatc
     monkeypatch.setenv("BAXY_RENEW_BANKS", str(tmp_path))
     monkeypatch.setattr(sys, "argv", ["summarize_arms_d20.py", "--prefix", "pcq-prueba"])
     summarize_arms_d20.main()
-    assert capsys.readouterr().out.startswith("base     dec [7]")
+    first, line = capsys.readouterr().out.splitlines()[:2]
+    assert first == f"runs: {tmp_path / 'runs'} (banks BAXY_RENEW_BANKS)" and line.startswith("base     dec [7]")

@@ -142,6 +142,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default="")
     args = parser.parse_args()
+    # Review of PC-Q: a shell that inherited another BAXY_RENEW_BANKS (ayudas/correr_d2.sh exports one) read other runs
+    # without a word: the folder in use is said first.
+    print(f"runs: {RUNS} (banks {'BAXY_RENEW_BANKS' if os.environ.get('BAXY_RENEW_BANKS') else 'default'})", flush=True)
     risks = _risks()
     hand, judge = _labels()
     rows, timings = [], []

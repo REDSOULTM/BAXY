@@ -13,6 +13,7 @@ def turns(label):
     t = json.load(open(R + label + '-falsedades/transcripts.json', encoding='utf-8'))
     return {c['id']: c for c in t}
 seed = sys.argv[1]
+print(f"runs: {R} (banks {'BAXY_RENEW_BANKS' if os.environ.get('BAXY_RENEW_BANKS') else 'default'})", flush=True)  # PC-Q: another BAXY_RENEW_BANKS read other runs silently
 A, B = (turns(x) for x in pairs[seed])
 for cid in sorted(A):
     print(f'#### {cid} {seed} | trap: {A[cid]["trap"][:160]}')

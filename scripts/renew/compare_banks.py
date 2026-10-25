@@ -85,6 +85,10 @@ def main() -> None:
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--catalog", default="", help="the runs' catalog: code-list arguments judged exactly")
     args = parser.parse_args()
+    # Review of PC-Q: a shell that inherited another BAXY_RENEW_BANKS (ayudas/correr_d2.sh exports one) read other runs
+    # without a word: the folder in use is said first.
+    print(f"banks: {PRACTICE.parent} ({'BAXY_RENEW_BANKS' if os.environ.get('BAXY_RENEW_BANKS') else 'default'}); "
+          f"--old {args.old}, --new {args.new}", flush=True)
     enums = enums_of(json.loads(Path(args.catalog).read_text(encoding="utf-8"))) if args.catalog else None
     old, new = load_bank(Path(args.old)), load_bank(Path(args.new))
     old_by_id = {c["id"]: c for c in old}
