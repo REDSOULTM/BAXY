@@ -263,6 +263,12 @@ internal sealed class SaidFolders
             && ProductCatalog.TryGet("file.find", out ProductOperationDescriptor? find) && find is not null
             && targets.Count == 1 && Express(find, Shared(arguments, find), targets[0]) is { } found
                 ? $"to look there, call file_find with {Changes(new JsonObject(), found)}" : null;
+        // Holdout v6 V6E034 (final_v5 s0): told only that filesystem_copy «cannot name a folder of theirs», the model
+        // answered that the file was in the person's folder and not in its working folder, and copied nothing. The
+        // operation that does the same act there is said as a call (aid «said_folder_counterpart»).
+        string? twin = reach.Sandbox && targets.Count == 1 && ModelAids.On(ModelAids.SaidFolderCounterpart)
+            ? Twin(operation, arguments, targets[0]) : null;
+        look = twin ?? look;
         if (!_told.Add(operation + "\n" + arguments.ToJsonString()))
         {
             // Holdout v6 V6E042 (cien s0 and s2): the search refused was written again and ran in the working folder; its
@@ -513,6 +519,31 @@ internal sealed class SaidFolders
         }
 
         return string.Join('/', parts);
+    }
+
+    // The operations of BAXY's working folder whose act another one does in the person's folders: that one, the argument
+    // it needs that the call had no way to say (the file's own name; the working folder's calls name it by its id), and
+    // whether it copies.
+    private static readonly Dictionary<string, (string Operation, string Name, bool Copy)> Twins = new(StringComparer.Ordinal)
+    {
+        ["filesystem.copy"] = ("filesystem.sandbox.move.named", "sourceFileName", true),
+        ["filesystem.move"] = ("filesystem.sandbox.move.named", "sourceFileName", false),
+        ["filesystem.read.text"] = ("file.read", "fileName", false),
+    };
+
+    // That operation as a call in the folder named: what the call gave that it also takes (a destination, inside the
+    // folder), the folder, and the name it still needs; null when it has none or cannot name that folder.
+    private string? Twin(string operation, JsonObject arguments, Place place)
+    {
+        if (!Twins.TryGetValue(operation, out (string Operation, string Name, bool Copy) twin)
+            || !ProductCatalog.TryGet(twin.Operation, out ProductOperationDescriptor? other) || other is null
+            || Express(other, Shared(arguments, other), place) is not { } routed)
+            return null;
+        if (twin.Copy)
+            routed["copy"] = true;
+        string wire = twin.Operation.Replace('.', '_');
+        return $"{operation.Replace('.', '_')} cannot name a folder of theirs, and {wire} does it there: call {wire} with "
+            + $"{Changes(new JsonObject(), routed)}, and {twin.Name} the file's own name";
     }
 
     // The arguments of a call that another operation also takes (a search's query, for file_find).

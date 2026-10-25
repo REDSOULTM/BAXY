@@ -111,6 +111,13 @@ public static class ModelAids
     /// (a read) or refused before any effect with the call that names it (anything else) (Baxy.App.SaidFolders).
     /// </summary>
     public const string SaidFolder = "said_folder";
+    /// <summary>
+    /// Holdout v6 V6E034 (final_v5 s0: «filesystem_copy cannot name a folder of theirs», answered «no pude copiarlo:
+    /// contrato.txt está en BAXY-bench, que es una carpeta de la persona»): a call of BAXY's working folder refused by
+    /// <see cref="SaidFolder"/> whose act another operation does in the person's folders (a copy, a move, a read) says
+    /// that operation as a call, with its arguments for the folder named (Baxy.App.SaidFolders).
+    /// </summary>
+    public const string SaidFolderCounterpart = "said_folder_counterpart";
 
     /// <summary>
     /// Fase 3 (holdout v5 V5E043): a folder made with the name the person said, spelled otherwise (viaje_chiloe_2027 for
