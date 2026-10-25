@@ -157,10 +157,12 @@ public sealed class LocalFilesystemProviderTests
     // Hallazgo de seguridad E030 (w9-sha), the bench's sequence on the real provider and journal: «sobrescribe notas.txt
     // con el texto 'vacío'» went without the hash, the refusal told the file's current one (currentSha256), and the retry
     // with it replaced the file unasked. The retry asks, bound to it, and with no yes the file stays as it was; a real read
-    // of the file (this provider's filesystem.read.text here, file.read in the product) is a sighting it goes on.
+    // of the file (this provider's filesystem.read.text here, file.read in the product) is a sighting it goes on. Without
+    // the aid overwrite_guard: with it, a replacement that loses the file's text asks after the read too (OverwriteGuardTests).
     [Test]
     public async Task AReplacementUnderTheHashItsRefusalToldAsksAndTheFileStaysWithoutTheYes()
     {
+        using IDisposable aids = ModelAids.Use("none");
         const string before = "uno\r\ndos\r\ntres\r\n";
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
@@ -250,14 +252,14 @@ public sealed class LocalFilesystemProviderTests
         FilesystemMutationResult first = provider.WriteText("dato.txt", "uno", null);
 
         FilesystemProviderException? failure = Assert.Throws<FilesystemProviderException>(
-            () => provider.WriteText("dato.txt", "dos", first.Sha256));
+            () => provider.WriteText("dato.txt", "uno y dos", first.Sha256));
 
         string kept = Path.Combine(sandbox, failure!.Result!.Value.GetProperty("newTextFile").GetString()!);
         Assert.Multiple(() =>
         {
             Assert.That(failure.Code, Is.EqualTo("write_not_completed_previous_recycled"));
             Assert.That(failure.EffectMayHaveOccurred, Is.True);
-            Assert.That(File.ReadAllText(kept), Is.EqualTo("dos"));
+            Assert.That(File.ReadAllText(kept), Is.EqualTo("uno y dos"));
             Assert.That(File.ReadAllText(bin.Recycled.Single()), Is.EqualTo("uno"));
         });
     }
@@ -290,7 +292,7 @@ public sealed class LocalFilesystemProviderTests
         Assert.Multiple(() =>
         {
             Assert.That(
-                () => provider.WriteText("dato.txt", "dos", first.Sha256),
+                () => provider.WriteText("dato.txt", "uno y dos", first.Sha256),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("previous_version_not_recycled"));
             Assert.That(File.ReadAllText(Path.Combine(sandbox, "dato.txt")), Is.EqualTo("uno"));
@@ -586,7 +588,8 @@ public sealed class LocalFilesystemProviderTests
     // Holdout v6 V6E041 («agrégale al file jugadores.txt … la línea: Matías, arquero»): written without append, refused,
     // then read and replaced by that line alone. The refusal of a write with neither append nor the hash says what each
     // does; with BAXY_AYUDAS=none, the facts without the sentence; a replace whose hash is not the file's says nothing.
-    [TestCase("all", true)]
+    // With overwrite_guard on too, a text that keeps little of the file says how much it has instead (OverwriteGuardTests).
+    [TestCase("replace_or_append", true)]
     [TestCase("none", false)]
     public async Task AWriteWithoutAppendOrHashToAFileThereSaysWhatAppendAndTheHashDo(string aids, bool hint)
     {

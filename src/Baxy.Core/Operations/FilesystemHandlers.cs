@@ -25,12 +25,47 @@ internal static class FilesystemHandlers
 }
 
 internal sealed class FilesystemHandler(string operation, IFilesystemProvider provider)
-    : IOperationHandler
+    : IOperationHandler, IInvocationPreflight
 {
     private readonly IFilesystemProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
 
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition(operation);
+
+    /// <summary>
+    /// Holdout v6 V6E041 (aid overwrite_guard): a file.write that replaces under a hash may lose the file's text. Pure.
+    /// </summary>
+    public bool MayRaise(JsonElement arguments) =>
+        operation == "file.write"
+        && ModelAids.On(ModelAids.OverwriteGuard)
+        && arguments.ValueKind == JsonValueKind.Object
+        && !OptionalBoolean(arguments, "append")
+        && arguments.TryGetProperty("expectedSha256", out JsonElement hash)
+        && hash.ValueKind == JsonValueKind.String;
+
+    /// <summary>
+    /// Holdout v6 V6E041: the replacement the provider refused once for the text it would lose, called again, is the
+    /// person's to allow: in normal mode it asks first (work_loss), bound to this invocation. The first time it is
+    /// refused at execution, before any effect, with the call that appends; anything else keeps its declared risk.
+    /// </summary>
+    public ValueTask<InvocationPreflightResult> PreflightAsync(JsonElement arguments, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!MayRaise(arguments)
+            || !arguments.TryGetProperty("relativePath", out JsonElement path) || path.ValueKind != JsonValueKind.String
+            || !arguments.TryGetProperty("text", out JsonElement text) || text.ValueKind != JsonValueKind.String)
+        {
+            return ValueTask.FromResult(InvocationPreflightResult.Proceed);
+        }
+
+        return ValueTask.FromResult(_provider.ReplacementAsksFirst(
+                path.GetString()!,
+                text.GetString()!,
+                OptionalString(arguments, "expectedSha256"),
+                OptionalString(arguments, "folder"))
+            ? InvocationPreflightResult.Raised(OperationRisk.Irreversible)
+            : InvocationPreflightResult.Proceed);
+    }
 
     public ValueTask<OperationOutcome> ExecuteAsync(
         OperationInvocation invocation,

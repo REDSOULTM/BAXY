@@ -109,6 +109,17 @@ public static class ModelAids
     /// </summary>
     public const string ReplaceOrAppend = "replace_or_append";
 
+    /// <summary>
+    /// Holdout v6 V6E041 (8 of 8 runs: file.write without append; in 6 the file was read and replaced under the hash the
+    /// read gave by the new line alone, and the reply said «agregué»): a file.write that would replace a file of the
+    /// person's that has text with a text that keeps little of it (half of its words or less, and not all of it) is
+    /// refused once before any effect, saying how many lines and characters it has and the exact file_write call that
+    /// appends; the same replacement again goes on, and in normal mode the kernel asks the person first
+    /// (FilesystemHandler's preflight, LocalFilesystemProvider.ReplacementAsksFirst). Empty files and edits that keep
+    /// most of the text go straight.
+    /// </summary>
+    public const string OverwriteGuard = "overwrite_guard";
+
     /// <summary>Renew al máximo (w5, E020): a look at BAXY's working folder says it is BAXY's, and one that found nothing that the person's folders were not looked at.</summary>
     public const string WorkFolderScope = "work_folder_scope";
 

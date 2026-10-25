@@ -81,6 +81,13 @@ public interface IFilesystemProvider
         string? expectedSha256,
         string? folder = null,
         bool append = false);
+
+    /// <summary>
+    /// Holdout v6 V6E041 (aid overwrite_guard): whether this replacement under its hash was refused once already for the
+    /// text it would lose, so running it now is the person's to allow (read only; none by default).
+    /// </summary>
+    bool ReplacementAsksFirst(string relativePath, string text, string? expectedSha256, string? folder) => false;
+
     FilesystemMutationResult Transfer(
         string resourceId,
         string destinationRelativePath,
