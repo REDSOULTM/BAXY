@@ -26,3 +26,18 @@ test('con «reducir movimiento» el avatar no tiembla en un error ni funde un cl
   expect(reduced.map((m) => m.trans), 'sin fundido ni transición').toEqual([0, 0]);
   await page.close();
 });
+
+test('en alto contraste la boca compuesta lleva el mismo filtro que el fotograma en que se compone', async () => {
+  // the lip-sync composes the mouth from the raw frame (drawImage ignores CSS filters): with another filter on the
+  // video than on the canvas, the mouth's area shows as a patch of other contrast
+  const page = await browser.newPage();
+  await page.emulateMedia({ reducedMotion: 'reduce' }); // the filter's 1.4 s transition, off: the final values at once
+  await page.setContent('<style>' + CSS + '</style><div class="bx-avid lip"><video class="on"></video><canvas class="bx-lip"></canvas></div>');
+  const filters = () => page.evaluate(() => ['video', 'canvas'].map((q) => getComputedStyle(document.querySelector(q)!).filter));
+  for (const hc of [false, true]) {
+    await page.evaluate((on) => document.documentElement.classList.toggle('hc', on), hc);
+    const [video, mouth] = await filters();
+    expect(mouth, (hc ? 'alto contraste' : 'normal') + ': filtro del vídeo ' + video).toBe(video);
+  }
+  await page.close();
+});

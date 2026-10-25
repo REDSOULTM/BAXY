@@ -244,3 +244,5 @@ html.a11y .bx-mod .n{flex-shrink:0}
 .bx-avid.lip video{-webkit-mask-image:var(--lip-hole);mask-image:var(--lip-hole);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 .bx-lip{position:absolute;left:39.1667%;top:54.375%;width:21.25%;height:14.1667%;z-index:1;pointer-events:none;mix-blend-mode:plus-lighter}
 .bx-avid:not(.lip) .bx-lip{visibility:hidden}
+/* the mouth is composed from the raw frame (a canvas draws it without the video's CSS filter): the same filter here */
+html.hc .bx-lip{filter:contrast(1.15)}
