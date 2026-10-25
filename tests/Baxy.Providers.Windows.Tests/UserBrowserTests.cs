@@ -54,6 +54,35 @@ public sealed class UserBrowserTests
     }
 
     [Test]
+    public async Task AYouTubeResultsPageOverItsBoundIsNotReadToTheEnd()
+    {
+        // Ronda q-web: the whole body was read into memory and only then held to its 4 MB; the read stops at the bound.
+        var body = new CountingStream(64 * 1024 * 1024);
+        using var http = new HttpClient(new StreamHttpHandler(body));
+
+        YouTubeSearchResult video = await YouTubeSearch.FirstVideoAsync(http, "red lista", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(video.ErrorCode, Is.EqualTo("youtube_search_response_too_large"));
+            Assert.That(body.BytesRead, Is.LessThanOrEqualTo(4_000_000 + 128 * 1024));
+        });
+    }
+
+    [Test]
+    public async Task AYouTubeResultsPageThatStopsMidBodyEndsAtTheClientTimeout()
+    {
+        var body = new CountingStream(64 * 1024, stallAfter: 16 * 1024);
+        using var http = new HttpClient(new StreamHttpHandler(body)) { Timeout = TimeSpan.FromMilliseconds(300) };
+
+        Task<YouTubeSearchResult> search = YouTubeSearch.FirstVideoAsync(http, "red lista", CancellationToken.None).AsTask();
+        Task finished = await Task.WhenAny(search, Task.Delay(TimeSpan.FromSeconds(10)));
+
+        Assert.That(finished, Is.SameAs(search), "the body read is bounded in time too");
+        Assert.That((await search).ErrorCode, Is.EqualTo("youtube_search_timeout"));
+    }
+
+    [Test]
     public void YouTubeResultsPageGivesTheFirstVideoAndItsOwnTitle()
     {
         YouTubeSearchResult video = YouTubeSearch.Parse(YouTubePage("dQw4w9WgXcQ", "Rick Astley \\u0026 Co - Never"));
@@ -2347,6 +2376,42 @@ public sealed class UserBrowserTests
         {
             Delays++;
             return ValueTask.CompletedTask;
+        }
+    }
+
+    private sealed class StreamHttpHandler(Stream body) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken) => Task.FromResult(
+                new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(body) });
+    }
+
+    // A body of «length» bytes of markup that never carries a result; with «stallAfter», it stops answering there.
+    private sealed class CountingStream(long length, long stallAfter = -1) : Stream
+    {
+        internal long BytesRead { get; private set; }
+
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => BytesRead; set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        public override int Read(byte[] buffer, int offset, int count) =>
+            ReadAsync(buffer.AsMemory(offset, count)).AsTask().GetAwaiter().GetResult();
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            if (stallAfter >= 0 && BytesRead >= stallAfter)
+                await Task.Delay(Timeout.Infinite, cancellationToken);
+            int count = (int)Math.Min(buffer.Length, length - BytesRead);
+            buffer.Span[..count].Fill((byte)'a');
+            BytesRead += count;
+            return count;
         }
     }
 
