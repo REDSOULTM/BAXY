@@ -15,6 +15,9 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
 
     private const string ClientProcess = "Spotify";
 
+    // Revisión nb-q-apps2: the script's last line was not the object it answers with, or lacked its fields.
+    internal const string ResponseUnreadable = "spotify_uia_response_unreadable";
+
     // The script has bounded 12.5 s discovery, 12 s search convergence (20 s
     // with one re-issued search when the page shows nothing playable, M169),
     // 12 s detail discovery and 15 s playback postread stages: 59.5 s. The
@@ -155,6 +158,10 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
                 if (line is null)
                     return effectBoundary.Failure(operation, "spotify_uia_process_failed");
                 using JsonDocument response = JsonDocument.Parse(line);
+                // Revisión nb-q-apps2: a last line that is JSON but not the script's object (a stray value a module
+                // printed) is a response the call cannot read, never an InvalidOperationException out of the adapter.
+                if (response.RootElement.ValueKind != JsonValueKind.Object)
+                    return effectBoundary.Failure(operation, ResponseUnreadable);
                 bool effect = response.RootElement.TryGetProperty("effectObserved", out JsonElement observed)
                     && observed.ValueKind == JsonValueKind.True;
                 bool beforeSearch = StoppedBeforeSearch(response.RootElement);
@@ -201,6 +208,14 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
                 // nothing pressed: the request already reached (alreadyPlaying, changed:false), never a press.
                 bool alreadyPlaying = response.RootElement.TryGetProperty("alreadyPlaying", out JsonElement already)
                     && already.ValueKind == JsonValueKind.True;
+                // Revisión nb-q-apps2: a success without the client's process id (or with one that is not a number) is
+                // not the script's postread; what it pressed may have played, unconfirmed.
+                if (!response.RootElement.TryGetProperty("processId", out JsonElement processValue)
+                    || processValue.ValueKind != JsonValueKind.Number
+                    || !processValue.TryGetInt32(out int processId))
+                {
+                    return WithDiagnostic(effectBoundary.Failure(operation, ResponseUnreadable, effect), response.RootElement);
+                }
                 JsonElement result = ExternalJson.Create(writer =>
                 {
                     writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -235,7 +250,7 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
                             StringField(response.RootElement, "title")))
                         writer.WriteBoolean("queryMatched", false);
                     writer.WriteString("playbackStatus", "playing");
-                    writer.WriteNumber("processId", response.RootElement.GetProperty("processId").GetInt32());
+                    writer.WriteNumber("processId", processId);
                     writer.WriteString("authority", "spotify_windows_uia_postread"); writer.WriteEndObject();
                 });
                 return alreadyPlaying
