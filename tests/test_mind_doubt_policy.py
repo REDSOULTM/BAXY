@@ -280,3 +280,124 @@ def test_the_confirm_floor_can_be_turned_off(tmp_path, monkeypatch) -> None:
     mind, _ = _mind(tmp_path, [_call("confirm_pending", {"approve": True}, 0.5)])
     result = mind.decide(1, "sí", {"operation": "app.close", "arguments": {"appId": "Paint"}})
     assert result["operation"] == "confirmation.answer"
+
+
+def _ask_at(p_call: float) -> dict:
+    """An ask_user the decision opened at `p_call` (the rest of the first token's probability was words)."""
+    reply = _call("ask_user", {"question": "¿En qué carpeta está el archivo?"}, 0.9)
+    reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", p_call)
+    return reply
+
+
+# Holdout v6 V6E069 (s1): «¿ya lo abriste?» after a file.open that had failed was answered with ask_user at p_call 0.26,
+# a counter-question about where the file was; the model's own majority was words.
+def test_an_ask_user_opened_against_the_words_majority_is_decided_again_in_words(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_S1_ASK_FLOOR", "0.5")
+    mind, server = _mind(tmp_path, [_ask_at(0.26), _say("No, no lo abrí: no encontré el archivo.")])
+    result = mind.decide(1, "¿ya lo abriste?")
+    assert result["kind"] == "conversation" and result["question"] == ""
+    assert result["reply"] == "No, no lo abrí: no encontré el archivo."
+    second = server.bodies[1]
+    assert second["tool_choice"] == "none"
+    assert second["messages"] == server.bodies[0]["messages"]  # no note: the same conversation, words only
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert rows[0]["kind"] == "ask_floor" and rows[0]["doubt"]["p_call"] == 0.26
+
+
+@pytest.mark.parametrize("floor, p_call", [("", 0.26), ("0.5", 0.9)])
+def test_an_ask_user_the_model_chose_or_the_floor_off_asks_as_before(tmp_path, monkeypatch, floor, p_call) -> None:
+    monkeypatch.setenv("BAXY_S1_ASK_FLOOR", floor)
+    mind, server = _mind(tmp_path, [_ask_at(p_call)])
+    result = mind.decide(1, "pon una alarma")
+    assert result["kind"] == "clarify" and result["question"] == "¿En qué carpeta está el archivo?"
+    assert len(server.bodies) == 1
+
+
+# Prueba en vivo (Paint cerrado, then «¿ya lo cerraste?»): layer 0 held app_close again with the same arguments and the
+# model, told to ask, asked «¿Quieres que lo cierre o que lo abra?». With BAXY_S1_DOUBT_DONE=1 the note says how the
+# same call ended earlier in the session, and asks nothing.
+@pytest.mark.parametrize("switch, arguments, earlier, told", [
+    ("1", {"appId": "Paint"}, {"status": "completed", "verification": "readback"}, True),
+    ("", {"appId": "Paint"}, {"status": "completed", "verification": "readback"}, False),
+    ("1", {"appId": "Spotify"}, {"status": "completed", "verification": "readback"}, False),
+    ("1", {"appId": "Paint"}, {"status": "failed", "error": "app_not_running"}, False),
+])
+def test_a_held_call_that_repeats_a_completed_one_is_told_with_how_it_ended(tmp_path, monkeypatch, switch, arguments,
+                                                                           earlier, told) -> None:
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    monkeypatch.setenv("BAXY_S1_DOUBT_DONE", switch)
+    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))
+    (tmp_path / "confirmation-mode").write_text("bypass", encoding="utf-8")  # the kernel runs app_close unasked
+    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Paint"}, 0.99), _say("Listo."),
+                                    _call("app_close", arguments, 0.3), _say("¿Qué hago con Paint?")])
+    mind.wire_to_op["app_close"] = "app.close"
+    mind.risk = {"app_close": "work_loss"}
+    assert mind.decide(1, "cierra el paint")["operation"] == "app.close"
+    mind.continue_turn(2, json.dumps(earlier))
+    result = mind.decide(3, "¿ya lo cerraste?")
+    assert result["kind"] == "conversation" and result["operation"] is None
+    note = server.bodies[-1]["messages"][-1]["content"]
+    assert ("con los mismos argumentos: completado y verificado." in note) is told
+    assert ("pregúntale en una frase corta qué quiere exactamente" in note) is not told
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [r["kind"] for r in rows if r["stage"] == "turn.decide"][-2] == ("doubt_done" if told else "doubt_ask")
+    if told:  # it asked nothing: the person's next words are not an answer to a doubt question
+        server.replies += [_call("app_close", {"appId": "Paint"}, 0.3), _say("¿Lo cierro otra vez?")]
+        assert mind.decide(4, "ciérralo otra vez")["operation"] is None
+
+
+def test_a_held_look_is_not_told_as_done_before(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    monkeypatch.setenv("BAXY_S1_DOUBT_DONE", "1")
+    mind, server = _mind(tmp_path, [_call("window_list", {}, 0.99), _say("Tienes Paint abierto."),
+                                    _call("window_list", {}, 0.3), _say("¿Qué quieres que mire?")])
+    mind.wire_to_op["window_list"] = "window.list"
+    mind.risk = {"window_list": "read_only"}
+    mind.decide(1, "qué ventanas tengo")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "output_only"}))
+    mind.decide(3, "¿y ahora?")
+    assert "qué quiere exactamente" in server.bodies[-1]["messages"][-1]["content"]
+
+
+def _look_against_typing(tmp_path, monkeypatch, switch: str, typing_effects) -> tuple:
+    monkeypatch.setenv("BAXY_S1_DOUBT", "")
+    monkeypatch.setenv("BAXY_S1_VETO", "0.6")
+    monkeypatch.setenv("BAXY_S1_CORRECT", "1")
+    monkeypatch.setenv("BAXY_S1_LOOK_TOWARD", switch)
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {"application": "Notepad"}, 0.5),
+                                    _say("¿Quieres que mire el Notepad o que escriba en él?")])
+    empty = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
+    look = {"name": "input.visible.controls", "description": "Read the controls of a window", "argumentsSchema": empty,
+            "risk": "read_only", "effects": ["window_input"]}
+    typing = {"name": "input.text.type", "description": "Type text into a window", "argumentsSchema": empty,
+              "risk": "privacy_sensitive"}
+    if typing_effects is not None:
+        typing["effects"] = typing_effects
+    mind.configure({"capabilities": [look, typing]})
+    one = FakeSystemOne("input_text_type")
+    mind.system_one = one  # type: ignore[assignment]
+    return mind, server
+
+
+# Holdout v5 V5E023 («en el Notepad que tengo abierto, agrega al final…»): Qwen looked at the window
+# (input_visible_controls, read_only) unsure; Laya chose input_text_type at 0.905, which «corrige» cannot fill
+# (privacy_sensitive), and BAXY asked instead of looking at the window it was about to write in.
+def test_layer2_lets_a_look_toward_the_act_it_chose_run(tmp_path, monkeypatch) -> None:
+    mind, server = _look_against_typing(tmp_path, monkeypatch, "1", ["window_input"])
+    result = mind.decide(1, "en el Notepad que tengo abierto, agrega al final: nos vemos")
+    assert result["kind"] == "action" and result["operation"] == "input.visible.controls"
+    assert len(server.bodies) == 1
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert rows[-1]["system_one"]["choice"] == "input_text_type" and rows[-1]["system_one"]["looks_toward"] is True
+
+
+@pytest.mark.parametrize("switch, typing_effects", [
+    ("", ["window_input"]),  # off: it asks, as before
+    ("1", ["window_input", "network"]),  # the act reaches what the look does not
+    ("1", None),  # an act with no effect of the catalog is not one the look leads to
+])
+def test_layer2_still_asks_otherwise(tmp_path, monkeypatch, switch, typing_effects) -> None:
+    mind, server = _look_against_typing(tmp_path, monkeypatch, switch, typing_effects)
+    result = mind.decide(1, "en el Notepad que tengo abierto, agrega al final: nos vemos")
+    assert result["kind"] == "conversation" and result["operation"] is None
+    assert "input_text_type" in server.bodies[1]["messages"][-1]["content"]

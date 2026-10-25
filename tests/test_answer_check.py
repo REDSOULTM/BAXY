@@ -466,3 +466,56 @@ STEAM_VIEW = {"status": "completed", "verification": "output_only",
 def test_a_control_said_absent_whose_name_the_reading_shows(answer: str, flagged: bool) -> None:
     view = _r("input.visible.controls", STEAM_VIEW, {"application": "Steam", "includeText": True})
     assert ("named_control" in _rules(answer, [view])) is flagged
+
+
+# ---- «no encontré X» while a result found X ----------------------------------------------------------------------------
+# Holdout v6 V6E055 (s1): an edit refused because the search stopped at its limit after finding BAXY-bench\ideas.txt was
+# told «No lo cambié: no encontré BAXY-bench\ideas.txt en todo el tiempo».
+SEARCH_STOPPED = {"status": "failed", "error": "known_file_search_incomplete",
+                  "observed": {"version": 1, "name": "ideas.txt", "folder": "home",
+                               "relativePath": "BAXY-bench\\ideas.txt", "changed": False,
+                               "searchScope": {"timeLimitSeconds": 8, "timeLimitReached": True, "exhaustive": False}}}
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("No lo cambié: no encontré BAXY-bench\\ideas.txt en todo el tiempo.", True),
+    ("No pude encontrar ideas.txt, así que no lo cambié.", True),
+    ("No encontré ideas.txt en BAXY-bench.", True),
+    ("No lo cambié: la búsqueda encontró BAXY-bench\\ideas.txt y paró antes del resto de la carpeta.", False),
+    ("No encontré notas.txt.", False),  # another file
+    ("No encontré otro ideas.txt aparte del de BAXY-bench.", False),  # another one of that name
+    ("No encontré ideas.txt en Descargas.", False),  # a place that does not hold the one found
+    ("¿No encontré ideas.txt?", False),
+])
+def test_a_file_said_not_found_that_a_result_of_the_turn_found(answer: str, flagged: bool) -> None:
+    edit = _r("file.edit", SEARCH_STOPPED, {"folder": "home", "fileName": "ideas.txt"})
+    assert ("found" in _rules(answer, [edit], "en ideas.txt cambia regar los cactus por regar las orquídeas")) is flagged
+
+
+def test_a_file_a_search_listed_or_only_a_name_alike_it_offered() -> None:
+    listed = _r("file.find", {"status": "completed", "verification": "output_only",
+                              "observed": {"mode": "name", "count": 1, "files": [
+                                  {"name": "informe.pdf", "folder": "documents", "relativePath": "trabajo\\informe.pdf"}]}})
+    assert "found" in _rules("No encontré informe.pdf en tus carpetas.", [listed])
+    # A name that differs only in its accents is the one the search offered as alike, not the one asked: not found.
+    alike = _r("file.read", {"status": "failed", "error": "known_file_not_found", "observed": {"candidates": [
+        {"name": "canción.txt", "folder": "home", "relativePath": "canción.txt"}]}})
+    assert "found" not in _rules("No encontré cancion.txt; hay uno parecido, canción.txt.", [alike])
+
+
+@pytest.mark.parametrize("setting, checked", [(None, True), ("answer_check", False)])
+def test_the_found_rule_is_an_aid_of_its_own(tmp_path: Path, monkeypatch, setting, checked) -> None:
+    if setting is None:
+        monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    else:
+        monkeypatch.setenv("BAXY_AYUDAS", setting)
+    first = "No lo cambié: no encontré BAXY-bench\\ideas.txt en todo el tiempo."
+    mind, server = _mind(tmp_path, [_call("file_edit", {"folder": "home", "fileName": "ideas.txt"}), _say(first),
+                                    _say("No lo cambié: la búsqueda encontró BAXY-bench\\ideas.txt y paró.")])
+    mind.wire_to_op = {"file_edit": "file.edit"}
+    mind.decide(1, "en ideas.txt cambia regar los cactus por regar las orquídeas")
+    result = mind.continue_turn(2, json.dumps(SEARCH_STOPPED))
+    assert (result["reply"] != first) is checked
+    if checked:
+        note = server.bodies[-1]["messages"][-1]["content"]
+        assert "su resultado muestra que encontró BAXY-bench\\ideas.txt." in note

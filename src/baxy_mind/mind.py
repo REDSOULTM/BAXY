@@ -841,10 +841,20 @@ CONFIRM_FLOOR = 0.95
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
                     "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
                     "qué quiere exactamente.]")
+# Prueba en vivo (Paint cerrado, then «¿ya lo cerraste?»): layer 0 held app_close again with the same arguments, and the
+# model, told to ask, asked «¿Quieres que lo cierre o que lo abra?». With BAXY_S1_DOUBT_DONE=1, a held call that repeats
+# one of the session that completed (same tool and arguments, and it did not only look) is told with how that one ended;
+# what the model says with it is its own. It does not start as DOUBT_NOTE: it asks nothing, so the person's next words
+# are not an answer to a doubt question.
+DOUBT_DONE_NOTE = ("[Nota interna, no la escribió la persona: ibas a usar {call} sin estar seguro de qué quiere, y en esta "
+                   "conversación ya se llamó {call} con los mismos argumentos: {outcome}. No la hagas de nuevo todavía: "
+                   "contesta a la persona según lo que ya pasó, y si te pidió hacerlo otra vez, pregúntale en una frase "
+                   "corta si lo repites.]")
 # Al máximo 4.2 (SAGE-Agent): one question per misunderstanding. The person's words right after a doubt question (both
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
 DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
+DOUBT_DONE = DOUBT_DONE_NOTE[:DOUBT_DONE_NOTE.index("{call}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
@@ -880,7 +890,8 @@ def _bypass() -> bool:
 
 
 def _threshold(name: str) -> float:
-    """A System One threshold from the environment (BAXY_S1_DOUBT, BAXY_S1_VETO); 0 when unset: that layer is off."""
+    """A System One threshold from the environment (BAXY_S1_DOUBT, BAXY_S1_VETO, BAXY_S1_ASK_FLOOR); 0 when unset: that
+    layer is off."""
     try:
         return max(0.0, min(1.0, float(os.environ.get(name, "") or 0)))
     except ValueError:
@@ -1983,6 +1994,12 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
+        if calls and self._asked_against_words(stage, turn, final, calls[0], reply):
+            # Nothing of this decision enters the conversation (its question, the calls behind it): the model decides
+            # again, words only, with no note, as most of its own probability had chosen.
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="ask_floor",
+                      operation=None, arguments=None if turn.get("private") else calls[0]["arguments"], content=None)
+            return self._next(request_id, stage, turn, final=True)
         note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
         if isinstance(note, dict):
             # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
@@ -1999,8 +2016,9 @@ class Mind:
             doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             if doubted.startswith("memory."):
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
-            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
-                      operation=doubted, arguments=None, content=None)
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                      kind="doubt_done" if note.startswith(DOUBT_DONE) else "doubt_ask", operation=doubted,
+                      arguments=None, content=None)
             return self._next(request_id, stage, turn, final=True)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
@@ -2041,7 +2059,10 @@ class Mind:
         spoken (answer_check.check). Contradicted, the model is asked once more, words only, with a note that says the
         facts that contradict it; its second answer is the one spoken, whatever it says, and the trace keeps both
         checks (turn.check). None: the answer stands as it is."""
-        findings = check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls)
+        # Aid «check_found» (holdout v6 V6E055): the rule «found» of the check («no encontré X» while a result of the turn
+        # found X), an aid of its own.
+        findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls)
+                    if f["rule"] != "found" or _aid_on("check_found")]
         private = bool(turn.get("private"))
         shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
         if turn.get("checked"):
@@ -2082,15 +2103,26 @@ class Mind:
         continuation or a heartbeat."""
         return stage == "turn.decide" and not final and not turn.get("beat")
 
+    def _asked_against_words(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any],
+                             reply: dict | None) -> bool:
+        """BAXY_S1_ASK_FLOOR (a threshold, off when unset): whether the decision's first call is an ask_user the model
+        opened against its own majority, p(open a call) under the floor (doubt.read's p_call; the rest was words).
+        Holdout v6 V6E069 (s1): «¿ya lo abriste?» after a file.open that had failed was answered with ask_user at p_call
+        0.26, and a yes/no question about what BAXY had done became a counter-question about where the file was."""
+        if call["wire"] != ASK_USER["function"]["name"] or not self._doubted(stage, turn, final):
+            return False
+        doubt = read_doubt(reply)
+        return doubt is not None and doubt["p_call"] < _threshold("BAXY_S1_ASK_FLOOR")
+
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
         model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
-        low_reversible. Layer 2
+        low_reversible (with BAXY_S1_DOUBT_DONE=1, a call that repeats a completed one says how that one ended). Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
-        runs. Asking is never held: it already puts the person in the loop; confirming only when it approves under
+        runs, and so does a look toward that tool's act (_looks_toward). Asking is never held: it already puts the person in the loop; confirming only when it approves under
         CONFIRM_FLOOR, whatever System One's own thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
             return None
@@ -2114,7 +2146,9 @@ class Mind:
         # arguments: that confirmation names the exact action and the person's answer is bound to it.
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
                 and self.risk.get(call["wire"]) != "low_reversible" and not self._kernel_confirms(call["wire"]):
-            return DOUBT_NOTE.format(call=call["wire"])
+            done = self._done_before(call) if os.environ.get("BAXY_S1_DOUBT_DONE", "").strip() == "1" else None
+            return (DOUBT_DONE_NOTE.format(call=call["wire"], outcome=done) if done
+                    else DOUBT_NOTE.format(call=call["wire"]))
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
         if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
@@ -2135,8 +2169,22 @@ class Mind:
             # On the same 26 runs it asked instead of 11, all right without System One (P112 ×4, P124 ×6, P113 ×1);
             # its corrections of them were 6 useful (P257) against 2 harmful.
             return None
+        if self._looks_toward(call["wire"], judged["choice"]):
+            self._judged["looks_toward"] = True
+            return None
         other = OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
+
+    def _looks_toward(self, wire: str, choice: str) -> bool:
+        """BAXY_S1_LOOK_TOWARD=1 (off by default): whether the model's call only reads and the decision model's tool,
+        which «corrige» did not fill, acts on nothing the look does not touch too (its effects of the catalog, none
+        missing, among the look's own): the look is a step toward that act, which the model then makes itself after
+        reading what it saw, and layer 2 does not turn it into a question. Holdout v5 V5E023 («en el Notepad que tengo
+        abierto, agrega al final…»): input_visible_controls (read_only, window_input) against input_text_type at 0.905
+        (privacy_sensitive, not correctable, window_input); BAXY asked instead of looking at the window."""
+        effects = set(self.effects.get(choice) or [])
+        return os.environ.get("BAXY_S1_LOOK_TOWARD", "").strip() == "1" and self.risk.get(wire) == "read_only" \
+            and bool(effects) and effects <= set(self.effects.get(wire) or [])
 
     def _said(self) -> list[dict[str, str]]:
         """What the person and BAXY said before the words being decided, for the decision model: their messages and
@@ -2161,6 +2209,21 @@ class Mind:
                     if isinstance(question, str) and question.strip():
                         said.append({"role": "assistant", "content": question})
         return said
+
+    def _done_before(self, call: dict[str, Any]) -> str | None:
+        """How the newest earlier call of the session with this call's tool and arguments ended (its outcome among the
+        session's calls, _ran), when it completed and did more than look (DOUBT_DONE_NOTE); None otherwise. A look
+        (OUTPUT_READ) is not told: what it saw may have changed since, and looking again is what was asked."""
+        key = _call_key(call["arguments"])
+        ids = {made.get("id") for message in self.conversation for made in message.get("tool_calls") or []
+               if made.get("id") and made.get("function", {}).get("name") == call["wire"]
+               and _call_key(made["function"].get("arguments") or "{}") == key}
+        for entry, call_id in zip(reversed(self._ran), reversed(self._ran_ids)):
+            if call_id in ids:
+                outcome = entry.partition(" → ")[2]
+                done = outcome.startswith(COMPLETED_OUTCOMES) and not outcome.startswith(OUTPUT_READ)
+                return outcome if done else None
+        return None
 
     def _kernel_confirms(self, wire: str) -> bool:
         """Whether the kernel asks the person before this tool runs, whatever its arguments: a risk it always confirms in
