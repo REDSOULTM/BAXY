@@ -1149,9 +1149,17 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         }
     }
 
-    private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog()
+    private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog() => ReadInstalledCatalog(SteamRoots().Libraries);
+
+    // Revisión de calidad (nb-q-apps): one manifest that cannot be read no longer fails the whole catalog. Steam deletes
+    // a manifest at the end of an uninstall and rewrites it while it downloads, and the catalog is read every 500 ms
+    // while BAXY waits on it: a manifest listed and gone by the time it is read is skipped (the game is no longer
+    // there); one that is there and refuses its read leaves its library unread, as a library not found does.
+    internal static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog(
+        IEnumerable<string> libraries,
+        Func<string, byte[]>? read = null)
     {
-        (_, string[] libraries) = SteamRoots();
+        read ??= File.ReadAllBytes;
         var result = new Dictionary<string, SteamLocalGame>(StringComparer.Ordinal);
         int unread = 0;
         foreach (string library in libraries)
@@ -1162,9 +1170,33 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 unread++;
                 continue;
             }
-            foreach (string manifest in Directory.EnumerateFiles(steamApps, "appmanifest_*.acf"))
+            string[] manifests;
+            try
             {
-                byte[] bytes = File.ReadAllBytes(manifest);
+                manifests = Directory.GetFiles(steamApps, "appmanifest_*.acf");
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                unread++;
+                continue;
+            }
+            bool libraryUnread = false;
+            foreach (string manifest in manifests)
+            {
+                byte[] bytes;
+                try
+                {
+                    bytes = read(manifest);
+                }
+                catch (Exception exception) when (exception is FileNotFoundException or DirectoryNotFoundException)
+                {
+                    continue;
+                }
+                catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+                {
+                    libraryUnread = true;
+                    continue;
+                }
                 string text = Encoding.UTF8.GetString(bytes);
                 var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (Match field in ManifestFieldRegex().Matches(text))
@@ -1182,6 +1214,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 result[appId] = new(appId, name, Convert.ToHexStringLower(SHA256.HashData(bytes)),
                     flags, Math.Max(0, downloaded), Math.Max(0, total), installDirectory);
             }
+            if (libraryUnread)
+                unread++;
         }
         return new InstalledCatalog(result.Values.ToArray(), unread);
     }
