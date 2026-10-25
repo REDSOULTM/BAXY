@@ -1243,7 +1243,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteEndObject();
         });
 
-    private static Uri RequireWebUri(string value)
+    // The one rule for an address BAXY opens in a browser: http(s), a host and no user info (https://bank@evil.example/
+    // reads as «bank» and goes to evil.example); browser.navigate.named applies it too.
+    internal static Uri RequireWebUri(string value)
     {
         if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
             || uri.Scheme is not ("http" or "https")

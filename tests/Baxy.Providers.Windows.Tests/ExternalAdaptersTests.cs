@@ -864,6 +864,42 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    [TestCase("https://bank@evil.example/")]
+    [TestCase("https://bank:secret@evil.example/login")]
+    [TestCase("javascript:alert(1)")]
+    [TestCase("file:///C:/Windows/win.ini")]
+    [TestCase("data:text/html,<b>hola</b>")]
+    public async Task NamedBrowserRefusesWhatBrowserNavigateRefusesBeforeOpening(string url)
+    {
+        using TemporaryDirectory temporary = new();
+        var context = new CdpBrowserSessionContext();
+        var opera = new StubBrowserChainSession(
+            temporary.Path,
+            new(true, true, url, url, "opera-page", ""),
+            new(true, "opera-page", url, "Page", "text", false, ""),
+            observedExecutablePath: Path.Combine(temporary.Path, "opera.exe"));
+        using var named = new NamedBrowserAdapter(temporary.Path, context, opera, userBrowser: null);
+
+        ExternalCapabilityReceipt receipt = await named.InvokeAsync(
+            "browser.navigate.named",
+            ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("browser", "opera");
+                writer.WriteString("url", url);
+                writer.WriteEndObject();
+            }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("named_browser_url_invalid"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(opera.NavigateCalls, Is.Zero);
+        });
+    }
+
     [Test]
     public async Task NamedBrowserNavigationKeepsItsSessionForTheImmediatePageRead()
     {
@@ -6282,6 +6318,8 @@ public sealed class ExternalAdaptersTests
     {
         internal int ReadCalls { get; private set; }
 
+        internal int NavigateCalls { get; private set; }
+
         // APP_MISSING952 (d2cf40e0c): a named navigation verifies the browser's
         // identity by the observed executable; a stub without one stays unverified.
         internal override string? ObservedExecutablePath => observedExecutablePath;
@@ -6291,6 +6329,7 @@ public sealed class ExternalAdaptersTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            NavigateCalls++;
             return ValueTask.FromResult(navigation);
         }
 

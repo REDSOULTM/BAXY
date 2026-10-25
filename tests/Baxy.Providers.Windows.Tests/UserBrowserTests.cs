@@ -540,6 +540,34 @@ public sealed class UserBrowserTests
     }
 
     [Test]
+    public async Task AnAddressWithUserInfoIsNotOpenedInThePersonsNamedBrowser()
+    {
+        // https://bank@evil.example/ reads as «bank» and goes to evil.example: browser.navigate refuses it
+        // (RequireWebUri) and so does the named browser, before anything opens.
+        var platform = new FakePlatform(OperaGx) { AddressOf = _ => "evil.example/" };
+        platform.WindowsAfterOpen = [new(11, "Evil - Opera")];
+        var context = new CdpBrowserSessionContext();
+        string root = Path.Combine(Path.GetTempPath(), "baxy-user-browser-" + Guid.NewGuid().ToString("N"));
+        using var named = new NamedBrowserAdapter(
+            root, context, opera: null,
+            userBrowser: new UserBrowserSurface(platform, _ => null));
+
+        ExternalCapabilityReceipt receipt = await named.InvokeAsync(
+            "browser.navigate.named",
+            Json("""{"browser":"opera_gx","url":"https://bank@evil.example/"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("named_browser_url_invalid"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.Opened, Is.Empty);
+            Assert.That(Directory.Exists(root), Is.False, "no private profile was created");
+        });
+    }
+
+    [Test]
     public async Task NoWindowChangeLeavesTheNavigationUncertain()
     {
         // The front window showed another page before the link opened (semilla r8: the destination already on show
