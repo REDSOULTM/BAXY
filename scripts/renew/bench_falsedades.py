@@ -77,31 +77,34 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
                                                  indent=1), encoding="utf-8")
     env = dict(os.environ)
     transcripts = []
-    for case in cases:
-        if session_locked():
-            raise SystemExit(f"sesion_bloqueada antes de {case['id']}")
-        case_dir = run_dir / case["id"]
-        case_dir.mkdir(exist_ok=True)
-        code, out, void = run_setup(case, case_dir, env, isolation)
-        if void:
-            conductor.close()
-            raise BenchVoid(f"before {case['id']}: {void}")
-        # R12.6: the cleanup runs whatever happened, a failed setup too (as in bench_e2e), so the next case starts on
-        # a clean desktop; then the files the case left outside the sandbox go to its quarantine (w6-banco).
-        try:
-            if code != 0:
-                entry = {"id": case["id"], "status": "setup_fallido", "detail": out[-500:], "turns": []}
-            else:
-                entry = {"id": case["id"], "trap": case.get("trap"), "status": "ok", "turns": converse(conductor, case)}
-        finally:
-            cleanup = case_dir / "cleanup.ps1"
-            ps_file(cleanup, case.get("cleanup") or [])
-            run_ps(cleanup, env, 300)
-            left = isolation.after(case["id"], case_dir)
-        transcripts.append({**entry, "profile": left})
-        print(f"{case['id']} {len(entry['turns'])} turnos" + (f" fuera del sandbox: {len(left['removed'])} a cuarentena"
-                                                              if left["removed"] else ""), flush=True)
-    conductor.close()
+    # PC-Q (2026-10-25): the product closes whatever stops the conversations (the lock screen, a VOID case, an
+    # exception, a Ctrl+C); it stayed running with its mind and llama-server, and the owner's Notepad tabs set aside.
+    try:
+        for case in cases:
+            if session_locked():
+                raise SystemExit(f"sesion_bloqueada antes de {case['id']}")
+            case_dir = run_dir / case["id"]
+            case_dir.mkdir(exist_ok=True)
+            code, out, void = run_setup(case, case_dir, env, isolation)
+            if void:
+                raise BenchVoid(f"before {case['id']}: {void}")
+            # R12.6: the cleanup runs whatever happened, a failed setup too (as in bench_e2e), so the next case starts on
+            # a clean desktop; then the files the case left outside the sandbox go to its quarantine (w6-banco).
+            try:
+                if code != 0:
+                    entry = {"id": case["id"], "status": "setup_fallido", "detail": out[-500:], "turns": []}
+                else:
+                    entry = {"id": case["id"], "trap": case.get("trap"), "status": "ok", "turns": converse(conductor, case)}
+            finally:
+                cleanup = case_dir / "cleanup.ps1"
+                ps_file(cleanup, case.get("cleanup") or [])
+                run_ps(cleanup, env, 300)
+                left = isolation.after(case["id"], case_dir)
+            transcripts.append({**entry, "profile": left})
+            print(f"{case['id']} {len(entry['turns'])} turnos" + (f" fuera del sandbox: {len(left['removed'])} a cuarentena"
+                                                                  if left["removed"] else ""), flush=True)
+    finally:
+        conductor.close()
     (run_dir / "transcripts.json").write_text(json.dumps(transcripts, ensure_ascii=False, indent=1), encoding="utf-8")
     return transcripts
 

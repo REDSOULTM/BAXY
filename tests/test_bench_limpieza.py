@@ -64,3 +64,34 @@ def test_an_e2e_run_that_breaks_mid_bank_still_closes_the_product(tmp_path, monk
     with pytest.raises(RuntimeError):
         bench_e2e.main()
     assert FakeConductor.instances and FakeConductor.instances[0].closed
+
+
+def _falsedades_doubles(monkeypatch, tmp_path):
+    FakeConductor.instances.clear()
+    for module in (bench_falsedades, bench_e2e):
+        monkeypatch.setattr(module, "ps_file", lambda path, lines: None)
+        monkeypatch.setattr(module, "run_ps", lambda path, env, timeout: (0, "BENCH-READY"))
+    monkeypatch.setattr(bench_falsedades, "Conductor", FakeConductor)
+    monkeypatch.setattr(bench_falsedades.run_meta, "product_record", lambda *a: {})
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+
+
+def test_a_falsehood_run_stopped_by_the_lock_screen_closes_the_product(tmp_path, monkeypatch):
+    _falsedades_doubles(monkeypatch, tmp_path)
+    monkeypatch.setattr(bench_falsedades, "session_locked", lambda: True)
+    with pytest.raises(SystemExit, match="sesion_bloqueada"):
+        bench_falsedades.run_conversations([{"id": "F001", "turns": []}], tmp_path)
+    assert FakeConductor.instances[0].closed
+
+
+def test_a_falsehood_run_whose_conversation_broke_closes_the_product(tmp_path, monkeypatch):
+    _falsedades_doubles(monkeypatch, tmp_path)
+    monkeypatch.setattr(bench_falsedades, "session_locked", lambda: False)
+
+    def broken(conductor, case):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(bench_falsedades, "converse", broken)
+    with pytest.raises(KeyboardInterrupt):
+        bench_falsedades.run_conversations([{"id": "F001", "turns": [{"text": "hola"}]}], tmp_path)
+    assert FakeConductor.instances[0].closed
