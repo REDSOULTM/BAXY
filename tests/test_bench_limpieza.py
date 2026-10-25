@@ -306,3 +306,41 @@ def test_an_e2e_case_that_breaks_mid_turn_still_runs_its_cleanup_and_restores_th
     with pytest.raises(KeyboardInterrupt):
         bench_e2e.judge_case(case, SimpleNamespace(), tmp_path, {}, bench_e2e.Isolation(tmp_path))
     assert ran == ["setup.ps1", "cleanup.ps1", "isolation_after.ps1"]
+
+
+class ProfileConductor(FakeConductor):
+    """The product writes its notes and memory in the bench's own profile."""
+
+    def __init__(self, run_dir, profile):
+        super().__init__(run_dir, profile)
+        (profile / "notes").mkdir(parents=True)
+        (profile / "notes" / "n.json").write_bytes(b"x" * 1500)
+        (profile / "memory.db").write_bytes(b"y" * 600)
+
+
+def test_an_e2e_run_says_where_its_profile_stayed_and_how_big_it_is(tmp_path, monkeypatch, capsys):
+    # The profile (LOCALAPPDATA\BAXY\bench-<label>-<ts>) is never removed: the run says where it is, so it can be
+    # moved by hand; nothing is deleted.
+    monkeypatch.setattr(bench_e2e, "BANKS", tmp_path / "bancos")
+    monkeypatch.setattr(bench_e2e, "Isolation", ReadyIsolation)
+    monkeypatch.setattr(bench_e2e, "Conductor", ProfileConductor)
+    monkeypatch.setattr(bench_e2e, "session_locked", lambda: False)
+    monkeypatch.setattr(bench_e2e.run_meta, "product_record", lambda *a: {"system_one": {"on": False,
+                                                                                         "server_started": False}})
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    cases = tmp_path / "cases.json"
+    cases.write_text("[]", encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["bench_e2e.py", "x", "--cases", str(cases)])
+    bench_e2e.main()
+    profile = next((tmp_path / "BAXY").glob("bench-x-*"))
+    assert f"profile of this run: {profile} (2 files, 2100 bytes)" in capsys.readouterr().out
+    assert (profile / "memory.db").is_file()
+
+
+def test_a_falsehood_replica_says_where_its_profile_stayed(tmp_path, monkeypatch, capsys):
+    _falsedades_doubles(monkeypatch, tmp_path)
+    monkeypatch.setattr(bench_falsedades, "Conductor", ProfileConductor)
+    monkeypatch.setattr(bench_falsedades, "session_locked", lambda: False)
+    bench_falsedades.run_conversations([], tmp_path)
+    profile = next((tmp_path / "BAXY").glob("bench-*"))
+    assert f"profile of this run: {profile} (2 files, 2100 bytes)" in capsys.readouterr().out

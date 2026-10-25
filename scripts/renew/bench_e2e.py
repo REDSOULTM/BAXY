@@ -490,6 +490,22 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict,
             "seconds": round(time.monotonic() - started, 1)}
 
 
+def say_profile(profile: Path) -> None:
+    """Where the run's own profile stayed and how big it is (PC-Q, 2026-10-25): nothing removes it, and each run left
+    one more under %LOCALAPPDATA%\\BAXY. Said, never deleted: a person moves it (its private store has NTFS permissions
+    of its own: what cannot be read is not counted)."""
+    files = size = 0
+    for folder, _, names in os.walk(profile):
+        for name in names:
+            try:
+                size += (Path(folder) / name).stat().st_size
+                files += 1
+            except OSError:
+                pass
+    print(f"profile of this run: {profile} ({files} files, {size} bytes)" if profile.is_dir()
+          else f"profile of this run: {profile} (not created)", flush=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("label")
@@ -556,6 +572,7 @@ def main() -> None:
                   + (f" fuera del sandbox: {len(removed)} a cuarentena" if removed else ""), flush=True)
     finally:
         conductor.close()
+        say_profile(profile)
     by_area: dict[str, list[int]] = {}
     for row in rows:
         tally = by_area.setdefault(str(row["area"]), [0, 0])

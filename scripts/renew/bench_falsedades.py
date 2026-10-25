@@ -28,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_e2e import (BANKS, ROOT, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
-                       run_ps, run_setup, run_turn, session_locked, wait_silence)
+                       run_ps, run_setup, run_turn, say_profile, session_locked, wait_silence)
 import limpieza  # noqa: E402
 import run_meta  # noqa: E402
 
@@ -107,6 +107,7 @@ def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
                                                                   if left["removed"] else ""), flush=True)
     finally:
         conductor.close()
+        say_profile(profile)
     (run_dir / "transcripts.json").write_text(json.dumps(transcripts, ensure_ascii=False, indent=1), encoding="utf-8")
     return transcripts
 
