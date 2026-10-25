@@ -113,7 +113,16 @@ internal static class ScreenViewProjection
             text.Append('\n');
             if (window["focused"] is JsonObject focused)
             {
-                text.Append("Foco: ").Append(Control(focused)).Append('\n');
+                text.Append("Foco: ").Append(Control(focused));
+                // Práctica V5E023: «agrega al final» typed at the start of the text, with nothing read saying where the
+                // caret was. Where the reader found it, beside the focus; nothing when it did not read it.
+                if (Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.CaretPlace)
+                    && CaretNote((string?)focused["caret"]) is { } caret)
+                {
+                    text.Append(' ').Append(caret);
+                }
+
+                text.Append('\n');
             }
         }
 
@@ -353,6 +362,17 @@ internal static class ScreenViewProjection
 
         return field;
     }
+
+    // Where the reader (DesktopUiaWorker.ps1, Get-CaretPlace) found the caret of a focused edit or document with text,
+    // its TextPattern selection against the whole text; null for anything else, the reader having said nothing.
+    private static string? CaretNote(string? caret) => caret switch
+    {
+        "start" => "(cursor al principio del texto: lo que se escriba va antes de lo que ya tiene)",
+        "end" => "(cursor al final del texto: lo que se escriba va después de lo que ya tiene)",
+        "middle" => "(cursor en medio del texto: lo que se escriba va ahí, ni al principio ni al final)",
+        "selection" => "(hay texto seleccionado: lo que se escriba lo reemplaza)",
+        _ => null,
+    };
 
     // A control's name as a label: its access key's «&», a closing «:» and the case left out.
     private static string Label(string? name) =>

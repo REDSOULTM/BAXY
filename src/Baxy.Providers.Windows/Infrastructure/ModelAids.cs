@@ -195,6 +195,16 @@ public static class ModelAids
     /// </summary>
     public const string SaveDialogNext = "save_dialog_next";
 
+    /// <summary>
+    /// Práctica V5E023 («en el Notepad que tengo abierto, agrega al final …»: the model typed with the caret at the start
+    /// of the text, «nos vemos el lunesHola equipo…», and said «agregué al final»; nothing it read said where the caret
+    /// was): a look whose focus is an edit or document with text says where its caret is, as UI Automation's TextPattern
+    /// reads it against the whole text (start, end, middle, or a selection), and nothing when it cannot be read
+    /// (ScreenViewProjection.CaretNote); a text typed into an edit control and read back there says where it landed in the
+    /// text the control already had (WindowsTextDelivery.Landed).
+    /// </summary>
+    public const string CaretPlace = "caret_place";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)

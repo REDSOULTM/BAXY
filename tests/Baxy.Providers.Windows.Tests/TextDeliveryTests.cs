@@ -84,6 +84,76 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // Práctica V5E023 («agrega al final»: «nos vemos el lunesHola equipo…», and «agregué al final» said): the receipt says
+    // where the text read back landed in what the field held, by the caret the control had; with the aid off, nothing.
+    [TestCase(0, "Hola equipo.", "nos vemos el lunesHola equipo.",
+        "the text went in at the start of the text the field already had, before it")]
+    [TestCase(12, "Hola equipo.", "Hola equipo.nos vemos el lunes",
+        "the text went in at the end of the text the field already had, after it")]
+    [TestCase(4, "Hola equipo.", "Holanos vemos el lunes equipo.",
+        "the text went in inside the text the field already had, neither at its start nor at its end")]
+    public async Task ATextReadBackInAFieldSaysWhereItLandedInWhatTheFieldHad(
+        int caret, string held, string written, string landed)
+    {
+        foreach (string aids in new[] { Baxy.Providers.Windows.Infrastructure.ModelAids.CaretPlace, "none" })
+        {
+            using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+            FakeFieldMessages messages = Notepad(held);
+            messages.Selected[Edit] = (caret, caret);
+
+            ExternalCapabilityReceipt receipt = await Adapter(new FakeDesktopKeyboard(), messages).InvokeAsync(
+                "input.text.type", Json("""{"text":"nos vemos el lunes","window":4660}"""), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+                Assert.That(messages.Content[Edit], Is.EqualTo(written));
+                Assert.That(receipt.Result?.TryGetProperty("landed", out JsonElement said) == true ? said.GetString() : null,
+                    Is.EqualTo(aids == "none" ? null : landed), aids);
+            });
+        }
+    }
+
+    // The same fact for a text typed by the keyboard into the focused edit control of the window in front, read back.
+    [Test]
+    public async Task ATextTypedAndReadBackInTheFocusedEditControlSaysWhereItLanded()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(
+            Baxy.Providers.Windows.Infrastructure.ModelAids.CaretPlace);
+        FakeFieldMessages notepad = Notepad("lista: ");
+        notepad.Selected[Edit] = (0, 0);
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "Sin título: Bloc de notas"),
+            FrontProcess = "Notepad",
+            EachCharacter = typed => notepad.Content[Edit] = notepad.Content[Edit].Insert(typed, "hola"[typed].ToString()),
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, notepad).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(notepad.Content[Edit], Is.EqualTo("holalista: "));
+            Assert.That(receipt.Result?.GetProperty("landed").GetString(),
+                Is.EqualTo("the text went in at the start of the text the field already had, before it"));
+        });
+    }
+
+    // Only what the two reads show: no text before, a selection replaced, a read missing, a text that is not there, or
+    // one the reads place in more than one way (typing «a» into «aaa»), and nothing is said.
+    [TestCase("ab", "x", "xab", "the text went in at the start of the text the field already had, before it")]
+    [TestCase("ab", "c", "abc", "the text went in at the end of the text the field already had, after it")]
+    [TestCase("ab", "b", "abb", null)]
+    [TestCase("", "hola", "hola", null)]
+    [TestCase("chau", "hola", "hola", null)]
+    [TestCase(null, "hola", "holachau", null)]
+    [TestCase("aaa", "a", "aaaa", null)]
+    [TestCase("ab", "x", "ayb", null)]
+    public void WhereATextLandedIsSaidOnlyWhenTheReadsPlaceItOneWay(string? was, string text, string now, string? landed) =>
+        Assert.That(WindowsTextDelivery.Landed(was, now, text), Is.EqualTo(landed));
+
     [Test]
     public async Task AnEditControlThatIgnoresTheReplacementTakesQueuedCharacters()
     {
@@ -1078,6 +1148,31 @@ public sealed class TextDeliveryTests
             Assert.That(body, Does.Contain("TextUnit]::Paragraph").And.Contain("TextUnit]::Line"));
             Assert.That(body, Does.Not.Contain("DocumentRange").And.Not.Contain("GetText(-1)"));
             Assert.That(body, Does.Contain("bounded=$bounded"));
+        });
+    }
+
+    // Práctica V5E023: the view's caret of its focused text (Get-CaretPlace) only compares the selection with the whole
+    // text, reads at most a character before it and three after, is asked only of a focused edit or document with a
+    // value read (never a password's), and is said only when read.
+    [Test]
+    public void TheViewsCaretIsReadByComparingItsSelectionWithTheWholeTextOnly()
+    {
+        string path = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
+        Assume.That(File.Exists(path), "the worker script is copied next to the tests");
+        string script = File.ReadAllText(path, System.Text.Encoding.UTF8);
+        int at = script.IndexOf("function Get-CaretPlace(", StringComparison.Ordinal);
+        Assert.That(at, Is.GreaterThanOrEqualTo(0));
+        string body = script[at..script.IndexOf("\nfunction ", at + 1, StringComparison.Ordinal)];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(body, Does.Contain("GetSelection()").And.Contain("CompareEndpoints").And.Contain("MoveEndpointByRange"));
+            Assert.That(body, Does.Contain("GetText(1)").And.Contain("GetText(3)").And.Not.Contain("GetText(-1)"));
+            Assert.That(body, Does.Not.Contain("SetFocus").And.Not.Contain(".Select(").And.Not.Contain("ScrollIntoView"));
+            Assert.That(script, Does.Contain(
+                "if(($focused.kind -eq 'Edit' -or $focused.kind -eq 'Document') -and -not [string]::IsNullOrEmpty([string]$focused.value)){"));
+            Assert.That(script, Does.Contain(
+                "if($caret.Length -gt 0){ $focusedOut | Add-Member -NotePropertyName caret -NotePropertyValue $caret }"));
         });
     }
 

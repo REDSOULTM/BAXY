@@ -842,7 +842,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // Rule 3: Windows accepting every event proves the keys went in, not that the text reached the field meant. A text
         // with no window named is verified by its read-back alone.
         AwaitTaken((int)(accepted / 2));
-        bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text);
+        string? landed = null;
+        bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text, out landed);
         // FT/proveedores goal (E2): the paragraph at the caret read again by UI Automation; a read that fails leaves
         // the text not read back, as before.
         (bool caretReadBack, bool caretBounded) = caretBefore is { } caret
@@ -900,6 +901,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 writer.WriteNull("error");
             else
                 writer.WriteString("error", unread);
+            // Práctica V5E023: where the text read back landed in what the edit control held.
+            if (landed is not null)
+                writer.WriteString("landed", landed);
             if (typing && (window == 0 || openedApplication)
                 && Infrastructure.ModelAids.On(Infrastructure.ModelAids.TypedTargetNext))
                 writer.WriteString("next", TypedInto(before.Title, sentToProcess, window == 0, readBack));
@@ -1395,6 +1399,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 _ => "win32_edit_message_reread",
             });
             writer.WriteNull("error");
+            // Práctica V5E023 («agregué al final» said of a text that went in before the old one): where the text read
+            // back landed in what the field held.
+            if (delivery.Landed is { } landed)
+                writer.WriteString("landed", landed);
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, true);
