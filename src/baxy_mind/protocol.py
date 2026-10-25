@@ -27,8 +27,11 @@ class ProtocolViolation(Exception):
 
 
 def _decode_message(line: bytes) -> dict[str, Any]:
-    if len(line) > MAX_LINE_BYTES:
-        raise ProtocolViolation("line_too_large", f"{len(line)} bytes")
+    # The cap is the message's, without its line end: the App's (MindSidecarClient.MaximumLineBytes) and write_message's.
+    body = line[:-1] if line.endswith(b"\n") else line
+    body = body[:-1] if body.endswith(b"\r") else body
+    if len(body) > MAX_LINE_BYTES:
+        raise ProtocolViolation("line_too_large", f"{len(body)} bytes")
     try:
         text = line.decode("utf-8", errors="strict")
     except UnicodeDecodeError as error:
@@ -49,9 +52,9 @@ def read_message() -> dict[str, Any] | None:
     """Lee una solicitud; None en EOF. Fail-closed ante línea inválida."""
 
     stream = sys.stdin.buffer
-    # Request one byte beyond the contract so an unterminated or hostile line
+    # Request the contract, its line end («\r\n» at most) and nothing more, so an unterminated or hostile line
     # is rejected before the stream allocates arbitrary input.
-    line = stream.readline(MAX_LINE_BYTES + 1)
+    line = stream.readline(MAX_LINE_BYTES + 2)
     if not line:
         return None
     return _decode_message(line)
