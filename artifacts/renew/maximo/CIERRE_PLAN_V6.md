@@ -78,6 +78,31 @@ ventana invisible) se repite antes de mirar sus aciertos. Nada más se excluye.
    silencio y restaurando el estado.
 5. `HOLDOUT_V6.md`, sección «fase 3» al inicio de `INFORME_MAXIMO.md`, `BRIEF_FT_C3.md` y mensaje al dueño.
 
-## Al congelar
+## Al congelar (2026-10-25 ~04:30), antes de extraer los 7z y sin haber visto ningún caso
 
-(pendiente)
+- **HEAD final (`cien`)**: `int11f` **f1d041344** = renew-cien + w10-bucle (H4), w10-duda (H1), w10-numeros, w10-web (H5),
+  w10-sinrespuesta (H6), w10-archivos, w10-teclado (sin typed_in_window), w10-alarma, w10-hora, w10-lectura, w10-motor
+  (H9), w10-guardado + nb-w10-mover (con cuenta), nb-w10-aviso (H7), nb-w10-clic, nb-w10-calc, nb-w10-dictado,
+  nb-w10-negra (H9), nb-w10-guardar. Retiradas con su cifra: w10-desc, snippets_only, typed_in_window.
+- **Elegido por la regla fijada antes de ver cifras** (int11f con w10-lectura frente a int11g sin ella, NB): falsedades de
+  práctica claras a ciegas ×3 int11f 1 = int11g 1 (base 2); e2e de práctica ×2 int11f 29,5 frente a 28,5 (Δ +1,0, IC95
+  [0; +2,5]); H2 ×2 11,5 frente a 11,0.
+- **Suites sobre f1d041344**: PC Kernel 753, Contracts 74, Setup 477, App 208, Providers 3113, pytest 664 (+ test_voice_vad
+  4/4 con el Python 3.10 de la voz; en 3.12 falta silero_vad, también en la base); NB Providers 3113, pytest 666 (1 omitida:
+  test_bench_isolation, necesita la librería del banco en su unidad).
+- **Recursos** (NB, int11f, oído real k4 + Parakeet Ultra cargado, `vram_attribution` ok): con voz VRAM 3 989 MiB y RAM del
+  producto 3 672 MiB; sin oído 3 980 / 2 712 MiB. Sesión larga 22/22, pico de llama 2 087 MiB, relectura total −5,7 s frente
+  a int10f.
+- **Catálogos**: `catalog-base.json` 4441e3b8…5495; `catalog-v5final.json` b33d2b3a…41b1; `catalog-v6final.json`
+  bc609c00…8884 (180 capacidades de f1d041344; 583 apps, las de v5final; cambian sólo los argumentos de
+  explorer.count, sandbox.move.named y las teclas ctrl_end/ctrl_home, sin operaciones nuevas ni retiradas, así que
+  `catalog_equivalence.json` no cambia).
+- **Juez**: los `scripts/renew` de f1d041344 son los del arnés congelado con que se validó el sello (4b956a806) salvo
+  `maximo/chequeo_offline.py`, que no puntúa; decisión con `--src` de cada configuración; e2e y falsedades con el arnés de
+  f1d041344 copiado a los worktrees de `inicio` y `final_v5`.
+- **Reparto, por la alternativa pre-registrada**: el PC tiene ventanas del dueño (Bloc de notas con texto sin guardar,
+  Spotify; sin uso desde hace 5 h): no se cierran. Decisión 3 semillas en el PC; e2e y falsedades semillas 0 y 1 en el NB,
+  intercaladas `inicio` → `final_v5` → `cien` por semilla; latencia sólo dentro del NB, con nvidia-smi a 1 Hz.
+- **Límites conocidos antes de abrir** (práctica): E027 y F009 (el modelo toma «BAXY-bench» por su carpeta propia; margen
+  frágil del prefijo, ablación N=40), E017 (no escribe el nombre en «Guardar como», ya sin falsedad), «sí no», «¿ya lo
+  hiciste?» con historial sin llamadas (efecto del banco).
