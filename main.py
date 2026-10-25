@@ -76,7 +76,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="arranca el runtime sin ventana y conduce la misma entrada de producto",
     )
-    parser.add_argument("--profile", help="perfil persistente de datos del conductor")
+    parser.add_argument("--profile", help="perfil persistente de datos (de la ventana o del conductor)")
     parser.add_argument("--capture", help="directorio de captura JSONL del conductor")
     parser.add_argument("--turns-file", help="JSONL de comandos públicos (text/session.new/upload/cancel)")
     parser.add_argument("--text", help="un turno de texto natural")
@@ -306,6 +306,7 @@ def launch(
     without_mind: bool,
     ui_probe: str | None = None,
     ui_capture: str | None = None,
+    profile: str | None = None,
 ) -> None:
     environment = environment_for_dotnet(dotnet_executable())
     command = [
@@ -324,6 +325,10 @@ def launch(
         command.extend(["-UiProbe", ui_probe])
     if ui_capture:
         command.extend(["-UiCapture", ui_capture])
+    # Calidad PC 2026-10-25: --profile was taken and dropped unless --conductor, and the window opened on the owner's
+    # development profile (dev-mente-v2).
+    if profile:
+        command.extend(["-Profile", profile])
     run_checked(command, environment=environment)
 
 
@@ -368,6 +373,7 @@ def main() -> int:
         without_mind=args.sin_mente,
         ui_probe=args.ui_probe,
         ui_capture=args.ui_capture,
+        profile=args.profile,
     )
     return 0
 
