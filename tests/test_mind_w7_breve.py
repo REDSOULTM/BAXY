@@ -42,7 +42,7 @@ def test_a_wording_is_said_in_full_once_and_every_call_keeps_its_entry(tmp_path:
     line = _turn(tmp_path, [("web_fetch", READ), ("web_fetch", READ), ("input_text_type", SENT),
                             ("input_text_type", SENT), ("task_complete", SAME), ("task_complete", SAME),
                             ("app_close", FAILED)])
-    assert line == ("web_fetch → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba; "
+    assert line == ("web_fetch → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; "
                     "web_fetch → lectura: sólo miró; "
                     "input_text_type → enviado sin verificar: no se volvió a mirar si hizo efecto; "
                     "input_text_type → enviado sin verificar; "
@@ -54,7 +54,7 @@ def test_a_wording_is_said_in_full_once_and_every_call_keeps_its_entry(tmp_path:
 def test_without_the_aid_the_line_is_the_one_of_before(tmp_path: pathlib.Path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_AYUDAS", "result_dedup,short_refs")
     line = _turn(tmp_path, [("web_fetch", READ), ("web_fetch", READ)])
-    full = "web_fetch → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba"
+    full = "web_fetch → lectura: sólo miró, sin abrir, cerrar ni cambiar nada"
     assert line == f"{full}; {full}"
 
 
@@ -71,10 +71,10 @@ def test_a_later_part_read_keeps_how_much_it_read(tmp_path: pathlib.Path, monkey
 def test_a_lone_call_and_different_outcomes_are_said_as_before(tmp_path: pathlib.Path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_AYUDAS", "all")
     assert _turn(tmp_path, [("web_fetch", READ)]) == (
-        "web_fetch → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba")
+        "web_fetch → lectura: sólo miró, sin abrir, cerrar ni cambiar nada")
     assert _turn(tmp_path, [("input_text_type", SENT), ("web_fetch", READ), ("app_close", FAILED)]) == (
         "input_text_type → enviado sin verificar: no se volvió a mirar si hizo efecto; "
-        "web_fetch → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; lo que vio está arriba; "
+        "web_fetch → lectura: sólo miró, sin abrir, cerrar ni cambiar nada; "
         "app_close → falló (window_not_found)")
 
 
