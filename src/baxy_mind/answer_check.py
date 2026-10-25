@@ -880,10 +880,12 @@ def _names_shown(receipts: list[Receipt]) -> list[tuple[str, str]]:
 
 
 # ---- names found ------------------------------------------------------------------------------------------------------
-# «No encontré X», «no pude encontrar X», and the file named right after it in its clause (not «otro X»: another one).
+# «No encontré X», «no pude encontrar X», and the file named right after it in its clause as what was not found: only an
+# article or the word for a file between them (not «otro X», another one; nor «errores en X», where X is the place).
 _NOT_FOUND = re.compile(r"\bno (?:(?:lo|la|los|las|pude|logre|se) )*(?:encontre|halle|localice|ubique|encontro|"
                         r"(?:pude|logre) (?:encontrar|hallar|localizar|ubicar)(?:lo|la)?)\b")
-_ANOTHER = re.compile(r"\b(?:otr[oa]s?|mas|ademas)\b")
+_FOUND_OBJECT = re.compile(r"(?:[\s«\"“']|\b(?:el|la|los|las|un|una|tu|su|tus|sus|ningun|ninguna|archivo|fichero|"
+                           r"documento|llamad[oa])\b)*")
 
 
 def _found_files(receipts: list[Receipt]) -> list[tuple[str, str, Receipt]]:
@@ -919,7 +921,7 @@ def _not_found_names(answer: str, folded: str, raw_folded: str, statements: list
         for hit in _NOT_FOUND.finditer(folded, start, end):
             stop = next((m.start() for m in _CLAUSE_END.finditer(folded, hit.end(), end)), end)
             name = next(_FILE_NAME.finditer(raw_folded, hit.end(), stop), None)
-            if name is None or _ANOTHER.search(folded, hit.end(), name.start()):
+            if name is None or not _FOUND_OBJECT.fullmatch(folded, hit.end(), name.start()):
                 continue
             # With its accents: a name alike that a search offers (known_file_not_found) differs only in them.
             said = answer[name.start():name.end()].replace("/", "\\").lower()

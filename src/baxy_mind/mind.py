@@ -844,8 +844,8 @@ DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro
 # Prueba en vivo (Paint cerrado, then «¿ya lo cerraste?»): layer 0 held app_close again with the same arguments, and the
 # model, told to ask, asked «¿Quieres que lo cierre o que lo abra?». With BAXY_S1_DOUBT_DONE=1, a held call that repeats
 # one of the session that completed (same tool and arguments, and it did not only look) is told with how that one ended;
-# what the model says with it is its own. It does not start as DOUBT_NOTE: it asks nothing, so the person's next words
-# are not an answer to a doubt question.
+# what the model says with it is its own. It does not start as DOUBT_NOTE (the trace tells them apart), but the person's
+# next words answer it as they answer DOUBT_NOTE (DOUBT_DONE): it asks whether to repeat a call asked for again.
 DOUBT_DONE_NOTE = ("[Nota interna, no la escribió la persona: ibas a usar {call} sin estar seguro de qué quiere, y en esta "
                    "conversación ya se llamó {call} con los mismos argumentos: {outcome}. No la hagas de nuevo todavía: "
                    "contesta a la persona según lo que ya pasó, y si te pidió hacerlo otra vez, pregúntale en una frase "
@@ -1441,7 +1441,10 @@ class Mind:
                 turn.update(asked=asked, after_asked=after, text=said, **was)
                 raise
         self._close_open_calls()
-        answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
+        # Revisión de nb-w11-mente: DOUBT_DONE_NOTE too, which asks whether to repeat a call asked for again; its answer
+        # was held again by the same note at every unsure «sí».
+        answering = any(str(m.get("content") or "").startswith((DOUBT_ASKED, DOUBT_DONE))
+                        for m in self.conversation[-2:])
         clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
         self.conversation.append(clock)
         request = {"role": "user", "content": text}
