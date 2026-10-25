@@ -292,7 +292,9 @@ internal sealed class SaidFolders
             || Text(arguments["relativePath"]) is not { } relative || Parts(relative) is not { Length: > 0 } parts)
             return null;
         string leaf = parts[^1];
+        // A spelling no folder name can hold («informe: tercer trimestre») is not offered: the call would fail.
         if (SaidSpelling(Spoken(leaf)) is not { } theirs || string.Equals(theirs, leaf, StringComparison.OrdinalIgnoreCase)
+            || theirs.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
             || !_told.Add("name\n" + arguments.ToJsonString()))
             return null;
         var respelled = (JsonObject)arguments.DeepClone();

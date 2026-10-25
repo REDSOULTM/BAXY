@@ -278,6 +278,64 @@ public sealed class ComputerUseAfterViewTests
         });
     }
 
+    // Revisión de nb-w11-revision: a click that brings up a window of another process (a button that opens the browser)
+    // leaves its own window inactive: its image changes (the title bar, the focus ring) and the view after it differs
+    // only in the focus the window lost. That is the click's effect, never «unchanged» (the model would press it again:
+    // a second browser window, a second send).
+    [Test]
+    public void AClickAfterWhichAnotherProcesssWindowCameIsNotFocusOnlyUnchanged()
+    {
+        WithWindow(window =>
+        {
+            const string PendingButton =
+                "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_pending\"," +
+                "\"pending\":true,\"name\":\"Abrir en el navegador\",\"kind\":\"Button\"," +
+                "\"controlIdentity\":\"1.46\",\"absentOrDisabled\":false,\"selected\":false,\"toggled\":false}";
+            const string UnchangedButton =
+                "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_unchanged\"," +
+                "\"name\":\"Abrir en el navegador\",\"controlIdentity\":\"1.46\",\"absentOrDisabled\":false}";
+            const string ViewAfterIt =
+                "{\"ok\":true,\"error\":\"\",\"window\":\"Ajustes\",\"controls\":[" +
+                "{\"kind\":\"Edit\",\"name\":\"Buscar\",\"id\":\"1.38\",\"state\":\"\",\"value\":null}," +
+                "{\"kind\":\"Button\",\"name\":\"Abrir en el navegador\",\"id\":\"1.46\",\"state\":\"\",\"value\":null}]," +
+                "\"controlCount\":2,\"partial\":false}";
+            var worker = new CommandWorker(command => command switch
+            {
+                "click" => PendingButton,
+                "postread" => UnchangedButton,
+                "view" => ViewAfterIt,
+                _ => null,
+            });
+            int captures = 0;
+            ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint hwnd, bool? selfDrawn, CancellationToken token) =>
+                ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
+                    new VisibleControlSurface.CapturedWindow(hwnd, [], 0, 0, 10, 10, captures++ < 3 ? "before" : "after"));
+            const int Clicked = 4100, Browser = 5200;
+            const nint BrowserWindow = 9100;
+            VisibleControlSurface.RootSnapshot Snapshot(nint front, params (nint Window, int Process)[] windows) =>
+                new([.. windows.Select(item => new VisibleControlSurface.RootWindow(item.Window, item.Process))], front,
+                    new HashSet<int> { Clicked }, 10, windows.ToDictionary(item => item.Process, _ => 4));
+            int looked = 0;
+            var adapter = new WindowsVisibleControlAdapter(worker, null, null, elevated: _ => false, capture: Capture)
+            {
+                ReadsAfterAct = true,
+                PopupsOf = _ => [],
+                RootWindows = _ => looked++ == 0
+                    ? Snapshot(window, (window, Clicked))
+                    : Snapshot(BrowserWindow, (BrowserWindow, Browser), (window, Clicked)),
+                DescribeHanded = _ => null,
+            };
+            RememberView(adapter, window,
+                new(0, "1.38", "Edit", "Buscar", "focused"),
+                new(1, "1.46", "Button", "Abrir en el navegador", ""));
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Abrir en el navegador", "1.46");
+
+            Assert.That(receipt.ErrorCode, Is.Not.EqualTo("visible_button_postread_unchanged"),
+                "a window of another process came after the click: its effect, not «unchanged»");
+        });
+    }
+
     // input.text.type and input.key.press: a completed act on a named window carries the view after it; one that did
     // not complete, or with no window named, reads nothing.
     [Test]
