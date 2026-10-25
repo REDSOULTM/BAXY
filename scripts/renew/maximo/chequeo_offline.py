@@ -86,8 +86,12 @@ def _conversations():
             ids = [json.loads(line).get("id") for line in open(f"{d}/results.jsonl", encoding="utf-8")
                    if line.startswith('{"id"')]
         sessions, turn = [], None
-        for line in open(f"{d}/events.jsonl", encoding="utf-8"):
-            e = json.loads(line)
+        for line in open(f"{d}/events.jsonl", encoding="utf-8", errors="replace"):
+            # PC-Q (2026-10-25): a run killed while the conductor wrote ends in half a line; it stopped the whole check.
+            try:
+                e = json.loads(line)
+            except json.JSONDecodeError:
+                continue
             if e["type"] == "command.done" and e.get("session") == "new":
                 sessions.append([])
                 turn = None
