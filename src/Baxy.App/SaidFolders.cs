@@ -36,6 +36,7 @@ namespace Baxy.App;
 internal sealed class SaidFolders
 {
     internal const string LeftOut = "said_folder_left_out";
+    internal const string NameChanged = "said_name_changed";
 
     /// <summary>JSON as the model reads it: accents and «» as they are, never as \u escapes (every result the App writes
     /// itself, NativeTurnLoop).</summary>
@@ -53,6 +54,9 @@ internal sealed class SaidFolders
 
     private static readonly Regex FullPath = new(
         @"(?<![\p{L}\p{Nd}])[A-Za-z]:[\\/][^\s""'«»<>|?*,;]*", RegexOptions.CultureInvariant);
+
+    // A path separator said as a word («baxy bench barra facturas», dictated).
+    private static readonly Regex SaidSeparator = new(@"^ (?:barra|slash|diagonal) ", RegexOptions.CultureInvariant);
 
     private static readonly Regex RelativePath = new(
         @"[^\s""'«»<>|?*,;:\\/]+(?:[\\/][^\s""'«»<>|?*,;:\\/]+)+", RegexOptions.CultureInvariant);
@@ -187,6 +191,11 @@ internal sealed class SaidFolders
             }
         }
 
+        // A separator said as a word between a folder named and one inside it leads into that one (holdout v5 V5E044,
+        // dictado: «cuantos pdf hay en baxy bench barra facturas» counted in BAXY-bench).
+        for (int index = 0; index < found.Count; index++)
+            found[index] = Deeper(found[index], spoken);
+
         // A folder that holds another one named is the way to it, unless that one is only one of several of its name
         // («de proyecto al escritorio» with a proyecto on the Desktop and another in the home folder).
         Place[] distinct = [.. found.GroupBy(place => place.Path, StringComparer.OrdinalIgnoreCase)
@@ -198,7 +207,11 @@ internal sealed class SaidFolders
     /// <summary>What happens to this call in this turn; null: it runs as it is (not a file call, or inside a folder named).</summary>
     internal Ruling? Rule(string operation, ProductOperationDescriptor descriptor, JsonObject arguments)
     {
-        if (_words.Length == 0 || !ModelAids.On(ModelAids.SaidFolder) || ReachOf(operation, descriptor, arguments) is not { } reach)
+        if (_words.Length == 0)
+            return null;
+        if (NameAsSaid(operation, arguments) is { } respelled)
+            return respelled;
+        if (!ModelAids.On(ModelAids.SaidFolder) || ReachOf(operation, descriptor, arguments) is not { } reach)
             return null;
         IReadOnlyList<Place> places = Places();
         if (places.Count == 0
@@ -267,6 +280,52 @@ internal sealed class SaidFolders
             ["next"] = next,
         };
         return new(arguments, null, refusal);
+    }
+
+    // Holdout v5 V5E043: a folder made with a name the person said, spelled otherwise (viaje_chiloe_2027 for «viaje
+    // chiloé 2027»: accents, separators), is refused once with the call that writes it as they said it; the same call
+    // again runs as written. Only a name whose folded words are exactly theirs and that differs beyond case. Aid
+    // «said_name».
+    private Ruling? NameAsSaid(string operation, JsonObject arguments)
+    {
+        if (operation != "filesystem.create.directory" || !ModelAids.On(ModelAids.SaidName)
+            || Text(arguments["relativePath"]) is not { } relative || Parts(relative) is not { Length: > 0 } parts)
+            return null;
+        string leaf = parts[^1];
+        if (SaidSpelling(Spoken(leaf)) is not { } theirs || string.Equals(theirs, leaf, StringComparison.OrdinalIgnoreCase)
+            || !_told.Add("name\n" + arguments.ToJsonString()))
+            return null;
+        var respelled = (JsonObject)arguments.DeepClone();
+        respelled["relativePath"] = string.Join('/', [.. parts[..^1], theirs]);
+        return new(arguments, null, new JsonObject
+        {
+            ["status"] = "rejected",
+            ["error"] = NameChanged,
+            ["next"] = $"nothing ran: the person said the name «{theirs}» and this call writes «{leaf}»; call "
+                + $"{operation.Replace('.', '_')} again with {Changes(arguments, respelled)}, as they said it; if they asked "
+                + "for this spelling, call it again exactly as before",
+        });
+    }
+
+    // The person's own spelling of words that fold to the ones given: the run of their words (without the punctuation at
+    // its ends) whose folded form is exactly that.
+    private string? SaidSpelling(string folded)
+    {
+        if (folded.Trim().Length == 0)
+            return null;
+        string[] words = _words.Split([' ', '\n', '\t'], StringSplitOptions.RemoveEmptyEntries);
+        int most = folded.Trim().Split(' ').Length;
+        for (int count = 1; count <= most; count++)
+        {
+            for (int start = 0; start + count <= words.Length; start++)
+            {
+                string run = string.Join(' ', words[start..(start + count)]).Trim('.', ',', ';', ':', '«', '»', '"', '(', ')', '¿', '?', '¡', '!');
+                if (Spoken(run) == folded)
+                    return run;
+            }
+        }
+
+        return null;
     }
 
     // Where a call acts: the items it names (a file or folder, or the folders a bare name is looked for under), or BAXY's
@@ -488,6 +547,31 @@ internal sealed class SaidFolders
         }
 
         return best;
+    }
+
+    // The folder a separator said as a word leads into from a place («cajón barra facturas»: facturas inside cajón), as
+    // far as the words keep naming a folder inside the last one.
+    private static Place Deeper(Place place, string spoken)
+    {
+        string said = Spoken(place.Said);
+        int at = spoken.IndexOf(said, StringComparison.Ordinal);
+        if (said.Trim().Length == 0 || at < 0)
+            return place;
+        string after = spoken[(at + said.Length - 1)..];
+        string folder = place.Path;
+        while (SaidSeparator.Match(after) is { Success: true } separator)
+        {
+            string rest = after[(separator.Length - 1)..];
+            string? inner = TopFolders(folder).Where(child => rest.StartsWith(Spoken(Path.GetFileName(child)), StringComparison.Ordinal))
+                .OrderByDescending(child => Path.GetFileName(child).Length).FirstOrDefault();
+            if (inner is null)
+                break;
+            after = rest[(Spoken(Path.GetFileName(inner)).Length - 1)..];
+            folder = inner;
+        }
+
+        return Same(folder, place.Path) ? place
+            : place with { Path = folder, Said = place.Said + "/" + Path.GetRelativePath(place.Path, folder).Replace('\\', '/') };
     }
 
     // A relative path the words said, with the words after it while they keep naming something that exists under one of

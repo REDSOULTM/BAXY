@@ -473,14 +473,14 @@ public sealed class SaidFoldersTests
     {
         SaidFolders said = Heard("en documentos crea la carpeta viaje chiloe 2027 y dentro un archivo itinerario.txt");
         Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
-            new JsonObject { ["folder"] = "documents", ["relativePath"] = "viaje_chiloe_2027" }), Is.Null);
-        Directory.CreateDirectory(Path.Combine(_home, "Documents", "viaje_chiloe_2027"));
+            new JsonObject { ["folder"] = "documents", ["relativePath"] = "viaje chiloe 2027" }), Is.Null);
+        Directory.CreateDirectory(Path.Combine(_home, "Documents", "viaje chiloe 2027"));
 
         SaidFolders.Ruling? write = said.Rule("file.write", Descriptor("file.write"),
             new JsonObject { ["folder"] = "documents", ["relativePath"] = "itinerario.txt", ["text"] = "día 1" });
 
         Assert.That((string?)write?.Refusal?["next"],
-            Does.Contain("call file_write again with relativePath \"viaje_chiloe_2027/itinerario.txt\""));
+            Does.Contain("call file_write again with relativePath \"viaje chiloe 2027/itinerario.txt\""));
     }
 
     // Holdout v5 V5E034/V5E044: a count in a folder of theirs was refused with no call that could reach it.
@@ -579,6 +579,57 @@ public sealed class SaidFoldersTests
                 ["subdirectory"] = "contabilidad",
             }), Is.Null);
         });
+    }
+
+    // Holdout v5 V5E044 (dictado, «cuantos pdf hay en baxy bench barra facturas»): the separator said as a word left
+    // the place at the outer folder, and the count looked only at its top level.
+    [TestCase("barra")]
+    [TestCase("slash")]
+    [TestCase("diagonal")]
+    public void ASeparatorSaidAsAWordLeadsIntoTheSubfolderItNames(string separator)
+    {
+        string bills = Path.Combine(_home, "cajon", "facturas");
+        Directory.CreateDirectory(bills);
+        SaidFolders said = Heard($"cuantos pdf hay en cajon {separator} facturas");
+
+        Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { bills }));
+    }
+
+    // Holdout v5 V5E043: the person said «viaje chiloé 2027» and the folder was made as viaje_chiloe_2027; a name made
+    // differs from theirs only in accents, separators or case, and it is offered as they said it.
+    [Test]
+    public void AFolderMadeWithTheNameSaidSpelledOtherwiseIsRefusedWithTheirSpelling()
+    {
+        SaidFolders said = Heard("en documentos crea una carpeta que se llame viaje chiloé 2027 y adentro un archivo");
+        ProductOperationDescriptor create = Descriptor("filesystem.create.directory");
+        var call = new JsonObject { ["relativePath"] = "viaje_chiloe_2027", ["folder"] = "documents" };
+
+        SaidFolders.Ruling? ruling = said.Rule("filesystem.create.directory", create, call);
+        SaidFolders.Ruling? again = said.Rule("filesystem.create.directory", create, call);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)ruling?.Refusal?["error"], Is.EqualTo(SaidFolders.NameChanged));
+            Assert.That((string?)ruling?.Refusal?["next"], Does.Contain("relativePath \"viaje chiloé 2027\""));
+            Assert.That(again?.Refusal, Is.Null);
+            Assert.That(said.Rule("filesystem.create.directory", create,
+                new JsonObject { ["relativePath"] = "Viaje Chiloé 2027", ["folder"] = "documents" }), Is.Null);
+            Assert.That(said.Rule("filesystem.create.directory", create,
+                new JsonObject { ["relativePath"] = "fotos", ["folder"] = "documents" }), Is.Null);
+            // Only a name that folds to the same words: «viaje chiloe 2026» is another name, not theirs respelled.
+            Assert.That(said.Rule("filesystem.create.directory", create,
+                new JsonObject { ["relativePath"] = "viaje chiloe 2026", ["folder"] = "documents" }), Is.Null);
+        });
+    }
+
+    // Counter-case: the person wrote the underscore themselves, so their spelling is the call's.
+    [Test]
+    public void AFolderMadeWithTheNameAsThePersonWroteItRuns()
+    {
+        SaidFolders said = Heard("crea en documentos la carpeta mis_notas_2027");
+
+        Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
+            new JsonObject { ["relativePath"] = "mis_notas_2027", ["folder"] = "documents" }), Is.Null);
     }
 
     private SaidFolders Heard(string words)
