@@ -91,7 +91,8 @@ function FaceView(props: FaceProps) {
     let earL2 = 0, lvl = 0, sparks: Spark[] = [], flashes: { x: number; y: number; t: number }[] = [], earGlow = 0, trs: Tracer[] = [], trail = 0;
     let jTurn: string | null = null, jPath: string[] = [];
     const heat = new Float32Array(BXM.N.length);
-    const onMove = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); mouse = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; lastMouseT = performance.now() / 1000; };
+    // a canvas that measures 0 × 0 (collapsed, not displayed) gives 0 / 0: a NaN in the gaze stays in it for good
+    const onMove = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); if (!r.width || !r.height) return; mouse = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; lastMouseT = performance.now() / 1000; };
     const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
     const confetti = (n: number) => {
       const cs = ['#FFB3BC', '#F5D69C', '#9DB4F5', '#FF7A9A', '#EEF2FF'];
