@@ -656,7 +656,7 @@ public static class ProductCatalog
                 ["fileName", "folder"]),
             OperationRisks.RecoverableDelete,
             "filesystem.known.trash.named.windows.absence.v1",
-            "Resuelve un archivo nombrado de forma única y lo envía a la Papelera de reciclaje de Windows, de donde la persona lo recupera, y verifica que ya no está en su carpeta; con un nombre repetido da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles."),
+            "Resuelve un archivo, o una carpeta con todo lo que tiene, nombrados de forma única y lo envía a la Papelera de reciclaje de Windows, de donde la persona lo recupera, y verifica que ya no está en su carpeta; con un nombre repetido da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles."),
         Descriptor(
             "filesystem.list",
             Schema(
