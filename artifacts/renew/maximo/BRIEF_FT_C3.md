@@ -262,7 +262,8 @@ cifras finales del holdout v6 se añaden al cerrar.
 | **T13. Aritmética del reloj de otro lugar** | V5E016: 1 de 4 aciertos (suma el desfase a la hora local y pierde el cambio de día) | `place_clock` da la hora del lugar ya calculada; el modelo no debería tener que hacer la cuenta |
 | **T14. Abrir la página cuando el fragmento no responde** | Metro (V5E008/018): con fragmentos que no traen el año, responde con un año vecino; incluso sin la cola «lo que vio está arriba» abre la página sólo 12/24 | El texto de la línea mueve la tasa pero no la lleva a 24/24; y un año dicho sin abrir suele ser memoria atribuida a una fuente |
 | **T15. Apps de nombre parecido sin lugar** | V5E011/V5D078: «configuración de pantalla de Windows» → «Configuración de Monitor en DisplayFusion» | System One decide la herramienta, no el appId; `place_owner` sólo actúa con lugar |
-| Límites conocidos que siguen | E027 (pregunta antes del borrado en 2/3), F009 (BAXY-bench al borde), «sí no», rutas dictadas | Sin cambio en esta fase |
+| **T16. Una carpeta de la persona que lleva «BAXY» en el nombre es suya** | E027 «borra viejo.txt de la carpeta BAXY-bench»: p_call 0,72 (base) / 0,60 (int11c) y negativas «es mi carpeta de trabajo privada»; con «Proyectos-bench» 0,99 en las dos (ablación offline, N=40 por brazo) | Ningún texto del prefijo lo explica: cualquier descripción lo mueve ±0,15; es del modelo |
+| Límites conocidos que siguen | F009 (BAXY-bench al borde, la misma confusión), «sí no», rutas dictadas | Sin cambio en esta fase |
 
 Lección de esta fase para los datos de c3: **cualquier palabra del prefijo es un cambio de distribución**. Lo que se
 añada a descripciones o reglas se decide junto con c3 y se mide con decision3 × 3 y e2e, nunca como retoque suelto.

@@ -3405,3 +3405,11 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
 - E017 (falla en todas las versiones): guarda en el home con otro nombre y dice «guardé lista.txt en BAXY-bench»: regla
   `saved_name` de answer_check (w10-guardado 5a9b7afb7; offline 0 marcas en 118 respuestas que afirman guardar, y E017
   sintético marcado) y la vista del diálogo «Guardar como» (nb-w10-guardar, NB). Van a int11e.
+- 01:0x **E027, ablación de p_call** (PC, modelo real, 8 relojes reales × 5 semillas, N=40 por brazo; `renew_v6\abl_e027`):
+  base 0,720 frente a int11c 0,603 (capa 0: 1/40 frente a 28/40 preguntas por duda). Ningún cambio del prefijo lo explica:
+  devolver una descripción a la base mueve p_call ±0,15 en cualquier sentido (la de la calculadora sola lo hunde a 0,447) y
+  el texto nuevo de mover sobre la base no lo baja (0,747): margen frágil. La causa es el nombre: el modelo toma
+  «BAXY-bench» por su carpeta privada (las negativas lo dicen, ya 4/40 en la base); con «Proyectos-bench», 0,99 en las dos.
+  Límite del modelo (brief, con F009); no se reescribe nada.
+- **int11e = 666b90210** = int11d + w10-guardado + nb-w10-guardar (answer_check y la vista de diálogos de guardar; el
+  prefijo de decisión no cambia). Candidato a HEAD final; suites en el PC, e2e s1 + falsedades s1 + recursos en el NB.
