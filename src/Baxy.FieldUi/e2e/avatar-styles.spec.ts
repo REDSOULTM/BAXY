@@ -41,3 +41,33 @@ test('en alto contraste la boca compuesta lleva el mismo filtro que el fotograma
   }
   await page.close();
 });
+
+test('con «reducir movimiento» se paran las animaciones sin fin de la vista y lo que indican queda a la vista', async () => {
+  const all = ['base', 'baxy', 'v4'].map((f) => readFileSync(new URL('../src/styles/' + f + '.css', import.meta.url), 'utf8')).join('\n').replace(/url\("\/bg\/[^"]*"\)/g, 'none');
+  const page = await browser.newPage();
+  await page.setContent('<style>' + all + '</style>' +
+    '<span class="bx-statel live"><i></i>Pensando</span><div class="bx-c-think"><i></i><i></i><i></i></div><span class="bx-live">texto</span>' +
+    '<div class="bx-step"><span class="txt">Abriendo…</span></div><button class="bx-mic on breath"></button><button class="bx-mic talking"></button>' +
+    '<div class="bx-wait"><span class="ar">→</span></div><div class="bx-boot"><div class="bar"><i></i></div></div><span class="spin"></span>');
+  const endless = () => page.evaluate(() => {
+    const out: string[] = [];
+    for (const el of document.body.querySelectorAll('*')) for (const ps of [null, '::before', '::after']) {
+      const cs = getComputedStyle(el, ps);
+      if (cs.animationName !== 'none' && cs.animationIterationCount === 'infinite') out.push(el.className + (ps ?? '') + ' ' + cs.animationName);
+    }
+    return out;
+  });
+  expect((await endless()).length, 'sin la preferencia siguen las del diseño').toBe(11);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(await endless(), 'con la preferencia ninguna sin fin').toEqual([]);
+  // still there: the live dot, the thinking dots, the caret, the talking ring, the spinner's arc and the boot bar
+  const shown = await page.evaluate(() => [
+    getComputedStyle(document.querySelector('.bx-statel i')!).opacity, getComputedStyle(document.querySelector('.bx-c-think i')!).opacity,
+    getComputedStyle(document.querySelector('.bx-live')!, '::after').opacity, getComputedStyle(document.querySelector('.bx-mic.talking')!, '::before').opacity,
+    getComputedStyle(document.querySelector('.spin')!).borderTopColor !== getComputedStyle(document.querySelector('.spin')!).borderBottomColor ? '1' : '0',
+    // the boot bar fills its track (its content box): in progress, not stuck at 30 %
+    String(((i: Element, bar: Element) => i.getBoundingClientRect().width >= bar.clientWidth - parseFloat(getComputedStyle(bar).paddingLeft) - parseFloat(getComputedStyle(bar).paddingRight) - 0.5)(document.querySelector('.bx-boot .bar i')!, document.querySelector('.bx-boot .bar')!) ? 1 : 0),
+  ].map(Number));
+  expect(shown.every((o) => o > 0.3), 'lo que indican sigue visible: ' + shown.join(' ')).toBe(true);
+  await page.close();
+});
