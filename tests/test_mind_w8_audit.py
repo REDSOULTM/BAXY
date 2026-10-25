@@ -255,6 +255,7 @@ def test_forgetting_everything_takes_the_trace_and_its_archive(tmp_path, monkeyp
     monkeypatch.delenv("BAXY_VISION_SLOT_DIR", raising=False)
     monkeypatch.delenv("BAXY_MIND_LLAMA_PORT", raising=False)
     monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    monkeypatch.setattr(sidecar, "declared_build", lambda path: "b11609")  # the server is a fake
     monkeypatch.setattr(sidecar, "LlmServer", Server)
     monkeypatch.setattr(sidecar, "Mind", Mind)
     monkeypatch.setattr(sidecar, "Voice", Voice)

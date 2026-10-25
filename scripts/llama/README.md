@@ -68,6 +68,15 @@ set "BAXY_MIND_LLAMA_SERVER=F:\BAXYeval\llama-patch\llama-server.exe"
 scripts\run_renew.cmd
 ```
 
+**Declarada (w11-llama, 2026-10-25).** La mente sólo arranca un llama-server declarado en
+`src/baxy_mind/data/llama_server.v1.json` (`llm_server.declared_build`): siete ficheros de la carpeta con su SHA-256
+(los tres de arriba más `llama.dll`, `mtmd.dll`, `ggml.dll` y `ggml-base.dll`; ~30 ms por arranque). Están la b11609
+(`b11609`) y ésta (`b11609-baxy-cache`, con el SHA-256 de este parche); otro binario, o una carpeta que mezcle los dos,
+no arranca y la mente sale con `baxy_mind_renew_failure: llama-server not declared …` nombrando los ficheros. Un
+cambio del parche es otro build: se compila, se mide y se declara con sus hashes en el mismo cambio
+(`tests/test_mind_llama_build.py` se pone rojo si el parche ya no es el declarado). No se comparan los backends
+(`ggml-cpu-*.dll`, `ggml-cuda.dll`) ni el runtime CUDA: son 1,2 GB y los bytes de la b11609 en las dos.
+
 La clave del prefijo guardado (`LlmServer.prefix_key`) incluye el binario: el primer arranque con el parcheado vuelve a
 leer el prefijo una vez (~18 s en GPU) y lo guarda para los siguientes.
 

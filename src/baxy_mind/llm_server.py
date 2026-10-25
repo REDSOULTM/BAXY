@@ -458,6 +458,35 @@ def _stamp(path: str) -> list[int] | None:
     return [status.st_size, status.st_mtime_ns]
 
 
+# The llama-server builds the mind may start, by the SHA-256 of their files (00_IDENTIDAD: no piece changes in silence).
+BUILDS = Path(__file__).with_name("data") / "llama_server.v1.json"
+
+
+def declared_build(server: str, builds: Path = BUILDS) -> str:
+    """The name of the declared build (data/llama_server.v1.json) that ``server`` is: each file the declaration names,
+    in the folder of the given llama-server.exe, with that build's SHA-256. w11-llama (2026-10-25): the product ran
+    whatever BAXY_MIND_LLAMA_SERVER named, unhashed; the registration's hash (MindRuntimeDiscovery) was of a server the
+    launcher overrode, and of the 10 KB launcher only, while llama.cpp's code lives in its DLLs. RuntimeError names
+    the files that match no build, or says the folder mixes builds."""
+    declaration = json.loads(builds.read_text(encoding="utf-8"))
+    path = Path(server)
+    if path.name.lower() != "llama-server.exe":
+        raise RuntimeError(f"BAXY_MIND_LLAMA_SERVER is not a llama-server.exe: {server}")
+    actual: dict[str, str | None] = {}
+    for name in declaration["files"]:
+        try:
+            actual[name] = hashlib.sha256((path.parent / name).read_bytes()).hexdigest()
+        except OSError:
+            actual[name] = None
+    for build, entry in declaration["builds"].items():
+        if entry["sha256"] == actual:
+            return build
+    unknown = [f"{name} {digest[:12] if digest else 'missing'}" for name, digest in actual.items()
+               if digest is None or all(entry["sha256"][name] != digest for entry in declaration["builds"].values())]
+    detail = ", ".join(unknown) if unknown else "its files belong to different builds"
+    raise RuntimeError(f"llama-server not declared in {builds.name}: {server} ({detail})")
+
+
 def _pinned_port() -> int | None:
     """BAXY_MIND_LLAMA_PORT when set; None when not (a free port is taken). Review 2026-10-22: a pinned port in use
     fails the start with its cause; another port taken in silence left the core's vision pointing at the pinned one."""

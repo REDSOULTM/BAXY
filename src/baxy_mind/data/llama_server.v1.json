@@ -1,0 +1,32 @@
+{
+ "schema": "baxy.llama-server.v1",
+ "source": "Los llama-server que la mente acepta arrancar (llm_server.declared_build, leído en __main__ antes de arrancar el servidor y System One): un binario que no es uno de éstos no arranca, y la mente sale con baxy_mind_renew_failure. Se comparan los ficheros de «files» de la carpeta del llama-server.exe dado, con su SHA-256: el lanzador, el servidor, la plantilla y el parser, el modelo y el muestreo, la visión y la base de ggml (~25 MB, ~25-45 ms por arranque en el notebook). No se comparan los backends que calculan (ggml-cpu-*.dll, ggml-cuda.dll) ni el runtime CUDA (1,2 GB: 1,2-2,5 s por arranque). Un build nuevo se declara aquí, en el mismo cambio que lo hace correr, con su medición (documentacion/03_COSTURAS.md, fila «Runtime de inferencia»); el que sale se borra.",
+ "files": ["llama-server.exe", "llama-server-impl.dll", "llama-common.dll", "llama.dll", "mtmd.dll", "ggml.dll", "ggml-base.dll"],
+ "builds": {
+  "b11609": {
+   "source": "llama.cpp b11609 (fcac19079), distribución oficial para Windows x64 con CUDA 12 (compilada por el CI de llama.cpp con Clang). La de run_renew.cmd: F:\\BAXYeval\\llama en el PC, D:\\BAXYeval\\llama en el notebook (copiada del PC).",
+   "sha256": {
+    "llama-server.exe": "a3e80f6200d12130a52fed1eb61dfb04d307cd27440c9f5efea7d20d49ecb9f0",
+    "llama-server-impl.dll": "b89fd583cbc04cd9d2d14a74516572edcab0948af79d2988557172c6dc4578d2",
+    "llama-common.dll": "9ccffac45285ac720d5d13dfb2227b9f3cbec808f469c3136dc1461359b11b5e",
+    "llama.dll": "58967aa7ea27ef05a135305590c36a8cbc01362a01c4af2063a57cddf7c086ec",
+    "mtmd.dll": "911bced80dd36f9d827c13aede1c1cdf2f5397ee89b1455c9801feb0fd9a9774",
+    "ggml.dll": "57e644ee4760875715e710fc3b124b926cbcfacdbe1835f4cb91230a30c7b5ba",
+    "ggml-base.dll": "1c23fd2ad42c74f89ccdd5a8d44b9ec4874d45b94c053a146d394c99ee741122"
+   }
+  },
+  "b11609-baxy-cache": {
+   "source": "b11609 con scripts/llama/cache_tools_prefix.patch, compilada como dice scripts/llama/README.md (MSVC 19.44, sin CUDA: sólo cambian llama-server.exe, llama-server-impl.dll y llama-common.dll; el resto son los bytes de b11609). Opcional: se elige definiendo BAXY_MIND_LLAMA_SERVER=...\\BAXYeval\\llama-patch\\llama-server.exe antes de run_renew.cmd. BAXY_LLAMA_CACHE=0 la hace calcular como b11609.",
+   "patch_sha256": "8d9049999423e00edbf5115232f0d5879cc176eaddede7345859e4b64613a7bb",
+   "sha256": {
+    "llama-server.exe": "2de274112f8bb81b606766fb0bf99a0164b46cfebc02d4eb10211f110ed3ca06",
+    "llama-server-impl.dll": "8fe197098e90149dd72c0ad2ad7c14c2143cbd809f4ff2854cb18e3d9d3a7efa",
+    "llama-common.dll": "a5f07844286cedb454f6be6d93c86903917cf6409e4cbbbc9539ec71b1a1d0af",
+    "llama.dll": "58967aa7ea27ef05a135305590c36a8cbc01362a01c4af2063a57cddf7c086ec",
+    "mtmd.dll": "911bced80dd36f9d827c13aede1c1cdf2f5397ee89b1455c9801feb0fd9a9774",
+    "ggml.dll": "57e644ee4760875715e710fc3b124b926cbcfacdbe1835f4cb91230a30c7b5ba",
+    "ggml-base.dll": "1c23fd2ad42c74f89ccdd5a8d44b9ec4874d45b94c053a146d394c99ee741122"
+   }
+  }
+ }
+}
