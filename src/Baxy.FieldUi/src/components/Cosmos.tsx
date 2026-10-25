@@ -35,15 +35,15 @@ function CosmosView({ state, focusX, light }: { state: BaxyState; focusX: number
   useEffect(() => { S.current = { state: sky(state), focusX, light }; }, [state, focusX, light]);
   useEffect(() => {
     const cv = ref.current!, ctx = cv.getContext('2d')!;
-    const DPR = Math.min(1.25, window.devicePixelRatio || 1);
-    let dpr = DPR, rnd: () => number;
+    let dpr = 1, rnd: () => number;
     let w = 0, h = 0, raf = 0, last = performance.now(), acc = 0;
     let stars: Star[] = [], comets: Comet[] = [], spawn = 0, rot = 0, vis = 1, nebKey = '';
     const neb = document.createElement('canvas');
     const build = () => {
       const lw = cv.clientWidth, lh = cv.clientHeight;
       if (!lw || !lh) return;
-      const vz = cv.getBoundingClientRect().width / lw || 1;
+      // the screen's density now: a window moved to a screen of another scale keeps its CSS size (no resize)
+      const DPR = Math.min(1.25, window.devicePixelRatio || 1), vz = cv.getBoundingClientRect().width / lw || 1;
       dpr = Math.max(0.5, Math.min(DPR * vz, Math.sqrt(COSMOS_MAXPX / (lw * lh))));
       const resize = Math.abs(lw - w) > 0.5 || Math.abs(lh - h) > 0.5 || !stars.length;
       w = lw; h = lh;
@@ -122,11 +122,15 @@ function CosmosView({ state, focusX, light }: { state: BaxyState; focusX: number
     let bq = 0;
     const buildSoon = () => { if (!bq) bq = requestAnimationFrame(() => { bq = 0; build(); }); };
     const onVis = () => { if (!document.hidden) build(); };
+    let dense: MediaQueryList | null = null;
+    const onDense = () => { watchDense(); build(); };
+    const watchDense = () => { dense?.removeEventListener('change', onDense); dense = window.matchMedia('(resolution: ' + (window.devicePixelRatio || 1) + 'dppx)'); dense.addEventListener('change', onDense); };
+    watchDense();
     const ro = new ResizeObserver(buildSoon); ro.observe(cv);
     window.addEventListener('resize', buildSoon); window.addEventListener('bx-scale', build); document.addEventListener('visibilitychange', onVis);
     raf = requestAnimationFrame(tick);
     return () => {
-      cancelAnimationFrame(raf); cancelAnimationFrame(bq); ro.disconnect();
+      cancelAnimationFrame(raf); cancelAnimationFrame(bq); ro.disconnect(); dense?.removeEventListener('change', onDense);
       window.removeEventListener('resize', buildSoon); window.removeEventListener('bx-scale', build); document.removeEventListener('visibilitychange', onVis);
     };
   }, []);

@@ -1,25 +1,16 @@
 import { expect, test, type Browser } from '@playwright/test';
-import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { createServer, type ViteDevServer } from 'vite';
-import { headless } from './headless';
+import { ROOT, headless, serveView } from './headless';
 
 /* AvatarVid on its own (e2e/harness/avatar.html, served by Vite) in a headless page, with no app: the clips come
    from public/clips through the page's router. */
 
-const ROOT = fileURLToPath(new URL('..', import.meta.url));
 let browser: Browser;
-let server: ViteDevServer;
+let view: Awaited<ReturnType<typeof serveView>>;
 let base = '';
 test.setTimeout(60_000);
-test.beforeAll(async () => {
-  server = await createServer({ root: ROOT, configFile: false, logLevel: 'silent', server: { host: '127.0.0.1', port: 0, strictPort: false }, optimizeDeps: { entries: [], include: ['react', 'react-dom', 'react-dom/client', 'react/jsx-dev-runtime'] } });
-  await server.listen();
-  const a = server.httpServer!.address();
-  base = 'http://127.0.0.1:' + (typeof a === 'object' && a ? a.port : 0);
-  browser = await headless();
-});
-test.afterAll(async () => { await browser?.close(); await server?.close(); });
+test.beforeAll(async () => { view = await serveView(); base = view.base; browser = await headless(); });
+test.afterAll(async () => { await browser?.close(); await view?.close(); });
 
 test('un clip que sale de la pantalla suelta su archivo (no queda un reproductor vivo fuera de la página)', async () => {
   const page = await browser.newPage();

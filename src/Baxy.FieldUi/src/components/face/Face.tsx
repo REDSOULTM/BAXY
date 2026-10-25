@@ -61,8 +61,7 @@ function FaceView(props: FaceProps) {
   useEffect(() => { P.current = props; });
   useEffect(() => {
     const cv = ref.current!, ctx = cv.getContext('2d')!;
-    const DPR = Math.min(1.25, window.devicePixelRatio || 1);
-    let dpr = DPR, refW = 0, dirty = true, w = 0, h = 0, raf = 0, last = performance.now();
+    let dpr = 1, refW = 0, dirty = true, w = 0, h = 0, raf = 0, last = performance.now();
     const mkG = (n: number, kind: Group['kind'], closed: number, k: number): Group => ({
       kind, closed, closedT: closed, k, pts: Array.from({ length: n }, () => ({ x: 0, y: -0.1, vx: 0, vy: 0, tx: 0, ty: 0, big: Math.random() < 0.22 })),
     });
@@ -102,7 +101,8 @@ function FaceView(props: FaceProps) {
     const size = () => {
       const lw = cv.clientWidth, lh = cv.clientHeight;
       if (!lw || !lh) return;
-      const vz = cv.getBoundingClientRect().width / lw || 1;
+      // the screen's density now: a window moved to a screen of another scale keeps its CSS size (no resize)
+      const DPR = Math.min(1.25, window.devicePixelRatio || 1), vz = cv.getBoundingClientRect().width / lw || 1;
       dpr = Math.max(0.5, Math.min(DPR * vz, Math.sqrt(FACE_MAXPX / (lw * lh)))); w = lw; h = lh;
       const host = cv.closest('.bx2');
       if (host) {
@@ -116,6 +116,10 @@ function FaceView(props: FaceProps) {
     let sizeQ = 0;
     const sizeSoon = () => { if (!sizeQ) sizeQ = requestAnimationFrame(() => { sizeQ = 0; size(); }); };
     const onVis = () => { if (!document.hidden) size(); };
+    let dense: MediaQueryList | null = null;
+    const onDense = () => { watchDense(); size(); };
+    const watchDense = () => { dense?.removeEventListener('change', onDense); dense = window.matchMedia('(resolution: ' + (window.devicePixelRatio || 1) + 'dppx)'); dense.addEventListener('change', onDense); };
+    watchDense();
     size();
     const ro = new ResizeObserver(sizeSoon); ro.observe(cv);
     window.addEventListener('resize', sizeSoon); window.addEventListener('bx-scale', size); document.addEventListener('visibilitychange', onVis);
@@ -707,7 +711,7 @@ function FaceView(props: FaceProps) {
     };
     raf = requestAnimationFrame(tick);
     return () => {
-      cancelAnimationFrame(raf); cancelAnimationFrame(sizeQ); ro.disconnect();
+      cancelAnimationFrame(raf); cancelAnimationFrame(sizeQ); ro.disconnect(); dense?.removeEventListener('change', onDense);
       window.removeEventListener('pointermove', onMove); window.removeEventListener('resize', sizeSoon); window.removeEventListener('bx-scale', size); document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
