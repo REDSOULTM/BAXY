@@ -5,14 +5,16 @@ namespace Baxy.App;
 
 internal sealed record OperationResponseProjection(string Message)
 {
-    public static OperationResponseProjection Create(OperationResponse response, string operationName)
+    /// <param name="asked">The application and place this turn's app.open asked for (TurnPlace), told in a look.</param>
+    public static OperationResponseProjection Create(
+        OperationResponse response, string operationName, (string Application, string Place)? asked = null)
     {
         ArgumentNullException.ThrowIfNull(response);
         ArgumentException.ThrowIfNullOrWhiteSpace(operationName);
         // The look's whole view is the receipt's result; the kernel's visible facts keep only its first rows.
         if (operationName == "input.visible.controls"
             && response.Result is { ValueKind: JsonValueKind.Object } look
-            && ScreenViewProjection.TryCreate(response.Message, look, out string view))
+            && ScreenViewProjection.TryCreate(response.Message, look, out string view, asked))
         {
             return new OperationResponseProjection(Replay(response, view));
         }

@@ -102,6 +102,14 @@ public sealed class ApplicationPlacesTests
     [TestCase("Steam", null, null, "Steam", "Iniciar sesión", "Agregar un producto", "Amigos y chat")]
     [TestCase("Steam", null, null)]
     [TestCase("Steam", null, null, "Página principal", "https://store.steampowered.com/")]
+    // Práctica e2e E014 («abre la configuración de sonido», notebook, 2026-10-25): Settings at Sistema › Sonido, as its
+    // first look read it in every c3 run (32 looks, the line only there); its «Propiedades» of a microphone, under the
+    // same breadcrumb, and Sistema's own page, which lists «Sonido» among its entries, are not the place.
+    [TestCase("Configuración", "sound", "Elegir dónde reproducir el sonido",
+        "Sistema", "Sonido", "Salida", "Elegir dónde reproducir el sonido", "Es posible que las aplicaciones tengan su propia configuración", "Volumen")]
+    [TestCase("configuracion", "sound", "Elegir dónde reproducir el sonido", "O Elegir donde reproducir el sonido")]
+    [TestCase("Configuración", null, null, "Sistema", "Sonido", "Propiedades", "Cambiar nombre", "Formato")]
+    [TestCase("Configuración", null, null, "Sistema", "Pantalla", "Sonido", "Notificaciones", "Concentración")]
     [TestCase("Spotify", null, null, "Página principal", "Instalado localmente")]
     [TestCase("Paint", null, null, "Página principal")]
     [TestCase(null, null, null, "Página principal")]
@@ -111,6 +119,15 @@ public sealed class ApplicationPlacesTests
         ApplicationPlaces.ShownPlace? found = ApplicationPlaces.PlaceShown(application, seen);
         Assert.That((found?.Place, found?.Shown), Is.EqualTo((place, shown)));
     }
+
+    // Two names of one application, as the data compare them: case and accents left out; none is the same as nothing.
+    [TestCase("Configuración", "configuracion", true)]
+    [TestCase("Steam", "STEAM", true)]
+    [TestCase("Configuración", "Configuración del sistema", false)]
+    [TestCase(null, "Steam", false)]
+    [TestCase(null, null, false)]
+    public void TwoNamesAreTheSameApplicationAsTheDataCompareThem(string? one, string? other, bool same) =>
+        Assert.That(ApplicationPlaces.SameApplication(one, other), Is.EqualTo(same));
 
     // What a place shows is text long enough to tell it by, never an empty list: refused whole.
     [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","shows":[]}}}}}""")]

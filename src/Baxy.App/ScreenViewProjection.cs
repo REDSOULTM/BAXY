@@ -24,6 +24,13 @@ namespace Baxy.App;
 /// </summary>
 internal static class ScreenViewProjection
 {
+    /// <summary>
+    /// The most places an application may have for a look to list its other places by name (sight_places). The data
+    /// (ApplicationPlaces) give Discord 1, Epic Games Launcher and Spotify 3, Steam 5 and Configuración 52: 8 lists every
+    /// launcher's few places on one short line, with room for a couple more, and never a list like Settings'.
+    /// </summary>
+    internal const int MaximumListedPlaces = 8;
+
     private static readonly (string Label, string[] Zones)[] Bands =
     [
         ("arriba", ["TL", "T", "TR"]),
@@ -42,7 +49,9 @@ internal static class ScreenViewProjection
 
     /// <param name="message">The kernel's visible facts of the look (status, error, cause, effectUncertain).</param>
     /// <param name="result">The look's receipt: the whole view the reader returned.</param>
-    internal static bool TryCreate(string message, JsonElement result, out string projected)
+    /// <param name="asked">The application and place this turn's app.open asked for (Baxy.App.TurnPlace), if any.</param>
+    internal static bool TryCreate(
+        string message, JsonElement result, out string projected, (string Application, string Place)? asked = null)
     {
         projected = string.Empty;
         JsonObject? facts;
@@ -130,20 +139,50 @@ internal static class ScreenViewProjection
         // Steam» or «la tienda»): the place of the application the reader said is in sight, by the text only it shows.
         if (view["place"] is JsonObject place)
         {
-            text.Append("Lugar a la vista: ").Append((string?)place["name"]).Append(" de ")
+            string? inSight = (string?)place["name"];
+            text.Append("Lugar a la vista: ").Append(inSight).Append(" de ")
                 .Append((string?)place["application"]).Append(" (sólo ahí sale «").Append((string?)place["shown"])
-                .Append("»)\n");
+                .Append("»)");
+            // Práctica e2e E014 («abre la configuración de sonido»): the look after app.open at sound, the same in the
+            // runs that stopped there and in the one that went on for 15 calls, did not say the window was where it was
+            // asked, and the model pressed «Sonido» in the breadcrumb of the page it was on. The place this turn's
+            // app.open asked of this application is told against the one in sight, as a fact; when they are the same,
+            // the other places (sight_places) are not said: nobody asked to go to them.
+            bool arrived = false;
+            if (Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.AskedPlace)
+                && asked is { } wanted
+                && Baxy.Kernel.Operations.ApplicationPlaces.SameApplication(wanted.Application, (string?)place["application"]))
+            {
+                arrived = string.Equals(wanted.Place, inSight, StringComparison.Ordinal);
+                text.Append(arrived
+                    ? ": es el que pidió app_open en este turno"
+                    : ", no el que pidió app_open en este turno (" + wanted.Place + ")");
+            }
+
+            text.Append('\n');
             // Prueba en vivo de la versión final (renew_v6, «abre la biblioteca de Steam»): Steam opened cold with no
             // place; its places were told by app.open and after a failed look while it was still updating, and once its
             // store was in sight six looks said «Lugar a la vista: store» and nothing else, until the turn's 15 calls
             // ran out. Where the view says which place is in sight, it says beside it the application's other places
             // that app.open opens directly, from the data (ApplicationPlaces), as facts.
-            if (Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.SightPlaces)
-                && OtherPlaces((string?)place["application"], (string?)place["name"]) is { Length: > 0 } others)
+            // Revisión de nb-w11-quieto: an application with many places (Configuración, 52) would list them all, a
+            // block that invites going to them; beyond MaximumListedPlaces only their number is said.
+            string? application = (string?)place["application"];
+            int otherCount = Baxy.Kernel.Operations.ApplicationPlaces.PlacesOf(application).Count(other => other.Place != inSight);
+            if (!arrived && otherCount > 0
+                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.SightPlaces))
             {
-                text.Append("(los otros lugares de ").Append((string?)place["application"])
-                    .Append(" se abren directo, sin pulsar: app_open con appId «").Append((string?)place["application"])
-                    .Append("» y place ").Append(others).Append(")\n");
+                if (otherCount + 1 > MaximumListedPlaces)
+                {
+                    text.Append('(').Append(application).Append(" se abre directo, sin pulsar, en otros ").Append(otherCount)
+                        .Append(" lugares: app_open con appId «").Append(application).Append("» y su place)\n");
+                }
+                else
+                {
+                    text.Append("(los otros lugares de ").Append(application)
+                        .Append(" se abren directo, sin pulsar: app_open con appId «").Append(application)
+                        .Append("» y place ").Append(OtherPlaces(application, inSight)).Append(")\n");
+                }
             }
         }
 

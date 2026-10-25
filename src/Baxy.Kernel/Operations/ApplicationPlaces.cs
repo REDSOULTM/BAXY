@@ -224,6 +224,14 @@ public static class ApplicationPlaces
         return shown;
     }
 
+    /// <summary>
+    /// Práctica e2e E014: whether two names are one application as the data compare them (case, accents and spacing left
+    /// out), so the place a look shows is told against the one app.open asked; false when either is missing.
+    /// </summary>
+    public static bool SameApplication(string? one, string? other) =>
+        !string.IsNullOrWhiteSpace(one) && !string.IsNullOrWhiteSpace(other)
+        && string.Equals(Fold(one), Fold(other), StringComparison.Ordinal);
+
     private static Application? Catalogued(IReadOnlyDictionary<string, Application> applications, string? catalog) =>
         catalog is null ? null : applications.Values.FirstOrDefault(
             application => string.Equals(application.GameCatalog, catalog, StringComparison.Ordinal));

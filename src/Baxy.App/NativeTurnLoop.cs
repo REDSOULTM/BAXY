@@ -120,6 +120,8 @@ internal sealed class NativeTurnLoop
     private readonly NetworkEgress _egress = new();
     private readonly SaidFolders _said;
     private readonly SaidApplication _saidApp = new();
+    // Práctica e2e E014: the place this turn's app.open asked for, told in a look at that application (TurnPlace).
+    private readonly TurnPlace _turnPlace = new();
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
@@ -197,6 +199,7 @@ internal sealed class NativeTurnLoop
         {
             _said.Heard(text);
             _saidApp.Heard(text);
+            _turnPlace.NewTurn();
         }
 
         await PersonTurnAsync(mind, arrivedAt, answering,
@@ -338,6 +341,7 @@ internal sealed class NativeTurnLoop
         _egress.NewTurn();
         _said.Clear();
         _saidApp.Clear();
+        _turnPlace.NewTurn();
         _turnStarted = Stopwatch.GetTimestamp();
         try
         {
@@ -364,6 +368,7 @@ internal sealed class NativeTurnLoop
         _egress.Reset();
         _said.Clear();
         _saidApp.Clear();
+        _turnPlace.NewTurn();
         if (!engineRestarted)
         {
             ResolveUncertain(endedTurn: null, all: true);
@@ -980,9 +985,10 @@ internal sealed class NativeTurnLoop
         }
 
         Resolve(prepared, memory);
+        _turnPlace.Ran(operation, arguments, response.Status);
         string body = memory
             ? MemoryObservation(prepared, response)
-            : OperationResponseProjection.Create(response, operation).Message;
+            : OperationResponseProjection.Create(response, operation, _turnPlace.Asked).Message;
         if (said is { } fact)
         {
             body = WithSaid(body, fact.Key, fact.Note);
