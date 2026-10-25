@@ -1,4 +1,7 @@
 @echo off
+rem Calidad PC 2026-10-25: lo que pone queda en esta ejecucion; sin setlocal, desde una consola cmd seguia ahi, y otro
+rem checkout lanzado despues heredaba su BAXY_MIND_PYTHONPATH y el System One apagado con system_one.cmd seguia encendido.
+setlocal
 rem BAXY Renew: Qwen3.5-4B, la wake word k4 (WakewordBaxy), Parakeet Ultra (TranscripcionBaxy) y la voz de BAXY (Supertonic 3, scripts\voice\make_baxy_voice.py).
 rem Las rutas son de cada maquina; en una tercera, agrega su bloque.
 rem Un banco (o el ajuste fino) puede elegir otro GGUF definiendo antes BAXY_MIND_LLM_GGUF, y otro llama-server definiendo
