@@ -1138,6 +1138,9 @@ class Mind:
         # PLAN_GENERAL C1: the long addresses results carried, by the short reference the model saw, and back.
         self._refs: dict[str, str] = {}
         self._ref_of: dict[str, str] = {}
+        # The references made in the session (_refs keeps only those the conversation still shows, _prune_refs): a new
+        # one takes the next number, never one still shown.
+        self._ref_count = 0
         # Review 2026-10-22: the ids the mind writes itself (a confirmation's call, a call the server gave none, a
         # correction) count up for the whole session: from the conversation's length they repeated once it was trimmed.
         self._ids = 0
@@ -1176,7 +1179,8 @@ class Mind:
             if isinstance(value, str) and len(value) > LONG_REF_CHARS and value.startswith(("http://", "https://")):
                 ref = self._ref_of.get(value)
                 if ref is None:
-                    ref = f"{REF_PREFIX}{len(self._refs) + 1}"
+                    self._ref_count = max(self._ref_count, len(self._refs)) + 1
+                    ref = f"{REF_PREFIX}{self._ref_count}"
                     self._refs[ref], self._ref_of[value] = value, ref
                 made[ref] = value
                 return ref
@@ -1388,7 +1392,7 @@ class Mind:
         """Start a fresh conversation, optionally from earlier plain exchanges (a bench case's context)."""
         self._turn = self._beat = None
         self.trimmed_turns = 0
-        self._refs, self._ref_of, self._ids = {}, {}, 0
+        self._refs, self._ref_of, self._ids, self._ref_count = {}, {}, 0, 0
         self._ran, self._ran_ids, self._ran_count = [], [], 0
         self._calls = []
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
@@ -1412,6 +1416,8 @@ class Mind:
         if isinstance(state.get("refs"), dict):
             self._refs = {str(ref): str(value) for ref, value in state["refs"].items()}
             self._ref_of = {value: ref for ref, value in self._refs.items()}
+            self._ref_count = max((int(ref[len(REF_PREFIX):]) for ref in self._refs
+                                   if ref.startswith(REF_PREFIX) and ref[len(REF_PREFIX):].isdecimal()), default=0)
         self._ids = state["ids"] if isinstance(state.get("ids"), int) and state["ids"] > 0 else 0
         self.conversation, unanswered = self._answered([m for m in conversation if isinstance(m, dict)
                                                         and m.get("role") in {"user", "assistant", "tool"}])
@@ -1429,7 +1435,7 @@ class Mind:
         calls = state.get("calls")
         # Kept before «answer_check» (or written otherwise): what ran in it is not known whole, and nothing is checked
         # against the session's calls.
-        self._calls = ([(str(c[0]), c[1], c[2]) for c in calls] if isinstance(calls, list) and all(
+        self._calls = (list(dict.fromkeys((str(c[0]), c[1], c[2]) for c in calls)) if isinstance(calls, list) and all(
             isinstance(c, list) and len(c) == 3 and isinstance(c[1], bool) and isinstance(c[2], bool) for c in calls)
             else None if any(m.get("tool_calls") for m in self.conversation) else [])
         self._trim()
@@ -1672,8 +1678,14 @@ class Mind:
         turn.setdefault("receipts", []).append({"op": op, "tool": wire, "arguments": arguments,
                                                 "observation": observation, "outcome": outcome,
                                                 "completed": completed, "read": read})
-        if self._calls is not None:
-            self._calls.append((op, completed, read))
+        self._session_call((op, completed, read))
+
+    def _session_call(self, call: tuple[str, bool, bool]) -> None:
+        """One call of the session for the answer check, which only asks whether one of a kind completed or ran at all:
+        each (operation, completed, read) is kept once (revisión de calidad de la mente: one entry per call, for good,
+        exported with the session and deep-copied by every early decision)."""
+        if self._calls is not None and call not in self._calls:
+            self._calls.append(call)
 
     def _close_open_calls(self) -> None:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
@@ -1682,9 +1694,8 @@ class Mind:
         if turn.get("awaiting"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
             self._ran_add(turn.get("calling"), NO_RESULT_RAN)
-            if self._calls is not None:  # it may have run: never a completed call of the session
-                op = str(turn.get("calling") or "?")
-                self._calls.append((op, False, self.risk.get(op.replace(".", "_")) == "read_only"))
+            op = str(turn.get("calling") or "?")  # it may have run: never a completed call of the session
+            self._session_call((op, False, self.risk.get(op.replace(".", "_")) == "read_only"))
         if turn.get("asked"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["asked"], "content": ASKED})
         pending = [c["id"] for c in turn.get("queue") or []]
@@ -1714,6 +1725,21 @@ class Mind:
             dropped += 1
         if dropped:
             self._drop(turns[dropped][0], dropped)
+        self._prune_refs()
+
+    def _prune_refs(self) -> None:
+        """Revisión de calidad de la mente (2026-10-25): the short references the conversation no longer shows (their
+        turns cut out, their results' bodies left out) are not kept: every address of the session stayed in _refs, and
+        with it in the exported session (the App's 1 MiB per line) and in what an early decision deep-copies. An open
+        heartbeat's own messages count as shown."""
+        if not self._refs:
+            return
+        shown = json.dumps([self.conversation, (self._beat or {}).get("conv"), (self._turn or {}).get("conv")],
+                           ensure_ascii=False)
+        alive = set(_REF.findall(shown))
+        if len(alive) < len(self._refs):
+            self._refs = {ref: value for ref, value in self._refs.items() if ref in alive}
+            self._ref_of = {value: ref for ref, value in self._refs.items()}
 
     def _drop(self, end: int, turns: int) -> None:
         """Take out the oldest `turns`, up to the first kept turn's clock (`end`): an earlier note of what was cut goes

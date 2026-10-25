@@ -94,9 +94,10 @@ class LlmServer:
         self.forget_set_aside()
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
-        log = open(log_dir / self.log_name, "w", encoding="utf-8")
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-        self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
+        # The server writes its log through its own inherited handle: the mind's copy is closed once it started.
+        with open(log_dir / self.log_name, "w", encoding="utf-8") as log:
+            self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
         threading.Thread(target=self._wait_health, daemon=True).start()
 
     def _wait_health(self) -> None:
@@ -368,16 +369,22 @@ class LlmServer:
         prefix may be in the slot: Mind.warm saves it before any turn."""
         state = self.slot_dir / f"{PREFIX}{key}.slot"
         kept = state.with_suffix(".json")
-        kept.unlink(missing_ok=True)  # the facts are written last: a state cut halfway is never restored
+        # Saving only spares the next start the warm-up: a file of the folder another process holds this moment (a
+        # scan of the state just written) never fails the warm-up itself (it was told to the App as a model that did
+        # not start).
         try:
+            kept.unlink(missing_ok=True)  # the facts are written last: a state cut halfway is never restored
             saved = int(self._post("/slots/0?action=save", {"filename": state.name}, 120).get("n_saved") or 0) > 0
+            if saved:
+                kept.write_text(json.dumps(facts, ensure_ascii=False), encoding="utf-8")
         except (OSError, ValueError, http.client.HTTPException):
             saved = False
-        if saved:
-            kept.write_text(json.dumps(facts, ensure_ascii=False), encoding="utf-8")
         for stale in self.slot_dir.glob(f"{PREFIX}*"):
             if not saved or stale.name not in (state.name, kept.name):
-                stale.unlink(missing_ok=True)
+                try:
+                    stale.unlink(missing_ok=True)
+                except OSError:
+                    pass  # held this moment: the next save removes it
         return saved
 
     def forget_set_aside(self) -> bool:

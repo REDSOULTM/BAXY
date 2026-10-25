@@ -60,6 +60,7 @@ model's own words.
 from __future__ import annotations
 
 import json
+import math
 import re
 import unicodedata
 from typing import Any, Iterable
@@ -657,6 +658,8 @@ def _numbers(answer: str, folded: str, statements: list[tuple[int, int]],
             elif isinstance(value, str) and len(value) < 400:
                 values.extend((key, float(n.replace(",", ".")), tool)
                               for n in re.findall(r"(?<![\w.])\d+(?:[.,]\d+)?(?![\w])", value))
+        # A number of 309 digits or more is no float (inf): no reading, and int() of it failed the check and the turn.
+        values = [reading for reading in values if math.isfinite(reading[1])]
         readings.extend(values)
         if _matches(str(r.get("op")).replace("_", "."), _LEVEL_OPS):
             level_readings.extend(values)

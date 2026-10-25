@@ -349,12 +349,19 @@ class Voice:
             self._blocks.put(np.array(indata[:, 0], dtype=np.float32, copy=True))  # the buffer is only valid here
 
         if self._wav_feed is not None:
-            self._stream = self._wav_feed.open(callback)
+            stream = self._wav_feed.open(callback)
         else:
             import sounddevice as sd
-            self._stream = sd.InputStream(device=self._device(), samplerate=RATE, channels=1, dtype="float32",
-                                          blocksize=BLOCK, callback=callback)
-        self._stream.start()
+            stream = sd.InputStream(device=self._device(), samplerate=RATE, channels=1, dtype="float32",
+                                    blocksize=BLOCK, callback=callback)
+        # Built, the stream is already open: one whose start fails is closed, never kept as the open microphone (the
+        # next start found it there and said the ear was on while it heard nothing).
+        try:
+            stream.start()
+        except BaseException:
+            stream.close()
+            raise
+        self._stream = stream
 
     def _revive(self) -> None:
         """No block for STALL_S from an open microphone: it is opened again (STALL_S)."""

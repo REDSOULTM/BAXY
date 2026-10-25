@@ -73,6 +73,9 @@ class SystemOne:
         self._process: subprocess.Popen | None = None
         self._ready = threading.Event()
         self._closing = threading.Event()
+        # close() and a start again take it in turn: a close that came between the watcher's pause and its start found
+        # the old process gone, and the watcher then started a server nobody closed.
+        self._launching = threading.Lock()
         self.restarts = 0
         # Where an exit or a start again is told: (stage, fields), the mind's trace (Mind sets it); None, nowhere.
         self.on_event: Callable[..., None] | None = None
@@ -85,16 +88,18 @@ class SystemOne:
         log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
         log_dir.mkdir(parents=True, exist_ok=True)
         # A start again keeps what the server wrote before it exited (its cause) in the same log.
-        log = open(log_dir / "system-one.log", "a" if self.restarts else "w", encoding="utf-8")
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
         self._ready.clear()
         # An encoder reads its whole input in one batch: -b/-ub cover the longest state plus its options. No device at
         # all (-dev none): with only -ngl 0 the CUDA build still made a context and offloaded its big batches, and the
         # product's VRAM went 3902 → 4091 MiB with System One on (Renew al máximo, palanca 3.1).
-        self._process = subprocess.Popen(
-            [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), "-ngl", "0", "-dev", "none",
-             "-t", str(self.threads), "-c", "4096", "-np", "1", "-b", "2048", "-ub", "2048"],
-            stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
+        # The server writes its log through its own inherited handle: the mind's copy is closed once it started (one
+        # was left open at every start again).
+        with open(log_dir / "system-one.log", "a" if self.restarts else "w", encoding="utf-8") as log:
+            self._process = subprocess.Popen(
+                [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), "-ngl", "0", "-dev",
+                 "none", "-t", str(self.threads), "-c", "4096", "-np", "1", "-b", "2048", "-ub", "2048"],
+                stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
 
     def _watch(self) -> None:
         while True:
@@ -112,11 +117,14 @@ class SystemOne:
             if self._closing.wait(min(2.0 ** self.restarts, 30.0)):
                 return
             self.port = _free_port()  # the old one may be taken by now
-            try:
-                self._launch()
-            except OSError as error:
-                self._tell("system_one.exited", exit_code=None, restart=None, failure=type(error).__name__)
-                return
+            with self._launching:
+                if self._closing.is_set():
+                    return
+                try:
+                    self._launch()
+                except OSError as error:
+                    self._tell("system_one.exited", exit_code=None, restart=None, failure=type(error).__name__)
+                    return
             self._tell("system_one.restarted", restart=self.restarts)
 
     def _tell(self, stage: str, **fields: Any) -> None:
@@ -183,7 +191,8 @@ class SystemOne:
             return None
 
     def close(self) -> None:
-        self._closing.set()
+        with self._launching:
+            self._closing.set()
         if self._process is not None and self._process.poll() is None:
             self._process.terminate()
             try:
