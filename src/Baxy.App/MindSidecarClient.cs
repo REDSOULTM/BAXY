@@ -70,33 +70,32 @@ internal sealed record MindVoiceStatus(
 
 /// <summary>
 /// Reads the voice state again while the sidecar still reports it as
-/// <c>pending</c> (its voice runtime is importing), a bounded number of times.
-/// The delay is injected so the schedule is testable without a real clock.
+/// <c>pending</c> (its voice runtime is importing) or its answer did not come
+/// (a slow read under load), until it is known. 2026-10-25 (spoken A/B
+/// c11b-on1): it gave up after 60 reads, and an ear that loaded later under
+/// load was never started and nothing said so. The mind always ends its load
+/// (voice.py Voice._load); the read ends this by throwing once its mind is
+/// gone. The delay is injected so the schedule is testable without a real clock.
 /// </summary>
 internal static class VoiceStatusSettling
 {
     internal static readonly TimeSpan Interval = TimeSpan.FromSeconds(1);
-    internal const int MaximumReads = 60;
 
-    internal static async Task<MindVoiceStatus?> UntilSettledAsync(
+    internal static async Task<MindVoiceStatus> UntilSettledAsync(
         Func<CancellationToken, Task<MindVoiceStatus?>> read,
         Func<TimeSpan, CancellationToken, Task> delay,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(read);
         ArgumentNullException.ThrowIfNull(delay);
-        MindVoiceStatus? status = null;
-        for (int attempt = 0; attempt < MaximumReads; attempt++)
+        while (true)
         {
             await delay(Interval, cancellationToken).ConfigureAwait(false);
-            status = await read(cancellationToken).ConfigureAwait(false);
-            if (status is { Pending: false })
+            if (await read(cancellationToken).ConfigureAwait(false) is { Pending: false } status)
             {
                 return status;
             }
         }
-
-        return status;
     }
 }
 
@@ -119,6 +118,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     internal const string PythonPathEnvironmentVariable = "BAXY_MIND_PYTHONPATH";
     // One model decision (prefix cached) takes about a second; the budget covers a cold cache after a restart.
     internal static readonly TimeSpan TurnRequestTimeout = TimeSpan.FromSeconds(30);
+    // The mind waits up to 60 s for its ear to load before it answers a voice.start (voice.py Voice.start). With the
+    // same 60 s here, a start it made at the end of that wait came after the App gave up, and the App stopped the
+    // microphone the start had just opened (2026-10-25, c11b-on1): the App waits longer than the mind.
+    internal static readonly TimeSpan VoiceStartTimeout = TimeSpan.FromSeconds(75);
     private const int MaximumLineBytes = 1024 * 1024;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonObject>> _pending = new();
