@@ -2059,7 +2059,10 @@ class Mind:
         spoken (answer_check.check). Contradicted, the model is asked once more, words only, with a note that says the
         facts that contradict it; its second answer is the one spoken, whatever it says, and the trace keeps both
         checks (turn.check). None: the answer stands as it is."""
-        findings = check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls)
+        # Aid «check_found» (holdout v6 V6E055): the rule «found» of the check («no encontré X» while a result of the turn
+        # found X), an aid of its own.
+        findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls)
+                    if f["rule"] != "found" or _aid_on("check_found")]
         private = bool(turn.get("private"))
         shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
         if turn.get("checked"):

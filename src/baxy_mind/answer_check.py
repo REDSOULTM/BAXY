@@ -33,6 +33,10 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   notas», «x.png - Paint», not a title it left) or the name of a file result (E017: «Guardar como» pressed with no name
   typed). Only a name of the same extension or the same stem counts as the saved file's (a page «Amazon.com: …» is
   not); another extension is another file (lista.md is not lista.txt). Nothing shown, nothing said.
+- ``found``: «no encontré ideas.txt» while a result of the turn names that file as one it found, even one that failed
+  for another reason: a ``relativePath`` (and the ``name`` beside it) of its own or of one of its listed files (V6E055:
+  an edit refused with known_file_search_incomplete had found ideas.txt in BAXY-bench). The name is compared with its
+  accents (a name alike that a search offers differs in them), and a place named after it must hold the file found.
 
 What never counts as a claim: a sentence or the part of one that is a question, a clause with «no / nunca / sin /
 tampoco» before the verb («no pude abrirlo», «no lo cerré»), a conditional «si…», quoted text, or a promise («voy a
@@ -454,6 +458,9 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     # A file's name said saved that the turn shows otherwise (E017).
     findings.extend(f for f in _saved_names(answer, text, folded, statements, receipts) if f not in findings)
 
+    # «No encontré X» while a result of the turn found X (V6E055).
+    findings.extend(f for f in _not_found_names(answer, folded, raw_folded, statements, receipts) if f not in findings)
+
     # «Ya estaba».
     changed = [r for r in receipts if r.get("completed") and _parsed(r).get("verification") == "readback"]
     if changed and not any(_ALREADY_SEEN.search(r.get("observation") or "") or "ya estaba" in (r.get("outcome") or "")
@@ -867,3 +874,57 @@ def _names_shown(receipts: list[Receipt]) -> list[tuple[str, str]]:
                     shown.append((base, str(r.get("tool") or r.get("op"))))
                     break
     return shown
+
+
+# ---- names found ------------------------------------------------------------------------------------------------------
+# «No encontré X», «no pude encontrar X», and the file named right after it in its clause (not «otro X»: another one).
+_NOT_FOUND = re.compile(r"\bno (?:(?:lo|la|los|las|pude|logre|se) )*(?:encontre|halle|localice|ubique|encontro|"
+                        r"(?:pude|logre) (?:encontrar|hallar|localizar|ubicar)(?:lo|la)?)\b")
+_ANOTHER = re.compile(r"\b(?:otr[oa]s?|mas|ademas)\b")
+
+
+def _found_files(receipts: list[Receipt]) -> list[tuple[str, str, Receipt]]:
+    """Every file a result of the turn names as found, as (its place: the known folder and its relative path, lower
+    case with backslashes; the name as the result writes it; the receipt): each object of the result with a relativePath."""
+    found = []
+
+    def objects(value: Any) -> Iterable[dict]:
+        if isinstance(value, dict):
+            yield value
+            for v in value.values():
+                yield from objects(v)
+        elif isinstance(value, list):
+            for v in value:
+                yield from objects(v)
+
+    for r in receipts:
+        for item in objects(_parsed(r)):
+            relative = item.get("relativePath")
+            if isinstance(relative, str) and relative.strip():
+                place = "\\" + str(item.get("folder") or "") + "\\" + relative.replace("/", "\\")
+                found.append((place.lower(), relative, r))
+    return found
+
+
+def _not_found_names(answer: str, folded: str, raw_folded: str, statements: list[tuple[int, int]],
+                     receipts: list[Receipt]) -> list[dict]:
+    """«No encontré ideas.txt» while a result of the turn found ideas.txt (rule ``found``)."""
+    found = _found_files(receipts)
+    if not found:
+        return []
+    for start, end in statements:
+        for hit in _NOT_FOUND.finditer(folded, start, end):
+            stop = next((m.start() for m in _CLAUSE_END.finditer(folded, hit.end(), end)), end)
+            name = next(_FILE_NAME.finditer(raw_folded, hit.end(), stop), None)
+            if name is None or _ANOTHER.search(folded, hit.end(), name.start()):
+                continue
+            # With its accents: a name alike that a search offers (known_file_not_found) differs only in them.
+            said = answer[name.start():name.end()].replace("/", "\\").lower()
+            rest = folded[name.end():stop]
+            places = [shows for label, pattern, shows in _FOLDERS if pattern.search(rest)]
+            for place, relative, receipt in found:
+                same = place.endswith("\\" + said) if "\\" in said else place.rsplit("\\", 1)[-1] == said
+                if same and all(any(s + "\\" in place for s in shows) for shows in places):
+                    return [{"rule": "found", "said": _quote(answer, start, end),
+                             "fact": f"{_told(receipt)}: su resultado muestra que encontró {relative}"}]
+    return []
