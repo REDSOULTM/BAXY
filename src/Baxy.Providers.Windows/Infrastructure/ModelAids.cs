@@ -120,6 +120,13 @@ public static class ModelAids
     public const string RepeatedUnchangedNext = "repeated_unchanged_next";
 
     /// <summary>
+    /// Práctica V5E029 («cambia la calculadora a modo científico»: the text «Modo de calculadora Estándar» clicked 3 times,
+    /// unchanged, and «Abrir navegación» beside it never tried): a click that changed nothing on a static text of the last
+    /// look says, from the first time, that it is a text and not a control, and names the controls nearest it.
+    /// </summary>
+    public const string TextClickNext = "text_click_next";
+
+    /// <summary>
     /// Renew al máximo (w8, falsedades F019): a look at a window drawn without controls (Steam's library, read only by
     /// OCR) says its text is the screen's words, pressed by label, and that a word missing from the controls is not absent.
     /// </summary>
