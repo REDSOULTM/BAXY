@@ -49,7 +49,8 @@ internal static class DeclaredTextFieldPress
             Text(root, "kind") ?? string.Empty,
             Flag(root, "editable"),
             Flag(root, "text"),
-            Flag(root, "inside"));
+            Flag(root, "inside"),
+            Text(root, "name") ?? string.Empty);
     }
 
     private static string? Text(JsonElement element, string name) =>
@@ -62,9 +63,13 @@ internal static class DeclaredTextFieldPress
 }
 
 /// <summary>What holds the keyboard's focus, as UI Automation reads it: its control type, whether its value can be edited,
-/// whether it has a TextPattern, and whether it lies inside the window the key goes to.</summary>
-internal readonly record struct FocusRead(string Kind, bool Editable, bool HasText, bool Inside)
+/// whether it has a TextPattern, whether it lies inside the window the key goes to, and its name as a look gives it.</summary>
+internal readonly record struct FocusRead(string Kind, bool Editable, bool HasText, bool Inside, string Name = "")
 {
     /// <summary>An edit box or a document whose text can be written: where Delete erases characters.</summary>
     internal bool IsTextField => Kind is "Edit" or "Document" && (Editable || HasText);
+
+    /// <summary>Revisión de la guarda F013 (teclas): a control that Enter and space press themselves (a button, a link,
+    /// a menu entry); on any other, space toggles, types or selects, and Enter goes to the dialog's default button.</summary>
+    internal bool IsPressedByAKey => Kind is "Button" or "SplitButton" or "Hyperlink" or "MenuItem";
 }

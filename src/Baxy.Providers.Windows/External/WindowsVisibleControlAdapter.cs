@@ -1266,9 +1266,78 @@ internal sealed class WindowsVisibleControlAdapter
         nint target = named != 0 ? named
             : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd
             : VisibleControlSurface.FrontWindow();
+        return await AnswersDestructiveDialogAsync(target, label, view, cancellationToken).ConfigureAwait(false)
+            ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
+            : null;
+    }
+
+    /// <summary>
+    /// Revisión de la guarda F013 (teclas): Enter or space on the focused «Reemplazar» of «¿Reemplazar?» wrote over the
+    /// file as the click F013 asks for did, unless the model declared it. Read only: the window the key goes to (the one
+    /// it names, or the one in front), through the modal dialog that disables it, must be a dialog; then the control
+    /// that would take the key (the worker's «focuskind», its name as a look gives it) is judged as a click on it is
+    /// (<see cref="AnswersDestructiveDialogAsync"/>). A focused button that is no yes («No», «Cancelar») never asks; space
+    /// on any other control toggles, types or selects, and presses nothing. Enter on any other control goes to the
+    /// dialog's default button, which UI Automation does not tell, and a focus not read inside the dialog is not known:
+    /// both are judged as a click on any yes of that dialog.
+    /// </summary>
+    public async ValueTask<bool> KeyAnswersDestructiveDialogAsync(
+        nint window, string key, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (key is not ("enter" or "space"))
+            return false;
+        nint target = window != 0 ? window : VisibleControlSurface.FrontWindow();
         nint dialog = target == 0 ? 0 : VisibleControlSurface.ModalSurface(target);
         if (dialog == 0 || !VisibleControlSurface.IsDialogWindow(dialog))
-            return null;
+            return false;
+
+        FocusRead? focus;
+        try
+        {
+            using JsonDocument? answer = await FocusKindAsync(dialog, cancellationToken).ConfigureAwait(false);
+            focus = DeclaredTextFieldPress.Read(answer);
+        }
+        catch (Exception exception) when (exception is IOException or JsonException or TimeoutException
+            or InvalidOperationException)
+        {
+            focus = null;
+        }
+
+        string? label = null;
+        if (focus is { Inside: true } read && read.IsPressedByAKey)
+        {
+            if (!VisibleControlSurface.AffirmativeAnswer(read.Name))
+                return false;
+            label = read.Name.Trim();
+        }
+        else if (focus is { Inside: true } && key == "space")
+        {
+            return false;
+        }
+
+        LastView? view;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        return await AnswersDestructiveDialogAsync(dialog, label, view, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// F013's reading, for a click and for a key: <paramref name="target"/>, through the modal dialog that disables it,
+    /// is a dialog whose own words ask about replacing, overwriting, deleting, discarding, not saving or losing changes,
+    /// and <paramref name="label"/> is one of its buttons (null: any of its affirmative ones). The dialog's words are
+    /// those of the last look when it was of that dialog, else of a read of it bounded in time. False when it is not so
+    /// or cannot be read.
+    /// </summary>
+    private async ValueTask<bool> AnswersDestructiveDialogAsync(
+        nint target, string? label, LastView? view, CancellationToken cancellationToken)
+    {
+        nint dialog = target == 0 ? 0 : VisibleControlSurface.ModalSurface(target);
+        if (dialog == 0 || !VisibleControlSurface.IsDialogWindow(dialog))
+            return false;
 
         IReadOnlyList<ViewControl> controls;
         string title;
@@ -1289,28 +1358,27 @@ internal sealed class WindowsVisibleControlAdapter
             catch (Exception exception) when (exception is IOException or JsonException or TimeoutException
                 or InvalidOperationException)
             {
-                return null;
+                return false;
             }
 
             if (answer is null)
-                return null;
+                return false;
             using (answer)
             {
                 if (!answer.RootElement.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
-                    return null;
+                    return false;
                 (controls, title) = (ParseControls(answer.RootElement), ReadString(answer.RootElement, "window"));
             }
         }
 
         if (title.Length == 0)
             title = VisibleControlSurface.WindowTitle(dialog);
-        bool itsButton = controls.Any(control => control.Kind is not ("Text" or "Document") && SameLabel(label, control.Name));
+        bool itsButton = controls.Any(control => control.Kind is not ("Text" or "Document")
+            && (label is null ? VisibleControlSurface.AffirmativeAnswer(control.Name) : SameLabel(label, control.Name)));
         IEnumerable<string?> said = controls.Where(static control => control.Kind is "Text" or "Document")
             .Select(static control => (string?)control.Name)
             .Append(title);
-        return itsButton && VisibleControlSurface.AsksToDestroy(said)
-            ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
-            : null;
+        return itsButton && VisibleControlSurface.AsksToDestroy(said);
     }
 
     private long _clicks;
