@@ -243,8 +243,10 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
                 {
                 }
 
+                // Ronda final 38: the worker alone, never its tree. A script it runs (the folder's starts explorer.exe
+                // with the folder asked) opens things for the person, and a worker cut short must not close them.
                 if (!process.WaitForExit(500))
-                    process.Kill(entireProcessTree: true);
+                    process.Kill(entireProcessTree: false);
             }
         }
         catch (Exception exception) when (exception is InvalidOperationException
