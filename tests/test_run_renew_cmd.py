@@ -6,8 +6,10 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
-NAMES = ("BAXY_MIND_PYTHONPATH", "BAXY_S1_DOUBT", "BAXY_RENEW_TTS_DIR")
+NAMES = ("BAXY_MIND_PYTHONPATH", "BAXY_S1_DOUBT", "BAXY_RENEW_TTS_DIR", "BAXY_MIND_LLAMA_PORT", "BAXY_VISION_ENDPOINT")
 DUMP = (
     "import json, os\n"
     f"print(json.dumps({{name: os.environ.get(name) for name in {NAMES!r}}}))\n"
@@ -51,3 +53,20 @@ def test_vision_off_still_reaches_the_launch(tmp_path: Path) -> None:
     checkout = _checkout(tmp_path / "uno")
     runs = _run(f'set "BAXY_VISION_OFF=1" & call "{checkout}\\scripts\\run_renew.cmd"', tmp_path)
     assert [run["BAXY_S1_DOUBT"] for run in runs] == ["0.4"]
+
+
+def test_a_bench_keeps_the_voice_it_sets(tmp_path: Path) -> None:
+    # Calidad PC 2026-10-25: every other path of the launcher is kept when it comes defined; the voice was not.
+    checkout = _checkout(tmp_path / "uno")
+    voice = tmp_path / "otra-voz"
+    runs = _run(f'set "BAXY_RENEW_TTS_DIR={voice}" & call "{checkout}\\scripts\\run_renew.cmd"', tmp_path)
+    assert [run["BAXY_RENEW_TTS_DIR"] for run in runs] == [str(voice)]
+
+
+def test_a_bench_keeps_the_port_it_sets_and_vision_follows_it(tmp_path: Path) -> None:
+    checkout = _checkout(tmp_path / "uno")
+    runs = _run(f'set "BAXY_MIND_LLAMA_PORT=8099" & call "{checkout}\\scripts\\run_renew.cmd"', tmp_path)
+    if runs[0]["BAXY_VISION_ENDPOINT"] is None:
+        pytest.skip("this machine has no vision projector: the launcher sets no port")
+    assert [(run["BAXY_MIND_LLAMA_PORT"], run["BAXY_VISION_ENDPOINT"]) for run in runs] == [
+        ("8099", "http://127.0.0.1:8099/v1/chat/completions")]
