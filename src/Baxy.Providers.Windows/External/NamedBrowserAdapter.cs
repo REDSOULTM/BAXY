@@ -116,6 +116,10 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         {
             return effectBoundary.Failure(operation, family + "_cdp_timeout");
         }
+        catch (CdpCommandException exception)
+        {
+            return effectBoundary.Failure(operation, exception.Code);
+        }
         catch (Exception exception) when (exception is IOException or HttpRequestException
             or TimeoutException)
         {

@@ -945,6 +945,35 @@ public sealed class ExternalAdaptersTests
     }
 
     [Test]
+    public void ACdpCommandWithoutAnswerEndsAtItsOwnTimeoutAndClosesTheSocket()
+    {
+        // Ronda q-web: an alert() on the page holds Runtime.evaluate; the command waited on the turn's token alone.
+        using var socket = new SilentWebSocket();
+
+        CdpCommandException failure = Assert.ThrowsAsync<CdpCommandException>(async () =>
+            await CdpBrowserSession.SendCommandAsync(
+                socket, 7, "Runtime.evaluate", null, TimeSpan.FromMilliseconds(200), CancellationToken.None))!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(failure.Code, Is.EqualTo("cdp_command_timeout"));
+            Assert.That(socket.Sent, Is.EqualTo(1));
+            Assert.That(socket.Aborted, Is.True);
+        });
+    }
+
+    [Test]
+    public void ATurnCancelledDuringACdpCommandStaysACancellation()
+    {
+        using var socket = new SilentWebSocket();
+        using var turn = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+
+        Assert.That(async () => await CdpBrowserSession.SendCommandAsync(
+                socket, 7, "Runtime.evaluate", null, TimeSpan.FromSeconds(30), turn.Token),
+            Throws.InstanceOf<OperationCanceledException>());
+    }
+
+    [Test]
     public async Task AFailedPageEvaluationIsToldByItsCodeNotAsAnEscapedException()
     {
         using TemporaryDirectory temporary = new();
@@ -6358,6 +6387,40 @@ public sealed class ExternalAdaptersTests
         {
             cancellationToken.ThrowIfCancellationRequested();
             return ValueTask.FromResult(result);
+        }
+    }
+
+    // A CDP socket that takes every command and never answers (a page held by alert()).
+    private sealed class SilentWebSocket : System.Net.WebSockets.WebSocket
+    {
+        internal int Sent { get; private set; }
+
+        internal bool Aborted { get; private set; }
+
+        public override System.Net.WebSockets.WebSocketCloseStatus? CloseStatus => null;
+        public override string? CloseStatusDescription => null;
+        public override System.Net.WebSockets.WebSocketState State =>
+            Aborted ? System.Net.WebSockets.WebSocketState.Aborted : System.Net.WebSockets.WebSocketState.Open;
+        public override string? SubProtocol => null;
+        public override void Abort() => Aborted = true;
+        public override Task CloseAsync(System.Net.WebSockets.WebSocketCloseStatus closeStatus,
+            string? statusDescription, CancellationToken cancellationToken) => Task.CompletedTask;
+        public override Task CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus closeStatus,
+            string? statusDescription, CancellationToken cancellationToken) => Task.CompletedTask;
+        public override void Dispose() { }
+
+        public override async Task<System.Net.WebSockets.WebSocketReceiveResult> ReceiveAsync(
+            ArraySegment<byte> buffer, CancellationToken cancellationToken)
+        {
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+            throw new InvalidOperationException("unreachable");
+        }
+
+        public override Task SendAsync(ArraySegment<byte> buffer, System.Net.WebSockets.WebSocketMessageType messageType,
+            bool endOfMessage, CancellationToken cancellationToken)
+        {
+            Sent++;
+            return Task.CompletedTask;
         }
     }
 
