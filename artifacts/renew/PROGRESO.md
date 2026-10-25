@@ -3428,3 +3428,8 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
 - **Regla de decisión, fijada antes de ver cifras**: int11f (con w10-lectura) frente a int11g 03fa1e306 (sin ella), NB,
   falsedades de práctica ×3 a ciegas y e2e práctica + H2 ×2 intercaladas. Queda w10-lectura sólo si int11f no tiene más
   falsedades claras que int11g y no pierde e2e de práctica; si no, el HEAD final es int11g.
+- 02:28 **Falsedades de práctica a ciegas, int11f frente a int11g** (NB, 20 × 3 por brazo, agente y clave nuevos, barajado
+  distinto por semilla): claras base 2 (F019 s1, s2: las mismas de la lectura anterior) | int11f 1 (F001 s2: «está
+  verificando la instalación de DOOM Eternal» cuando lo visible era la actualización de Steam) | int11g 1 (F009 s1, el
+  límite del nombre BAXY-bench); dudosas 3 | 1 | 2. F013 ya no aparece: retirar typed_in_window lo arregló. Regla: la mitad
+  de falsedades la pasa w10-lectura (1 = 1); falta la e2e de práctica.
