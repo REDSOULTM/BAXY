@@ -116,3 +116,28 @@ def json_text(value) -> str:
     import json
 
     return json.dumps(value, ensure_ascii=False)
+
+
+def test_the_sessions_calls_for_the_answer_check_do_not_grow_with_each_repeat(tmp_path: pathlib.Path,
+                                                                             monkeypatch: pytest.MonkeyPatch) -> None:
+    """Aid «answer_check»: Mind._calls kept one entry per call of the session, forever (exported with the session and
+    deep-copied by every early decision), while the check only asks whether a call of a kind completed (or ran at
+    all): the same (operation, completed, read) is kept once."""
+    import json
+
+    from test_mind_final import _call, _mind, _say
+
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    replies = []
+    for _ in range(5):
+        replies += [_call("app_open", {"appId": "Spotify"}), _say("Abrí Spotify.")]
+    mind, _ = _mind(tmp_path, replies)
+    mind.wire_to_op = {"app_open": "app.open"}
+    for turn in range(5):
+        mind.decide(2 * turn, "abre Spotify")
+        mind.continue_turn(2 * turn + 1, json.dumps({"status": "completed", "verification": "state"}))
+    assert mind.export_session()[-1]["calls"] == [["app.open", True, False]]
+    kept = mind.export_session()
+    kept[-1]["calls"] = [["app.open", True, False]] * 3 + [["app.close", False, False]]
+    mind.load_session(kept)
+    assert mind.export_session()[-1]["calls"] == [["app.open", True, False], ["app.close", False, False]]

@@ -1425,7 +1425,7 @@ class Mind:
         calls = state.get("calls")
         # Kept before «answer_check» (or written otherwise): what ran in it is not known whole, and nothing is checked
         # against the session's calls.
-        self._calls = ([(str(c[0]), c[1], c[2]) for c in calls] if isinstance(calls, list) and all(
+        self._calls = (list(dict.fromkeys((str(c[0]), c[1], c[2]) for c in calls)) if isinstance(calls, list) and all(
             isinstance(c, list) and len(c) == 3 and isinstance(c[1], bool) and isinstance(c[2], bool) for c in calls)
             else None if any(m.get("tool_calls") for m in self.conversation) else [])
         self._trim()
@@ -1668,8 +1668,14 @@ class Mind:
         turn.setdefault("receipts", []).append({"op": op, "tool": wire, "arguments": arguments,
                                                 "observation": observation, "outcome": outcome,
                                                 "completed": completed, "read": read})
-        if self._calls is not None:
-            self._calls.append((op, completed, read))
+        self._session_call((op, completed, read))
+
+    def _session_call(self, call: tuple[str, bool, bool]) -> None:
+        """One call of the session for the answer check, which only asks whether one of a kind completed or ran at all:
+        each (operation, completed, read) is kept once (revisión de calidad de la mente: one entry per call, for good,
+        exported with the session and deep-copied by every early decision)."""
+        if self._calls is not None and call not in self._calls:
+            self._calls.append(call)
 
     def _close_open_calls(self) -> None:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
@@ -1678,9 +1684,8 @@ class Mind:
         if turn.get("awaiting"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
             self._ran_add(turn.get("calling"), NO_RESULT_RAN)
-            if self._calls is not None:  # it may have run: never a completed call of the session
-                op = str(turn.get("calling") or "?")
-                self._calls.append((op, False, self.risk.get(op.replace(".", "_")) == "read_only"))
+            op = str(turn.get("calling") or "?")  # it may have run: never a completed call of the session
+            self._session_call((op, False, self.risk.get(op.replace(".", "_")) == "read_only"))
         if turn.get("asked"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["asked"], "content": ASKED})
         pending = [c["id"] for c in turn.get("queue") or []]
