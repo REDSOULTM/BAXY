@@ -832,6 +832,12 @@ internal sealed class WindowsVisibleControlAdapter
     private static readonly TimeSpan ScreenChangeFreshness = TimeSpan.FromSeconds(30);
     private nint _lookedWindow;
     private DateTime _screenChangedUtc = DateTime.MinValue;
+    // The clock the label's wait runs on: when a click changed the screen, the opening's settling and the label's
+    // budget, the pause between looks and the still window's watch (the opened application's NotedUtc is on it too).
+    private readonly TimeProvider _time;
+
+    private DateTime Now => _time.GetUtcNow().UtcDateTime;
+
     // Goal v3, analysis r3a M7: how many elements the accessible tree had when the last look by label did not find the
     // label (-1: not said). After an opening the label is waited for only while that tree grows.
     private int _lookedTreeSize = -1;
@@ -1197,9 +1203,11 @@ internal sealed class WindowsVisibleControlAdapter
         Func<nint, bool?, CancellationToken, ValueTask<VisibleControlSurface.CapturedWindow?>>? capture = null,
         IVisibleControlLocator? tooltip = null,
         Func<nint, bool>? elevated = null,
-        Func<nint, IReadOnlyList<nint>>? renderHosts = null)
+        Func<nint, IReadOnlyList<nint>>? renderHosts = null,
+        TimeProvider? time = null)
     {
         _worker = worker ?? throw new ArgumentNullException(nameof(worker));
+        _time = time ?? TimeProvider.System;
         _renderHosts = renderHosts ?? VisibleControlSurface.FamilyContentWindows;
         _elevated = elevated ?? (window => VisibleControlSurface.RunsAboveUs(VisibleControlSurface.WindowProcess(window).ProcessId));
         _tooltip = tooltip;
@@ -1387,7 +1395,7 @@ internal sealed class WindowsVisibleControlAdapter
             && result.TryGetProperty("surfaceChanged", out JsonElement changed)
             && changed.ValueKind == JsonValueKind.True)
         {
-            _screenChangedUtc = DateTime.UtcNow;
+            _screenChangedUtc = Now;
         }
 
         return RepeatedUnchanged(receipt, arguments);
@@ -1809,7 +1817,7 @@ internal sealed class WindowsVisibleControlAdapter
 
         _openedLooked = null;
         // The first click after one that changed the screen waits the whole stretch (review r10).
-        bool afterScreenChange = DateTime.UtcNow - _screenChangedUtc < ScreenChangeFreshness;
+        bool afterScreenChange = Now - _screenChangedUtc < ScreenChangeFreshness;
         _screenChangedUtc = DateTime.MinValue;
         _lookedWindow = 0;
         nint surfaceWindow = 0;
@@ -1825,7 +1833,7 @@ internal sealed class WindowsVisibleControlAdapter
             ? noted.NotedUtc + (noted.Launched ? _timing.LaunchSurface : _timing.ReusedSurface)
             : DateTime.MinValue;
         // Whatever happens to the opened application's windows, the click ends by here.
-        DateTime cap = (settled > DateTime.UtcNow ? settled : DateTime.UtcNow) + labelBudget;
+        DateTime cap = (settled > Now ? settled : Now) + labelBudget;
         while (true)
         {
             bool look = true;
@@ -1843,11 +1851,11 @@ internal sealed class WindowsVisibleControlAdapter
                     lookingSince = null;
                     previousTree = -1;
                 }
-                bool settling = DateTime.UtcNow < settled;
+                bool settling = Now < settled;
                 look = surface.Window != 0 && (surface.Drawn || !settling);
                 if (!look && !settling && lookingSince is null)
                     break;
-                if (DateTime.UtcNow >= cap)
+                if (Now >= cap)
                 {
                     if (await HoverOnceAsync().ConfigureAwait(false) is { } capped)
                         return capped;
@@ -1857,7 +1865,7 @@ internal sealed class WindowsVisibleControlAdapter
 
             if (look)
             {
-                lookingSince ??= DateTime.UtcNow;
+                lookingSince ??= Now;
                 // Bound to the opened application's window, to the window the click names or to the window of the view
                 // whose identity went stale: nothing is read or pressed on whatever else holds the front (the person
                 // took it). The accessible tree reaches the bound window behind; OCR and vision read its own image
@@ -1903,7 +1911,7 @@ internal sealed class WindowsVisibleControlAdapter
                 // shows its label to a later look first, and its controls are not hovered half drawn. On a look made
                 // when the label's wait is already over, before vision.
                 hoverWindow = boundWindow;
-                if (DateTime.UtcNow >= lookingSince.Value + labelBudget
+                if (Now >= lookingSince.Value + labelBudget
                     && await HoverOnceAsync().ConfigureAwait(false) is { } tooltip)
                     return tooltip;
 
@@ -1921,7 +1929,7 @@ internal sealed class WindowsVisibleControlAdapter
             // cancelled) ends the wait.
             if (look && uia?.ErrorCode is { } code && !CascadeAfter.Contains(code))
                 break;
-            if (lookingSince is { } since && DateTime.UtcNow >= since + labelBudget)
+            if (lookingSince is { } since && Now >= since + labelBudget)
             {
                 if (await HoverOnceAsync().ConfigureAwait(false) is { } waited)
                     return waited;
@@ -1934,7 +1942,7 @@ internal sealed class WindowsVisibleControlAdapter
             // found» now. A loading screen (a small tree) or a window that changes keeps the whole wait (a client
             // launched cold, UI1731).
             if (opened is not null && look && _surfaceHash is not null && _lookedWindow != 0
-                && lookingSince is { } lookedFor && DateTime.UtcNow >= lookedFor + _timing.SettledLabel)
+                && lookingSince is { } lookedFor && Now >= lookedFor + _timing.SettledLabel)
             {
                 int tree = _lookedTreeSize;
                 bool built = tree >= _timing.InterfaceUp && previousTree >= 0 && tree <= previousTree;
@@ -1972,7 +1980,7 @@ internal sealed class WindowsVisibleControlAdapter
 
                 continue;
             }
-            await Task.Delay(_timing.Interval, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(_timing.Interval, _time, cancellationToken).ConfigureAwait(false);
         }
 
         // Nothing looked at means nothing pressed: no window of the opened application ever showed (ronda final 18:
@@ -2011,24 +2019,24 @@ internal sealed class WindowsVisibleControlAdapter
         Func<CancellationToken, ValueTask<string?>> surfaceHash,
         CancellationToken cancellationToken)
     {
-        var watch = Stopwatch.StartNew();
+        long watch = _time.GetTimestamp();
         string? first = await surfaceHash(cancellationToken).ConfigureAwait(false);
         if (first is null)
         {
-            TimeSpan rest = _timing.Interval - watch.Elapsed;
+            TimeSpan rest = _timing.Interval - _time.GetElapsedTime(watch);
             if (rest > TimeSpan.Zero)
-                await Task.Delay(rest, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(rest, _time, cancellationToken).ConfigureAwait(false);
             return false;
         }
 
-        var still = Stopwatch.StartNew();
-        while (watch.Elapsed < _timing.Interval)
+        long still = _time.GetTimestamp();
+        while (_time.GetElapsedTime(watch) < _timing.Interval)
         {
-            await Task.Delay(_timing.StillSample, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(_timing.StillSample, _time, cancellationToken).ConfigureAwait(false);
             string? now = await surfaceHash(cancellationToken).ConfigureAwait(false);
             if (now is null || !string.Equals(now, first, StringComparison.Ordinal))
                 return false;
-            if (still.Elapsed >= _timing.StillFor)
+            if (_time.GetElapsedTime(still) >= _timing.StillFor)
                 return true;
         }
 

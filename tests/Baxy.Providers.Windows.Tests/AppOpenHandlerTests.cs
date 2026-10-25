@@ -607,13 +607,16 @@ public sealed class AppOpenHandlerTests
     {
         var opened = new List<string>();
         int waited = 0;
+        // The opening's own clock: a process created at the moment it began was started by it, however long this test
+        // takes to reach it (read from the wall clock, a cold run alone left it more than a clock tick behind).
         var handler = new AppOpenHandler(
             new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", running,
-                startedNow ? DateTime.UtcNow.Ticks : 638900000000000000),
+                startedNow ? OpeningStarted.UtcTicks : 638900000000000000),
             new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RecordedPlace(opened),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
-            settle: (_, _, _) => { waited++; return ValueTask.FromResult(999L); });
+            settle: (_, _, _) => { waited++; return ValueTask.FromResult(999L); },
+            time: new FixedTime(OpeningStarted));
 
         OperationOutcome outcome = await handler.ExecuteAsync(
             Invocation($$"""{"appId":"{{app}}","place":"{{place}}"}"""), CancellationToken.None);
@@ -635,11 +638,12 @@ public sealed class AppOpenHandlerTests
         var opened = new List<string>();
         var settled = new TaskCompletionSource<long>(TaskCreationOptions.RunContinuationsAsynchronously);
         var handler = new AppOpenHandler(
-            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", false, DateTime.UtcNow.Ticks),
+            new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", false, OpeningStarted.UtcTicks),
             new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RecordedPlace(opened),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
-            settle: (_, _, _) => new ValueTask<long>(settled.Task));
+            settle: (_, _, _) => new ValueTask<long>(settled.Task),
+            time: new FixedTime(OpeningStarted));
 
         ValueTask<OperationOutcome> opening = handler.ExecuteAsync(
             Invocation("""{"appId":"Steam","place":"library"}"""), CancellationToken.None);
@@ -654,6 +658,14 @@ public sealed class AppOpenHandlerTests
             Assert.That(opened, Has.Count.EqualTo(2));
             Assert.That(outcome.Result!.Value.GetProperty("windowHandle").GetInt64(), Is.EqualTo(999));
         });
+    }
+
+    // The moment an opening under test begins, on its own clock.
+    private static readonly DateTimeOffset OpeningStarted = new(2026, 10, 25, 12, 0, 0, TimeSpan.Zero);
+
+    private sealed class FixedTime(DateTimeOffset now) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => now;
     }
 
     private static AppOpenHandler SteamHandler(List<string> opened, IGameTitles titles) => new(

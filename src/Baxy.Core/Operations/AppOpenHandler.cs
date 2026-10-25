@@ -13,7 +13,8 @@ internal sealed class AppOpenHandler(
     Func<nint, string?>? windowIdFor = null,
     Func<long, OpenedWindowFront>? frontOf = null,
     IGameTitles? games = null,
-    Func<long, string, CancellationToken, ValueTask<long>>? settle = null)
+    Func<long, string, CancellationToken, ValueTask<long>>? settle = null,
+    TimeProvider? time = null)
     : IOperationHandler, IInvocationPreflight
 {
     // BAXY Renew cu (C03 en frío): how long an application started behind its sign-in may take to show its window.
@@ -26,6 +27,8 @@ internal sealed class AppOpenHandler(
     private readonly IApplicationPlaceOpener _places = places ?? new ShellApplicationPlaceOpener();
     private readonly Func<long, OpenedWindowFront> _frontOf = frontOf ?? OpenedWindowFront.Read;
     private readonly IGameTitles _games = games ?? new CatalogGameTitles();
+    // The clock the moment before the opening is read on (LaunchedByThisOpening compares it with the process's own).
+    private readonly TimeProvider _time = time ?? TimeProvider.System;
 
     public OperationDefinition Definition { get; } =
         ProductCatalog.CreateDefinition("app.open");
@@ -164,7 +167,7 @@ internal sealed class AppOpenHandler(
         // window that appears inside a process the person was already using), and never counts as BAXY's.
         // v3 r22 revisión 2: the person's own input into what this opening launches is watched from before it.
         _provenance.PrepareLaunch();
-        long openingStartedTicks = DateTime.UtcNow.Ticks;
+        long openingStartedTicks = _time.GetUtcNow().UtcTicks;
         ApplicationOpenResult providerResult = await _provider.OpenAsync(
             new ApplicationOpenRequest(
                 arguments.AppId,
