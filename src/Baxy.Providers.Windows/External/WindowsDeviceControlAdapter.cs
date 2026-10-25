@@ -456,19 +456,75 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string id = ExternalJson.RequiredString(arguments, "deviceId");
         if (!_bluetooth.TryGetValue(id, out string? nativeId))
             return IdentityUnknown(operation, "bluetooth_identity_expired", "deviceId", "paired", "bluetooth_device_list");
-        DeviceInformation item = await DeviceInformation.CreateFromIdAsync(nativeId);
-        if (item.Pairing.IsPaired)
+        BluetoothPairingState item = await ReadPairingAsync(nativeId, cancellationToken).ConfigureAwait(false);
+        if (item.IsPaired)
             return ExternalJson.Switched(operation, BluetoothPairResult(id, item.Name), effectObserved: false);
-        if (!item.Pairing.CanPair) return ExternalJson.Failure(operation, "bluetooth_device_cannot_pair");
+        if (!item.CanPair) return ExternalJson.Failure(operation, "bluetooth_device_cannot_pair");
         effectBoundary.Cross(cancellationToken);
-        DevicePairingResult paired = await item.Pairing.PairAsync(DevicePairingProtectionLevel.Default);
+        // Revisión nb-q-apps2: PairAsync waits for the person to answer Windows' pairing dialog, and nobody answering
+        // held the turn for good (no deadline, the turn's cancel ignored). The wait is bounded and follows the turn's
+        // cancel; past the bound the pairing is not confirmed, and the dialog, if still open, may yet pair the device.
+        using var pairing = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        bool paired;
+        try
+        {
+            paired = await BluetoothPairing.PairAsync(nativeId, pairing.Token).AsTask()
+                .WaitAsync(BluetoothPairTimeout, cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            pairing.Cancel();
+            return PairingNotConfirmed(operation, id);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            pairing.Cancel();
+            throw;
+        }
         cancellationToken.ThrowIfCancellationRequested();
-        DeviceInformation after = await DeviceInformation.CreateFromIdAsync(nativeId);
-        if (paired.Status is not (DevicePairingResultStatus.Paired or DevicePairingResultStatus.AlreadyPaired)
-            || !after.Pairing.IsPaired)
+        BluetoothPairingState after = await ReadPairingAsync(nativeId, cancellationToken).ConfigureAwait(false);
+        if (!paired || !after.IsPaired)
             return effectBoundary.Failure(operation, "bluetooth_pairing_not_verified", true);
         return ExternalJson.Success(operation, BluetoothPairResult(id, after.Name), true);
     }
+
+    /// <summary>Revisión nb-q-apps2: the device's pairing as Windows reads it (a fake in tests; nothing is paired).</summary>
+    internal IBluetoothPairing BluetoothPairing { get; init; } = WindowsBluetoothPairing.Instance;
+
+    /// <summary>Revisión nb-q-apps2: how long a pairing waits for Windows (and the person, if it shows its dialog).</summary>
+    internal TimeSpan BluetoothPairTimeout { get; init; } = DefaultBluetoothPairTimeout;
+
+    private static readonly TimeSpan DefaultBluetoothPairTimeout = TimeSpan.FromSeconds(45);
+
+    // A read of the device is bounded as the inventory is (a WinRT call that never answers is a timeout, before any effect).
+    private async Task<BluetoothPairingState> ReadPairingAsync(string nativeId, CancellationToken cancellationToken)
+    {
+        using var reading = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        try
+        {
+            return await BluetoothPairing.ReadAsync(nativeId, reading.Token).AsTask()
+                .WaitAsync(_bluetoothInventoryTimeout, cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            reading.Cancel();
+            throw;
+        }
+    }
+
+    private static ExternalCapabilityReceipt PairingNotConfirmed(string operation, string id) =>
+        ExternalJson.FailureAfterEffect(operation, "bluetooth_pairing_not_confirmed") with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1); writer.WriteString("deviceId", id);
+                writer.WriteBoolean("pairingConfirmed", false);
+                writer.WriteString("next", "Windows did not confirm the pairing in time (its pairing dialog may be "
+                    + "waiting for an answer); if that dialog is still open the device may still pair, and "
+                    + "bluetooth_device_list shows whether it is paired");
+                writer.WriteEndObject();
+            }),
+        };
 
     // Renew al máximo (w5): an id no list of this Core gave (an older session's, or one made up) was a bare «expired»; with
     // the aid identity_relist it says nothing was done and which list gives the ids.
@@ -2889,6 +2945,38 @@ internal interface IBluetoothDeviceInventory
 {
     ValueTask<IReadOnlyList<BluetoothDeviceSnapshot>> ListAsync(
         CancellationToken cancellationToken);
+}
+
+internal sealed record BluetoothPairingState(string Name, bool IsPaired, bool CanPair);
+
+/// <summary>Revisión nb-q-apps2: a Bluetooth device's pairing, read and asked of Windows (a fake in tests).</summary>
+internal interface IBluetoothPairing
+{
+    ValueTask<BluetoothPairingState> ReadAsync(string nativeId, CancellationToken cancellationToken);
+
+    // Whether Windows answered that the device is paired (Paired or AlreadyPaired).
+    ValueTask<bool> PairAsync(string nativeId, CancellationToken cancellationToken);
+}
+
+internal sealed class WindowsBluetoothPairing : IBluetoothPairing
+{
+    internal static readonly WindowsBluetoothPairing Instance = new();
+
+    public async ValueTask<BluetoothPairingState> ReadAsync(string nativeId, CancellationToken cancellationToken)
+    {
+        DeviceInformation item = await DeviceInformation.CreateFromIdAsync(nativeId).AsTask(cancellationToken)
+            .ConfigureAwait(false);
+        return new BluetoothPairingState(item.Name, item.Pairing.IsPaired, item.Pairing.CanPair);
+    }
+
+    public async ValueTask<bool> PairAsync(string nativeId, CancellationToken cancellationToken)
+    {
+        DeviceInformation item = await DeviceInformation.CreateFromIdAsync(nativeId).AsTask(cancellationToken)
+            .ConfigureAwait(false);
+        DevicePairingResult paired = await item.Pairing.PairAsync(DevicePairingProtectionLevel.Default)
+            .AsTask(cancellationToken).ConfigureAwait(false);
+        return paired.Status is DevicePairingResultStatus.Paired or DevicePairingResultStatus.AlreadyPaired;
+    }
 }
 
 internal sealed class WindowsBluetoothDeviceInventory : IBluetoothDeviceInventory
