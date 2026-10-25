@@ -120,16 +120,24 @@ export default function App() {
   }, []);
 
   // ---- read the host's settings now, and the ones the chat can change every few seconds ----
+  // a reading that started before a change of the person's was sent or answered may hold the value from before it: it
+  // is dropped (the next one reads the change), so a switch never jumps back to what it was for a few seconds
+  const edits = useRef(0);
+  const edit = useCallback(async <T,>(write: () => Promise<T>): Promise<T> => {
+    edits.current++;
+    try { return await write(); } finally { edits.current++; }
+  }, []);
   useEffect(() => {
     let cancelled = false;
     const sync = async () => {
+      const at = edits.current;
       const [c, a, g, p] = await Promise.all([
         getJson<{ confirmationPolicy?: string; confirmSeconds?: number; proposalSeconds?: number }>('/confirmation'),
         getJson<{ active?: string }>('/accessibility'),
         getJson<GeneralSettings>('/settings/general'),
         getJson<ProposalSettings>('/proposals'),
       ]);
-      if (cancelled) return;
+      if (cancelled || edits.current !== at) return;
       if (c) setBypassState(c.confirmationPolicy === 'bypass');
       if (c && typeof c.confirmSeconds === 'number' && typeof c.proposalSeconds === 'number') {
         const life = { confirm: c.confirmSeconds, proposal: c.proposalSeconds };
@@ -321,18 +329,18 @@ export default function App() {
     else setPanel(null);
   }, []);
   const setBypass = useCallback(async (on: boolean) => {
-    const r = await send<{ confirmationPolicy?: string }>('PUT', '/confirmation', { confirmationPolicy: on ? 'bypass' : 'normal' });
+    const r = await edit(() => send<{ confirmationPolicy?: string }>('PUT', '/confirmation', { confirmationPolicy: on ? 'bypass' : 'normal' }));
     if (!r) { setNotice({ b: 'Confirmación', t: 'no se pudo cambiar' }); return; }
     const now = r.confirmationPolicy === 'bypass';
     setBypassState(now);
     setNotice(now ? { b: 'Bypass', t: 'sin frenos hasta que lo apagues' } : { b: 'Normal', t: 'pregunto antes de lo arriesgado' });
-  }, []);
+  }, [edit]);
   const setA11y = useCallback(async (next: A11y) => {
     setA11yState(next);
     keep('baxy.a11y.size', next.size); keep('baxy.a11y.contrast', next.contrast ? '1' : '0');
-    const r = await send<{ active?: string }>('PUT', '/accessibility', { mode: next.on ? 'accessible' : 'normal' });
+    const r = await edit(() => send<{ active?: string }>('PUT', '/accessibility', { mode: next.on ? 'accessible' : 'normal' }));
     if (r) setA11yState((x) => ({ ...x, on: r.active === 'accessible' }));
-  }, []);
+  }, [edit]);
   const applyMic = useCallback(async (m: MicMode) => {
     const r = m === 'always' ? await send<{ running?: boolean }>('POST', '/voice/start') : await send('POST', '/voice/stop');
     return r !== null && (m !== 'always' || (r as { running?: boolean }).running !== false);
@@ -398,13 +406,13 @@ export default function App() {
     void send('POST', '/voice/trigger');
   }, [state, mic]);
   const onGeneral = useCallback(async (p: Partial<GeneralSettings>) => {
-    const r = await send<GeneralSettings>('PUT', '/settings/general', p);
+    const r = await edit(() => send<GeneralSettings>('PUT', '/settings/general', p));
     if (r) setGeneral(r); else setNotice({ b: 'Ajustes', t: 'no se pudo guardar' });
-  }, []);
+  }, [edit]);
   const onProposals = useCallback(async (p: Partial<ProposalSettings>) => {
-    const r = await send<ProposalSettings>('PUT', '/proposals', p);
+    const r = await edit(() => send<ProposalSettings>('PUT', '/proposals', p));
     if (r) setProposals(r); else setNotice({ b: 'Propuestas', t: 'no se pudo guardar' });
-  }, []);
+  }, [edit]);
   // the last reply or card: unread while the chat is folded and it is not the one the person saw last; a waiting card
   // opens the chat by itself until the person folds it again.
   const lastReply = useMemo(() => {

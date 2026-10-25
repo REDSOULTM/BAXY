@@ -207,3 +207,29 @@ test('memoria: olvidar un recuerdo llamado «all» no pregunta por olvidar todo'
   await expect(h.page.locator('.bx-mem-row', { hasText: 'todos los días' })).toContainText('¿Olvidar?');
   await expect(h.page.locator('.panel-footer')).not.toContainText('¿Olvidar todo?');
 });
+
+test('ajustes: una lectura de los ajustes empezada antes de un cambio no lo deshace en la vista', async () => {
+  h = await openView();
+  const host = { autostart: false, closeToTray: true, voiceMuted: false, wakeSound: true, waitNotice: true, web: false, weather: true, screen: false };
+  let slow = false, reads = 0;
+  h.reply('/settings/general', async (c) => {
+    if (c.method === 'PUT') { Object.assign(host, c.body); return { body: { ...host } }; }
+    const seen = { ...host }; // read before the change below lands
+    reads++;
+    if (slow) await later(900);
+    return { body: seen };
+  });
+  await h.page.locator('.bx-gear').click();
+  await h.page.locator('.settings-tab', { hasText: 'Privacidad' }).click();
+  const web = h.page.locator('button.toggle[aria-label="Búsqueda web"]');
+  await expect(web).toBeEnabled();
+  slow = true;
+  const before = reads;
+  await expect.poll(() => reads, { timeout: 8000 }).toBeGreaterThan(before); // the periodic read is on its way
+  await web.click();
+  await expect(web).toHaveAttribute('aria-checked', 'true');
+  // until the next periodic read (4 s) the switch must not go back to what it was
+  const seen: (string | null)[] = [];
+  for (let i = 0; i < 14; i++) { seen.push(await web.getAttribute('aria-checked')); await h.page.waitForTimeout(100); }
+  expect(seen.filter((v) => v !== 'true'), 'el interruptor volvió atrás').toEqual([]);
+});
