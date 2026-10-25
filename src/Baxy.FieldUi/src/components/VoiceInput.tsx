@@ -34,8 +34,11 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
   useEffect(() => {
     if (!menu) return;
     const close = (e: PointerEvent) => { if (!(e.target as Element | null)?.closest('.bx-micwrap')) setMenu(false); };
+    // Esc closes the open menu and goes no further (it is also a card's No)
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); setMenu(false); } };
     window.addEventListener('pointerdown', close);
-    return () => window.removeEventListener('pointerdown', close);
+    window.addEventListener('keydown', esc, true);
+    return () => { window.removeEventListener('pointerdown', close); window.removeEventListener('keydown', esc, true); };
   }, [menu]);
   const send = () => { if (!armed) return; onSubmit(draft.trim()); setDraft(''); };
   const ph = state === 'booting' ? 'Cargando el modelo…'

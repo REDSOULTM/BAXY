@@ -97,3 +97,13 @@ test('sesiones: Enter al renombrar renombra una vez', async () => {
   await h.page.waitForTimeout(300);
   expect(renames()).toEqual([{ id: 's2', title: 'Compras' }]);
 });
+
+test('Esc con el menú del micrófono abierto cierra el menú y no rechaza la tarjeta', async () => {
+  h = await openView({ items: [card('c1')] });
+  await h.page.locator('.bx-caret').click();
+  await expect(h.page.locator('.bx-micmenu')).toBeVisible();
+  await h.page.keyboard.press('Escape');
+  await expect(h.page.locator('.bx-micmenu')).toHaveCount(0);
+  await h.page.waitForTimeout(300);
+  expect(answers()).toEqual([]);
+});
