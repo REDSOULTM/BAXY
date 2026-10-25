@@ -62,6 +62,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // still loaded under load, the start was answered as the App's wait ran out, the App stopped it again, and the
     // startup voice had yielded to that command: the wake word never started.
     private Task _voiceSettled = Task.CompletedTask;
+    // Each wake-word command the person gives, numbered: a start that waited for the ear yields to any given after it.
+    private int _wakeCommands;
     private const string WakeUnavailable = "wake_unavailable";
     private bool _startupMindPending;
     private bool _isListening;
@@ -941,9 +943,29 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal async Task<bool> SetWakeVoiceAsync(bool enabled, CancellationToken cancellationToken)
     {
+        int command = Interlocked.Increment(ref _wakeCommands);
+        if (enabled)
+        {
+            // A wake word is a mode, not an utterance: asked for while the ear still loads, it starts once it has loaded
+            // (_voiceSettled), instead of reaching a mind that holds it until then. It waits outside the gate of the voice
+            // commands (revisión de nb-w11-arranque): a stop given meanwhile (rest, /voice/stop) is not held behind the
+            // ear's load, however long, and the start yields to it.
+            Volatile.Write(ref _personVoiceChoice, 1);
+            await _voiceSettled.WaitAsync(cancellationToken);
+            if (Volatile.Read(ref _wakeCommands) != command)
+            {
+                return IsWakeListening;
+            }
+        }
+
         await _voiceCommands.WaitAsync(cancellationToken);
         try
         {
+            if (enabled && Volatile.Read(ref _wakeCommands) != command)
+            {
+                return IsWakeListening;
+            }
+
             await AwaitStartupVoiceAsync();
             // Ronda final 27 (regla 3): nothing listening is already off, whatever the mind's state (a mind that ended
             // turned the flags off): stopping it is done, never «still running».
@@ -960,20 +982,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (enabled)
             {
-                if (IsWakeListening)
-                {
-                    return true;
-                }
-
-                // A wake word is a mode, not an utterance: asked for while the ear still loads, it starts once it has
-                // loaded (_voiceSettled), instead of reaching a mind that holds it until then.
-                await _voiceSettled.WaitAsync(cancellationToken);
-                mind = _mindClient;
-                if (mind is not { IsReady: true })
-                {
-                    return false;
-                }
-
                 if (IsWakeListening)
                 {
                     return true;
