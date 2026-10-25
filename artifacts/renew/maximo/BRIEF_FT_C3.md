@@ -247,3 +247,22 @@ producto no da. Con S1, said_path_next se queda sólo como comprobación.
    falsedades y el holdout nuevo.
 9. **Coste**: 1 época de c2 son 296 pasos en la 4060 Ti, más fusión, cuantización y bancos (~1 día por ciclo con las
    dos máquinas). Con el dueño en el PC, nada que actúe corre ahí (`PROGRESO.md:2976-2981`).
+
+## 7. Añadido de la fase 3 (2026-10-24, «al 100 % sin reentrenar»): lo que sólo arregla el modelo
+
+Lo que la fase 3 no movió sin reentrenar, con su cifra (holdout v5, ya material de práctica, y bancos de práctica). Las
+cifras finales del holdout v6 se añaden al cerrar.
+
+| Conducta | Evidencia | Por qué no se arregla fuera del modelo |
+|---|---|---|
+| **T9. Seguir el medio que la persona nombra** («en la terminal», «con un comando») | V5E051: file_write directo en las dos semillas (confianza 0,53/0,62; System One eligió también file_write 0,91) | Una ayuda de descripción toca el prefijo; la lección P2.2 se repitió en esta fase (abajo) |
+| **T10. Saber lo que sus herramientas hacen** (borrar una carpeta) | V5E046: «no puedo borrar carpetas» en las dos semillas, aunque la descripción lo dice en su primera frase | Una palabra en el «Use when» (`w10-desc`, «or folder») costó −3 en decision3 s0 (243 frente a 240) volteando alarmas y «abre el tercero» |
+| **T11. «¿Ya lo hiciste?» sin actuar otra vez** | ya_hecho de v5 (final, 120 decisiones): ~6 acciones nuevas (reproducir tras «¿ya está sonando?», quitar el silencio, abrir Photoshop) y 13 preguntas de más | La regla del sistema pide verificar con una lectura; elegir lectura y no acción es del modelo |
+| **T12. Nombres del dictado tal como se dijeron** | V5E043: «viaje chiloé 2027» → `viaje_chiloe_2027` a 0,99 | `said_name` (NB) lo rechaza una vez con la grafía dicha; el modelo debería escribirla bien a la primera |
+| **T13. Aritmética del reloj de otro lugar** | V5E016: 1 de 4 aciertos (suma el desfase a la hora local y pierde el cambio de día) | `place_clock` da la hora del lugar ya calculada; el modelo no debería tener que hacer la cuenta |
+| **T14. Abrir la página cuando el fragmento no responde** | Metro (V5E008/018): con fragmentos que no traen el año, responde con un año vecino; incluso sin la cola «lo que vio está arriba» abre la página sólo 12/24 | El texto de la línea mueve la tasa pero no la lleva a 24/24; y un año dicho sin abrir suele ser memoria atribuida a una fuente |
+| **T15. Apps de nombre parecido sin lugar** | V5E011/V5D078: «configuración de pantalla de Windows» → «Configuración de Monitor en DisplayFusion» | System One decide la herramienta, no el appId; `place_owner` sólo actúa con lugar |
+| Límites conocidos que siguen | E027 (pregunta antes del borrado en 2/3), F009 (BAXY-bench al borde), «sí no», rutas dictadas | Sin cambio en esta fase |
+
+Lección de esta fase para los datos de c3: **cualquier palabra del prefijo es un cambio de distribución**. Lo que se
+añada a descripciones o reglas se decide junto con c3 y se mide con decision3 × 3 y e2e, nunca como retoque suelto.

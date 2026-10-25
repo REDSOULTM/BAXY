@@ -59,7 +59,9 @@ informa con su cifra y su causa; nada se reajusta después de abrir.
 
 ## Exclusiones fijadas ahora
 
-`setup_fallido`, `void` y `sesion_bloqueada` quedan fuera. Una corrida VOID entera (ventana ajena, frente sostenido por una
+`setup_fallido`, `void` y `sesion_bloqueada` quedan fuera. Un `contaminated: true` cuyo único cambio en el perfil está bajo
+`%USERPROFILE%\.claude\` (la sesión de Claude Code de esa máquina renovando su token o limpiando, no BAXY: v5 PC
+`.last-cleanup`, práctica NB 2026-10-24 `.credentials.json`) no anula el brazo; se anota con su ruta. Una corrida VOID entera (ventana ajena, frente sostenido por una
 ventana invisible) se repite antes de mirar sus aciertos. Nada más se excluye.
 
 ## Orden del cierre

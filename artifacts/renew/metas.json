@@ -2654,7 +2654,7 @@
       },
       "H1_confirmaciones": {
         "maquina": "PC",
-        "estado": "diagnóstico"
+        "estado": "H1 tal como se planteó no aparece (0 doubt_ask en 5 confirmaciones); causas arregladas: rutas relativas con espacios (NB), nombres casi iguales (w10-archivos), rival '=' de la duda (w10-duda); V5E046/051 límite del modelo"
       },
       "H2_tareas_siempre_fallidas": {
         "maquina": "PC+NB",
@@ -2686,19 +2686,19 @@
       },
       "H3_ya_lo_hiciste": {
         "maquina": "PC",
-        "estado": "diagnóstico"
+        "estado": "efecto del banco (historial sin llamadas): final 45/120 bien, ~50 lecturas de verificación; secundaria pre-registrada"
       },
       "H4_bucles_lectura": {
         "maquina": "PC",
-        "estado": "diagnóstico"
+        "estado": "arreglado w10-bucle 0fe6a5cb8 (windowId de un solo uso)"
       },
       "H5_urls_inventadas": {
         "maquina": "PC",
-        "estado": "pendiente"
+        "estado": "ayuda result_hosts w10-web ec37cef4a; en medida"
       },
       "H6_sin_respuesta": {
         "maquina": "PC",
-        "estado": "diagnóstico"
+        "estado": "arreglado w10-sinrespuesta c39fcfff9 (reproducido con el modelo real)"
       },
       "H7_latencia": {
         "maquina": "NB",
@@ -2706,7 +2706,7 @@
       },
       "H8_uso_diario": {
         "maquina": "PC",
-        "estado": "pendiente"
+        "estado": "sin causa única de la App (hora ambigua, profileName, mirar antes de lanzar, DisplayFusion)"
       },
       "H9_engine_no_answer": {
         "maquina": "NB",
@@ -2715,6 +2715,14 @@
       "H10_limites": {
         "maquina": "PC",
         "estado": "pendiente"
+      },
+      "palancas": {
+        "w10-duda c27986969": "se queda: decision3 x3 +3,67 (IC95 [+1,0; +7,0]), acciones equivocadas -0,67",
+        "w10-desc a038a3022": "descartada: decision3 s0 sin ella 243 frente a 240 (voltea P017, P090, Q031, Q116)",
+        "snippets_only (sin commit)": "descartada: abre la página 0/24 frente a 4/24",
+        "w10-lectura bc1eb2193": "en medida (int11c): abre la página 12/24 frente a 4/24 offline",
+        "w10-bucle, w10-numeros, w10-web, w10-sinrespuesta, w10-archivos, w10-teclado, w10-alarma, w10-hora": "en int11 (suites verdes); medida e2e en el NB",
+        "w10-teclado typed_in_window": "receta de reemplazo retirada (82211cf25): E012 en int11 escribía en el diálogo Abrir"
       }
     }
   }
