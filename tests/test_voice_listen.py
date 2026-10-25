@@ -227,3 +227,42 @@ def test_the_microphone_is_the_mme_sound_mapper_unless_one_is_named(monkeypatch:
     assert listening._device() == 0
     monkeypatch.setenv("BAXY_RENEW_MIC", "3")
     assert listening._device() == 3
+
+
+def test_a_microphone_that_fails_to_start_is_closed_and_opened_again_on_the_next_start(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """Revisión de calidad de la mente (2026-10-25): sounddevice opens the stream when it is built and start() may still
+    fail (the device busy or gone); the stream was kept, never closed, and the next voice.start found it «open» and said
+    the ear was on while it heard nothing (until STALL_S reopened it, and only if the voice was not off)."""
+    streams: list = []
+
+    class Input:
+        failing = True
+
+        def __init__(self, **_settings) -> None:
+            self.started = self.closed = False
+            streams.append(self)
+
+        def start(self):
+            if Input.failing:
+                raise OSError("device unavailable")
+            self.started = True
+
+        def close(self) -> None:
+            self.closed = True
+
+    def load(self: Voice) -> None:
+        self._recognizer, self._input, self._vad = _InstantRecognizer(), True, _Vad()
+        self._loaded.set()
+
+    monkeypatch.setitem(__import__("sys").modules, "sounddevice", SimpleNamespace(InputStream=Input))
+    monkeypatch.setattr(voice, "Speech", _Speech)
+    monkeypatch.setattr(Voice, "_load", load)
+    monkeypatch.setattr(Voice, "_device", lambda self: None)
+    listening = Voice(lambda message: None)
+    assert not listening.start("direct")
+    assert streams[0].closed and listening._stream is None
+    Input.failing = False
+    assert listening.start("direct")
+    assert len(streams) == 2 and streams[1].started and listening._stream is streams[1]
+    listening.stop()
