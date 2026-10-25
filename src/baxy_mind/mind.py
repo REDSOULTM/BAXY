@@ -20,6 +20,7 @@ import urllib.error
 from pathlib import Path
 from typing import Any
 
+from . import context_vistas
 from .answer_check import check as check_answer
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
@@ -1962,6 +1963,14 @@ class Mind:
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": shown + "\n[En este turno: " + "; ".join(line) + "]" + note})
         turn["awaiting"] = None
+        if context_vistas.on():
+            # H-ctx «vistas» (BAXY_RENEW_CTX=vistas): an older look this one replaces, or an identical older result, in
+            # short (context_vistas.py); the prefix is untouched, the model re-reads from the first one changed.
+            begin = max([i for i, m in enumerate(conv) if m["role"] == "user"
+                         and str(m.get("content") or "").startswith(CLOCK_MARK)], default=0)
+            shortened = context_vistas.clean_turn(conv, begin, TURN_FACTS, _result_key)
+            if shortened:
+                aids["ctx_vistas"] = shortened
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
             self._log("turn.aid", time.perf_counter(), None, operation=turn.get("calling"),
