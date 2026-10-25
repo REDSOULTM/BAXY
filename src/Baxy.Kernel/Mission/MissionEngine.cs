@@ -28,6 +28,16 @@ public sealed class MissionEngine : IDisposable
     private readonly HashSet<string> _safeRetries = new(StringComparer.Ordinal);
     private readonly HashSet<string> _reconciling = new(StringComparer.Ordinal);
 
+    // Revisión 2026-10-25 (reservas de reintento): a retryable answer leaves its invocation begun, holding a completion
+    // reservation (2 MiB of the journal) for the retry; the App resolves the call once answered and never retries it, so
+    // each one held its reservation until the Core restarted, and past a few (the volume gives them) every new
+    // invocation was refused with journal_capacity_reached. An open retry ends when its window passes, or before the
+    // journal would refuse a new invocation: its own last answer, made final, is written first (the journal releases the
+    // reservation only once that terminal is on disk), and a retry after that replays it, never runs again.
+    internal static readonly TimeSpan RetryWindow = TimeSpan.FromMinutes(10);
+    private readonly List<OpenRetry> _openRetries = [];
+    private readonly TimeProvider _time;
+
     // Hallazgo E030 (w9-sha): the versions the responses sent gave, completed or not, under the execution gate too.
     private readonly ToldVersions _toldVersions = new();
 
@@ -48,6 +58,7 @@ public sealed class MissionEngine : IDisposable
         _privateEnvelopeAuthenticator = options?.PrivateEnvelopeAuthenticator;
         _confirmationMode = options?.ConfirmationMode
             ?? (() => ConfirmationMode.Normal);
+        _time = options?.Time ?? TimeProvider.System;
     }
 
     public async ValueTask<OperationResponse> ExecuteAsync(
@@ -75,6 +86,7 @@ public sealed class MissionEngine : IDisposable
         await _executionGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
+            await CloseOpenRetriesAsync(lapsedOnly: true, keep: null).ConfigureAwait(false);
             string fingerprint = RequestFingerprint.Compute(request);
             CompletedInvocation? completed = await _journal
                 .FindCompletedAsync(request.InvocationId, cancellationToken)
@@ -206,13 +218,7 @@ public sealed class MissionEngine : IDisposable
                 grantedBinding = binding;
             }
 
-            try
-            {
-                await _journal
-                    .RecordStartedAsync(request, fingerprint, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (JournalCapacityException)
+            if (!await TryRecordStartedAsync(request, fingerprint, cancellationToken).ConfigureAwait(false))
             {
                 return Rejected(
                     request,
@@ -245,6 +251,7 @@ public sealed class MissionEngine : IDisposable
             // This run spends what was known of the earlier one: only its own outcome can make a retry safe again.
             _safeRetries.Remove(request.InvocationId);
             _reconciling.Remove(request.InvocationId);
+            _openRetries.RemoveAll(open => open.Is(request.InvocationId));
             OperationOutcome outcome = preflightFailure ?? await handler
                 .ExecuteAsync(invocation, cancellationToken)
                 .ConfigureAwait(false);
@@ -295,6 +302,7 @@ public sealed class MissionEngine : IDisposable
                     _safeRetries.Add(request.InvocationId);
                 }
 
+                _openRetries.Add(new OpenRetry(request, fingerprint, outcome, _time.GetUtcNow() + RetryWindow));
                 return response;
             }
 
@@ -383,7 +391,81 @@ public sealed class MissionEngine : IDisposable
 
         _safeRetries.Remove(request.InvocationId);
         _reconciling.Remove(request.InvocationId);
+        _openRetries.RemoveAll(open => open.Is(request.InvocationId));
         return response;
+    }
+
+    // The start of an invocation, recorded with its completion reserved. When the journal has no room for that
+    // reservation and retries nobody made hold some, those end (CloseOpenRetriesAsync) and the start is tried once more.
+    private async ValueTask<bool> TryRecordStartedAsync(
+        OperationRequest request,
+        string fingerprint,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _journal.RecordStartedAsync(request, fingerprint, cancellationToken).ConfigureAwait(false);
+            return true;
+        }
+        catch (JournalCapacityException) when (_openRetries.Exists(open => !open.Is(request.InvocationId)))
+        {
+        }
+        catch (JournalCapacityException)
+        {
+            return false;
+        }
+
+        await CloseOpenRetriesAsync(lapsedOnly: false, keep: request.InvocationId).ConfigureAwait(false);
+        try
+        {
+            await _journal.RecordStartedAsync(request, fingerprint, cancellationToken).ConfigureAwait(false);
+            return true;
+        }
+        catch (JournalCapacityException)
+        {
+            return false;
+        }
+    }
+
+    // Each open retry (all, or only those whose window passed; never keep) ends with its own last answer made final:
+    // failed, with its code, its evidence and whether its effect may stand. Written through the journal's completion,
+    // which appends the terminal before it gives back the reservation.
+    private async ValueTask CloseOpenRetriesAsync(bool lapsedOnly, string? keep)
+    {
+        if (_openRetries.Count == 0)
+        {
+            return;
+        }
+
+        DateTimeOffset now = _time.GetUtcNow();
+        foreach (OpenRetry open in _openRetries.ToArray())
+        {
+            if ((lapsedOnly && open.Until > now) || (keep is not null && open.Is(keep)))
+            {
+                continue;
+            }
+
+            _openRetries.Remove(open);
+            OperationOutcome last = open.Outcome;
+            OperationOutcome final = OperationOutcome.Failure(
+                last.ErrorCode ?? "operation_failed",
+                last.Result,
+                last.EffectMayHaveOccurred,
+                last.CauseCode);
+            using var commit = new CancellationTokenSource(TerminalCommitTimeout);
+            await CompleteAsync(open.Request, open.Fingerprint, ToResponse(open.Request, final), commit.Token)
+                .ConfigureAwait(false);
+        }
+    }
+
+    private sealed record OpenRetry(
+        OperationRequest Request,
+        string Fingerprint,
+        OperationOutcome Outcome,
+        DateTimeOffset Until)
+    {
+        public bool Is(string invocationId) =>
+            string.Equals(Request.InvocationId, invocationId, StringComparison.Ordinal);
     }
 
     // K-2 refinada: a risk the preflight lowered read where the invocation lands (landingRead).

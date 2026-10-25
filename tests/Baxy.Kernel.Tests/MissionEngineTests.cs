@@ -239,6 +239,54 @@ public sealed class MissionEngineTests
         });
     }
 
+    // Revisión 2026-10-25 (reservas de reintento): a retryable answer is retried as before within its window; past it,
+    // the next invocation finds it ended (its own failure written final, so its reservation is free) and a late retry
+    // replays that failure instead of running again.
+    [Test]
+    public async Task ARetryNobodyMadeWithinItsWindowEndsWithItsOwnFailure()
+    {
+        var handler = new RetryableOnceHandler();
+        var other = new CountingHandler(OperationRisk.Reversible, "task.create");
+        var time = new ManualTime(DateTimeOffset.Parse("2026-10-25T20:00:00Z", System.Globalization.CultureInfo.InvariantCulture));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([handler, other]),
+            journal,
+            new MissionEngineOptions { Time = time });
+        OperationRequest request = CreateRequest("{\"title\":\"Compras\",\"content\":\"pan\"}");
+
+        OperationResponse pending = await engine.ExecuteAsync(request, CancellationToken.None);
+        time.Advance(MissionEngine.RetryWindow - TimeSpan.FromSeconds(1));
+        await engine.ExecuteAsync(OtherRequest(), CancellationToken.None);
+        CompletedInvocation? withinTheWindow = await journal.FindCompletedAsync(request.InvocationId, CancellationToken.None);
+        time.Advance(TimeSpan.FromSeconds(2));
+        await engine.ExecuteAsync(OtherRequest(), CancellationToken.None);
+        CompletedInvocation? pastTheWindow = await journal.FindCompletedAsync(request.InvocationId, CancellationToken.None);
+        OperationResponse late = await engine.ExecuteAsync(
+            request with { RequestId = Guid.NewGuid().ToString("D") },
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pending.Status, Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(withinTheWindow, Is.Null);
+            Assert.That(pastTheWindow?.Response.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(pastTheWindow?.Response.ErrorCode, Is.EqualTo("reconciliation_required"));
+            Assert.That(late.Replayed, Is.True);
+            Assert.That(late.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(late.EffectMayHaveOccurred, Is.False);
+            Assert.That(handler.ExecutionCount, Is.EqualTo(1));
+        });
+
+        static OperationRequest OtherRequest() => new(
+            ProtocolTypes.OperationRequest,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            "task.create",
+            JsonDocument.Parse("{}").RootElement.Clone());
+    }
+
     // Revisión 2026-10-22 (K-6): the yes was given to one execution. A retryable outcome whose effect may have happened
     // leaves the invocation open, and the same token used to run it again without asking; it is spent, and the retry
     // asks again, saying an execution already began (reconciliationRequired). One with no effect keeps its grant
@@ -455,12 +503,12 @@ public sealed class MissionEngineTests
 
     private static JsonElement Parse(string json) => JsonDocument.Parse(json).RootElement.Clone();
 
-    private sealed class CountingHandler(OperationRisk risk) : IOperationHandler
+    private sealed class CountingHandler(OperationRisk risk, string operation = "note.create") : IOperationHandler
     {
         public int ExecutionCount { get; private set; }
 
         public OperationDefinition Definition { get; } =
-            new("note.create", risk, "Create a local note.");
+            new(operation, risk, "Create a local note.");
 
         public ValueTask<OperationOutcome> ExecuteAsync(
             OperationInvocation invocation,
@@ -553,5 +601,14 @@ public sealed class MissionEngineTests
                     effectMayHaveOccurred: effectMayHaveOccurred)
                 : OperationOutcome.Success());
         }
+    }
+
+    private sealed class ManualTime(DateTimeOffset now) : TimeProvider
+    {
+        private DateTimeOffset _now = now;
+
+        public void Advance(TimeSpan by) => _now += by;
+
+        public override DateTimeOffset GetUtcNow() => _now;
     }
 }

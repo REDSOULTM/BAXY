@@ -27,12 +27,14 @@ public sealed class ToldVersions
 
     private static readonly Expectation[] Kinds = [.. Replacements.Values.DistinctBy(static entry => entry.Kind)];
 
-    // Forgetting an observation only makes a replacement ask; a told version is forgotten oldest first.
+    // Forgetting an observation only makes a replacement ask; a told version is forgotten oldest first. Revisión
+    // 2026-10-25: the order holds only the versions still told (one a completed response gave leaves it too), so past
+    // a thousand only the oldest still told is forgotten, never one that came later.
     private const int MaximumObserved = 4096;
     private const int MaximumTold = 1024;
     private readonly HashSet<string> _observed = new(StringComparer.Ordinal);
-    private readonly HashSet<string> _told = new(StringComparer.Ordinal);
-    private readonly Queue<string> _toldOrder = new();
+    private readonly Dictionary<string, LinkedListNode<string>> _told = new(StringComparer.Ordinal);
+    private readonly LinkedList<string> _toldOrder = new();
 
     /// <summary>Whether this operation replaces what is there under an expected version (it asks only sometimes).</summary>
     public static bool ExpectsAVersion(string operation) => Replacements.ContainsKey(operation);
@@ -50,7 +52,11 @@ public sealed class ToldVersions
         {
             if (completed)
             {
-                _told.Remove(token);
+                if (_told.Remove(token, out LinkedListNode<string>? told))
+                {
+                    _toldOrder.Remove(told);
+                }
+
                 if (_observed.Count >= MaximumObserved)
                 {
                     _observed.Clear();
@@ -58,12 +64,13 @@ public sealed class ToldVersions
 
                 _observed.Add(token);
             }
-            else if (!_observed.Contains(token) && _told.Add(token))
+            else if (!_observed.Contains(token) && !_told.ContainsKey(token))
             {
-                _toldOrder.Enqueue(token);
+                _told.Add(token, _toldOrder.AddLast(token));
                 while (_toldOrder.Count > MaximumTold)
                 {
-                    _told.Remove(_toldOrder.Dequeue());
+                    _told.Remove(_toldOrder.First!.Value);
+                    _toldOrder.RemoveFirst();
                 }
             }
         }
@@ -94,7 +101,7 @@ public sealed class ToldVersions
             identity = given.GetString();
         }
 
-        return _told.Contains(Token(expectation.Kind, identity, value));
+        return _told.ContainsKey(Token(expectation.Kind, identity, value));
     }
 
     // Every version in a result, at any depth: a property whose name ends in a kind, with the identity its kind names

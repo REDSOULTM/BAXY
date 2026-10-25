@@ -282,8 +282,8 @@ internal static class FieldStepProjection
     }
 
     // RiskPolicy in normal mode, without arguments: always asks, or asks only with some arguments (a click on «Enviar»,
-    // Ctrl+W, a console command that changes something, closing every tab, a replacement under a version only a refusal
-    // told: ToldVersions), or never.
+    // Ctrl+W, a console command that changes something, closing every tab, a click under the pointer (K-1), a
+    // replacement under a version only a refusal told: ToldVersions), or never.
     private static string ConfirmationOf(ProductOperationDescriptor descriptor)
     {
         if (RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, descriptor.Name)
@@ -293,6 +293,7 @@ internal static class FieldStepProjection
         }
 
         return descriptor.Name is "shell.command.run" or "input.visible.click" or "input.key.press" or "browser.control"
+                or "input.pointer.control"
             || ToldVersions.ExpectsAVersion(descriptor.Name)
             ? "sometimes"
             : "never";

@@ -194,6 +194,54 @@ public sealed class ToldVersionsTests
         });
     }
 
+    // Revisión 2026-10-25: a version a completed response later gave left the told set but stayed in its order, which
+    // still counted it; past a thousand versions known only from refusals, one still only told was forgotten early and
+    // its replacement went unasked. Only the versions still told count.
+    [Test]
+    public void AVersionLaterObservedDoesNotPushOutOneStillOnlyTold()
+    {
+        var versions = new ToldVersions();
+        string[] told = [.. Enumerable.Range(0, 1024).Select(static i => Hash(i))];
+        foreach (string hash in told)
+        {
+            versions.Record(Answer(OperationStatuses.Failed, "currentSha256", hash));
+        }
+
+        foreach (string hash in told[^24..])
+        {
+            versions.Record(Answer(OperationStatuses.Completed, "sha256", hash));
+        }
+
+        foreach (int i in Enumerable.Range(5000, 24))
+        {
+            versions.Record(Answer(OperationStatuses.Failed, "currentSha256", Hash(i)));
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(versions.OnlyToldBy("file.write", Replace(told[0])), Is.True);
+            Assert.That(versions.OnlyToldBy("file.write", Replace(told[^1])), Is.False);
+            Assert.That(versions.OnlyToldBy("file.write", Replace(Hash(5023))), Is.True);
+        });
+
+        static OperationResponse Answer(string status, string name, string hash) => new(
+            ProtocolTypes.OperationResponse,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            status,
+            "hechos",
+            status == OperationStatuses.Completed,
+            false,
+            Json($$"""{"{{name}}":"{{hash}}"}"""),
+            status == OperationStatuses.Completed ? null : "version_conflict");
+
+        static string Hash(int value) => value.ToString("x64", System.Globalization.CultureInfo.InvariantCulture);
+
+        static JsonElement Replace(string hash) =>
+            Json($$"""{"relativePath":"notas.txt","text":"vacío","expectedSha256":"{{hash}}"}""");
+    }
+
     private static MissionEngine Engine(
         InMemoryInvocationJournal journal,
         ConfirmationMode mode,
