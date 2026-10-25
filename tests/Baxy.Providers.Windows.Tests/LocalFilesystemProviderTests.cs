@@ -1141,6 +1141,48 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Revisión de calidad (archivos): «descarga.exe:Zone.Identifier» is no file of the person's but the mark Windows keeps
+    // on what came from the internet (SmartScreen reads it before running it); a stream of a file is never written,
+    // replaced, appended to nor made through a file tool, with or without a folder.
+    [Test]
+    public void AStreamOfAFileIsNeverWritten()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        Directory.CreateDirectory(home);
+        string program = Path.Combine(home, "descarga.exe");
+        File.WriteAllText(program, "MZ");
+        const string mark = "[ZoneTransfer]\r\nZoneId=3\r\n";
+        File.WriteAllText(program + ":Zone.Identifier", mark);
+        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
+        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"), bin)
+        {
+            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
+            PrivateRoots = [],
+        };
+        string markHash = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(mark)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => provider.WriteText("descarga.exe:Zone.Identifier", "", markHash, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(() => provider.WriteText("descarga.exe:Zone.Identifier", "ZoneId=0", null, "home", append: true),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(() => provider.WriteText("descarga.exe:otro", "x", null, "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(() => provider.CreateDirectory("carpeta:flujo", "home"),
+                Throws.TypeOf<FilesystemProviderException>()
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
+            Assert.That(File.ReadAllText(program + ":Zone.Identifier"), Is.EqualTo(mark));
+            Assert.That(File.ReadAllText(program), Is.EqualTo("MZ"));
+            Assert.That(bin.Recycled, Is.Empty);
+            Assert.That(Directory.EnumerateFileSystemEntries(home).Select(Path.GetFileName), Is.EqualTo(new[] { "descarga.exe" }));
+        });
+    }
+
     // Revisión de calidad (archivos): the working folder lives inside BAXY's own area and is usable through home, but its
     // backups are not: written through home they were replaced (a backup's bytes and its recorded hash), and a restore
     // then gave the forged bytes as a verified backup.

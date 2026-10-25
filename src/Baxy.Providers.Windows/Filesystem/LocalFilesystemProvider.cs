@@ -557,6 +557,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             throw string.Equals(root, _root, StringComparison.OrdinalIgnoreCase)
                 ? OutsideTheSandbox(takesFolder)
                 : Error("path_outside_folder");
+        // Revisión de calidad (archivos): a «:» past the folder names a stream of a file («descarga.exe:Zone.Identifier»,
+        // the mark SmartScreen reads), never a file of the person's; it reached the Recycle Bin as one.
+        if (full.AsSpan(root.Length).Contains(':')) throw Error("invalid_path");
         // Revisión de calidad (archivos): the backups are reserved whichever folder names them (through home too).
         if (IsReserved(full)) throw Error("path_reserved");
         // Renew al máximo (B-SYS-1): BAXY's own state is not one of the person's files, whichever folder names it; the
