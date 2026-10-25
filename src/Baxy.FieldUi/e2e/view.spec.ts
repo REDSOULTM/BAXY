@@ -126,3 +126,11 @@ test('un pedido que el host tomó deja la caja vacía', async () => {
   await expect.poll(() => h.calls.filter((c) => c.path === '/turn').map((c) => c.body)).toEqual([{ text: 'abre la calculadora' }]);
   await expect(box()).toHaveValue('');
 });
+
+test('la caja no admite más de lo que el host acepta (4096 caracteres)', async () => {
+  // MissionInput.MaximumCharacters: a longer request is refused as invalid_text
+  h = await openView();
+  await box().fill('a'.repeat(5000));
+  await box().press('Enter');
+  await expect.poll(() => h.calls.filter((c) => c.path === '/turn').map((c) => (c.body as { text: string }).text.length)).toEqual([4096]);
+});
