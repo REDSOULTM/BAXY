@@ -240,16 +240,26 @@ internal sealed class SaidFolders
             return null;
         string named = Said(places);
         string where = reach.Sandbox ? "BAXY's own working folder" : string.Join(", ", reach.Items);
-        if (!_told.Add(operation + "\n" + arguments.ToJsonString()))
-        {
-            return new(arguments, $"{who} {named}; this call acted in {where}, outside it, as it was written: "
-                + $"it did not look at or change anything in {(places.Count == 1 ? "that folder" : "those folders")}", null);
-        }
-
         // Of several folders named, the ones that hold the file or folder the call names are its place.
         Place[] holding = reach.Leaf is null ? [.. places]
             : [.. places.Where(place => Holds(place.Path, reach.Leaf))];
         IReadOnlyList<Place> targets = holding.Length == 1 ? holding : places;
+        // The look there is said as a call, with what the call looked for (holdout v6 V6E042: told only that file_find
+        // «looks there», the model wrote the same filesystem_search again).
+        string? look = reach.Sandbox && descriptor.Risk == OperationRisks.ReadOnly
+            && ProductCatalog.TryGet("file.find", out ProductOperationDescriptor? find) && find is not null
+            && targets.Count == 1 && Express(find, Shared(arguments, find), targets[0]) is { } found
+                ? $"to look there, call file_find with {Changes(new JsonObject(), found)}" : null;
+        if (!_told.Add(operation + "\n" + arguments.ToJsonString()))
+        {
+            // Holdout v6 V6E042 (cien s0 and s2): the search refused was written again and ran in the working folder; its
+            // note said only what it had not looked at, and the model answered «no está en mi carpeta de trabajo» (the
+            // run that called file_find next found it). The look there is said again with what it did not look at.
+            return new(arguments, $"{who} {named}; this call acted in {where}, outside it, as it was written: "
+                + $"it did not look at or change anything in {(places.Count == 1 ? "that folder" : "those folders")}"
+                + (look is null ? string.Empty : "; " + look), null);
+        }
+
         string wire = operation.Replace('.', '_');
         if (descriptor.Risk == OperationRisks.ReadOnly && targets.Count == 1
             && Express(descriptor, arguments, targets[0]) is { } routed)
@@ -276,16 +286,9 @@ internal sealed class SaidFolders
         }
         else if (reach.Sandbox)
         {
-            // The look there is said as a call, with what the call looked for (holdout v6 V6E042: told only that
-            // file_find «looks there», the model wrote the same filesystem_search again).
-            string alternative = descriptor.Risk == OperationRisks.ReadOnly
-                && ProductCatalog.TryGet("file.find", out ProductOperationDescriptor? find) && find is not null
-                && targets.Count == 1 && Express(find, Shared(arguments, find), targets[0]) is { } look
-                    ? $"to look there, call file_find with {Changes(new JsonObject(), look)}"
-                    : $"{wire} cannot name a folder of theirs";
             next = $"nothing ran: {wire} acts only in BAXY's own working folder, not in the person's folders, and "
-                + $"{who} {named}: {alternative}. If the person asked for BAXY's working folder itself, call it "
-                + "again exactly as before";
+                + $"{who} {named}: {look ?? $"{wire} cannot name a folder of theirs"}. If the person asked for BAXY's "
+                + "working folder itself, call it again exactly as before";
         }
         else
         {
