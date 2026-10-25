@@ -738,10 +738,17 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         return (reader, writer, pipe);
     }
 
-    private static void TryStop(Process process)
+    private static void TryStop(Process process) =>
+        TryStop(() => { if (!process.HasExited) process.Kill(entireProcessTree: true); });
+
+    // Revisión nb-q-apps2: ending a player or yt-dlp is best effort. Kill throws more than InvalidOperationException
+    // (the process already gone): Win32Exception when Windows refuses to end it or one of its tree, AggregateException
+    // when ending the tree fails partway; none of them may turn a receipt or a cleanup into an unhandled exception.
+    internal static void TryStop(Action kill)
     {
-        try { if (!process.HasExited) process.Kill(entireProcessTree: true); }
-        catch (InvalidOperationException) { }
+        try { kill(); }
+        catch (Exception exception) when (exception is InvalidOperationException
+            or System.ComponentModel.Win32Exception or AggregateException or NotSupportedException) { }
     }
 
     private static string? ResolveTool(string environmentName, string directory, string file)
