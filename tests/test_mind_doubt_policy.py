@@ -280,3 +280,34 @@ def test_the_confirm_floor_can_be_turned_off(tmp_path, monkeypatch) -> None:
     mind, _ = _mind(tmp_path, [_call("confirm_pending", {"approve": True}, 0.5)])
     result = mind.decide(1, "sí", {"operation": "app.close", "arguments": {"appId": "Paint"}})
     assert result["operation"] == "confirmation.answer"
+
+
+def _ask_at(p_call: float) -> dict:
+    """An ask_user the decision opened at `p_call` (the rest of the first token's probability was words)."""
+    reply = _call("ask_user", {"question": "¿En qué carpeta está el archivo?"}, 0.9)
+    reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", p_call)
+    return reply
+
+
+# Holdout v6 V6E069 (s1): «¿ya lo abriste?» after a file.open that had failed was answered with ask_user at p_call 0.26,
+# a counter-question about where the file was; the model's own majority was words.
+def test_an_ask_user_opened_against_the_words_majority_is_decided_again_in_words(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_S1_ASK_FLOOR", "0.5")
+    mind, server = _mind(tmp_path, [_ask_at(0.26), _say("No, no lo abrí: no encontré el archivo.")])
+    result = mind.decide(1, "¿ya lo abriste?")
+    assert result["kind"] == "conversation" and result["question"] == ""
+    assert result["reply"] == "No, no lo abrí: no encontré el archivo."
+    second = server.bodies[1]
+    assert second["tool_choice"] == "none"
+    assert second["messages"] == server.bodies[0]["messages"]  # no note: the same conversation, words only
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert rows[0]["kind"] == "ask_floor" and rows[0]["doubt"]["p_call"] == 0.26
+
+
+@pytest.mark.parametrize("floor, p_call", [("", 0.26), ("0.5", 0.9)])
+def test_an_ask_user_the_model_chose_or_the_floor_off_asks_as_before(tmp_path, monkeypatch, floor, p_call) -> None:
+    monkeypatch.setenv("BAXY_S1_ASK_FLOOR", floor)
+    mind, server = _mind(tmp_path, [_ask_at(p_call)])
+    result = mind.decide(1, "pon una alarma")
+    assert result["kind"] == "clarify" and result["question"] == "¿En qué carpeta está el archivo?"
+    assert len(server.bodies) == 1

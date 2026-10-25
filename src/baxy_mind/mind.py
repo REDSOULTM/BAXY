@@ -880,7 +880,8 @@ def _bypass() -> bool:
 
 
 def _threshold(name: str) -> float:
-    """A System One threshold from the environment (BAXY_S1_DOUBT, BAXY_S1_VETO); 0 when unset: that layer is off."""
+    """A System One threshold from the environment (BAXY_S1_DOUBT, BAXY_S1_VETO, BAXY_S1_ASK_FLOOR); 0 when unset: that
+    layer is off."""
     try:
         return max(0.0, min(1.0, float(os.environ.get(name, "") or 0)))
     except ValueError:
@@ -1983,6 +1984,12 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
+        if calls and self._asked_against_words(stage, turn, final, calls[0], reply):
+            # Nothing of this decision enters the conversation (its question, the calls behind it): the model decides
+            # again, words only, with no note, as most of its own probability had chosen.
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="ask_floor",
+                      operation=None, arguments=None if turn.get("private") else calls[0]["arguments"], content=None)
+            return self._next(request_id, stage, turn, final=True)
         note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
         if isinstance(note, dict):
             # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
@@ -2081,6 +2088,17 @@ class Mind:
         """Whether this call's decision is read for its doubt: a person's turn deciding, not its last answer, a
         continuation or a heartbeat."""
         return stage == "turn.decide" and not final and not turn.get("beat")
+
+    def _asked_against_words(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any],
+                             reply: dict | None) -> bool:
+        """BAXY_S1_ASK_FLOOR (a threshold, off when unset): whether the decision's first call is an ask_user the model
+        opened against its own majority, p(open a call) under the floor (doubt.read's p_call; the rest was words).
+        Holdout v6 V6E069 (s1): «¿ya lo abriste?» after a file.open that had failed was answered with ask_user at p_call
+        0.26, and a yes/no question about what BAXY had done became a counter-question about where the file was."""
+        if call["wire"] != ASK_USER["function"]["name"] or not self._doubted(stage, turn, final):
+            return False
+        doubt = read_doubt(reply)
+        return doubt is not None and doubt["p_call"] < _threshold("BAXY_S1_ASK_FLOOR")
 
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
