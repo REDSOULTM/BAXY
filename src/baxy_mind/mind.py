@@ -2089,7 +2089,10 @@ class Mind:
         # found X), an aid of its own; aid «check_read» (holdout v6, falsedades): the rule «read» («no leí X» while a read
         # of the turn brought X whole), another.
         # Aid «check_denial»: the rule «denial» reads the catalog and the conversation's earlier calls.
-        denials = _aid_on(CHECK_RULE_AIDS["denial"]) and not turn.get("receipts") and not turn.get("checked")
+        # Revisión w11-rev4: with earlier turns trimmed out of the conversation, its earlier calls are not known whole and
+        # a try that failed there may be what the answer tells: the rule reads nothing.
+        denials = (_aid_on(CHECK_RULE_AIDS["denial"]) and not turn.get("receipts") and not turn.get("checked")
+                   and not self.trimmed_turns)
         catalog = {self.wire_to_op[t["function"]["name"]]: str(t["function"].get("description") or "")
                    for t in self.tools if t["function"]["name"] in self.wire_to_op} if denials else None
         findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls,

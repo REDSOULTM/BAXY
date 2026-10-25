@@ -181,3 +181,18 @@ def test_an_earlier_failed_try_in_the_conversation_holds_the_denial(tmp_path: Pa
     mind.continue_turn(2, json.dumps({"status": "failed", "error": "known_file_not_found"}))
     result = mind.decide(3, "¿por qué?")
     assert result["reply"] == "No puedo borrar archivos de esa carpeta." and len(server.bodies) == 3
+
+
+def test_a_conversation_trimmed_of_its_earlier_turns_holds_the_denial(tmp_path: Path, monkeypatch) -> None:
+    # Revisión w11-rev4: the failed try was in a turn the trim took out of the conversation; the earlier calls are no
+    # longer known whole, so the denial may be what that try told and is not asked again.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _configured(tmp_path, [
+        _call("filesystem_known_trash_named", {"name": "old-drafts"}), _say("No pude borrarla."),
+        _say("No puedo borrar archivos de esa carpeta.")])
+    mind.decide(1, "borra old-drafts")
+    mind.continue_turn(2, json.dumps({"status": "failed", "error": "known_file_not_found"}))
+    del mind.conversation[:]  # as _trim does with the turns it takes out
+    mind.trimmed_turns = 1
+    result = mind.decide(3, "¿por qué?")
+    assert result["reply"] == "No puedo borrar archivos de esa carpeta." and len(server.bodies) == 3
