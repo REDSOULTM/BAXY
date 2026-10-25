@@ -179,6 +179,7 @@ try {
     New-Item -ItemType Directory -Path $coreOutput | Out-Null
     $null = Assert-ExistingPathChainHasNoReparsePoint -Path $stagingRoot
     [Environment]::SetEnvironmentVariable('SOURCE_DATE_EPOCH', [string]$sourceDateEpoch, 'Process')
+    Use-BaxyVisualStudioInstallerPath
 
     Push-Location $sourceRoot
     try {

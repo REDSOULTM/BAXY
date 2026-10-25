@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -30,7 +31,6 @@ APP_EXE = BUILD_LAYOUT.app_executable(ROOT)
 CORE_EXE = BUILD_LAYOUT.core_publish_executable(ROOT)
 RUN_SCRIPT = ROOT / "scripts" / "run_baxy.ps1"
 STATE_DIRECTORY = Path(os.environ.get("LOCALAPPDATA", ROOT)) / "BAXY" / "development"
-BUILD_STATE = STATE_DIRECTORY / "source-build-v1.json"
 
 ACTIVE_DOTNET_PROJECT_ROOTS = (
     Path("src") / "Baxy.App",
@@ -76,7 +76,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="arranca el runtime sin ventana y conduce la misma entrada de producto",
     )
-    parser.add_argument("--profile", help="perfil persistente de datos del conductor")
+    parser.add_argument("--profile", help="perfil persistente de datos (de la ventana o del conductor)")
     parser.add_argument("--capture", help="directorio de captura JSONL del conductor")
     parser.add_argument("--turns-file", help="JSONL de comandos públicos (text/session.new/upload/cancel)")
     parser.add_argument("--text", help="un turno de texto natural")
@@ -105,11 +105,31 @@ def _files_under(directory: Path) -> list[Path]:
     return files
 
 
+# Calidad PC 2026-10-25: the projects also take files from outside their folders (the JSON that Baxy.App, Baxy.Kernel
+# and Baxy.Providers.Windows embed from src/baxy_mind/data); a change there was «sin cambios». Read from each project
+# file, so a new include is never missed.
+_OUTSIDE_INCLUDE = re.compile(r'<(?:Content|EmbeddedResource|None|Compile)\s+Include="(\.\.[\\/][^"]+)"')
+
+
+def _project_outside_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for relative in ACTIVE_DOTNET_PROJECT_ROOTS:
+        for project in (root / relative).glob("*.csproj"):
+            for include in _OUTSIDE_INCLUDE.findall(project.read_text(encoding="utf-8-sig")):
+                pattern = include.replace("\\", "/")
+                if "*" in pattern:
+                    files.extend(path.resolve() for path in _files_under(project.parent / pattern.split("*", 1)[0]))
+                elif (path := project.parent / pattern).is_file():
+                    files.append(path.resolve())
+    return [path for path in files if path.is_relative_to(root)]
+
+
 def source_files(root: Path = ROOT) -> list[Path]:
     root = root.resolve()
     files: list[Path] = []
     for relative in (*ACTIVE_DOTNET_PROJECT_ROOTS, *RUNTIME_ASSET_ROOTS):
         files.extend(_files_under(root / relative))
+    files.extend(_project_outside_files(root))
     files.extend(path for path in root.glob("Directory.*") if path.is_file())
     files.extend(
         path for relative in EXPLICIT_BUILD_FILES if (path := root / relative).is_file()
@@ -136,9 +156,16 @@ def source_fingerprint(root: Path = ROOT) -> str:
     return digest.hexdigest()
 
 
-def recorded_fingerprint() -> str | None:
+def build_state(root: Path = ROOT) -> Path:
+    # Calidad PC 2026-10-25: one record per worktree. The fingerprint carries the worktree, so with one record per user
+    # building worktree B overwrote A's, and A recompiled with nothing changed.
+    name = hashlib.sha256(os.path.normcase(str(root.resolve())).encode("utf-8")).hexdigest()[:16]
+    return STATE_DIRECTORY / f"source-build-v1-{name}.json"
+
+
+def recorded_fingerprint(root: Path = ROOT) -> str | None:
     try:
-        payload = json.loads(BUILD_STATE.read_text(encoding="utf-8"))
+        payload = json.loads(build_state(root).read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError, OSError):
         return None
     if payload.get("schema") != "baxy-development-build-v1":
@@ -248,8 +275,14 @@ def compile_if_needed(*, force: bool) -> None:
         raise RuntimeError(
             "La compilación terminó sin producir los ejecutables esperados."
         )
+    record_fingerprint(ROOT, fingerprint)
+    print("Compilación actualizada.")
+
+
+def record_fingerprint(root: Path, fingerprint: str) -> None:
     STATE_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    temporary = BUILD_STATE.with_suffix(".tmp")
+    state = build_state(root)
+    temporary = state.with_suffix(".tmp")
     temporary.write_text(
         json.dumps(
             {
@@ -261,8 +294,7 @@ def compile_if_needed(*, force: bool) -> None:
         + "\n",
         encoding="utf-8",
     )
-    os.replace(temporary, BUILD_STATE)
-    print("Compilación actualizada.")
+    os.replace(temporary, state)
 
 
 CONDUCTOR_SCRIPT = ROOT / "scripts" / "run_baxy_conductor.ps1"
@@ -274,6 +306,7 @@ def launch(
     without_mind: bool,
     ui_probe: str | None = None,
     ui_capture: str | None = None,
+    profile: str | None = None,
 ) -> None:
     environment = environment_for_dotnet(dotnet_executable())
     command = [
@@ -292,6 +325,10 @@ def launch(
         command.extend(["-UiProbe", ui_probe])
     if ui_capture:
         command.extend(["-UiCapture", ui_capture])
+    # Calidad PC 2026-10-25: --profile was taken and dropped unless --conductor, and the window opened on the owner's
+    # development profile (dev-mente-v2).
+    if profile:
+        command.extend(["-Profile", profile])
     run_checked(command, environment=environment)
 
 
@@ -336,6 +373,7 @@ def main() -> int:
         without_mind=args.sin_mente,
         ui_probe=args.ui_probe,
         ui_capture=args.ui_capture,
+        profile=args.profile,
     )
     return 0
 

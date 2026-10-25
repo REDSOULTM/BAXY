@@ -1,4 +1,7 @@
 @echo off
+rem Calidad PC 2026-10-25: lo que pone queda en esta ejecucion; sin setlocal, desde una consola cmd seguia ahi, y otro
+rem checkout lanzado despues heredaba su BAXY_MIND_PYTHONPATH y el System One apagado con system_one.cmd seguia encendido.
+setlocal
 rem BAXY Renew: Qwen3.5-4B, la wake word k4 (WakewordBaxy), Parakeet Ultra (TranscripcionBaxy) y la voz de BAXY (Supertonic 3, scripts\voice\make_baxy_voice.py).
 rem Las rutas son de cada maquina; en una tercera, agrega su bloque.
 rem Un banco (o el ajuste fino) puede elegir otro GGUF definiendo antes BAXY_MIND_LLM_GGUF, y otro llama-server definiendo
@@ -12,7 +15,7 @@ if /I "%COMPUTERNAME%"=="REDNOTE" (
   rem Modelo: Qwen3.5-4B con el ajuste fino de BAXY (ciclo 2, Q4_K_M, sha256 8a4b6ce3...; artifacts/renew/ft/RECETA.md). El base era sha 00fe7986.
   if not defined BAXY_MIND_LLM_GGUF set "BAXY_MIND_LLM_GGUF=D:\BAXYeval\models\BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf"
   if not defined BAXY_MIND_LLAMA_SERVER set "BAXY_MIND_LLAMA_SERVER=D:\BAXYeval\llama\llama-server.exe"
-  set "BAXY_RENEW_TTS_DIR=D:\BAXYRuntime\assets\voice\baxy-supertonic"
+  if not defined BAXY_RENEW_TTS_DIR set "BAXY_RENEW_TTS_DIR=D:\BAXYRuntime\assets\voice\baxy-supertonic"
   set "VISION_MMPROJ=D:\BAXYeval\models\Qwen3.5-4B-mmproj-F16.gguf"
 ) else (
   if not defined BAXY_MIND_LLM_GGUF set "BAXY_MIND_LLM_GGUF=F:\BAXYeval\models\BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf"
@@ -20,7 +23,7 @@ if /I "%COMPUTERNAME%"=="REDNOTE" (
   rem Un banco puede apagar el oido (k4 y Ultra quedan fuera de la medicion del arnes) definiendo antes la variable.
   if not defined BAXY_RENEW_WAKE_DIR set "BAXY_RENEW_WAKE_DIR=C:\Users\usuario\Desktop\ETC\Programacion\WakewordBaxy\models\final\baxy-wake-k4"
   if not defined BAXY_RENEW_STT_DIR set "BAXY_RENEW_STT_DIR=D:\TranscripcionBaxy-modelos\parakeet-ultra-sherpa-int8-oli"
-  set "BAXY_RENEW_TTS_DIR=%LOCALAPPDATA%\BAXYRuntime\assets\voice\baxy-supertonic"
+  if not defined BAXY_RENEW_TTS_DIR set "BAXY_RENEW_TTS_DIR=%LOCALAPPDATA%\BAXYRuntime\assets\voice\baxy-supertonic"
   set "VISION_MMPROJ=F:\BAXYeval\models\Qwen3.5-4B-mmproj-F16.gguf"
 )
 rem PLAN_GENERAL A5: el proyector de Qwen3.5-4B en CPU en el mismo llama-server, y el escalon de vision del clic apuntado
@@ -29,8 +32,9 @@ rem restaura despues, unos 2 s; el archivo se borra al restaurarlo. Se apaga def
 if defined BAXY_VISION_OFF goto run
 if not exist "%VISION_MMPROJ%" goto run
 set "BAXY_MIND_MMPROJ=%VISION_MMPROJ%"
-set "BAXY_MIND_LLAMA_PORT=8077"
-set "BAXY_VISION_ENDPOINT=http://127.0.0.1:8077/v1/chat/completions"
+rem Calidad PC 2026-10-25: la voz y el puerto que pone un banco se respetan, como las demas rutas; la vision sigue al puerto.
+if not defined BAXY_MIND_LLAMA_PORT set "BAXY_MIND_LLAMA_PORT=8077"
+set "BAXY_VISION_ENDPOINT=http://127.0.0.1:%BAXY_MIND_LLAMA_PORT%/v1/chat/completions"
 set "BAXY_VISION_MODEL=baxy"
 set "BAXY_VISION_SLOT=0"
 rem Un banco guarda el slot en otro disco definiendo antes la variable (el C: del PC se lleno el 2026-10-22).

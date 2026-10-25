@@ -92,7 +92,9 @@ function Quote-ConductorArgument([string]$value) {
     if ($value -notmatch '[\s"]') {
         return $value
     }
-    return '"' + ($value -replace '\\','\\' -replace '"','\"') + '"'
+    # Calidad PC 2026-10-25: a backslash is an escape only before a quote (and before the closing one); doubling all
+    # of them gave a turn naming a folder «C:\\Users\\...».
+    return '"' + ($value -replace '(\\*)"','$1$1\"' -replace '(\\+)$','$1$1') + '"'
 }
 $argumentLine = ($argumentList | ForEach-Object { Quote-ConductorArgument $_ }) -join ' '
 $process = New-Object System.Diagnostics.Process

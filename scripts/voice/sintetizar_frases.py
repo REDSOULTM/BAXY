@@ -117,32 +117,28 @@ def main() -> None:
     script.write_text("\ufeff" + "\n".join(lines) + "\n$z.Dispose()\n", encoding="utf-8")
     subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script)], check=True)
 
-    # Supertonic: BAXY's own voice, its recipe (voice_output.py), to memory.
-    import sherpa_onnx
-    folder = Path(os.environ.get("BAXY_RENEW_TTS_DIR") or Path(os.environ["LOCALAPPDATA"]) / "BAXYRuntime/assets/voice/baxy-supertonic")
-    recipe = json.loads((folder / "baxy-voice.json").read_text(encoding="utf-8"))
-    tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(
-        supertonic=sherpa_onnx.OfflineTtsSupertonicModelConfig(
-            duration_predictor=str(folder / "duration_predictor.int8.onnx"),
-            text_encoder=str(folder / "text_encoder.int8.onnx"),
-            vector_estimator=str(folder / "vector_estimator.int8.onnx"),
-            vocoder=str(folder / "vocoder.int8.onnx"), tts_json=str(folder / "tts.json"),
-            unicode_indexer=str(folder / "unicode_indexer.bin"), voice_style=str(folder / "voice.bin")),
-        num_threads=2, provider="cpu")))
+    # Supertonic: BAXY's own voice as the product synthesizes it (voice_output.Speech._synthesize), to memory.
+    # Calidad PC 2026-10-25: this took the recipe's speed alone, without its «shift» (pitch and formants, by
+    # resampling) and the speed by the phrase's length (_speed): another voice than BAXY's. The cache folder is new,
+    # so a set made before is not mixed with it.
+    os.environ.setdefault("BAXY_RENEW_TTS_DIR",
+                          str(Path(os.environ["LOCALAPPDATA"]) / "BAXYRuntime/assets/voice/baxy-supertonic"))
+    from baxy_mind.voice_output import Speech
+    speech = Speech(lambda _speaking: None, lambda *_spoken: None)
+    speech._ready.wait()
+    if speech.failure:
+        raise SystemExit(f"the voice did not load: {speech.failure}")
     manifest = []
-    for p in phrases:
-        said = p.get("dicho") or spoken(p["texto"])
-        out = raw / "Supertonic" / f"{p['id']}.npy"
-        if not out.is_file():
-            out.parent.mkdir(parents=True, exist_ok=True)
-            config = sherpa_onnx.GenerationConfig()
-            config.sid = 0
-            config.num_steps = int(recipe.get("steps", 8))
-            config.speed = float(recipe.get("speed", 1.0))
-            config.extra = {"lang": "es", "seed": str(recipe.get("seed", 7))}
-            g = tts.generate(said, config)
-            np.save(out, to16k(np.asarray(g.samples, np.float32), int(g.sample_rate)))
-        jobs.append(("Supertonic", p, out, said))
+    try:
+        for p in phrases:
+            said = p.get("dicho") or spoken(p["texto"])
+            out = raw / "Supertonic-voz" / f"{p['id']}.npy"
+            if not out.is_file():
+                out.parent.mkdir(parents=True, exist_ok=True)
+                np.save(out, to16k(speech._synthesize(said, pause=False), speech.rate))
+            jobs.append(("Supertonic", p, out, said))
+    finally:
+        speech.close()
 
     rng_seed = 0
     for v, p, src, said in jobs:
