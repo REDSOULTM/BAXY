@@ -391,70 +391,84 @@ def judge_case(case: dict, conductor: Conductor, case_dir: Path, env_base: dict,
         result["profile"] = isolation.after(case["id"], case_dir)
         return result
 
-    run_turn(conductor, {"session": "new"}, 30)
-    replies, speech, turn_events, turn_from = [], [], [], []
-    turns = case.get("turns") or []
-    for number, turn in enumerate(turns, start=1):
-        if number > 1 and turn.get("barge_in_after_ms") is None:
-            wait_silence(conductor)
-        turn_from.append(len(conductor.events.all))
-        if turn.get("barge_in_after_ms") is not None:
-            # Sent N ms after the previous answer started to sound (not its notice); the previous turn must have sounded.
-            prior = next((e for e in reversed(conductor.events.all)
-                          if e["type"] == "speech.start" and not e.get("notice")), None)
-            if prior is None:
-                conductor.events.wait(lambda e: e["type"] == "speech.start" and not e.get("notice"), 15)
-            time.sleep(float(turn["barge_in_after_ms"]) / 1000)
-        left = max(5.0, budget - (time.monotonic() - started))
-        events = run_turn(conductor, {"text": turn["text"]}, left)
-        end = next((e for e in events if e["type"] == "turn.end"), {})
-        asked = bool(end.get("pendingConfirmation"))
-        confirmation_text = ""
-        if asked:
-            confirmation_text = next((e["body"] for e in reversed(events)
-                                      if e["type"] == "message" and e["speaker"] == "baxy"), "")
-        answered = turn.get("reply_if_confirmation") if asked else None
-        if asked and answered:
+    # PC-Q (2026-10-25): a case that broke under its turns or oracles (an exception, a Ctrl+C) still runs its cleanup and
+    # the profile restore (as falsedades, R12.6): the files it created outside the sandbox stayed for the next case.
+    stage = "turns"
+    try:
+        run_turn(conductor, {"session": "new"}, 30)
+        replies, speech, turn_events, turn_from = [], [], [], []
+        turns = case.get("turns") or []
+        for number, turn in enumerate(turns, start=1):
+            if number > 1 and turn.get("barge_in_after_ms") is None:
+                wait_silence(conductor)
+            turn_from.append(len(conductor.events.all))
+            if turn.get("barge_in_after_ms") is not None:
+                # Sent N ms after the previous answer started to sound (not its notice); the previous turn must have sounded.
+                prior = next((e for e in reversed(conductor.events.all)
+                              if e["type"] == "speech.start" and not e.get("notice")), None)
+                if prior is None:
+                    conductor.events.wait(lambda e: e["type"] == "speech.start" and not e.get("notice"), 15)
+                time.sleep(float(turn["barge_in_after_ms"]) / 1000)
             left = max(5.0, budget - (time.monotonic() - started))
-            events += run_turn(conductor, {"text": answered}, left)
-        finals = [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"]
-        final = finals[-1] if finals and (not asked or answered) else ("" if asked and not answered else
-                                                                      (finals[-1] if finals else ""))
-        replies.append({"turn": number, "text": final, "asked_confirmation": asked,
-                        "confirmation_text": confirmation_text, "answered": answered})
-        turn_events.append(events)
+            events = run_turn(conductor, {"text": turn["text"]}, left)
+            end = next((e for e in events if e["type"] == "turn.end"), {})
+            asked = bool(end.get("pendingConfirmation"))
+            confirmation_text = ""
+            if asked:
+                confirmation_text = next((e["body"] for e in reversed(events)
+                                          if e["type"] == "message" and e["speaker"] == "baxy"), "")
+            answered = turn.get("reply_if_confirmation") if asked else None
+            if asked and answered:
+                left = max(5.0, budget - (time.monotonic() - started))
+                events += run_turn(conductor, {"text": answered}, left)
+            finals = [e["body"] for e in events if e["type"] == "message" and e["speaker"] == "baxy"]
+            final = finals[-1] if finals and (not asked or answered) else ("" if asked and not answered else
+                                                                          (finals[-1] if finals else ""))
+            replies.append({"turn": number, "text": final, "asked_confirmation": asked,
+                            "confirmation_text": confirmation_text, "answered": answered})
+            turn_events.append(events)
 
-    # Let the last answer finish sounding before the voice rule and the oracles read the world.
-    wait_silence(conductor)
-    conductor.events.poll()
+        # Let the last answer finish sounding before the voice rule and the oracles read the world.
+        wait_silence(conductor)
+        conductor.events.poll()
 
-    speech = utterances(conductor.events.all, turn_from, replies)
+        speech = utterances(conductor.events.all, turn_from, replies)
 
-    (case_dir / "replies.json").write_text(json.dumps(replies, ensure_ascii=False), encoding="utf-8")
-    (case_dir / "speech.json").write_text(json.dumps(speech, ensure_ascii=False), encoding="utf-8")
-    lib_env["BAXY_E2E_REPLIES"] = str(case_dir / "replies.json")
-    lib_env["BAXY_E2E_SPEECH"] = str(case_dir / "speech.json")
-    oracles = []
-    for index, oracle in enumerate(case.get("oracle") or []):
-        script = case_dir / f"oracle{index}.ps1"
-        ps_file(script, [oracle["ps"]])
-        code, out = run_ps(script, lib_env, 240)
-        matched = code == 0 and re.search(oracle["expect_regex"], out.strip()) is not None
-        oracles.append({"expect": oracle["expect_regex"], "ok": matched, "out": out.strip()[:400]})
+        (case_dir / "replies.json").write_text(json.dumps(replies, ensure_ascii=False), encoding="utf-8")
+        (case_dir / "speech.json").write_text(json.dumps(speech, ensure_ascii=False), encoding="utf-8")
+        lib_env["BAXY_E2E_REPLIES"] = str(case_dir / "replies.json")
+        lib_env["BAXY_E2E_SPEECH"] = str(case_dir / "speech.json")
+        oracles = []
+        for index, oracle in enumerate(case.get("oracle") or []):
+            script = case_dir / f"oracle{index}.ps1"
+            ps_file(script, [oracle["ps"]])
+            code, out = run_ps(script, lib_env, 240)
+            matched = code == 0 and re.search(oracle["expect_regex"], out.strip()) is not None
+            oracles.append({"expect": oracle["expect_regex"], "ok": matched, "out": out.strip()[:400]})
 
-    spoken_ok = True
-    if case.get("must_speak"):
-        for reply in replies:
-            if not reply["text"]:
-                continue
-            said = [s for s in speech if s["turn"] == reply["turn"] and norm(s["spoken_text"]) == norm(reply["text"])]
-            barged = any(t.get("barge_in_after_ms") is not None for t in (case.get("turns") or [])[reply["turn"]:])
-            spoken_ok &= bool(said) and (barged or any(s["completed"] for s in said))
-    cleanup = case_dir / "cleanup.ps1"
-    ps_file(cleanup, case.get("cleanup") or [])
-    _, cleanup_out = run_ps(cleanup, lib_env, 300)
-    leftovers = [line for line in cleanup_out.splitlines() if line.startswith("LEFTOVER")]
-    profile = isolation.after(case["id"], case_dir)
+        spoken_ok = True
+        if case.get("must_speak"):
+            for reply in replies:
+                if not reply["text"]:
+                    continue
+                said = [s for s in speech if s["turn"] == reply["turn"] and norm(s["spoken_text"]) == norm(reply["text"])]
+                barged = any(t.get("barge_in_after_ms") is not None for t in (case.get("turns") or [])[reply["turn"]:])
+                spoken_ok &= bool(said) and (barged or any(s["completed"] for s in said))
+        stage = "cleanup"
+        cleanup = case_dir / "cleanup.ps1"
+        ps_file(cleanup, case.get("cleanup") or [])
+        _, cleanup_out = run_ps(cleanup, lib_env, 300)
+        leftovers = [line for line in cleanup_out.splitlines() if line.startswith("LEFTOVER")]
+        stage = "profile"
+        profile = isolation.after(case["id"], case_dir)
+        stage = "done"
+    finally:
+        if stage == "turns":
+            cleanup = case_dir / "cleanup.ps1"
+            ps_file(cleanup, case.get("cleanup") or [])
+            run_ps(cleanup, lib_env, 300)
+        if stage in ("turns", "cleanup"):
+            isolation.after(case["id"], case_dir)
     ok = bool(oracles) and all(o["ok"] for o in oracles) and spoken_ok  # a case with no oracle checks nothing
     first_audio, first_response_audio, unanswered = [], [], []
     for number in range(1, len(turn_from) + 1):

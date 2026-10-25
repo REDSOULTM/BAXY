@@ -285,3 +285,25 @@ def test_a_falsehood_run_says_which_judge_judged_it(tmp_path, monkeypatch):
     assert judge["server"]["sha256"] == bench_falsedades.run_meta.sha256_file(server)
     assert judge["seeds"] == list(bench_falsedades.JUDGE_SEEDS)
     assert judge["script_sha256"] == bench_falsedades.run_meta.sha256_file(Path(bench_falsedades.__file__))
+
+
+def test_an_e2e_case_that_breaks_mid_turn_still_runs_its_cleanup_and_restores_the_profile(tmp_path, monkeypatch):
+    # The files a case created outside the sandbox go to its quarantine and its own cleanup runs (as in falsedades,
+    # R12.6), also when a turn raised: they stayed for the next case and the next arm.
+    ran = []
+
+    def run_ps(path, env, timeout):
+        ran.append(Path(path).name)
+        return 0, "BENCH-READY"
+
+    def broken(*args):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(bench_e2e, "ps_file", lambda path, lines: None)
+    monkeypatch.setattr(bench_e2e, "run_ps", run_ps)
+    monkeypatch.setattr(bench_e2e, "run_turn", broken)
+    case = {"id": "E001", "setup": [], "cleanup": ["Remove-Item x"], "turns": [{"text": "abre el bloc"}],
+            "oracle": [{"ps": "x", "expect_regex": "x"}]}
+    with pytest.raises(KeyboardInterrupt):
+        bench_e2e.judge_case(case, SimpleNamespace(), tmp_path, {}, bench_e2e.Isolation(tmp_path))
+    assert ran == ["setup.ps1", "cleanup.ps1", "isolation_after.ps1"]
