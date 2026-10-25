@@ -171,7 +171,7 @@ public sealed class MissionFrontTests
         using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
         {
             RefusedProcessOf = (_, _) => "Code",
-            OpenWindowsOf = () => ["«pendientes_hoy.txt: Bloc de notas» (Notepad, window 2230342)"],
+            OpenWindowsOf = () => [new("pendientes_hoy.txt: Bloc de notas", "Notepad", 2230342)],
         };
 
         ExternalCapabilityReceipt receipt = await provider.InvokeAsync(operation, Json(arguments), CancellationToken.None);
@@ -186,10 +186,86 @@ public sealed class MissionFrontTests
             Assert.That(receipt.Result!.Value.GetProperty("windows").EnumerateArray().Select(window => window.GetString()),
                 Is.EqualTo(new[] { "«pendientes_hoy.txt: Bloc de notas» (Notepad, window 2230342)" }));
             string told = receipt.Result!.Value.GetProperty("next").GetString()!;
-            Assert.That(told, Does.Contain("input_text_type with window set to the number of the one meant"));
+            Assert.That(told, Does.Contain("window set to the number of the one meant"));
             Assert.That(told.IndexOf("windows (top first)", StringComparison.Ordinal),
                 Is.LessThan(told.IndexOf("input_visible_controls", StringComparison.Ordinal)),
                 "the listed windows come before a look");
+        });
+    }
+
+    // Práctica V5E066 («en el bloc de notas que tengo abierto escribe: comprar velas», junto s0 and s1, after V6E016):
+    // the refusal listed «compras-cumple.txt: Bloc de notas» (Notepad, window 43910856) and said the step is done again
+    // with the number of the one meant; the reply ended there both times, once asking the person «dime su número de
+    // ventana». The refusal writes the call itself: the same arguments (the window and the index the model gave, if any,
+    // left out: a look at another window gave them) with the number of the first window listed, says the numbers are in
+    // windows and are not asked of the person, and keeps the text as it was written.
+    [TestCase("""{"text":"comprar velas"}""")]
+    [TestCase("""{"text":"comprar velas","window":18016}""")]
+    [TestCase("""{"text":"comprar velas","window":18016,"index":7}""")]
+    public async Task AProtectedWindowRefusalWritesTheCallThatDoesTheStepInTheWindowListed(string arguments)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
+        {
+            RefusedProcessOf = (_, _) => "Code",
+            OpenWindowsOf = () =>
+            [
+                new("compras-cumple.txt: Bloc de notas", "Notepad", 43910856),
+                new("Calculadora", "ApplicationFrameHost", 52888974),
+            ],
+        };
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json(arguments), CancellationToken.None);
+
+        string told = receipt.Result!.Value.GetProperty("next").GetString()!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(adapter.Calls, Is.Zero);
+            Assert.That(receipt.Result!.Value.GetProperty("windows").EnumerateArray().Select(window => window.GetString()),
+                Is.EqualTo(new[]
+                {
+                    "«compras-cumple.txt: Bloc de notas» (Notepad, window 43910856)",
+                    "«Calculadora» (ApplicationFrameHost, window 52888974)",
+                }));
+            Assert.That(told, Does.Contain(
+                "call input_text_type again with text \"comprar velas\" and window set to the number of the one meant "
+                + "(window 43910856 for «compras-cumple.txt: Bloc de notas»)"));
+            Assert.That(told, Does.Contain("the numbers are in windows: the person is not asked for one"));
+            Assert.That(told, Does.Not.Contain("18016").And.Not.Contain("index"), "a look at another window gave them");
+        });
+    }
+
+    // The call is written as the model wrote it: a text with other characters goes as it is, and the provider's own
+    // argument (the opened application's mark) is never part of it; a text too long to repeat is said as «the same
+    // arguments».
+    [Test]
+    public async Task TheCallARefusalWritesKeepsTheTextAsWrittenAndLeavesOutTheProvidersOwnArguments()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
+        {
+            RefusedProcessOf = (_, _) => "Code",
+            OpenWindowsOf = () => [new("Sin título: Bloc de notas", "Notepad", 2230342)],
+        };
+
+        ExternalCapabilityReceipt written = await provider.InvokeAsync("input.text.type",
+            Json("""{"text":"reunión con «Pedro» el miércoles","openedApplication":true}"""), CancellationToken.None);
+        ExternalCapabilityReceipt longer = await provider.InvokeAsync("input.text.type",
+            Json("{\"text\":\"" + new string('a', 400) + "\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(written.Result!.Value.GetProperty("next").GetString(), Does.Contain(
+                "call input_text_type again with text \"reunión con «Pedro» el miércoles\" and window set to the number"));
+            Assert.That(written.Result!.Value.GetProperty("next").GetString(), Does.Not.Contain("openedApplication"));
+            Assert.That(longer.Result!.Value.GetProperty("next").GetString(), Does.Contain(
+                "call input_text_type again with the same arguments and window set to the number of the one meant "
+                + "(window 2230342 for «Sin título: Bloc de notas»)"));
         });
     }
 

@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace Baxy.Providers.Windows.External;
@@ -18,7 +19,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     private Func<string, JsonElement, string?>? _refusedProcess;
     private Func<string, JsonElement, string?>? _elevatedAct;
     // Holdout v6 V6E016: the desktop's windows an act may reach, as a refusal lists them. Null in the test seams.
-    private Func<IReadOnlyList<string>>? _openWindows;
+    private Func<IReadOnlyList<OpenWindow>>? _openWindows;
     private readonly IOpenedApplicationKeyboard? _openedKeyboard;
     private int _disposed;
 
@@ -256,7 +257,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     }
 
     // A test seam's way to list the desktop's windows an act may reach (the product's reads them, OpenWindows).
-    internal Func<IReadOnlyList<string>>? OpenWindowsOf
+    internal Func<IReadOnlyList<OpenWindow>>? OpenWindowsOf
     {
         set => _openWindows = value;
     }
@@ -267,11 +268,18 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// gives the Notepad's number. The desktop's root windows an act may reach, top of the Z order first, each as a look
     /// names it («title» (process, window N)), N being what the act takes as window.
     /// </summary>
-    private static IReadOnlyList<string> OpenWindows() =>
+    private static IReadOnlyList<OpenWindow> OpenWindows() =>
         [.. VisibleControlSurface.RootWindowsNow(0).Windows
             .Where(window => !VisibleControlSurface.ActRefused(window.Window))
-            .Select(window => $"«{VisibleControlSurface.WindowTitle(window.Window)}» "
-                + $"({VisibleControlSurface.ViewProcess(window.Window).ProcessName}, window {(long)window.Window})")];
+            .Select(window => new OpenWindow(VisibleControlSurface.WindowTitle(window.Window),
+                VisibleControlSurface.ViewProcess(window.Window).ProcessName, (long)window.Window))];
+
+    /// <summary>A desktop window an act may reach: its title, its program and its number (what the act takes as window).</summary>
+    internal readonly record struct OpenWindow(string Title, string Process, long Number)
+    {
+        /// <summary>As a look names it: «title» (process, window N).</summary>
+        public string Shown => $"«{Title}» ({Process}, window {Number})";
+    }
 
     // A test seam's way to say a keyboard act's window runs above BAXY (the product's reads its process token).
     internal Func<string, JsonElement, string?>? ElevatedActOf
@@ -328,7 +336,11 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     // paste, Ctrl+A, a copy) take none, and keep the opening or the front.
     // Holdout v6 V6E016: with the windows an act may reach listed beside it, the step is done again with the number of
     // the one meant, and only a window not listed is looked at by its name first.
-    private static string ProtectedNext(string operation, string program, bool named, bool listed)
+    // Práctica V5E066 (junto s0 and s1): with the windows listed and the step to do again only described, the reply
+    // ended at the refusal both times, once asking the person for the window's number. The call is written out: the
+    // same arguments, the window set to the number of the one meant, the first listed as the example.
+    private static string ProtectedNext(
+        string operation, string program, bool named, OpenWindow? first, JsonElement arguments)
     {
         string refused = $"nothing was sent: the window it would go to belongs to {program}, where BAXY does not act";
         if (!TakesAWindow(operation))
@@ -336,13 +348,49 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 + "(window_focus) and then do this step again there";
         string step = operation.Replace('.', '_');
         return refused + (named ? "" : $"; {step} with no window named acts on the window in front")
-            + (listed
-                ? $"; the windows open that BAXY may act in are in windows (top first), and doing this step again as {step} "
-                    + "with window set to the number of the one meant sends it there; a window not listed"
+            + (first is { } top
+                ? $"; the windows open that BAXY may act in are in windows (top first), each with its number: to do this "
+                    + $"step in one of them, call {step} again with {CallArguments(arguments)} and window set to the number "
+                    + $"of the one meant (window {top.Number} for «{top.Title}»); the numbers are in windows: the person is "
+                    + "not asked for one; a window not listed"
                 : "; the window of another application that is open")
             + " is reached by looking at it by its name "
             + "(input_visible_controls with application), whose result gives that window's number, and doing this step "
             + $"again as {step} with window set to that number; an application that is not open is opened first (app_open)";
+    }
+
+    // The longest the arguments of a refused call are written again in its next; longer, «the same arguments».
+    private const int CallArgumentsMaxChars = 240;
+
+    private static readonly JsonWriterOptions AsWritten = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
+    // A refused call's own arguments as a next writes them («text "comprar velas"»), without its window (the next sets
+    // it), the index of a control or field (a look at another window gave it) nor the provider's own mark of the
+    // opened application.
+    private static string CallArguments(JsonElement arguments)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object)
+            return "the same arguments";
+        var written = new List<string>();
+        foreach (JsonProperty argument in arguments.EnumerateObject())
+        {
+            if (argument.NameEquals("window") || argument.NameEquals("index") || argument.NameEquals(OpenedApplicationArgument)
+                || argument.Value.ValueKind == JsonValueKind.Null)
+                continue;
+            using var buffer = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(buffer, AsWritten))
+            {
+                if (argument.Value.ValueKind == JsonValueKind.String)
+                    writer.WriteStringValue(argument.Value.GetString());
+                else
+                    argument.Value.WriteTo(writer);
+            }
+
+            written.Add($"{argument.Name} {System.Text.Encoding.UTF8.GetString(buffer.ToArray())}");
+        }
+
+        string call = string.Join(" and ", written);
+        return call.Length is 0 or > CallArgumentsMaxChars ? "the same arguments" : call;
     }
 
     public InstalledGameCatalogSnapshot GetInstalledGameCatalogSnapshot()
@@ -487,18 +535,19 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                     // the reply blamed the app it meant; the fact of where it went, and how another window is reached.
                     if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.ProtectedFrontNext))
                     {
-                        IReadOnlyList<string> open = TakesAWindow(operation) && _openWindows is { } windows
+                        IReadOnlyList<OpenWindow> open = TakesAWindow(operation) && _openWindows is { } windows
                             ? windows()
                             : [];
                         if (open.Count > 0)
                         {
                             writer.WriteStartArray("windows");
-                            foreach (string window in open.Take(WindowsVisibleControlAdapter.NamedWindowCandidateLimit))
-                                writer.WriteStringValue(window);
+                            foreach (OpenWindow window in open.Take(WindowsVisibleControlAdapter.NamedWindowCandidateLimit))
+                                writer.WriteStringValue(window.Shown);
                             writer.WriteEndArray();
                         }
 
-                        writer.WriteString("next", ProtectedNext(operation, program, MissionWindow(arguments) != 0, open.Count > 0));
+                        writer.WriteString("next", ProtectedNext(
+                            operation, program, MissionWindow(arguments) != 0, open.Count > 0 ? open[0] : null, arguments));
                     }
 
                     writer.WriteEndObject();
