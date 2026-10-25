@@ -329,7 +329,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             return ExternalJson.Failure(operation, read.Error ?? "web_fetch_page_unreadable");
         (string title, string whole, int skipped) = PageText.Prose(read.Html);
         int start = Math.Min(offset, whole.Length);
-        string text = whole.Substring(start, Math.Min(maximumCharacters, whole.Length - start));
+        // A part never begins or ends between the two halves of a character (an emoji): each half alone was written
+        // as «�», and the character was lost from both parts.
+        if (start > 0 && start < whole.Length && char.IsLowSurrogate(whole[start]) && char.IsHighSurrogate(whole[start - 1]))
+            start--;
+        int length = Math.Min(maximumCharacters, whole.Length - start);
+        if (length > 1 && start + length < whole.Length && char.IsHighSurrogate(whole[start + length - 1])
+            && char.IsLowSurrogate(whole[start + length]))
+            length--;
+        string text = whole.Substring(start, length);
         bool hasMore = start + text.Length < whole.Length;
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
