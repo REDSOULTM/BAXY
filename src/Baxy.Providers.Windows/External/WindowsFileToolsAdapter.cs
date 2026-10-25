@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Baxy.Providers.Windows.Applications;
+using Baxy.Providers.Windows.Filesystem;
 using Microsoft.Win32;
 
 namespace Baxy.Providers.Windows.External;
@@ -452,9 +453,13 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             return new(null, "file_name_invalid", [], true);
         if (File.Exists(path))
             return new(path, null, [], true);
+        string leaf = System.IO.Path.GetFileName(path);
+        // Holdout v6 (V6F010): the one file there whose name is the one said with its words otherwise separated is it
+        // (SpokenFileNames); of two, none is chosen, and the walk says them.
+        if (SameWordsBeside(path, leaf) is [string same])
+            return new(same, null, [], true);
         if (name.IndexOfAny(['\\', '/']) >= 0)
             return new(null, "file_not_found", [], false, Searched: false);
-        string leaf = System.IO.Path.GetFileName(path);
         TimeSpan limit = budget ?? OpenSearchBudget;
         var found = new List<(string Folder, string RelativePath)>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -495,7 +500,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
                     ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) =>
                         !OutOfTime()
                         && !entry.IsDirectory
-                        && entry.FileName.Equals(leaf.AsSpan(), StringComparison.OrdinalIgnoreCase),
+                        && (entry.FileName.Equals(leaf.AsSpan(), StringComparison.OrdinalIgnoreCase)
+                            || SpokenFileNames.Same(entry.FileName.ToString(), leaf)),
                     ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry _) => !OutOfTime(),
                 };
                 // A known folder inside the home folder (its Desktop) is seen once, from the home folder.
@@ -518,6 +524,27 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         }
 
         return new(null, "file_not_found", found, !incomplete && found.Count < OpenSearchCandidates);
+    }
+
+    // The files beside path (hidden, system and linked ones left out, as the walk leaves them) whose name is its leaf
+    // with the words otherwise separated; two at most, enough to know whether one is the file.
+    private static string[] SameWordsBeside(string path, string leaf)
+    {
+        string? folder = System.IO.Path.GetDirectoryName(path);
+        if (folder is null || !Directory.Exists(folder))
+            return [];
+        try
+        {
+            return [.. Directory.EnumerateFiles(folder, "*", new EnumerationOptions
+            {
+                IgnoreInaccessible = true,
+                AttributesToSkip = FileAttributes.Hidden | FileAttributes.System | FileAttributes.ReparsePoint,
+            }).Where(file => SpokenFileNames.Same(System.IO.Path.GetFileName(file), leaf)).Take(2)];
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return [];
+        }
     }
 
     // Where a bare name not in the folder asked is looked for, and how deep: the home folder's own folders first when it

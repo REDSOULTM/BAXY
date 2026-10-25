@@ -78,9 +78,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 AttributesToSkip = FileAttributes.ReparsePoint,
                 IgnoreInaccessible = false,
             };
+            // Holdout v6 (V6F010): a part of a name is also its words whatever separates them (SpokenFileNames).
             string[] matching = Directory.EnumerateFileSystemEntries(_root, "*", options)
                 .Where(path => !IsReserved(path)
-                    && Path.GetFileName(path).Contains(normalized, StringComparison.OrdinalIgnoreCase))
+                    && (Path.GetFileName(path).Contains(normalized, StringComparison.OrdinalIgnoreCase)
+                        || SpokenFileNames.Contains(Path.GetFileName(path), normalized)))
                 .OrderBy(path => Path.GetRelativePath(_root, path), StringComparer.OrdinalIgnoreCase)
                 .ToArray();
             FilesystemEntry[] entries = matching.Take(limit).Select(IssueEntry).ToArray();
@@ -720,7 +722,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private static readonly TimeSpan SameNameBudget = TimeSpan.FromSeconds(1);
 
     // Files named like the leaf of path below root (hidden, system and linked folders left out, BAXY's backups too),
-    // the shallowest first; a walk past its budget gives what it found so far, and none found claims nothing.
+    // the shallowest first; a walk past its budget gives what it found so far, and none found claims nothing. A name of
+    // the same words otherwise separated is one of that name (holdout v6 V6F010, SpokenFileNames).
     private string[] SameNameBelow(string root, string path)
     {
         string name = Path.GetFileName(path);
@@ -740,7 +743,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 (ref FileSystemEntry entry) => entry.ToFullPath(), options)
             {
                 ShouldIncludePredicate = (ref FileSystemEntry entry) =>
-                    !entry.IsDirectory && entry.FileName.Equals(name, StringComparison.OrdinalIgnoreCase),
+                    !entry.IsDirectory && (entry.FileName.Equals(name, StringComparison.OrdinalIgnoreCase)
+                        || SpokenFileNames.Same(entry.FileName.ToString(), name)),
                 ShouldRecursePredicate = (ref FileSystemEntry _) => Stopwatch.GetElapsedTime(started) < SameNameBudget,
             };
             foreach (string file in walk)

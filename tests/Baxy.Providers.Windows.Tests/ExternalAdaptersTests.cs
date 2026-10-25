@@ -2297,6 +2297,64 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Holdout v6 (V6F010): a name said with its words otherwise separated («lista invitados» for lista_invitados.txt)
+    // found no file to move, and the answer was that it did not exist. It is that file, in the person's folder and in
+    // BAXY's working folder; a name spelled exactly is still the one meant first, and two that only have its words are
+    // candidates: nothing is moved by choosing one.
+    [Test]
+    public async Task ANamedFileSaidWithOtherSeparatorsIsMovedAndTwoSuchAreAmbiguous()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "perfil");
+        string sandbox = Path.Combine(temporary.Path, "filesystem-sandbox");
+        Directory.CreateDirectory(Path.Combine(home, "archivo"));
+        Directory.CreateDirectory(Path.Combine(home, "viejos"));
+        Directory.CreateDirectory(sandbox);
+        await File.WriteAllTextAsync(Path.Combine(home, "lista_invitados.txt"), "Ana");
+        await File.WriteAllTextAsync(Path.Combine(home, "plan viaje.txt"), "exacto");
+        await File.WriteAllTextAsync(Path.Combine(home, "viejos", "plan_viaje.txt"), "parecido");
+        await File.WriteAllTextAsync(Path.Combine(home, "notas_reunion.txt"), "uno");
+        await File.WriteAllTextAsync(Path.Combine(home, "viejos", "notas-reunion.txt"), "dos");
+        await File.WriteAllTextAsync(Path.Combine(sandbox, "Informe_Final.md"), "uno\ndos\n");
+        await File.WriteAllTextAsync(Path.Combine(sandbox, "informe-final.copia.md"), "uno\ntres\n");
+        var adapter = new WindowsSandboxNamedFileAdapter(temporary.Path, folder => folder == "home" ? home : null, []);
+        Task<ExternalCapabilityReceipt> Run(string operation, string arguments) => adapter.InvokeAsync(
+            operation, Json(arguments), CancellationToken.None).AsTask();
+
+        ExternalCapabilityReceipt moved = await Run("filesystem.sandbox.move.named",
+            """{"folder":"home","sourceFileName":"lista invitados.txt","destinationRelativePath":"archivo"}""");
+        ExternalCapabilityReceipt copied = await Run("filesystem.sandbox.move.named",
+            """{"copy":true,"folder":"home","sourceFileName":"plan viaje.txt","destinationRelativePath":"archivo"}""");
+        ExternalCapabilityReceipt two = await Run("filesystem.sandbox.move.named",
+            """{"folder":"home","sourceFileName":"notas reunion.txt","destinationRelativePath":"archivo"}""");
+        ExternalCapabilityReceipt diff = await Run("filesystem.sandbox.diff.named",
+            """{"leftFileName":"informe final.md","rightFileName":"informe final copia.md"}""");
+        ExternalCapabilityReceipt work = await Run("filesystem.sandbox.move.named",
+            """{"sourceFileName":"informe final.md","destinationRelativePath":"logs/informe.md"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(moved.Verified, Is.True, moved.ErrorCode);
+            Assert.That(moved.Result?.GetProperty("sourceRelativePath").GetString(), Is.EqualTo("lista_invitados.txt"));
+            Assert.That(File.ReadAllText(Path.Combine(home, "archivo", "lista_invitados.txt")), Is.EqualTo("Ana"));
+            Assert.That(File.Exists(Path.Combine(home, "lista_invitados.txt")), Is.False);
+            Assert.That(copied.Verified, Is.True, copied.ErrorCode);
+            Assert.That(File.ReadAllText(Path.Combine(home, "archivo", "plan viaje.txt")), Is.EqualTo("exacto"));
+            Assert.That(two.ErrorCode, Is.EqualTo("named_file_ambiguous"));
+            Assert.That(two.EffectMayHaveOccurred, Is.False);
+            Assert.That(two.Result?.GetProperty("candidates").EnumerateArray().Select(item => item.GetString()).Order(),
+                Is.EqualTo(new[] { "notas_reunion.txt", "viejos/notas-reunion.txt" }));
+            Assert.That(File.Exists(Path.Combine(home, "notas_reunion.txt")), Is.True);
+            Assert.That(File.Exists(Path.Combine(home, "viejos", "notas-reunion.txt")), Is.True);
+            Assert.That(diff.Verified, Is.True, diff.ErrorCode);
+            Assert.That(diff.Result?.GetProperty("leftName").GetString(), Is.EqualTo("Informe_Final.md"));
+            Assert.That(diff.Result?.GetProperty("rightName").GetString(), Is.EqualTo("informe-final.copia.md"));
+            Assert.That(work.Verified, Is.True, work.ErrorCode);
+            Assert.That(work.Result?.GetProperty("sourceFileName").GetString(), Is.EqualTo("Informe_Final.md"));
+            Assert.That(File.Exists(Path.Combine(sandbox, "logs", "informe.md")), Is.True);
+        });
+    }
+
     // Revisión de nb-w11-revision: a walk the time limit stopped after one file of that name may have left another one
     // unseen; the one seen is not «the file of that name» to move (file.edit refuses the same, known_file_search_incomplete).
     [Test]

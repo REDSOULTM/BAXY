@@ -93,7 +93,7 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
         if (!Transfer(source, destination, copy, hash))
             return ExternalJson.Failure(operation, "sandbox_move_postread_failed", true);
-        return Moved(operation, sourceName, relativeDestination, hash, copy,
+        return Moved(operation, Path.GetFileName(source), relativeDestination, hash, copy,
             "sandbox_named_move_hash_absence_postread", null);
     }
 
@@ -178,25 +178,35 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
             });
     }
 
-    // The files of that whole name (case aside) under the folder, walked as the known-folder tools walk it.
+    // The files of that whole name (case aside) under the folder, walked as the known-folder tools walk it; with none,
+    // the ones of its words otherwise separated (holdout v6 V6F010, SpokenFileNames).
     private (string[] Matches, bool WalkStopped) FindInFolder(string root, string label, string fileName)
     {
         var matches = new List<string>();
+        var same = new List<string>();
         DateTime deadline = _utcNow() + WalkTimeLimit;
+        bool stopped = false;
         foreach (string file in Directory.EnumerateFiles(root, "*", WindowsKnownFileAdapter.WalkOptions(label)))
         {
             if (_utcNow() >= deadline)
-                return ([.. matches], true);
-            if (string.Equals(Path.GetFileName(file), fileName, StringComparison.OrdinalIgnoreCase)
-                && !BaxyPrivateArea.Holds(_privateRoots, file))
+            {
+                stopped = true;
+                break;
+            }
+            if (BaxyPrivateArea.Holds(_privateRoots, file))
+                continue;
+            if (string.Equals(Path.GetFileName(file), fileName, StringComparison.OrdinalIgnoreCase))
             {
                 matches.Add(file);
                 if (matches.Count > CandidatesShown)
                     break;
             }
+            else if (matches.Count == 0 && same.Count <= CandidatesShown
+                && SpokenFileNames.Same(Path.GetFileName(file), fileName))
+                same.Add(file);
         }
 
-        return ([.. matches], false);
+        return (matches.Count > 0 ? [.. matches] : [.. same], stopped);
     }
 
     // Holdout v5 V5E040 (int11): a destination that repeats the subfolder it is already in («BAXY-bench/copia.txt» in
@@ -292,14 +302,17 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         }), effectObserved: false);
     }
 
-    // A file is the one named only when its whole name, case aside, is the name given; two such files anywhere in
-    // the work folder are ambiguous and nothing is chosen.
+    // A file is the one named only when its whole name, case aside, is the name given or, with none such, its words
+    // otherwise separated (holdout v6 V6F010); two such files anywhere in the work folder are ambiguous and nothing is
+    // chosen.
     private string ResolveUnique(string fileName)
     {
         if (!Directory.Exists(_root)) throw new InvalidDataException("sandbox_named_root_not_found");
         string[] matches = Enumerate()
             .Where(path => string.Equals(Path.GetFileName(path), fileName, StringComparison.OrdinalIgnoreCase))
             .Take(2).ToArray();
+        if (matches.Length == 0)
+            matches = [.. Enumerate().Where(path => SpokenFileNames.Same(Path.GetFileName(path), fileName)).Take(2)];
         if (matches.Length == 0) throw new InvalidDataException("sandbox_named_file_not_found");
         if (matches.Length > 1) throw new InvalidDataException("sandbox_named_file_ambiguous");
         return matches[0];

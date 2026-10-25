@@ -553,18 +553,28 @@ internal sealed class SaidFolders
         Same(place.Said, place.Path) ? place.Path : $"«{place.Said}» ({place.Path})"));
 
     private static string Holding(Place place, string? leaf) =>
-        leaf is null ? string.Empty : Holds(place.Path, leaf) ? $" ({leaf} is there)" : $" (no {leaf} there)";
+        leaf is null ? string.Empty : Held(place.Path, leaf) is { Length: > 0 } held
+            ? $" ({string.Join(" and ", held)} {(held.Length == 1 ? "is" : "are")} there)" : $" (no {leaf} there)";
 
-    private static bool Holds(string folder, string leaf)
+    private static bool Holds(string folder, string leaf) => Held(folder, leaf).Length > 0;
+
+    // The names of what the folder holds by that name: the name itself or, with none so spelled, those of its words
+    // otherwise separated (holdout v6 V6F010, SpokenFileNames).
+    private static string[] Held(string folder, string leaf)
     {
         try
         {
             string path = Path.Combine(folder, leaf);
-            return File.Exists(path) || Directory.Exists(path);
+            if (File.Exists(path) || Directory.Exists(path))
+                return [leaf];
+            return Directory.Exists(folder)
+                ? [.. Directory.EnumerateFileSystemEntries(folder).Select(entry => Path.GetFileName(entry))
+                    .Where(name => SpokenFileNames.Same(name, leaf)).Order(StringComparer.Ordinal)]
+                : [];
         }
-        catch (ArgumentException)
+        catch (Exception exception) when (exception is ArgumentException or IOException or UnauthorizedAccessException)
         {
-            return false;
+            return [];
         }
     }
 

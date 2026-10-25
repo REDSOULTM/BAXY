@@ -63,6 +63,8 @@ public static class ModelAids
     /// Holdout v5 (V5E052: «factura marzo.pdf» dictated, factura-marzo.pdf there, nothing offered): a known file named
     /// exactly by none gives, from the same walk, up to 5 names with the same words under other separators (space, -, _,
     /// .), case or accents as candidates, and that fact; nothing is done to them, and the exact name is asked for again.
+    /// (Holdout v6 V6F010: a name that differs only in its separators is the name itself, aid or not, SpokenFileNames;
+    /// what this aid offers is a name that also differs in accents or extension.)
     /// </summary>
     public const string NearNames = "near_names";
 
