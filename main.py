@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -105,11 +106,31 @@ def _files_under(directory: Path) -> list[Path]:
     return files
 
 
+# Calidad PC 2026-10-25: the projects also take files from outside their folders (the JSON that Baxy.App, Baxy.Kernel
+# and Baxy.Providers.Windows embed from src/baxy_mind/data); a change there was «sin cambios». Read from each project
+# file, so a new include is never missed.
+_OUTSIDE_INCLUDE = re.compile(r'<(?:Content|EmbeddedResource|None|Compile)\s+Include="(\.\.[\\/][^"]+)"')
+
+
+def _project_outside_files(root: Path) -> list[Path]:
+    files: list[Path] = []
+    for relative in ACTIVE_DOTNET_PROJECT_ROOTS:
+        for project in (root / relative).glob("*.csproj"):
+            for include in _OUTSIDE_INCLUDE.findall(project.read_text(encoding="utf-8-sig")):
+                pattern = include.replace("\\", "/")
+                if "*" in pattern:
+                    files.extend(path.resolve() for path in _files_under(project.parent / pattern.split("*", 1)[0]))
+                elif (path := project.parent / pattern).is_file():
+                    files.append(path.resolve())
+    return [path for path in files if path.is_relative_to(root)]
+
+
 def source_files(root: Path = ROOT) -> list[Path]:
     root = root.resolve()
     files: list[Path] = []
     for relative in (*ACTIVE_DOTNET_PROJECT_ROOTS, *RUNTIME_ASSET_ROOTS):
         files.extend(_files_under(root / relative))
+    files.extend(_project_outside_files(root))
     files.extend(path for path in root.glob("Directory.*") if path.is_file())
     files.extend(
         path for relative in EXPLICIT_BUILD_FILES if (path := root / relative).is_file()
