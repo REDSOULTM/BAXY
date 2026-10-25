@@ -260,3 +260,28 @@ def test_the_product_starts_from_a_checkout_whose_path_has_spaces(tmp_path, monk
     assert (root / "scripts" / "args.txt").read_text().split("\n")[:8] == [
         "--conductor", "--command-dir", str(run_dir / "commands"), "--capture", str(run_dir), "--profile",
         str(tmp_path / "per fil"), "--timeout-ms"]
+
+
+def test_a_falsehood_run_says_which_judge_judged_it(tmp_path, monkeypatch):
+    # The judge's GGUF is BAXY_RENEW_JUDGE_GGUF's, and a --judge-only reads transcripts made long before: the summary
+    # named the product that talked (run.json) and nothing of the model that judged it.
+    model, server = tmp_path / "juez.gguf", tmp_path / "llama-server.exe"
+    model.write_bytes(b"35B")
+    server.write_bytes(b"exe")
+    run_dir = tmp_path / "runs" / "lbl-falsedades"
+    run_dir.mkdir(parents=True)
+    (run_dir / "transcripts.json").write_text("[]", encoding="utf-8")
+    monkeypatch.setattr(bench_falsedades, "BANKS", tmp_path)
+    monkeypatch.setattr(bench_falsedades, "JUDGE_GGUF", str(model))
+    monkeypatch.setattr(bench_falsedades, "LLAMA_SERVER", str(server))
+    monkeypatch.setattr(bench_falsedades, "judge", lambda replicas, log_dir: [[] for _ in replicas])
+    monkeypatch.setattr(bench_falsedades.run_meta, "_cache_path", lambda: None)
+    monkeypatch.delenv("BAXY_RENEW_SEED", raising=False)
+    monkeypatch.setattr(sys, "argv", ["bench_falsedades.py", "lbl", "--cases", "c.json", "--judge-only"])
+    bench_falsedades.main()
+    summary = json.loads((run_dir / "results.jsonl").read_text(encoding="utf-8").splitlines()[0])["summary"]
+    judge = summary["judge"]
+    assert judge["gguf"] == bench_falsedades.run_meta.fingerprint(model)
+    assert judge["server"]["sha256"] == bench_falsedades.run_meta.sha256_file(server)
+    assert judge["seeds"] == list(bench_falsedades.JUDGE_SEEDS)
+    assert judge["script_sha256"] == bench_falsedades.run_meta.sha256_file(Path(bench_falsedades.__file__))

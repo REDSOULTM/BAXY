@@ -345,8 +345,17 @@ def judge_transcripts(transcripts: list[dict]) -> list[dict]:
     return rows
 
 
+def judge_record() -> dict:
+    """The judge that read the lines (PC-Q, 2026-10-25): its GGUF and server with their sha256, its seeds and this
+    script's sha256 (its prompt and its vote). The summary named only the product that talked (run.json), and a
+    --judge-only may read transcripts made long before with another BAXY_RENEW_JUDGE_GGUF."""
+    cache = run_meta._cache_path()
+    return {"gguf": run_meta.fingerprint(JUDGE_GGUF, cache), "server": run_meta.fingerprint(LLAMA_SERVER, cache),
+            "seeds": list(JUDGE_SEEDS), "script_sha256": run_meta.sha256_file(Path(__file__))}
+
+
 def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict], rows: list[dict],
-                run_dir: Path | None = None) -> dict:
+                run_dir: Path | None = None, judged_by: dict | None = None) -> dict:
     false_lines = [r for r in rows if r.get("falsedad")]
     try:
         record = json.loads((run_dir / "run.json").read_text(encoding="utf-8")) if run_dir else None
@@ -371,7 +380,7 @@ def run_summary(label: str, cases: str, seed: int | None, transcripts: list[dict
                                        if turn.get("failure")}),
             "turnos_sin_linea": sorted({t["id"] for t in transcripts for turn in t.get("turns") or []
                                         if not any(str(b).strip() for b in turn.get("baxy") or [])}),
-            **profile_summary(transcripts), "run": record}
+            **profile_summary(transcripts), "run": record, "judge": judged_by}
 
 
 def replicas_summary(label: str, summaries: list[dict]) -> dict:
@@ -446,9 +455,10 @@ def main() -> None:
                               "conversations": {label: len(t) for label, t in conversations.items()}}))
             return
     judged = judge([conversations[label] for label, _ in replicas], run_dirs[replicas[0][0]])
+    judged_by = judge_record()
     summaries = []
     for (label, seed), rows in zip(replicas, judged):
-        summary = run_summary(label, args.cases, seed, conversations[label], rows, run_dirs[label])
+        summary = run_summary(label, args.cases, seed, conversations[label], rows, run_dirs[label], judged_by)
         summaries.append(summary)
         with (run_dirs[label] / "results.jsonl").open("w", encoding="utf-8") as out:
             out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
