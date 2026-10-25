@@ -119,6 +119,31 @@ public sealed class SaidFoldersTests
         });
     }
 
+    // Holdout v6 (V6F010): a file named with its words otherwise separated («lista invitados.txt» for
+    // lista_invitados.txt) is the file the folder holds: of two folders of the name said, the one that holds it is the
+    // place, said with the file's own name.
+    [Test]
+    public void AFileNamedWithOtherSeparatorsIsHeldByTheFolderThatHasIt()
+    {
+        File.WriteAllText(Path.Combine(_home, "banco-local", "lista_invitados.txt"), "Ana\n");
+        SaidFolders said = Heard("agrega a Pedro al final de lista invitados.txt, en la carpeta banco-local");
+        SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"), new JsonObject
+        {
+            ["relativePath"] = "lista invitados.txt",
+            ["text"] = "Pedro",
+            ["folder"] = "home",
+            ["append"] = true,
+        });
+
+        string next = (string?)ruling?.Refusal?["next"] ?? string.Empty;
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.Contain("If " + Path.Combine(_home, "banco-local")
+                + " (lista_invitados.txt is there) is the place of this call"));
+            Assert.That(next, Does.Not.Contain("folder \"desktop\""));
+        });
+    }
+
     // Of two folders of that name, neither holding the file, both are offered, each said with what it holds.
     [Test]
     public void ANameInTwoFoldersOffersBoth()

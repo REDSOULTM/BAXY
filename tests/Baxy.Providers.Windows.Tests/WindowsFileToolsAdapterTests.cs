@@ -169,6 +169,35 @@ public sealed class WindowsFileToolsAdapterTests
         });
     }
 
+    // Holdout v6 (V6F010): «lista invitados» said, lista_invitados.txt there. A name is its words whatever separates them
+    // (space, -, _, .): the one file of those words where it was asked is opened; two there are not, and are said with
+    // any seen elsewhere.
+    [Test]
+    public void ANameSaidWithOtherSeparatorsOpensThatFileAndTwoSuchAreSaid()
+    {
+        string documents = Directory.CreateDirectory(Path.Combine(_root, "Documentos")).FullName;
+        string pictures = Directory.CreateDirectory(Path.Combine(_root, "Imagenes")).FullName;
+        File.WriteAllText(Path.Combine(documents, "lista_invitados.txt"), "x");
+        File.WriteAllText(Path.Combine(documents, "notas_reunion.txt"), "x");
+        File.WriteAllText(Path.Combine(documents, "notas-reunion.txt"), "x");
+        File.WriteAllText(Path.Combine(Directory.CreateDirectory(Path.Combine(pictures, "viaje")).FullName, "foto-playa.jpg"), "x");
+        WindowsFileToolsAdapter adapter = TwoFolders(documents, pictures);
+
+        WindowsFileToolsAdapter.OpenTarget one = adapter.LocateOpenTarget("documents", "lista invitados.txt");
+        WindowsFileToolsAdapter.OpenTarget two = adapter.LocateOpenTarget("documents", "notas reunion.txt");
+        WindowsFileToolsAdapter.OpenTarget elsewhere = adapter.LocateOpenTarget("documents", "foto playa.jpg");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(one.Path, Is.EqualTo(Path.Combine(documents, "lista_invitados.txt")));
+            Assert.That(two.Path, Is.Null);
+            Assert.That(two.SeenElsewhere.Select(seen => seen.RelativePath).Order(StringComparer.Ordinal),
+                Is.EqualTo(new[] { "notas-reunion.txt", "notas_reunion.txt" }));
+            Assert.That(elsewhere.Path, Is.Null);
+            Assert.That(elsewhere.SeenElsewhere, Is.EqualTo(new[] { ("pictures", Path.Combine("viaje", "foto-playa.jpg")) }));
+        });
+    }
+
     [Test]
     public void TwoFilesWithTheNameAreBothSaidAndNoneIsAnHonestAbsence()
     {

@@ -1129,6 +1129,8 @@ public sealed class KnownFileToolsTests
     // names with the same words under other separators, case or accents (and, for a read or an edit, another
     // extension), as candidates with that fact; nothing is trashed, read or edited by them, and the exact name named
     // again is the one the core asks the yes for. Off (BAXY_AYUDAS without it), or with nothing alike, it is as before.
+    // (Holdout v6 V6F010: a name with only its separators otherwise is that file, ANameSaidWithOtherSeparatorsIsThatFile-
+    // AndTwoSuchAreAmbiguous; here the names alike also differ in accents.)
     [TestCase("all", true)]
     [TestCase("search_scope", false)]
     public async Task ANameAlmostTheSameGivesTheExactNamesAndActsOnNone(string aids, bool near)
@@ -1138,26 +1140,26 @@ public sealed class KnownFileToolsTests
         (WindowsKnownFileAdapter adapter, string desktop, string documents, FolderRecycleBin bin) = Folders(temporary);
         string pyme = Path.Combine(documents, "facturas pyme");
         Directory.CreateDirectory(pyme);
-        Directory.CreateDirectory(Path.Combine(desktop, "fotos_viaje"));
-        string factura = Path.Combine(pyme, "factura-marzo.pdf");
-        string informe = Path.Combine(pyme, "Informe_Final.txt");
+        Directory.CreateDirectory(Path.Combine(desktop, "fotos_añejas"));
+        string factura = Path.Combine(pyme, "facturación-marzo.pdf");
+        string informe = Path.Combine(pyme, "Informe_Reunión.txt");
         string cancion = Path.Combine(desktop, "canción.txt");
         await File.WriteAllTextAsync(factura, "x");
         await File.WriteAllTextAsync(informe, "lunes");
         await File.WriteAllTextAsync(cancion, "lunes");
 
         ExternalCapabilityReceipt trash = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"factura marzo.pdf"}"""),
+            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"facturacion marzo.pdf"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt? asked = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"factura marzo.pdf"}"""),
+            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"facturacion marzo.pdf"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt folder = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"desktop","fileName":"Fotos Viaje"}"""), CancellationToken.None);
+            """{"folder":"desktop","fileName":"Fotos Anejas"}"""), CancellationToken.None);
         ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(
-            """{"folder":"all_known","fileName":"informe final.txt"}"""), CancellationToken.None);
+            """{"folder":"all_known","fileName":"informe reunion.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt byPath = await adapter.InvokeAsync("file.read", Json(
-            """{"folder":"documents","fileName":"facturas pyme/informe final"}"""), CancellationToken.None);
+            """{"folder":"documents","fileName":"facturas pyme/informe reunion"}"""), CancellationToken.None);
         ExternalCapabilityReceipt edit = await adapter.InvokeAsync("file.edit", Json(
             """{"folder":"desktop","fileName":"CANCION.TXT","oldText":"lunes","newText":"martes"}"""),
             CancellationToken.None);
@@ -1166,7 +1168,7 @@ public sealed class KnownFileToolsTests
             CancellationToken.None);
         // The exact name, named again, is one target: the read before the yes leaves the call to ask.
         ExternalCapabilityReceipt? exact = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"factura-marzo.pdf"}"""),
+            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"facturación-marzo.pdf"}"""),
             CancellationToken.None);
 
         static string[] Names(ExternalCapabilityReceipt receipt) =>
@@ -1184,24 +1186,24 @@ public sealed class KnownFileToolsTests
                 Assert.That(refused.EffectMayHaveOccurred, Is.False);
             }
             Assert.That(asked?.ErrorCode, Is.EqualTo("known_file_not_found"));
-            Assert.That(Names(trash), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "factura-marzo.pdf") } : []));
+            Assert.That(Names(trash), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "facturación-marzo.pdf") } : []));
             Assert.That(Names(asked!), Is.EqualTo(Names(trash)));
-            Assert.That(Names(folder), Is.EqualTo(near ? new[] { "fotos_viaje" } : []));
-            Assert.That(Names(read), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "Informe_Final.txt") } : []));
-            Assert.That(Names(byPath), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "Informe_Final.txt") } : []));
+            Assert.That(Names(folder), Is.EqualTo(near ? new[] { "fotos_añejas" } : []));
+            Assert.That(Names(read), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "Informe_Reunión.txt") } : []));
+            Assert.That(Names(byPath), Is.EqualTo(near ? new[] { Path.Combine("facturas pyme", "Informe_Reunión.txt") } : []));
             Assert.That(Names(edit), Is.EqualTo(near ? new[] { "canción.txt" } : []));
             Assert.That(Next(trash), Is.EqualTo(near
-                ? "no file or folder is named exactly factura marzo.pdf; these have the same words with other "
-                    + "separators, case or accents: \"factura-marzo.pdf\"; to use one, call again with its exact name "
+                ? "no file or folder is named exactly facturacion marzo.pdf; these have the same words with other "
+                    + "separators, case or accents: \"facturación-marzo.pdf\"; to use one, call again with its exact name "
                     + "as fileName"
-                : "factura marzo.pdf is not in documents/facturas pyme, subfolders included" + elsewhere));
+                : "facturacion marzo.pdf is not in documents/facturas pyme, subfolders included" + elsewhere));
             Assert.That(Next(read), Is.EqualTo(near
-                ? "no file is named exactly informe final.txt; these have the same words with other separators, "
-                    + "case, accents or extension: \"Informe_Final.txt\"; to use one, call again with its exact name "
+                ? "no file is named exactly informe reunion.txt; these have the same words with other separators, "
+                    + "case, accents or extension: \"Informe_Reunión.txt\"; to use one, call again with its exact name "
                     + "as fileName"
-                : "informe final.txt is not in desktop, documents, subfolders included; nothing else on the PC was "
+                : "informe reunion.txt is not in desktop, documents, subfolders included; nothing else on the PC was "
                     + "searched"));
-            Assert.That(Next(byPath), near ? Does.Contain("\"Informe_Final.txt\"") : Is.Null);
+            Assert.That(Next(byPath), near ? Does.Contain("\"Informe_Reunión.txt\"") : Is.Null);
             // Nothing alike is the refusal of before, whatever the aid.
             Assert.That(Names(nothingAlike), Is.Empty);
             Assert.That(Next(nothingAlike), Is.EqualTo(
@@ -1209,9 +1211,82 @@ public sealed class KnownFileToolsTests
             Assert.That(read.Result!.Value.TryGetProperty("text", out _), Is.False, "nothing was read");
             Assert.That(File.ReadAllText(cancion), Is.EqualTo("lunes"), "nothing was edited");
             Assert.That(File.Exists(factura), Is.True, "nothing was trashed");
-            Assert.That(Directory.Exists(Path.Combine(desktop, "fotos_viaje")), Is.True);
+            Assert.That(Directory.Exists(Path.Combine(desktop, "fotos_añejas")), Is.True);
             Assert.That(bin.Recycled, Is.Empty);
             Assert.That(exact, Is.Null);
+        });
+    }
+
+    // Holdout v6 (V6F010, in every configuration): «lista invitados» said, lista_invitados.txt there, and the search
+    // found nothing, so the answer was that it did not exist. A voice dictates no separator: a name is its words whatever
+    // separates them (space, -, _, .), in the search, the read, the edit and the bin alike, with or without the aids. A
+    // name spelled exactly is still the one meant before one that only has its words, and two that only have its words
+    // are two candidates: nothing is read, edited or trashed by choosing one.
+    [TestCase("all")]
+    [TestCase("none")]
+    public async Task ANameSaidWithOtherSeparatorsIsThatFileAndTwoSuchAreAmbiguous(string aids)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, FolderRecycleBin bin) = Folders(temporary);
+        string invitados = Path.Combine(desktop, "lista_invitados.txt");
+        string exact = Path.Combine(documents, "plan viaje.txt");
+        string presupuesto = Path.Combine(documents, "Presupuesto-2026.xlsx");
+        string[] notas = [Path.Combine(desktop, "notas_reunion.txt"), Path.Combine(documents, "notas-reunion.txt")];
+        await File.WriteAllTextAsync(invitados, "Ana");
+        await File.WriteAllTextAsync(exact, "exacto");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "plan_viaje.txt"), "parecido");
+        await File.WriteAllTextAsync(presupuesto, "x");
+        foreach (string nota in notas)
+            await File.WriteAllTextAsync(nota, "lunes");
+        Task<ExternalCapabilityReceipt> Run(string operation, string arguments) =>
+            adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None).AsTask();
+
+        ExternalCapabilityReceipt found = await Run("file.find", """{"folder":"all_known","query":"lista invitados"}""");
+        ExternalCapabilityReceipt read = await Run("file.read", """{"folder":"all_known","fileName":"lista invitados.txt"}""");
+        ExternalCapabilityReceipt edited = await Run("file.edit",
+            """{"folder":"desktop","fileName":"Lista-Invitados.txt","oldText":"Ana","newText":"Ana y Pedro"}""");
+        ExternalCapabilityReceipt exactRead = await Run("file.read", """{"folder":"all_known","fileName":"plan viaje.txt"}""");
+        ExternalCapabilityReceipt? asked = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
+            """{"folder":"documents","fileName":"presupuesto 2026.xlsx"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt trashed = await Run("filesystem.known.trash.named",
+            """{"folder":"documents","fileName":"presupuesto 2026.xlsx"}""");
+        ExternalCapabilityReceipt twoRead = await Run("file.read", """{"folder":"all_known","fileName":"notas reunion.txt"}""");
+        ExternalCapabilityReceipt twoEdit = await Run("file.edit",
+            """{"folder":"all_known","fileName":"notas reunion.txt","oldText":"lunes","newText":"martes"}""");
+        ExternalCapabilityReceipt twoTrash = await Run("filesystem.known.trash.named",
+            """{"folder":"all_known","fileName":"notas reunion.txt"}""");
+
+        static string[] Candidates(ExternalCapabilityReceipt receipt) =>
+            [.. receipt.Result!.Value.GetProperty("candidates").EnumerateArray()
+                .Select(item => item.GetProperty("name").GetString()!).Order(StringComparer.Ordinal)];
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.Result!.Value.GetProperty("matchCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(found.Result!.Value.GetProperty("files")[0].GetProperty("name").GetString(),
+                Is.EqualTo("lista_invitados.txt"));
+            Assert.That(read.ErrorCode, Is.Null);
+            Assert.That(read.Result!.Value.GetProperty("text").GetString(), Is.EqualTo("Ana"));
+            Assert.That(edited.ErrorCode, Is.Null);
+            Assert.That(edited.Result!.Value.GetProperty("reviewLabel").GetString(), Is.EqualTo("lista_invitados.txt"));
+            Assert.That(File.ReadAllText(invitados), Is.EqualTo("Ana y Pedro"));
+            Assert.That(exactRead.Result!.Value.GetProperty("text").GetString(), Is.EqualTo("exacto"));
+            Assert.That(asked, Is.Null, "one file has those words: the yes is asked for it");
+            Assert.That(trashed.ErrorCode, Is.Null);
+            Assert.That(trashed.Result!.Value.GetProperty("reviewLabel").GetString(), Is.EqualTo("Presupuesto-2026.xlsx"));
+            Assert.That(File.Exists(presupuesto), Is.False);
+            foreach (ExternalCapabilityReceipt two in new[] { twoRead, twoEdit, twoTrash })
+            {
+                Assert.That(two.ErrorCode, Is.EqualTo("known_file_ambiguous"));
+                Assert.That(two.EffectMayHaveOccurred, Is.False);
+                Assert.That(Candidates(two), Is.EqualTo(new[] { "notas-reunion.txt", "notas_reunion.txt" }));
+            }
+            Assert.That(twoRead.Result!.Value.TryGetProperty("text", out _), Is.False, "nothing was read");
+            Assert.That(notas.Select(File.ReadAllText), Is.All.EqualTo("lunes"), "nothing was edited");
+            string[] recycled = [.. bin.Recycled.Select(path => Path.GetFileName(path)[33..])];
+            Assert.That(recycled, Does.Contain("Presupuesto-2026.xlsx"));
+            Assert.That(recycled, Has.None.StartsWith("notas"), "nothing was trashed");
+            Assert.That(notas.All(File.Exists), Is.True);
         });
     }
 

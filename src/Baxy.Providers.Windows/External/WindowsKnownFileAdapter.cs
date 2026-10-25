@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.IO.Enumeration;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -469,10 +468,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         }
     }
 
+    // Holdout v6 (V6F010): a part of a name is also its words whatever separates them (SpokenFileNames).
     private static bool NameMatches(string name, string query) =>
         query.Contains('*') || query.Contains('?')
             ? FileSystemName.MatchesSimpleExpression(query, name, ignoreCase: true)
-            : name.Contains(query, StringComparison.OrdinalIgnoreCase);
+                || FileSystemName.MatchesSimpleExpression(
+                    SpokenFileNames.Words(query), SpokenFileNames.Words(name), ignoreCase: false)
+            : name.Contains(query, StringComparison.OrdinalIgnoreCase) || SpokenFileNames.Contains(name, query);
 
     private static string? OptionalText(JsonElement arguments, string name) =>
         arguments.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String
@@ -512,7 +514,6 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     {
         if (TrashTarget(operation, roots, arguments, out KnownEntry target) is { } refused)
             return refused;
-        string fileName = ExternalJson.RequiredString(arguments, "fileName").Trim();
         (string label, _, string source) = target;
         bool isFolder = Directory.Exists(source);
         int entries = isFolder
@@ -526,7 +527,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("reviewLabel", fileName); writer.WriteString("folder", label);
+            writer.WriteString("reviewLabel", Path.GetFileName(source)); writer.WriteString("folder", label);
             writer.WriteBoolean("sourceAbsent", true);
             writer.WriteBoolean("inRecycleBin", true);
             writer.WriteBoolean("isFolder", isFolder);
@@ -554,8 +555,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             return ExternalJson.Failure(operation, "known_file_name_invalid");
         // FILES1603 «Borra la carpeta CarterTest del escritorio»: a directory with
         // that name in a known folder is trashed the same way, whole.
-        string? folded = ModelAids.On(ModelAids.NearNames) && FoldedName(fileName) is { Length: > 0 } words ? words : null;
-        List<KnownEntry> found = [], near = [];
+        string? folded = ModelAids.On(ModelAids.NearNames) && SpokenFileNames.Folded(fileName) is { Length: > 0 } words
+            ? words : null;
+        List<KnownEntry> found = [], same = [], near = [];
         foreach (KnownEntry item in Enumerate(roots).Concat(EnumerateDirectories(roots)))
         {
             string name = Path.GetFileName(item.Path);
@@ -564,12 +566,17 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 found.Add(item);
                 if (found.Count > CandidatesShown) break;
             }
+            // Holdout v6 (V6F010): with no name spelled so, the one of its words otherwise separated is it.
+            else if (found.Count == 0 && SpokenFileNames.Same(name, fileName))
+            {
+                if (same.Count <= CandidatesShown) same.Add(item);
+            }
             // Holdout v5 (V5E052): the names alike are only said when the name itself is nowhere, from the same walk.
             else if (folded is not null && found.Count == 0 && near.Count <= CandidatesShown
-                && FoldedName(name) == folded)
+                && SpokenFileNames.Folded(name) == folded)
                 near.Add(item);
         }
-        KnownEntry[] matches = [.. found];
+        KnownEntry[] matches = found.Count > 0 ? [.. found] : [.. same];
         if (matches.Length == 0 && near.Count > 0)
             return CandidatesRefusal(operation, "known_file_not_found", near,
                 next: NearNamesNext("no file or folder", fileName, near, "case or accents", walkStopped: false));
@@ -1032,9 +1039,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             || parts.Any(part => part is "" or "." or ".." || part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
             return ExternalJson.Failure(operation, "known_file_name_invalid");
         List<KnownEntry> matches = [];
+        // Holdout v6 (V6F010): with no file spelled so, the ones of its words otherwise separated (SpokenFileNames).
+        List<KnownEntry> same = [];
         List<KnownEntry> stems = [];
         string stem = parts[^1];
-        string? folded = ModelAids.On(ModelAids.NearNames) && FoldedName(stem) is { Length: > 0 } words ? words : null;
+        string? folded = ModelAids.On(ModelAids.NearNames) && SpokenFileNames.Folded(stem) is { Length: > 0 } words
+            ? words : null;
         if (fullPath || parts.Length > 1)
         {
             foreach ((string label, string root) in roots)
@@ -1044,7 +1054,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 if (File.Exists(path) && !CrossesReparsePoint(root, path)) matches.Add(new KnownEntry(label, root, path));
             }
             // Holdout v5 (V5E052): a path no file has is looked for alike only in the folder it names, its top level.
-            for (int index = 0; matches.Count == 0 && folded is not null && index < roots.Count; index++)
+            for (int index = 0; matches.Count == 0 && index < roots.Count; index++)
             {
                 (string label, string root) = roots[index];
                 string folder = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(root, name)))!;
@@ -1055,7 +1065,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 };
                 foreach (string file in Directory.EnumerateFiles(folder, "*", topLevel))
                 {
-                    if (stems.Count <= CandidatesShown && !BaxyPrivateArea.Holds(_privateRoots, file)
+                    if (BaxyPrivateArea.Holds(_privateRoots, file)) continue;
+                    if (SpokenFileNames.Same(Path.GetFileName(file), stem))
+                    {
+                        if (same.Count <= CandidatesShown) same.Add(new KnownEntry(label, root, file));
+                    }
+                    else if (folded is not null && stems.Count <= CandidatesShown
                         && StemOrAlike(Path.GetFileName(file), stem, folded))
                         stems.Add(new KnownEntry(label, root, file));
                 }
@@ -1072,12 +1087,18 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                     matches.Add(item);
                     if (matches.Count > CandidatesShown) break;
                 }
+                else if (matches.Count == 0 && SpokenFileNames.Same(fileName, stem))
+                {
+                    if (same.Count <= CandidatesShown) same.Add(item);
+                }
                 // The stems are only said when the name itself is nowhere: gathered in the same walk, not a second one.
                 else if (matches.Count == 0 && stems.Count <= CandidatesShown && StemOrAlike(fileName, stem, folded))
                     stems.Add(item);
             }
             walkStopped = walk.Reached;
         }
+        if (matches.Count == 0)
+            matches = same;
         if (matches.Count == 1)
         {
             located = matches[0];
@@ -1118,39 +1139,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // names that fold to the same words.
     private static bool StemOrAlike(string fileName, string requested, string? folded) =>
         string.Equals(Path.GetFileNameWithoutExtension(fileName), requested, StringComparison.OrdinalIgnoreCase)
-        || (folded is not null && (FoldedName(fileName) == folded
-            || FoldedName(Path.GetFileNameWithoutExtension(fileName)) == folded));
-
-    // Holdout v5 (V5E052): a name as a voice says it. Lower case, without accents, and the words between the separators a
-    // voice does not dictate (space, -, _ and .) joined by one space: «Factura_Marzo.PDF» and «factura marzo.pdf» are the
-    // same words. Only ever used to offer names; nothing is acted on by it.
-    internal static string FoldedName(string name)
-    {
-        string decomposed;
-        try
-        {
-            decomposed = name.Normalize(NormalizationForm.FormD);
-        }
-        catch (ArgumentException)
-        {
-            decomposed = name; // a name Windows allows with a lone surrogate has no normal form
-        }
-        var folded = new StringBuilder(decomposed.Length);
-        bool gap = false;
-        foreach (char character in decomposed)
-        {
-            if (CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.NonSpacingMark) continue;
-            if (character is ' ' or '-' or '_' or '.')
-            {
-                gap = folded.Length > 0;
-                continue;
-            }
-            if (gap) folded.Append(' ');
-            gap = false;
-            folded.Append(char.ToLowerInvariant(character));
-        }
-        return folded.ToString();
-    }
+        || (folded is not null && (SpokenFileNames.Folded(fileName) == folded
+            || SpokenFileNames.Folded(Path.GetFileNameWithoutExtension(fileName)) == folded));
 
     // The names alike, said as what they are: not the name asked, its words otherwise written; the exact one is named
     // again to act on it (and then the core asks the yes for that one).

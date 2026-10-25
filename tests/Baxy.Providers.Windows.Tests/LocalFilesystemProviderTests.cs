@@ -50,6 +50,34 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
+    // Holdout v6 (V6F010): «lista invitados» said, lista_invitados.txt there, and the search found nothing. A part of a
+    // name is its words whatever separates them (space, -, _, .); an append to the name said finds that file as it finds
+    // one of that name below (append_target_missing), and makes no second file beside it.
+    [Test]
+    public void ASearchAndAnAppendFindANameWhoseWordsAreOtherwiseSeparated()
+    {
+        using TemporaryDirectory temporary = new();
+        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"));
+        provider.WriteText("lista_invitados.txt", "Ana", null);
+        provider.WriteText("notas/Lista-Invitados.2025.md", "Luis", null);
+        provider.WriteText("compras.txt", "pan", null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(provider.Search("lista invitados", 10).Entries.Select(entry => entry.Name)
+                .Order(StringComparer.Ordinal), Is.EqualTo(new[] { "Lista-Invitados.2025.md", "lista_invitados.txt" }));
+            Assert.That(provider.Search("invitados 2025", 10).Count, Is.EqualTo(1));
+            Assert.That(provider.Search("compras", 10).Count, Is.EqualTo(1));
+            Assert.That(provider.Search("lista compras", 10).Count, Is.Zero);
+            FilesystemProviderException refused = Assert.Throws<FilesystemProviderException>(
+                () => provider.WriteText("lista invitados.txt", "Pedro", null, append: true))!;
+            Assert.That(refused.Code, Is.EqualTo("append_target_missing"));
+            Assert.That(refused.Result!.Value.GetProperty("sameNameIn").EnumerateArray().Select(item => item.GetString()),
+                Is.EqualTo(new[] { "lista_invitados.txt" }));
+            Assert.That(provider.Search("lista invitados.txt", 10).Count, Is.EqualTo(1), "no second file was made");
+        });
+    }
+
     [Test]
     public void ARenameThatOnlyChangesCaseIsMade()
     {
