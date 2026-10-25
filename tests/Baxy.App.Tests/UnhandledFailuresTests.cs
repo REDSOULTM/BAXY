@@ -25,7 +25,7 @@ public sealed class UnhandledFailuresTests
                 BindingFlags.Instance | BindingFlags.NonPublic)!;
             Func<Task> turn = static () => throw new KeyNotFoundException("la clave de Ñuñoa");
 
-            await (Task)run.Invoke(viewModel, ["hola", turn, CancellationToken.None])!;
+            await (Task)run.Invoke(viewModel, ["hola", turn, CancellationToken.None, null])!;
 
             string log = Path.Combine(fake.DataRoot, "diagnostics", "unhandled.v1.jsonl");
             Assert.Multiple(() =>
