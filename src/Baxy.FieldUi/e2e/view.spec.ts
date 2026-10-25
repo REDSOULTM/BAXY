@@ -195,3 +195,15 @@ test('sesiones: una lista vieja que llega tarde no tapa la nueva', async () => {
   await h.page.waitForTimeout(1200);
   await expect(h.page.locator('.bx-sess-t')).toHaveText('Compras');
 });
+
+test('memoria: olvidar un recuerdo llamado «all» no pregunta por olvidar todo', async () => {
+  h = await openView();
+  h.reply('/memory', () => ({ body: { enabled: true, total: 2, items: [
+    { key: 'all', value: 'all: todos los días a las 8', updated_at: '', kind: 'rule' },
+    { key: 'color', value: 'color: verde', updated_at: '', kind: 'preference' },
+  ] } }));
+  await h.page.locator('button', { hasText: 'Memoria' }).first().click();
+  await h.page.locator('.bx-mem-row', { hasText: 'todos los días' }).getByRole('button', { name: 'Olvidar' }).click();
+  await expect(h.page.locator('.bx-mem-row', { hasText: 'todos los días' })).toContainText('¿Olvidar?');
+  await expect(h.page.locator('.panel-footer')).not.toContainText('¿Olvidar todo?');
+});

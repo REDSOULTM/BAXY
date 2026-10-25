@@ -39,6 +39,7 @@ const ERRORS: Record<string, string> = {
 
 export function MemoryPanel({ onClose, revision }: { onClose: () => void; revision: number }) {
   const [data, setData] = useState<MemoryList | null>(null);
+  // what waits for its «¿Olvidar?»: 'all', or a row as 'key:' + its key (a memory may be called «all»)
   const [ask, setAsk] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
@@ -74,8 +75,8 @@ export function MemoryPanel({ onClose, revision }: { onClose: () => void; revisi
     return (
       <div key={m.key} className="bx-mem-row">
         <span className="t">{sens ? <><b>{m.label ?? m.key}</b> · ••••••</> : m.label ? <><b>{m.label}</b> · {m.value}</> : m.value}</span>
-        {ask === m.key ? <ConfirmRow label="¿Olvidar?" yes="Sí, olvidar" onYes={() => void forget(m.key)} onNo={() => setAsk(null)} /> : (
-          <span className="acts"><button className="bx-lnk" disabled={busy} onClick={() => setAsk(m.key)}>Olvidar</button></span>
+        {ask === 'key:' + m.key ? <ConfirmRow label="¿Olvidar?" yes="Sí, olvidar" onYes={() => void forget(m.key)} onNo={() => setAsk(null)} /> : (
+          <span className="acts"><button className="bx-lnk" disabled={busy} onClick={() => setAsk('key:' + m.key)}>Olvidar</button></span>
         )}
       </div>
     );
