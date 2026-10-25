@@ -4646,13 +4646,15 @@ public sealed class ExternalAdaptersTests
     // Renew al máximo (auditoría de flujos, P257: «deja el volumen en 20» chose audio.app.volume.set {app:"volumen"} in
     // 7 of 27 runs): an application with no audio session failed with the bare code, so the next step had nothing to go
     // on. The failure names the applications that do have one (few, short) and that the PC's own volume is another
-    // operation; a model aid, off with the others.
-    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "all", "audio_volume")]
+    // operation; a model aid, off with the others. Holdout v6 V6E064 («el volumen déjamelo en treinta mientras veo la
+    // serie» set Netflix's own volume): with that operation only named, the model answered in words in 4 of 4 runs; the
+    // PC's own call is said with the person's level or amount, as said_folder says its call.
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "all", "audio_volume", "level 20")]
     [TestCase("audio.app.volume.adjust", """{"app":"volumen","amount":10,"direction":"down"}""", "all",
-        "audio_volume_adjust")]
-    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "none", null)]
+        "audio_volume_adjust", "amount 10 and direction \"down\"")]
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "none", null, null)]
     public async Task AnAppWithNoAudioSessionNamesTheAppsThatHaveOne(
-        string operation, string arguments, string aids, string? systemOperation)
+        string operation, string arguments, string aids, string? systemOperation, string? systemArguments)
     {
         using IDisposable setting = ModelAids.Use(aids);
         string[] withAudio = ["Spotify", "chrome", "Discord", "mpv", "steam", "opera", "Teams", "zoom", "vlc", "obs64"];
@@ -4676,7 +4678,8 @@ public sealed class ExternalAdaptersTests
             string[] named = receipt.Result!.Value.GetProperty("appsWithAudio").EnumerateArray()
                 .Select(item => item.GetString()!).ToArray();
             Assert.That(named, Is.EqualTo(withAudio.Take(8).ToArray()));
-            Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.Contain(" is " + systemOperation + ","));
+            Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.Contain(" is " + systemOperation + ",")
+                .And.EndWith($"if the person meant the whole PC, call {systemOperation} with {systemArguments}"));
         });
     }
 

@@ -221,7 +221,8 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
                 cancellationToken);
             if (adjusted is null)
             {
-                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, "audio_volume_adjust"));
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, "audio_volume_adjust",
+                    $"amount {amount} and direction \"{direction}\""));
             }
             // FT/proveedores goal (review): an application already at the end it is moved towards, with no session
             // changed, says that state, as the system volume does (M54); it was a success with no observed effect,
@@ -345,7 +346,8 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
                 cancellationToken);
             if (adjusted is null)
             {
-                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, "audio_volume"));
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, "audio_volume",
+                    $"level {level}"));
             }
             if (Math.Abs(adjusted.Level - level) > 2)
             {
@@ -396,7 +398,9 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
 /// <summary>
 /// Renew al máximo (auditoría de flujos, P257 «deja el volumen en 20» → audio.app.volume.set {app:"volumen"}): an
 /// application with no audio session on the default output fails before any effect, and (model aid) the failure names
-/// the applications that have one, few and by their process names, and the operation of the PC's own volume.
+/// the applications that have one, few and by their process names, and the operation of the PC's own volume. Holdout v6
+/// V6E064 («el volumen déjamelo en treinta mientras veo la serie» set Netflix's volume, 4 of 4 runs then answered in
+/// words): that operation is said as the call it would be, with the person's level or amount.
 /// </summary>
 internal static class AppSessionNotFound
 {
@@ -407,7 +411,8 @@ internal static class AppSessionNotFound
     internal static ExternalCapabilityReceipt Receipt(
         string operation,
         Func<IReadOnlyList<string>> sessionNames,
-        string systemOperation)
+        string systemOperation,
+        string systemArguments)
     {
         ExternalCapabilityReceipt failure = ExternalJson.FailureBeforeEffect(operation, ErrorCode);
         if (!ModelAids.On(ModelAids.AppVolumeCandidates))
@@ -439,7 +444,8 @@ internal static class AppSessionNotFound
                     writer.WriteStringValue(name);
                 writer.WriteEndArray();
                 writer.WriteString("next", "only these applications have a volume of their own now (app takes one of "
-                    + $"them); the volume of the whole PC is {systemOperation}, not an application");
+                    + $"them); the volume of the whole PC is {systemOperation}, not an application: if the person meant "
+                    + $"the whole PC, call {systemOperation} with {systemArguments}");
                 writer.WriteEndObject();
             }),
         };

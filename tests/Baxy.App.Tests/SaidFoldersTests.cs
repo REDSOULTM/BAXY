@@ -236,7 +236,7 @@ public sealed class SaidFoldersTests
         {
             Assert.That((string?)said.Rule("file.write", Descriptor("file.write"),
                     new JsonObject { ["relativePath"] = "notas.txt", ["text"] = "x", ["folder"] = "home" })
-                ?.Refusal?["next"], Does.Contain("call file_write again with folder \"desktop\";"));
+                ?.Refusal?["next"], Does.Contain("call file_write again with relativePath \"notas.txt\" and folder \"desktop\";"));
             Assert.That(said.Rule("file.write", Descriptor("file.write"),
                 new JsonObject { ["relativePath"] = "notas.txt", ["text"] = "x", ["folder"] = "desktop" }), Is.Null);
         });
@@ -630,6 +630,68 @@ public sealed class SaidFoldersTests
 
         Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
             new JsonObject { ["relativePath"] = "mis_notas_2027", ["folder"] = "documents" }), Is.Null);
+    }
+
+    // Holdout v6 V6E065: a call into BAXY's working folder whose relativePath already began with the folder named was told
+    // only folder "home", and the model wrote it again as relativePath "cotizaciones" (refused again, then «BAXY-bench es
+    // mi carpeta de trabajo»). A path inside a folder is said with the folder it is inside.
+    [Test]
+    public void AFolderChangedIsSaidWithThePathInsideIt()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "taller-bench"));
+        SaidFolders said = Heard("crea una carpeta que se llame cotizaciones en taller-bench");
+
+        SaidFolders.Ruling? ruling = said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
+            new JsonObject { ["relativePath"] = "taller-bench/cotizaciones" });
+
+        Assert.That((string?)ruling?.Refusal?["next"], Does.Contain(
+            "call filesystem_create_directory again with relativePath \"taller-bench/cotizaciones\" and folder \"home\";"));
+    }
+
+    // Holdout v6 V6E058, V6E062 and V6E055: the folder of a request is left unsaid in the next one («uy, me equivoqué de
+    // año, era fotos_2026»; «ábreme horario.txt que está ahí»; «que diga regar las orquídeas»), and the call acted in the
+    // home folder: fotos_2026 beside BAXY-bench, «no encontré horario.txt», an edit refused after an 8 s walk of the home
+    // folder. A turn whose words name no folder is ruled by the folders the person's previous request named: a call that
+    // would act outside them is refused once with the call that names them; the same call again runs as written. A read
+    // is not routed there (only the words of its own turn route a read), and a turn that names a folder is its own.
+    [Test]
+    public void ATurnThatNamesNoFolderKeepsTheFolderOfThePreviousRequest()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "taller-bench"));
+        var said = new SaidFolders(Known);
+        said.Heard("haz la carpeta fotos_2025 en taller-bench");
+        said.Heard("uy, me equivoqué de año, era fotos_2026");
+        var made = new JsonObject { ["relativePath"] = "fotos_2026", ["folder"] = "home" };
+        var opened = new JsonObject { ["folder"] = "home", ["name"] = "horario.txt" };
+
+        SaidFolders.Ruling? first = said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"), made);
+        SaidFolders.Ruling? again = said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"), made);
+        SaidFolders.Ruling? open = said.Rule("file.open", Descriptor("file.open"), opened);
+        SaidFolders.Ruling? read = said.Rule("file.read", Descriptor("file.read"),
+            new JsonObject { ["fileName"] = "horario.txt", ["folder"] = "home" });
+
+        var named = new SaidFolders(Known);
+        named.Heard("haz la carpeta fotos_2025 en taller-bench");
+        named.Heard("ahora crea fotos_2026 en el escritorio");
+        var cleared = new SaidFolders(Known);
+        cleared.Heard("haz la carpeta fotos_2025 en taller-bench");
+        cleared.Clear();
+        cleared.Heard("uy, me equivoqué de año, era fotos_2026");
+
+        Assert.Multiple(() =>
+        {
+            string next = (string?)first?.Refusal?["next"] ?? string.Empty;
+            Assert.That(next, Does.StartWith("nothing ran: the person's previous request named «taller-bench»"));
+            Assert.That(next, Does.Contain(
+                "call filesystem_create_directory again with relativePath \"taller-bench/fotos_2026\""));
+            Assert.That(again?.Refusal, Is.Null);
+            Assert.That(again?.Note, Does.Contain("outside it, as it was written"));
+            Assert.That((string?)open?.Refusal?["next"], Does.Contain("call file_open again with name \"taller-bench/horario.txt\""));
+            Assert.That(read, Is.Null);
+            Assert.That(named.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
+                new JsonObject { ["relativePath"] = "fotos_2026", ["folder"] = "desktop" }), Is.Null);
+            Assert.That(cleared.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"), made), Is.Null);
+        });
     }
 
     private SaidFolders Heard(string words)
