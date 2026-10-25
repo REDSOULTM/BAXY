@@ -41,6 +41,12 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   recado.txt») while a read of the turn completed with that file's text, whole: a non-empty text and nothing left
   unread (readInPart, hasMore, endReached false, unread PDF pages). The name is compared as in ``found``; «no pude abrir»
   is not read against a read when an open of the turn did not complete (it may tell that one).
+- ``denial``: in a turn with no call, «no puedo / no se puede / no tengo acceso / I can't» followed in its clause by an
+  act (borrar, copiar, mover, leer, abrir, contar, crear, escribir, buscar, acceder) and a thing of the PC the tools
+  reach (a file or folder, a note, a window's text), while an operation of the session's catalog does that act on it
+  (DENIED_OPS). Not when the sentence gives a limit of its own (a confirmation, a protected window, something not
+  installed or not found, a place outside the person's folders, a program) or a condition («si…»), nor when an earlier
+  call of that act did not complete (it may be what the answer tells), except one the core refused for its arguments.
 
 What never counts as a claim: a sentence or the part of one that is a question, a clause with «no / nunca / sin /
 tampoco» before the verb («no pude abrirlo», «no lo cerré»), a conditional «si…», quoted text, or a promise («voy a
@@ -356,10 +362,13 @@ def _told(receipt: Receipt) -> str:
 
 
 # ---- the check --------------------------------------------------------------------------------------------------------
-def check(answer: str, request: str, receipts: list[Receipt], session: list[Call] | None) -> list[dict]:
+def check(answer: str, request: str, receipts: list[Receipt], session: list[Call] | None,
+          catalog: dict[str, str] | None = None, tries: list[tuple[str, str]] | None = None) -> list[dict]:
     """The findings of an answer against its turn: ``receipts`` are the turn's calls in order, ``session`` every call
     of the session before and in this turn as (operation, completed, read), or None when the session is not known whole (a
     kept session, or one past the calls the mind keeps): then nothing is said of calls that may have been there.
+    ``catalog`` (each operation and its description) and ``tries`` (the conversation's earlier calls as (operation,
+    status)) are for the rule ``denial``, which is not read without the catalog.
     Each finding: {"rule", "said" (the model's words), "fact" (what contradicts them)}."""
     if not answer or not answer.strip():
         return []
@@ -470,6 +479,9 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
 
     # «No leí X» while a result of the turn read X whole (holdout v6, falsedades).
     findings.extend(f for f in _not_read_names(answer, folded, raw_folded, statements, receipts) if f not in findings)
+
+    # «No puedo borrar carpetas de X» with no call in the turn while a tool of the catalog does it (aid check_denial).
+    findings.extend(f for f in _denials(answer, folded, statements, receipts, catalog, tries) if f not in findings)
 
     # «Ya estaba».
     changed = [r for r in receipts if r.get("completed") and _parsed(r).get("verification") == "readback"]
@@ -1018,4 +1030,119 @@ def _not_read_names(answer: str, folded: str, raw_folded: str, statements: list[
                 if same:
                     return [{"rule": "read", "said": _quote(answer, start, end),
                              "fact": f"{_told(receipt)}: su resultado trae el texto entero de {label}"}]
+    return []
+
+
+# ---- denials (aid «check_denial») -------------------------------------------------------------------------------------
+# A turn with no call whose answer says BAXY cannot do an act on the person's PC that a tool of the catalog does (V5E046
+# «No puedo eliminar carpetas de BAXY-bench», 17 c3 runs; E027 / V6E052 «no puedo borrar archivos de la carpeta
+# BAXY-bench, es mi carpeta de trabajo privada»; V5E040 «No tengo acceso a tu carpeta BAXY-bench»; V6E015 «No puedo leer
+# el texto del bloc de notas»): nothing behind the claim. Read only when the act and its object are both said in the
+# clause after the denial, the object is a thing of the PC that the tools reach (a file or a folder, a note, the text of a
+# window), and an operation of the catalog does that act on it. Kept narrow: a false finding costs a regeneration.
+_DENIAL = re.compile(
+    r"\bno (?:(?:lo|la|los|las|le|les|te|me) )?(?:puedo|podria|soy capaz de|logro|me es posible|es posible|"
+    r"tengo (?:como|forma de|manera de|la capacidad de|capacidad de|permiso para|permisos para))\b"
+    r"|\bno (?:(?:lo|la|los|las) )?se (?:puede|pueden|permite)\b"
+    r"|\bno tengo acceso\b"
+    r"|\bi (?:can[’']?t|cannot|can not|am not able to|am unable to)\b|\bi[’']m (?:not able to|unable to)\b"
+    r"|\bi (?:don[’']?t|do not) have (?:access|permission)\b|\bi have no access\b")
+# The acts, folded (a Spanish infinitive with its clitics, an English base form). «acceso»: the denial is access itself.
+_DENIED_ACTS = {
+    "borrar": r"borrar|eliminar|suprimir|delete|remove|erase",
+    "copiar": r"copiar|duplicar|hacer una copia|copy|duplicate",
+    "mover": r"mover|trasladar|move",
+    "leer": r"leer|read",
+    "abrir": r"abrir|open",
+    "contar": r"contar|count",
+    "crear": r"crear|create|make",
+    "escribir": r"escribir|editar|modificar|guardar|agregar|anadir|write|edit|modify|save|append",
+    "buscar": r"buscar|encontrar|listar|search|find|list",
+    "acceso": r"acceder|access",
+}
+_DENIED_ACT = re.compile(r"(?:\s+(?:directamente|realmente|tampoco|aun|todavia|en|a|al|el|the|to|into))*\s*(?:"
+                         + "|".join(f"(?P<{act}>(?:{verbs})(?:lo|la|los|las|le|les|te|me)?)"
+                                    for act, verbs in _DENIED_ACTS.items()) + r")\b")
+# The objects, by what reaches them: the text of a window (Notepad, the screen), a file or a folder, a note. «bloc de
+# notas» is a window, not a note.
+_DENIED_OBJECTS = {
+    "window": re.compile(r"\b(?:bloc de notas|notepad|ventanas?|pantalla|window|screen)\b"),
+    "file": re.compile(r"\b(?:archivos?|ficheros?|carpetas?|subcarpetas?|directorios?|documentos?|files?|folders?|"
+                       r"director(?:y|ies)|escritorio|descargas|desktop|downloads)\b"
+                       r"|[\w-]+\.(?:txt|md|docx?|xlsx?|pptx?|pdf|csv|json|png|jpe?g|zip|log)\b"),
+    "note": re.compile(r"\b(?<!bloc de )(?:notas?|notes?)\b"),
+}
+# Which operations of the catalog do an act on an object: the first ones the catalog has are named, in this order.
+DENIED_OPS: dict[tuple[str, str], tuple[str, ...]] = {
+    ("borrar", "file"): ("filesystem.known.trash.named",),
+    ("copiar", "file"): ("filesystem.sandbox.move.named",),
+    ("mover", "file"): ("filesystem.sandbox.move.named",),
+    ("leer", "file"): ("file.read",),
+    ("abrir", "file"): ("file.open", "filesystem.folder.open"),
+    ("contar", "file"): ("filesystem.explorer.count", "file.find"),
+    ("crear", "file"): ("filesystem.create.directory", "file.write"),
+    ("escribir", "file"): ("file.write", "file.edit"),
+    ("buscar", "file"): ("file.find",),
+    ("acceso", "file"): ("file.find", "file.read"),
+    ("leer", "window"): ("input.visible.controls",),
+    ("leer", "note"): ("note.read",),
+    ("borrar", "note"): ("note.trash",),
+    ("crear", "note"): ("note.create",),
+    ("buscar", "note"): ("note.search",),
+    ("escribir", "note"): ("note.update",),
+}
+# What the sentence itself gives as a limit the tools have, or a refusal of policy: a confirmation, a protected window,
+# a pending «sí», what is not installed or not found, a place outside the person's folders (a USB, the cloud, another PC,
+# Windows' own folders), a kind of file the tools refuse (a program, an installer).
+_REAL_LIMIT = re.compile(
+    r"\b(?:confirm\w*|autoriz\w*|tu permiso|protegid\w*|bloquead\w*|por seguridad|hasta que|antes de que|sin que|"
+    r"no (?:esta|estan|aparece|aparecen|existe|existen) (?:instalad\w*|en el catalogo)|no (?:lo |la )?encontre|"
+    r"not installed|not found|usb|pendrive|disco externo|unidad|nube|cloud|onedrive|google drive|dropbox|icloud|"
+    r"servidor|server|otro (?:pc|computador|ordenador|equipo)|celular|telefono|movil|phone|system32|"
+    r"archivos de programa|program files|ejecutables?|executables?|instalador\w*|installers?|programas?)\b"
+    r"|\.exe\b|\bc:\\windows")
+_IF = re.compile(r"\b(?:si|if)\b")
+
+
+def _first_sentence(description: str) -> str:
+    sentence = re.split(r"(?<=[.!?])\s+(?=[A-Z¿«])", description.strip(), maxsplit=1)[0]
+    return sentence if len(sentence) <= 400 else sentence[:400].rsplit(" ", 1)[0] + "…"
+
+
+def _denials(answer: str, folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
+             catalog: dict[str, str] | None, tries: list[tuple[str, str]] | None) -> list[dict]:
+    """«No puedo borrar carpetas de X» in a turn with no call while the catalog has an operation that does it (rule
+    ``denial``). ``catalog``: each operation of the session's catalog and the description the model reads; ``tries``:
+    the session's earlier calls as (operation, status of their result): one of that act that did not complete (it
+    failed, waits for a «sí», was declined, its result unknown) may be what the answer tells, and holds the finding; one
+    the core refused for its arguments («rejected»: nothing was tried) does not."""
+    if receipts or not catalog:
+        return []
+    for start, end in statements:
+        if _REAL_LIMIT.search(folded, start, end):
+            continue
+        for hit in _DENIAL.finditer(folded, start, end):
+            clause = _clause_start(folded, start, hit.start())
+            if any(not (m.group(0) == "si" and answer[m.start():m.start() + 2].lower() == "sí")
+                   for m in _IF.finditer(folded, start, hit.start())):
+                continue  # «si no me dices dónde, no puedo…»: a condition, not a limit
+            stop = next((m.start() for m in _CLAUSE_END.finditer(folded, hit.end(), end)), end)
+            if "acces" in hit.group(0):
+                act = "acceso"
+            else:
+                verb = _DENIED_ACT.match(folded, hit.end(), stop)
+                act = next((k for k, v in verb.groupdict().items() if v), None) if verb else None
+            if act is None:
+                continue
+            objects = [kind for kind, pattern in _DENIED_OBJECTS.items() if pattern.search(folded, hit.end(), stop)]
+            if "window" in objects:
+                objects = [o for o in objects if o != "note"]
+            ops = [op for kind in objects for op in DENIED_OPS.get((act, kind), ())]
+            if not ops or any(op in ops and status not in ("completed", "rejected") for op, status in tries or []):
+                continue
+            named = [op for op in dict.fromkeys(ops) if op in catalog][:2]
+            if named:
+                facts = "; ".join(f"{op.replace('.', '_')} lo hace en el PC de la persona: «{_first_sentence(catalog[op])}»"
+                                  for op in named)
+                return [{"rule": "denial", "said": _quote(answer, start, end), "fact": facts}]
     return []

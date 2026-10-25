@@ -832,7 +832,17 @@ CHECK_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía 
 CHECK_FACT = "Dice «{said}», pero {fact}."
 CHECK_FACTS = 3
 # The rules of the check that are aids of their own (BAXY_AYUDAS), beside «answer_check» itself.
-CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read"}
+CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read", "denial": "check_denial"}
+# Aid «check_denial» (2026-10-25): an answer of a turn with no call that says BAXY cannot do what a tool of the catalog
+# does (answer_check rule «denial»: V5E046 «No puedo eliminar carpetas de BAXY-bench», E027, V5E040, V6E015). The model
+# is told which tool does it and what its description says, and answers again once; its tools stay, so it may do what
+# was asked (whatever it does then is its own call, under the same doubt and confirmations as any other). Offline on the
+# 1,968 replies of the c3-*-e2e and ho6-*-e2e-e2e runs (265 of turns with no call): 34 flagged, all false denials by hand
+# (V5E046 17, E027 6, V5E040 3, V6E015 3, V6E052 2, and V6E065 3: «¿ya la creaste?» after a call refused for its
+# arguments), and none of the 16 other no-call replies that deny something (a coffee, the lights, a pizza, a window of
+# Code) (scripts/renew/ayudas/niego_auditoria.py).
+DENIAL_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo y dice que no puedes hacer algo "
+               "que una de tus herramientas hace. {facts} Responde de nuevo a la persona según lo que pidió.]")
 # Renew al máximo (confirmaciones, 2026-10-23): a «sí» the model is not sure is one. On the real model (29 answers to a
 # pending trash of notas.txt, 3 seeds, int7) every plain yes («sí», «dale», «ya po», «okey», «go ahead», «zí») confirmed at
 # ≥ 0.998 and «sí pero el otro» at 0.77-0.79, which would have trashed the file the person had just said was not the
@@ -2067,7 +2077,12 @@ class Mind:
         # Aid «check_found» (holdout v6 V6E055): the rule «found» of the check («no encontré X» while a result of the turn
         # found X), an aid of its own; aid «check_read» (holdout v6, falsedades): the rule «read» («no leí X» while a read
         # of the turn brought X whole), another.
-        findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls)
+        # Aid «check_denial»: the rule «denial» reads the catalog and the conversation's earlier calls.
+        denials = _aid_on(CHECK_RULE_AIDS["denial"]) and not turn.get("receipts") and not turn.get("checked")
+        catalog = {self.wire_to_op[t["function"]["name"]]: str(t["function"].get("description") or "")
+                   for t in self.tools if t["function"]["name"] in self.wire_to_op} if denials else None
+        findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [], self._calls,
+                                            catalog=catalog, tries=self._tries(turn["conv"]) if denials else None)
                     if f["rule"] not in CHECK_RULE_AIDS or _aid_on(CHECK_RULE_AIDS[f["rule"]])]
         private = bool(turn.get("private"))
         shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
@@ -2085,12 +2100,14 @@ class Mind:
                 self.foresee(None, True)  # the first sentence the voice synthesized ahead is not the one spoken
             except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
                 pass
-        note = {"role": "user", "content": CHECK_NOTE.format(facts=" ".join(
+        denied = any(f["rule"] == "denial" for f in findings)
+        note = {"role": "user", "content": (DENIAL_NOTE if denied else CHECK_NOTE).format(facts=" ".join(
             CHECK_FACT.format(said=f["said"], fact=f["fact"]) for f in findings[:CHECK_FACTS]))}
         conv = turn["conv"]
         conv.append(note)
         try:
-            result = self._next(request_id, stage, turn, final=True)
+            # A denial with no call behind it keeps the tools: the model may do what it had said it could not.
+            result = self._next(request_id, stage, turn, final=not denied)
         finally:
             # The note was for that one answer: the conversation keeps what was said, not the check.
             for index in range(len(conv) - 1, -1, -1):
@@ -2101,7 +2118,29 @@ class Mind:
             # Nothing written the second time: the first answer is spoken (the trace has it as contradicted).
             conv.append({"role": "assistant", "content": content})
             result["reply"] = content
+        elif denied and result.get("kind") != "conversation":
+            turn.pop("checked", None)  # it acted: its answer after the results is checked as any other
         return result
+
+    def _tries(self, conv: list[dict[str, Any]]) -> list[tuple[str, str]]:
+        """The conversation's calls before this answer as (operation, status of their result): «completed», «failed»,
+        «rejected», «needs_confirmation», «cancelled»…, or «unknown» when the result is not there or not a status (a
+        body left out, a call never answered). For the rule «denial» of the check."""
+        results: dict[Any, str] = {}
+        for message in conv:
+            if message.get("role") == "tool":
+                try:  # the result as the App gave it, before the facts line the mind writes after it
+                    facts = json.JSONDecoder().raw_decode(str(message.get("content") or ""))[0]
+                except json.JSONDecodeError:
+                    facts = None
+                status = facts.get("status") if isinstance(facts, dict) else None
+                results[message.get("tool_call_id")] = str(status) if status else "unknown"
+        tries = []
+        for message in conv:
+            for call in message.get("tool_calls") or [] if message.get("role") == "assistant" else []:
+                wire = str((call.get("function") or {}).get("name") or "")
+                tries.append((self.wire_to_op.get(wire, wire), results.get(call.get("id"), "unknown")))
+        return tries
 
     @staticmethod
     def _doubted(stage: str, turn: dict[str, Any], final: bool) -> bool:
