@@ -281,3 +281,19 @@ def test_system_ones_server_is_not_started_again_once_the_mind_closes(tmp_path: 
     laya._launch()
     laya._watch()
     assert len(launched) == 1
+
+
+def test_a_number_too_long_for_a_float_in_a_result_does_not_break_the_answer_check() -> None:
+    """Aid «answer_check», rule «number»: each number in a result's short texts became a float, and one of 309 digits or
+    more (a code, a pasted number) is infinite; told among the readings, int() of it raised OverflowError, the check
+    failed and with it the whole turn (turn_runtime_failure instead of the answer)."""
+    import json
+
+    from baxy_mind.answer_check import check
+
+    observed = {"status": "completed", "verification": "state", "observed": {"code": "9" * 320, "level": 40}}
+    receipt = {"op": "audio.volume.set", "tool": "audio_volume_set", "arguments": {"level": 40},
+               "observation": json.dumps(observed), "outcome": "completado y verificado", "completed": True,
+               "read": False}
+    findings = check("Listo, el volumen quedó en 45 %.", "sube el volumen", [receipt], [])
+    assert [f["rule"] for f in findings] == ["number"] and "inf" not in findings[0]["fact"]
