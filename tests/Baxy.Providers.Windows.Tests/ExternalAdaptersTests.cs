@@ -2268,6 +2268,10 @@ public sealed class ExternalAdaptersTests
         ExternalCapabilityReceipt outside = await Run("""
             {"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"../../fuera.txt"}
             """);
+        // Holdout v5 V5E040 (int11): a destination that repeats the subfolder, with no such folder inside it, is inside it.
+        ExternalCapabilityReceipt repeated = await Run("""
+            {"copy":true,"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"BAXY-bench/contrato-copia.txt"}
+            """);
 
         Assert.Multiple(() =>
         {
@@ -2284,6 +2288,10 @@ public sealed class ExternalAdaptersTests
             Assert.That(over.EffectMayHaveOccurred, Is.False);
             Assert.That(unmade.ErrorCode, Is.EqualTo("named_file_destination_folder_not_found"));
             Assert.That(outside.ErrorCode, Is.EqualTo("named_file_destination_invalid"));
+            Assert.That(repeated.Verified, Is.True, repeated.ErrorCode);
+            Assert.That(File.ReadAllText(Path.Combine(bench, "contrato-copia.txt")), Is.EqualTo("texto"));
+            Assert.That(repeated.Result?.GetProperty("destinationRelativePath").GetString(),
+                Is.EqualTo("contrato-copia.txt"));
             Assert.That(File.Exists(Path.Combine(bench, "contrato.txt")), Is.True);
             Assert.That(Directory.Exists(Path.Combine(bench, "viejos")), Is.False);
         });

@@ -133,6 +133,8 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         }
 
         string source = matches[0];
+        if (subdirectory is not null && !Path.IsPathFullyQualified(relativeDestination))
+            relativeDestination = WithoutRepeatedFolder(root, subdirectory, relativeDestination);
         string destination = Path.GetFullPath(Path.IsPathFullyQualified(relativeDestination) ? relativeDestination
             : Path.Combine(root, relativeDestination)).TrimEnd(Path.DirectorySeparatorChar);
         if (!destination.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
@@ -180,6 +182,22 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         }
 
         return ([.. matches], false);
+    }
+
+    // Holdout v5 V5E040 (int11): a destination that repeats the subfolder it is already in («BAXY-bench/copia.txt» in
+    // BAXY-bench), when no folder of that name is there, names a path inside it.
+    private static string WithoutRepeatedFolder(string root, string subdirectory, string relative)
+    {
+        string[] own = subdirectory.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+        string[] given = relative.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+        for (int count = Math.Min(own.Length, given.Length - 1); count > 0; count--)
+        {
+            if (own.AsSpan(own.Length - count).SequenceEqual(given.AsSpan(0, count), StringComparer.OrdinalIgnoreCase)
+                && !Directory.Exists(Path.Combine(root, string.Join(Path.DirectorySeparatorChar, given, 0, count))))
+                return string.Join(Path.DirectorySeparatorChar, given, count, given.Length - count);
+        }
+
+        return relative;
     }
 
     private static bool CrossesReparsePoint(string root, string folder)

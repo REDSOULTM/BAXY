@@ -108,6 +108,12 @@ public static class ModelAids
     public const string SaidFolder = "said_folder";
 
     /// <summary>
+    /// Fase 3 (holdout v5 V5E043): a folder made with the name the person said, spelled otherwise (viaje_chiloe_2027 for
+    /// «viaje chiloé 2027»), is refused once with the call that writes it as they said it (Baxy.App.SaidFolders).
+    /// </summary>
+    public const string SaidName = "said_name";
+
+    /// <summary>
     /// Holdout v4 (en vivo: «Biblioteca» pressed 7 times in Steam, each visible_button_postread_unchanged, 50 s): the
     /// same click seen unchanged a second time in a row says so, and the places its application opens straight at.
     /// </summary>
