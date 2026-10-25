@@ -228,47 +228,50 @@ def main() -> None:
     from baxy_mind.mind import Mind  # noqa: E402
     server = LlmServer(args.gguf, args.server, context=49152, log_name=f"cont-{args.label}.log")
     server.start()
-    mind = Mind(server, RUNS / f"{args.label}.trace.jsonl")
-    mind.configure(json.loads(Path(args.catalog).read_text(encoding="utf-8")))
-    server.wait_ready(600)
-    mind.warm()
-    rows, tally = [], Counter()
-    for case in cases(set(args.levers.split(","))):
-        for arm in (("base", "aid", "next") if case["lever"] in ("3", "4") else ("base", "aid")):
-            if case["lever"] == "5":
-                os.environ["BAXY_AYUDAS"] = "turn_facts" if arm == "aid" else "none"
+    # PC-Q (2026-10-25): a warm-up or a case outside its try that raised left llama-server running.
+    try:
+        mind = Mind(server, RUNS / f"{args.label}.trace.jsonl")
+        mind.configure(json.loads(Path(args.catalog).read_text(encoding="utf-8")))
+        server.wait_ready(600)
+        mind.warm()
+        rows, tally = [], Counter()
+        for case in cases(set(args.levers.split(","))):
+            for arm in (("base", "aid", "next") if case["lever"] in ("3", "4") else ("base", "aid")):
+                if case["lever"] == "5":
+                    os.environ["BAXY_AYUDAS"] = "turn_facts" if arm == "aid" else "none"
+                    try:
+                        result = steps_turn(mind, case)
+                        verdict = judge(case, result)
+                    except Exception as exc:  # noqa: BLE001
+                        result, verdict = {"kind": "error", "error": repr(exc)[:200]}, "error"
+                    os.environ["BAXY_AYUDAS"] = "none"
+                    tally[(case["lever"], arm, verdict)] += 1
+                    rows.append({"id": case["id"], "lever": "5", "arm": arm, "verdict": verdict, "kind": result.get("kind"),
+                                 "operation": result.get("operation"), "arguments": result.get("arguments"),
+                                 "reply": result.get("reply") or result.get("question")})
+                    print(case["id"], arm, verdict, flush=True)
+                    continue
+                mind.new_session(case["history"])
+                mind.conversation.append({"role": "user", "content": mind._clock()})
+                mind.conversation.append({"role": "user", "content": case["text"]})
+                wire = case["op"].replace(".", "_")
+                mind.conversation.append({"role": "assistant", "content": "", "tool_calls": [
+                    {"id": "call_0", "type": "function",
+                     "function": {"name": wire, "arguments": json.dumps(case["args"], ensure_ascii=False)}}]})
+                mind._turn = {"conv": mind.conversation, "queue": [], "awaiting": "call_0", "text": case["text"],
+                              "calling": case["op"], "calling_args": json.dumps(case["args"], sort_keys=True)}
                 try:
-                    result = steps_turn(mind, case)
+                    result = mind.continue_turn(case["id"], case["obs"](arm if case["lever"] in ("3", "4") else arm == "aid"))
                     verdict = judge(case, result)
                 except Exception as exc:  # noqa: BLE001
                     result, verdict = {"kind": "error", "error": repr(exc)[:200]}, "error"
-                os.environ["BAXY_AYUDAS"] = "none"
                 tally[(case["lever"], arm, verdict)] += 1
-                rows.append({"id": case["id"], "lever": "5", "arm": arm, "verdict": verdict, "kind": result.get("kind"),
-                             "operation": result.get("operation"), "arguments": result.get("arguments"),
-                             "reply": result.get("reply") or result.get("question")})
+                rows.append({"id": case["id"], "lever": case["lever"], "arm": arm, "verdict": verdict,
+                             "kind": result.get("kind"), "operation": result.get("operation"),
+                             "arguments": result.get("arguments"), "reply": result.get("reply") or result.get("question")})
                 print(case["id"], arm, verdict, flush=True)
-                continue
-            mind.new_session(case["history"])
-            mind.conversation.append({"role": "user", "content": mind._clock()})
-            mind.conversation.append({"role": "user", "content": case["text"]})
-            wire = case["op"].replace(".", "_")
-            mind.conversation.append({"role": "assistant", "content": "", "tool_calls": [
-                {"id": "call_0", "type": "function",
-                 "function": {"name": wire, "arguments": json.dumps(case["args"], ensure_ascii=False)}}]})
-            mind._turn = {"conv": mind.conversation, "queue": [], "awaiting": "call_0", "text": case["text"],
-                          "calling": case["op"], "calling_args": json.dumps(case["args"], sort_keys=True)}
-            try:
-                result = mind.continue_turn(case["id"], case["obs"](arm if case["lever"] in ("3", "4") else arm == "aid"))
-                verdict = judge(case, result)
-            except Exception as exc:  # noqa: BLE001
-                result, verdict = {"kind": "error", "error": repr(exc)[:200]}, "error"
-            tally[(case["lever"], arm, verdict)] += 1
-            rows.append({"id": case["id"], "lever": case["lever"], "arm": arm, "verdict": verdict,
-                         "kind": result.get("kind"), "operation": result.get("operation"),
-                         "arguments": result.get("arguments"), "reply": result.get("reply") or result.get("question")})
-            print(case["id"], arm, verdict, flush=True)
-    server.close()
+    finally:
+        server.close()
     with open(RUNS / f"{args.label}.jsonl", "w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": {f"{k[0]}|{k[1]}|{k[2]}": v for k, v in sorted(tally.items())}},
                              ensure_ascii=False) + "\n")
