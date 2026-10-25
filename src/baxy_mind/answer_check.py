@@ -229,9 +229,11 @@ _HOME = re.compile(r"\b(?:tu|mi) carpeta (?:de usuario|personal|de inicio|home)\
                    r"|\bcarpeta home\b|\bcarpeta de inicio\b|\bcarpeta personal\b")
 _WORK = re.compile(r"\b(?:mi|la) carpeta de trabajo\b|\bcarpeta de baxy\b|\bmi carpeta\b")
 _SANDBOX = ("\\appdata\\local\\baxy", "filesystem-sandbox")
+# Holdout v6 V6E058 (s1): also a claim that opens with the participle («Creada la carpeta fotos_2026 dentro de BAXY-bench»).
 _PLACED = re.compile(r"\b(?:guarde|cree|escribi|agregue|anadi|movi|copie|deje|puse|anote|sobrescribi|he guardado|"
                      r"he creado|he escrito|he agregado|he anadido|he movido|he copiado|he dejado|he sobrescrito|"
-                     r"se guardo|se creo|quedo|quedaron|esta guardad[oa]|esta en|estan en)\b")
+                     r"se guardo|se creo|quedo|quedaron|esta guardad[oa]|esta en|estan en|"
+                     r"guardad[oa]s?|cread[oa]s?|escrit[oa]s?|movid[oa]s?|copiad[oa]s?)\b")
 _PLACE_OPS = ("file.write", "file.edit", "file.compress", "filesystem.", "office.document.create",
               "document.presentation.create", "capture.", "web.download", "backup.")
 _PATH = re.compile(r"\b[A-Za-z]:[\\/][^\s«»\"'”“,;()<>*`]*")
