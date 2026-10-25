@@ -3390,3 +3390,9 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   64,7, ya_hecho 15,0 → 16,7 (H3: lejos del +8), larga_cola 70,3 → 69,7. Sin pérdida en ningún banco de decisión.
 - 22:49 **int11d e852c2db3** (int11c + nb-w10-negra + w10-motor, H9): suites PC Kernel 747, Contracts 74, Setup 477, App
   208, Providers 3119, pytest 654 (+vad con py3.10); catálogo idéntico al de int11c. Candidato a HEAD final.
+- 22:33 **e2e de int11 frente a la base int10f** (NB, 3 semillas intercaladas, GPU caliente igual en los dos): H2 (los 20 de
+  v5) 1,0 → 7,0, Δ +6,0 (IC95 [+2,33; +10,0], McNemar p 0,016), suben V5E016, 032, 034, 045, 047, 060, 062 y no baja
+  ninguno, pass^3 0 → 4; práctica (30) 29,0 → 28,0 (Δ −1,0, IC95 [−2,67; +0,67]): baja sólo E012 (el recibo con ctrl_a,
+  arreglado en int11b) y E015 en s2 (H9, arreglado en int11d); primera respuesta p50 4 400 → 4 035 ms (−365 ms, el aviso
+  corto). Falsedades de práctica base/int11 ×3 corridas (120 conversaciones); la lectura a ciegas se hace una vez con
+  int11c.
