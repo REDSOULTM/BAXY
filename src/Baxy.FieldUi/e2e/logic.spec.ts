@@ -104,3 +104,17 @@ test('la red marca aparte una llamada que puede haber corrido («?») de una que
   expect(journeyAtEnd(walk, 'skip', 'apps')).toBe(walk);
   expect(journeyAtEnd(null, 'maybe', 'apps')).toBeNull();
 });
+
+test('el recorrido de la red no repite una familia seguida cuando el turno vuelve a ella tras una respuesta', async () => {
+  // a confirmation: the call, BAXY's words asking, the same family again once approved, the final words
+  const { reduce, INITIAL } = await import('../src/store');
+  const step = (phase: 'start' | 'end', status: 'run' | 'ok' = 'run') => ({ type: 'step' as const, phase, turn: 't1', id: 's', label: 'Borrar', fam: 'archivos' as const, status });
+  const reply = (id: string, text: string) => ({ type: 'item' as const, item: { who: 'baxy' as const, id, text, ts: '', steps: [] } });
+  let s = reduce(INITIAL, step('start'));
+  s = reduce(s, reply('b1', '¿Lo borro?'));
+  expect(s.journey?.path).toEqual(['mente', 'archivos', 'verificar']);
+  s = reduce(s, step('start'));
+  s = reduce(s, step('end', 'ok'));
+  s = reduce(s, reply('b2', 'Listo.'));
+  expect(s.journey?.path).toEqual(['mente', 'archivos', 'verificar']);
+});
