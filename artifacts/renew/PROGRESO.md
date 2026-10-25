@@ -3396,3 +3396,12 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   arreglado en int11b) y E015 en s2 (H9, arreglado en int11d); primera respuesta p50 4 400 → 4 035 ms (−365 ms, el aviso
   corto). Falsedades de práctica base/int11 ×3 corridas (120 conversaciones); la lectura a ciegas se hace una vez con
   int11c.
+- 00:38 **e2e de int11c** (NB, 3 semillas intercaladas con base e int11, GPU en P0 todo el tiempo): H2 (20) base 1,0 |
+  int11 7,0 | **int11c 10,67** (Δ +9,67, IC95 [+6,0; +13,67], McNemar p 0,0005, Holm 0,001); suben V5E016, 018, 021,
+  032, 034, 040, 043, 044, 045, 047, 060, 062 y no baja ninguno; pass^3 0 → 7. Práctica (30) 29,0 | 28,0 | 28,0: int11c −1,0
+  (IC95 [−2,0; 0,0]), baja sólo E029 («No pido comida.» = negativa válida que el oráculo no recoge: banco); E027 cambia de
+  lado según la semilla (ablación de p_call en curso). Primera respuesta p50 (mediana de 6): 4 400 | 4 035 | 4 099 ms. Sin
+  core-disconnect ni engine_no_answer en las 6 corridas.
+- E017 (falla en todas las versiones): guarda en el home con otro nombre y dice «guardé lista.txt en BAXY-bench»: regla
+  `saved_name` de answer_check (w10-guardado 5a9b7afb7; offline 0 marcas en 118 respuestas que afirman guardar, y E017
+  sintético marcado) y la vista del diálogo «Guardar como» (nb-w10-guardar, NB). Van a int11e.
