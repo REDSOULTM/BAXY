@@ -52,3 +52,15 @@ def test_the_real_projects_embedded_data_is_part_of_the_fingerprint() -> None:
     assert "src/baxy_mind/data/memory_subjects.v1.json" in inputs
     assert "src/baxy_mind/data/world_acts.v1.json" in inputs
     assert "src/baxy_mind/data/keypad_keys.v1.json" in inputs
+
+
+def test_building_another_worktree_does_not_make_this_one_recompile(tmp_path: Path, monkeypatch) -> None:
+    # Calidad PC 2026-10-25: the state file was one per user and the fingerprint carries the worktree, so building
+    # worktree B overwrote A's record and A recompiled with nothing changed.
+    monkeypatch.setattr(main, "STATE_DIRECTORY", tmp_path / "estado")
+    first = _worktree(tmp_path / "uno")
+    second = _worktree(tmp_path / "dos")
+    main.record_fingerprint(first, main.source_fingerprint(first))
+    main.record_fingerprint(second, main.source_fingerprint(second))
+    assert main.recorded_fingerprint(first) == main.source_fingerprint(first)
+    assert main.recorded_fingerprint(second) == main.source_fingerprint(second)

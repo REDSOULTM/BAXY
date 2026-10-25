@@ -31,7 +31,6 @@ APP_EXE = BUILD_LAYOUT.app_executable(ROOT)
 CORE_EXE = BUILD_LAYOUT.core_publish_executable(ROOT)
 RUN_SCRIPT = ROOT / "scripts" / "run_baxy.ps1"
 STATE_DIRECTORY = Path(os.environ.get("LOCALAPPDATA", ROOT)) / "BAXY" / "development"
-BUILD_STATE = STATE_DIRECTORY / "source-build-v1.json"
 
 ACTIVE_DOTNET_PROJECT_ROOTS = (
     Path("src") / "Baxy.App",
@@ -157,9 +156,16 @@ def source_fingerprint(root: Path = ROOT) -> str:
     return digest.hexdigest()
 
 
-def recorded_fingerprint() -> str | None:
+def build_state(root: Path = ROOT) -> Path:
+    # Calidad PC 2026-10-25: one record per worktree. The fingerprint carries the worktree, so with one record per user
+    # building worktree B overwrote A's, and A recompiled with nothing changed.
+    name = hashlib.sha256(os.path.normcase(str(root.resolve())).encode("utf-8")).hexdigest()[:16]
+    return STATE_DIRECTORY / f"source-build-v1-{name}.json"
+
+
+def recorded_fingerprint(root: Path = ROOT) -> str | None:
     try:
-        payload = json.loads(BUILD_STATE.read_text(encoding="utf-8"))
+        payload = json.loads(build_state(root).read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError, OSError):
         return None
     if payload.get("schema") != "baxy-development-build-v1":
@@ -269,8 +275,14 @@ def compile_if_needed(*, force: bool) -> None:
         raise RuntimeError(
             "La compilación terminó sin producir los ejecutables esperados."
         )
+    record_fingerprint(ROOT, fingerprint)
+    print("Compilación actualizada.")
+
+
+def record_fingerprint(root: Path, fingerprint: str) -> None:
     STATE_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    temporary = BUILD_STATE.with_suffix(".tmp")
+    state = build_state(root)
+    temporary = state.with_suffix(".tmp")
     temporary.write_text(
         json.dumps(
             {
@@ -282,8 +294,7 @@ def compile_if_needed(*, force: bool) -> None:
         + "\n",
         encoding="utf-8",
     )
-    os.replace(temporary, BUILD_STATE)
-    print("Compilación actualizada.")
+    os.replace(temporary, state)
 
 
 CONDUCTOR_SCRIPT = ROOT / "scripts" / "run_baxy_conductor.ps1"
