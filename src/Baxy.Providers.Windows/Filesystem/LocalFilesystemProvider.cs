@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO.Enumeration;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using Baxy.Providers.Windows.External;
 using Baxy.Providers.Windows.Infrastructure;
 
@@ -29,6 +31,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private readonly Dictionary<string, Handle> _handles = new(StringComparer.Ordinal);
     private readonly TimeProvider _time;
     private readonly IRecycleBin _recycleBin;
+
+    // Holdout v6 V6E041 (overwrite_guard): the replacements refused once for the text they would lose (the file, its
+    // version and the new text's hash), under the root's lock. Forgetting one only refuses it once more.
+    private const int MaximumRefusedReplacements = 256;
+    private readonly HashSet<string> _refusedReplacements = new(StringComparer.Ordinal);
 
     public LocalFilesystemProvider(string rootDirectory, TimeProvider? timeProvider = null)
         : this(rootDirectory, WindowsRecycleBin.Instance, timeProvider)
@@ -145,6 +152,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         string? folder = null,
         bool append = false)
     {
+        string calledPath = relativePath;
         (string root, relativePath) = RootFor(folder, relativePath);
         string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
         lock (_gate)
@@ -179,12 +187,32 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 : append
                     ? expectedSha256 is not null && !string.Equals(current, expectedSha256, StringComparison.Ordinal)
                     : !IsHash(expectedSha256) || !string.Equals(current, expectedSha256, StringComparison.Ordinal);
+            // Holdout v6 V6E041 (aid overwrite_guard): what a replacement of a file there would lose, and whether this
+            // same replacement (the same file's version and the same text) was refused for it before.
+            TextLoss? loss = current is not null && !append && ModelAids.On(ModelAids.OverwriteGuard)
+                ? LossOf(path, normalizedText)
+                : null;
+            string? replacement = loss is null ? null : ReplacementKey(path, current!, desiredHash);
             // BAXY Renew (notebook): a hash expected of a file that is not there is no other version of it.
             if (conflict)
+            {
+                if (replacement is not null) RememberRefused(replacement);
                 throw WriteRefused(
                     current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append,
                     current, current is null ? 0 : append ? previous.Length : new FileInfo(path).Length,
-                    replaceOrAppend: current is not null && !append && !IsHash(expectedSha256));
+                    replaceOrAppend: current is not null && !append && !IsHash(expectedSha256),
+                    loss: loss is null ? null : new LossTold(loss, calledPath, folder, text, Again: false));
+            }
+
+            // Holdout v6 V6E041: the first time, a replacement that loses the file's text is refused before any effect
+            // with what the file has and the call that appends; the same one again goes on (FilesystemHandler's
+            // preflight asks the person first in normal mode, ReplacementAsksFirst).
+            if (replacement is not null && !_refusedReplacements.Contains(replacement))
+            {
+                RememberRefused(replacement);
+                throw WriteRefused("replacement_loses_text", path, exists, append, current,
+                    new FileInfo(path).Length, loss: new LossTold(loss!, calledPath, folder, text, Again: true));
+            }
 
             // A refused write leaves nothing behind: the folder of a new file is made only now.
             EnsureHandleRoom();
@@ -236,6 +264,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             {
                 if (!keepNewText && File.Exists(temporary)) File.Delete(temporary);
             }
+            if (replacement is not null) _refusedReplacements.Remove(replacement);
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
             return WhereWritten(
@@ -689,9 +718,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     // straight in a second call instead of a file.read first; its previous version still goes to the Recycle Bin. Hallazgo
     // E030 (w9-sha): that second call asks the person first, since a hash only a refusal told is no sighting (ToldVersions).
     // Holdout v6 V6E041: a write that came without append and without the hash says both ways on.
+    // Holdout v6 V6E041 (overwrite_guard): a write that would replace text it keeps little of says how much the file has
+    // (lines and characters, or its bytes when it is no text), how many of its lines the text keeps, and both ways on.
     private static FilesystemProviderException WriteRefused(
         string code, string path, bool exists, bool append, string? currentSha256 = null, long size = 0,
-        bool replaceOrAppend = false) =>
+        bool replaceOrAppend = false, LossTold? loss = null) =>
         new(code)
         {
             Result = ExternalJson.Create(writer =>
@@ -705,7 +736,17 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                     writer.WriteString("currentSha256", currentSha256);
                     writer.WriteNumber("size", size);
                 }
-                if (replaceOrAppend && ModelAids.On(ModelAids.ReplaceOrAppend))
+                if (loss is not null)
+                {
+                    if (loss.Loss.Lines is int lines)
+                    {
+                        writer.WriteNumber("lines", lines);
+                        writer.WriteNumber("characters", loss.Loss.Characters);
+                        writer.WriteNumber("linesKept", loss.Loss.LinesKept);
+                    }
+                    writer.WriteString("next", LossNext(Path.GetFileName(path), size, loss));
+                }
+                else if (replaceOrAppend && ModelAids.On(ModelAids.ReplaceOrAppend))
                 {
                     writer.WriteString("next", $"nothing was written: {Path.GetFileName(path)} is already there; "
                         + "file_write with append true adds the text as a new line at its end and keeps what it has, and "
@@ -715,6 +756,180 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 writer.WriteEndObject();
             }),
         };
+
+    /// <summary>
+    /// Holdout v6 V6E041 (overwrite_guard): whether this replacement, under the file's current hash, was refused once
+    /// already for the text it would lose, so it goes on now and in normal mode the person is asked first
+    /// (FilesystemHandler's preflight). Read only.
+    /// </summary>
+    public bool ReplacementAsksFirst(string relativePath, string text, string? expectedSha256, string? folder)
+    {
+        if (!ModelAids.On(ModelAids.OverwriteGuard) || !IsHash(expectedSha256)) return false;
+        try
+        {
+            (string root, string inner) = RootFor(folder, relativePath);
+            string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
+            lock (_gate)
+            {
+                string path = ResolveIn(root, inner, allowMissingLeaf: true, takesFolder: true);
+                if (!File.Exists(path)) return false;
+                string current = HashFile(path);
+                string desired = Hex(SHA256.HashData(StrictUtf8.GetBytes(normalizedText)));
+                return string.Equals(current, expectedSha256, StringComparison.Ordinal)
+                    && !string.Equals(current, desired, StringComparison.Ordinal)
+                    && _refusedReplacements.Contains(ReplacementKey(path, current, desired));
+            }
+        }
+        catch (Exception exception) when (exception is FilesystemProviderException or IOException
+            or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+        {
+            return false;
+        }
+    }
+
+    private void RememberRefused(string replacement)
+    {
+        if (_refusedReplacements.Count >= MaximumRefusedReplacements) _refusedReplacements.Clear();
+        _refusedReplacements.Add(replacement);
+    }
+
+    private static string ReplacementKey(string path, string current, string desired) =>
+        Path.GetFullPath(path).ToUpperInvariant() + "\n" + current + "\n" + desired;
+
+    // What a file has that a replacement by text would lose: null when nothing is lost (an empty file or only blanks,
+    // a text that holds all of it) or when the text keeps more than half of its words (an edit: a line corrected, one of
+    // three taken out); otherwise its lines, characters and the lines the text keeps, or no lines for a file that is no
+    // text (bytes that are no text in a known encoding, or past the size an append reads).
+    private static TextLoss? LossOf(string path, string text)
+    {
+        long size = new FileInfo(path).Length;
+        if (size == 0) return null;
+        if (size > MaximumAppendTargetBytes) return new TextLoss(null, 0, 0);
+        string? before = TextFileEncoding.DecodeExactly(File.ReadAllBytes(path));
+        if (before is null || before.Contains('\0')) return new TextLoss(null, 0, 0);
+        string had = Unified(before).Trim();
+        if (had.Length == 0 || Unified(text).Contains(had, StringComparison.Ordinal)) return null;
+        var words = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (string word in Words(text)) words[word] = words.GetValueOrDefault(word) + 1;
+        int total = 0, kept = 0;
+        foreach (string word in Words(before))
+        {
+            total++;
+            if (words.GetValueOrDefault(word) > 0)
+            {
+                words[word]--;
+                kept++;
+            }
+        }
+        if (total > 0 && kept * 2 > total) return null;
+        string[] lines = LinesOf(before);
+        var newLines = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (string line in LinesOf(text))
+        {
+            string trimmed = line.Trim();
+            newLines[trimmed] = newLines.GetValueOrDefault(trimmed) + 1;
+        }
+        int linesKept = 0;
+        foreach (string line in lines)
+        {
+            string trimmed = line.Trim();
+            if (trimmed.Length > 0 && newLines.GetValueOrDefault(trimmed) > 0)
+            {
+                newLines[trimmed]--;
+                linesKept++;
+            }
+        }
+        return new TextLoss(lines.Length, before.Length, linesKept);
+    }
+
+    private static string Unified(string text) =>
+        text.Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
+
+    // A text's lines as a reader counts them: a last line break ends the last line, it starts none.
+    private static string[] LinesOf(string text)
+    {
+        string unified = Unified(text);
+        if (unified.EndsWith('\n')) unified = unified[..^1];
+        return unified.Length == 0 ? [] : unified.Split('\n');
+    }
+
+    // Its words: runs of letters and digits, in lower case.
+    private static IEnumerable<string> Words(string text)
+    {
+        int start = -1;
+        for (int index = 0; index <= text.Length; index++)
+        {
+            bool inWord = index < text.Length && char.IsLetterOrDigit(text[index]);
+            if (inWord && start < 0)
+            {
+                start = index;
+            }
+            else if (!inWord && start >= 0)
+            {
+                yield return text[start..index].ToLowerInvariant();
+                start = -1;
+            }
+        }
+    }
+
+    // The receipt's sentence: what the file has, that this call replaces all of it, the call that appends (a file that
+    // is text), and how a replacement the person asked for goes on.
+    private static string LossNext(string name, long size, LossTold told)
+    {
+        TextLoss loss = told.Loss;
+        string has = told.Again ? name + " has " : name + " is already there with ";
+        string what = loss.Lines is int lines
+            ? $"{lines} {(lines == 1 ? "line" : "lines")} ({loss.Characters} {(loss.Characters == 1 ? "character" : "characters")})"
+            : $"{size} {(size == 1 ? "byte" : "bytes")} that are not text";
+        string keeps = loss.Lines is null ? string.Empty
+            : loss.LinesKept == 0 ? ", which keeps none of its lines"
+            : $", which keeps {loss.LinesKept} of its {loss.Lines} lines";
+        var next = new StringBuilder(
+            $"nothing was written: {has}{what}, and this call would replace all of it with the text{keeps}.");
+        if (loss.Lines is not null)
+        {
+            next.Append(" To add the text as a new line at its end and keep what it has: ")
+                .Append(AppendCall(told))
+                .Append('.');
+        }
+        next.Append(" To replace all it has only if the person asked for that: ")
+            .Append(told.Again ? "the same call again" : "the same call with expectedSha256 (currentSha256)")
+            .Append("; in normal mode it asks the person's yes first");
+        return next.ToString();
+    }
+
+    // The exact file_write that appends, with this call's own arguments; a long text is named, not repeated.
+    private const int MaximumTextRepeated = 300;
+    private static readonly JsonWriterOptions CallWriting = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
+    private static string AppendCall(LossTold told)
+    {
+        if (told.Text.Length > MaximumTextRepeated)
+        {
+            return told.Folder is null
+                ? "file_write with the same relativePath and text, and append true"
+                : "file_write with the same relativePath, folder and text, and append true";
+        }
+
+        using var buffer = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(buffer, CallWriting))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("relativePath", told.RelativePath);
+            if (told.Folder is not null) writer.WriteString("folder", told.Folder);
+            writer.WriteString("text", told.Text);
+            writer.WriteBoolean("append", true);
+            writer.WriteEndObject();
+        }
+        return "file_write " + Encoding.UTF8.GetString(buffer.ToArray());
+    }
+
+    // Lines null: a file that is no text.
+    private sealed record TextLoss(int? Lines, int Characters, int LinesKept);
+
+    // A loss as a refusal tells it: the call's own path, folder and text, and whether this is the replacement's own
+    // refusal (Again: the same call again goes on) or a version_conflict's (the call still needs the hash).
+    private sealed record LossTold(TextLoss Loss, string RelativePath, string? Folder, string Text, bool Again);
 
     // Renew al máximo (w5, E024): how far an append to a missing file looks for one of that name below its folder.
     private const int SameNameDepth = 6;
