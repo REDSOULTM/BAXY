@@ -169,7 +169,15 @@ internal static partial class PathSafety
         return new SafeFileTree(files, directories);
     }
 
-    internal static void DeleteTreeFailClosed(string installationRoot, string target)
+    internal static void DeleteTreeFailClosed(string installationRoot, string target) =>
+        DeleteTreeFailClosed(installationRoot, target, attestOwnedEntries: true);
+
+    // The user's data is not an attested installation tree: a downloaded file's Zone.Identifier stream or a hard
+    // link is deleted with its name instead of stopping the purge halfway. A reparse point is still never followed.
+    internal static void DeleteUserDataTreeFailClosed(string parent, string target) =>
+        DeleteTreeFailClosed(parent, target, attestOwnedEntries: false);
+
+    private static void DeleteTreeFailClosed(string installationRoot, string target, bool attestOwnedEntries)
     {
         string rootFull = Path.GetFullPath(installationRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         string targetFull = Path.GetFullPath(target).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
@@ -185,7 +193,7 @@ internal static partial class PathSafety
         }
 
         AssertExistingChainHasNoReparsePoint(targetFull);
-        DeleteEntryFailClosed(targetFull);
+        DeleteEntryFailClosed(targetFull, attestOwnedEntries);
     }
 
     internal static void AssertRegularFile(string path)
@@ -279,7 +287,7 @@ internal static partial class PathSafety
         }
     }
 
-    private static void DeleteEntryFailClosed(string path)
+    private static void DeleteEntryFailClosed(string path, bool attestOwnedEntries)
     {
         FileAttributes attributes = File.GetAttributes(path);
         if ((attributes & FileAttributes.ReparsePoint) != 0)
@@ -288,10 +296,18 @@ internal static partial class PathSafety
         }
 
         bool isDirectory = (attributes & FileAttributes.Directory) != 0;
-        AssertNoAlternateDataStreams(path, isDirectory);
+        if (attestOwnedEntries)
+        {
+            AssertNoAlternateDataStreams(path, isDirectory);
+        }
+
         if (!isDirectory)
         {
-            AssertSingleLink(path);
+            if (attestOwnedEntries)
+            {
+                AssertSingleLink(path);
+            }
+
             ClearReadOnly(path, attributes);
             File.Delete(path);
             return;
@@ -299,7 +315,7 @@ internal static partial class PathSafety
 
         foreach (string child in Directory.EnumerateFileSystemEntries(path))
         {
-            DeleteEntryFailClosed(child);
+            DeleteEntryFailClosed(child, attestOwnedEntries);
         }
 
         ClearReadOnly(path, attributes);

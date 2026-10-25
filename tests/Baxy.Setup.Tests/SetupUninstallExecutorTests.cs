@@ -151,6 +151,68 @@ public sealed class SetupUninstallExecutorTests
     }
 
     [Test]
+    public void PurgeDeletesDataFilesWithStreamsOrHardLinksAndOnlyTheirDataNames()
+    {
+        using TemporaryTree tree = new();
+        string dataRoot = Path.Combine(tree.Root, "data");
+        string downloaded = Path.Combine(dataRoot, "a-downloaded.bin");
+        string linked = Path.Combine(dataRoot, "b-linked.bin");
+        string outside = Path.Combine(tree.Root, "outside.bin");
+        Directory.CreateDirectory(dataRoot);
+        File.WriteAllText(downloaded, "downloaded");
+        File.WriteAllText(downloaded + ":Zone.Identifier", "[ZoneTransfer]\r\nZoneId=3\r\n");
+        File.WriteAllText(outside, "outside");
+        if (!CreateHardLink(linked, outside, 0))
+        {
+            Assert.Ignore("This volume cannot create the hard link the purge test needs.");
+        }
+
+        PathSafety.DeleteUserDataTreeFailClosed(tree.Root, dataRoot);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Directory.Exists(dataRoot), Is.False);
+            Assert.That(File.ReadAllText(outside), Is.EqualTo("outside"));
+        });
+    }
+
+    [Test]
+    public void PurgeNeverFollowsAReparsePointOutOfTheDataRoot()
+    {
+        using TemporaryTree tree = new();
+        string dataRoot = Path.Combine(tree.Root, "data");
+        string outside = Path.Combine(tree.Root, "outside");
+        string sentinel = Path.Combine(outside, "sentinel.txt");
+        Directory.CreateDirectory(dataRoot);
+        Directory.CreateDirectory(outside);
+        File.WriteAllText(sentinel, "outside");
+        string junction = Path.Combine(dataRoot, "junction");
+        _ = Baxy.Tests.NtfsTestJunction.Create(junction, outside);
+        try
+        {
+            Assert.That(
+                () => PathSafety.DeleteUserDataTreeFailClosed(tree.Root, dataRoot),
+                Throws.TypeOf<InstallationSafetyException>());
+            Assert.That(File.ReadAllText(sentinel), Is.EqualTo("outside"));
+        }
+        finally
+        {
+            if (Directory.Exists(junction))
+            {
+                Directory.Delete(junction);
+            }
+        }
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll",
+        EntryPoint = "CreateHardLinkW",
+        CharSet = System.Runtime.InteropServices.CharSet.Unicode,
+        SetLastError = true)]
+    [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static extern bool CreateHardLink(string fileName, string existingFileName, nint securityAttributes);
+
+    [Test]
     public void ForeignTombstoneIsRejectedBeforeMovingAnything()
     {
         using TemporaryTree tree = new();

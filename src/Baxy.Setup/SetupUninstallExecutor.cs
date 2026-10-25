@@ -50,7 +50,7 @@ internal sealed class SetupUninstallExecutor
             string parent = Directory.GetParent(_paths.DataRoot)?.FullName ??
                 throw new InstallationSafetyException(
                     "The canonical BAXY data directory has no parent.");
-            PathSafety.DeleteTreeFailClosed(parent, _paths.DataRoot);
+            PathSafety.DeleteUserDataTreeFailClosed(parent, _paths.DataRoot);
         }
 
         _ = LaunchTombstoneCleanup(_paths.InstallationRoot, tombstone);
