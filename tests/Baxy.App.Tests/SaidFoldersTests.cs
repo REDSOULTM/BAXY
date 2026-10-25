@@ -182,7 +182,22 @@ public sealed class SaidFoldersTests
             ?.Refusal?["next"] ?? string.Empty;
 
         Assert.That(next, Does.Contain("filesystem_list acts only in BAXY's own working folder")
-            .And.Contain("file_find with folder \"home\" and subdirectory \"banco-local\" looks there"));
+            .And.Contain("to look there, call file_find with folder \"home\" and subdirectory \"banco-local\""));
+    }
+
+    // Holdout v6 V6E042: told only that file_find «looks there», the model wrote the same filesystem_search again; the
+    // look is said as a call, with the name the search looked for.
+    [Test]
+    public void ASearchOfTheWorkingFolderIsRefusedWithTheCallThatLooksForItInTheFolderNamed()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "cajones", "azul"));
+        SaidFolders said = Heard("busca en cajones dónde está el file llaves.txt, que no me acuerdo en cuál lo dejé");
+
+        string next = (string?)said.Rule("filesystem.search", Descriptor("filesystem.search"),
+            new JsonObject { ["query"] = "llaves.txt" })?.Refusal?["next"] ?? string.Empty;
+
+        Assert.That(next, Does.Contain(
+            "to look there, call file_find with query \"llaves.txt\" and folder \"home\" and subdirectory \"cajones\""));
     }
 
     // E027 shape: a delete is never routed; it is refused with the call that names the folder.
@@ -578,6 +593,91 @@ public sealed class SaidFoldersTests
                 ["folder"] = "home",
                 ["subdirectory"] = "contabilidad",
             }), Is.Null);
+        });
+    }
+
+    // Holdout v6 V6E034: told «destinationRelativePath … and subdirectory "BAXY-bench"» of a call that had folder "home",
+    // the model wrote it without that folder; a place given by folder and subdirectory is said whole.
+    [Test]
+    public void AMoveRefusedInTheFolderNamedSaysItsFolderAndSubdirectoryTogether()
+    {
+        string bench = Path.Combine(_home, "banco-local");
+        File.WriteAllText(Path.Combine(bench, "contrato.txt"), "x");
+        SaidFolders said = Heard("en banco-local haz una copia de contrato.txt que se llame respaldo.txt");
+        ProductOperationDescriptor move = Descriptor("filesystem.sandbox.move.named");
+
+        string Next(JsonObject call) => (string?)said.Rule("filesystem.sandbox.move.named", move, call)?.Refusal?["next"]
+            ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Next(new JsonObject
+            {
+                ["sourceFileName"] = "contrato.txt",
+                ["destinationRelativePath"] = "banco-local/respaldo.txt",
+                ["folder"] = "home",
+            }), Does.Contain("again with destinationRelativePath \"respaldo.txt\" and folder \"home\" and subdirectory "
+                + "\"banco-local\";"));
+            Assert.That(Next(new JsonObject
+            {
+                ["sourceFileName"] = "contrato.txt",
+                ["destinationRelativePath"] = "respaldo.txt",
+                ["subdirectory"] = "banco-local",
+            }), Does.Contain("again with subdirectory \"banco-local\" and folder \"home\";"));
+        });
+    }
+
+    // Holdout v6 V6E043 (dictado, «en mis documentos dentro de la carpeta recetas abuela crea … sopaipillas punto
+    // txt»): a folder recetas in the home folder was named too, and the call offered for Recetas Abuela kept the model's
+    // recetas_abuela inside it; the model asked or wrote Recetas Abuela\recetas_abuela\sopaipillas.txt.
+    [Test]
+    public void ANameSaidAsPartOfALongerFolderNameIsThatFolderAndItsRespellingIsIt()
+    {
+        string recipes = Path.Combine(_home, "Documents", "Recetas Abuela");
+        Directory.CreateDirectory(recipes);
+        Directory.CreateDirectory(Path.Combine(_home, "recetas"));
+        SaidFolders said = Heard("en mis documentos dentro de la carpeta recetas abuela crea un archivo sopaipillas punto "
+            + "txt que diga harina zapallo y manteca");
+
+        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject
+        {
+            ["relativePath"] = "recetas_abuela/sopaipillas.txt",
+            ["text"] = "harina zapallo y manteca",
+            ["folder"] = "documents",
+        })?.Refusal?["next"] ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { recipes }));
+            Assert.That(next, Does.Contain("call file_write again with relativePath \"Recetas Abuela/sopaipillas.txt\";"));
+            // Counter-case: said alone, recetas is that folder.
+            Assert.That(Heard("crea lista.txt en la carpeta recetas").Places().Select(static place => place.Path),
+                Is.EqualTo(new[] { Path.Combine(_home, "recetas") }));
+        });
+    }
+
+    // Holdout v6 V6E044 (dictado, «anota al final de gastos punto txt en baxi bench …»): the name came spelled by its
+    // sounds and named no folder; the append went to the home folder.
+    [TestCase("anota al final de gastos punto txt en baxi bench una linea nueva gas dieciocho mil")]
+    [TestCase("anota al final de gastos punto txt en vaxy bench una linea nueva")]
+    public void AFolderNameDictatedInAnotherSpellingOfItsSoundsIsThatFolder(string words)
+    {
+        string bench = Path.Combine(_home, "BAXY-bench");
+        Directory.CreateDirectory(bench);
+        File.WriteAllText(Path.Combine(bench, "gastos.txt"), "luz 32000\r\n");
+        SaidFolders said = Heard(words);
+
+        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject
+        {
+            ["relativePath"] = "gastos.txt", ["text"] = "gas 18000", ["folder"] = "home", ["append"] = true,
+        })?.Refusal?["next"] ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { bench }));
+            Assert.That(next, Does.Contain("call file_write again with relativePath \"BAXY-bench/gastos.txt\";"));
+            // BAXY's own name, however it is spelled, is how the person speaks to it, never a folder (home has «baxy»).
+            Assert.That(Heard("baxi, crea notas.txt").Places(), Is.Empty);
         });
     }
 

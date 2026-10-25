@@ -132,7 +132,7 @@ internal sealed class SaidFolders
         IEnumerable<string> Named(string name)
         {
             string[] all = [.. roots.SelectMany(Folders).Where(folder =>
-                Spoken(Path.GetFileName(folder)) == name)];
+                Sounded(Path.GetFileName(folder)) == name)];
             string[] qualified = [.. all.Where(folder => qualifiers.Any(root => Same(Path.GetDirectoryName(folder)!, root)))];
             return qualified.Length > 0 ? qualified : all;
         }
@@ -150,7 +150,7 @@ internal sealed class SaidFolders
                 if (parts.Length < 2)
                     continue;
                 string[] starts = PersonFolders.Names.TryGetValue(PersonFolders.Fold(parts[0]), out string? label)
-                    && Root(label) is { } known ? [known] : [.. Named(Spoken(parts[0]))];
+                    && Root(label) is { } known ? [known] : [.. Named(Sounded(parts[0]))];
                 string said = LongestRelative(match.Value, rest[(match.Index + match.Length)..], starts);
                 saidRelatives.Add(said);
                 parts = Parts(said);
@@ -162,15 +162,15 @@ internal sealed class SaidFolders
         }
 
         // The words of a relative path are that path's («Documentos/proyecto» is not Documents).
-        string spoken = Spoken(pathSaid ? rest
+        string spoken = Sounded(pathSaid ? rest
             : RelativePath.Replace(saidRelatives.Aggregate(rest, static (text, said) => text.Replace(said, " ")), " "));
         var knownSaid = new HashSet<string>(StringComparer.Ordinal);
         foreach ((string name, string label) in PersonFolders.Names)
         {
-            if (spoken.Contains(Spoken(name), StringComparison.Ordinal) && Root(label) is { } root && Directory.Exists(root))
+            if (spoken.Contains(Sounded(name), StringComparison.Ordinal) && Root(label) is { } root && Directory.Exists(root))
             {
                 found.Add(new(root, name));
-                knownSaid.Add(Spoken(name));
+                knownSaid.Add(Sounded(name));
             }
         }
 
@@ -179,15 +179,19 @@ internal sealed class SaidFolders
             found.AddRange(relatives);
             // A known folder's name is that folder, not a folder of its name inside it (holdout v5 V5E043 on the
             // notebook: «en documentos» went to Documentos\Documentos).
-            foreach (string name in roots.SelectMany(Folders).Select(folder => Spoken(Path.GetFileName(folder)))
-                         .Distinct(StringComparer.Ordinal))
+            string[] names = [.. roots.SelectMany(Folders).Select(folder => Sounded(Path.GetFileName(folder)))
+                .Distinct(StringComparer.Ordinal).Where(name => name.Count(char.IsLetter) >= 3
+                    && name.Trim() != Sounded(OwnName).Trim() && !knownSaid.Contains(name)
+                    && spoken.Contains(name, StringComparison.Ordinal))];
+            foreach (string name in names)
             {
-                if (name.Count(char.IsLetter) >= 3 && name.Trim() != OwnName && !knownSaid.Contains(name)
-                    && spoken.Contains(name, StringComparison.Ordinal))
-                {
-                    string[] named = [.. Named(name)];
-                    found.AddRange(named.Select(folder => new Place(folder, Path.GetFileName(folder), named.Length == 1)));
-                }
+                // A name said only as part of a longer one that is also a folder's is that folder's (holdout v6 V6E043:
+                // «la carpeta recetas abuela» is Recetas Abuela, not also a folder recetas).
+                if (Occurrences(spoken, name).All(at => names.Any(other => other.Length > name.Length
+                        && Occurrences(spoken, other).Any(from => from <= at && at + name.Length <= from + other.Length))))
+                    continue;
+                string[] named = [.. Named(name)];
+                found.AddRange(named.Select(folder => new Place(folder, Path.GetFileName(folder), named.Length == 1)));
             }
         }
 
@@ -249,16 +253,18 @@ internal sealed class SaidFolders
             next = $"nothing ran: the person named {named} and this call would act in {where}, outside it. If "
                 + $"{which} is the place of this call, call {wire} again with "
                 + string.Join(", or ", options.Where(option => option.Arguments is not null).Select(option =>
-                    Changes(arguments, option.Arguments!) + (targets.Count == 1 ? string.Empty
+                    Changes(arguments, option.Arguments!, whole: true) + (targets.Count == 1 ? string.Empty
                         : $" for {option.Place.Path}{Holding(option.Place, reach.Leaf)}")))
                 + "; " + again;
         }
         else if (reach.Sandbox)
         {
+            // The look there is said as a call, with what the call looked for (holdout v6 V6E042: told only that
+            // file_find «looks there», the model wrote the same filesystem_search again).
             string alternative = descriptor.Risk == OperationRisks.ReadOnly
                 && ProductCatalog.TryGet("file.find", out ProductOperationDescriptor? find) && find is not null
-                && targets.Count == 1 && Express(find, new JsonObject(), targets[0]) is { } look
-                    ? $"file_find with {Changes(new JsonObject(), look)} looks there"
+                && targets.Count == 1 && Express(find, Shared(arguments, find), targets[0]) is { } look
+                    ? $"to look there, call file_find with {Changes(new JsonObject(), look)}"
                     : $"{wire} cannot name a folder of theirs";
             next = $"nothing ran: {wire} acts only in BAXY's own working folder, not in the person's folders, and the "
                 + $"person named {named}: {alternative}. If the person asked for BAXY's working folder itself, call it "
@@ -463,7 +469,8 @@ internal sealed class SaidFolders
         string[] own = Parts(relative);
         for (int count = Math.Min(own.Length, parts.Count - 1); count > 0; count--)
         {
-            if (own[^count..].SequenceEqual(parts.Take(count), StringComparer.OrdinalIgnoreCase))
+            // Holdout v6 V6E043: the folder's name respelled by the model («recetas_abuela» in Recetas Abuela) is it.
+            if (own[^count..].Select(Sounded).SequenceEqual(parts.Take(count).Select(Sounded), StringComparer.Ordinal))
             {
                 parts.RemoveRange(0, count);
                 break;
@@ -473,13 +480,29 @@ internal sealed class SaidFolders
         return string.Join('/', parts);
     }
 
-    // The arguments that differ, as the model writes them: folder "home" and subdirectory "proyecto".
-    private static string Changes(JsonObject given, JsonObject routed)
+    // The arguments of a call that another operation also takes (a search's query, for file_find).
+    private static JsonObject Shared(JsonObject arguments, ProductOperationDescriptor other)
     {
+        var shared = new JsonObject();
+        foreach ((string key, JsonNode? value) in arguments)
+        {
+            if (other.ArgumentsSchema.Properties.Any(property => property.Name == key))
+                shared[key] = value?.DeepClone();
+        }
+
+        return shared;
+    }
+
+    // The arguments that differ, as the model writes them: folder "home" and subdirectory "proyecto". Whole: a place
+    // given by folder and subdirectory is said with both (holdout v6 V6E034: told only the subdirectory of a call that
+    // had folder "home", the model wrote it without that folder).
+    private static string Changes(JsonObject given, JsonObject routed, bool whole = false)
+    {
+        bool split = whole && routed.ContainsKey("subdirectory");
         var changes = new List<string>();
         foreach ((string key, JsonNode? value) in routed)
         {
-            if (!JsonNode.DeepEquals(value, given[key]))
+            if (!JsonNode.DeepEquals(value, given[key]) || (split && key is "folder" or "subdirectory"))
                 changes.Add($"{key} {value?.ToJsonString(AsWritten) ?? "null"}");
         }
 
@@ -553,7 +576,7 @@ internal sealed class SaidFolders
     // far as the words keep naming a folder inside the last one.
     private static Place Deeper(Place place, string spoken)
     {
-        string said = Spoken(place.Said);
+        string said = Sounded(place.Said);
         int at = spoken.IndexOf(said, StringComparison.Ordinal);
         if (said.Trim().Length == 0 || at < 0)
             return place;
@@ -562,11 +585,11 @@ internal sealed class SaidFolders
         while (SaidSeparator.Match(after) is { Success: true } separator)
         {
             string rest = after[(separator.Length - 1)..];
-            string? inner = TopFolders(folder).Where(child => rest.StartsWith(Spoken(Path.GetFileName(child)), StringComparison.Ordinal))
+            string? inner = TopFolders(folder).Where(child => rest.StartsWith(Sounded(Path.GetFileName(child)), StringComparison.Ordinal))
                 .OrderByDescending(child => Path.GetFileName(child).Length).FirstOrDefault();
             if (inner is null)
                 break;
-            after = rest[(Spoken(Path.GetFileName(inner)).Length - 1)..];
+            after = rest[(Sounded(Path.GetFileName(inner)).Length - 1)..];
             folder = inner;
         }
 
@@ -639,6 +662,33 @@ internal sealed class SaidFolders
         if (spoken[^1] != ' ')
             spoken.Append(' ');
         return spoken.ToString();
+    }
+
+    // The person's words and a folder's name as they sound: a dictated name comes spelled by its sounds (holdout v6
+    // V6E044: «baxi bench» for BAXY-bench), so the letters Spanish writes for one sound are one: b and v, s and z, i and
+    // a y not before a vowel.
+    private static string Sounded(string text)
+    {
+        char[] letters = Spoken(text).ToCharArray();
+        for (int index = 0; index < letters.Length; index++)
+        {
+            letters[index] = letters[index] switch
+            {
+                'v' => 'b',
+                'z' => 's',
+                'y' when index + 1 == letters.Length || "aeiou".IndexOf(letters[index + 1]) < 0 => 'i',
+                char letter => letter,
+            };
+        }
+
+        return new string(letters);
+    }
+
+    private static IEnumerable<int> Occurrences(string text, string part)
+    {
+        for (int at = text.IndexOf(part, StringComparison.Ordinal); at >= 0;
+             at = text.IndexOf(part, at + 1, StringComparison.Ordinal))
+            yield return at;
     }
 
     private static string? Text(JsonNode? node) =>

@@ -91,6 +91,13 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5, E024): an append refused for a missing file says where one of that name is.</summary>
     public const string AppendElsewhere = "append_elsewhere";
 
+    /// <summary>
+    /// Holdout v6 V6E041 («agrégale al file jugadores.txt … la línea: …», written without append and refused, then read
+    /// and replaced by that line alone): a write without append and without the hash, refused because the file is
+    /// there, says that append adds the text at its end and that the hash replaces all the file has.
+    /// </summary>
+    public const string ReplaceOrAppend = "replace_or_append";
+
     /// <summary>Renew al máximo (w5, E020): a look at BAXY's working folder says it is BAXY's, and one that found nothing that the person's folders were not looked at.</summary>
     public const string WorkFolderScope = "work_folder_scope";
 
