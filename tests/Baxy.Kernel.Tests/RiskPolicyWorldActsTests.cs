@@ -201,6 +201,9 @@ public sealed class RiskPolicyWorldActsTests
     [TestCase("""{"key":"enter","onto":"Eliminar pruebas"}""", true)]
     [TestCase("""{"key":"enter","onto":"general (canal de texto)"}""", false)]
     [TestCase("""{"key":"enter","onto":null}""", true)]
+    // Revisión de calidad del núcleo (final2): an empty or blank name declares nothing either.
+    [TestCase("""{"key":"enter","onto":""}""", true)]
+    [TestCase("""{"key":"space","onto":"  "}""", true)]
     [TestCase("""{"key":"tab","onto":"Cotele!!!😎, Canal de voz, Choche"}""", false)]
     public void A_key_on_what_asks_asks_as_its_click_would(string arguments, bool asks)
     {

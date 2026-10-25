@@ -271,8 +271,10 @@ public static partial class RiskPolicy
             ? key.GetString()
             : null;
 
+    // Revisión de calidad del núcleo (final2): an empty or blank «onto» names nothing, as a missing one does (K-2 asks).
     private static string? OntoOf(JsonElement arguments) =>
         arguments.TryGetProperty("onto", out JsonElement onto) && onto.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(onto.GetString())
             ? onto.GetString()
             : null;
 
