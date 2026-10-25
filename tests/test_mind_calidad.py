@@ -248,3 +248,36 @@ def test_the_model_servers_are_closed_even_when_the_voice_cannot_say_it_stopped(
     monkeypatch.setattr(sidecar.protocol, "write_message", lambda message: None)
     assert sidecar.main() == 0
     assert closed == ["speech", "server", "system_one"]
+
+
+def test_system_ones_server_is_not_started_again_once_the_mind_closes(tmp_path: pathlib.Path,
+                                                                      monkeypatch: pytest.MonkeyPatch) -> None:
+    """The watcher starts an exited server again after a pause; close() arriving between that pause and the start
+    found the old process gone and terminated nothing, and the watcher then started a server nobody would close."""
+    launched: list = []
+
+    class Exited(_Process):
+        returncode = 1
+
+        def poll(self) -> int:
+            return 1
+
+    def popen(_command, stdout=None, **_kwargs):
+        launched.append(Exited())
+        return launched[-1]
+
+    laya = system_one.SystemOne("laya.gguf", EXE)
+
+    def free_port() -> int:
+        laya.close()  # the mind ends right then
+        return 5000
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setattr(system_one.subprocess, "Popen", popen)
+    monkeypatch.setattr(system_one, "_free_port", free_port)
+    real_wait = system_one.threading.Event.wait
+    monkeypatch.setattr(system_one.threading.Event, "wait",
+                        lambda self, timeout=None: real_wait(self, min(timeout or 0.01, 0.01)))
+    laya._launch()
+    laya._watch()
+    assert len(launched) == 1

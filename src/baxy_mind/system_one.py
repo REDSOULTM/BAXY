@@ -73,6 +73,9 @@ class SystemOne:
         self._process: subprocess.Popen | None = None
         self._ready = threading.Event()
         self._closing = threading.Event()
+        # close() and a start again take it in turn: a close that came between the watcher's pause and its start found
+        # the old process gone, and the watcher then started a server nobody closed.
+        self._launching = threading.Lock()
         self.restarts = 0
         # Where an exit or a start again is told: (stage, fields), the mind's trace (Mind sets it); None, nowhere.
         self.on_event: Callable[..., None] | None = None
@@ -114,11 +117,14 @@ class SystemOne:
             if self._closing.wait(min(2.0 ** self.restarts, 30.0)):
                 return
             self.port = _free_port()  # the old one may be taken by now
-            try:
-                self._launch()
-            except OSError as error:
-                self._tell("system_one.exited", exit_code=None, restart=None, failure=type(error).__name__)
-                return
+            with self._launching:
+                if self._closing.is_set():
+                    return
+                try:
+                    self._launch()
+                except OSError as error:
+                    self._tell("system_one.exited", exit_code=None, restart=None, failure=type(error).__name__)
+                    return
             self._tell("system_one.restarted", restart=self.restarts)
 
     def _tell(self, stage: str, **fields: Any) -> None:
@@ -185,7 +191,8 @@ class SystemOne:
             return None
 
     def close(self) -> None:
-        self._closing.set()
+        with self._launching:
+            self._closing.set()
         if self._process is not None and self._process.poll() is None:
             self._process.terminate()
             try:
