@@ -341,9 +341,12 @@ def test_a_held_call_that_repeats_a_completed_one_is_told_with_how_it_ended(tmp_
     assert ("pregúntale en una frase corta qué quiere exactamente" in note) is not told
     rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
     assert [r["kind"] for r in rows if r["stage"] == "turn.decide"][-2] == ("doubt_done" if told else "doubt_ask")
-    if told:  # it asked nothing: the person's next words are not an answer to a doubt question
-        server.replies += [_call("app_close", {"appId": "Paint"}, 0.3), _say("¿Lo cierro otra vez?")]
-        assert mind.decide(4, "ciérralo otra vez")["operation"] is None
+    if told:
+        # Revisión de nb-w11-mente: the note tells the model to ask whether to repeat it when the person asked for it
+        # again, and the answer to that question was held again by the same note, at every unsure «sí»: one hold per
+        # misunderstanding, as after DOUBT_NOTE.
+        server.replies += [_call("app_close", {"appId": "Paint"}, 0.3)]
+        assert mind.decide(4, "sí, ciérralo otra vez")["operation"] == "app.close"
 
 
 def test_a_held_look_is_not_told_as_done_before(tmp_path, monkeypatch) -> None:
