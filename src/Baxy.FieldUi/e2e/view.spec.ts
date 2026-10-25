@@ -70,3 +70,30 @@ test('mantener para hablar: un toque que el sistema cancela suelta el oído', as
   await mic.dispatchEvent('pointercancel', { pointerId: 1, pointerType: 'touch', isPrimary: true });
   await expect.poll(voice).toEqual(['/voice/trigger', '/voice/release']);
 });
+
+async function renaming() {
+  h.reply('/sessions', () => ({ body: { sessions: [{ id: 's1', label: 'Mañana', ts: '10:00', current: true, turn_count: 2 }, { id: 's2', label: 'Ayer', ts: 'ayer', current: false, turn_count: 5 }] } }));
+  await h.page.locator('button', { hasText: 'Sesiones' }).first().click();
+  await h.page.locator('.bx-mem-row', { hasText: 'Ayer' }).locator('.bx-lnk').click();
+  const input = h.page.locator('input[aria-label="Nombre de la sesión"]');
+  await input.fill('Compras');
+  return input;
+}
+const renames = () => h.calls.filter((c) => c.path === '/sessions/rename').map((c) => c.body);
+
+test('sesiones: Esc al renombrar deja el nombre como estaba y el panel abierto', async () => {
+  h = await openView();
+  const input = await renaming();
+  await input.press('Escape');
+  await h.page.waitForTimeout(300);
+  expect(renames()).toEqual([]);
+  await expect(h.page.locator('.panel', { hasText: 'Sesiones' })).toBeVisible();
+});
+
+test('sesiones: Enter al renombrar renombra una vez', async () => {
+  h = await openView();
+  const input = await renaming();
+  await input.press('Enter');
+  await h.page.waitForTimeout(300);
+  expect(renames()).toEqual([{ id: 's2', title: 'Compras' }]);
+});

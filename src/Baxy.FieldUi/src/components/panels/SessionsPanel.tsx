@@ -37,7 +37,7 @@ export function SessionsPanel({ onClose, onNew, revision }: { onClose: () => voi
           <div key={s.id} className={'bx-mem-row' + (s.current ? ' cur' : '')}>
             {ed === s.id
               ? <input className="st-input" autoFocus value={val} maxLength={80} aria-label="Nombre de la sesión" onChange={(e) => setVal(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') void save(); if (e.key === 'Escape') setEd(null); }} onBlur={() => void save()} />
+                onKeyDown={(e) => { if (e.key === 'Enter') void save(); if (e.key === 'Escape') { e.stopPropagation(); setEd(null); } }} onBlur={() => void save()} />
               : <button className="bx-sess-t" onClick={() => (s.current ? onClose() : void open(s.id))}>{s.label}</button>}
             <span className="acts">
               <span className="ts">{s.current ? 'Abierta' : s.ts}</span>
