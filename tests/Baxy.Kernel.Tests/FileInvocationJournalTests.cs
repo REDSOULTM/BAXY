@@ -191,6 +191,60 @@ public sealed class FileInvocationJournalTests
         });
     }
 
+    // Revisión 2026-10-25 (reservas de reintento): a retryable answer nobody retries kept its completion reservation in
+    // the journal until the Core restarted; past a few of them (only the volume gives them today) every new invocation
+    // was refused with journal_capacity_reached. Under that pressure the open retries end, their terminal written before
+    // the reservation goes: the new invocation runs, a closed one replays its own failure without running again, and a
+    // reopen still honours every reservation left.
+    [Test]
+    public async Task RetriesNobodyMakesEndBeforeTheJournalRefusesANewInvocation()
+    {
+        const int completionReservationBytes = 16 * 1024;
+        var handler = new RetryableHandler();
+        OperationRequest[] requests = [.. Enumerable.Range(0, 8).Select(_ => CreateRequest())];
+        var responses = new List<OperationResponse>();
+        OperationResponse retry;
+        await using (FileInvocationJournal journal = await FileInvocationJournal.OpenWithCapacityForTestingAsync(
+                         _journalPath,
+                         new JournalHmacAuthenticator(_authenticationKey),
+                         maximumJournalBytes: 4 * completionReservationBytes,
+                         completionReservationBytes))
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), journal))
+        {
+            foreach (OperationRequest request in requests)
+            {
+                responses.Add(await engine.ExecuteAsync(request, CancellationToken.None));
+            }
+
+            retry = await engine.ExecuteAsync(
+                requests[0] with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        OperationResponse afterReopen;
+        await using (FileInvocationJournal reopened = await OpenJournalAsync())
+        using (var engine = new MissionEngine(new OperationRegistry([handler]), reopened))
+        {
+            await reopened.AbandonInterruptedAsync(CancellationToken.None);
+            afterReopen = await engine.ExecuteAsync(
+                requests[1] with { RequestId = Guid.NewGuid().ToString("D") },
+                CancellationToken.None);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(responses.Select(static response => response.ErrorCode), Is.All.EqualTo("provider_busy"));
+            Assert.That(responses.Select(static response => response.Status), Is.All.EqualTo(OperationStatuses.Pending));
+            Assert.That(retry.Replayed, Is.True);
+            Assert.That(retry.Status, Is.EqualTo(OperationStatuses.Failed));
+            Assert.That(retry.ErrorCode, Is.EqualTo("provider_busy"));
+            Assert.That(retry.EffectMayHaveOccurred, Is.False);
+            Assert.That(afterReopen.Replayed, Is.True);
+            Assert.That(afterReopen.ErrorCode, Is.EqualTo("provider_busy"));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(requests.Length));
+        });
+    }
+
     // Auditoría del núcleo 2026-10-23: evidence larger than the completion reserved before the effect is dropped, never
     // the terminal state (the core used to end after the effect); its facts stay, and the replay runs nothing again.
     [Test]
@@ -1178,6 +1232,23 @@ public sealed class FileInvocationJournalTests
             cancellationToken.ThrowIfCancellationRequested();
             ExecutionCount++;
             return ValueTask.FromResult(OperationOutcome.Success(invocation.Arguments));
+        }
+    }
+
+    private sealed class RetryableHandler : IOperationHandler
+    {
+        public int ExecutionCount { get; private set; }
+
+        public OperationDefinition Definition { get; } =
+            new("note.create", OperationRisk.Reversible, "Create a local note.");
+
+        public ValueTask<OperationOutcome> ExecuteAsync(
+            OperationInvocation invocation,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ExecutionCount++;
+            return ValueTask.FromResult(OperationOutcome.RetryableFailure("provider_busy"));
         }
     }
 

@@ -27,4 +27,10 @@ public sealed class MissionEngineOptions
     /// camino. Por defecto, <see cref="ConfirmationMode.Normal"/>.
     /// </summary>
     public Func<ConfirmationMode>? ConfirmationMode { get; init; }
+
+    /// <summary>
+    /// El reloj con el que vence la ventana de reintento de un resultado reintentable. Sólo lo cambian las pruebas del
+    /// kernel; por defecto, <see cref="TimeProvider.System"/>.
+    /// </summary>
+    internal TimeProvider? Time { get; init; }
 }
