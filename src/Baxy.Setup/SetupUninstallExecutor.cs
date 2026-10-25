@@ -39,22 +39,73 @@ internal sealed class SetupUninstallExecutor
             _paths.InstallationRoot,
             Guid.NewGuid());
         MoveInstallationRoot(_paths.InstallationRoot, tombstone);
+        FinishMovedUninstall(
+            _paths.InstallationRoot,
+            tombstone,
+            removeIntegration: () =>
+            {
+                _ = verified.Shortcut.DeleteOwnedVerifiedAfterInstallationMove(
+                    verified.State.Shortcut.Sha256,
+                    verified.State.Shortcut.Bytes);
+                _ = verified.Registry.DeleteCapturedOwned(verified.RegistryDeletion);
+            },
+            purgeData: policy == UninstallDataPolicy.PurgeData ? PurgeDataRoot : null,
+            launchCleanup: LaunchTombstoneCleanup);
+        return 0;
+    }
 
-        _ = verified.Shortcut.DeleteOwnedVerifiedAfterInstallationMove(
-            verified.State.Shortcut.Sha256,
-            verified.State.Shortcut.Bytes);
-        _ = verified.Registry.DeleteCapturedOwned(verified.RegistryDeletion);
-
-        if (policy == UninstallDataPolicy.PurgeData)
+    internal static void FinishMovedUninstall(
+        string installationRoot,
+        string tombstone,
+        Action removeIntegration,
+        Action? purgeData,
+        Func<string, string, uint> launchCleanup)
+    {
+        // Until the Start Menu shortcut and the uninstall key are gone, the installation goes back to its path: the
+        // registry would otherwise name a Baxy.Setup.exe that no longer exists and block both uninstall and reinstall.
+        try
         {
-            string parent = Directory.GetParent(_paths.DataRoot)?.FullName ??
-                throw new InstallationSafetyException(
-                    "The canonical BAXY data directory has no parent.");
-            PathSafety.DeleteUserDataTreeFailClosed(parent, _paths.DataRoot);
+            removeIntegration();
+        }
+        catch (Exception failure)
+        {
+            ReturnInstallationRoot(installationRoot, tombstone, failure);
+            throw;
         }
 
-        _ = LaunchTombstoneCleanup(_paths.InstallationRoot, tombstone);
-        return 0;
+        // From here the product is uninstalled: a failed data purge must not strand the moved installation. The
+        // cleanup still starts last, just before this process exits, so its retries outlast this running host.
+        try
+        {
+            purgeData?.Invoke();
+        }
+        finally
+        {
+            _ = launchCleanup(installationRoot, tombstone);
+        }
+    }
+
+    private static void ReturnInstallationRoot(string installationRoot, string tombstone, Exception failure)
+    {
+        try
+        {
+            Directory.Move(tombstone, installationRoot);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException)
+        {
+            throw new InstallationSafetyException(
+                "BAXY uninstall failed after moving the installation, which could not be returned to its path.",
+                new AggregateException(failure, exception));
+        }
+    }
+
+    private void PurgeDataRoot()
+    {
+        string parent = Directory.GetParent(_paths.DataRoot)?.FullName ??
+            throw new InstallationSafetyException(
+                "The canonical BAXY data directory has no parent.");
+        PathSafety.DeleteUserDataTreeFailClosed(parent, _paths.DataRoot);
     }
 
     private VerifiedUninstall VerifyInstalledProduct(ProductOperationGate productGate)

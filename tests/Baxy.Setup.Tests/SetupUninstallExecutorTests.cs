@@ -213,6 +213,60 @@ public sealed class SetupUninstallExecutorTests
     private static extern bool CreateHardLink(string fileName, string existingFileName, nint securityAttributes);
 
     [Test]
+    public void FailedIntegrationRemovalReturnsTheInstallationToItsPath()
+    {
+        using TemporaryTree tree = new();
+        Directory.CreateDirectory(tree.InstallationRoot);
+        File.WriteAllText(Path.Combine(tree.InstallationRoot, "installed.txt"), "installed");
+        string tombstone = SetupUninstallExecutor.BuildTombstonePath(tree.InstallationRoot, Guid.NewGuid());
+        SetupUninstallExecutor.MoveInstallationRoot(tree.InstallationRoot, tombstone);
+        int cleanups = 0;
+        bool purged = false;
+
+        Assert.That(
+            () => SetupUninstallExecutor.FinishMovedUninstall(
+                tree.InstallationRoot,
+                tombstone,
+                removeIntegration: static () => throw new InstallationSafetyException("registry"),
+                purgeData: () => purged = true,
+                launchCleanup: (_, _) => ++cleanups > 0 ? 1u : 0u),
+            Throws.TypeOf<InstallationSafetyException>().With.Message.EqualTo("registry"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                File.ReadAllText(Path.Combine(tree.InstallationRoot, "installed.txt")),
+                Is.EqualTo("installed"));
+            Assert.That(Directory.Exists(tombstone), Is.False);
+            Assert.That(cleanups, Is.Zero);
+            Assert.That(purged, Is.False);
+        });
+    }
+
+    [Test]
+    public void FailedPurgeStillCleansTheMovedInstallation()
+    {
+        using TemporaryTree tree = new();
+        Directory.CreateDirectory(tree.InstallationRoot);
+        File.WriteAllText(Path.Combine(tree.InstallationRoot, "installed.txt"), "installed");
+        string tombstone = SetupUninstallExecutor.BuildTombstonePath(tree.InstallationRoot, Guid.NewGuid());
+        SetupUninstallExecutor.MoveInstallationRoot(tree.InstallationRoot, tombstone);
+
+        Assert.That(
+            () => SetupUninstallExecutor.FinishMovedUninstall(
+                tree.InstallationRoot,
+                tombstone,
+                removeIntegration: static () => { },
+                purgeData: static () => throw new IOException("locked data"),
+                launchCleanup: SetupUninstallExecutor.LaunchTombstoneCleanup),
+            Throws.TypeOf<IOException>());
+        Assert.Multiple(() =>
+        {
+            Assert.That(WaitUntil(() => !Directory.Exists(tombstone), TimeSpan.FromSeconds(8)), Is.True);
+            Assert.That(Directory.Exists(tree.InstallationRoot), Is.False);
+        });
+    }
+
+    [Test]
     public void ForeignTombstoneIsRejectedBeforeMovingAnything()
     {
         using TemporaryTree tree = new();
