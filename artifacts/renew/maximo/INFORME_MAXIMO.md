@@ -53,7 +53,10 @@ Retiradas con su cifra: `w10-desc` (−3 en decisión por una palabra), `snippet
 `typed_in_window` (empujaba a guardar por la interfaz y volvía una falsedad 3 de 3). Encontrado después de abrir el holdout,
 sin medir en él y fuera de esta versión: el notebook arregló un fallo del arranque de la voz que podía dejarte sin «Baxy»
 si el PC iba cargado (`nb-w11-arranque`), una guarda para que nada escriba en las carpetas de inicio de Windows
-(`nb-w11-inicio`) y varios casos de uso del PC (`nb-w11-*`): esperan tu visto bueno para entrar.
+(`nb-w11-inicio`) y varios casos de uso del PC (`nb-w11-*`). **Por decisión tuya (2026-10-25 14:00) entraron en
+`renew-cien` sólo los dos primeros** (9b2ef1d01 y 1e35ffe58), **sin medir en el holdout v6**: las cifras de arriba son
+las de f1d041344 sin ellos. Suites del PC con los dos: Kernel 753, Contracts 74, Setup 477, App 213, Providers 3116,
+pytest 664 (+ test_voice_vad 4/4 con el Python de la voz). Las demás `nb-w11-*` siguen en hub sin fusionar.
 
 ## Fase 2 (2026-10-23 → 24), en corto para el dueño
 

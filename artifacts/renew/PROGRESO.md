@@ -3469,3 +3469,9 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   | H10 límites | al brief §7 (T9-T16) | E027/F009 con ablación N=40 |
 - Suites sobre f1d041344 en las dos máquinas, recursos 3 989 / 3 672 MiB, holdout v6 sellado antes y corrido una vez con el
   plan pre-registrado, código final en hub/renew-cien 8953ecd03 (docs hasta f1e312a6e).
+- 14:10 **Decisión del dueño (14:00)**: entran en renew-cien, sin medir en el holdout v6, `nb-w11-inicio` (432780fd5 →
+  1e35ffe58: ninguna herramienta de archivos escribe en las carpetas de inicio de Windows) y el commit propio de
+  `nb-w11-arranque` (a18ab1097 → 9b2ef1d01: la palabra de activación pedida al arrancar espera a que cargue el oído y, si
+  no arranca, se ve). La rama nb-w11-arranque traía además 16 commits de otras propuestas sin medir: no entran. Suites del
+  PC sobre 9b2ef1d01: Kernel 753, Contracts 74, Setup 477, App 213, Providers 3116, pytest 664 (+ vad 4/4 con py3.10).
+  El notebook, parado por orden del dueño a las 14:02.
