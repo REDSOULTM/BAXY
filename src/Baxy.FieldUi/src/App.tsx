@@ -436,9 +436,13 @@ export default function App() {
       if (e.key === ' ' && mic === 'ptt' && !e.repeat && !panel && !(a && a.tagName === 'INPUT' && a.value)) { e.preventDefault(); pttStart(); }
     };
     const onUp = (e: KeyboardEvent) => { if (e.key === ' ' && ptt.current) { e.preventDefault(); pttEnd(); } };
+    // the window losing the focus with the space held (Alt+Tab, a notification) sends its release elsewhere: the ear
+    // is let go then, never left listening
+    const onBlur = () => pttEnd();
     window.addEventListener('keydown', onKey);
     window.addEventListener('keyup', onUp);
-    return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onUp); };
+    window.addEventListener('blur', onBlur);
+    return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onUp); window.removeEventListener('blur', onBlur); };
   }, [pendingCard, panel, mic, answer, pttStart, pttEnd]);
 
   // ---- what the face shows ----

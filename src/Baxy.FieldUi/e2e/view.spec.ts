@@ -50,3 +50,14 @@ test('una respuesta que el host rechazó se dice y se puede dar otra vez', async
   await h.page.locator('.bx-card .bx-btn', { hasText: 'Sí' }).click();
   await expect.poll(answers).toEqual([{ approve: true, card: 'c1' }, { approve: true, card: 'c1' }]);
 });
+
+const voice = () => h.calls.filter((c) => c.path === '/voice/trigger' || c.path === '/voice/release').map((c) => c.path);
+
+test('mantener para hablar: si la ventana pierde el foco con el espacio pulsado, el oído se suelta', async () => {
+  h = await openView({ mic: 'ptt' });
+  await h.page.keyboard.down(' ');
+  await expect.poll(voice).toEqual(['/voice/trigger']);
+  // Alt+Tab with the space held: the key's release goes to another window
+  await h.page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await expect.poll(voice).toEqual(['/voice/trigger', '/voice/release']);
+});
