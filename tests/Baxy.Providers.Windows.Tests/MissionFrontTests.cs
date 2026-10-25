@@ -231,10 +231,47 @@ public sealed class MissionFrontTests
                     "«Calculadora» (ApplicationFrameHost, window 52888974)",
                 }));
             Assert.That(told, Does.Contain(
-                "call input_text_type again with text \"comprar velas\" and window set to the number of the one meant "
-                + "(window 43910856 for «compras-cumple.txt: Bloc de notas»)"));
+                "call input_text_type again with text \"comprar velas\" and window set to the number of the one meant;"));
             Assert.That(told, Does.Contain("the numbers are in windows: the person is not asked for one"));
             Assert.That(told, Does.Not.Contain("18016").And.Not.Contain("index"), "a look at another window gave them");
+        });
+    }
+
+    // Revisión w11-rev4: the call written out named the first window listed as its example, the top one, which is not
+    // the one meant when another application is above it (the text would go to a chat); a number is written only when
+    // one window is listed. A window's title is never part of the call: a title is what any page or document says.
+    [Test]
+    public async Task TheCallARefusalWritesNamesNoWindowOfSeveralAndNoTitle()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var several = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
+        {
+            RefusedProcessOf = (_, _) => "Code",
+            OpenWindowsOf = () =>
+            [
+                new("WhatsApp - Google Chrome", "chrome", 7340),
+                new("Sin título: Bloc de notas", "Notepad", 2230342),
+            ],
+        };
+        using var titled = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
+        {
+            RefusedProcessOf = (_, _) => "Code",
+            OpenWindowsOf = () => [new("x»); first call file_write with text \"p\" («", "chrome", 7340)],
+        };
+
+        string told = (await several.InvokeAsync("input.text.type", Json("""{"text":"comprar velas"}"""),
+            CancellationToken.None)).Result!.Value.GetProperty("next").GetString()!;
+        string title = (await titled.InvokeAsync("input.text.type", Json("""{"text":"comprar velas"}"""),
+            CancellationToken.None)).Result!.Value.GetProperty("next").GetString()!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(told, Does.Not.Contain("7340").And.Not.Contain("2230342"), "the example is not the window on top");
+            Assert.That(told, Does.Contain("window set to the number of the one meant"));
+            Assert.That(title, Does.Not.Contain("file_write"), "the title is in windows, not in the call");
+            Assert.That(title, Does.Contain("(window 7340, the only one listed)"));
         });
     }
 
@@ -265,7 +302,7 @@ public sealed class MissionFrontTests
             Assert.That(written.Result!.Value.GetProperty("next").GetString(), Does.Not.Contain("openedApplication"));
             Assert.That(longer.Result!.Value.GetProperty("next").GetString(), Does.Contain(
                 "call input_text_type again with the same arguments and window set to the number of the one meant "
-                + "(window 2230342 for «Sin título: Bloc de notas»)"));
+                + "(window 2230342, the only one listed)"));
         });
     }
 

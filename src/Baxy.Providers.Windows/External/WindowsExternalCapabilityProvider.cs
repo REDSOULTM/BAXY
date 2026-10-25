@@ -338,9 +338,12 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     // the one meant, and only a window not listed is looked at by its name first.
     // Práctica V5E066 (junto s0 and s1): with the windows listed and the step to do again only described, the reply
     // ended at the refusal both times, once asking the person for the window's number. The call is written out: the
-    // same arguments, the window set to the number of the one meant, the first listed as the example.
+    // same arguments and the window set to the number of the one meant.
+    // Revisión w11-rev4: the first listed is the top one, not the one meant when another application is above it (the
+    // text went to a chat); a number is written only when one window is listed, and never a title, which any page or
+    // document sets: titles stay in windows.
     private static string ProtectedNext(
-        string operation, string program, bool named, OpenWindow? first, JsonElement arguments)
+        string operation, string program, bool named, bool listed, long? only, JsonElement arguments)
     {
         string refused = $"nothing was sent: the window it would go to belongs to {program}, where BAXY does not act";
         if (!TakesAWindow(operation))
@@ -348,10 +351,11 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 + "(window_focus) and then do this step again there";
         string step = operation.Replace('.', '_');
         return refused + (named ? "" : $"; {step} with no window named acts on the window in front")
-            + (first is { } top
+            + (listed
                 ? $"; the windows open that BAXY may act in are in windows (top first), each with its number: to do this "
                     + $"step in one of them, call {step} again with {CallArguments(arguments)} and window set to the number "
-                    + $"of the one meant (window {top.Number} for «{top.Title}»); the numbers are in windows: the person is "
+                    + $"of the one meant{(only is { } number ? $" (window {number}, the only one listed)" : "")}; the numbers "
+                    + "are in windows: the person is "
                     + "not asked for one; a window not listed"
                 : "; the window of another application that is open")
             + " is reached by looking at it by its name "
@@ -547,7 +551,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                         }
 
                         writer.WriteString("next", ProtectedNext(
-                            operation, program, MissionWindow(arguments) != 0, open.Count > 0 ? open[0] : null, arguments));
+                            operation, program, MissionWindow(arguments) != 0, open.Count > 0,
+                            open.Count == 1 ? open[0].Number : null, arguments));
                     }
 
                     writer.WriteEndObject();
