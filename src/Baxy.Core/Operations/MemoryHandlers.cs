@@ -693,8 +693,7 @@ internal sealed class MemoryOperationHandler : IOperationHandler
         int offset = RequiredInt32(payload, "offset");
         if (limit is < 1 or > MaximumListPageSize
             || offset < 0
-            || offset > LocalMemoryStore.MaximumListResults
-            || (long)offset + limit > LocalMemoryStore.MaximumListResults)
+            || offset > LocalMemoryStore.MaximumListResults)
         {
             throw new JsonException("The memory list page is out of range.");
         }

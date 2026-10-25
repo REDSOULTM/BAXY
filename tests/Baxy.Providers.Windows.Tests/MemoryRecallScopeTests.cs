@@ -69,6 +69,27 @@ public sealed class MemoryRecallScopeTests
         Assert.That(recalled["records"]!.AsArray(), Has.Count.EqualTo(1));
     }
 
+    // Revisión del núcleo (q-core): a page the catalog takes (offset up to 512, limit up to 100) near the end of the store
+    // is that page, short or empty; offset + limit over 512 was refused, so the memory panel (pages of 100) failed at
+    // offset 500 with more than 500 records, and the last records could not be reached by pages of 20.
+    [TestCase(500, 20)]
+    [TestCase(500, 100)]
+    [TestCase(450, 100)]
+    public async Task APageNearTheEndOfTheStoreIsListed(int offset, int limit)
+    {
+        using var temporary = new Temporary();
+        temporary.Remember("comida favorita", "pizza");
+        JsonObject listed = await temporary.RunOpenedAsync("memory.list", new JsonObject
+        {
+            ["version"] = 1, ["limit"] = limit, ["offset"] = offset,
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(listed["records"]!.AsArray(), Is.Empty);
+            Assert.That((int?)listed["totalCount"], Is.EqualTo(1));
+        });
+    }
+
     // Al máximo 11.2: an exact recall that matched nothing showed what is remembered as if it were the match (the model
     // told the favorite food as the name asked for). The list comes back said as not the exact match.
     [Test]
