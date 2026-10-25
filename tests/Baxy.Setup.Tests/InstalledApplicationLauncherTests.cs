@@ -100,6 +100,33 @@ public sealed class InstalledApplicationLauncherTests
         Assert.That(block, Is.EqualTo(new[] { '\0', '\0' }));
     }
 
+    [Test]
+    public void EnvironmentLargerThanOneVariableLimitIsStillInherited()
+    {
+        // Windows bounds each variable to 32,767 characters, not the whole block.
+        KeyValuePair<string, string>[] inherited =
+        [
+            KeyValuePair.Create("FIRST", new string('a', 20_000)),
+            KeyValuePair.Create("SECOND", new string('b', 20_000)),
+        ];
+
+        char[] block = InstalledApplicationLauncher.BuildEnvironmentBlock(inherited);
+
+        Assert.That(
+            ParseEnvironmentBlock(block),
+            Is.EqualTo(new[] { "FIRST=" + new string('a', 20_000), "SECOND=" + new string('b', 20_000) }));
+    }
+
+    [Test]
+    public void OneVariableBeyondTheWindowsLimitIsRejected()
+    {
+        KeyValuePair<string, string>[] inherited = [KeyValuePair.Create("HUGE", new string('a', 32_767))];
+
+        Assert.That(
+            () => InstalledApplicationLauncher.BuildEnvironmentBlock(inherited),
+            Throws.TypeOf<InstalledApplicationLaunchException>());
+    }
+
     [TestCase("BAD=NAME", "value")]
     [TestCase("BAD\0NAME", "value")]
     [TestCase("GOOD", "bad\0value")]

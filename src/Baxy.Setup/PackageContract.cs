@@ -32,23 +32,30 @@ internal static class PackageContract
     internal const int MaximumWindowsIntegrationBytes = 16 * 1024;
     internal const int MaximumWindowsIntegrationTransactionBytes = 48 * 1024;
 
-    internal static readonly string[] DirectoryPaths =
-    [
-        "FieldUi",
-        "FieldUi/assets",
-        "FieldUiHost",
-        "core",
-        "runtimes",
-        "runtimes/win-x64",
-        "runtimes/win-x64/native",
-        "tools",
-        "tools/mpv",
-        "tools/yt-dlp",
-    ];
+    // Every file Baxy.App publishes from src/Baxy.FieldUi/dist but the reviewed index.html: the built assets, whose
+    // names carry the build's content hashes, and the interface's images and clips. They come from the dist when this
+    // project is built (Baxy.Setup.csproj, FieldUiAssets), so the contract names the files of the build it ships and
+    // never a stale list.
+    private static readonly string[] FieldUiDistPaths =
+        [.. FieldUiAssets.Paths.Select(static path => path.Replace('\\', '/'))];
 
-    // The reviewed payload but the Field UI's built assets, whose names carry the build's content hashes: those come
-    // from src/Baxy.FieldUi/dist/assets when this project is built (Baxy.Setup.csproj, FieldUiAssets), so the contract
-    // names the assets of the build it ships and never a stale one.
+    internal static readonly string[] DirectoryPaths = Ordinal(
+    [
+        .. new[]
+        {
+            "FieldUi",
+            "FieldUiHost",
+            "core",
+            "runtimes",
+            "runtimes/win-x64",
+            "runtimes/win-x64/native",
+            "tools",
+            "tools/mpv",
+            "tools/yt-dlp",
+        }.Union(FieldUiDistPaths.SelectMany(AncestorDirectories), StringComparer.Ordinal),
+    ]);
+
+    // The reviewed payload but the Field UI's dist files (FieldUiDistPaths).
     private static readonly string[] ReviewedPayloadPaths =
     [
         "Baxy.exe",
@@ -83,11 +90,28 @@ internal static class PackageContract
     ];
 
     // Each list in ordinal order, the order the build writes the manifest, the checksums and the ZIP in.
-    internal static readonly string[] PayloadPaths = Ordinal([.. ReviewedPayloadPaths, .. FieldUiAssets.Paths]);
+    internal static readonly string[] PayloadPaths = Ordinal([.. ReviewedPayloadPaths, .. FieldUiDistPaths]);
 
     internal static readonly string[] ChecksumPaths = Ordinal([.. PayloadPaths, "build-manifest.json"]);
 
     internal static readonly string[] ZipPaths = Ordinal([.. ChecksumPaths, "SHA256SUMS"]);
+
+    // The trees Setup walks follow this contract, whose Field UI assets grow with the build: an installed version is
+    // its directories, its ZIP files and .baxy-version.json; a staging transaction adds package.zip and the version
+    // directory. The margin only bounds the walk; the exact file and directory sets are checked after it.
+    private const int TreeEntryMargin = 16;
+
+    internal static int MaximumVersionTreeEntries => DirectoryPaths.Length + ZipPaths.Length + 1 + TreeEntryMargin;
+
+    internal static int MaximumStagingTreeEntries => MaximumVersionTreeEntries + 2;
+
+    private static IEnumerable<string> AncestorDirectories(string path)
+    {
+        for (int separator = path.LastIndexOf('/'); separator > 0; separator = path.LastIndexOf('/', separator - 1))
+        {
+            yield return path[..separator];
+        }
+    }
 
     private static string[] Ordinal(string[] paths)
     {

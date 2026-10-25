@@ -120,6 +120,153 @@ public sealed class SetupUninstallExecutorTests
     }
 
     [Test]
+    public void PurgeDeletesReadOnlyDataFilesAndDirectories()
+    {
+        using TemporaryTree tree = new();
+        string dataRoot = Path.Combine(tree.Root, "data");
+        string nestedData = Path.Combine(dataRoot, "nested");
+        string readOnlyFile = Path.Combine(nestedData, "read-only.txt");
+        Directory.CreateDirectory(nestedData);
+        File.WriteAllText(readOnlyFile, "data");
+        File.SetAttributes(readOnlyFile, FileAttributes.ReadOnly);
+        File.SetAttributes(nestedData, FileAttributes.Directory | FileAttributes.ReadOnly);
+        try
+        {
+            PathSafety.DeleteTreeFailClosed(tree.Root, dataRoot);
+
+            Assert.That(Directory.Exists(dataRoot), Is.False);
+        }
+        finally
+        {
+            if (File.Exists(readOnlyFile))
+            {
+                File.SetAttributes(readOnlyFile, FileAttributes.Normal);
+            }
+
+            if (Directory.Exists(nestedData))
+            {
+                File.SetAttributes(nestedData, FileAttributes.Directory);
+            }
+        }
+    }
+
+    [Test]
+    public void PurgeDeletesDataFilesWithStreamsOrHardLinksAndOnlyTheirDataNames()
+    {
+        using TemporaryTree tree = new();
+        string dataRoot = Path.Combine(tree.Root, "data");
+        string downloaded = Path.Combine(dataRoot, "a-downloaded.bin");
+        string linked = Path.Combine(dataRoot, "b-linked.bin");
+        string outside = Path.Combine(tree.Root, "outside.bin");
+        Directory.CreateDirectory(dataRoot);
+        File.WriteAllText(downloaded, "downloaded");
+        File.WriteAllText(downloaded + ":Zone.Identifier", "[ZoneTransfer]\r\nZoneId=3\r\n");
+        File.WriteAllText(outside, "outside");
+        if (!CreateHardLink(linked, outside, 0))
+        {
+            Assert.Ignore("This volume cannot create the hard link the purge test needs.");
+        }
+
+        PathSafety.DeleteUserDataTreeFailClosed(tree.Root, dataRoot);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Directory.Exists(dataRoot), Is.False);
+            Assert.That(File.ReadAllText(outside), Is.EqualTo("outside"));
+        });
+    }
+
+    [Test]
+    public void PurgeNeverFollowsAReparsePointOutOfTheDataRoot()
+    {
+        using TemporaryTree tree = new();
+        string dataRoot = Path.Combine(tree.Root, "data");
+        string outside = Path.Combine(tree.Root, "outside");
+        string sentinel = Path.Combine(outside, "sentinel.txt");
+        Directory.CreateDirectory(dataRoot);
+        Directory.CreateDirectory(outside);
+        File.WriteAllText(sentinel, "outside");
+        string junction = Path.Combine(dataRoot, "junction");
+        _ = Baxy.Tests.NtfsTestJunction.Create(junction, outside);
+        try
+        {
+            Assert.That(
+                () => PathSafety.DeleteUserDataTreeFailClosed(tree.Root, dataRoot),
+                Throws.TypeOf<InstallationSafetyException>());
+            Assert.That(File.ReadAllText(sentinel), Is.EqualTo("outside"));
+        }
+        finally
+        {
+            if (Directory.Exists(junction))
+            {
+                Directory.Delete(junction);
+            }
+        }
+    }
+
+    [System.Runtime.InteropServices.DllImport(
+        "kernel32.dll",
+        EntryPoint = "CreateHardLinkW",
+        CharSet = System.Runtime.InteropServices.CharSet.Unicode,
+        SetLastError = true)]
+    [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static extern bool CreateHardLink(string fileName, string existingFileName, nint securityAttributes);
+
+    [Test]
+    public void FailedIntegrationRemovalReturnsTheInstallationToItsPath()
+    {
+        using TemporaryTree tree = new();
+        Directory.CreateDirectory(tree.InstallationRoot);
+        File.WriteAllText(Path.Combine(tree.InstallationRoot, "installed.txt"), "installed");
+        string tombstone = SetupUninstallExecutor.BuildTombstonePath(tree.InstallationRoot, Guid.NewGuid());
+        SetupUninstallExecutor.MoveInstallationRoot(tree.InstallationRoot, tombstone);
+        int cleanups = 0;
+        bool purged = false;
+
+        Assert.That(
+            () => SetupUninstallExecutor.FinishMovedUninstall(
+                tree.InstallationRoot,
+                tombstone,
+                removeIntegration: static () => throw new InstallationSafetyException("registry"),
+                purgeData: () => purged = true,
+                launchCleanup: (_, _) => ++cleanups > 0 ? 1u : 0u),
+            Throws.TypeOf<InstallationSafetyException>().With.Message.EqualTo("registry"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                File.ReadAllText(Path.Combine(tree.InstallationRoot, "installed.txt")),
+                Is.EqualTo("installed"));
+            Assert.That(Directory.Exists(tombstone), Is.False);
+            Assert.That(cleanups, Is.Zero);
+            Assert.That(purged, Is.False);
+        });
+    }
+
+    [Test]
+    public void FailedPurgeStillCleansTheMovedInstallation()
+    {
+        using TemporaryTree tree = new();
+        Directory.CreateDirectory(tree.InstallationRoot);
+        File.WriteAllText(Path.Combine(tree.InstallationRoot, "installed.txt"), "installed");
+        string tombstone = SetupUninstallExecutor.BuildTombstonePath(tree.InstallationRoot, Guid.NewGuid());
+        SetupUninstallExecutor.MoveInstallationRoot(tree.InstallationRoot, tombstone);
+
+        Assert.That(
+            () => SetupUninstallExecutor.FinishMovedUninstall(
+                tree.InstallationRoot,
+                tombstone,
+                removeIntegration: static () => { },
+                purgeData: static () => throw new IOException("locked data"),
+                launchCleanup: SetupUninstallExecutor.LaunchTombstoneCleanup),
+            Throws.TypeOf<IOException>());
+        Assert.Multiple(() =>
+        {
+            Assert.That(WaitUntil(() => !Directory.Exists(tombstone), TimeSpan.FromSeconds(8)), Is.True);
+            Assert.That(Directory.Exists(tree.InstallationRoot), Is.False);
+        });
+    }
+
+    [Test]
     public void ForeignTombstoneIsRejectedBeforeMovingAnything()
     {
         using TemporaryTree tree = new();

@@ -794,7 +794,7 @@ public sealed class InstallationEngine
                 throw new InstallationSafetyException("The staging root contains a transaction not attested by the journal.");
             }
 
-            _ = PathSafety.InspectTree(entry);
+            _ = PathSafety.InspectTree(entry, PackageContract.MaximumStagingTreeEntries);
         }
     }
 

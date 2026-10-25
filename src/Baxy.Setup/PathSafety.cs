@@ -151,7 +151,7 @@ internal static partial class PathSafety
         AssertNoAlternateDataStreams(directoryFull, isDirectory: true);
     }
 
-    internal static SafeFileTree InspectTree(string root, int maximumEntries = 64)
+    internal static SafeFileTree InspectTree(string root, int maximumEntries)
     {
         string rootFull = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         AssertExistingChainHasNoReparsePoint(rootFull);
@@ -169,7 +169,15 @@ internal static partial class PathSafety
         return new SafeFileTree(files, directories);
     }
 
-    internal static void DeleteTreeFailClosed(string installationRoot, string target)
+    internal static void DeleteTreeFailClosed(string installationRoot, string target) =>
+        DeleteTreeFailClosed(installationRoot, target, attestOwnedEntries: true);
+
+    // The user's data is not an attested installation tree: a downloaded file's Zone.Identifier stream or a hard
+    // link is deleted with its name instead of stopping the purge halfway. A reparse point is still never followed.
+    internal static void DeleteUserDataTreeFailClosed(string parent, string target) =>
+        DeleteTreeFailClosed(parent, target, attestOwnedEntries: false);
+
+    private static void DeleteTreeFailClosed(string installationRoot, string target, bool attestOwnedEntries)
     {
         string rootFull = Path.GetFullPath(installationRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         string targetFull = Path.GetFullPath(target).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
@@ -185,7 +193,7 @@ internal static partial class PathSafety
         }
 
         AssertExistingChainHasNoReparsePoint(targetFull);
-        DeleteEntryFailClosed(targetFull);
+        DeleteEntryFailClosed(targetFull, attestOwnedEntries);
     }
 
     internal static void AssertRegularFile(string path)
@@ -279,7 +287,7 @@ internal static partial class PathSafety
         }
     }
 
-    private static void DeleteEntryFailClosed(string path)
+    private static void DeleteEntryFailClosed(string path, bool attestOwnedEntries)
     {
         FileAttributes attributes = File.GetAttributes(path);
         if ((attributes & FileAttributes.ReparsePoint) != 0)
@@ -288,20 +296,39 @@ internal static partial class PathSafety
         }
 
         bool isDirectory = (attributes & FileAttributes.Directory) != 0;
-        AssertNoAlternateDataStreams(path, isDirectory);
+        if (attestOwnedEntries)
+        {
+            AssertNoAlternateDataStreams(path, isDirectory);
+        }
+
         if (!isDirectory)
         {
-            AssertSingleLink(path);
+            if (attestOwnedEntries)
+            {
+                AssertSingleLink(path);
+            }
+
+            ClearReadOnly(path, attributes);
             File.Delete(path);
             return;
         }
 
         foreach (string child in Directory.EnumerateFileSystemEntries(path))
         {
-            DeleteEntryFailClosed(child);
+            DeleteEntryFailClosed(child, attestOwnedEntries);
         }
 
+        ClearReadOnly(path, attributes);
         Directory.Delete(path, recursive: false);
+    }
+
+    // Windows refuses to delete a read-only entry: a purge of the user's data would stop halfway on the first one.
+    private static void ClearReadOnly(string path, FileAttributes attributes)
+    {
+        if ((attributes & FileAttributes.ReadOnly) != 0)
+        {
+            File.SetAttributes(path, attributes & ~FileAttributes.ReadOnly);
+        }
     }
 
     private static void AssertNoAlternateDataStreams(string path, bool isDirectory)
