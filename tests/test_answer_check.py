@@ -485,6 +485,12 @@ SEARCH_STOPPED = {"status": "failed", "error": "known_file_search_incomplete",
     ("No encontré notas.txt.", False),  # another file
     ("No encontré otro ideas.txt aparte del de BAXY-bench.", False),  # another one of that name
     ("No encontré ideas.txt en Descargas.", False),  # a place that does not hold the one found
+    # Revisión de nb-w11-mente: the file is where something else was not found, not what was not found.
+    ("Lo revisé y no encontré errores en ideas.txt.", False),
+    ("No encontré la palabra cactus en BAXY-bench\\ideas.txt.", False),
+    ("No encontré nada raro dentro de ideas.txt.", False),
+    ("No encontré el archivo ideas.txt.", True),
+    ("No encontré ningún archivo llamado «ideas.txt».", True),
     ("¿No encontré ideas.txt?", False),
 ])
 def test_a_file_said_not_found_that_a_result_of_the_turn_found(answer: str, flagged: bool) -> None:
