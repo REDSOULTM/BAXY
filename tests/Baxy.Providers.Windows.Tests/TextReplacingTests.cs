@@ -108,6 +108,25 @@ public sealed class TextReplacingTests
         });
     }
 
+    // Revisión w11-rev4: the person writes in the field between the read and the selection; the range selected no
+    // longer holds the old text, so nothing is typed over it.
+    [Test]
+    public async Task ATextChangedBeforeTheSelectionIsNotTypedOver()
+    {
+        FakeFieldMessages messages = Notepad("reunión con Pedro el martes");
+        messages.OnSelect = field => messages.Content[field] = "Hoy " + messages.Content[field];
+
+        ExternalCapabilityReceipt receipt = await Replace(new FakeDesktopKeyboard(), messages,
+            """{"text":"miércoles","replacing":"martes","window":4660}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_effect_not_verified"));
+            Assert.That(messages.Content[Edit], Is.EqualTo("Hoy reunión con Pedro el martes"), "nothing was typed over");
+        });
+    }
+
     [Test]
     public async Task AnOldTextThatIsNotThereChangesNothing()
     {

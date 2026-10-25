@@ -322,6 +322,11 @@ internal sealed class WindowsTextDelivery
         if (!_messages.Select(field, start, start + replacing.Length)
             || _messages.Selection(field) != (start, start + replacing.Length))
             return new FieldDelivery("em_replacesel", false, true, "input_effect_not_verified", fieldClass);
+        // Revisión w11-rev4: the range selected holds the old text only while the text is the one read; a person who
+        // wrote in the field meanwhile moved it, and nothing is typed over another part of their text.
+        int still = _messages.TextLength(field);
+        if (still != length || _messages.Text(field, still) != was)
+            return new FieldDelivery("em_replacesel", false, true, "input_effect_not_verified", fieldClass);
         if (!Same(identity))
             return new FieldDelivery("em_replacesel", false, true, "input_window_changed", fieldClass);
         _ = _messages.ReplaceSelection(field, text);

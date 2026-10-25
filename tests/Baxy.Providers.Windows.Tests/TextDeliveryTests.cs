@@ -1357,8 +1357,12 @@ internal sealed class FakeFieldMessages : IFieldMessages
     // A rich edit's positions count a line break («\r\n» in its WM_GETTEXT) as one character.
     internal bool BreaksCountOne { get; init; }
 
+    // Called as EM_SETSEL is answered (the person types in the field meanwhile).
+    internal Action<nint>? OnSelect { get; set; }
+
     public bool Select(nint hwnd, int start, int end)
     {
+        OnSelect?.Invoke(hwnd);
         Selects.Add((hwnd, start, end));
         _allSelected.Remove(hwnd);
         if (Content.ContainsKey(hwnd))
