@@ -25,7 +25,7 @@ Lo que la fase 3 añadió, sin reentrenar:
 2. **Confirmaciones**: el «sí» del núcleo llega en vez de una pregunta por texto (la duda ya no cuenta como rival un «=»
    que es la misma palabra cortada de otra forma: +3,7 en decisión de práctica); las rutas con espacios que nombras
    («Documentos\Turnos Farmacia») ya no se parten; un nombre dictado sin guion («factura marzo») encuentra
-   «factura-marzo.pdf» y te dice cuál es antes de tocar nada.
+   «factura-marzo.pdf» y te lo nombra y espera a que lo pidas con su nombre exacto.
 3. **Más rápido**: el aviso de «estoy en ello» es de una a tres palabras (antes «Estoy procesando tu solicitud.», que
    retrasaba la respuesta): −0,5 s hasta la primera palabra tras una herramienta.
 4. **Sin bucles ni silencios**: 13 lecturas iguales de una ventana ya no pasan (cada lectura traía un identificador
