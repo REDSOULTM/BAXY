@@ -28,6 +28,11 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   (input_visible_controls) shows X in its controls or its text, which it says is pressed by its text (F019).
 - ``already``: «ya estaba» after a call that changed something, with nothing in the turn saying it was already so
   (verification unchanged, alreadyRunning, after.same).
+- ``saved_name``: «guardé lista.txt», «lo guardé como notas.docx» while no result of the turn shows that name and what
+  was read from the last act that could save on shows another: a window's title («lista pilas, cables.txt: Bloc de
+  notas», «x.png - Paint», not a title it left) or the name of a file result (E017: «Guardar como» pressed with no name
+  typed). Only a name of the same extension or the same stem counts as the saved file's (a page «Amazon.com: …» is
+  not); another extension is another file (lista.md is not lista.txt). Nothing shown, nothing said.
 
 What never counts as a claim: a sentence or the part of one that is a question, a clause with «no / nunca / sin /
 tampoco» before the verb («no pude abrirlo», «no lo cerré»), a conditional «si…», quoted text, or a promise («voy a
@@ -240,6 +245,22 @@ _ALREADY = re.compile(r"\bya (?:(?:lo|la|los|las|se) )?(?:estaba|estaban|tenia|t
 _ALREADY_SEEN = re.compile(r"unchanged|already|\"same\":true|\"changed\":false|nochange|no_change|wasAlready|"
                            r"ya estaba", re.IGNORECASE)
 
+# ---- saved names ------------------------------------------------------------------------------------------------------
+# A file said saved, created or written with its name (folded), and the name in its clause: a bare name or a path's last
+# part, with an extension that has a letter (not «2.5»).
+_SAVED = re.compile(r"\b(?:guarde|he guardado|cree|he creado|escribi|he escrito|se guardo|se creo|quedo guardad[oa]|"
+                    r"quedo cread[oa]|esta guardad[oa])\b")
+_FILE_NAME = re.compile(r"(?<![\w.-])(?:[^\s«»\"'“”,;()<>*?|]*[\\/])?"
+                        r"(?P<name>[^\s«»\"'“”,;:()<>*?|\\/]+\.(?=[a-z0-9]*[a-z])[a-z0-9]{1,5})(?![\w-])")
+# Where the clause of a claim ends: a «:» of a path («C:\…») does not end it.
+_CLAUSE_END = re.compile(r"[,;]|:(?![\\/])|\b(?:pero|aunque|y|o|porque|asi que|mientras|luego|despues|entonces)\b")
+# A window's title in a result: «Ventana «…»» and «TitleBar «…»» of a view, or a field named title; the file it names
+# is its first part («*lista.txt: Bloc de notas», «x.png - Paint»), never an address («…@gmail.com - Gmail»).
+_TITLED = re.compile(r"\b(?:Ventana|TitleBar|Window) «([^»\n]+)»")
+_TITLE_NAME = re.compile(r"^[\s*●•]*(?P<name>[^\\/:*?\"<>|@\n]+?\.(?=[A-Za-z0-9]*[A-Za-z])[A-Za-z0-9]{1,5})"
+                         r"(?: - | — | – |: )\S")
+_NAME_FIELDS = ("name", "fileName", "fullPath", "destinationFullPath", "path")
+
 
 def _fold(text: str) -> str:
     """Lower case without accents, one character for each: positions in it are positions in ``text``."""
@@ -427,6 +448,9 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
 
     # Folders and paths.
     findings.extend(f for f in _folders(answer, folded, raw_folded, statements, receipts, request) if f not in findings)
+
+    # A file's name said saved that the turn shows otherwise (E017).
+    findings.extend(f for f in _saved_names(answer, text, folded, statements, receipts) if f not in findings)
 
     # «Ya estaba».
     changed = [r for r in receipts if r.get("completed") and _parsed(r).get("verification") == "readback"]
@@ -780,3 +804,64 @@ def _original_path(receipt: Receipt, folded_path: str) -> str:
         if isinstance(value, str) and value.replace("/", "\\").lower() == folded_path:
             return value
     return folded_path
+
+
+def _saved_names(answer: str, text: str, folded: str, statements: list[tuple[int, int]],
+                 receipts: list[Receipt]) -> list[dict]:
+    """«Guardé lista.txt» while no result of the turn shows lista.txt and what was read from the last act that could
+    save on names the file otherwise (E017)."""
+    acts = [i for i, r in enumerate(receipts) if _does("guardar", str(r.get("op")), bool(r.get("read")))]
+    shown = _names_shown(receipts[acts[-1]:]) if acts else []
+    if not shown:
+        return []
+    seen = _fold("\n".join(_texts(r) for r in receipts))
+    for start, end in statements:
+        for hit in _SAVED.finditer(folded, start, end):
+            if not _preterite(text, hit) or _negated(folded, start, hit.start(), text):
+                continue
+            stop = next((m.start() for m in _CLAUSE_END.finditer(folded, hit.end(), end)), end)
+            for m in _FILE_NAME.finditer(folded, _clause_start(folded, start, hit.start()), stop):
+                said = m.group("name")
+                if re.search(rf"(?<![\w.-]){re.escape(said)}(?![\w-]|\.[a-z0-9])", seen):
+                    continue
+                stem, ext = said.rsplit(".", 1)
+                other = [(name, where) for name, where in shown if _fold(name) != said
+                         and (_fold(name).rsplit(".", 1)[0] == stem or _fold(name).rsplit(".", 1)[1] == ext)]
+                if other:
+                    name, where = other[-1]
+                    return [{"rule": "saved_name", "said": _quote(answer, start, end),
+                             "fact": f"ningún resultado muestra {answer[m.start('name'):m.end('name')]}; {where} dice "
+                                     f"que el archivo es {name}"}]
+    return []
+
+
+def _texts(receipt: Receipt) -> str:
+    """Every text of a result and of its arguments, unescaped (a name in a path or a view is found as it is)."""
+    facts = _parsed(receipt)
+    values = [v for _, v in _walk(facts)] if facts else [receipt.get("observation") or ""]
+    values += [v for _, v in _walk(receipt.get("arguments") or {})]
+    return "\n".join(str(v) for v in values if isinstance(v, str))
+
+
+def _names_shown(receipts: list[Receipt]) -> list[tuple[str, str]]:
+    """The file names these results show, in order, with who shows them: the first part of a window's title (not one
+    it left, «gone», or had «before»), and the name of what a file result wrote."""
+    shown: list[tuple[str, str]] = []
+    for r in receipts:
+        facts = _parsed(r)
+        for key, value in _walk(facts):
+            if not isinstance(value, str) or key == "gone" or re.search(r"before|was", key, re.IGNORECASE):
+                continue
+            titles = [value] if re.search(r"title", key, re.IGNORECASE) else []
+            titles += [m.group(1) for m in _TITLED.finditer(value)]
+            shown += [(hit.group("name").strip(), "la ventana") for t in titles
+                      for hit in [_TITLE_NAME.match(t.strip())] if hit]
+        observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
+        if not r.get("read") and _matches(str(r.get("op")).replace("_", "."), _PLACE_OPS):
+            for key in _NAME_FIELDS:
+                value = observed.get(key)
+                base = value.replace("/", "\\").rsplit("\\", 1)[-1] if isinstance(value, str) else ""
+                if re.search(r"\.(?=[A-Za-z0-9]*[A-Za-z])[A-Za-z0-9]{1,5}$", base):
+                    shown.append((base, str(r.get("tool") or r.get("op"))))
+                    break
+    return shown

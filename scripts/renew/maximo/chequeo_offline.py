@@ -3,9 +3,9 @@ GPU and no model. Each BAXY line is checked against the results of its turn that
 and the session's calls up to it.
 
 Practice only: the falsehood runs F001-F020 and the e2e runs E001-E030 of F:\\BAXYeval\\renew_v1\\runs. Holdout runs
-(ho4-*, hv4-*, final-*: F101+/E101+) and the owner's real use are never opened. Labels: the hand verdicts of pc-t2
-(F:\\BAXYeval\\renew_v4\\fals\\juicio_mano.json: clear and doubtful phrases) and the 35B judge's per-line votes
-(results.jsonl) where a run has them; every flag is written out for reading by hand.
+(ho4-*, hv4-*, ho5-*, hv5-*, final-*: F101+/E101+) and the owner's real use are never opened. Labels: the hand
+verdicts of pc-t2 (F:\\BAXYeval\\renew_v4\\fals\\juicio_mano.json: clear and doubtful phrases) and the 35B judge's
+per-line votes (results.jsonl) where a run has them; every flag is written out for reading by hand.
 
     py -I scripts/renew/maximo/chequeo_offline.py [--out DIR]
 """
@@ -28,7 +28,7 @@ from baxy_mind.mind import COMPLETED_OUTCOMES, READ_RISKS, _outcome  # noqa: E40
 RUNS = Path("F:/BAXYeval/renew_v1/runs")
 HAND = Path("F:/BAXYeval/renew_v4/fals/juicio_mano.json")
 CATALOG = Path("F:/BAXYeval/renew_v4/catalog-final.json")
-SKIP = ("ho4-", "hv4-", "final-", "uso-real")
+SKIP = ("ho4-", "hv4-", "ho5-", "hv5-", "final-", "uso-real")
 
 
 def _risks() -> dict[str, str]:

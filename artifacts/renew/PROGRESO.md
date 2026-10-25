@@ -3378,3 +3378,21 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   responden). Pendiente su medida en falsedades (F002, F015) y e2e.
 - **int11c = aec328933** = int11b b47ab9c9b − w10-desc + nb-w10-dictado + w10-lectura. Suites, catálogo y decision3 x3 en
   el PC; e2e x3 y falsedades x3 en el NB, pareadas con int11.
+- 22:26 **int11c en decisión, 5 semillas** (catálogo int11c): 241/239/240/242/242 = 240,8 frente a la base 239,4
+  (240/242 en s3/s4): Δ +1,4 (IC95 [−2,6; +5,6]), pass^5 232 → 236, acciones equivocadas 12,4 → 10,4. Sin pérdida.
+- 22:24 **H9 con causa** (NB, primera repro con nb-core-motivo): con Steam en frío la captura de la ventana antes del lugar
+  sale negra, el proveedor lanza IOException, nadie la ataja y el core se para (exit 70) → `engine_no_answer`. Arreglos:
+  nb-w10-negra 4bc235b34 (el dibujo ilegible es «sin dibujo leído») y w10-motor (el core contesta esa petición como
+  fallo con efecto incierto y sigue), en curso. Van a int11d.
+- 23:17 **int11c en el banco de decisión v5** (720, ya práctica; referencia ho5-final s0-2, mismo código base, catálogo y
+  juez): 631/629/622 = 627,33 frente a 624,0 (Δ +3,33, IC95 [−3,67; +10,67]; gemelos [−4,0; +10,67]); acciones
+  equivocadas 66,33 → 63,33; pass^3 602 → 609. Por familia: comun 109,7 → 111,3 (H8 recupera algo), multiturno 62,3 →
+  64,7, ya_hecho 15,0 → 16,7 (H3: lejos del +8), larga_cola 70,3 → 69,7. Sin pérdida en ningún banco de decisión.
+- 22:49 **int11d e852c2db3** (int11c + nb-w10-negra + w10-motor, H9): suites PC Kernel 747, Contracts 74, Setup 477, App
+  208, Providers 3119, pytest 654 (+vad con py3.10); catálogo idéntico al de int11c. Candidato a HEAD final.
+- 22:33 **e2e de int11 frente a la base int10f** (NB, 3 semillas intercaladas, GPU caliente igual en los dos): H2 (los 20 de
+  v5) 1,0 → 7,0, Δ +6,0 (IC95 [+2,33; +10,0], McNemar p 0,016), suben V5E016, 032, 034, 045, 047, 060, 062 y no baja
+  ninguno, pass^3 0 → 4; práctica (30) 29,0 → 28,0 (Δ −1,0, IC95 [−2,67; +0,67]): baja sólo E012 (el recibo con ctrl_a,
+  arreglado en int11b) y E015 en s2 (H9, arreglado en int11d); primera respuesta p50 4 400 → 4 035 ms (−365 ms, el aviso
+  corto). Falsedades de práctica base/int11 ×3 corridas (120 conversaciones); la lectura a ciegas se hace una vez con
+  int11c.
