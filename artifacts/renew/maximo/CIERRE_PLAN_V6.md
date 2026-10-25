@@ -27,6 +27,9 @@ producto envía. Laya `layam-long-s1-Q8_0.gguf` y umbrales 0,4 / 0,6 / corrige e
 | Falsedades (36) | PC s0, NB s1 | 2 | falsedades claras a mano y a ciegas (`CRITERIO_FALSEDADES.md`) | dudosas |
 
 - Intercalado por semilla y máquina: `inicio`, `final_v5`, `cien`.
+- Si al abrir el PC tiene ventanas del dueño (el banco da VOID antes de actuar, como el 2026-10-24 20:07 con un Bloc de
+  notas sin guardar y Spotify), no se cierran: e2e y falsedades corren las dos semillas en el NB (s0 y s1, en ese orden y
+  con el mismo intercalado) y el PC sólo hace decisión. La latencia se compara entonces sólo dentro del NB.
 - Arnés común: `scripts/renew` del HEAD final copiado a los worktrees de `inicio` y `final_v5` (decisión con `--src`).
   Antes de la primera corrida, `holdout_tools\validate.py` con ese juez: PROBLEMAS 0.
 - Una corrida con `errors > 0` o `system_one.unanswered > 2` se repite entera. E2E/falsedades: S1 explícito y comprobado
