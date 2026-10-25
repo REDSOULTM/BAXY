@@ -1864,7 +1864,7 @@ internal class CdpBrowserSession : IDisposable
         int maximumCharacters,
         string snapshot)
     {
-        using JsonDocument document = JsonDocument.Parse(snapshot);
+        using JsonDocument document = JsonDocument.Parse(WithoutLoneSurrogates(snapshot));
         JsonElement root = document.RootElement;
         string? url = root.TryGetProperty("url", out JsonElement urlElement)
             && urlElement.ValueKind == JsonValueKind.String ? urlElement.GetString() : null;
@@ -1888,6 +1888,18 @@ internal class CdpBrowserSession : IDisposable
         }
         return new(true, targetId, observed.AbsoluteUri, title, text, truncated, string.Empty);
     }
+
+    // A lone surrogate in the page (its own text, or the slice at maximumCharacters cutting an emoji in two): V8's
+    // JSON.stringify writes it as a \udXXX escape, which System.Text.Json refuses to read as a string (an
+    // ArgumentException that escaped the adapter, and the page read failed as the provider's). Each one is read as
+    // U+FFFD, as a browser shows it; a whole pair, and an escaped backslash before «u», are left as they are.
+    private static readonly Regex JsonBackslashOrSurrogateEscape = new(
+        @"\\\\|\\u[dD][89abAB][0-9a-fA-F]{2}\\u[dD][c-fC-F][0-9a-fA-F]{2}|\\u[dD][89a-fA-F][0-9a-fA-F]{2}",
+        RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    internal static string WithoutLoneSurrogates(string json) =>
+        JsonBackslashOrSurrogateEscape.Replace(json, match => match.Length == 6 ? "\\ufffd" : match.Value);
 
     internal virtual async ValueTask<CdpBrowserTabsResult> ListTabsAsync(
         int limit,
