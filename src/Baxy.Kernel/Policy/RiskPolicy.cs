@@ -158,6 +158,10 @@ public static partial class RiskPolicy
         "ft", "format-list", "fl", "format-wide", "fw", "out-string", "convertto-json", "convertfrom-json",
         "convertto-csv", "convertfrom-csv", "resolve-path", "rvpa", "split-path", "join-path", "test-path",
         "write-output", "echo", "write", "hostname", "whoami", "systeminfo", "tasklist",
+        // Propuesta para el PC (prueba en vivo de la versión final, renew_v6: «revisa BAXY-bench\server-vivo.log y dime
+        // si hay errores en todo el archivo» asked the person before a findstr that only looks for a text): Windows'
+        // findstr reads files and prints the lines that match; none of its switches writes, deletes or sends.
+        "findstr",
     };
 
     /// <summary>

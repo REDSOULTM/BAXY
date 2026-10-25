@@ -209,6 +209,14 @@ public static class ModelAids
     /// </summary>
     public const string SaveDialogNext = "save_dialog_next";
 
+    /// <summary>
+    /// Prueba en vivo de la versión final (renew_v6, «abre la biblioteca de Steam»: Steam opened with no place, and six
+    /// looks at its store said only «Lugar a la vista: store» until the turn's calls ran out): a look that says which
+    /// place of an application is in sight says beside it that application's other places, which app.open opens directly
+    /// (ScreenViewProjection, from ApplicationPlaces).
+    /// </summary>
+    public const string SightPlaces = "sight_places";
+
     private static readonly AsyncLocal<string?> Setting = new();
 
     public static bool On(string aid)
