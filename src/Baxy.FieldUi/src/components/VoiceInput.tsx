@@ -14,9 +14,6 @@ const MIC: { id: MicMode; icon: IconName; label: string; sub: string }[] = [
   { id: 'ptt', icon: 'wave', label: 'Mantener para hablar', sub: 'O la barra espaciadora · en pruebas, próximamente disponible' },
 ];
 
-// the host refuses a longer request (MissionInput.MaximumCharacters, the WPF composer's MaxLength)
-const MAX_CHARS = 4096;
-
 interface Props {
   mic: MicMode;
   micAvailable: boolean;
@@ -88,7 +85,7 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
           <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M1.5 5 L4 2.5 L6.5 5"></path></svg>
         </button>
       </div>
-      <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={ph} spellCheck={false} autoFocus maxLength={MAX_CHARS}
+      <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={ph} spellCheck={false} autoFocus
         aria-label="Escribe a BAXY" data-ready={canSend ? 'true' : 'false'}
         onKeyDown={(e) => { if (e.key === 'Enter' && armed) { e.preventDefault(); e.stopPropagation(); void send(); } }} />
       <button className={'bx-send' + (armed ? '' : ' hide')} onClick={() => void send()} title="Enviar"><Icon name="send" size={14} /></button>

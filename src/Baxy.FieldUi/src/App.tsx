@@ -26,6 +26,7 @@ import type { BaxyState, GeneralSettings, Metrics, MicMode, ProposalSettings } f
    only read on dark), and so does any moment without a decoded frame. */
 const AVATAR = (() => { try { return new URLSearchParams(location.search).get('avatar') || localStorage.getItem('bx-avatar') || 'video'; } catch { return 'video'; } })();
 
+const MAX_REQUEST = 4096; /* MissionInput.MaximumCharacters */
 const NARROW = 1100; /* below this layout width the chat floats over the face */
 const RAIL = 192, CHATW = 330;
 
@@ -307,6 +308,12 @@ export default function App() {
 
   // ---- actions ----
   const submit = useCallback(async (text: string) => {
+    // the host refuses a longer request (MissionInput.MaximumCharacters, UTF-16 like a JS string's length): it is never
+    // cut to fit, which would send a request other than the one written; it is not sent, and the view says why
+    if (text.length > MAX_REQUEST) {
+      setNotice({ b: 'BAXY', t: 'el pedido es demasiado largo · máximo ' + MAX_REQUEST + ' caracteres, tiene ' + text.length });
+      return false;
+    }
     const r = await send('POST', '/turn', { text });
     if (r === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
     return r !== null;

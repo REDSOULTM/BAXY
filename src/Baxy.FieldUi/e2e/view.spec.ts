@@ -127,12 +127,14 @@ test('un pedido que el host tomó deja la caja vacía', async () => {
   await expect(box()).toHaveValue('');
 });
 
-test('la caja no admite más de lo que el host acepta (4096 caracteres)', async () => {
-  // MissionInput.MaximumCharacters: a longer request is refused as invalid_text
+test('un pedido de más de 4096 caracteres no se recorta ni se envía: se dice por qué y queda en la caja', async () => {
+  // MissionInput.MaximumCharacters (UTF-16): the host refuses a longer request as invalid_text
   h = await openView();
   await box().fill('a'.repeat(5000));
   await box().press('Enter');
-  await expect.poll(() => h.calls.filter((c) => c.path === '/turn').map((c) => (c.body as { text: string }).text.length)).toEqual([4096]);
+  await expect(h.page.locator('.bx-notice')).toContainText('4096');
+  expect(h.calls.filter((c) => c.path === '/turn')).toEqual([]);
+  await expect(box()).toHaveValue('a'.repeat(5000));
 });
 
 test('accesibilidad: la opción elegida de cada selector y lo que despliega cada botón se anuncian', async () => {
