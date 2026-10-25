@@ -49,11 +49,20 @@ $script:BaxyReviewedPayloadPaths = @(
     'vcruntime140_cor3.dll',
     'wpfgfx_cor3.dll'
 )
+# Calidad PC 2026-10-25: Baxy.App publishes every file of dist (Content Include="..\Baxy.FieldUi\dist\**\*"), and the
+# interface v5 put its icon, backgrounds and clips beside index.html and assets/: the build refused its own product
+# («must contain exactly 38 reviewed files»). The list takes all of dist, as the App does.
+$script:BaxyFieldUiDistRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../src/Baxy.FieldUi/dist'))
 $script:BaxyFieldUiAssetPaths = @(
-    Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot '../src/Baxy.FieldUi/dist/assets') -File |
+    Get-ChildItem -LiteralPath (Join-Path $script:BaxyFieldUiDistRoot 'assets') -File |
         ForEach-Object { 'FieldUi/assets/' + $_.Name }
 )
 if ($script:BaxyFieldUiAssetPaths.Count -eq 0) { throw 'src/Baxy.FieldUi/dist/assets is empty: build the Field UI first.' }
+$script:BaxyFieldUiPublishedPaths = @(
+    Get-ChildItem -LiteralPath $script:BaxyFieldUiDistRoot -File -Recurse -Force |
+        ForEach-Object { 'FieldUi/' + $_.FullName.Substring($script:BaxyFieldUiDistRoot.Length + 1).Replace('\', '/') } |
+        Where-Object { $script:BaxyReviewedPayloadPaths -cnotcontains $_ }
+)
 function Get-BaxyOrdinalPaths {
     param([Parameter(Mandatory = $true)][string[]]$Paths)
 
@@ -61,7 +70,7 @@ function Get-BaxyOrdinalPaths {
     [Array]::Sort($sorted, [StringComparer]::Ordinal)
     return ,$sorted
 }
-$script:BaxyProductPayloadPaths = Get-BaxyOrdinalPaths ($script:BaxyReviewedPayloadPaths + $script:BaxyFieldUiAssetPaths)
+$script:BaxyProductPayloadPaths = Get-BaxyOrdinalPaths ($script:BaxyReviewedPayloadPaths + $script:BaxyFieldUiPublishedPaths)
 
 if ($null -eq ('BaxyNativeStreamInspector' -as [type])) {
     Add-Type -TypeDefinition @'
