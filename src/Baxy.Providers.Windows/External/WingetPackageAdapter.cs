@@ -144,7 +144,7 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         ];
         if (version is not null)
             install.AddRange(["--version", version]);
-        WingetLaunch? launched = _launch(install);
+        using WingetLaunch? launched = _launch(install);
         if (launched is null)
             return effectBoundary.Failure(operation, "winget_install_not_started");
         int processId = launched.ProcessId;
@@ -297,7 +297,7 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
 
         var effectBoundary = new ExternalEffectBoundary();
         effectBoundary.Cross(cancellationToken);
-        WingetLaunch? launched = _launch([
+        using WingetLaunch? launched = _launch([
             "uninstall", "--id", package.Id, "--exact", "--silent",
             "--accept-source-agreements", "--disable-interactivity",
         ]);
@@ -544,7 +544,13 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
         or System.ComponentModel.Win32Exception;
 
     // A winget run BAXY started: its process and, once it ended, its exit code and the last line it wrote.
-    internal sealed record WingetLaunch(int ProcessId, Func<(int ExitCode, string LastLine)?> Outcome);
+    // Revisión nb-q-apps2: Release lets go of what the launch holds (the Process), once the call has read its outcome.
+    internal sealed record WingetLaunch(int ProcessId, Func<(int ExitCode, string LastLine)?> Outcome) : IDisposable
+    {
+        internal Action? Release { get; init; }
+
+        public void Dispose() => Release?.Invoke();
+    }
 
     // A run that ended without the change it was for says what winget said: its exit code and its last line.
     private static ExternalCapabilityReceipt WithOutcome(ExternalCapabilityReceipt failure, WingetLaunch launched) =>
@@ -557,38 +563,50 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
                     writer.WriteStartObject();
                     writer.WriteNumber("version", 1);
                     writer.WriteNumber("wingetExitCode", outcome.ExitCode);
-                    writer.WriteString("wingetLastLine", outcome.LastLine);
+                    if (outcome.LastLine.Length > 0)
+                        writer.WriteString("wingetLastLine", outcome.LastLine);
                     writer.WriteEndObject();
                 }),
             };
 
-    private static WingetLaunch? LaunchDetached(IReadOnlyList<string> arguments)
+    // Revisión nb-q-apps2: winget started from the core with its output redirected inherited every inheritable handle
+    // of the core (its stdio pipes among them), and its Process was never disposed. It is started through the shell,
+    // as a person starts it, hidden: nothing of the core is inherited, and its exit code is still read from its
+    // process (what it printed is not: an outcome carries no last line). The Process is let go when the call ends.
+    internal static ProcessStartInfo LaunchStart(IReadOnlyList<string> arguments)
     {
         var start = new ProcessStartInfo("winget.exe")
         {
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
+            UseShellExecute = true,
+            WindowStyle = ProcessWindowStyle.Hidden,
+            WorkingDirectory = Environment.SystemDirectory,
         };
         foreach (string argument in arguments)
             start.ArgumentList.Add(argument);
-        Process? process = Process.Start(start);
-        HelperProcessJob.Assign(process);
+        return start;
+    }
+
+    private static WingetLaunch? LaunchDetached(IReadOnlyList<string> arguments)
+    {
+        Process? process = Process.Start(LaunchStart(arguments));
         if (process is null)
             return null;
-        // Las salidas se drenan para que winget no se bloquee en un tubo lleno, y su última línea se guarda.
-        Task<string> output = process.StandardOutput.ReadToEndAsync();
-        Task<string> error = process.StandardError.ReadToEndAsync();
+        HelperProcessJob.Assign(process);
         return new WingetLaunch(process.Id, () =>
         {
-            if (!process.HasExited || !Task.WaitAll([output, error], TimeSpan.FromSeconds(2)))
+            try
+            {
+                return process.HasExited ? (process.ExitCode, string.Empty) : null;
+            }
+            catch (Exception exception) when (exception is InvalidOperationException
+                or System.ComponentModel.Win32Exception or NotSupportedException)
+            {
                 return null;
-            string last = (error.Result + "\n" + output.Result)
-                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .LastOrDefault(line => line.Any(char.IsLetterOrDigit)) ?? string.Empty;
-            return (process.ExitCode, last.Length <= 240 ? last : last[..240]);
-        });
+            }
+        })
+        {
+            Release = process.Dispose,
+        };
     }
 
     private static async Task<bool> WaitForExitAsync(int processId, TimeSpan budget, CancellationToken cancellationToken)
