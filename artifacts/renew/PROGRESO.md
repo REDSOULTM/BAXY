@@ -3433,3 +3433,10 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   verificando la instalación de DOOM Eternal» cuando lo visible era la actualización de Steam) | int11g 1 (F009 s1, el
   límite del nombre BAXY-bench); dudosas 3 | 1 | 2. F013 ya no aparece: retirar typed_in_window lo arregló. Regla: la mitad
   de falsedades la pasa w10-lectura (1 = 1); falta la e2e de práctica.
+- 06:06 **Holdout v6, decisión** (PC, 720 × 3, juez de f1d041344 8935ddf0, sin errores ni consultas sin respuesta):
+  inicio 602/599/603 = 601,33 | final_v5 622/609/624 = 618,33 | cien 618/612/620 = 616,67. `cien` − `final_v5` −1,67
+  (IC95 [−7,67; +3,67], gemelos [−7,33; +3,67], McNemar p 0,45): la meta «IC95 por encima de −3» NO se cumple (sin pérdida
+  demostrada, pero el banco no descarta hasta −7). `cien` − `inicio` +15,33 (IC95 [+5,33; +25,67], p 0,011, Holm 0,023).
+  Acciones equivocadas 95,33 | 75,67 | 80,33 (cien − final_v5 +4,67, IC95 [−0,67; +10,33]). Por familia, cien frente a
+  final_v5: comun 110,3 → 109,3, larga_cola 80,0 → 79,7, par_minimo 81,7 → 82,0, multipaso 31,3 → 30,3, ya_hecho 12,7 →
+  14,3 (+1,7; meta +8 no cumplida); secundaria ya_hecho: 53 de 120 decisiones son lecturas de verificación sin efecto.
