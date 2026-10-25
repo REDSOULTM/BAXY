@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -164,33 +163,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 && NamedWindow(arguments) is nint window and not 0
                 && await _fields.AfterActAsync(window, cancellationToken).ConfigureAwait(false) is { } after)
                 receipt = WindowsVisibleControlAdapter.WithAfter(receipt, after);
-            // Holdout v5 (V5E061): a completed text that named no field (the window's own focus, a document) says it is
-            // in that window and in no file BAXY wrote, after the sentence of where it went when there is one.
-            if (operation == "input.text.type"
-                && receipt is { Verified: true, ErrorCode: null, EffectObserved: true, Result: { ValueKind: JsonValueKind.Object } result }
-                && !Names(arguments, "index") && !Names(arguments, "entry")
-                && Infrastructure.ModelAids.On(Infrastructure.ModelAids.TypedInWindow))
-                receipt = WithNext(receipt, result, TypedInWindow(result, NamedWindow(arguments)));
             return receipt;
         }
         finally
         {
             _focusOwed = null;
         }
-    }
-
-    // Whether a step gives the argument a value (absent and null name nothing).
-    private static bool Names(JsonElement arguments, string name) =>
-        arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty(name, out JsonElement value)
-        && value.ValueKind is not (JsonValueKind.Null or JsonValueKind.False);
-
-    // The receipt with one more sentence in its «next», after the one it already has.
-    private static ExternalCapabilityReceipt WithNext(ExternalCapabilityReceipt receipt, JsonElement result, string sentence)
-    {
-        JsonObject node = JsonNode.Parse(result.GetRawText())!.AsObject();
-        node["next"] = node["next"]?.GetValue<string>() is { Length: > 0 } before ? $"{before}; {sentence}" : sentence;
-        using JsonDocument merged = JsonDocument.Parse(node.ToJsonString());
-        return receipt with { Result = merged.RootElement.Clone() };
     }
 
     // The window a step names («window»); 0 when it names none or not as a handle.
@@ -959,31 +937,6 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
               + "(input_visible_controls with application), whose result gives that window's number, and typing the "
               + "text again as input_text_type with window set to that number"
             : where;
-    }
-
-    // Holdout v5 (V5E061): a completed text, as a sentence: the window it is in (by its number when the step named one)
-    // and that BAXY wrote no file. Only the fact: with a way to replace it told after every typing, the model replaced
-    // what nobody asked to change (int11 e2e E012, NB s0: Ctrl+A and the text again, and in a Spanish Notepad Ctrl+A is
-    // «Abrir», so the second text went into its dialog).
-    internal static string TypedInWindow(JsonElement result, nint window)
-    {
-        string title = result.TryGetProperty("sentTo", out JsonElement sentTo)
-            && sentTo.TryGetProperty("title", out JsonElement sentTitle) ? sentTitle.GetString() ?? ""
-            : result.TryGetProperty("windowTitle", out JsonElement windowTitle) ? windowTitle.GetString() ?? ""
-            : "";
-        string process = sentTo.ValueKind == JsonValueKind.Object && sentTo.TryGetProperty("process", out JsonElement sentProcess)
-            ? sentProcess.GetString() ?? ""
-            : "";
-        string named = (title.Length, process.Length) switch
-        {
-            (> 0, > 0) => $"{title} ({process})",
-            (> 0, _) => title,
-            (_, > 0) => process,
-            _ => "",
-        };
-        string which = named.Length > 0 ? $"the window of {named}" : "that window";
-        return $"the text is in {which}" + (window != 0 ? $" (window {window})" : "")
-            + ", not written to a file: BAXY saved nothing, and a file holds it only once that application saves it";
     }
 
     // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad), by its title
