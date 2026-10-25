@@ -1,4 +1,59 @@
-# BAXY Renew al máximo: informe final (fase 1: 2026-10-23; fase 2: 2026-10-24)
+# BAXY Renew al máximo: informe final (fase 1: 2026-10-23; fase 2: 2026-10-24; fase 3: 2026-10-25)
+
+## Fase 3 (2026-10-24 → 25, «al 100 % sin reentrenar»), en corto para el dueño
+
+Versión final: `renew-cien` 8953ecd03 (código = `int11f` f1d041344). Medida una sola vez en el holdout v6, nuevo y
+sellado antes de los arreglos, contra BAXY al empezar «al máximo» (`inicio`) y al cerrar la fase 2 (`final_v5`). Detalle:
+`HOLDOUT_V6.md`; plan: `CIERRE_PLAN_V6.md`.
+
+| Qué | `inicio` | `final_v5` | `cien` | Meta (contra `final_v5`) |
+|---|---|---|---|---|
+| Decisión (720 × 3) | 601,3 | 618,3 | 616,7 | sin pérdida, IC95 > −3: **no** (−1,7, IC95 [−7,7, +3,7]) |
+| «¿Ya lo hiciste?» (40) | 12,7 | 12,7 | 14,3 | +8: **no** (+1,7) |
+| Tareas reales, e2e (75 × 2) | 49,0 | 55,5 | **57,0** | +5 con IC95 > 0: **no** (+1,5, IC95 [−2,0, +5,5]) |
+| Confirmaciones (8, por semilla) | 6 / 5 | 7 / 5 | **6 / 6** | ≥ 6: **sí** |
+| Falsedades claras (72, a ciegas) | 15 | 6 | **1** | no más que `final_v5`: **sí** |
+| Primera respuesta p50 (NB) | 3,3-3,5 s | 4,3 s | **3,7-3,8 s** | −0,4 s: **sí** (−0,52 s) |
+| VRAM / RAM con voz (NB, oído real) | — | 3 986 / 3 634 MiB | 3 989 / 3 672 MiB | ≤ 4 GB / 4 GB: **sí** |
+
+Frente a `inicio` (toda la misión): decisión +15,3 (p Holm 0,023), e2e +8,0 (IC95 [+1, +15]), falsedades claras 15 → 1.
+
+Lo que la fase 3 añadió, sin reentrenar:
+
+1. **Casi sin falsedades**: 1 clara en 72 conversaciones (6 en la fase 2, 15 al empezar). Una regla nueva no deja decir
+   «guardé X» cuando la ventana muestra otro nombre; la vista de «Guardar como» dice qué nombre y carpeta recibe el archivo.
+2. **Confirmaciones**: el «sí» del núcleo llega en vez de una pregunta por texto (la duda ya no cuenta como rival un «=»
+   que es la misma palabra cortada de otra forma: +3,7 en decisión de práctica); las rutas con espacios que nombras
+   («Documentos\Turnos Farmacia») ya no se parten; un nombre dictado sin guion («factura marzo») encuentra
+   «factura-marzo.pdf» y te dice cuál es antes de tocar nada.
+3. **Más rápido**: el aviso de «estoy en ello» es de una a tres palabras (antes «Estoy procesando tu solicitud.», que
+   retrasaba la respuesta): −0,5 s hasta la primera palabra tras una herramienta.
+4. **Sin bucles ni silencios**: 13 lecturas iguales de una ventana ya no pasan (cada lectura traía un identificador
+   nuevo); tras leer un archivo largo por páginas la respuesta final siempre cabe (antes: ninguna respuesta); si un
+   proveedor falla de forma inesperada, el núcleo contesta y sigue (antes se caía: el `engine_no_answer` al abrir Steam en
+   frío); una captura negra de Steam en frío ya no rompe la apertura.
+5. **Archivos y tareas que antes no hacía**: mover y copiar por nombre en tus carpetas, contar en una subcarpeta, «barra»
+   dictada como separador, la calculadora sigue desde lo que muestra (y ^ y paréntesis en científica), Ctrl+Fin/Inicio, la
+   hora de otro lugar ya calculada, alarmas sin título, y vuelve a abrir la página cuando el fragmento de una búsqueda no
+   trae la respuesta. En los 20 casos que la fase 2 fallaba siempre: 1 → 10,7 de 20 en práctica.
+
+Lo que no se movió, dicho tal cual:
+
+- **Decisión**: igual a la fase 2 dentro del ruido (−1,7), pero el holdout no descarta una pérdida de hasta −7; algunos
+  casos al borde se voltean con cualquier palabra nueva del prefijo (una sola, «or folder», costó −3 en práctica y se
+  retiró).
+- **Tareas reales**: +1,5, no +5; ningún caso empeoró. Lo que más queda: uso del PC (8 de 14) y archivos (11-12 de 16).
+- **«¿Ya lo hiciste?» en decisión**: el banco da un historial sin llamadas y BAXY, como manda su regla, vuelve a mirar el
+  estado (53 de 120 decisiones): eso cuenta como fallo; lo que falla de verdad (actuar otra vez) son 5 de 120.
+- **Límites del modelo** (van al ajuste fino, `BRIEF_FT_C3.md` §7): toma «BAXY-bench» por su carpeta propia (E027, F009),
+  no sigue «en la terminal», cree que no puede borrar carpetas, no escribe el nombre en «Guardar como» (ya sin mentir),
+  apps de nombre parecido sin lugar.
+
+Retiradas con su cifra: `w10-desc` (−3 en decisión por una palabra), `snippets_only` (abría la página 0/24 frente a 4/24) y
+`typed_in_window` (empujaba a guardar por la interfaz y volvía una falsedad 3 de 3). Encontrado después de abrir el holdout,
+sin medir en él y fuera de esta versión: el notebook arregló un fallo del arranque de la voz que podía dejarte sin «Baxy»
+si el PC iba cargado (`nb-w11-arranque`), una guarda para que nada escriba en las carpetas de inicio de Windows
+(`nb-w11-inicio`) y varios casos de uso del PC (`nb-w11-*`): esperan tu visto bueno para entrar.
 
 ## Fase 2 (2026-10-23 → 24), en corto para el dueño
 
