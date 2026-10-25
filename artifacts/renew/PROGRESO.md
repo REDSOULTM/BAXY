@@ -3378,3 +3378,9 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
   responden). Pendiente su medida en falsedades (F002, F015) y e2e.
 - **int11c = aec328933** = int11b b47ab9c9b − w10-desc + nb-w10-dictado + w10-lectura. Suites, catálogo y decision3 x3 en
   el PC; e2e x3 y falsedades x3 en el NB, pareadas con int11.
+- 22:26 **int11c en decisión, 5 semillas** (catálogo int11c): 241/239/240/242/242 = 240,8 frente a la base 239,4
+  (240/242 en s3/s4): Δ +1,4 (IC95 [−2,6; +5,6]), pass^5 232 → 236, acciones equivocadas 12,4 → 10,4. Sin pérdida.
+- 22:24 **H9 con causa** (NB, primera repro con nb-core-motivo): con Steam en frío la captura de la ventana antes del lugar
+  sale negra, el proveedor lanza IOException, nadie la ataja y el core se para (exit 70) → `engine_no_answer`. Arreglos:
+  nb-w10-negra 4bc235b34 (el dibujo ilegible es «sin dibujo leído») y w10-motor (el core contesta esa petición como
+  fallo con efecto incierto y sigue), en curso. Van a int11d.
