@@ -24,6 +24,8 @@ internal sealed class RuntimeFileHashCache
     private readonly string? _storePath;
     private readonly Func<string, string> _hasher;
     private readonly Dictionary<string, Entry> _entries = new(StringComparer.OrdinalIgnoreCase);
+    // The paths this start read: a full store keeps them before older ones (earlier runtimes and models).
+    private readonly HashSet<string> _read = new(StringComparer.OrdinalIgnoreCase);
     private bool _dirty;
 
     internal RuntimeFileHashCache(
@@ -49,6 +51,7 @@ internal sealed class RuntimeFileHashCache
     internal string Sha256(string path)
     {
         var before = new FileInfo(path);
+        _read.Add(before.FullName);
         Entry? identity = Identify(before);
         if (identity is not null
             && _entries.TryGetValue(before.FullName, out Entry? known)
@@ -88,7 +91,8 @@ internal sealed class RuntimeFileHashCache
             var document = new StoreDocument(
                 Schema,
                 _entries
-                    .OrderBy(static pair => pair.Key, StringComparer.Ordinal)
+                    .OrderBy(pair => _read.Contains(pair.Key) ? 0 : 1)
+                    .ThenBy(static pair => pair.Key, StringComparer.Ordinal)
                     .Take(MaximumEntries)
                     .Select(static pair => new StoreEntry(
                         pair.Key,

@@ -23,10 +23,12 @@ internal static class ShellStartupSequence
             Record(ShellTraceStages.StartupFieldBegin);
             await initializeField();
             Record(ShellTraceStages.StartupFieldReady);
-            probeRun = probe?.Invoke();
         }
         finally
         {
+            // Revisión de calidad (2026-10-25): the probe is what ends a --ui-probe run (it exits in its own finally),
+            // so it runs when the view failed too; otherwise that run stayed in the tray holding the instance.
+            probeRun = probe?.Invoke();
             await shell;
             Record(ShellTraceStages.StartupShellReady);
         }

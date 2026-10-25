@@ -96,6 +96,32 @@ public sealed class ConfirmationAnswerTests
         }
     }
 
+    // Revisión de calidad (2026-10-25): a new conversation holds the turn without being busy; a Sí pressed while the mind
+    // started it over waited for the turn and then ran in the new conversation, on a call the new session had dropped.
+    [Test]
+    public async Task AnAnswerPressedWhileANewConversationStartsIsRefusedOnceItDropsTheCall()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject { ["hold"] = new JsonObject { ["session.new"] = "go" } });
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        {
+            ViewModelHarness.AcceptTurns(viewModel);
+            NativeTurnConfirmation asked = WaitingCalls.Ask(viewModel);
+            Task<bool> starting = viewModel.StartNewUiSessionAsync(CancellationToken.None);
+            Assert.That(await fake.WaitSeenAsync("session.new"), Is.True);
+
+            Task<bool> answer = viewModel.AnswerConfirmationAsync(true, System.Diagnostics.Stopwatch.GetTimestamp(),
+                CancellationToken.None, asked);
+            fake.Open("go");
+
+            Assert.That(await starting, Is.True);
+            Assert.That(await answer, Is.False, "the answer was taken for a call the new conversation dropped");
+            Assert.That(viewModel.Messages, Is.Empty);
+            Assert.That(fake.Seen, Does.Not.Contain("turn.confirm"));
+        }
+    }
+
     [Test]
     public async Task AToastPressedForAProposalThatEndedDoesNotAnswerTheNextOne()
     {
