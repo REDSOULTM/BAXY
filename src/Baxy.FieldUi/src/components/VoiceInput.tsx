@@ -20,7 +20,7 @@ interface Props {
   onMic: (m: MicMode) => void;
   onPttStart: () => void;
   onPttEnd: () => void;
-  /** sends the request; false when the host did not take it */
+  /** sends the request; false when it was not taken (not sent, or the host refused it) */
   onSubmit: (text: string) => Promise<boolean>;
   state: BaxyState;
   canSend: boolean;
@@ -41,7 +41,7 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
     window.addEventListener('keydown', esc, true);
     return () => { window.removeEventListener('pointerdown', close); window.removeEventListener('keydown', esc, true); };
   }, [menu]);
-  // a request the host did not take comes back to the box (unless the person already wrote something else)
+  // a request that was not taken comes back to the box (unless the person already wrote something else)
   const send = async () => {
     if (!armed) return;
     const text = draft.trim();

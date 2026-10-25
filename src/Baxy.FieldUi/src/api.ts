@@ -30,3 +30,26 @@ export async function send<T = Record<string, unknown>>(
     return null;
   }
 }
+
+/** like send, telling apart a request the host refused (a 4xx with its error code: it took nothing) from one that got
+ *  no answer (the bridge's 503 for a request that timed out or failed on the way: the host may have taken it). */
+export async function sendTold<T = Record<string, unknown>>(
+  method: 'POST' | 'PUT' | 'DELETE',
+  path: string,
+  body?: unknown,
+): Promise<{ value: T | null; refused: boolean }> {
+  try {
+    const r = await fetch(path, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const text = await r.text();
+    if (r.ok) return { value: (text ? JSON.parse(text) : {}) as T, refused: false };
+    let code: unknown = null;
+    try { code = (JSON.parse(text) as { error?: unknown }).error; } catch { /* no code */ }
+    return { value: null, refused: r.status >= 400 && r.status < 500 && typeof code === 'string' };
+  } catch {
+    return { value: null, refused: false };
+  }
+}

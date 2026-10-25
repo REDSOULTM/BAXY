@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useBaxy } from './store';
-import { getJson, send } from './api';
+import { getJson, send, sendTold } from './api';
 import { Rail, type PanelId, type Profile } from './components/Rail';
 import { Chat } from './components/Chat';
 import { Boot, Caption } from './components/Caption';
@@ -314,9 +314,11 @@ export default function App() {
       setNotice({ b: 'BAXY', t: 'el pedido es demasiado largo · máximo ' + MAX_REQUEST + ' caracteres, tiene ' + text.length });
       return false;
     }
-    const r = await send('POST', '/turn', { text });
-    if (r === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
-    return r !== null;
+    // /turn answers when the turn ends: a request that got no answer may have been taken and is not given back to the
+    // box (Enter would send it again); only one the host refused is
+    const r = await sendTold('POST', '/turn', { text });
+    if (r.value === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
+    return !r.refused;
   }, []);
   // the answer names the card it answers: a press or a key meant for one that ended never answers the next (the host
   // refuses it), and a refused answer is said, never lost in silence. A card is answered once: a second press or key

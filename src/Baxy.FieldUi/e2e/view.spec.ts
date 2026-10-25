@@ -110,13 +110,23 @@ test('Esc con el menú del micrófono abierto cierra el menú y no rechaza la ta
 
 const box = () => h.page.locator('input[aria-label="Escribe a BAXY"]');
 
-test('un pedido que el host no tomó vuelve a la caja, no se pierde', async () => {
+test('un pedido que el host rechazó vuelve a la caja, no se pierde', async () => {
   h = await openView();
-  h.reply('/turn', () => ({ status: 503 }));
+  h.reply('/turn', () => ({ status: 409, body: { ok: false, error: 'agent_not_ready' } }));
   await box().fill('abre la calculadora');
   await box().press('Enter');
   await expect(h.page.locator('.bx-notice')).toContainText('no pudo recibir el pedido');
   await expect(box()).toHaveValue('abre la calculadora');
+});
+
+test('un pedido sin respuesta del host (plazo del puente agotado) no vuelve a la caja: pudo haberse tomado', async () => {
+  h = await openView();
+  // field-native-bridge.js: a request that timed out or failed in the bridge answers 503 with no host refusal
+  h.reply('/turn', () => ({ status: 503, body: { error: 'Error: BAXY native request timed out: http' } }));
+  await box().fill('abre la calculadora');
+  await box().press('Enter');
+  await expect(h.page.locator('.bx-notice')).toContainText('no pudo recibir el pedido');
+  await expect(box()).toHaveValue('');
 });
 
 test('un pedido que el host tomó deja la caja vacía', async () => {
@@ -265,6 +275,7 @@ test('Enter con el foco en un botón fuera de la tarjeta (el engranaje tras cerr
   await expect(p.locator('.bx-gear')).toBeFocused();
   h.emit({ type: 'item', item: card('c1') });
   await expect(p.locator('.bx-card.s-pending')).toHaveCount(1);
+  await p.waitForTimeout(150); // the keys follow the card once the view's effects ran
   await p.keyboard.press('Enter');
   await expect.poll(answers).toEqual([{ approve: true, card: 'c1' }]);
   await expect(p.locator('.settings-panel')).toHaveCount(0);
