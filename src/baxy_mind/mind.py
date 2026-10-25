@@ -20,6 +20,7 @@ import urllib.error
 from pathlib import Path
 from typing import Any
 
+from . import context_cerrados
 from .answer_check import check as check_answer
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
@@ -1480,6 +1481,7 @@ class Mind:
                 turn.update(asked=asked, after_asked=after, text=said, **was)
                 raise
         self._close_open_calls()
+        self._clean_closed()
         # Revisión de nb-w11-mente: DOUBT_DONE_NOTE too, which asks whether to repeat a call asked for again; its answer
         # was held again by the same note at every unsure «sí».
         answering = any(str(m.get("content") or "").startswith((DOUBT_ASKED, DOUBT_DONE))
@@ -1507,6 +1509,16 @@ class Mind:
             self._take_back(self.conversation, clock)
             self._turn = None
             raise
+
+    def _clean_closed(self) -> None:
+        """H-ctx «cerrados» (BAXY_RENEW_CTX=cerrados): with no turn open, the closed turns' results in short
+        (context_cerrados.py), once each: at the history's prefill, where nobody waits, or at the next turn's start."""
+        if not context_cerrados.on() or not self.conversation:
+            return
+        started = time.perf_counter()
+        changed = context_cerrados.clean_closed(self.conversation, len(self.conversation), TURN_FACTS)
+        if changed:
+            self._log("ctx.cerrados", started, None, results=changed)
 
     @staticmethod
     def _take_back(conv: list[dict[str, Any]], first: dict[str, Any]) -> None:
@@ -1605,6 +1617,7 @@ class Mind:
                 or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
             return False
         started = time.perf_counter()
+        self._clean_closed()
         after = [{"role": "user", "content": self._clock()}] if clock else []
         body = {"messages": [{"role": "system", "content": self._system()}, *self._history(self.conversation),
                              *after, {"role": "user", "content": PREFILL_MARK}],
