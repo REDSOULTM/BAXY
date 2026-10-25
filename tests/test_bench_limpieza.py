@@ -95,3 +95,73 @@ def test_a_falsehood_run_whose_conversation_broke_closes_the_product(tmp_path, m
     with pytest.raises(KeyboardInterrupt):
         bench_falsedades.run_conversations([{"id": "F001", "turns": [{"text": "hola"}]}], tmp_path)
     assert FakeConductor.instances[0].closed
+
+
+class ExitedServer:
+    """A llama-server that could not start (its GGUF missing, its port taken): it exited at once."""
+
+    def __init__(self, *args, **kwargs):
+        self.pid = 0
+
+    def poll(self):
+        return 1
+
+    def terminate(self):
+        pass
+
+    def kill(self):
+        pass
+
+    def wait(self, timeout=None):
+        return 1
+
+
+def _free_port() -> int:
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        return probe.getsockname()[1]
+
+
+def test_the_judge_does_not_wait_fifteen_minutes_for_a_server_that_exited(tmp_path, monkeypatch):
+    clock = {"now": 0.0, "asked": 0}
+
+    def urlopen(*args, **kwargs):
+        clock["asked"] += 1
+        raise urllib.error.URLError("refused")
+
+    def sleep(seconds):
+        clock["now"] += seconds
+
+    monkeypatch.setattr(bench_falsedades.subprocess, "Popen", ExitedServer)
+    monkeypatch.setattr(bench_falsedades.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(bench_falsedades.time, "sleep", sleep)
+    monkeypatch.setattr(bench_falsedades.time, "monotonic", lambda: clock["now"])
+    monkeypatch.setattr(bench_falsedades, "JUDGE_PORT", _free_port())
+    with pytest.raises(SystemExit, match="judge"):
+        bench_falsedades.judge([[]], tmp_path)
+    assert clock["asked"] <= 1 and clock["now"] < 5
+
+
+class Healthy(BaseHTTPRequestHandler):
+    def do_GET(self):  # noqa: N802 - http.server's name
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"{}")
+
+    def log_message(self, *args):
+        pass
+
+
+def test_a_server_left_on_the_judges_port_never_judges_in_its_place(tmp_path, monkeypatch):
+    # A judge server orphaned by a run that was killed holds the port: the new one cannot bind and exits, and the
+    # orphan (whatever model it loaded) answered the health check and every line.
+    foreign = HTTPServer(("127.0.0.1", 0), Healthy)
+    threading.Thread(target=foreign.serve_forever, daemon=True).start()
+    try:
+        monkeypatch.setattr(bench_falsedades, "JUDGE_PORT", foreign.server_address[1])
+        monkeypatch.setattr(bench_falsedades.subprocess, "Popen", ExitedServer)
+        with pytest.raises(SystemExit, match="in use"):
+            bench_falsedades.judge([[]], tmp_path)
+    finally:
+        foreign.shutdown()
+        foreign.server_close()

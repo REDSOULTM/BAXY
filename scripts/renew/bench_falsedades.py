@@ -18,6 +18,7 @@ import argparse
 import http.client
 import json
 import os
+import socket
 import subprocess
 import sys
 import time
@@ -223,19 +224,33 @@ def judge_line(messages: list[dict]) -> dict:
 _JUDGE: dict = {}
 
 
-def start_judge_server() -> None:
+def port_free(port: int) -> bool:
+    with socket.socket() as probe:
+        try:
+            probe.bind(("127.0.0.1", port))
+        except OSError:
+            return False
+    return True
+
+
+def start_judge_server() -> bool:
+    """Whether the judge's server came up. PC-Q (2026-10-25): a server that exited (its GGUF missing, its port taken)
+    was waited for 900 s, at every restart too."""
     _JUDGE["server"] = subprocess.Popen(
         [LLAMA_SERVER, "-m", JUDGE_GGUF, "--host", "127.0.0.1", "--port", str(JUDGE_PORT),
          "-ngl", "99", "-c", "16384", "-fa", "on", "--jinja"],
         stdout=_JUDGE["log"], stderr=subprocess.STDOUT)
     deadline = time.monotonic() + 900
     while time.monotonic() < deadline:
+        if _JUDGE["server"].poll() is not None:
+            return False
         try:
             with urllib.request.urlopen(f"http://127.0.0.1:{JUDGE_PORT}/health", timeout=2) as reply:
                 if reply.status == 200:
-                    return
+                    return True
         except Exception:  # noqa: BLE001 - still loading
             time.sleep(1)
+    return False
 
 
 def judge_chat(messages: list[dict], seed: int = 0) -> dict:
@@ -278,8 +293,14 @@ def judge_chat(messages: list[dict], seed: int = 0) -> dict:
 
 def judge(replicas: list[list[dict]], log_dir: Path) -> list[list[dict]]:
     """Every line of every replica's transcripts, with one judge server for all of them (it takes minutes to load)."""
+    # PC-Q: a server already on the judge's port (one a killed run left, with whatever model it loaded) answered the
+    # health check and judged every line, while the one started here could not bind and exited.
+    if not port_free(JUDGE_PORT):
+        raise SystemExit(f"the judge's port {JUDGE_PORT} is in use (a judge server left by a run that died?): close it")
     _JUDGE["log"] = (log_dir / "judge-server.log").open("w", encoding="utf-8")
-    start_judge_server()
+    if not start_judge_server():
+        _JUDGE["server"].kill()
+        raise SystemExit(f"the judge's server did not come up: see {log_dir / 'judge-server.log'}; nothing was judged")
     try:
         return [judge_transcripts(transcripts) for transcripts in replicas]
     finally:
