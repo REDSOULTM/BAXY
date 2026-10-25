@@ -1359,6 +1359,64 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Práctica e2e V6E035 («¿qué archivo de mi carpeta X tiene anotado el dato Y?»): file.find with query Y, a search of
+    // names, found nothing three times and the answer was «ningún archivo en X menciona Y», with Y written inside one of
+    // them. With aid find_content_next a name search with no match says that only names were matched, how many files
+    // under it had their text unread, and the call that searches inside them; a pattern, a match, a search by content,
+    // an empty folder or a walk stopped by its time limit say nothing more.
+    [TestCase("all", true)]
+    [TestCase("search_scope", false)]
+    public async Task ANameSearchWithNoMatchSaysTheTextOfItsFilesWasNotSearched(string aids, bool aid)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, _, string documents, _) = Folders(temporary);
+        string viaje = Path.Combine(documents, "Viaje Sur");
+        Directory.CreateDirectory(Path.Combine(viaje, "fotos"));
+        await File.WriteAllTextAsync(Path.Combine(viaje, "datos.txt"), "Patente: AB-12\nHotel: Central\n");
+        await File.WriteAllTextAsync(Path.Combine(viaje, "fotos", "lista.txt"), "playa, cerro\n");
+        await File.WriteAllTextAsync(Path.Combine(viaje, "fotos", "ruta.txt"), "norte\n");
+        await File.WriteAllTextAsync(Path.Combine(documents, "patente.txt"), "x");
+        Task<ExternalCapabilityReceipt> Run(string arguments) =>
+            adapter.InvokeAsync("file.find", Json(arguments), CancellationToken.None).AsTask();
+
+        ExternalCapabilityReceipt byName = await Run(
+            """{"folder":"documents","subdirectory":"Viaje Sur","query":"patente"}""");
+        ExternalCapabilityReceipt whole = await Run("""{"folder":"documents","query":"hotel"}""");
+        ExternalCapabilityReceipt pattern = await Run("""{"folder":"documents","subdirectory":"Viaje Sur","query":"*.pdf"}""");
+        ExternalCapabilityReceipt matched = await Run("""{"folder":"documents","query":"patente"}""");
+        ExternalCapabilityReceipt byContent = await Run(
+            """{"folder":"documents","subdirectory":"Viaje Sur","content":"pasaporte"}""");
+        ExternalCapabilityReceipt empty = await Run("""{"folder":"desktop","query":"patente"}""");
+        ExternalCapabilityReceipt inside = await Run(
+            """{"folder":"documents","subdirectory":"Viaje Sur","content":"patente"}""");
+
+        static string? Next(ExternalCapabilityReceipt receipt) =>
+            receipt.Result!.Value.TryGetProperty("next", out JsonElement next) ? next.GetString() : null;
+        Assert.Multiple(() =>
+        {
+            Assert.That(byName.Verified, Is.True, byName.ErrorCode);
+            Assert.That(byName.Result!.Value.GetProperty("matchCount").GetInt32(), Is.Zero);
+            Assert.That(Next(byName), Is.EqualTo(aid
+                ? "no file name in documents/Viaje Sur contains \"patente\": this search matched names only, so the "
+                    + "text inside its 3 files was not searched; to search inside them, call file_find with folder "
+                    + "\"documents\", subdirectory \"Viaje Sur\" and content \"patente\""
+                : null));
+            Assert.That(Next(whole), Is.EqualTo(aid
+                ? "no file name in documents contains \"hotel\": this search matched names only, so the text inside "
+                    + "its 4 files was not searched; to search inside them, call file_find with folder \"documents\" "
+                    + "and content \"hotel\""
+                : null));
+            Assert.That(Next(pattern), Is.Null);
+            Assert.That(Next(matched), Is.Null);
+            Assert.That(Next(byContent), Is.Null);
+            Assert.That(Next(empty), Is.Null);
+            // The call it names finds the file.
+            Assert.That(inside.Result!.Value.GetProperty("files")[0].GetProperty("name").GetString(),
+                Is.EqualTo("datos.txt"));
+        });
+    }
+
     // Holdout v5 (V5E061): the oldText of a file.edit was the whole content of another file (found by the «Sin título»
     // of a Notepad window), and the model then replaced this one whole. With aid edit_text_absent the refusal adds the
     // fact that this file holds no such text and may not be the file the person means; it forbids nothing.
