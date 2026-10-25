@@ -5591,6 +5591,40 @@ public sealed class ExternalAdaptersTests
         }
     }
 
+    // Revisión de calidad (nb-q-apps): a player whose IPC answers garbage (or closes) mid-read threw out of media.status;
+    // it reads as unavailable, before any effect.
+    [Test]
+    public async Task AStatusWhoseIpcAnswersGarbageIsAReceipt()
+    {
+        string pipeName = "baxy-test-mpv-" + Guid.NewGuid().ToString("N");
+        Task player = Task.Run(() => AnswerOnceAsync(pipeName, _ => "not json"));
+        var local = new YouTubeMpvAdapter(mpvPath: null, ytDlpPath: null, nodePath: null);
+        const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance;
+        FieldInfo activePlayer = typeof(YouTubeMpvAdapter).GetField("_activePlayer", Private)!;
+        FieldInfo activePipe = typeof(YouTubeMpvAdapter).GetField("_activePipe", Private)!;
+        using Process alive = Process.GetCurrentProcess();
+        activePlayer.SetValue(local, alive);
+        activePipe.SetValue(local, pipeName);
+        ExternalCapabilityReceipt status;
+        try
+        {
+            status = await local.InvokeAsync("media.status", Json("{}"), CancellationToken.None);
+            await player;
+        }
+        finally
+        {
+            // The player stands for this test's own process: nothing stops it.
+            activePlayer.SetValue(local, null);
+            activePipe.SetValue(local, null);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(status.ErrorCode, Is.EqualTo("local_player_ipc_unavailable"));
+            Assert.That(status.EffectMayHaveOccurred, Is.False);
+        });
+    }
+
     // Revisión de calidad (nb-q-apps): a player whose IPC takes the connection and never answers held the adapter's
     // gate for good: media.status hung, and so did every media.control and the pause before any other playback. One
     // exchange has its deadline, past which the player reads as unavailable and the gate is free again.

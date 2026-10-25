@@ -422,7 +422,17 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         {
             if (!HasActivePlayer)
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_inactive");
-            bool? paused = await ReadPauseAsync(cancellationToken).ConfigureAwait(false);
+            bool? paused;
+            try
+            {
+                paused = await ReadPauseAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or JsonException)
+            {
+                // Revisión de calidad (nb-q-apps): a player whose IPC closed or answered garbage mid-read threw out of
+                // media.status (the only path here without a catch); a read is not the player's state.
+                paused = null;
+            }
             if (paused is null)
                 return ExternalJson.FailureBeforeEffect(operation, "local_player_ipc_unavailable");
             // Renew al máximo (B-APP-1): left paused while a system session plays, it is not what is playing.
