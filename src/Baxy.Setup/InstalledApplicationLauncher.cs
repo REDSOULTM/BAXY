@@ -48,7 +48,7 @@ internal sealed class InstalledApplicationLauncher
     internal const uint RequiredCreationFlags = CreateBreakawayFromJob | CreateUnicodeEnvironment;
 
     private const string DataRootOverride = "BAXY_DATA_DIR";
-    private const int MaximumEnvironmentBlockCharacters = 32_767;
+    private const int MaximumEnvironmentVariableCharacters = 32_767;
 
     private readonly InstallationEngine _engine;
     private readonly IInstalledApplicationPlatform _platform;
@@ -151,16 +151,17 @@ internal sealed class InstalledApplicationLauncher
                 : StringComparer.Ordinal.Compare(left.Key, right.Key);
         });
 
+        // Windows bounds each variable, not the block: a long inherited environment still starts BAXY.
         long requiredCharacters = filtered.Count == 0 ? 2 : 1;
         foreach (KeyValuePair<string, string> pair in filtered)
         {
-            requiredCharacters = checked(requiredCharacters + pair.Key.Length + pair.Value.Length + 2L);
-        }
+            if (pair.Key.Length + 1L + pair.Value.Length > MaximumEnvironmentVariableCharacters)
+            {
+                throw new InstalledApplicationLaunchException(
+                    "An inherited process-environment variable exceeds the reviewed Windows limit.");
+            }
 
-        if (requiredCharacters > MaximumEnvironmentBlockCharacters)
-        {
-            throw new InstalledApplicationLaunchException(
-                "The inherited process environment exceeds the reviewed Windows limit.");
+            requiredCharacters = checked(requiredCharacters + pair.Key.Length + pair.Value.Length + 2L);
         }
 
         char[] block = new char[checked((int)requiredCharacters)];
