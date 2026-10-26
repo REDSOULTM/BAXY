@@ -302,7 +302,8 @@ internal sealed class SaidFolders
             next = $"nothing ran: {who} {named} and this call would act in {where}, outside it. If "
                 + $"{which} is the place of this call, call {wire} again with "
                 + string.Join(", or ", options.Where(option => option.Arguments is not null).Select(option =>
-                    Changes(arguments, option.Arguments!, whole: true) + (targets.Count == 1 ? string.Empty
+                    Changes(arguments, option.Arguments!, whole: true) + (targets.Count == 1
+                        ? Reached(operation, descriptor, option.Arguments!, option.Place)
                         : $" for {option.Place.Path}{Holding(option.Place, reach.Leaf)}")))
                 + "; " + again;
         }
@@ -460,22 +461,10 @@ internal sealed class SaidFolders
     {
         IReadOnlyList<OperationArgumentProperty> properties = descriptor.ArgumentsSchema.Properties;
         bool Takes(string name) => properties.Any(property => property.Name == name);
-        if (properties.FirstOrDefault(static property => property.Name == "folder") is not { } folderArgument)
+        if (Holder(descriptor, place) is not (string label, string relative))
             return null;
-        (string Label, string Root)? holder = null;
-        foreach (string label in folderArgument.AllowedValues)
-        {
-            if (label is not ("all_known" or "projects") && Root(label) is { } root && Within(place.Path, root)
-                && (holder is null || root.Length > holder.Value.Root.Length))
-                holder = (label, root);
-        }
-
-        if (holder is not { } best)
-            return null;
-        string relative = Same(place.Path, best.Root) ? string.Empty
-            : Path.GetRelativePath(best.Root, place.Path).Replace('\\', '/');
         var routed = (JsonObject)arguments.DeepClone();
-        routed["folder"] = best.Label;
+        routed["folder"] = label;
         if (Takes("subdirectory"))
         {
             if (relative.Length == 0)
@@ -500,6 +489,38 @@ internal sealed class SaidFolders
 
         return relative.Length == 0 && key is null ? routed : null;
     }
+
+    // The deepest known folder of the call's folder argument that holds the place, and the place's path inside it (empty
+    // for that folder itself); null when the call has no folder argument or none of its folders holds the place.
+    private (string Label, string Relative)? Holder(ProductOperationDescriptor descriptor, Place place)
+    {
+        if (descriptor.ArgumentsSchema.Properties.FirstOrDefault(static property => property.Name == "folder") is not { } folder)
+            return null;
+        (string Label, string Root)? holder = null;
+        foreach (string label in folder.AllowedValues)
+        {
+            if (label is not ("all_known" or "projects") && Root(label) is { } root && Within(place.Path, root)
+                && (holder is null || root.Length > holder.Value.Root.Length))
+                holder = (label, root);
+        }
+
+        return holder is not { } best ? null
+            : (best.Label, Same(place.Path, best.Root) ? string.Empty
+                : Path.GetRelativePath(best.Root, place.Path).Replace('\\', '/'));
+    }
+
+    // Revisión de los bucles de said_folder (93 repeated refusals in 64 turns of the saved runs): told the call that names
+    // the folder, the model wrote it and then left the folder out of its next call (44 of them; final5 V6E048: file_edit
+    // fixed, file_read in it, then file_edit and file_write without it, three refusals, ~20 s); and told relativePath
+    // "BAXY-bench/facturas2025" and folder "home", it wrote relativePath "facturas2025" (27; V6E064, V8E067). The call is
+    // said with where it acts, and the folder with how every call of the turn in it names it.
+    private string Reached(string operation, ProductOperationDescriptor descriptor, JsonObject routed, Place place) =>
+        (ReachOf(operation, descriptor, routed) is { Sandbox: false, Items.Count: > 0 } reach
+            ? $" (it acts in {string.Join(", ", reach.Items)})" : string.Empty)
+        + (Holder(descriptor, place) is not (string label, string relative) ? string.Empty
+            : relative.Length == 0 ? $"; any other call of this turn in that folder says it the same way, folder \"{label}\""
+            : $"; any other call of this turn in that folder says it the same way: folder \"{label}\" with \"{relative}\" "
+                + "as subdirectory, or at the start of relativePath or name");
 
     // What a path the call gave names inside the folder: a full path's last part; a relative one without a known
     // folder's name it begins with, nor the folder's own last parts it repeats («proyecto/notas.txt» in proyecto).
