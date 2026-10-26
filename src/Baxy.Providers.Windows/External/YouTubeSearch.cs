@@ -24,12 +24,39 @@ internal static partial class YouTubeSearch
             + Uri.EscapeDataString(query));
         using var request = new HttpRequestMessage(HttpMethod.Get, search);
         request.Headers.UserAgent.ParseAdd("Mozilla/5.0 BAXY/1.0");
-        using HttpResponseMessage response = await http.SendAsync(
-            request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
-        string html = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        return Parse(html, query);
+        // Ronda q-web: the client's timeout covers only the headers (ResponseHeadersRead); the body is read under the
+        // same bound, and only up to MaximumBodyBytes: the whole page was read into memory before its size was weighed.
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        if (http.Timeout != Timeout.InfiniteTimeSpan)
+            deadline.CancelAfter(http.Timeout);
+        try
+        {
+            using HttpResponseMessage response = await http.SendAsync(
+                request, HttpCompletionOption.ResponseHeadersRead, deadline.Token).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            if (response.Content.Headers.ContentLength > MaximumBodyBytes)
+                return new(string.Empty, string.Empty, "youtube_search_response_too_large");
+            using Stream body = await response.Content.ReadAsStreamAsync(deadline.Token).ConfigureAwait(false);
+            byte[] buffer = new byte[MaximumBodyBytes + 1];
+            int read = 0;
+            while (read < buffer.Length)
+            {
+                int count = await body.ReadAsync(buffer.AsMemory(read), deadline.Token).ConfigureAwait(false);
+                if (count == 0)
+                    break;
+                read += count;
+            }
+            if (read > MaximumBodyBytes)
+                return new(string.Empty, string.Empty, "youtube_search_response_too_large");
+            return Parse(Encoding.UTF8.GetString(buffer, 0, read), query);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return new(string.Empty, string.Empty, "youtube_search_timeout");
+        }
     }
+
+    private const int MaximumBodyBytes = 4_000_000;
 
     // Uso real 2026-10-21: «Red Ready» played «Rare Earth - Get Ready», YouTube's first result. Of the first videos, the
     // first whose title holds every word searched; with none, YouTube's first, told as not matching (the model then
@@ -38,7 +65,7 @@ internal static partial class YouTubeSearch
 
     internal static YouTubeSearchResult Parse(string html, string? query = null)
     {
-        if (Encoding.UTF8.GetByteCount(html) > 4_000_000)
+        if (Encoding.UTF8.GetByteCount(html) > MaximumBodyBytes)
             return new(string.Empty, string.Empty, "youtube_search_response_too_large");
         Match video = VideoRenderer().Match(html);
         if (video.Success)

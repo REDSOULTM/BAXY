@@ -864,6 +864,134 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    [TestCase("https://bank@evil.example/")]
+    [TestCase("https://bank:secret@evil.example/login")]
+    [TestCase("javascript:alert(1)")]
+    [TestCase("file:///C:/Windows/win.ini")]
+    [TestCase("data:text/html,<b>hola</b>")]
+    public async Task NamedBrowserRefusesWhatBrowserNavigateRefusesBeforeOpening(string url)
+    {
+        using TemporaryDirectory temporary = new();
+        var context = new CdpBrowserSessionContext();
+        var opera = new StubBrowserChainSession(
+            temporary.Path,
+            new(true, true, url, url, "opera-page", ""),
+            new(true, "opera-page", url, "Page", "text", false, ""),
+            observedExecutablePath: Path.Combine(temporary.Path, "opera.exe"));
+        using var named = new NamedBrowserAdapter(temporary.Path, context, opera, userBrowser: null);
+
+        ExternalCapabilityReceipt receipt = await named.InvokeAsync(
+            "browser.navigate.named",
+            ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("browser", "opera");
+                writer.WriteString("url", url);
+                writer.WriteEndObject();
+            }),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("named_browser_url_invalid"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(opera.NavigateCalls, Is.Zero);
+        });
+    }
+
+    // Ronda q-web: a page evaluation that threw (exceptionDetails), a CDP error, or a value of another type escaped as
+    // KeyNotFoundException or InvalidOperationException, out of the adapter; it is cdp_evaluation_failed.
+    [TestCase("""{"id":1,"result":{"result":{"type":"object","subtype":"error","description":"ReferenceError"},"exceptionDetails":{"text":"Uncaught"}}}""")]
+    [TestCase("""{"id":1,"error":{"code":-32000,"message":"Cannot find context with specified id"}}""")]
+    [TestCase("""{"id":1,"result":{"result":{"type":"undefined"}}}""")]
+    [TestCase("""{"id":1,"result":{"result":{"type":"number","value":3}}}""")]
+    public void AnEvaluationWithoutAStringIsACdpEvaluationFailure(string response)
+    {
+        using JsonDocument document = JsonDocument.Parse(response);
+
+        CdpCommandException failure = Assert.Throws<CdpCommandException>(
+            () => CdpBrowserSession.EvaluatedString(document.RootElement))!;
+
+        Assert.That(failure.Code, Is.EqualTo("cdp_evaluation_failed"));
+    }
+
+    [TestCase("""{"id":1,"result":{"result":{"type":"string","value":"8"}}}""")]
+    [TestCase("""{"id":1,"result":{"result":{"type":"undefined"}}}""")]
+    [TestCase("""{"id":1,"result":{"result":{"type":"number","value":1},"exceptionDetails":{"text":"Uncaught"}}}""")]
+    public void AnEvaluationWithoutANumberIsACdpEvaluationFailure(string response)
+    {
+        using JsonDocument document = JsonDocument.Parse(response);
+
+        CdpCommandException failure = Assert.Throws<CdpCommandException>(
+            () => CdpBrowserSession.EvaluatedNumber(document.RootElement))!;
+
+        Assert.That(failure.Code, Is.EqualTo("cdp_evaluation_failed"));
+    }
+
+    [Test]
+    public void AnEvaluationReturnsItsValue()
+    {
+        using JsonDocument text = JsonDocument.Parse("""{"id":1,"result":{"result":{"type":"string","value":"https://example.com/"}}}""");
+        using JsonDocument none = JsonDocument.Parse("""{"id":1,"result":{"result":{"type":"object","subtype":"null","value":null}}}""");
+        using JsonDocument number = JsonDocument.Parse("""{"id":1,"result":{"result":{"type":"number","value":120.5}}}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CdpBrowserSession.EvaluatedString(text.RootElement), Is.EqualTo("https://example.com/"));
+            Assert.That(CdpBrowserSession.EvaluatedString(none.RootElement), Is.Empty);
+            Assert.That(CdpBrowserSession.EvaluatedNumber(number.RootElement), Is.EqualTo(120.5));
+        });
+    }
+
+    [Test]
+    public void ACdpCommandWithoutAnswerEndsAtItsOwnTimeoutAndClosesTheSocket()
+    {
+        // Ronda q-web: an alert() on the page holds Runtime.evaluate; the command waited on the turn's token alone.
+        using var socket = new SilentWebSocket();
+
+        CdpCommandException failure = Assert.ThrowsAsync<CdpCommandException>(async () =>
+            await CdpBrowserSession.SendCommandAsync(
+                socket, 7, "Runtime.evaluate", null, TimeSpan.FromMilliseconds(200), CancellationToken.None))!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(failure.Code, Is.EqualTo("cdp_command_timeout"));
+            Assert.That(socket.Sent, Is.EqualTo(1));
+            Assert.That(socket.Aborted, Is.True);
+        });
+    }
+
+    [Test]
+    public void ATurnCancelledDuringACdpCommandStaysACancellation()
+    {
+        using var socket = new SilentWebSocket();
+        using var turn = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+
+        Assert.That(async () => await CdpBrowserSession.SendCommandAsync(
+                socket, 7, "Runtime.evaluate", null, TimeSpan.FromSeconds(30), turn.Token),
+            Throws.InstanceOf<OperationCanceledException>());
+    }
+
+    [Test]
+    public async Task AFailedPageEvaluationIsToldByItsCodeNotAsAnEscapedException()
+    {
+        using TemporaryDirectory temporary = new();
+        using var edge = new ThrowingPageSession(
+            temporary.Path, new CdpCommandException("cdp_evaluation_failed", "Runtime.evaluate threw."));
+        using var http = new HttpClient(new StubHttpHandler("<rss><channel></channel></rss>"));
+        using var web = new WebBrowserAdapter(edge, http, new CdpBrowserSessionContext());
+
+        ExternalCapabilityReceipt page = await web.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.False);
+            Assert.That(page.ErrorCode, Is.EqualTo("cdp_evaluation_failed"));
+        });
+    }
+
     [Test]
     public async Task NamedBrowserNavigationKeepsItsSessionForTheImmediatePageRead()
     {
@@ -6459,6 +6587,46 @@ public sealed class ExternalAdaptersTests
         }
     }
 
+    // A CDP socket that takes every command and never answers (a page held by alert()).
+    private sealed class SilentWebSocket : System.Net.WebSockets.WebSocket
+    {
+        internal int Sent { get; private set; }
+
+        internal bool Aborted { get; private set; }
+
+        public override System.Net.WebSockets.WebSocketCloseStatus? CloseStatus => null;
+        public override string? CloseStatusDescription => null;
+        public override System.Net.WebSockets.WebSocketState State =>
+            Aborted ? System.Net.WebSockets.WebSocketState.Aborted : System.Net.WebSockets.WebSocketState.Open;
+        public override string? SubProtocol => null;
+        public override void Abort() => Aborted = true;
+        public override Task CloseAsync(System.Net.WebSockets.WebSocketCloseStatus closeStatus,
+            string? statusDescription, CancellationToken cancellationToken) => Task.CompletedTask;
+        public override Task CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus closeStatus,
+            string? statusDescription, CancellationToken cancellationToken) => Task.CompletedTask;
+        public override void Dispose() { }
+
+        public override async Task<System.Net.WebSockets.WebSocketReceiveResult> ReceiveAsync(
+            ArraySegment<byte> buffer, CancellationToken cancellationToken)
+        {
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+            throw new InvalidOperationException("unreachable");
+        }
+
+        public override Task SendAsync(ArraySegment<byte> buffer, System.Net.WebSockets.WebSocketMessageType messageType,
+            bool endOfMessage, CancellationToken cancellationToken)
+        {
+            Sent++;
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class ThrowingPageSession(string profile, Exception failure) : CdpBrowserSession(profile)
+    {
+        internal override ValueTask<CdpPageReadResult> ReadPageAsync(
+            int maximumCharacters, CancellationToken cancellationToken) => ValueTask.FromException<CdpPageReadResult>(failure);
+    }
+
     private sealed class StubBrowserPageSession(string profile, CdpPageReadResult result)
         : CdpBrowserSession(profile)
     {
@@ -6479,6 +6647,8 @@ public sealed class ExternalAdaptersTests
     {
         internal int ReadCalls { get; private set; }
 
+        internal int NavigateCalls { get; private set; }
+
         // APP_MISSING952 (d2cf40e0c): a named navigation verifies the browser's
         // identity by the observed executable; a stub without one stays unverified.
         internal override string? ObservedExecutablePath => observedExecutablePath;
@@ -6488,6 +6658,7 @@ public sealed class ExternalAdaptersTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            NavigateCalls++;
             return ValueTask.FromResult(navigation);
         }
 

@@ -141,6 +141,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         {
             return effectBoundary.Failure(operation, "web_argument_invalid");
         }
+        catch (CdpCommandException exception)
+        {
+            return effectBoundary.Failure(operation, exception.Code);
+        }
         catch (Exception exception) when (exception is IOException
             or HttpRequestException or WebSocketException or JsonException
             or TimeoutException or XmlException)
@@ -1243,7 +1247,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteEndObject();
         });
 
-    private static Uri RequireWebUri(string value)
+    // The one rule for an address BAXY opens in a browser: http(s), a host and no user info (https://bank@evil.example/
+    // reads as «bank» and goes to evil.example); browser.navigate.named applies it too.
+    internal static Uri RequireWebUri(string value)
     {
         if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
             || uri.Scheme is not ("http" or "https")
@@ -1407,6 +1413,13 @@ internal sealed class CdpBrowserSessionContext
     }
 }
 
+/// <summary>A CDP command that did not give what it was sent for, told by its own code: an IOException, so every caller
+/// that takes a lost CDP endpoint as a failure takes this one too.</summary>
+internal sealed class CdpCommandException(string code, string message) : IOException(message)
+{
+    internal string Code { get; } = code;
+}
+
 internal class CdpBrowserSession : IDisposable
 {
     // Ronda final: how many times this session launched its own browser, so a read that had to open one says so.
@@ -1461,7 +1474,7 @@ internal class CdpBrowserSession : IDisposable
             endpoint, createIfMissing: true, cancellationToken)
             .ConfigureAwait(false);
         using var socket = new ClientWebSocket();
-        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+        await ConnectCdpAsync(socket, webSocket, cancellationToken).ConfigureAwait(false);
         string beforeUrl = await EvaluateStringAsync(socket, "location.href", cancellationToken)
             .ConfigureAwait(false);
         string beforeDocument = await EvaluateStringAsync(
@@ -1645,7 +1658,7 @@ internal class CdpBrowserSession : IDisposable
         }
 
         using var socket = new ClientWebSocket();
-        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+        await ConnectCdpAsync(socket, webSocket, cancellationToken).ConfigureAwait(false);
         if (action == "back")
         {
             JsonElement history = await CommandAsync(
@@ -1837,7 +1850,7 @@ internal class CdpBrowserSession : IDisposable
         (string targetId, Uri webSocket) = await ResolveTargetAsync(
             endpoint, createIfMissing: false, cancellationToken).ConfigureAwait(false);
         using var socket = new ClientWebSocket();
-        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+        await ConnectCdpAsync(socket, webSocket, cancellationToken).ConfigureAwait(false);
         for (int attempt = 0; attempt < 40; attempt++)
         {
             string snapshot = await EvaluateStringAsync(
@@ -1986,7 +1999,7 @@ internal class CdpBrowserSession : IDisposable
         foreach ((string targetId, Uri webSocket) in candidates)
         {
             using var socket = new ClientWebSocket();
-            await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+            await ConnectCdpAsync(socket, webSocket, cancellationToken).ConfigureAwait(false);
             string[] before = (await EvaluateStringAsync(socket, probe, cancellationToken).ConfigureAwait(false))
                 .Split('\u001f');
             if (before.Length != 4)
@@ -2065,7 +2078,7 @@ internal class CdpBrowserSession : IDisposable
         (string targetId, Uri webSocket) = await ResolveTargetAsync(
             endpoint, createIfMissing: false, cancellationToken).ConfigureAwait(false);
         using var socket = new ClientWebSocket();
-        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+        await ConnectCdpAsync(socket, webSocket, cancellationToken).ConfigureAwait(false);
 
         string playbackFailure = "youtube_playback_not_verified_video_missing";
         bool reloaded = false;
@@ -2194,7 +2207,7 @@ internal class CdpBrowserSession : IDisposable
         (string targetId, Uri webSocket) = await ResolveTargetAsync(
             endpoint, createIfMissing: false, cancellationToken).ConfigureAwait(false);
         using var socket = new ClientWebSocket();
-        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+        await ConnectCdpAsync(socket, webSocket, cancellationToken).ConfigureAwait(false);
         string titleLiteral = "\"" + JsonEncodedText.Encode(title).ToString() + "\"";
         string searchLiteral = "\"" + JsonEncodedText.Encode(searchUri.AbsoluteUri).ToString() + "\"";
         double? baseline = null;
@@ -2344,7 +2357,7 @@ internal class CdpBrowserSession : IDisposable
         (string targetId, Uri webSocket) = await ResolveTargetAsync(
             endpoint, createIfMissing: true, cancellationToken).ConfigureAwait(false);
         using var socket = new ClientWebSocket();
-        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+        await ConnectCdpAsync(socket, webSocket, cancellationToken).ConfigureAwait(false);
         // El override vive con esta sesión CDP: dura lo que dura el socket, sólo
         // para este destino; Netflix y las navegaciones nombradas no lo ven.
         await CommandAsync(socket, "Emulation.setUserAgentOverride", writer =>
@@ -2816,13 +2829,63 @@ internal class CdpBrowserSession : IDisposable
         exception is HttpRequestException or IOException or JsonException
         || exception is OperationCanceledException && !cancellationToken.IsCancellationRequested;
 
-    private async ValueTask<JsonElement> CommandAsync(
-        ClientWebSocket socket,
+    // Ronda q-web: each CDP step had only the turn's token as its bound, and an alert() on the page holds
+    // Runtime.evaluate until the turn ends. Each connection and each command has its own bound; past it the socket is
+    // closed and the step fails as cdp_connect_timeout or cdp_command_timeout.
+    internal static readonly TimeSpan CommandTimeout = TimeSpan.FromSeconds(15);
+
+    private static async ValueTask ConnectCdpAsync(
+        ClientWebSocket socket, Uri webSocket, CancellationToken cancellationToken)
+    {
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        deadline.CancelAfter(CommandTimeout);
+        try
+        {
+            await socket.ConnectAsync(webSocket, deadline.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            socket.Abort();
+            throw new CdpCommandException("cdp_connect_timeout", "The CDP page socket did not open in time.");
+        }
+    }
+
+    private ValueTask<JsonElement> CommandAsync(
+        WebSocket socket,
+        string method,
+        Action<Utf8JsonWriter>? parameters,
+        CancellationToken cancellationToken) =>
+        SendCommandAsync(socket, Interlocked.Increment(ref _nextCommandId), method, parameters, CommandTimeout,
+            cancellationToken);
+
+    internal static async ValueTask<JsonElement> SendCommandAsync(
+        WebSocket socket,
+        int id,
+        string method,
+        Action<Utf8JsonWriter>? parameters,
+        TimeSpan timeout,
+        CancellationToken cancellationToken)
+    {
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        deadline.CancelAfter(timeout);
+        try
+        {
+            return await SendAndReceiveAsync(socket, id, method, parameters, deadline.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            socket.Abort();
+            throw new CdpCommandException("cdp_command_timeout", method + " gave no answer in time.");
+        }
+    }
+
+    private static async ValueTask<JsonElement> SendAndReceiveAsync(
+        WebSocket socket,
+        int id,
         string method,
         Action<Utf8JsonWriter>? parameters,
         CancellationToken cancellationToken)
     {
-        int id = Interlocked.Increment(ref _nextCommandId);
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
         {
@@ -2840,7 +2903,7 @@ internal class CdpBrowserSession : IDisposable
     }
 
     private async ValueTask<string> EvaluateStringAsync(
-        ClientWebSocket socket,
+        WebSocket socket,
         string expression,
         CancellationToken cancellationToken,
         bool userGesture = false)
@@ -2851,23 +2914,56 @@ internal class CdpBrowserSession : IDisposable
             writer.WriteBoolean("returnByValue", true);
             if (userGesture) writer.WriteBoolean("userGesture", true);
         }, cancellationToken).ConfigureAwait(false);
-        return response.GetProperty("result").GetProperty("result").GetProperty("value").GetString()
-            ?? string.Empty;
+        return EvaluatedString(response);
     }
 
     private async ValueTask<double> EvaluateNumberAsync(
-        ClientWebSocket socket, string expression, CancellationToken cancellationToken)
+        WebSocket socket, string expression, CancellationToken cancellationToken)
     {
         JsonElement response = await CommandAsync(socket, "Runtime.evaluate", writer =>
         {
             writer.WriteString("expression", expression);
             writer.WriteBoolean("returnByValue", true);
         }, cancellationToken).ConfigureAwait(false);
-        return response.GetProperty("result").GetProperty("result").GetProperty("value").GetDouble();
+        return EvaluatedNumber(response);
     }
 
+    // Ronda q-web: the value a Runtime.evaluate gave by value. A page script that threw (exceptionDetails), a CDP error
+    // or a value of another type escaped as KeyNotFoundException or InvalidOperationException, out of every adapter;
+    // it is cdp_evaluation_failed. A null value stays the empty string it was.
+    internal static string EvaluatedString(JsonElement response) =>
+        EvaluatedValue(response) switch
+        {
+            { ValueKind: JsonValueKind.String } value => value.GetString() ?? string.Empty,
+            { ValueKind: JsonValueKind.Null } => string.Empty,
+            _ => throw EvaluationFailed(),
+        };
+
+    internal static double EvaluatedNumber(JsonElement response) =>
+        EvaluatedValue(response) is { ValueKind: JsonValueKind.Number } value && value.TryGetDouble(out double number)
+            ? number
+            : throw EvaluationFailed();
+
+    private static JsonElement EvaluatedValue(JsonElement response)
+    {
+        if (response.ValueKind != JsonValueKind.Object
+            || !response.TryGetProperty("result", out JsonElement outer)
+            || outer.ValueKind != JsonValueKind.Object
+            || outer.TryGetProperty("exceptionDetails", out _)
+            || !outer.TryGetProperty("result", out JsonElement remote)
+            || remote.ValueKind != JsonValueKind.Object
+            || !remote.TryGetProperty("value", out JsonElement value))
+        {
+            throw EvaluationFailed();
+        }
+        return value;
+    }
+
+    private static CdpCommandException EvaluationFailed() =>
+        new("cdp_evaluation_failed", "Runtime.evaluate gave no value of the expected type.");
+
     private static async ValueTask<JsonElement> ReceiveCommandAsync(
-        ClientWebSocket socket,
+        WebSocket socket,
         int expectedId,
         CancellationToken cancellationToken)
     {

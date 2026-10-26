@@ -50,6 +50,17 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         // WEB1739: error codes and the post-read authority name the browser family
         // («chrome_not_installed», «edge_cdp_url_postread»), never Opera for another browser.
         string family = browser is "opera" or "opera_gx" ? "opera" : browser;
+        // Ronda q-web: the address is held to browser.navigate's rule (RequireWebUri) before anything opens, in the
+        // person's browser or by CDP; https://bank@evil.example/ was opened in both.
+        Uri target;
+        try
+        {
+            target = WebBrowserAdapter.RequireWebUri(ExternalJson.RequiredString(arguments, "url"));
+        }
+        catch (InvalidDataException)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "named_browser_url_invalid");
+        }
         // The browser the model named is the one used: «opera» is Opera, «opera_gx» is Opera GX, and an absent one
         // fails as not installed (BAXY Renew audit 2026-10-15; it was Opera GX in place of Opera, WEB1797).
         // M122 (owner 2026-10-02): the browser named is the person's own default
@@ -57,17 +68,13 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         // not in a private profile of the same browser.
         if (!_browsers.ContainsKey(browser)
             && _userBrowser?.Resolve() is { } userBrowser
-            && string.Equals(userBrowser.Family, browser, StringComparison.Ordinal)
-            && Uri.TryCreate(arguments.TryGetProperty("url", out JsonElement url)
-                    && url.ValueKind == JsonValueKind.String ? url.GetString() : null,
-                UriKind.Absolute, out Uri? address)
-            && address.Scheme is "http" or "https")
+            && string.Equals(userBrowser.Family, browser, StringComparison.Ordinal))
         {
             ExternalCapabilityReceipt? opened;
             try
             {
                 opened = await _userBrowser.NavigateAsync(
-                    operation, userBrowser, address, effectBoundary, cancellationToken).ConfigureAwait(false);
+                    operation, userBrowser, target, effectBoundary, cancellationToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (
                 cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
@@ -92,17 +99,6 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
                 WebBrowserAdapter.SharedBrowserProfile(_dataRoot, browser), executable);
             _browsers.Add(browser, session);
         }
-        Uri target;
-        try
-        {
-            target = new Uri(ExternalJson.RequiredString(arguments, "url"), UriKind.Absolute);
-            if (target.Scheme is not ("http" or "https"))
-                return ExternalJson.Failure(operation, "named_browser_url_invalid");
-        }
-        catch (Exception exception) when (exception is UriFormatException or InvalidDataException)
-        {
-            return ExternalJson.FailureBeforeEffect(operation, "named_browser_url_invalid");
-        }
         _sessionContext?.Activate(session);
         CdpNavigationResult navigation;
         try
@@ -119,6 +115,10 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
             return effectBoundary.Failure(operation, family + "_cdp_timeout");
+        }
+        catch (CdpCommandException exception)
+        {
+            return effectBoundary.Failure(operation, exception.Code);
         }
         catch (Exception exception) when (exception is IOException or HttpRequestException
             or TimeoutException)
