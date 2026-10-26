@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useBaxy } from './store';
-import { getJson, send } from './api';
+import { getJson, send, sendTold } from './api';
 import { Rail, type PanelId, type Profile } from './components/Rail';
 import { Chat } from './components/Chat';
 import { Boot, Caption } from './components/Caption';
@@ -26,6 +26,7 @@ import type { BaxyState, GeneralSettings, Metrics, MicMode, ProposalSettings } f
    only read on dark), and so does any moment without a decoded frame. */
 const AVATAR = (() => { try { return new URLSearchParams(location.search).get('avatar') || localStorage.getItem('bx-avatar') || 'video'; } catch { return 'video'; } })();
 
+const MAX_REQUEST = 4096; /* MissionInput.MaximumCharacters */
 const NARROW = 1100; /* below this layout width the chat floats over the face */
 const RAIL = 192, CHATW = 330;
 
@@ -307,9 +308,17 @@ export default function App() {
 
   // ---- actions ----
   const submit = useCallback(async (text: string) => {
-    const r = await send('POST', '/turn', { text });
-    if (r === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
-    return r !== null;
+    // the host refuses a longer request (MissionInput.MaximumCharacters, UTF-16 like a JS string's length): it is never
+    // cut to fit, which would send a request other than the one written; it is not sent, and the view says why
+    if (text.length > MAX_REQUEST) {
+      setNotice({ b: 'BAXY', t: 'el pedido es demasiado largo · máximo ' + MAX_REQUEST + ' caracteres, tiene ' + text.length });
+      return false;
+    }
+    // /turn answers when the turn ends: a request that got no answer may have been taken and is not given back to the
+    // box (Enter would send it again); only one the host refused is
+    const r = await sendTold('POST', '/turn', { text });
+    if (r.value === null) setNotice({ b: 'BAXY', t: 'no pudo recibir el pedido ahora' });
+    return !r.refused;
   }, []);
   // the answer names the card it answers: a press or a key meant for one that ended never answers the next (the host
   // refuses it), and a refused answer is said, never lost in silence. A card is answered once: a second press or key
@@ -438,8 +447,9 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       const a = document.activeElement as HTMLInputElement | null;
       const typing = !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') && !!a.value.trim();
-      // Enter on a focused button presses that button: on the card's «No» it is a No, never the card's Sí
-      const control = e.key === 'Enter' && !!a?.closest?.('button, a[href], select, [role="button"], [role="switch"]');
+      // Enter on a focused button of a card presses that button: on the card's «No» it is a No, never the card's Sí.
+      // Any other focused button (the gear a closed panel gave the focus back to) does not take the card's Enter.
+      const control = e.key === 'Enter' && !!a?.closest?.('.bx-card') && !!a.closest('button, a[href], select, [role="button"], [role="switch"]');
       if (pendingCard && !panel && !typing && !control && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); void answer(e.key === 'Enter', pendingCard.id); return; }
       if (e.key === 'Escape' && panel) setPanel(null);
       if (e.key === ' ' && mic === 'ptt' && !e.repeat && !panel && !(a && a.tagName === 'INPUT' && a.value)) { e.preventDefault(); pttStart(); }

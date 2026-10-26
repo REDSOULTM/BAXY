@@ -110,13 +110,23 @@ test('Esc con el menú del micrófono abierto cierra el menú y no rechaza la ta
 
 const box = () => h.page.locator('input[aria-label="Escribe a BAXY"]');
 
-test('un pedido que el host no tomó vuelve a la caja, no se pierde', async () => {
+test('un pedido que el host rechazó vuelve a la caja, no se pierde', async () => {
   h = await openView();
-  h.reply('/turn', () => ({ status: 503 }));
+  h.reply('/turn', () => ({ status: 409, body: { ok: false, error: 'agent_not_ready' } }));
   await box().fill('abre la calculadora');
   await box().press('Enter');
   await expect(h.page.locator('.bx-notice')).toContainText('no pudo recibir el pedido');
   await expect(box()).toHaveValue('abre la calculadora');
+});
+
+test('un pedido sin respuesta del host (plazo del puente agotado) no vuelve a la caja: pudo haberse tomado', async () => {
+  h = await openView();
+  // field-native-bridge.js: a request that timed out or failed in the bridge answers 503 with no host refusal
+  h.reply('/turn', () => ({ status: 503, body: { error: 'Error: BAXY native request timed out: http' } }));
+  await box().fill('abre la calculadora');
+  await box().press('Enter');
+  await expect(h.page.locator('.bx-notice')).toContainText('no pudo recibir el pedido');
+  await expect(box()).toHaveValue('');
 });
 
 test('un pedido que el host tomó deja la caja vacía', async () => {
@@ -127,12 +137,14 @@ test('un pedido que el host tomó deja la caja vacía', async () => {
   await expect(box()).toHaveValue('');
 });
 
-test('la caja no admite más de lo que el host acepta (4096 caracteres)', async () => {
-  // MissionInput.MaximumCharacters: a longer request is refused as invalid_text
+test('un pedido de más de 4096 caracteres no se recorta ni se envía: se dice por qué y queda en la caja', async () => {
+  // MissionInput.MaximumCharacters (UTF-16): the host refuses a longer request as invalid_text
   h = await openView();
   await box().fill('a'.repeat(5000));
   await box().press('Enter');
-  await expect.poll(() => h.calls.filter((c) => c.path === '/turn').map((c) => (c.body as { text: string }).text.length)).toEqual([4096]);
+  await expect(h.page.locator('.bx-notice')).toContainText('4096');
+  expect(h.calls.filter((c) => c.path === '/turn')).toEqual([]);
+  await expect(box()).toHaveValue('a'.repeat(5000));
 });
 
 test('accesibilidad: la opción elegida de cada selector y lo que despliega cada botón se anuncian', async () => {
@@ -251,4 +263,20 @@ test('teclado: un panel abierto toma el foco y al cerrarse lo devuelve a lo que 
   await expect.poll(inPanel, 'Memoria tiene el foco').toBe(true);
   await p.keyboard.press('Escape');
   await expect(memory).toBeFocused();
+});
+
+test('Enter con el foco en un botón fuera de la tarjeta (el engranaje tras cerrar Ajustes) responde Sí', async () => {
+  h = await openView();
+  const p = h.page;
+  await p.locator('.bx-gear').focus();
+  await p.keyboard.press('Enter');
+  await expect(p.locator('.settings-panel')).toBeVisible();
+  await p.keyboard.press('Escape');
+  await expect(p.locator('.bx-gear')).toBeFocused();
+  h.emit({ type: 'item', item: card('c1') });
+  await expect(p.locator('.bx-card.s-pending')).toHaveCount(1);
+  await p.waitForTimeout(150); // the keys follow the card once the view's effects ran
+  await p.keyboard.press('Enter');
+  await expect.poll(answers).toEqual([{ approve: true, card: 'c1' }]);
+  await expect(p.locator('.settings-panel')).toHaveCount(0);
 });
