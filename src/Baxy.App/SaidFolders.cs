@@ -77,6 +77,8 @@ internal sealed class SaidFolders
     private string _words = string.Empty;
     // The words of the person's previous request (none after a heartbeat or a new session).
     private string _before = string.Empty;
+    // The folders this turn's calls made in the person's folders (Ran).
+    private readonly List<string> _made = [];
 
     /// <param name="known">Where each known folder is, by its label (tests point them at a temporary folder).</param>
     internal SaidFolders(Func<string, string?>? known = null) => _known = known ?? PersonFolders.Path;
@@ -99,6 +101,7 @@ internal sealed class SaidFolders
         _before = _words;
         _words = words ?? string.Empty;
         _told.Clear();
+        _made.Clear();
     }
 
     /// <summary>
@@ -107,6 +110,16 @@ internal sealed class SaidFolders
     /// </summary>
     internal void Answered(string words) =>
         _words = _words.Length == 0 ? words ?? string.Empty : _words + "\n" + words;
+
+    /// <summary>A call ran with <paramref name="arguments"/> as sent and ended with <paramref name="status"/>: a folder
+    /// it made in the person's folders is one this turn made (Rule).</summary>
+    internal void Ran(string operation, JsonObject arguments, string? status)
+    {
+        if (operation == "filesystem.create.directory" && status == OperationStatuses.Completed
+            && ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) && descriptor is not null
+            && ReachOf(operation, descriptor, arguments) is { Sandbox: false, Items: [string folder] })
+            _made.Add(folder);
+    }
 
     /// <summary>A heartbeat or a new session: no words of the person's hold.</summary>
     internal void Clear() => Heard(string.Empty);
@@ -253,10 +266,17 @@ internal sealed class SaidFolders
             return null;
         string named = Said(places);
         string where = reach.Sandbox ? "BAXY's own working folder" : string.Join(", ", reach.Items);
-        // Of several folders named, the ones that hold the file or folder the call names are its place.
-        Place[] holding = reach.Leaf is null ? [.. places]
-            : [.. places.Where(place => Holds(place.Path, reach.Leaf))];
-        IReadOnlyList<Place> targets = holding.Length == 1 ? holding : places;
+        // Holdout v8 (falsedades #16): «haz una carpeta cumple_benja en BAXY-bench, adentro un archivo lista.txt»; the
+        // write left out the folder just made and was offered BAXY-bench/lista.txt, beside it. A folder this turn made
+        // inside a folder named is a place of it. Of those and the folders named, the ones that hold the file or folder
+        // the call names are its place; of a write that names what none holds, the only folder made.
+        Place[] made = [.. _made.Where(folder => places.Any(place => !Same(folder, place.Path) && Within(folder, place.Path)))
+            .Distinct(StringComparer.OrdinalIgnoreCase).Select(folder => new Place(folder, Path.GetFileName(folder)))];
+        Place[] holding = reach.Leaf is null ? []
+            : [.. places.Concat(made).Where(place => Holds(place.Path, reach.Leaf))];
+        IReadOnlyList<Place> targets = holding.Length == 1 ? holding
+            : holding.Length == 0 && made.Length == 1 && reach.Leaf is not null && descriptor.Risk != OperationRisks.ReadOnly
+                ? made : places;
         // The look there is said as a call, with what the call looked for (holdout v6 V6E042: told only that file_find
         // «looks there», the model wrote the same filesystem_search again).
         string? look = reach.Sandbox && descriptor.Risk == OperationRisks.ReadOnly
@@ -297,7 +317,9 @@ internal sealed class SaidFolders
         if (options.Any(option => option.Arguments is not null))
         {
             // Of two folders of that name, the one that holds the file is said by its path and what it holds.
-            string which = places.Count == 1 ? "that folder"
+            string which = targets.Count == 1 && made.Contains(targets[0])
+                    ? $"{targets[0].Path}, the folder this turn made in {(places.Count == 1 ? "it" : "one of them")},"
+                : places.Count == 1 ? "that folder"
                 : targets.Count == 1 ? targets[0].Path + Holding(targets[0], reach.Leaf) : "one of them";
             next = $"nothing ran: {who} {named} and this call would act in {where}, outside it. If "
                 + $"{which} is the place of this call, call {wire} again with "

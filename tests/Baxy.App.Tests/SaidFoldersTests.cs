@@ -548,6 +548,49 @@ public sealed class SaidFoldersTests
             Does.Contain("call file_write again with relativePath \"viaje chiloe 2027/itinerario.txt\""));
     }
 
+    // Holdout v8 (falsedades #16, cien and final2, s0 and s1): «haz una carpeta cumple_benja en BAXY-bench, adentro un
+    // archivo lista.txt»; the model made BAXY-bench/cumple_benja and wrote lista.txt in the home folder, and the refusal
+    // offered BAXY-bench/lista.txt, beside the folder just made. A folder BAXY made in this turn inside the folder named
+    // is a place of it: the only one made is the place of a write that names what no place holds, and a read of what it
+    // holds is routed into it. The folder named stays a place of its own.
+    [Test]
+    public void AFolderMadeInTheTurnInsideTheFolderNamedIsThePlaceOfTheWriteThatLeftItOut()
+    {
+        string bench = Path.Combine(_home, "taller-bench");
+        string party = Path.Combine(bench, "cumple_benja");
+        Directory.CreateDirectory(bench);
+        File.WriteAllText(Path.Combine(bench, "invitados.txt"), "ana\n");
+        SaidFolders said = Heard("haz una carpeta cumple_benja en taller-bench, adentro un archivo lista.txt que diga globos");
+        var make = new JsonObject { ["relativePath"] = "taller-bench/cumple_benja", ["folder"] = "home" };
+        Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"), make), Is.Null);
+        Directory.CreateDirectory(party);
+        said.Ran("filesystem.create.directory", make, "completed");
+
+        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject
+        {
+            ["relativePath"] = "lista.txt", ["text"] = "globos", ["folder"] = "home",
+        })?.Refusal?["next"] ?? string.Empty;
+        File.WriteAllText(Path.Combine(party, "lista.txt"), "globos\n");
+        SaidFolders.Ruling? read = said.Rule("file.read", Descriptor("file.read"),
+            new JsonObject { ["fileName"] = "lista.txt", ["folder"] = "home" });
+        SaidFolders.Ruling? beside = said.Rule("file.read", Descriptor("file.read"),
+            new JsonObject { ["fileName"] = "invitados.txt", ["folder"] = "home" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.Contain($"If {party}, the folder this turn made in it, is the place of this call, call "
+                + $"file_write again with relativePath \"taller-bench/cumple_benja/lista.txt\" (it acts in "
+                + $"{Path.Combine(party, "lista.txt")})"));
+            Assert.That(next, Does.Not.Contain("\"taller-bench/lista.txt\""));
+            Assert.That(read?.Arguments["subdirectory"]?.GetValue<string>(), Is.EqualTo("taller-bench/cumple_benja"));
+            Assert.That(beside?.Arguments["subdirectory"]?.GetValue<string>(), Is.EqualTo("taller-bench"));
+            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
+            {
+                ["relativePath"] = "taller-bench/notas.txt", ["text"] = "x", ["folder"] = "home",
+            }), Is.Null);
+        });
+    }
+
     // Holdout v5 V5E034/V5E044: a count in a folder of theirs was refused with no call that could reach it.
     [Test]
     public void ACountLeavingOutTheFolderNamedIsRoutedIntoItsSubdirectory()

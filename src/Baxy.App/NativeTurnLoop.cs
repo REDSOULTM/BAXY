@@ -977,6 +977,7 @@ internal sealed class NativeTurnLoop
 
         Resolve(prepared, memory);
         _turnPlace.Ran(operation, arguments, response.Status);
+        _said.Ran(operation, arguments, response.Status);
         string body = memory
             ? MemoryObservation(prepared, response)
             : OperationResponseProjection.Create(response, operation, _turnPlace.Asked).Message;
