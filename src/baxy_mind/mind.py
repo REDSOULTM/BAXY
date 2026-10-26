@@ -20,8 +20,6 @@ import urllib.error
 from pathlib import Path
 from typing import Any
 
-from . import context_cerrados
-from . import context_vistas
 from .answer_check import check as check_answer
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
@@ -1490,7 +1488,6 @@ class Mind:
                 turn.update(asked=asked, after_asked=after, text=said, **was)
                 raise
         self._close_open_calls()
-        self._clean_closed()
         answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
         clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
         self.conversation.append(clock)
@@ -1515,16 +1512,6 @@ class Mind:
             self._take_back(self.conversation, clock)
             self._turn = None
             raise
-
-    def _clean_closed(self) -> None:
-        """H-ctx «cerrados» (BAXY_RENEW_CTX_MODE=cerrados): with no turn open, the closed turns' results in short
-        (context_cerrados.py), once each: at the history's prefill, where nobody waits, or at the next turn's start."""
-        if not context_cerrados.on() or not self.conversation:
-            return
-        started = time.perf_counter()
-        changed = context_cerrados.clean_closed(self.conversation, len(self.conversation), TURN_FACTS)
-        if changed:
-            self._log("ctx.cerrados", started, None, results=changed)
 
     @staticmethod
     def _take_back(conv: list[dict[str, Any]], first: dict[str, Any]) -> None:
@@ -1623,7 +1610,6 @@ class Mind:
                 or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
             return False
         started = time.perf_counter()
-        self._clean_closed()
         after = [{"role": "user", "content": self._clock()}] if clock else []
         body = {"messages": [{"role": "system", "content": self._system()}, *self._history(self.conversation),
                              *after, {"role": "user", "content": PREFILL_MARK}],
@@ -1963,14 +1949,6 @@ class Mind:
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": shown + "\n[En este turno: " + "; ".join(line) + "]" + note})
         turn["awaiting"] = None
-        if context_vistas.on():
-            # H-ctx «vistas» (BAXY_RENEW_CTX_MODE=vistas): an older look this one replaces, or an identical older result, in
-            # short (context_vistas.py); the prefix is untouched, the model re-reads from the first one changed.
-            begin = max([i for i, m in enumerate(conv) if m["role"] == "user"
-                         and str(m.get("content") or "").startswith(CLOCK_MARK)], default=0)
-            shortened = context_vistas.clean_turn(conv, begin, TURN_FACTS, _result_key)
-            if shortened:
-                aids["ctx_vistas"] = shortened
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
             self._log("turn.aid", time.perf_counter(), None, operation=turn.get("calling"),
