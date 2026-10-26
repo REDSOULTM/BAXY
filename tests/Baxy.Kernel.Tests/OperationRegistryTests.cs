@@ -68,19 +68,21 @@ public sealed class OperationRegistryTests
         });
     }
 
-    // D3: what reaches another person keeps asking; playing, navigating, clicking,
-    // copying, capturing, typing, radios and settings do not. Installing asks since
-    // the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo Normal BAXY
-    // confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct».
-    [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
+    // D3: what reaches another person keeps asking; playing, navigating, clicking, copying, capturing, typing, radios
+    // and settings do not. Installing asks since the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo
+    // Normal BAXY confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct». Decisión del
+    // dueño 2026-10-25 («solo se debe pedir confirmación a cosas que son destructivas… que Baxy no te moleste todo el
+    // tiempo… sino para cosas que realmente son peligrosas»): the test message to the owner's own channel, an event in
+    // their own calendar, their own game library and a graceful close go directly; they all asked before.
+    [TestCase("message.send.test", PolicyDecision.Allow)]
+    [TestCase("email.send", PolicyDecision.RequireConfirmation)]
     // Uso real 2026-10-21: message.send asks in normal mode and in Bypass (MessageSendAsksEvenInBypass).
     [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
     [TestCase("media.play.query", PolicyDecision.Allow)]
     [TestCase("streaming.play.named", PolicyDecision.Allow)]
     [TestCase("browser.navigate.named", PolicyDecision.Allow)]
     [TestCase("input.visible.click", PolicyDecision.Allow)]
-    // Auditoría final 2, fila 8: an event in the owner's Outlook calendar is synchronized to their account.
-    [TestCase("calendar.event.create", PolicyDecision.RequireConfirmation)]
+    [TestCase("calendar.event.create", PolicyDecision.Allow)]
     [TestCase("capture.screenshot", PolicyDecision.Allow)]
     [TestCase("clipboard.read.text", PolicyDecision.Allow)]
     [TestCase("input.text.type", PolicyDecision.Allow)]
@@ -88,16 +90,18 @@ public sealed class OperationRegistryTests
     [TestCase("bluetooth.device.pair", PolicyDecision.Allow)]
     [TestCase("system.settings.set", PolicyDecision.Allow)]
     [TestCase("memory.enable", PolicyDecision.Allow)]
-    [TestCase("game.install.named", PolicyDecision.RequireConfirmation)]
+    [TestCase("game.install.named", PolicyDecision.Allow)]
     [TestCase("package.install", PolicyDecision.RequireConfirmation)]
     [TestCase("game.uninstall.named", PolicyDecision.RequireConfirmation)]
     [TestCase("game.launch", PolicyDecision.Allow)]
-    [TestCase("game.install.cancel", PolicyDecision.RequireConfirmation)]
+    [TestCase("game.install.cancel", PolicyDecision.Allow)]
+    [TestCase("game.install.cancel.active", PolicyDecision.Allow)]
     [TestCase("memory.forget", PolicyDecision.RequireConfirmation)]
     [TestCase("system.process.terminate.named", PolicyDecision.RequireConfirmation)]
     [TestCase("system.recyclebin.empty", PolicyDecision.RequireConfirmation)]
-    [TestCase("window.close.all", PolicyDecision.RequireConfirmation)]
-    [TestCase("app.close", PolicyDecision.RequireConfirmation)]
+    [TestCase("window.close.all", PolicyDecision.Allow)]
+    [TestCase("app.close", PolicyDecision.Allow)]
+    [TestCase("app.restart", PolicyDecision.Allow)]
     [TestCase("system.power", PolicyDecision.Allow)]
     [TestCase("input.scroll", PolicyDecision.Allow)]
     public void Normal_mode_asks_only_for_the_destructive_or_what_reaches_another_person(
@@ -234,6 +238,32 @@ public sealed class OperationRegistryTests
     [TestCase("Archivo: eliminar", true)]
     [TestCase("Delete (Supr)", true)]
     [TestCase("Eli\u200Bminar", true)]
+    // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+    // peligrosas»): quitar, remove, limpiar, clear, vaciar, empty or descartar over a harmless object (the mute, a
+    // filter, a search, a format, a notification, a selection) destroys nothing; they all asked before. Clearing a
+    // history, emptying the bin and discarding changes still ask.
+    [TestCase("Quitar silencio", false)]
+    [TestCase("Remove filter", false)]
+    [TestCase("Clear filters", false)]
+    [TestCase("Quitar los filtros de la tabla", false)]
+    [TestCase("Limpiar búsqueda", false)]
+    [TestCase("Clear search", false)]
+    [TestCase("Quitar formato", false)]
+    [TestCase("Clear format", false)]
+    [TestCase("Descartar notificación", false)]
+    [TestCase("Clear all notifications", false)]
+    [TestCase("Limpiar notificaciones", false)]
+    [TestCase("Vaciar selección", false)]
+    [TestCase("Clear selection", false)]
+    [TestCase("Unmute", false)]
+    [TestCase("Clear search history", true)]
+    [TestCase("Limpiar historial de búsqueda", true)]
+    [TestCase("Clear history", true)]
+    [TestCase("Vaciar papelera", true)]
+    [TestCase("Empty recycle bin", true)]
+    [TestCase("Descartar cambios", true)]
+    [TestCase("Quitar filtro y eliminar", true)]
+    [TestCase("Borrar búsqueda", true)]
     [TestCase("Elementos eliminados", false)]
     [TestCase("Deleted items", false)]
     [TestCase("You can remove any of these items from your list later", false)]
@@ -362,17 +392,18 @@ public sealed class OperationRegistryTests
         });
     }
 
-    // Auditoría final 2, fila 9: Ctrl+W can close the window (the File Explorer, the last tab of a browser), so it asks
-    // like app.close; the other shortcuts do not.
-    [TestCase("""{"key":"ctrl_w"}""", PolicyDecision.RequireConfirmation)]
-    [TestCase("""{"key":"ctrl_w","window":4660}""", PolicyDecision.RequireConfirmation)]
+    // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+    // peligrosas»): Ctrl+W closes a tab or a window gracefully, as app.close does, and goes directly (it asked before,
+    // auditoría final 2, fila 9); the application's own «No guardar» is what asks. No shortcut asks.
+    [TestCase("""{"key":"ctrl_w"}""", PolicyDecision.Allow)]
+    [TestCase("""{"key":"ctrl_w","window":4660}""", PolicyDecision.Allow)]
     [TestCase("""{"key":"ctrl_t"}""", PolicyDecision.Allow)]
     [TestCase("""{"key":"ctrl_s"}""", PolicyDecision.Allow)]
     // Holdout v5 V5E023: Ctrl+End and Ctrl+Home only move the caret, on a text field or anywhere.
     [TestCase("""{"key":"ctrl_end"}""", PolicyDecision.Allow)]
     [TestCase("""{"key":"ctrl_home","target":"text_field","window":4660}""", PolicyDecision.Allow)]
     [TestCase("""{"key":"ctrl_end","target":"message_composer"}""", PolicyDecision.Allow)]
-    public void Ctrl_w_asks_because_it_may_close_a_window(string arguments, PolicyDecision expected)
+    public void Shortcuts_go_without_asking_ctrl_w_too(string arguments, PolicyDecision expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.key.press");
         using JsonDocument document = JsonDocument.Parse(arguments);

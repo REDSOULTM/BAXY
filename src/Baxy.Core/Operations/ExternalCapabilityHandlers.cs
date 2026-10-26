@@ -323,61 +323,9 @@ internal sealed class ExternalCapabilityHandler(
     string operation,
     IExternalCapabilityProvider provider) : IOperationHandler, IInvocationPreflight
 {
-    // v3 r22 uso real: the operations that only point at or move through what a window shows (a click on a control,
-    // a scroll, the list of visible controls) put nothing into it. Every other call that reaches a window (the
-    // catalog's typed effect window_input) may have written into it, and which one is not always known, so it marks
-    // every process BAXY launched as written (LaunchProvenance, fail-closed): their windows ask again before closing.
-    // Al máximo, flujos: a call that reaches no window (the volume, a radio) wrote into none («abre el bloc de notas»,
-    // «sube el volumen», «ciérralo» asked).
-    // v3 r22 revisión: a pointing operation may still carry text it types into what it opens (a click's «search» is
-    // typed into the box the click opened, SearchBurst.TypeAsync); with any such argument present and not empty it
-    // writes as well.
-    private static readonly Dictionary<string, string[]> PointingOperations = new(StringComparer.Ordinal)
-    {
-        ["input.visible.click"] = ["search"],
-        ["input.scroll"] = [],
-        ["input.visible.controls"] = [],
-    };
-
     private readonly IExternalCapabilityProvider _provider =
         provider ?? throw new ArgumentNullException(nameof(provider));
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition(operation);
-
-    internal static bool MayWriteIntoAWindow(OperationDefinition definition, JsonElement arguments)
-    {
-        if (definition.Risk == OperationRisk.ReadOnly
-            || definition.ProductDescriptor?.Has(OperationEffects.WindowInput, arguments) == false)
-        {
-            return false;
-        }
-
-        if (!PointingOperations.TryGetValue(definition.Name, out string[]? typed))
-        {
-            return true;
-        }
-
-        if (typed.Length == 0)
-        {
-            return false;
-        }
-
-        if (arguments.ValueKind != JsonValueKind.Object)
-        {
-            return true;
-        }
-
-        foreach (string name in typed)
-        {
-            if (arguments.TryGetProperty(name, out JsonElement value)
-                && value.ValueKind != JsonValueKind.Null
-                && (value.ValueKind != JsonValueKind.String || value.GetString()!.Length > 0))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     // Al máximo, flujos: what the provider reads of the call's target before the person is asked (a name that is not
     // there, or is there several times, with its candidates): that failure answers without a yes. A provider that
@@ -434,11 +382,6 @@ internal sealed class ExternalCapabilityHandler(
         OperationInvocation invocation,
         CancellationToken cancellationToken)
     {
-        if (MayWriteIntoAWindow(Definition, invocation.Arguments))
-        {
-            LaunchProvenance.Shared.NoteWritten();
-        }
-
         ExternalCapabilityReceipt receipt;
         try
         {

@@ -63,8 +63,11 @@ public sealed class CoreRequestTests
         });
     }
 
+    // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+    // peligrosas»): the retry of an app.open that threw (low reversible, nothing in its arguments asks) runs again
+    // without asking to reconcile it (it asked before); the next request runs too.
     [Test]
-    public async Task TheRetryOfAnInvocationThatThrewAsksToReconcileAndTheNextRequestRuns()
+    public async Task TheRetryOfAReversibleInvocationThatThrewRunsAndTheNextRequestRuns()
     {
         var handler = new ThrowingHandler(() => new IOException("Window content capture came back black"), times: 1);
         await using var core = await Core.OpenAsync(handler);
@@ -80,10 +83,9 @@ public sealed class CoreRequestTests
         Assert.Multiple(() =>
         {
             Assert.That(failed.ErrorCode, Is.EqualTo(CoreRequest.UnexpectedFailureCode));
-            Assert.That(retry.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
-            Assert.That(retry.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
+            Assert.That(retry.Status, Is.EqualTo(OperationStatuses.Completed));
             Assert.That(next.Status, Is.EqualTo(OperationStatuses.Completed));
-            Assert.That(handler.ExecutionCount, Is.EqualTo(2));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(3));
         });
     }
 

@@ -29,9 +29,15 @@ public static class ProductCatalog
                     String("windowId", maximumLength: 36, nonWhitespace: true),
                 ],
                 []),
-            OperationRisks.WorkLoss,
+            // Decisión del dueño 2026-10-25 («solo se debe pedir confirmación a cosas que son destructivas… que Baxy no
+            // te moleste todo el tiempo»): it closes gracefully and never forces, and an application's own «¿Guardar?»
+            // stops it (its «No guardar» asks by itself), so it is low reversible. Its window command reaches a window
+            // of the person (window_input): a heartbeat only proposes it and «corrige» never puts it in the model's
+            // mouth.
+            OperationRisks.LowReversible,
             "app.close.identity.window.absence.v1",
-            "Solicita el cierre de una ventana resuelta (windowId) o de todas las ventanas de una aplicación por su nombre (appId) y verifica su ausencia sin forzar la terminacion del proceso; si una ventana responde con un diálogo propio (guardar) se detiene y lo dice; el windowId caduca a los 5 minutos."),
+            "Solicita el cierre de una ventana resuelta (windowId) o de todas las ventanas de una aplicación por su nombre (appId) y verifica su ausencia sin forzar la terminacion del proceso; si una ventana responde con un diálogo propio (guardar) se detiene y lo dice; el windowId caduca a los 5 minutos.",
+            effects: [WindowInput()]),
         Descriptor(
             "app.installed",
             Schema([String("name", maximumUtf8Bytes: 256, nonWhitespace: true)], ["name"]),
@@ -72,9 +78,12 @@ public static class ProductCatalog
         Descriptor(
             "app.restart",
             Schema([String("appId", maximumUtf8Bytes: 512, nonWhitespace: true)], ["appId"]),
-            OperationRisks.WorkLoss,
+            // Low reversible and window_input as app.close (decisión del dueño 2026-10-25): it closes gracefully, never
+            // forces.
+            OperationRisks.LowReversible,
             "app.restart.window.close.process.exit.app.open.v1",
-            "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo."),
+            "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo.",
+            effects: [WindowInput()]),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(
@@ -291,7 +300,7 @@ public static class ProductCatalog
                 ["endUtc", "startUtc", "title"]),
             OperationRisks.ExternalCommunication,
             "calendar.event.create.account.postread.v1",
-            "Crea un evento en el calendario predeterminado del Outlook clásico de la persona, que lo sincroniza con su cuenta si la cuenta sincroniza (se relee en este PC): sale de la máquina, así que pide su confirmación antes; verifica la identidad del evento creado."),
+            "Crea un evento en el calendario predeterminado del Outlook clásico de la persona, que lo sincroniza con su cuenta si la cuenta sincroniza (se relee en este PC); verifica la identidad del evento creado."),
         Descriptor(
             "calendar.event.list",
             Schema(
@@ -860,10 +869,9 @@ public static class ProductCatalog
                     // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): los atajos
                     // que una persona usa en cualquier aplicación —seleccionar todo,
                     // copiar, buscar, paleta de comandos, pestaña nueva, cerrar
-                    // pestaña, deshacer, recargar—. Ctrl+W cierra la pestaña, pero en el
-                    // Explorador, en muchas aplicaciones y en la última pestaña de un
-                    // navegador cierra la ventana: RiskPolicy lo confirma (auditoría
-                    // final 2, fila 9).
+                    // pestaña, deshacer, recargar—. Ctrl+W cierra la pestaña o, en muchas
+                    // aplicaciones, la ventana, con gracia: va directo (decisión del dueño
+                    // 2026-10-25; el «No guardar» de la aplicación ya pregunta).
                     // Goal v3 punto 2: guardar, guardar como, abrir, reemplazar,
                     // cortar, la barra de menús (F10) y el menú contextual del
                     // control enfocado (Shift+F10); ninguno cierra nada.
@@ -894,7 +902,7 @@ public static class ProductCatalog
             ], ["key"]),
             OperationRisks.LowReversible,
             "input.key.press.win32.sendinput.accepted.v1",
-            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Inicio/Fin, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; Ctrl+W, que puede cerrar una ventana, pide confirmación, y con target message_composer la pulsación de Enter se trata como un envío.",
+            "Presiona una tecla o una combinación (Ctrl+A/C/F/H/K/L/O/S/T/V/W/X/Z, Ctrl+Inicio/Fin, Ctrl+Shift+S, Ctrl+Shift+Escape, F5, F10, Shift+F10) en la ventana enfocada y verifica que Windows aceptó todos los eventos SendInput; con target message_composer la pulsación de Enter se trata como un envío.",
             effects: [WindowInput()]),
         Descriptor(
             "input.keyboard.layout",
@@ -1974,9 +1982,12 @@ public static class ProductCatalog
         Descriptor(
             "window.close.all",
             EmptySchema(),
-            OperationRisks.WorkLoss,
+            // Low reversible and window_input as app.close (decisión del dueño 2026-10-25): it closes gracefully, never
+            // forces.
+            OperationRisks.LowReversible,
             "window.close.all.desktop.postread.v1",
-            "Pide el cierre de todas las ventanas visibles de este escritorio salvo las de BAXY (las de otro escritorio virtual no se tocan y se cuentan), verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso."),
+            "Pide el cierre de todas las ventanas visibles de este escritorio salvo las de BAXY (las de otro escritorio virtual no se tocan y se cuentan), verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso.",
+            effects: [WindowInput()]),
         Descriptor(
             "window.focus",
             WindowIdSchema(),

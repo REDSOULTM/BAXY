@@ -82,9 +82,6 @@ public sealed class AppCloseByApplicationTests
 
         OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
             Invocation("{\"appId\":\"Steam\"}"), CancellationToken.None);
-        // Said before the person is asked to confirm a close (IInvocationPreflight), with the same processes.
-        InvocationPreflightResult before = await new AppCloseHandler(windows).PreflightAsync(
-            JsonDocument.Parse("{\"appId\":\"Steam\"}").RootElement, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -92,8 +89,6 @@ public sealed class AppCloseByApplicationTests
             Assert.That(outcome.EffectMayHaveOccurred, Is.False);
             Assert.That(outcome.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(4242));
             Assert.That(windows.Closed, Is.Empty);
-            Assert.That(before.Failure?.ErrorCode, Is.EqualTo("app_running_in_background"));
-            Assert.That(before.Failure?.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(4242));
         });
     }
 
@@ -153,41 +148,16 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
-    // Al máximo, flujos: an application asked for by its name with no window to close is that failure before any yes;
-    // one with its windows leaves the close to ask (and to resolve them again).
-    [Test]
-    public async Task AnApplicationNotRunningFailsBeforeTheYesAndOneRunningIsAsked()
+    // Decisión del dueño 2026-10-25 («solo se debe pedir confirmación a cosas que son destructivas… que Baxy no te
+    // moleste todo el tiempo»): app.close goes without a yes through the engine, by the application's name or by one
+    // window, also for an editor that may hold a document: it closes gracefully, and the application's own «¿Guardar?»
+    // stops it (its «No guardar» asks by itself). Before, Notepad's close asked (work_loss). Fake windows: nothing
+    // closes for real.
+    [TestCase("{\"appId\":\"Bloc de notas\"}")]
+    [TestCase("{\"windowId\":\"win_notepad\"}")]
+    public async Task AnEditorClosesWithoutAskingInNormalMode(string arguments)
     {
-        var none = new AppCloseHandler(new FakeWindows([]));
-        var running = new FakeWindows([Frame("win_a", 100, "Sin título - Paint")]);
-
-        InvocationPreflightResult missing = await none.PreflightAsync(
-            JsonDocument.Parse("{\"appId\":\"Paint\"}").RootElement, CancellationToken.None);
-        InvocationPreflightResult there = await new AppCloseHandler(running).PreflightAsync(
-            JsonDocument.Parse("{\"appId\":\"Paint\"}").RootElement, CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(missing.Failure?.ErrorCode, Is.EqualTo("app_not_running"));
-            Assert.That(missing.Failure?.EffectMayHaveOccurred, Is.False);
-            Assert.That(there.Failure, Is.Null);
-            Assert.That(there.Risk, Is.Null, "a window holding a document keeps work_loss");
-            Assert.That(running.Closed, Is.Empty);
-        });
-    }
-
-    // Al máximo, flujos («cierra discord» asked every time): app.close by the application's name lowers its risk as a
-    // close by a window does when every window it has holds no document of the person (the provider's rule, with the
-    // microphone's); one window with a document, or one it cannot place, keeps the yes. Fake windows: nothing closes
-    // for real.
-    [TestCase(new[] { "win_discord", "win_discord_2" }, false)]
-    [TestCase(new[] { "win_notepad" }, true)]
-    public async Task ByNameAnApplicationAllOfWhoseWindowsHoldNoDocumentClosesWithoutAsking(string[] ids, bool asks)
-    {
-        var windows = new FakeWindows([.. ids.Select((id, index) => Frame(id, 100 + index, id))])
-        {
-            Documentless = ["win_discord", "win_discord_2"],
-        };
+        var windows = new FakeWindows([Frame("win_notepad", 100, "notas.txt - Bloc de notas")]);
         string root = Path.Combine(Path.GetTempPath(), "baxy-app-close-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
         try
@@ -200,13 +170,13 @@ public sealed class AppCloseByApplicationTests
             OperationResponse response = await engine.ExecuteAsync(
                 new OperationRequest(
                     ProtocolTypes.OperationRequest, Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"),
-                    Guid.NewGuid().ToString("D"), "app.close", JsonDocument.Parse("{\"appId\":\"Discord\"}").RootElement),
+                    Guid.NewGuid().ToString("D"), "app.close", JsonDocument.Parse(arguments).RootElement),
                 CancellationToken.None);
 
             Assert.Multiple(() =>
             {
-                Assert.That(response.ErrorCode, asks ? Is.EqualTo("confirmation_required") : Is.Null);
-                Assert.That(windows.Closed, asks ? Is.Empty : Is.EqualTo(ids));
+                Assert.That(response.ErrorCode, Is.Null);
+                Assert.That(windows.Closed, Is.EqualTo(new[] { "win_notepad" }));
             });
         }
         finally
@@ -249,10 +219,6 @@ public sealed class AppCloseByApplicationTests
         internal List<string> Closed { get; } = [];
 
         internal string? Prompts { get; init; }
-
-        internal string[] Documentless { get; init; } = [];
-
-        public bool HoldsNoDocument(string windowId) => Documentless.Contains(windowId);
 
         internal string? Hides { get; init; }
 

@@ -179,16 +179,21 @@ public sealed class MissionEngine : IDisposable
                 policy = PolicyDecision.RequireConfirmation;
             }
 
-            // Auditoría del núcleo 2026-10-23: an invocation that started before and did not end (the handler threw, the core
-            // stopped, its last run may have acted) is not run again without the person, in either mode: its effect may
-            // stand. It asks, bound to it, with reconciliationRequired; a yes given before that run was for that run only.
-            // A retry after a run that said nothing was done goes on as the provider's own retry.
+            // Auditoría del núcleo 2026-10-23: an invocation that started before and did not end (the handler threw,
+            // the core stopped, its last run may have acted) is not run again without the person, in either mode: its
+            // effect may stand. It asks, bound to it, with reconciliationRequired; a yes given before that run was for
+            // that run only. A retry after a run that said nothing was done goes on as the provider's own retry.
+            // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+            // peligrosas»): nor does one that only reads or changes something reversibly and asks nothing with these
+            // arguments; running it again destroys nothing.
             bool uncertainStart = startedFingerprint is not null
                 && knownOperation
                 && handler is not null
                 && validArguments
                 && preflightFailure is null
-                && !_safeRetries.Contains(request.InvocationId);
+                && !_safeRetries.Contains(request.InvocationId)
+                && !(policy == PolicyDecision.Allow
+                    && handler.Definition.Risk is OperationRisk.ReadOnly or OperationRisk.Reversible);
             if (uncertainStart)
             {
                 policy = PolicyDecision.RequireConfirmation;

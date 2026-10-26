@@ -837,7 +837,7 @@ public sealed class ProductCatalogTests
     public void WorkLossChallengesInNormalModeAndBypassSkipsIt()
     {
         ProductOperationDescriptor recycle = ProductCatalog.GetRequired("system.recyclebin.empty");
-        ProductOperationDescriptor close = ProductCatalog.GetRequired("app.close");
+        ProductOperationDescriptor close = ProductCatalog.GetRequired("system.process.terminate.named");
         ProductOperationDescriptor overwrite = ProductCatalog.GetRequired("memory.forget");
 
         Assert.Multiple(() =>

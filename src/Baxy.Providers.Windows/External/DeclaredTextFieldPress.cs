@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -9,7 +10,8 @@ namespace Baxy.Providers.Windows.External;
 /// either goes unasked: a focus that is no text field (a file list, a button, a message list), one outside the window
 /// the key goes to, or one that cannot be read, asks the person, bound to that press. A messaging client's composer and
 /// a console's line are text fields for typing, never for Enter, which sends or runs what they hold: Enter declared on a
-/// text field asks in a window that is not ordinary (<see cref="KeyWindowKind"/>). Space types a space in a text field.
+/// text field asks in a window that is not ordinary (<see cref="KeyWindowKind"/>). Space types a space in a text field;
+/// on another control it asks only when that control's name asks.
 /// </summary>
 internal static class DeclaredTextFieldPress
 {
@@ -28,9 +30,18 @@ internal static class DeclaredTextFieldPress
     /// </summary>
     internal static bool NeedsYes(JsonElement arguments, FocusRead? focus, KeyWindowKind window)
     {
-        if (focus is not { Inside: true } read || !read.IsTextField)
+        if (focus is not { Inside: true } read)
         {
             return true;
+        }
+
+        // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+        // peligrosas»): space on a focus read inside the window that is no text field (a check box, a switch, a button)
+        // toggles or presses that control, and asks only when its read name would make a click on it ask (it sends,
+        // buys, deletes: RiskPolicy). Delete and Enter there still ask.
+        if (!read.IsTextField)
+        {
+            return Text(arguments, "key") != "space" || RiskPolicy.PressedNameAsksMoreThanItsLabel(null, read.Name);
         }
 
         return Text(arguments, "key") == "enter" && window != KeyWindowKind.Ordinary;

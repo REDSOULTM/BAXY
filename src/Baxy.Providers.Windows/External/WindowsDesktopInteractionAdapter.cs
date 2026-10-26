@@ -373,7 +373,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
     // The keys of input.key.press (ProductCatalog's enum) as the virtual keys pressed together. Motor de computer use
     // (CONTRATO_VISTA_ACCION.md §2): the shortcuts a person uses in any app. None ends a process; ctrl_w closes a tab
-    // and, in many applications, the window, so it asks first (RiskPolicy.MayCloseAWindow, work_loss).
+    // or, in many applications, the window, gracefully, and goes directly (decisión del dueño 2026-10-25).
     private static readonly Dictionary<string, ushort[]> VirtualKeys = new(StringComparer.Ordinal)
     {
         ["alt_tab"] = [0x12, 0x09],

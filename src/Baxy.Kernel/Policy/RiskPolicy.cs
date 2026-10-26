@@ -9,11 +9,15 @@ namespace Baxy.Kernel.Policy;
 /// artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-20.md): «lo que debe
 /// pedir permisos sólo deben ser cosas destructivas o irreparables». Reproducir,
 /// navegar, copiar, capturar, pulsar, escribir, radios y ajustes van directos en
-/// modo normal; lo que llega a otra persona (mensajes y correo), lo que crea en la
-/// cuenta del dueño (un evento de su calendario de Outlook) y lo que destruye
-/// o pierde trabajo (work_loss, también Ctrl+W, que puede cerrar una ventana) sigue preguntando, e
-/// instalar también (decisión 8 del dueño, 2026-10-10). Las etiquetas de riesgo
-/// del catálogo no cambian: los sellos históricos las citan.
+/// modo normal; lo que llega a otra persona (mensajes y correo) y lo que destruye
+/// o pierde trabajo (work_loss) sigue preguntando, e instalar también (decisión 8
+/// del dueño, 2026-10-10). Decisión del dueño 2026-10-25: «solo se debe pedir
+/// confirmación a cosas que son destructivas… como muy máximo… que Baxy no te moleste
+/// todo el tiempo… sino para cosas que realmente son peligrosas»: cerrar con gracia
+/// (app.close, app.restart, window.close.all, Ctrl+W: el «No guardar» de la propia
+/// aplicación ya pregunta), crear un evento en su calendario, el mensaje de prueba a
+/// su propio canal, y la biblioteca de juegos propia (instalar, cancelar una descarga)
+/// van directos.
 ///
 /// Motor de computer use (CONTRATO_VISTA_ACCION.md §2.1, D15): un paso del bucle
 /// lleva el riesgo de su primitiva evaluado con los argumentos exactos delante.
@@ -34,17 +38,28 @@ namespace Baxy.Kernel.Policy;
 /// </summary>
 public static partial class RiskPolicy
 {
-    // External communication that reaches another person or sends the owner's content to an account outside the
-    // machine: the only external operations that keep asking in normal mode. An event created in the owner's Outlook
-    // calendar is synchronized to their account (auditoría final 2, fila 8: nothing of the owner leaves without
-    // their yes).
+    // External communication that reaches another person: the only external operations that keep asking in normal mode.
+    // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+    // peligrosas»): an event in the owner's own calendar (calendar.event.create) and the test message, whose
+    // destination is always forced to the owner's own test channel (message.send.test), reach nobody else and go
+    // directly.
     private static readonly HashSet<string> ExternalRequiringConfirmation = new(StringComparer.Ordinal)
     {
-        "calendar.event.create",
         "message.send",
-        "message.send.test",
         "email.latest.reply",
         "email.send",
+    };
+
+    // Decisión del dueño 2026-10-25: operations that go directly in normal mode although their catalog risk asks. The
+    // catalog keeps labelling them (historical seals cite the labels, and a heartbeat still only proposes them):
+    // apagar / cerrar sesión (identity), and the owner's own game library, which is undone by installing or downloading
+    // again (game.install.named installs a game the account owns; package.install keeps asking).
+    private static readonly HashSet<string> UnaskedDespiteTheirRisk = new(StringComparer.Ordinal)
+    {
+        "game.install.cancel",
+        "game.install.cancel.active",
+        "game.install.named",
+        "system.power",
     };
 
     // landingRead: the handler's preflight read where this exact invocation lands and lowered its risk; only the
@@ -69,9 +84,7 @@ public static partial class RiskPolicy
             return PolicyDecision.Allow;
         }
 
-        // Identity: apagar / cerrar sesión van directos. The catalog still
-        // labels system.power as work_loss so historical seals do not move.
-        if (string.Equals(operation, "system.power", StringComparison.Ordinal))
+        if (operation is not null && UnaskedDespiteTheirRisk.Contains(operation))
         {
             return PolicyDecision.Allow;
         }
@@ -81,7 +94,6 @@ public static partial class RiskPolicy
                 || (!landingRead && PressesUndeclared(operation, invocation))
                 || CannotBeUndone(operation, invocation)
                 || LosesTheSession(operation, invocation)
-                || MayCloseAWindow(operation, invocation)
                 || ClicksUnseen(operation, invocation)
                 || ShellMayChange(operation, invocation)))
         {
@@ -136,7 +148,7 @@ public static partial class RiskPolicy
 
             // git is not among them: «git log --output=f» writes a file and «git diff» runs the external diff or textconv
             // program a repository configures (BAXY Renew audit 2026-10-15).
-            if (!ReadingCommands.Contains(words[0].ToLowerInvariant()))
+            if (!ReadingCommands.Contains(words[0].ToLowerInvariant()) || IpconfigChanges(words))
             {
                 return true;
             }
@@ -162,7 +174,22 @@ public static partial class RiskPolicy
         // si hay errores en todo el archivo» asked the person before a findstr that only looks for a text): Windows'
         // findstr reads files and prints the lines that match; none of its switches writes, deletes or sends.
         "findstr",
+        // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo»): the network and system readings a
+        // person asks for. ipconfig only with a switch that reads (IpconfigChanges); «where» is already Where-Object's
+        // alias above.
+        "ipconfig", "netstat", "nslookup", "getmac", "ver", "test-connection", "get-nettcpconnection",
     };
+
+    // ipconfig's switches that change the network instead of reading it (they ask): releasing or renewing the address,
+    // flushing or registering DNS, setting a class id. Windows takes them with «/» or «-».
+    private static bool IpconfigChanges(string[] words) =>
+        string.Equals(words[0], "ipconfig", StringComparison.OrdinalIgnoreCase)
+        && words.Skip(1).Any(word => word.TrimStart('/', '-').ToLowerInvariant() is { } option
+            && (option.StartsWith("release", StringComparison.Ordinal)
+                || option.StartsWith("renew", StringComparison.Ordinal)
+                || option.StartsWith("flushdns", StringComparison.Ordinal)
+                || option.StartsWith("registerdns", StringComparison.Ordinal)
+                || option.StartsWith("setclassid", StringComparison.Ordinal)));
 
     /// <summary>
     /// Whether this exact invocation of a computer-use primitive leaves the
@@ -295,16 +322,6 @@ public static partial class RiskPolicy
         && arguments.TryGetProperty(closing.Name, out JsonElement value)
         && value.ValueKind == JsonValueKind.String
         && string.Equals(value.GetString(), closing.Value, StringComparison.Ordinal);
-
-    /// <summary>
-    /// Auditoría final 2 (fila 9): Ctrl+W closes a tab, but in the File Explorer, in many applications and on the last
-    /// tab of a Chromium browser it closes the window, and with it what the person had there unsaved. It asks, like
-    /// app.close (work_loss).
-    /// </summary>
-    private static bool MayCloseAWindow(string? operation, JsonElement arguments) =>
-        string.Equals(operation, "input.key.press", StringComparison.Ordinal)
-        && arguments.ValueKind == JsonValueKind.Object
-        && KeyOf(arguments) is "ctrl_w";
 
     /// <summary>
     /// Revisión 2026-10-22 (K-2): Enter or space whose step declares neither where the keyboard is («target») nor what
@@ -443,16 +460,21 @@ public static partial class RiskPolicy
         RegexOptions.CultureInvariant)]
     private static partial Regex IrreversibleAct();
 
-    // A destructive verb anywhere in a short label: not saving, discarding, closing without saving, moving to the
-    // bin, removing, emptying, clearing, deleting, uninstalling («No guardar», «Don't save», «Descartar cambios»,
-    // «Mover a la papelera», «Vaciar papelera de reciclaje», «Empty Recycle Bin», «Quitar de la biblioteca»,
-    // «Remove», «Limpiar historial», «Clear all»). Only verb forms count: «Eliminados», «Deleted items» or
-    // «Papelera de reciclaje» name a place, not an act. Incidente del 2026-10-15 (msconfig, «Deshabilitar todos»): turning
-    // off everything a list holds at once («Deshabilitar todos», «Desactivar todo», «Disable all») asks too. Auditoría del
-    // núcleo 2026-10-23: ending a program without letting it save («Finalizar tarea», «End task», «Forzar cierre», «Force
-    // quit») loses what it held, as system.process.terminate.named (work_loss) does.
+    // A destructive verb anywhere in a short label: not saving, discarding, closing without saving, moving to the bin,
+    // removing, emptying, clearing, deleting, uninstalling («No guardar», «Don't save», «Descartar cambios», «Mover a
+    // la papelera», «Vaciar papelera de reciclaje», «Empty Recycle Bin», «Quitar de la biblioteca», «Remove», «Limpiar
+    // historial», «Clear all»). Only verb forms count: «Eliminados», «Deleted items» or «Papelera de reciclaje» name a
+    // place, not an act. Incidente del 2026-10-15 (msconfig, «Deshabilitar todos»): turning off everything a list holds
+    // at once («Deshabilitar todos», «Desactivar todo», «Disable all») asks too. Auditoría del núcleo 2026-10-23:
+    // ending a program without letting it save («Finalizar tarea», «End task», «Forzar cierre», «Force quit») loses
+    // what it held, as system.process.terminate.named (work_loss) does. Decisión del dueño 2026-10-25 («que Baxy no te
+    // moleste todo el tiempo… sino para cosas que realmente son peligrosas»): quitar, remove, limpiar, clear, vaciar,
+    // empty, descartar or discard whose object is harmless and comes back at once (the mute, a filter, a search, a
+    // format, a notification, a selection: «Quitar silencio», «Clear filters», «Limpiar búsqueda», «Descartar
+    // notificación») destroy nothing and do not ask; the object ends the label or a preposition follows it, so «Clear
+    // search history» still asks, as «Vaciar papelera», «Clear history» and «Descartar cambios» do.
     [GeneratedRegex(
-        @"\b(?:finalizar\s+(?:la\s+)?tarea|finaliza\s+(?:la\s+)?tarea|end\s+task|forzar\s+(?:el\s+)?cierre|fuerza\s+(?:el\s+)?cierre|force\s+(?:quit|close)|deshabilitar\s+tod[oa]s?|deshabilita\s+tod[oa]s?|desactivar\s+tod[oa]s?|desactiva\s+tod[oa]s?|disable\s+all|turn\s+off\s+all|no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|descartar|descarta|discard|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
+        @"\b(?:finalizar\s+(?:la\s+)?tarea|finaliza\s+(?:la\s+)?tarea|end\s+task|forzar\s+(?:el\s+)?cierre|fuerza\s+(?:el\s+)?cierre|force\s+(?:quit|close)|deshabilitar\s+tod[oa]s?|deshabilita\s+tod[oa]s?|desactivar\s+tod[oa]s?|desactiva\s+tod[oa]s?|disable\s+all|turn\s+off\s+all|no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|(?:quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|descartar|descarta|discard)\b(?!(?:\s+(?:el|la|los|las|tu|su|sus|tus|the|all|todo|todos|todas|this|these|esta|este|estas|estos))*\s+(?:silencio|mute|filtros?|filters?|busqueda|search|formato|format|notificacion(?:es)?|notifications?|seleccion|selection)(?:\s*$|\s+(?:de|del|en|a|al|from|in|on|of|for|para)\b))|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
         RegexOptions.CultureInvariant)]
     private static partial Regex DestructiveVerb();
 }

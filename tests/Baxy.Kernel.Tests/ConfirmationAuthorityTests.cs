@@ -92,7 +92,7 @@ public sealed class ConfirmationAuthorityTests
     {
         using var journal = new InMemoryInvocationJournal();
         var primary = new CountingHandler(OperationRisk.Irreversible); // D3 2026-09-20: a nameless External effect no longer asks
-        var secondary = new CountingHandler(OperationRisk.External, "message.send.test");
+        var secondary = new CountingHandler(OperationRisk.External, "message.send");
         using var engine = new MissionEngine(new OperationRegistry([primary, secondary]), journal);
         OperationRequest request = CreateRequest("{\"destination\":\"equipo\"}");
         string token = RequiredToken(await engine.ExecuteAsync(request, CancellationToken.None));
@@ -119,7 +119,7 @@ public sealed class ConfirmationAuthorityTests
             request with
             {
                 RequestId = NewId(),
-                Operation = "message.send.test",
+                Operation = "message.send",
                 ConfirmationToken = token,
             },
         ];
