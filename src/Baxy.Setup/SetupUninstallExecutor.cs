@@ -42,13 +42,12 @@ internal sealed class SetupUninstallExecutor
         FinishMovedUninstall(
             _paths.InstallationRoot,
             tombstone,
-            removeIntegration: () =>
-            {
-                _ = verified.Shortcut.DeleteOwnedVerifiedAfterInstallationMove(
-                    verified.State.Shortcut.Sha256,
-                    verified.State.Shortcut.Bytes);
-                _ = verified.Registry.DeleteCapturedOwned(verified.RegistryDeletion);
-            },
+            removeRegistry: () => _ = verified.Registry.DeleteCapturedOwned(verified.RegistryDeletion),
+            restoreRegistry: () => verified.Registry.WriteNewOrUpdateOwnedVerified(
+                BuildRegistrySpecification(verified.State)),
+            removeShortcut: () => _ = verified.Shortcut.DeleteOwnedVerifiedAfterInstallationMove(
+                verified.State.Shortcut.Sha256,
+                verified.State.Shortcut.Bytes),
             purgeData: policy == UninstallDataPolicy.PurgeData ? PurgeDataRoot : null,
             launchCleanup: LaunchTombstoneCleanup);
         return 0;
@@ -57,19 +56,43 @@ internal sealed class SetupUninstallExecutor
     internal static void FinishMovedUninstall(
         string installationRoot,
         string tombstone,
-        Action removeIntegration,
+        Action removeRegistry,
+        Action restoreRegistry,
+        Action removeShortcut,
         Action? purgeData,
         Func<string, string, uint> launchCleanup)
     {
         // Until the Start Menu shortcut and the uninstall key are gone, the installation goes back to its path: the
         // registry would otherwise name a Baxy.Setup.exe that no longer exists and block both uninstall and reinstall.
+        // The key goes first because its exact values can be written again; the shortcut's bytes cannot.
         try
         {
-            removeIntegration();
+            removeRegistry();
         }
         catch (Exception failure)
         {
             ReturnInstallationRoot(installationRoot, tombstone, failure);
+            throw;
+        }
+
+        try
+        {
+            removeShortcut();
+        }
+        catch (Exception failure)
+        {
+            ReturnInstallationRoot(installationRoot, tombstone, failure);
+            try
+            {
+                restoreRegistry();
+            }
+            catch (Exception restoreFailure)
+            {
+                throw new InstallationSafetyException(
+                    "BAXY uninstall returned the installation but could not restore its uninstall registry key.",
+                    new AggregateException(failure, restoreFailure));
+            }
+
             throw;
         }
 
