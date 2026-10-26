@@ -327,3 +327,14 @@ test('el panel del catálogo se titula «Capacidades de BAXY»', async () => {
   await h.page.getByRole('button', { name: /Capacidades/ }).click();
   await expect(h.page.locator('.panel-title')).toHaveText('Capacidades de BAXY');
 });
+
+test('ajustes: la pestaña Confirmación dice que sólo pregunta antes de lo destructivo o peligroso', async () => {
+  h = await openView();
+  await h.page.locator('.bx-gear').click();
+  await h.page.locator('.settings-tab', { hasText: 'Confirmación' }).click();
+  const tip = h.page.locator('.settings-panel .st-tip');
+  await expect(tip).toContainText('sólo antes de lo destructivo o peligroso');
+  for (const w of ['vaciar la papelera', 'desinstalar', 'comprar o pagar', 'forzar el cierre']) await expect(tip).toContainText(w);
+  // creating a calendar event goes straight through since the owner's decision of 2026-10-25
+  await expect(tip).not.toContainText(/calendario/i);
+});
