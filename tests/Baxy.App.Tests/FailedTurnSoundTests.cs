@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Json.Nodes;
 using NUnit.Framework;
 
 namespace Baxy.App.Tests;
@@ -7,7 +8,8 @@ namespace Baxy.App.Tests;
 /// <summary>
 /// A failed turn is heard (final 6, accesibilidad): it sounds <see cref="Chime.TurnFailed"/> once, through
 /// <see cref="MainWindowViewModel.LastTurnFailure"/>, whether the model did not answer (NativeTurnLoop's Fail) or the
-/// turn threw; a turn that answers or that was cancelled sounds nothing.
+/// turn threw; a turn that answers or that was cancelled sounds nothing, and so does any turn while the owner silenced
+/// BAXY's voice.
 /// </summary>
 [TestFixture]
 public sealed class FailedTurnSoundTests
@@ -63,6 +65,27 @@ public sealed class FailedTurnSoundTests
             {
                 Assert.That(viewModel.LastTurnFailure, Is.EqualTo("turn_failed"));
                 Assert.That(sounded, Is.EqualTo(2), "the next failed turn sounds once");
+            });
+        }
+    }
+
+    [Test]
+    public async Task AFailedTurnSoundsNothingWhileTheVoiceIsSilenced()
+    {
+        using var fake = new FakeMind();
+        int sounded = 0;
+        var viewModel = new MainWindowViewModel { Sound = _ => sounded++ };
+        await using (viewModel)
+        {
+            viewModel.Settings.ApplyGeneral(new JsonObject { ["voiceMuted"] = true });
+            var loop = (NativeTurnLoop)typeof(MainWindowViewModel).GetField("_loop", Private)!.GetValue(viewModel)!;
+
+            await RunTurnAsync(viewModel, () => loop.RunAsync("abre la calculadora", Stopwatch.GetTimestamp(),
+                CancellationToken.None));
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.LastTurnFailure, Is.EqualTo("mind_unavailable"));
+                Assert.That(sounded, Is.Zero, "a failed turn sounded with the voice silenced");
             });
         }
     }

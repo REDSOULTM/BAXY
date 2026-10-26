@@ -52,8 +52,9 @@ internal sealed record NativeTurnConfirmation(
 /// exact invocation; any other call runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// <para>
-/// In a turn the person opened, a call that sends out to a host nobody gave, or launches a game they did not name
-/// (<see cref="NetworkEgress"/>), is held the same way, and asks as a confirmation.
+/// In a turn the person opened, a call that sends an address that carries something, or an IP or a port, to a host
+/// nobody gave, or launches a game they did not name (<see cref="NetworkEgress"/>), is held the same way, and asks as a
+/// confirmation.
 /// </para>
 /// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
