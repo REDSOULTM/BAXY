@@ -27,6 +27,7 @@ public sealed class LaunchProvenance
     private readonly Func<int, long?> _processCreationTicks;
     private readonly IPersonInputWitness _personInput;
     private bool _forgotten;
+    private long _lastWrittenUtcTicks;
 
     public LaunchProvenance()
         : this(ReadProcessCreationTicks, WindowsPersonInputWitness.Shared)
@@ -81,6 +82,7 @@ public sealed class LaunchProvenance
     {
         lock (_gate)
         {
+            _lastWrittenUtcTicks = DateTime.UtcNow.Ticks;
             for (int index = 0; index < _entries.Count; index++)
             {
                 _entries[index] = _entries[index] with { Written = true };
@@ -124,6 +126,29 @@ public sealed class LaunchProvenance
         // the launch may have put their work there; not being able to tell keeps it asking.
         return launched
             && _personInput.ReachedSince(windowHandle, found.CreationTicks) == PersonInputVerdict.Untouched;
+    }
+
+    /// <summary>
+    /// PC-F8 cierre (acotado: un formulario a medio llenar no marca el título): whether nothing was written into a
+    /// window since its process was created: no key or click of the person reached it (watched since before then),
+    /// and BAXY wrote into no window since then (which window a write reached is not always known). Not being able
+    /// to tell counts as written (fail-closed).
+    /// </summary>
+    public bool UnwrittenSince(long windowHandle, long processCreationTimeUtcTicks)
+    {
+        if (windowHandle <= 0 || processCreationTimeUtcTicks <= 0)
+        {
+            return false;
+        }
+
+        long written;
+        lock (_gate)
+        {
+            written = _lastWrittenUtcTicks;
+        }
+
+        return (written == 0 || written < processCreationTimeUtcTicks)
+            && _personInput.ReachedSince(windowHandle, processCreationTimeUtcTicks) == PersonInputVerdict.Untouched;
     }
 
     /// <summary>

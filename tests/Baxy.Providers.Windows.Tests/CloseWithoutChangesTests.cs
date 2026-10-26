@@ -10,6 +10,9 @@ namespace Baxy.Providers.Windows.Tests;
 /// A window whose own reading shows no changes holds nothing of the person: its title carries no unsaved mark, it is
 /// not a console or a terminal, it is not in a call and it shows no dialog. Any reading that fails, or that cannot
 /// tell, keeps the yes. No real window is touched: the platform is a fake.
+/// Acotado (coordinador, fuera de final8: un formulario a medio llenar o una ventana privada no marcan el título): the
+/// way also needs that nothing was written into the window since it was created (the person's input watched since
+/// then, and no write of BAXY), that it is not a browser nor a private window, and that it shows at most one tab.
 /// </summary>
 [TestFixture]
 public sealed class CloseWithoutChangesTests
@@ -106,6 +109,148 @@ public sealed class CloseWithoutChangesTests
     }
 
     [Test]
+    public async Task AWindowThePersonTypedIntoStillAsks()
+    {
+        // The person typed into the saved note after it was opened: a field or a selection may hold their work.
+        const string title = "nota.txt - Bloc de notas";
+        Watch watch = Watched();
+        var provider = Provider(new FakePlatform(Window(title)) { Title = title }, watch.Provenance);
+        watch.Now = 900_000;
+        watch.Input.Record(654, 654);
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
+    }
+
+    [Test]
+    public async Task ABrowserWithoutAMarkWhereThePersonTypedStillAsks()
+    {
+        // v3 r22 revisión 2: the person filled a form in the browser; its title never shows it.
+        Watch watch = Watched();
+        var provider = Provider(
+            new FakePlatform(Browser()) { Title = "Formulario - Navegador", WebBrowser = true }, watch.Provenance);
+        watch.Now = 900_000;
+        watch.Input.Record(777, 777);
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
+    }
+
+    [Test]
+    public async Task ABrowserNobodyTypedIntoStillAsksForItsPrivateModeCannotBeTold()
+    {
+        var provider = Provider(new FakePlatform(Browser()) { Title = "Inicio - Navegador", WebBrowser = true });
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
+    }
+
+    [Test]
+    public async Task ABrowserWithTwoTabsStillAsks()
+    {
+        var provider = Provider(new FakePlatform(Browser()) { Title = "Inicio - Navegador", WebBrowser = true, Tabs = 2 });
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
+    }
+
+    [TestCase(2)]
+    [TestCase(null)]
+    public async Task AWindowWithSeveralTabsOrUnreadableTabsStillAsks(int? tabs)
+    {
+        // Only the tab in front names the title; another may hold unsaved work.
+        const string title = "nota.txt - Bloc de notas";
+        var provider = Provider(new FakePlatform(Window(title)) { Title = title, Tabs = tabs });
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
+    }
+
+    [TestCase(0)]
+    [TestCase(1)]
+    public async Task AWindowWithOneTabOrNoneClosesWithoutAsking(int tabs)
+    {
+        const string title = "nota.txt - Bloc de notas";
+        var provider = Provider(new FakePlatform(Window(title)) { Title = title, Tabs = tabs });
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.True);
+    }
+
+    [TestCase("Nueva pestaña - Navegador (Incógnito)")]
+    [TestCase("Nueva pestaña - Navegador (Incognito)")]
+    [TestCase("[InPrivate] Nueva pestaña - Navegador")]
+    [TestCase("Navegación privada - Navegador")]
+    [TestCase("Private Browsing - Navegador")]
+    public async Task APrivateWindowStillAsks(string title)
+    {
+        // Told by its title, whatever its executable: closing it loses its session for good.
+        var browser = Provider(new FakePlatform(Browser()) { Title = title, WebBrowser = true });
+        var other = Provider(new FakePlatform(Window(title)) { Title = title });
+        string browserId = await ActiveWindowIdAsync(browser);
+        string otherId = await ActiveWindowIdAsync(other);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(browser.HoldsNoDocument(browserId), Is.False);
+            Assert.That(other.HoldsNoDocument(otherId), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task PaintUntitledThatNobodyWroteIntoClosesWithoutAsking()
+    {
+        // The person's input watched since before Paint was created, and none of it reached it (only BAXY's window).
+        const string title = "Sin título - Paint";
+        Watch watch = Watched();
+        var provider = Provider(new FakePlatform(Window(title)) { Title = title }, watch.Provenance);
+        watch.Now = 900_000;
+        watch.Input.Record(555, 555);
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.True);
+    }
+
+    [Test]
+    public async Task AWindowCreatedBeforeThePersonsInputWasWatchedStillAsks()
+    {
+        // The watch began after Paint was created: what the person did in it before cannot be told.
+        const string title = "Sin título - Paint";
+        var late = new PersonInputLedger(static () => true, static () => true, static () => 30_000_000);
+        late.EnsureWatching();
+        var provider = Provider(new FakePlatform(Window(title)) { Title = title },
+            new LaunchProvenance(static _ => null, late));
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
+    }
+
+    [Test]
+    public async Task AWindowCreatedBeforeBaxyWroteSomewhereStillAsks()
+    {
+        // Which window a write of BAXY reached is not always known.
+        const string title = "Sin título - Paint";
+        Watch watch = Watched();
+        watch.Provenance.NoteWritten();
+        var provider = Provider(new FakePlatform(Window(title)) { Title = title }, watch.Provenance);
+
+        Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
+    }
+
+    [TestCase("{\"tabs\":2}", 2)]
+    [TestCase("{\"tabs\":0}", 0)]
+    [TestCase("{\"outcome\":\"shortcut\"}", null)]
+    [TestCase("{\"tabs\":-1}", null)]
+    [TestCase("no", null)]
+    public void TheTabCountIsReadOnlyFromItsAnswer(string line, int? count) =>
+        Assert.That(Applications.WindowsInstalledApplicationPlatform.ReadTabCount(line), Is.EqualTo(count));
+
+    [Test]
+    public void APlatformThatCannotTellSaysBrowserAndNoTabs()
+    {
+        IWindowControlPlatform silent = new SilentPlatform();
+        WindowIdentity window = Window("Sin título - Paint");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(silent.IsWebBrowser(window), Is.True);
+            Assert.That(silent.TabCount(window), Is.Null);
+        });
+    }
+
+    [Test]
     public void APlatformThatCannotTellAConsoleSaysItIsOne()
     {
         IWindowControlPlatform silent = new SilentPlatform();
@@ -127,8 +272,28 @@ public sealed class CloseWithoutChangesTests
         ? new WindowIdentity((nint)321, 500, 9_000, "mspaint", DateTimeOffset.UnixEpoch, PaintPath)
         : new WindowIdentity((nint)654, 600, 12_000, "Notepad", DateTimeOffset.UnixEpoch, NotepadPath);
 
-    private static WindowsWindowControlProvider Provider(FakePlatform platform) =>
-        new(platform, new Applications.WindowsInstalledApplicationOpenProvider(), new LaunchProvenance());
+    private static WindowIdentity Browser() =>
+        new((nint)777, 5150, 20_000, "browser", DateTimeOffset.UnixEpoch, @"C:\Apps\browser.exe");
+
+    // The person's input watched since long before the windows were created (clock 1); Now moves the clock.
+    private sealed class Watch
+    {
+        public Watch()
+        {
+            Input = new PersonInputLedger(static () => true, static () => true, () => Now);
+            Input.EnsureWatching();
+            Provenance = new LaunchProvenance(static _ => null, Input);
+        }
+
+        public long Now { get; set; } = 1;
+        public PersonInputLedger Input { get; }
+        public LaunchProvenance Provenance { get; }
+    }
+
+    private static Watch Watched() => new();
+
+    private static WindowsWindowControlProvider Provider(FakePlatform platform, LaunchProvenance? provenance = null) =>
+        new(platform, new Applications.WindowsInstalledApplicationOpenProvider(), provenance ?? Watched().Provenance);
 
     private static async Task<string> ActiveWindowIdAsync(WindowsWindowControlProvider provider)
     {
@@ -142,6 +307,8 @@ public sealed class CloseWithoutChangesTests
         public string Title { get; init; } = string.Empty;
         public bool Console { get; init; }
         public bool CapturingMicrophone { get; init; }
+        public bool WebBrowser { get; init; }
+        public int? Tabs { get; init; } = 1;
         public IReadOnlyList<nint> Dialogs { get; init; } = [];
         public Failure Fails { get; set; }
 
@@ -170,6 +337,10 @@ public sealed class CloseWithoutChangesTests
             Fails == Failure.Dialogs ? throw new InvalidOperationException("not enumerated") : Dialogs;
 
         public bool CapturesMicrophone(WindowIdentity identity) => CapturingMicrophone;
+
+        public bool IsWebBrowser(WindowIdentity identity) => WebBrowser;
+
+        public int? TabCount(WindowIdentity identity) => Tabs;
 
         public bool Execute(WindowIdentity identity, WindowControlAction action) => false;
         public bool SetBounds(WindowIdentity identity, WindowBounds bounds) => false;

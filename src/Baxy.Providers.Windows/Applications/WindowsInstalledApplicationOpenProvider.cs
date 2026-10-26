@@ -2826,7 +2826,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     private static Task? s_tabStripWarm;
     internal static readonly TimeSpan TabStripWorkerHang = TimeSpan.FromSeconds(10);
 
-    // $args[0]: the window; $args[1]: the step, «strip» (whether a Tab holds a TabItem), «command» (whether a toggle
+    // $args[0]: the window; $args[1]: the step, «strip» (whether a Tab holds a TabItem), «count» (the most TabItems
+    // one strip holds, PC-F8 cierre), «command» (whether a toggle
     // takes Ctrl+N and the strip shows its add button) or «add» (the press); $args[2]: the press's deadline, in UTC
     // ticks. Only reads, and in «add» one Invoke of the add button, never past its deadline less 200 ms; never a key, never
     // a tab of the window selected or closed. The add button: an enabled, shown, invokable Button child of the strip (no
@@ -2849,6 +2850,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             if($null -ne $tab.FindFirst($scope::Descendants,(Kind $CT::TabItem))){ $strips+=$tab }
           }
           if($mode -eq 'strip'){ if($strips.Count -gt 0){ '{"strip":true}' } else { '{"strip":false}' }; return }
+          if($mode -eq 'count'){ $n=0; foreach($s in $strips){ $c=@($s.FindAll($scope::Descendants,(Kind $CT::TabItem))).Count; if($c -gt $n){ $n=$c } }; '{"tabs":'+$n+'}'; return }
           if($strips.Count -eq 0){ '{"outcome":"shortcut"}'; return }
           function AddButton($strip){
             $items=@($strip.FindAll($scope::Descendants,(Kind $CT::TabItem)) | Where-Object { -not $_.Current.IsOffscreen -and -not $_.Current.BoundingRectangle.IsEmpty })
@@ -2918,6 +2920,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         """;
 
     public void PrewarmTabStrip() => _ = TabStripWarm();
+
+    // PC-F8 cierre: the Core starts the reader with the window provider, so a close finds it ready.
+    internal static void PrewarmTabStripWorker() => _ = TabStripWarm();
 
     private static Task TabStripWarm()
     {
@@ -3008,6 +3013,39 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     }
 
     // The probe's answer: only «strip: true» is a tab strip shown.
+    // PC-F8 cierre (acotado): how many tabs (or documents) the window's widest tab strip holds, 0 with none; null when
+    // it cannot be read within «within» (app.close then keeps the yes).
+    internal static int? CountTabs(long windowHandle, TimeSpan within)
+    {
+        try
+        {
+            return RunTabStripAsync(windowHandle, "count", within, CancellationToken.None).AsTask().GetAwaiter().GetResult()
+                is { } line ? ReadTabCount(line) : null;
+        }
+        catch (Exception exception) when (exception is TimeoutException or InvalidOperationException
+            or System.ComponentModel.Win32Exception or IOException)
+        {
+            return null;
+        }
+    }
+
+    internal static int? ReadTabCount(string line)
+    {
+        try
+        {
+            using JsonDocument answer = JsonDocument.Parse(line.Length > 0 ? line : "{}");
+            return answer.RootElement.ValueKind == JsonValueKind.Object
+                && answer.RootElement.TryGetProperty("tabs", out JsonElement tabs)
+                && tabs.ValueKind == JsonValueKind.Number && tabs.TryGetInt32(out int count) && count >= 0
+                    ? count
+                    : null;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
     internal static bool ReadTabStripShown(string line)
     {
         try

@@ -94,8 +94,17 @@ public sealed class CloseWithoutAskingProvenanceTests
         provenance.NoteLaunched(5150, 20_000, 777);
         now = 900_000;
         personInput.Record(777, 777);
-        var provider = Provider(new WindowIdentity(
-            (nint)777, 5150, 20_000, "browser", DateTimeOffset.UnixEpoch, @"C:\Apps\browser.exe"), provenance);
+        // PC-F8 cierre (acotado): a platform that reads every other guard as letting the close go (title without a
+        // mark, no console, not a browser, one tab, no dialog), so only the person's typing keeps the yes.
+        var platform = new OneWindowPlatform(new WindowIdentity(
+            (nint)777, 5150, 20_000, "browser", DateTimeOffset.UnixEpoch, @"C:\Apps\browser.exe"))
+        {
+            Console = false,
+            WebBrowser = false,
+            Tabs = 1,
+        };
+        var provider = new WindowsWindowControlProvider(
+            platform, new Applications.WindowsInstalledApplicationOpenProvider(), provenance);
 
         Assert.That(provider.HoldsNoDocument(await ActiveWindowIdAsync(provider)), Is.False);
     }
@@ -688,6 +697,15 @@ public sealed class CloseWithoutAskingProvenanceTests
         }
 
         public bool CapturesMicrophone(WindowIdentity identity) => CapturingMicrophone;
+
+        // Fail-closed unless a case says otherwise, as a platform that cannot tell.
+        public bool Console { get; init; } = true;
+        public bool WebBrowser { get; init; } = true;
+        public int? Tabs { get; init; }
+
+        public bool ShowsConsole(WindowIdentity identity) => Console;
+        public bool IsWebBrowser(WindowIdentity identity) => WebBrowser;
+        public int? TabCount(WindowIdentity identity) => Tabs;
 
         public IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity) =>
             _asking ? [(nint)4_040] : [];
