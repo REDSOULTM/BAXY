@@ -55,14 +55,13 @@ internal sealed class SilenceNotice
     /// A turn the person opened starts; their words or press arrived at <paramref name="arrivedAt"/>, a timestamp of this
     /// notice's clock (<see cref="System.Diagnostics.Stopwatch.GetTimestamp"/> for the system's), maybe well before the
     /// turn started (it waited for a heartbeat to end). <see cref="After"/> after that moment, if the turn has published
-    /// nothing, has not ended and <paramref name="mayNotice"/> holds, <paramref name="say"/> gets <paramref name="phrase"/>,
+    /// nothing (or its line is not heard yet) and has not ended, <paramref name="say"/> gets <paramref name="phrase"/>,
     /// and again every <see cref="Again"/>; with that moment already past, the check and the notice run now, on the turn's thread. Otherwise the timer
     /// fires on the thread pool and the check and the notice run on the context the turn runs on (the interface's thread,
     /// where the turn publishes too), when it has one.
     /// </summary>
-    internal void Open(string? phrase, long arrivedAt, Func<bool> mayNotice, Action<string> say)
+    internal void Open(string? phrase, long arrivedAt, Action<string> say)
     {
-        ArgumentNullException.ThrowIfNull(mayNotice);
         ArgumentNullException.ThrowIfNull(say);
         lock (_gate)
         {
@@ -74,7 +73,7 @@ internal sealed class SilenceNotice
             }
 
             _open = true;
-            Action notice = () => Notice(turn, phrase, mayNotice, say);
+            Action notice = () => Notice(turn, phrase, say);
             TimeSpan due = After - _time.GetElapsedTime(arrivedAt);
             SynchronizationContext? context = SynchronizationContext.Current;
             _timer = _time.CreateTimer(
@@ -141,11 +140,11 @@ internal sealed class SilenceNotice
         }
     }
 
-    private void Notice(long turn, string phrase, Func<bool> mayNotice, Action<string> say)
+    private void Notice(long turn, string phrase, Action<string> say)
     {
         lock (_gate)
         {
-            if (!_open || turn != _turn || !mayNotice())
+            if (!_open || turn != _turn)
             {
                 return;
             }
