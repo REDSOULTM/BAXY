@@ -217,6 +217,32 @@ public sealed class ExternalCapabilityHandlerTests
         });
     }
 
+    // Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53», Calculator showing 47): in 7 of 7 runs that wrote
+    // «53» it was refused with only what is accepted, and the model asked the person «¿qué número está en la
+    // calculadora?». One number alone says it computes nothing, that nothing was pressed, and the same number with an
+    // operator before it, which continues from the display as it is; another shape says nothing of the kind.
+    [TestCase("53", "+53")]
+    [TestCase(" 4,5 ", "+4.5")]
+    [TestCase("2++3", null)]
+    [TestCase("5 3", null)]
+    [TestCase("53+", null)]
+    public async Task ANumberAloneSaysAnOperatorBeforeItContinuesFromTheDisplay(string expression, string? continued)
+    {
+        string message = OperationVisibleFacts.FromOutcome(
+            "calculator.expression.evaluate", await Calculator("""{"ok":true}""", expression));
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement observed = facts.RootElement.GetProperty("observed");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("calculator_expression_invalid"));
+            Assert.That(observed.TryGetProperty("next", out JsonElement next) ? next.GetString() : null, continued is null
+                ? Is.Null
+                : Is.EqualTo($"{continued[1..]} alone has no operator: it computes nothing, and nothing was pressed; "
+                    + $"{continued} continues from the number the display shows now, without reading it first"));
+        });
+    }
+
     // BAXY Renew cu (C14): an empty code from a provider is no code: it becomes the generic one, never «» in the journal
     // (journaled as «», the engine did not start again on that profile).
     [Test]
