@@ -72,10 +72,10 @@ export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, 
       <div ref={ref} tabIndex={-1} style={{ outline: 'none' }} className="panel settings-panel bxs" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Ajustes">
         <div className="panel-head">
           <span className="panel-title">Ajustes</span>
-          <button className="bx-ib plain" onClick={onClose} title="Cerrar"><Icon name="x" size={14} /></button>
+          <button className="bx-ib plain" onClick={onClose} title="Cerrar" aria-label="Cerrar"><Icon name="x" size={14} /></button>
         </div>
-        <div className="settings-tabs">
-          {TABS.map(([id, l]) => <button key={id} className={'settings-tab' + (tab === id ? ' on' : '')} onClick={() => setTab(id)}>{l}</button>)}
+        <div className="settings-tabs" role="group" aria-label="Secciones de ajustes">
+          {TABS.map(([id, l]) => <button key={id} className={'settings-tab' + (tab === id ? ' on' : '')} aria-pressed={tab === id} onClick={() => setTab(id)}>{l}</button>)}
         </div>
         <div className="panel-body settings-body">
           {tab === 'general' ? (<>

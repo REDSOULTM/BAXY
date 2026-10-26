@@ -76,7 +76,7 @@ export function MemoryPanel({ onClose, revision }: { onClose: () => void; revisi
       <div key={m.key} className="bx-mem-row">
         <span className="t">{sens ? <><b>{m.label ?? m.key}</b> · ••••••</> : m.label ? <><b>{m.label}</b> · {m.value}</> : m.value}</span>
         {ask === 'key:' + m.key ? <ConfirmRow label="¿Olvidar?" yes="Sí, olvidar" onYes={() => void forget(m.key)} onNo={() => setAsk(null)} /> : (
-          <span className="acts"><button className="bx-lnk" disabled={busy} onClick={() => setAsk('key:' + m.key)}>Olvidar</button></span>
+          <span className="acts"><button className="bx-lnk" disabled={busy} aria-label={'Olvidar: ' + (sens ? m.label ?? m.key : m.label ?? m.value)} onClick={() => setAsk('key:' + m.key)}>Olvidar</button></span>
         )}
       </div>
     );
@@ -88,8 +88,8 @@ export function MemoryPanel({ onClose, revision }: { onClose: () => void; revisi
         <div className="bxs-l"><span>Recordar cosas sobre ti</span><span className="h">Si lo apagas, BAXY no guarda nada nuevo. Lo que ya está se queda hasta que lo olvides.</span></div>
         <div className="bxs-c"><Toggle on={on} label="Recordar cosas sobre ti" locked={busy || !data || !!data.error} onChange={(v) => void setOn(v)} /></div>
       </div>
-      {data?.error ? <div className="bx-mem-empty">{ERRORS[data.error] ?? 'No se pudo leer la memoria.'}</div> : null}
-      {note ? <div className="bx-mem-empty">{note}</div> : null}
+      {data?.error ? <div className="bx-mem-empty" role="status">{ERRORS[data.error] ?? 'No se pudo leer la memoria.'}</div> : null}
+      {note ? <div className="bx-mem-empty" role="status">{note}</div> : null}
       {data && !data.error ? (
         <div className={'bx-mem' + (on ? '' : ' off')}>
           {!on ? <div className="bx-mem-empty">La memoria está apagada: BAXY no lee ni guarda recuerdos.</div> : null}

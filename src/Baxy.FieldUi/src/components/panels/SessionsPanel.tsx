@@ -35,8 +35,8 @@ export function SessionsPanel({ onClose, onNew, revision }: { onClose: () => voi
   return (
     <Panel title="Sesiones" onClose={onClose} width={480}>
       <button className="panel-btn" style={{ marginBottom: 12 }} onClick={onNew}><Icon name="plus" size={11} /> Nueva conversación</button>
-      {note ? <div className="bx-mem-empty">{note}</div> : null}
-      {list === null ? <div className="bx-mem-empty">No se pudieron leer las sesiones.</div> : null}
+      {note ? <div className="bx-mem-empty" role="status">{note}</div> : null}
+      {list === null ? <div className="bx-mem-empty" role="status">No se pudieron leer las sesiones.</div> : null}
       <div className="bx-mem">
         {list?.map((s) => (
           <div key={s.id} className={'bx-mem-row' + (s.current ? ' cur' : '')}>
@@ -46,7 +46,7 @@ export function SessionsPanel({ onClose, onNew, revision }: { onClose: () => voi
               : <button className="bx-sess-t" onClick={() => (s.current ? onClose() : void open(s.id))}>{s.label}</button>}
             <span className="acts">
               <span className="ts">{s.current ? 'Abierta' : s.ts}</span>
-              {ed !== s.id ? <button className="bx-lnk" onClick={() => { setEd(s.id); setVal(s.label); }}>Renombrar</button> : null}
+              {ed !== s.id ? <button className="bx-lnk" aria-label={'Renombrar ' + s.label} onClick={() => { setEd(s.id); setVal(s.label); }}>Renombrar</button> : null}
             </span>
           </div>
         ))}

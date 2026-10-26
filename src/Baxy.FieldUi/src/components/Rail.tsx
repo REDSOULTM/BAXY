@@ -90,14 +90,16 @@ function RailView({ state, powered, onPower, bypass, onMode, metrics, net, profi
           {net ? <><Globe s={10} /><span>Salió a internet</span></> : <><i></i><span>Todo local</span></>}
         </div>
       </div>
-      <button className={'power-row' + (powered ? ' on' : ' off')} onClick={onPower} title={powered ? 'Poner en reposo' : 'Activar'}>
+      <button className={'power-row' + (powered ? ' on' : ' off')} onClick={onPower} title={powered ? 'Poner en reposo' : 'Activar'}
+        aria-label={state === 'booting' ? 'BAXY arrancando' : powered ? 'BAXY activo · poner en reposo' : 'BAXY en reposo · activar'}>
         <span className="power-ic"><Icon name="power" size={15} /></span>
         <span className="power-lbl">{state === 'booting' ? 'Arrancando' : powered ? 'Activo' : 'En reposo'}</span>
         <span className="power-dot"></span>
       </button>
       <div className="min-block">
         <div className="sec-head"><span>confirmación</span></div>
-        <button className={'bx-modebtn ' + (bypass ? 'bypass' : 'normal')} onClick={onMode} title={bypass ? 'Bypass: hace todo sin preguntar · pulsa para volver a Normal' : 'Normal: pregunta antes de lo arriesgado · pulsa para Bypass'}>
+        <button className={'bx-modebtn ' + (bypass ? 'bypass' : 'normal')} onClick={onMode} role="switch" aria-checked={bypass}
+          aria-label={bypass ? 'Confirmación en Bypass: hace todo sin preguntar' : 'Confirmación Normal: pregunta antes de lo arriesgado · activar Bypass'} title={bypass ? 'Bypass: hace todo sin preguntar · pulsa para volver a Normal' : 'Normal: pregunta antes de lo arriesgado · pulsa para Bypass'}>
           <span className="ic"><Icon name={bypass ? 'bolt' : 'check'} size={14} /></span>
           <span className="tx"><span className="n">{bypass ? 'Bypass' : 'Normal'}</span><span className="s">{bypass ? 'Sin frenos' : 'Si hay riesgo'}</span></span>
           <span className="sw"><i></i></span>
@@ -132,7 +134,7 @@ function RailView({ state, powered, onPower, bypass, onMode, metrics, net, profi
         <div className="bx-profiles">
           {PROFILES.map(([id, ic, tip, ready]) => (
             <button key={id} className={'bx-pchip' + (profile === id ? ' on' : '') + (ready ? '' : ' soon')} data-tip={tip} title={tip}
-              aria-disabled={!ready} onClick={() => { if (ready) onProfile(id); }}><Icon name={ic} size={14} /></button>
+              aria-label={tip} aria-pressed={profile === id} aria-disabled={!ready} onClick={() => { if (ready) onProfile(id); }}><Icon name={ic} size={14} /></button>
           ))}
         </div>
       </div>

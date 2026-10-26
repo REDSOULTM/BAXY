@@ -9,6 +9,7 @@ import { Cosmos } from './components/Cosmos';
 import { Face } from './components/face/Face';
 import { AvatarVid } from './components/AvatarVid';
 import { useLipActive } from './lip';
+import { liveText } from './live';
 import { Globe, Icon } from './components/Icon';
 import { MemoryPanel } from './components/panels/MemoryPanel';
 import { CatalogPanel } from './components/panels/CatalogPanel';
@@ -278,13 +279,16 @@ export default function App() {
     const frame = document.querySelector<HTMLElement>('.app-frame');
     if (!frame) return;
     const spins = [...frame.querySelectorAll<HTMLElement>('.bd-spin')];
+    // final 4, accesibilidad: with prefers-reduced-motion the ring stays still, as the sky and the face do (its colours
+    // still tell the state)
+    const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     let raf = 0, last = performance.now(), acc = 0, angle = 0, speed = 1;
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop);
       acc += now - last; last = now;
       if (acc < 32 || document.hidden) return; // 30 fps is enough for a slow ring
       const dt = Math.min(0.05, acc / 1000); acc = 0;
-      const tg = R.current.powered ? (R.current.bypass ? 1.5 : 1) : 0;
+      const tg = R.current.powered && !calm?.matches ? (R.current.bypass ? 1.5 : 1) : 0;
       speed += (tg - speed) * Math.min(1, dt * 2.6);
       if (tg === 0 && speed < 0.012) speed = 0;
       if (speed === 0) return;
@@ -513,18 +517,21 @@ export default function App() {
               </span>
               <span className="bx-ctr">
                 {!chatShown ? (
-                  <button className="bx-ib" title="Mostrar conversación" onClick={() => toggleChat(true)}>
+                  <button className="bx-ib" title="Mostrar conversación" aria-label={'Mostrar conversación' + (unread ? ' · hay una respuesta sin leer' : '')} onClick={() => toggleChat(true)}>
                     <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"><path d="M2.5 4Q2.5 2.8 3.7 2.8H12.3Q13.5 2.8 13.5 4V9.6Q13.5 10.8 12.3 10.8H7L4.2 13.2V10.8H3.7Q2.5 10.8 2.5 9.6Z"></path><path d="M5.3 6.8h.01M8 6.8h.01M10.7 6.8h.01" strokeWidth="1.8" strokeLinecap="round"></path></svg>
                     {unread ? <span className="dot"></span> : null}
                   </button>
                 ) : null}
                 <span className="bx-win">
-                  <button className="bx-ib plain" title="Minimizar" onClick={() => void win('minimize')}><Icon name="win-min" size={12} /></button>
-                  <button className="bx-ib plain" title={maximized ? 'Restaurar' : 'Maximizar'} onClick={() => void win('toggle_maximize')}><Icon name={maximized ? 'win-restore' : 'win-max'} size={12} /></button>
-                  <button className="bx-ib plain bx-close" title="Cerrar" onClick={() => void win('close')}><Icon name="x" size={12} /></button>
+                  <button className="bx-ib plain" title="Minimizar" aria-label="Minimizar" onClick={() => void win('minimize')}><Icon name="win-min" size={12} /></button>
+                  <button className="bx-ib plain" title={maximized ? 'Restaurar' : 'Maximizar'} aria-label={maximized ? 'Restaurar' : 'Maximizar'} onClick={() => void win('toggle_maximize')}><Icon name={maximized ? 'win-restore' : 'win-max'} size={12} /></button>
+                  <button className="bx-ib plain bx-close" title="Cerrar" aria-label="Cerrar BAXY" onClick={() => void win('close')}><Icon name="x" size={12} /></button>
                 </span>
               </span>
             </div>
+            {/* final 4, accesibilidad: the notices, the internet banner and a failure are drawn for a moment and were
+                never read by a screen reader; this region, always there, says them (politely, never over the voice) */}
+            <div className="sr-only" role="status" aria-live="polite">{liveText(banner, shownNotice, state === 'error' ? errorText : null)}</div>
             <div className="bx-cbot">
               {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>Salió a internet</b><span>· {banner}</span></div>
                 : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}

@@ -588,3 +588,6 @@ body {
 }
 .st-tip .bone   { color: var(--t-bone); }
 .st-tip .carmine { color: var(--carmine); }
+
+/* final 4, accesibilidad: read by a screen reader, never drawn (the live region of App.tsx) */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}

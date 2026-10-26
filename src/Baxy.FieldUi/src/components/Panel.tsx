@@ -11,7 +11,7 @@ export function Panel({ title, onClose, width, children }: { title: string; onCl
       <div ref={ref} tabIndex={-1} className="panel" style={{ outline: 'none', ...(width ? { width } : null) }} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={title}>
         <div className="panel-head">
           <span className="panel-title">{title}</span>
-          <button className="ibtn" onClick={onClose} data-tip="Cerrar" title="Cerrar"><Icon name="x" /></button>
+          <button className="ibtn" onClick={onClose} data-tip="Cerrar" title="Cerrar" aria-label="Cerrar"><Icon name="x" /></button>
         </div>
         <div className="panel-body">{children}</div>
       </div>
@@ -19,12 +19,13 @@ export function Panel({ title, onClose, width, children }: { title: string; onCl
   );
 }
 
-/** the two-step confirmation inside a row (design panels4.jsx BxConfirmRow). */
+/** the two-step confirmation inside a row (design panels4.jsx BxConfirmRow). The button that asked it is gone, so the
+ *  keyboard's focus goes to its «No» (Enter never confirms by itself), and a screen reader hears the question first. */
 export function ConfirmRow({ label, yes, onYes, onNo }: { label: string; yes: string; onYes: () => void; onNo: () => void }) {
   return (
-    <span className="bx-irow">
+    <span className="bx-irow" role="group" aria-label={label}>
       <span>{label}</span>
-      <button className="bx-sbtn" onClick={onNo}>No</button>
+      <button className="bx-sbtn" onClick={onNo} autoFocus>No</button>
       <button className="bx-sbtn go" onClick={onYes}>{yes}</button>
     </span>
   );
