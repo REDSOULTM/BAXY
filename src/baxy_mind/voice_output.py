@@ -15,7 +15,8 @@ uses that take; a call written after it drops the take; nothing sounds before th
 publishes the answer.
 The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote at warm-up, which the mind
 gives the voice with its catalog.ready (set_notice; al máximo 9.2a: it was «Un momento.», fixed in the code). It is
-synthesized as soon as the voice has it and said from that audio only: a notice never takes the one synthesis an answer
+synthesized as soon as the voice has it (given before the voice loaded, it is the load's warm-up take, so it is ready
+with the voice) and said from that audio only: a notice never takes the one synthesis an answer
 needs (owner, 2026-10-20: an answer waited 3.6 s behind a notice synthesized like any sentence). It is dropped if an
 answer was given after it and before it began to sound: said then, it came right before the answer and held it back
 (owner, 2026-10-20: the notice cut in on what BAXY was about to say; answers waited up to 4.8 s behind it). An answer
@@ -361,7 +362,7 @@ class Speech:
             self._start()
             with self._posting:
                 self._loaded = True
-                if self._notice_text:
+                if self._notice_text and self._notice_audio is None:
                     self._synthesize_notice(self._notice_text)
         except Exception as error:  # noqa: BLE001 - without a voice BAXY still answers on screen
             self.failure = repr(error)
@@ -451,8 +452,17 @@ class Speech:
             num_threads=THREADS, provider="cpu")))
         self.rate = int(self._tts.sample_rate)
         self._shift = Fraction(2 ** (float(self._voice.get("shift", 0)) / 12)).limit_denominator(100)
-        # Loads the voice now, so the first answer does not wait for it.
-        self._synthesize("Hola.", pause=False)
+        # Loads the voice now, so the first answer does not wait for it. The mind's notice phrase, when it came while the
+        # model loaded (catalog.ready; on the notebook, e2e c3-final5-dv6, the first turn's notice was refused 7.3 s
+        # after it, with no audio yet, and the next one came 10 s later), is that first take and its audio is kept: the
+        # notice is ready with the voice, and a throwaway «Hola.» followed by the notice's own synthesis no longer
+        # stands before the first answer or notice.
+        with self._posting:
+            warm = self._notice_text
+        audio = self._synthesize(warm or "Hola.", pause=False)
+        with self._posting:
+            if warm and self._notice_text == warm:
+                self._notice_audio = audio
 
     def _sentences(self, text: str) -> _Sentences:
         """Each sentence's audio in order: the first is already being synthesized (while the output opens), and each

@@ -206,11 +206,12 @@ internal sealed class NativeTurnLoop
     }
 
     // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
-    // notice when it has published nothing SilenceNotice.After after they arrived (the turn may have waited for a
-    // heartbeat to end before it started), unless a call waits for the person's Sí or No and this turn asked for it
-    // (asked after the turn started: its question comes next), even when it is the same invocation the person said «sí»
-    // to and the kernel asks again; a call left waiting before the turn started, by an earlier turn or by a heartbeat it
-    // waited for, does not hold it back. A heartbeat says none: nobody asked and nobody waits for it.
+    // notice when nothing it published is heard SilenceNotice.After after they arrived (the turn may have waited for a
+    // heartbeat to end before it started). A call this turn raised that waits for the person's Sí or No no longer holds
+    // it back: until its question is heard BAXY is still writing or saying it, as with any line (al máximo 9.2b), and
+    // that silence passed 3 s (primera voz, e2e c3-final5-dv6: a «¿Mando … a la papelera?» heard at 4.65 s and a
+    // «Should I close Notepad without saving?» at 3.25 s, with no notice before them). A heartbeat says none: nobody
+    // asked and nobody waits for it.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
         long arrivedAt,
@@ -219,9 +220,8 @@ internal sealed class NativeTurnLoop
     {
         _personAt = arrivedAt;
         long turn = ++_personTurns;
-        long started = Stopwatch.GetTimestamp();
-        _turnStarted = started;
-        _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedAt < started, _host.Notice);
+        _turnStarted = Stopwatch.GetTimestamp();
+        _notice.Open(mind.Notice, arrivedAt, _host.Notice);
         try
         {
             await DriveAsync(mind, await decide(), cancellationToken);

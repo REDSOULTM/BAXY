@@ -22,7 +22,7 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), static () => true, said.Add);
+        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
 
         clock.Advance(TimeSpan.FromSeconds(2.4));
         notice.Publish(static () => { });
@@ -38,7 +38,7 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), static () => true, said.Add);
+        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
 
         clock.Advance(TimeSpan.FromSeconds(1.5));
         notice.Publish(static () => { });
@@ -57,7 +57,7 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), static () => true, said.Add);
+        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
 
         clock.Advance(TimeSpan.FromSeconds(1));
         notice.Sounded();
@@ -72,7 +72,7 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), static () => true, said.Add);
+        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
 
         clock.Advance(TimeSpan.FromSeconds(1));
         notice.Close();
@@ -87,12 +87,12 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), static () => true, said.Add);
+        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
         clock.Advance(TimeSpan.FromSeconds(2));
         notice.Publish(static () => { });
         notice.Close();
 
-        notice.Open(null, clock.GetTimestamp(), static () => true, said.Add); // the next turn, with no phrase
+        notice.Open(null, clock.GetTimestamp(), said.Add); // the next turn, with no phrase
         clock.Advance(TimeSpan.FromSeconds(5));
 
         Assert.That(said, Is.Empty);
