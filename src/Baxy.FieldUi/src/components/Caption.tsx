@@ -32,13 +32,13 @@ interface CapProps {
   live: string;
   step: string | null;
   waiting: string | null;
-  error: string;
 }
 
-export function Caption({ state, sub, subGone, live, step, waiting, error }: CapProps) {
+export function Caption({ state, sub, subGone, live, step, waiting }: CapProps) {
   if (state === 'booting' || state === 'standby') return <div className="bx-cap"></div>;
   if (state === 'listening') return <div className="bx-cap"><div className="bx-live">{live || ' '}</div></div>;
-  if (state === 'error') return <div className="bx-cap"><div className="bx-err bx-fade">{error}</div></div>;
+  // a failure is the state's label above (the ear's, the model's): the captions are BAXY's own words only
+  if (state === 'error') return <div className="bx-cap"></div>;
   if (state === 'thinking' && step) return <div className="bx-cap"><div className="bx-step bx-fade" key={step}><span className="txt">{step}</span></div></div>;
   if (waiting) return <div className="bx-cap"><div className="bx-wait bx-fade">{waiting} <span className="ar">→</span></div></div>;
   return <div className="bx-cap">{sub ? <Sub key={sub.key} text={sub.text} animate={state === 'speaking'} gone={subGone} /> : null}</div>;

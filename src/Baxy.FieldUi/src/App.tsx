@@ -50,7 +50,8 @@ const FAILURE: Record<string, string> = {
   core_disconnected: 'El motor local se desconectó',
   retry_without_close: 'El motor local no arrancó',
   turn_failed: 'El turno no pudo terminar',
-  voice_error: 'No te entendí bien. ¿Lo repites?',
+  // a state of the interface, never words of BAXY's (zero fixed visible replies)
+  voice_error: 'No se entendió el audio',
 };
 
 // the frame's ring per state (design app.jsx SET).
@@ -65,7 +66,7 @@ const RING: Record<string, string[]> = {
 
 const LABEL: Record<BaxyState, string> = {
   booting: 'Arrancando', standby: 'En reposo', idle: 'En espera', listening: 'Escuchando', thinking: 'Pensando',
-  speaking: 'Hablando', confirm: 'Esperando tu ok', error: 'No te entendí',
+  speaking: 'Hablando', confirm: 'Esperando tu ok', error: 'No se entendió el audio',
 };
 
 export default function App() {
@@ -204,7 +205,6 @@ export default function App() {
         : host === 'idle' && pendingCard ? 'confirm'
           : host;
   const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
-  const errorText = voiceError ?? (s.agent.failure ? FAILURE[s.agent.failure] ?? 'Algo falló' : 'Algo falló');
   const label = state === 'error' ? (voiceError ? LABEL.error : FAILURE[s.agent.failure ?? ''] ?? 'Algo falló') : LABEL[state];
 
   // how long the model took this time, kept as this view's note for the next start (never a promise)
@@ -529,7 +529,7 @@ export default function App() {
               {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>Salió a internet</b><span>· {banner}</span></div>
                 : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
               {booting && s.boot ? <Boot boot={s.boot} />
-                : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} error={errorText} />}
+                : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} />}
               <VoiceInput mic={shownMic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
                 onSubmit={submit} state={state} canSend={canSend} />
             </div>
