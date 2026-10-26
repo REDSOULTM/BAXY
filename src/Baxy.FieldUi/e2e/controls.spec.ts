@@ -159,7 +159,7 @@ test('paneles: propuestas, catálogo, sesiones y memoria', async () => {
   expect.soft(await until(async () => !(await get('/proposals')).quiet), 'volver a activas').toBe(true);
   await esc();
 
-  await page.locator('.bx-mod', { hasText: 'Qué puedo hacer' }).click();
+  await page.locator('.bx-mod', { hasText: 'Capacidades' }).click();
   await page.locator('.panel input').fill('volumen');
   await expect(page.locator('.panel')).toContainText(/volumen/i);
   await esc();

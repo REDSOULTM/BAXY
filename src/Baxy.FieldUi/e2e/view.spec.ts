@@ -304,3 +304,22 @@ test('ningún aviso ni etiqueta fija de la vista habla como BAXY en primera pers
   await expect(p.locator('.bx-notice')).toContainText('ocupad');
   await expect(p.locator('.bx-notice')).not.toHaveText(firstPerson);
 });
+
+test('el catálogo no habla como BAXY («Qué puedo hacer») y su nombre cabe en el riel a cada ancho', async () => {
+  h = await openView();
+  const p = h.page;
+  const rail = p.locator('.bx2 button', { hasText: /puedo hacer|Capacidades/ }).first();
+  await expect(rail).not.toContainText(/puedo/i);
+  for (const [w, ht] of [[1280, 720], [1100, 700], [900, 640], [1920, 1080]]) {
+    await p.setViewportSize({ width: w, height: ht });
+    await p.waitForTimeout(150);
+    // no label of the rail's panel buttons overflows its button
+    const over = await p.evaluate(() => [...document.querySelectorAll<HTMLElement>('.bx2 button')]
+      .filter((b) => /Sesiones|Memoria|Triggers|Capacidades|Propuestas|puedo/.test(b.innerText))
+      .flatMap((b) => [...b.querySelectorAll<HTMLElement>('span')].filter((s) => s.scrollWidth > s.clientWidth + 1 || s.getBoundingClientRect().right > b.getBoundingClientRect().right + 1).map((s) => s.innerText)));
+    expect(over, `${w}×${ht}`).toEqual([]);
+  }
+  await p.setViewportSize({ width: 1400, height: 860 });
+  await rail.click();
+  await expect(p.locator('.panel-title')).toHaveText('Capacidades de BAXY');
+});
