@@ -31,6 +31,9 @@ public sealed class BeatProposalTests
         "capture.active.window", "capture.screenshot", "clipboard.read.text", "email.latest.read", "memory.enable",
         "memory.export", "memory.sensitive.save", "ocr.read", "peripheral.scan", "system.settings.set",
         "vision.describe", "wifi.connect", "wifi.connect.named",
+        // pc-f6-ajustes: BAXY's own settings (its voice, web search, not interrupting, its proposals' silence) reach no
+        // window, send nothing out, and the view's Settings shows them.
+        "baxy.settings.set",
     ];
 
     [TestCase("system.settings.set", "{\"setting\":\"airplane_mode\",\"value\":1}")]

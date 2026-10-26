@@ -152,6 +152,7 @@ internal static class Program
             new ScreenshotCaptureHandler(screenshotProvider),
             .. FilesystemHandlers.Create(filesystemProvider),
             .. ExternalCapabilityHandlers.Create(externalCapabilityProvider, dataRoot, new KeyWindowReader()),
+            new OwnSettingsHandler(dataRoot),
             .. MemoryHandlers.Create(
                 memoryStore,
                 memoryCodec,

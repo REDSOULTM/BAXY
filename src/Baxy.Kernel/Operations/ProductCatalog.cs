@@ -198,6 +198,25 @@ public static class ProductCatalog
             "backup.verify.sandbox.hash.v1",
             "Reabre una copia privada y compara su SHA-256 con el registrado al crearla; una copia cambiada o sin ese registro no está verificada."),
         Descriptor(
+            "baxy.settings.set",
+            Schema(
+                [
+                    // pc-f6-ajustes: los ajustes propios de BAXY que la vista cambia (FieldSettingsStore). proposals
+                    // toma 30m, 1h o tomorrow (silencio hasta las 08:00) y on lo quita; los demás, on u off.
+                    String(
+                        "setting",
+                        values:
+                        [
+                            "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos", "proposals", "voice",
+                            "web_search",
+                        ]),
+                    String("value", values: ["1h", "30m", "off", "on", "tomorrow"]),
+                ],
+                ["setting", "value"]),
+            OperationRisks.LowReversible,
+            "baxy.settings.set.profile.postread.v1",
+            "Cambia un ajuste propio de BAXY (su voz, la búsqueda web, no interrumpir en juegos, llamadas o vídeos, o silenciar sus propuestas 30 min, 1 h o hasta mañana) y verifica su postlectura."),
+        Descriptor(
             "bluetooth.device.list",
             EmptySchema(),
             OperationRisks.ReadOnly,

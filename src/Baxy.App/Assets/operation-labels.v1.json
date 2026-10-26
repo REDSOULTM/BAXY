@@ -159,6 +159,7 @@
     "system.recyclebin.empty": { "t": "Vaciar la papelera", "g": "system", "f": "archivos" },
     "system.settings.adjust": { "t": "Subir o bajar el brillo", "g": "system", "f": "ventanas" },
     "system.settings.set": { "t": "Brillo, no molestar o modo avión", "g": "system", "f": "ventanas" },
+    "baxy.settings.set": { "t": "Cambiar un ajuste de BAXY", "g": "system", "f": "ventanas" },
     "system.settings.status": { "t": "Ver brillo o modo avión", "g": "system", "f": "ventanas" },
     "system.status": { "t": "Ver el estado del PC", "g": "system", "f": "ventanas" },
     "system.time": { "t": "Ver la hora", "g": "time", "f": "alarmas" },
