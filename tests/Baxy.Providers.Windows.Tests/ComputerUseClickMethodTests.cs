@@ -711,6 +711,45 @@ public sealed class ComputerUseClickMethodTests
         });
     }
 
+    // e2e c3-final5 dv6 (five pointer clicks in Configuración, 2.0-2.2 s each): the window is probed for an animation
+    // once, by the tree's press before it asks the worker; the worker pressed nothing, so the pointer's press does not
+    // probe it again (its image and the 150 + 450 ms of the probe).
+    [Test]
+    public async Task ThePointersPressTakesTheTreesProbeAndDoesNotProbeAgain()
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
+            "{\"version\":2,\"ok\":false,\"effectObserved\":false,\"error\":\"visible_click_needs_pointer\"," +
+            "\"name\":\"Servidor\",\"kind\":\"ListItem\",\"controlIdentity\":\"1.2.7\",\"absentOrDisabled\":false," +
+            "\"pending\":false,\"method\":\"pointer\",\"needsPointer\":true,\"point\":{\"x\":120,\"y\":340}}",
+            "{\"version\":2,\"ok\":true,\"effectObserved\":true,\"error\":\"\",\"name\":\"Servidor\"," +
+            "\"controlIdentity\":\"1.2.7\",\"absentOrDisabled\":false,\"selected\":true,\"toggled\":false," +
+            "\"surfaceChanged\":false,\"cascadeStage\":\"uia\",\"method\":\"pointer\"}");
+        var pointer = new RecordingPointer(ready: true);
+        int beforePress = 0;
+        ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint window, bool? selfDrawn, CancellationToken token)
+        {
+            if (pointer.Clicks.Count == 0)
+                beforePress++;
+            return ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
+                new VisibleControlSurface.CapturedWindow(window, [], 0, 0, 10, 10, "still"));
+        }
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, pointer: pointer, capture: Capture)
+        {
+            WindowInFront = TestFront,
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"servidor"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(pointer.Clicks, Is.EqualTo(new[] { (120, 340) }));
+            Assert.That(beforePress, Is.EqualTo(1 + VisibleControlSurface.AnimationProbes.Length),
+                "one image and the probe's, all before the worker was asked");
+        });
+    }
+
     [Test]
     public async Task ThePointerThatMayNotPressNowLeavesNothingPressed()
     {

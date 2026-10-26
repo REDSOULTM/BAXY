@@ -2118,6 +2118,35 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // e2e c3-final4/5 dv6 (a label not in Configuración, 2.0 s): the look's own press probed the window and found it
+    // still; when the window still shows that same image after a look that pressed nothing, it has been still since
+    // that probe, and «not found» comes at the first image of the watch. Another image is watched from zero, as before.
+    [TestCase("same", true)]
+    [TestCase("other", false)]
+    public async Task VisibleClickOnAWindowItsLookFoundStillCountsFromThatProbe(string shownAfter, bool fromProbe)
+    {
+        var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(NotFoundByUia);
+        int samples = 0;
+        var adapter = new WindowsVisibleControlAdapter(
+            worker, new CountingLocator("ocr", hit: false), vision: null, timing: StillTiming,
+            surfaceHash: (_, _) => { samples++; return ValueTask.FromResult<string?>(shownAfter); },
+            capture: (window, _, _) => ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
+                new VisibleControlSurface.CapturedWindow(window, [], 0, 0, 10, 10, "same")))
+        {
+            WindowInFront = ComputerUsePerceptionTests.TestFront,
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"crash bandicoot"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_not_found"));
+            Assert.That(worker.Commands.Count, Is.EqualTo(1));
+            Assert.That(samples, fromProbe ? Is.EqualTo(1) : Is.GreaterThanOrEqualTo(2));
+        });
+    }
+
     // A window that changes while the click waits may be drawing the label: it is looked at again at once and the
     // label that appeared is pressed.
     [Test]

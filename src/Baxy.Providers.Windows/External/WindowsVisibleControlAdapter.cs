@@ -709,19 +709,6 @@ internal sealed class WindowsVisibleControlAdapter
         return false;
     }
 
-    private async ValueTask<bool> WindowAnimatesAsync(nint hwnd, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await _capture(hwnd, null, cancellationToken).ConfigureAwait(false) is not { } first
-                || await AnimatesFromAsync(hwnd, first, cancellationToken).ConfigureAwait(false);
-        }
-        catch (Exception exception) when (exception is IOException or InvalidOperationException)
-        {
-            return true;
-        }
-    }
-
     private static string ElevatedCode(nint window)
     {
         int processId = VisibleControlSurface.WindowProcess(window).ProcessId;
@@ -1942,6 +1929,7 @@ internal sealed class WindowsVisibleControlAdapter
                 nint boundWindow = opened is not null ? surfaceWindow : namedWindow != 0 ? namedWindow : viewWindow;
                 using IDisposable bound = VisibleControlSurface.RequireWindow(boundWindow);
                 _lookedTreeSize = -1;
+                _stillSince = null;
                 uia = await InvokeUiaAsync(operation, label, null, boundWindow, cancellationToken)
                     .ConfigureAwait(false);
                 if (ShouldKeep(uia))
@@ -2019,7 +2007,8 @@ internal sealed class WindowsVisibleControlAdapter
                 if (built)
                 {
                     nint watched = _lookedWindow;
-                    if (await StaysStillAsync(token => _surfaceHash(watched, token), cancellationToken).ConfigureAwait(false))
+                    if (await StaysStillAsync(token => _surfaceHash(watched, token), StillSeen(watched, uia), cancellationToken)
+                        .ConfigureAwait(false))
                     {
                         if (await HoverOnceAsync().ConfigureAwait(false) is { } settledTip)
                             return settledTip;
@@ -2040,7 +2029,8 @@ internal sealed class WindowsVisibleControlAdapter
                 // changes is looked at again at once. The window watched is the one the look read and the click
                 // targets, never whatever holds the front meanwhile (review r10).
                 nint watched = _lookedWindow;
-                if (await StaysStillAsync(token => _surfaceHash(watched, token), cancellationToken).ConfigureAwait(false))
+                if (await StaysStillAsync(token => _surfaceHash(watched, token), StillSeen(watched, uia), cancellationToken)
+                    .ConfigureAwait(false))
                 {
                     if (await HoverOnceAsync().ConfigureAwait(false) is { } still)
                         return still;
@@ -2084,8 +2074,12 @@ internal sealed class WindowsVisibleControlAdapter
 
     // Watches the window in front for up to Interval: true when it stayed exactly the same for StillFor, false as soon
     // as it changes, when it cannot be captured (then the whole interval is waited, as before) or at the interval.
+    // An image the probe of the look's own press found still (seen) that the window still shows counts from that probe:
+    // e2e c3-final4/5 dv6, a label not found in Configuración took 2.0 s, of it the probe's 600 ms of the same image and
+    // then the 750 ms of StillFor watched again from zero.
     private async ValueTask<bool> StaysStillAsync(
         Func<CancellationToken, ValueTask<string?>> surfaceHash,
+        (string Sha256, long At)? seen,
         CancellationToken cancellationToken)
     {
         long watch = _time.GetTimestamp();
@@ -2098,7 +2092,11 @@ internal sealed class WindowsVisibleControlAdapter
             return false;
         }
 
-        long still = _time.GetTimestamp();
+        long still = seen is { } probe && string.Equals(probe.Sha256, first, StringComparison.Ordinal)
+            ? probe.At
+            : _time.GetTimestamp();
+        if (_time.GetElapsedTime(still) >= _timing.StillFor)
+            return true;
         while (_time.GetElapsedTime(watch) < _timing.Interval)
         {
             await Task.Delay(_timing.StillSample, _time, cancellationToken).ConfigureAwait(false);
@@ -2111,6 +2109,13 @@ internal sealed class WindowsVisibleControlAdapter
 
         return false;
     }
+
+    // The still image the look's press probed on that window, when the look pressed nothing (a press seen unchanged
+    // may have moved the window between the probe and now).
+    private (string Sha256, long At)? StillSeen(nint window, ExternalCapabilityReceipt? look) =>
+        look is { EffectObserved: false, EffectMayHaveOccurred: false } && _stillSince is { } seen && seen.Window == window
+            ? (seen.Sha256, seen.At)
+            : null;
 
     private static async ValueTask<string?> WindowSurfaceHashAsync(nint window, CancellationToken cancellationToken)
     {
@@ -3352,6 +3357,7 @@ internal sealed class WindowsVisibleControlAdapter
         // digit stays enabled and unselected after Invoke, so the surface is
         // the only evidence (UI1273); it is compared before/after the click.
         VisibleControlSurface.CapturedWindow? before = null;
+        long probed = _time.GetTimestamp();
         try
         {
             before = await _capture(hwnd, null, cancellationToken).ConfigureAwait(false);
@@ -3365,6 +3371,8 @@ internal sealed class WindowsVisibleControlAdapter
         {
             before = null;
         }
+
+        _stillSince = before is { } still ? (hwnd, still.Sha256, probed) : null;
 
         // Pasada r15b B2 (v3-17): the window's own popups before the click; one born of it is its effect.
         IReadOnlyList<nint> popupsBefore = PopupsOf(hwnd);
@@ -3404,7 +3412,8 @@ internal sealed class WindowsVisibleControlAdapter
                 if (answer.RootElement.TryGetProperty("needsPointer", out JsonElement needsPointer)
                     && needsPointer.ValueKind == JsonValueKind.True)
                 {
-                    return await PointerAsync(operation, answer.RootElement, hwnd, effectBoundary, cancellationToken)
+                    return await PointerAsync(
+                            operation, answer.RootElement, hwnd, animated: before is null, effectBoundary, cancellationToken)
                         .ConfigureAwait(false);
                 }
 
@@ -3430,11 +3439,14 @@ internal sealed class WindowsVisibleControlAdapter
     /// The control has no way to be pressed but the cursor (no pattern, no default action, not a classic window): the
     /// worker pressed nothing and handed its point. The pointer presses it only while the window may take it, and the
     /// surface is captured again right before, since bringing a window forward changes what the screen shows.
+    /// <paramref name="animated"/> is the verdict of the probe the tree's press made on that window right before it
+    /// asked the worker (no image, or one that changed by itself): the worker pressed nothing since.
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> PointerAsync(
         string operation,
         JsonElement answer,
         nint hwnd,
+        bool animated,
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
@@ -3446,10 +3458,10 @@ internal sealed class WindowsVisibleControlAdapter
             return ExternalJson.FailureBeforeEffect(operation, "visible_button_not_invokable");
         }
 
-        // Auditoría final (regla 3): the same probe as the tree's press, before the pointer's: a window that changes by
-        // itself gives no proof of the press by its image.
-        bool animated = await WindowAnimatesAsync(hwnd, cancellationToken).ConfigureAwait(false);
-        // Ronda final 19: the desktop's roots as close to the press as this path can take them (after the probe).
+        // Auditoría final (regla 3): a window that changes by itself gives no proof of the press by its image. Its probe
+        // is the tree's press's (animated), not a second one: e2e c3-final5 dv6, five pointer clicks in Configuración
+        // took 2.0-2.2 s, about 0.7 s of each the same 150 + 450 ms probe and its captures again.
+        // Ronda final 19: the desktop's roots as close to the press as this path can take them.
         HandoffWatch? roots = _clickRoots = RootsBefore(hwnd);
         PointerPressed pointed = await LocatedPointPress.PointerAsync(
             _pointer, hwnd, x, y, null, null, cancellationToken, PopupsOf).ConfigureAwait(false);
@@ -4107,6 +4119,10 @@ internal sealed class WindowsVisibleControlAdapter
 
     // When the running press started (Environment.TickCount64): the person's touch of the window since then is theirs.
     private long _pressStartedMs;
+
+    // The image the probe of the running look's press found still on its window, and when that probe began (the
+    // adapter's clock); null when the probe saw it change or read nothing, or the look reached no press.
+    private (nint Window, string Sha256, long At)? _stillSince;
 
     // The identity of the control the tree pressed in the running click and saw nothing change from (finding 4).
     private string? _pressedUnchanged;
