@@ -261,18 +261,30 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal MemoryOperationProtector? MemoryProtector => _memoryProtector;
 
-    /// <summary>Why the last turn ended without an answer from the model (mind_unavailable, decision_unavailable).</summary>
+    /// <summary>
+    /// Why the last turn ended without an answer from the model (mind_unavailable, decision_unavailable). Each turn starts
+    /// it empty, so a turn that fails sets it once, and that sounds <see cref="FailedTurnSound"/> unless the owner
+    /// silenced BAXY's voice; a turn that answers or that was cancelled leaves it empty and sounds nothing.
+    /// </summary>
     internal string? LastTurnFailure
     {
         get => _lastTurnFailure;
         private set
         {
+            bool failed = _lastTurnFailure is null && value is not null;
             if (SetField(ref _lastTurnFailure, value))
             {
                 OnPropertyChanged(nameof(Failure));
+                if (failed && !Settings.VoiceMuted)
+                {
+                    FailedTurnSound();
+                }
             }
         }
     }
+
+    /// <summary>What a failed turn sounds (<see cref="Chime.TurnFailed"/>); the App's tests count it or keep quiet.</summary>
+    internal Action FailedTurnSound { get; init; } = Chime.TurnFailed.Play;
 
     /// <summary>What the interface shows as the failure: the engine's (retry_without_close, core_disconnected), else the last turn's.</summary>
     internal string? Failure => _startupFailure ?? _lastTurnFailure;
@@ -1154,7 +1166,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         VoiceWake?.Invoke();
                         if (Settings.WakeSound)
                         {
-                            WakeChime.Play();
+                            Chime.Wake.Play();
                         }
 
                         break;

@@ -79,7 +79,7 @@ public sealed class ConfirmationAnswerTests
     public async Task AnAnswerForTheWaitingCardIsTaken()
     {
         using var fake = new FakeMind();
-        var viewModel = new MainWindowViewModel();
+        var viewModel = new MainWindowViewModel { FailedTurnSound = static () => { } };
         await using (viewModel)
         await using (var view = new ChannelHarness(viewModel))
         {
@@ -126,7 +126,7 @@ public sealed class ConfirmationAnswerTests
     public async Task AToastPressedForAProposalThatEndedDoesNotAnswerTheNextOne()
     {
         using var fake = new FakeMind();
-        var viewModel = new MainWindowViewModel();
+        var viewModel = new MainWindowViewModel { FailedTurnSound = static () => { } };
         await using (viewModel)
         {
             ViewModelHarness.AcceptTurns(viewModel);
