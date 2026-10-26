@@ -11,19 +11,19 @@ namespace Baxy.App;
 /// <summary>
 /// BAXY Renew al máximo 11.5 (identity: «puede entrar información, no puede salir contenido del usuario»; lethal
 /// trifecta, OWASP LLM01, CaMeL): in a turn the person opened, a call waits for their «sí» only for what is really
-/// dangerous. Two cases. A page address that carries something (a path past «/», a query, a fragment, a name before
-/// «@») to a host that came neither from this session's results (their address fields: a search result, a page fetched
-/// or read, a tab) nor from the person's words (the site's name, «youtube» for www.youtube.com),
-/// <c>host_not_from_session</c>: the way out for what a page told the model to send. And a game the person did not
-/// name, <c>game_title_not_said</c>. A search followed by the fetch of one of its results never waits. An address
-/// literal (an IP) carries no words: a page in the person's own network (loopback, private, link-local) goes, but one
+/// dangerous. Two cases. A page address to a host that came neither from this session's results (their address fields:
+/// a search result, a page fetched or read, a tab) nor from the person's words (the site's name, «youtube» for
+/// www.youtube.com), <c>host_not_from_session</c>, when the address carries something (a path past «/», a query, a
+/// fragment, a name before «@»), is an IP literal or names a port other than its scheme's: the way out for what a page
+/// told the model to send. And a game the person did not name, <c>game_title_not_said</c>. A search followed by the
+/// fetch of one of its results never waits. An IP in the person's own network (loopback, private, link-local) goes; one
 /// at any other IP waits unless the person wrote it or a result gave it (auditoría de la App, 2026-10-23: a fetch of
 /// «http://203.0.113.9/?d=…» left the PC unasked). Owner's decision, 2026-10-25: only what is destructive or really
 /// dangerous asks, BAXY must not bother the person all the time; so searching or looking something up on the web never
-/// waits, whatever of the person's text or data it carries, a bare site («https://ejemplo.com», «ejemplo.com/») goes
-/// since it carries nothing of theirs, and a ping sends no page. Which calls go out is the catalog's typed fact (al
-/// máximo 5.1: the network effect, with the call's exact arguments), and the address is the call's <c>url</c>. A
-/// heartbeat holds every such call already (NativeTurnLoop.BeatProposes).
+/// waits, whatever of the person's text or data it carries, a bare site by its name («https://ejemplo.com»,
+/// «ejemplo.com/») goes since it carries nothing past its host, and a ping sends no page. Which calls go out is the
+/// catalog's typed fact (al máximo 5.1: the network effect, with the call's exact arguments), and the address is the
+/// call's <c>url</c>. A heartbeat holds every such call already (NativeTurnLoop.BeatProposes).
 /// </summary>
 internal sealed class NetworkEgress
 {
@@ -57,8 +57,10 @@ internal sealed class NetworkEgress
             return null;
         }
 
-        return Text(arguments["url"]) is { } url && UriOf(url) is { } address && Carries(address)
+        return Text(arguments["url"]) is { } url && UriOf(url) is { } address
             && Normalized(address.Host) is { Length: > 0 } host && !Grounded(host)
+            && (Carries(address) || address.HostNameType is UriHostNameType.IPv4 or UriHostNameType.IPv6
+                || !address.IsDefaultPort)
                 ? "host_not_from_session"
                 : null;
     }

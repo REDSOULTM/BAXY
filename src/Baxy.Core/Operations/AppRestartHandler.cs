@@ -43,11 +43,11 @@ internal sealed class AppRestartHandler : IOperationHandler, IInvocationPrefligh
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("app.restart");
 
     /// <summary>
-    /// Auditoría de identidad (nb-f4-identidad; 00_IDENTIDAD: en modo normal sólo se confirma lo que destruye datos,
-    /// cerrar sin guardar entre ello): a restart closes as app.close does, gracefully and stopping at a dialog of its own,
-    /// so an application all of whose windows hold no document of the person loses nothing and restarts without a yes,
-    /// as app.close by its name closes («reinicia discord» asked every time); a window with a document, or one the
-    /// provider cannot place, keeps work_loss and asks. Read only.
+    /// Auditoría de identidad (nb-f4-identidad; 00_IDENTIDAD, decisión del dueño del 2026-10-25: en modo normal sólo se
+    /// confirma lo destructivo o realmente peligroso, cerrar sin guardar entre ello): a restart closes as app.close does,
+    /// gracefully and stopping at a dialog of its own, so an application all of whose windows hold no document of the
+    /// person loses nothing and restarts without a yes, as app.close by its name closes («reinicia discord» asked every
+    /// time); a window with a document, or one the provider cannot place, keeps work_loss and asks. Read only.
     /// </summary>
     public async ValueTask<InvocationPreflightResult> PreflightAsync(
         JsonElement arguments,

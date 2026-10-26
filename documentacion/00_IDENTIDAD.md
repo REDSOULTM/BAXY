@@ -143,7 +143,7 @@ apagar el equipo. Con dos modos:
 
 | Modo | Comportamiento |
 |---|---|
-| **Normal** (por defecto) | Confirma **sólo lo destructivo o realmente peligroso** — borrar, sobrescribir, cerrar sin guardar, vaciar la papelera, forzar un cierre, instalar o desinstalar programas, comprar o pagar, enviar o publicar a otra persona. Abrir, cerrar con gracia, buscar, consultar, crear en lo propio, apagar o cerrar sesión van directos (decisión del dueño, 2026-10-25). |
+| **Normal** (por defecto) | Confirma **sólo lo destructivo o realmente peligroso** — borrar, sobrescribir, cerrar sin guardar, vaciar la papelera, forzar un cierre, instalar o desinstalar programas, comprar o pagar, enviar o publicar a otra persona, entrar a un canal de voz, llamar o transmitir en directo. Retiene además dos casos de seguridad: un juego con un título que la persona no dijo y una salida a la red que puede sacar datos (ver «La red»). Abrir, cerrar con gracia, buscar, consultar, crear en lo propio, apagar o cerrar sesión van directos (decisión del dueño, 2026-10-25). |
 | **Bypass** | Sin frenos. Se activa con **un ajuste consciente** y queda encendido hasta que se apague. |
 
 La confirmación sigue ligada a la invocación exacta, no a la intención aproximada.
@@ -198,6 +198,10 @@ reciente.
 La línea es de dirección, no de conexión: **puede entrar información, no puede
 salir contenido del usuario**. El modelo sigue siendo local; no hay API de pago
 resolviendo lo que el modelo local no puede.
+
+Decisión del dueño, 2026-10-25: la persona puede buscar o consultar con sus propios
+datos sin el sí. Lo que se retiene es la exfiltración: una dirección que lleva datos
+(o una IP o un puerto) a un sitio que nadie dio, ni la persona ni un resultado.
 
 **Pantalla y ficheros: sí, cuando los necesita**, y diciéndolo. Sin esto no hay
 «operar cualquier aplicación».
@@ -332,9 +336,10 @@ Respondidas una por una al fijar la misión de estabilización
 (`computer-use/PROMPT_ESTABILIZACION_2026-10-10.md`). Donde afinan una decisión de arriba, vale ésta.
 
 - **Confirmación.** En modo Normal BAXY confirma sólo lo destructivo o realmente peligroso, lo que lista la tabla de
-  arriba: lo que destruye datos y, de lo que sale al mundo, enviar o publicar a otra persona, comprar o pagar, instalar
-  o desinstalar (decisión del dueño, 2026-10-25). El modo bypass sigue sin frenos, y las pruebas del producto se
-  corren en bypass sobre blancos seguros. Decisión del dueño, 2026-10-25: buscar o consultar la web nunca pide el sí
+  arriba: lo que destruye datos y, de lo que sale al mundo, enviar o publicar a otra persona, entrar a un canal de voz,
+  llamar o transmitir en directo, comprar o pagar, instalar o desinstalar (decisión del dueño, 2026-10-25). Retiene
+  además un juego con un título que la persona no dijo y la salida a la red de «La red». El modo bypass sigue sin
+  frenos, y las pruebas del producto se corren en bypass sobre blancos seguros. Decisión del dueño, 2026-10-25: buscar o consultar la web nunca pide el sí
   aunque lleve texto o datos de la persona; sólo pide el sí lo realmente peligroso.
 - **Estable antes que amplio.** No existe un computer use «mágico»: BAXY corre con un modelo local pequeño y hace,
   al máximo y siempre, lo que puede hacer con sus requisitos. Lo que no puede hacer de forma fiable no se fuerza ni
