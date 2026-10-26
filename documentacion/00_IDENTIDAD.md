@@ -333,7 +333,8 @@ Respondidas una por una al fijar la misión de estabilización
 
 - **Confirmación.** En modo Normal BAXY confirma lo que destruye datos **y también lo que sale al mundo**: enviar un
   mensaje, entrar a un canal de voz, publicar, comprar, instalar o desinstalar. El modo bypass sigue sin frenos, y
-  las pruebas del producto se corren en bypass sobre blancos seguros.
+  las pruebas del producto se corren en bypass sobre blancos seguros. Decisión del dueño, 2026-10-25: buscar o
+  consultar la web nunca pide el sí aunque lleve texto o datos de la persona; sólo pide el sí lo realmente peligroso.
 - **Estable antes que amplio.** No existe un computer use «mágico»: BAXY corre con un modelo local pequeño y hace,
   al máximo y siempre, lo que puede hacer con sus requisitos. Lo que no puede hacer de forma fiable no se fuerza ni
   se hardcodea: se declara límite y BAXY lo dice («Eso no lo hago») dejando a la persona lo más cerca posible.

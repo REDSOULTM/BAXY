@@ -52,8 +52,8 @@ internal sealed record NativeTurnConfirmation(
 /// exact invocation; any other call runs. A heartbeat never starts while a confirmation waits for the person.
 /// </para>
 /// <para>
-/// In a turn the person opened, a call that sends out a value memory read in it or a host nobody gave
-/// (<see cref="NetworkEgress"/>) is held the same way, and asks as a confirmation.
+/// In a turn the person opened, a call that sends out to a host nobody gave, or launches a game they did not name
+/// (<see cref="NetworkEgress"/>), is held the same way, and asks as a confirmation.
 /// </para>
 /// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
@@ -185,9 +185,8 @@ internal sealed class NativeTurnLoop
         }
 
         // Auditoría de la App (2026-10-23): words that answer the waiting call (asked before they arrived) keep the context
-        // of the turn that asked it, as a press on Sí or No does: the folders it named and what memory read in it. A
-        // spoken «sí» replaced them, so the calls after the approved one were ruled by «sí» alone while the button's
-        // were ruled by the turn that asked.
+        // of the turn that asked it, as a press on Sí or No does: the folders it named. A spoken «sí» replaced them, so
+        // the calls after the approved one were ruled by «sí» alone while the button's were ruled by the turn that asked.
         bool answering = WaitingPrepared() is not null && ConfirmationAsk.Answers(_askedAt, arrivedAt);
         _egress.Heard(text);
         if (answering)
@@ -202,7 +201,7 @@ internal sealed class NativeTurnLoop
             _turnPlace.NewTurn();
         }
 
-        await PersonTurnAsync(mind, arrivedAt, answering,
+        await PersonTurnAsync(mind, arrivedAt,
             () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken), cancellationToken);
     }
 
@@ -212,21 +211,14 @@ internal sealed class NativeTurnLoop
     // (asked after the turn started: its question comes next), even when it is the same invocation the person said «sí»
     // to and the kernel asks again; a call left waiting before the turn started, by an earlier turn or by a heartbeat it
     // waited for, does not hold it back. A heartbeat says none: nobody asked and nobody waits for it.
-    // answering: the turn answers the waiting call, and what memory read in the turn that asked it still counts.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
         long arrivedAt,
-        bool answering,
         Func<Task<MindStep?>> decide,
         CancellationToken cancellationToken)
     {
         _personAt = arrivedAt;
         long turn = ++_personTurns;
-        if (!answering)
-        {
-            _egress.NewTurn();
-        }
-
         long started = Stopwatch.GetTimestamp();
         _turnStarted = started;
         _notice.Open(mind.Notice, arrivedAt, () => WaitingPrepared() is null || _askedAt < started, _host.Notice);
@@ -312,7 +304,7 @@ internal sealed class NativeTurnLoop
         }
 
         _droppedOperation = null;
-        await PersonTurnAsync(mind, arrivedAt, answering: true,
+        await PersonTurnAsync(mind, arrivedAt,
             () => mind.ConfirmAsync(approve, label, cancellationToken), cancellationToken);
     }
 
@@ -338,7 +330,6 @@ internal sealed class NativeTurnLoop
         }
 
         _beat = true;
-        _egress.NewTurn();
         _said.Clear();
         _saidApp.Clear();
         _turnPlace.NewTurn();

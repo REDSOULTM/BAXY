@@ -330,7 +330,6 @@ internal static class FieldStepProjection
     private static string? CauseLabel(string? cause) => cause switch
     {
         "host_not_from_session" => "va a un sitio que nadie dio",
-        "sends_remembered_value" => "envía un dato de tu memoria",
         "game_title_not_said" => "un juego que no nombraste",
         _ => null,
     };
