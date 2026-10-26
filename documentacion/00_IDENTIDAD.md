@@ -143,7 +143,7 @@ apagar el equipo. Con dos modos:
 
 | Modo | Comportamiento |
 |---|---|
-| **Normal** (por defecto) | Confirma **sólo lo destructivo o realmente peligroso** — borrar, sobrescribir, cerrar sin guardar, vaciar la papelera, forzar un cierre, instalar o desinstalar programas, comprar o pagar, enviar o publicar a otra persona, entrar a un canal de voz, llamar o transmitir en directo. Retiene además dos casos de seguridad: un juego con un título que la persona no dijo y una salida a la red que puede sacar datos (ver «La red»). Abrir, cerrar con gracia, buscar, consultar, crear en lo propio, apagar o cerrar sesión van directos (decisión del dueño, 2026-10-25). |
+| **Normal** (por defecto) | Confirma **sólo lo destructivo o realmente peligroso** — borrar, sobrescribir, cerrar sin guardar, vaciar la papelera, forzar un cierre, instalar o desinstalar programas, comprar o pagar, enviar o publicar a otra persona, entrar a un canal de voz, llamar o transmitir en directo. Retiene además dos casos de seguridad: un juego con un título que la persona no dijo y una salida a la red que puede sacar datos (ver «La red»). Abrir, buscar, consultar, crear en lo propio, apagar o cerrar sesión van directos; cerrar una aplicación o una ventana va directo cuando no se pierde nada y pregunta cuando se perdería algo (un documento abierto, una consola con un proceso, una llamada) (decisión del dueño, 2026-10-25; revisión del PC, 2026-10-26). |
 | **Bypass** | Sin frenos. Se activa con **un ajuste consciente** y queda encendido hasta que se apague. |
 
 La confirmación sigue ligada a la invocación exacta, no a la intención aproximada.
