@@ -148,6 +148,7 @@ def test_a_repeated_wake_request_gets_its_live_caption_again(monkeypatch: pytest
     monkeypatch.setattr(voice, "Speech", _Speech)
     monkeypatch.setattr(Voice, "_load", load)
     monkeypatch.setattr(Voice, "_open", lambda self: None)
+    monkeypatch.setattr(voice, "BEHIND_BLOCKS", 100)  # the blocks are queued at once here, never behind a microphone
     listening = Voice(written.append)
     assert listening.start("wake")
     _blocks(listening, 0.1, 15)   # «Baxy» at 0.1 s and the request: its caption

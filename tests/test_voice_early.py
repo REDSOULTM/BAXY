@@ -136,10 +136,20 @@ def test_a_stop_takes_it_back(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_with_the_switch_off_the_voice_hears_and_decodes_as_before(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(voice, "BEHIND_BLOCKS", 100)  # the blocks are queued at once here, never behind a microphone
     listening, recognizer, written, told, _ = _voice(monkeypatch, early_s=0.0)
     _feed(listening, "v" * 10 + "." * 10)
     _until(lambda: _transcripts(written) == ["abre Steam"])
     assert told == [] and recognizer.decoded == [1.3, 1.9]  # its live caption at 1.3 s, then the request
+
+
+def test_behind_the_microphone_the_live_caption_waits_and_the_request_still_ends(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    # every block queued at once is a voice far behind its microphone: no caption is decoded, only the request
+    listening, recognizer, written, told, _ = _voice(monkeypatch, early_s=0.0)
+    _feed(listening, "v" * 10 + "." * 10)
+    _until(lambda: _transcripts(written) == ["abre Steam"])
+    assert told == [] and recognizer.decoded == [1.9]
 
 
 def test_the_wake_word_is_told_once(monkeypatch: pytest.MonkeyPatch) -> None:

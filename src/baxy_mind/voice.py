@@ -45,6 +45,23 @@ WORD_TAIL_S = 0.4       # voice in the first 0.4 s after the trigger is the end 
 # reached 0.5 s past the trigger at 10 dB and 0.7 s at 5 dB (0.2 s in a quiet room; 50 «Baxi» + request, OneCore).
 NOISY_TAIL_S = 0.8
 CALL_LEAD_S = 0.25      # a word that began this long before the trigger is the call (or came before it)
+# Whose voice ends the request (real use, 2026-10-26: a TV or people talking behind kept requests open and went into the
+# transcript, and soft voices on a notebook's microphone, under VOICE_RMS, waited for NO_COMMAND_S or were cut in their
+# pauses): a block counts when Silero hears speech in it and it is no more than SPEAKER_DB under the level of the one
+# who speaks (Voice._speaker_level). Maas et al., «Anchored speech detection» (Interspeech 2016), anchor on the wake
+# word; Rhasspy's VAD_AND_RATIO and Pipecat's volume gate use a ratio too. On 57 synthetic requests in direct mode
+# (2026-10-26): soft (-16 dB) closed 0.8 s after the voice instead of 4.3 s, with none cut; with other people talking
+# 10-20 dB under it, as soon or sooner and with fewer stray words than VOICE_RMS (15 and 12 dB let more of them in);
+# clean and pink noise as before.
+SPEAKER_DB = 10.0
+SPEAKER_FLOOR = 0.004   # under this nothing is voice, however soft the speaker
+CALL_BACK_S = 1.0       # in wake mode the speaker's level is looked for from this long before the trigger: «Baxy»
+MIN_VOICE_S = 0.1       # no block of voice after the call: noise or a false wake, nothing is transcribed
+# Ultra decodes on the thread that hears the blocks (0.4 s for 4 s of audio, 1.4-1.6 s for 14 s on the notebook,
+# 2026-10-26), and a live caption decoded the whole request again every PARTIAL_S: the thread fell behind the microphone,
+# so the end of the request and the next «Baxy» were heard seconds late. A caption waits while more than this many
+# blocks wait (the early and the final transcripts, one per pause and one per request, do not).
+BEHIND_BLOCKS = 1
 NO_COMMAND_S = 4.0      # after the trigger, time for the request to start
 DIRECT_WAIT_S = 6.0     # direct mode (microphone button): time for the request to start
 MAX_S = 12.0
@@ -162,6 +179,12 @@ def voiced(audio: np.ndarray, marks: np.ndarray) -> np.ndarray:
     n = len(audio) // BLOCK * BLOCK
     loud = np.sqrt((audio[:n].reshape(-1, BLOCK) ** 2).mean(axis=1)) >= VOICE_RMS
     return loud & marks[:n].reshape(-1, BLOCK).any(axis=1)
+
+
+def _blocks(audio: np.ndarray, marks: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Each whole BLOCK of ``audio``: its RMS and whether Silero heard speech in it (``marks``)."""
+    n = len(audio) // BLOCK * BLOCK
+    return np.sqrt((audio[:n].reshape(-1, BLOCK) ** 2).mean(axis=1)), marks[:n].reshape(-1, BLOCK).any(axis=1)
 
 
 class Voice:
@@ -459,6 +482,8 @@ class Voice:
         now = self._total / RATE
         if now - self._partial_at < PARTIAL_S or now - start < WORD_TAIL_S + PARTIAL_S or self._early_at is not None:
             return None  # an early transcript is the caption of the silence after it
+        if self._blocks.qsize() > BEHIND_BLOCKS:
+            return None  # behind the microphone: the caption waits for the blocks (BEHIND_BLOCKS)
         self._partial_at = now
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
@@ -479,11 +504,26 @@ class Voice:
 
     def _voice_end(self, start: float) -> float | None:
         """When the last block of voice of the request ended (the end of «Baxy» left out), or None before any."""
-        a = self._at(start)
-        blocks = np.flatnonzero(voiced(self._audio[a:], self._speech[a:]))
-        tail = (NOISY_TAIL_S if self._noisy(a) else WORD_TAIL_S) if self._mode == "wake" else 0.0
-        blocks = [i for i in blocks if i * BLOCK / RATE >= tail]
+        blocks = self._request_voice(start)
         return start + (blocks[-1] + 1) * BLOCK / RATE if blocks else None
+
+    def _request_voice(self, start: float) -> list[int]:
+        """The blocks from ``start`` that are the speaker's voice (SPEAKER_DB), the end of «Baxy» left out."""
+        a = self._at(start)
+        wake = self._mode == "wake"
+        level = self._speaker_level(self._at(start - CALL_BACK_S) if wake else a)
+        if level is None:
+            return []
+        rms, speech = _blocks(self._audio[a:], self._speech[a:])
+        voice_blocks = speech & (rms >= max(SPEAKER_FLOOR, level * 10 ** (-SPEAKER_DB / 20)))
+        tail = (NOISY_TAIL_S if self._noisy(a) else WORD_TAIL_S) if wake else 0.0
+        return [int(i) for i in np.flatnonzero(voice_blocks) if i * BLOCK / RATE >= tail]
+
+    def _speaker_level(self, r: int) -> float | None:
+        """The level of the one who speaks: the 80th percentile of the blocks of speech heard from ``r`` (None before
+        any), so the nearest voice sets it even when a farther one spoke first."""
+        rms, speech = _blocks(self._audio[r:], self._speech[r:])
+        return float(np.percentile(rms[speech], 80)) if speech.any() else None
 
     def _noisy(self, a: int) -> bool:
         """Four in five blocks heard before the call (up to 1 s before the request opens at ``a``) are loud: the noise
@@ -551,6 +591,7 @@ class Voice:
         self._early_at = None  # the request's own transcript says whether the early one stands (early.py)
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
+        stop = self._total / RATE if len(self._request_voice(start)) * BLOCK / RATE >= MIN_VOICE_S else begin
         self._event("transcribing")
 
         def then(text: str) -> None:
@@ -565,7 +606,7 @@ class Voice:
                 self._reset()
             self._state()
 
-        return self._segment(begin, self._total / RATE), start - begin if wake else None, then
+        return self._segment(begin, stop), start - begin if wake else None, then
 
     def _transcribe(self, audio: np.ndarray, wake_at: float | None) -> str:
         peak = float(np.max(np.abs(audio))) if len(audio) else 0.0

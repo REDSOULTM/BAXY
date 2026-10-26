@@ -128,3 +128,33 @@ def test_the_silence_is_counted_exactly_whatever_the_request_s_length(voiced_blo
     heard._speech = numpy.ones(len(heard._audio), bool)
     heard._total = len(heard._audio)
     assert heard._over(0.0)
+
+
+@pytest.mark.parametrize("mode", ["wake", "direct"])
+def test_speech_far_under_the_speaker_does_not_keep_the_request_open(mode: str) -> None:
+    # a TV or people talking behind: speech to Silero, loud to VOICE_RMS, but more than SPEAKER_DB under the speaker
+    near = 0.2
+    behind = near * 10 ** (-(voice.SPEAKER_DB + 3) / 20)
+    assert behind >= voice.VOICE_RMS
+    assert _heard(mode, (1.5, near), (voice.END_SILENCE_S, behind))._over(0.0)
+    assert not _heard(mode, (1.5, near), (voice.END_SILENCE_S, near * 10 ** (-(voice.SPEAKER_DB - 3) / 20)))._over(0.0)
+
+
+@pytest.mark.parametrize("mode", ["wake", "direct"])
+def test_a_soft_speaker_under_voice_rms_is_heard_to_the_end(mode: str) -> None:
+    soft = voice.VOICE_RMS / 2
+    assert not _heard(mode, (1.5, soft), (voice.END_SILENCE_S - 0.1, QUIET))._over(0.0)
+    assert _heard(mode, (1.5, soft), (voice.END_SILENCE_S, QUIET))._over(0.0)
+
+
+def test_a_request_with_no_voice_after_the_call_is_not_transcribed() -> None:
+    # «Baxy» alone (a false wake in noise): only the end of the word after the trigger, then the room
+    heard = _heard("wake", (voice.WORD_TAIL_S, LOUD), (voice.NO_COMMAND_S, QUIET))
+    heard._start, heard._early_at = 0.0, None
+    heard._event = lambda name: None
+    audio, _, _ = heard._finish(0.0)
+    assert len(audio) == 0
+    spoken = _heard("wake", (1.5, LOUD), (voice.END_SILENCE_S, QUIET))
+    spoken._start, spoken._early_at = 0.0, None
+    spoken._event = lambda name: None
+    assert len(spoken._finish(0.0)[0]) == len(spoken._audio)
