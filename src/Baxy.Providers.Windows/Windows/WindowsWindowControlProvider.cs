@@ -1359,6 +1359,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     /// a window of a process a verified app.open of BAXY launched in this session and BAXY never wrote into
     /// (<see cref="LaunchProvenance"/>), holds nothing of the person either. An identity listed as never closing
     /// without asking (data «neverWithoutAsking») always holds one.
+    /// PC-F8 cierre: neither does a window whose own reading shows nothing unsaved (see ShowsNoChanges).
     /// </summary>
     public bool HoldsNoDocument(string windowId)
     {
@@ -1393,8 +1394,46 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
 
         return DocumentlessApplications.Contains(identity.AppUserModelId, identity.ExecutablePath)
             || _provenance.LaunchedAndUnwritten(
-                identity.Handle, identity.ProcessId, identity.ProcessCreationTimeUtcTicks);
+                identity.Handle, identity.ProcessId, identity.ProcessCreationTimeUtcTicks)
+            || ShowsNoChanges(identity);
     }
+
+    // PC-F8 cierre (identidad: «sólo se confirma lo destructivo o peligroso»; cerrar Paint con el lienzo en blanco o
+    // un editor con su archivo guardado pedía el sí): a window whose own reading shows nothing unsaved holds nothing
+    // of the person. Its title is read and carries no unsaved mark, it is not a console or a terminal (whatever runs
+    // there ends with it), and it shows no dialog of its own (a copy in progress, a question). The close stays polite:
+    // an application that still asks answers with its own dialog and the close stops there (closePrompted). Any
+    // reading that fails or cannot tell keeps the yes (fail-closed).
+    private bool ShowsNoChanges(WindowIdentity identity)
+    {
+        if (External.VisibleControlSurface.RunsWhatIsTyped(identity.ProcessName))
+        {
+            return false;
+        }
+
+        try
+        {
+            string? title = _platform.Observe(identity).Title;
+            return !string.IsNullOrWhiteSpace(title)
+                && !MarksUnsavedChanges(title)
+                && !_platform.ShowsConsole(identity)
+                && _platform.OwnedDialogs(identity).Count == 0;
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException
+            or ArgumentException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
+
+    // The marks applications put in a title while it has unsaved changes: an asterisk (Notepad, Paint and most
+    // editors, before or after the name), a dot (●) or the words themselves.
+    private static readonly string[] UnsavedWords = ["sin guardar", "no guardado", "unsaved", "modified", "modificado"];
+
+    internal static bool MarksUnsavedChanges(string title) =>
+        title.Contains('*', StringComparison.Ordinal)
+        || title.Contains('●', StringComparison.Ordinal)
+        || UnsavedWords.Any(word => title.Contains(word, StringComparison.OrdinalIgnoreCase));
 
     private bool CapturesMicrophone(WindowIdentity identity)
     {
@@ -1618,6 +1657,9 @@ internal interface IWindowControlPlatform
     IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity) => [];
     // v3 r22 revisión: whether the window's application is capturing the microphone now (MicrophoneInUse).
     bool CapturesMicrophone(WindowIdentity identity) => false;
+    // PC-F8 cierre: whether the window is a console or a terminal (its window class); a platform that cannot tell
+    // says it is one (fail-closed).
+    bool ShowsConsole(WindowIdentity identity) => true;
     // BAXY Renew cu (C13 en el PC): a window in full screen covers its whole monitor (taskbar included) with no title bar.
     bool FullScreen(WindowIdentity identity) => false;
     // BAXY Renew cu (C13 en el PC): one key posted to the window itself (never the real keyboard): Esc or F11.
@@ -1939,6 +1981,19 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     }
 
     public bool CapturesMicrophone(WindowIdentity identity) => MicrophoneInUse.Capturing(identity);
+
+    // PC-F8 cierre: a console host's window (conhost), a terminal's (Windows Terminal) or a hosted pseudo-console.
+    private static readonly HashSet<string> ConsoleWindowClasses = new(StringComparer.Ordinal)
+    {
+        "ConsoleWindowClass", "CASCADIA_HOSTING_WINDOW_CLASS", "PseudoConsoleWindow",
+    };
+
+    public bool ShowsConsole(WindowIdentity identity)
+    {
+        _ = Observe(identity);
+        string className = ReadClassName(identity.Handle);
+        return className.Length == 0 || ConsoleWindowClasses.Contains(className);
+    }
 
     public IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity)
     {
