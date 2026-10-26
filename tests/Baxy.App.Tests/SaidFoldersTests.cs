@@ -964,14 +964,44 @@ public sealed class SaidFoldersTests
         Assert.That((string?)ruling?.Refusal?["next"], Does.Contain(
             "call filesystem_create_directory again with relativePath \"taller-bench/cotizaciones\" and folder \"home\" "
             + $"(it acts in {Path.Combine(_home, "taller-bench", "cotizaciones")}); any other call of this turn in that "
-            + "folder says it the same way: folder \"home\" with \"taller-bench\" as subdirectory, or at the start of "
-            + "relativePath or name;"));
+            + "folder says it the same way: folder \"home\" with \"taller-bench\" at the start of relativePath;"));
+    }
+
+    // e2e final6c V6E044: told file_write's folder «as subdirectory, or at the start of relativePath or name», forms
+    // file_write has not, the model answered without calling. The folder is said only in the forms of this call's
+    // arguments: relativePath for file_write, subdirectory for file_edit.
+    [Test]
+    public void TheFolderIsSaidOnlyInTheFormsTheCallTakes()
+    {
+        string bench = Path.Combine(_home, "BAXY-bench");
+        Directory.CreateDirectory(bench);
+        SaidFolders said = Heard("anota en gastos.txt de BAXY-bench: gas 18000");
+
+        string write = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject
+        {
+            ["relativePath"] = "gastos.txt", ["text"] = "gas 18000", ["folder"] = "home", ["append"] = true,
+        })?.Refusal?["next"] ?? string.Empty;
+        string edit = (string?)Heard("anota en gastos.txt de BAXY-bench: gas 18000").Rule("file.edit",
+            Descriptor("file.edit"), new JsonObject
+            {
+                ["fileName"] = "gastos.txt", ["folder"] = "home", ["oldText"] = "gas", ["newText"] = "gas 18000",
+            })?.Refusal?["next"] ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(write, Does.Contain("call file_write again with relativePath \"BAXY-bench/gastos.txt\" (it acts in "
+                + Path.Combine(bench, "gastos.txt") + "); any other call of this turn in that folder says it the same way: "
+                + "folder \"home\" with \"BAXY-bench\" at the start of relativePath;"));
+            Assert.That(write, Does.Not.Contain("subdirectory"));
+            Assert.That(edit, Does.Contain("any other call of this turn in that folder says it the same way: folder \"home\" "
+                + "with \"BAXY-bench\" as subdirectory;"));
+        });
     }
 
     // e2e final5 V6E048 (and V6E045, V6E047; 44 of the 93 repeated refusals in the saved runs): told file_edit with
     // subdirectory "Coro Parroquial", the model wrote it, read the file there, and then wrote file_edit and file_write
     // without that folder: three refusals in one turn, ~20 s. The first refusal says how every call of the turn in that
-    // folder names it, in each form the calls give a place (subdirectory, relativePath, name).
+    // folder names it, in the form this call gives a place (subdirectory).
     [Test]
     public void TheFirstRefusalSaysHowEveryCallOfTheTurnNamesTheFolder()
     {
@@ -989,7 +1019,7 @@ public sealed class SaidFoldersTests
         {
             Assert.That(next, Does.Contain($"call file_edit again with folder \"documents\" and subdirectory \"Coro Taller\" "
                 + $"(it acts in {choir}); any other call of this turn in that folder says it the same way: folder "
-                + "\"documents\" with \"Coro Taller\" as subdirectory, or at the start of relativePath or name;"));
+                + "\"documents\" with \"Coro Taller\" as subdirectory;"));
             // As told, each form runs where the person said.
             Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
             {

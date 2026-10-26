@@ -73,6 +73,39 @@ public sealed class SaidVerbsTests
         Assert.That(Rule(words, call), Is.Null);
     }
 
+    // e2e final6c V6E048: «sobrescribe … con la palabra pendiente» and a file_edit of one line, which kept the rest. The
+    // edit goes as the file.write of its newText over the whole file under its current hash (the person's «sí» first),
+    // and its result says so.
+    [Test]
+    public void AnEditOfTheFileTheySaidToOverwriteReplacesItWhole()
+    {
+        string hash = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+            File.ReadAllBytes(Path.Combine(_root, "Documents", "Liga de Futbolito", "jugadores.txt"))));
+
+        (JsonObject Arguments, string Note)? ruled = Rule(
+            "sobrescribe jugadores.txt de mi carpeta Liga de Futbolito en Documentos con la palabra pendiente", "file.edit",
+            Edit("Liga de Futbolito"));
+
+        Assert.That(ruled, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ruled!.Value.Arguments.ToJsonString(), Is.EqualTo(new JsonObject
+            {
+                ["relativePath"] = "Liga de Futbolito/jugadores.txt", ["folder"] = "documents", ["text"] = "pendiente",
+                ["append"] = false, ["expectedSha256"] = hash,
+            }.ToJsonString()));
+            Assert.That(ruled.Value.Note, Does.Contain("the person said to overwrite jugadores.txt: this call is file_write"));
+        });
+    }
+
+    // «Reemplaza X por Y» and other words are an edit; a file not there under that folder, or no words: it runs as it is.
+    [TestCase("reemplaza Benja, delantero por pendiente en jugadores.txt de Liga de Futbolito", "Liga de Futbolito")]
+    [TestCase("cambia Benja, delantero por pendiente en jugadores.txt", "Liga de Futbolito")]
+    [TestCase("sobrescribe jugadores.txt con la palabra pendiente", null)]
+    [TestCase("", "Liga de Futbolito")]
+    public void OtherwiseTheEditRunsAsItIs(string words, string? subdirectory) =>
+        Assert.That(Rule(words, "file.edit", Edit(subdirectory)), Is.Null);
+
     [TestCase("a lo que tiene la calculadora súmale 53", "53", "+53")]
     [TestCase("réstale 7 a lo que muestra", "7", "-7")]
     [TestCase("multiplícalo por 2,5", "2,5", "*2,5")]
@@ -129,13 +162,13 @@ public sealed class SaidVerbsTests
         var call = new JsonObject { ["expression"] = "53" };
         verbs.Heard("súmale 53");
         verbs.Answered("sí");
-        (JsonObject, string)? answered = verbs.Rule("calculator.expression.evaluate", call, () => null);
+        (JsonObject, string)? answered = verbs.Rule("calculator.expression.evaluate", call, (_, _) => null);
         verbs.Clear();
 
         Assert.Multiple(() =>
         {
             Assert.That(answered, Is.Not.Null);
-            Assert.That(verbs.Rule("calculator.expression.evaluate", call, () => null), Is.Null);
+            Assert.That(verbs.Rule("calculator.expression.evaluate", call, (_, _) => null), Is.Null);
         });
     }
 
@@ -155,8 +188,17 @@ public sealed class SaidVerbsTests
         var verbs = new SaidVerbs();
         folders.Heard(words);
         verbs.Heard(words);
-        ProductOperationDescriptor descriptor = ProductCatalog.TryGet(operation, out ProductOperationDescriptor? found)
-            && found is not null ? found : throw new AssertionException("no " + operation);
-        return verbs.Rule(operation, call, () => folders.FileThere(operation, descriptor, call));
+        return verbs.Rule(operation, call, (named, given) => folders.FileThere(named,
+            ProductCatalog.TryGet(named, out ProductOperationDescriptor? found) && found is not null
+                ? found : throw new AssertionException("no " + named), given));
     }
+
+    private static JsonObject Edit(string? subdirectory) => new()
+    {
+        ["fileName"] = "jugadores.txt",
+        ["folder"] = "documents",
+        ["subdirectory"] = subdirectory,
+        ["oldText"] = "Benja, delantero",
+        ["newText"] = "pendiente",
+    };
 }

@@ -584,9 +584,11 @@ internal sealed class NativeTurnLoop
             said = (SaidApplication.NoteKey, owner.Note);
         }
 
-        // The person's verb picks the call: «agrégale» an append, «súmale» the operator on what the Calculator shows
-        // (SaidVerbs).
-        if (_saidVerbs.Rule(operation, arguments, () => _said.FileThere(operation, descriptor, arguments)) is { } verb)
+        // The person's verb picks the call: «agrégale» an append, «sobrescribe» a replacement of the whole file, «súmale»
+        // the operator on what the Calculator shows (SaidVerbs).
+        if (_saidVerbs.Rule(operation, arguments, (named, given) =>
+                ProductCatalog.TryGet(named, out ProductOperationDescriptor? called) && called is not null
+                    ? _said.FileThere(named, called, given) : null) is { } verb)
         {
             arguments = verb.Arguments;
             said = said is { } folder ? (folder.Key, folder.Note + "; " + verb.Note) : (SaidVerbs.NoteKey, verb.Note);

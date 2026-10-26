@@ -541,14 +541,30 @@ internal sealed class SaidFolders
     // the folder, the model wrote it and then left the folder out of its next call (44 of them; final5 V6E048: file_edit
     // fixed, file_read in it, then file_edit and file_write without it, three refusals, ~20 s); and told relativePath
     // "BAXY-bench/facturas2025" and folder "home", it wrote relativePath "facturas2025" (27; V6E064, V8E067). The call is
-    // said with where it acts, and the folder with how every call of the turn in it names it.
+    // said with where it acts, and the folder with how every call of the turn in it names it. Only in the forms this
+    // call's arguments take (e2e final6c V6E044: file_write, told «as subdirectory», which it has not, answered without
+    // calling).
     private string Reached(string operation, ProductOperationDescriptor descriptor, JsonObject routed, Place place) =>
         (ReachOf(operation, descriptor, routed) is { Sandbox: false, Items.Count: > 0 } reach
             ? $" (it acts in {string.Join(", ", reach.Items)})" : string.Empty)
         + (Holder(descriptor, place) is not (string label, string relative) ? string.Empty
             : relative.Length == 0 ? $"; any other call of this turn in that folder says it the same way, folder \"{label}\""
             : $"; any other call of this turn in that folder says it the same way: folder \"{label}\" with \"{relative}\" "
-                + "as subdirectory, or at the start of relativePath or name");
+                + Forms(descriptor));
+
+    // How the call's arguments put a path inside its folder: as subdirectory, or at the start of relativePath or name.
+    private static string Forms(ProductOperationDescriptor descriptor)
+    {
+        bool Takes(string name) => descriptor.ArgumentsSchema.Properties.Any(property => property.Name == name);
+        string start = (Takes("relativePath"), Takes("name")) switch
+        {
+            (true, true) => "at the start of relativePath or name",
+            (true, false) => "at the start of relativePath",
+            (false, true) => "at the start of name",
+            _ => string.Empty,
+        };
+        return !Takes("subdirectory") ? start : start.Length == 0 ? "as subdirectory" : "as subdirectory, or " + start;
+    }
 
     // What a path the call gave names inside the folder: a full path's last part; a relative one without a known
     // folder's name it begins with, nor the folder's own last parts it repeats («proyecto/notas.txt» in proyecto).

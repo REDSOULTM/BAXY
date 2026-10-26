@@ -1,4 +1,5 @@
 using System.IO;
+using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Baxy.Providers.Windows.Infrastructure;
@@ -13,6 +14,11 @@ namespace Baxy.App;
 /// append): a file.write without append over a file of theirs that is there, when their words say to add to it and
 /// nothing of replacing it, goes as an append, which keeps all the file had; a text that already holds what the file has
 /// (the model rewrote it whole) goes as written. Aid «overwrite_guard».</item>
+/// <item>e2e final6c V6E048 («sobrescribe repertorio.txt de mi carpeta Coro Parroquial en Documentos con la palabra
+/// pendiente»: file_edit of one line, the file kept the rest): a file.edit of a file of theirs that is there, when their
+/// words say to overwrite it, goes as the file.write of its newText over all of it under the file's own hash, which asks
+/// the person's «sí» first (LocalFilesystemProvider.ReplacementAsksFirst). «Reemplaza X por Y» is an edit, and stays one.
+/// Aid «overwrite_guard».</item>
 /// <item>Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): a calculator.expression.evaluate of a bare number,
 /// when their words name one operation on what it shows, goes as that operator and the number (continuing from the
 /// number shown). Words of several operations change nothing. Aid «calculator_next».</item>
@@ -30,7 +36,8 @@ internal sealed class SaidVerbs
 
     private static readonly Regex BareNumber = new(@"^\d+(?:[.,]\d+)?$", RegexOptions.CultureInvariant);
 
-    private static readonly Lazy<(string[] Append, string[] KeepWhole, (string Operator, string[] Words)[] Operators)> Verbs =
+    private static readonly Lazy<(string[] Append, string[] KeepWhole, string[] Overwrite,
+        (string Operator, string[] Words)[] Operators)> Verbs =
         new(() =>
         {
             using Stream stream = typeof(SaidVerbs).Assembly.GetManifestResourceStream("Baxy.App.SaidVerbs.json")
@@ -40,7 +47,7 @@ internal sealed class SaidVerbs
             static string[] Words(JsonNode? node) =>
                 [.. (node as JsonArray ?? throw new InvalidDataException("A list of said verbs is missing."))
                     .Select(word => SaidFolders.Spoken((string)word!))];
-            return (Words(data["append"]), Words(data["keepWhole"]),
+            return (Words(data["append"]), Words(data["keepWhole"]), Words(data["overwrite"]),
                 [.. (data["operators"] as JsonObject ?? throw new InvalidDataException("The said operators are missing."))
                     .Select(entry => (entry.Key, Words(entry.Value)))]);
         });
@@ -62,15 +69,18 @@ internal sealed class SaidVerbs
 
     /// <summary>
     /// The call as the person's verb picks it, and what its result says; null: it runs as it is.
-    /// <paramref name="fileThere"/> gives the one file of the person's a file call names when it is there (SaidFolders).
+    /// <paramref name="fileThere"/> gives the one file of the person's a file call (its operation and arguments) names
+    /// when it is there (SaidFolders).
     /// </summary>
-    internal (JsonObject Arguments, string Note)? Rule(string operation, JsonObject arguments, Func<string?> fileThere)
+    internal (JsonObject Arguments, string Note)? Rule(string operation, JsonObject arguments,
+        Func<string, JsonObject, string?> fileThere)
     {
         if (_spoken.Trim().Length == 0)
             return null;
         return operation switch
         {
-            "file.write" => Append(arguments, fileThere),
+            "file.write" => Append(arguments, () => fileThere(operation, arguments)),
+            "file.edit" => Overwrite(arguments, fileThere),
             "calculator.expression.evaluate" => Operate(arguments),
             _ => null,
         };
@@ -89,6 +99,44 @@ internal sealed class SaidVerbs
         string name = Path.GetFileName(file);
         return (appended, $"the person said to add to {name}: this call appended the text as a new line at its end and "
             + $"kept all {name} had, instead of replacing it, as it was written");
+    }
+
+    private (JsonObject, string)? Overwrite(JsonObject arguments, Func<string, JsonObject, string?> fileThere)
+    {
+        if (!ModelAids.On(ModelAids.OverwriteGuard) || !Says(Verbs.Value.Overwrite)
+            || Text(arguments["newText"]) is not { } text || Text(arguments["folder"]) is not { } folder
+            || folder == "all_known" || Text(arguments["fileName"]) is not { } fileName || Path.IsPathFullyQualified(fileName))
+            return null;
+        string? subdirectory = Text(arguments["subdirectory"]);
+        if (subdirectory is not null && Path.IsPathFullyQualified(subdirectory))
+            return null;
+        var written = new JsonObject
+        {
+            ["relativePath"] = subdirectory is null ? fileName : subdirectory.TrimEnd('/', '\\') + "/" + fileName,
+            ["folder"] = folder,
+            ["text"] = text,
+            ["append"] = false,
+        };
+        if (fileThere("file.write", written) is not { } file || Sha256(file) is not { } hash)
+            return null;
+        written["expectedSha256"] = hash;
+        string name = Path.GetFileName(file);
+        return (written, $"the person said to overwrite {name}: this call is file_write of newText over all {name} had, "
+            + "under its current hash, its previous version to the Recycle Bin, instead of file_edit of oldText alone, as it "
+            + "was written");
+    }
+
+    private static string? Sha256(string file)
+    {
+        try
+        {
+            using FileStream stream = File.OpenRead(file);
+            return Convert.ToHexStringLower(SHA256.HashData(stream));
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
     }
 
     private (JsonObject, string)? Operate(JsonObject arguments)
