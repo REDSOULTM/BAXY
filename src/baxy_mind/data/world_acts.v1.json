@@ -1,6 +1,6 @@
 {
   "schema": "baxy.world-acts.v1",
-  "source": "Las palabras con que el nombre de un control dice que su clic sale al mundo o llega a otra persona (enviar, publicar, compartir, unirse, llamar, transmitir): con ellas el kernel (RiskPolicy, sobre la etiqueta exacta de la invocación) pide el sí de la persona antes de pulsarlo. Ronda 29 (pasada r27: «Iniciar Transmisión» pulsado en OBS sin que nadie lo pidiera). Lo lee Baxy.Kernel (WorldActs); los ejemplos, sus pruebas.",
+  "source": "Las palabras con que el nombre de un control dice que su clic sale al mundo o llega a otra persona (enviar, publicar, compartir, unirse, llamar, transmitir): con ellas el kernel (RiskPolicy, sobre la etiqueta exacta de la invocación) pide el sí de la persona antes de pulsarlo. Ronda 29 (pasada r27: «Iniciar Transmisión» pulsado en OBS sin que nadie lo pidiera). Auditoría de identidad (nb-f4-identidad, 2026-10-25): instalar también sale al mundo (aclaración del dueño del 2026-10-10); «Desinstalar» ya preguntaba como lo que no se deshace. Lo lee Baxy.Kernel (WorldActs); los ejemplos, sus pruebas.",
   "shortcutHint": "\\s*[(\\[](?:ctrl|control|ctl|alt|shift|mayus|mayusculas|supr|del|enter|intro|cmd|win)\\b[^)\\]]*[)\\]]$",
   "where": {
     "anywhere": "the words as whole words wherever they stand in the label",
@@ -41,6 +41,12 @@
       ]
     },
     {
+      "name": "install",
+      "where": "firstShort",
+      "words": ["instalar", "instala", "install"],
+      "unless": "\\b(?:mas tarde|luego|despues|later)\\b"
+    },
+    {
       "name": "join",
       "where": "firstShort",
       "words": ["unirse", "unirme", "unete", "join"]
@@ -73,7 +79,8 @@
       "Share", "Share screen", "Enviar", "Enviar comentarios", "Send message", "Enviar (Ctrl+Enter)", "Llamar",
       "Unirse", "Unirse a la reunión", "Join meeting", "Cotele (canal de voz)", "General, voice channel",
       "Call of Duty (canal de voz)", "Iniciar llamada", "Call", "Llamada de voz",
-      "Responder a todos", "Comentar", "Invitar", "Reenviar"
+      "Responder a todos", "Comentar", "Invitar", "Reenviar",
+      "Instalar", "Install now"
     ],
     "free": [
       "Iniciar sesión", "Iniciar Grabación", "Iniciar Cámara Virtual", "Start Recording", "Reproducir", "Play",
@@ -84,7 +91,8 @@
       "Submit search", "Biblioteca", "Recall the callback", "Silenciar 'Audio del escritorio'",
       "Propiedades de Audio avanzadas", "Streaming", "Transmisiones recientes",
       "Ajustes de llamada", "Registro de llamadas", "Llamar a la función", "Call Stack", "Call Hierarchy",
-      "Call of Duty®: Black Ops 6", "Abandonar llamada", "Leave Call"
+      "Call of Duty®: Black Ops 6", "Abandonar llamada", "Leave Call",
+      "Instalado", "Installed", "Instalar más tarde"
     ]
   }
 }
