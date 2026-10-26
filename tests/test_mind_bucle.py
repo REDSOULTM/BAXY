@@ -201,15 +201,17 @@ def test_the_last_answer_again_in_a_turn_with_no_call_is_written_once_more(tmp_p
     assert len([r for r in _trace(mind) if r["stage"] == "turn.repeat"]) == 1
 
 
-def test_an_answer_after_a_call_or_another_answer_is_not_written_again(tmp_path: Path, monkeypatch) -> None:
+def test_the_last_answer_again_after_calls_is_written_once_more_and_another_answer_is_not(
+        tmp_path: Path, monkeypatch) -> None:
+    # uso real 2026-10-26: every search of the turn failed and the answer was the turn before's, letter for letter
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     mind, server = _mind(tmp_path, [_say("Son las 10."), _call("system_status", {}), _say("Son las 10."),
-                                    _say("Hola.")])
+                                    _say("No pude leer la hora del sistema."), _say("Hola.")])
     mind.decide(1, "¿qué hora es?")
     mind.decide(2, "¿y ahora?")
-    assert mind.continue_turn(3, json.dumps({"status": "completed"}))["reply"] == "Son las 10."
+    assert mind.continue_turn(3, json.dumps({"status": "failed"}))["reply"] == "No pude leer la hora del sistema."
     assert mind.decide(4, "hola")["reply"] == "Hola."
-    assert len(server.bodies) == 4
+    assert len(server.bodies) == 5
 
 
 def test_without_the_aid_the_same_answer_is_said_again(tmp_path: Path, monkeypatch) -> None:
