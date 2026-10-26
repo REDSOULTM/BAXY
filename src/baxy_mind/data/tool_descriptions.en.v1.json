@@ -201,9 +201,7 @@
   },
   "file.find": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",
-   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory); all_known only when they named no folder.",
-   "query": "A part of the file's name, or a pattern like *.pdf: it matches names only, never the text inside the files.",
-   "content": "A text to look for inside the files, for which file says, mentions or has written something (a number, a person, a word); with query it looks only in the files so named."
+   "folder": "Which of the person's folders: desktop, documents or downloads when they name one; home for any other folder of theirs (its name goes in subdirectory); all_known only when they named no folder."
   },
   "file.edit": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",

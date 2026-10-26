@@ -221,21 +221,6 @@ def test_the_applications_with_places_are_named_from_the_data(tmp_path: Path) ->
         assert app in texts
 
 
-def test_file_find_tells_on_its_arguments_that_query_is_the_name_and_content_the_text_inside(tmp_path: Path,
-                                                                                            monkeypatch) -> None:
-    # Práctica e2e V6E035 («¿qué archivo de la carpeta X tiene anotado Y?»): file_find with query Y, a search of names,
-    # three times, and «ningún archivo menciona Y» with Y written inside one; another run's content Y found it.
-    # Ablación a: with its aid named (off by default).
-    monkeypatch.setenv("BAXY_AYUDAS", "all,find_argument_meaning")
-    mind, _ = _mind(tmp_path, [])
-    mind.configure({"capabilities": [{"name": "file.find", "description": "Find files.", "argumentsSchema": {
-        "type": "object", "properties": {name: {"type": "string"} for name in ("content", "folder", "query")}}}]})
-    tool = next(t for t in mind.tools if t["function"]["name"] == "file_find")["function"]
-    query, content = (tool["parameters"]["properties"][name]["description"] for name in ("query", "content"))
-    assert "name" in query and "never the text inside" in query
-    assert "inside" in content and "mentions" in content
-
-
 SETTINGS_AND_TRASH = {"capabilities": [
     {"name": "system.settings.set", "description": "Set a setting.", "argumentsSchema": {"type": "object", "properties": {}}},
     {"name": "filesystem.known.trash.named", "description": "Delete by name.",
@@ -524,32 +509,12 @@ def test_the_same_window_read_with_a_new_handle_each_time_is_the_same_result(tmp
     assert "window_resolve ya se llamó 3 veces en este turno" in last
 
 
-@pytest.mark.parametrize("setting,on", [(None, False), ("all", False), ("find_content_next", False),
-                                        ("find_argument_meaning", True), ("all,find_argument_meaning", True),
-                                        ("none", False)])
-def test_file_find_tells_name_and_inside_on_its_arguments_only_with_its_aid(tmp_path: Path, monkeypatch,
-                                                                             setting: str | None, on: bool) -> None:
-    # Revisión w11-rev4: what query and content mean (práctica V6E035) reached the model with BAXY_AYUDAS=none too.
-    # Ablación a: they are the aid find_argument_meaning's, off unless named (par_mínimo V6D346 and V6D634 searched the
-    # text inside with them); find_content_next, the next of a search of names with no hit, no longer brings them.
-    if setting is None:
-        monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    else:
-        monkeypatch.setenv("BAXY_AYUDAS", setting)
-    mind, _ = _mind(tmp_path, [])
-    mind.configure({"capabilities": [{"name": "file.find", "description": "Find files.", "argumentsSchema": {
-        "type": "object", "properties": {name: {"type": "string"} for name in ("content", "folder", "query")}}}]})
-    tool = next(t for t in mind.tools if t["function"]["name"] == "file_find")["function"]
-    for name in ("query", "content"):
-        assert ("description" in tool["parameters"]["properties"][name]) is on
-
-
 @pytest.mark.parametrize("setting,default_on,default_off", [
     (None, True, False), ("", True, False), ("all", True, False), ("ALL", True, False), ("none", False, False),
     ("0", False, False), ("check_found", False, False),
-    ("all,find_argument_meaning,text_replacing", True, True),
-    ("find_argument_meaning,text_replacing", False, True),
-    ("check_found, find_argument_meaning, text_replacing", False, True)])
+    ("all,text_replacing", True, True),
+    ("text_replacing", False, True),
+    ("check_found, text_replacing", False, True)])
 def test_an_aid_off_by_default_is_on_only_when_named(monkeypatch, setting: str | None, default_on: bool,
                                                      default_off: bool) -> None:
     # Ablaciones de nb-w11-final: DEFAULT_OFF_AIDS stay off with the aids by default and with «all»; named, they are on.
@@ -558,7 +523,6 @@ def test_an_aid_off_by_default_is_on_only_when_named(monkeypatch, setting: str |
         monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     else:
         monkeypatch.setenv("BAXY_AYUDAS", setting)
-    assert {"find_argument_meaning", "text_replacing"} <= mind_module.DEFAULT_OFF_AIDS
+    assert "text_replacing" in mind_module.DEFAULT_OFF_AIDS
     assert mind_module._aid_on("person_folder_sentence") is default_on
-    assert mind_module._aid_on("find_argument_meaning") is default_off
     assert mind_module._aid_on("text_replacing") is default_off
