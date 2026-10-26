@@ -15,7 +15,8 @@ public sealed class BeatProposalTests
 {
     // What a heartbeat changes alone, as the owner can review it: a reversible change that reaches no window of the
     // person's, sends nothing out and cuts no connection, called with no arguments (media.control then goes to BAXY's
-    // YouTube tab, a window: it is proposed). An operation joins this list knowingly.
+    // YouTube tab, a window: it is proposed). An operation joins this list knowingly. BAXY's own conversations
+    // (conversation.*) are not here: a heartbeat never runs them (NativeTurnLoop.IsConversation, person_turn_only).
     private static readonly string[] ChangesAlone =
     [
         "app.open", "audio.app.volume.adjust", "audio.app.volume.set", "audio.microphone.mute", "audio.mute",
@@ -58,6 +59,7 @@ public sealed class BeatProposalTests
     {
         string[] alone = [.. ProductCatalog.ToolDescriptors
             .Where(static descriptor => descriptor.Risk != Baxy.Contracts.OperationRisks.ReadOnly
+                && !NativeTurnLoop.IsConversation(descriptor.Name)
                 && !NativeTurnLoop.BeatProposes(descriptor, []))
             .Select(static descriptor => descriptor.Name)];
 

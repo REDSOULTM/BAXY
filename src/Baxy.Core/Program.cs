@@ -150,6 +150,7 @@ internal static class Program
             new ScreenshotCaptureHandler(
                 screenshotProvider, "capture.active.window", activeWindow: true),
             new ScreenshotCaptureHandler(screenshotProvider),
+            .. ConversationHandlers.Create(),
             .. FilesystemHandlers.Create(filesystemProvider),
             .. ExternalCapabilityHandlers.Create(externalCapabilityProvider, dataRoot, new KeyWindowReader()),
             .. MemoryHandlers.Create(

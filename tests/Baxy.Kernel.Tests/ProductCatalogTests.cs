@@ -148,7 +148,18 @@ public sealed class ProductCatalogTests
     // Every operation of the catalog is offered to the model as a tool.
     // BAXY Renew uso real: + 1, message.send. BAXY Renew cu (C04 variante, C05): + 2, game.store.page y game.store.search;
     // (C14) + 1, client.microphone.set; (C18) + 1, clipboard.paste.into; (C10, C11, notebook) + 1, office.format.apply.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1;
+    // pc-f6-sesiones (APLAZADOS f4-accesibilidad): + 4, las conversaciones por voz (ConversationAdditions).
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 4;
+
+    // pc-f6-sesiones (APLAZADOS f4-accesibilidad, 2026-10-25): empezar, listar, abrir y renombrar una conversación
+    // estaba sólo en la vista; la App las ejecuta con sus propias sesiones (FieldProductChannel) y ninguna pide el sí.
+    internal static readonly string[] ConversationAdditions =
+    [
+        "conversation.list",
+        "conversation.new",
+        "conversation.open",
+        "conversation.rename",
+    ];
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
@@ -479,7 +490,7 @@ public sealed class ProductCatalogTests
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
                     .And.SupersetOf(RenewAgentAdditions).And.SupersetOf(RenewRealesAdditions)
-                    .And.SupersetOf(UsoRealAdditions));
+                    .And.SupersetOf(UsoRealAdditions).And.SupersetOf(ConversationAdditions));
             Assert.That(descriptors.Select(static descriptor => descriptor.Name),
                 Has.None.AnyOf(RenewRetired));
             Assert.That(
@@ -667,6 +678,31 @@ public sealed class ProductCatalogTests
                     RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal,
                         descriptor.Name, arguments.RootElement),
                     Is.EqualTo(PolicyDecision.Allow));
+            }
+        });
+    }
+
+    [TestCase("conversation.list", OperationRisks.ReadOnly, "{}", "{\"conversation\":\"ayer\"}")]
+    [TestCase("conversation.new", OperationRisks.LowReversible, "{}", "{\"title\":\"Viaje\"}")]
+    [TestCase("conversation.open", OperationRisks.LowReversible, "{\"conversation\":\"Viaje\"}", "{}")]
+    [TestCase("conversation.rename", OperationRisks.LowReversible, "{\"title\":\"Viaje\"}", "{\"title\":\" \"}")]
+    [TestCase("conversation.rename", OperationRisks.LowReversible,
+        "{\"conversation\":\"ab12cd34ef56\",\"title\":\"Viaje\"}", "{\"conversation\":\"ab12cd34ef56\"}")]
+    public void TheConversationsAreToolsThatNeverAskForTheYes(string name, string risk, string valid, string invalid)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(name);
+        using JsonDocument accepted = JsonDocument.Parse(valid);
+        using JsonDocument refused = JsonDocument.Parse(invalid);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(risk));
+            Assert.That(OperationArgumentValidator.IsValid(accepted.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(OperationArgumentValidator.IsValid(refused.RootElement, descriptor.ArgumentsSchema), Is.False);
+            foreach (ConfirmationMode mode in Enum.GetValues<ConfirmationMode>())
+            {
+                Assert.That(RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), mode, name,
+                    accepted.RootElement), Is.EqualTo(PolicyDecision.Allow), $"{name} {mode}");
             }
         });
     }

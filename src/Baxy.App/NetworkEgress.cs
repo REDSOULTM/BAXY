@@ -240,8 +240,8 @@ internal sealed class NetworkEgress
         return name.StartsWith("www.", StringComparison.Ordinal) ? name[4..] : name;
     }
 
-    // Lower case without accents: «Ñuñoa» is «nunoa».
-    private static string Folded(string text)
+    // Lower case without accents: «Ñuñoa» is «nunoa» (also how a conversation is found by its title, FieldProductChannel).
+    internal static string Folded(string text)
     {
         var folded = new StringBuilder(text.Length);
         foreach (char c in text.Normalize(NormalizationForm.FormD))
