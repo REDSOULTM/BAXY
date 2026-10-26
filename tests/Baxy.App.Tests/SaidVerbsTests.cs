@@ -52,10 +52,9 @@ public sealed class SaidVerbsTests
         });
     }
 
-    // Nothing changes when the words say to replace it (V6E048), say nothing of adding, the call already appends, the file
+    // Nothing changes when the words say to replace it and not overwrite it, say nothing of adding, the call already appends, the file
     // is not there (a new file), the text already holds the whole file (the model rewrote it with the new line), or no
     // words of the person's hold.
-    [TestCase("sobrescribe jugadores.txt de mi carpeta Liga de Futbolito en Documentos con la palabra pendiente", "pendiente", false, true)]
     [TestCase("agrega la línea Matías, arquero y reemplaza todo lo demás", "Matías, arquero", false, true)]
     [TestCase("escribe en jugadores.txt Matías, arquero", "Matías, arquero", false, true)]
     [TestCase("agrégale a jugadores.txt la línea Matías, arquero", "Matías, arquero", true, true)]
@@ -71,6 +70,46 @@ public sealed class SaidVerbsTests
             call["relativePath"] = "Liga de Futbolito/nuevo.txt";
 
         Assert.That(Rule(words, call), Is.Null);
+    }
+
+    // e2e final6: «sobrescribe metas.txt de BAXY-bench con: …» and a file_write without hash, refused as a version
+    // conflict (the model then asked the person itself). Before: it ran as written. Now it goes under the file's current
+    // hash, which asks the person's «sí» on that first call, and its result says so.
+    [Test]
+    public void AWriteWithoutHashOverTheFileTheySaidToOverwriteGoesUnderItsHash()
+    {
+        string bench = Path.Combine(_root, "Documents", "BAXY-bench");
+        Directory.CreateDirectory(bench);
+        File.WriteAllText(Path.Combine(bench, "metas.txt"), "leer 10 páginas al día" + Environment.NewLine);
+        string hash = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(
+            File.ReadAllBytes(Path.Combine(bench, "metas.txt"))));
+        const string Words = "sobrescribe metas.txt de BAXY-bench con: correr 5 km los domingos";
+        var call = new JsonObject
+        {
+            ["relativePath"] = "BAXY-bench/metas.txt", ["folder"] = "documents", ["text"] = "correr 5 km los domingos",
+        };
+
+        (JsonObject Arguments, string Note)? ruled = Rule(Words, call);
+        JsonObject With(string key, JsonNode value)
+        {
+            var given = (JsonObject)call.DeepClone();
+            given[key] = value;
+            return given;
+        }
+
+        Assert.That(ruled, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ruled!.Value.Arguments.ToJsonString(), Is.EqualTo(new JsonObject
+            {
+                ["relativePath"] = "BAXY-bench/metas.txt", ["folder"] = "documents", ["text"] = "correr 5 km los domingos",
+                ["append"] = false, ["expectedSha256"] = hash,
+            }.ToJsonString()));
+            Assert.That(ruled.Value.Note, Does.Contain("the person said to overwrite metas.txt: this call replaces all"));
+            Assert.That(Rule("escribe en metas.txt de BAXY-bench: correr 5 km los domingos", call), Is.Null);
+            Assert.That(Rule(Words, With("expectedSha256", new string('a', 64))), Is.Null);
+            Assert.That(Rule(Words, With("append", true)), Is.Null);
+        });
     }
 
     // e2e final6c V6E048: «sobrescribe … con la palabra pendiente» and a file_edit of one line, which kept the rest. The

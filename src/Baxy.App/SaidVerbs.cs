@@ -19,6 +19,10 @@ namespace Baxy.App;
 /// words say to overwrite it, goes as the file.write of its newText over all of it under the file's own hash, which asks
 /// the person's «sí» first (LocalFilesystemProvider.ReplacementAsksFirst). «Reemplaza X por Y» is an edit, and stays one.
 /// Aid «overwrite_guard».</item>
+/// <item>e2e final6 («sobrescribe metas.txt de BAXY-bench con: correr 5 km los domingos»: file_write without hash over the
+/// file, refused as a version conflict, and the model asked the person itself): a file.write without hash and without
+/// append over a file of theirs that is there, when their words say to overwrite it, goes under the file's own hash,
+/// which asks the person's «sí» first on that first call. Aid «overwrite_guard».</item>
 /// <item>Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): a calculator.expression.evaluate of a bare number,
 /// when their words name one operation on what it shows, goes as that operator and the number (continuing from the
 /// number shown). Words of several operations change nothing. Aid «calculator_next».</item>
@@ -79,7 +83,7 @@ internal sealed class SaidVerbs
             return null;
         return operation switch
         {
-            "file.write" => Append(arguments, () => fileThere(operation, arguments)),
+            "file.write" => Append(arguments, () => fileThere(operation, arguments)) ?? Replace(arguments, fileThere),
             "file.edit" => Overwrite(arguments, fileThere),
             "calculator.expression.evaluate" => Operate(arguments),
             _ => null,
@@ -117,13 +121,33 @@ internal sealed class SaidVerbs
             ["text"] = text,
             ["append"] = false,
         };
+        return UnderHash(written, fileThere, name => $"is file_write of newText over all {name} had, under its current "
+            + "hash, its previous version to the Recycle Bin, instead of file_edit of oldText alone");
+    }
+
+    private (JsonObject, string)? Replace(JsonObject arguments, Func<string, JsonObject, string?> fileThere)
+    {
+        if (!ModelAids.On(ModelAids.OverwriteGuard) || !Says(Verbs.Value.Overwrite)
+            || Text(arguments["expectedSha256"]) is not null
+            || (arguments["append"] is JsonValue append && append.TryGetValue(out bool on) && on)
+            || Text(arguments["text"]) is null)
+            return null;
+        var written = (JsonObject)arguments.DeepClone();
+        written["append"] = false;
+        return UnderHash(written, fileThere, name => $"replaces all {name} had under its current hash, its previous "
+            + "version to the Recycle Bin, instead of a write without hash");
+    }
+
+    // The file.write over the one file of the person's it names, under that file's current hash: the person's «sí» first.
+    private static (JsonObject, string)? UnderHash(JsonObject written, Func<string, JsonObject, string?> fileThere,
+        Func<string, string> instead)
+    {
         if (fileThere("file.write", written) is not { } file || Sha256(file) is not { } hash)
             return null;
         written["expectedSha256"] = hash;
         string name = Path.GetFileName(file);
-        return (written, $"the person said to overwrite {name}: this call is file_write of newText over all {name} had, "
-            + "under its current hash, its previous version to the Recycle Bin, instead of file_edit of oldText alone, as it "
-            + "was written");
+        return (written, $"the person said to overwrite {name}: this call "
+            + instead(name) + ", as it was written");
     }
 
     private static string? Sha256(string file)
