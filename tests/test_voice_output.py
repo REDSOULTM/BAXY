@@ -345,3 +345,46 @@ def test_the_first_sound_says_whether_it_is_the_notice_or_the_answer(
     # The answers that sounded are counted (a feed of WAV files waits for them, voice_feed.py); the notice is not one.
     voice._sounding(1.0, 1.2, True)
     assert voice._answered == 1
+
+
+# --- nb-f4-velocidad: the notice's tail never holds an answer whose first take is ready --------------------------------
+
+def _timed_notice(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, answer) -> float:
+    """How long the notice's _play holds the speech thread, with the real tail (TAIL_S) and a 0.09 s output."""
+    stream = _FakeStream()
+    speech = _player(tmp_path, monkeypatch, [], stream)
+    monkeypatch.setattr(voice_output, "TAIL_S", 0.55)
+    started = time.monotonic()
+    silence = voice_output.np.zeros(10, voice_output.np.float32)
+    speech._play(iter([silence]), speech._generation, started, True, answer)
+    return time.monotonic() - started
+
+
+def test_a_notice_said_in_front_of_a_ready_answer_ends_after_a_sentence_pause(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Its answer's first take is ready: the notice's tail is BAXY's pause between sentences, not the whole TAIL_S
+    (117 of 522 e2e turns waited it, up to 0.64 s)."""
+    from concurrent.futures import Future
+
+    ready: Future = Future()
+    ready.set_result("take")
+    held = _timed_notice(tmp_path, monkeypatch, ready)
+    # the device's latency drains (0.09 s), then GAP_S less that latency: GAP_S in all
+    assert voice_output.GAP_S - 0.01 <= held < voice_output.GAP_S + 0.12
+    assert held < 0.09 + voice_output.TAIL_S - 0.1
+
+
+def test_a_notice_whose_answer_is_still_synthesized_keeps_its_tail_until_the_take_is_ready(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from concurrent.futures import Future
+
+    pending: Future = Future()
+    threading.Timer(0.5, lambda: pending.set_result("take")).start()
+    held = _timed_notice(tmp_path, monkeypatch, pending)
+    assert 0.45 <= held < 0.62  # it ends as soon as the take is ready (0.5 s), before the tail ends (0.64 s)
+
+
+def test_a_notice_with_no_answer_behind_it_keeps_the_whole_tail(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    held = _timed_notice(tmp_path, monkeypatch, None)
+    assert held >= 0.09 + 0.55 - 0.01
