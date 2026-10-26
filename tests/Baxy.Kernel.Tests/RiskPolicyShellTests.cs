@@ -32,6 +32,17 @@ public sealed class RiskPolicyShellTests
     [TestCase("findstr /C:\"ERROR\" \"C:\\Users\\ana\\BAXY-bench\\server-vivo.log\"")]
     [TestCase("findstr /S /I /N error *.log")]
     [TestCase("Get-Content server.log | findstr ERROR")]
+    // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo»): network and system readings; they all
+    // asked before.
+    [TestCase("ipconfig")]
+    [TestCase("ipconfig /all")]
+    [TestCase("netstat -an")]
+    [TestCase("nslookup example.com")]
+    [TestCase("getmac /v")]
+    [TestCase("ver")]
+    [TestCase("Test-Connection example.com -Count 2")]
+    [TestCase("Get-NetTCPConnection -State Listen")]
+    [TestCase("netstat -ano | where LocalPort -eq 80")]
     public void A_command_that_only_reads_runs_directly(string command) =>
         Assert.That(Run(command), Is.EqualTo(PolicyDecision.Allow));
 
@@ -66,6 +77,12 @@ public sealed class RiskPolicyShellTests
     [TestCase(".\\script.ps1")]
     [TestCase("findstr ERROR server.log > errores.txt")]
     [TestCase("findstr ERROR server.log | Out-File errores.txt")]
+    // ipconfig's switches that change the network instead of reading it.
+    [TestCase("ipconfig /release")]
+    [TestCase("ipconfig /renew Wi-Fi")]
+    [TestCase("IPCONFIG -flushdns")]
+    [TestCase("ipconfig /registerdns")]
+    [TestCase("ipconfig /setclassid Ethernet x")]
     public void Anything_else_asks_with_the_exact_command(string command) =>
         Assert.That(Run(command), Is.EqualTo(PolicyDecision.RequireConfirmation));
 

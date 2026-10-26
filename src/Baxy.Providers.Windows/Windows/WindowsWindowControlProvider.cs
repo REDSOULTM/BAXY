@@ -1349,65 +1349,6 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
     }
 
-    /// <summary>
-    /// v3 r6 lectores (t2-r4 c04-5 «cierra configuración» pidió confirmación): whether the window an id names holds no
-    /// document of the person, read without consuming the id. Its application is the catalog identity it was resolved
-    /// from or its executable, looked up in <see cref="DocumentlessApplications"/>; an unknown, expired or malformed id
-    /// holds one (fail-closed).
-    /// v3 r22 uso real (t3-c18 «ya ciérrala» sobre la Calculadora que BAXY abrió y sólo clicó; t4-c03 «ya cierra
-    /// discord»): a window of an application whose content lives in the person's account (data «accountBacked»), or
-    /// a window of a process a verified app.open of BAXY launched in this session and BAXY never wrote into
-    /// (<see cref="LaunchProvenance"/>), holds nothing of the person either. An identity listed as never closing
-    /// without asking (data «neverWithoutAsking») always holds one.
-    /// </summary>
-    public bool HoldsNoDocument(string windowId)
-    {
-        if (string.IsNullOrEmpty(windowId) || windowId.Length != 36
-            || !windowId.StartsWith("win_", StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        WindowIdentity? identity;
-        lock (_gate)
-        {
-            RemoveExpired();
-            if (!_handles.TryGetValue(windowId, out identity))
-            {
-                return false;
-            }
-        }
-
-        if (DocumentlessApplications.NeverWithoutAsking(identity.AppUserModelId, identity.ExecutablePath))
-        {
-            return false;
-        }
-
-        // v3 r22 revisión (la persona en plena reunión pide cerrar la app): an application capturing the microphone
-        // is in a call or a recording; closing its window may leave it, and opening the application again does not
-        // bring it back.
-        if (CapturesMicrophone(identity))
-        {
-            return false;
-        }
-
-        return DocumentlessApplications.Contains(identity.AppUserModelId, identity.ExecutablePath)
-            || _provenance.LaunchedAndUnwritten(
-                identity.Handle, identity.ProcessId, identity.ProcessCreationTimeUtcTicks);
-    }
-
-    private bool CapturesMicrophone(WindowIdentity identity)
-    {
-        try
-        {
-            return _platform.CapturesMicrophone(identity);
-        }
-        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
-        {
-            return true;
-        }
-    }
-
     private void Revoke(string id)
     {
         lock (_gate)
@@ -1616,8 +1557,6 @@ internal interface IWindowControlPlatform
     ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken);
     // v3 r22 uso real: the visible top-level windows of the same process that the window owns (its dialogs).
     IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity) => [];
-    // v3 r22 revisión: whether the window's application is capturing the microphone now (MicrophoneInUse).
-    bool CapturesMicrophone(WindowIdentity identity) => false;
     // BAXY Renew cu (C13 en el PC): a window in full screen covers its whole monitor (taskbar included) with no title bar.
     bool FullScreen(WindowIdentity identity) => false;
     // BAXY Renew cu (C13 en el PC): one key posted to the window itself (never the real keyboard): Esc or F11.
@@ -1938,7 +1877,6 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         return PostMessage(identity.Handle, SystemCommandMessage, SystemCloseCommand, 0);
     }
 
-    public bool CapturesMicrophone(WindowIdentity identity) => MicrophoneInUse.Capturing(identity);
 
     public IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity)
     {

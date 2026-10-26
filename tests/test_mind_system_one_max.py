@@ -138,7 +138,12 @@ SYSTEM_POWER = {"name": "system.power", "description": "Power", "risk": "work_lo
                                                                                 "enum": ["restart", "shutdown"]}},
                                     "required": ["action"], "additionalProperties": False}}
 CALENDAR = _risky("calendar.event.create", "external_communication", "title")
-RISKY = [PACKAGE_UNINSTALL, GAME_UNINSTALL, NOTE_TRASH, PACKAGE_INSTALL, SYSTEM_POWER, CALENDAR, GAME_LAUNCH]  # the games list
+# Decisión del dueño 2026-10-25: the own game library goes without a yes though the catalog labels it installation or
+# work_loss (RiskPolicy.UnaskedDespiteTheirRisk), so «corrige» never puts it in the model's mouth.
+GAME_INSTALL = _risky("game.install.named", "installation", "title")
+GAME_CANCEL = _risky("game.install.cancel", "work_loss", "appId")
+RISKY = [PACKAGE_UNINSTALL, GAME_UNINSTALL, NOTE_TRASH, PACKAGE_INSTALL, SYSTEM_POWER, CALENDAR, GAME_INSTALL,
+         GAME_CANCEL, GAME_LAUNCH]  # the games list
 
 
 @pytest.mark.parametrize("choice, filled, operation", [
@@ -147,6 +152,8 @@ RISKY = [PACKAGE_UNINSTALL, GAME_UNINSTALL, NOTE_TRASH, PACKAGE_INSTALL, SYSTEM_
     ("package_install", {"packageId": "worms"}, "package.install"),  # installation
     ("system_power", {"action": "shutdown"}, None),  # work_loss in the catalog, but the kernel runs it without asking
     ("calendar_event_create", {"title": "worms"}, None),  # external_communication: the kernel asks for only some
+    ("game_install_named", {"title": "Worms W.M.D"}, None),  # installation, but the kernel runs it without asking
+    ("game_install_cancel", {"appId": "worms"}, None),  # work_loss, but the kernel runs it without asking
     ("game_uninstall_named", {"title": "Age of Empires"}, None)])  # still founded or nothing (B-MED-1)
 def test_in_normal_mode_a_correction_the_kernel_confirms_arrives_as_the_action(tmp_path, monkeypatch, choice, filled,
                                                                                 operation) -> None:

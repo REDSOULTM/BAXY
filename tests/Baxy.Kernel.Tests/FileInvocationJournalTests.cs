@@ -547,9 +547,11 @@ public sealed class FileInvocationJournalTests
         await using (FileInvocationJournal reopened = await OpenJournalAsync())
         using (var engine = new MissionEngine(new OperationRegistry([recoveryHandler]), reopened))
         {
-            // Auditoría del núcleo 2026-10-23: after a restart nothing says the pending run did nothing, so the retry
-            // asks (reconciliationRequired) and runs on the yes, as a new request.
-            (_, OperationResponse retry) = await UncertainStart.RetryAsync(engine, request with { RequestId = retryRequestId });
+            // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+            // peligrosas»): after a restart nothing says the pending run did nothing, but a reversible note is retried
+            // without asking, as a new request.
+            OperationResponse retry = await engine.ExecuteAsync(
+                request with { RequestId = retryRequestId }, CancellationToken.None);
 
             Assert.Multiple(() =>
             {
@@ -583,8 +585,10 @@ public sealed class FileInvocationJournalTests
             };
 
             OperationResponse conflict = await engine.ExecuteAsync(conflicting, CancellationToken.None);
-            // Auditoría del núcleo 2026-10-23: a start that may have acted is retried on the person's yes.
-            (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, original);
+            // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+            // peligrosas»): a start that may have acted, of a reversible note, is retried without asking.
+            OperationResponse recovered = await engine.ExecuteAsync(
+                original with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
 
             Assert.Multiple(() =>
             {
@@ -697,8 +701,10 @@ public sealed class FileInvocationJournalTests
             OperationResponse incompleteConflict = await engine.ExecuteAsync(
                 ChangeContent(incompleteRequest, "contenido conflictivo"),
                 CancellationToken.None);
-            // Auditoría del núcleo 2026-10-23: a start that may have acted is retried on the person's yes.
-            (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, incompleteRequest);
+            // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+            // peligrosas»): a start that may have acted, of a reversible note, is retried without asking.
+            OperationResponse recovered = await engine.ExecuteAsync(
+                incompleteRequest with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
             OperationResponse triggerReplay = await engine.ExecuteAsync(
                 triggerRequest with { RequestId = Guid.NewGuid().ToString("D") },
                 CancellationToken.None);

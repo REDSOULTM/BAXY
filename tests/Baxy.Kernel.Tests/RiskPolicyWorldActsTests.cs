@@ -168,7 +168,8 @@ public sealed class RiskPolicyWorldActsTests
             "Vaciar la papelera cuando el disco se llena de archivos viejos", "Limpiar historial", "Clear all",
             "Enviar búsqueda", "Submit search", "En\u200Bviar mensaje", "Desinstalar (Supr)", "Choche, Llamada de voz en curso",
             "Ajustes de voz y video", "Abrir Discord", "Steam", "Tienda", "Deshabilitar todos", "Disable all",
-            "Desactivar todo", "Deshabilitado", "Habilitar todos",
+            "Desactivar todo", "Deshabilitado", "Habilitar todos", "Quitar silencio", "Clear filters",
+            "Limpiar búsqueda", "Descartar notificación", "Clear search history", "Vaciar papelera", "Descartar cambios",
         ];
         string[] differ =
         [
@@ -188,6 +189,11 @@ public sealed class RiskPolicyWorldActsTests
             Assert.That(RiskPolicy.LabelAsks("Desactivar todo"), Is.True);
             Assert.That(RiskPolicy.LabelAsks("Deshabilitado"), Is.False);
             Assert.That(RiskPolicy.LabelAsks("Habilitar todos"), Is.False);
+            // Decisión del dueño 2026-10-25: over a harmless object the verb does not ask; over a history it still
+            // does.
+            Assert.That(RiskPolicy.LabelAsks("Quitar silencio"), Is.False);
+            Assert.That(RiskPolicy.LabelAsks("Clear filters"), Is.False);
+            Assert.That(RiskPolicy.LabelAsks("Clear search history"), Is.True);
         });
     }
 

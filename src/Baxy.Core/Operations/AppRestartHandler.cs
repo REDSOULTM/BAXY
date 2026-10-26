@@ -14,9 +14,10 @@ namespace Baxy.Core.Operations;
 /// does (never forced; a window that answers with a dialog of its own, such as asking to save, stops everything and is
 /// said); then its processes must end on their own (an application that keeps running hidden is said, not killed);
 /// then it is opened again by app.open, with all of app.open's verification, and only a process that is not one of the
-/// closed ones counts as the restart.
+/// closed ones counts as the restart. Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para
+/// cosas que realmente son peligrosas»): it is low reversible and goes without a yes, as app.close does.
 /// </summary>
-internal sealed class AppRestartHandler : IOperationHandler, IInvocationPreflight
+internal sealed class AppRestartHandler : IOperationHandler
 {
     internal static readonly TimeSpan ExitWait = TimeSpan.FromSeconds(10);
 
@@ -41,28 +42,6 @@ internal sealed class AppRestartHandler : IOperationHandler, IInvocationPrefligh
     }
 
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("app.restart");
-
-    /// <summary>
-    /// Auditoría de identidad (nb-f4-identidad; 00_IDENTIDAD: en modo normal sólo se confirma lo que destruye datos,
-    /// cerrar sin guardar entre ello): a restart closes as app.close does, gracefully and stopping at a dialog of its own,
-    /// so an application all of whose windows hold no document of the person loses nothing and restarts without a yes,
-    /// as app.close by its name closes («reinicia discord» asked every time); a window with a document, or one the
-    /// provider cannot place, keeps work_loss and asks. Read only.
-    /// </summary>
-    public async ValueTask<InvocationPreflightResult> PreflightAsync(
-        JsonElement arguments,
-        CancellationToken cancellationToken)
-    {
-        if (arguments.ValueKind != JsonValueKind.Object
-            || !arguments.TryGetProperty("appId", out JsonElement appId) || appId.ValueKind != JsonValueKind.String
-            || !ApplicationIds.IsValidRequest(appId.GetString()!))
-            return InvocationPreflightResult.Proceed;
-        ApplicationWindows found = await ApplicationWindowCloser.ResolveAsync(_windows, appId.GetString()!, cancellationToken)
-            .ConfigureAwait(false);
-        return found.ErrorCode is null && found.Windows.All(window => _windows.HoldsNoDocument(window.WindowId))
-            ? InvocationPreflightResult.Lowered(OperationRisk.Reversible)
-            : InvocationPreflightResult.Proceed;
-    }
 
     public async ValueTask<OperationOutcome> ExecuteAsync(
         OperationInvocation invocation,

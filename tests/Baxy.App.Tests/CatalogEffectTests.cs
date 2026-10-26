@@ -22,6 +22,9 @@ public sealed class CatalogEffectTests
         "window.maximize", "window.minimize.all", "window.move", "window.resize", "window.snap", "file.open",
         "filesystem.file.open.latest", "filesystem.folder.open", "browser.page.read", "browser.tabs.list",
         "game.store.page", "game.store.search", "client.microphone.set", "clipboard.paste.into", "office.format.apply",
+        // Decisión del dueño 2026-10-25 (after the lists): a graceful close, now low reversible, sends its window command
+        // to the person's windows, so a heartbeat only proposes it and «corrige» never fills it.
+        "app.close", "app.restart", "window.close.all",
     ];
 
     private static readonly HashSet<string> NetworkAlways =

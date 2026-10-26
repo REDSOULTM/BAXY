@@ -177,8 +177,6 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
 
             if (reconciled != foreign)
             {
-                // v3 r22 revisión 3: input the detector missed is the person's and went to the window in front.
-                Windows.WindowsPersonInputWitness.NoteReached(Front());
                 InterlockedMax(ref _lastForeign, reconciled);
                 InterlockedMax(ref _lastMissedAt, reconciled);
             }
@@ -450,20 +448,6 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     }
 
     /// <summary>
-    /// v3 r22 revisión 3: the window one Raw Input record of the person reached (0 when it is BAXY's, carries no window,
-    /// or cannot reach a window's content). Every record without BAXY's mark is the person's, injected or not (Synergy,
-    /// remote desktops, on-screen keyboards, the live harness's simulated user): a key reaches the window in front
-    /// (<paramref name="front"/>), a button or the wheel the window under the pointer (<paramref name="pointed"/>, the
-    /// front when it is not known). Only the window is answered, never the key or the position.
-    /// </summary>
-    internal static nint PersonReachedWindow(ReadOnlySpan<byte> record, int header, nint front, nint pointed)
-    {
-        if (IsOwn(record, header) is not false || !ReachesContent(record, header))
-            return 0;
-        return BinaryPrimitives.ReadUInt32LittleEndian(record) == 0 && pointed != 0 ? pointed : front;
-    }
-
-    /// <summary>
     /// Whether one Raw Input record (header and body) can move the front: a mouse button going down
     /// (<c>RAWMOUSE.usButtonFlags</c>, 4 bytes into the mouse record) or Alt or a Windows key going down
     /// (<c>RAWKEYBOARD.Flags</c> and <c>VKey</c>, 2 and 6 bytes into the keyboard record). Only this answer is kept,
@@ -702,8 +686,6 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
                 reached = WindowFromPoint(point) is var pointed and not 0 ? GetAncestor(pointed, 2) : 0;
             nint front = GetForegroundWindow();
             _book.Note(front, now, reached);
-            // v3 r22 revisión 3: the window this input of the person reached, for the launch provenance's witness.
-            Windows.WindowsPersonInputWitness.NoteReached(PersonReachedWindow(record, header, front, reached ?? 0));
         }
 
         bool beyond = ActsBeyondFront(record, header);

@@ -244,18 +244,15 @@ public sealed class AppRestartHandlerTests
         internal void Advance(TimeSpan by) => _ticks += by.Ticks;
     }
 
-    // Auditoría de identidad (nb-f4-identidad; 00_IDENTIDAD: en modo normal sólo pregunta lo que destruye datos, cerrar
-    // sin guardar entre ello): a restart closes as app.close does (gracefully, stopping at a dialog to save), so an
-    // application all of whose windows hold no document of the person restarts without a yes, as «cierra discord»
-    // closes; one window with a document, or one the provider cannot place, keeps the yes. Fake windows and opening.
-    [TestCase(new[] { "win_discord", "win_discord_2" }, false)]
-    [TestCase(new[] { "win_discord", "win_notepad" }, true)]
-    public async Task AnApplicationAllOfWhoseWindowsHoldNoDocumentRestartsWithoutAsking(string[] ids, bool asks)
+    // Decisión del dueño 2026-10-25 («solo se debe pedir confirmación a cosas que son destructivas… que Baxy no te
+    // moleste todo el tiempo»): a restart closes as app.close does (gracefully, stopping at a dialog to save) and goes
+    // without a yes through the engine, also with a window that may hold a document (before, it asked: work_loss).
+    // Fake windows and opening.
+    [TestCase(new[] { "win_discord", "win_discord_2" }, "no window holds a document")]
+    [TestCase(new[] { "win_discord", "win_notepad" }, "one window may hold a document")]
+    public async Task AnApplicationRestartsWithoutAskingInNormalMode(string[] ids, string held)
     {
-        var windows = new FakeWindows([.. ids.Select((id, index) => Frame(id, 100 + index))])
-        {
-            Documentless = ["win_discord", "win_discord_2"],
-        };
+        var windows = new FakeWindows([.. ids.Select((id, index) => Frame(id, 100 + index))]);
         var opens = new List<OperationInvocation>();
         string root = Path.Combine(Path.GetTempPath(), "baxy-app-restart-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
@@ -276,9 +273,9 @@ public sealed class AppRestartHandlerTests
 
             Assert.Multiple(() =>
             {
-                Assert.That(response.ErrorCode, asks ? Is.EqualTo("confirmation_required") : Is.Null);
-                Assert.That(windows.Closed, asks ? Is.Empty : Is.EqualTo(ids));
-                Assert.That(opens, asks ? Is.Empty : Has.Count.EqualTo(1));
+                Assert.That(response.ErrorCode, Is.Null, held);
+                Assert.That(windows.Closed, Is.EqualTo(ids));
+                Assert.That(opens, Has.Count.EqualTo(1));
             });
         }
         finally
@@ -333,10 +330,6 @@ public sealed class AppRestartHandlerTests
         internal string? Prompts { get; init; }
 
         internal IReadOnlyList<int> Background { get; init; } = [];
-
-        internal string[] Documentless { get; init; } = [];
-
-        public bool HoldsNoDocument(string windowId) => Documentless.Contains(windowId);
 
         public ValueTask<IReadOnlyList<int>> BackgroundProcessesAsync(
             string applicationName, CancellationToken cancellationToken) =>

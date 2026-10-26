@@ -182,8 +182,6 @@ internal sealed class AppOpenHandler(
         // v3 r22 revisión: the moment before the opening. A process created before it was not launched by this
         // opening, whatever the provider's reuse flag says (a process already running with no visible window, a
         // window that appears inside a process the person was already using), and never counts as BAXY's.
-        // v3 r22 revisión 2: the person's own input into what this opening launches is watched from before it.
-        _provenance.PrepareLaunch();
         long openingStartedTicks = _time.GetUtcNow().UtcTicks;
         ApplicationOpenResult providerResult = await _provider.OpenAsync(
             new ApplicationOpenRequest(
@@ -221,8 +219,8 @@ internal sealed class AppOpenHandler(
         }
 
         // v3 r22 uso real (t3-c18): a process this verified opening launched (not one already running) is noted with
-        // its creation time and the window the opening verified; its window closes without asking while BAXY has
-        // not written into any window (WindowsWindowControlProvider.HoldsNoDocument).
+        // its creation time and the window the opening verified, so the reads of open windows say BAXY opened it
+        // (F002).
         if (!providerResult.AlreadyRunning
             && LaunchedByThisOpening(providerResult.Receipt.ProcessCreationTimeUtcTicks, openingStartedTicks))
         {

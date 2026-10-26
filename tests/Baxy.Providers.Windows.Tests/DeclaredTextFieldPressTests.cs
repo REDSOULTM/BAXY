@@ -40,7 +40,11 @@ public sealed class DeclaredTextFieldPressTests
     // What is declared a text field and is not (a file list, a button), lies outside the window, or cannot be read;
     // and Enter on a messaging client's composer or a console's line, which sends or runs what they hold.
     [TestCase("""{"key":"delete","target":"text_field"}""", """{"ok":true,"kind":"List","editable":false,"text":false,"inside":true}""", KeyWindowKind.Ordinary)]
-    [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true}""", KeyWindowKind.Ordinary)]
+    [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true,"name":"Enviar"}""", KeyWindowKind.Ordinary)]
+    [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true,"name":"Eliminar"}""", KeyWindowKind.Ordinary)]
+    [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"CheckBox","editable":false,"text":false,"inside":false,"name":"Recordarme"}""", KeyWindowKind.Ordinary)]
+    [TestCase("""{"key":"space","target":"text_field"}""", null, KeyWindowKind.Ordinary)]
+    [TestCase("""{"key":"enter","target":"text_field"}""", """{"ok":true,"kind":"CheckBox","editable":false,"text":false,"inside":true,"name":"Recordarme"}""", KeyWindowKind.Ordinary)]
     [TestCase("""{"key":"delete","target":"text_field","window":7}""", """{"ok":true,"kind":"Edit","editable":true,"text":true,"inside":false}""", KeyWindowKind.Ordinary)]
     [TestCase("""{"key":"delete","target":"text_field"}""", """{"ok":false,"error":"focus_not_found"}""", KeyWindowKind.Ordinary)]
     [TestCase("""{"key":"delete","target":"text_field"}""", null, KeyWindowKind.Ordinary)]
@@ -55,6 +59,26 @@ public sealed class DeclaredTextFieldPressTests
         {
             Assert.That(response.ErrorCode, Is.EqualTo("confirmation_required"));
             Assert.That(keys.Pressed, Is.Zero);
+            Assert.That(fields.Asked, Is.EqualTo(1));
+        });
+    }
+
+    // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
+    // peligrosas»): space on a focus read inside the window that is no text field (a check box, a switch, a button)
+    // toggles or presses it, and asks only when its read name would make a click on it ask; before, it always asked.
+    [TestCase("""{"ok":true,"kind":"CheckBox","editable":false,"text":false,"inside":true,"name":"Recordarme"}""")]
+    [TestCase("""{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true,"name":"Activar Wi-Fi"}""")]
+    [TestCase("""{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true}""")]
+    [TestCase("""{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true,"name":"Quitar silencio"}""")]
+    public async Task SpaceOnAControlWhoseNameAsksNothingGoesWithoutAsking(string focus)
+    {
+        (OperationResponse response, Keys keys, Fields fields) = await Press(
+            """{"key":"space","target":"text_field","window":7}""", focus, KeyWindowKind.Ordinary);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Status, Is.EqualTo(OperationStatuses.Completed), response.ErrorCode);
+            Assert.That(keys.Pressed, Is.EqualTo(1));
             Assert.That(fields.Asked, Is.EqualTo(1));
         });
     }
