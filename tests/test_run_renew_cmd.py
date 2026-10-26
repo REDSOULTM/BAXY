@@ -6,10 +6,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-import pytest
-
 ROOT = Path(__file__).resolve().parents[1]
-NAMES = ("BAXY_MIND_PYTHONPATH", "BAXY_S1_DOUBT", "BAXY_RENEW_TTS_DIR", "BAXY_MIND_LLAMA_PORT", "BAXY_VISION_ENDPOINT")
+NAMES = ("BAXY_MIND_PYTHONPATH", "BAXY_S1_GGUF", "BAXY_S1_DOUBT", "BAXY_RENEW_TTS_DIR", "BAXY_MIND_MMPROJ",
+         "BAXY_MIND_LLAMA_PORT", "BAXY_VISION_ENDPOINT")
 DUMP = (
     "import json, os\n"
     f"print(json.dumps({{name: os.environ.get(name) for name in {NAMES!r}}}))\n"
@@ -45,14 +44,14 @@ def test_switching_system_one_off_holds_in_the_same_console(tmp_path: Path) -> N
     switch.parent.mkdir(parents=True)
     launcher = f'"{checkout}\\scripts\\run_renew.cmd"'
     runs = _run(f'call {launcher} & type nul > "{switch}" & call {launcher}', tmp_path)
-    assert [run["BAXY_S1_DOUBT"] for run in runs] == ["0.4", None]
+    assert [run["BAXY_S1_GGUF"] is not None for run in runs] == [True, False]
 
 
 def test_vision_off_still_reaches_the_launch(tmp_path: Path) -> None:
     # The file is checked out with LF (.gitattributes): `goto run` must still find its label.
     checkout = _checkout(tmp_path / "uno")
     runs = _run(f'set "BAXY_VISION_OFF=1" & call "{checkout}\\scripts\\run_renew.cmd"', tmp_path)
-    assert [run["BAXY_S1_DOUBT"] for run in runs] == ["0.4"]
+    assert [(run["BAXY_MIND_MMPROJ"], run["BAXY_S1_GGUF"] is not None) for run in runs] == [(None, True)]
 
 
 def test_a_bench_keeps_the_voice_it_sets(tmp_path: Path) -> None:
@@ -63,10 +62,11 @@ def test_a_bench_keeps_the_voice_it_sets(tmp_path: Path) -> None:
     assert [run["BAXY_RENEW_TTS_DIR"] for run in runs] == [str(voice)]
 
 
-def test_a_bench_keeps_the_port_it_sets_and_vision_follows_it(tmp_path: Path) -> None:
+def test_the_launcher_leaves_system_one_and_the_vision_wiring_to_the_product(tmp_path: Path) -> None:
+    # Entrega 1.1.0: System One's thresholds are the mind's defaults (mind.SYSTEM_ONE), and the vision's port, endpoint
+    # and slot are set by the App from the projector (MindRuntimeDiscovery, which keeps a bench's port), as in BAXY
+    # installed, which has no launcher.
     checkout = _checkout(tmp_path / "uno")
-    runs = _run(f'set "BAXY_MIND_LLAMA_PORT=8099" & call "{checkout}\\scripts\\run_renew.cmd"', tmp_path)
-    if runs[0]["BAXY_VISION_ENDPOINT"] is None:
-        pytest.skip("this machine has no vision projector: the launcher sets no port")
-    assert [(run["BAXY_MIND_LLAMA_PORT"], run["BAXY_VISION_ENDPOINT"]) for run in runs] == [
-        ("8099", "http://127.0.0.1:8099/v1/chat/completions")]
+    runs = _run(f'call "{checkout}\\scripts\\run_renew.cmd"', tmp_path)
+    assert [(run["BAXY_S1_DOUBT"], run["BAXY_MIND_LLAMA_PORT"], run["BAXY_VISION_ENDPOINT"]) for run in runs] == [
+        (None, None, None)]

@@ -150,8 +150,9 @@ Solo el manifest validado y los overrides explícitos habilitan esa ruta.
 `scripts/register_mind_runtime.ps1` mutan el runtime local. Úsalos únicamente
 cuando la tarea autoriza preparar o cambiar ese runtime. El registro valida
 locks, estructura, nombres y existencia, calcula los hashes del intérprete,
-GGUF, llama-server, bundle STT y wake declarado, y vuelve a leerlos antes de
-promover el manifest.
+GGUF, llama-server y de cada pieza dada (voz, oído, System One, proyector de
+visión; ver `documentacion/26_ESTRUCTURA_Y_RUTAS_DE_MAQUINA.md`), y vuelve a
+leerlos antes de promover el manifest.
 
 Los modelos Gemma, llama.cpp, E5, Parakeet, Nemotron y wake no se copian al
 repositorio ni al ZIP de producto. Sus licencias, identidades y manifests

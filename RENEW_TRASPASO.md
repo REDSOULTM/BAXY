@@ -213,8 +213,11 @@ regla vital.
 - **Compilación:**
   - `vswhere.exe` no está en el PATH; `run_renew.cmd` lo agrega.
   - Si Baxy.exe tiene tomados los archivos, `main.py` cierra la ventana antes de copiar.
-- **Manifiesto compartido:** `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` es de BAXY Definitivo; no se edita.
-  Renew usa sus propias variables `BAXY_RENEW_*` y las de `BAXY_MIND_*` que fija el lanzador.
+- **Manifiesto del runtime:** `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` lo escribe
+  `scripts\register_mind_runtime.ps1`. Desde la entrega 1.1.0 lleva también la voz, el oído, System One y el proyector
+  de cada máquina, y es lo que usa BAXY instalado, que no tiene lanzador; las variables `BAXY_RENEW_*`, `BAXY_S1_*` y
+  `BAXY_MIND_*` que fija `run_renew.cmd` (o un banco) mandan sobre él. Los umbrales de System One son los de la mente
+  (`SYSTEM_ONE` en `src\baxy_mind\mind.py`).
 
 ## Voz de BAXY (2026-10-17, elegida por el dueño de oído)
 

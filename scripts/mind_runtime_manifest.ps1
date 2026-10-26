@@ -11,20 +11,16 @@ $script:BaxyMindRuntimeProperties = @(
     'gguf_sha256',
     'llama_server',
     'llama_server_sha256',
-    'stt_dir',
-    'stt_sha256',
-    'wake_manifest',
-    'wake_manifest_sha256',
-    'tts_model',
-    'tts_sha256',
-    'ngl',
-    'wake_on_start'
+    'ngl'
 )
-$script:BaxySttRequiredFiles = @(
-    'encoder.int8.onnx',
-    'decoder.int8.onnx',
-    'joiner.int8.onnx',
-    'tokens.txt'
+# Entrega 1.1.0: the pieces beside the model on this machine, each a path and its SHA-256, or both null (that piece
+# stays off): property, its hash, kind, label. The App applies each where no variable names one (MindRuntimeDiscovery).
+$script:BaxyMindRuntimePieces = @(
+    @('renew_tts_dir', 'renew_tts_sha256', 'Container', 'Voz de BAXY (Supertonic)'),
+    @('renew_wake_dir', 'renew_wake_sha256', 'Container', 'Palabra de activacion (k4)'),
+    @('renew_stt_dir', 'renew_stt_sha256', 'Container', 'Reconocedor (Parakeet Ultra)'),
+    @('s1_gguf', 's1_gguf_sha256', 'Leaf', 'Modelo de decision de System One'),
+    @('mmproj', 'mmproj_sha256', 'Leaf', 'Proyector de vision')
 )
 
 function Get-BaxySha256 {
@@ -33,18 +29,21 @@ function Get-BaxySha256 {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
-function Get-BaxySttSha256 {
+# A folder's SHA-256, as the App checks it (MindRuntimeDiscovery.DirectorySha256): of the UTF-8 lines «name:sha256», one
+# per file directly in it by ordinal name, each ending in a line feed. Subfolders are not part of it.
+function Get-BaxyDirectorySha256 {
     param([Parameter(Mandatory = $true)][string]$Directory)
 
-    $lines = [Collections.Generic.List[string]]::new()
-    foreach ($name in $script:BaxySttRequiredFiles) {
-        $path = Join-Path $Directory $name
-        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
-            throw "stt_bundle_incomplete: $path"
-        }
-        $lines.Add("$name`:$((Get-BaxySha256 -Path $path))")
+    [string[]]$names = @([IO.Directory]::GetFiles($Directory) | ForEach-Object { [IO.Path]::GetFileName($_) })
+    if ($names.Count -eq 0) {
+        throw "directory_empty: $Directory"
     }
-    $bytes = [Text.Encoding]::UTF8.GetBytes(($lines -join "`n") + "`n")
+    [Array]::Sort($names, [StringComparer]::Ordinal)
+    $text = [Text.StringBuilder]::new()
+    foreach ($name in $names) {
+        $null = $text.Append("$name`:$((Get-BaxySha256 -Path (Join-Path $Directory $name)))`n")
+    }
+    $bytes = [Text.Encoding]::UTF8.GetBytes($text.ToString())
     $sha = [Security.Cryptography.SHA256]::Create()
     try {
         return ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace(
@@ -91,6 +90,12 @@ function Get-BaxyMindRuntimeStatus {
     }
     $actualProperties = @($runtime.PSObject.Properties.Name)
     $expectedProperties = @($script:BaxyMindRuntimeProperties)
+    foreach ($piece in $script:BaxyMindRuntimePieces) {
+        foreach ($name in @($piece[0], $piece[1])) {
+            if ($actualProperties -ccontains $name) { $expectedProperties += $name }
+        }
+    }
+    if ($actualProperties -ccontains 's1_threads') { $expectedProperties += 's1_threads' }
     # LoRAs bound by hash to the registered GGUF: property, schema, label.
     $adapterContracts = @(
         @('cpu_prose_adapter', 'baxy-cpu-prose-adapter-v1', 'Adaptador CPU'),
@@ -114,7 +119,6 @@ function Get-BaxyMindRuntimeStatus {
         $pythonPath = [IO.Path]::GetFullPath([string]$runtime.python_path)
         $gguf = [IO.Path]::GetFullPath([string]$runtime.gguf)
         $server = [IO.Path]::GetFullPath([string]$runtime.llama_server)
-        $stt = [IO.Path]::GetFullPath([string]$runtime.stt_dir)
     } catch {
         $result.Code = 'runtime_path_invalid'
         $result.Detail = "El manifiesto contiene una ruta invalida: $manifestFull"
@@ -137,15 +141,9 @@ function Get-BaxyMindRuntimeStatus {
         $result.Detail = "La mente Python no existe en la ruta registrada: $pythonPath"
         return [pscustomobject]$result
     }
-    if (-not (Test-Path -LiteralPath $stt -PathType Container)) {
-        $result.Code = 'runtime_asset_missing'
-        $result.Detail = "Parakeet STT no existe en la ruta registrada: $stt"
-        return [pscustomobject]$result
-    }
     if (-not (Test-BaxySha256Text $runtime.python_sha256) -or
         -not (Test-BaxySha256Text $runtime.gguf_sha256) -or
-        -not (Test-BaxySha256Text $runtime.llama_server_sha256) -or
-        -not (Test-BaxySha256Text $runtime.stt_sha256)) {
+        -not (Test-BaxySha256Text $runtime.llama_server_sha256)) {
         $result.Code = 'runtime_manifest_hash_missing'
         $result.Detail = "El manifiesto no contiene hashes SHA-256 validos: $manifestFull"
         return [pscustomobject]$result
@@ -188,72 +186,38 @@ function Get-BaxyMindRuntimeStatus {
             return [pscustomobject]$result
         }
     }
-    try {
-        $sttHash = Get-BaxySttSha256 -Directory $stt
-    } catch {
-        $result.Code = 'runtime_asset_incomplete'
-        $result.Detail = "Parakeet STT esta incompleto: $stt"
-        return [pscustomobject]$result
-    }
-    if ($sttHash -cne [string]$runtime.stt_sha256) {
-        $result.Code = 'runtime_asset_hash_mismatch'
-        $result.Detail = "Parakeet STT no coincide con el SHA-256 registrado: $stt"
-        return [pscustomobject]$result
-    }
-
-    $wakeOnStart = $runtime.wake_on_start -is [bool] -and [bool]$runtime.wake_on_start
-    if ($runtime.wake_on_start -isnot [bool]) {
-        $result.Code = 'runtime_manifest_wake_invalid'
-        $result.Detail = "El estado wake del manifiesto es invalido: $manifestFull"
-        return [pscustomobject]$result
-    }
-    if ($null -eq $runtime.wake_manifest -and $null -eq $runtime.wake_manifest_sha256) {
-        if ($wakeOnStart) {
-            $result.Code = 'runtime_wake_invalid'
-            $result.Detail = "wake_on_start exige un manifiesto wake: $manifestFull"
-            return [pscustomobject]$result
+    foreach ($piece in $script:BaxyMindRuntimePieces) {
+        $path = $runtime.PSObject.Properties[$piece[0]]
+        $sha = $runtime.PSObject.Properties[$piece[1]]
+        $path = if ($null -eq $path) { $null } else { $path.Value }
+        $sha = if ($null -eq $sha) { $null } else { $sha.Value }
+        if ($null -eq $path -and $null -eq $sha) { continue }
+        $actual = $null
+        if ($path -is [string] -and [IO.Path]::IsPathRooted($path) -and (Test-BaxySha256Text $sha) -and
+            (Test-Path -LiteralPath $path -PathType $piece[2])) {
+            try {
+                $actual = if ($piece[2] -ceq 'Leaf') {
+                    Get-BaxySha256 -Path $path
+                } else {
+                    Get-BaxyDirectorySha256 -Directory $path
+                }
+            } catch {
+                $actual = $null
+            }
         }
-    } else {
-        try {
-            $wake = [IO.Path]::GetFullPath([string]$runtime.wake_manifest)
-        } catch {
-            $result.Code = 'runtime_wake_invalid'
-            $result.Detail = "La ruta wake del manifiesto es invalida: $manifestFull"
-            return [pscustomobject]$result
-        }
-        if (-not (Test-Path -LiteralPath $wake -PathType Leaf) -or
-            -not (Test-BaxySha256Text $runtime.wake_manifest_sha256) -or
-            (Get-BaxySha256 -Path $wake) -cne [string]$runtime.wake_manifest_sha256) {
-            $result.Code = 'runtime_wake_invalid'
-            $result.Detail = "El manifiesto wake falta o no coincide con su SHA-256: $wake"
+        if ($null -eq $actual -or $actual -cne [string]$sha) {
+            $result.Code = 'runtime_piece_invalid'
+            $result.Detail = "$($piece[3]) falta o no coincide con su SHA-256: $path"
             return [pscustomobject]$result
         }
     }
-
-    if ($null -eq $runtime.tts_model -and $null -eq $runtime.tts_sha256) {
-        # Neural TTS is optional; SAPI remains the documented fallback.
-    } elseif (
-        $null -eq $runtime.tts_model -or
-        $null -eq $runtime.tts_sha256 -or
-        -not (Test-BaxySha256Text $runtime.tts_sha256)
-    ) {
-        $result.Code = 'runtime_tts_invalid'
-        $result.Detail = "El manifiesto TTS es incompleto: $manifestFull"
+    $threads = $runtime.PSObject.Properties['s1_threads']
+    if ($null -ne $threads -and $null -ne $threads.Value -and
+        ((($threads.Value -isnot [int]) -and ($threads.Value -isnot [long])) -or
+            [long]$threads.Value -lt 1 -or [long]$threads.Value -gt 64)) {
+        $result.Code = 'runtime_piece_invalid'
+        $result.Detail = "Los hilos de System One del manifiesto son invalidos: $manifestFull"
         return [pscustomobject]$result
-    } else {
-        try {
-            $tts = [IO.Path]::GetFullPath([string]$runtime.tts_model)
-        } catch {
-            $result.Code = 'runtime_tts_invalid'
-            $result.Detail = "La ruta TTS del manifiesto es invalida: $manifestFull"
-            return [pscustomobject]$result
-        }
-        if (-not (Test-Path -LiteralPath $tts -PathType Leaf) -or
-            (Get-BaxySha256 -Path $tts) -cne [string]$runtime.tts_sha256) {
-            $result.Code = 'runtime_tts_invalid'
-            $result.Detail = "El modelo TTS falta o no coincide con su SHA-256: $tts"
-            return [pscustomobject]$result
-        }
     }
     # ConvertFrom-Json materializes ordinary JSON integers as Int64 on Windows
     # PowerShell.  Accept both integral runtime representations, while keeping

@@ -820,9 +820,9 @@ def _omitted(facts: str) -> str:
 CUT_TEXT = "\n[Texto recortado para que quepa el turno: {n} caracteres más de lo que escribió la persona ya no se muestran]"
 CUT_TEXT_FLOOR = 500
 
-# System One, layer 0 (doubt.py): what the model reads when it was not sure of the action it chose. Off unless
-# BAXY_S1_DOUBT holds a threshold; on the 1,839 labelled real requests, below 0.4 held 95 of 210 wrong actions and asked
-# instead of 10 of 1,530 right ones (phase 0, 2026-10-21).
+# System One, layer 0 (doubt.py): what the model reads when it was not sure of the action it chose. Under BAXY_S1_DOUBT
+# (0.4, SYSTEM_ONE); on the 1,839 labelled real requests, below 0.4 held 95 of 210 wrong actions and asked instead of 10
+# of 1,530 right ones (phase 0, 2026-10-21).
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
               "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
 # Aid «answer_check» (al máximo, lever 3; answer_check.py): what the model reads when its final answer contradicts the
@@ -909,11 +909,34 @@ def _bypass() -> bool:
     return word in ("bypass", "all")
 
 
+# System One as the benches certified it (phase 0): ask under 0.4 of confidence (layer 0), consult the decision model
+# under 0.6 (layer 2), and let it correct a harmless call («corrige»). Entrega 1.1.0 (2026-10-25): scripts/run_renew.cmd
+# set them, so BAXY installed and opened from the Start menu decided without System One; now they are the mind's own.
+# A variable still sets its value for a bench's arm (empty or 0 turns that layer off), and the owner's switch
+# %LOCALAPPDATA%\BAXY\renew\system_one.off (scripts\system_one.cmd off) turns all three off; the App does not give the
+# decision model's GGUF then either (MindRuntimeDiscovery).
+SYSTEM_ONE = {"BAXY_S1_DOUBT": "0.4", "BAXY_S1_VETO": "0.6", "BAXY_S1_CORRECT": "1"}
+
+
+def system_one_off() -> bool:
+    """Whether the owner switched System One off (scripts/system_one.cmd off)."""
+    return (Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "system_one.off").exists()
+
+
+def _system_one(name: str) -> str:
+    """A System One setting: the environment's when the variable is there, else its default (SYSTEM_ONE), none with
+    the owner's switch off."""
+    value = os.environ.get(name)
+    if value is None:
+        return "" if system_one_off() else SYSTEM_ONE.get(name, "")
+    return value.strip()
+
+
 def _threshold(name: str) -> float:
-    """A System One threshold from the environment (BAXY_S1_DOUBT, BAXY_S1_VETO); 0 when unset: that
-    layer is off."""
+    """A System One threshold (BAXY_S1_DOUBT, BAXY_S1_VETO; BAXY_CONFIRM_FLOOR when given), _system_one's; 0 turns that
+    layer off."""
     try:
-        return max(0.0, min(1.0, float(os.environ.get(name, "") or 0)))
+        return max(0.0, min(1.0, float(_system_one(name) or 0)))
     except ValueError:
         return 0.0
 
@@ -2315,7 +2338,7 @@ class Mind:
         # only what the conversation showed (every argument founded, the optional ones too). Keys, clicks and commands
         # (low_reversible and up) still never come from «corrige» (shell_command_run has the same network effect).
         shared = bool(effects) and risk == "read_only" and effects <= set(self.effects.get(chosen) or [])
-        if os.environ.get("BAXY_S1_CORRECT", "").strip() != "1" or risk not in CORRECTABLE_RISKS \
+        if _system_one("BAXY_S1_CORRECT") != "1" or risk not in CORRECTABLE_RISKS \
                 or (effects and not shared) or (risk in CONFIRMED_RISKS and not self._kernel_confirms(wire)):
             return None
         # Auditoría de la mente (w8, P4): why a fill did not become the call, in the trace row beside the decision

@@ -10,8 +10,18 @@ import os
 
 import pytest
 
+from baxy_mind import mind
+
+# The owner's System One switch is machine state too (%LOCALAPPDATA%\BAXY\renew\system_one.off, scripts\system_one.cmd
+# off): entrega 1.1.0 made System One the mind's default, so a PC with it off failed the tests of the defaults. Only a
+# switch a test makes under its own LOCALAPPDATA counts.
+_OWNERS_LOCALAPPDATA = os.environ.get("LOCALAPPDATA")
+_system_one_off = mind.system_one_off
+
 
 @pytest.fixture(autouse=True)
 def _no_baxy_switch_from_the_shell(monkeypatch: pytest.MonkeyPatch) -> None:
     for name in [name for name in os.environ if name.upper().startswith("BAXY_")]:
         monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(mind, "system_one_off",
+                        lambda: os.environ.get("LOCALAPPDATA") != _OWNERS_LOCALAPPDATA and _system_one_off())
