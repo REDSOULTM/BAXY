@@ -4,9 +4,9 @@ using System.Media;
 namespace Baxy.App;
 
 /// <summary>
-/// BAXY's two sounds without words, played by the App on Windows' default output (the one BAXY's voice follows), so
-/// they sound with the window hidden too. Each tone is synthesized once (sine notes, low volume, soft edges); nothing is
-/// read from disk or the network.
+/// BAXY's sounds without words, played by the App on Windows' default output (the one BAXY's voice follows), so they
+/// sound with the window hidden too. Each tone is synthesized once (sine notes, low volume, soft edges; a 0 Hz note is a
+/// rest); nothing is read from disk or the network.
 /// </summary>
 internal sealed class Chime
 {
@@ -19,6 +19,14 @@ internal sealed class Chime
     /// its state and the screen reader reads it, and this is what someone who does not look hears. A fixed line would
     /// be a fixed reply (invariante 5), so it is a sound. Two notes down, 260 ms.</summary>
     internal static readonly Chime TurnFailed = new([(660, 110), (440, 150)]);
+
+    /// <summary>The ear failed while the person spoke (voice_error during a request: the microphone sent nothing or a
+    /// block failed): what they said was not heard, and they say it again. Two low equal blips, 180 ms.</summary>
+    internal static readonly Chime ListenFailed = new([(392, 70), (0, 40), (392, 70)]);
+
+    /// <summary>The person was heard while a turn ran and the request started nothing (voice_dropped_busy): wait and say
+    /// it again when BAXY is done. One short soft note, 90 ms.</summary>
+    internal static readonly Chime Wait = new([(587, 90)]);
 
     private readonly Lazy<byte[]> _wave;
 

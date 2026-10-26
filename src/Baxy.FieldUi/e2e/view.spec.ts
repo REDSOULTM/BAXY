@@ -284,10 +284,10 @@ test('Enter con el foco en un botón fuera de la tarjeta (el engranaje tras cerr
 test('un error de voz es un estado de la interfaz: nada en el subtítulo de BAXY ni una frase como si la dijera él', async () => {
   h = await openView();
   h.emit({ type: 'voice', available: true, mode: 'wake', speaking: false, last_error: 'voice_error' });
-  await expect(h.page.locator('.bx-statel')).toContainText('No se entendió el audio');
+  await expect(h.page.locator('.bx-statel')).toContainText('Falló la escucha');
   await expect(h.page.locator('.bx-cap')).toHaveText('');
   const shown = await h.page.locator('body').innerText();
-  expect(shown).not.toMatch(/te entendí|lo repites/i);
+  expect(shown).not.toMatch(/entend|lo repites/i);
 });
 
 test('ningún aviso ni etiqueta fija de la vista habla como BAXY en primera persona', async () => {

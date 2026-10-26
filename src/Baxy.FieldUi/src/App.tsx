@@ -51,8 +51,9 @@ const FAILURE: Record<string, string> = {
   core_disconnected: 'El motor local se desconectó',
   retry_without_close: 'El motor local no arrancó',
   turn_failed: 'El turno no pudo terminar',
-  // a state of the interface, never words of BAXY's (zero fixed visible replies)
-  voice_error: 'No se entendió el audio',
+  // a state of the interface, never words of BAXY's (zero fixed visible replies); the ear failed (the microphone sent
+  // nothing or a block of it could not be heard), which is not BAXY not understanding what was said
+  voice_error: 'Falló la escucha',
 };
 
 // the frame's ring per state (design app.jsx SET).
@@ -67,7 +68,7 @@ const RING: Record<string, string[]> = {
 
 const LABEL: Record<BaxyState, string> = {
   booting: 'Arrancando', standby: 'En reposo', idle: 'En espera', listening: 'Escuchando', thinking: 'Pensando',
-  speaking: 'Hablando', confirm: 'Esperando tu ok', error: 'No se entendió el audio',
+  speaking: 'Hablando', confirm: 'Esperando tu ok', error: FAILURE.voice_error,
 };
 
 export default function App() {

@@ -12,9 +12,9 @@ internal static class ViewModelHarness
 {
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
-    internal static async Task<MainWindowViewModel> WithMindAsync()
+    internal static async Task<MainWindowViewModel> WithMindAsync(Action<Chime>? sound = null)
     {
-        var viewModel = new MainWindowViewModel { FailedTurnSound = static () => { } }; // a failed turn sounds nothing here
+        var viewModel = new MainWindowViewModel { Sound = sound ?? (static _ => { }) }; // no chime sounds here unless asked
         await StartMindAsync(viewModel);
         if (!viewModel.IsMindReady)
         {

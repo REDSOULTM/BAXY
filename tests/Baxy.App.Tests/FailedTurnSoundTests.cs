@@ -20,7 +20,7 @@ public sealed class FailedTurnSoundTests
     {
         using var fake = new FakeMind();
         int sounded = 0;
-        var viewModel = new MainWindowViewModel { FailedTurnSound = () => sounded++ };
+        var viewModel = new MainWindowViewModel { Sound = chime => sounded += chime == Chime.TurnFailed ? 1 : 0 };
         await using (viewModel)
         {
             var loop = (NativeTurnLoop)typeof(MainWindowViewModel).GetField("_loop", Private)!.GetValue(viewModel)!;
