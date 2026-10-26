@@ -44,9 +44,9 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
         && hash.ValueKind == JsonValueKind.String;
 
     /// <summary>
-    /// Holdout v6 V6E041: the replacement the provider refused once for the text it would lose, called again, is the
-    /// person's to allow: in normal mode it asks first (work_loss), bound to this invocation. The first time it is
-    /// refused at execution, before any effect, with the call that appends; anything else keeps its declared risk.
+    /// Holdout v6 V6E041/V6E048: a replacement under the file's own hash that would lose its text is the person's to
+    /// allow: in normal mode BAXY asks first, the first time, bound to this invocation (the model, refused, asked the
+    /// person itself instead of calling again); anything else keeps its declared risk.
     /// </summary>
     public ValueTask<InvocationPreflightResult> PreflightAsync(JsonElement arguments, CancellationToken cancellationToken)
     {

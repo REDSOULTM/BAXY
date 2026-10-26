@@ -83,8 +83,8 @@ public interface IFilesystemProvider
         bool append = false);
 
     /// <summary>
-    /// Holdout v6 V6E041 (aid overwrite_guard): whether this replacement under its hash was refused once already for the
-    /// text it would lose, so running it now is the person's to allow (read only; none by default).
+    /// Holdout v6 V6E041/V6E048 (aid overwrite_guard): whether this replacement under the file's own hash would lose its
+    /// text, so running it is the person's to allow (read only; none by default).
     /// </summary>
     bool ReplacementAsksFirst(string relativePath, string text, string? expectedSha256, string? folder) => false;
 

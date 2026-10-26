@@ -31,11 +31,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private readonly TimeProvider _time;
     private readonly IRecycleBin _recycleBin;
 
-    // Holdout v6 V6E041 (overwrite_guard): the replacements refused once for the text they would lose (the file, its
-    // version and the new text's hash), under the root's lock. Forgetting one only refuses it once more.
-    private const int MaximumRefusedReplacements = 256;
-    private readonly HashSet<string> _refusedReplacements = new(StringComparer.Ordinal);
-
     public LocalFilesystemProvider(string rootDirectory, TimeProvider? timeProvider = null)
         : this(rootDirectory, WindowsRecycleBin.Instance, timeProvider)
     {
@@ -186,31 +181,19 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 : append
                     ? expectedSha256 is not null && !string.Equals(current, expectedSha256, StringComparison.Ordinal)
                     : !IsHash(expectedSha256) || !string.Equals(current, expectedSha256, StringComparison.Ordinal);
-            // Holdout v6 V6E041 (aid overwrite_guard): what a replacement of a file there would lose, and whether this
-            // same replacement (the same file's version and the same text) was refused for it before.
-            TextLoss? loss = current is not null && !append && ModelAids.On(ModelAids.OverwriteGuard)
+            // Holdout v6 V6E041 (aid overwrite_guard): what a refused replacement of a file there would lose; one under
+            // the file's own hash asks the person first in normal mode (FilesystemHandler's preflight, ReplacementAsksFirst).
+            TextLoss? loss = conflict && current is not null && !append && ModelAids.On(ModelAids.OverwriteGuard)
                 ? LossOf(path, normalizedText)
                 : null;
-            string? replacement = loss is null ? null : ReplacementKey(path, current!, desiredHash);
             // BAXY Renew (notebook): a hash expected of a file that is not there is no other version of it.
             if (conflict)
             {
-                if (replacement is not null) RememberRefused(replacement);
                 throw WriteRefused(
                     current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append,
                     current, current is null ? 0 : append ? previous.Length : new FileInfo(path).Length,
                     replaceOrAppend: current is not null && !append && !IsHash(expectedSha256),
-                    loss: loss is null ? null : new LossTold(loss, calledPath, folder, text, Again: false));
-            }
-
-            // Holdout v6 V6E041: the first time, a replacement that loses the file's text is refused before any effect
-            // with what the file has and the call that appends; the same one again goes on (FilesystemHandler's
-            // preflight asks the person first in normal mode, ReplacementAsksFirst).
-            if (replacement is not null && !_refusedReplacements.Contains(replacement))
-            {
-                RememberRefused(replacement);
-                throw WriteRefused("replacement_loses_text", path, exists, append, current,
-                    new FileInfo(path).Length, loss: new LossTold(loss!, calledPath, folder, text, Again: true));
+                    loss: loss is null ? null : new LossTold(loss, calledPath, folder, text));
             }
 
             // A refused write leaves nothing behind: the folder of a new file is made only now.
@@ -263,7 +246,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             {
                 if (!keepNewText && File.Exists(temporary)) File.Delete(temporary);
             }
-            if (replacement is not null) _refusedReplacements.Remove(replacement);
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
             return WhereWritten(
@@ -761,9 +743,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         };
 
     /// <summary>
-    /// Holdout v6 V6E041 (overwrite_guard): whether this replacement, under the file's current hash, was refused once
-    /// already for the text it would lose, so it goes on now and in normal mode the person is asked first
-    /// (FilesystemHandler's preflight). Read only.
+    /// Holdout v6 V6E041/V6E048 (overwrite_guard): whether this replacement, under the file's current hash, would lose
+    /// the file's text (TextLoss), so in normal mode the person is asked first, bound to the call (FilesystemHandler's
+    /// preflight); in bypass it goes straight. Read only.
     /// </summary>
     public bool ReplacementAsksFirst(string relativePath, string text, string? expectedSha256, string? folder)
     {
@@ -780,7 +762,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 string desired = Hex(SHA256.HashData(StrictUtf8.GetBytes(normalizedText)));
                 return string.Equals(current, expectedSha256, StringComparison.Ordinal)
                     && !string.Equals(current, desired, StringComparison.Ordinal)
-                    && _refusedReplacements.Contains(ReplacementKey(path, current, desired));
+                    && LossOf(path, normalizedText) is not null;
             }
         }
         catch (Exception exception) when (exception is FilesystemProviderException or IOException
@@ -789,15 +771,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             return false;
         }
     }
-
-    private void RememberRefused(string replacement)
-    {
-        if (_refusedReplacements.Count >= MaximumRefusedReplacements) _refusedReplacements.Clear();
-        _refusedReplacements.Add(replacement);
-    }
-
-    private static string ReplacementKey(string path, string current, string desired) =>
-        Path.GetFullPath(path).ToUpperInvariant() + "\n" + current + "\n" + desired;
 
     // What a file has that a replacement by text would lose (TextLoss), or no lines for a file that is no text (bytes
     // that are no text in a known encoding, or past the size an append reads).
@@ -818,7 +791,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private static string LossNext(string name, long size, LossTold told)
     {
         TextLoss loss = told.Loss;
-        string has = told.Again ? name + " has " : name + " is already there with ";
         string what = loss.Lines is int lines
             ? $"{lines} {(lines == 1 ? "line" : "lines")} ({loss.Characters} {(loss.Characters == 1 ? "character" : "characters")})"
             : $"{size} {(size == 1 ? "byte" : "bytes")} that are not text";
@@ -826,7 +798,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             : loss.LinesKept == 0 ? ", which keeps none of its lines"
             : $", which keeps {loss.LinesKept} of its {loss.Lines} lines";
         var next = new StringBuilder(
-            $"nothing was written: {has}{what}, and this call would replace all of it with the text{keeps}.");
+            $"nothing was written: {name} is already there with {what}, and this call would replace all of it with "
+            + $"the text{keeps}.");
         if (loss.Lines is not null)
         {
             next.Append(" If the person asked to add the text: ")
@@ -834,7 +807,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 .Append(", a new line at its end that keeps what it has.");
         }
         next.Append(" If the person asked to replace all it has: ")
-            .Append(told.Again ? "the same call again" : "the same call with expectedSha256 (currentSha256)")
+            .Append("the same call with expectedSha256 (currentSha256)")
             .Append(". Their words pick the call, so ask them nothing: in normal mode BAXY itself asks their yes "
                 + "before a replacement");
         return next.ToString();
@@ -866,9 +839,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         return "file_write " + Encoding.UTF8.GetString(buffer.ToArray());
     }
 
-    // A loss as a refusal tells it: the call's own path, folder and text, and whether this is the replacement's own
-    // refusal (Again: the same call again goes on) or a version_conflict's (the call still needs the hash).
-    private sealed record LossTold(TextLoss Loss, string RelativePath, string? Folder, string Text, bool Again);
+    // A loss as a version_conflict tells it: the call's own path, folder and text (the call still needs the hash).
+    private sealed record LossTold(TextLoss Loss, string RelativePath, string? Folder, string Text);
 
     // Renew al máximo (w5, E024): how far an append to a missing file looks for one of that name below its folder.
     private const int SameNameDepth = 6;
