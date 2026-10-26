@@ -1,5 +1,9 @@
+using System.Security.Cryptography;
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Core.Operations;
+using Baxy.Kernel.Journal;
+using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
@@ -240,6 +244,49 @@ public sealed class AppRestartHandlerTests
         internal void Advance(TimeSpan by) => _ticks += by.Ticks;
     }
 
+    // Auditoría de identidad (nb-f4-identidad; 00_IDENTIDAD: en modo normal sólo pregunta lo que destruye datos, cerrar
+    // sin guardar entre ello): a restart closes as app.close does (gracefully, stopping at a dialog to save), so an
+    // application all of whose windows hold no document of the person restarts without a yes, as «cierra discord»
+    // closes; one window with a document, or one the provider cannot place, keeps the yes. Fake windows and opening.
+    [TestCase(new[] { "win_discord", "win_discord_2" }, false)]
+    [TestCase(new[] { "win_discord", "win_notepad" }, true)]
+    public async Task AnApplicationAllOfWhoseWindowsHoldNoDocumentRestartsWithoutAsking(string[] ids, bool asks)
+    {
+        var windows = new FakeWindows([.. ids.Select((id, index) => Frame(id, 100 + index))])
+        {
+            Documentless = ["win_discord", "win_discord_2"],
+        };
+        var opens = new List<OperationInvocation>();
+        string root = Path.Combine(Path.GetTempPath(), "baxy-app-restart-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
+                Path.Combine(root, "journal.jsonl"),
+                new JournalHmacAuthenticator(RandomNumberGenerator.GetBytes(JournalHmacAuthenticator.KeyLength)));
+            using var engine = new MissionEngine(
+                new OperationRegistry([new AppRestartHandler(windows, Opens(opens, 300), (_, _, _) => ValueTask.FromResult(true))]),
+                journal);
+
+            OperationResponse response = await engine.ExecuteAsync(
+                new OperationRequest(
+                    ProtocolTypes.OperationRequest, Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"),
+                    Guid.NewGuid().ToString("D"), "app.restart", JsonDocument.Parse("{\"appId\":\"Discord\"}").RootElement),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.ErrorCode, asks ? Is.EqualTo("confirmation_required") : Is.Null);
+                Assert.That(windows.Closed, asks ? Is.Empty : Is.EqualTo(ids));
+                Assert.That(opens, asks ? Is.Empty : Has.Count.EqualTo(1));
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     [Test]
     public async Task AnApplicationWithNoWindowIsNotRunningAndNothingHappens()
     {
@@ -286,6 +333,10 @@ public sealed class AppRestartHandlerTests
         internal string? Prompts { get; init; }
 
         internal IReadOnlyList<int> Background { get; init; } = [];
+
+        internal string[] Documentless { get; init; } = [];
+
+        public bool HoldsNoDocument(string windowId) => Documentless.Contains(windowId);
 
         public ValueTask<IReadOnlyList<int>> BackgroundProcessesAsync(
             string applicationName, CancellationToken cancellationToken) =>
